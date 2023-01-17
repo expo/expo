@@ -221,194 +221,194 @@ public class file: ModulesProvider {
 `;
 
 exports[`monorepo resolve { app: 'ejected', platform: 'android' } 1`] = `
-Array [
-  Object {
-    "modules": Array [],
+[
+  {
+    "modules": [],
     "packageName": "@unimodules/core",
     "packageVersion": "7.1.1",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "unimodules-core",
         "sourceDir": "monorepo/node_modules/@unimodules/core/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-application",
     "packageVersion": "3.2.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-application",
         "sourceDir": "monorepo/node_modules/expo-application/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-constants",
     "packageVersion": "11.0.1",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-constants",
         "sourceDir": "monorepo/node_modules/expo-constants/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-error-recovery",
     "packageVersion": "2.2.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-error-recovery",
         "sourceDir": "monorepo/node_modules/expo-error-recovery/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-file-system",
     "packageVersion": "11.1.3",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-file-system",
         "sourceDir": "monorepo/node_modules/expo-file-system/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-font",
     "packageVersion": "9.2.1",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-font",
         "sourceDir": "monorepo/node_modules/expo-font/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-image-loader",
     "packageVersion": "2.2.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-image-loader",
         "sourceDir": "monorepo/node_modules/expo-image-loader/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-keep-awake",
     "packageVersion": "9.2.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-keep-awake",
         "sourceDir": "monorepo/node_modules/expo-keep-awake/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-modules-core",
     "packageVersion": "0.2.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-modules-core",
         "sourceDir": "monorepo/node_modules/expo-modules-core/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-permissions",
     "packageVersion": "12.1.1",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-permissions",
         "sourceDir": "monorepo/node_modules/expo-permissions/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-splash-screen",
     "packageVersion": "0.11.2",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-splash-screen",
         "sourceDir": "monorepo/node_modules/expo-splash-screen/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-structured-headers",
     "packageVersion": "1.1.1",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-structured-headers",
         "sourceDir": "monorepo/node_modules/expo-structured-headers/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-updates",
     "packageVersion": "0.8.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-updates",
         "sourceDir": "monorepo/node_modules/expo-updates/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-updates-interface",
     "packageVersion": "0.2.1",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-updates-interface",
         "sourceDir": "monorepo/node_modules/expo-updates-interface/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "unimodules-app-loader",
     "packageVersion": "2.2.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "unimodules-app-loader",
         "sourceDir": "monorepo/node_modules/unimodules-app-loader/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "unimodules-task-manager-interface",
     "packageVersion": "6.2.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "unimodules-task-manager-interface",
         "sourceDir": "monorepo/node_modules/unimodules-task-manager-interface/android",
       },
@@ -418,310 +418,310 @@ Array [
 `;
 
 exports[`monorepo resolve { app: 'ejected', platform: 'ios' } 1`] = `
-Array [
-  Object {
-    "appDelegateSubscribers": Array [],
+[
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "@unimodules/core",
     "packageVersion": "7.1.1",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "UMCore",
         "podspecDir": "monorepo/node_modules/@unimodules/core/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "UMCore",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "@unimodules/react-native-adapter",
     "packageVersion": "6.3.1",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "UMReactNativeAdapter",
         "podspecDir": "monorepo/node_modules/@unimodules/react-native-adapter/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "UMReactNativeAdapter",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-application",
     "packageVersion": "3.2.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXApplication",
         "podspecDir": "monorepo/node_modules/expo-application/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXApplication",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-constants",
     "packageVersion": "11.0.1",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXConstants",
         "podspecDir": "monorepo/node_modules/expo-constants/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXConstants",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-error-recovery",
     "packageVersion": "2.2.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXErrorRecovery",
         "podspecDir": "monorepo/node_modules/expo-error-recovery/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXErrorRecovery",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-file-system",
     "packageVersion": "11.1.3",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXFileSystem",
         "podspecDir": "monorepo/node_modules/expo-file-system/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXFileSystem",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-font",
     "packageVersion": "9.2.1",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXFont",
         "podspecDir": "monorepo/node_modules/expo-font/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXFont",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-image-loader",
     "packageVersion": "2.2.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXImageLoader",
         "podspecDir": "monorepo/node_modules/expo-image-loader/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXImageLoader",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-keep-awake",
     "packageVersion": "9.2.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXKeepAwake",
         "podspecDir": "monorepo/node_modules/expo-keep-awake/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXKeepAwake",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-modules-core",
     "packageVersion": "0.2.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "ExpoModulesCore",
         "podspecDir": "monorepo/node_modules/expo-modules-core/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "ExpoModulesCore",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-permissions",
     "packageVersion": "12.1.1",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXPermissions",
         "podspecDir": "monorepo/node_modules/expo-permissions/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXPermissions",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-splash-screen",
     "packageVersion": "0.11.2",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXSplashScreen",
         "podspecDir": "monorepo/node_modules/expo-splash-screen/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXSplashScreen",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-structured-headers",
     "packageVersion": "1.1.1",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXStructuredHeaders",
         "podspecDir": "monorepo/node_modules/expo-structured-headers/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXStructuredHeaders",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-updates",
     "packageVersion": "0.8.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXUpdates",
         "podspecDir": "monorepo/node_modules/expo-updates/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXUpdates",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-updates-interface",
     "packageVersion": "0.2.1",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXUpdatesInterface",
         "podspecDir": "monorepo/node_modules/expo-updates-interface/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXUpdatesInterface",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "unimodules-app-loader",
     "packageVersion": "2.2.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "UMAppLoader",
         "podspecDir": "monorepo/node_modules/unimodules-app-loader/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "UMAppLoader",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "unimodules-task-manager-interface",
     "packageVersion": "6.2.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "UMTaskManagerInterface",
         "podspecDir": "monorepo/node_modules/unimodules-task-manager-interface/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "UMTaskManagerInterface",
     ],
   },
@@ -729,194 +729,194 @@ Array [
 `;
 
 exports[`monorepo resolve { app: 'managed', platform: 'android' } 1`] = `
-Array [
-  Object {
-    "modules": Array [],
+[
+  {
+    "modules": [],
     "packageName": "@unimodules/core",
     "packageVersion": "7.1.1",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "unimodules-core",
         "sourceDir": "monorepo/node_modules/@unimodules/core/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-application",
     "packageVersion": "3.2.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-application",
         "sourceDir": "monorepo/node_modules/expo-application/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-constants",
     "packageVersion": "11.0.1",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-constants",
         "sourceDir": "monorepo/node_modules/expo-constants/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-error-recovery",
     "packageVersion": "2.2.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-error-recovery",
         "sourceDir": "monorepo/node_modules/expo-error-recovery/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-file-system",
     "packageVersion": "11.1.3",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-file-system",
         "sourceDir": "monorepo/node_modules/expo-file-system/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-font",
     "packageVersion": "9.2.1",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-font",
         "sourceDir": "monorepo/node_modules/expo-font/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-image-loader",
     "packageVersion": "2.2.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-image-loader",
         "sourceDir": "monorepo/node_modules/expo-image-loader/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-keep-awake",
     "packageVersion": "9.2.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-keep-awake",
         "sourceDir": "monorepo/node_modules/expo-keep-awake/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-modules-core",
     "packageVersion": "0.2.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-modules-core",
         "sourceDir": "monorepo/node_modules/expo-modules-core/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-permissions",
     "packageVersion": "12.1.1",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-permissions",
         "sourceDir": "monorepo/node_modules/expo-permissions/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-splash-screen",
     "packageVersion": "0.11.2",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-splash-screen",
         "sourceDir": "monorepo/node_modules/expo-splash-screen/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-structured-headers",
     "packageVersion": "1.1.1",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-structured-headers",
         "sourceDir": "monorepo/node_modules/expo-structured-headers/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-updates",
     "packageVersion": "0.8.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-updates",
         "sourceDir": "monorepo/node_modules/expo-updates/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-updates-interface",
     "packageVersion": "0.2.1",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-updates-interface",
         "sourceDir": "monorepo/node_modules/expo-updates-interface/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "unimodules-app-loader",
     "packageVersion": "2.2.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "unimodules-app-loader",
         "sourceDir": "monorepo/node_modules/unimodules-app-loader/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "unimodules-task-manager-interface",
     "packageVersion": "6.2.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "unimodules-task-manager-interface",
         "sourceDir": "monorepo/node_modules/unimodules-task-manager-interface/android",
       },
@@ -926,310 +926,310 @@ Array [
 `;
 
 exports[`monorepo resolve { app: 'managed', platform: 'ios' } 1`] = `
-Array [
-  Object {
-    "appDelegateSubscribers": Array [],
+[
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "@unimodules/core",
     "packageVersion": "7.1.1",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "UMCore",
         "podspecDir": "monorepo/node_modules/@unimodules/core/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "UMCore",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "@unimodules/react-native-adapter",
     "packageVersion": "6.3.1",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "UMReactNativeAdapter",
         "podspecDir": "monorepo/node_modules/@unimodules/react-native-adapter/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "UMReactNativeAdapter",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-application",
     "packageVersion": "3.2.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXApplication",
         "podspecDir": "monorepo/node_modules/expo-application/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXApplication",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-constants",
     "packageVersion": "11.0.1",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXConstants",
         "podspecDir": "monorepo/node_modules/expo-constants/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXConstants",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-error-recovery",
     "packageVersion": "2.2.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXErrorRecovery",
         "podspecDir": "monorepo/node_modules/expo-error-recovery/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXErrorRecovery",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-file-system",
     "packageVersion": "11.1.3",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXFileSystem",
         "podspecDir": "monorepo/node_modules/expo-file-system/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXFileSystem",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-font",
     "packageVersion": "9.2.1",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXFont",
         "podspecDir": "monorepo/node_modules/expo-font/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXFont",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-image-loader",
     "packageVersion": "2.2.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXImageLoader",
         "podspecDir": "monorepo/node_modules/expo-image-loader/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXImageLoader",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-keep-awake",
     "packageVersion": "9.2.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXKeepAwake",
         "podspecDir": "monorepo/node_modules/expo-keep-awake/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXKeepAwake",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-modules-core",
     "packageVersion": "0.2.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "ExpoModulesCore",
         "podspecDir": "monorepo/node_modules/expo-modules-core/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "ExpoModulesCore",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-permissions",
     "packageVersion": "12.1.1",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXPermissions",
         "podspecDir": "monorepo/node_modules/expo-permissions/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXPermissions",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-splash-screen",
     "packageVersion": "0.11.2",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXSplashScreen",
         "podspecDir": "monorepo/node_modules/expo-splash-screen/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXSplashScreen",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-structured-headers",
     "packageVersion": "1.1.1",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXStructuredHeaders",
         "podspecDir": "monorepo/node_modules/expo-structured-headers/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXStructuredHeaders",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-updates",
     "packageVersion": "0.8.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXUpdates",
         "podspecDir": "monorepo/node_modules/expo-updates/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXUpdates",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-updates-interface",
     "packageVersion": "0.2.1",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXUpdatesInterface",
         "podspecDir": "monorepo/node_modules/expo-updates-interface/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXUpdatesInterface",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "unimodules-app-loader",
     "packageVersion": "2.2.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "UMAppLoader",
         "podspecDir": "monorepo/node_modules/unimodules-app-loader/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "UMAppLoader",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "unimodules-task-manager-interface",
     "packageVersion": "6.2.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "UMTaskManagerInterface",
         "podspecDir": "monorepo/node_modules/unimodules-task-manager-interface/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "UMTaskManagerInterface",
     ],
   },
@@ -1237,206 +1237,206 @@ Array [
 `;
 
 exports[`monorepo resolve { app: 'with-sentry', platform: 'android' } 1`] = `
-Array [
-  Object {
-    "modules": Array [],
+[
+  {
+    "modules": [],
     "packageName": "@unimodules/core",
     "packageVersion": "7.1.1",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "unimodules-core",
         "sourceDir": "monorepo/node_modules/@unimodules/core/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-application",
     "packageVersion": "3.2.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-application",
         "sourceDir": "monorepo/node_modules/expo-application/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-constants",
     "packageVersion": "11.0.1",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-constants",
         "sourceDir": "monorepo/node_modules/expo-constants/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-device",
     "packageVersion": "3.3.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-device",
         "sourceDir": "monorepo/node_modules/expo-device/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-error-recovery",
     "packageVersion": "2.2.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-error-recovery",
         "sourceDir": "monorepo/node_modules/expo-error-recovery/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-file-system",
     "packageVersion": "11.1.3",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-file-system",
         "sourceDir": "monorepo/node_modules/expo-file-system/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-font",
     "packageVersion": "9.2.1",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-font",
         "sourceDir": "monorepo/node_modules/expo-font/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-image-loader",
     "packageVersion": "2.2.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-image-loader",
         "sourceDir": "monorepo/node_modules/expo-image-loader/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-keep-awake",
     "packageVersion": "9.2.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-keep-awake",
         "sourceDir": "monorepo/node_modules/expo-keep-awake/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-modules-core",
     "packageVersion": "0.2.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-modules-core",
         "sourceDir": "monorepo/node_modules/expo-modules-core/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-permissions",
     "packageVersion": "12.1.1",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-permissions",
         "sourceDir": "monorepo/node_modules/expo-permissions/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-splash-screen",
     "packageVersion": "0.11.2",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-splash-screen",
         "sourceDir": "monorepo/node_modules/expo-splash-screen/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-structured-headers",
     "packageVersion": "1.1.1",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-structured-headers",
         "sourceDir": "monorepo/node_modules/expo-structured-headers/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-updates",
     "packageVersion": "0.8.2",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-updates",
         "sourceDir": "monorepo/apps/with-sentry/node_modules/expo-updates/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "expo-updates-interface",
     "packageVersion": "0.2.2",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "expo-updates-interface",
         "sourceDir": "monorepo/apps/with-sentry/node_modules/expo-updates-interface/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "unimodules-app-loader",
     "packageVersion": "2.2.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "unimodules-app-loader",
         "sourceDir": "monorepo/node_modules/unimodules-app-loader/android",
       },
     ],
   },
-  Object {
-    "modules": Array [],
+  {
+    "modules": [],
     "packageName": "unimodules-task-manager-interface",
     "packageVersion": "6.2.0",
     "pods": undefined,
-    "projects": Array [
-      Object {
+    "projects": [
+      {
         "name": "unimodules-task-manager-interface",
         "sourceDir": "monorepo/node_modules/unimodules-task-manager-interface/android",
       },
@@ -1446,328 +1446,328 @@ Array [
 `;
 
 exports[`monorepo resolve { app: 'with-sentry', platform: 'ios' } 1`] = `
-Array [
-  Object {
-    "appDelegateSubscribers": Array [],
+[
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "@unimodules/core",
     "packageVersion": "7.1.1",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "UMCore",
         "podspecDir": "monorepo/node_modules/@unimodules/core/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "UMCore",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "@unimodules/react-native-adapter",
     "packageVersion": "6.3.1",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "UMReactNativeAdapter",
         "podspecDir": "monorepo/node_modules/@unimodules/react-native-adapter/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "UMReactNativeAdapter",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-application",
     "packageVersion": "3.2.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXApplication",
         "podspecDir": "monorepo/node_modules/expo-application/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXApplication",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-constants",
     "packageVersion": "11.0.1",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXConstants",
         "podspecDir": "monorepo/node_modules/expo-constants/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXConstants",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-device",
     "packageVersion": "3.3.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXDevice",
         "podspecDir": "monorepo/node_modules/expo-device/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXDevice",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-error-recovery",
     "packageVersion": "2.2.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXErrorRecovery",
         "podspecDir": "monorepo/node_modules/expo-error-recovery/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXErrorRecovery",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-file-system",
     "packageVersion": "11.1.3",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXFileSystem",
         "podspecDir": "monorepo/node_modules/expo-file-system/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXFileSystem",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-font",
     "packageVersion": "9.2.1",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXFont",
         "podspecDir": "monorepo/node_modules/expo-font/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXFont",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-image-loader",
     "packageVersion": "2.2.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXImageLoader",
         "podspecDir": "monorepo/node_modules/expo-image-loader/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXImageLoader",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-keep-awake",
     "packageVersion": "9.2.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXKeepAwake",
         "podspecDir": "monorepo/node_modules/expo-keep-awake/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXKeepAwake",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-modules-core",
     "packageVersion": "0.2.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "ExpoModulesCore",
         "podspecDir": "monorepo/node_modules/expo-modules-core/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "ExpoModulesCore",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-permissions",
     "packageVersion": "12.1.1",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXPermissions",
         "podspecDir": "monorepo/node_modules/expo-permissions/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXPermissions",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-splash-screen",
     "packageVersion": "0.11.2",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXSplashScreen",
         "podspecDir": "monorepo/node_modules/expo-splash-screen/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXSplashScreen",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-structured-headers",
     "packageVersion": "1.1.1",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXStructuredHeaders",
         "podspecDir": "monorepo/node_modules/expo-structured-headers/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXStructuredHeaders",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-updates",
     "packageVersion": "0.8.2",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXUpdates",
         "podspecDir": "monorepo/apps/with-sentry/node_modules/expo-updates/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXUpdates",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "expo-updates-interface",
     "packageVersion": "0.2.2",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "EXUpdatesInterface",
         "podspecDir": "monorepo/apps/with-sentry/node_modules/expo-updates-interface/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "EXUpdatesInterface",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "unimodules-app-loader",
     "packageVersion": "2.2.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "UMAppLoader",
         "podspecDir": "monorepo/node_modules/unimodules-app-loader/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "UMAppLoader",
     ],
   },
-  Object {
-    "appDelegateSubscribers": Array [],
+  {
+    "appDelegateSubscribers": [],
     "debugOnly": false,
-    "modules": Array [],
+    "modules": [],
     "packageName": "unimodules-task-manager-interface",
     "packageVersion": "6.2.0",
-    "pods": Array [
-      Object {
+    "pods": [
+      {
         "podName": "UMTaskManagerInterface",
         "podspecDir": "monorepo/node_modules/unimodules-task-manager-interface/ios",
       },
     ],
     "projects": undefined,
-    "reactDelegateHandlers": Array [],
-    "swiftModuleNames": Array [
+    "reactDelegateHandlers": [],
+    "swiftModuleNames": [
       "UMTaskManagerInterface",
     ],
   },
@@ -1775,212 +1775,212 @@ Array [
 `;
 
 exports[`monorepo search ejected 1`] = `
-Object {
-  "@unimodules/core": Object {
-    "config": Object {
+{
+  "@unimodules/core": {
+    "config": {
       "name": "unimodules-core",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/@unimodules/core",
     "version": "7.1.1",
   },
-  "@unimodules/react-native-adapter": Object {
-    "config": Object {
-      "android": Object {
-        "packages": Array [],
+  "@unimodules/react-native-adapter": {
+    "config": {
+      "android": {
+        "packages": [],
       },
       "name": "unimodules-react-native-adapter",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/@unimodules/react-native-adapter",
     "version": "6.3.1",
   },
-  "expo-application": Object {
-    "config": Object {
+  "expo-application": {
+    "config": {
       "name": "expo-application",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
         "web",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-application",
     "version": "3.2.0",
   },
-  "expo-constants": Object {
-    "config": Object {
+  "expo-constants": {
+    "config": {
       "name": "expo-constants",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-constants",
     "version": "11.0.1",
   },
-  "expo-error-recovery": Object {
-    "config": Object {
+  "expo-error-recovery": {
+    "config": {
       "name": "expo-error-recovery",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-error-recovery",
     "version": "2.2.0",
   },
-  "expo-file-system": Object {
-    "config": Object {
+  "expo-file-system": {
+    "config": {
       "name": "expo-file-system",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-file-system",
     "version": "11.1.3",
   },
-  "expo-font": Object {
-    "config": Object {
+  "expo-font": {
+    "config": {
       "name": "expo-font",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-font",
     "version": "9.2.1",
   },
-  "expo-image-loader": Object {
-    "config": Object {
+  "expo-image-loader": {
+    "config": {
       "name": "expo-image-loader",
-      "platforms": Array [
+      "platforms": [
         "android",
         "ios",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-image-loader",
     "version": "2.2.0",
   },
-  "expo-keep-awake": Object {
-    "config": Object {
+  "expo-keep-awake": {
+    "config": {
       "name": "expo-keep-awake",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-keep-awake",
     "version": "9.2.0",
   },
-  "expo-modules-core": Object {
-    "config": Object {
+  "expo-modules-core": {
+    "config": {
       "name": "expo-modules-core",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-modules-core",
     "version": "0.2.0",
   },
-  "expo-permissions": Object {
-    "config": Object {
+  "expo-permissions": {
+    "config": {
       "name": "expo-permissions",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-permissions",
     "version": "12.1.1",
   },
-  "expo-splash-screen": Object {
-    "config": Object {
+  "expo-splash-screen": {
+    "config": {
       "name": "expo-splash-screen",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-splash-screen",
     "version": "0.11.2",
   },
-  "expo-structured-headers": Object {
-    "config": Object {
+  "expo-structured-headers": {
+    "config": {
       "name": "expo-structured-headers",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-structured-headers",
     "version": "1.1.1",
   },
-  "expo-updates": Object {
-    "config": Object {
+  "expo-updates": {
+    "config": {
       "name": "expo-updates",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-updates",
     "version": "0.8.0",
   },
-  "expo-updates-interface": Object {
-    "config": Object {
+  "expo-updates-interface": {
+    "config": {
       "name": "expo-updates-interface",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-updates-interface",
     "version": "0.2.1",
   },
-  "unimodules-app-loader": Object {
-    "config": Object {
+  "unimodules-app-loader": {
+    "config": {
       "name": "unimodules-app-loader",
-      "platforms": Array [
+      "platforms": [
         "android",
         "ios",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/unimodules-app-loader",
     "version": "2.2.0",
   },
-  "unimodules-task-manager-interface": Object {
-    "config": Object {
+  "unimodules-task-manager-interface": {
+    "config": {
       "name": "unimodules-task-manager-interface",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/unimodules-task-manager-interface",
     "version": "6.2.0",
   },
@@ -1988,212 +1988,212 @@ Object {
 `;
 
 exports[`monorepo search managed 1`] = `
-Object {
-  "@unimodules/core": Object {
-    "config": Object {
+{
+  "@unimodules/core": {
+    "config": {
       "name": "unimodules-core",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/@unimodules/core",
     "version": "7.1.1",
   },
-  "@unimodules/react-native-adapter": Object {
-    "config": Object {
-      "android": Object {
-        "packages": Array [],
+  "@unimodules/react-native-adapter": {
+    "config": {
+      "android": {
+        "packages": [],
       },
       "name": "unimodules-react-native-adapter",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/@unimodules/react-native-adapter",
     "version": "6.3.1",
   },
-  "expo-application": Object {
-    "config": Object {
+  "expo-application": {
+    "config": {
       "name": "expo-application",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
         "web",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-application",
     "version": "3.2.0",
   },
-  "expo-constants": Object {
-    "config": Object {
+  "expo-constants": {
+    "config": {
       "name": "expo-constants",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-constants",
     "version": "11.0.1",
   },
-  "expo-error-recovery": Object {
-    "config": Object {
+  "expo-error-recovery": {
+    "config": {
       "name": "expo-error-recovery",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-error-recovery",
     "version": "2.2.0",
   },
-  "expo-file-system": Object {
-    "config": Object {
+  "expo-file-system": {
+    "config": {
       "name": "expo-file-system",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-file-system",
     "version": "11.1.3",
   },
-  "expo-font": Object {
-    "config": Object {
+  "expo-font": {
+    "config": {
       "name": "expo-font",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-font",
     "version": "9.2.1",
   },
-  "expo-image-loader": Object {
-    "config": Object {
+  "expo-image-loader": {
+    "config": {
       "name": "expo-image-loader",
-      "platforms": Array [
+      "platforms": [
         "android",
         "ios",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-image-loader",
     "version": "2.2.0",
   },
-  "expo-keep-awake": Object {
-    "config": Object {
+  "expo-keep-awake": {
+    "config": {
       "name": "expo-keep-awake",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-keep-awake",
     "version": "9.2.0",
   },
-  "expo-modules-core": Object {
-    "config": Object {
+  "expo-modules-core": {
+    "config": {
       "name": "expo-modules-core",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-modules-core",
     "version": "0.2.0",
   },
-  "expo-permissions": Object {
-    "config": Object {
+  "expo-permissions": {
+    "config": {
       "name": "expo-permissions",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-permissions",
     "version": "12.1.1",
   },
-  "expo-splash-screen": Object {
-    "config": Object {
+  "expo-splash-screen": {
+    "config": {
       "name": "expo-splash-screen",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-splash-screen",
     "version": "0.11.2",
   },
-  "expo-structured-headers": Object {
-    "config": Object {
+  "expo-structured-headers": {
+    "config": {
       "name": "expo-structured-headers",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-structured-headers",
     "version": "1.1.1",
   },
-  "expo-updates": Object {
-    "config": Object {
+  "expo-updates": {
+    "config": {
       "name": "expo-updates",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-updates",
     "version": "0.8.0",
   },
-  "expo-updates-interface": Object {
-    "config": Object {
+  "expo-updates-interface": {
+    "config": {
       "name": "expo-updates-interface",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-updates-interface",
     "version": "0.2.1",
   },
-  "unimodules-app-loader": Object {
-    "config": Object {
+  "unimodules-app-loader": {
+    "config": {
       "name": "unimodules-app-loader",
-      "platforms": Array [
+      "platforms": [
         "android",
         "ios",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/unimodules-app-loader",
     "version": "2.2.0",
   },
-  "unimodules-task-manager-interface": Object {
-    "config": Object {
+  "unimodules-task-manager-interface": {
+    "config": {
       "name": "unimodules-task-manager-interface",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/unimodules-task-manager-interface",
     "version": "6.2.0",
   },
@@ -2201,190 +2201,190 @@ Object {
 `;
 
 exports[`monorepo search with-sentry 1`] = `
-Object {
-  "@unimodules/core": Object {
-    "config": Object {
+{
+  "@unimodules/core": {
+    "config": {
       "name": "unimodules-core",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/@unimodules/core",
     "version": "7.1.1",
   },
-  "@unimodules/react-native-adapter": Object {
-    "config": Object {
-      "android": Object {
-        "packages": Array [],
+  "@unimodules/react-native-adapter": {
+    "config": {
+      "android": {
+        "packages": [],
       },
       "name": "unimodules-react-native-adapter",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/@unimodules/react-native-adapter",
     "version": "6.3.1",
   },
-  "expo-application": Object {
-    "config": Object {
+  "expo-application": {
+    "config": {
       "name": "expo-application",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
         "web",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-application",
     "version": "3.2.0",
   },
-  "expo-constants": Object {
-    "config": Object {
+  "expo-constants": {
+    "config": {
       "name": "expo-constants",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-constants",
     "version": "11.0.1",
   },
-  "expo-device": Object {
-    "config": Object {
+  "expo-device": {
+    "config": {
       "name": "expo-device",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
         "web",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-device",
     "version": "3.3.0",
   },
-  "expo-error-recovery": Object {
-    "config": Object {
+  "expo-error-recovery": {
+    "config": {
       "name": "expo-error-recovery",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-error-recovery",
     "version": "2.2.0",
   },
-  "expo-file-system": Object {
-    "config": Object {
+  "expo-file-system": {
+    "config": {
       "name": "expo-file-system",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-file-system",
     "version": "11.1.3",
   },
-  "expo-font": Object {
-    "config": Object {
+  "expo-font": {
+    "config": {
       "name": "expo-font",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-font",
     "version": "9.2.1",
   },
-  "expo-image-loader": Object {
-    "config": Object {
+  "expo-image-loader": {
+    "config": {
       "name": "expo-image-loader",
-      "platforms": Array [
+      "platforms": [
         "android",
         "ios",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-image-loader",
     "version": "2.2.0",
   },
-  "expo-keep-awake": Object {
-    "config": Object {
+  "expo-keep-awake": {
+    "config": {
       "name": "expo-keep-awake",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-keep-awake",
     "version": "9.2.0",
   },
-  "expo-modules-core": Object {
-    "config": Object {
+  "expo-modules-core": {
+    "config": {
       "name": "expo-modules-core",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-modules-core",
     "version": "0.2.0",
   },
-  "expo-permissions": Object {
-    "config": Object {
+  "expo-permissions": {
+    "config": {
       "name": "expo-permissions",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-permissions",
     "version": "12.1.1",
   },
-  "expo-splash-screen": Object {
-    "config": Object {
+  "expo-splash-screen": {
+    "config": {
       "name": "expo-splash-screen",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-splash-screen",
     "version": "0.11.2",
   },
-  "expo-structured-headers": Object {
-    "config": Object {
+  "expo-structured-headers": {
+    "config": {
       "name": "expo-structured-headers",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/expo-structured-headers",
     "version": "1.1.1",
   },
-  "expo-updates": Object {
-    "config": Object {
+  "expo-updates": {
+    "config": {
       "name": "expo-updates",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [
-      Object {
+    "duplicates": [
+      {
         "path": "monorepo/node_modules/expo-updates",
         "version": "0.8.0",
       },
@@ -2392,16 +2392,16 @@ Object {
     "path": "monorepo/apps/with-sentry/node_modules/expo-updates",
     "version": "0.8.2",
   },
-  "expo-updates-interface": Object {
-    "config": Object {
+  "expo-updates-interface": {
+    "config": {
       "name": "expo-updates-interface",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [
-      Object {
+    "duplicates": [
+      {
         "path": "monorepo/node_modules/expo-updates-interface",
         "version": "0.2.1",
       },
@@ -2409,27 +2409,27 @@ Object {
     "path": "monorepo/apps/with-sentry/node_modules/expo-updates-interface",
     "version": "0.2.2",
   },
-  "unimodules-app-loader": Object {
-    "config": Object {
+  "unimodules-app-loader": {
+    "config": {
       "name": "unimodules-app-loader",
-      "platforms": Array [
+      "platforms": [
         "android",
         "ios",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/unimodules-app-loader",
     "version": "2.2.0",
   },
-  "unimodules-task-manager-interface": Object {
-    "config": Object {
+  "unimodules-task-manager-interface": {
+    "config": {
       "name": "unimodules-task-manager-interface",
-      "platforms": Array [
+      "platforms": [
         "ios",
         "android",
       ],
     },
-    "duplicates": Array [],
+    "duplicates": [],
     "path": "monorepo/node_modules/unimodules-task-manager-interface",
     "version": "6.2.0",
   },

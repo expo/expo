@@ -37,9 +37,6 @@
   "devDependencies": {
     "expo-module-scripts": "^3.0.0"
   },
-  "jest": {
-    "preset": "expo-module-scripts"
-  },
   "peerDependencies": {
     "expo": "*"
   }

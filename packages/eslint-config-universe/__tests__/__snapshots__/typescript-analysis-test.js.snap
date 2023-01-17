@@ -1,13 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`lints: fixtures/typescript-analysis-00.ts 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [
-    Object {
+  "messages": [
+    {
       "column": 10,
       "endColumn": 46,
       "endLine": 11,
@@ -17,11 +17,11 @@ Object {
       "nodeType": "LogicalExpression",
       "ruleId": "@typescript-eslint/prefer-optional-chain",
       "severity": 1,
-      "suggestions": Array [
-        Object {
+      "suggestions": [
+        {
           "desc": "Change to an optional chain.",
-          "fix": Object {
-            "range": Array [
+          "fix": {
+            "range": [
               138,
               174,
             ],
@@ -44,20 +44,20 @@ Object {
 export function myFunc(foo: T | null) {
   return foo && foo.a && foo.a.b && foo.a.b.c;
 }",
-  "suppressedMessages": Array [],
-  "usedDeprecatedRules": Array [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 1,
 }
 `;
 
 exports[`lints: fixtures/typescript-analysis-01.ts 1`] = `
-Object {
+{
   "errorCount": 1,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [
-    Object {
+  "messages": [
+    {
       "column": 1,
       "endColumn": 2,
       "endLine": 6,
@@ -76,20 +76,20 @@ for (const b in arr) {
   sum += b;
 }
 export { sum };",
-  "suppressedMessages": Array [],
-  "usedDeprecatedRules": Array [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 0,
 }
 `;
 
 exports[`lints: fixtures/typescript-analysis-02.ts 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [
-    Object {
+  "messages": [
+    {
       "column": 12,
       "endColumn": 14,
       "endLine": 4,
@@ -99,11 +99,11 @@ Object {
       "nodeType": "Punctuator",
       "ruleId": "@typescript-eslint/prefer-nullish-coalescing",
       "severity": 1,
-      "suggestions": Array [
-        Object {
+      "suggestions": [
+        {
           "desc": "Fix to nullish coalescing operator (\`??\`).",
-          "fix": Object {
-            "range": Array [
+          "fix": {
+            "range": [
               162,
               164,
             ],
@@ -120,20 +120,20 @@ Object {
   return a || b;
 }
 ",
-  "suppressedMessages": Array [],
-  "usedDeprecatedRules": Array [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 1,
 }
 `;
 
 exports[`lints: fixtures/typescript-analysis-03.ts 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [
-    Object {
+  "messages": [
+    {
       "column": 9,
       "endColumn": 10,
       "endLine": 2,
@@ -148,8 +148,8 @@ Object {
   "source": "export function wat() {
   throw 3;
 }",
-  "suppressedMessages": Array [],
-  "usedDeprecatedRules": Array [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 1,
 }
 `;

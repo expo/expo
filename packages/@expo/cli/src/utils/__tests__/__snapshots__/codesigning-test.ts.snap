@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`getCodeSigningInfoAsync expo-root keyid requested online normal case gets a development certificate 1`] = `
-Object {
-  "certificateChainForResponse": Array [
+{
+  "certificateChainForResponse": [
     "-----BEGIN CERTIFICATE-----
   MIIDyTCCArGgAwIBAgIJcLqJvCTwY8nXMA0GCSqGSIb3DQEBCwUAMHkxHDAaBgNV
   BAMTE0V4cG8gR28gQ2VydGlmaWNhdGUxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpD
@@ -105,8 +105,8 @@ CFDVAoGBAK/aVHnMZlPwWZoso9svdrW/lXwhjlbYPfBwmUZsS05J+KRFxjeb/oQm
 `;
 
 exports[`getCodeSigningInfoAsync non expo-root certificate keyid requested normal case gets the configured certificate 1`] = `
-Object {
-  "certificateChainForResponse": Array [],
+{
+  "certificateChainForResponse": [],
   "certificateForPrivateKey": "-----BEGIN CERTIFICATE-----
   MIICzTCCAbWgAwIBAgIJWEL03IR99LhMMA0GCSqGSIb3DQEBCwUAMA8xDTALBgNV
   BAMTBHRlc3QwIBcNMjIwNDEyMTcyODIzWhgPMjEyMjA0MTIxNzI4MjNaMA8xDTAL

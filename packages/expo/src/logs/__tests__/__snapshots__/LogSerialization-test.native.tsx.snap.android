@@ -1,18 +1,18 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`serializes cyclic objects 1`] = `
-Array [
+[
   "Object {
-  \\"self\\": [Circular],
+  "self": [Circular],
 }",
 ]
 `;
 
 exports[`serializes nested objects 1`] = `
-Array [
+[
   "Object {
-  \\"outer\\": Object {
-    \\"inner\\": Array [
+  "outer": Object {
+    "inner": Array [
       Array [],
       Object {},
     ],
@@ -29,9 +29,9 @@ exports[`with stack trace support in Expo CLI doesn't fail if symbolication fail
 `;
 
 exports[`with stack trace support in Expo CLI doesn't fail if the error has no stack frames 1`] = `
-Object {
-  "body": Array [
-    Object {
+{
+  "body": [
+    {
       "message": "Test error",
       "stack": "",
     },
@@ -41,8 +41,8 @@ Object {
 `;
 
 exports[`with stack trace support in Expo CLI doesn't fail if the error stack property is missing 1`] = `
-Object {
-  "body": Array [
+{
+  "body": [
     "[Error: Test error]",
   ],
   "includesStack": false,

@@ -88,11 +88,11 @@ describe(loginAsync, () => {
 
     expect(await fs.promises.readFile(getUserStatePath(), 'utf8')).toMatchInlineSnapshot(`
       "{
-        \\"auth\\": {
-          \\"sessionSecret\\": \\"SESSION_SECRET\\",
-          \\"userId\\": \\"USER_ID\\",
-          \\"username\\": \\"USERNAME\\",
-          \\"currentConnection\\": \\"Username-Password-Authentication\\"
+        "auth": {
+          "sessionSecret": "SESSION_SECRET",
+          "userId": "USER_ID",
+          "username": "USERNAME",
+          "currentConnection": "Username-Password-Authentication"
         }
       }
       "

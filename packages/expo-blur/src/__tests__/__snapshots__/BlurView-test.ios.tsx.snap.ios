@@ -3,8 +3,8 @@
 exports[`renders a native blur view 1`] = `
 <View
   style={
-    Array [
-      Object {
+    [
+      {
         "backgroundColor": "transparent",
       },
       undefined,
@@ -14,13 +14,13 @@ exports[`renders a native blur view 1`] = `
 >
   <ViewManagerAdapter_ExpoBlurView
     proxiedProperties={
-      Object {
+      {
         "intensity": 0.65,
         "tint": "light",
       }
     }
     style={
-      Object {
+      {
         "bottom": 0,
         "left": 0,
         "position": "absolute",
