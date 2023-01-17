@@ -30,6 +30,7 @@ struct SK_API SkV2 {
     friend SkV2 operator*(SkV2 v, SkScalar s) { return {v.x*s, v.y*s}; }
     friend SkV2 operator*(SkScalar s, SkV2 v) { return {v.x*s, v.y*s}; }
     friend SkV2 operator/(SkV2 v, SkScalar s) { return {v.x/s, v.y/s}; }
+    friend SkV2 operator/(SkScalar s, SkV2 v) { return {s/v.x, s/v.y}; }
 
     void operator+=(SkV2 v) { *this = *this + v; }
     void operator-=(SkV2 v) { *this = *this - v; }

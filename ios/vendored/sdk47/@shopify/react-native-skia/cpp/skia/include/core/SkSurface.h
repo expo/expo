@@ -21,24 +21,31 @@
 #include <android/hardware_buffer.h>
 #endif
 
-#ifdef SK_METAL
+#if SK_SUPPORT_GPU && defined(SK_METAL)
 #include "include/gpu/mtl/GrMtlTypes.h"
 #endif
 
 class SkCanvas;
+class SkCapabilities;
 class SkDeferredDisplayList;
 class SkPaint;
 class SkSurfaceCharacterization;
 class GrBackendRenderTarget;
 class GrBackendSemaphore;
-class GrBackendSurfaceMutableState;
 class GrBackendTexture;
 class GrDirectContext;
 class GrRecordingContext;
 class GrRenderTarget;
 enum GrSurfaceOrigin: int;
 
-namespace skgpu::graphite { class Recorder; }
+namespace skgpu {
+class MutableTextureState;
+}
+
+namespace skgpu::graphite {
+class BackendTexture;
+class Recorder;
+}
 
 /** \class SkSurface
     SkSurface is responsible for managing the pixels that a canvas draws into. The pixels can be
@@ -391,7 +398,41 @@ public:
                                                     );
 #endif
 
-#ifdef SK_METAL
+#ifdef SK_GRAPHITE_ENABLED
+    /**
+     * In Graphite, while clients hold a ref on an SkSurface, the backing gpu object does _not_
+     * count against the budget. Once an SkSurface is freed, the backing gpu object may or may
+     * not become a scratch (i.e., reusable) resource but, if it does, it will be counted against
+     * the budget.
+     */
+    static sk_sp<SkSurface> MakeGraphite(
+            skgpu::graphite::Recorder*,
+            const SkImageInfo& imageInfo,
+            skgpu::graphite::Mipmapped = skgpu::graphite::Mipmapped::kNo,
+            const SkSurfaceProps* surfaceProps = nullptr);
+
+    /**
+     * Wraps a GPU-backed texture in an SkSurface. Depending on the backend gpu API, the caller may
+     * be required to ensure the texture is valid for the lifetime of the returned SkSurface. The
+     * required lifetimes for the specific apis are:
+     *     Metal: Skia will call retain on the underlying MTLTexture so the caller can drop it once
+     *            this call returns.
+     *
+     * SkSurface is returned if all the parameters are valid. The backendTexture is valid if its
+     * format agrees with colorSpace and recorder; for instance, if backendTexture has an sRGB
+     * configuration, then the recorder must support sRGB, and colorSpace must be present. Further,
+     * backendTexture's width and height must not exceed the recorder's capabilities, and the
+     * recorder must be able to support the back-end texture.
+     */
+    static sk_sp<SkSurface> MakeGraphiteFromBackendTexture(skgpu::graphite::Recorder*,
+                                                           const skgpu::graphite::BackendTexture&,
+                                                           SkColorType colorType,
+                                                           sk_sp<SkColorSpace> colorSpace,
+                                                           const SkSurfaceProps* props);
+
+#endif // SK_GRAPHITE_ENABLED
+
+#if SK_SUPPORT_GPU && defined(SK_METAL)
     /** Creates SkSurface from CAMetalLayer.
         Returned SkSurface takes a reference on the CAMetalLayer. The ref on the layer will be
         released when the SkSurface is destroyed.
@@ -600,6 +641,12 @@ public:
     */
     SkCanvas* getCanvas();
 
+    /** Returns SkCapabilities that describes the capabilities of the SkSurface's device.
+
+        @return  SkCapabilities of SkSurface's device.
+    */
+    sk_sp<const SkCapabilities> capabilities();
+
     /** Returns a compatible SkSurface, or nullptr. Returned SkSurface contains
         the same raster, GPU, or null properties as the original. Returned SkSurface
         does not share the same pixels.
@@ -786,6 +833,36 @@ public:
      */
     using RescaleGamma = SkImage::RescaleGamma;
     using RescaleMode  = SkImage::RescaleMode;
+
+    /** Makes surface pixel data available to caller, possibly asynchronously.
+
+        Currently asynchronous reads are only supported on the GPU backend and only when the
+        underlying 3D API supports transfer buffers and CPU/GPU synchronization primitives. In all
+        other cases this operates synchronously.
+
+        Data is read from the source sub-rectangle, then converted to the color space, color type,
+        and alpha type of 'info'. A 'srcRect' that is not contained by the bounds of the surface
+        causes failure.
+
+        When the pixel data is ready the caller's ReadPixelsCallback is called with a
+        AsyncReadResult containing pixel data in the requested color type, alpha type, and color
+        space. The AsyncReadResult will have count() == 1. Upon failure the callback is called
+        with nullptr for AsyncReadResult. For a GPU surface this flushes work but a submit must
+        occur to guarantee a finite time before the callback is called.
+
+        The data is valid for the lifetime of AsyncReadResult with the exception that if the
+        SkSurface is GPU-backed the data is immediately invalidated if the context is abandoned
+        or destroyed.
+
+        @param info            info of the requested pixels
+        @param srcRect         subrectangle of surface to read
+        @param callback        function to call with result of the read
+        @param context         passed to callback
+     */
+    void asyncReadPixels(const SkImageInfo& info,
+                         const SkIRect& srcRect,
+                         ReadPixelsCallback callback,
+                         ReadPixelsContext context);
 
     /** Makes surface pixel data available to caller, possibly asynchronously. It can also rescale
         the surface pixels.
@@ -990,15 +1067,15 @@ public:
         The GrFlushInfo describes additional options to flush. Please see documentation at
         GrFlushInfo for more info.
 
-        If a GrBackendSurfaceMutableState is passed in, at the end of the flush we will transition
-        the surface to be in the state requested by the GrBackendSurfaceMutableState. If the surface
+        If a skgpu::MutableTextureState is passed in, at the end of the flush we will transition
+        the surface to be in the state requested by the skgpu::MutableTextureState. If the surface
         (or SkImage or GrBackendSurface wrapping the same backend object) is used again after this
         flush the state may be changed and no longer match what is requested here. This is often
         used if the surface will be used for presenting or external use and the client wants backend
         object to be prepped for that use. A finishedProc or semaphore on the GrFlushInfo will also
         include the work for any requested state change.
 
-        If the backend API is Vulkan, the caller can set the GrBackendSurfaceMutableState's
+        If the backend API is Vulkan, the caller can set the skgpu::MutableTextureState's
         VkImageLayout to VK_IMAGE_LAYOUT_UNDEFINED or queueFamilyIndex to VK_QUEUE_FAMILY_IGNORED to
         tell Skia to not change those respective states.
 
@@ -1022,7 +1099,7 @@ public:
         @param access  optional state change request after flush
     */
     GrSemaphoresSubmitted flush(const GrFlushInfo& info,
-                                const GrBackendSurfaceMutableState* newState = nullptr);
+                                const skgpu::MutableTextureState* newState = nullptr);
 #endif // SK_SUPPORT_GPU
 
     void flush();
