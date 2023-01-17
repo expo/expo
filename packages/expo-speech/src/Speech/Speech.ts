@@ -32,18 +32,15 @@ function _registerListenersIfNeeded() {
       options.onStart();
     }
   });
-  setSpeakingListener(
-    'Exponent.speakingWillSayNextString',
-    ({ id, charIndex, charLength }) => {
-      const options = _CALLBACKS[id];
-      if (options && options.onBoundary) {
-        options.onBoundary({
-          charIndex,
-          charLength,
-        });
-      }
-    },
-  );
+  setSpeakingListener('Exponent.speakingWillSayNextString', ({ id, charIndex, charLength }) => {
+    const options = _CALLBACKS[id];
+    if (options && options.onBoundary) {
+      options.onBoundary({
+        charIndex,
+        charLength,
+      });
+    }
+  });
   setSpeakingListener('Exponent.speakingDone', ({ id }) => {
     const options = _CALLBACKS[id];
     if (options && options.onDone) {
