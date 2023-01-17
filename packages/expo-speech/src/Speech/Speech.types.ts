@@ -48,7 +48,7 @@ export type SpeechOptions = {
   _voiceIndex?: number;
 
   /**
-   * A callback that is invoked when the spoken utterance reaches a word. Android and iOS only pass the charIndex and charLength of `SpeechSynthesisEvent`.
+   * A callback that is invoked when the spoken utterance reaches a word. Android and iOS only pass the `charIndex` and `charLength` of `SpeechSynthesisEvent`.
    */
   onBoundary?: SpeechEventCallback | null;
   onMark?: SpeechEventCallback | null;
