@@ -7,6 +7,7 @@ const elementToComponent = {
   br: 'BR',
   caption: 'Caption',
   code: 'Code',
+  div: 'Div',
   footer: 'Footer',
   h1: 'H1',
   h2: 'H2',
@@ -38,6 +39,11 @@ const elementToComponent = {
   strong: 'Strong',
   aside: 'Aside',
   tfoot: 'TFoot',
+  blockquote: 'BlockQuote',
+  q: 'Q',
+
+  // TODO: img, html, body
+  // NOTE: head, meta, link should use some special component in the future.
 };
 
 module.exports = ({ types: t }, { expo }) => {
