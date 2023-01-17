@@ -53,7 +53,8 @@ public class MainActivity extends ReactActivity {
 
         // Hacky way to prevent onboarding DevMenuActivity breaks detox testing,
         // we do this by setting the dev-menu internal setting.
-        final Intent intent = getIntent();final String action = intent.getAction();
+        final Intent intent = getIntent();
+        final String action = intent.getAction();
         final Uri initialUri = intent.getData();
         if (action.equals(Intent.ACTION_VIEW) &&
           initialUri != null &&
