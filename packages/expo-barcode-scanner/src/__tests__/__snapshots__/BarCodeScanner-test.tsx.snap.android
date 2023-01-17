@@ -4,8 +4,8 @@ exports[`renders correctly 1`] = `
 <ViewManagerAdapter_ExpoBarCodeScanner
   onBarCodeScanned={[Function]}
   proxiedProperties={
-    Object {
-      "barCodeTypes": Array [],
+    {
+      "barCodeTypes": [],
       "type": undefined,
     }
   }

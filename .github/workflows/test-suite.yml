@@ -49,6 +49,8 @@ jobs:
       - name: 🧪 Run Web tests
         run: yarn test:web
         working-directory: apps/bare-expo
+        env:
+          EXPO_NO_TYPESCRIPT_SETUP: 1
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))

@@ -1,13 +1,13 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`jest-expo/universal resolves to default extensions 1`] = `
-Array [
+[
   "ios",
 ]
 `;
 
 exports[`jest-expo/universal resolves to fallback extensions 1`] = `
-Array [
+[
   "ios",
   "android",
 ]

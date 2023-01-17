@@ -144,23 +144,23 @@ describe('installAsync', () => {
     });
 
     await expect(manager.installAsync()).rejects.toThrowErrorMatchingInlineSnapshot(`
-            "Command \`pod install --repo-update\` failed.
-            └─ Cause: This is often due to native package versions mismatching. Try deleting the 'ios/Pods' folder or the 'ios/Podfile.lock' file and running 'npx pod-install' to resolve.
+      "Command \`pod install --repo-update\` failed.
+      └─ Cause: This is often due to native package versions mismatching. Try deleting the 'ios/Pods' folder or the 'ios/Podfile.lock' file and running 'npx pod-install' to resolve.
 
-            [90m[!] CocoaPods could not find compatible versions for pod \\"EXFileSystem\\":[39m
-            [90m  In snapshot (Podfile.lock):[39m
-            [90m    EXFileSystem (from \`../node_modules/expo-file-system/ios\`)[39m
-            [90m[39m
-            [90m  In Podfile:[39m
-            [90m    EXFileSystem (from \`../node_modules/expo-file-system/ios\`)[39m
-            [90m[39m
-            [90m[39m
-            [90mYou have either:[39m
-            [90m * out-of-date source repos which you can update with \`pod repo update\` or with \`pod install --repo-update\`.[39m
-            [90m * changed the constraints of dependency \`EXFileSystem\` inside your development pod \`EXFileSystem\`.[39m
-            [90m   You should run \`pod update EXFileSystem\` to apply changes you've made.[39m
-            [90m[39m"
-          `);
+      [90m[!] CocoaPods could not find compatible versions for pod "EXFileSystem":[39m
+      [90m  In snapshot (Podfile.lock):[39m
+      [90m    EXFileSystem (from \`../node_modules/expo-file-system/ios\`)[39m
+      [90m[39m
+      [90m  In Podfile:[39m
+      [90m    EXFileSystem (from \`../node_modules/expo-file-system/ios\`)[39m
+      [90m[39m
+      [90m[39m
+      [90mYou have either:[39m
+      [90m * out-of-date source repos which you can update with \`pod repo update\` or with \`pod install --repo-update\`.[39m
+      [90m * changed the constraints of dependency \`EXFileSystem\` inside your development pod \`EXFileSystem\`.[39m
+      [90m   You should run \`pod update EXFileSystem\` to apply changes you've made.[39m
+      [90m[39m"
+    `);
 
     // `pod install` > `pod update EXFileSystem` > `pod repo update` > `pod install`
     expect(manager._runAsync).toHaveBeenNthCalledWith(1, ['install']);
