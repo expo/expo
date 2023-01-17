@@ -3218,14 +3218,19 @@
     recyclerlistview "4.1.2"
     tslib "2.4.0"
 
-"@shopify/react-native-skia@0.1.157":
-  version "0.1.157"
-  resolved "https://registry.yarnpkg.com/@shopify/react-native-skia/-/react-native-skia-0.1.157.tgz#85f7f5859aa06639fc780fb57af19e55ad10da35"
-  integrity sha512-dqOUn2SQ94WJRUAd+LufOyQlNvmCjKFlvVljbi/UjPK47to9Q1zd5amUxPa5acvOrolKsEaNHgiFzOBMyRf0nA==
+"@shopify/react-native-skia@0.1.171":
+  version "0.1.171"
+  resolved "https://registry.yarnpkg.com/@shopify/react-native-skia/-/react-native-skia-0.1.171.tgz#70f00e178d3bc06d95535a82cbfbea2bd3723987"
+  integrity sha512-m/pSfc/xAlAqSIEzFsf82QJs3aRkq+Bn1xEJMPKWIZ8J4QDE6bGQ8MXy9/nM+89VYz1GjdYI2BKnCC3ZMjhT6Q==
   dependencies:
-    "@babel/plugin-proposal-nullish-coalescing-operator" "^7.18.6"
+    "@types/pixelmatch" "^5.2.4"
+    "@types/pngjs" "^6.0.1"
+    "@types/ws" "^8.5.3"
     canvaskit-wasm "0.36.1"
+    pixelmatch "^5.3.0"
+    pngjs "^6.0.0"
     react-reconciler "^0.27.0"
+    ws "^8.11.0"
 
 "@sideway/address@^4.1.3":
   version "4.1.4"
@@ -4017,10 +4022,24 @@
   resolved "https://registry.yarnpkg.com/@types/parse-json/-/parse-json-4.0.0.tgz#2f8bb441434d163b35fb8ffdccd7138927ffb8c0"
   integrity sha512-//oorEZjL6sbPcKUaCdIGlIUeH26mgzimjBB77G6XRgnDl/L5wOnpyBGRe/Mmf5CVW3PwEBE1NjiMZ/ssFh4wA==
 
+"@types/pixelmatch@^5.2.4":
+  version "5.2.4"
+  resolved "https://registry.yarnpkg.com/@types/pixelmatch/-/pixelmatch-5.2.4.tgz#ca145cc5ede1388c71c68edf2d1f5190e5ddd0f6"
+  integrity sha512-HDaSHIAv9kwpMN7zlmwfTv6gax0PiporJOipcrGsVNF3Ba+kryOZc0Pio5pn6NhisgWr7TaajlPEKTbTAypIBQ==
+  dependencies:
+    "@types/node" "*"
+
 "@types/pixi.js@^4.8.6":
   version "4.8.9"
   resolved "https://registry.yarnpkg.com/@types/pixi.js/-/pixi.js-4.8.9.tgz#207d8719f655d84eaa28adcfb3c62e414450dc56"
   integrity sha512-PCqd9/TaGOAqg73u8cQKH2sg8pdkRzU6VKu8lWrV+/+p5QiDRtrT8chY5yveVM8A/hWLNtvIQlWpojDomTSNQQ==
+
+"@types/pngjs@^6.0.1":
+  version "6.0.1"
+  resolved "https://registry.yarnpkg.com/@types/pngjs/-/pngjs-6.0.1.tgz#c711ec3fbbf077fed274ecccaf85dd4673130072"
+  integrity sha512-J39njbdW1U/6YyVXvC9+1iflZghP8jgRf2ndYghdJb5xL49LYDB+1EuAxfbuJ2IBbWIL3AjHPQhgaTxT3YaYeg==
+  dependencies:
+    "@types/node" "*"
 
 "@types/prettier@^2.1.5":
   version "2.4.4"
@@ -4299,10 +4318,10 @@
   resolved "https://registry.yarnpkg.com/@types/wrap-ansi/-/wrap-ansi-8.0.1.tgz#59dc91b83a2e949971da8617592d9eaaf6592774"
   integrity sha512-cjwgM6WWy9YakrQ36Pq0vg5XoNblVEaNq+/pHngKl4GyyDIxTeskPoG+tp4LsRk0lHrA4LaLJqlvYridi7mzlw==
 
-"@types/ws@^8.0.0":
-  version "8.5.3"
-  resolved "https://registry.yarnpkg.com/@types/ws/-/ws-8.5.3.tgz#7d25a1ffbecd3c4f2d35068d0b283c037003274d"
-  integrity sha512-6YOoWjruKj1uLf3INHH7D3qTXwFfEsg1kf3c0uDdSBJwfa/llkwIjrAGV7j7mVgGNbzTQ3HiHKKDXl6bJPD97w==
+"@types/ws@^8.0.0", "@types/ws@^8.5.3":
+  version "8.5.4"
+  resolved "https://registry.yarnpkg.com/@types/ws/-/ws-8.5.4.tgz#bb10e36116d6e570dd943735f86c933c1587b8a5"
+  integrity sha512-zdQDHKUgcX/zBc4GrwsE/7dVdAD8JR4EuiAXiiUhhfyIJXXb2+PrGshFyeXWQPMmmZ2XxgaqclgpIC7eTXc1mg==
   dependencies:
     "@types/node" "*"
 
@@ -14789,6 +14808,13 @@ pirates@^4.0.1, pirates@^4.0.4, pirates@^4.0.5:
   resolved "https://registry.yarnpkg.com/pirates/-/pirates-4.0.5.tgz#feec352ea5c3268fb23a37c702ab1699f35a5f3b"
   integrity sha512-8V9+HQPupnaXMA23c5hvl69zXvTwTzyAYasnkb0Tts4XvO4CliqONMOnvlq26rkhLC3nWDFBJf73LU1e1VZLaQ==
 
+pixelmatch@^5.3.0:
+  version "5.3.0"
+  resolved "https://registry.yarnpkg.com/pixelmatch/-/pixelmatch-5.3.0.tgz#5e5321a7abedfb7962d60dbf345deda87cb9560a"
+  integrity sha512-o8mkY4E/+LNUf6LzX96ht6k6CEDi65k9G2rjMtBe9Oo+VPKSvl+0GKHuH/AlG+GA5LPG/i5hrekkxUc3s2HU+Q==
+  dependencies:
+    pngjs "^6.0.0"
+
 pixi-gl-core@^1.1.4:
   version "1.1.4"
   resolved "https://registry.yarnpkg.com/pixi-gl-core/-/pixi-gl-core-1.1.4.tgz#8b4b5c433b31e419bc379dc565ce1b835a91b372"
@@ -14846,6 +14872,11 @@ pngjs@^5.0.0:
   version "5.0.0"
   resolved "https://registry.yarnpkg.com/pngjs/-/pngjs-5.0.0.tgz#e79dd2b215767fd9c04561c01236df960bce7fbb"
   integrity sha512-40QW5YalBNfQo5yRYmiw7Yz6TKKVr3h6970B2YE+3fQpsWcrbj1PzJgxeJ19DRQjhMbKPIuMY8rFaXc8moolVw==
+
+pngjs@^6.0.0:
+  version "6.0.0"
+  resolved "https://registry.yarnpkg.com/pngjs/-/pngjs-6.0.0.tgz#ca9e5d2aa48db0228a52c419c3308e87720da821"
+  integrity sha512-TRzzuFRRmEoSW/p1KVAmiOgPco2Irlah+bGFCeNfJXxxYGwSw7YwAOAcd7X28K/m5bjBWKsC29KyoMfHbypayg==
 
 pnp-webpack-plugin@^1.5.0:
   version "1.7.0"
