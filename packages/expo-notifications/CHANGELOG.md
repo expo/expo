@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update getExpoPushTokenAsync to make projectId required. ([#20833](https://github.com/expo/expo/pull/20833) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 0.17.0 — 2022-10-25
 
 ### 🛠 Breaking changes
