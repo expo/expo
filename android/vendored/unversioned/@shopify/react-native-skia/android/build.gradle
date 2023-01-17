@@ -43,7 +43,7 @@ static def findNodeModules(baseDir) {
   throw new GradleException("React-Native-Skia: Failed to find node_modules/ path!")
 }
 
-def nodeModules = findNodeModules(projectDir)
+def nodeModules = Paths.get(projectDir.getPath(), '../../../../../..', 'react-native-lab').toString()
 logger.warn("react-native-skia: node_modules/ found at: ${nodeModules}")
 
 def sourceBuild = false
@@ -74,6 +74,11 @@ if (gradle.startParameter.taskRequests.args[0].toString().contains("Release")) {
     buildType = "release"
 } else if (gradle.startParameter.taskRequests.args[0].toString().contains("Debug")) {
     buildType = "debug"
+}
+
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
 def reactProperties = new Properties()
@@ -117,7 +122,7 @@ android {
         externalNativeBuild {
             cmake {
                 cppFlags "-fexceptions", "-frtti", "-std=c++1y", "-DONANDROID"
-                abiFilters 'x86', 'x86_64', 'armeabi-v7a', 'arm64-v8a'
+                abiFilters (*reactNativeArchitectures())
                 arguments '-DANDROID_STL=c++_shared',
                           "-DREACT_NATIVE_VERSION=${REACT_NATIVE_VERSION}",
                           "-DNODE_MODULES_DIR=${nodeModules}",

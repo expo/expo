@@ -40,8 +40,8 @@ endif()
 add_library(
         ${PACKAGE_NAME}
         SHARED
-        "${PROJECT_SOURCE_DIR}/cpp/jni/JniLoad.cpp"
-        "${PROJECT_SOURCE_DIR}/cpp/jni/JniSkiaManager.cpp"
+        "${PROJECT_SOURCE_DIR}/../cpp/jni/JniLoad.cpp"
+        "${PROJECT_SOURCE_DIR}/../cpp/jni/JniSkiaManager.cpp"
 
         "${PROJECT_SOURCE_DIR}/cpp/jni/JniPlatformContext.cpp"
         "${PROJECT_SOURCE_DIR}/cpp/rnskia-android/RNSkOpenGLCanvasProvider.cpp"
@@ -50,14 +50,14 @@ add_library(
         "${PROJECT_SOURCE_DIR}/cpp/jsi/JsiHostObject.cpp"
         "${PROJECT_SOURCE_DIR}/cpp/jsi/JsiValue.cpp"
 
-        "${PROJECT_SOURCE_DIR}/cpp/rnskia/RNSkManager.cpp"
-        "${PROJECT_SOURCE_DIR}/cpp/rnskia/RNSkJsView.cpp"
-        "${PROJECT_SOURCE_DIR}/cpp/rnskia/RNSkDomView.cpp"
-        "${PROJECT_SOURCE_DIR}/cpp/rnskia/RNSkDispatchQueue.cpp"
+        "${PROJECT_SOURCE_DIR}/../cpp/rnskia/RNSkManager.cpp"
+        "${PROJECT_SOURCE_DIR}/../cpp/rnskia/RNSkJsView.cpp"
+        "${PROJECT_SOURCE_DIR}/../cpp/rnskia/RNSkDomView.cpp"
+        "${PROJECT_SOURCE_DIR}/../cpp/rnskia/RNSkDispatchQueue.cpp"
 
-        "${PROJECT_SOURCE_DIR}/cpp/rnskia/dom/base/DrawingContext.cpp"
+        "${PROJECT_SOURCE_DIR}/../cpp/rnskia/dom/base/DrawingContext.cpp"
 
-        "${PROJECT_SOURCE_DIR}/cpp/api/third_party/CSSColorParser.cpp"
+        "${PROJECT_SOURCE_DIR}/../cpp/api/third_party/CSSColorParser.cpp"
         
 )
 
@@ -71,33 +71,33 @@ target_include_directories(
         "${NODE_MODULES_DIR}/react-native/ReactCommon/react/nativemodule/core"
         "${NODE_MODULES_DIR}/react-native/ReactAndroid/src/main/java/com/facebook/react/turbomodule/core/jni"
 
-        cpp/skia/include/config/
-        cpp/skia/include/core/
-        cpp/skia/include/effects/
-        cpp/skia/include/utils/
-        cpp/skia/include/pathops/
-        cpp/skia/modules/
+        ${PROJECT_SOURCE_DIR}/../cpp/skia/include/config/
+        ${PROJECT_SOURCE_DIR}/../cpp/skia/include/core/
+        ${PROJECT_SOURCE_DIR}/../cpp/skia/include/effects/
+        ${PROJECT_SOURCE_DIR}/../cpp/skia/include/utils/
+        ${PROJECT_SOURCE_DIR}/../cpp/skia/include/pathops/
+        ${PROJECT_SOURCE_DIR}/../cpp/skia/modules/
         #cpp/skia/modules/skparagraph/include/
-        cpp/skia/include/
-        cpp/skia
+        ${PROJECT_SOURCE_DIR}/../cpp/skia/include/
+        ${PROJECT_SOURCE_DIR}/../cpp/skia
 
-        cpp/api
-        cpp/jsi
-        cpp/jni/include
-        cpp/rnskia-android
-        cpp/rnskia
-        cpp/rnskia/values
-        cpp/rnskia/dom
-        cpp/rnskia/dom/base
-        cpp/rnskia/dom/nodes
-        cpp/rnskia/dom/props
-        cpp/utils  
+        ${PROJECT_SOURCE_DIR}/../cpp/api
+        ${PROJECT_SOURCE_DIR}/../cpp/jsi
+        ${PROJECT_SOURCE_DIR}/cpp/jni/include
+        ${PROJECT_SOURCE_DIR}/cpp/rnskia-android
+        ${PROJECT_SOURCE_DIR}/../cpp/rnskia
+        ${PROJECT_SOURCE_DIR}/../cpp/rnskia/values
+        ${PROJECT_SOURCE_DIR}/../cpp/rnskia/dom
+        ${PROJECT_SOURCE_DIR}/../cpp/rnskia/dom/base
+        ${PROJECT_SOURCE_DIR}/../cpp/rnskia/dom/nodes
+        ${PROJECT_SOURCE_DIR}/../cpp/rnskia/dom/props
+        ${PROJECT_SOURCE_DIR}/../cpp/utils  
 
         ${libfbjni_include_DIRS}
 )
 
 # Import prebuilt SKIA libraries
-set (SKIA_LIBS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../libs/android/${ANDROID_ABI}")
+set (SKIA_LIBS_PATH "${CMAKE_CURRENT_SOURCE_DIR}/../../../../common/libs/${ANDROID_ABI}")
 
 add_library(skia STATIC IMPORTED)
 set_property(TARGET skia PROPERTY IMPORTED_LOCATION "${SKIA_LIBS_PATH}/libskia.a")
