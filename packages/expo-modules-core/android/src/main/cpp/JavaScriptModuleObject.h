@@ -105,7 +105,7 @@ public:
   public:
     HostObject(JavaScriptModuleObject *);
 
-  ~HostObject() override;
+    ~HostObject() override;
 
     jsi::Value get(jsi::Runtime &, const jsi::PropNameID &name) override;
 
@@ -113,6 +113,7 @@ public:
 
     std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime &rt) override;
 
+    jni::global_ref<jobject> jObjectRef;
   private:
     JavaScriptModuleObject *jsModule;
   };
@@ -126,7 +127,7 @@ private:
    * A reference to the `JavaScriptModuleObject::HostObject`.
    * Simple we cached that value to return the same object each time.
    */
-  std::shared_ptr<jsi::Object> jsiObject = nullptr;
+  std::weak_ptr<jsi::Object> jsiObject;
   jni::global_ref<JavaScriptModuleObject::javaobject> javaPart_;
 
   /**
@@ -149,6 +150,5 @@ private:
    * The `LongLivedObjectCollection` to hold `LongLivedObject` (callbacks or promises) for this module.
    */
   std::shared_ptr<react::LongLivedObjectCollection> longLivedObjectCollection_;
-
 };
 } // namespace expo
