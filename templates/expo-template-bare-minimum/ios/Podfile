@@ -9,11 +9,16 @@ platform :ios, podfile_properties['ios.deploymentTarget'] || '13.0'
 install! 'cocoapods',
   :deterministic_uuids => false
 
+prepare_react_native_project!
+
+flipper_config = ENV['NO_FLIPPER'] == "1" || ENV['CI'] ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
+
 target 'HelloWorld' do
   use_expo_modules!
   config = use_native_modules!
 
   use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
+  use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
 
   # Flags change depending on the env values.
   flags = get_default_flags()
@@ -27,12 +32,13 @@ target 'HelloWorld' do
     #
     # Uncomment to opt-in to using Flipper
     # Note that if you have use_frameworks! enabled, Flipper will not work
-    # :flipper_configuration => !ENV['CI'] ? FlipperConfiguration.enabled : FlipperConfiguration.disabled,
+    # :flipper_configuration => flipper_config,
   )
 
   post_install do |installer|
     react_native_post_install(
       installer,
+      config[:reactNativePath],
       # Set `mac_catalyst_enabled` to `true` in order to apply patches
       # necessary for Mac Catalyst builds
       :mac_catalyst_enabled => false

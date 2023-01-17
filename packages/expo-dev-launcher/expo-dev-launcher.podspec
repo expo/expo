@@ -46,19 +46,19 @@ Pod::Spec.new do |s|
   s.user_target_xcconfig = {
     "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-launcher/Swift Compatibility Header\"",
   }
-  
+
   s.dependency "React-Core"
   s.dependency "expo-dev-menu-interface"
   s.dependency "EXManifests"
   s.dependency "EXUpdatesInterface"
   s.dependency "expo-dev-menu"
   s.dependency "ExpoModulesCore"
-  
+
   s.subspec 'Unsafe' do |unsafe|
     unsafe.source_files = 'ios/Unsafe/**/*.{h,m,mm,swift,cpp}'
     unsafe.compiler_flags = '-x objective-c++ -std=c++1z -fno-objc-arc' # Disable Automatic Reference Counting
   end
-  
+
   s.subspec 'Main' do |main|
     main.dependency "expo-dev-launcher/Unsafe"
   end
@@ -69,8 +69,10 @@ Pod::Spec.new do |s|
     test_spec.dependency 'Nimble'
     test_spec.dependency "React-CoreModules"
     test_spec.dependency "OHHTTPStubs"
+    # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
+    test_spec.dependency 'ExpoModulesTestCore'
   end
-  
+
   s.default_subspec = 'Main'
 
 end

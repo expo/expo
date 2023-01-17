@@ -163,7 +163,7 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
 
-  compileOnly 'com.facebook.fbjni:fbjni:0.2.2'
+  compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
 
   api 'com.google.android.exoplayer:exoplayer:2.18.1'
   api 'com.google.android.exoplayer:extension-okhttp:2.18.1'

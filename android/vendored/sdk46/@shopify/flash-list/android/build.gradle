@@ -61,7 +61,7 @@ android {
 
 dependencies {
     implementation 'host.exp:reactandroid-abi46_0_0:1.0.0'
-    compileOnly 'com.facebook.fbjni:fbjni:0.2.2'
+    compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
     compileOnly 'com.facebook.yoga:proguard-annotations:1.19.0'
     compileOnly 'androidx.annotation:annotation:+'
 

@@ -87,10 +87,6 @@ dependencies {
 
   testImplementation 'junit:junit:4.12'
 
-
-  api("com.facebook.fbjni:fbjni-java-only:0.2.2")
-
-
   implementation project(":expoview")
 
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
@@ -99,7 +95,7 @@ dependencies {
   api 'androidx.appcompat:appcompat:1.2.0'
   api 'androidx.autofill:autofill:1.1.0'
   api 'androidx.swiperefreshlayout:swiperefreshlayout:1.0.0'
-  api 'com.facebook.fbjni:fbjni-java-only:0.2.2'
+  api 'com.facebook.fbjni:fbjni:0.3.0'
   api 'com.facebook.fresco:fresco:2.5.0'
   api 'com.facebook.fresco:animated-gif:2.5.0'
   api 'com.facebook.fresco:animated-webp:2.5.0'

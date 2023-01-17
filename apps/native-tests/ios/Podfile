@@ -5,6 +5,10 @@ require File.join(File.dirname(`node --print "require.resolve('@react-native-com
 require 'json'
 podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {}
 
+prepare_react_native_project!
+
+flipper_config = ENV['NO_FLIPPER'] == "1" || ENV['CI'] ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
+
 platform :ios, podfile_properties['ios.deploymentTarget'] || '13.0'
 install! 'cocoapods',
   :deterministic_uuids => false
@@ -34,12 +38,13 @@ target 'NativeTests' do
     #
     # Uncomment to opt-in to using Flipper
     # Note that if you have use_frameworks! enabled, Flipper will not work
-    # :flipper_configuration => !ENV['CI'] ? FlipperConfiguration.enabled : FlipperConfiguration.disabled,
+    # :flipper_configuration => flipper_config,
   )
 
   post_install do |installer|
     react_native_post_install(
       installer,
+      config[:reactNativePath],
       # Set `mac_catalyst_enabled` to `true` in order to apply patches
       # necessary for Mac Catalyst builds
       :mac_catalyst_enabled => false

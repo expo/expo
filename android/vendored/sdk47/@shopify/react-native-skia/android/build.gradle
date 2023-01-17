@@ -139,7 +139,7 @@ android {
 
     externalNativeBuild {
         cmake {
-            path file('CMakeLists.txt')            
+            path file('CMakeLists.txt')
         }
     }
 
@@ -191,9 +191,9 @@ dependencies {
   // From node_modules
 
     //noinspection GradleDynamicVersion
-    extractHeaders("com.facebook.fbjni:fbjni:0.2.2:headers")
+    extractHeaders("com.facebook.fbjni:fbjni:0.3.0:headers")
     //noinspection GradleDynamicVersion
-    extractJNI("com.facebook.fbjni:fbjni:0.2.2")
+    extractJNI("com.facebook.fbjni:fbjni:0.3.0")
 
     if(REACT_NATIVE_VERSION < 69) {
         def rnAAR = fileTree("${rootDir}/versioned-abis").matching({ include "**/reactandroid-abi47_0_0/**/*.aar" }).singleFile
@@ -268,7 +268,7 @@ def nativeBuildDependsOn(dependsOnTask, variant) {
 
 afterEvaluate {
   nativeBuildDependsOn(extractAARHeaders, null)
-  nativeBuildDependsOn(extractJNIFiles, null)  
+  nativeBuildDependsOn(extractJNIFiles, null)
 }
 
 tasks.whenTaskAdded { task ->

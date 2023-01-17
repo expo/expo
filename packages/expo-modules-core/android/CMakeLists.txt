@@ -6,7 +6,9 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_STANDARD 17)
 set(PACKAGE_NAME "expo-modules-core")
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
-set(ignoreMe "${PROJECT_BUILD_DIR} ${REACT_ANDROID_BUILD_DIR} ${REACT_NATIVE_TARGET_VERSION} ${REACT_ANDROID_DIR} ${HERMES_HEADER_DIR}")
+set(ignoreMe "${PROJECT_BUILD_DIR} ${REACT_ANDROID_BUILD_DIR} ${REACT_ANDROID_DIR} ${HERMES_HEADER_DIR}")
+
+string(APPEND CMAKE_CXX_FLAGS " -DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}")
 
 if (${NATIVE_DEBUG})
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g")
@@ -76,26 +78,12 @@ endif ()
 
 if(${UNIT_TEST})
   if(${USE_HERMES})
-    file(GLOB HERMES_SO_DIR "${BUILD_DIR}/third-party-ndk/hermes/jni/${ANDROID_ABI}")
-    find_library(
-        JSEXECUTOR_LIB
-        hermes
-        PATHS ${HERMES_SO_DIR}
-        NO_CMAKE_FIND_ROOT_PATH
-    )
-    set(JSEXECUTOR_INCLUDE ${HERMES_HEADER_DIR} ${HERMES_HEADER_DIR}/API ${HERMES_HEADER_DIR}/public)
+    set(JSEXECUTOR_LIB ReactAndroid::hermes_executor)
   else()
-    find_library(
-        JSEXECUTOR_LIB
-        jscexecutor
-        PATHS ${LIBRN_DIR}
-        NO_CMAKE_FIND_ROOT_PATH
-    )
-    set(JSEXECUTOR_INCLUDE "")
+    set(JSEXECUTOR_LIB ReactAndroid::jscexecutor)
   endif()
 else()
   set(JSEXECUTOR_LIB "")
-  set(JSEXECUTOR_INCLUDE "")
 endif()
 
 # find libraries
@@ -121,7 +109,6 @@ target_include_directories(
 
         "${BUILD_DIR}/third-party-ndk/boost/boost_${BOOST_VERSION}"
         "${COMMON_DIR}"
-        "${JSEXECUTOR_INCLUDE}"
         "${SRC_DIR}/fabric"
 )
 

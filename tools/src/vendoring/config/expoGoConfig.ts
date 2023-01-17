@@ -174,27 +174,11 @@ const config: VendoringTargetConfig = {
               replaceWith: '',
             },
             {
-              // add prefab support, setup task dependencies and hermes-engine dependencies
+              // compileOnly hermes-engine
               paths: 'build.gradle',
-              transform: (text: string) =>
-                text +
-                '\n\n' +
-                `tasks.whenTaskAdded { task ->\n` +
-                `  def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'\n` +
-                `  if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake') || task.name.startsWith('buildCMake') || task.name.startsWith('generateJsonModel'))) {\n` +
-                `    task.dependsOn(":ReactAndroid:copy\${buildType}JniLibsProjectOnly")\n` +
-                `  }\n` +
-                `}\n` +
-                `\n` +
-                `android {\n` +
-                `  buildFeatures {\n` +
-                `    prefab true\n` +
-                `  }\n` +
-                `}\n` +
-                `\n` +
-                `dependencies {\n` +
-                `  compileOnly(project(":ReactAndroid:hermes-engine"))\n` +
-                `}\n`,
+              find: /implementation "com\.facebook\.react:hermes-android:?"\s*\/\/ version substituted by RNGP/g,
+              replaceWith:
+                'compileOnly "com.facebook.react:hermes-android:${REACT_NATIVE_VERSION}"',
             },
             {
               // find rn libs in ReactAndroid build output

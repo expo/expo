@@ -101,7 +101,7 @@ export async function renamePackageOnDisk(
     return;
   }
 
-  for (const type of ['main', 'debug']) {
+  for (const type of ['debug', 'main', 'release']) {
     await renameJniOnDiskForType({ projectRoot, type, packageName: newPackageName });
     await renamePackageOnDiskForType({ projectRoot, type, packageName: newPackageName });
   }
@@ -237,8 +237,8 @@ export function setPackageInBuildGradle(config: Pick<ExpoConfig, 'android'>, bui
     return buildGradle;
   }
 
-  const pattern = new RegExp(`applicationId ['"].*['"]`);
-  return buildGradle.replace(pattern, `applicationId '${packageName}'`);
+  const pattern = new RegExp(`(applicationId|namespace) ['"].*['"]`, 'g');
+  return buildGradle.replace(pattern, `$1 '${packageName}'`);
 }
 
 export function setPackageInAndroidManifest(

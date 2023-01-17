@@ -168,6 +168,8 @@ Pod::Spec.new do |s|
     test_spec.dependency 'Quick'
     test_spec.dependency 'Nimble'
     test_spec.dependency 'React-CoreModules'
+    # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
+    test_spec.dependency 'ExpoModulesTestCore'
     test_spec.platform = :ios, '13.0'
   end
 

@@ -152,22 +152,11 @@ afterEvaluate {
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 31)
 
-  if (REACT_NATIVE_BUILD_FROM_SOURCE) {
-    if (rootProject.hasProperty("ndkPath")) {
-      ndkPath rootProject.ext.ndkPath
-    }
-    if (rootProject.hasProperty("ndkVersion")) {
-      ndkVersion rootProject.ext.ndkVersion
-    }
-  } else {
-    // This ndkVersion should align to prebuilt react-native building ndkVersion.
-    // Because the unwind library is different before NDK r23 and after,
-    // if we build this library with newer NDK, C++ exceptions are incompatible between these libraries.
-    // For example, C++ exceptions throwing from hermes are not catchable from this library.
-    // Ref: https://android.googlesource.com/platform/ndk/+/master/docs/BuildSystemMaintainers.md#unwinding
-    //
-    // TODO: Revisit this version when upgrade react-native 0.71 (Expo SDK 48)
-    ndkVersion = "21.4.7075529"
+  if (rootProject.hasProperty("ndkPath")) {
+    ndkPath rootProject.ext.ndkPath
+  }
+  if (rootProject.hasProperty("ndkVersion")) {
+    ndkVersion rootProject.ext.ndkVersion
   }
 
   compileOptions {
@@ -300,7 +289,7 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
 
-  compileOnly 'com.facebook.fbjni:fbjni:0.2.2'
+  compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
 
   testImplementation 'androidx.test:core:1.4.0'
   testImplementation 'junit:junit:4.13.1'

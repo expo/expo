@@ -5,8 +5,6 @@ apply plugin: 'de.undercouch.download'
 apply plugin: 'kotlin-kapt'
 apply from: new File(rootDir, "versioning_linking.gradle")
 
-def hasHermesEngineDeps = false
-
 def reactProperties = new Properties()
 file("${project(':ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
 
@@ -170,9 +168,6 @@ dependencies {
 
   testImplementation 'junit:junit:4.12'
 
-
-  api("com.facebook.fbjni:fbjni-java-only:0.2.2")
-
   // WHEN_VERSIONING_REPLACE_WITH_DEPENDENCIES
 
   // WHEN_VERSIONING_REMOVE_FROM_HERE
@@ -189,7 +184,6 @@ dependencies {
       exclude(group:'com.facebook.fbjni', module: 'fbjni')
     }
   }
-  hasHermesEngineDeps = true
 
   // Expo modules
   api project(':expo')
@@ -213,7 +207,7 @@ dependencies {
   api("androidx.autofill:autofill:${reactProperties.getProperty('ANDROIDX_AUTOFILL_VERSION')}")
   api("androidx.swiperefreshlayout:swiperefreshlayout:${reactProperties.getProperty('SWIPEREFRESH_LAYOUT_VERSION')}")
 
-  api("com.facebook.fbjni:fbjni-java-only:${reactProperties.getProperty('FBJNI_VERSION')}")
+  api("com.facebook.fbjni:fbjni:${reactProperties.getProperty('FBJNI_VERSION')}")
   api("com.facebook.fresco:fresco:${reactProperties.getProperty('FRESCO_VERSION')}")
   api("com.facebook.fresco:imagepipeline-okhttp3:${reactProperties.getProperty('FRESCO_VERSION')}")
   api("com.facebook.fresco:ui-common:${reactProperties.getProperty('FRESCO_VERSION')}")
