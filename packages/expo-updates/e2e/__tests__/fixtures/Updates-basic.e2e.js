@@ -1,6 +1,6 @@
+const crypto = require('crypto');
 const path = require('path');
 const { setTimeout } = require('timers/promises');
-const uuid = require('uuid/v4');
 const { device, beforeEach } = require('detox');
 
 const Server = require('./utils/server');
@@ -75,7 +75,7 @@ describe('', () => {
       platform
     );
     const manifest = {
-      id: uuid(),
+      id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       runtimeVersion: RUNTIME_VERSION,
       launchAsset: {
@@ -125,7 +125,7 @@ describe('', () => {
     await copyBundleToStaticFolder(updateDistPath, bundleFilename, newNotifyString, platform);
     const hash = 'invalid-hash';
     const manifest = {
-      id: uuid(),
+      id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       runtimeVersion: RUNTIME_VERSION,
       launchAsset: {
@@ -193,7 +193,7 @@ describe('', () => {
       })
     );
     const manifest = {
-      id: uuid(),
+      id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       runtimeVersion: RUNTIME_VERSION,
       launchAsset: {
@@ -283,7 +283,7 @@ describe('', () => {
       })
     );
     const manifest = {
-      id: uuid(),
+      id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       runtimeVersion: RUNTIME_VERSION,
       launchAsset: {
@@ -327,7 +327,7 @@ describe('', () => {
       platform
     );
     const manifest = {
-      id: uuid(),
+      id: crypto.randomUUID(),
       createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // yesterday
       runtimeVersion: RUNTIME_VERSION,
       launchAsset: {

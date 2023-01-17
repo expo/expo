@@ -1,6 +1,6 @@
+const crypto = require('crypto');
 const path = require('path');
 const { setTimeout } = require('timers/promises');
-const uuid = require('uuid/v4');
 const { device, beforeEach } = require('detox');
 
 const Server = require('./utils/server');
@@ -235,7 +235,7 @@ describe('Asset deletion recovery', () => {
       })
     );
     const manifest = {
-      id: uuid(),
+      id: crypto.randomUUID(),
       createdAt: new Date().toISOString(),
       runtimeVersion: RUNTIME_VERSION,
       launchAsset: {
