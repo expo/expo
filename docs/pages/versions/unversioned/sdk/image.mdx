@@ -78,15 +78,15 @@ import { Image } from 'expo-image';
 
 ## Generating a blurhash on a server
 
-Images can significantly improve the visual experience, but they can also slow down app/page loading times due to their large file sizes. To overcome this, we can create placeholder images using blurhash algorithm that can provide an immersive experience while deferring the loading of the actual picture until later.
+Images can significantly improve the visual experience, however, they can also slow down app/page loading times due to their large file sizes. To overcome this, you can create placeholder images using blurhash algorithm that provides an immersive experience while deferring the loading of the actual picture until later.
 
-This brief guide will demonstrate how to create a blurhash of an uploaded image on the backend using `JavaScript` and `Express.js`. However, the same techniques and principles apply to other languages and server technologies.
+This guide demonstrates how to create a blurhash of an uploaded image on the backend using JavaScript and Express.js. The same techniques and principles apply to other languages and server technologies.
 
-To simplify the process, we will install a few dependencies: [`multer`](https://github.com/expressjs/multer) for handling multipart requests, [`sharp`](https://github.com/lovell/sharp) for converting files to a data buffer, and the official [`blurhash JavaScript package`](https://github.com/woltapp/blurhash/tree/master/TypeScript).
+Start by installing a few dependencies: [`multer`](https://github.com/expressjs/multer) for handling multipart requests, [`sharp`](https://github.com/lovell/sharp) for converting files to a data buffer, and the official [`blurhash` JavaScript package](https://github.com/woltapp/blurhash/tree/master/TypeScript).
 
 <Terminal cmd={['$ npm install multer sharp blurhash']} />
 
-Next, we need to import all needed functions from installed packages and initialized `multer`:
+Next, import all required functions from installed packages and initialize `multer`:
 
 ```js
 // Multer is a middleware for handling `multipart/form-data`.
@@ -100,7 +100,7 @@ const { encode } = require('blurhash');
 const upload = multer();
 ```
 
-Assuming app is a variable that holds our express server, we can create an endpoint that accepts an image and returns a JSON response containing the generated blurhash.
+Assuming app is a variable that holds a reference to the Express server, an endpoint can be created that accepts an image and returns a JSON response containing the generated blurhash.
 
 ```js
 app.post('/blurhash', upload.single('image'), async (req, res) => {
@@ -111,23 +111,23 @@ app.post('/blurhash', upload.single('image'), async (req, res) => {
     return;
   }
 
-  // Users can specify number of components in each axies.
-  const compoenentX = req.body.componentX ?? 4;
-  const compoenentY = req.body.componentY ?? 3;
+  // Users can specify number of components in each axes.
+  const componentX = req.body.componentX ?? 4;
+  const componentY = req.body.componentY ?? 3;
 
   // We're converting provided image to a byte buffer.
-  // Sharp currencurrentlylty supported multiple common formats like JPEG, PNG, WebP, GIF, and AVIF.
+  // Sharp currently supported multiple common formats like JPEG, PNG, WebP, GIF, and AVIF.
   const { data, info } = await sharp(file.buffer).ensureAlpha().raw().toBuffer({
     resolveWithObject: true,
   });
 
-  const blurhash = encode(data, info.width, info.height, compoenentX, compoenentY);
+  const blurhash = encode(data, info.width, info.height, componentX, componentY);
   res.json({ blurhash });
 });
 ```
 
-Additionally, the request can include two parameters: `componentX` and `componentY` which are passed through the algorithm. These values can be calculated or hard-coded on the server, or specified by the user. However, they must be within the range of 1 to 9 and have an aspect ratio similar to the uploaded image. A value of 9 will give the best results but may take longer to generate the hash.
+Additionally, the request can include two parameters: `componentX` and `componentY`, are passed through the algorithm. These values can be calculated or hard-coded on the server or specified by the user. However, they must be within the range of 1 to 9 and have an aspect ratio similar to the uploaded image. A value of 9 will give the best results but may take longer to generate the hash.
 
-The process of generating a blurhash can be accomplished in various languages and server technologies, similar to the one using JavaScript. The key step is to locate an encoder for your chosen language, which can often be found in the [`woltapp/blurhash`](https://github.com/woltapp/blurhash#implementations) repository. Once you have the encoder, you will need to obtain a representation of the image. Some libraries use a default image class (for example, the Swift implementation uses `UIImage`), but in other cases, you will have to provide raw byte data. Therefore, be sure to check the encoder readme to confirm the expected data format.
+The process of generating a blurhash can be accomplished in various languages and server technologies, similar to the one using JavaScript. The key step is to locate an encoder for your chosen language, which can often be found in the [`woltapp/blurhash`](https://github.com/woltapp/blurhash#implementations) repository. Once you have the encoder, you will need to obtain a representation of the image. Some libraries use a default image class (for example, the Swift implementation uses `UIImage`). In other cases, you will have to provide raw byte data. Make sure to check the encoder's documentation to confirm the expected data format.
 
-> Note: when working with raw byte data, it is crucial to ensure that all pixels are represented by 4 numbers - the alpha layer is present. Failing to do so may lead to errors like "width and height must match the pixels array".
+> When working with raw byte data, please ensure the alpha layer is present (each pixel is represented by red, green, blue and alpha values). Failing to do so may lead to errors like "width and height must match the pixels array".
