@@ -51,3 +51,62 @@ export class ProjectPrerequisite extends Prerequisite {
     super();
   }
 }
+
+type PrerequisiteWorker = typeof import('./ProjectPrerequisiteWorker') &
+  import('jest-worker').Worker;
+
+/**
+ * Wrap a prerequisite class in a jest-worker, for expensive and long running assertions.
+ * The result from this method can be used as normal prerequisite class.
+ */
+export function createPrerequisiteWorker(prerequisiteFile: string): typeof ProjectPrerequisite {
+  return class ProjectPrerequisiteWorker extends ProjectPrerequisite {
+    private worker: PrerequisiteWorker | null = null;
+    private workerFile = prerequisiteFile;
+
+    /**
+     * Start the jest worker if it wasn't started already.
+     * The worker's output is piped to the main thread.
+     */
+    public async startWorkerAsync() {
+      if (!this.worker) {
+        const { Worker: JestWorker } = await import('jest-worker');
+        const worker = new JestWorker(require.resolve('./ProjectPrerequisiteWorker'), {
+          maxRetries: 1,
+          exposedMethods: ['assertImplementation'],
+        });
+
+        // Forward the worker's console logs to the main thread.
+        worker.getStderr().pipe(process.stderr);
+        worker.getStdout().pipe(process.stdout);
+
+        this.worker = worker as PrerequisiteWorker;
+      }
+
+      return this.worker;
+    }
+
+    /** Stop the worker if it was started */
+    public async stopWorkerAsync() {
+      if (this.worker) {
+        await this.worker.end();
+        this.worker = null;
+      }
+    }
+
+    /** Run the assertion within the worker and throw or cache possible errors in this instance */
+    public async assertImplementation(): Promise<void> {
+      const worker = await this.startWorkerAsync();
+      const result = await worker.assertImplementation(this.workerFile, this.projectRoot);
+
+      // If we want to keep long running workers alive, we need a "destroy" lifecycle method.
+      this.stopWorkerAsync();
+
+      if (result.type === 'error') {
+        throw result.error;
+      } else if (result.type === 'failure') {
+        this.cachedError = result.error;
+      }
+    }
+  };
+}
