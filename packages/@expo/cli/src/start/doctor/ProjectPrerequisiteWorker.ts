@@ -1,37 +1,44 @@
 import { PrerequisiteCommandError, ProjectPrerequisite } from './Prerequisite';
 
-type PrerequisiteWorkerResult =
+/**
+ * We can't share the class instance outside this worker.
+ * Instead we share serializable custom messages, to unserialize in the wrapping prerequisite class.
+ */
+export type PrerequisiteWorkerResult =
   | { type: 'success' }
   | { type: 'failure'; error: PrerequisiteCommandError }
   | { type: 'error'; error: Error };
 
 /**
- * Dynamically load the prerequisite class within the jest worker.
- * This is executed from a wrapped Prerequisite class, from `createPrerequisiteWorker`.
- * Once initialized, the prerequisite methods are piped from the original thread to the worker.
+ * Try to maintain the same prerequisite instance, if loaded already.
+ * It is possible to lose the instance when the worker is terminated, or when multiple workers are used.
  */
-function createInstance(
-  prerequisiteFile: string,
-  ...params: ConstructorParameters<typeof ProjectPrerequisite>
-): ProjectPrerequisite {
-  const PrerequisiteClass = require(prerequisiteFile).default as typeof ProjectPrerequisite;
-  return new PrerequisiteClass(...params);
-}
+let instance: null | ProjectPrerequisite = null;
 
-/** Execute the prerequisite assertion within this worker instance */
+/**
+ * Dynamically load and execute the prerequisite assertion within this worker instance.
+ * This method interprets the result from that instance, and sends it to the wrapping prerequisite class.
+ */
 export async function assertImplementation(
-  ...params: Parameters<typeof createInstance>
+  prerequisiteFile: string,
+  ...props: ConstructorParameters<typeof ProjectPrerequisite>
 ): Promise<PrerequisiteWorkerResult> {
   try {
-    const instance = createInstance(...params);
+    if (!instance) {
+      const PrerequisiteClass = require(prerequisiteFile).default as typeof ProjectPrerequisite;
+      instance = new PrerequisiteClass(...props);
+    }
+
     await instance.assertImplementation();
 
     return { type: 'success' };
   } catch (error) {
-    if (error instanceof PrerequisiteCommandError) {
-      return { type: 'failure', error };
-    }
-
-    return { type: 'error', error: error as Error };
+    return error instanceof PrerequisiteCommandError
+      ? { type: 'failure', error }
+      : { type: 'error', error: error as Error };
+  } finally {
+    // Reset this assertion instance whenever an error occurs.
+    // The error is cached in the wrapping prerequisite worker class.
+    instance?.resetAssertion();
   }
 }

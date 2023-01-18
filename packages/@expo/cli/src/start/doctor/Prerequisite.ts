@@ -72,8 +72,9 @@ export function createPrerequisiteWorker(prerequisiteFile: string): typeof Proje
       if (!this.worker) {
         const { Worker: JestWorker } = await import('jest-worker');
         const worker = new JestWorker(require.resolve('./ProjectPrerequisiteWorker'), {
-          maxRetries: 1,
           exposedMethods: ['assertImplementation'],
+          maxRetries: 1,
+          numWorkers: 1, // TODO(cedric): check if we need to maintain a pool of workers to increase performance
         });
 
         // Forward the worker's console logs to the main thread.
@@ -99,7 +100,7 @@ export function createPrerequisiteWorker(prerequisiteFile: string): typeof Proje
       const worker = await this.startWorkerAsync();
       const result = await worker.assertImplementation(this.workerFile, this.projectRoot);
 
-      // If we want to keep long running workers alive, we need a "destroy" lifecycle method.
+      // TODO(cedric): If we want to keep long running workers alive, we need a "destroy" lifecycle method.
       this.stopWorkerAsync();
 
       if (result.type === 'error') {
