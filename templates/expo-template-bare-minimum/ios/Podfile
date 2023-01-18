@@ -5,8 +5,7 @@ require File.join(File.dirname(`node --print "require.resolve('@react-native-com
 require 'json'
 podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
 
-# Libraries use this env flag to determine whether to add React-RCTFabric as a dependency.
-ENV['RCT_NEW_ARCH_ENABLED'] = podfile_properties['newArchEnabled'] ? '1' : '0'
+ENV['RCT_NEW_ARCH_ENABLED'] = podfile_properties['newArchEnabled'] == 'true' ? '1' : '0'
 
 platform :ios, podfile_properties['ios.deploymentTarget'] || '13.0'
 install! 'cocoapods',
