@@ -8,8 +8,8 @@ import { installExitHooks } from '../utils/exit';
 import { isInteractive } from '../utils/interactive';
 import { profile } from '../utils/profile';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
-import { TypeScriptProjectPrerequisite } from './doctor/typescript/TypeScriptProjectPrerequisite';
-import { WebSupportProjectPrerequisite } from './doctor/web/WebSupportProjectPrerequisite';
+import { TypeScriptProjectPrerequisiteWorker } from './doctor/typescript/TypeScriptProjectPrerequisite';
+import { WebSupportProjectPrerequisiteWorker } from './doctor/web/WebSupportProjectPrerequisite';
 import { startInterfaceAsync } from './interface/startInterface';
 import { Options, resolvePortsAsync } from './resolveOptions';
 import { BundlerStartOptions } from './server/BundlerDevServer';
@@ -91,10 +91,10 @@ export async function startAsync(
   // Validations
 
   if (options.web || settings.webOnly) {
-    await devServerManager.ensureProjectPrerequisiteAsync(WebSupportProjectPrerequisite);
+    await devServerManager.ensureProjectPrerequisiteAsync(WebSupportProjectPrerequisiteWorker);
   }
 
-  await devServerManager.ensureProjectPrerequisiteAsync(TypeScriptProjectPrerequisite);
+  await devServerManager.ensureProjectPrerequisiteAsync(TypeScriptProjectPrerequisiteWorker);
 
   if (!settings.webOnly && !options.devClient) {
     await profile(validateDependenciesVersionsAsync)(projectRoot, exp, pkg);
