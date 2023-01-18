@@ -75,7 +75,7 @@ To get everything working properly, you'll want to install and include a global 
 ### Adding ResizeObserver
 
 - Install the polyfill:
-  <Terminal cmd={['$ npm install resize-observer-polyfill']} />
+  <Terminal cmd={['$ npx expo install resize-observer-polyfill']} />
 - Restart the project and `@expo/webpack-config` will automatically include the polyfill.
 
 The reason it automatically includes the polyfill is that `react-native-web` needs it included immediately. webpack can inject the polyfill before any of the application code has been executed. Alternatively, you can customize the webpack config and include the polyfill in the `entry` field yourself.
