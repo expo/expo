@@ -6,23 +6,26 @@ import * as Log from '../../../log';
 import { fileExistsAsync } from '../../../utils/dir';
 import { env } from '../../../utils/env';
 import { everyMatchAsync, wrapGlobWithTimeout } from '../../../utils/glob';
-import { ProjectPrerequisite } from '../Prerequisite';
+import { createPrerequisiteWorker, ProjectPrerequisite } from '../Prerequisite';
 import { ensureDependenciesAsync } from '../dependencies/ensureDependenciesAsync';
 import { updateTSConfigAsync } from './updateTSConfig';
 
 const debug = require('debug')('expo:doctor:typescriptSupport') as typeof console.log;
 
+/** Create a worker version of this prerequisite, to execute async in a different thread */
+export const TypeScriptProjectPrerequisiteWorker = createPrerequisiteWorker(
+  require.resolve(__filename)
+);
+
 /** Ensure the project has the required TypeScript support settings. */
-export class TypeScriptProjectPrerequisite extends ProjectPrerequisite {
+export default class TypeScriptProjectPrerequisite extends ProjectPrerequisite {
   /** Ensure a project that hasn't explicitly disabled web support has all the required packages for running in the browser. */
   async assertImplementation(): Promise<void> {
     if (env.EXPO_NO_TYPESCRIPT_SETUP) {
-      Log.warn('Skipping TypeScript setup: EXPO_NO_TYPESCRIPT_SETUP is enabled.');
-      return;
+      return Log.warn('Skipping TypeScript setup: EXPO_NO_TYPESCRIPT_SETUP is enabled.');
     }
-    debug('Ensuring TypeScript support is setup');
 
-    const tsConfigPath = path.join(this.projectRoot, 'tsconfig.json');
+    debug('Ensuring TypeScript support is setup');
 
     // Ensure the project is TypeScript before continuing.
     const intent = await this._getSetupRequirements();
@@ -34,7 +37,10 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite {
     await this._ensureDependenciesInstalledAsync();
 
     // Update the config
-    await updateTSConfigAsync({ tsConfigPath, isBootstrapping: intent.isBootstrapping });
+    await updateTSConfigAsync({
+      tsConfigPath: path.join(this.projectRoot, 'tsconfig.json'),
+      isBootstrapping: intent.isBootstrapping,
+    });
   }
 
   /** Exposed for testing. */
