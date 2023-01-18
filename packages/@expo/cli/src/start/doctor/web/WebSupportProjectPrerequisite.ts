@@ -10,20 +10,29 @@ import chalk from 'chalk';
 import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { getPlatformBundlers } from '../../server/platformBundlers';
-import { PrerequisiteCommandError, ProjectPrerequisite } from '../Prerequisite';
+import {
+  createPrerequisiteWorker,
+  PrerequisiteCommandError,
+  ProjectPrerequisite,
+} from '../Prerequisite';
 import { ensureDependenciesAsync } from '../dependencies/ensureDependenciesAsync';
 import { ResolvedPackage } from '../dependencies/getMissingPackages';
 
 const debug = require('debug')('expo:doctor:webSupport') as typeof console.log;
 
+/** Create a worker version of this prerequisite, to execute async in a different thread */
+export const WebSupportProjectPrerequisiteWorker = createPrerequisiteWorker(
+  require.resolve(__filename)
+);
+
 /** Ensure the project has the required web support settings. */
-export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
+export default class WebSupportProjectPrerequisite extends ProjectPrerequisite {
   /** Ensure a project that hasn't explicitly disabled web support has all the required packages for running in the browser. */
   async assertImplementation(): Promise<void> {
     if (env.EXPO_NO_WEB_SETUP) {
-      Log.warn('Skipping web setup: EXPO_NO_WEB_SETUP is enabled.');
-      return;
+      return Log.warn('Skipping web setup: EXPO_NO_WEB_SETUP is enabled.');
     }
+
     debug('Ensuring web support is setup');
 
     const result = await this._shouldSetupWebSupportAsync();
