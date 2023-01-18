@@ -42,8 +42,6 @@ export async function updateTSConfigAsync({
   // Write changes and log out a summary of what changed
   await JsonFile.writeAsync(tsConfigPath, projectTSConfig);
 
-  Log.log();
-
   if (isBootstrapping) {
     Log.log(chalk`{bold TypeScript}: A {cyan tsconfig.json} has been auto-generated`);
   } else {
