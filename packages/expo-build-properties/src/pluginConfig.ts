@@ -29,6 +29,11 @@ export interface PluginConfigType {
  * Config for Android native build properties
  */
 export interface PluginConfigTypeAndroid {
+  /**
+   * Enable React Native new architecture mode on Android
+   */
+  newArchEnabled?: boolean;
+
   /** Override the default `minSdkVersion` version number in `build.gradle` */
   minSdkVersion?: number;
 
@@ -58,6 +63,11 @@ export interface PluginConfigTypeAndroid {
  * Config for iOS native build properties
  */
 export interface PluginConfigTypeIos {
+  /**
+   * Enable React Native new architecture mode on iOS
+   */
+  newArchEnabled?: boolean;
+
   /**
    * Override the default iOS *Deployment Target* version in the following projects:
    *  - in CocoaPods projects
@@ -92,6 +102,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
     android: {
       type: 'object',
       properties: {
+        newArchEnabled: { type: 'boolean', nullable: true },
         minSdkVersion: { type: 'integer', nullable: true },
         compileSdkVersion: { type: 'integer', nullable: true },
         targetSdkVersion: { type: 'integer', nullable: true },
@@ -117,6 +128,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
     ios: {
       type: 'object',
       properties: {
+        newArchEnabled: { type: 'boolean', nullable: true },
         deploymentTarget: { type: 'string', pattern: '\\d+\\.\\d+', nullable: true },
         useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
       },

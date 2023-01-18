@@ -5,6 +5,10 @@ const config_plugins_1 = require("expo/config-plugins");
 const { createBuildPodfilePropsConfigPlugin } = config_plugins_1.IOSConfig.BuildProperties;
 exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
     {
+        propName: 'newArchEnabled',
+        propValueGetter: (config) => config.ios?.newArchEnabled?.toString(),
+    },
+    {
         propName: 'ios.useFrameworks',
         propValueGetter: (config) => config.ios?.useFrameworks,
     },

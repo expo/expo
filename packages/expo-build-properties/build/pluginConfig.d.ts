@@ -9,6 +9,10 @@ export interface PluginConfigType {
  * Config for Android native build properties
  */
 export interface PluginConfigTypeAndroid {
+    /**
+     * Enable React Native new architecture mode on Android
+     */
+    newArchEnabled?: boolean;
     /** Override the default `minSdkVersion` version number in `build.gradle` */
     minSdkVersion?: number;
     /** Override the default `compileSdkVersion` version number in `build.gradle` */
@@ -30,6 +34,10 @@ export interface PluginConfigTypeAndroid {
  * Config for iOS native build properties
  */
 export interface PluginConfigTypeIos {
+    /**
+     * Enable React Native new architecture mode on iOS
+     */
+    newArchEnabled?: boolean;
     /**
      * Override the default iOS *Deployment Target* version in the following projects:
      *  - in CocoaPods projects

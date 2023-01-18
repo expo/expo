@@ -11,6 +11,10 @@ const fileContentsUtils_1 = require("./fileContentsUtils");
 const { createBuildGradlePropsConfigPlugin } = config_plugins_1.AndroidConfig.BuildProperties;
 exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
     {
+        propName: 'newArchEnabled',
+        propValueGetter: (config) => config.android?.newArchEnabled?.toString(),
+    },
+    {
         propName: 'android.minSdkVersion',
         propValueGetter: (config) => config.android?.minSdkVersion?.toString(),
     },
