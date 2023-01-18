@@ -29,7 +29,7 @@ const setCssVariables = (element, size) => {
     element?.style.setProperty('--expo-image-width', `${size.width}px`);
     element?.style.setProperty('--expo-image-height', `${size.height}px`);
 };
-export default function ExpoImage({ source, placeholder, contentFit, contentPosition, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, ...props }) {
+export default function ExpoImage({ source, placeholder, contentFit, contentPosition, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, blurRadius, ...props }) {
     const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
     const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy, setCssVariables);
     return (React.createElement("div", { ref: containerRef, className: "expo-image-container", style: {
@@ -46,6 +46,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                     placeholder?.[0]?.uri || '',
                     ({ onAnimationFinished }) => (className, style) => (React.createElement(ImageWrapper, { source: placeholder?.[0], style: {
                             objectFit: 'scale-down',
+                            ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
                             ...style,
                         }, className: className, events: {
                             onTransitionEnd: [onAnimationFinished],
@@ -62,6 +63,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                     onTransitionEnd: [onAnimationFinished],
                 }, style: {
                     objectFit: selectedSource ? contentFit : 'scale-down',
+                    ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
                     ...style,
                 }, className: className, priority: priority, contentPosition: selectedSource ? contentPosition : { top: '50%', left: '50%' }, blurhashContentPosition: contentPosition, blurhashStyle: {
                     objectFit: contentFit,
