@@ -84,6 +84,11 @@ const linking: LinkingOptions<object> = {
       },
     },
   },
+  // react-navigation internally has a 150ms timeout for `Linking.getInitialURL`.
+  // https://github.com/react-navigation/react-navigation/blob/f93576624282c3d65e359cca2826749f56221e8c/packages/native/src/useLinking.native.tsx#L29-L37
+  // The timeout is too short for GitHub Actions CI with Hermes and causes test failures.
+  // For detox testing, we use the raw `Linking.getInitialURL` instead.
+  ...(global.DETOX ? { getInitialURL: Linking.getInitialURL } : null),
 };
 
 function TabNavigator() {

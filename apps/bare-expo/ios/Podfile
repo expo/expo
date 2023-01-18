@@ -19,7 +19,6 @@ prepare_react_native_project!
 flipper_config = ENV['NO_FLIPPER'] == "1" || ENV['CI'] ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
 
 abstract_target 'BareExpoMain' do
-  pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios"
   pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
 
   use_expo_modules!(
@@ -103,8 +102,16 @@ abstract_target 'BareExpoMain' do
   end
 
   target 'BareExpoTests' do
-    inherit! :search_paths
+    use_react_native!(
+      :path => config[:reactNativePath],
+      :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes',
+      :fabric_enabled => flags[:fabric_enabled],
+      # An absolute path to your application root.
+      :app_path => "#{Pod::Config.instance.installation_root}/..",
+      :flipper_configuration => FlipperConfiguration.disabled,
+    )
 
+    pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios"
     pod 'Nimble', :podspec => './../../../ios/Nimble.podspec'
   end
 end
