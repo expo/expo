@@ -34,6 +34,9 @@ export default {
     randomUUID() {
         return getCrypto().randomUUID();
     },
+    digestAsync(algorithm, data) {
+        return getCrypto().subtle.digest(algorithm, data);
+    },
 };
 function hexString(buffer) {
     const byteArray = new Uint8Array(buffer);

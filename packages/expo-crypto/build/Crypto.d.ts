@@ -63,4 +63,5 @@ export declare function getRandomValues<T extends IntBasedTypedArray | UintBased
  * ```
  */
 export declare function randomUUID(): any;
+export declare const subtle: Pick<SubtleCrypto, 'digest'>;
 //# sourceMappingURL=Crypto.d.ts.map

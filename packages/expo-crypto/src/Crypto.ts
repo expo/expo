@@ -177,3 +177,46 @@ export function getRandomValues<T extends IntBasedTypedArray | UintBasedTypedArr
 export function randomUUID() {
   return ExpoCrypto.randomUUID();
 }
+
+const digestLengths = {
+  [CryptoDigestAlgorithm.SHA1]: 20,
+  [CryptoDigestAlgorithm.SHA256]: 32,
+  [CryptoDigestAlgorithm.SHA384]: 48,
+  [CryptoDigestAlgorithm.SHA512]: 64,
+  [CryptoDigestAlgorithm.MD2]: 16,
+  [CryptoDigestAlgorithm.MD4]: 16,
+  [CryptoDigestAlgorithm.MD5]: 16,
+};
+
+/**
+ * The `digest()` method of `Crypto` generates a digest of the supplied `data` with the provided digest `algorithm`.
+ *
+ * @param algorithm The cryptographic hash function to use to transform a block of data into a fixed-size output.
+ * @param data The value that will be used to generate a digest.
+ * @return A Promise which fulfills with a value representing the hashed input.
+ * @example
+ * ```ts
+ * const array = new Uint8Array([1, 2, 3, 4, 5]);
+ * const digest = await Crypto.digest(Crypto.CryptoDigestAlgorithm.SHA512, array);
+ * console.log('Your digest: ' + digest);
+ * ```
+ */
+function digest(algorithm: CryptoDigestAlgorithm, data: BufferSource): Promise<Uint8Array> {
+  return new Promise(async (resolve, reject) => {
+    try {
+      if ('digestAsync' in ExpoCrypto) {
+        resolve(ExpoCrypto.digestAsync(algorithm, data));
+      } else {
+        const output = new Uint8Array(digestLengths[algorithm]).fill(0);
+        ExpoCrypto.digest(algorithm, output, data);
+        resolve(output);
+      }
+    } catch (error) {
+      reject(error);
+    }
+  });
+}
+
+export const subtle: Pick<SubtleCrypto, 'digest'> = {
+  digest,
+};
