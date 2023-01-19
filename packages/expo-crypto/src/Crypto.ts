@@ -204,7 +204,7 @@ const digestLengths = {
 function digest(algorithm: CryptoDigestAlgorithm, data: BufferSource): Promise<Uint8Array> {
   return new Promise(async (resolve, reject) => {
     try {
-      if ('digestAsync' in ExpoCrypto) {
+      if (typeof ExpoCrypto.digestAsync === 'function') {
         resolve(ExpoCrypto.digestAsync(algorithm, data));
       } else {
         const output = new Uint8Array(digestLengths[algorithm]).fill(0);

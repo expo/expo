@@ -171,7 +171,7 @@ const digestLengths = {
 function digest(algorithm, data) {
     return new Promise(async (resolve, reject) => {
         try {
-            if ('digestAsync' in ExpoCrypto) {
+            if (typeof ExpoCrypto.digestAsync === 'function') {
                 resolve(ExpoCrypto.digestAsync(algorithm, data));
             }
             else {
