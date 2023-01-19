@@ -71,7 +71,8 @@ type Event =
   | 'Serve Manifest'
   | 'Serve Expo Updates Manifest'
   | 'dev client start command'
-  | 'dev client run command';
+  | 'dev client run command'
+  | 'metro config';
 
 /**
  * Log an event, ensuring the user is identified before logging the event.

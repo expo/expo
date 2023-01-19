@@ -17,6 +17,8 @@ import { Terminal } from 'metro-core';
 import { MetroTerminalReporter } from '../start/server/metro/MetroTerminalReporter';
 import { withMetroMultiPlatformAsync } from '../start/server/metro/withMetroMultiPlatform';
 import { getPlatformBundlers } from '../start/server/platformBundlers';
+import { getMetroProperties } from '../utils/analytics/getMetroProperties';
+import { logEventAsync } from '../utils/analytics/rudderstackClient';
 
 export type MetroDevServerOptions = LoadOptions & {
   logger: import('@expo/bunyan');
@@ -106,6 +108,8 @@ export async function bundleAsync(
 
   const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
+
+  logEventAsync('metro config', getMetroProperties(exp, config));
 
   const bundlerPlatforms = getPlatformBundlers(exp);
 
