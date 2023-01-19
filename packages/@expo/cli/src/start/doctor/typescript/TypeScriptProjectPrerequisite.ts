@@ -1,4 +1,5 @@
 import { ExpoConfig } from '@expo/config';
+import chalk from 'chalk';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -77,7 +78,7 @@ export default class TypeScriptProjectPrerequisite extends ProjectPrerequisite {
         exp,
         installMessage: `It looks like you're trying to use TypeScript but don't have the required dependencies installed.`,
         warningMessage: `If you're not using TypeScript, please remove the TypeScript files from your project.`,
-        disableMessage: `You can disable this setup with EXPO_NO_TYPESCRIPT_SETUP.`,
+        disableMessage: chalk`You can disable this setup with {bold EXPO_NO_TYPESCRIPT_SETUP}.`,
         requiredPackages: [
           // use typescript/package.json to skip node module cache issues when the user installs
           // the package and attempts to resolve the module in the same process.

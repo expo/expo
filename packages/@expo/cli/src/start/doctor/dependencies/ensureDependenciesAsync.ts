@@ -31,14 +31,22 @@ export async function ensureDependenciesAsync(
     return true;
   }
 
-  // Inform about the missing packages
+  // Inform the user about what is wrong, and is currently being fixed
   Log.log(installMessage, '\n');
   if (disableMessage) {
     Log.warn(warningMessage);
-    Log.warn(disableMessage, '\n');
+    Log.log(chalk.dim(disableMessage), '\n');
   } else {
     Log.warn(warningMessage, '\n');
   }
+
+  // Show the exact packages that are incorrect or missing
+  Log.log('Missing packages:');
+  Log.log(
+    '  -',
+    missing.map(({ pkg, version }) => chalk`${pkg}{dim @${version}}`).join('\n  - '),
+    '\n'
+  ); // TODO(cedric): collapse this into the package manager
 
   // Format with version if available.
   const packages = missing.map(({ pkg, version }) => (version ? [pkg, version].join('@') : pkg));
