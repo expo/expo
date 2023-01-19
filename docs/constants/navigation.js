@@ -198,6 +198,7 @@ const general = [
   makeSection('Regulatory compliance', sortAlphabetical(pagesFromDir('regulatory-compliance')), {}),
   makeSection('Technical specs', [
     makePage('technical-specs/expo-updates-0.mdx'),
+    makePage('technical-specs/expo-updates-1-draft.mdx'),
     makePage('technical-specs/expo-sfv-0.mdx'),
   ]),
   makeSection('Deprecated', [
