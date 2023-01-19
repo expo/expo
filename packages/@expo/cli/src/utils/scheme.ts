@@ -21,6 +21,16 @@ function sortLongest(obj: string[]): string[] {
   return obj.sort((a, b) => b.length - a.length);
 }
 
+/**
+ * Resolve the scheme for the dev client using two methods:
+ *   - filter on known Expo schemes, starting with `exp+`, avoiding 3rd party schemes.
+ *   - filter on longest to ensure uniqueness.
+ */
+function resolveExpoOrLongestScheme(schemes: string[]): string[] {
+  const expoOnlySchemes = schemes.filter((scheme) => scheme.startsWith('exp+'));
+  return expoOnlySchemes.length > 0 ? sortLongest(expoOnlySchemes) : sortLongest(schemes);
+}
+
 // TODO: Revisit and test after run code is merged.
 export async function getSchemesForIosAsync(projectRoot: string): Promise<string[]> {
   try {
@@ -32,7 +42,7 @@ export async function getSchemesForIosAsync(projectRoot: string): Promise<string
       const plistObject = plist.parse(rawPlist);
       const schemes = IOSConfig.Scheme.getSchemesFromPlist(plistObject);
       debug(`ios application schemes:`, schemes);
-      return sortLongest(schemes);
+      return resolveExpoOrLongestScheme(schemes);
     }
   } catch (error) {
     debug(`expected error collecting ios application schemes for the main target:`, error);
@@ -48,7 +58,7 @@ export async function getSchemesForAndroidAsync(projectRoot: string): Promise<st
     const manifest = await AndroidConfig.Manifest.readAndroidManifestAsync(configPath);
     const schemes = await AndroidConfig.Scheme.getSchemesFromManifest(manifest);
     debug(`android application schemes:`, schemes);
-    return sortLongest(schemes);
+    return resolveExpoOrLongestScheme(schemes);
   } catch (error) {
     debug(`expected error collecting android application schemes for the main activity:`, error);
     // No android folder or some other error
