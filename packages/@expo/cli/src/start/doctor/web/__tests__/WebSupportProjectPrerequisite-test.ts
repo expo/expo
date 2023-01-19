@@ -3,9 +3,8 @@ import { getConfig, getProjectConfigDescriptionWithPaths, ProjectConfig } from '
 import { asMock } from '../../../../__tests__/asMock';
 import * as Log from '../../../../log';
 import { stripAnsi } from '../../../../utils/ansi';
-import {
+import WebSupportProjectPrerequisite, {
   isWebPlatformExcluded,
-  WebSupportProjectPrerequisite,
 } from '../WebSupportProjectPrerequisite';
 
 jest.mock('../../../../log');

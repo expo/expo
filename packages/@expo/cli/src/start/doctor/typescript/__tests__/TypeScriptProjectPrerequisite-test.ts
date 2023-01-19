@@ -1,7 +1,7 @@
 import { vol } from 'memfs';
 
 import * as Log from '../../../../log';
-import { TypeScriptProjectPrerequisite } from '../TypeScriptProjectPrerequisite';
+import TypeScriptProjectPrerequisite from '../TypeScriptProjectPrerequisite';
 
 jest.mock('../../../../log');
 
