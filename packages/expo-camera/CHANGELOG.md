@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix path where simulator saves photos ([#20872](https://github.com/expo/expo/pull/20872) by [@pettomartino](https://github.com/pettomartino))
+
 ### 💡 Others
 
 ## 13.1.0 - 2022-11-23
