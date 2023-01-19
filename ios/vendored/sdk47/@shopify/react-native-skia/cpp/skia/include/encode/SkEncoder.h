@@ -14,6 +14,23 @@
 
 class SK_API SkEncoder : SkNoncopyable {
 public:
+    /**
+     * A single frame to be encoded into an animated image.
+     *
+     * If a frame does not fit in the canvas size, this is an error.
+     * TODO(skia:13705): Add offsets when we have support for an encoder that supports using
+     * offsets.
+     */
+    struct SK_API Frame {
+        /**
+         *  Pixmap of the frame.
+         */
+        SkPixmap pixmap;
+        /**
+         *  Duration of the frame in millseconds.
+         */
+        int duration;
+    };
 
     /**
      *  Encode |numRows| rows of input.  If the caller requests more rows than are remaining

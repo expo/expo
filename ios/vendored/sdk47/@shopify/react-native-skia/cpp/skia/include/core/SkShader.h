@@ -56,6 +56,12 @@ public:
         return this->isAImage(nullptr, (SkTileMode*)nullptr) != nullptr;
     }
 
+    // TODO(skbug.com/8941): Have Android use SkAndroidFrameworkUtils, move types to SkShaderBase,
+    // and delete asAGradient().
+#ifndef SK_BUILD_FOR_ANDROID_FRAMEWORK
+private:
+#endif
+
     /**
      *  If the shader subclass can be represented as a gradient, asAGradient
      *  returns the matching GradientType enum (or kNone_GradientType if it
@@ -92,24 +98,26 @@ public:
         kRadial_GradientType,
         kSweep_GradientType,
         kConical_GradientType,
-        kLast_GradientType = kConical_GradientType,
     };
 
     struct GradientInfo {
-        int         fColorCount;    //!< In-out parameter, specifies passed size
-                                    //   of fColors/fColorOffsets on input, and
-                                    //   actual number of colors/offsets on
-                                    //   output.
-        SkColor*    fColors;        //!< The colors in the gradient.
-        SkScalar*   fColorOffsets;  //!< The unit offset for color transitions.
-        SkPoint     fPoint[2];      //!< Type specific, see above.
-        SkScalar    fRadius[2];     //!< Type specific, see above.
+        int         fColorCount    = 0;        //!< In-out parameter, specifies passed size
+                                               //   of fColors/fColorOffsets on input, and
+                                               //   actual number of colors/offsets on
+                                               //   output.
+        SkColor*    fColors        = nullptr;  //!< The colors in the gradient.
+        SkScalar*   fColorOffsets  = nullptr;  //!< The unit offset for color transitions.
+        SkPoint     fPoint[2];                 //!< Type specific, see above.
+        SkScalar    fRadius[2];                //!< Type specific, see above.
         SkTileMode  fTileMode;
-        uint32_t    fGradientFlags; //!< see SkGradientShader::Flags
+        uint32_t    fGradientFlags = 0;        //!< see SkGradientShader::Flags
     };
 
-    // DEPRECATED. skbug.com/8941
-    virtual GradientType asAGradient(GradientInfo* info) const;
+    GradientType asAGradient(GradientInfo* info) const;
+
+#ifndef SK_BUILD_FOR_ANDROID_FRAMEWORK
+public:
+#endif
 
     //////////////////////////////////////////////////////////////////////////
     //  Methods to create combinations or variants of shaders

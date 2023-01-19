@@ -12,10 +12,10 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
-#include <SkCornerPathEffect.h>
-#include <SkDashPathEffect.h>
-#include <SkDiscretePathEffect.h>
-#include <SkPathEffect.h>
+#include "SkCornerPathEffect.h"
+#include "SkDashPathEffect.h"
+#include "SkDiscretePathEffect.h"
+#include "SkPathEffect.h"
 #include "include/effects/Sk1DPathEffect.h"
 #include "include/effects/Sk2DPathEffect.h"
 
@@ -23,7 +23,7 @@
 
 namespace RNSkia {
 
-using namespace facebook;
+namespace jsi = facebook::jsi;
 
 class JsiSkPathEffectFactory : public JsiSkHostObject {
 public:
@@ -36,14 +36,17 @@ public:
 
   JSI_HOST_FUNCTION(MakeDash) {
     auto jsiIntervals = arguments[0].asObject(runtime).asArray(runtime);
-    auto size = (int)jsiIntervals.size(runtime);
+    auto size = static_cast<int>(jsiIntervals.size(runtime));
     std::vector<SkScalar> intervals;
     intervals.reserve(size);
     for (int i = 0; i < size; i++) {
       SkScalar interval = jsiIntervals.getValueAtIndex(runtime, i).asNumber();
       intervals.push_back(interval);
     }
-    int phase = count >= 2 && !arguments[1].isUndefined() && !arguments[1].isNull() ? arguments[1].asNumber() : 0;
+    int phase =
+        count >= 2 && !arguments[1].isUndefined() && !arguments[1].isNull()
+            ? arguments[1].asNumber()
+            : 0;
     return jsi::Object::createFromHostObject(
         runtime, std::make_shared<JsiSkPathEffect>(
                      getContext(),
@@ -65,8 +68,9 @@ public:
     auto inner = JsiSkPathEffect::fromValue(runtime, arguments[1]);
 
     return jsi::Object::createFromHostObject(
-            runtime, std::make_shared<JsiSkPathEffect>(
-                    getContext(),  SkPathEffect::MakeCompose(std::move(outer), std::move(inner))));
+        runtime, std::make_shared<JsiSkPathEffect>(
+                     getContext(), SkPathEffect::MakeCompose(
+                                       std::move(outer), std::move(inner))));
   }
 
   JSI_HOST_FUNCTION(MakeSum) {
@@ -74,26 +78,29 @@ public:
     auto inner = JsiSkPathEffect::fromValue(runtime, arguments[1]);
 
     return jsi::Object::createFromHostObject(
-            runtime, std::make_shared<JsiSkPathEffect>(
-                    getContext(),  SkPathEffect::MakeSum(std::move(outer), std::move(inner))));
+        runtime, std::make_shared<JsiSkPathEffect>(
+                     getContext(), SkPathEffect::MakeSum(std::move(outer),
+                                                         std::move(inner))));
   }
 
   JSI_HOST_FUNCTION(MakePath1D) {
     auto path = JsiSkPath::fromValue(runtime, arguments[0]);
     auto advance = arguments[1].asNumber();
     auto phase = arguments[2].asNumber();
-    auto style = static_cast<SkPath1DPathEffect::Style>(arguments[3].asNumber());
+    auto style =
+        static_cast<SkPath1DPathEffect::Style>(arguments[3].asNumber());
     return jsi::Object::createFromHostObject(
-            runtime, std::make_shared<JsiSkPathEffect>(
-                    getContext(),  SkPath1DPathEffect::Make(*path, advance, phase, style)));
+        runtime, std::make_shared<JsiSkPathEffect>(
+                     getContext(),
+                     SkPath1DPathEffect::Make(*path, advance, phase, style)));
   }
 
   JSI_HOST_FUNCTION(MakePath2D) {
     auto matrix = JsiSkMatrix::fromValue(runtime, arguments[0]);
     auto path = JsiSkPath::fromValue(runtime, arguments[1]);
     return jsi::Object::createFromHostObject(
-            runtime, std::make_shared<JsiSkPathEffect>(
-                    getContext(),  SkPath2DPathEffect::Make(*matrix, *path)));
+        runtime, std::make_shared<JsiSkPathEffect>(
+                     getContext(), SkPath2DPathEffect::Make(*matrix, *path)));
   }
 
   JSI_HOST_FUNCTION(MakeLine2D) {
@@ -101,22 +108,20 @@ public:
     auto matrix = JsiSkMatrix::fromValue(runtime, arguments[1]);
 
     return jsi::Object::createFromHostObject(
-            runtime, std::make_shared<JsiSkPathEffect>(
-                    getContext(),  SkLine2DPathEffect::Make(width, *matrix)));
+        runtime, std::make_shared<JsiSkPathEffect>(
+                     getContext(), SkLine2DPathEffect::Make(width, *matrix)));
   }
 
-  JSI_EXPORT_FUNCTIONS(
-    JSI_EXPORT_FUNC(JsiSkPathEffectFactory, MakeCorner),
-    JSI_EXPORT_FUNC(JsiSkPathEffectFactory, MakeDash),
-    JSI_EXPORT_FUNC(JsiSkPathEffectFactory, MakeDiscrete),
-    JSI_EXPORT_FUNC(JsiSkPathEffectFactory, MakeCompose),
-    JSI_EXPORT_FUNC(JsiSkPathEffectFactory, MakeSum),
-    JSI_EXPORT_FUNC(JsiSkPathEffectFactory, MakeLine2D),
-    JSI_EXPORT_FUNC(JsiSkPathEffectFactory, MakePath1D),
-    JSI_EXPORT_FUNC(JsiSkPathEffectFactory, MakePath2D),
-   )
+  JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(JsiSkPathEffectFactory, MakeCorner),
+                       JSI_EXPORT_FUNC(JsiSkPathEffectFactory, MakeDash),
+                       JSI_EXPORT_FUNC(JsiSkPathEffectFactory, MakeDiscrete),
+                       JSI_EXPORT_FUNC(JsiSkPathEffectFactory, MakeCompose),
+                       JSI_EXPORT_FUNC(JsiSkPathEffectFactory, MakeSum),
+                       JSI_EXPORT_FUNC(JsiSkPathEffectFactory, MakeLine2D),
+                       JSI_EXPORT_FUNC(JsiSkPathEffectFactory, MakePath1D),
+                       JSI_EXPORT_FUNC(JsiSkPathEffectFactory, MakePath2D), )
 
-  JsiSkPathEffectFactory(std::shared_ptr<RNSkPlatformContext> context)
+  explicit JsiSkPathEffectFactory(std::shared_ptr<RNSkPlatformContext> context)
       : JsiSkHostObject(std::move(context)) {}
 };
 

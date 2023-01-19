@@ -9,10 +9,10 @@
 #define GrVkBackendContext_DEFINED
 
 #include "include/core/SkRefCnt.h"
-#include "include/gpu/vk/GrVkMemoryAllocator.h"
 #include "include/gpu/vk/GrVkTypes.h"
+#include "include/gpu/vk/VulkanMemoryAllocator.h"
 
-class GrVkExtensions;
+namespace skgpu { class VulkanExtensions; }
 
 enum GrVkExtensionFlags {
     kEXT_debug_report_GrVkExtensionFlag    = 0x0001,
@@ -43,34 +43,36 @@ struct VkPhysicalDeviceFeatures2;
 // (either by deleting the struct or manually releasing the refs) before the underlying vulkan
 // device and instance are destroyed.
 struct SK_API GrVkBackendContext {
-    VkInstance                       fInstance;
-    VkPhysicalDevice                 fPhysicalDevice;
-    VkDevice                         fDevice;
-    VkQueue                          fQueue;
-    uint32_t                         fGraphicsQueueIndex;
-    uint32_t                         fMinAPIVersion; // Deprecated. Set fInstanceVersion instead.
-    uint32_t                         fInstanceVersion = 0; // Deprecated. Set fMaxApiVersion instead
+    VkInstance                          fInstance = VK_NULL_HANDLE;
+    VkPhysicalDevice                    fPhysicalDevice = VK_NULL_HANDLE;
+    VkDevice                            fDevice = VK_NULL_HANDLE;
+    VkQueue                             fQueue = VK_NULL_HANDLE;
+    uint32_t                            fGraphicsQueueIndex = 0;
+    uint32_t                            fMinAPIVersion = 0; // Deprecated. Use fInstanceVersion
+                                                            // instead.
+    uint32_t                            fInstanceVersion = 0; // Deprecated. Use fMaxApiVersion
     // The max api version set here should match the value set in VkApplicationInfo::apiVersion when
     // then VkInstance was created.
-    uint32_t                         fMaxAPIVersion = 0;
-    uint32_t                         fExtensions = 0; // Deprecated. Use fVkExtensions instead.
-    const GrVkExtensions*            fVkExtensions = nullptr;
-    uint32_t                         fFeatures; // Deprecated. Use fDeviceFeatures[2] instead.
+    uint32_t                            fMaxAPIVersion = 0;
+    uint32_t                            fExtensions = 0; // Deprecated. Use fVkExtensions instead.
+    const skgpu::VulkanExtensions*      fVkExtensions = nullptr;
+    uint32_t                            fFeatures = 0; // Deprecated. Use fDeviceFeatures[2]
+                                                       // instead.
     // The client can create their VkDevice with either a VkPhysicalDeviceFeatures or
     // VkPhysicalDeviceFeatures2 struct, thus we have to support taking both. The
     // VkPhysicalDeviceFeatures2 struct is needed so we know if the client enabled any extension
     // specific features. If fDeviceFeatures2 is not null then we ignore fDeviceFeatures. If both
     // fDeviceFeatures and fDeviceFeatures2 are null we will assume no features are enabled.
-    const VkPhysicalDeviceFeatures*  fDeviceFeatures = nullptr;
-    const VkPhysicalDeviceFeatures2* fDeviceFeatures2 = nullptr;
-    sk_sp<GrVkMemoryAllocator>       fMemoryAllocator;
-    GrVkGetProc                      fGetProc = nullptr;
+    const VkPhysicalDeviceFeatures*     fDeviceFeatures = nullptr;
+    const VkPhysicalDeviceFeatures2*    fDeviceFeatures2 = nullptr;
+    sk_sp<skgpu::VulkanMemoryAllocator> fMemoryAllocator;
+    skgpu::VulkanGetProc                fGetProc = nullptr;
     // This is deprecated and should be set to false. The client is responsible for managing the
     // lifetime of the VkInstance and VkDevice objects.
-    bool                             fOwnsInstanceAndDevice = false;
+    bool                                fOwnsInstanceAndDevice = false;
     // Indicates that we are working with protected content and all CommandPool and Queue operations
     // should be done in a protected context.
-    GrProtected                      fProtectedContext = GrProtected::kNo;
+    GrProtected                         fProtectedContext = GrProtected::kNo;
 };
 
 #endif

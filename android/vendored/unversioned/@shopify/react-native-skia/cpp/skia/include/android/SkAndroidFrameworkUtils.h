@@ -8,8 +8,10 @@
 #ifndef SkAndroidFrameworkUtils_DEFINED
 #define SkAndroidFrameworkUtils_DEFINED
 
+#include "include/core/SkColor.h"
+#include "include/core/SkPoint.h"
 #include "include/core/SkRefCnt.h"
-#include "include/core/SkTypes.h"
+#include "include/core/SkTileMode.h"
 
 #ifdef SK_BUILD_FOR_ANDROID_FRAMEWORK
 
@@ -17,6 +19,7 @@ class SkCanvas;
 struct SkIRect;
 struct SkRect;
 class SkSurface;
+class SkShader;
 
 /**
  *  SkAndroidFrameworkUtils expose private APIs used only by Android framework.
@@ -54,6 +57,37 @@ public:
      *  @return SkCanvas that was found in the innermost SkPaintFilterCanvas.
      */
     static SkCanvas* getBaseWrappedCanvas(SkCanvas* canvas);
+
+    /**
+     * Skia will change the order in which local matrices concatenate. In order to not break Android
+     * apps targeting older API levels we offer this function to use the legacy concatenation order.
+     */
+    static void UseLegacyLocalMatrixConcatenation();
+
+    /**
+     *  If the shader represents a linear gradient ShaderAsALinearGradient
+     *  returns true and if info is not null, ShaderAsALinearGradient populates
+     *  info with the parameters for the gradient. fColorCount is both an input
+     *  and output parameter. On input, it indicates how many entries in
+     *  fColors and fColorOffsets can be used, if they are not nullptr. After
+     *  asAGradient has run, fColorCount indicates how many color-offset pairs
+     *  there are in the gradient. fColorOffsets specifies where on the range of
+     *  0 to 1 to transition to the given color. fPoints represent the endpoints
+     *  of the gradient.
+     */
+    struct LinearGradientInfo {
+        int         fColorCount    = 0;        //!< In-out parameter, specifies passed size
+                                               //   of fColors/fColorOffsets on input, and
+                                               //   actual number of colors/offsets on
+                                               //   output.
+        SkColor*    fColors        = nullptr;  //!< The colors in the gradient.
+        SkScalar*   fColorOffsets  = nullptr;  //!< The unit offset for color transitions.
+        SkPoint     fPoints[2];                //!< Type specific, see above.
+        SkTileMode  fTileMode;
+        uint32_t    fGradientFlags = 0;        //!< see SkGradientShader::Flags
+    };
+
+    static bool ShaderAsALinearGradient(SkShader* shader, LinearGradientInfo*);
 };
 
 #endif // SK_BUILD_FOR_ANDROID_ANDROID

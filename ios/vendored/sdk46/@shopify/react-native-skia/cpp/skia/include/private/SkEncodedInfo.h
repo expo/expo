@@ -8,12 +8,18 @@
 #ifndef SkEncodedInfo_DEFINED
 #define SkEncodedInfo_DEFINED
 
-#include <memory>
-
+#include "include/core/SkAlphaType.h"
 #include "include/core/SkColorSpace.h"
+#include "include/core/SkColorType.h"
 #include "include/core/SkData.h"
 #include "include/core/SkImageInfo.h"
-#include "include/third_party/skcms/skcms.h"
+#include "include/core/SkRefCnt.h"
+#include "include/core/SkTypes.h"
+#include "modules/skcms/skcms.h"
+
+#include <cstdint>
+#include <memory>
+#include <utility>
 
 struct SkEncodedInfo {
 public:

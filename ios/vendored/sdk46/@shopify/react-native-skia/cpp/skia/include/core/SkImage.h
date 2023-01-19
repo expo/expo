@@ -13,11 +13,12 @@
 #include "include/core/SkSamplingOptions.h"
 #include "include/core/SkScalar.h"
 #include "include/core/SkShader.h"
+#include "include/core/SkSurfaceProps.h"
 #include "include/core/SkTileMode.h"
 #if SK_SUPPORT_GPU
 #include "include/gpu/GrTypes.h"
 #endif
-#if SK_GRAPHITE_ENABLED
+#if defined(SK_GRAPHITE_ENABLED)
 #include "include/gpu/graphite/GraphiteTypes.h"
 #endif
 #include <functional>  // std::function
@@ -49,8 +50,9 @@ class SkYUVAPixmaps;
 
 enum class SkEncodedImageFormat;
 
-#if SK_GRAPHITE_ENABLED
+#if defined(SK_GRAPHITE_ENABLED)
 namespace skgpu::graphite {
+class BackendTexture;
 class Recorder;
 };
 #endif
@@ -253,12 +255,13 @@ public:
         @param paint       SkPaint to apply transparency, filtering, and so on; may be nullptr
         @param bitDepth    8-bit integer or 16-bit float: per component
         @param colorSpace  range of colors; may be nullptr
+        @param props       props to use when rasterizing the picture
         @return            created SkImage, or nullptr
     */
     static sk_sp<SkImage> MakeFromPicture(sk_sp<SkPicture> picture, const SkISize& dimensions,
                                           const SkMatrix* matrix, const SkPaint* paint,
-                                          BitDepth bitDepth,
-                                          sk_sp<SkColorSpace> colorSpace);
+                                          BitDepth bitDepth, sk_sp<SkColorSpace> colorSpace,
+                                          SkSurfaceProps props = {});
 
 #if SK_SUPPORT_GPU
         /** Creates a GPU-backed SkImage from compressed data.
@@ -942,6 +945,36 @@ public:
         kRepeatedCubic,
     };
 
+    /** Makes image pixel data available to caller, possibly asynchronously.
+
+        Currently asynchronous reads are only supported on the GPU backend and only when the
+        underlying 3D API supports transfer buffers and CPU/GPU synchronization primitives. In all
+        other cases this operates synchronously.
+
+        Data is read from the source sub-rectangle, then converted to the color space, color type,
+        and alpha type of 'info'. A 'srcRect' that is not contained by the bounds of the image
+        causes failure.
+
+        When the pixel data is ready the caller's ReadPixelsCallback is called with a
+        AsyncReadResult containing pixel data in the requested color type, alpha type, and color
+        space. The AsyncReadResult will have count() == 1. Upon failure the callback is called with
+        nullptr for AsyncReadResult. For a GPU image this flushes work but a submit must occur to
+        guarantee a finite time before the callback is called.
+
+        The data is valid for the lifetime of AsyncReadResult with the exception that if the SkImage
+        is GPU-backed the data is immediately invalidated if the context is abandoned or
+        destroyed.
+
+        @param info            info of the requested pixels
+        @param srcRect         subrectangle of image to read
+        @param callback        function to call with result of the read
+        @param context         passed to callback
+    */
+    void asyncReadPixels(const SkImageInfo& info,
+                         const SkIRect& srcRect,
+                         ReadPixelsCallback callback,
+                         ReadPixelsContext context) const;
+
     /** Makes image pixel data available to caller, possibly asynchronously. It can also rescale
         the image pixels.
 
@@ -1143,30 +1176,57 @@ public:
                                     GrMipmapped = GrMipmapped::kNo,
                                     SkBudgeted = SkBudgeted::kYes) const;
 #endif
+
 #ifdef SK_GRAPHITE_ENABLED
+    /** Creates an SkImage from a GPU texture associated with the recorder.
+
+        SkImage is returned if the format of backendTexture is recognized and supported.
+        Recognized formats vary by GPU back-end.
+
+        @param recorder            The recorder
+        @param backendTexture      texture residing on GPU
+        @param colorSpace          This describes the color space of this image's contents, as
+                                   seen after sampling. In general, if the format of the backend
+                                   texture is SRGB, some linear colorSpace should be supplied
+                                   (e.g., SkColorSpace::MakeSRGBLinear()). If the format of the
+                                   backend texture is linear, then the colorSpace should include
+                                   a description of the transfer function as
+                                   well (e.g., SkColorSpace::MakeSRGB()).
+        @return                    created SkImage, or nullptr
+    */
+    static sk_sp<SkImage> MakeGraphiteFromBackendTexture(skgpu::graphite::Recorder*,
+                                                         const skgpu::graphite::BackendTexture&,
+                                                         SkColorType colorType,
+                                                         SkAlphaType alphaType,
+                                                         sk_sp<SkColorSpace> colorSpace);
+
+    struct RequiredImageProperties {
+        skgpu::graphite::Mipmapped fMipmapped;
+    };
+
     /** Graphite version of makeTextureImage.
 
-        Returns SkImage backed by GPU texture, using Recorder for creation and uploads if necessary.
-        The returned SkImage respects mipmapped setting for non-GPU SkImages; if mipmapped
-        equals GrMipmapped::kYes, the backing texture allocates mip map levels.
+        Returns an SkImage backed by a Graphite texture, using the provided Recorder for creation
+        and uploads if necessary. The returned SkImage respects the required image properties'
+        mipmap setting for non-Graphite SkImages; i.e., if mipmapping is required, the backing
+        Graphite texture will have allocated mip map levels.
 
         It is assumed that MIP maps are always supported by the GPU.
 
-        Returns original SkImage if the image is already texture-backed, the recorder matches, and
-        mipmapped is compatible with the backing GPU texture. If mipmapped is not compatible,
-        it will return nullptr.
+        Returns original SkImage if the image is already Graphite-backed and the required mipmapping
+        is compatible with the backing Graphite texture. If the required mipmapping is not
+        compatible, nullptr will be returned.
 
-        Returns nullptr if recorder is nullptr, or if SkImage was created with another
+        Returns nullptr if no Recorder is provided, or if SkImage was created with another
         Recorder and work on that Recorder has not been submitted.
 
-        @param Recorder        the Recorder to use for storing commands
-        @param Mipmapped       whether created SkImage texture must allocate mip map levels
-        @return                created SkImage, or nullptr
+        @param Recorder                 the Recorder to use for storing commands
+        @param RequiredImageProperties  properties the returned SkImage must possess (e.g.,
+                                        mipmaps)
+        @return                         created SkImage, or nullptr
     */
     sk_sp<SkImage> makeTextureImage(skgpu::graphite::Recorder*,
-                                    skgpu::graphite::Mipmapped = skgpu::graphite::Mipmapped::kNo,
-                                    SkBudgeted = SkBudgeted::kYes) const;
-
+                                    RequiredImageProperties = {}) const;
 #endif
 
     /** Returns raster image or lazy image. Copies SkImage backed by GPU texture into

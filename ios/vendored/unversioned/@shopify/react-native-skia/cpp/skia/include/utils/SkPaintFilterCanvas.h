@@ -21,10 +21,15 @@
 #include "include/private/SkTDArray.h"
 #include "include/utils/SkNWayCanvas.h"
 
+#include <cstddef>
+
+namespace sktext {
+class GlyphRunList;
+}
+
 class GrRecordingContext;
 class SkData;
 class SkDrawable;
-class SkGlyphRunList;
 class SkImage;
 class SkMatrix;
 class SkPaint;
@@ -103,7 +108,7 @@ protected:
     void onDrawPicture(const SkPicture*, const SkMatrix*, const SkPaint*) override;
     void onDrawDrawable(SkDrawable*, const SkMatrix*) override;
 
-    void onDrawGlyphRunList(const SkGlyphRunList&, const SkPaint&) override;
+    void onDrawGlyphRunList(const sktext::GlyphRunList&, const SkPaint&) override;
     void onDrawTextBlob(const SkTextBlob* blob, SkScalar x, SkScalar y,
                         const SkPaint& paint) override;
     void onDrawAnnotation(const SkRect& rect, const char key[], SkData* value) override;
@@ -119,12 +124,12 @@ protected:
     bool onPeekPixels(SkPixmap* pixmap) override;
     bool onAccessTopLayerPixels(SkPixmap* pixmap) override;
     SkImageInfo onImageInfo() const override;
-    bool onGetProps(SkSurfaceProps* props) const override;
+    bool onGetProps(SkSurfaceProps* props, bool top) const override;
 
 private:
     class AutoPaintFilter;
 
-    SkCanvas* proxy() const { SkASSERT(fList.count() == 1); return fList[0]; }
+    SkCanvas* proxy() const { SkASSERT(fList.size() == 1); return fList[0]; }
 
     SkPaintFilterCanvas* internal_private_asPaintFilterCanvas() const override {
         return const_cast<SkPaintFilterCanvas*>(this);

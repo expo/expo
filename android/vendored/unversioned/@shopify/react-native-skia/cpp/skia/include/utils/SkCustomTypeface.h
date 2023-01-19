@@ -8,28 +8,25 @@
 #ifndef SkCustomTypeface_DEFINED
 #define SkCustomTypeface_DEFINED
 
+#include "include/core/SkDrawable.h"
 #include "include/core/SkFontMetrics.h"
 #include "include/core/SkFontStyle.h"
 #include "include/core/SkPath.h"
+#include "include/core/SkRect.h"
 #include "include/core/SkRefCnt.h"
 #include "include/core/SkTypes.h"
 
 #include <vector>
 
-class SkImage;
-class SkPaint;
-class SkPicture;
 class SkStream;
 class SkTypeface;
 
-class SkCustomTypefaceBuilder {
+class SK_API SkCustomTypefaceBuilder {
 public:
     SkCustomTypefaceBuilder();
 
     void setGlyph(SkGlyphID, float advance, const SkPath&);
-    void setGlyph(SkGlyphID, float advance, const SkPath&, const SkPaint&);
-    void setGlyph(SkGlyphID, float advance, sk_sp<SkImage>, float scale);
-    void setGlyph(SkGlyphID, float advance, sk_sp<SkPicture>);
+    void setGlyph(SkGlyphID, float advance, sk_sp<SkDrawable>, const SkRect& bounds);
 
     void setMetrics(const SkFontMetrics& fm, float scale = 1);
     void setFontStyle(SkFontStyle);
@@ -37,14 +34,30 @@ public:
     sk_sp<SkTypeface> detach();
 
 private:
-    std::vector<SkPath> fPaths;
-    std::vector<float>  fAdvances;
-    SkFontMetrics       fMetrics;
-    SkFontStyle         fStyle;
+    struct GlyphRec {
+        // logical union
+        SkPath            fPath;
+        sk_sp<SkDrawable> fDrawable;
+
+        SkRect            fBounds  = {0,0,0,0}; // only used for drawable glyphs atm
+        float             fAdvance = 0;
+
+        bool isDrawable() const {
+            SkASSERT(!fDrawable || fPath.isEmpty());
+            return fDrawable != nullptr;
+        }
+    };
+
+    std::vector<GlyphRec> fGlyphRecs;
+    SkFontMetrics         fMetrics;
+    SkFontStyle           fStyle;
+
+    GlyphRec& ensureStorage(SkGlyphID);
 
     static sk_sp<SkTypeface> Deserialize(SkStream*);
 
     friend class SkTypeface;
+    friend class SkUserTypeface;
 };
 
 #endif

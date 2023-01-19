@@ -765,7 +765,22 @@ public:
         kGray_8_SkColorType or kRGB_565_SkColorType, then alpha is ignored; RGB is
         treated as opaque. If colorType() is kAlpha_8_SkColorType, then RGB is ignored.
 
-        @param c  unpremultiplied color
+        @param c            unpremultiplied color
+        @param colorSpace   SkColorSpace of c
+
+        example: https://fiddle.skia.org/c/@Bitmap_eraseColor
+    */
+    void eraseColor(SkColor4f c, SkColorSpace* colorSpace = nullptr) const;
+
+    /** Replaces pixel values with c, interpreted as being in the sRGB SkColorSpace.
+        All pixels contained by bounds() are affected. If the colorType() is
+        kGray_8_SkColorType or kRGB_565_SkColorType, then alpha is ignored; RGB is
+        treated as opaque. If colorType() is kAlpha_8_SkColorType, then RGB is ignored.
+
+        Input color is ultimately converted to an SkColor4f, so eraseColor(SkColor4f c)
+        will have higher color resolution.
+
+        @param c  unpremultiplied color.
 
         example: https://fiddle.skia.org/c/@Bitmap_eraseColor
     */
@@ -792,6 +807,25 @@ public:
         If the colorType() is kGray_8_SkColorType or kRGB_565_SkColorType, then alpha
         is ignored; RGB is treated as opaque. If colorType() is kAlpha_8_SkColorType,
         then RGB is ignored.
+
+        @param c            unpremultiplied color
+        @param area         rectangle to fill
+        @param colorSpace   SkColorSpace of c
+
+        example: https://fiddle.skia.org/c/@Bitmap_erase
+    */
+    void erase(SkColor4f c, SkColorSpace* colorSpace, const SkIRect& area) const;
+    void erase(SkColor4f c, const SkIRect& area) const;
+
+    /** Replaces pixel values inside area with c. interpreted as being in the sRGB
+        SkColorSpace. If area does not intersect bounds(), call has no effect.
+
+        If the colorType() is kGray_8_SkColorType or kRGB_565_SkColorType, then alpha
+        is ignored; RGB is treated as opaque. If colorType() is kAlpha_8_SkColorType,
+        then RGB is ignored.
+
+        Input color is ultimately converted to an SkColor4f, so erase(SkColor4f c)
+        will have higher color resolution.
 
         @param c     unpremultiplied color
         @param area  rectangle to fill
@@ -825,6 +859,23 @@ public:
     SkColor getColor(int x, int y) const {
         return this->pixmap().getColor(x, y);
     }
+
+    /** Returns pixel at (x, y) as unpremultiplied float color.
+        Returns black with alpha if SkColorType is kAlpha_8_SkColorType.
+
+        Input is not validated: out of bounds values of x or y trigger an assert() if
+        built with SK_DEBUG defined; and returns undefined values or may crash if
+        SK_RELEASE is defined. Fails if SkColorType is kUnknown_SkColorType or
+        pixel address is nullptr.
+
+        SkColorSpace in SkImageInfo is ignored. Some color precision may be lost in the
+        conversion to unpremultiplied color.
+
+        @param x  column index, zero or greater, and less than width()
+        @param y  row index, zero or greater, and less than height()
+        @return   pixel converted to unpremultiplied color
+    */
+    SkColor4f getColor4f(int x, int y) const { return this->pixmap().getColor4f(x, y); }
 
     /** Look up the pixel at (x,y) and return its alpha component, normalized to [0..1].
         This is roughly equivalent to SkGetColorA(getColor()), but can be more efficent

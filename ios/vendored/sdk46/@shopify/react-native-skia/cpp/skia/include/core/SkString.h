@@ -184,10 +184,12 @@ public:
     void set(const SkString& src) { *this = src; }
     void set(const char text[]);
     void set(const char text[], size_t len);
+    void set(std::string_view str) { this->set(str.data(), str.size()); }
 
-    void insert(size_t offset, const SkString& src) { this->insert(offset, src.c_str(), src.size()); }
     void insert(size_t offset, const char text[]);
     void insert(size_t offset, const char text[], size_t len);
+    void insert(size_t offset, const SkString& str) { this->insert(offset, str.c_str(), str.size()); }
+    void insert(size_t offset, std::string_view str) { this->insert(offset, str.data(), str.size()); }
     void insertUnichar(size_t offset, SkUnichar);
     void insertS32(size_t offset, int32_t value);
     void insertS64(size_t offset, int64_t value, int minDigits = 0);
@@ -196,9 +198,10 @@ public:
     void insertHex(size_t offset, uint32_t value, int minDigits = 0);
     void insertScalar(size_t offset, SkScalar);
 
-    void append(const SkString& str) { this->insert((size_t)-1, str); }
     void append(const char text[]) { this->insert((size_t)-1, text); }
     void append(const char text[], size_t len) { this->insert((size_t)-1, text, len); }
+    void append(const SkString& str) { this->insert((size_t)-1, str.c_str(), str.size()); }
+    void append(std::string_view str) { this->insert((size_t)-1, str.data(), str.size()); }
     void appendUnichar(SkUnichar uni) { this->insertUnichar((size_t)-1, uni); }
     void appendS32(int32_t value) { this->insertS32((size_t)-1, value); }
     void appendS64(int64_t value, int minDigits = 0) { this->insertS64((size_t)-1, value, minDigits); }
@@ -207,9 +210,10 @@ public:
     void appendHex(uint32_t value, int minDigits = 0) { this->insertHex((size_t)-1, value, minDigits); }
     void appendScalar(SkScalar value) { this->insertScalar((size_t)-1, value); }
 
-    void prepend(const SkString& str) { this->insert(0, str); }
     void prepend(const char text[]) { this->insert(0, text); }
     void prepend(const char text[], size_t len) { this->insert(0, text, len); }
+    void prepend(const SkString& str) { this->insert(0, str.c_str(), str.size()); }
+    void prepend(std::string_view str) { this->insert(0, str.data(), str.size()); }
     void prependUnichar(SkUnichar uni) { this->insertUnichar(0, uni); }
     void prependS32(int32_t value) { this->insertS32(0, value); }
     void prependS64(int32_t value, int minDigits = 0) { this->insertS64(0, value, minDigits); }
@@ -235,6 +239,8 @@ public:
      */
     void swap(SkString& other);
 
+    using sk_is_trivially_relocatable = std::true_type;
+
 private:
     struct Rec {
     public:
@@ -258,6 +264,8 @@ private:
         void operator delete(void* p) { ::operator delete(p); }
     };
     sk_sp<Rec> fRec;
+
+    static_assert(::sk_is_trivially_relocatable<decltype(fRec)>::value);
 
 #ifdef SK_DEBUG
     const SkString& validate() const;

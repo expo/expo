@@ -99,7 +99,7 @@ namespace ABI47_0_0RNSkia
         throw jsi::JSError(runtime, "invalid uniform index");
       }
       auto it = getObject()->uniforms().begin() + i;
-      return jsi::String::createFromAscii(runtime, it->name.c_str());
+      return jsi::String::createFromAscii(runtime, std::string(it->name));
     }
 
     JSI_HOST_FUNCTION(getUniform)

@@ -78,6 +78,10 @@ SK_API extern void* sk_calloc_throw(size_t count, size_t elemSize);
 SK_API extern void* sk_malloc_throw(size_t count, size_t elemSize);
 SK_API extern void* sk_realloc_throw(void* buffer, size_t count, size_t elemSize);
 
+// Returns the true usable size provided by the underlying allocator, or 0 if
+// querying the allocation size is not supported.
+SK_API extern size_t sk_malloc_usable_size(void* buffer);
+
 /**
  *  These variants return nullptr on failure
  */

@@ -9,45 +9,11 @@
 #ifndef GrVkTypes_DEFINED
 #define GrVkTypes_DEFINED
 
-#include "include/core/SkTypes.h"
-#include "include/gpu/vk/GrVkVulkan.h"
-
-#ifndef VK_VERSION_1_1
-#error Skia requires the use of Vulkan 1.1 headers
-#endif
-
-#include <functional>
 #include "include/gpu/GrTypes.h"
+#include "include/gpu/vk/VulkanTypes.h"
 
-typedef intptr_t GrVkBackendMemory;
-
-/**
- * Types for interacting with Vulkan resources created externally to Skia. GrBackendObjects for
- * Vulkan textures are really const GrVkImageInfo*
- */
-struct GrVkAlloc {
-    // can be VK_NULL_HANDLE iff is an RT and is borrowed
-    VkDeviceMemory    fMemory = VK_NULL_HANDLE;
-    VkDeviceSize      fOffset = 0;
-    VkDeviceSize      fSize = 0;  // this can be indeterminate iff Tex uses borrow semantics
-    uint32_t          fFlags = 0;
-    GrVkBackendMemory fBackendMemory = 0; // handle to memory allocated via GrVkMemoryAllocator.
-
-    enum Flag {
-        kNoncoherent_Flag     = 0x1,   // memory must be flushed to device after mapping
-        kMappable_Flag        = 0x2,   // memory is able to be mapped.
-        kLazilyAllocated_Flag = 0x4,   // memory was created with lazy allocation
-    };
-
-    bool operator==(const GrVkAlloc& that) const {
-        return fMemory == that.fMemory && fOffset == that.fOffset && fSize == that.fSize &&
-               fFlags == that.fFlags && fUsesSystemHeap == that.fUsesSystemHeap;
-    }
-
-private:
-    friend class GrVkHeap; // For access to usesSystemHeap
-    bool fUsesSystemHeap = false;
-};
+using GrVkBackendMemory = skgpu::VulkanBackendMemory;
+using GrVkAlloc = skgpu::VulkanAlloc;
 
 // This struct is used to pass in the necessary information to create a VkSamplerYcbcrConversion
 // object for an VkExternalFormatANDROID.
@@ -98,7 +64,7 @@ struct GrVkYcbcrConversionInfo {
  */
 struct GrVkImageInfo {
     VkImage                  fImage = VK_NULL_HANDLE;
-    GrVkAlloc                fAlloc;
+    skgpu::VulkanAlloc       fAlloc;
     VkImageTiling            fImageTiling = VK_IMAGE_TILING_OPTIMAL;
     VkImageLayout            fImageLayout = VK_IMAGE_LAYOUT_UNDEFINED;
     VkFormat                 fFormat = VK_FORMAT_UNDEFINED;
@@ -134,11 +100,7 @@ struct GrVkImageInfo {
 #endif
 };
 
-using GrVkGetProc = std::function<PFN_vkVoidFunction(
-        const char*, // function name
-        VkInstance,  // instance or VK_NULL_HANDLE
-        VkDevice     // device or VK_NULL_HANDLE
-        )>;
+using GrVkGetProc = skgpu::VulkanGetProc;
 
 /**
  * This object is wrapped in a GrBackendDrawableInfo and passed in as an argument to

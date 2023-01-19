@@ -21,11 +21,12 @@
 class GrBackendFormat;
 class GrCaps;
 class GrContextThreadSafeProxyPriv;
-class GrTextBlobRedrawCoordinator;
 class GrThreadSafeCache;
 class GrThreadSafePipelineBuilder;
 class SkSurfaceCharacterization;
 class SkSurfaceProps;
+
+namespace sktext::gpu { class TextBlobRedrawCoordinator; }
 
 /**
  * Can be used to perform actions related to the generating GrContext in a thread safe manner. The
@@ -149,14 +150,14 @@ private:
     // `init` method on GrContext_Base).
     void init(sk_sp<const GrCaps>, sk_sp<GrThreadSafePipelineBuilder>);
 
-    const GrBackendApi                           fBackend;
-    const GrContextOptions                       fOptions;
-    const uint32_t                               fContextID;
-    sk_sp<const GrCaps>                          fCaps;
-    std::unique_ptr<GrTextBlobRedrawCoordinator> fTextBlobRedrawCoordinator;
-    std::unique_ptr<GrThreadSafeCache>           fThreadSafeCache;
-    sk_sp<GrThreadSafePipelineBuilder>           fPipelineBuilder;
-    std::atomic<bool>                            fAbandoned{false};
+    const GrBackendApi                                      fBackend;
+    const GrContextOptions                                  fOptions;
+    const uint32_t                                          fContextID;
+    sk_sp<const GrCaps>                                     fCaps;
+    std::unique_ptr<sktext::gpu::TextBlobRedrawCoordinator> fTextBlobRedrawCoordinator;
+    std::unique_ptr<GrThreadSafeCache>                      fThreadSafeCache;
+    sk_sp<GrThreadSafePipelineBuilder>                      fPipelineBuilder;
+    std::atomic<bool>                                       fAbandoned{false};
 };
 
 #else // !SK_SUPPORT_GPU

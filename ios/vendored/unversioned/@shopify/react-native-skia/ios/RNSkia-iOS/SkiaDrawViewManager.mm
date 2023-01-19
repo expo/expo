@@ -1,13 +1,13 @@
-#include <SkiaDrawViewManager.h>
+#include "SkiaDrawViewManager.h"
 #include <React/RCTBridge+Private.h>
 
 #include <RNSkPlatformContext.h>
 #include <RNSkJsView.h>
 #include <RNSkIOSView.h>
 
-#include <SkiaManager.h>
+#include "SkiaManager.h"
 #include <RNSkiaModule.h>
-#include <SkiaUIView.h>
+#include "SkiaUIView.h"
 
 
 
@@ -24,7 +24,7 @@ RCT_EXPORT_MODULE(SkiaDrawView)
 RCT_CUSTOM_VIEW_PROPERTY(nativeID, NSNumber, SkiaUIView) {
   // Get parameter
   int nativeId = [[RCTConvert NSString:json] intValue];
-  [(SkiaUIView*)view setNativeId:nativeId];            
+  [(SkiaUIView*)view setNativeId:nativeId];
 }
 
 RCT_CUSTOM_VIEW_PROPERTY(mode, NSString, SkiaUIView) {

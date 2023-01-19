@@ -23,7 +23,6 @@ public:
         kField,
         kFunctionDeclaration,
         kType,
-        kUnresolvedFunction,
         kVariable,
 
         kFirst = kExternal,
@@ -50,6 +49,13 @@ public:
 
     std::string_view name() const {
         return fName;
+    }
+
+    /**
+     *  Don't call this directly--use SymbolTable::renameSymbol instead!
+     */
+    void setName(std::string_view newName) {
+        fName = newName;
     }
 
     /**
@@ -81,8 +87,6 @@ private:
     const Type* fType;
 
     using INHERITED = IRNode;
-
-    friend class Type;
 };
 
 }  // namespace SkSL

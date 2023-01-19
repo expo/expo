@@ -14,15 +14,11 @@
 #include "include/private/gpu/graphite/MtlTypesPriv.h"
 #endif
 
-namespace skgpu::graphite {
-
-// Forward declares so we can friend classes in other namespaces
-#ifdef SK_METAL
-namespace graphite {
-    class MtlCaps;
-    class MtlTexture;
-}
+#ifdef SK_VULKAN
+#include "include/private/gpu/graphite/VulkanGraphiteTypesPriv.h"
 #endif
+
+namespace skgpu::graphite {
 
 class TextureInfo {
 public:
@@ -35,6 +31,20 @@ public:
             , fLevelCount(mtlInfo.fLevelCount)
             , fProtected(Protected::kNo)
             , fMtlSpec(mtlInfo) {}
+#endif
+
+#ifdef SK_VULKAN
+    TextureInfo(const VulkanTextureInfo& vkInfo)
+            : fBackend(BackendApi::kVulkan)
+            , fValid(true)
+            , fSampleCount(vkInfo.fSampleCount)
+            , fLevelCount(vkInfo.fLevelCount)
+            , fProtected(Protected::kNo)
+            , fVkSpec(vkInfo) {
+        if (vkInfo.fFlags & VK_IMAGE_CREATE_PROTECTED_BIT) {
+            fProtected = Protected::kYes;
+        }
+    }
 #endif
 
     ~TextureInfo() {}
@@ -61,6 +71,16 @@ public:
     }
 #endif
 
+#ifdef SK_VULKAN
+    bool getVulkanTextureInfo(VulkanTextureInfo* info) const {
+        if (!this->isValid() || fBackend != BackendApi::kVulkan) {
+            return false;
+        }
+        *info = VulkanTextureSpecToTextureInfo(fVkSpec, fSampleCount, fLevelCount);
+        return true;
+    }
+#endif
+
 private:
 #ifdef SK_METAL
     friend class MtlCaps;
@@ -69,6 +89,15 @@ private:
     const MtlTextureSpec& mtlTextureSpec() const {
         SkASSERT(fValid && fBackend == BackendApi::kMetal);
         return fMtlSpec;
+    }
+#endif
+
+#ifdef SK_VULKAN
+    friend class VulkanCaps;
+    friend class VulkanTexture;
+    const VulkanTextureSpec& vulkanTextureSpec() const {
+        SkASSERT(fValid && fBackend == BackendApi::kVulkan);
+        return fVkSpec;
     }
 #endif
 
@@ -82,6 +111,9 @@ private:
     union {
 #ifdef SK_METAL
         MtlTextureSpec fMtlSpec;
+#endif
+#ifdef SK_VULKAN
+        VulkanTextureSpec fVkSpec;
 #endif
     };
 };

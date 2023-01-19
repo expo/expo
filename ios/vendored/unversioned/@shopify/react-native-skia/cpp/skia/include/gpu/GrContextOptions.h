@@ -252,7 +252,7 @@ struct SK_API GrContextOptions {
 
     /**
      * If true, then add 1 pixel padding to all glyph masks in the atlas to support bi-lerp
-     * rendering of all glyphs. This must be set to true to use GrSlug.
+     * rendering of all glyphs. This must be set to true to use Slugs.
      */
     #if defined(SK_EXPERIMENTAL_SIMULATE_DRAWGLYPHRUNLIST_WITH_SLUG) || \
         defined(SK_EXPERIMENTAL_SIMULATE_DRAWGLYPHRUNLIST_WITH_SLUG_SERIALIZE) || \

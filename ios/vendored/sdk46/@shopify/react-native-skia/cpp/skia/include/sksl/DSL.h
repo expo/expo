@@ -29,7 +29,6 @@ using Modifiers = DSLModifiers;
 using Parameter = DSLParameter;
 using Statement = DSLStatement;
 using Var = DSLVar;
-template<typename T> using Wrapper = DSLWrapper<T>;
 
 } // namespace dsl
 

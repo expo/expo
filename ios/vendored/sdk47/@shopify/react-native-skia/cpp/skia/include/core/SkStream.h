@@ -122,7 +122,7 @@ public:
     }
 
 //SkStreamSeekable
-    /** Returns true if this stream can report it's current position. */
+    /** Returns true if this stream can report its current position. */
     virtual bool hasPosition() const { return false; }
     /** Returns the current position in the stream. If this cannot be done, returns 0. */
     virtual size_t getPosition() const { return 0; }
@@ -140,7 +140,7 @@ public:
     virtual bool move(long /*offset*/) { return false; }
 
 //SkStreamAsset
-    /** Returns true if this stream can report it's total length. */
+    /** Returns true if this stream can report its total length. */
     virtual bool hasLength() const { return false; }
     /** Returns the total length of the stream. If this cannot be done, returns 0. */
     virtual size_t getLength() const { return 0; }

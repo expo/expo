@@ -33,7 +33,7 @@
     Modern implementations of std::vector<T> will generally provide similar performance
     characteristics when used with appropriate care. Consider using std::vector<T> in new code.
 */
-template <typename T, bool MEM_MOVE = false> class SkTArray {
+template <typename T, bool MEM_MOVE = sk_is_trivially_relocatable<T>::value> class SkTArray {
 private:
     enum ReallocType { kExactFit, kGrowing, kShrinking };
 
@@ -461,6 +461,18 @@ protected:
     }
 
 private:
+    // We disable Control-Flow Integrity sanitization (go/cfi) when casting item-array buffers.
+    // CFI flags this code as dangerous because we are casting `buffer` to a T* while the buffer's
+    // contents might still be uninitialized memory. When T has a vtable, this is especially risky
+    // because we could hypothetically access a virtual method on fItemArray and jump to an
+    // unpredictable location in memory. Of course, SkTArray won't actually use fItemArray in this
+    // way, and we don't want to construct a T before the user requests one. There's no real risk
+    // here, so disable CFI when doing these casts.
+    SK_ATTRIBUTE(no_sanitize("cfi"))
+    static T* TCast(void* buffer) {
+        return (T*)buffer;
+    }
+
     void init(int count) {
         fCount = SkToU32(count);
         if (!count) {
@@ -468,7 +480,7 @@ private:
             fItemArray = nullptr;
         } else {
             fAllocCount = SkToU32(std::max(count, kMinHeapAllocCount));
-            fItemArray = (T*)sk_malloc_throw((size_t)fAllocCount, sizeof(T));
+            fItemArray = TCast(sk_malloc_throw((size_t)fAllocCount, sizeof(T)));
         }
         fOwnMemory = true;
         fReserved = false;
@@ -483,11 +495,11 @@ private:
         fReserved = false;
         if (count > preallocCount) {
             fAllocCount = SkToU32(std::max(count, kMinHeapAllocCount));
-            fItemArray = (T*)sk_malloc_throw(fAllocCount, sizeof(T));
+            fItemArray = TCast(sk_malloc_throw(fAllocCount, sizeof(T)));
             fOwnMemory = true;
         } else {
             fAllocCount = SkToU32(preallocCount);
-            fItemArray = (T*)preallocStorage;
+            fItemArray = TCast(preallocStorage);
             fOwnMemory = false;
         }
     }
@@ -506,7 +518,9 @@ private:
     }
 
     template <bool E = MEM_MOVE> std::enable_if_t<E, void> move(int dst, int src) {
-        memcpy(&fItemArray[dst], &fItemArray[src], sizeof(T));
+        memcpy(static_cast<void*>(&fItemArray[dst]),
+               static_cast<void*>(&fItemArray[src]),
+               sizeof(T));
     }
     template <bool E = MEM_MOVE> std::enable_if_t<E, void> move(void* dst) {
         sk_careful_memcpy(dst, fItemArray, fCount * sizeof(T));
@@ -567,7 +581,7 @@ private:
 
         fAllocCount = SkToU32(Sk64_pin_to_s32(newAllocCount));
         SkASSERT(fAllocCount >= newCount);
-        T* newItemArray = (T*)sk_malloc_throw((size_t)fAllocCount, sizeof(T));
+        T* newItemArray = TCast(sk_malloc_throw((size_t)fAllocCount, sizeof(T)));
         this->move(newItemArray);
         if (fOwnMemory) {
             sk_free(fItemArray);
@@ -593,7 +607,7 @@ template<typename T, bool MEM_MOVE> constexpr int SkTArray<T, MEM_MOVE>::kMinHea
 /**
  * Subclass of SkTArray that contains a preallocated memory block for the array.
  */
-template <int N, typename T, bool MEM_MOVE = false>
+template <int N, typename T, bool MEM_MOVE = sk_is_trivially_relocatable<T>::value>
 class SkSTArray : private SkAlignedSTStorage<N,T>, public SkTArray<T, MEM_MOVE> {
 private:
     using STORAGE   = SkAlignedSTStorage<N,T>;

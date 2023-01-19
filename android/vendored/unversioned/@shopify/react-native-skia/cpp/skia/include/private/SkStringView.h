@@ -42,6 +42,10 @@ inline constexpr bool contains(std::string_view str, std::string_view needle) {
     return str.find(needle) != std::string_view::npos;
 }
 
+inline constexpr bool contains(std::string_view str, std::string_view::value_type c) {
+    return str.find(c) != std::string_view::npos;
+}
+
 }  // namespace skstd
 
 #endif

@@ -1,6 +1,6 @@
 #import <React/RCTBridge.h>
 
-#import <SkiaUIView.h>
+#import "SkiaUIView.h"
 
 #include <utility>
 #include <vector>
@@ -29,7 +29,7 @@
     _debugMode = false;
     _drawingMode = RNSkia::RNSkDrawingMode::Default;
     _factory = factory;
-    
+
     // Listen to notifications about module invalidation
     [[NSNotificationCenter defaultCenter] addObserver:self
                                              selector:@selector(willInvalidateModules)
@@ -51,11 +51,11 @@
     // Remove implementation view when the parent view is not set
     if(_impl != nullptr) {
       [_impl->getLayer() removeFromSuperlayer];
-      
+
       if(_nativeId != 0 && _manager != nullptr) {
         _manager->setSkiaView(_nativeId, nullptr);
       }
-      
+
       _impl = nullptr;
     }
   } else {
@@ -79,9 +79,9 @@
   if(_manager != nullptr && _nativeId != 0) {
     _manager->unregisterSkiaView(_nativeId);
   }
-  
+
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTBridgeWillInvalidateModulesNotification object:nil];
-    
+
   assert(_impl == nullptr);
 }
 
@@ -98,7 +98,7 @@
 
 -(void) setDrawingMode:(std::string) mode {
   _drawingMode = mode.compare("continuous") == 0 ? RNSkia::RNSkDrawingMode::Continuous : RNSkia::RNSkDrawingMode::Default;
-  
+
   if(_impl != nullptr) {
     _impl->getDrawView()->setDrawingMode(_drawingMode);
   }
@@ -113,7 +113,7 @@
 
 - (void) setNativeId:(size_t) nativeId {
   _nativeId = nativeId;
-  
+
   if(_impl != nullptr) {
     _manager->registerSkiaView(nativeId, _impl->getDrawView());
   }
@@ -147,7 +147,7 @@
       RNSkia::RNSkTouchInfo nextTouch;
       nextTouch.x = position.x;
       nextTouch.y = position.y;
-      nextTouch.force = [touch force];    
+      nextTouch.force = [touch force];
       nextTouch.id = [touch hash];
       auto phase = [touch phase];
       switch(phase) {
@@ -167,7 +167,7 @@
           nextTouch.type = RNSkia::RNSkTouchInfo::TouchType::Active;
           break;
       }
-      
+
       nextTouches.push_back(nextTouch);
     }
     if(_impl != nullptr) {

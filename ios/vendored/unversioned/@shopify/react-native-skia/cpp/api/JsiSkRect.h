@@ -10,13 +10,13 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
-#include <SkRect.h>
+#include "SkRect.h"
 
 #pragma clang diagnostic pop
 
 namespace RNSkia {
 
-using namespace facebook;
+namespace jsi = facebook::jsi;
 
 class JsiSkRect : public JsiSkWrappingSharedPtrHostObject<SkRect> {
 public:
@@ -58,18 +58,16 @@ public:
    */
   JsiSkRect(std::shared_ptr<RNSkPlatformContext> context, const SkRect &rect)
       : JsiSkWrappingSharedPtrHostObject<SkRect>(
-            std::move(context), std::make_shared<SkRect>(rect)){}
+            std::move(context), std::make_shared<SkRect>(rect)) {}
 
   /**
     Returns the underlying object from a host object of this type
    */
   static std::shared_ptr<SkRect> fromValue(jsi::Runtime &runtime,
                                            const jsi::Value &obj) {
-    const auto& object = obj.asObject(runtime);
+    const auto &object = obj.asObject(runtime);
     if (object.isHostObject(runtime)) {
-      return object
-              .asHostObject<JsiSkRect>(runtime)
-              ->getObject();
+      return object.asHostObject<JsiSkRect>(runtime)->getObject();
     } else {
       auto x = object.getProperty(runtime, "x").asNumber();
       auto y = object.getProperty(runtime, "y").asNumber();
@@ -90,9 +88,10 @@ public:
   }
   static jsi::Value toValue(jsi::Runtime &runtime,
                             std::shared_ptr<RNSkPlatformContext> context,
-                            SkRect&& rect) {
+                            SkRect &&rect) {
     return jsi::Object::createFromHostObject(
-        runtime, std::make_shared<JsiSkRect>(std::move(context), std::move(rect)));
+        runtime,
+        std::make_shared<JsiSkRect>(std::move(context), std::move(rect)));
   }
 
   /**
@@ -112,7 +111,8 @@ public:
 
       // Return the newly constructed object
       return jsi::Object::createFromHostObject(
-          runtime, std::make_shared<JsiSkRect>(std::move(context), std::move(rect)));
+          runtime,
+          std::make_shared<JsiSkRect>(std::move(context), std::move(rect)));
     };
   }
 };
