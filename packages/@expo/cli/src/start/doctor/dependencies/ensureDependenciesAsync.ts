@@ -40,14 +40,6 @@ export async function ensureDependenciesAsync(
     Log.warn(warningMessage, '\n');
   }
 
-  // Show the exact packages that are incorrect or missing
-  Log.log('Missing packages:');
-  Log.log(
-    '  -',
-    missing.map(({ pkg, version }) => chalk`${pkg}{dim @${version}}`).join('\n  - '),
-    '\n'
-  ); // TODO(cedric): collapse this into the package manager
-
   // Format with version if available.
   const packages = missing.map(({ pkg, version }) => (version ? [pkg, version].join('@') : pkg));
 
