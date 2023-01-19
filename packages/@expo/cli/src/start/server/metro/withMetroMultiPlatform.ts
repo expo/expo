@@ -11,7 +11,7 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 
 import { env } from '../../../utils/env';
-import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
+import { WebSupportProjectPrerequisiteWorker } from '../../doctor/web/WebSupportProjectPrerequisite';
 import { PlatformBundlers } from '../platformBundlers';
 import { importMetroResolverFromProject } from './resolveFromProject';
 import { getAppRouterRelativeEntryPath } from './router';
@@ -170,7 +170,7 @@ export async function withMetroMultiPlatformAsync(
   process.env.EXPO_PROJECT_ROOT = process.env.EXPO_PROJECT_ROOT ?? projectRoot;
 
   if (platformBundlers.web === 'metro') {
-    await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
+    await new WebSupportProjectPrerequisiteWorker(projectRoot).assertAsync();
   } else {
     // Bail out early for performance enhancements if web is not enabled.
     return config;

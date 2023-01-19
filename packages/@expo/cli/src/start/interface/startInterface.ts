@@ -6,7 +6,7 @@ import { AbortCommandError } from '../../utils/errors';
 import { getAllSpinners, ora } from '../../utils/ora';
 import { getProgressBar, setProgressBar } from '../../utils/progress';
 import { addInteractionListener, pauseInteractions } from '../../utils/prompts';
-import { WebSupportProjectPrerequisite } from '../doctor/web/WebSupportProjectPrerequisite';
+import { WebSupportProjectPrerequisiteWorker } from '../doctor/web/WebSupportProjectPrerequisite';
 import { DevServerManager } from '../server/DevServerManager';
 import { KeyPressHandler } from './KeyPressHandler';
 import { BLT, printHelp, printUsage, StartOptions } from './commandsTable';
@@ -138,7 +138,9 @@ export async function startInterfaceAsync(
     switch (key) {
       case 'w': {
         try {
-          await devServerManager.ensureProjectPrerequisiteAsync(WebSupportProjectPrerequisite);
+          await devServerManager.ensureProjectPrerequisiteAsync(
+            WebSupportProjectPrerequisiteWorker
+          );
           if (!platforms.includes('web')) {
             platforms.push('web');
             options.platforms?.push('web');

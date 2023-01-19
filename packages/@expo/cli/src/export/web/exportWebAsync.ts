@@ -2,7 +2,7 @@ import { getConfig } from '@expo/config';
 import chalk from 'chalk';
 
 import { Log } from '../../log';
-import { WebSupportProjectPrerequisite } from '../../start/doctor/web/WebSupportProjectPrerequisite';
+import { WebSupportProjectPrerequisiteWorker } from '../../start/doctor/web/WebSupportProjectPrerequisite';
 import { getPlatformBundlers } from '../../start/server/platformBundlers';
 import { WebpackBundlerDevServer } from '../../start/server/webpack/WebpackBundlerDevServer';
 import { CommandError } from '../../utils/errors';
@@ -10,7 +10,7 @@ import { Options } from './resolveOptions';
 
 export async function exportWebAsync(projectRoot: string, options: Options) {
   // Ensure webpack is available
-  await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
+  await new WebSupportProjectPrerequisiteWorker(projectRoot).assertAsync();
 
   const { exp } = getConfig(projectRoot);
   const platformBundlers = getPlatformBundlers(exp);
