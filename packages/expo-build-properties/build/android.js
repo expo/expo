@@ -63,7 +63,7 @@ const withAndroidFlipper = (config, props) => {
     const ANDROID_FLIPPER_KEY = 'FLIPPER_VERSION';
     const FLIPPER_FALLBACK = '0.125.0';
     // when not set, or set to enabled, make no changes
-    if (props.android?.flipper === undefined || props.android.flipper === 'enabled') {
+    if (props.android?.flipper === undefined || props.android.flipper === true) {
         return config;
     }
     return (0, config_plugins_1.withGradleProperties)(config, (c) => {
@@ -76,7 +76,7 @@ const withAndroidFlipper = (config, props) => {
         // strip flipper key and re-add based on setting
         c.modResults = c.modResults.filter((item) => !(item.type === 'property' && item.key === ANDROID_FLIPPER_KEY));
         // if disabled, do not re-add
-        if (props.android?.flipper !== 'disabled') {
+        if (props.android?.flipper !== false) {
             c.modResults.push({
                 type: 'property',
                 key: ANDROID_FLIPPER_KEY,

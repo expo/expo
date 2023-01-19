@@ -46,7 +46,7 @@ describe(validateConfig, () => {
 
   it('should not allow ios.flipper and ios.useFrameworks at the same time', () => {
     expect(() =>
-      validateConfig({ ios: { flipper: 'enabled', useFrameworks: 'static' } })
+      validateConfig({ ios: { flipper: true, useFrameworks: 'static' } })
     ).toThrowErrorMatchingInlineSnapshot(
       `"\`ios.flipper\` cannot be enabled when \`ios.useFrameworks\` is set."`
     );

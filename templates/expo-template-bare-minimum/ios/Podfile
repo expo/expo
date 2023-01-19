@@ -25,9 +25,9 @@ target 'HelloWorld' do
   # Flipper support in expo via build properties plugin
   expo_flipper = FlipperConfiguration.disabled
   if ENV['FLIPPER_DISABLE'] != "1" && ENV['NO_FLIPPER'] != "1" && defined?(podfile_properties['ios.flipper']) then
-    if podfile_properties['ios.flipper'] == 'enabled' then
+    if podfile_properties['ios.flipper'] == true then
       expo_flipper = FlipperConfiguration.enabled
-    elsif podfile_properties['ios.flipper'] != 'enabled' then
+    elsif podfile_properties['ios.flipper'] != false then
       expo_flipper = FlipperConfiguration.enabled(["Debug"], { 'Flipper' => podfile_properties['ios.flipper'] })
     end
   end

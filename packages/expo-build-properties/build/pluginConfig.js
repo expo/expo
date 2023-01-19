@@ -36,12 +36,8 @@ const schema = {
                 enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
                 extraProguardRules: { type: 'string', nullable: true },
                 flipper: {
-                    type: 'string',
+                    type: ['boolean', 'string'],
                     nullable: true,
-                    oneOf: [
-                        { type: 'string', enum: ['enabled'] },
-                        { type: 'string', pattern: '\\d+\\.\\d+.\\d+', nullable: true },
-                    ],
                 },
                 packagingOptions: {
                     type: 'object',
@@ -63,12 +59,8 @@ const schema = {
                 deploymentTarget: { type: 'string', pattern: '\\d+\\.\\d+', nullable: true },
                 useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
                 flipper: {
-                    type: 'string',
+                    type: ['boolean', 'string'],
                     nullable: true,
-                    oneOf: [
-                        { type: 'string', enum: ['enabled', 'disabled'] },
-                        { type: 'string', pattern: '\\d+\\.\\d+.\\d+', nullable: true },
-                    ],
                 },
             },
             nullable: true,
@@ -128,7 +120,7 @@ function maybeThrowInvalidVersions(config) {
  * @ignore
  */
 function validateConfig(config) {
-    const validate = new ajv_1.default().compile(schema);
+    const validate = new ajv_1.default({ allowUnionTypes: true }).compile(schema);
     if (!validate(config)) {
         throw new Error('Invalid expo-build-properties config: ' + JSON.stringify(validate.errors));
     }

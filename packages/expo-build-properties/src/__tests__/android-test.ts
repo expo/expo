@@ -85,7 +85,7 @@ describe(withAndroidFlipper, () => {
 
     withAndroidFlipper(expoConfig, {
       android: {
-        flipper: 'enabled',
+        flipper: true,
       },
     });
     expect((expoConfig as ExpoConfigWithMods)?.mods?.android).toBeUndefined();

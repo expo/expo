@@ -31,11 +31,11 @@ export interface PluginConfigTypeAndroid {
     packagingOptions?: PluginConfigTypeAndroidPackagingOptions;
     /**
      * Enable [Flipper](https://fbflipper.com/) when running your app on Android.
-     * Setting `enabled` enables the default version of flipper, while setting
+     * Setting `true` enables the default version of flipper, while setting
      * a semver string will enable a specific version of Flipper you've declared in your
-     * package.json. On Android, Flipper cannot be disabled.
+     * package.json. You may also explicitly disable flipper by passing `false`.
      */
-    flipper?: 'enabled' | 'disabled' | Omit<string, 'enabled' | 'disabled'>;
+    flipper?: boolean | string;
 }
 /**
  * Config for iOS native build properties
@@ -59,14 +59,14 @@ export interface PluginConfigTypeIos {
     useFrameworks?: 'static' | 'dynamic';
     /**
      * Enable [Flipper](https://fbflipper.com/) when running your app on iOS in
-     * Debug mode. Setting `enabeld` enables the default version of flipper, while
+     * Debug mode. Setting `true` enables the default version of flipper, while
      * setting a semver string will enable a specific version of Flipper you've
-     * declared in your package.json. The default for this configuration is `disabled`.
+     * declared in your package.json. The default for this configuration is `false`.
      *
      * Note: You cannot use `flipper` at the same time as `useFrameworks`, and
      * doing so will generate an error.
      */
-    flipper?: 'enabled' | 'disabled' | Omit<string, 'enabled' | 'disabled'>;
+    flipper?: boolean | string;
 }
 /**
  * AGP [PackagingOptions](https://developer.android.com/reference/tools/gradle-api/7.0/com/android/build/api/dsl/PackagingOptions)

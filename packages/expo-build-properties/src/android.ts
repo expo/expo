@@ -73,7 +73,7 @@ export const withAndroidFlipper: ConfigPlugin<PluginConfigType> = (config, props
   const FLIPPER_FALLBACK = '0.125.0';
 
   // when not set, or set to enabled, make no changes
-  if (props.android?.flipper === undefined || props.android.flipper === 'enabled') {
+  if (props.android?.flipper === undefined || props.android.flipper === true) {
     return config;
   }
 
@@ -94,7 +94,7 @@ export const withAndroidFlipper: ConfigPlugin<PluginConfigType> = (config, props
     );
 
     // if disabled, do not re-add
-    if (props.android?.flipper !== 'disabled') {
+    if (props.android?.flipper !== false) {
       c.modResults.push({
         type: 'property',
         key: ANDROID_FLIPPER_KEY,
