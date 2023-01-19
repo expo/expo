@@ -1,20 +1,14 @@
 --- android/CMakeLists.txt
 +++ android/CMakeLists.txt
-@@ -40,8 +40,8 @@
- add_library(
-         ${PACKAGE_NAME}
-         SHARED
--        "${PROJECT_SOURCE_DIR}/cpp/jni/JniLoad.cpp"
--        "${PROJECT_SOURCE_DIR}/cpp/jni/JniSkiaManager.cpp"
-+        "${PROJECT_SOURCE_DIR}/../cpp/jni/JniLoad.cpp"
-+        "${PROJECT_SOURCE_DIR}/../cpp/jni/JniSkiaManager.cpp"
- 
-         "${PROJECT_SOURCE_DIR}/cpp/jni/JniPlatformContext.cpp"
+@@ -47,17 +47,17 @@
          "${PROJECT_SOURCE_DIR}/cpp/rnskia-android/RNSkOpenGLCanvasProvider.cpp"
-@@ -50,14 +50,14 @@
-         "${PROJECT_SOURCE_DIR}/cpp/jsi/JsiHostObject.cpp"
-         "${PROJECT_SOURCE_DIR}/cpp/jsi/JsiValue.cpp"
- 
+         "${PROJECT_SOURCE_DIR}/cpp/rnskia-android/SkiaOpenGLRenderer.cpp"
+
+-        "${PROJECT_SOURCE_DIR}/cpp/jsi/JsiHostObject.cpp"
+-        "${PROJECT_SOURCE_DIR}/cpp/jsi/JsiValue.cpp"
++        "${PROJECT_SOURCE_DIR}/../cpp/jsi/JsiHostObject.cpp"
++        "${PROJECT_SOURCE_DIR}/../cpp/jsi/JsiValue.cpp"
+
 -        "${PROJECT_SOURCE_DIR}/cpp/rnskia/RNSkManager.cpp"
 -        "${PROJECT_SOURCE_DIR}/cpp/rnskia/RNSkJsView.cpp"
 -        "${PROJECT_SOURCE_DIR}/cpp/rnskia/RNSkDomView.cpp"

@@ -40,15 +40,15 @@ endif()
 add_library(
         ${PACKAGE_NAME}
         SHARED
-        "${PROJECT_SOURCE_DIR}/../cpp/jni/JniLoad.cpp"
-        "${PROJECT_SOURCE_DIR}/../cpp/jni/JniSkiaManager.cpp"
+        "${PROJECT_SOURCE_DIR}/cpp/jni/JniLoad.cpp"
+        "${PROJECT_SOURCE_DIR}/cpp/jni/JniSkiaManager.cpp"
 
         "${PROJECT_SOURCE_DIR}/cpp/jni/JniPlatformContext.cpp"
         "${PROJECT_SOURCE_DIR}/cpp/rnskia-android/RNSkOpenGLCanvasProvider.cpp"
         "${PROJECT_SOURCE_DIR}/cpp/rnskia-android/SkiaOpenGLRenderer.cpp"
 
-        "${PROJECT_SOURCE_DIR}/cpp/jsi/JsiHostObject.cpp"
-        "${PROJECT_SOURCE_DIR}/cpp/jsi/JsiValue.cpp"
+        "${PROJECT_SOURCE_DIR}/../cpp/jsi/JsiHostObject.cpp"
+        "${PROJECT_SOURCE_DIR}/../cpp/jsi/JsiValue.cpp"
 
         "${PROJECT_SOURCE_DIR}/../cpp/rnskia/RNSkManager.cpp"
         "${PROJECT_SOURCE_DIR}/../cpp/rnskia/RNSkJsView.cpp"
