@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Assert that use of `expo.entryPoint` is not supported (never has been outside of classic builds).
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
