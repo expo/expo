@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Pin `@expo/dev-server` to version `0.1.120` to keep webpack support in SDK 46 ([#20878](https://github.com/expo/expo/pull/20878) by [@byCedric](https://github.com/byCedric))
-
 ### 💡 Others
+
+## 0.3.3 — 2023-01-19
+
+### 🐛 Bug fixes
+
+- Pin `@expo/dev-server` to version `0.1.120` to keep webpack support in SDK 46 ([#20878](https://github.com/expo/expo/pull/20878) by [@byCedric](https://github.com/byCedric))
 
 ## 0.3.2 — 2022-10-13
 
