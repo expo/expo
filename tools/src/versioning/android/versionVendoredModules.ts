@@ -199,7 +199,7 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
       },
       {
         paths: 'build.gradle',
-        find: /\b(compileOnly|implementation|api)\s+['"]com.facebook.react:react-native:.+['"]/gm,
+        find: /\b(compileOnly|implementation|api)\s+['"]com.facebook.react:react-(native|android):.*['"]/gm,
         replaceWith:
           `implementation 'host.exp:reactandroid-${prefix}:1.0.0'` +
           '\n' +
@@ -212,24 +212,9 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
           `    compileOnly 'androidx.appcompat:appcompat:+'\n`,
       },
       {
-        paths: 'build.gradle',
-        find: 'buildDir/react-native-0*/jni',
-        replaceWith: 'buildDir/reactandroid-abi*/jni',
-      },
-      {
         paths: ['build.gradle', 'CMakeLists.txt'],
         find: /\/react-native\//g,
         replaceWith: '/versioned-react-native/',
-      },
-      {
-        paths: 'build.gradle',
-        find: /def rnAAR = fileTree.*\*\.aar.*\)/g,
-        replaceWith: `def rnAAR = fileTree("\${rootDir}/versioned-abis").matching({ include "**/reactandroid-${prefix}/**/*.aar" })`,
-      },
-      {
-        paths: 'build.gradle',
-        find: /def rnAAR = fileTree.*rnAarMatcher.*\)/g,
-        replaceWith: `def rnAAR = fileTree("\${rootDir}/versioned-abis").matching({ include "**/reactandroid-${prefix}/**/*.aar" })`,
       },
       {
         paths: 'CMakeLists.txt',
@@ -238,13 +223,8 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
       },
       {
         paths: 'CMakeLists.txt',
-        find: /(\bfind_library\(\n?\s*[A-Z_]+\n?\s*)(\w+)/gm,
-        replaceWith(substring, group1, libName) {
-          if (['fbjni', 'log'].includes(libName)) {
-            return substring;
-          }
-          return `${group1}${libName}_${prefix}`;
-        },
+        find: /\b(ReactAndroid::[\w-]+)\b/g,
+        replaceWith: `$1_${prefix}`,
       },
       {
         paths: 'AndroidManifest.xml',

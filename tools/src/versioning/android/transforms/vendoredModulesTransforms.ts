@@ -62,7 +62,7 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
         },
         {
           paths: 'build.gradle',
-          find: `compileOnly(project(":ReactAndroid:hermes-engine"))`,
+          find: `compileOnly "com.facebook.react:hermes-android:\${REACT_NATIVE_VERSION}"`,
           replaceWith:
             `if (file("\${reactNativeRootDir}/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-release.aar").exists()) {\n` +
             `    compileOnly(files("\${reactNativeRootDir}/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-release.aar"))\n` +
@@ -88,14 +88,6 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
           paths: '**/*.{java,kt}',
           find: new RegExp(`\\b(?<!${prefix}\\.)(com.swmansion.reanimated.R\\.)`, 'g'),
           replaceWith: `${prefix}.$1`,
-        },
-        {
-          paths: 'build.gradle',
-          // The `android/versioned-react-native/ReactAndroid/gradle.properties` is not committed to git,
-          // we use the `react-native-lab/react-native/ReactAndroid/gradle.properties` instead.
-          find: 'file("$reactNativeRootDir/ReactAndroid/gradle.properties")',
-          replaceWith:
-            'file("$reactNativeRootDir/../../react-native-lab/react-native/ReactAndroid/gradle.properties")',
         },
       ],
     },
