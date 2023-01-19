@@ -1328,6 +1328,7 @@ PODS:
     - ExpoModulesCore
   - EASClient/Tests (0.4.1):
     - ExpoModulesCore
+    - ExpoModulesTestCore
   - EXApplication (5.0.1):
     - ExpoModulesCore
   - EXAV (13.1.0):
@@ -1451,6 +1452,7 @@ PODS:
     - ExpoModulesCore
     - Nimble (~> 9.2.0)
     - Quick (~> 5.0.0)
+    - React-hermes
   - ExpoNetwork (5.1.0):
     - ExpoModulesCore
   - ExpoRandom (13.0.0):
@@ -1505,6 +1507,7 @@ PODS:
     - EASClient
     - EXManifests
     - ExpoModulesCore
+    - ExpoModulesTestCore
     - EXStructuredHeaders
     - EXUpdatesInterface
     - OCMockito (~> 6.0)
@@ -3486,7 +3489,7 @@ SPEC CHECKSUMS:
   Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
-  EASClient: 19efe9e8ef9b3917c5f3dcb3ed82319de4d8c0bd
+  EASClient: c51ef206857c58c22d8d2fa22ed28106a79934a1
   EXApplication: 034b1c40a8e9fe1bff76a1e511ee90dff64ad834
   EXAV: 4b92292fb107520a25956bea940a94a3bb4911ca
   EXBackgroundFetch: 186248a00a38fc4d22d60ec30e4e751449e785ee
@@ -3530,7 +3533,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: e202d1e2a4950df17ac8d0889d65a1ffd7532d7e
   ExpoMailComposer: 5bd9a732104eb1721a5aa4744903673787d1410c
   ExpoModulesCore: faf895df37a73853034d34b7f16c0886741fe361
-  ExpoModulesTestCore: 6d85fb02315d059f2709a77cfd325ca00e323128
+  ExpoModulesTestCore: 06aca772f462c9d0ca4e8866d501f9ff3c8b86f3
   ExpoNetwork: 3a7787b5cd93d32897c51e9f74b98dca6061ece4
   ExpoRandom: 58b7e0a5fe1adf1cb6dc1cbe503a6fe9524f36ce
   ExpoSMS: 95e1ac17d8e953b0364ad46195893e9060869c5b
@@ -3550,7 +3553,7 @@ SPEC CHECKSUMS:
   EXSQLite: 13c91c389b3c6241ddcf5c47eaa43289721193fe
   EXStructuredHeaders: fb774e45eac2e5d62ba40b28176bfbfba61b843e
   EXTaskManager: 0afcc6fd813dec5dee98aa5ec4f22c2a840dd4a7
-  EXUpdates: 078c1ceeb13daa09884104e1a98cdd2896682b7a
+  EXUpdates: 54f438293b68416db5a3a5d46d32817161f0b2a7
   EXUpdatesInterface: bffd1ead18f0bab04fa784ca159c115607b8a23c
   FBAEMKit: c7f82b5145d446bcbbcd50485c032689032fc6a2
   FBAudienceNetwork: e0fcc9091fced34910ed0b6da06f129db46ac9e6
