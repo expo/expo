@@ -109,11 +109,11 @@ export async function bundleAsync(
   const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
 
-  logEventAsync('metro config', getMetroProperties(exp, config));
-
   const bundlerPlatforms = getPlatformBundlers(exp);
 
   config = await withMetroMultiPlatformAsync(projectRoot, config, bundlerPlatforms);
+
+  logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));
 
   const metroServer = await metro.runMetro(config, {
     watch: false,
