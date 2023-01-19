@@ -18,6 +18,7 @@ namespace SkSL {
 enum class ProgramKind : int8_t {
     kFragment,
     kVertex,
+    kCompute,
     kGraphiteFragment,
     kGraphiteVertex,
     kRuntimeColorFilter,    // Runtime effect only suitable as SkColorFilter

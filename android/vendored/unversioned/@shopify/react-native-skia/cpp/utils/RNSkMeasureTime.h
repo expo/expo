@@ -11,22 +11,22 @@
 
 namespace RNSkia {
 
-using namespace std::chrono;
-
 class RNSkMeasureTime {
 public:
-  RNSkMeasureTime(const std::string &name)
-      : _name(name), _start(high_resolution_clock::now()){}
+  explicit RNSkMeasureTime(const std::string &name)
+      : _name(name), _start(std::chrono::high_resolution_clock::now()) {}
 
   ~RNSkMeasureTime() {
-    auto stop = high_resolution_clock::now();
-    auto duration = duration_cast<milliseconds>(stop - _start).count();
+    auto stop = std::chrono::high_resolution_clock::now();
+    auto duration =
+        std::chrono::duration_cast<std::chrono::milliseconds>(stop - _start)
+            .count();
     RNSkLogger::logToConsole("%s: %lld ms\n", _name.c_str(), duration);
   }
 
 private:
   std::string _name;
-  time_point<steady_clock> _start;
+  std::chrono::time_point<std::chrono::steady_clock> _start;
 };
 
 }; // namespace RNSkia

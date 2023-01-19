@@ -9,13 +9,15 @@
 #define SKSL_MODIFIERS
 
 #include "include/private/SkSLLayout.h"
-#include "include/sksl/SkSLPosition.h"
 
-#include <vector>
+#include <cstddef>
+#include <memory>
+#include <string>
 
 namespace SkSL {
 
 class Context;
+class Position;
 
 /**
  * A set of modifier keywords (in, out, uniform, etc.) appearing before a declaration.
@@ -44,11 +46,17 @@ struct Modifiers {
         kHighp_Flag          = 1 <<  6,
         kMediump_Flag        = 1 <<  7,
         kLowp_Flag           = 1 <<  8,
+        kReadOnly_Flag       = 1 <<  9,
+        kWriteOnly_Flag      = 1 << 10,
+        kBuffer_Flag         = 1 << 11,
+        // We use the Metal name for this one (corresponds to the GLSL 'shared' modifier)
+        kThreadgroup_Flag    = 1 << 12,
         // SkSL extensions, not present in GLSL
-        kES3_Flag            = 1 <<  9,
-        kHasSideEffects_Flag = 1 <<  10,
-        kInline_Flag         = 1 <<  11,
-        kNoInline_Flag       = 1 <<  12,
+        kExport_Flag         = 1 << 13,
+        kES3_Flag            = 1 << 14,
+        kPure_Flag           = 1 << 15,
+        kInline_Flag         = 1 << 16,
+        kNoInline_Flag       = 1 << 17,
     };
 
     Modifiers()
@@ -60,49 +68,75 @@ struct Modifiers {
     , fFlags(flags) {}
 
     std::string description() const {
-        std::string result = fLayout.description();
+        return fLayout.description() + DescribeFlags(fFlags) + " ";
+    }
 
+    static std::string DescribeFlags(int flags) {
         // SkSL extensions
-        if (fFlags & kES3_Flag) {
+        std::string result;
+        if (flags & kExport_Flag) {
+            result += "$export ";
+        }
+        if (flags & kES3_Flag) {
             result += "$es3 ";
         }
-        if (fFlags & kHasSideEffects_Flag) {
-            result += "sk_has_side_effects ";
+        if (flags & kPure_Flag) {
+            result += "$pure ";
         }
-        if (fFlags & kNoInline_Flag) {
+        if (flags & kInline_Flag) {
+            result += "inline ";
+        }
+        if (flags & kNoInline_Flag) {
             result += "noinline ";
         }
 
         // Real GLSL qualifiers (must be specified in order in GLSL 4.1 and below)
-        if (fFlags & kFlat_Flag) {
+        if (flags & kFlat_Flag) {
             result += "flat ";
         }
-        if (fFlags & kNoPerspective_Flag) {
+        if (flags & kNoPerspective_Flag) {
             result += "noperspective ";
         }
-        if (fFlags & kConst_Flag) {
+        if (flags & kConst_Flag) {
             result += "const ";
         }
-        if (fFlags & kUniform_Flag) {
+        if (flags & kUniform_Flag) {
             result += "uniform ";
         }
-        if ((fFlags & kIn_Flag) && (fFlags & kOut_Flag)) {
+        if ((flags & kIn_Flag) && (flags & kOut_Flag)) {
             result += "inout ";
-        } else if (fFlags & kIn_Flag) {
+        } else if (flags & kIn_Flag) {
             result += "in ";
-        } else if (fFlags & kOut_Flag) {
+        } else if (flags & kOut_Flag) {
             result += "out ";
         }
-        if (fFlags & kHighp_Flag) {
+        if (flags & kHighp_Flag) {
             result += "highp ";
         }
-        if (fFlags & kMediump_Flag) {
+        if (flags & kMediump_Flag) {
             result += "mediump ";
         }
-        if (fFlags & kLowp_Flag) {
+        if (flags & kLowp_Flag) {
             result += "lowp ";
         }
+        if (flags & kReadOnly_Flag) {
+            result += "readonly ";
+        }
+        if (flags & kWriteOnly_Flag) {
+            result += "writeonly ";
+        }
+        if (flags & kBuffer_Flag) {
+            result += "buffer ";
+        }
 
+        // We're using a non-GLSL name for this one; the GLSL equivalent is "shared"
+        if (flags & kThreadgroup_Flag) {
+            result += "threadgroup ";
+        }
+
+        if (!result.empty()) {
+            result.pop_back();
+        }
         return result;
     }
 
@@ -118,8 +152,10 @@ struct Modifiers {
      * Verifies that only permitted modifiers and layout flags are included. Reports errors and
      * returns false in the event of a violation.
      */
-    bool checkPermitted(const Context& context, Position pos, int permittedModifierFlags,
-            int permittedLayoutFlags) const;
+    bool checkPermitted(const Context& context,
+                        Position pos,
+                        int permittedModifierFlags,
+                        int permittedLayoutFlags) const;
 
     Layout fLayout;
     int fFlags;

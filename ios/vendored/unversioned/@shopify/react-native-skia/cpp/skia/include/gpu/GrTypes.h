@@ -36,37 +36,37 @@ private:
  * basic bitfield.
  */
 #define GR_MAKE_BITFIELD_CLASS_OPS(X) \
-    SK_MAYBE_UNUSED constexpr GrTFlagsMask<X> operator~(X a) { \
+    [[maybe_unused]] constexpr GrTFlagsMask<X> operator~(X a) { \
         return GrTFlagsMask<X>(~static_cast<int>(a)); \
     } \
-    SK_MAYBE_UNUSED constexpr X operator|(X a, X b) { \
+    [[maybe_unused]] constexpr X operator|(X a, X b) { \
         return static_cast<X>(static_cast<int>(a) | static_cast<int>(b)); \
     } \
-    SK_MAYBE_UNUSED inline X& operator|=(X& a, X b) { \
+    [[maybe_unused]] inline X& operator|=(X& a, X b) { \
         return (a = a | b); \
     } \
-    SK_MAYBE_UNUSED constexpr bool operator&(X a, X b) { \
+    [[maybe_unused]] constexpr bool operator&(X a, X b) { \
         return SkToBool(static_cast<int>(a) & static_cast<int>(b)); \
     } \
-    SK_MAYBE_UNUSED constexpr GrTFlagsMask<X> operator|(GrTFlagsMask<X> a, GrTFlagsMask<X> b) { \
+    [[maybe_unused]] constexpr GrTFlagsMask<X> operator|(GrTFlagsMask<X> a, GrTFlagsMask<X> b) { \
         return GrTFlagsMask<X>(a.value() | b.value()); \
     } \
-    SK_MAYBE_UNUSED constexpr GrTFlagsMask<X> operator|(GrTFlagsMask<X> a, X b) { \
+    [[maybe_unused]] constexpr GrTFlagsMask<X> operator|(GrTFlagsMask<X> a, X b) { \
         return GrTFlagsMask<X>(a.value() | static_cast<int>(b)); \
     } \
-    SK_MAYBE_UNUSED constexpr GrTFlagsMask<X> operator|(X a, GrTFlagsMask<X> b) { \
+    [[maybe_unused]] constexpr GrTFlagsMask<X> operator|(X a, GrTFlagsMask<X> b) { \
         return GrTFlagsMask<X>(static_cast<int>(a) | b.value()); \
     } \
-    SK_MAYBE_UNUSED constexpr X operator&(GrTFlagsMask<X> a, GrTFlagsMask<X> b) { \
+    [[maybe_unused]] constexpr X operator&(GrTFlagsMask<X> a, GrTFlagsMask<X> b) { \
         return static_cast<X>(a.value() & b.value()); \
     } \
-    SK_MAYBE_UNUSED constexpr X operator&(GrTFlagsMask<X> a, X b) { \
+    [[maybe_unused]] constexpr X operator&(GrTFlagsMask<X> a, X b) { \
         return static_cast<X>(a.value() & static_cast<int>(b)); \
     } \
-    SK_MAYBE_UNUSED constexpr X operator&(X a, GrTFlagsMask<X> b) { \
+    [[maybe_unused]] constexpr X operator&(X a, GrTFlagsMask<X> b) { \
         return static_cast<X>(static_cast<int>(a) & b.value()); \
     } \
-    SK_MAYBE_UNUSED inline X& operator&=(X& a, GrTFlagsMask<X> b) { \
+    [[maybe_unused]] inline X& operator&=(X& a, GrTFlagsMask<X> b) { \
         return (a = a & b); \
     } \
 

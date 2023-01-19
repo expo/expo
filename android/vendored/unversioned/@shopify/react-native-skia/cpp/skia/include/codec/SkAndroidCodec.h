@@ -9,9 +9,25 @@
 #define SkAndroidCodec_DEFINED
 
 #include "include/codec/SkCodec.h"
+#include "include/core/SkAlphaType.h"
+#include "include/core/SkColorSpace.h"
+#include "include/core/SkColorType.h"
 #include "include/core/SkEncodedImageFormat.h"
-#include "include/core/SkStream.h"
+#include "include/core/SkImageInfo.h"
+#include "include/core/SkRefCnt.h"
+#include "include/core/SkSize.h"
 #include "include/core/SkTypes.h"
+#include "include/private/SkEncodedInfo.h"
+#include "include/private/SkNoncopyable.h"
+#include "modules/skcms/skcms.h"
+
+#include <cstddef>
+#include <memory>
+
+class SkData;
+class SkPngChunkReader;
+class SkStream;
+struct SkIRect;
 
 /**
  *  Abstract interface defining image codec functionality that is necessary for

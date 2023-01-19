@@ -8,6 +8,7 @@
 #ifndef SKSL_OPERATOR
 #define SKSL_OPERATOR
 
+#include <cstdint>
 #include <string_view>
 
 namespace SkSL {
@@ -15,66 +16,68 @@ namespace SkSL {
 class Context;
 class Type;
 
+enum class OperatorKind : uint8_t {
+    PLUS,
+    MINUS,
+    STAR,
+    SLASH,
+    PERCENT,
+    SHL,
+    SHR,
+    LOGICALNOT,
+    LOGICALAND,
+    LOGICALOR,
+    LOGICALXOR,
+    BITWISENOT,
+    BITWISEAND,
+    BITWISEOR,
+    BITWISEXOR,
+    EQ,
+    EQEQ,
+    NEQ,
+    LT,
+    GT,
+    LTEQ,
+    GTEQ,
+    PLUSEQ,
+    MINUSEQ,
+    STAREQ,
+    SLASHEQ,
+    PERCENTEQ,
+    SHLEQ,
+    SHREQ,
+    BITWISEANDEQ,
+    BITWISEOREQ,
+    BITWISEXOREQ,
+    PLUSPLUS,
+    MINUSMINUS,
+    COMMA
+};
+
+enum class OperatorPrecedence : uint8_t {
+    kParentheses    =  1,
+    kPostfix        =  2,
+    kPrefix         =  3,
+    kMultiplicative =  4,
+    kAdditive       =  5,
+    kShift          =  6,
+    kRelational     =  7,
+    kEquality       =  8,
+    kBitwiseAnd     =  9,
+    kBitwiseXor     = 10,
+    kBitwiseOr      = 11,
+    kLogicalAnd     = 12,
+    kLogicalXor     = 13,
+    kLogicalOr      = 14,
+    kTernary        = 15,
+    kAssignment     = 16,
+    kSequence       = 17,
+    kTopLevel       = kSequence
+};
+
 class Operator {
 public:
-    enum class Kind {
-        PLUS,
-        MINUS,
-        STAR,
-        SLASH,
-        PERCENT,
-        SHL,
-        SHR,
-        LOGICALNOT,
-        LOGICALAND,
-        LOGICALOR,
-        LOGICALXOR,
-        BITWISENOT,
-        BITWISEAND,
-        BITWISEOR,
-        BITWISEXOR,
-        EQ,
-        EQEQ,
-        NEQ,
-        LT,
-        GT,
-        LTEQ,
-        GTEQ,
-        PLUSEQ,
-        MINUSEQ,
-        STAREQ,
-        SLASHEQ,
-        PERCENTEQ,
-        SHLEQ,
-        SHREQ,
-        BITWISEANDEQ,
-        BITWISEOREQ,
-        BITWISEXOREQ,
-        PLUSPLUS,
-        MINUSMINUS,
-        COMMA
-    };
-
-    enum class Precedence {
-        kParentheses    =  1,
-        kPostfix        =  2,
-        kPrefix         =  3,
-        kMultiplicative =  4,
-        kAdditive       =  5,
-        kShift          =  6,
-        kRelational     =  7,
-        kEquality       =  8,
-        kBitwiseAnd     =  9,
-        kBitwiseXor     = 10,
-        kBitwiseOr      = 11,
-        kLogicalAnd     = 12,
-        kLogicalXor     = 13,
-        kLogicalOr      = 14,
-        kTernary        = 15,
-        kAssignment     = 16,
-        kSequence       = 17,
-        kTopLevel       = kSequence
-    };
+    using Kind = OperatorKind;
 
     Operator(Kind op) : fKind(op) {}
 
@@ -84,7 +87,7 @@ public:
         return fKind == Kind::EQEQ || fKind == Kind::NEQ;
     }
 
-    Precedence getBinaryPrecedence() const;
+    OperatorPrecedence getBinaryPrecedence() const;
 
     // Returns the operator name surrounded by the expected whitespace for a tidy binary expression.
     const char* operatorName() const;

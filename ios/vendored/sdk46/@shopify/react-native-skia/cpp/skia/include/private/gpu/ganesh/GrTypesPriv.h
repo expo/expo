@@ -135,6 +135,11 @@ struct GrMipLevel {
     size_t fRowBytes = 0;
     // This may be used to keep fPixels from being freed while a GrMipLevel exists.
     sk_sp<SkData> fOptionalStorage;
+
+    static_assert(::sk_is_trivially_relocatable<decltype(fPixels)>::value);
+    static_assert(::sk_is_trivially_relocatable<decltype(fOptionalStorage)>::value);
+
+    using sk_is_trivially_relocatable = std::true_type;
 };
 
 enum class GrSemaphoreWrapType {
@@ -410,7 +415,7 @@ enum class GrGpuBufferType {
     kXferGpuToCpu,
     kUniform,
 };
-static const int kGrGpuBufferTypeCount = static_cast<int>(GrGpuBufferType::kUniform) + 1;
+static const constexpr int kGrGpuBufferTypeCount = static_cast<int>(GrGpuBufferType::kUniform) + 1;
 
 /**
  * Provides a performance hint regarding the frequency at which a data store will be accessed.
