@@ -7,6 +7,8 @@ export type ImageSource = {
     uri?: string;
     /**
      * An object representing the HTTP headers to send along with the request for a remote image.
+     * @platform android
+     * @platform ios
      */
     headers?: Record<string, string>;
     /**
