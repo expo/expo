@@ -7,7 +7,7 @@ import path from 'path';
 
 import { ANDROID_DIR } from '../../Constants';
 import logger from '../../Logger';
-import { copyFileWithTransformsAsync, transformFileAsync } from '../../Transforms';
+import { copyFileWithTransformsAsync, transformFilesAsync } from '../../Transforms';
 import { FileTransforms } from '../../Transforms.types';
 import { searchFilesAsync } from '../../Utils';
 import {
@@ -117,13 +117,17 @@ async function maybePrebuildSharedLibsAsync(module: string, sdkNumber: number) {
  */
 async function transformExponentPackageAsync(name: string, prefix: string) {
   const transforms = exponentPackageTransforms(prefix)[name] ?? null;
-  const exponentPackageFile = path.resolve(
-    path.join(
-      ANDROID_DIR,
-      `versioned-abis/expoview-${prefix}/src/main/java/${prefix}/host/exp/exponent/ExponentPackage.kt`
-    )
-  );
-  await transformFileAsync(exponentPackageFile, transforms);
+  const basenames = [
+    'ExponentPackage',
+    'ExponentAsyncStorageModule',
+    'ExponentUnsignedAsyncStorageModule',
+  ]
+  const files = await glob(`**/{${basenames.join(',')}}.kt`, {
+    cwd: path.join(ANDROID_DIR, `versioned-abis/expoview-${prefix}`),
+    nodir: true,
+    absolute: true,
+  })
+  await transformFilesAsync(files, transforms);
 }
 
 /**
@@ -207,6 +211,7 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
           `    compileOnly 'com.facebook.fbjni:fbjni:+'\n` +
           `    compileOnly 'com.facebook.yoga:proguard-annotations:+'\n` +
           `    compileOnly 'com.facebook.soloader:soloader:+'\n` +
+          `    compileOnly 'com.facebook.fresco:fbcore:+'\n` +
           `    compileOnly 'androidx.annotation:annotation:+'\n` +
           `    compileOnly 'com.google.code.findbugs:jsr305:+'\n` +
           `    compileOnly 'androidx.appcompat:appcompat:+'\n`,

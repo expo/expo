@@ -91,6 +91,14 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
         },
       ],
     },
+    '@react-native-async-storage/async-storage': {
+      content: [
+        {
+          find: /\b(import (static )?)(com.reactnativecommunity.asyncstorage.)/g,
+          replaceWith: `$1${prefix}.$3`,
+        },
+      ],
+    },
   };
 }
 
@@ -129,6 +137,12 @@ export function exponentPackageTransforms(prefix: string): Record<string, String
     'react-native-svg': [
       {
         find: /\bimport (com.horcrux.svg)/g,
+        replaceWith: `import ${prefix}.$1`,
+      },
+    ],
+    '@react-native-async-storage/async-storage': [
+      {
+        find: /\bimport (com.reactnativecommunity.asyncstorage.)/g,
         replaceWith: `import ${prefix}.$1`,
       },
     ],

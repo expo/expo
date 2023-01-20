@@ -82,6 +82,16 @@ export function expoModulesTransforms(module: string, abiVersion: string): FileT
         },
       ],
     },
+    'expo-image': {
+      content: [
+        {
+          // glide only supports single AppGlideModule, we use the one from unversioned expo-image
+          paths: 'SourceMap.kt',
+          find: new RegExp(`\\bimport ${abiVersion}\\.expo\\.modules\\.image\\.GlideOptions`, 'g'),
+          replaceWith: 'import expo.modules.image.GlideOptions',
+        }
+      ],
+    },
   };
   const transforms: FileTransforms = moduleTransforms[module] ?? {};
 
