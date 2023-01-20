@@ -189,7 +189,10 @@ const digestLengths = {
 };
 
 /**
- * The `digest()` method of `Crypto` generates a digest of the supplied `data` with the provided digest `algorithm`.
+ * The `digest()` method of `Crypto` generates a digest of the supplied `TypedArray` of bytes `data` with the provided digest `algorithm`.
+ * A digest is a short fixed-length value derived from some variable-length input. **Cryptographic digests** should exhibit _collision-resistance_,
+ * meaning that it's very difficult to generate multiple inputs that have equal digest values.
+ * On web, this method can only be called from a secure origin (https) otherwise an error will be thrown.
  *
  * @param algorithm The cryptographic hash function to use to transform a block of data into a fixed-size output.
  * @param data The value that will be used to generate a digest.
@@ -201,7 +204,7 @@ const digestLengths = {
  * console.log('Your digest: ' + digest);
  * ```
  */
-function digest(algorithm: CryptoDigestAlgorithm, data: BufferSource): Promise<Uint8Array> {
+export function digest(algorithm: CryptoDigestAlgorithm, data: BufferSource): Promise<Uint8Array> {
   return new Promise((resolve, reject) => {
     try {
       if (typeof ExpoCrypto.digestAsync === 'function') {
@@ -216,7 +219,3 @@ function digest(algorithm: CryptoDigestAlgorithm, data: BufferSource): Promise<U
     }
   });
 }
-
-export const subtle: Pick<SubtleCrypto, 'digest'> = {
-  digest,
-};
