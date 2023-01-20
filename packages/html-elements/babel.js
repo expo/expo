@@ -37,12 +37,16 @@ const elementToComponent = {
   tr: 'TR',
   ul: 'UL',
   strong: 'Strong',
+  span: 'Span',
   aside: 'Aside',
   tfoot: 'TFoot',
   blockquote: 'BlockQuote',
   q: 'Q',
 
-  // TODO: img, html, body
+  html: 'Div',
+  body: 'Div',
+
+  // TODO: img
   // NOTE: head, meta, link should use some special component in the future.
 };
 

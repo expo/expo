@@ -77,6 +77,7 @@ Here is a list of all the currently supported elements and the web feature they 
 | [`<q />`][html-q]                   |          [`<Q />`](#q)          |
 | [`<s />`][html-s]                   |          [`<S />`](#s)          |
 | [`<section />`][html-section]       |    [`<Section />`](#section)    |
+| [`<span />`][html-span]             |       [`<Span />`](#span)       |
 | [`<strong />`][html-strong]         |     [`<Strong />`](#strong)     |
 | [`<table />`][html-table]           |      [`<Table />`](#table)      |
 | [`<tbody />`][html-tbody]           |      [`<TBody />`](#tbody)      |
@@ -434,6 +435,14 @@ Alternate bold text.
 | --------- | ----------------------------------------- |
 | Universal | `<Text style={{ fontWeight: 'bold' }} />` |
 
+### `<Span/>`
+
+Inline text element.
+
+| Platform  | Output     |
+| --------- | ---------- |
+| Universal | `<Text />` |
+
 ### `<S/>`
 
 Strike through text.
@@ -733,11 +742,50 @@ Used to caption your table. Excepts text as a child.
 | Web      | `<caption />`               |
 | Native   | `<Text style={[Custom]} />` |
 
-## TODO
+# TODO
 
 - Improve relative imports for better tree-shaking.
 
-## Contributing
+# Babel
+
+You can write `react-dom` elements in your code and use the babel plugin to transform them to `@expo/html-elements` elements.
+
+```js
+// babel.config.js
+module.exports = {
+  plugins: ['@expo/html-elements/babel'],
+};
+```
+
+## Input
+
+```js
+export default function Page() {
+  return (
+    <div>
+      <h1>Hello World</h1>
+    </div>
+  );
+}
+```
+
+## Output
+
+The import is automatically added if it's not already present. All props are passed through without any additional transforms.
+
+```js
+import { Div, H1 } from '@expo/html-elements';
+
+export default function Page() {
+  return (
+    <Div>
+      <H1>Hello World</H1>
+    </Div>
+  );
+}
+```
+
+# Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).
 
@@ -776,6 +824,7 @@ Contributions are very welcome! Please refer to guidelines described in the [con
 [html-q]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q
 [html-s]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s
 [html-section]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section
+[html-span]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span
 [html-small]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small
 [html-strong]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong
 [html-table]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table
