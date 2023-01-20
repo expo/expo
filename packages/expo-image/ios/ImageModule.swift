@@ -87,7 +87,13 @@ public final class ImageModule: Module {
   }
 
   static func registerCoders() {
-    SDImageCodersManager.shared.addCoder(SDImageWebPCoder.shared)
+    if #available(iOS 14.0, *) {
+      // By default Animated WebP is not supported
+      SDImageCodersManager.shared.addCoder(SDImageAWebPCoder.shared)
+    } else {
+      // This coder is much slower, but it's the only one that works in iOS 13
+      SDImageCodersManager.shared.addCoder(SDImageWebPCoder.shared)
+    }
     SDImageCodersManager.shared.addCoder(SDImageAVIFCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageSVGCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageHEICCoder.shared)
