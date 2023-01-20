@@ -126,6 +126,8 @@ private:
   /**
    * A reference to the `JavaScriptModuleObject::HostObject`.
    * Simple we cached that value to return the same object each time.
+   * It's a weak reference because the JS runtime holds the actual object. 
+   * Doing that allows the runtime to deallocate jsi::Object if it's not needed anymore.
    */
   std::weak_ptr<jsi::Object> jsiObject;
   jni::global_ref<JavaScriptModuleObject::javaobject> javaPart_;
