@@ -2,6 +2,9 @@
   "name": "expo-image-manipulator",
   "platforms": ["ios", "android"],
   "ios": {
-    "modulesClassNames": ["ImageManipulatorModule"]
+    "modules": ["ImageManipulatorModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.imagemanipulator.ImageManipulatorModule"]
   }
 }
