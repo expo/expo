@@ -1,6 +1,5 @@
 package expo.modules.kotlin.modules
 
-import expo.modules.kotlin.ConcatIterator
 import expo.modules.kotlin.activityresult.AppContextActivityResultCaller
 import expo.modules.kotlin.events.EventListener
 import expo.modules.kotlin.events.EventName
@@ -20,7 +19,5 @@ class ModuleDefinitionData(
   val asyncFunctions = objectDefinition.asyncFunctions
   val eventsDefinition = objectDefinition.eventsDefinition
   val properties = objectDefinition.properties
-
-  val functions
-    get() = ConcatIterator(syncFunctions.values.iterator(), asyncFunctions.values.iterator())
+  val functions = objectDefinition.functions
 }
