@@ -71,7 +71,7 @@ export declare function randomUUID(): any;
  *
  * @param algorithm The cryptographic hash function to use to transform a block of data into a fixed-size output.
  * @param data The value that will be used to generate a digest.
- * @return A Promise which fulfills with a value representing the hashed input.
+ * @return A Promise which fulfills with an ArrayBuffer representing the hashed input.
  * @example
  * ```ts
  * const array = new Uint8Array([1, 2, 3, 4, 5]);
@@ -79,5 +79,5 @@ export declare function randomUUID(): any;
  * console.log('Your digest: ' + digest);
  * ```
  */
-export declare function digest(algorithm: CryptoDigestAlgorithm, data: BufferSource): Promise<Uint8Array>;
+export declare function digest(algorithm: CryptoDigestAlgorithm, data: BufferSource): Promise<ArrayBuffer>;
 //# sourceMappingURL=Crypto.d.ts.map

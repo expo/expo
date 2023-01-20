@@ -196,7 +196,7 @@ const digestLengths = {
  *
  * @param algorithm The cryptographic hash function to use to transform a block of data into a fixed-size output.
  * @param data The value that will be used to generate a digest.
- * @return A Promise which fulfills with a value representing the hashed input.
+ * @return A Promise which fulfills with an ArrayBuffer representing the hashed input.
  * @example
  * ```ts
  * const array = new Uint8Array([1, 2, 3, 4, 5]);
@@ -204,15 +204,15 @@ const digestLengths = {
  * console.log('Your digest: ' + digest);
  * ```
  */
-export function digest(algorithm: CryptoDigestAlgorithm, data: BufferSource): Promise<Uint8Array> {
+export function digest(algorithm: CryptoDigestAlgorithm, data: BufferSource): Promise<ArrayBuffer> {
   return new Promise((resolve, reject) => {
     try {
       if (typeof ExpoCrypto.digestAsync === 'function') {
         resolve(ExpoCrypto.digestAsync(algorithm, data));
       } else {
-        const output = new Uint8Array(digestLengths[algorithm]).fill(0);
+        const output = new Uint8Array(digestLengths[algorithm]);
         ExpoCrypto.digest(algorithm, output, data);
-        resolve(output);
+        resolve(output.buffer);
       }
     } catch (error) {
       reject(error);

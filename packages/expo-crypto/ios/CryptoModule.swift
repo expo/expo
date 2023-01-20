@@ -68,12 +68,10 @@ private func getRandomValues(array: TypedArray) throws -> TypedArray {
   return array
 }
 
-private func digest(algorithm: DigestAlgorithm, output: Uint8Array, data: TypedArray) throws -> TypedArray {
+private func digest(algorithm: DigestAlgorithm, output: TypedArray, data: TypedArray) throws {
   let length = Int(algorithm.digestLength)
   let outputPtr = output.rawPointer.assumingMemoryBound(to: UInt8.self)
   algorithm.digest(data.rawPointer, UInt32(data.byteLength), outputPtr)
-
-  return output
 }
 
 private class LossyConversionException: Exception {

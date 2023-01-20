@@ -1,9 +1,27 @@
 import * as Crypto from 'expo-crypto';
 import { Platform } from 'react-native';
 
+function areArrayBuffersEqual(a, b) {
+  console.warn({ a, b });
+  if (a.byteLength !== b.byteLength) return false;
+  const dv1 = new Int8Array(a);
+  const dv2 = new Int8Array(b);
+  for (let i = 0; i !== a.byteLength; i++) {
+    if (dv1[i] !== dv2[i]) return false;
+  }
+  return true;
+}
+
+function getArrayBufferFromHex(hex) {
+  const bytes = new Uint8Array(Math.ceil(hex.length / 2));
+  for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
+  return bytes.buffer;
+}
+
 const { CryptoEncoding, CryptoDigestAlgorithm } = Crypto;
 
 const testValue = 'Expo';
+const testTypedArray = new Uint8Array([69, 120, 112, 111]);
 
 const valueMapping = {
   [CryptoEncoding.HEX]: {
@@ -72,6 +90,21 @@ export async function test({ describe, it, expect }) {
                 expect(error).not.toBeNull();
               }
             });
+          }
+        });
+      }
+    });
+
+    describe('digest()', async () => {
+      for (const entry of Object.entries(CryptoDigestAlgorithm)) {
+        const [key, algorithm] = entry;
+        it(`CryptoDigestAlgorithm.${key}`, async () => {
+          const hex = valueMapping[CryptoEncoding.HEX][algorithm];
+          const targetValue = getArrayBufferFromHex(hex);
+          if (supportedAlgorithm(algorithm)) {
+            const value = await Crypto.digest(algorithm, testTypedArray);
+            const buffersAreEqual = areArrayBuffersEqual(value, targetValue);
+            expect(buffersAreEqual).toBe(true);
           }
         });
       }
