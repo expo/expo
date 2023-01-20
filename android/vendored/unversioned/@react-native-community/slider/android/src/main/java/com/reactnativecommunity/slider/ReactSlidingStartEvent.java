@@ -7,10 +7,10 @@
 
 package com.reactnativecommunity.slider;
 
+import androidx.annotation.Nullable;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.WritableMap;
 import com.facebook.react.uimanager.events.Event;
-import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 /**
  * Event emitted when the user starts dragging the slider.
@@ -45,9 +45,10 @@ public class ReactSlidingStartEvent extends Event<ReactSlidingStartEvent> {
         return false;
     }
 
+    @Nullable
     @Override
-    public void dispatch(RCTEventEmitter rctEventEmitter) {
-        rctEventEmitter.receiveEvent(getViewTag(), getEventName(), serializeEventData());
+    protected WritableMap getEventData() {
+        return serializeEventData();
     }
 
     private WritableMap serializeEventData() {
