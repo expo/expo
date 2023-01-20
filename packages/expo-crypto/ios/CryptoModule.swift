@@ -22,7 +22,6 @@ public class CryptoModule: Module {
     Function("randomUUID") {
       UUID().uuidString
     }
-
   }
 }
 
