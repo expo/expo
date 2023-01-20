@@ -63,12 +63,6 @@ public final class ImageView: ExpoView {
     }
   }
 
-  public override var accessibilityLabel: String? {
-    didSet {
-      sdImageView.accessibilityLabel = accessibilityLabel
-    }
-  }
-
   public required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
 
