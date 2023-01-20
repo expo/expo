@@ -106,6 +106,15 @@ exports[`renders S 1`] = `
 </div>
 `;
 
+exports[`renders Span 1`] = `
+<div
+  className="css-text-1rynq56"
+  dir="auto"
+>
+  demo
+</div>
+`;
+
 exports[`renders Strong 1`] = `
 <div
   className="css-text-1rynq56 r-fontWeight-vw2c0b"
