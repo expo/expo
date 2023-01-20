@@ -89,7 +89,7 @@ export function expoModulesTransforms(module: string, abiVersion: string): FileT
           paths: 'SourceMap.kt',
           find: new RegExp(`\\bimport ${abiVersion}\\.expo\\.modules\\.image\\.GlideOptions`, 'g'),
           replaceWith: 'import expo.modules.image.GlideOptions',
-        }
+        },
       ],
     },
   };

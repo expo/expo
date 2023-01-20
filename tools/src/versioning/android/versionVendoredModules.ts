@@ -121,12 +121,12 @@ async function transformExponentPackageAsync(name: string, prefix: string) {
     'ExponentPackage',
     'ExponentAsyncStorageModule',
     'ExponentUnsignedAsyncStorageModule',
-  ]
+  ];
   const files = await glob(`**/{${basenames.join(',')}}.kt`, {
     cwd: path.join(ANDROID_DIR, `versioned-abis/expoview-${prefix}`),
     nodir: true,
     absolute: true,
-  })
+  });
   await transformFilesAsync(files, transforms);
 }
 
