@@ -119,7 +119,7 @@ const DIGEST: FunctionDescription = {
       ],
     },
   ],
-  actions: Crypto.subtle.digest,
+  actions: Crypto.digest,
   renderAdditionalResult: (result: ArrayBuffer) => {
     return <Text>{new Uint8Array(result).map((byte, idx) => Number(byte)).join(', ')}</Text>;
   },
