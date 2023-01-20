@@ -185,14 +185,18 @@ export function withExtendedResolver(
         return resolve(
           {
             ...context,
+            // @ts-expect-error: mainFields is not on type
+            mainFields,
             preferNativePlatform: platform !== 'web',
             resolveRequest: undefined,
 
             // Passing `mainFields` directly won't be considered
             // we need to extend the `getPackageMainPath` directly to
             // use platform specific `mainFields`.
+            // NOTE: This is no longer needed after Metro 0.75.0, where the above
+            // `mainFields` assignment is adequate.
             getPackageMainPath(packageJsonPath) {
-              // @ts-expect-error: mainFields is not on type
+              // @ts-expect-error: moduleCache is not on type
               const package_ = context.moduleCache.getPackage(packageJsonPath);
               return package_.getMain(mainFields);
             },

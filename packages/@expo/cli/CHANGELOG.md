@@ -83,6 +83,7 @@ _This version does not introduce any user-facing changes._
 - Fix tests. ([#20510](https://github.com/expo/expo/pull/20510) by [@EvanBacon](https://github.com/EvanBacon))
 - Simplify the Xcode warnings. ([#20512](https://github.com/expo/expo/pull/20512) by [@EvanBacon](https://github.com/EvanBacon))
 - Simply Metro watch mode detection to `CI=true`, and log when disabled. ([#20939](https://github.com/expo/expo/pull/20939) by [@byCedric](https://github.com/byCedric))
+- Simplify `mainFields` override in custom resolver (fix Metro web 0.75 compatibility). ([#21039](https://github.com/expo/expo/pull/21039) by [@huntie](https://github.com/huntie))
 
 ## 0.4.10 - 2022-11-22
 
