@@ -46,8 +46,6 @@ const getCanonicalUrl = (path: string) => {
   }
 };
 
-const DEFAULT_PAGE_DESCRIPTION = `Expo is an open-source platform for making universal native apps for Android, iOS, and the web with JavaScript and React.`;
-
 export default function DocumentationPage(props: Props) {
   const { version } = usePageApiVersion();
   const { pathname } = useRouter();
@@ -115,9 +113,7 @@ export default function DocumentationPage(props: Props) {
       isMobileMenuVisible={isMobileMenuVisible}
       onContentScroll={handleContentScroll}
       sidebarScrollPosition={sidebarScrollPosition}>
-      <Head
-        title={props.title}
-        description={props.description === '' ? DEFAULT_PAGE_DESCRIPTION : props.description}>
+      <Head title={props.title} description={props.description}>
         {props.hideFromSearch !== true && (
           <meta
             name="docsearch:version"

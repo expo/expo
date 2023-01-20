@@ -1,6 +1,7 @@
 ---
 title: Push notifications troubleshooting & FAQ
 sidebar_title: Troubleshooting and FAQ
+description: A collection of common questions about Expo's push notification service.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -22,7 +23,6 @@ For best results, we recommend you add throttling (which is handled automaticall
 ### Using Expo's push notification service is not mandatory
 
 You can use any push notification service for Expo projects. The [`getDevicePushTokenAsync` method from `expo-notifications`](/versions/latest/sdk/notifications/#getdevicepushtokenasync-devicepushtoken) allows you to get the native device push token, which you can then use with other services, or even [send your notifications directly through FCM and APNs](/push-notifications/sending-notifications-custom).
-
 
 ### Connections to notification service are encrypted
 
@@ -116,7 +116,6 @@ Check the `details` property of the returned push ticket or receipt for more inf
 `getDevicePushTokenAsync` and `getExpoPushTokenAsync` can sometimes take a long time to resolve on iOS. This is outside of `expo-notifications`'s control, as stated in Apple's [Troubleshooting Push Notifications](https://developer.apple.com/library/archive/technotes/tn2265/_index.html) technical note:
 
 > This is not necessarily an error condition. The system may not have Internet connectivity at all because it is out of range of any cell towers or Wi-Fi access points, or it may be in airplane mode. Instead of treating this as an error, your app should continue normally, disabling only that functionality that relies on push notifications.
-
 
 Here are some ways our community members have resolved this issue:
 
