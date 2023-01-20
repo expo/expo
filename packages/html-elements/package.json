@@ -38,15 +38,15 @@
     "projects": [
       {
         "preset": "jest-expo/ios",
-        "testMatch": ["<rootDir>/src/**/__tests__/*.tsx"]
+        "modulePathIgnorePatterns": ["<rootDir>/babel/"]
       },
       {
         "preset": "jest-expo/android",
-        "testMatch": ["<rootDir>/src/**/__tests__/*.tsx"]
+        "modulePathIgnorePatterns": ["<rootDir>/babel/"]
       },
       {
         "preset": "jest-expo/web",
-        "testMatch": ["<rootDir>/src/**/__tests__/*.tsx"]
+        "modulePathIgnorePatterns": ["<rootDir>/babel/"]
       }
     ]
   },
