@@ -177,9 +177,12 @@ export function getDefaultConfig(
     resolver: {
       resolverMainFields,
       platforms: ['ios', 'android', 'native', 'testing'],
-      assetExts: metroDefaultValues.resolver.assetExts.filter(
-        (assetExt) => !sourceExts.includes(assetExt)
-      ),
+      assetExts: metroDefaultValues.resolver.assetExts
+        .concat(
+          // Add default support for `expo-image` file types.
+          ['heic', 'avif']
+        )
+        .filter((assetExt) => !sourceExts.includes(assetExt)),
       sourceExts,
       nodeModulesPaths,
     },
