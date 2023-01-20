@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `avif` and `heic` to the default `resolver.assetExts` to support `expo-image`.
+- Add `avif` and `heic` to the default `resolver.assetExts` to support `expo-image`. ([#20893](https://github.com/expo/expo/pull/20893) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
