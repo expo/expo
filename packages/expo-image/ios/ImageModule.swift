@@ -66,7 +66,7 @@ public final class ImageModule: Module {
       }
 
       Prop("accessible") { (view, accessible: Bool?) in
-        view.accessible = accessible ?? false
+        view.sdImageView.isAccessibilityElement = accessible ?? false
       }
 
       Prop("accessibilityLabel") { (view, label: String?) in

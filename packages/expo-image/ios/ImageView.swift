@@ -40,8 +40,6 @@ public final class ImageView: ExpoView {
 
   var cachePolicy: ImageCachePolicy = .disk
 
-  var accessible: Bool = false
-
   // MARK: - Events
 
   let onLoadStart = EventDispatcher()
@@ -137,8 +135,6 @@ public final class ImageView: ExpoView {
     // Some loaders (e.g. blurhash) need access to the source and the screen scale.
     context[ImageView.contextSourceKey] = source
     context[ImageView.screenScaleKey] = screenScale
-
-    sdImageView.isAccessibilityElement = accessible
 
     onLoadStart([:])
 
