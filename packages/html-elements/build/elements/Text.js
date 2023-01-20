@@ -49,6 +49,7 @@ export const Time = forwardRef(({ dateTime, ...props }, ref) => {
 export const Strong = B;
 export const Del = S;
 export const EM = I;
+export const Span = Text;
 const styles = StyleSheet.create({
     p: {
         marginVertical: em(1),

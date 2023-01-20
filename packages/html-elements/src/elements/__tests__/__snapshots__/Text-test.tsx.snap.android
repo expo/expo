@@ -187,6 +187,12 @@ exports[`renders S 1`] = `
 </Text>
 `;
 
+exports[`renders Span 1`] = `
+<Text>
+  demo
+</Text>
+`;
+
 exports[`renders Strong 1`] = `
 <Text
   style={
