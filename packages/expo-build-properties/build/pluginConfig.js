@@ -36,7 +36,7 @@ const schema = {
                 enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
                 extraProguardRules: { type: 'string', nullable: true },
                 flipper: {
-                    type: ['boolean', 'string'],
+                    type: 'string',
                     nullable: true,
                 },
                 packagingOptions: {
@@ -125,7 +125,7 @@ function validateConfig(config) {
         throw new Error('Invalid expo-build-properties config: ' + JSON.stringify(validate.errors));
     }
     maybeThrowInvalidVersions(config);
-    // explicitly block using use_frameworks and flipper in iOS
+    // explicitly block using use_frameworks and Flipper in iOS
     // https://github.com/facebook/flipper/issues/2414
     if (config?.ios?.flipper !== undefined && config?.ios?.useFrameworks !== undefined) {
         throw new Error('`ios.flipper` cannot be enabled when `ios.useFrameworks` is set.');

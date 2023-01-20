@@ -59,12 +59,12 @@ export interface PluginConfigTypeAndroid {
   packagingOptions?: PluginConfigTypeAndroidPackagingOptions;
 
   /**
-   * Enable [Flipper](https://fbflipper.com/) when running your app on Android.
-   * Setting `true` enables the default version of flipper, while setting
-   * a semver string will enable a specific version of Flipper you've declared in your
-   * package.json. You may also explicitly disable flipper by passing `false`.
+   * Change the [Flipper](https://fbflipper.com/) version when running your app on Android.
+   * Flipper is by default enabled with the version that comes bundled with react-native.
+   * However, you can set the `flipper` property to a semver string and specify an
+   * alternate Flipper version.
    */
-  flipper?: boolean | string;
+  flipper?: string;
 }
 
 /**
@@ -92,7 +92,7 @@ export interface PluginConfigTypeIos {
 
   /**
    * Enable [Flipper](https://fbflipper.com/) when running your app on iOS in
-   * Debug mode. Setting `true` enables the default version of flipper, while
+   * Debug mode. Setting `true` enables the default version of Flipper, while
    * setting a semver string will enable a specific version of Flipper you've
    * declared in your package.json. The default for this configuration is `false`.
    *
@@ -136,7 +136,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
         extraProguardRules: { type: 'string', nullable: true },
 
         flipper: {
-          type: ['boolean', 'string'],
+          type: 'string',
           nullable: true,
         },
 
@@ -236,7 +236,7 @@ export function validateConfig(config: any): PluginConfigType {
 
   maybeThrowInvalidVersions(config);
 
-  // explicitly block using use_frameworks and flipper in iOS
+  // explicitly block using use_frameworks and Flipper in iOS
   // https://github.com/facebook/flipper/issues/2414
   if (config?.ios?.flipper !== undefined && config?.ios?.useFrameworks !== undefined) {
     throw new Error('`ios.flipper` cannot be enabled when `ios.useFrameworks` is set.');

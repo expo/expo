@@ -54,35 +54,28 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
         propName: 'android.enableProguardInReleaseBuilds',
         propValueGetter: (config) => config.android?.enableProguardInReleaseBuilds?.toString(),
     },
-    {
-        propName: 'android.flipper',
-        propValueGetter: (config) => typeof config.android?.flipper === 'string' ? config.android.flipper : undefined,
-    },
 ], 'withAndroidBuildProperties');
 const withAndroidFlipper = (config, props) => {
     const ANDROID_FLIPPER_KEY = 'FLIPPER_VERSION';
     const FLIPPER_FALLBACK = '0.125.0';
-    // when not set, or set to enabled, make no changes
-    if (props.android?.flipper === undefined || props.android.flipper === true) {
+    // when not set, make no changes
+    if (props.android?.flipper === undefined) {
         return config;
     }
     return (0, config_plugins_1.withGradleProperties)(config, (c) => {
-        // check for flipper version in package. If set, use that
+        // check for Flipper version in package. If set, use that
         let existing;
-        const found = c.modResults.filter((item) => item.type === 'property' && item.key === ANDROID_FLIPPER_KEY)?.[0];
+        const found = c.modResults.find((item) => item.type === 'property' && item.key === ANDROID_FLIPPER_KEY);
         if (found && found.type === 'property') {
             existing = found.value;
         }
-        // strip flipper key and re-add based on setting
+        // strip key and re-add based on setting
         c.modResults = c.modResults.filter((item) => !(item.type === 'property' && item.key === ANDROID_FLIPPER_KEY));
-        // if disabled, do not re-add
-        if (props.android?.flipper !== false) {
-            c.modResults.push({
-                type: 'property',
-                key: ANDROID_FLIPPER_KEY,
-                value: (props.android?.flipper ?? existing ?? FLIPPER_FALLBACK),
-            });
-        }
+        c.modResults.push({
+            type: 'property',
+            key: ANDROID_FLIPPER_KEY,
+            value: (props.android?.flipper ?? existing ?? FLIPPER_FALLBACK),
+        });
         return c;
     });
 };

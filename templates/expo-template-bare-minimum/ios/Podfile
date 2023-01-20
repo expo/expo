@@ -13,8 +13,6 @@ install! 'cocoapods',
 
 prepare_react_native_project!
 
-flipper_config = ENV['NO_FLIPPER'] == "1" || ENV['CI'] ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
-
 target 'HelloWorld' do
   use_expo_modules!
   config = use_native_modules!
@@ -24,10 +22,10 @@ target 'HelloWorld' do
 
   # Flipper support in expo via build properties plugin
   expo_flipper = FlipperConfiguration.disabled
-  if ENV['FLIPPER_DISABLE'] != "1" && ENV['NO_FLIPPER'] != "1" && defined?(podfile_properties['ios.flipper']) then
-    if podfile_properties['ios.flipper'] == true then
+  if ENV['NO_FLIPPER'] != "1" && defined?(podfile_properties['ios.flipper']) then
+    if podfile_properties['ios.flipper'] == 'true' then
       expo_flipper = FlipperConfiguration.enabled
-    elsif podfile_properties['ios.flipper'] != false then
+    elsif podfile_properties['ios.flipper'] != 'false' then
       expo_flipper = FlipperConfiguration.enabled(["Debug"], { 'Flipper' => podfile_properties['ios.flipper'] })
     end
   end

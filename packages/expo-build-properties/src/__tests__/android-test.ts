@@ -1,10 +1,21 @@
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from 'expo/config';
+import { withGradleProperties } from 'expo/config-plugins';
 
 import { updateAndroidProguardRules, withAndroidFlipper } from '../android';
+import withBuildProperties from '../withBuildProperties';
+import { compileMockModWithResultsAsync } from './mockMods';
 
 type ExpoConfigWithMods = ExpoConfig & {
   mods?: Record<'ios' | 'android', Record<string, unknown[]>>;
 };
+
+jest.mock('@expo/config-plugins/build/plugins/android-plugins', () => {
+  const plugins = jest.requireActual('@expo/config-plugins/build/plugins/android-plugins');
+  return {
+    ...plugins,
+    withGradleProperties: jest.fn().mockImplementation((config) => config),
+  };
+});
 
 describe(updateAndroidProguardRules, () => {
   it('should append new rules', () => {
@@ -74,7 +85,7 @@ describe(updateAndroidProguardRules, () => {
 });
 
 describe(withAndroidFlipper, () => {
-  it('should do nothing by default or if set to enabled', async () => {
+  it('should do nothing by default', async () => {
     const expoConfig: ExpoConfig = {
       name: 'withAndroidFlipper',
       slug: 'withAndroidFlipper',
@@ -85,25 +96,34 @@ describe(withAndroidFlipper, () => {
 
     withAndroidFlipper(expoConfig, {
       android: {
-        flipper: true,
+        flipper: undefined,
       },
     });
     expect((expoConfig as ExpoConfigWithMods)?.mods?.android).toBeUndefined();
   });
 
-  it('should update the flipper version if requested', async () => {
-    const expoConfig: ExpoConfig = {
-      name: 'withAndroidFlipper',
-      slug: 'withAndroidFlipper',
-    };
+  it('should update the Flipper version if requested', async () => {
     const pluginConfig = {
       android: {
         flipper: '0.999.0',
       },
     };
-    withAndroidFlipper(expoConfig, pluginConfig);
-    expect((expoConfig as ExpoConfigWithMods)?.mods?.android?.gradleProperties).toBeInstanceOf(
-      Function
+
+    const { modResults: androidModResults } = await compileMockModWithResultsAsync(
+      {},
+      {
+        plugin: withBuildProperties,
+        pluginProps: pluginConfig,
+        mod: withGradleProperties,
+        modResults: [{ type: 'property', key: 'android.flipper', value: '0.999.0' }],
+      }
     );
+    expect(androidModResults).toEqual([
+      {
+        type: 'property',
+        key: 'android.flipper',
+        value: '0.999.0',
+      },
+    ]);
   });
 });
