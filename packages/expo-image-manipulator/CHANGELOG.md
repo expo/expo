@@ -17,6 +17,7 @@
 ### 🛠 Breaking changes
 
 - Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+- Migrated Android codebase to use the new Expo modules API. ([#20683](https://github.com/expo/expo/pull/20683) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 10.4.0 — 2022-07-07
 
