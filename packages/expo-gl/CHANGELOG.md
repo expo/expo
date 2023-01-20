@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `31`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
 ## 12.2.0 — 2022-12-30
 
 ### 🐛 Bug fixes
