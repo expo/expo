@@ -8,11 +8,17 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 1.0.0-beta.1 — 2023-01-20
+
+### 🐛 Bug fixes
+
 - Use `SDImageAWebPCoder` on iOS 14+ to speed up loading WebP images. ([#20897](https://github.com/expo/expo/pull/20897) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
-- On Android bump `compileSdkVersion` and `targetSdkVersion` to `31`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
 - Upgraded `SDWebImage` to `5.15.0` and `SDWebImageAVIFCoder` to `0.9.4`. ([#20898](https://github.com/expo/expo/pull/20898) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.0.0-beta.0 — 2023-01-19
