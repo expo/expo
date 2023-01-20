@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Use `SDImageAWebPCoder` on iOS 14+ to speed up loading WebP images.
+- Use `SDImageAWebPCoder` on iOS 14+ to speed up loading WebP images. ([#20897](https://github.com/expo/expo/pull/20897) by [@tsapeta](https://github.com/tsapeta))
 
 ### 💡 Others
 
