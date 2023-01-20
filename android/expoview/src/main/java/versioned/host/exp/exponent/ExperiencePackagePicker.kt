@@ -31,7 +31,7 @@ import expo.modules.gl.GLViewModule
 import expo.modules.haptics.HapticsModule
 import expo.modules.image.ExpoImageModule
 import expo.modules.imageloader.ImageLoaderPackage
-import expo.modules.imagemanipulator.ImageManipulatorPackage
+import expo.modules.imagemanipulator.ImageManipulatorModule
 import expo.modules.imagepicker.ImagePickerModule
 import expo.modules.intentlauncher.IntentLauncherModule
 import expo.modules.keepawake.KeepAwakePackage
@@ -86,7 +86,6 @@ object ExperiencePackagePicker : ModulesProvider {
     FontLoaderPackage(),
     GLPackage(),
     ImageLoaderPackage(),
-    ImageManipulatorPackage(),
     KeepAwakePackage(),
     LocalAuthenticationPackage(),
     LocationPackage(),
@@ -135,6 +134,7 @@ object ExperiencePackagePicker : ModulesProvider {
     GLViewModule::class.java,
     HapticsModule::class.java,
     ImagePickerModule::class.java,
+    ImageManipulatorModule::class.java,
     ExpoImageModule::class.java,
     IntentLauncherModule::class.java,
     LinearGradientModule::class.java,
