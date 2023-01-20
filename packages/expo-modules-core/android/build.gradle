@@ -150,7 +150,7 @@ afterEvaluate {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
   if (rootProject.hasProperty("ndkPath")) {
     ndkPath rootProject.ext.ndkPath
@@ -170,7 +170,7 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 31)
+    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
     versionName "1.1.1"
