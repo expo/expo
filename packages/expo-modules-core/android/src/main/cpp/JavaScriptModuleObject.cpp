@@ -42,13 +42,15 @@ void JavaScriptModuleObject::registerNatives() {
 }
 
 std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &runtime) {
-  if (jsiObject == nullptr) {
-    auto hostObject = std::make_shared<JavaScriptModuleObject::HostObject>(this);
-    jsiObject = std::make_shared<jsi::Object>(
-      jsi::Object::createFromHostObject(runtime, hostObject));
+  if (auto object = jsiObject.lock()) {
+    return object;
   }
 
-  return jsiObject;
+  auto hostObject = std::make_shared<JavaScriptModuleObject::HostObject>(this);
+  auto object = std::make_shared<jsi::Object>(
+    jsi::Object::createFromHostObject(runtime, hostObject));
+  jsiObject = object;
+  return object;
 }
 
 void JavaScriptModuleObject::exportConstants(
@@ -143,9 +145,8 @@ JavaScriptModuleObject::HostObject::HostObject(
  * Clears all the JSI references held by the `JavaScriptModuleObject`.
  */
 JavaScriptModuleObject::HostObject::~HostObject() {
-  if (jsModule->jsiObject != nullptr) {
-    jsModule->jsiObject.reset();
-  }
+  jObjectRef.reset();
+  jsModule->jsiObject.reset();
   jsModule->methodsMetadata.clear();
   jsModule->constants.clear();
   jsModule->properties.clear();
@@ -236,5 +237,4 @@ JavaScriptModuleObject::JavaScriptModuleObject(jni::alias_ref<jhybridobject> jTh
   : javaPart_(jni::make_global(jThis)) {
   longLivedObjectCollection_ = std::make_shared<react::LongLivedObjectCollection>();
 }
-
 } // namespace expo
