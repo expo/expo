@@ -76,7 +76,6 @@ public final class ImageView: ExpoView {
     sdImageView.contentMode = contentFit.toContentMode()
     sdImageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     sdImageView.layer.masksToBounds = false
-    sdImageView.isAccessibilityElement = accessible
 
     // Apply trilinear filtering to smooth out mis-sized images.
     sdImageView.layer.magnificationFilter = .trilinear
