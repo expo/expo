@@ -33,13 +33,7 @@ class ImageManipulatorModule : Module() {
           }
 
           override fun onFailure(cause: Throwable?) {
-            // No cleanup required here.
-            val basicMessage = "Could not get decoded bitmap of $uri"
-            if (cause != null) {
-              promise.reject("${ERROR_TAG}_DECODE", "$basicMessage: $cause", cause)
-            } else {
-              promise.reject(ImageDecodeException(uri))
-            }
+            promise.reject(ImageDecodeException(uri, cause))
           }
         }
       )
