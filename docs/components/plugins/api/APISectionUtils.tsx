@@ -661,7 +661,7 @@ export const STYLES_APIBOX = css({
   },
 
   [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
-    padding: `0 ${spacing[4]}px`,
+    paddingInline: spacing[4],
   },
 });
 
