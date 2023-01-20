@@ -40,6 +40,8 @@ public final class ImageView: ExpoView {
 
   var cachePolicy: ImageCachePolicy = .disk
 
+  var accessible: Bool = false
+
   // MARK: - Events
 
   let onLoadStart = EventDispatcher()
@@ -61,6 +63,12 @@ public final class ImageView: ExpoView {
     }
   }
 
+  public override var accessibilityLabel: String? {
+    didSet {
+      sdImageView.accessibilityLabel = accessibilityLabel
+    }
+  }
+
   public required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
 
@@ -68,6 +76,7 @@ public final class ImageView: ExpoView {
     sdImageView.contentMode = contentFit.toContentMode()
     sdImageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     sdImageView.layer.masksToBounds = false
+    sdImageView.isAccessibilityElement = accessible
 
     // Apply trilinear filtering to smooth out mis-sized images.
     sdImageView.layer.magnificationFilter = .trilinear
@@ -135,6 +144,8 @@ public final class ImageView: ExpoView {
     // Some loaders (e.g. blurhash) need access to the source and the screen scale.
     context[ImageView.contextSourceKey] = source
     context[ImageView.screenScaleKey] = screenScale
+
+    sdImageView.isAccessibilityElement = accessible
 
     onLoadStart([:])
 

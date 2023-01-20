@@ -65,6 +65,14 @@ public final class ImageModule: Module {
         view.cachePolicy = cachePolicy ?? .disk
       }
 
+      Prop("accessible") { (view, accessible: Bool) in
+        view.accessible = accessible
+      }
+
+      Prop("accessibilityLabel") { (view, label: String) in
+        view.accessibilityLabel = label
+      }
+
       OnViewDidUpdateProps { view in
         view.reload()
       }
