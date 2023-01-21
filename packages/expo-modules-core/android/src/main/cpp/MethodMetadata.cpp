@@ -303,6 +303,14 @@ jsi::Value MethodMetadata::callSync(
       ->consume();
     return jsi::valueFromDynamic(rt, dynamic);
   }
+  if (env->IsInstanceOf(unpackedResult, JavaScriptModuleObject::javaClassStatic().get())) {
+    auto anonymousObject = jni::static_ref_cast<JavaScriptModuleObject::javaobject>(result)
+      ->cthis();
+    anonymousObject->jsiInteropModuleRegistry = moduleRegistry;
+    auto hostObject = std::make_shared<JavaScriptModuleObject::HostObject>(anonymousObject);
+    hostObject->jObjectRef = jni::make_global(result);
+    return jsi::Object::createFromHostObject(rt, hostObject);
+  }
 
   return jsi::Value::undefined();
 }
