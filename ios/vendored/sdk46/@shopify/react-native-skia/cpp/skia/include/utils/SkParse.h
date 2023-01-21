@@ -14,6 +14,9 @@
 #include "include/core/SkScalar.h"
 #include "include/core/SkTypes.h"
 
+#include <cstddef>
+#include <cstdint>
+
 class SK_API SkParse {
 public:
     static int Count(const char str[]); // number of scalars or int values

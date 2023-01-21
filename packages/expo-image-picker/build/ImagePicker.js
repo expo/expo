@@ -30,7 +30,7 @@ const DEPRECATED_RESULT_KEYS = [
     'fileSize',
 ];
 function mergeDeprecatedResult(result) {
-    const firstAsset = result.assets?.[0];
+    const firstAsset = result?.assets?.[0];
     const deprecatedResult = {
         ...result,
         get cancelled() {

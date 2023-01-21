@@ -42,7 +42,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: 16
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(yarn global bin)" >> $GITHUB_PATH
       - name: ♻️ Restore caches
@@ -86,7 +86,6 @@ jobs:
           profile: 'updates_testing'
           projectRoot: './updates-e2e'
           expoToken: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
-          resourceClass: large
           noWait: ${{ github.event.schedule }}
           message: ${{ github.event.pull_request.title }}
       - name: On Android workflow canceled

@@ -9,6 +9,7 @@
 #define SkColorMatrix_DEFINED
 
 #include "include/core/SkImageInfo.h"
+#include "include/core/SkTypes.h"
 
 #include <algorithm>
 #include <array>

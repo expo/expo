@@ -39,7 +39,11 @@ public:
         : fModifiers(layout.fSkSLLayout, flags)
         , fPosition(pos) {}
 
-    int flags() const {
+    int& flags() {
+        return fModifiers.fFlags;
+    }
+
+    const int& flags() const {
         return fModifiers.fFlags;
     }
 
@@ -55,7 +59,6 @@ private:
     friend class DSLCore;
     friend class DSLFunction;
     friend class DSLType;
-    friend class DSLVarBase;
     friend class DSLWriter;
 };
 

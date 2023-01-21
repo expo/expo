@@ -240,7 +240,6 @@ private:
     friend class SkBigPicture;
     friend class SkEmptyPicture;
     friend class SkPicturePriv;
-    template <typename> friend class SkMiniPicture;
 
     void serialize(SkWStream*, const SkSerialProcs*, class SkRefCntSet* typefaces,
         bool textBlobsOnly=false) const;
@@ -262,8 +261,6 @@ private:
 
     // Returns NULL if this is not an SkBigPicture.
     virtual const class SkBigPicture* asSkBigPicture() const { return nullptr; }
-
-    friend struct SkPathCounter;
 
     static bool IsValidPictInfo(const struct SkPictInfo& info);
     static sk_sp<SkPicture> Forwardport(const struct SkPictInfo&,

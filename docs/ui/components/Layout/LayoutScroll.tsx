@@ -47,12 +47,12 @@ const scrollStyle = css({
   },
   // Handle
   '::-webkit-scrollbar-thumb': {
-    backgroundColor: theme.background.tertiary,
+    backgroundColor: theme.background.element,
     borderRadius: '10px',
   },
   // Handle on hover
   '::-webkit-scrollbar-thumb:hover': {
-    backgroundColor: theme.background.quaternary,
+    backgroundColor: theme.background.hover,
   },
 });
 

@@ -50,7 +50,7 @@ class JSIInteropModuleRegistryTest {
     val f2Value = evaluateScript("expo.modules.TestModule.f2(\"expo\")")
 
     Truth.assertThat(f1Value.isNumber()).isTrue()
-    val unboxedF1Value = f1Value.getDouble().toInt()
+    val unboxedF1Value = f1Value.getInt()
     Truth.assertThat(unboxedF1Value).isEqualTo(20)
 
     Truth.assertThat(f2Value.isString()).isTrue()
@@ -69,7 +69,7 @@ class JSIInteropModuleRegistryTest {
   ) { methodQueue ->
     val promiseResult = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f()")
     Truth.assertThat(promiseResult.isNumber()).isTrue()
-    Truth.assertThat(global().getProperty("promiseResult").getDouble().toInt()).isEqualTo(20)
+    Truth.assertThat(global().getProperty("promiseResult").getInt()).isEqualTo(20)
   }
 
   @Test
@@ -89,7 +89,7 @@ class JSIInteropModuleRegistryTest {
     val i1Value = evaluateScript("expo.modules.TestModule.c3.i1")
 
     Truth.assertThat(c1Value.isNumber()).isTrue()
-    val unboxedC1Value = c1Value.getDouble().toInt()
+    val unboxedC1Value = c1Value.getInt()
     Truth.assertThat(unboxedC1Value).isEqualTo(123)
 
     Truth.assertThat(c2Value.isString()).isTrue()
@@ -97,7 +97,7 @@ class JSIInteropModuleRegistryTest {
     Truth.assertThat(unboxedC2Value).isEqualTo("string")
 
     Truth.assertThat(i1Value.isNumber()).isTrue()
-    val unboxedI1Value = i1Value.getDouble().toInt()
+    val unboxedI1Value = i1Value.getInt()
     Truth.assertThat(unboxedI1Value).isEqualTo(123)
   }
 }

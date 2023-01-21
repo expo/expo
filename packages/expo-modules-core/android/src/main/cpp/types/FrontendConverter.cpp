@@ -40,6 +40,23 @@ bool IntegerFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &va
   return value.isNumber();
 }
 
+jobject LongFrontendConverter::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  JSIInteropModuleRegistry *moduleRegistry,
+  const jsi::Value &value
+) const {
+  auto &longClass = JavaReferencesCache::instance()
+    ->getJClass("java/lang/Long");
+  jmethodID longConstructor = longClass.getMethod("<init>", "(J)V");
+  return env->NewObject(longClass.clazz, longConstructor,
+                        static_cast<jlong>(value.getNumber()));
+}
+
+bool LongFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
+  return value.isNumber();
+}
+
 jobject FloatFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
@@ -291,6 +308,12 @@ jobject PrimitiveArrayFrontendConverter::convert(
     return _createPrimitiveArray(
       &JNIEnv::NewIntArray,
       &JNIEnv::SetIntArrayRegion
+    );
+  }
+  if (parameterType == CppType::LONG) {
+    return _createPrimitiveArray(
+      &JNIEnv::NewLongArray,
+      &JNIEnv::SetLongArrayRegion
     );
   }
   if (parameterType == CppType::DOUBLE) {

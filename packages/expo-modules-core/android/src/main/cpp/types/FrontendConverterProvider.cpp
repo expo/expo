@@ -12,6 +12,7 @@ void FrontendConverterProvider::createConverters() {
 #define RegisterConverter(type, clazz)  simpleConverters.insert({type, std::make_shared<clazz>()})
   RegisterConverter(CppType::NONE, UnknownFrontendConverter);
   RegisterConverter(CppType::INT, IntegerFrontendConverter);
+  RegisterConverter(CppType::LONG, LongFrontendConverter);
   RegisterConverter(CppType::FLOAT, FloatFrontendConverter);
   RegisterConverter(CppType::DOUBLE, DoubleFrontendConverter);
   RegisterConverter(CppType::BOOLEAN, BooleanFrontendConverter);

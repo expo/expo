@@ -5,8 +5,6 @@ apply plugin: 'de.undercouch.download'
 apply plugin: 'kotlin-kapt'
 apply from: new File(rootDir, "versioning_linking.gradle")
 
-def hasHermesEngineDeps = false
-
 def reactProperties = new Properties()
 file("${project(':ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
 
@@ -94,7 +92,7 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 31)
+    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 1
     versionName "1.0"
 
@@ -170,22 +168,12 @@ dependencies {
 
   testImplementation 'junit:junit:4.12'
 
-
-  api("com.facebook.fbjni:fbjni-java-only:0.2.2")
-
   // WHEN_VERSIONING_REPLACE_WITH_DEPENDENCIES
 
   // WHEN_VERSIONING_REMOVE_FROM_HERE
 
   api 'org.webkit:android-jsc:r250230' // needs to be before react-native
 
-  /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:45.0.0'
-  compileOnly project(':expo')
-  compileOnly project(':expo-random')
-  END UNCOMMENT WHEN DISTRIBUTING */
-
-  // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
   api project(':ReactAndroid')
 
   if (!buildHermesSource) {
@@ -196,7 +184,6 @@ dependencies {
       exclude(group:'com.facebook.fbjni', module: 'fbjni')
     }
   }
-  hasHermesEngineDeps = true
 
   // Expo modules
   api project(':expo')
@@ -205,7 +192,6 @@ dependencies {
   api project(':expo-random')
 
   // Versioned react native
-  // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
   // BEGIN_SDK_47
   versionedApi 'host.exp:reactandroid-abi47_0_0:1.0.0'
@@ -213,12 +199,7 @@ dependencies {
   // BEGIN_SDK_46
   versionedApi 'host.exp:reactandroid-abi46_0_0:1.0.0'
   // END_SDK_46
-  // BEGIN_SDK_45
-  versionedApi 'host.exp:reactandroid-abi45_0_0:1.0.0'
-  // END_SDK_45
-  // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
-  // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // React native dependencies
   api("androidx.appcompat:appcompat-resources:${reactProperties.getProperty('ANDROIDX_APPCOMPAT_VERSION')}")
@@ -226,7 +207,7 @@ dependencies {
   api("androidx.autofill:autofill:${reactProperties.getProperty('ANDROIDX_AUTOFILL_VERSION')}")
   api("androidx.swiperefreshlayout:swiperefreshlayout:${reactProperties.getProperty('SWIPEREFRESH_LAYOUT_VERSION')}")
 
-  api("com.facebook.fbjni:fbjni-java-only:${reactProperties.getProperty('FBJNI_VERSION')}")
+  api("com.facebook.fbjni:fbjni:${reactProperties.getProperty('FBJNI_VERSION')}")
   api("com.facebook.fresco:fresco:${reactProperties.getProperty('FRESCO_VERSION')}")
   api("com.facebook.fresco:imagepipeline-okhttp3:${reactProperties.getProperty('FRESCO_VERSION')}")
   api("com.facebook.fresco:ui-common:${reactProperties.getProperty('FRESCO_VERSION')}")

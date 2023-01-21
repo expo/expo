@@ -18,6 +18,6 @@ it(`doesn't start with a number or special character`, () => {
 
 it(`bails out if there aren't any ASCII characters in the slug to work with`, () => {
   expect(() => getDefaultScheme({ slug: '👋' })).toThrowErrorMatchingInlineSnapshot(
-    `"Could not autogenerate a scheme. Please make sure the \\"slug\\" property in app config consists of URL friendly characters."`
+    `"Could not autogenerate a scheme. Please make sure the "slug" property in app config consists of URL friendly characters."`
   );
 });

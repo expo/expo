@@ -22,7 +22,7 @@ export const Icon = ({ title, image, size = 64 }: IconProps) => (
 );
 
 const iconStyle = css({
-  background: theme.background.tertiary,
+  background: theme.background.element,
   borderRadius: '100%',
   padding: spacing[1],
 });

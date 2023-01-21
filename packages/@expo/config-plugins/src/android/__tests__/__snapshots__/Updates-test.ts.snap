@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`Android Updates config ensureBuildGradleContainsConfigurationScript adds create-manifest-android.gradle line to build.gradle 1`] = `
-"apply plugin: \\"com.android.application\\"
+"apply plugin: "com.android.application"
 
 import com.android.build.OutputFile
 
@@ -12,19 +12,19 @@ import com.android.build.OutputFile
  * cycle. By default, bundleDebugJsAndAssets is skipped, as in debug/dev mode we prefer to load the
  * bundle directly from the development server. Below you can see all the possible configurations
  * and their defaults. If you decide to add a configuration block, make sure to add it before the
- * \`apply from: \\"../../node_modules/react-native/react.gradle\\"\` line.
+ * \`apply from: "../../node_modules/react-native/react.gradle"\` line.
  *
  * project.ext.react = [
  *   // the name of the generated asset file containing your JS bundle
- *   bundleAssetName: \\"index.android.bundle\\",
+ *   bundleAssetName: "index.android.bundle",
  *
  *   // the entry file for bundle generation. If none specified and
- *   // \\"index.android.js\\" exists, it will be used. Otherwise \\"index.js\\" is
+ *   // "index.android.js" exists, it will be used. Otherwise "index.js" is
  *   // default. Can be overridden with ENTRY_FILE environment variable.
- *   entryFile: \\"index.android.js\\",
+ *   entryFile: "index.android.js",
  *
  *   // https://reactnative.dev/docs/performance#enable-the-ram-format
- *   bundleCommand: \\"ram-bundle\\",
+ *   bundleCommand: "ram-bundle",
  *
  *   // whether to bundle JS and assets in debug mode
  *   bundleInDebug: false,
@@ -48,32 +48,32 @@ import com.android.build.OutputFile
  *   //         'devDisabledIn\${productFlavor}\${buildType}'
  *   //         'devDisabledIn\${buildType}'
  *
- *   // the root of your project, i.e. where \\"package.json\\" lives
- *   root: \\"../../\\",
+ *   // the root of your project, i.e. where "package.json" lives
+ *   root: "../../",
  *
  *   // where to put the JS bundle asset in debug mode
- *   jsBundleDirDebug: \\"$buildDir/intermediates/assets/debug\\",
+ *   jsBundleDirDebug: "$buildDir/intermediates/assets/debug",
  *
  *   // where to put the JS bundle asset in release mode
- *   jsBundleDirRelease: \\"$buildDir/intermediates/assets/release\\",
+ *   jsBundleDirRelease: "$buildDir/intermediates/assets/release",
  *
  *   // where to put drawable resources / React Native assets, e.g. the ones you use via
  *   // require('./image.png')), in debug mode
- *   resourcesDirDebug: \\"$buildDir/intermediates/res/merged/debug\\",
+ *   resourcesDirDebug: "$buildDir/intermediates/res/merged/debug",
  *
  *   // where to put drawable resources / React Native assets, e.g. the ones you use via
  *   // require('./image.png')), in release mode
- *   resourcesDirRelease: \\"$buildDir/intermediates/res/merged/release\\",
+ *   resourcesDirRelease: "$buildDir/intermediates/res/merged/release",
  *
  *   // by default the gradle tasks are skipped if none of the JS files or assets change; this means
  *   // that we don't look at files in android/ or ios/ to determine whether the tasks are up to
  *   // date; if you have any other folders that you want to ignore for performance reasons (gradle
  *   // indexes the entire tree), add them here. Alternatively, if you have JS files in android/
  *   // for example, you might want to remove it from here.
- *   inputExcludes: [\\"android/**\\", \\"ios/**\\"],
+ *   inputExcludes: ["android/**", "ios/**"],
  *
  *   // override which node gets called and with what additional arguments
- *   nodeExecutableAndArgs: [\\"node\\"],
+ *   nodeExecutableAndArgs: ["node"],
  *
  *   // supply additional arguments to the packager
  *   extraPackagerArgs: []
@@ -85,7 +85,7 @@ project.ext.react = [
 ]
 
 apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
-apply from: \\"../../node_modules/react-native/react.gradle\\"
+apply from: "../../node_modules/react-native/react.gradle"
 
 /**
  * Set this to true to create two separate APKs instead of one:
@@ -122,7 +122,7 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  * on project.ext.react, JavaScript will not be compiled to Hermes Bytecode
  * and the benefits of using Hermes will therefore be sharply reduced.
  */
-def enableHermes = project.ext.react.get(\\"enableHermes\\", false);
+def enableHermes = project.ext.react.get("enableHermes", false);
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -133,18 +133,18 @@ android {
     }
 
     defaultConfig {
-        applicationId \\"com.testapp\\"
+        applicationId "com.testapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName \\"1.0\\"
+        versionName "1.0"
     }
     splits {
         abi {
             reset()
             enable enableSeparateBuildPerCPUArchitecture
             universalApk false  // If true, also generate a universal APK
-            include \\"armeabi-v7a\\", \\"x86\\", \\"arm64-v8a\\", \\"x86_64\\"
+            include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
         }
     }
     signingConfigs {
@@ -164,7 +164,7 @@ android {
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile(\\"proguard-android.txt\\"), \\"proguard-rules.pro\\"
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
 
@@ -173,7 +173,7 @@ android {
         variant.outputs.each { output ->
             // For each separate APK per architecture, set a unique version code as described here:
             // https://developer.android.com/studio/build/configure-apk-splits.html
-            def versionCodes = [\\"armeabi-v7a\\": 1, \\"x86\\": 2, \\"arm64-v8a\\": 3, \\"x86_64\\": 4]
+            def versionCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3, "x86_64": 4]
             def abi = output.getFilter(OutputFile.ABI)
             if (abi != null) {  // null for the universal-debug, universal-release variants
                 output.versionCodeOverride =
@@ -185,26 +185,26 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: \\"libs\\", include: [\\"*.jar\\"])
+    implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
-    implementation \\"com.facebook.react:react-native:+\\"  // From node_modules
-    implementation \\"androidx.swiperefreshlayout:swiperefreshlayout:1.0.0\\"
-    debugImplementation(\\"com.facebook.flipper:flipper:\${FLIPPER_VERSION}\\") {
+    implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    debugImplementation("com.facebook.flipper:flipper:\${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'
     }
-    debugImplementation(\\"com.facebook.flipper:flipper-network-plugin:\${FLIPPER_VERSION}\\") {
+    debugImplementation("com.facebook.flipper:flipper-network-plugin:\${FLIPPER_VERSION}") {
         exclude group:'com.facebook.flipper'
         exclude group:'com.squareup.okhttp3', module:'okhttp'
     }
-    debugImplementation(\\"com.facebook.flipper:flipper-fresco-plugin:\${FLIPPER_VERSION}\\") {
+    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:\${FLIPPER_VERSION}") {
         exclude group:'com.facebook.flipper'
     }
     addUnimodulesDependencies()
 
     if (enableHermes) {
-        def hermesPath = \\"../../node_modules/hermes-engine/android/\\";
-        debugImplementation files(hermesPath + \\"hermes-debug.aar\\")
-        releaseImplementation files(hermesPath + \\"hermes-release.aar\\")
+        def hermesPath = "../../node_modules/hermes-engine/android/";
+        debugImplementation files(hermesPath + "hermes-debug.aar")
+        releaseImplementation files(hermesPath + "hermes-release.aar")
     } else {
         implementation jscFlavor
     }
@@ -217,16 +217,16 @@ task copyDownloadableDepsToLibs(type: Copy) {
     into 'libs'
 }
 
-apply from: file(\\"../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle\\"); applyNativeModulesAppBuildGradle(project)
-apply from: \\"./eas-build.gradle\\"
+apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+apply from: "./eas-build.gradle"
 
 // Integration with Expo updates
-apply from: \\"../../node_modules/expo-updates/scripts/create-manifest-android.gradle\\"
+apply from: "../../node_modules/expo-updates/scripts/create-manifest-android.gradle"
 "
 `;
 
 exports[`Android Updates config ensureBuildGradleContainsConfigurationScript fixes the path to create-manifest-android.gradle in case of a monorepo 1`] = `
-"apply plugin: \\"com.android.application\\"
+"apply plugin: "com.android.application"
 
 import com.android.build.OutputFile
 
@@ -237,19 +237,19 @@ import com.android.build.OutputFile
  * cycle. By default, bundleDebugJsAndAssets is skipped, as in debug/dev mode we prefer to load the
  * bundle directly from the development server. Below you can see all the possible configurations
  * and their defaults. If you decide to add a configuration block, make sure to add it before the
- * \`apply from: \\"../../node_modules/react-native/react.gradle\\"\` line.
+ * \`apply from: "../../node_modules/react-native/react.gradle"\` line.
  *
  * project.ext.react = [
  *   // the name of the generated asset file containing your JS bundle
- *   bundleAssetName: \\"index.android.bundle\\",
+ *   bundleAssetName: "index.android.bundle",
  *
  *   // the entry file for bundle generation. If none specified and
- *   // \\"index.android.js\\" exists, it will be used. Otherwise \\"index.js\\" is
+ *   // "index.android.js" exists, it will be used. Otherwise "index.js" is
  *   // default. Can be overridden with ENTRY_FILE environment variable.
- *   entryFile: \\"index.android.js\\",
+ *   entryFile: "index.android.js",
  *
  *   // https://reactnative.dev/docs/performance#enable-the-ram-format
- *   bundleCommand: \\"ram-bundle\\",
+ *   bundleCommand: "ram-bundle",
  *
  *   // whether to bundle JS and assets in debug mode
  *   bundleInDebug: false,
@@ -273,32 +273,32 @@ import com.android.build.OutputFile
  *   //         'devDisabledIn\${productFlavor}\${buildType}'
  *   //         'devDisabledIn\${buildType}'
  *
- *   // the root of your project, i.e. where \\"package.json\\" lives
- *   root: \\"../../\\",
+ *   // the root of your project, i.e. where "package.json" lives
+ *   root: "../../",
  *
  *   // where to put the JS bundle asset in debug mode
- *   jsBundleDirDebug: \\"$buildDir/intermediates/assets/debug\\",
+ *   jsBundleDirDebug: "$buildDir/intermediates/assets/debug",
  *
  *   // where to put the JS bundle asset in release mode
- *   jsBundleDirRelease: \\"$buildDir/intermediates/assets/release\\",
+ *   jsBundleDirRelease: "$buildDir/intermediates/assets/release",
  *
  *   // where to put drawable resources / React Native assets, e.g. the ones you use via
  *   // require('./image.png')), in debug mode
- *   resourcesDirDebug: \\"$buildDir/intermediates/res/merged/debug\\",
+ *   resourcesDirDebug: "$buildDir/intermediates/res/merged/debug",
  *
  *   // where to put drawable resources / React Native assets, e.g. the ones you use via
  *   // require('./image.png')), in release mode
- *   resourcesDirRelease: \\"$buildDir/intermediates/res/merged/release\\",
+ *   resourcesDirRelease: "$buildDir/intermediates/res/merged/release",
  *
  *   // by default the gradle tasks are skipped if none of the JS files or assets change; this means
  *   // that we don't look at files in android/ or ios/ to determine whether the tasks are up to
  *   // date; if you have any other folders that you want to ignore for performance reasons (gradle
  *   // indexes the entire tree), add them here. Alternatively, if you have JS files in android/
  *   // for example, you might want to remove it from here.
- *   inputExcludes: [\\"android/**\\", \\"ios/**\\"],
+ *   inputExcludes: ["android/**", "ios/**"],
  *
  *   // override which node gets called and with what additional arguments
- *   nodeExecutableAndArgs: [\\"node\\"],
+ *   nodeExecutableAndArgs: ["node"],
  *
  *   // supply additional arguments to the packager
  *   extraPackagerArgs: []
@@ -310,7 +310,7 @@ project.ext.react = [
 ]
 
 apply from: '../../node_modules/react-native-unimodules/gradle.groovy'
-apply from: \\"../../node_modules/react-native/react.gradle\\"
+apply from: "../../node_modules/react-native/react.gradle"
 /**
  * Set this to true to create two separate APKs instead of one:
  *   - An APK that only works on ARM devices
@@ -346,7 +346,7 @@ def jscFlavor = 'org.webkit:android-jsc:+'
  * on project.ext.react, JavaScript will not be compiled to Hermes Bytecode
  * and the benefits of using Hermes will therefore be sharply reduced.
  */
-def enableHermes = project.ext.react.get(\\"enableHermes\\", false);
+def enableHermes = project.ext.react.get("enableHermes", false);
 
 android {
     compileSdkVersion rootProject.ext.compileSdkVersion
@@ -357,18 +357,18 @@ android {
     }
 
     defaultConfig {
-        applicationId \\"com.testapp\\"
+        applicationId "com.testapp"
         minSdkVersion rootProject.ext.minSdkVersion
         targetSdkVersion rootProject.ext.targetSdkVersion
         versionCode 1
-        versionName \\"1.0\\"
+        versionName "1.0"
     }
     splits {
         abi {
             reset()
             enable enableSeparateBuildPerCPUArchitecture
             universalApk false  // If true, also generate a universal APK
-            include \\"armeabi-v7a\\", \\"x86\\", \\"arm64-v8a\\", \\"x86_64\\"
+            include "armeabi-v7a", "x86", "arm64-v8a", "x86_64"
         }
     }
     signingConfigs {
@@ -388,7 +388,7 @@ android {
             // see https://reactnative.dev/docs/signed-apk-android.
             signingConfig signingConfigs.debug
             minifyEnabled enableProguardInReleaseBuilds
-            proguardFiles getDefaultProguardFile(\\"proguard-android.txt\\"), \\"proguard-rules.pro\\"
+            proguardFiles getDefaultProguardFile("proguard-android.txt"), "proguard-rules.pro"
         }
     }
 
@@ -397,7 +397,7 @@ android {
         variant.outputs.each { output ->
             // For each separate APK per architecture, set a unique version code as described here:
             // https://developer.android.com/studio/build/configure-apk-splits.html
-            def versionCodes = [\\"armeabi-v7a\\": 1, \\"x86\\": 2, \\"arm64-v8a\\": 3, \\"x86_64\\": 4]
+            def versionCodes = ["armeabi-v7a": 1, "x86": 2, "arm64-v8a": 3, "x86_64": 4]
             def abi = output.getFilter(OutputFile.ABI)
             if (abi != null) {  // null for the universal-debug, universal-release variants
                 output.versionCodeOverride =
@@ -409,26 +409,26 @@ android {
 }
 
 dependencies {
-    implementation fileTree(dir: \\"libs\\", include: [\\"*.jar\\"])
+    implementation fileTree(dir: "libs", include: ["*.jar"])
     //noinspection GradleDynamicVersion
-    implementation \\"com.facebook.react:react-native:+\\"  // From node_modules
-    implementation \\"androidx.swiperefreshlayout:swiperefreshlayout:1.0.0\\"
-    debugImplementation(\\"com.facebook.flipper:flipper:\${FLIPPER_VERSION}\\") {
+    implementation "com.facebook.react:react-native:+"  // From node_modules
+    implementation "androidx.swiperefreshlayout:swiperefreshlayout:1.0.0"
+    debugImplementation("com.facebook.flipper:flipper:\${FLIPPER_VERSION}") {
       exclude group:'com.facebook.fbjni'
     }
-    debugImplementation(\\"com.facebook.flipper:flipper-network-plugin:\${FLIPPER_VERSION}\\") {
+    debugImplementation("com.facebook.flipper:flipper-network-plugin:\${FLIPPER_VERSION}") {
         exclude group:'com.facebook.flipper'
         exclude group:'com.squareup.okhttp3', module:'okhttp'
     }
-    debugImplementation(\\"com.facebook.flipper:flipper-fresco-plugin:\${FLIPPER_VERSION}\\") {
+    debugImplementation("com.facebook.flipper:flipper-fresco-plugin:\${FLIPPER_VERSION}") {
         exclude group:'com.facebook.flipper'
     }
     addUnimodulesDependencies()
 
     if (enableHermes) {
-        def hermesPath = \\"../../node_modules/hermes-engine/android/\\";
-        debugImplementation files(hermesPath + \\"hermes-debug.aar\\")
-        releaseImplementation files(hermesPath + \\"hermes-release.aar\\")
+        def hermesPath = "../../node_modules/hermes-engine/android/";
+        debugImplementation files(hermesPath + "hermes-debug.aar")
+        releaseImplementation files(hermesPath + "hermes-release.aar")
     } else {
         implementation jscFlavor
     }
@@ -441,10 +441,10 @@ task copyDownloadableDepsToLibs(type: Copy) {
     into 'libs'
 }
 
-apply from: file(\\"../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle\\"); applyNativeModulesAppBuildGradle(project)
-apply from: \\"./eas-build.gradle\\"
+apply from: file("../../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesAppBuildGradle(project)
+apply from: "./eas-build.gradle"
 
 // Integration with Expo updates
-apply from: \\"../../../node_modules/expo-updates/scripts/create-manifest-android.gradle\\"
+apply from: "../../../node_modules/expo-updates/scripts/create-manifest-android.gradle"
 "
 `;

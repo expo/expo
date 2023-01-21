@@ -51,6 +51,10 @@ abstract_target 'Expo Go' do
     :hermes_enabled => true,
     :fabric_enabled => false,
   )
+  setup_jsc!(
+    :react_native_path => '../react-native-lab/react-native',
+    :fabric_enabled => false,
+  )
 
   # Build React Native with RCT_DEV enabled and RCT_ENABLE_INSPECTOR and
   # RCT_ENABLE_PACKAGER_CONNECTION disabled

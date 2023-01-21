@@ -60,9 +60,9 @@ const buttonMinWidth = spacing[16] + spacing[1];
 const inputStyle = css({
   display: 'block',
   boxSizing: 'border-box',
-  boxShadow: shadows.input,
+  boxShadow: shadows.xs,
   border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.small,
+  borderRadius: borderRadius.sm,
   color: theme.text.default,
   background: theme.background.default,
   height: 48,

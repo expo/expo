@@ -10,17 +10,16 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
-#include <SkPoint.h>
+#include "SkPoint.h"
 
 #pragma clang diagnostic pop
 
 namespace RNSkia {
 
-using namespace facebook;
+namespace jsi = facebook::jsi;
 
 class JsiSkPoint : public JsiSkWrappingSharedPtrHostObject<SkPoint> {
 public:
-
   JSI_PROPERTY_GET(x) { return static_cast<double>(getObject()->x()); }
 
   JSI_PROPERTY_GET(y) { return static_cast<double>(getObject()->y()); }
@@ -30,18 +29,16 @@ public:
 
   JsiSkPoint(std::shared_ptr<RNSkPlatformContext> context, const SkPoint &point)
       : JsiSkWrappingSharedPtrHostObject<SkPoint>(
-            std::move(context), std::make_shared<SkPoint>(point)){}
+            std::move(context), std::make_shared<SkPoint>(point)) {}
 
   /**
   Returns the underlying object from a host object of this type
  */
   static std::shared_ptr<SkPoint> fromValue(jsi::Runtime &runtime,
                                             const jsi::Value &obj) {
-    const auto& object = obj.asObject(runtime);
+    const auto &object = obj.asObject(runtime);
     if (object.isHostObject(runtime)) {
-      return object
-              .asHostObject<JsiSkPoint>(runtime)
-              ->getObject();
+      return object.asHostObject<JsiSkPoint>(runtime)->getObject();
     } else {
       auto x = object.getProperty(runtime, "x").asNumber();
       auto y = object.getProperty(runtime, "y").asNumber();
@@ -74,7 +71,8 @@ public:
 
       // Return the newly constructed object
       return jsi::Object::createFromHostObject(
-          runtime, std::make_shared<JsiSkPoint>(std::move(context), std::move(point)));
+          runtime,
+          std::make_shared<JsiSkPoint>(std::move(context), std::move(point)));
     };
   }
 };

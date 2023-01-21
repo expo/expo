@@ -117,6 +117,9 @@ public:
     /** Return the default fontmgr. */
     static sk_sp<SkFontMgr> RefDefault();
 
+    /* Returns an empty font manager without any typeface dependencies */
+    static sk_sp<SkFontMgr> RefEmpty();
+
 protected:
     virtual int onCountFamilies() const = 0;
     virtual void onGetFamilyName(int index, SkString* familyName) const = 0;

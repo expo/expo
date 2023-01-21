@@ -1,7 +1,7 @@
 import React from 'react';
 
 import { CommentData, CommentTagData } from '~/components/plugins/api/APIDataTypes';
-import { getAllTagData } from '~/components/plugins/api/APISectionUtils';
+import { getAllTagData, getCommentContent } from '~/components/plugins/api/APISectionUtils';
 import { PlatformTags } from '~/ui/components/Tag';
 
 type Props = {
@@ -12,7 +12,7 @@ type Props = {
 
 export const APISectionPlatformTags = ({ comment, prefix, platforms }: Props) => {
   const platformsData = platforms || getAllTagData('platform', comment);
-  const platformNames = platformsData?.map(platformData => platformData.text);
+  const platformNames = platformsData?.map(platformData => getCommentContent(platformData.content));
 
   return <PlatformTags prefix={prefix} platforms={platformNames} />;
 };

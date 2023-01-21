@@ -162,6 +162,9 @@ redirects[tutorial/planning]=tutorial/introduction/
 redirects[tutorial/sharing]=tutorial/introduction/
 redirects[tutorial/text]=tutorial/introduction/
 
+# Push notifications
+redirects[push-notifications/using-fcm/]=push-notifications/push-notifications-setup/
+
 # Removed API reference docs
 redirects[versions/latest/sdk/facebook]=guides/authentication/
 redirects[versions/latest/sdk/taskmanager]=versions/latest/sdk/task-manager/

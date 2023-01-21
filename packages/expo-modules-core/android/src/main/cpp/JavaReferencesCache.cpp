@@ -21,6 +21,10 @@ void JavaReferencesCache::loadJClasses(JNIEnv *env) {
     {"<init>", "(I)V"}
   });
 
+  loadJClass(env, "java/lang/Long", {
+    {"<init>", "(J)V"}
+  });
+
   loadJClass(env, "java/lang/Float", {
     {"<init>", "(F)V"}
   });

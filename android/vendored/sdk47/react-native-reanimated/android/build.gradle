@@ -193,7 +193,7 @@ def FOLLY_VERSION = reactProperties.getProperty("FOLLY_VERSION")
 def GLOG_VERSION = reactProperties.getProperty("GLOG_VERSION")
 def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
 def REACT_NATIVE_MINOR_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
-def FBJNI_VERSION = "0.2.2"
+def FBJNI_VERSION = "0.3.0"
 def REANIMATED_PACKAGE_BUILD = System.getenv("REANIMATED_PACKAGE_BUILD")
 
 // We download various C++ open-source dependencies into downloads.
@@ -922,7 +922,7 @@ dependencies {
         implementation "com.facebook.fbjni:fbjni:" + FBJNI_VERSION
     }
     else {
-        implementation "com.facebook.fbjni:fbjni-java-only:" + FBJNI_VERSION
+        // implementation "com.facebook.fbjni:fbjni-java-only:" + FBJNI_VERSION
     }
     implementation 'host.exp:reactandroid-abi47_0_0:1.0.0'
     compileOnly 'com.facebook.fbjni:fbjni:+'

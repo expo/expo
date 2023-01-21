@@ -130,14 +130,14 @@ Thanks again for helping to make sure that Expo is stable for everyone!
 
 ## 📚 Updating Documentation
 
-Our docs are made with [Next.js](https://github.com/zeit/next.js). They're located in the `docs/` directory. For more information look at the [`docs/readme.md`](/docs/README.md).
+Our docs are made with [Next.js](https://github.com/vercel/next.js). They're located in the **docs/** directory. For more information look at the [`docs/README.md`](/docs/README.md).
 
 **TL;DR:**
 
-1. Navigate to the `docs/` directory and run `yarn`.
+1. Navigate to the **docs/** directory and run `yarn`.
 2. Start the project with `yarn dev` (make sure you don't have another server running on port `3002`).
-3. Navigate to the docs you want to edit: `cd docs/pages/versions/unversioned/`
-4. If you update an older version, ensure the relevant changes are copied into `unversioned/`
+3. Navigate to the docs you want to edit: `cd docs/pages/`.
+4. If you update an older version, ensure the relevant changes are copied into `docs/pages/versions/unversioned/` for API docs.
 
 ## 📝 Writing a Commit Message
 

@@ -9,7 +9,6 @@ import {
 } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import {
-  mdComponents,
   resolveTypeName,
   renderFlags,
   CommentTextBlock,
@@ -24,6 +23,7 @@ import {
   STYLES_APIBOX,
   getTagNamesList,
   H3Code,
+  getCommentContent,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
 import { H2, UL, LI, BOLD, P, CODE } from '~/ui/components/Text';
@@ -73,7 +73,10 @@ const renderTypePropertyRow = ({
   signatures,
   kind,
 }: PropData): JSX.Element => {
-  const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
+  const defaultTag = getTagData('default', comment);
+  const initValue = parseCommentContent(
+    defaultValue || (defaultTag ? getCommentContent(defaultTag.content) : undefined)
+  );
   const commentData = getCommentOrSignatureComment(comment, signatures);
   const hasDeprecationNote = Boolean(getTagData('deprecated', comment));
   return (
@@ -87,8 +90,8 @@ const renderTypePropertyRow = ({
       <Cell fitContent>
         <APISectionDeprecationNote comment={comment} />
         <CommentTextBlock
+          inlineHeaders
           comment={commentData}
-          components={mdComponents}
           afterContent={renderDefaultValue(initValue)}
           emptyCommentFallback={hasDeprecationNote ? undefined : '-'}
         />
