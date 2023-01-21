@@ -69,11 +69,7 @@ export function withWebResolvers(config: ConfigT, projectRoot: string) {
 
   const extraNodeModules: { [key: string]: Record<string, string> } = {
     web: {
-      // 'react/jsx-runtime': require.resolve('./external-react_jsx-runtime'),
-      // // // react: require.resolve('react'),
-      // 'react-dom': require.resolve('./external-react-dom'),
       'react-native': path.resolve(require.resolve('react-native-web/package.json'), '..'),
-      // react: require.resolve('./external-react'),
     },
   };
 
@@ -122,6 +118,7 @@ export function withWebResolvers(config: ConfigT, projectRoot: string) {
           ...context,
           preferNativePlatform: platform !== 'web',
           resolveRequest: undefined,
+
           // Passing `mainFields` directly won't be considered
           // we need to extend the `getPackageMainPath` directly to
           // use platform specific `mainFields`.
@@ -200,11 +197,5 @@ function withMetroMultiPlatform(
 
   config = withWebPolyfills(config);
 
-  // config.watchFolders = [
-  //   ...config.watchFolders,
-  //   __dirname,
-  //   // path.join(require.resolve('react-dom/package.json'), '../..'),
-  // ];
-  // console.log('WATCH FOLDERS:', config.watchFolders);
   return withWebResolvers(config, projectRoot);
 }
