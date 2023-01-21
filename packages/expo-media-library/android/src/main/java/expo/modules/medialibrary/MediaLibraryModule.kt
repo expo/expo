@@ -397,14 +397,12 @@ class MediaLibraryModule : Module() {
       ?.not() ?: false
   }
 
-  private fun hasWritePermissions(): Boolean {
-    return if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
-      false
-    } else {
-      appContext.permissions
-        ?.hasGrantedPermissions(WRITE_EXTERNAL_STORAGE)
-        ?.not() ?: false
-    }
+  private fun hasWritePermissions() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    false
+  } else {
+    appContext.permissions
+      ?.hasGrantedPermissions(WRITE_EXTERNAL_STORAGE)
+      ?.not() ?: false
   }
 
   private fun runActionWithPermissions(assetsId: List<String>, action: Action) {
