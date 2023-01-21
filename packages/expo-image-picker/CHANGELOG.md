@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for [granular permissions](https://developer.android.com/about/versions/13/behavior-changes-13) on Android 13.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
