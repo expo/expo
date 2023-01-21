@@ -1,29 +1,27 @@
+import { ServerContainer, ServerContainerRef } from '@react-navigation/native';
+import { App } from 'expo-router/entry';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { AppRegistry } from 'react-native-web';
-import { ServerContainer, ServerContainerRef } from '@react-navigation/native';
-
-//
-import { App } from 'expo-router/entry';
 
 AppRegistry.registerComponent('App', () => App);
 
 export function serverRenderUrl(location: URL): string {
   const { element, getStyleElement } = AppRegistry.getApplication('App');
 
-    const ref = React.createRef<ServerContainerRef>();
+  const ref = React.createRef<ServerContainerRef>();
 
-    const html = ReactDOMServer.renderToString(
-      <ServerContainer ref={ref} location={location}>
-        {element}
-      </ServerContainer>
-    );
+  const html = ReactDOMServer.renderToString(
+    <ServerContainer ref={ref} location={location}>
+      {element}
+    </ServerContainer>
+  );
 
-    const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
+  const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
 
-    const options = ref.current?.getCurrentOptions();
+  const options = ref.current?.getCurrentOptions();
 
-    const document = `
+  const document = `
         <!DOCTYPE html>
         <html style="height: 100%">
         <meta charset="utf-8">
@@ -40,6 +38,5 @@ export function serverRenderUrl(location: URL): string {
         </div>
     `;
 
-    return document;
-//   return '...';
+  return document;
 }
