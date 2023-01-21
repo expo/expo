@@ -50,7 +50,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     </a>
   </h2>
   <div
-    class="css-y2smtm"
+    class="css-1h8tzv"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -338,7 +338,7 @@ for more details.
     </h2>
     <div>
       <div
-        class="css-1b8yuk8"
+        class="css-c22nmz"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -422,7 +422,7 @@ for more details.
         </p>
       </div>
       <div
-        class="css-1b8yuk8"
+        class="css-c22nmz"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -506,7 +506,7 @@ for more details.
         </p>
       </div>
       <div
-        class="css-1b8yuk8"
+        class="css-c22nmz"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -598,7 +598,7 @@ for more details.
         </p>
       </div>
       <div
-        class="css-1b8yuk8"
+        class="css-c22nmz"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -692,7 +692,7 @@ in here.
         </p>
       </div>
       <div
-        class="css-1b8yuk8"
+        class="css-c22nmz"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -943,7 +943,7 @@ properties.
     </a>
   </h2>
   <div
-    class="css-1b8yuk8"
+    class="css-c22nmz"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -1253,7 +1253,7 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-    class="css-1b8yuk8"
+    class="css-c22nmz"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -1432,7 +1432,7 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-    class="css-1b8yuk8"
+    class="css-c22nmz"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -1708,7 +1708,7 @@ refresh operation.
     </p>
   </div>
   <div
-    class="css-1b8yuk8"
+    class="css-c22nmz"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -2031,7 +2031,7 @@ sign-in operation.
     </p>
   </div>
   <div
-    class="css-1b8yuk8"
+    class="css-c22nmz"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -2388,7 +2388,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="css-1b8yuk8"
+    class="css-c22nmz"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -2645,7 +2645,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="css-y2smtm"
+    class="css-1h8tzv"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -3169,7 +3169,7 @@ developers.
     </div>
   </div>
   <div
-    class="css-y2smtm"
+    class="css-1h8tzv"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -3476,7 +3476,7 @@ may be
     </div>
   </div>
   <div
-    class="css-y2smtm"
+    class="css-1h8tzv"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -3785,7 +3785,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-y2smtm"
+    class="css-1h8tzv"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -4115,7 +4115,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-y2smtm"
+    class="css-1h8tzv"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -4354,7 +4354,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-y2smtm"
+    class="css-1h8tzv"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -4520,7 +4520,7 @@ OAuth 2.0 protocol
     </a>
   </h2>
   <div
-    class="css-10gr5wx"
+    class="css-1kkk53e"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -4593,7 +4593,7 @@ OAuth 2.0 protocol
       .
     </p>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -4661,7 +4661,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -4729,7 +4729,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -4798,7 +4798,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-10gr5wx"
+    class="css-1kkk53e"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -4871,7 +4871,7 @@ OAuth 2.0 protocol
       .
     </p>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -4939,7 +4939,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5007,7 +5007,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <strong
         class="css-bvflvn-TextComponent"
@@ -5109,7 +5109,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-10gr5wx"
+    class="css-1kkk53e"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -5234,7 +5234,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5296,7 +5296,7 @@ for more details.
       </code>
     </div>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5358,7 +5358,7 @@ for more details.
       </code>
     </div>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5420,7 +5420,7 @@ for more details.
       </code>
     </div>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5483,7 +5483,7 @@ for more details.
     </div>
   </div>
   <div
-    class="css-10gr5wx"
+    class="css-1kkk53e"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -5538,7 +5538,7 @@ for more details.
       </a>
     </h3>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5606,7 +5606,7 @@ for more details.
       </p>
     </div>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5668,7 +5668,7 @@ for more details.
       </code>
     </div>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5730,7 +5730,7 @@ for more details.
       </code>
     </div>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5793,7 +5793,7 @@ for more details.
     </div>
   </div>
   <div
-    class="css-10gr5wx"
+    class="css-1kkk53e"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -5961,7 +5961,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -6023,7 +6023,7 @@ for more details.
       </code>
     </div>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -6086,7 +6086,7 @@ for more details.
     </div>
   </div>
   <div
-    class="css-10gr5wx"
+    class="css-1kkk53e"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -6199,7 +6199,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -6267,7 +6267,7 @@ for more details.
       </p>
     </div>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -6335,7 +6335,7 @@ for more details.
       </p>
     </div>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -6456,7 +6456,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </a>
   </h2>
   <div
-    class="css-y2smtm"
+    class="css-1h8tzv"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -6587,7 +6587,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </h2>
     <div>
       <div
-        class="css-1b8yuk8"
+        class="css-c22nmz"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -6710,7 +6710,7 @@ minimize battery usage.
         </p>
       </div>
       <div
-        class="css-1b8yuk8"
+        class="css-c22nmz"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -6870,7 +6870,7 @@ data has been retrieved.
         </blockquote>
       </div>
       <div
-        class="css-1b8yuk8"
+        class="css-c22nmz"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -7125,7 +7125,7 @@ Same as
     </a>
   </h2>
   <div
-    class="css-1b8yuk8"
+    class="css-c22nmz"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -7538,7 +7538,7 @@ This uses both
     </a>
   </h2>
   <div
-    class="css-1b8yuk8"
+    class="css-c22nmz"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -7720,7 +7720,7 @@ This uses both
     </p>
   </div>
   <div
-    class="css-1b8yuk8"
+    class="css-c22nmz"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -7924,7 +7924,7 @@ This uses both
     </p>
   </div>
   <div
-    class="css-1b8yuk8"
+    class="css-c22nmz"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -8305,7 +8305,7 @@ code.
     </a>
   </h2>
   <div
-    class="css-1b8yuk8"
+    class="css-c22nmz"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -8644,7 +8644,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="css-y2smtm"
+    class="css-1h8tzv"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -8809,7 +8809,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-y2smtm"
+    class="css-1h8tzv"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -8951,7 +8951,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-y2smtm"
+    class="css-1h8tzv"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9073,7 +9073,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-y2smtm"
+    class="css-1h8tzv"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9249,7 +9249,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-y2smtm"
+    class="css-1h8tzv"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9374,7 +9374,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-y2smtm"
+    class="css-1h8tzv"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9653,7 +9653,7 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="css-y2smtm"
+    class="css-1h8tzv"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9808,7 +9808,7 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="css-y2smtm"
+    class="css-1h8tzv"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9936,7 +9936,7 @@ you don't get this value.
     </a>
   </h2>
   <div
-    class="css-10gr5wx"
+    class="css-1kkk53e"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9991,7 +9991,7 @@ you don't get this value.
       </a>
     </h3>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -10059,7 +10059,7 @@ you don't get this value.
       </p>
     </div>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -10127,7 +10127,7 @@ you don't get this value.
       </p>
     </div>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -10248,7 +10248,7 @@ exports[`APISection expo-pedometer 1`] = `
     </a>
   </h2>
   <div
-    class="css-1b8yuk8"
+    class="css-c22nmz"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -10412,7 +10412,7 @@ exports[`APISection expo-pedometer 1`] = `
     <br />
   </div>
   <div
-    class="css-1b8yuk8"
+    class="css-c22nmz"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -10768,7 +10768,7 @@ a start date that is more than seven days in the past returns only the available
     </blockquote>
   </div>
   <div
-    class="css-1b8yuk8"
+    class="css-c22nmz"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -10941,7 +10941,7 @@ available on this device.
     </p>
   </div>
   <div
-    class="css-1b8yuk8"
+    class="css-c22nmz"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -11105,7 +11105,7 @@ available on this device.
     <br />
   </div>
   <div
-    class="css-1b8yuk8"
+    class="css-c22nmz"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -11415,7 +11415,7 @@ provided with a single argument that is
     </a>
   </h2>
   <div
-    class="css-1b8yuk8"
+    class="css-c22nmz"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -11754,7 +11754,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="css-y2smtm"
+    class="css-1h8tzv"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -11876,7 +11876,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-y2smtm"
+    class="css-1h8tzv"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -12007,7 +12007,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-y2smtm"
+    class="css-1h8tzv"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -12094,7 +12094,7 @@ in order to enable/disable the permission.
     </p>
   </div>
   <div
-    class="css-y2smtm"
+    class="css-1h8tzv"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -12260,7 +12260,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="css-10gr5wx"
+    class="css-1kkk53e"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -12315,7 +12315,7 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -12383,7 +12383,7 @@ in order to enable/disable the permission.
       </p>
     </div>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -12451,7 +12451,7 @@ in order to enable/disable the permission.
       </p>
     </div>
     <div
-      class="css-1b8yuk8"
+      class="css-c22nmz"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
