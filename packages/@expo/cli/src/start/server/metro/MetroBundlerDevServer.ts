@@ -13,6 +13,8 @@ import {
   RuntimeRedirectMiddleware,
 } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
+import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
+import { getServerRenderer } from '../node-renderer';
 import { instantiateMetroAsync } from './instantiateMetro';
 
 /** Default port to use for apps running in Expo Go. */
@@ -98,6 +100,51 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     if (this.isTargetingWeb()) {
       // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
+
+      // Middleware for hosting middleware
+      middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+        if (!req?.url) {
+          return next();
+        }
+
+        // TODO: Formal manifest for allowed paths
+        if (req.url.endsWith('.ico')) {
+          return next();
+        }
+
+        try {
+          const serverRenderLocation = await getServerRenderer(this.projectRoot);
+
+          const location = new URL(req.url, `http://localhost:${parsedOptions.port}/`);
+
+          console.log('rendering:', location);
+          const content = serverRenderLocation(location);
+
+          console.log('content:', content);
+
+          res.setHeader('Content-Type', 'text/html');
+          res.end(content);
+          return;
+        } catch (error) {
+          console.error(error);
+          res.setHeader('Content-Type', 'text/html');
+          res.end(`
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+  <title>Error</title>
+</head>
+<body>
+  <h1>Failed to render static app</h1>
+  <pre>${error.stack}</pre>
+</body>
+</html>
+`);
+          return;
+        }
+      });
 
       // This MUST run last since it's the fallback.
       middleware.use(new HistoryFallbackMiddleware(manifestMiddleware.internal).getHandler());
