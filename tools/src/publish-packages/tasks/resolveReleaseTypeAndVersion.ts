@@ -28,10 +28,16 @@ export const resolveReleaseTypeAndVersion = new Task<TaskArgs>(
       );
       const allVersions = pkgView?.versions ?? [];
 
-      // Make it a prerelease version if `--prerelease` was passed and assign to the state.
-      state.releaseType = prerelease
-        ? (('pre' + highestReleaseType) as ReleaseType)
-        : highestReleaseType;
+      if (prerelease) {
+        // Make it a prerelease version if `--prerelease` was passed and assign to the state.
+        state.releaseType = ('pre' + highestReleaseType) as ReleaseType;
+      } else if (getPrereleaseIdentifier(pkg.packageVersion)) {
+        // If the current version is a prerelease, just increment its number.
+        state.releaseType = ReleaseType.PRERELEASE;
+      } else {
+        // Set the release type depending on changes made in the package.
+        state.releaseType = highestReleaseType;
+      }
 
       // If the version to bump is not published yet, then we do want to use it instead,
       // no matter which release type is suggested.

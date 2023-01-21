@@ -14,7 +14,7 @@ export const globalPrism = css`
     position: relative;
     padding: 0.2em;
     border-radius: 0.3em;
-    color: color: ${theme.code.property};
+    color: color: ${theme.palette.red11};
     border: 1px solid ${theme.border.default};
     display: inline;
     white-space: normal;
@@ -49,56 +49,60 @@ export const globalPrism = css`
   .token.prolog,
   .token.doctype,
   .token.cdata {
-    color: ${theme.code.comment}
+    color: ${theme.palette.gray10}
   }
 
+  .token.operator,
   .token.punctuation {
-    color: ${theme.code.punctuation}
+    color: ${theme.palette.gray9}
   }
 
-  .token.property,
-  .token.tag,
   .token.boolean,
-  .token.number,
   .token.function-name,
   .token.constant,
   .token.symbol,
   .token.deleted {
-    color: ${theme.code.property}
+    color: ${theme.palette.red11}
   }
 
   .token.selector,
-  .token.attr-name,
-  .token.string,
   .token.char,
-  .token.function,
   .token.builtin,
+  .token.script,
   .token.inserted {
-    color: ${theme.code.builtin}
+    color: ${theme.palette.green10}
   }
 
-  .token.operator,
   .token.entity,
-  .token.url,
   .token.variable {
-    color: ${theme.code.operator}
+    color: ${theme.palette.green11}
+  }
+  
+  .token.attr-name,
+  .token.url {
+    color: ${theme.palette.blue11}
   }
 
+  .token.keyword {
+    color: ${theme.palette.pink10}
+  }
+
+  .token.property,
   .token.atrule,
   .token.attr-value,
-  .token.keyword,
-  .token.class-name {
-    color: ${theme.code.keyword}
+  .token.function {
+    color: ${theme.palette.purple11}
   }
 
+  .token.class-name,
   .token.regex,
   .token.important {
-    color: ${theme.code.regex}
+    color: ${theme.palette.orange11}
   }
 
-  .language-css .token.string,
-  .style .token.string {
-    color: ${theme.code.string}
+  .token.number,
+  .token.string {
+    color: ${theme.palette.yellow11}
   }
 
   .token.important {
@@ -131,7 +135,7 @@ export const globalPrism = css`
   .token.tab:not(:empty):before,
   .token.cr:before,
   .token.lf:before {
-    color: ${theme.code.before}
+    color: ${theme.palette.gray9}
   }
 
   pre[class*='language-'].line-numbers {

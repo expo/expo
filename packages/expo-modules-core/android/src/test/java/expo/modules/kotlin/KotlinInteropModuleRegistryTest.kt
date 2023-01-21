@@ -142,7 +142,7 @@ class KotlinInteropModuleRegistryTest {
         JavaOnlyArray().apply { pushInt(1) }
       ) to """
         Call to function 'test-1.f1' has been rejected.
-        → Caused by: Received 1 arguments, but 0 was expected.
+        → Caused by: Received 1 arguments, but 0 was expected
       """.trimIndent(),
       Triple(
         "test-2",
@@ -159,7 +159,7 @@ class KotlinInteropModuleRegistryTest {
         JavaOnlyArray()
       ) to """
         Call to function 'test-2.f2' has been rejected.
-        → Caused by: Received 0 arguments, but 1 was expected.
+        → Caused by: Received 0 arguments, but 1 was expected
       """.trimIndent(),
       Triple(
         "test-1",

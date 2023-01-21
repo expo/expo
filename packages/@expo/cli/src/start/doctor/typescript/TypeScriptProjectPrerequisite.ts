@@ -77,7 +77,6 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite {
           // the package and attempts to resolve the module in the same process.
           { file: 'typescript/package.json', pkg: 'typescript' },
           { file: '@types/react/package.json', pkg: '@types/react' },
-          { file: '@types/react-native/package.json', pkg: '@types/react-native' },
         ],
       });
     } catch (error) {

@@ -204,10 +204,10 @@ public:
     Type type() const { return fType; }
     const SkSVGColorType& color() const { SkASSERT(fType == Type::kColor); return fColor; }
     SkSpan<const SkString> vars() const {
-        return fVars ? SkMakeSpan<const Vars>(fVars->fData) : SkSpan<const SkString>{nullptr, 0};
+        return fVars ? SkSpan<const SkString>(fVars->fData) : SkSpan<const SkString>();
     }
-    SkSpan<      SkString> vars()       {
-        return fVars ? SkMakeSpan<      Vars>(fVars->fData) : SkSpan<      SkString>{nullptr, 0};
+    SkSpan<SkString> vars()       {
+        return fVars ? SkSpan<SkString>(fVars->fData) : SkSpan<SkString>();
     }
 
 private:

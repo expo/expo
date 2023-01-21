@@ -85,13 +85,9 @@ It's not yet possible to increase memory limits on your build workers, [only one
 
 ## Verify that your JavaScript bundles locally
 
-When you get the `Metro encountered an error` during a native iOS build, it means Metro bundler failed to bundle the app. This unfortunately runs at the end of the native build process, meaning it takes a while to fail.
+When a build fails with `Task :app:bundleReleaseJsAndAssets FAILED` (Android) or `Metro encountered an error` (iOS), it means Metro bundler was unable to bundle the app's JavaScript code while trying to embed it in your app's binary. This error message is usually followed by a syntax error or other details about why bundling failed. Unfortunately, a standard React Native project is configured to perform this step late in the Gradle/Xcode build step, meaning it can take a while to see this error.
 
-<Terminal cmd={[`❌ Metro encountered an error:`]} />
-
-You can reproduce this production bundle locally by running `expo export --experimental-bundle` which simply creates a production bundle. Continue doing this until the command passes without throwing. In general, this should save you hours of debugging time.
-
-This behavior comes from React Native on iOS, in the future we plan to rewrite this for EAS Build so the bundle is created before the native runtime.
+You can build the production bundle locally by running `npx expo export` to bypass all of the other build steps so you can see this error much more quickly. Run this command repeatedly, resolving any syntax errors or other issues uncovered until the bundle builds successfully. Then try your EAS build again.
 
 ## Verify that your project builds and runs locally
 

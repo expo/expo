@@ -47,7 +47,7 @@ describe(Callout, () => {
     render(<Callout type="error">Hello</Callout>);
     expect(screen.getByTestId('callout-container')).toHaveStyleRule(
       'background-color',
-      theme.background.error
+      theme.background.danger
     );
   });
 

@@ -8,13 +8,13 @@ exports[`doesn't conflict with Prettier: message 1`] = `
 exports[`doesn't conflict with Prettier: success 1`] = `true`;
 
 exports[`lints with the web config: fixtures/all-00.js 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [
-    Object {
+  "messages": [
+    {
       "column": 14,
       "endColumn": 15,
       "endLine": 30,
@@ -86,20 +86,20 @@ function _fn() {}
 
 function* gen() {}
 ",
-  "suppressedMessages": Array [],
-  "usedDeprecatedRules": Array [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 1,
 }
 `;
 
 exports[`lints with the web config: fixtures/all-01.ts 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [
-    Object {
+  "messages": [
+    {
       "column": 3,
       "endColumn": 18,
       "endLine": 18,
@@ -110,7 +110,7 @@ Object {
       "ruleId": "@typescript-eslint/no-dupe-class-members",
       "severity": 1,
     },
-    Object {
+    {
       "column": 14,
       "endColumn": 25,
       "endLine": 25,
@@ -158,20 +158,20 @@ export class Example {
 
 function _fn(...args: any): void {}
 ",
-  "suppressedMessages": Array [],
-  "usedDeprecatedRules": Array [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 2,
 }
 `;
 
 exports[`lints with the web config: fixtures/all-02.js 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [
-    Object {
+  "messages": [
+    {
       "column": 7,
       "endColumn": 14,
       "endLine": 1,
@@ -182,7 +182,7 @@ Object {
       "ruleId": "no-unused-vars",
       "severity": 1,
     },
-    Object {
+    {
       "column": 10,
       "endColumn": 17,
       "endLine": 3,
@@ -193,7 +193,7 @@ Object {
       "ruleId": "no-unused-vars",
       "severity": 1,
     },
-    Object {
+    {
       "column": 9,
       "endColumn": 16,
       "endLine": 4,
@@ -211,20 +211,20 @@ function unused2() {
   const unused3 = 'hi';
 }
 ",
-  "suppressedMessages": Array [],
-  "usedDeprecatedRules": Array [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 3,
 }
 `;
 
 exports[`lints with the web config: fixtures/all-03.ts 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [
-    Object {
+  "messages": [
+    {
       "column": 7,
       "endColumn": 16,
       "endLine": 1,
@@ -235,7 +235,7 @@ Object {
       "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
-    Object {
+    {
       "column": 10,
       "endColumn": 19,
       "endLine": 3,
@@ -246,7 +246,7 @@ Object {
       "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
-    Object {
+    {
       "column": 9,
       "endColumn": 15,
       "endLine": 5,
@@ -257,7 +257,7 @@ Object {
       "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
-    Object {
+    {
       "column": 9,
       "endColumn": 25,
       "endLine": 6,
@@ -268,7 +268,7 @@ Object {
       "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
-    Object {
+    {
       "column": 28,
       "endColumn": 37,
       "endLine": 6,
@@ -288,51 +288,51 @@ function tsUnused2() {
   const angleBracketCast = <string>x;
 }
 ",
-  "suppressedMessages": Array [],
-  "usedDeprecatedRules": Array [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 5,
 }
 `;
 
 exports[`lints with the web config: fixtures/all-04.ts 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [],
+  "messages": [],
   "output": "export const blah = (): string[] => {
   return ['1'];
 };
 ",
-  "suppressedMessages": Array [],
-  "usedDeprecatedRules": Array [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 0,
 }
 `;
 
 exports[`lints with the web config: fixtures/all-05.ts 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [],
+  "messages": [],
   "output": "export const blah = 3!;
 ",
-  "suppressedMessages": Array [],
-  "usedDeprecatedRules": Array [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 0,
 }
 `;
 
 exports[`lints with the web config: fixtures/all-06.ts 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [],
+  "messages": [],
   "output": "export const numberTest: number | null = null;
 export const booleanTest: boolean | null = null;
 export const symbolTest: symbol | null = null;
@@ -340,19 +340,19 @@ export const objectTest: object | null = null;
 export const stringTest: string | null = null;
 export const objectShorthandTest: object | null = null;
 ",
-  "suppressedMessages": Array [],
-  "usedDeprecatedRules": Array [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 0,
 }
 `;
 
 exports[`lints with the web config: fixtures/all-07.js 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [],
+  "messages": [],
   "output": "import b from 'b';
 import c from 'c';
 
@@ -363,89 +363,89 @@ const e = require('e');
 
 export default a + b + c + d + e;
 ",
-  "suppressedMessages": Array [],
-  "usedDeprecatedRules": Array [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 0,
 }
 `;
 
 exports[`lints with the web config: fixtures/web-native-00.js 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [],
-  "suppressedMessages": Array [],
-  "usedDeprecatedRules": Array [],
+  "messages": [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 0,
 }
 `;
 
 exports[`lints with the web config: fixtures/web-native-01.js 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [],
-  "suppressedMessages": Array [],
-  "usedDeprecatedRules": Array [],
+  "messages": [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 0,
 }
 `;
 
 exports[`lints with the web config: fixtures/web-native-02.js 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [],
-  "suppressedMessages": Array [],
-  "usedDeprecatedRules": Array [],
+  "messages": [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 0,
 }
 `;
 
 exports[`lints with the web config: fixtures/web-native-03.js 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [],
+  "messages": [],
   "output": "import React from 'react';
 import { View } from 'react-native';
 
 export default function Example() {
-  return <View testID=\\"test\\" />;
+  return <View testID="test" />;
 }
 ",
-  "suppressedMessages": Array [],
-  "usedDeprecatedRules": Array [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 0,
 }
 `;
 
 exports[`lints with the web config: fixtures/web-native-04.js 1`] = `
-Object {
+{
   "errorCount": 2,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [
-    Object {
+  "messages": [
+    {
       "column": 5,
       "endColumn": 14,
       "endLine": 10,
       "line": 10,
-      "message": "React Hook \\"useEffect\\" is called conditionally. React Hooks must be called in the exact same order in every component render.",
+      "message": "React Hook "useEffect" is called conditionally. React Hooks must be called in the exact same order in every component render.",
       "nodeType": "Identifier",
       "ruleId": "react-hooks/rules-of-hooks",
       "severity": 2,
     },
-    Object {
+    {
       "column": 10,
       "endColumn": 18,
       "endLine": 14,
@@ -456,12 +456,12 @@ Object {
       "ruleId": "no-unused-vars",
       "severity": 1,
     },
-    Object {
+    {
       "column": 3,
       "endColumn": 12,
       "endLine": 15,
       "line": 15,
-      "message": "React Hook \\"useEffect\\" is called in function \\"notAHook\\" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word \\"use\\".",
+      "message": "React Hook "useEffect" is called in function "notAHook" that is neither a React function component nor a custom React Hook function. React component names must start with an uppercase letter. React Hook names must start with the word "use".",
       "nodeType": "Identifier",
       "ruleId": "react-hooks/rules-of-hooks",
       "severity": 2,
@@ -484,8 +484,8 @@ function notAHook() {
   useEffect(() => {});
 }
 ",
-  "suppressedMessages": Array [],
-  "usedDeprecatedRules": Array [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 1,
 }
 `;

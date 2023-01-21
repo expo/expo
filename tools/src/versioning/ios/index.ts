@@ -388,7 +388,7 @@ async function generateReactNativePodScriptAsync(
         'gm'
       ),
       replaceWith: `
-    if File.exists?("#{react_native_path}/sdks/hermes-engine/destroot")
+    if File.exist?("#{react_native_path}/sdks/hermes-engine/destroot")
       pod '${versionName}hermes-engine', :path => "#{react_native_path}/sdks/hermes-engine", :project_name => '${versionName}'
     else
       pod '${versionName}hermes-engine', :podspec => "#{react_native_path}/sdks/hermes-engine/${versionName}hermes-engine.podspec", :project_name => '${versionName}'

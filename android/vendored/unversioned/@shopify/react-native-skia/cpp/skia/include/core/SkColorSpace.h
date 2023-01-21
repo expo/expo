@@ -11,7 +11,7 @@
 #include "include/core/SkRefCnt.h"
 #include "include/private/SkFixed.h"
 #include "include/private/SkOnce.h"
-#include "include/third_party/skcms/skcms.h"
+#include "modules/skcms/skcms.h"
 #include <memory>
 
 class SkData;

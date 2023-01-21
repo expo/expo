@@ -15,6 +15,7 @@
 /packages/expo-battery                          @tsapeta
 /packages/expo-blur                             @tsapeta
 /packages/expo-brightness                       @tsapeta
+/packages/expo-build-properties                 @kudo @gabrieldonadel
 /packages/expo-calendar                         @lukmccall
 /packages/expo-camera                           @lukmccall
 /packages/expo-cellular                         @ide @tsapeta

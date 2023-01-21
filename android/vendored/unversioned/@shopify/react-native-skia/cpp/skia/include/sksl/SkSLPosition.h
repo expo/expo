@@ -9,6 +9,8 @@
 #define SKSL_POSITION
 
 #include "include/core/SkTypes.h"
+
+#include <cstdint>
 #include <string_view>
 
 namespace SkSL {

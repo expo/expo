@@ -8,11 +8,8 @@ typealias ViewType = LinearGradientView
 class LinearGradientModule : Module() {
   override fun definition() = ModuleDefinition {
     Name("ExpoLinearGradient")
-    ViewManager {
-      View { context ->
-        LinearGradientView(context)
-      }
 
+    View(LinearGradientView::class) {
       Prop("colors") { view: ViewType, colors: IntArray ->
         view.setColors(colors)
       }

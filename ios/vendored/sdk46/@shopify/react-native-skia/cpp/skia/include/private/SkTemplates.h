@@ -393,32 +393,6 @@ private:
 
 //////////////////////////////////////////////////////////////////////////////////////////////////
 
-/**
- *  Pass the object and the storage that was offered during SkInPlaceNewCheck, and this will
- *  safely destroy (and free if it was dynamically allocated) the object.
- */
-template <typename T> void SkInPlaceDeleteCheck(T* obj, void* storage) {
-    if (storage == obj) {
-        obj->~T();
-    } else {
-        delete obj;
-    }
-}
-
-/**
- *  Allocates T, using storage if it is large enough, and allocating on the heap (via new) if
- *  storage is not large enough.
- *
- *      obj = SkInPlaceNewCheck<Type>(storage, size);
- *      ...
- *      SkInPlaceDeleteCheck(obj, storage);
- */
-template<typename T, typename... Args>
-T* SkInPlaceNewCheck(void* storage, size_t size, Args&&... args) {
-    return (sizeof(T) <= size) ? new (storage) T(std::forward<Args>(args)...)
-                               : new T(std::forward<Args>(args)...);
-}
-
 template <int N, typename T> class SkAlignedSTStorage {
 public:
     SkAlignedSTStorage() {}
@@ -449,5 +423,29 @@ template<size_t N, typename C> constexpr auto SkMakeArray(C c)
 -> std::array<decltype(c(std::declval<typename std::index_sequence<N>::value_type>())), N> {
     return SkMakeArrayFromIndexSequence(c, std::make_index_sequence<N>{});
 }
+
+/**
+ * Trait for identifying types which are relocatable via memcpy, for container optimizations.
+ *
+ */
+template<typename, typename = void>
+struct sk_has_trivially_relocatable_member : std::false_type {};
+
+// Types can declare themselves trivially relocatable with a public
+//    using sk_is_trivially_relocatable = std::true_type;
+template<typename T>
+struct sk_has_trivially_relocatable_member<T, std::void_t<typename T::sk_is_trivially_relocatable>>
+        : T::sk_is_trivially_relocatable {};
+
+// By default, all trivially copyable types are trivially relocatable.
+template <typename T>
+struct sk_is_trivially_relocatable
+        : std::disjunction<std::is_trivially_copyable<T>, sk_has_trivially_relocatable_member<T>
+>{};
+
+// Here be some dragons: while technically not guaranteed, we count on all sane unique_ptr
+// implementations to be trivially relocatable.
+template <typename T>
+struct sk_is_trivially_relocatable<std::unique_ptr<T>> : std::true_type {};
 
 #endif

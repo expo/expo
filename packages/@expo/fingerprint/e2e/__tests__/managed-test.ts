@@ -100,29 +100,29 @@ describe('managed project test', () => {
     });
     const diff = await diffFingerprintChangesAsync(fingerprint, projectRoot);
     expect(diff).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "filePath": "node_modules/@react-native-community/netinfo",
           "hash": "9864bf3bf95283fe99774aaeec91965d70f3eab3",
-          "reasons": Array [
+          "reasons": [
             "bareRncliAutolinking",
           ],
           "type": "dir",
         },
-        Object {
-          "contents": "{\\"sourceDir\\":\\"node_modules/@react-native-community/netinfo/android\\",\\"packageImportPath\\":\\"import com.reactnativecommunity.netinfo.NetInfoPackage;\\",\\"packageInstance\\":\\"new NetInfoPackage()\\",\\"buildTypes\\":[],\\"componentDescriptors\\":[],\\"androidMkPath\\":\\"node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/Android.mk\\",\\"cmakeListsPath\\":\\"node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/CMakeLists.txt\\"}",
+        {
+          "contents": "{"sourceDir":"node_modules/@react-native-community/netinfo/android","packageImportPath":"import com.reactnativecommunity.netinfo.NetInfoPackage;","packageInstance":"new NetInfoPackage()","buildTypes":[],"componentDescriptors":[],"androidMkPath":"node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/Android.mk","cmakeListsPath":"node_modules/@react-native-community/netinfo/android/build/generated/source/codegen/jni/CMakeLists.txt"}",
           "hash": "cb4dfbb38f9151ecd6621bc9e36055540495c463",
           "id": "rncliAutolinkingConfig:@react-native-community/netinfo:android",
-          "reasons": Array [
+          "reasons": [
             "bareRncliAutolinking",
           ],
           "type": "contents",
         },
-        Object {
-          "contents": "{\\"podspecPath\\":\\"node_modules/@react-native-community/netinfo/react-native-netinfo.podspec\\",\\"configurations\\":[],\\"scriptPhases\\":[]}",
+        {
+          "contents": "{"podspecPath":"node_modules/@react-native-community/netinfo/react-native-netinfo.podspec","configurations":[],"scriptPhases":[]}",
           "hash": "40eebce5caf94df11096238a5a2ca648ea9f242e",
           "id": "rncliAutolinkingConfig:@react-native-community/netinfo:ios",
-          "reasons": Array [
+          "reasons": [
             "bareRncliAutolinking",
           ],
           "type": "contents",

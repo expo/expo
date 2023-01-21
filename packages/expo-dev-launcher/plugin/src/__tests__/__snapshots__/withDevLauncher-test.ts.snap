@@ -37,7 +37,7 @@ public class MainActivity extends ReactActivity {
    */
   @Override
   protected String getMainComponentName() {
-    return \\"main\\";
+    return "main";
   }
 
   @Override
@@ -50,7 +50,7 @@ public class MainActivity extends ReactActivity {
   /**
    * Align the back button behavior with Android S
    * where moving root activities to background instead of finishing activities.
-   * @see <a href=\\"https://developer.android.com/reference/android/app/Activity#onBackPressed()\\">onBackPressed</a>
+   * @see <a href="https://developer.android.com/reference/android/app/Activity#onBackPressed()">onBackPressed</a>
    */
   @Override
   public void invokeDefaultOnBackPressed() {
@@ -86,7 +86,7 @@ public class MainActivity extends ReactActivity {
     */
   @Override
   protected String getMainComponentName() {
-    return \\"react-native-project\\";
+    return "react-native-project";
   }
 
   @Override

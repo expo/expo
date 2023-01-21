@@ -22,8 +22,8 @@ it('loads expected modules by default', async () => {
     `require('../../build/src/run/android').expoRunAndroid`
   );
   expect(modules).toStrictEqual([
-    '../node_modules/ansi-styles/index.js',
     '../node_modules/arg/index.js',
+    '../node_modules/chalk/node_modules/ansi-styles/index.js',
     '../node_modules/chalk/source/index.js',
     '../node_modules/chalk/source/util.js',
     '../node_modules/has-flag/index.js',

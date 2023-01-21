@@ -17,8 +17,8 @@ export const SidebarHeadEntry = ({ href, title, isActive, Icon }: SidebarHeadEnt
     <A href={href} css={[entryContainerStyle, isActive && activeEntryContainerStyle]} isStyled>
       <Icon
         css={entryIconStyle}
-        color={isActive ? theme.link.default : theme.icon.default}
-        width={iconSize.small}
+        color={isActive ? theme.text.link : theme.icon.default}
+        width={iconSize.sm}
       />
       <span>{title}</span>
     </A>
@@ -51,11 +51,11 @@ const entryContainerStyle = css({
 const activeEntryContainerStyle = css({
   color: theme.text.default,
   fontWeight: 500,
-  background: theme.background.tertiary,
-  borderRadius: borderRadius.medium,
+  background: theme.background.element,
+  borderRadius: borderRadius.md,
 
-  '[data-expo-theme="dark"] &': {
-    backgroundColor: theme.background.tertiary,
+  '.dark-theme &': {
+    backgroundColor: theme.background.element,
   },
 });
 

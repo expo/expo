@@ -1,5 +1,5 @@
 import React from 'react';
-import { NativeModules, requireNativeComponent } from 'react-native';
+import { NativeModules, requireNativeComponent, HostComponent } from 'react-native';
 
 // To make the transition from React Native's `requireNativeComponent` to Expo's
 // `requireNativeViewManager` as easy as possible, `requireNativeViewManager` is a drop-in
@@ -13,6 +13,27 @@ import { NativeModules, requireNativeComponent } from 'react-native';
 type NativeExpoComponentProps = {
   proxiedProperties: object;
 };
+
+/**
+ * A map that caches registered native components.
+ */
+const nativeComponentsCache = new Map<string, HostComponent<any>>();
+
+/**
+ * Requires a React Native component from cache if possible. This prevents
+ * "Tried to register two views with the same name" errors on fast refresh, but
+ * also when there are multiple versions of the same package with native component.
+ */
+function requireCachedNativeComponent<Props>(viewName: string): HostComponent<Props> {
+  const cachedNativeComponent = nativeComponentsCache.get(viewName);
+
+  if (!cachedNativeComponent) {
+    const nativeComponent = requireNativeComponent<Props>(viewName);
+    nativeComponentsCache.set(viewName, nativeComponent);
+    return nativeComponent;
+  }
+  return cachedNativeComponent;
+}
 
 /**
  * A drop-in replacement for `requireNativeComponent`.
@@ -32,7 +53,7 @@ export function requireNativeViewManager<P>(viewName: string): React.ComponentTy
   // manager
   const reactNativeViewName = `ViewManagerAdapter_${viewName}`;
   const ReactNativeComponent =
-    requireNativeComponent<NativeExpoComponentProps>(reactNativeViewName);
+    requireCachedNativeComponent<NativeExpoComponentProps>(reactNativeViewName);
   const proxiedPropsNames = viewManagerConfig?.propsNames ?? [];
 
   // Define a component for universal-module authors to access their native view manager

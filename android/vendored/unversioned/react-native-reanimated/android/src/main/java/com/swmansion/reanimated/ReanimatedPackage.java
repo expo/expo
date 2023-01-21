@@ -16,8 +16,10 @@ import com.facebook.react.module.model.ReactModuleInfoProvider;
 import com.facebook.react.turbomodule.core.interfaces.TurboModule;
 import com.facebook.react.uimanager.ReanimatedUIManager;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.ViewManager;
 import com.facebook.systrace.Systrace;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 public class ReanimatedPackage extends TurboReactPackage implements ReactPackage {
@@ -68,12 +70,11 @@ public class ReanimatedPackage extends TurboReactPackage implements ReactPackage
     ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_START);
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createUIManagerModule");
     final ReactInstanceManager reactInstanceManager = getReactInstanceManager(reactContext);
+    List<ViewManager> viewManagers = reactInstanceManager.getOrCreateViewManagers(reactContext);
     int minTimeLeftInFrameForNonBatchedOperationMs = -1;
     try {
-      return new ReanimatedUIManager(
-          reactContext,
-          reactInstanceManager.getOrCreateViewManagers(reactContext),
-          minTimeLeftInFrameForNonBatchedOperationMs);
+      return ReanimatedUIManagerFactory.create(
+          reactContext, viewManagers, minTimeLeftInFrameForNonBatchedOperationMs);
     } finally {
       Systrace.endSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE);
       ReactMarker.logMarker(CREATE_UI_MANAGER_MODULE_END);

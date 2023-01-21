@@ -10,8 +10,8 @@
 
 #include "include/core/SkColor.h"
 #include "include/core/SkColorPriv.h"
-#include "include/private/SkNx.h"
 #include "include/private/SkTo.h"
+#include "include/private/SkVx.h"
 
 ////////////////////////////////////////////////////////////////////////////////////////////
 // Convert a 16bit pixel to a 32bit pixel
@@ -330,27 +330,6 @@ static inline U16CPU SkPack888ToRGB16(U8CPU r, U8CPU g, U8CPU b) {
 
 /////////////////////////////////////////////////////////////////////////////////////////
 
-/*  SrcOver the 32bit src color with the 16bit dst, returning a 16bit value
-    (with dirt in the high 16bits, so caller beware).
-*/
-static inline U16CPU SkSrcOver32To16(SkPMColor src, uint16_t dst) {
-    unsigned sr = SkGetPackedR32(src);
-    unsigned sg = SkGetPackedG32(src);
-    unsigned sb = SkGetPackedB32(src);
-
-    unsigned dr = SkGetPackedR16(dst);
-    unsigned dg = SkGetPackedG16(dst);
-    unsigned db = SkGetPackedB16(dst);
-
-    unsigned isa = 255 - SkGetPackedA32(src);
-
-    dr = (sr + SkMul16ShiftRound(dr, isa, SK_R16_BITS)) >> (8 - SK_R16_BITS);
-    dg = (sg + SkMul16ShiftRound(dg, isa, SK_G16_BITS)) >> (8 - SK_G16_BITS);
-    db = (sb + SkMul16ShiftRound(db, isa, SK_B16_BITS)) >> (8 - SK_B16_BITS);
-
-    return SkPackRGB16(dr, dg, db);
-}
-
 static inline SkColor SkPixel16ToColor(U16CPU src) {
     SkASSERT(src == SkToU16(src));
 
@@ -395,11 +374,11 @@ static inline SkPMColor SkPixel4444ToPixel32(U16CPU c) {
     return d | (d << 4);
 }
 
-static inline Sk4f swizzle_rb(const Sk4f& x) {
-    return SkNx_shuffle<2, 1, 0, 3>(x);
+static inline skvx::float4 swizzle_rb(const skvx::float4& x) {
+    return skvx::shuffle<2, 1, 0, 3>(x);
 }
 
-static inline Sk4f swizzle_rb_if_bgra(const Sk4f& x) {
+static inline skvx::float4 swizzle_rb_if_bgra(const skvx::float4& x) {
 #ifdef SK_PMCOLOR_IS_BGRA
     return swizzle_rb(x);
 #else
@@ -407,24 +386,15 @@ static inline Sk4f swizzle_rb_if_bgra(const Sk4f& x) {
 #endif
 }
 
-static inline Sk4f Sk4f_fromL32(uint32_t px) {
-    return SkNx_cast<float>(Sk4b::Load(&px)) * (1 / 255.0f);
+static inline skvx::float4 Sk4f_fromL32(uint32_t px) {
+    return skvx::cast<float>(skvx::byte4::Load(&px)) * (1 / 255.0f);
 }
 
-static inline uint32_t Sk4f_toL32(const Sk4f& px) {
-    Sk4f v = px;
-
-#if !defined(SKNX_NO_SIMD) && SK_CPU_SSE_LEVEL >= SK_CPU_SSE_LEVEL_SSE2
-    // SkNx_cast<uint8_t, int32_t>() pins, and we don't anticipate giant floats
-#elif !defined(SKNX_NO_SIMD) && defined(SK_ARM_HAS_NEON)
-    // SkNx_cast<uint8_t, int32_t>() pins, and so does Sk4f_round().
-#else
-    // No guarantee of a pin.
-    v = Sk4f::Max(0, Sk4f::Min(v, 1));
-#endif
-
+static inline uint32_t Sk4f_toL32(const skvx::float4& px) {
     uint32_t l32;
-    SkNx_cast<uint8_t>(Sk4f_round(v * 255.0f)).store(&l32);
+    // For the expected positive color values, the +0.5 before the pin and cast effectively rounds
+    // to the nearest int without having to call round() or lrint().
+    skvx::cast<uint8_t>(pin(px * 255.f + 0.5f, skvx::float4(0.f), skvx::float4(255.f))).store(&l32);
     return l32;
 }
 

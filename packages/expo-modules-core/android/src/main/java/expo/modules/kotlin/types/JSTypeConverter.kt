@@ -39,6 +39,7 @@ object JSTypeConverter {
       is Uri -> value.toJSValue()
       is File -> value.toJSValue()
       is Pair<*, *> -> value.toJSValue(containerProvider)
+      is Long -> value.toDouble()
       else -> value
     }
   }

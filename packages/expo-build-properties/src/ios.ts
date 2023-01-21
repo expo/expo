@@ -7,6 +7,10 @@ const { createBuildPodfilePropsConfigPlugin } = IOSConfig.BuildProperties;
 export const withIosBuildProperties = createBuildPodfilePropsConfigPlugin<PluginConfigType>(
   [
     {
+      propName: 'newArchEnabled',
+      propValueGetter: (config) => config.ios?.newArchEnabled?.toString(),
+    },
+    {
       propName: 'ios.useFrameworks',
       propValueGetter: (config) => config.ios?.useFrameworks,
     },

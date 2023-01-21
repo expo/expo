@@ -55,83 +55,96 @@ async function selectPackageToPublishAsync(
     return true;
   }
   const packageName = parcel.pkg.packageName;
-  const version = parcel.state.releaseVersion;
+  const { releaseVersion } = parcel.state;
   const { selected } = await inquirer.prompt([
     {
       type: 'confirm',
       name: 'selected',
       prefix: '❔',
-      message: `Do you want to publish ${green.bold(packageName)} as ${cyan.bold(version!)}?`,
+      message: `Do you want to publish ${green.bold(packageName)} as ${cyan.bold(releaseVersion)}?`,
       default: true,
     },
   ]);
-  if (!selected) {
-    const incrementedVersions = incrementVersion(
-      parcel.pkg.packageVersion,
-      parcel.pkgView?.versions ?? [],
-      options.prerelease === true ? 'rc' : options.prerelease || null
-    );
-    const { version, customVersion } = await inquirer.prompt([
-      {
-        type: 'list',
-        name: 'version',
-        prefix: '❔',
-        message: `What do you want to do with ${green.bold(packageName)}?`,
-        choices: [
-          {
-            name: "Don't publish",
-            value: null,
-          },
-          ...Object.keys(incrementedVersions).map((type) => {
-            return {
-              name: `Publish as ${cyan.bold(incrementedVersions[type])} (${type})`,
-              value: incrementedVersions[type],
-            };
-          }),
-          {
-            name: 'Publish as custom version',
-            value: CUSTOM_VERSION_CHOICE_VALUE,
-          },
-        ],
-        validate: validateVersion(parcel),
-      },
-      {
-        type: 'input',
-        name: 'customVersion',
-        prefix: '❔',
-        message: 'Type in custom version to publish:',
-        when(answers: Record<string, string>): boolean {
-          return answers.version === CUSTOM_VERSION_CHOICE_VALUE;
-        },
-        validate: validateVersion(parcel),
-      },
-    ]);
-    if (customVersion || version) {
-      parcel.state.releaseVersion = customVersion || version;
-      return true;
-    }
+
+  if (selected) {
+    return true;
   }
-  return selected;
+
+  const suggestedVersions = getSuggestedVersions(
+    parcel.pkg.packageVersion,
+    parcel.pkgView?.versions ?? [],
+    options.prerelease === true ? 'rc' : options.prerelease || null
+  );
+  const { version, customVersion } = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'version',
+      prefix: '❔',
+      message: `What do you want to do with ${green.bold(packageName)}?`,
+      choices: [
+        {
+          name: "Don't publish",
+          value: null,
+        },
+        ...suggestedVersions.map((version) => {
+          return {
+            name: `Publish as ${cyan.bold(version)}`,
+            value: version,
+          };
+        }),
+        {
+          name: 'Publish as custom version',
+          value: CUSTOM_VERSION_CHOICE_VALUE,
+        },
+      ],
+      validate: validateVersion(parcel),
+    },
+    {
+      type: 'input',
+      name: 'customVersion',
+      prefix: '❔',
+      message: 'Type in custom version to publish:',
+      when(answers: Record<string, string>): boolean {
+        return answers.version === CUSTOM_VERSION_CHOICE_VALUE;
+      },
+      validate: validateVersion(parcel),
+    },
+  ]);
+
+  if (customVersion || version) {
+    parcel.state.releaseVersion = customVersion ?? version;
+    return true;
+  }
+  return false;
 }
 
 /**
- * Creates an object with possible incrementations of given version.
+ * Returns a list of suggested versions to publish.
  */
-function incrementVersion(
+function getSuggestedVersions(
   version: string,
   otherVersions: string[],
   prerelease?: string | null
-): Record<string, string> {
-  const releaseTypes: ReleaseType[] = [ReleaseType.MAJOR, ReleaseType.MINOR, ReleaseType.PATCH];
+): string[] {
+  const [currentPrereleaseId] = semver.prerelease(version) ?? [];
 
-  // Add more options for prerelease versions
-  if (prerelease) {
-    releaseTypes.push(ReleaseType.PREMAJOR, ReleaseType.PREMINOR, ReleaseType.PREPATCH);
+  // The current version is a prerelease version
+  if (typeof currentPrereleaseId === 'string') {
+    const prereleaseIds = ['alpha', 'beta', 'rc'];
+
+    if (!prereleaseIds.includes(currentPrereleaseId)) {
+      prereleaseIds.unshift(currentPrereleaseId);
+    }
+    return prereleaseIds
+      .slice(prereleaseIds.indexOf(currentPrereleaseId))
+      .map((identifier) => {
+        return resolveSuggestedVersion(version, otherVersions, ReleaseType.PRERELEASE, identifier);
+      })
+      .concat(version.replace(/\-.*$/, ''));
   }
-  return releaseTypes.reduce((acc, type) => {
-    acc[type] = resolveSuggestedVersion(version, otherVersions, type, prerelease);
-    return acc;
-  }, {});
+  return [ReleaseType.MAJOR, ReleaseType.MINOR, ReleaseType.PATCH].map((type) => {
+    return resolveSuggestedVersion(version, otherVersions, type, prerelease);
+  });
 }
 
 /**
