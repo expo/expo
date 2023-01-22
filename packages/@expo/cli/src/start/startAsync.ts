@@ -68,6 +68,7 @@ export async function exportFromServerAsync(
   projectRoot: string,
   devServerManager: DevServerManager
 ) {
+  console.time('static-generation');
   const devServerUrl = devServerManager.getDefaultDevServer().getDevServerUrl();
 
   const manifest = await fetch(`${devServerUrl}/_expo/routes.json`).then((res) => res.json());
@@ -94,8 +95,6 @@ export async function exportFromServerAsync(
 
   await Promise.all(fetchScreens(manifest.screens));
 
-  console.log('files:', files);
-
   fs.mkdirSync(path.join(projectRoot, 'dist'), { recursive: true });
 
   files.forEach(([filename, contents]) => {
@@ -103,6 +102,7 @@ export async function exportFromServerAsync(
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     fs.writeFileSync(outputPath, contents);
   });
+  console.timeEnd('static-generation');
 }
 
 export async function startAsync(
