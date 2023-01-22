@@ -66,9 +66,17 @@ public final class ImageModule: Module {
       }
 
       Prop("enableLiveTextIOS") { (view, enableLiveTextIOS: Bool?) in
-          view.enableLiveTextIOS = enableLiveTextIOS ?? false;
+        view.enableLiveTextIOS = enableLiveTextIOS ?? false;
       }
-      
+
+      Prop("accessible") { (view, accessible: Bool?) in
+        view.sdImageView.isAccessibilityElement = accessible ?? false
+      }
+
+      Prop("accessibilityLabel") { (view, label: String?) in
+        view.sdImageView.accessibilityLabel = label
+      }
+
       OnViewDidUpdateProps { view in
         view.reload()
       }
