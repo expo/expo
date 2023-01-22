@@ -14,7 +14,7 @@ import {
 } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
-import { getServerRenderer } from '../node-renderer';
+import { getServerFunctions, getServerRenderer } from '../node-renderer';
 import { instantiateMetroAsync } from './instantiateMetro';
 
 /** Default port to use for apps running in Expo Go. */
@@ -101,6 +101,22 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
 
+      // Middleware for hosting middleware
+      middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+        if (!req?.url) {
+          return next();
+        }
+
+        if (req.url === '/_expo/routes.json') {
+          const { getManifest } = await getServerFunctions(
+            this.projectRoot,
+            `http://localhost:${parsedOptions.port}`
+          );
+          const manifest = getManifest();
+          res.setHeader('Content-Type', 'application/json');
+          res.end(JSON.stringify(manifest));
+        }
+      });
       // Middleware for hosting middleware
       middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
         if (!req?.url) {

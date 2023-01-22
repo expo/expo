@@ -30,10 +30,7 @@ async function storeDebugBundleResults(projectRoot: string, results) {
   return tempFileLocation;
 }
 
-export async function getServerRenderer(
-  projectRoot: string,
-  devServerUrl: string
-): Promise<(location: URL) => string> {
+export async function getServerFunctions(projectRoot: string, devServerUrl: string): Promise<any> {
   await createNodeEntryAsync(projectRoot);
 
   const content = await fetch(
@@ -47,5 +44,13 @@ export async function getServerRenderer(
     'eval-metro-bundle'
   )(`module.exports = (() => { ${content}\n; return __r(0); })() `);
 
+  return res;
+}
+
+export async function getServerRenderer(
+  projectRoot: string,
+  devServerUrl: string
+): Promise<(location: URL) => string> {
+  const res = await getServerFunctions(projectRoot, devServerUrl);
   return res.serverRenderUrl;
 }

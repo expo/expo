@@ -6,6 +6,10 @@ import { AppRegistry } from 'react-native-web';
 
 AppRegistry.registerComponent('App', () => App);
 
+export function getManifest() {
+  return require('expo-router/manifest').getManifest();
+}
+
 export function serverRenderUrl(location: URL): string {
   const { element, getStyleElement } = AppRegistry.getApplication('App');
 
