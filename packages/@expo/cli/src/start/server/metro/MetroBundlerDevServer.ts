@@ -71,7 +71,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // then the manifest handler will never run, the static middleware will run
     // and serve index.html instead of the manifest.
     // https://github.com/expo/expo/issues/13114
-    prependMiddleware(middleware, manifestMiddleware);
+    // prependMiddleware(middleware, manifestMiddleware);
 
     middleware.use(
       new InterstitialPageMiddleware(this.projectRoot, {
@@ -168,7 +168,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       });
 
       // This MUST run last since it's the fallback.
-      middleware.use(new HistoryFallbackMiddleware(manifestMiddleware.internal).getHandler());
+      // middleware.use(new HistoryFallbackMiddleware(manifestMiddleware.internal).getHandler());
     }
     // Extend the close method to ensure that we clean up the local info.
     const originalClose = server.close.bind(server);

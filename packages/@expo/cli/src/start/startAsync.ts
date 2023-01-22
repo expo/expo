@@ -81,7 +81,8 @@ export async function exportFromServerAsync(
       const filename = name + '.html';
 
       // TODO: handle dynamic routes
-      if (segment !== '' && !segment.startsWith(':') && segment !== '*') {
+      if (!segment.startsWith(':') && segment !== '*') {
+        // if (segment !== '' && !segment.startsWith(':') && segment !== '*') {
         console.log('render ->', filename, `${devServerUrl}/${segment}`);
         const screen = await fetch(`${devServerUrl}/${segment}`).then((res) => res.text());
         console.log('screen ->', !!screen);
