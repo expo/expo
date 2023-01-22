@@ -65,6 +65,10 @@ public final class ImageModule: Module {
         view.cachePolicy = cachePolicy ?? .disk
       }
 
+      Prop("enableLiveTextIOS") { (view, enableLiveTextIOS: Bool?) in
+          view.enableLiveTextIOS = enableLiveTextIOS ?? false;
+      }
+      
       OnViewDidUpdateProps { view in
         view.reload()
       }

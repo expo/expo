@@ -36,6 +36,13 @@ export type ImageSource = {
    * If not provided, the `uri` is used also as the cache key.
    */
   cacheKey?: string;
+
+  /**
+   * Enables live text interaction on iOS.
+   * https://developer.apple.com/documentation/visionkit/enabling_live_text_interactions_with_images
+   * @platform ios
+   */
+  enableLiveTextIOS?: boolean;
 };
 
 /**
