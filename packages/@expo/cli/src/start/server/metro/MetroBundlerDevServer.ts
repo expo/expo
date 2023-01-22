@@ -115,6 +115,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           const manifest = getManifest();
           res.setHeader('Content-Type', 'application/json');
           res.end(JSON.stringify(manifest));
+        } else {
+          next();
         }
       });
       // Middleware for hosting middleware
