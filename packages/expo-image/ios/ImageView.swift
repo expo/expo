@@ -56,9 +56,10 @@ public final class ImageView: ExpoView {
 
   var enableLiveTextIOS: Bool = false {
     didSet {
-        // We don't handle the true case as setImage gets called which will eventually call analyzeImage
-        if (!enableLiveTextIOS)
-          self.resetImageAnalyzer()
+      // We don't handle the true case as setImage gets called which will eventually call analyzeImage
+      if !enableLiveTextIOS {
+        self.resetImageAnalyzer()
+      }
     }
   }
 
@@ -358,24 +359,24 @@ public final class ImageView: ExpoView {
   }
 
   private func analyzeImage() {
-    guard #available(iOS 16.0, *), let imageAnalysisInteraction = imageAnalysisInteraction, let imageAnalyzer = ImageView.imageAnalyzer, let image = self.sdImageView.image else {
+    guard #available(iOS 16.0, *), let imageAnalysisInteraction = imageAnalysisInteraction, 
+    let imageAnalyzer = ImageView.imageAnalyzer, let image = self.sdImageView.image else {
       return
     }
 
     sdImageView.addInteraction(imageAnalysisInteraction)
 
     Task {
-        let configuration = ImageAnalyzer.Configuration([.text, .machineReadableCode])
-        
-        do {
-            let imageAnalysis = try await imageAnalyzer.analyze(image, configuration: configuration)
-            if image == self.sdImageView.image {
-              imageAnalysisInteraction.analysis = imageAnalysis
-              imageAnalysisInteraction.preferredInteractionTypes = .automatic
-            }
-        } catch {
-            // Handle error
+      let configuration = ImageAnalyzer.Configuration([.text, .machineReadableCode])
+      do {
+        let imageAnalysis = try await imageAnalyzer.analyze(image, configuration: configuration)
+        if image == self.sdImageView.image {
+          imageAnalysisInteraction.analysis = imageAnalysis
+          imageAnalysisInteraction.preferredInteractionTypes = .automatic
         }
+      } catch {
+        // Handle error
+      }
     }
   }
 
@@ -385,7 +386,7 @@ public final class ImageView: ExpoView {
     sdImageView.contentMode = contentFit.toContentMode()
     sdImageView.image = image
 
-    if (self.enableLiveTextIOS) {
+    if self.enableLiveTextIOS {
       self.analyzeImage()
     }
   }

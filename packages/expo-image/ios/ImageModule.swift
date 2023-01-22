@@ -66,7 +66,7 @@ public final class ImageModule: Module {
       }
 
       Prop("enableLiveTextIOS") { (view, enableLiveTextIOS: Bool?) in
-        view.enableLiveTextIOS = enableLiveTextIOS ?? false;
+        view.enableLiveTextIOS = enableLiveTextIOS ?? false
       }
 
       Prop("accessible") { (view, accessible: Bool?) in
