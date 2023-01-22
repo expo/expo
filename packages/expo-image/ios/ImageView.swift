@@ -359,7 +359,7 @@ public final class ImageView: ExpoView {
   }
 
   private func analyzeImage() {
-    guard #available(iOS 16.0, *), let imageAnalysisInteraction = imageAnalysisInteraction, 
+    guard #available(iOS 16.0, *), let imageAnalysisInteraction = imageAnalysisInteraction,
     let imageAnalyzer = ImageView.imageAnalyzer, let image = self.sdImageView.image else {
       return
     }
