@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Skip mounting root component when DOM is not available.
+- Skip mounting root component when DOM is not available. ([#20916](https://github.com/expo/expo/pull/20916) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
