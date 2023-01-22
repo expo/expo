@@ -24,7 +24,7 @@ export default function registerRootComponent<P extends InitialProps>(
     AppRegistry.registerComponent('main', () => withDevTools(component));
   }
 
-  if (Platform.OS === 'web') {
+  if (Platform.OS === 'web' && typeof window !== 'undefined') {
     const rootTag = document.getElementById('root') ?? document.getElementById('main');
     AppRegistry.runApplication('main', { rootTag });
   }
