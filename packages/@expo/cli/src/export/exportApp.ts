@@ -3,11 +3,11 @@ import path from 'path';
 
 import * as Log from '../log';
 import { importCliSaveAssetsFromProject } from '../start/server/metro/resolveFromProject';
-import { generateStaticRoutesAsync } from '../start/server/generateStaticRoutes';
 import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
 import { createBundlesAsync } from './createBundles';
 import { exportAssetsAsync } from './exportAssets';
+import { exportStaticAsync } from './generateStaticRoutes';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { printBundleSizes } from './printBundleSizes';
 import { Options } from './resolveOptions';
@@ -18,8 +18,6 @@ import {
   writeMetadataJsonAsync,
   writeSourceMapsAsync,
 } from './writeContents';
-import { minify } from 'html-minifier';
-import { profile } from '../utils/profile';
 
 /**
  * The structure of the outputDir will be:
@@ -94,19 +92,12 @@ export async function exportAppAsync(
   Log.log('Finished saving JS Bundles');
 
   if (fileNames.web) {
-    const htmlFiles = await generateStaticRoutesAsync(projectRoot, {
-      scripts: [`/bundles/${fileNames.web}`],
-    });
-    for (const [filePath, html] of htmlFiles) {
-      const result = profile(minify, 'minify-html')(html, {
-        // collapseWhitespace: true,
-        // minifyCSS: true,
-        // removeComments: true,
-        // removeAttributeQuotes: true,
+    if (env.EXPO_USE_STATIC) {
+      await exportStaticAsync(projectRoot, {
+        outputDir: outputPath,
+        scripts: [`/bundles/${fileNames.web}`],
       });
-
-      // If web exists, then write the template HTML file.
-      await fs.promises.writeFile(path.join(outputPath, filePath), result);
+    } else {
     }
 
     // Save assets like a typical bundler, preserving the file paths on web.

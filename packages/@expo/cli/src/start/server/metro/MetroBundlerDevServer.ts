@@ -1,5 +1,6 @@
 import { getConfig } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
+import assert from 'assert';
 
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
@@ -16,6 +17,7 @@ import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { getServerFunctions, getServerRenderer } from '../node-renderer';
 import { instantiateMetroAsync } from './instantiateMetro';
+import { env } from '../../../utils/env';
 
 /** Default port to use for apps running in Expo Go. */
 const EXPO_GO_METRO_PORT = 19000;
@@ -40,6 +42,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           await getFreePortAsync(EXPO_GO_METRO_PORT));
 
     return port;
+  }
+
+  /** Get routes from Expo Router. */
+  async getRoutesAsync() {
+    const url = this.getDevServerUrl();
+    assert(url, 'Dev server must be started');
+    const { getManifest } = await getServerFunctions(this.projectRoot, url);
+    return getManifest();
   }
 
   protected async startImplementationAsync(
@@ -101,79 +111,68 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
 
-      // Middleware for hosting middleware
-      middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-        if (!req?.url) {
-          return next();
-        }
+      if (env.EXPO_USE_STATIC) {
+        // Middleware for hosting middleware
+        middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+          if (!req?.url) {
+            return next();
+          }
 
-        if (req.url === '/_expo/routes.json') {
-          const { getManifest } = await getServerFunctions(
-            this.projectRoot,
-            `http://localhost:${parsedOptions.port}`
-          );
-          const manifest = getManifest();
-          res.setHeader('Content-Type', 'application/json');
-          res.end(JSON.stringify(manifest));
-        } else {
-          next();
-        }
-      });
-      // Middleware for hosting middleware
-      middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-        if (!req?.url) {
-          return next();
-        }
+          // TODO: Formal manifest for allowed paths
+          if (req.url.endsWith('.ico')) {
+            return next();
+          }
 
-        // TODO: Formal manifest for allowed paths
-        if (req.url.endsWith('.ico')) {
-          return next();
-        }
+          const devServerUrl = this.getDevServerUrl()!;
+          try {
+            const serverRenderLocation = await getServerRenderer(this.projectRoot, devServerUrl);
 
-        try {
-          const serverRenderLocation = await getServerRenderer(
-            this.projectRoot,
-            `http://localhost:${parsedOptions.port}`
-          );
+            const location = new URL(req.url, devServerUrl);
 
-          const location = new URL(req.url, `http://localhost:${parsedOptions.port}/`);
+            let content = serverRenderLocation(location);
 
-          let content = serverRenderLocation(location);
+            //TODO: Not this -- disable injection some other way
+            if (options.mode !== 'production') {
+              // Add scripts for rehydration
+              // TODO: bundle split
+              content = content.replace(
+                '</body>',
+                [`<script src="${manifestMiddleware.getWebBundleUrl()}" defer></script>`].join(
+                  '\n'
+                ) + '</body>'
+              );
+            }
 
-          // Add scripts for rehydration
-          // TODO: bundle split
-          content = content.replace(
-            '</body>',
-            [`<script src="${manifestMiddleware.getWebBundleUrl()}" defer></script>`].join('\n') +
-              '</body>'
-          );
-
-          res.setHeader('Content-Type', 'text/html');
-          res.end(content);
-          return;
-        } catch (error) {
-          console.error(error);
-          res.setHeader('Content-Type', 'text/html');
-          res.end(`
-<!DOCTYPE html>
-<html lang="en">
-<head>
-  <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-  <title>Error</title>
-</head>
-<body>
-  <h1>Failed to render static app</h1>
-  <pre>${error.stack}</pre>
-</body>
-</html>
-`);
-          return;
-        }
-      });
+            res.setHeader('Content-Type', 'text/html');
+            res.end(content);
+            return;
+          } catch (error: any) {
+            console.error(error);
+            res.setHeader('Content-Type', 'text/html');
+            res.end(`
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Error</title>
+  </head>
+  <body>
+    <h1>Failed to render static app</h1>
+    <pre>${error.stack}</pre>
+  </body>
+  </html>
+  `);
+          }
+        });
+      }
 
       // This MUST run last since it's the fallback.
-      // middleware.use(new HistoryFallbackMiddleware(manifestMiddleware.internal).getHandler());
+      if (!env.EXPO_USE_STATIC) {
+        middleware.use(
+          new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
+        );
+      }
     }
     // Extend the close method to ensure that we clean up the local info.
     const originalClose = server.close.bind(server);
