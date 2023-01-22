@@ -1,5 +1,5 @@
 import { Image, ImageSource } from 'expo-image';
-import { useCallback, useState } from 'react';
+import { useCallback, useEffect, useState } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 import Button from '../../components/Button';
@@ -17,6 +17,17 @@ export default function ImagePlaceholderScreen() {
   const resetSource = useCallback(() => {
     setSource(null);
   }, [source]);
+
+  useEffect(() => {
+    async function dupa() {
+      const img = (await global.expo.modules.ExpoImage.load(
+        getRandomImageUri()
+      )) as Uint8ClampedArray;
+      console.log(typeof img, img.byteLength, img.constructor.name);
+      console.log(img.slice(0, 12));
+    }
+    dupa();
+  }, []);
 
   return (
     <View style={styles.container}>

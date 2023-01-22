@@ -92,6 +92,19 @@ public final class ImageModule: Module {
         promise.resolve(true)
       }
     }
+
+    AsyncFunction("load") { (url: URL, promise: Promise) in
+      SDWebImageManager.shared.loadImage(with: url, progress: nil) { image, _, _, _, finished, _ in
+        if let runtime = self.appContext?.runtime, let data = image?.pngData() {
+          self.appContext?.executeOnJavaScriptThread(runBlock: {
+            let typedArray = JavaScriptTypedArray.createArrayBuffer(runtime, with: data)
+            promise.resolve(typedArray)
+          })
+        } else {
+          promise.reject("foo", "bar")
+        }
+      }
+    }
   }
 
   static func registerCoders() {

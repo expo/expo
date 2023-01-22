@@ -2,6 +2,7 @@
 
 #import <ExpoModulesCore/EXJavaScriptTypedArray.h>
 #import <ExpoModulesCore/TypedArray.h>
+#import <ExpoModulesCore/MutableBuffer.h>
 
 @implementation EXJavaScriptTypedArray {
   __weak EXJavaScriptRuntime *_runtime;
@@ -24,6 +25,30 @@
 - (nonnull void *)getUnsafeMutableRawPointer
 {
   return _typedArrayPtr->getRawPointer(*[_runtime get]);
+}
+
+#pragma mark - Statics
+
++ (nonnull EXJavaScriptTypedArray *)createArrayBuffer:(nonnull EXJavaScriptRuntime *)runtime withData:(nonnull NSData *)data
+{
+  __block NSData *retainedData = data;
+  uint8_t *bytes = (uint8_t *)[data bytes];
+  size_t size = [data length];
+
+  jsi::Runtime *rt = [runtime get];
+  std::shared_ptr<expo::MutableBuffer> mutableBuffer = std::make_shared<expo::MutableBuffer>(bytes, size, ^{
+    retainedData = nil;
+    NSLog(@"deallocated");
+  });
+  std::shared_ptr<jsi::ArrayBuffer> arrayBuffer = std::make_shared<jsi::ArrayBuffer>(*rt, mutableBuffer);
+
+  jsi::Value typedArrayObject = rt->global()
+    .getPropertyAsFunction(*rt, "Uint8ClampedArray")
+    .callAsConstructor(*rt, jsi::Value(*rt, *arrayBuffer));
+
+  auto ptr = std::make_shared<jsi::Object>(typedArrayObject.asObject(*rt));
+
+  return [[EXJavaScriptTypedArray alloc] initWith:ptr runtime:runtime];
 }
 
 @end

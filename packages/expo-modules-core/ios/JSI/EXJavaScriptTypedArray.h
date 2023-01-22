@@ -27,4 +27,6 @@ NS_SWIFT_NAME(JavaScriptTypedArray)
 
 - (nonnull void *)getUnsafeMutableRawPointer;
 
++ (nonnull EXJavaScriptTypedArray *)createArrayBuffer:(nonnull EXJavaScriptRuntime *)runtime withData:(nonnull NSData *)data;
+
 @end
