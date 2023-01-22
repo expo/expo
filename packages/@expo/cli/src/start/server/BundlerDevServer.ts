@@ -137,7 +137,8 @@ export abstract class BundlerDevServer {
       isNativeWebpack: this.name === 'webpack' && this.isTargetingNative(),
       privateKeyPath: options.privateKeyPath,
     });
-    return middleware.getHandler();
+    return middleware;
+    // return middleware.getHandler();
   }
 
   /** Start the dev server using settings defined in the start command. */

@@ -236,6 +236,16 @@ export abstract class ManifestMiddleware<
     await resolveGoogleServicesFile(this.projectRoot, manifest);
   }
 
+  public getWebBundleUrl() {
+    const platform = 'web';
+    // Read from headers
+    const mainModuleName = this.resolveMainModuleName(this.initialProjectConfig, platform);
+    return this._getBundleUrlPath({
+      platform,
+      mainModuleName,
+    });
+  }
+
   /**
    * Web platforms should create an index.html response using the same script resolution as native.
    *
@@ -243,13 +253,8 @@ export abstract class ManifestMiddleware<
    * to an `index.html`, this enables the web platform to load JavaScript from the server.
    */
   private async handleWebRequestAsync(req: ServerRequest, res: ServerResponse) {
-    const platform = 'web';
     // Read from headers
-    const mainModuleName = this.resolveMainModuleName(this.initialProjectConfig, platform);
-    const bundleUrl = this._getBundleUrlPath({
-      platform,
-      mainModuleName,
-    });
+    const bundleUrl = this.getWebBundleUrl();
 
     res.setHeader('Content-Type', 'text/html');
 

@@ -138,7 +138,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
           const location = new URL(req.url, `http://localhost:${parsedOptions.port}/`);
 
-          const content = serverRenderLocation(location);
+          let content = serverRenderLocation(location);
+
+          // Add scripts for rehydration
+          // TODO: bundle split
+          content = content.replace(
+            '</body>',
+            [`<script src="${manifestMiddleware.getWebBundleUrl()}" defer></script>`].join('\n') +
+              '</body>'
+          );
 
           res.setHeader('Content-Type', 'text/html');
           res.end(content);
