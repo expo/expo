@@ -138,10 +138,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
           const location = new URL(req.url, `http://localhost:${parsedOptions.port}/`);
 
-          console.log('rendering:', location);
           const content = serverRenderLocation(location);
-
-          // console.log('content:', content);
 
           res.setHeader('Content-Type', 'text/html');
           res.end(content);

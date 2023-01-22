@@ -77,17 +77,26 @@ export async function exportFromServerAsync(
   // name : contents
   const files: [string, string][] = [];
 
-  const fetchScreens = (screens: Record<string, any>) => {
+  const fetchScreens = (screens: Record<string, any>, additionPath: string = '') => {
     return Object.entries(screens).map(async ([name, segment]) => {
       const filename = name + '.html';
 
+      if (typeof segment !== 'string') {
+        await Promise.all(
+          fetchScreens(segment.screens, [additionPath, segment.path].filter(Boolean).join('/'))
+        );
+        return;
+      }
+
       // TODO: handle dynamic routes
       if (!segment.startsWith(':') && segment !== '*') {
+        const fullFilename = [additionPath, filename].filter(Boolean).join('/');
+        const fullSegment = [additionPath, segment].filter(Boolean).join('/');
         // if (segment !== '' && !segment.startsWith(':') && segment !== '*') {
-        console.log('render ->', filename, `${devServerUrl}/${segment}`);
-        const screen = await fetch(`${devServerUrl}/${segment}`).then((res) => res.text());
+        console.log('render ->', fullFilename, `${devServerUrl}/${fullSegment}`);
+        const screen = await fetch(`${devServerUrl}/${fullSegment}`).then((res) => res.text());
         console.log('screen ->', !!screen);
-        files.push([filename, screen]);
+        files.push([fullFilename, screen]);
       }
       // TODO: recurse
     });
