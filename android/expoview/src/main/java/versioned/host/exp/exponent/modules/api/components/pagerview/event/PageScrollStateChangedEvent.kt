@@ -13,22 +13,22 @@ import com.facebook.react.uimanager.events.RCTEventEmitter
  * - pageScrollState - {Idle,Dragging,Settling}
  */
 class PageScrollStateChangedEvent(viewTag: Int, private val mPageScrollState: String) : Event<PageScrollStateChangedEvent>(viewTag) {
-  override fun getEventName(): String {
-    return EVENT_NAME
-  }
+    override fun getEventName(): String {
+        return EVENT_NAME
+    }
 
-  override fun dispatch(rctEventEmitter: RCTEventEmitter) {
-    rctEventEmitter.receiveEvent(viewTag, eventName, serializeEventData())
-  }
+    override fun dispatch(rctEventEmitter: RCTEventEmitter) {
+        rctEventEmitter.receiveEvent(viewTag, eventName, serializeEventData())
+    }
 
-  private fun serializeEventData(): WritableMap {
-    val eventData = Arguments.createMap()
-    eventData.putString("pageScrollState", mPageScrollState)
-    return eventData
-  }
+    private fun serializeEventData(): WritableMap {
+        val eventData = Arguments.createMap()
+        eventData.putString("pageScrollState", mPageScrollState)
+        return eventData
+    }
 
-  companion object {
-    const val EVENT_NAME = "topPageScrollStateChanged"
-  }
+    companion object {
+        const val EVENT_NAME = "topPageScrollStateChanged"
+    }
 
 }

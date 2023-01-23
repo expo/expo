@@ -13,22 +13,22 @@ import com.facebook.react.uimanager.events.RCTEventEmitter
  * - position - index of page that has been selected
  */
 class PageSelectedEvent(viewTag: Int, private val mPosition: Int) : Event<PageSelectedEvent>(viewTag) {
-  override fun getEventName(): String {
-    return EVENT_NAME
-  }
+    override fun getEventName(): String {
+        return EVENT_NAME
+    }
 
-  override fun dispatch(rctEventEmitter: RCTEventEmitter) {
-    rctEventEmitter.receiveEvent(viewTag, eventName, serializeEventData())
-  }
+    override fun dispatch(rctEventEmitter: RCTEventEmitter) {
+        rctEventEmitter.receiveEvent(viewTag, eventName, serializeEventData())
+    }
 
-  private fun serializeEventData(): WritableMap {
-    val eventData = Arguments.createMap()
-    eventData.putInt("position", mPosition)
-    return eventData
-  }
+    private fun serializeEventData(): WritableMap {
+        val eventData = Arguments.createMap()
+        eventData.putInt("position", mPosition)
+        return eventData
+    }
 
-  companion object {
-    const val EVENT_NAME = "topPageSelected"
-  }
+    companion object {
+        const val EVENT_NAME = "topPageSelected"
+    }
 
 }

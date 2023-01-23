@@ -19,29 +19,29 @@ import java.lang.Float.isNaN
  * is visible.
  */
 class PageScrollEvent(viewTag: Int, private val mPosition: Int, offset: Float) : Event<PageScrollEvent>(viewTag) {
-  private val mOffset: Float = if (isInfinite(offset) || isNaN(offset)) 0.0f else offset
-  override fun getEventName(): String {
-    return EVENT_NAME
-  }
+    private val mOffset: Float = if (isInfinite(offset) || isNaN(offset)) 0.0f else offset
+    override fun getEventName(): String {
+        return EVENT_NAME
+    }
 
-  override fun dispatch(rctEventEmitter: RCTEventEmitter) {
-    rctEventEmitter.receiveEvent(viewTag, eventName, serializeEventData())
-  }
+    override fun dispatch(rctEventEmitter: RCTEventEmitter) {
+        rctEventEmitter.receiveEvent(viewTag, eventName, serializeEventData())
+    }
 
-  private fun serializeEventData(): WritableMap {
-    val eventData = Arguments.createMap()
-    eventData.putInt("position", mPosition)
-    eventData.putDouble("offset", mOffset.toDouble())
-    return eventData
-  }
+    private fun serializeEventData(): WritableMap {
+        val eventData = Arguments.createMap()
+        eventData.putInt("position", mPosition)
+        eventData.putDouble("offset", mOffset.toDouble())
+        return eventData
+    }
 
-  companion object {
-    const val EVENT_NAME = "topPageScroll"
-  }
+    companion object {
+        const val EVENT_NAME = "topPageScroll"
+    }
 
-  init {
+    init {
 
-    // folly::toJson default options don't support serialize NaN or Infinite value
-  }
+        // folly::toJson default options don't support serialize NaN or Infinite value
+    }
 }
 
