@@ -11,6 +11,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `@react-native-async-storage/async-storage` from `1.17.3' to `1.17.11`. ([#20780](https://github.com/expo/expo/pull/20780) by [@kudo](https://github.com/kudo))
 - Updated `react-native-reanimated` from `2.12.0` to `2.14.0`. ([#20798](https://github.com/expo/expo/pull/20798) by [@kudo](https://github.com/kudo))
 - Updated `@shopify/react-native-skia` from `0.1.157` to `0.1.171`. ([#20857](https://github.com/expo/expo/pull/20857) by [@kudo](https://github.com/kudo))
+- Updated `react-native-safe-area-context` from `4.4.1` to `4.5.0`. ([#20899](https://github.com/expo/expo/pull/20899) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🛠 Breaking changes
 
