@@ -17,13 +17,6 @@ export function serverRenderUrl(location: URL): string {
 
   const out = React.createElement(Root, {
     children: element,
-    // scripts: (
-    //   <>
-    //     {scripts.map((script, index) => (
-    //       <script key={String(index)} src={script} />
-    //     ))}
-    //   </>
-    // ),
     scripts: <></>,
     styles: (
       <>
