@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `Caused by java.lang.NoSuchMethodError: No interface method getOrDefault` on Android. ([#20921](https://github.com/expo/expo/pull/20921) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 12.4.0 — 2022-11-30

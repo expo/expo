@@ -67,7 +67,7 @@ class ResolveTakenPictureAsyncTask(
     get() = options[QUALITY_KEY]?.let {
       val requestedQuality = (it as Number).toDouble()
       (requestedQuality * 100).toInt()
-    } ?: DEFAULT_QUALITY * 100
+    } ?: (DEFAULT_QUALITY * 100)
 
   override fun doInBackground(vararg params: Void?): Bundle? {
     // handle SkipProcessing
@@ -93,7 +93,7 @@ class ResolveTakenPictureAsyncTask(
         var bitmap: Bitmap? = null
         var lastError: Error? = null
 
-        val maxDownsampling = ((options.getOrDefault("maxDownsampling", 1.0)) as Double).toInt()
+        val maxDownsampling = ((options["maxDownsampling"] as? Double) ?: 1.0).toInt()
         // If OOM exception was thrown, we try to use downsampling to recover.
         while (bitmapOptions.inSampleSize <= maxDownsampling) {
           try {
