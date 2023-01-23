@@ -21,7 +21,7 @@ export declare function isAvailableAsync(): Promise<boolean>;
  *
  * @param options An optional [`AppleAuthenticationSignInOptions`](#appleauthenticationsigninoptions) object
  * @return A promise that fulfills with an [`AppleAuthenticationCredential`](#appleauthenticationcredential)
- * object after a successful authentication, and rejects with `ERR_CANCELED` if the user cancels the
+ * object after a successful authentication, and rejects with `ERR_REQUEST_CANCELED` if the user cancels the
  * sign-in operation.
  */
 export declare function signInAsync(options?: AppleAuthenticationSignInOptions): Promise<AppleAuthenticationCredential>;
@@ -31,7 +31,7 @@ export declare function signInAsync(options?: AppleAuthenticationSignInOptions):
  *
  * @param options An [`AppleAuthenticationRefreshOptions`](#appleauthenticationrefreshoptions) object
  * @returns A promise that fulfills with an [`AppleAuthenticationCredential`](#appleauthenticationcredential)
- * object after a successful authentication, and rejects with `ERR_CANCELED` if the user cancels the
+ * object after a successful authentication, and rejects with `ERR_REQUEST_CANCELED` if the user cancels the
  * refresh operation.
  */
 export declare function refreshAsync(options: AppleAuthenticationRefreshOptions): Promise<AppleAuthenticationCredential>;
@@ -45,7 +45,7 @@ export declare function refreshAsync(options: AppleAuthenticationRefreshOptions)
  *
  * @param options An [`AppleAuthenticationSignOutOptions`](#appleauthenticationsignoutoptions) object
  * @returns A promise that fulfills with an [`AppleAuthenticationCredential`](#appleauthenticationcredential)
- * object after a successful authentication, and rejects with `ERR_CANCELED` if the user cancels the
+ * object after a successful authentication, and rejects with `ERR_REQUEST_CANCELED` if the user cancels the
  * sign-out operation.
  */
 export declare function signOutAsync(options: AppleAuthenticationSignOutOptions): Promise<AppleAuthenticationCredential>;

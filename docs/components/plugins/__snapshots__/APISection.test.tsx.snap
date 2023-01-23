@@ -1701,7 +1701,7 @@ object after a successful authentication, and rejects with
         class="css-zmv3vl-TextComponent"
         data-text="true"
       >
-        ERR_CANCELED
+        ERR_REQUEST_CANCELED
       </code>
        if the user cancels the
 refresh operation.
@@ -2024,7 +2024,7 @@ object after a successful authentication, and rejects with
         class="css-zmv3vl-TextComponent"
         data-text="true"
       >
-        ERR_CANCELED
+        ERR_REQUEST_CANCELED
       </code>
        if the user cancels the
 sign-in operation.
@@ -2334,7 +2334,7 @@ object after a successful authentication, and rejects with
         class="css-zmv3vl-TextComponent"
         data-text="true"
       >
-        ERR_CANCELED
+        ERR_REQUEST_CANCELED
       </code>
        if the user cancels the
 sign-out operation.
