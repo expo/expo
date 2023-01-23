@@ -20,24 +20,12 @@ async function createNodeEntryAsync(projectRoot: string) {
   return tempFileLocation;
 }
 
-async function storeDebugBundleResults(projectRoot: string, results) {
-  const tempFileLocation = path.join(projectRoot, '.expo', 'web', 'debug-ssr');
-
-  fs.promises.mkdir(tempFileLocation, { recursive: true });
-  const templatePath = path.join(tempFileLocation, 'index.js');
-  fs.writeFileSync(templatePath, results);
-
-  return tempFileLocation;
-}
-
 export async function getServerFunctions(projectRoot: string, devServerUrl: string): Promise<any> {
   await createNodeEntryAsync(projectRoot);
 
   const content = await fetch(
     `${devServerUrl}/.expo/web/render-root.bundle?platform=web&dev=false&minify=false&runModule=false&modulesOnly=false`
   ).then((res) => res.text());
-
-  //   await storeDebugBundleResults(projectRoot, content);
 
   const res = profile(
     requireString,

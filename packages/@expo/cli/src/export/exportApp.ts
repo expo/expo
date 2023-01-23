@@ -3,6 +3,7 @@ import path from 'path';
 
 import * as Log from '../log';
 import { importCliSaveAssetsFromProject } from '../start/server/metro/resolveFromProject';
+import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
 import { createBundlesAsync } from './createBundles';
@@ -97,14 +98,29 @@ export async function exportAppAsync(
         outputDir: outputPath,
         scripts: [`/bundles/${fileNames.web}`],
       });
+      Log.log('Finished saving static files');
     } else {
+      // Generate SPA-styled HTML file.
+      // If web exists, then write the template HTML file.
+      await fs.promises.writeFile(
+        path.join(outputPath, 'index.html'),
+        await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
+          scripts: [`/bundles/${fileNames.web}`],
+        })
+      );
     }
 
     // Save assets like a typical bundler, preserving the file paths on web.
     const saveAssets = importCliSaveAssetsFromProject(projectRoot);
     await Promise.all(
       Object.entries(bundles).map(([platform, bundle]) => {
-        return saveAssets(bundle.assets, platform, outputPath);
+        return saveAssets(
+          // @ts-expect-error: tolerable type mismatches: unused `readonly` (common in Metro) and `undefined` instead of `null`.
+          bundle.assets,
+          platform,
+          outputPath,
+          undefined
+        );
       })
     );
   }

@@ -1,8 +1,6 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import chalk from 'chalk';
-import fetch from 'node-fetch';
-import fs from 'fs';
-import path from 'path';
+
 import * as Log from '../log';
 import getDevClientProperties from '../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../utils/analytics/rudderstackClient';
@@ -64,56 +62,6 @@ async function getMultiBundlerStartOptions(
   return [commonOptions, multiBundlerStartOptions];
 }
 
-export async function exportFromServerAsync(
-  projectRoot: string,
-  devServerManager: DevServerManager
-) {
-  console.time('static-generation');
-  const devServerUrl = devServerManager.getDefaultDevServer().getDevServerUrl();
-
-  const manifest = await fetch(`${devServerUrl}/_expo/routes.json`).then((res) => res.json());
-
-  console.log('manifest ->', manifest);
-  // name : contents
-  const files: [string, string][] = [];
-
-  const fetchScreens = (screens: Record<string, any>, additionPath: string = '') => {
-    return Object.entries(screens).map(async ([name, segment]) => {
-      const filename = name + '.html';
-
-      if (typeof segment !== 'string') {
-        await Promise.all(
-          fetchScreens(segment.screens, [additionPath, segment.path].filter(Boolean).join('/'))
-        );
-        return;
-      }
-
-      // TODO: handle dynamic routes
-      if (!segment.startsWith(':') && segment !== '*') {
-        const fullFilename = [additionPath, filename].filter(Boolean).join('/');
-        const fullSegment = [additionPath, segment].filter(Boolean).join('/');
-        // if (segment !== '' && !segment.startsWith(':') && segment !== '*') {
-        console.log('render ->', fullFilename, `${devServerUrl}/${fullSegment}`);
-        const screen = await fetch(`${devServerUrl}/${fullSegment}`).then((res) => res.text());
-        console.log('screen ->', !!screen);
-        files.push([fullFilename, screen]);
-      }
-      // TODO: recurse
-    });
-  };
-
-  await Promise.all(fetchScreens(manifest.screens));
-
-  fs.mkdirSync(path.join(projectRoot, 'dist'), { recursive: true });
-
-  files.forEach(([filename, contents]) => {
-    const outputPath = path.join(projectRoot, 'dist', filename);
-    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-    fs.writeFileSync(outputPath, contents);
-  });
-  console.timeEnd('static-generation');
-}
-
 export async function startAsync(
   projectRoot: string,
   options: Options,
@@ -159,9 +107,6 @@ export async function startAsync(
   }
 
   await profile(devServerManager.startAsync.bind(devServerManager))(startOptions);
-
-  // TEST:
-  await exportFromServerAsync(projectRoot, devServerManager);
 
   // Open project on devices.
   await profile(openPlatformsAsync)(devServerManager, options);

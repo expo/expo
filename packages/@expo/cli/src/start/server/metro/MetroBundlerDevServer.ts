@@ -81,7 +81,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // then the manifest handler will never run, the static middleware will run
     // and serve index.html instead of the manifest.
     // https://github.com/expo/expo/issues/13114
-    // prependMiddleware(middleware, manifestMiddleware);
+
+    prependMiddleware(middleware, manifestMiddleware.getHandler());
 
     middleware.use(
       new InterstitialPageMiddleware(this.projectRoot, {

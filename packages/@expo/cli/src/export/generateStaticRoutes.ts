@@ -83,7 +83,10 @@ export async function exportFromServerAsync(
     const outputPath = path.join(outputDir, filename);
     fs.mkdirSync(path.dirname(outputPath), { recursive: true });
     fs.writeFileSync(outputPath, contents);
+
+    Log.log(`Writing:`, filename);
   });
+
   console.timeEnd('static-generation');
 }
 
@@ -96,6 +99,12 @@ export async function exportStaticAsync(
     mode: 'production',
     location: {},
   });
+
+  await devServerManager.startAsync([
+    {
+      type: 'metro',
+    },
+  ]);
 
   await exportFromServerAsync(projectRoot, devServerManager, options);
 
