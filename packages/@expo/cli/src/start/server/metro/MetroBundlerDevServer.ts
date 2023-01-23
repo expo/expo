@@ -141,13 +141,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             targetModuleId
           );
 
-          console.log(
-            'check:',
-            apiFunctionPath,
-            targetModuleId,
-            path.join(this.projectRoot, 'app'),
-            apiFunctionPath
-          );
           if (!!apiFunctionPath && fs.existsSync(apiFunctionPath)) {
             // Handle as middleware
 
@@ -155,19 +148,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             // remove extension
             apiFuncPathname = apiFuncPathname.substring(0, apiFuncPathname.lastIndexOf('.'));
 
-            console.log('apiFuncPathname:', apiFuncPathname);
-
             try {
+              // Metro evaluates the bundle and returns it for us.
               const resolved = await getMiddleware(devServerUrl, apiFuncPathname);
-
+              // Interop with ES6 modules.
               const func = resolved?.default || resolved;
-              // // 3. Import middleware file
-              // const middleware = fresh(resolved);
 
-              // // Interop default
-              // const func = middleware.default || middleware;
-
-              console.log('run:', func);
               // 4. Execute.
               await func(req, res, next);
               return;

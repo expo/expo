@@ -19,12 +19,10 @@ async function createNodeEntryAsync(projectRoot: string) {
   return tempFileLocation;
 }
 
-function localizeBundle(str: string) {
-  let parsedContent = metroRuntime + str;
-
-  // Replace the __r() call with a return statement.
-  parsedContent = parsedContent.replace(/^(__r\(.*\);)$/m, 'return $1');
-  return `module.exports = (() => { ${parsedContent}\n })() `;
+function wrapBundle(str: string) {
+  // Skip the metro runtime so debugging is a bit easier.
+  // Replace the __r() call with an export statement.
+  return metroRuntime + str.replace(/^(__r\(.*\);)$/m, 'module.exports = $1');
 }
 
 const metroRuntime = `var __BUNDLE_START_TIME__=this.nativePerformanceNow?nativePerformanceNow():Date.now(),__DEV__=false,process=this.process||{},__METRO_GLOBAL_PREFIX__='';process.env=process.env||{};process.env.NODE_ENV=process.env.NODE_ENV||"production";
@@ -201,7 +199,7 @@ export async function getMiddleware(devServerUrl: string, pathname: string): Pro
   const content = await fetch(
     `${devServerUrl}/${pathname}.bundle?platform=web&dev=false&minify=false&modulesOnly=true`
   ).then((res) => res.text());
-  return profile(requireString, 'eval-metro-bundle')(localizeBundle(content));
+  return profile(requireString, 'eval-metro-bundle')(wrapBundle(content));
 }
 
 export async function getServerFunctions(projectRoot: string, devServerUrl: string): Promise<any> {
@@ -209,7 +207,7 @@ export async function getServerFunctions(projectRoot: string, devServerUrl: stri
   const content = await fetch(
     `${devServerUrl}/.expo/web/render-root.bundle?platform=web&dev=false&minify=false&modulesOnly=true`
   ).then((res) => res.text());
-  return profile(requireString, 'eval-metro-bundle')(localizeBundle(content));
+  return profile(requireString, 'eval-metro-bundle')(wrapBundle(content));
 }
 
 export async function getServerRenderer(
