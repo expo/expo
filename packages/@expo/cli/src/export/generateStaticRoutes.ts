@@ -9,6 +9,7 @@ import fs from 'fs';
 import { minify as minifyHtml } from 'html-minifier';
 import fetch from 'node-fetch';
 import path from 'path';
+import { getTransformedRoutes } from '@vercel/routing-utils';
 
 import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
@@ -39,6 +40,7 @@ export async function exportFromServerAsync(
   debug('Routes:', manifest);
   // name : contents
   const files: [string, string][] = [];
+  const overrides: [string, string][] = [];
 
   const fetchScreens = (
     screens: Record<string, any>,
@@ -99,6 +101,10 @@ export async function exportFromServerAsync(
 
             const fullFilename = ['static', additionPath, filename].filter(Boolean).join('/');
             files.push([fullFilename, processedHtml]);
+            const out = path.join(additionPath, filename);
+            // remove extension
+
+            overrides.push([out, out.replace(/\.html$/, '')]);
           }
         } catch (e: any) {
           Log.error('Error while generating static HTML for route:', fullSegment);
@@ -120,7 +126,15 @@ export async function exportFromServerAsync(
     Log.log(`Writing:`, filename);
   });
 
-  fs.writeFileSync(path.join(outputDir, 'config.json'), JSON.stringify({ version: 3 }));
+  fs.writeFileSync(
+    path.join(outputDir, 'config.json'),
+    JSON.stringify({
+      version: 3,
+      routes: getTransformedRoutes({
+        cleanUrls: true,
+      }).routes,
+    })
+  );
 
   console.timeEnd('static-generation');
 }

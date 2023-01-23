@@ -196,7 +196,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           const location = new URL(req.url, devServerUrl);
 
           try {
-            const serverRenderLocation = await getServerRenderer(this.projectRoot, devServerUrl);
+            const serverRenderLocation = (
+              await getServerFunctions(this.projectRoot, devServerUrl, {
+                minify: options.mode === 'production',
+                // dev: options.mode !== 'production',
+              })
+            ).serverRenderUrl;
 
             let content = serverRenderLocation(location);
 

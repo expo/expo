@@ -43,10 +43,14 @@ export async function getMiddleware(devServerUrl: string, pathname: string): Pro
   )(await getMiddlewareContent(devServerUrl, pathname));
 }
 
-export async function getServerFunctions(projectRoot: string, devServerUrl: string): Promise<any> {
+export async function getServerFunctions(
+  projectRoot: string,
+  devServerUrl: string,
+  { dev = false, minify = false }: { dev?: boolean; minify?: boolean } = {}
+): Promise<any> {
   await createNodeEntryAsync(projectRoot);
   const content = await fetch(
-    `${devServerUrl}/.expo/web/render-root.bundle?platform=web&dev=false&minify=false`
+    `${devServerUrl}/.expo/web/render-root.bundle?platform=web&dev=${dev}&minify=${minify}`
   ).then((res) => res.text());
   return profile(requireString, 'eval-metro-bundle')(wrapBundle(content));
 }

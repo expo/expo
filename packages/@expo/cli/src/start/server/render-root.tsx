@@ -10,6 +10,8 @@ export function getManifest() {
   return require('expo-router/manifest').getManifest();
 }
 
+import { Head } from 'expo-router';
+
 export function serverRenderUrl(location: URL): string {
   const { element, getStyleElement } = AppRegistry.getApplication('App');
 
@@ -26,16 +28,37 @@ export function serverRenderUrl(location: URL): string {
     ),
   });
 
+  const headContext = {};
+
   let html = ReactDOMServer.renderToString(
-    <ServerContainer ref={ref} location={location}>
-      {out}
-    </ServerContainer>
+    <Head.Provider context={headContext}>
+      <ServerContainer ref={ref} location={location}>
+        {out}
+      </ServerContainer>
+    </Head.Provider>
   );
 
-  const options = ref.current?.getCurrentOptions();
-  if (options?.title) {
-    html = html.replace('<head>', `<head><title>${options?.title}</title>`);
+  // React Navigation options
+  // const options = ref.current?.getCurrentOptions();
+  // if (options?.title) {
+  //   html = html.replace('<head>', `<head><title>${options?.title}</title>`);
+  // }
+
+  return '<!DOCTYPE html>' + mixHeadComponentsWithStaticResults(headContext.helmet, html);
+}
+
+function mixHeadComponentsWithStaticResults(helmet: any, html: string) {
+  // Head components
+  for (const key of ['title', 'priority', 'meta', 'link', 'script', 'style'].reverse()) {
+    const result = helmet[key].toString();
+    if (result) {
+      html = html.replace('<head>', `<head>${result}`);
+    }
   }
+
+  // attributes
+  html = html.replace('<html ', `<html ${helmet.htmlAttributes.toString()} `);
+  html = html.replace('<body ', `<body ${helmet.bodyAttributes.toString()} `);
 
   return html;
 }
