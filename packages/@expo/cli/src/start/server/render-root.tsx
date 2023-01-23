@@ -33,7 +33,9 @@ export function serverRenderUrl(location: URL): string {
   );
 
   const options = ref.current?.getCurrentOptions();
-  html = html.replace('<head>', `<head><title>${options?.title}</title>`);
+  if (options?.title) {
+    html = html.replace('<head>', `<head><title>${options?.title}</title>`);
+  }
 
   return html;
 }
