@@ -89,7 +89,7 @@ export default function App() {
             });
             // signed in
           } catch (e) {
-            if (e.code === 'ERR_CANCELED') {
+            if (e.code === 'ERR_REQUEST_CANCELED') {
               // handle that the user canceled the sign-in flow
             } else {
               // handle other errors
@@ -149,4 +149,4 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 | ERR_APPLE_AUTHENTICATION_INVALID_SCOPE  | An invalid [`AppleAuthenticationScope`](#appleauthenticationappleauthenticationscope) was passed in.   |
 | ERR_APPLE_AUTHENTICATION_REQUEST_FAILED | The authentication request failed. See the error message for additional specific information.          |
 | ERR_APPLE_AUTHENTICATION_UNAVAILABLE    | Apple authentication is unavailable on the device.                                                     |
-| ERR_CANCELED                            | The user canceled the sign-in request from the system modal.                                           |
+| ERR_REQUEST_CANCELED                    | The user canceled the sign-in request from the system modal.                                           |
