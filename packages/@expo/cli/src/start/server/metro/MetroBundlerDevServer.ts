@@ -9,7 +9,6 @@ import { prependMiddleware } from '@expo/dev-server';
 import assert from 'assert';
 import path from 'path';
 import fs from 'fs';
-import resolveFrom from 'resolve-from';
 
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
@@ -27,6 +26,7 @@ import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.
 import { getMiddleware, getServerFunctions, getServerRenderer } from '../node-renderer';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { env } from '../../../utils/env';
+import resolve from 'resolve/sync';
 
 /** Default port to use for apps running in Expo Go. */
 const EXPO_GO_METRO_PORT = 19000;
@@ -40,19 +40,24 @@ export function isApiRoute(projectRoot: string, pathname: string) {
   // 1. Get pathname, e.g. `/thing`
   // location.pathname;
 
-  // 2. Check if it's a middleware, e.g. `./app/thing+api.js` exists
-  // TODO: Search through group syntax
-  const apiFunctionPath = resolveFrom.silent(path.join(projectRoot, 'app'), targetModuleId);
+  try {
+    // 2. Check if it's a middleware, e.g. `./app/thing+api.js` exists
+    // TODO: Search through group syntax
+    const apiFunctionPath = resolve(targetModuleId, {
+      basedir: path.join(projectRoot, 'app'),
+      extensions: ['.js', '.jsx', '.ts', '.tsx', 'mjs'],
+    });
 
-  if (!!apiFunctionPath && fs.existsSync(apiFunctionPath)) {
-    // Handle as middleware
+    if (!!apiFunctionPath && fs.existsSync(apiFunctionPath)) {
+      // Handle as middleware
 
-    let apiFuncPathname = path.relative(projectRoot, apiFunctionPath);
-    // remove extension
-    apiFuncPathname = apiFuncPathname.substring(0, apiFuncPathname.lastIndexOf('.'));
+      let apiFuncPathname = path.relative(projectRoot, apiFunctionPath);
+      // remove extension
+      apiFuncPathname = apiFuncPathname.substring(0, apiFuncPathname.lastIndexOf('.'));
 
-    return apiFuncPathname;
-  }
+      return apiFuncPathname;
+    }
+  } catch (e) {}
   return null;
 }
 

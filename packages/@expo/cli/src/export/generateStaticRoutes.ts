@@ -55,17 +55,29 @@ export async function exportFromServerAsync(
 
       // TODO: handle dynamic routes
       if (segment !== '*') {
-        const fullFilename = [additionPath, filename].filter(Boolean).join('/');
         const fullSegment = [additionPath, segment].filter(Boolean).join('/');
-        debug('render:', fullFilename, `${devServerUrl}/${fullSegment}`);
+        debug('render:', `${devServerUrl}/${fullSegment}`);
         try {
           const apiRoutePath = isApiRoute(projectRoot, '/' + fullSegment);
           if (apiRoutePath) {
             const content = await getMiddlewareContent(devServerUrl!, apiRoutePath, {
               minify,
             });
-            const fullFilename = [additionPath, name + '.js'].filter(Boolean).join('/');
+
+            const outputDir = ['functions', additionPath, name + '.func'].filter(Boolean).join('/');
+            const fullFilename = path.join(outputDir, 'index.js');
+
             files.push([fullFilename, content]);
+
+            files.push([
+              path.join(outputDir, '.vc-config.json'),
+              JSON.stringify({
+                handler: 'index.js',
+                runtime: 'nodejs16.x',
+                launcherType: 'Nodejs',
+                shouldAddHelpers: true,
+              }),
+            ]);
           } else {
             const screen = await fetch(`${devServerUrl}/${fullSegment}`).then((res) => res.text());
             const content = screen.replace(
@@ -85,6 +97,7 @@ export async function exportFromServerAsync(
               });
             }
 
+            const fullFilename = ['static', additionPath, filename].filter(Boolean).join('/');
             files.push([fullFilename, processedHtml]);
           }
         } catch (e: any) {
@@ -106,6 +119,8 @@ export async function exportFromServerAsync(
 
     Log.log(`Writing:`, filename);
   });
+
+  fs.writeFileSync(path.join(outputDir, 'config.json'), JSON.stringify({ version: 3 }));
 
   console.timeEnd('static-generation');
 }

@@ -48,8 +48,9 @@ export async function exportAppAsync(
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
 
   const outputPath = path.resolve(projectRoot, outputDir);
-  const assetsPath = path.join(outputPath, 'assets');
-  const bundlesPath = path.join(outputPath, 'bundles');
+  const staticFolder = path.join(outputPath, 'static');
+  const assetsPath = path.join(staticFolder, 'assets');
+  const bundlesPath = path.join(staticFolder, 'bundles');
 
   await Promise.all([assetsPath, bundlesPath].map(ensureDirectoryAsync));
 
@@ -105,7 +106,7 @@ export async function exportAppAsync(
       // Generate SPA-styled HTML file.
       // If web exists, then write the template HTML file.
       await fs.promises.writeFile(
-        path.join(outputPath, 'index.html'),
+        path.join(staticFolder, 'index.html'),
         await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
           scripts: [`/bundles/${fileNames.web}`],
         })
@@ -120,7 +121,7 @@ export async function exportAppAsync(
           // @ts-expect-error: tolerable type mismatches: unused `readonly` (common in Metro) and `undefined` instead of `null`.
           bundle.assets,
           platform,
-          outputPath,
+          staticFolder,
           undefined
         );
       })
@@ -129,13 +130,13 @@ export async function exportAppAsync(
 
   const { assets } = await exportAssetsAsync(projectRoot, {
     exp,
-    outputDir: outputPath,
+    outputDir: staticFolder,
     bundles,
   });
 
   if (dumpAssetmap) {
     Log.log('Dumping asset map');
-    await writeAssetMapAsync({ outputDir: outputPath, assets });
+    await writeAssetMapAsync({ outputDir: staticFolder, assets });
   }
 
   // build source maps
@@ -152,13 +153,13 @@ export async function exportAppAsync(
     // If we output source maps, then add a debug HTML file which the user can open in
     // the web browser to inspect the output like web.
     await writeDebugHtmlAsync({
-      outputDir: outputPath,
+      outputDir: staticFolder,
       fileNames,
     });
   }
 
   // Generate a `metadata.json` and the export is complete.
-  await writeMetadataJsonAsync({ outputDir: outputPath, bundles, fileNames });
+  await writeMetadataJsonAsync({ outputDir: staticFolder, bundles, fileNames });
 }
 
 /**
