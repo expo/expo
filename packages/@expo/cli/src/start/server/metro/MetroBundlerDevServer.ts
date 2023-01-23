@@ -34,6 +34,28 @@ const EXPO_GO_METRO_PORT = 19000;
 /** Default port to use for apps that run in standard React Native projects or Expo Dev Clients. */
 const DEV_CLIENT_METRO_PORT = 8081;
 
+export function isApiRoute(projectRoot: string, pathname: string) {
+  const location = new URL(pathname, 'http://localhost:8081');
+  const targetModuleId = '.' + location.pathname + '+api';
+  // 1. Get pathname, e.g. `/thing`
+  // location.pathname;
+
+  // 2. Check if it's a middleware, e.g. `./app/thing+api.js` exists
+  // TODO: Search through group syntax
+  const apiFunctionPath = resolveFrom.silent(path.join(projectRoot, 'app'), targetModuleId);
+
+  if (!!apiFunctionPath && fs.existsSync(apiFunctionPath)) {
+    // Handle as middleware
+
+    let apiFuncPathname = path.relative(projectRoot, apiFunctionPath);
+    // remove extension
+    apiFuncPathname = apiFuncPathname.substring(0, apiFuncPathname.lastIndexOf('.'));
+
+    return apiFuncPathname;
+  }
+  return null;
+}
+
 export class MetroBundlerDevServer extends BundlerDevServer {
   get name(): string {
     return 'metro';
@@ -116,59 +138,45 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     middleware.use(new CreateFileMiddleware(this.projectRoot).getHandler());
 
+    if (env.EXPO_USE_STATIC) {
+      // Middleware for hosting middleware
+      middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+        if (!req?.url) {
+          return next();
+        }
+
+        const devServerUrl = this.getDevServerUrl()!;
+
+        const apiFuncPathname = isApiRoute(this.projectRoot, req.url);
+        // Handle as middleware
+        if (apiFuncPathname) {
+          try {
+            // Metro evaluates the bundle and returns it for us.
+            const resolved = await getMiddleware(devServerUrl, apiFuncPathname);
+            // Interop with ES6 modules.
+            const func = resolved?.default || resolved;
+
+            // 4. Execute.
+            await func(req, res, next);
+            return;
+          } catch (error) {
+            console.error(error);
+            res.setHeader('Content-Type', 'text/html');
+            res.end(errorResult(error));
+            return;
+          }
+        }
+
+        // Try to serve routes
+        return next();
+      });
+    }
     // Append support for redirecting unhandled requests to the index.html page on web.
     if (this.isTargetingWeb()) {
       // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
 
       if (env.EXPO_USE_STATIC) {
-        // Middleware for hosting middleware
-        middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-          if (!req?.url) {
-            return next();
-          }
-
-          const devServerUrl = this.getDevServerUrl()!;
-          const location = new URL(req.url, devServerUrl);
-          const targetModuleId = '.' + location.pathname + '+api';
-          // 1. Get pathname, e.g. `/thing`
-          // location.pathname;
-
-          // 2. Check if it's a middleware, e.g. `./app/thing+api.js` exists
-          // TODO: Search through group syntax
-          const apiFunctionPath = resolveFrom.silent(
-            path.join(this.projectRoot, 'app'),
-            targetModuleId
-          );
-
-          if (!!apiFunctionPath && fs.existsSync(apiFunctionPath)) {
-            // Handle as middleware
-
-            let apiFuncPathname = path.relative(this.projectRoot, apiFunctionPath);
-            // remove extension
-            apiFuncPathname = apiFuncPathname.substring(0, apiFuncPathname.lastIndexOf('.'));
-
-            try {
-              // Metro evaluates the bundle and returns it for us.
-              const resolved = await getMiddleware(devServerUrl, apiFuncPathname);
-              // Interop with ES6 modules.
-              const func = resolved?.default || resolved;
-
-              // 4. Execute.
-              await func(req, res, next);
-              return;
-            } catch (error) {
-              console.error(error);
-              res.setHeader('Content-Type', 'text/html');
-              res.end(errorResult(error));
-              return;
-            }
-          }
-
-          // Try to serve routes
-          return next();
-        });
-
         middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
           if (!req?.url) {
             return next();
@@ -185,7 +193,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           try {
             const serverRenderLocation = await getServerRenderer(this.projectRoot, devServerUrl);
 
-            console.log('serverRenderLocation', serverRenderLocation);
             let content = serverRenderLocation(location);
 
             //TODO: Not this -- disable injection some other way

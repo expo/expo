@@ -12,7 +12,8 @@ import path from 'path';
 
 import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
-import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
+import { isApiRoute, MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
+import { getMiddlewareContent } from '../start/server/node-renderer';
 import { profile } from '../utils/profile';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
@@ -58,24 +59,34 @@ export async function exportFromServerAsync(
         const fullSegment = [additionPath, segment].filter(Boolean).join('/');
         debug('render:', fullFilename, `${devServerUrl}/${fullSegment}`);
         try {
-          const screen = await fetch(`${devServerUrl}/${fullSegment}`).then((res) => res.text());
-          const content = screen.replace(
-            '</body>',
-            scripts.map((script) => `<script src="${script}" defer></script>`).join('') + '</body>'
-          );
-
-          let processedHtml = content;
-          if (minify) {
-            // TODO: Option to disable minification
-            processedHtml = profile(minifyHtml, 'minify-html')(content, {
-              // collapseWhitespace: true,
-              // minifyCSS: true,
-              // removeComments: true,
-              // removeAttributeQuotes: true,
+          const apiRoutePath = isApiRoute(projectRoot, '/' + fullSegment);
+          if (apiRoutePath) {
+            const content = await getMiddlewareContent(devServerUrl!, apiRoutePath, {
+              minify,
             });
-          }
+            const fullFilename = [additionPath, name + '.js'].filter(Boolean).join('/');
+            files.push([fullFilename, content]);
+          } else {
+            const screen = await fetch(`${devServerUrl}/${fullSegment}`).then((res) => res.text());
+            const content = screen.replace(
+              '</body>',
+              scripts.map((script) => `<script src="${script}" defer></script>`).join('') +
+                '</body>'
+            );
 
-          files.push([fullFilename, processedHtml]);
+            let processedHtml = content;
+            if (minify) {
+              // TODO: Option to disable minification
+              processedHtml = profile(minifyHtml, 'minify-html')(content, {
+                // collapseWhitespace: true,
+                // minifyCSS: true,
+                // removeComments: true,
+                // removeAttributeQuotes: true,
+              });
+            }
+
+            files.push([fullFilename, processedHtml]);
+          }
         } catch (e: any) {
           Log.error('Error while generating static HTML for route:', fullSegment);
           Log.exception(e);
