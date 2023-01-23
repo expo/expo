@@ -17,6 +17,7 @@
 ### 🎉 New features
 
 - Migrated Android codebase to use the new Expo modules API. ([#20232](https://github.com/expo/expo/pull/20232) by [@alanhughes](https://github.com/alanjhughes))
+- Add support for [granular permissions](https://developer.android.com/about/versions/13/behavior-changes-13) on Android 13. ([#20907](https://github.com/expo/expo/pull/20907) by [@alanhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
