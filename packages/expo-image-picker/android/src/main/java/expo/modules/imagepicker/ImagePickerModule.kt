@@ -183,8 +183,7 @@ class ImagePickerModule : Module() {
       listOfNotNull(
         Manifest.permission.WRITE_EXTERNAL_STORAGE,
         Manifest.permission.READ_EXTERNAL_STORAGE.takeIf { !writeOnly }
-      )
-        .toTypedArray()
+      ).toTypedArray()
     }
 
   private fun ensureTargetActivityIsAvailable(options: ImagePickerOptions) {
