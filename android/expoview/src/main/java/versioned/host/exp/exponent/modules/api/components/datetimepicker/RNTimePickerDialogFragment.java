@@ -8,6 +8,8 @@
 
 package versioned.host.exp.exponent.modules.api.components.datetimepicker;
 
+import host.exp.expoview.R;
+
 import static versioned.host.exp.exponent.modules.api.components.datetimepicker.Common.getDisplayTime;
 import static versioned.host.exp.exponent.modules.api.components.datetimepicker.Common.setButtonTextColor;
 import static versioned.host.exp.exponent.modules.api.components.datetimepicker.Common.setButtonTitles;
