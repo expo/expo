@@ -3,7 +3,7 @@
 exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
 <div>
   <div
-    class="css-1cj5gpg-AppConfigProperty"
+    class="css-165e1mf-AppConfigProperty"
   >
     <p
       class="  css-yszm2s-TextComponent"
@@ -123,7 +123,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     <div />
   </div>
   <div
-    class="css-1cj5gpg-AppConfigProperty"
+    class="css-165e1mf-AppConfigProperty"
   >
     <p
       class="  css-yszm2s-TextComponent"
@@ -287,7 +287,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </details>
     <div>
       <div
-        class="css-1cj5gpg-AppConfigProperty"
+        class="css-165e1mf-AppConfigProperty"
       >
         <p
           class="  css-yszm2s-TextComponent"
@@ -415,7 +415,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </details>
         <div>
           <div
-            class="css-1cj5gpg-AppConfigProperty"
+            class="css-165e1mf-AppConfigProperty"
           >
             <p
               class="  css-yszm2s-TextComponent"
@@ -501,7 +501,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </div>
       </div>
       <div
-        class="css-1cj5gpg-AppConfigProperty"
+        class="css-165e1mf-AppConfigProperty"
       >
         <p
           class="  css-yszm2s-TextComponent"
@@ -601,7 +601,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </div>
   </div>
   <div
-    class="css-1cj5gpg-AppConfigProperty"
+    class="css-165e1mf-AppConfigProperty"
   >
     <p
       class="  css-yszm2s-TextComponent"
@@ -761,7 +761,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     </blockquote>
     <div>
       <div
-        class="css-1cj5gpg-AppConfigProperty"
+        class="css-165e1mf-AppConfigProperty"
       >
         <p
           class="  css-yszm2s-TextComponent"
@@ -845,7 +845,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         <div />
       </div>
       <div
-        class="css-1cj5gpg-AppConfigProperty"
+        class="css-165e1mf-AppConfigProperty"
       >
         <p
           class="  css-yszm2s-TextComponent"
@@ -922,7 +922,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         </p>
         <div>
           <div
-            class="css-1cj5gpg-AppConfigProperty"
+            class="css-165e1mf-AppConfigProperty"
           >
             <p
               class="  css-yszm2s-TextComponent"
