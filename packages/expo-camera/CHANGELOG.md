@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix `Caused by java.lang.NoSuchMethodError: No interface method getOrDefault` on Android.
+
 ### 💡 Others
 
 ## 12.4.0 — 2022-11-30
