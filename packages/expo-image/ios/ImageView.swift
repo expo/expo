@@ -10,12 +10,8 @@ typealias SDWebImageContext = [SDWebImageContextOption: Any]
 public final class ImageView: ExpoView {
   static let contextSourceKey = SDWebImageContextOption(rawValue: "source")
   static let screenScaleKey = SDWebImageContextOption(rawValue: "screenScale")
-  static let imageAnalyzer = {
-    if #available(iOS 16.0, *) {
-      return ImageAnalyzer.isSupported ? ImageAnalyzer() : nil
-    }
-    return nil
-  }()
+  @available(iOS 16.0, *)
+  static let imageAnalyzer = ImageAnalyzer.isSupported ? ImageAnalyzer() : nil
 
   let imageAnalysisInteraction = {
     if #available(iOS 16.0, *) {
@@ -54,11 +50,11 @@ public final class ImageView: ExpoView {
 
   var cachePolicy: ImageCachePolicy = .disk
 
-  var enableLiveTextIOS: Bool = false {
+  var enableLiveTextInteraction: Bool = false {
     didSet {
       // We don't handle the true case as setImage gets called which will eventually call analyzeImage
-      if !enableLiveTextIOS {
-        self.resetImageAnalyzer()
+      if !enableLiveTextInteraction {
+        resetImageAnalyzer()
       }
     }
   }
@@ -375,19 +371,19 @@ public final class ImageView: ExpoView {
           imageAnalysisInteraction.preferredInteractionTypes = .automatic
         }
       } catch {
-        // Handle error
+        log.error(error)
       }
     }
   }
 
   private func setImage(_ image: UIImage?, contentFit: ContentFit) {
-    self.resetImageAnalyzer()
+    resetImageAnalyzer()
 
     sdImageView.contentMode = contentFit.toContentMode()
     sdImageView.image = image
 
-    if self.enableLiveTextIOS {
-      self.analyzeImage()
+    if enableLiveTextInteraction {
+      analyzeImage()
     }
   }
 

@@ -36,13 +36,6 @@ export type ImageSource = {
    * If not provided, the `uri` is used also as the cache key.
    */
   cacheKey?: string;
-
-  /**
-   * Enables live text interaction on iOS.
-   * https://developer.apple.com/documentation/visionkit/enabling_live_text_interactions_with_images
-   * @platform ios
-   */
-  enableLiveTextIOS?: boolean;
 };
 
 /**
@@ -234,6 +227,13 @@ export type ImageProps = {
    * @platform ios
    */
   accessibilityLabel?: string | null;
+
+  /**
+   * Enables Live Text interaction with the image. Check official [Apple documentation](https://developer.apple.com/documentation/visionkit/enabling_live_text_interactions_with_images) for more details.
+   * @default false
+   * @platform ios 16.0+
+   */
+  enableLiveTextInteraction?: boolean;
 };
 
 /**

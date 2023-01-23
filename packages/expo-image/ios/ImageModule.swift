@@ -65,8 +65,8 @@ public final class ImageModule: Module {
         view.cachePolicy = cachePolicy ?? .disk
       }
 
-      Prop("enableLiveTextIOS") { (view, enableLiveTextIOS: Bool?) in
-        view.enableLiveTextIOS = enableLiveTextIOS ?? false
+      Prop("enableLiveTextInteraction") { (view, enableLiveTextInteraction: Bool?) in
+        view.enableLiveTextInteraction = enableLiveTextInteraction ?? false
       }
 
       Prop("accessible") { (view, accessible: Bool?) in
