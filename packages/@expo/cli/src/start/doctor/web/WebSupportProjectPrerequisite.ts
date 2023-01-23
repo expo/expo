@@ -72,7 +72,6 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
     }
 
     try {
-      return true;
       return await ensureDependenciesAsync(this.projectRoot, {
         // This never seems to work when prompting, installing, and running -- instead just inform the user to run the install command and try again.
         skipPrompt: true,

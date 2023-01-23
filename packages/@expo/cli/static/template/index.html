@@ -13,6 +13,10 @@
     />
     <title>%WEB_TITLE%</title>
     <style>
+      /**
+       * Extend the react-native-web reset:
+       * https://github.com/necolas/react-native-web/blob/master/packages/react-native-web/src/exports/StyleSheet/initialRules.js
+       */
       html,
       body,
       #root {
@@ -57,7 +61,56 @@
       }*/
     </style>
   </head>
+
   <body>
+    <!-- 
+      A generic no script element with a reload button and a message.
+      Feel free to customize this however you'd like.
+    -->
+    <noscript>
+      <form
+        action=""
+        style="
+          background-color: #fff;
+          position: fixed;
+          top: 0;
+          left: 0;
+          right: 0;
+          bottom: 0;
+          z-index: 9999;
+        "
+      >
+        <div
+          style="
+            font-size: 18px;
+            font-family: Helvetica, sans-serif;
+            line-height: 24px;
+            margin: 10%;
+            width: 80%;
+          "
+        >
+          <p>Oh no! It looks like JavaScript is not enabled in your browser.</p>
+          <p style="margin: 20px 0;">
+            <button
+              type="submit"
+              style="
+                background-color: #4630eb;
+                border-radius: 100px;
+                border: none;
+                box-shadow: none;
+                color: #fff;
+                cursor: pointer;
+                font-weight: bold;
+                line-height: 20px;
+                padding: 6px 16px;
+              "
+            >
+              Reload
+            </button>
+          </p>
+        </div>
+      </form>
+    </noscript>
     <!-- The root element for your Expo app. -->
     <div id="root"></div>
   </body>

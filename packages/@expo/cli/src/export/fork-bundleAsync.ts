@@ -24,7 +24,7 @@ export type MetroDevServerOptions = LoadOptions & {
 };
 export type BundleOptions = {
   entryPoint: string;
-  platform?: 'android' | 'ios' | 'web' | null;
+  platform: 'android' | 'ios' | 'web';
   dev?: boolean;
   minify?: boolean;
   sourceMapUrl?: string;
@@ -183,8 +183,7 @@ export async function bundleAsync(
     const isHermesManaged = isEnableHermesManaged(expoConfig, platform);
     if (isHermesManaged) {
       const platformTag = chalk.bold(
-        { ios: 'iOS', android: 'Android', web: 'Web', node: 'Node.js' }[platform ?? 'node'] ||
-          platform
+        { ios: 'iOS', android: 'Android', web: 'Web' }[platform] || platform
       );
 
       terminalReporter.terminal.log(`${platformTag} Building Hermes bytecode for the bundle`);

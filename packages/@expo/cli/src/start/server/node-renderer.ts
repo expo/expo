@@ -13,7 +13,6 @@ async function createNodeEntryAsync(projectRoot: string) {
 
   const templatePath = path.join(__dirname, 'render-root.js');
   const template = fs.readFileSync(templatePath, 'utf8');
-  // template = template.replace('[PATH_TO_COMPONENTS]', '../../app');
 
   fs.writeFileSync(tempFileLocation, template);
 
