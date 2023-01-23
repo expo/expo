@@ -7,6 +7,9 @@
 import { getConfig } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
 import assert from 'assert';
+import path from 'path';
+import fs from 'fs';
+import resolveFrom from 'resolve-from';
 
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
@@ -21,7 +24,7 @@ import {
 } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
-import { getServerFunctions, getServerRenderer } from '../node-renderer';
+import { getMiddleware, getServerFunctions, getServerRenderer } from '../node-renderer';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { env } from '../../../utils/env';
 
@@ -125,17 +128,78 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             return next();
           }
 
+          const devServerUrl = this.getDevServerUrl()!;
+          const location = new URL(req.url, devServerUrl);
+          const targetModuleId = '.' + location.pathname + '+api';
+          // 1. Get pathname, e.g. `/thing`
+          // location.pathname;
+
+          // 2. Check if it's a middleware, e.g. `./app/thing+api.js` exists
+          // TODO: Search through group syntax
+          const apiFunctionPath = resolveFrom.silent(
+            path.join(this.projectRoot, 'app'),
+            targetModuleId
+          );
+
+          console.log(
+            'check:',
+            apiFunctionPath,
+            targetModuleId,
+            path.join(this.projectRoot, 'app'),
+            apiFunctionPath
+          );
+          if (!!apiFunctionPath && fs.existsSync(apiFunctionPath)) {
+            // Handle as middleware
+
+            let apiFuncPathname = path.relative(this.projectRoot, apiFunctionPath);
+            // remove extension
+            apiFuncPathname = apiFuncPathname.substring(0, apiFuncPathname.lastIndexOf('.'));
+
+            console.log('apiFuncPathname:', apiFuncPathname);
+
+            try {
+              const resolved = await getMiddleware(devServerUrl, apiFuncPathname);
+
+              const func = resolved?.default || resolved;
+              // // 3. Import middleware file
+              // const middleware = fresh(resolved);
+
+              // // Interop default
+              // const func = middleware.default || middleware;
+
+              console.log('run:', func);
+              // 4. Execute.
+              await func(req, res, next);
+              return;
+            } catch (error) {
+              console.error(error);
+              res.setHeader('Content-Type', 'text/html');
+              res.end(errorResult(error));
+              return;
+            }
+          }
+
+          // Try to serve routes
+          return next();
+        });
+
+        middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+          if (!req?.url) {
+            return next();
+          }
+
           // TODO: Formal manifest for allowed paths
           if (req.url.endsWith('.ico')) {
             return next();
           }
 
           const devServerUrl = this.getDevServerUrl()!;
+          const location = new URL(req.url, devServerUrl);
+
           try {
             const serverRenderLocation = await getServerRenderer(this.projectRoot, devServerUrl);
 
-            const location = new URL(req.url, devServerUrl);
-
+            console.log('serverRenderLocation', serverRenderLocation);
             let content = serverRenderLocation(location);
 
             //TODO: Not this -- disable injection some other way
@@ -156,20 +220,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           } catch (error: any) {
             console.error(error);
             res.setHeader('Content-Type', 'text/html');
-            res.end(`
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Error</title>
-  </head>
-  <body>
-    <h1>Failed to render static app</h1>
-    <pre>${error.stack}</pre>
-  </body>
-  </html>
-  `);
+            res.end(errorResult(error));
           }
         });
       }
@@ -210,6 +261,23 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   protected getConfigModuleIds(): string[] {
     return ['./metro.config.js', './metro.config.json', './rn-cli.config.js'];
   }
+}
+
+function errorResult(error: Error) {
+  return `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Error</title>
+  </head>
+  <body>
+    <h1>Failed to render static app</h1>
+    <pre>${error.stack}</pre>
+  </body>
+  </html>
+  `;
 }
 
 export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
