@@ -39,10 +39,17 @@ public class ReactSliderManager extends SimpleViewManager<ReactSlider> {
               }
 
               ReactContext reactContext = (ReactContext) seekbar.getContext();
-              reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
-                      new ReactSliderEvent(
-                              seekbar.getId(),
-                              slider.toRealProgress(progress), fromUser));
+              if(fromUser) {
+                reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
+                  new ReactSliderEvent(
+                    seekbar.getId(),
+                    slider.toRealProgress(progress), fromUser));
+              } else {
+                reactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(
+                  new ReactSlidingCompleteEvent(
+                    seekbar.getId(),
+                    ((ReactSlider)seekbar).toRealProgress(seekbar.getProgress())));
+              }
             }
 
             @Override
