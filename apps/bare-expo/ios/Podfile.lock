@@ -548,7 +548,7 @@ PODS:
   - React-jsinspector (0.71.0)
   - React-logger (0.71.0):
     - glog
-  - react-native-netinfo (9.3.5):
+  - react-native-netinfo (9.3.7):
     - React-Core
   - react-native-pager-view (6.0.1):
     - React-Core
@@ -562,7 +562,7 @@ PODS:
     - React-Core
   - react-native-slider (4.2.4):
     - React-Core
-  - react-native-view-shot (3.5.0):
+  - react-native-view-shot (3.4.0):
     - React-Core
   - react-native-webview (11.23.1):
     - React-Core
@@ -1210,7 +1210,7 @@ SPEC CHECKSUMS:
   expo-dev-launcher: 044db39b2cf5d2946199e956a32b63c924a8f180
   expo-dev-menu: f9a412d2f1cb0173545516185c9ae66a221a2db9
   expo-dev-menu-interface: c8ad2dc7bb9513c6668c0b0fdf2391727a3d19a7
-  ExpoAppleAuthentication: c0e39d8cf1aec4495e719ea108f5fb8c9970c2db
+  ExpoAppleAuthentication: 01abfb8434e01e0dd23629291da0e3ce040112c0
   ExpoBattery: 41fab48a6bad4aacff2e7d3108f6a3f636e73d3c
   ExpoBlur: 6802b7e333badc26aa37d1fdd085fa27d961476b
   ExpoBrightness: 5d8971ae90d471cc59792cf1f3ef10d56239da01
@@ -1292,12 +1292,12 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 060dd495f1e2af3d87216f7ca8a94c55ec885b4f
   React-jsinspector: 5061fcbec93fd672183dfb39cc2f65e55a0835db
   React-logger: a6c0b3a807a8e81f6d7fea2e72660766f55daa50
-  react-native-netinfo: 85b2a435c4d3705c08b0c42ff2d6ef6b9622ea0a
+  react-native-netinfo: 2517ad504b3d303e90d7a431b0fcaef76d207983
   react-native-pager-view: 3051346698a0ba0c4e13e40097cc11b00ee03cca
   react-native-safe-area-context: 39c2d8be3328df5d437ac1700f4f3a4f75716acc
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
   react-native-slider: cecabb58ecffad671d2ad3ccc58c7f4d2d029e95
-  react-native-view-shot: 792829857bbb23a9c8acdad9a640554bdee397a3
+  react-native-view-shot: a60a98a18c72bcaaaf2138f9aab960ae9b0d96c7
   react-native-webview: d33e2db8925d090871ffeb232dfa50cb3a727581
   React-perflogger: e5fc4149e9bbb972b8520277f3b23141faa47a36
   React-RCTActionSheet: 991de88216bf03ab9bb1d213d73c62ecbe64ade7

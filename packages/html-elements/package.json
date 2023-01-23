@@ -38,15 +38,21 @@
     "projects": [
       {
         "preset": "jest-expo/ios",
-        "modulePathIgnorePatterns": ["<rootDir>/babel/"]
+        "modulePathIgnorePatterns": [
+          "<rootDir>/babel/"
+        ]
       },
       {
         "preset": "jest-expo/android",
-        "modulePathIgnorePatterns": ["<rootDir>/babel/"]
+        "modulePathIgnorePatterns": [
+          "<rootDir>/babel/"
+        ]
       },
       {
         "preset": "jest-expo/web",
-        "modulePathIgnorePatterns": ["<rootDir>/babel/"]
+        "modulePathIgnorePatterns": [
+          "<rootDir>/babel/"
+        ]
       }
     ]
   },
