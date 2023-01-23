@@ -97,6 +97,8 @@ export async function exportAppAsync(
       await exportStaticAsync(projectRoot, {
         outputDir: outputPath,
         scripts: [`/bundles/${fileNames.web}`],
+        // TODO: Expose
+        minify: true,
       });
       Log.log('Finished saving static files');
     } else {

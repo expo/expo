@@ -6,7 +6,7 @@
  */
 import assert from 'assert';
 import fs from 'fs';
-import { minify } from 'html-minifier';
+import { minify as minifyHtml } from 'html-minifier';
 import fetch from 'node-fetch';
 import path from 'path';
 
@@ -28,7 +28,7 @@ export async function getExpoRoutesAsync(devServerManager: DevServerManager) {
 export async function exportFromServerAsync(
   projectRoot: string,
   devServerManager: DevServerManager,
-  { outputDir, scripts }: { outputDir: string; scripts: string[] }
+  { outputDir, scripts, minify }: Options
 ) {
   console.time('static-generation');
   const devServerUrl = devServerManager.getDefaultDevServer().getDevServerUrl();
@@ -64,15 +64,18 @@ export async function exportFromServerAsync(
             scripts.map((script) => `<script src="${script}" defer></script>`).join('') + '</body>'
           );
 
-          // TODO: Option to disable minification
-          const minifiedHtml = profile(minify, 'minify-html')(content, {
-            // collapseWhitespace: true,
-            // minifyCSS: true,
-            // removeComments: true,
-            // removeAttributeQuotes: true,
-          });
+          let processedHtml = content;
+          if (minify) {
+            // TODO: Option to disable minification
+            processedHtml = profile(minifyHtml, 'minify-html')(content, {
+              // collapseWhitespace: true,
+              // minifyCSS: true,
+              // removeComments: true,
+              // removeAttributeQuotes: true,
+            });
+          }
 
-          files.push([fullFilename, minifiedHtml]);
+          files.push([fullFilename, processedHtml]);
         } catch (e: any) {
           Log.error('Error while generating static HTML for route:', fullSegment);
           Log.exception(e);
@@ -96,10 +99,7 @@ export async function exportFromServerAsync(
   console.timeEnd('static-generation');
 }
 
-export async function exportStaticAsync(
-  projectRoot: string,
-  options: { outputDir: string; scripts: string[] }
-) {
+export async function exportStaticAsync(projectRoot: string, options: Options) {
   const devServerManager = new DevServerManager(projectRoot, {
     minify: true,
     mode: 'production',
@@ -116,3 +116,5 @@ export async function exportStaticAsync(
 
   await devServerManager.stopAsync();
 }
+
+type Options = { outputDir: string; scripts: string[]; minify: boolean };
