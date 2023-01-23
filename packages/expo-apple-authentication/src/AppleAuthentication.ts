@@ -55,7 +55,7 @@ export async function signInAsync(
   const credential = await ExpoAppleAuthentication.requestAsync(requestOptions);
   if (!credential.authorizationCode || !credential.identityToken || !credential.user) {
     throw new CodedError(
-      'ERR_APPLE_AUTHENTICATION_REQUEST_FAILED',
+      'ERR_REQUEST_FAILED',
       'The credential returned by `signInAsync` is missing one or more required fields.'
     );
   }
@@ -85,7 +85,7 @@ export async function refreshAsync(
   const credential = await ExpoAppleAuthentication.requestAsync(requestOptions);
   if (!credential.authorizationCode || !credential.identityToken || !credential.user) {
     throw new CodedError(
-      'ERR_APPLE_AUTHENTICATION_REQUEST_FAILED',
+      'ERR_REQUEST_FAILED',
       'The credential returned by `refreshAsync` is missing one or more required fields.'
     );
   }
