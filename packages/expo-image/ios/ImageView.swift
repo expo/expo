@@ -2,6 +2,7 @@
 
 import SDWebImage
 import ExpoModulesCore
+import VisionKit
 
 typealias SDWebImageContext = [SDWebImageContextOption: Any]
 
@@ -9,6 +10,15 @@ typealias SDWebImageContext = [SDWebImageContextOption: Any]
 public final class ImageView: ExpoView {
   static let contextSourceKey = SDWebImageContextOption(rawValue: "source")
   static let screenScaleKey = SDWebImageContextOption(rawValue: "screenScale")
+  @available(iOS 16.0, *)
+  static let imageAnalyzer = ImageAnalyzer.isSupported ? ImageAnalyzer() : nil
+
+  let imageAnalysisInteraction = {
+    if #available(iOS 16.0, *) {
+      return ImageAnalyzer.isSupported ? ImageAnalysisInteraction() : nil
+    }
+    return nil
+  }()
 
   let sdImageView = SDAnimatedImageView(frame: .zero)
 
@@ -39,6 +49,15 @@ public final class ImageView: ExpoView {
   var imageTintColor: UIColor = .clear
 
   var cachePolicy: ImageCachePolicy = .disk
+
+  var enableLiveTextInteraction: Bool = false {
+    didSet {
+      // We don't handle the true case as setImage gets called which will eventually call analyzeImage
+      if !enableLiveTextInteraction {
+        resetImageAnalyzer()
+      }
+    }
+  }
 
   // MARK: - Events
 
@@ -330,9 +349,42 @@ public final class ImageView: ExpoView {
     }
   }
 
+  private func resetImageAnalyzer() {
+    imageAnalysisInteraction?.preferredInteractionTypes = []
+    imageAnalysisInteraction?.analysis = nil
+  }
+
+  private func analyzeImage() {
+    guard #available(iOS 16.0, *), let imageAnalysisInteraction = imageAnalysisInteraction,
+    let imageAnalyzer = ImageView.imageAnalyzer, let image = self.sdImageView.image else {
+      return
+    }
+
+    sdImageView.addInteraction(imageAnalysisInteraction)
+
+    Task {
+      let configuration = ImageAnalyzer.Configuration([.text, .machineReadableCode])
+      do {
+        let imageAnalysis = try await imageAnalyzer.analyze(image, configuration: configuration)
+        if image == self.sdImageView.image {
+          imageAnalysisInteraction.analysis = imageAnalysis
+          imageAnalysisInteraction.preferredInteractionTypes = .automatic
+        }
+      } catch {
+        log.error(error)
+      }
+    }
+  }
+
   private func setImage(_ image: UIImage?, contentFit: ContentFit) {
+    resetImageAnalyzer()
+
     sdImageView.contentMode = contentFit.toContentMode()
     sdImageView.image = image
+
+    if enableLiveTextInteraction {
+      analyzeImage()
+    }
   }
 
   // MARK: - Helpers

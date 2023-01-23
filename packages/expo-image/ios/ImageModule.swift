@@ -65,6 +65,10 @@ public final class ImageModule: Module {
         view.cachePolicy = cachePolicy ?? .disk
       }
 
+      Prop("enableLiveTextInteraction") { (view, enableLiveTextInteraction: Bool?) in
+        view.enableLiveTextInteraction = enableLiveTextInteraction ?? false
+      }
+
       Prop("accessible") { (view, accessible: Bool?) in
         view.sdImageView.isAccessibilityElement = accessible ?? false
       }
