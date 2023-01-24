@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.components.pagerview.event
+package com.reactnativepagerview.event
 
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap

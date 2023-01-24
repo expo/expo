@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.components.pagerview.event
+package com.reactnativepagerview.event
 
 import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.WritableMap
@@ -7,12 +7,12 @@ import com.facebook.react.uimanager.events.RCTEventEmitter
 
 
 /**
- * Event emitted by [ReactViewPager] when selected page changes.
+ * Event emitted by [ReactViewPager] when user scrolling state changed.
  *
  * Additional data provided by this event:
- * - position - index of page that has been selected
+ * - pageScrollState - {Idle,Dragging,Settling}
  */
-class PageSelectedEvent(viewTag: Int, private val mPosition: Int) : Event<PageSelectedEvent>(viewTag) {
+class PageScrollStateChangedEvent(viewTag: Int, private val mPageScrollState: String) : Event<PageScrollStateChangedEvent>(viewTag) {
     override fun getEventName(): String {
         return EVENT_NAME
     }
@@ -23,12 +23,12 @@ class PageSelectedEvent(viewTag: Int, private val mPosition: Int) : Event<PageSe
 
     private fun serializeEventData(): WritableMap {
         val eventData = Arguments.createMap()
-        eventData.putInt("position", mPosition)
+        eventData.putString("pageScrollState", mPageScrollState)
         return eventData
     }
 
     companion object {
-        const val EVENT_NAME = "topPageSelected"
+        const val EVENT_NAME = "topPageScrollStateChanged"
     }
 
 }
