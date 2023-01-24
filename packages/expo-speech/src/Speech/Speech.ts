@@ -15,6 +15,7 @@ let _didSetListeners = false;
 function _unregisterListenersIfNeeded() {
   if (Object.keys(_CALLBACKS).length === 0) {
     removeSpeakingListener('Exponent.speakingStarted');
+    removeSpeakingListener('Exponent.speakingWillSayNextString');
     removeSpeakingListener('Exponent.speakingDone');
     removeSpeakingListener('Exponent.speakingStopped');
     removeSpeakingListener('Exponent.speakingError');
@@ -29,6 +30,15 @@ function _registerListenersIfNeeded() {
     const options = _CALLBACKS[id];
     if (options && options.onStart) {
       options.onStart();
+    }
+  });
+  setSpeakingListener('Exponent.speakingWillSayNextString', ({ id, charIndex, charLength }) => {
+    const options = _CALLBACKS[id];
+    if (options && options.onBoundary) {
+      options.onBoundary({
+        charIndex,
+        charLength,
+      });
     }
   });
   setSpeakingListener('Exponent.speakingDone', ({ id }) => {
