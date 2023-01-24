@@ -1,4 +1,4 @@
-import { ImageStyle as RNImageStyle } from 'react-native';
+import { ImageStyle as RNImageStyle, ViewProps } from 'react-native';
 
 export type ImageSource = {
   /**
@@ -47,7 +47,7 @@ export type ImageStyle = RNImageStyle;
  * Some props are from React Native Image that Expo Image supports (more or less) for easier migration,
  * but all of them are deprecated and might be removed in the future.
  */
-export type ImageProps = {
+export interface ImageProps extends ViewProps {
   /** @hidden */
   style?: RNImageStyle | RNImageStyle[];
 
