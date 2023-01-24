@@ -1,4 +1,5 @@
 import { ServerContainer, ServerContainerRef } from '@react-navigation/native';
+import { Head } from 'expo-router';
 import { App } from 'expo-router/entry';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
@@ -9,8 +10,6 @@ AppRegistry.registerComponent('App', () => App);
 export function getManifest() {
   return require('expo-router/manifest').getManifest();
 }
-
-import { Head } from 'expo-router';
 
 export function serverRenderUrl(location: URL): string {
   const { element, getStyleElement } = AppRegistry.getApplication('App');

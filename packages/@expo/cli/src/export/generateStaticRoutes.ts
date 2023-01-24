@@ -4,12 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { getTransformedRoutes } from '@vercel/routing-utils';
 import assert from 'assert';
 import fs from 'fs';
 import { minify as minifyHtml } from 'html-minifier';
 import fetch from 'node-fetch';
 import path from 'path';
-import { getTransformedRoutes } from '@vercel/routing-utils';
 
 import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
@@ -92,10 +92,10 @@ export async function exportFromServerAsync(
             if (minify) {
               // TODO: Option to disable minification
               processedHtml = profile(minifyHtml, 'minify-html')(content, {
-                // collapseWhitespace: true,
-                // minifyCSS: true,
-                // removeComments: true,
-                // removeAttributeQuotes: true,
+                collapseWhitespace: true,
+                minifyCSS: true,
+                removeComments: true,
+                removeAttributeQuotes: true,
               });
             }
 
