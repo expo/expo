@@ -47,7 +47,7 @@ EX_EXPORT_MODULE(ExponentSpeech)
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[@"Exponent.speakingStarted", @"Exponent.speakingDone", @"Exponent.speakingStopped", @"Exponent.speakingError"];
+  return @[@"Exponent.speakingStarted", @"Exponent.speakingWillSayNextString", @"Exponent.speakingDone", @"Exponent.speakingStopped", @"Exponent.speakingError"];
 }
 
 - (void)startObserving {
@@ -64,6 +64,15 @@ EX_EXPORT_MODULE(ExponentSpeech)
   id<EXEventEmitterService> emitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
   if (emitter != nil) {
     [emitter sendEventWithName:@"Exponent.speakingStarted" body:@{ @"id": ((EXSpeechUtteranceWithId *) utterance).utteranceId }];
+  }
+}
+
+- (void)speechSynthesizer:(AVSpeechSynthesizer *)synthesizer
+  willSpeakRangeOfSpeechString:(NSRange)characterRange utterance:(nonnull AVSpeechUtterance *)utterance
+{
+  id<EXEventEmitterService> emitter = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXEventEmitterService)];
+  if (emitter != nil) {
+    [emitter sendEventWithName:@"Exponent.speakingWillSayNextString" body:@{ @"id": ((EXSpeechUtteranceWithId *) utterance).utteranceId, @"charIndex": @(characterRange.location), @"charLength": @(characterRange.length) }];
   }
 }
 
