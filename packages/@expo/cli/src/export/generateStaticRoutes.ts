@@ -73,12 +73,16 @@ export async function exportFromServerAsync(
 
             files.push([
               path.join(outputDir, '.vc-config.json'),
-              JSON.stringify({
-                handler: 'index.js',
-                runtime: 'nodejs16.x',
-                launcherType: 'Nodejs',
-                shouldAddHelpers: true,
-              }),
+              JSON.stringify(
+                {
+                  handler: 'index.js',
+                  runtime: 'nodejs16.x',
+                  launcherType: 'Nodejs',
+                  shouldAddHelpers: true,
+                },
+                null,
+                2
+              ),
             ]);
           } else {
             const screen = await fetch(`${devServerUrl}/${fullSegment}`).then((res) => res.text());
@@ -91,12 +95,12 @@ export async function exportFromServerAsync(
             let processedHtml = content;
             if (minify) {
               // TODO: Option to disable minification
-              processedHtml = profile(minifyHtml, 'minify-html')(content, {
-                collapseWhitespace: true,
-                minifyCSS: true,
-                removeComments: true,
-                removeAttributeQuotes: true,
-              });
+              // processedHtml = profile(minifyHtml, 'minify-html')(content, {
+              //   collapseWhitespace: true,
+              //   minifyCSS: true,
+              //   removeComments: true,
+              //   // removeAttributeQuotes: true,
+              // });
             }
 
             const fullFilename = ['static', additionPath, filename].filter(Boolean).join('/');
@@ -128,12 +132,16 @@ export async function exportFromServerAsync(
 
   fs.writeFileSync(
     path.join(outputDir, 'config.json'),
-    JSON.stringify({
-      version: 3,
-      routes: getTransformedRoutes({
-        cleanUrls: true,
-      }).routes,
-    })
+    JSON.stringify(
+      {
+        version: 3,
+        routes: getTransformedRoutes({
+          cleanUrls: true,
+        }).routes,
+      },
+      null,
+      2
+    )
   );
 
   console.timeEnd('static-generation');

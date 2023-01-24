@@ -164,7 +164,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             // 4. Execute.
             await func(req, res, next);
             return;
-          } catch (error) {
+          } catch (error: any) {
             console.error(error);
             res.setHeader('Content-Type', 'text/html');
             res.end(errorResult(error));

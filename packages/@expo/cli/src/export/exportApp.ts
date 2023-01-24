@@ -54,7 +54,7 @@ export async function exportAppAsync(
 
   await Promise.all([assetsPath, bundlesPath].map(ensureDirectoryAsync));
 
-  await copyPublicFolderAsync(publicPath, outputDir);
+  await copyPublicFolderAsync(publicPath, staticFolder);
 
   // Run metro bundler and create the JS bundles/source maps.
   const bundles = await createBundlesAsync(
