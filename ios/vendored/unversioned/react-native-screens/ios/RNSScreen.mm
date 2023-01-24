@@ -57,7 +57,7 @@
 
   return self;
 }
-#endif
+#endif // RN_FABRIC_ENABLED
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
@@ -82,6 +82,9 @@
   _hasStatusBarHiddenSet = NO;
   _hasOrientationSet = NO;
   _hasHomeIndicatorHiddenSet = NO;
+#if !TARGET_OS_TV
+  _sheetExpandsWhenScrolledToEdge = YES;
+#endif // !TARGET_OS_TV
 }
 
 - (UIViewController *)reactViewController
@@ -146,6 +149,7 @@
       // ignored, we only need to keep in mind not to set presentation delegate
       break;
   }
+
   // There is a bug in UIKit which causes retain loop when presentationController is accessed for a
   // controller that is not going to be presented modally. We therefore need to avoid setting the
   // delegate for screens presented using push. This also means that when controller is updated from
@@ -513,6 +517,60 @@
   return self.stackPresentation != RNSScreenStackPresentationPush;
 }
 
+#if !TARGET_OS_TV
+/**
+ * Updates settings for sheet presentation controller.
+ * Note that this method should not be called inside `stackPresentation` setter, because on Paper we don't have
+ * guarantee that values of all related props had been updated earlier.
+ */
+- (void)updatePresentationStyle
+{
+#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_15_0) && \
+    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
+  if (@available(iOS 15.0, *)) {
+    UISheetPresentationController *sheet = _controller.sheetPresentationController;
+    if (_stackPresentation == RNSScreenStackPresentationFormSheet && sheet != nil) {
+      sheet.prefersScrollingExpandsWhenScrolledToEdge = _sheetExpandsWhenScrolledToEdge;
+      sheet.prefersGrabberVisible = _sheetGrabberVisible;
+      sheet.preferredCornerRadius =
+          _sheetCornerRadius < 0 ? UISheetPresentationControllerAutomaticDimension : _sheetCornerRadius;
+
+      if (_sheetLargestUndimmedDetent == RNSScreenDetentTypeMedium) {
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+      } else if (_sheetLargestUndimmedDetent == RNSScreenDetentTypeLarge) {
+        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierLarge;
+      } else if (_sheetLargestUndimmedDetent == RNSScreenDetentTypeAll) {
+        sheet.largestUndimmedDetentIdentifier = nil;
+      } else {
+        RCTLogError(@"Unhandled value of sheetLargestUndimmedDetent passed");
+      }
+
+      if (_sheetAllowedDetents == RNSScreenDetentTypeMedium) {
+        sheet.detents = @[ UISheetPresentationControllerDetent.mediumDetent ];
+        if (sheet.selectedDetentIdentifier != UISheetPresentationControllerDetentIdentifierMedium) {
+          [sheet animateChanges:^{
+            sheet.selectedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
+          }];
+        }
+      } else if (_sheetAllowedDetents == RNSScreenDetentTypeLarge) {
+        sheet.detents = @[ UISheetPresentationControllerDetent.largeDetent ];
+        if (sheet.selectedDetentIdentifier != UISheetPresentationControllerDetentIdentifierLarge) {
+          [sheet animateChanges:^{
+            sheet.selectedDetentIdentifier = UISheetPresentationControllerDetentIdentifierLarge;
+          }];
+        }
+      } else if (_sheetAllowedDetents == RNSScreenDetentTypeAll) {
+        sheet.detents =
+            @[ UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent ];
+      } else {
+        RCTLogError(@"Unhandled value of sheetAllowedDetents passed");
+      }
+    }
+  }
+#endif // Check for max allowed iOS version
+}
+#endif // !TARGET_OS_TV
+
 #pragma mark - Fabric specific
 #ifdef RN_FABRIC_ENABLED
 
@@ -612,7 +670,20 @@
   if (newScreenProps.homeIndicatorHidden != oldScreenProps.homeIndicatorHidden) {
     [self setHomeIndicatorHidden:newScreenProps.homeIndicatorHidden];
   }
-#endif
+
+  [self setSheetGrabberVisible:newScreenProps.sheetGrabberVisible];
+  [self setSheetCornerRadius:newScreenProps.sheetCornerRadius];
+  [self setSheetExpandsWhenScrolledToEdge:newScreenProps.sheetExpandsWhenScrolledToEdge];
+
+  if (newScreenProps.sheetAllowedDetents != oldScreenProps.sheetAllowedDetents) {
+    [self setSheetAllowedDetents:[RNSConvert RNSScreenDetentTypeFromAllowedDetents:newScreenProps.sheetAllowedDetents]];
+  }
+
+  if (newScreenProps.sheetLargestUndimmedDetent != oldScreenProps.sheetLargestUndimmedDetent) {
+    [self setSheetLargestUndimmedDetent:
+              [RNSConvert RNSScreenDetentTypeFromLargestUndimmedDetent:newScreenProps.sheetLargestUndimmedDetent]];
+  }
+#endif // !TARGET_OS_TV
 
   // Notice that we compare against _stackPresentation, not oldScreenProps.stackPresentation.
   // See comment in prepareForRecycle method for explanation.
@@ -621,6 +692,11 @@
   if (newStackPresentation != _stackPresentation) {
     [self setStackPresentation:newStackPresentation];
   }
+
+#if !TARGET_OS_TV
+  // This must be called after setter for stackPresentation
+  [self updatePresentationStyle];
+#endif // !TARGET_OS_TV
 
   if (newScreenProps.stackAnimation != oldScreenProps.stackAnimation) {
     [self setStackAnimation:[RNSConvert RNSScreenStackAnimationFromCppEquivalent:newScreenProps.stackAnimation]];
@@ -659,6 +735,14 @@
 
 #pragma mark - Paper specific
 #else
+
+- (void)didSetProps:(NSArray<NSString *> *)changedProps
+{
+  [super didSetProps:changedProps];
+#if !TARGET_OS_TV
+  [self updatePresentationStyle];
+#endif // !TARGET_OS_TV
+}
 
 - (void)setPointerEvents:(RCTPointerEvents)pointerEvents
 {
@@ -1196,11 +1280,48 @@ RCT_EXPORT_VIEW_PROPERTY(statusBarAnimation, UIStatusBarAnimation)
 RCT_EXPORT_VIEW_PROPERTY(statusBarHidden, BOOL)
 RCT_EXPORT_VIEW_PROPERTY(statusBarStyle, RNSStatusBarStyle)
 RCT_EXPORT_VIEW_PROPERTY(homeIndicatorHidden, BOOL)
+
+RCT_EXPORT_VIEW_PROPERTY(sheetAllowedDetents, RNSScreenDetentType);
+RCT_EXPORT_VIEW_PROPERTY(sheetLargestUndimmedDetent, RNSScreenDetentType);
+RCT_EXPORT_VIEW_PROPERTY(sheetGrabberVisible, BOOL);
+RCT_EXPORT_VIEW_PROPERTY(sheetCornerRadius, CGFloat);
+RCT_EXPORT_VIEW_PROPERTY(sheetExpandsWhenScrolledToEdge, BOOL);
 #endif
+
+#if !TARGET_OS_TV
+// See:
+// 1. https://github.com/software-mansion/react-native-screens/pull/1543
+// 2. https://github.com/software-mansion/react-native-screens/pull/1596
+// This class is instatiated from React Native's internals during application startup
+- (instancetype)init
+{
+  if (self = [super init]) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    });
+  }
+  return self;
+}
+
+- (void)dealloc
+{
+  dispatch_sync(dispatch_get_main_queue(), ^{
+    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+  });
+}
+#endif // !TARGET_OS_TV
 
 - (UIView *)view
 {
   return [[RNSScreenView alloc] initWithBridge:self.bridge];
+}
+
++ (BOOL)requiresMainQueueSetup
+{
+  // Returning NO here despite the fact some initialization in -init method dispatches tasks
+  // on main queue, because the comments in RN source code states that modules which return YES
+  // here will be constructed ahead-of-time -- and this is not required in our case.
+  return NO;
 }
 
 @end
@@ -1275,6 +1396,16 @@ RCT_ENUM_CONVERTER(
       @"dark" : @(RNSStatusBarStyleDark),
     }),
     RNSStatusBarStyleAuto,
+    integerValue)
+
+RCT_ENUM_CONVERTER(
+    RNSScreenDetentType,
+    (@{
+      @"large" : @(RNSScreenDetentTypeLarge),
+      @"medium" : @(RNSScreenDetentTypeMedium),
+      @"all" : @(RNSScreenDetentTypeAll),
+    }),
+    RNSScreenDetentTypeAll,
     integerValue)
 
 + (UIInterfaceOrientationMask)UIInterfaceOrientationMask:(id)json
