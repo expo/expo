@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- `ImageProps` now extends `ViewProps`. ([#20942](https://github.com/expo/expo/pull/20942) by [@appden](https://github.com/appden))
+
 ### 💡 Others
 
 ## 1.0.0-beta.1 — 2023-01-20
