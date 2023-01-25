@@ -110,8 +110,7 @@ describe(resolveEntryPoint, () => {
   });
 
   it('exists-expjson', () => {
-    const entryPoint = resolveEntryPoint('/exists-expjson');
-    expect(entryPoint).toBe('main.js');
+    expect(() => resolveEntryPoint('/exists-expjson')).toThrow();
   });
 
   // Can't test resolving modules yet

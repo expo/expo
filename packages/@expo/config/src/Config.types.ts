@@ -148,6 +148,7 @@ export type ConfigErrorCode =
   | 'NOT_OBJECT'
   | 'NO_EXPO'
   | 'MODULE_NOT_FOUND'
+  | 'DEPRECATED'
   | 'INVALID_MODE'
   | 'INVALID_FORMAT'
   | 'INVALID_PLUGIN'
