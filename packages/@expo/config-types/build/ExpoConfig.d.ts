@@ -158,7 +158,7 @@ export interface ExpoConfig {
      */
     scheme?: string;
     /**
-     * The relative path to your main JavaScript file.
+     * @deprecated Use a `main` field in the project `package.json` instead.
      */
     entryPoint?: string;
     /**
