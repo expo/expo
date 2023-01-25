@@ -8,11 +8,13 @@ Package-specific changes not released in any SDK will be added here just before 
 ### 📚 3rd party library updates
 
 - Updated `react-native-webview` from `11.23.1` to `11.26.0`. ([#20933](https://github.com/expo/expo/pull/20933) by [@aleqsio](https://github.com/aleqsio))
+- Updated `react-native-gesture-handler` from `2.8.0` to `2.9.0`. ([#20930](https://github.com/expo/expo/pull/20930) by [@tsapeta](https://github.com/tsapeta))
 - Updated `react-native-shared-element` from `0.8.4` to `0.8.7`. ([#20593](https://github.com/expo/expo/pull/20593) by [@ijzerenhein](https://github.com/ijzerenhein))
 - Updated `@react-native-async-storage/async-storage` from `1.17.3' to `1.17.11`. ([#20780](https://github.com/expo/expo/pull/20780) by [@kudo](https://github.com/kudo))
 - Updated `react-native-reanimated` from `2.12.0` to `2.14.0`. ([#20798](https://github.com/expo/expo/pull/20798) by [@kudo](https://github.com/kudo))
 - Updated `@shopify/react-native-skia` from `0.1.157` to `0.1.171`. ([#20857](https://github.com/expo/expo/pull/20857) by [@kudo](https://github.com/kudo))
 - Updated `react-native-safe-area-context` from `4.4.1` to `4.5.0`. ([#20899](https://github.com/expo/expo/pull/20899) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Updated `react-native-screens` from `3.18.0` to `3.19.0`. ([#20938](https://github.com/expo/expo/pull/20938) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🛠 Breaking changes
 
@@ -206,7 +208,7 @@ Package-specific changes not released in any SDK will be added here just before 
   - Added `bounds` property to the `BarCodeScanningResult`. ([#19519](https://github.com/expo/expo/pull/19519) by [@lukmccall](https://github.com/lukmccall))
 - **`expo-constants`**
   - Deprecated the unreliable `source-login-scripts.sh` and sourcing the Node.js binary path from `.xcode.env` and `.xcode.env.local`. ([#18330](https://github.com/expo/expo/pull/18330) by [@kudo](https://github.com/kudo))
-  - Fixed *with-node.sh* doesn't keep quotes when passing arguments to Node.js and caused build errors when there are spaces in target name. ([#18741](https://github.com/expo/expo/pull/18741) by [@kudo](https://github.com/kudo))
+  - Fixed _with-node.sh_ doesn't keep quotes when passing arguments to Node.js and caused build errors when there are spaces in target name. ([#18741](https://github.com/expo/expo/pull/18741) by [@kudo](https://github.com/kudo))
 - **`expo-cellular`**
   - Added missing permissions requester. ([#19633](https://github.com/expo/expo/pull/19633) by [@lukmccall](https://github.com/lukmccall))
 - **`expo-device`**

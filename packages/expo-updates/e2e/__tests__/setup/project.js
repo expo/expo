@@ -5,23 +5,63 @@ const path = require('path');
 
 const dirName = __dirname; /* eslint-disable-line */
 
+const expoDependencyNames = [
+  'expo',
+  '@expo/config-plugins',
+  '@expo/config-types',
+  'expo-application',
+  'expo-constants',
+  'expo-eas-client',
+  'expo-error-recovery',
+  'expo-file-system',
+  'expo-font',
+  'expo-json-utils',
+  'expo-keep-awake',
+  'expo-manifests',
+  'expo-modules-autolinking',
+  'expo-modules-core',
+  'expo-splash-screen',
+  'expo-status-bar',
+  'expo-structured-headers',
+  'expo-updates',
+  'expo-updates-interface',
+];
+
+const expoResolutions = {};
+const expoVersions = {};
+
 async function packExpoDependency(repoRoot, projectRoot, destPath, dependencyName) {
   // Pack up the named Expo package into the destination folder
-  const dependencyPath = path.resolve(repoRoot, 'packages', dependencyName);
+  const dependencyComponents = dependencyName.split('/');
+  let dependencyPath;
+  if (dependencyComponents[0] === '@expo') {
+    dependencyPath = path.resolve(
+      repoRoot,
+      'packages',
+      dependencyComponents[0],
+      dependencyComponents[1]
+    );
+  } else {
+    dependencyPath = path.resolve(repoRoot, 'packages', dependencyComponents[0]);
+  }
   await spawnAsync('npm', ['pack', '--pack-destination', destPath], {
     cwd: dependencyPath,
     stdio: 'ignore',
   });
 
   // Ensure the file was created as expected
-  const dependencyTarballPath = glob.sync(path.join(destPath, `${dependencyName}-*.tgz`))[0];
+  const dependencyTarballName =
+    dependencyComponents[0] === '@expo'
+      ? `expo-${dependencyComponents[1]}`
+      : `${dependencyComponents[0]}`;
+  const dependencyTarballPath = glob.sync(path.join(destPath, `${dependencyTarballName}-*.tgz`))[0];
 
   if (!dependencyTarballPath) {
     throw new Error(`Failed to locate packed ${dependencyName} in ${destPath}`);
   }
 
   // Return the dependency in the form needed by package.json, as a relative path
-  const dependency = `file:.${path.sep}${path.relative(projectRoot, dependencyTarballPath)}`;
+  const dependency = `.${path.sep}${path.relative(projectRoot, dependencyTarballPath)}`;
   // We also need the exact version string for each package
   const version = require(path.resolve(dependencyPath, 'package.json')).version;
   return {
@@ -62,33 +102,10 @@ async function copyCommonFixturesToProject(projectRoot, appJsFileName) {
   await fs.rm(projectFilesTarballPath);
 }
 
-async function preparePackageJson(projectRoot, repoRoot) {
+async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
   // Create the project subfolder to hold NPM tarballs built from the current state of the repo
   const dependenciesPath = path.join(projectRoot, 'dependencies');
   await fs.mkdir(dependenciesPath);
-
-  const expoDependencyNames = [
-    'expo',
-    'expo-application',
-    'expo-constants',
-    'expo-eas-client',
-    'expo-error-recovery',
-    'expo-file-system',
-    'expo-font',
-    'expo-json-utils',
-    'expo-keep-awake',
-    'expo-manifests',
-    'expo-modules-autolinking',
-    'expo-modules-core',
-    'expo-splash-screen',
-    'expo-status-bar',
-    'expo-structured-headers',
-    'expo-updates',
-    'expo-updates-interface',
-  ];
-
-  const expoResolutions = {};
-  const expoVersions = {};
 
   for (const dependencyName of expoDependencyNames) {
     console.log(`Packing ${dependencyName}...`);
@@ -99,31 +116,35 @@ async function preparePackageJson(projectRoot, repoRoot) {
       dependencyName
     );
     expoResolutions[dependencyName] = result.dependency;
-    expoVersions[dependencyName] = result.version;
+    expoVersions[dependencyName] = result.dependency;
   }
   console.log('Done packing dependencies.');
 
   // Additional scripts and dependencies for Detox testing
-  const extraScripts = {
-    'detox:android:debug:build': 'detox build -c android.debug',
-    'detox:android:debug:test': 'detox test -c android.debug',
-    'detox:android:release:build': 'detox build -c android.release',
-    'detox:android:release:test': 'detox test -c android.release',
-    'detox:ios:debug:build': 'detox build -c ios.debug',
-    'detox:ios:debug:test': 'detox test -c ios.debug',
-    'detox:ios:release:build': 'detox build -c ios.release',
-    'detox:ios:release:test': 'detox test -c ios.release',
-    'eas-build-pre-install': './eas-hooks/eas-build-pre-install.sh',
-    'eas-build-on-success': './eas-hooks/eas-build-on-success.sh',
-  };
+  const extraScripts = configureE2E
+    ? {
+        'detox:android:debug:build': 'detox build -c android.debug',
+        'detox:android:debug:test': 'detox test -c android.debug',
+        'detox:android:release:build': 'detox build -c android.release',
+        'detox:android:release:test': 'detox test -c android.release',
+        'detox:ios:debug:build': 'detox build -c ios.debug',
+        'detox:ios:debug:test': 'detox test -c ios.debug',
+        'detox:ios:release:build': 'detox build -c ios.release',
+        'detox:ios:release:test': 'detox test -c ios.release',
+        'eas-build-pre-install': './eas-hooks/eas-build-pre-install.sh',
+        'eas-build-on-success': './eas-hooks/eas-build-on-success.sh',
+      }
+    : {};
 
-  const extraDevDependencies = {
-    '@config-plugins/detox': '^3.0.0',
-    detox: '^19.12.1',
-    express: '^4.18.2',
-    jest: '^29.3.1',
-    'jest-circus': '^29.3.1',
-  };
+  const extraDevDependencies = configureE2E
+    ? {
+        '@config-plugins/detox': '^3.0.0',
+        detox: '^19.12.1',
+        express: '^4.18.2',
+        jest: '^29.3.1',
+        'jest-circus': '^29.3.1',
+      }
+    : {};
 
   // Remove the default Expo dependencies from create-expo-app
   let packageJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'package.json'), 'utf-8'));
@@ -140,16 +161,16 @@ async function preparePackageJson(projectRoot, repoRoot) {
       ...extraScripts,
     },
     dependencies: {
-      ...expoVersions,
+      ...expoResolutions,
       ...packageJson.dependencies,
     },
     devDependencies: {
-      ...packageJson.devDependencies,
       ...extraDevDependencies,
+      ...packageJson.devDependencies,
     },
     resolutions: {
-      ...packageJson.resolutions,
       ...expoResolutions,
+      ...packageJson.resolutions,
     },
   };
   await fs.writeFile(
@@ -215,30 +236,8 @@ async function prepareLocalUpdatesModule(repoRoot) {
   await fs.writeFile(updatesPackageFilePath, updatesPackageFileContents, 'utf8');
 }
 
-async function initAsync(projectRoot, { repoRoot, runtimeVersion, localCliBin }) {
-  console.log('Creating expo app');
-  const workingDir = path.dirname(projectRoot);
-  const projectName = path.basename(projectRoot);
-
-  // initialize project (do not do NPM install, we do that later)
-  await spawnAsync('yarn', ['create', 'expo-app', projectName, '--yes', '--no-install'], {
-    cwd: workingDir,
-    stdio: 'inherit',
-  });
-
-  await prepareLocalUpdatesModule(repoRoot);
-
-  await preparePackageJson(projectRoot, repoRoot);
-
-  // Now we do NPM install
-  await spawnAsync('yarn', [], {
-    cwd: projectRoot,
-    stdio: 'inherit',
-  });
-
-  // configure app.json
-  let appJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'app.json'), 'utf-8'));
-  appJson = {
+function transformAppJsonForE2E(appJson, projectName, runtimeVersion) {
+  return {
     ...appJson,
     expo: {
       ...appJson.expo,
@@ -246,8 +245,8 @@ async function initAsync(projectRoot, { repoRoot, runtimeVersion, localCliBin })
       owner: 'expo-ci',
       runtimeVersion,
       plugins: ['expo-updates', '@config-plugins/detox'],
-      android: { ...appJson.android, package: 'dev.expo.updatese2e' },
-      ios: { ...appJson.ios, bundleIdentifier: 'dev.expo.updatese2e' },
+      android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
+      ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
       updates: {
         ...appJson.updates,
         url: `http://${process.env.UPDATES_HOST}:${process.env.UPDATES_PORT}/update`,
@@ -259,8 +258,9 @@ async function initAsync(projectRoot, { repoRoot, runtimeVersion, localCliBin })
       },
     },
   };
-  await fs.writeFile(path.join(projectRoot, 'app.json'), JSON.stringify(appJson, null, 2), 'utf-8');
+}
 
+async function configureUpdatesSigningAsync(projectRoot) {
   // generate and configure code signing
   await spawnAsync(
     'yarn',
@@ -290,6 +290,48 @@ async function initAsync(projectRoot, { repoRoot, runtimeVersion, localCliBin })
     ],
     { cwd: projectRoot, stdio: 'inherit' }
   );
+}
+
+async function initAsync(
+  projectRoot,
+  {
+    repoRoot,
+    runtimeVersion,
+    localCliBin,
+    configureE2E = true,
+    transformAppJson = transformAppJsonForE2E,
+  }
+) {
+  console.log('Creating expo app');
+  const workingDir = path.dirname(projectRoot);
+  const projectName = path.basename(projectRoot);
+
+  // initialize project (do not do NPM install, we do that later)
+  await spawnAsync('yarn', ['create', 'expo-app', projectName, '--yes', '--no-install'], {
+    cwd: workingDir,
+    stdio: 'inherit',
+  });
+
+  if (configureE2E) {
+    await prepareLocalUpdatesModule(repoRoot);
+  }
+
+  await preparePackageJson(projectRoot, repoRoot, configureE2E);
+
+  // Now we do NPM install
+  await spawnAsync('yarn', [], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
+  // configure app.json
+  let appJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'app.json'), 'utf-8'));
+  appJson = transformAppJson(appJson, projectName, runtimeVersion);
+  await fs.writeFile(path.join(projectRoot, 'app.json'), JSON.stringify(appJson, null, 2), 'utf-8');
+
+  if (configureE2E) {
+    await configureUpdatesSigningAsync(projectRoot);
+  }
 
   // pack local template and prebuild, but do not reinstall NPM
   const localTemplatePath = path.join(repoRoot, 'templates', 'expo-template-bare-minimum');
