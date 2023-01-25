@@ -33,7 +33,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/device/",
   "dependencies": {
-    "ua-parser-js": "^0.7.19"
+    "ua-parser-js": "^0.7.33"
   },
   "devDependencies": {
     "expo-module-scripts": "^3.0.0"
