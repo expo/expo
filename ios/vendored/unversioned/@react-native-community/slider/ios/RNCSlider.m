@@ -132,6 +132,12 @@
   }
 }
 
+- (void)setDisabled:(BOOL)disabled
+{
+    self.enabled = !disabled;
+    [self layoutSubviews];
+}
+
 - (float)discreteValue:(float)value
 {
     if (self.step > 0 && value >= self.maximumValue) {

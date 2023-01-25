@@ -383,7 +383,7 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-community/slider': {
       source: 'https://github.com/callstack/react-native-slider',
-      rootDir: 'src',
+      rootDir: 'package',
       ios: {},
       android: {
         includeFiles: 'android/**',
