@@ -1,4 +1,4 @@
-import { ImageStyle as RNImageStyle } from 'react-native';
+import { ImageStyle as RNImageStyle, ViewProps } from 'react-native';
 export type ImageSource = {
     /**
      * A string representing the resource identifier for the image,
@@ -42,7 +42,7 @@ export type ImageStyle = RNImageStyle;
  * Some props are from React Native Image that Expo Image supports (more or less) for easier migration,
  * but all of them are deprecated and might be removed in the future.
  */
-export type ImageProps = {
+export interface ImageProps extends ViewProps {
     /** @hidden */
     style?: RNImageStyle | RNImageStyle[];
     /**
@@ -193,7 +193,7 @@ export type ImageProps = {
     accessible?: boolean;
     /**
      * The text that's read by the screen reader when the user interacts with the image.
-     * @default null
+     * @default undefined
      * @platform android
      * @platform ios
      */
@@ -204,7 +204,7 @@ export type ImageProps = {
      * @platform ios 16.0+
      */
     enableLiveTextInteraction?: boolean;
-};
+}
 /**
  * It narrows down some props to types expected by the native/web side.
  * @hidden
