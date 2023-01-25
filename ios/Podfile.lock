@@ -1968,7 +1968,7 @@ PODS:
     - glog
   - react-native-netinfo (9.3.7):
     - React-Core
-  - react-native-pager-view (6.0.1):
+  - react-native-pager-view (6.1.2):
     - React-Core
   - react-native-safe-area-context (4.5.0):
     - RCT-Folly
@@ -3619,7 +3619,7 @@ SPEC CHECKSUMS:
   React-jsinspector: 5061fcbec93fd672183dfb39cc2f65e55a0835db
   React-logger: a6c0b3a807a8e81f6d7fea2e72660766f55daa50
   react-native-netinfo: 2517ad504b3d303e90d7a431b0fcaef76d207983
-  react-native-pager-view: 3051346698a0ba0c4e13e40097cc11b00ee03cca
+  react-native-pager-view: 54bed894cecebe28cede54c01038d9d1e122de43
   react-native-safe-area-context: 39c2d8be3328df5d437ac1700f4f3a4f75716acc
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
   react-native-skia: 571e20d8f275a305d5d30f17d4329862b852d65e

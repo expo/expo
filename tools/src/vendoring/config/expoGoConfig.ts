@@ -367,6 +367,9 @@ const config: VendoringTargetConfig = {
     'react-native-pager-view': {
       source: 'https://github.com/callstack/react-native-viewpager',
       ios: {},
+      android: {
+        excludeFiles: ['android/gradle{/**,**}', 'android/settings.gradle'],
+      },
     },
     'react-native-shared-element': {
       source: 'https://github.com/IjzerenHein/react-native-shared-element',
