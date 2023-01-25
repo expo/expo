@@ -148,7 +148,7 @@ Android workers run on virtual machines in an isolated environment. Every build 
 
 ## iOS build server configurations
 
-iOS worker VMs run on Mac Mini 8.1 hosts in an isolated environment. Every build gets its own fresh macOS VM:
+iOS worker VMs run on Mac Mini 8.1 hosts in an isolated environment. Every build gets its own fresh macOS VM. We run a maximum of two builder VMs per one M1 host at the same time:
 
 - Hardware:
   - Intel: Intel(R) Core(TM) i7-8700B CPU (6 cores/12 threads), 64 GB RAM
