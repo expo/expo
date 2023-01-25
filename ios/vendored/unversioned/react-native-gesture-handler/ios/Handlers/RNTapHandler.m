@@ -12,8 +12,8 @@
 
 #import <React/RCTConvert.h>
 
-// RNBetterTapGestureRecognizer extends UIGestureRecognizer instead of UITapGestureRecognizer 
-// because the latter does not allow for parameters like maxDelay, maxDuration, minPointers, 
+// RNBetterTapGestureRecognizer extends UIGestureRecognizer instead of UITapGestureRecognizer
+// because the latter does not allow for parameters like maxDelay, maxDuration, minPointers,
 // maxDelta to be configured. Using our custom implementation of tap recognizer we are able
 // to support these.
 
@@ -27,7 +27,7 @@
 @property (nonatomic) CGFloat maxDeltaY;
 @property (nonatomic) NSInteger minPointers;
 
-- (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
+- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
 
 @end
 
@@ -43,7 +43,7 @@ static const NSInteger defaultMinPointers = 1;
 static const CGFloat defaultMaxDelay = 0.2;
 static const NSTimeInterval defaultMaxDuration = 0.5;
 
-- (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
+- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
   if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
@@ -73,7 +73,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 {
   [super touchesBegan:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
-  
+
   if (_tapsSoFar == 0) {
     // this recognizer sends UNDETERMINED -> BEGAN state change event before gestureRecognizerShouldBegin
     // is called (it resets the gesture handler), making it send whatever the last known state as oldState
@@ -100,28 +100,29 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 {
   [super touchesMoved:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
-  
+
   NSInteger numberOfTouches = [touches count];
   if (numberOfTouches > _maxNumberOfTouches) {
     _maxNumberOfTouches = numberOfTouches;
   }
-  
+
   if (self.state != UIGestureRecognizerStatePossible) {
     return;
   }
-  
+
   if ([self shouldFailUnderCustomCriteria]) {
     self.state = UIGestureRecognizerStateFailed;
     [self triggerAction];
     [self reset];
     return;
   }
-  
+
   self.state = UIGestureRecognizerStatePossible;
   [self triggerAction];
 }
 
-- (CGPoint)translationInView {
+- (CGPoint)translationInView
+{
   CGPoint currentPosition = [self locationInView:self.view.window];
   return CGPointMake(currentPosition.x - _initPosition.x, currentPosition.y - _initPosition.y);
 }
@@ -133,7 +134,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
       return YES;
     }
   }
-  
+
   CGPoint trans = [self translationInView];
   if (TEST_MAX_IF_NOT_NAN(fabs(trans.x), _maxDeltaX)) {
     return YES;
@@ -151,7 +152,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 {
   [super touchesEnded:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
-  
+
   if (_numberOfTaps == _tapsSoFar && _maxNumberOfTouches >= _minPointers) {
     self.state = UIGestureRecognizerStateEnded;
     [self reset];
@@ -164,7 +165,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 {
   [super touchesCancelled:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
-  
+
   self.state = UIGestureRecognizerStateCancelled;
   [self reset];
 }
@@ -186,7 +187,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 @end
 
 @implementation RNTapGestureHandler {
-    RNGestureHandlerEventExtraData * _lastData;
+  RNGestureHandlerEventExtraData *_lastData;
 }
 
 - (instancetype)initWithTag:(NSNumber *)tag
@@ -201,7 +202,7 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 {
   [super resetConfig];
   RNBetterTapGestureRecognizer *recognizer = (RNBetterTapGestureRecognizer *)_recognizer;
-  
+
   recognizer.numberOfTaps = defaultNumberOfTaps;
   recognizer.minPointers = defaultMinPointers;
   recognizer.maxDeltaX = NAN;
@@ -215,22 +216,22 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 {
   [super configure:config];
   RNBetterTapGestureRecognizer *recognizer = (RNBetterTapGestureRecognizer *)_recognizer;
-  
+
   APPLY_INT_PROP(numberOfTaps);
   APPLY_INT_PROP(minPointers);
   APPLY_FLOAT_PROP(maxDeltaX);
   APPLY_FLOAT_PROP(maxDeltaY);
-  
+
   id prop = config[@"maxDelayMs"];
   if (prop != nil) {
     recognizer.maxDelay = [RCTConvert CGFloat:prop] / 1000.0;
   }
-  
+
   prop = config[@"maxDurationMs"];
   if (prop != nil) {
     recognizer.maxDuration = [RCTConvert CGFloat:prop] / 1000.0;
   }
-  
+
   prop = config[@"maxDist"];
   if (prop != nil) {
     CGFloat dist = [RCTConvert CGFloat:prop];
@@ -240,12 +241,12 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
 {
-    if (recognizer.state == UIGestureRecognizerStateEnded) {
-        return _lastData;
-    }
-    
-    _lastData = [super eventExtraData:recognizer];
+  if (recognizer.state == UIGestureRecognizerStateEnded) {
     return _lastData;
+  }
+
+  _lastData = [super eventExtraData:recognizer];
+  return _lastData;
 }
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
@@ -257,9 +258,8 @@ static const NSTimeInterval defaultMaxDuration = 0.5;
   RNGestureHandlerState savedState = _lastState;
   BOOL shouldBegin = [super gestureRecognizerShouldBegin:gestureRecognizer];
   _lastState = savedState;
-  
+
   return shouldBegin;
 }
 
 @end
-

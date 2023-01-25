@@ -19,9 +19,9 @@
   uint64_t previousTime;
 }
 
-- (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
+- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
 - (void)handleGesture:(UIGestureRecognizer *)recognizer;
-- (NSUInteger) getDuration;
+- (NSUInteger)getDuration;
 
 @end
 
@@ -30,7 +30,7 @@
   CGPoint _initPosition;
 }
 
-- (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
+- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
   if ((self = [super initWithTarget:self action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
@@ -70,10 +70,11 @@
 {
   [super touchesMoved:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
-  
+
   CGPoint trans = [self translationInView];
-  if ((_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView])
-      || (TEST_MAX_IF_NOT_NAN(fabs(trans.y * trans.y + trans.x + trans.x), self.allowableMovement * self.allowableMovement))) {
+  if ((_gestureHandler.shouldCancelWhenOutside && ![_gestureHandler containsPointInView]) ||
+      (TEST_MAX_IF_NOT_NAN(
+          fabs(trans.y * trans.y + trans.x + trans.x), self.allowableMovement * self.allowableMovement))) {
     self.enabled = NO;
     self.enabled = YES;
   }
@@ -96,25 +97,24 @@
   if (self.state == UIGestureRecognizerStateFailed) {
     [self triggerAction];
   }
-  
+
   [_gestureHandler.pointerTracker reset];
-  
+
   [super reset];
 }
 
 - (NSUInteger)getDuration
 {
   static mach_timebase_info_data_t sTimebaseInfo;
-  
+
   if (sTimebaseInfo.denom == 0) {
     mach_timebase_info(&sTimebaseInfo);
   }
-  
+
   return (NSUInteger)(((previousTime - startTime) * sTimebaseInfo.numer / (sTimebaseInfo.denom * 1000000)));
 }
 
 @end
-
 
 @implementation RNLongPressGestureHandler
 
@@ -130,7 +130,7 @@
 {
   [super resetConfig];
   UILongPressGestureRecognizer *recognizer = (UILongPressGestureRecognizer *)_recognizer;
-  
+
   recognizer.minimumPressDuration = 0.5;
   recognizer.allowableMovement = 10;
 }
@@ -139,12 +139,12 @@
 {
   [super configure:config];
   UILongPressGestureRecognizer *recognizer = (UILongPressGestureRecognizer *)_recognizer;
-  
+
   id prop = config[@"minDurationMs"];
   if (prop != nil) {
     recognizer.minimumPressDuration = [RCTConvert CGFloat:prop] / 1000.0;
   }
-  
+
   prop = config[@"maxDist"];
   if (prop != nil) {
     recognizer.allowableMovement = [RCTConvert CGFloat:prop];
@@ -165,21 +165,19 @@
 
 - (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
 {
-  //same as TapGH, this needs to be unified when all handlers are updated
+  // same as TapGH, this needs to be unified when all handlers are updated
   RNGestureHandlerState savedState = _lastState;
   BOOL shouldBegin = [super gestureRecognizerShouldBegin:gestureRecognizer];
   _lastState = savedState;
-  
+
   return shouldBegin;
 }
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
 {
-    return [RNGestureHandlerEventExtraData
-            forPosition:[recognizer locationInView:recognizer.view]
-            withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
-            withNumberOfTouches:recognizer.numberOfTouches
-            withDuration:[(RNBetterLongPressGestureRecognizer*)recognizer getDuration]];
+  return [RNGestureHandlerEventExtraData forPosition:[recognizer locationInView:recognizer.view]
+                                withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
+                                 withNumberOfTouches:recognizer.numberOfTouches
+                                        withDuration:[(RNBetterLongPressGestureRecognizer *)recognizer getDuration]];
 }
 @end
-

@@ -11,7 +11,7 @@
 @property (nonatomic) CGFloat force;
 @property (nonatomic) BOOL feedbackOnActivation;
 
-- (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
+- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
 
 @end
 
@@ -25,7 +25,7 @@ static const CGFloat defaultMinForce = 0.2;
 static const CGFloat defaultMaxForce = NAN;
 static const BOOL defaultFeedbackOnActivation = NO;
 
-- (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler
+- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler
 {
   if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
@@ -45,7 +45,7 @@ static const BOOL defaultFeedbackOnActivation = NO;
   }
   [super touchesBegan:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
-  
+
   _firstTouch = [touches anyObject];
   [self handleForceWithTouches:touches];
   self.state = UIGestureRecognizerStatePossible;
@@ -59,25 +59,27 @@ static const BOOL defaultFeedbackOnActivation = NO;
   }
   [super touchesMoved:touches withEvent:event];
   [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
-  
+
   [self handleForceWithTouches:touches];
-  
+
   if ([self shouldFail]) {
     self.state = UIGestureRecognizerStateFailed;
     return;
   }
-  
+
   if (self.state == UIGestureRecognizerStatePossible && [self shouldActivate]) {
     [self performFeedbackIfRequired];
     self.state = UIGestureRecognizerStateBegan;
   }
 }
 
-- (BOOL)shouldActivate {
+- (BOOL)shouldActivate
+{
   return (_force >= _minForce);
 }
 
-- (BOOL)shouldFail {
+- (BOOL)shouldFail
+{
   return TEST_MAX_IF_NOT_NAN(_force, _maxForce);
 }
 
@@ -113,11 +115,13 @@ static const BOOL defaultFeedbackOnActivation = NO;
   [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
 }
 
-- (void)handleForceWithTouches:(NSSet<UITouch *> *)touches {
+- (void)handleForceWithTouches:(NSSet<UITouch *> *)touches
+{
   _force = _firstTouch.force / _firstTouch.maximumPossibleForce;
 }
 
-- (void)reset {
+- (void)reset
+{
   [_gestureHandler.pointerTracker reset];
   [super reset];
   _force = 0;
@@ -140,7 +144,7 @@ static const BOOL defaultFeedbackOnActivation = NO;
 {
   [super resetConfig];
   RNForceTouchGestureRecognizer *recognizer = (RNForceTouchGestureRecognizer *)_recognizer;
-  
+
   recognizer.feedbackOnActivation = defaultFeedbackOnActivation;
   recognizer.maxForce = defaultMaxForce;
   recognizer.minForce = defaultMinForce;
@@ -162,12 +166,10 @@ static const BOOL defaultFeedbackOnActivation = NO;
 
 - (RNGestureHandlerEventExtraData *)eventExtraData:(RNForceTouchGestureRecognizer *)recognizer
 {
-  return [RNGestureHandlerEventExtraData
-          forForce: recognizer.force
-          forPosition:[recognizer locationInView:recognizer.view]
-          withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
-          withNumberOfTouches:recognizer.numberOfTouches];
+  return [RNGestureHandlerEventExtraData forForce:recognizer.force
+                                      forPosition:[recognizer locationInView:recognizer.view]
+                             withAbsolutePosition:[recognizer locationInView:recognizer.view.window]
+                              withNumberOfTouches:recognizer.numberOfTouches];
 }
 
 @end
-

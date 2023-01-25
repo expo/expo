@@ -16,13 +16,23 @@ import com.swmansion.gesturehandler.core.GestureHandler
 class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>() {
   private var extraData: WritableMap? = null
   private var coalescingKey: Short = 0
+
+  // On the new architecture, native animated expects event names prefixed with `top` instead of `on`,
+  // since we know when the native animated node is the target of the event we can use the different
+  // event name where appropriate.
+  // TODO: This is a workaround not as solution, but doing this properly would require a total overhaul of
+  // how GH sends events (which needs to be done, but maybe wait until the RN's apis stop changing)
+  private var useTopPrefixedName: Boolean = false
+
   private fun <T : GestureHandler<T>> init(
     handler: T,
     dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
+    useNativeAnimatedName: Boolean
   ) {
     super.init(handler.view!!.id)
     extraData = createEventData(handler, dataExtractor)
     coalescingKey = handler.eventCoalescingKey
+    this.useTopPrefixedName = useNativeAnimatedName
   }
 
   override fun onDispose() {
@@ -30,7 +40,7 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
     EVENTS_POOL.release(this)
   }
 
-  override fun getEventName() = EVENT_NAME
+  override fun getEventName() = if (useTopPrefixedName) NATIVE_ANIMATED_EVENT_NAME else EVENT_NAME
 
   override fun canCoalesce() = true
 
@@ -42,15 +52,17 @@ class RNGestureHandlerEvent private constructor() : Event<RNGestureHandlerEvent>
 
   companion object {
     const val EVENT_NAME = "onGestureHandlerEvent"
+    const val NATIVE_ANIMATED_EVENT_NAME = "topGestureHandlerEvent"
     private const val TOUCH_EVENTS_POOL_SIZE = 7 // magic
     private val EVENTS_POOL = Pools.SynchronizedPool<RNGestureHandlerEvent>(TOUCH_EVENTS_POOL_SIZE)
 
     fun <T : GestureHandler<T>> obtain(
       handler: T,
       dataExtractor: RNGestureHandlerEventDataExtractor<T>?,
+      useTopPrefixedName: Boolean = false
     ): RNGestureHandlerEvent =
       (EVENTS_POOL.acquire() ?: RNGestureHandlerEvent()).apply {
-        init(handler, dataExtractor)
+        init(handler, dataExtractor, useTopPrefixedName)
       }
 
     fun <T : GestureHandler<T>> createEventData(
