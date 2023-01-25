@@ -1,9 +1,12 @@
 import { getConfig } from '@expo/config';
 import { MetroDevServerOptions } from '@expo/dev-server';
+import chalk from 'chalk';
 import http from 'http';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
 
+import { Log } from '../../../log';
+import { env } from '../../../utils/env';
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
@@ -76,6 +79,8 @@ export async function instantiateMetroAsync(
   const server = await Metro.runServer(metroConfig, {
     hmrEnabled: true,
     websocketEndpoints,
+    // @ts-expect-error Property was added in 0.73.4, remove this statement when updating Metro
+    watch: isWatchEnabled(),
   });
 
   if (attachToServer) {
@@ -98,4 +103,18 @@ export async function instantiateMetroAsync(
       messageSocket: messageSocketEndpoint,
     };
   }
+}
+
+/**
+ * Simplify and communicate if Metro is running without watching file updates,.
+ * Exposed for testing.
+ */
+export function isWatchEnabled() {
+  if (env.CI) {
+    Log.log(
+      chalk`Metro is running in CI mode, reloads are disabled. Remove {bold CI=true} to enable watch mode.`
+    );
+  }
+
+  return !env.CI;
 }
