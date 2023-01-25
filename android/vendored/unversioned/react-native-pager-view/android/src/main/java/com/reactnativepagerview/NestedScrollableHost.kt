@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.components.pagerview
+package com.reactnativepagerview
 
 import android.content.Context
 import android.util.AttributeSet

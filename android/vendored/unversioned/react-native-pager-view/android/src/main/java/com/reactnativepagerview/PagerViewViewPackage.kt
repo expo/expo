@@ -1,4 +1,4 @@
-package versioned.host.exp.exponent.modules.api.components.pagerview
+package com.reactnativepagerview
 
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
