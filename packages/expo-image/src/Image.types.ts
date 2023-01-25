@@ -222,11 +222,11 @@ export interface ImageProps extends ViewProps {
 
   /**
    * The text that's read by the screen reader when the user interacts with the image.
-   * @default null
+   * @default undefined
    * @platform android
    * @platform ios
    */
-  accessibilityLabel?: string | null;
+  accessibilityLabel?: string;
 
   /**
    * Enables Live Text interaction with the image. Check official [Apple documentation](https://developer.apple.com/documentation/visionkit/enabling_live_text_interactions_with_images) for more details.
@@ -234,7 +234,7 @@ export interface ImageProps extends ViewProps {
    * @platform ios 16.0+
    */
   enableLiveTextInteraction?: boolean;
-};
+}
 
 /**
  * It narrows down some props to types expected by the native/web side.

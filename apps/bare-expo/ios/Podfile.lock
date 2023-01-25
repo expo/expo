@@ -157,7 +157,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (12.1.0):
     - ExpoModulesCore
-  - ExpoImage (1.0.0-beta.1):
+  - ExpoImage (1.0.0-beta.2):
     - ExpoModulesCore
     - SDWebImage (~> 5.15.0)
     - SDWebImageAVIFCoder (~> 0.9.4)
@@ -562,7 +562,7 @@ PODS:
     - React-Core
   - react-native-slider (4.2.4):
     - React-Core
-  - react-native-view-shot (3.4.0):
+  - react-native-view-shot (3.5.0):
     - React-Core
   - react-native-webview (11.23.1):
     - React-Core
@@ -686,7 +686,7 @@ PODS:
     - React-RCTText
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.18.0):
+  - RNScreens (3.19.0):
     - React-Core
     - React-RCTImage
   - RNSharedElement (0.8.7):
@@ -1220,7 +1220,7 @@ SPEC CHECKSUMS:
   ExpoDevice: 458bb44dab3e955480e3642ecdfb6f8240955dbf
   ExpoGL: 5cc4c55cb83a9620c08ba6d797cb0ec812038e62
   ExpoHaptics: 129d3f8d44c2205adcdf8db760602818463d5437
-  ExpoImage: 1e7f82b818dbace2f10b0ae74a30db8c77f69dc2
+  ExpoImage: 4380f14eaa66bc60dee17a78ca6cd03f74cd93a7
   ExpoImageManipulator: 5f3c1ab8dd81de11491b5051bb925abc91fe57e4
   ExpoImagePicker: ce37302446e70145bb413f0f74886441abdae022
   ExpoKeepAwake: 69b59d0a8d2b24de9f82759c39b3821fec030318
@@ -1297,7 +1297,7 @@ SPEC CHECKSUMS:
   react-native-safe-area-context: 39c2d8be3328df5d437ac1700f4f3a4f75716acc
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
   react-native-slider: cecabb58ecffad671d2ad3ccc58c7f4d2d029e95
-  react-native-view-shot: a60a98a18c72bcaaaf2138f9aab960ae9b0d96c7
+  react-native-view-shot: 792829857bbb23a9c8acdad9a640554bdee397a3
   react-native-webview: d33e2db8925d090871ffeb232dfa50cb3a727581
   React-perflogger: e5fc4149e9bbb972b8520277f3b23141faa47a36
   React-RCTActionSheet: 991de88216bf03ab9bb1d213d73c62ecbe64ade7
@@ -1319,7 +1319,7 @@ SPEC CHECKSUMS:
   RNFlashList: 18d906a373da5ff16776e5013df9495d826edc7e
   RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
   RNReanimated: 3882aa3f7a30d3c74aa05d6c230399942690a043
-  RNScreens: f3230dd008a7d0ce5c0a8bc78ff12cf2315bda24
+  RNScreens: ea4cd3a853063cda19a4e3c28d2e52180c80f4eb
   RNSharedElement: 14409838520c8b50850aa4d33e15d0b8afdf7052
   RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
   SDWebImage: 9bec4c5cdd9579e1f57104735ee0c37df274d593

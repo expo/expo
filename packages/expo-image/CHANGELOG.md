@@ -6,13 +6,19 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.0.0-beta.2 — 2023-01-25
+
+### 🎉 New features
+
 - Added support for Live text interaction. ([#20915](https://github.com/expo/expo/pull/20915) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
 
 ### 🐛 Bug fixes
 
 - `ImageProps` now extends `ViewProps`. ([#20942](https://github.com/expo/expo/pull/20942) by [@appden](https://github.com/appden))
-
-### 💡 Others
 
 ## 1.0.0-beta.1 — 2023-01-20
 
