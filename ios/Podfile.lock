@@ -2009,7 +2009,7 @@ PODS:
     - React-Core
   - react-native-slider (4.2.4):
     - React-Core
-  - react-native-webview (11.23.1):
+  - react-native-webview (11.26.0):
     - React-Core
   - React-perflogger (0.71.0)
   - React-RCTActionSheet (0.71.0):
@@ -3624,7 +3624,7 @@ SPEC CHECKSUMS:
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
   react-native-skia: 571e20d8f275a305d5d30f17d4329862b852d65e
   react-native-slider: cecabb58ecffad671d2ad3ccc58c7f4d2d029e95
-  react-native-webview: d33e2db8925d090871ffeb232dfa50cb3a727581
+  react-native-webview: 994b9f8fbb504d6314dc40d83f94f27c6831b3bf
   React-perflogger: e5fc4149e9bbb972b8520277f3b23141faa47a36
   React-RCTActionSheet: 991de88216bf03ab9bb1d213d73c62ecbe64ade7
   React-RCTAnimation: b74e3d1bf5280891a573e447b487fa1db0713b5b
