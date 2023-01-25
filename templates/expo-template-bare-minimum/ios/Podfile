@@ -24,9 +24,9 @@ target 'HelloWorld' do
   expo_flipper = FlipperConfiguration.disabled
   if ENV['NO_FLIPPER'] != "1" && defined?(podfile_properties['ios.flipper']) then
     if podfile_properties['ios.flipper'] == 'true' then
-      expo_flipper = FlipperConfiguration.enabled
+      expo_flipper = FlipperConfiguration.enabled(["Debug", "Release"])
     elsif podfile_properties['ios.flipper'] != 'false' then
-      expo_flipper = FlipperConfiguration.enabled(["Debug"], { 'Flipper' => podfile_properties['ios.flipper'] })
+      expo_flipper = FlipperConfiguration.enabled(["Debug", "Release"], { 'Flipper' => podfile_properties['ios.flipper'] })
     end
   end
 
