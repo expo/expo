@@ -1,15 +1,15 @@
-/**
- * Copyright (c) Facebook, Inc. and its affiliates.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
+#ifdef RCT_NEW_ARCH_ENABLED
 
 #import <UIKit/UIKit.h>
+#import <React/RCTViewComponentView.h>
+#import "RNCSlider.h"
 
-#import <React/RCTComponent.h>
+NS_ASSUME_NONNULL_BEGIN
 
-@interface RNCSlider : UISlider
+typedef void (^RNCLoadImageCompletionBlock)(NSError * _Nullable error, UIImage * _Nullable image);
+typedef void (^RNCLoadImageFailureBlock)();
+
+@interface RNCSliderComponentView : RCTViewComponentView
 
 @property (nonatomic, copy) RCTBubblingEventBlock onRNCSliderValueChange;
 @property (nonatomic, copy) RCTBubblingEventBlock onRNCSliderSlidingStart;
@@ -31,6 +31,9 @@
 @property (nonatomic, strong) NSArray *accessibilityIncrements;
 
 - (float) discreteValue:(float)value;
-- (void) setDisabled:(bool)disabled;
 
 @end
+
+NS_ASSUME_NONNULL_END
+
+#endif

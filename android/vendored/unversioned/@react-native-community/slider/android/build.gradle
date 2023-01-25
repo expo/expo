@@ -1,12 +1,25 @@
-buildscript {
-  repositories {
-    mavenCentral()
-    google()
-  }
+def isNewArchitectureEnabled() {
+  return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
+}
 
-  dependencies {
-    classpath 'com.android.tools.build:gradle:3.2.1'
+if (isNewArchitectureEnabled()) {
+  buildscript {
+    repositories {
+      mavenCentral()
+      google()
+    }
+
+    dependencies {
+      classpath("com.android.tools.build:gradle:7.1.1")
+      classpath("com.facebook.react:react-native-gradle-plugin")
+      classpath("de.undercouch:gradle-download-task:5.0.1")
+    }
   }
+}
+
+apply plugin: 'com.android.library'
+if (isNewArchitectureEnabled()) {
+  apply plugin: 'com.facebook.react'
 }
 
 def getExtOrDefault(name) {
@@ -17,8 +30,6 @@ def getExtOrIntegerDefault(name) {
   return rootProject.ext.has(name) ? rootProject.ext.get(name) : (project.properties['ReactNativeSlider_' + name]).toInteger()
 }
 
-apply plugin: 'com.android.library'
-
 android {
   compileSdkVersion getExtOrIntegerDefault('compileSdkVersion')
   buildToolsVersion getExtOrDefault('buildToolsVersion')
@@ -26,6 +37,17 @@ android {
   defaultConfig {
     minSdkVersion getExtOrIntegerDefault('minSdkVersion')
     targetSdkVersion getExtOrIntegerDefault('targetSdkVersion')
+    buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+  }
+
+  sourceSets {
+    main {
+      if (isNewArchitectureEnabled()) {
+          java.srcDirs += ['src/newarch']
+      } else {
+          java.srcDirs += ['src/oldarch']
+      }
+    }
   }
 }
 
@@ -37,4 +59,12 @@ repositories {
 dependencies {
   //noinspection GradleDynamicVersion
   api 'com.facebook.react:react-native:+'
+}
+
+if (isNewArchitectureEnabled()) {
+    react {
+        jsRootDir = file("../src")
+        libraryName = "ReactSlider"
+        codegenJavaPackageName = "com.reactnativecommunity.slider"
+    }
 }
