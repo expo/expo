@@ -8,7 +8,7 @@ const checkmarkBase64 =
 
 export default class ExpoCheckbox extends React.PureComponent<CheckboxProps> {
   /**
-   * @deprecated `Checkbox.isAvailableAsync()` is deprecated and will be removed in future releases.
+   * @deprecated Currently, `Checkbox` supports all the platforms, so `isAvailableAsync()` method is deprecated and will be removed in future releases.
    */
   static isAvailableAsync() {
     console.warn(
