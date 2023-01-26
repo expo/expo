@@ -18,7 +18,7 @@ public final class SharingModule: Module, OnDocumentInteractionResult {
       }
 
       guard let filePermissions: EXFilePermissionModuleInterface =
-              appContext?.legacyModule(implementing: EXFilePermissionModuleInterface.self)
+        appContext?.legacyModule(implementing: EXFilePermissionModuleInterface.self)
       else {
         throw FilePermissionModuleException()
       }
@@ -34,8 +34,9 @@ public final class SharingModule: Module, OnDocumentInteractionResult {
       documentInteractionController?.uti = options.UTI
 
       guard let currentViewcontroller = appContext?.utilities?.currentViewController(),
-            let rootView = currentViewcontroller.view,
-            let documentInteractionController = documentInteractionController else {
+        let rootView = currentViewcontroller.view,
+        let documentInteractionController = documentInteractionController
+      else {
         throw MissingCurrentViewControllerException()
       }
 

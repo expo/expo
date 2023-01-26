@@ -14,5 +14,4 @@ internal class SharingDelegate: NSObject, UIDocumentInteractionControllerDelegat
   func documentInteractionControllerDidDismissOpenInMenu(_ controller: UIDocumentInteractionController) {
     self.resultHandler.didDismissOpenInMenu()
   }
-
 }
