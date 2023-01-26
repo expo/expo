@@ -72,7 +72,7 @@ To disable using our Maven cache server for your builds set `EAS_BUILD_DISABLE_M
 
 EAS Build caches the **Podfile.lock** file by default. This provides consistent results across managed app builds.
 
-Additionally, EAS Build runs a CocoaPods cache server that can speed up downloading iOS dependencies for your build jobs. It also makes the service more resilient to CocoaPods CDN outages.
+Additionally, EAS Build runs a CocoaPods cache server that can speed up downloading iOS dependencies for your build jobs in most cases. It also makes the service more resilient to CocoaPods CDN outages.
 
 The cache server is configured to cache almost all the pods served from the official CocoaPods CDN, minus a few exceptions that our cache server can't handle. These exceptions can be found on the [blacklist](https://github.com/expo/eas-build/blob/main/packages/cocoapods-nexus-plugin/lib/cocoapods_plugin.rb#L4) of our custom CocoaPods plugin. These are fetched directly from the CDN instead of being fetched through our cache server.
 
