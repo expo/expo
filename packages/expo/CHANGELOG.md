@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Skip mounting root component when DOM is not available. ([#20916](https://github.com/expo/expo/pull/20916) by [@EvanBacon](https://github.com/EvanBacon))
+- Use position `fixed` to float fast refresh indicator to the bottom on web.
 
 ### 💡 Others
 
