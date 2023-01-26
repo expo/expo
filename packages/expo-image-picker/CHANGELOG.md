@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Add support for [granular permissions](https://developer.android.com/about/versions/13/behavior-changes-13) on Android 13. ([#20908](https://github.com/expo/expo/pull/20908) by [@alanhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 14.1.0 — 2023-01-26
+
+### 🎉 New features
+
+- Add support for [granular permissions](https://developer.android.com/about/versions/13/behavior-changes-13) on Android 13. ([#20908](https://github.com/expo/expo/pull/20908) by [@alanhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
