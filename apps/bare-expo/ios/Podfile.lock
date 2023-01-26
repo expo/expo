@@ -166,7 +166,7 @@ PODS:
   - ExpoImageManipulator (11.0.0):
     - EXImageLoader
     - ExpoModulesCore
-  - ExpoImagePicker (14.0.3):
+  - ExpoImagePicker (14.1.0):
     - ExpoModulesCore
   - ExpoKeepAwake (11.0.1):
     - ExpoModulesCore
@@ -1222,7 +1222,7 @@ SPEC CHECKSUMS:
   ExpoHaptics: 129d3f8d44c2205adcdf8db760602818463d5437
   ExpoImage: 4380f14eaa66bc60dee17a78ca6cd03f74cd93a7
   ExpoImageManipulator: 5f3c1ab8dd81de11491b5051bb925abc91fe57e4
-  ExpoImagePicker: ce37302446e70145bb413f0f74886441abdae022
+  ExpoImagePicker: 3851acac688e36cbf49973ff03fe395fa7f0fbf4
   ExpoKeepAwake: 69b59d0a8d2b24de9f82759c39b3821fec030318
   ExpoLinearGradient: b40c2133ad57ae105b1b12a319e314463c817f6b
   ExpoLocalAuthentication: 933c9bfa88da946fc67ab51c8ddaa17d1c4a3d59
