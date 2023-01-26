@@ -119,6 +119,7 @@ const nonLinkableTypes = [
   'React.FC',
   'ForwardRefExoticComponent',
   'StyleProp',
+  'HTMLInputElement',
   // Cross-package permissions management
   'RequestPermissionMethod',
   'GetPermissionMethod',
@@ -161,6 +162,8 @@ const hardcodedTypeLinks: Record<string, string> = {
   Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
+  SyntheticEvent:
+    'https://beta.reactjs.org/reference/react-dom/components/common#react-event-object',
   View: 'https://reactnative.dev/docs/view',
   ViewProps: 'https://reactnative.dev/docs/view#props',
   ViewStyle: 'https://reactnative.dev/docs/view-style-props',

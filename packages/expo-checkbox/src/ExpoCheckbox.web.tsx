@@ -8,58 +8,65 @@
  * see: https://github.com/necolas/react-native-web
  */
 
-import React, { useCallback } from 'react';
+import React from 'react';
 // @ts-ignore
 import { StyleSheet, View, unstable_createElement as createElement } from 'react-native';
 
-import { CheckboxComponent, CheckboxEvent } from './Checkbox.types';
+import { CheckboxProps, CheckboxEvent } from './Checkbox.types';
 
-const ExpoCheckbox: CheckboxComponent = (props) => {
-  const { color, disabled, onChange, onValueChange, style, value, ...other } = props;
+export default class ExpoCheckbox extends React.PureComponent<CheckboxProps> {
+  /**
+   * @deprecated Currently, `Checkbox` supports all the platforms, so `isAvailableAsync()` method is deprecated and will be removed in future releases.
+   */
+  static isAvailableAsync() {
+    console.warn(
+      'Checkbox.isAvailableAsync() is deprecated and will be removed in future releases'
+    );
+    return Promise.resolve(true);
+  }
 
-  const handleChange = useCallback(
-    (event: CheckboxEvent) => {
-      const value = (event.nativeEvent.target as unknown as HTMLInputElement).checked;
-      event.nativeEvent.value = value;
-      onChange && onChange(event);
-      onValueChange && onValueChange(value);
-    },
-    [onChange, onValueChange]
-  );
+  private handleChange = (event: React.SyntheticEvent<HTMLInputElement, CheckboxEvent>) => {
+    const value = event.nativeEvent.target.checked;
+    event.nativeEvent.value = value;
+    this.props.onChange?.(event);
+    this.props.onValueChange?.(value);
+  };
 
-  const fakeControl = (
-    <View
-      pointerEvents="none"
-      style={[
-        styles.fakeControl,
-        value && styles.fakeControlChecked,
-        // custom color
-        !!color && { backgroundColor: value ? color : undefined, borderColor: color },
-        disabled && styles.fakeControlDisabled,
-        value && disabled && styles.fakeControlCheckedAndDisabled,
-      ]}
-    />
-  );
+  render() {
+    const { color, disabled, onChange, onValueChange, style, value, ...other } = this.props;
 
-  const nativeControl = createElement('input', {
-    accessibilityChecked: value,
-    accessibilityDisabled: disabled,
-    checked: value,
-    disabled,
-    onChange: handleChange,
-    style: [styles.nativeControl, styles.cursorInherit],
-    type: 'checkbox',
-  });
+    const fakeControl = (
+      <View
+        pointerEvents="none"
+        style={[
+          styles.fakeControl,
+          value && styles.fakeControlChecked,
+          // custom color
+          !!color && { backgroundColor: value ? color : undefined, borderColor: color },
+          disabled && styles.fakeControlDisabled,
+          value && disabled && styles.fakeControlCheckedAndDisabled,
+        ]}
+      />
+    );
 
-  return (
-    <View {...other} style={[styles.root, style, disabled && styles.cursorDefault]}>
-      {nativeControl}
-      {fakeControl}
-    </View>
-  );
-};
+    const nativeControl = createElement('input', {
+      accessibilityChecked: value,
+      accessibilityDisabled: disabled,
+      checked: value,
+      disabled,
+      onChange: this.handleChange,
+      style: [styles.nativeControl, styles.cursorInherit],
+      type: 'checkbox',
+    });
 
-ExpoCheckbox.displayName = 'Checkbox';
+    return (
+      <View {...other} style={[styles.root, style, disabled && styles.cursorDefault]}>
+        {nativeControl}
+        {fakeControl}
+      </View>
+    );
+  }
+}
 
 const styles = StyleSheet.create({
   root: {
@@ -115,12 +122,5 @@ const styles = StyleSheet.create({
     WebkitAppearance: 'none',
   },
 });
-
-export default ExpoCheckbox;
-
-ExpoCheckbox.isAvailableAsync = () => {
-  console.warn('Checkbox.isAvailableAsync() is deprecated and will be removed in future releases');
-  return Promise.resolve(true);
-};
 
 export const name = 'ExpoCheckbox';
