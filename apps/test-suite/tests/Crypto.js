@@ -2,20 +2,17 @@ import * as Crypto from 'expo-crypto';
 import { Platform } from 'react-native';
 
 function areArrayBuffersEqual(a, b) {
-  console.warn({ a, b });
-  if (a.byteLength !== b.byteLength) return false;
+  if (a.byteLength !== b.byteLength) {
+    return false;
+  }
   const dv1 = new Int8Array(a);
   const dv2 = new Int8Array(b);
-  for (let i = 0; i !== a.byteLength; i++) {
-    if (dv1[i] !== dv2[i]) return false;
-  }
-  return true;
+  return dv1.every((item, index) => item === dv2[index]);
 }
 
 function getArrayBufferFromHex(hex) {
   const bytes = new Uint8Array(Math.ceil(hex.length / 2));
-  for (let i = 0; i < bytes.length; i++) bytes[i] = parseInt(hex.substr(i * 2, 2), 16);
-  return bytes.buffer;
+  return bytes.map((byte, index) => parseInt(hex.substr(i * 2, 2), 16)).buffer;
 }
 
 const { CryptoEncoding, CryptoDigestAlgorithm } = Crypto;
