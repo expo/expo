@@ -196,6 +196,9 @@ PODS:
   - ExpoPrint (12.2.1):
     - ExpoModulesCore
   - ExpoRandom (13.1.1):
+  - ExpoSharing (11.1.0):
+    - ExpoModulesCore
+  - ExpoSMS (11.1.0):
     - ExpoModulesCore
   - ExpoSecureStore (12.1.1):
     - ExpoModulesCore
@@ -825,6 +828,7 @@ DEPENDENCIES:
   - ExpoPrint (from `../../../packages/expo-print/ios`)
   - ExpoRandom (from `../../../packages/expo-random/ios`)
   - ExpoSecureStore (from `../../../packages/expo-secure-store/ios`)
+  - ExpoSharing (from `../../../packages/expo-sharing/ios`)
   - ExpoSMS (from `../../../packages/expo-sms/ios`)
   - ExpoSpeech (from `../../../packages/expo-speech/ios`)
   - ExpoSQLite (from `../../../packages/expo-sqlite/ios`)
@@ -836,7 +840,7 @@ DEPENDENCIES:
   - EXScreenCapture (from `../../../packages/expo-screen-capture/ios`)
   - EXScreenOrientation (from `../../../packages/expo-screen-orientation/ios`)
   - EXSensors (from `../../../packages/expo-sensors/ios`)
-  - EXSharing (from `../../../packages/expo-sharing/ios`)
+  - EXSpeech (from `../../../packages/expo-speech/ios`)
   - EXSplashScreen (from `../../../packages/expo-splash-screen/ios`)
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
   - EXStructuredHeaders/Tests (from `../../../packages/expo-structured-headers/ios`)
@@ -1083,6 +1087,9 @@ EXTERNAL SOURCES:
   ExpoSecureStore:
     inhibit_warnings: false
     :path: "../../../packages/expo-secure-store/ios"
+  ExpoSharing:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-sharing/ios"
   ExpoSMS:
     inhibit_warnings: false
     :path: "../../../packages/expo-sms/ios"
@@ -1116,9 +1123,9 @@ EXTERNAL SOURCES:
   EXSensors:
     inhibit_warnings: false
     :path: "../../../packages/expo-sensors/ios"
-  EXSharing:
+  EXSpeech:
     inhibit_warnings: false
-    :path: "../../../packages/expo-sharing/ios"
+    :path: "../../../packages/expo-speech/ios"
   EXSplashScreen:
     inhibit_warnings: false
     :path: "../../../packages/expo-splash-screen/ios"
@@ -1238,6 +1245,7 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
+<<<<<<< HEAD
   EASClient: 950674e1098ebc09c4c2cf064a61e42e84d9d4c6
   EXApplication: d8f53a7eee90a870a75656280e8d4b85726ea903
   EXAV: f1f69397ecdcf44cfacd4ff5d338cd1b96891e87
@@ -1305,8 +1313,85 @@ SPEC CHECKSUMS:
   EXStructuredHeaders: b1a48d732562e2cc81f11771bcfd29534f5d9254
   EXTaskManager: f8257faa4c20acfc3f31e21ab82a62544d70db85
   EXUpdatesInterface: 353553ad3df1507f0d9e814a3dd79c7053606acd
+<<<<<<< HEAD
   FBLazyVector: 446e84642979fff0ba57f3c804c2228a473aeac2
   FBReactNativeSpec: 65116c16f31352fe07d88f2a8161e91a3517745b
+=======
+  FBLazyVector: 60195509584153283780abdac5569feffb8f08cc
+  FBReactNativeSpec: b422511e23a82412c257e34bef96b07d2ff26bd9
+=======
+  EASClient: c51ef206857c58c22d8d2fa22ed28106a79934a1
+  EXApplication: 034b1c40a8e9fe1bff76a1e511ee90dff64ad834
+  EXAV: 4b92292fb107520a25956bea940a94a3bb4911ca
+  EXBackgroundFetch: 186248a00a38fc4d22d60ec30e4e751449e785ee
+  EXBarCodeScanner: 572ff0f1d32d4ba63262d4a9995d2ebb57f476a0
+  EXCalendar: 1234457cffa88adfbfbe7f8937e21963f7b0f5b6
+  EXCamera: d7e91d5857faee493ca3cf8dafd42572db61849e
+  EXConstants: 44f7d347d0432a66f469d0ce1dc4e3a0ca1b8b2d
+  EXContacts: ef197934926d31c2a58092e081ca9e7c402f13fd
+  EXDocumentPicker: b622eb86d698176e5664e464a11ca8a5f7c1e4c5
+  EXErrorRecovery: ae43433feb0608a64dc5b1c8363b3e7769a9ea24
+  EXFaceDetector: 0bb666598a78ae4a787689a45a58ddb68e3bd86e
+  EXFileSystem: ed61548927905e157b95b3b49bd83a26ff24e1ce
+  EXFont: 319606bfe48c33b5b5063fb0994afdc496befe80
+  EXImageLoader: 84b65e6bd9d3345d6fbb3ab936a546c54496a64d
+  EXInAppPurchases: b88582167dde6a7da6253c5f2b7a56edf24d76e1
+  EXJSONUtils: 09aef2c1fba1a116ca8c73a2c8299aac00d96b43
+  EXLocation: ea8c1a5b5b3c3ac47f1f3a7cfd54d311ec920a37
+  EXManifests: 347f49430b63444579aa013f0ad057d16b8d1cc8
+  EXMediaLibrary: ea5769f4199af0425ddd6ee9026edb03b1e40d96
+  EXNotifications: 2bda232eb900aa6d602e40cad363879ae827d672
+  EXPermissions: a2007c82e5d3ffeb2e2dbc78ef65ae464dd1ee57
+  Expo: 8ee43334b657268299454a67f30f60e5a8ca89d9
+  expo-dev-client: d723d52ccfbe2eb47ee24d1ac0cf5b39001589c2
+  expo-dev-launcher: 044db39b2cf5d2946199e956a32b63c924a8f180
+  expo-dev-menu: f9a412d2f1cb0173545516185c9ae66a221a2db9
+  expo-dev-menu-interface: c8ad2dc7bb9513c6668c0b0fdf2391727a3d19a7
+  ExpoAppleAuthentication: 01abfb8434e01e0dd23629291da0e3ce040112c0
+  ExpoBattery: 41fab48a6bad4aacff2e7d3108f6a3f636e73d3c
+  ExpoBlur: 6802b7e333badc26aa37d1fdd085fa27d961476b
+  ExpoBrightness: 5d8971ae90d471cc59792cf1f3ef10d56239da01
+  ExpoCellular: 851660eb7a461d5b11889e537e3a8be4b20fc088
+  ExpoClipboard: dc3c9469926884bfe1af886c9243de69bebf6363
+  ExpoCrypto: 6eb2a5ede7d95b7359a5f0391ee0c5d2ecd144b3
+  ExpoDevice: 458bb44dab3e955480e3642ecdfb6f8240955dbf
+  ExpoGL: 5cc4c55cb83a9620c08ba6d797cb0ec812038e62
+  ExpoHaptics: 129d3f8d44c2205adcdf8db760602818463d5437
+  ExpoImage: 4380f14eaa66bc60dee17a78ca6cd03f74cd93a7
+  ExpoImageManipulator: 5f3c1ab8dd81de11491b5051bb925abc91fe57e4
+  ExpoImagePicker: ce37302446e70145bb413f0f74886441abdae022
+  ExpoKeepAwake: 69b59d0a8d2b24de9f82759c39b3821fec030318
+  ExpoLinearGradient: b40c2133ad57ae105b1b12a319e314463c817f6b
+  ExpoLocalAuthentication: 933c9bfa88da946fc67ab51c8ddaa17d1c4a3d59
+  ExpoLocalization: e202d1e2a4950df17ac8d0889d65a1ffd7532d7e
+  ExpoMailComposer: 5bd9a732104eb1721a5aa4744903673787d1410c
+  ExpoMaps: da84a66611924dd53beaa2d2801cbd677758796a
+  ExpoModulesCore: faf895df37a73853034d34b7f16c0886741fe361
+  ExpoModulesTestCore: 06aca772f462c9d0ca4e8866d501f9ff3c8b86f3
+  ExpoNetwork: 3a7787b5cd93d32897c51e9f74b98dca6061ece4
+  ExpoRandom: 58b7e0a5fe1adf1cb6dc1cbe503a6fe9524f36ce
+  ExpoSharing: 43588f8acfdf2c23ec80312eac00aa961d259a04
+  ExpoSMS: 95e1ac17d8e953b0364ad46195893e9060869c5b
+  ExpoStoreReview: 713336ff504db3a6983475bf7c67519cc5efc86f
+  ExpoSystemUI: 218d890fed7397f175e9ce6e22455fce67a86adb
+  ExpoTrackingTransparency: 8d02327d4414009f03a43e6b2dbad52265996936
+  ExpoVideoThumbnails: 424db02cedfbbe2d498bcb2712ea4ba8a9dcb453
+  ExpoWebBrowser: 073e50f16669d498fb49063b9b7fe780b24f7fda
+  EXPrint: 72d06856abf849ea54db8841ac76e4edbcb37566
+  EXScreenCapture: d9f1ec31042dfef109290d06c2b4789b7444d16d
+  EXScreenOrientation: 07e5aeff07bce09a2b214981e612d87fd7719997
+  EXSecureStore: daec0117c922a67c658cb229152a9e252e5c1750
+  EXSensors: 535beac36b78487d53c630eb627d7528bcc610b3
+  EXSpeech: b1e02f7d9d4e9731133da25ee4b26cc0740707ed
+  EXSplashScreen: 20052670daff7650fa01140a178d0af1a914584b
+  EXSQLite: 13c91c389b3c6241ddcf5c47eaa43289721193fe
+  EXStructuredHeaders: fb774e45eac2e5d62ba40b28176bfbfba61b843e
+  EXTaskManager: 0afcc6fd813dec5dee98aa5ec4f22c2a840dd4a7
+  EXUpdatesInterface: bffd1ead18f0bab04fa784ca159c115607b8a23c
+  FBLazyVector: 61839cba7a48c570b7ac3e1cd8a4d0948382202f
+  FBReactNativeSpec: bd2475946b56c32738cbf881c585eae5efa608c4
+>>>>>>> 939522d323 ([sharing][ios] Migrate to Expo Modules)
+>>>>>>> c0aebd5d61 ([sharing][ios] Migrate to Expo Modules)
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   GoogleDataTransport: 1c8145da7117bd68bbbed00cf304edb6a24de00f
