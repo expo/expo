@@ -12,7 +12,7 @@ function areArrayBuffersEqual(a, b) {
 
 function getArrayBufferFromHex(hex) {
   const bytes = new Uint8Array(Math.ceil(hex.length / 2));
-  return bytes.map((byte, index) => parseInt(hex.substr(i * 2, 2), 16)).buffer;
+  return bytes.map((_, index) => parseInt(hex.substr(index * 2, 2), 16)).buffer;
 }
 
 const { CryptoEncoding, CryptoDigestAlgorithm } = Crypto;
