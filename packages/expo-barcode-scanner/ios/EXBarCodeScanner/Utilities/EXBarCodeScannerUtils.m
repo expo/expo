@@ -2,6 +2,7 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
+#import <ZXingObjC/ZXingObjCCore.h>
 #import <EXBarCodeScanner/EXBarCodeScannerUtils.h>
 
 @implementation EXBarCodeScannerUtils

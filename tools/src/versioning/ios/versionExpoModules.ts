@@ -8,7 +8,7 @@ import { Podspec } from '../../CocoaPods';
 import logger from '../../Logger';
 import { Package } from '../../Packages';
 import { copyFileWithTransformsAsync } from '../../Transforms';
-import { searchFilesAsync } from '../../Utils';
+import { arrayize, searchFilesAsync } from '../../Utils';
 import { expoModulesTransforms } from './transforms/expoModulesTransforms';
 import { getVersionPrefix, getVersionedDirectory } from './utils';
 
@@ -17,6 +17,9 @@ const TIMER_LABEL = 'Versioning expo modules finished in';
 
 // The pattern that matches the dependency pods that need to be renamed in `*.podspec.json`.
 const PODSPEC_DEPS_TO_RENAME_PATTERN = /^(Expo|EX|UM|EAS|React|RCT|Yoga)/;
+
+// The pattern that matches the file that need to be renamed in `*.podspec.json`.
+const PODSPEC_FILES_TO_RENAME_PATTERN = /^(Expo|EX|UM|EAS|React|RCT|Yoga|hermes-engine)(?!-Folly)/;
 
 /**
  * Function that versions expo modules.
@@ -106,6 +109,17 @@ async function generateVersionedPodspecAsync(
         delete podspec.dependencies[key];
       });
   }
+  if (podspec.public_header_files) {
+    podspec.public_header_files = transformVersionedFiles(podspec.public_header_files, prefix);
+  }
+  if (podspec.pod_target_xcconfig?.HEADER_SEARCH_PATHS) {
+    // using ' ' to split HEADER_SEARCH_PATHS is not 100% correct but good enough for expo-modules' podspec
+    const headerSearchPaths = transformVersionedFiles(
+      podspec.pod_target_xcconfig.HEADER_SEARCH_PATHS.split(' '),
+      prefix
+    );
+    podspec.pod_target_xcconfig.HEADER_SEARCH_PATHS = headerSearchPaths.join(' ');
+  }
 
   if (['expo-updates', 'expo-constants'].includes(pkg.packageName)) {
     // For expo-updates and expo-constants in Expo Go, we don't need app.config and app.manifest in versioned code.
@@ -121,4 +135,20 @@ async function generateVersionedPodspecAsync(
   });
 
   return podspec;
+}
+
+/**
+ * Transform files into versioned file names.
+ * For versioning `source_files` or `HEADER_SEARCH_PATHS` in podspec
+ */
+function transformVersionedFiles(files: string | string[], prefix: string): string[] {
+  const result = arrayize(files).map((item) => {
+    const dirname = path.dirname(item);
+    const basename = path.basename(item);
+    const versionedBasename = PODSPEC_FILES_TO_RENAME_PATTERN.test(basename)
+      ? `${prefix}${basename}`
+      : basename;
+    return path.join(dirname, versionedBasename);
+  });
+  return result;
 }

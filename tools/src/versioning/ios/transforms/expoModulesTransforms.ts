@@ -68,8 +68,8 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
       {
         // Prefix `Expo*` frameworks in imports.
         paths: objcFilesPattern,
-        find: /#import <(Expo|EAS)(.*?)\//g,
-        replaceWith: `#import <${prefix}$1$2/`,
+        find: /#(import|include) <(Expo|EAS)(.*?)\//g,
+        replaceWith: `#$1 <${prefix}$2$3/`,
       },
       {
         paths: objcFilesPattern,
@@ -121,6 +121,11 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
         paths: objcFilesPattern,
         find: /\bnamespace react(\s+[^=])/g,
         replaceWith: `namespace ${prefix}React$1`,
+      },
+      {
+        paths: objcFilesPattern,
+        find: /\b((include|import|__has_include).*\/)(JSCRuntime\.h)/g,
+        replaceWith: `$1${prefix}$3`,
       },
       {
         paths: 'EXGLImageUtils.cpp',
