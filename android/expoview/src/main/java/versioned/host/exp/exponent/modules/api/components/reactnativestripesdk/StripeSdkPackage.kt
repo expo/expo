@@ -4,6 +4,7 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
+import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.addresssheet.AddressSheetViewManager
 import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.pushprovisioning.AddToWalletButtonManager
 
 class StripeSdkPackage : ReactPackage {
@@ -17,7 +18,9 @@ class StripeSdkPackage : ReactPackage {
         AuBECSDebitFormViewManager(),
         StripeContainerManager(),
         CardFormViewManager(),
-        AddToWalletButtonManager(reactContext)
+        GooglePayButtonManager(),
+        AddToWalletButtonManager(reactContext),
+        AddressSheetViewManager()
       )
     }
 }
