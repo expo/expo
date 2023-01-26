@@ -12,7 +12,7 @@ import React from 'react';
 import { StyleSheet, View, unstable_createElement as createElement } from 'react-native';
 export default class ExpoCheckbox extends React.PureComponent {
     /**
-     * @deprecated @deprecated Currently, `Checkbox` supports all the platforms, so `isAvailableAsync()` method is deprecated and will be removed in future releases.
+     * @deprecated Currently, `Checkbox` supports all the platforms, so `isAvailableAsync()` method is deprecated and will be removed in future releases.
      */
     static isAvailableAsync() {
         console.warn('Checkbox.isAvailableAsync() is deprecated and will be removed in future releases');
