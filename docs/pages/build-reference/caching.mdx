@@ -70,13 +70,13 @@ To disable using our Maven cache server for your builds set `EAS_BUILD_DISABLE_M
 
 ## iOS dependencies
 
-EAS Build runs a CocoaPods cache server that can speed up downloading iOS dependencies for your build jobs. It also makes the service more resilient to CocoaPods CDN outages.
+EAS Build caches the **Podfile.lock** file by default. This provides consistent results across managed app builds.
 
-Currently, EAS Build is configured to cache almost all the pods served from the official CocoaPods CDN, minus a few exceptions which can't be handled by our cache server. These exceptions can be found on the [blacklist](https://github.com/expo/eas-build/blob/main/packages/cocoapods-nexus-plugin/lib/cocoapods_plugin.rb#L4) of our custom CocoaPods plugin and are fetched directly from CDN instead of being fetched through our cache server.
+Additionally, EAS Build runs a CocoaPods cache server that can speed up downloading iOS dependencies for your build jobs in most cases. It also makes the service more resilient to CocoaPods CDN outages.
 
-We also cache **Podfile.lock** to provide consistent results across managed app builds.
+The cache server is configured to cache almost all the pods served from the official CocoaPods CDN, minus a few exceptions that our cache server can't handle. These exceptions can be found on the [blacklist](https://github.com/expo/eas-build/blob/main/packages/cocoapods-nexus-plugin/lib/cocoapods_plugin.rb#L4) of our custom CocoaPods plugin. These are fetched directly from the CDN instead of being fetched through our cache server.
 
-To disable using our CocoaPods cache server for your builds set `EAS_BUILD_DISABLE_COCOAPODS_CACHE` env variable value to `"1"` in **eas.json**.
+This is an experimental feature that requires explicit opt-in. You can **enable** it by setting the `EAS_BUILD_ENABLE_COCOAPODS_CACHE` env variable value to `"1"` in **eas.json**.
 
 {/* prettier-ignore */}
 ```json eas.json
@@ -84,7 +84,26 @@ To disable using our CocoaPods cache server for your builds set `EAS_BUILD_DISAB
   "build": {
     "production": {
       "env": {
-        "EAS_BUILD_DISABLE_COCOAPODS_CACHE": "1"
+        "EAS_BUILD_ENABLE_COCOAPODS_CACHE": "1"
+        /* @hide ... */ /* @end */
+      }
+      /* @hide ... */ /* @end */
+    }
+    /* @hide ... */ /* @end */
+  }
+  /* @hide ... */ /* @end */
+}
+```
+
+To explicitly disable using our CocoaPods cache server for your builds, set the `EAS_BUILD_ENABLE_COCOAPODS_CACHE` env variable value to `"0"` in **eas.json**.
+
+{/* prettier-ignore */}
+```json eas.json
+{
+  "build": {
+    "production": {
+      "env": {
+        "EAS_BUILD_ENABLE_COCOAPODS_CACHE": "0"
         /* @hide ... */ /* @end */
       }
       /* @hide ... */ /* @end */
