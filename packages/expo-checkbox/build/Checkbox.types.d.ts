@@ -1,6 +1,10 @@
 import { SyntheticEvent } from 'react';
 import { ColorValue, NativeSyntheticEvent, ViewProps } from 'react-native';
 export type CheckboxEvent = {
+    /**
+     * On native platforms, a `NodeHandle` for the element on which the event has occurred.
+     * On web, a DOM node on which the event has occurred.
+     */
     target: any;
     /**
      * A boolean representing checkbox current value.
