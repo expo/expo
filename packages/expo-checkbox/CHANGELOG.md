@@ -10,7 +10,7 @@
 
 ### ⚠️ Notices
 
-- Remove deprecated `isAvailableAsync()` method.
+- Remove deprecated `isAvailableAsync()` method. ([#20961](https://github.com/expo/expo/pull/20961) by [@Simek](https://github.com/Simek))
 
 ### 💡 Others
 
