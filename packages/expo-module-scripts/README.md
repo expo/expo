@@ -144,7 +144,7 @@ Use the following scripts to interact with the plugin:
 
 ### 🤡 Jest
 
-The Jest preset extends [`jest-expo`](https://github.com/expo/expo/tree/main/packages/jest-expo) or [`jest-expo-enzyme`](https://github.com/expo/expo/tree/main/packages/jest-expo-enzyme) and adds proper TypeScript support and type declarations to the presets.
+The Jest preset extends [`jest-expo`](https://github.com/expo/expo/tree/main/packages/jest-expo) and adds proper TypeScript support and type declarations to the presets.
 
 **For unit testing API-based modules:**
 
