@@ -8,12 +8,12 @@ import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 import { Collapsible } from '~/ui/components/Collapsible';
 
 When adding a native module to your project, most of the setup can be done automatically by installing the module in your project,
-but some modules require a more complex setup. For instance, say you installed `expo-camera` in your bare project,
+however, some modules require a more complex setup. For instance, say you installed `expo-camera` in your bare project,
 you now need to configure the native app to enable camera permissions — this is where config plugins come in.
-Config plugins are a system for extending the Expo config and customizing the prebuild phase of managed builds.
+Config plugins are a system for extending the [Expo config](/workflow/configuration) and customizing the prebuild phase of managed builds.
 
 Internally Expo CLI uses config plugins to generate and configure all the native code for a managed project.
-Plugins do things like generate app icons, set the app name, and configure the **AndroidManifest.xml**, **Info.plist**, etc.
+Plugins do things like generate app icons, set the app name, and configure the **AndroidManifest.xml**, **Info.plist**, and so on.
 
 You can think of plugins like a bundler for native projects, and running `npx expo prebuild` as a way to bundle the projects by evaluating all the project plugins.
 Doing so will generate **android** and **ios** directories. These directories can be modified manually after being generated,
@@ -69,7 +69,7 @@ Some plugins can be customized by passing an array, where the second argument is
 ```
 
 If you run `npx expo prebuild`, the `mods` will be compiled, and the native files be changed!
-The changes won't take effect until you rebuild the native project, eg: with Xcode. If you're using config plugins in a managed app,
+The changes won't take effect until you rebuild the native project, for example, with Xcode. If you're using config plugins in a managed app,
 they will be applied during the prebuild phase on `eas build`.
 
 For instance, if you add a plugin that adds permission messages to your app, the app will need to be rebuilt.
@@ -82,7 +82,7 @@ And that's it! Now you're using Config plugins. No more having to interact with 
 
 Plugins are **synchronous** functions that accept an [`ExpoConfig`][config-docs] and return a modified [`ExpoConfig`][config-docs].
 
-- Plugins should be named using the following convention: `with<Plugin Functionality>`, that is, `withFacebook`.
+- Plugins should be named using the following convention: `with<Plugin Functionality>`, for example, `withFacebook`.
 - Plugins should be synchronous and their return value should be serializable, except for any `mods` that are added.
 - Optionally, a second argument can be passed to the plugin to configure it.
 - `plugins` are always invoked when the config is read by the `expo/config` method `getConfig`.
@@ -159,7 +159,7 @@ module.exports = function withPrefixedName(config, prefix) {
 }
 ```
 
-↓ ↓ ↓
+It evaluates to the following JSON config:
 
 ```json Evaluated config JSON
 {
@@ -220,9 +220,9 @@ export default {
 
 A modifier (mod for short) is an async function that accepts a config and a data object, then manipulates and returns both as an object.
 
-Mods are added to the `mods` object of the Expo config. The `mods` object is different to the rest of the Expo config because it doesn't get serialized
-after the initial reading, this means you can use it to perform actions _during_ code generation.
-If possible, you should attempt to use basic plugins instead of mods as they're simpler to work with.
+Mods are added to the `mods` object of the Expo config. The `mods` object is different from the rest of the Expo config because it doesn't get serialized
+after the initial reading, which means you can use it to perform actions _during_ code generation.
+If possible, you should attempt to use basic plugins instead of mods, as they're simpler to work with.
 
 - `mods` are omitted from the manifest and **cannot** be accessed via `Updates.manifest`. Mods exist for the sole purpose of modifying native project files during code generation!
 - `mods` can be used to read and write files safely during the `expo prebuild` command. This is how Expo CLI modifies the **Info.plist**, entitlements, xcproj, etc...
@@ -539,7 +539,7 @@ Use the following dependencies in a library that provides a config plugin:
 ```
 
 - You may update the exact version of `expo` to build against a specific version.
-- For simple config plugins that depend on core, stable APIs, such as a plugin that only modifies **AndroidManifest.xml** ot **Info.plist**, you can use a loose dependency such as in the example above.
+- For simple config plugins that depend on core, stable APIs, such as a plugin that only modifies **AndroidManifest.xml** or **Info.plist**, you can use a loose dependency such as in the example above.
 - You may also want to install [`expo-module-scripts`](https://github.com/expo/expo/blob/main/packages/expo-module-scripts/README.md) as a development dependency, but it's not required.
 
 ### Importing the config plugins package
@@ -555,7 +555,7 @@ Importing through the `expo` package ensures that you are using the version of t
 
 If you do not import the package through the `expo` re-export in this way, you may accidentally be importing an incompatible version
 (depending on the implementation details of module hoisting in the package manager used by the developer consuming the module) or be unable to import the module at all
-(if using "plug and play" features of a package manager like Yarn Berry or pnpm).
+(if using "plug and play" features of a package manager such as Yarn Berry or pnpm).
 
 Config types are exported directly from `expo/config`, so there is no need to install or import from `expo/config-types`:
 
@@ -608,7 +608,7 @@ If you aren't comfortable with setting up a monorepo, you can try manually runni
 
 ### Modifying the AndroidManifest.xml
 
-Packages should attempt to use the built-in **AndroidManifest.xml** [merging system](https://android-doc.github.io/tools/building/manifest-merge.html)
+Packages should attempt to use the built-in **AndroidManifest.xml** [merging system](https://developer.android.com/studio/build/manage-manifests)
 before using a config plugin. This can be used for static, non-optional features like permissions.
 This will ensure features are merged during build-time and not prebuild-time, which minimizes the possibility of users forgetting to prebuild.
 The drawback is that users cannot use [introspection](#introspection) to preview the changes and debug any potential issues.
@@ -692,8 +692,8 @@ export const withCustomConfig: ConfigPlugin<string> = (config, id) => {
 
 ### Modifying the iOS Podfile
 
-The iOS Podfile is the config file for CocoaPods, the dependency manager on iOS. Think of Podfile like package.json but for iOS.
-The Podfile is a ruby file (application code), which means you **cannot** safely modify it from Expo config plugins, and should opt towards another approach, like Expo Autolinking hooks (citation needed).
+The iOS **Podfile** is the config file for CocoaPods, the dependency manager on iOS. It is similar to **package.json** for iOS.
+The **Podfile** is a ruby file (application code), which means you **cannot** safely modify it from Expo config plugins and should opt for another approach, such as [Expo Autolinking](modules/autolinking) hooks.
 
 Currently, we do have a configuration that interacts with the CocoaPods file though.
 
@@ -740,7 +740,7 @@ export default createRunOncePlugin(
   Doing this often helps you to find ways to reduce the setup, which can lead to a simpler plugin.
   - Document the available properties for the plugin, and specify if the plugin works without props.
   - If you can make your plugin work after running prebuild multiple times, that’s a big plus! It can improve the developer experience to be able to run `expo prebuild` without the `--clean` flag to sync changes.
-- **Naming conventions**: Use `withFeatureName` if cross-platform. If the plugin is platform specific, use a camel case naming with the platform right after “with”. Ex; `withIosSplash`, `withAndroidSplash`.
+- **Naming conventions**: Use `withFeatureName` if cross-platform. If the plugin is platform specific, use a camel case naming with the platform right after “with”. For example, `withAndroidSplash`, `withIosSplash`.
   There is no universally agreed upon casing for `iOS` in camel cased identifiers, we prefer this style and suggest using it for your config plugins too.
 - **Leverage built-in plugins**: Account for built-in plugins from the [prebuild config](https://github.com/expo/expo-cli/blob/master/packages/prebuild-config/src/plugins/withDefaultPlugins.ts).
   Some features are included for historical reasons, like the ability to automatically copy and link [Google services files](https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/ios/Google.ts#L15) defined in the Expo config.
@@ -761,7 +761,7 @@ When Expo SDK upgrades to a new version of React Native for instance, the templa
 
 If your plugin is mostly using [static modifications](#static-modification) then it will work well across versions.
 If it's using a regular expression to transform application code, then you'll definitely want to document which Expo SDK version your plugin is intended for.
-Expo releases a new version quarterly (every 3 months), and there is a [beta period][expo-beta-docs] where you can test if your plugin works with the new version before it's released.
+Expo releases a new version quarterly (every 3 months), and there is a [beta period](https://github.com/expo/expo/blob/main/guides/releasing/Release%20Workflow.md#stage-5---beta-release) where you can test if your plugin works with the new version before it's released.
 
 {/* TODO: versioned plugin wrapper */}
 
@@ -946,7 +946,7 @@ Introspection only supports a subset of modifiers:
 
 Introspection works by creating custom base mods that work like the default base mods, except they don't write the `modResults` to disk at the end.
 Instead of persisting, they save the results to the Expo config under `_internal.modResults`, followed by the name of the mod
-i.e. the `ios.infoPlist` mod saves to `_internal.modResults.ios.infoPlist: {}`.
+such as the `ios.infoPlist` mod saves to `_internal.modResults.ios.infoPlist: {}`.
 
 As a real-world example, introspection is used by `eas-cli` to determine what the final iOS entitlements will be in a managed app,
 so it can sync them with the Apple Developer Portal before building. Introspection can also be used as a handy debugging and development tool.
