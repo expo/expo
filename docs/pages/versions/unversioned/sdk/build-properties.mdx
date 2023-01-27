@@ -9,7 +9,11 @@ import { ConfigPluginExample } from '~/components/plugins/ConfigSection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-**`expo-build-properties`** is a [config plugin](/guides/config-plugins) configuring the native build properties of your `ios/Podfile.properties.json` and `android/gradle.properties` directories during [Expo Prebuild](/workflow/prebuild). This config plugin configures how [Expo Prebuild](/workflow/prebuild) generates the native `ios` and `android` folders and therefore cannot be used with projects that don't run `npx expo prebuild` (bare projects).
+`expo-build-properties` is a [config plugin](/guides/config-plugins) configuring the native build properties
+of your **android/gradle.properties** and **ios/Podfile.properties.json** directories during [Prebuild](/workflow/prebuild).
+
+> **info** This config plugin configures how [Prebuild command](/workflow/prebuild) generates the native **android** and **ios** folders
+> and therefore cannot be used with projects that don't run `npx expo prebuild` (bare projects).
 
 <PlatformsSection ios simulator android emulator />
 
@@ -17,7 +21,7 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 <APIInstallSection hideBareInstructions={true} />
 
-## Configuration in app.json/app.config.js
+## Usage
 
 <ConfigPluginExample>
 
@@ -45,9 +49,29 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 
 </ConfigPluginExample>
 
-### Full configurable properties
+### Example app.config.js usage
 
-Learn more from [`PluginConfigType`](#pluginconfigtype).
+```js app.config.js
+import { withPlugins } from 'expo/config-plugins';
+import { withBuildProperties } from 'expo-build-properties';
+
+export default withPlugins(config, [
+  [withBuildProperties, {
+    "android": {
+      "compileSdkVersion": 31,
+      "targetSdkVersion": 31,
+      "buildToolsVersion": "31.0.0"
+    },
+    "ios": {
+      "deploymentTarget": "13.0"
+    }
+  }]
+]);
+```
+
+### All configurable properties
+
+[`PluginConfigType`](#pluginconfigtype) interface represents currently available configuration properties.
 
 ## API
 
