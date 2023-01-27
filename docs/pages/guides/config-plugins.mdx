@@ -4,7 +4,7 @@ description: Learn about config plugins, which are the Expo way of customizing t
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
-import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { YesIcon, NoIcon, WarningIcon } from '~/ui/components/DocIcons';
 import { Collapsible } from '~/ui/components/Collapsible';
 
 When adding a native module to your project, most of the setup can be done automatically by installing the module in your project,
@@ -255,30 +255,34 @@ module.exports = {
 
 ### Default mods
 
-The following default mods are provided by the mod compiler for common file manipulation:
+The following default mods are provided by the mod compiler for common file manipulation.
 
-#### Android
+> Dangerous modifications rely on regular expressions (regex) to modify application code, which may cause the build to break.
+> Regex mods are also difficult to version, and therefore should be used sparingly.
+> Always opt towards using application code to modify application code, that is, [Expo Modules][emc] native API.
 
-- `mods.android.manifest` -- Modify the **android/app/src/main/AndroidManifest.xml** as JSON (parsed with [`xml2js`][xml2js]).
-- `mods.android.strings` -- Modify the **android/app/src/main/res/values/strings.xml** as JSON (parsed with [`xml2js`][xml2js]).
-- `mods.android.colors` -- Modify the **android/app/src/main/res/values/colors.xml** as JSON (parsed with [`xml2js`][xml2js]).
-- `mods.android.colorsNight` -- Modify the **android/app/src/main/res/values-night/colors.xml** as JSON (parsed with [`xml2js`][xml2js]).
-- `mods.android.styles` -- Modify the **android/app/src/main/res/values/styles.xml** as JSON (parsed with [`xml2js`][xml2js]).
-- `mods.android.gradleProperties` -- Modify the **android/gradle.properties** as a `Properties.PropertiesItem[]`.
-- `mods.android.mainActivity` -- Modify the **android/app/src/main/&lt;package&gt;/MainActivity.java** as a string (Dangerous).
-- `mods.android.mainApplication` -- Modify the **android/app/src/main/&lt;package&gt;/MainApplication.java** as a string (Dangerous).
-- `mods.android.appBuildGradle` -- Modify the **android/app/build.gradle** as a string (Dangerous).
-- `mods.android.projectBuildGradle` -- Modify the **android/build.gradle** as a string (Dangerous).
-- `mods.android.settingsGradle` -- Modify the **android/settings.gradle** as a string (Dangerous).
+| Android mod                       |    Dangerous    | Description                                                                                               |
+|-----------------------------------|:---------------:|-----------------------------------------------------------------------------------------------------------|
+| `mods.android.manifest`           |        -        | Modify the **android/app/src/main/AndroidManifest.xml** as JSON (parsed with [`xml2js`][xml2js]).         |
+| `mods.android.strings`            |        -        | Modify the **android/app/src/main/res/values/strings.xml** as JSON (parsed with [`xml2js`][xml2js]).      |
+| `mods.android.colors`             |        -        | Modify the **android/app/src/main/res/values/colors.xml** as JSON (parsed with [`xml2js`][xml2js]).       |
+| `mods.android.colorsNight`        |        -        | Modify the **android/app/src/main/res/values-night/colors.xml** as JSON (parsed with [`xml2js`][xml2js]). |
+| `mods.android.styles`             |        -        | Modify the **android/app/src/main/res/values/styles.xml** as JSON (parsed with [`xml2js`][xml2js]).       |
+| `mods.android.gradleProperties`   |        -        | Modify the **android/gradle.properties** as a `Properties.PropertiesItem[]`.                              |
+| `mods.android.mainActivity`       | <WarningIcon /> | Modify the **android/app/src/main/&lt;package&gt;/MainActivity.java** as a string.                        |
+| `mods.android.mainApplication`    | <WarningIcon /> | Modify the **android/app/src/main/&lt;package&gt;/MainApplication.java** as a string.                     |
+| `mods.android.appBuildGradle`     | <WarningIcon /> | Modify the **android/app/build.gradle** as a string.                                                      |
+| `mods.android.projectBuildGradle` | <WarningIcon /> | Modify the **android/build.gradle** as a string.                                                          |
+| `mods.android.settingsGradle`     | <WarningIcon /> | Modify the **android/settings.gradle** as a string.                                                       |
 
-## iOS
-
-- `mods.ios.infoPlist` -- Modify the **ios/&lt;name&gt;/Info.plist** as JSON (parsed with [`@expo/plist`][expo-plist]).
-- `mods.ios.entitlements` -- Modify the **ios/&lt;name&gt;/&lt;product-name&gt;.entitlements** as JSON (parsed with [`@expo/plist`][expo-plist]).
-- `mods.ios.expoPlist` -- Modify the **ios/&lt;ame&gt;/Expo.plist** as JSON (Expo updates config for iOS) (parsed with [`@expo/plist`][expo-plist]).
-- `mods.ios.xcodeproj` -- Modify the **ios/&lt;name&gt;.xcodeproj** as an `XcodeProject` object (parsed with [`xcode`](https://www.npmjs.com/package/xcode)).
-- `mods.ios.podfileProperties` -- Modify the **ios/Podfile.properties.json** as JSON.
-- `mods.ios.appDelegate` -- Modify the **ios/&lt;name&gt;/AppDelegate.m** as a string (Dangerous).
+| iOS mod                      |    Dangerous    | Description                                                                                                                         |
+|------------------------------|:---------------:|-------------------------------------------------------------------------------------------------------------------------------------|
+| `mods.ios.infoPlist`         |        -        | Modify the **ios/&lt;name&gt;/Info.plist** as JSON (parsed with [`@expo/plist`][expo-plist]).                                       |
+| `mods.ios.entitlements`      |        -        | Modify the **ios/&lt;name&gt;/&lt;product-name&gt;.entitlements** as JSON (parsed with [`@expo/plist`][expo-plist]).                |
+| `mods.ios.expoPlist`         |        -        | Modify the **ios/&lt;ame&gt;/Expo.plist** as JSON (Expo updates config for iOS) (parsed with [`@expo/plist`][expo-plist]).          |
+| `mods.ios.xcodeproj`         |        -        | Modify the **ios/&lt;name&gt;.xcodeproj** as an `XcodeProject` object (parsed with [`xcode`](https://www.npmjs.com/package/xcode)). |
+| `mods.ios.podfileProperties` |        -        | Modify the **ios/Podfile.properties.json** as JSON.                                                                                 |
+| `mods.ios.appDelegate`       | <WarningIcon /> | Modify the **ios/&lt;name&gt;/AppDelegate.m** as a string.                                                                          |
 
 After the mods are resolved, the contents of each mod will be written to disk. Custom default mods can be added to support new native files.
 For example, you can create a mod to support the `GoogleServices-Info.plist`, and pass it to other mods.
@@ -291,30 +295,31 @@ If you're developing a feature that requires mods, it's best not to interact wit
 Instead you should use the helper mods provided by `expo/config-plugins`:
 
 #### Android
-- `withAndroidManifest`
-- `withStringsXml`
-- `withAndroidColors`
-- `withAndroidColorsNight`
-- `withAndroidStyles`
-- `withGradleProperties`
-- `withMainActivity` (Dangerous)
-- `withMainApplication` (Dangerous)
-- `withProjectBuildGradle` (Dangerous)
-- `withAppBuildGradle` (Dangerous)
-- `withSettingsGradle` (Dangerous)
+
+| Android mod                       | Mod plugin               |    Dangerous    |
+|-----------------------------------|--------------------------|:---------------:|
+| `mods.android.manifest`           | `withAndroidManifest`    |        -        |
+| `mods.android.strings`            | `withStringsXml`         |        -        |
+| `mods.android.colors`             | `withAndroidColors`      |        -        |
+| `mods.android.colorsNight`        | `withAndroidColorsNight` |        -        |
+| `mods.android.styles`             | `withAndroidStyles`      |        -        |
+| `mods.android.gradleProperties`   | `withGradleProperties`   |        -        |
+| `mods.android.mainActivity`       | `withMainActivity`       | <WarningIcon /> |
+| `mods.android.mainApplication`    | `withMainApplication`    | <WarningIcon /> |
+| `mods.android.appBuildGradle`     | `withAppBuildGradle`     | <WarningIcon /> |
+| `mods.android.projectBuildGradle` | `withProjectBuildGradle` | <WarningIcon /> |
+| `mods.android.settingsGradle`     | `withSettingsGradle`     | <WarningIcon /> |
 
 #### iOS
 
-- `withInfoPlist`
-- `withEntitlementsPlist`
-- `withExpoPlist`
-- `withXcodeProject`
-- `withPodfileProperties`
-- `withAppDelegate` (Dangerous)
-
-> Dangerous modifications rely on regular expressions (regex) to modify application code, which may cause the build to break.
-> Regex mods are also difficult to version, and therefore should be used sparingly.
-> Always opt towards using application code to modify application code, that is, [Expo Modules][emc] native API.
+| iOS mod                      | Mod plugin              |    Dangerous    |
+|------------------------------|-------------------------|:---------------:|
+| `mods.ios.infoPlist`         | `withInfoPlist`         |        -        |
+| `mods.ios.entitlements`      | `withEntitlementsPlist` |        -        |
+| `mods.ios.expoPlist`         | `withExpoPlist`         |        -        |
+| `mods.ios.xcodeproj`         | `withXcodeProject`      |        -        |
+| `mods.ios.podfileProperties` | `withPodfileProperties` |        -        |
+| `mods.ios.appDelegate`       | `withAppDelegate`       | <WarningIcon /> |
 
 A mod plugin gets passed a `config` object with additional properties `modResults` and `modRequest` added to it.
 
