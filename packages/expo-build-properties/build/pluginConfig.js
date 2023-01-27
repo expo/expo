@@ -7,7 +7,7 @@ exports.validateConfig = void 0;
 const ajv_1 = __importDefault(require("ajv"));
 const semver_1 = __importDefault(require("semver"));
 /**
- * The minimal supported versions. These values should align to SDK
+ * The minimal supported versions. These values should align to SDK.
  * @ignore
  */
 const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
@@ -59,12 +59,12 @@ const schema = {
         },
     },
 };
+// note(Kudo): For the implementation, we check items one by one because Ajv does not well support custom error message.
 /**
- * Check versions to meet expo minimal supported versions.
+ * Checks if specified versions meets Expo minimal supported versions.
  * Will throw error message whenever there are invalid versions.
- * For the implementation, we check items one by one because ajv does not well support custom error message.
  *
- * @param config the validated config passed from ajv
+ * @param config The validated config passed from Ajv.
  * @ignore
  */
 function maybeThrowInvalidVersions(config) {
