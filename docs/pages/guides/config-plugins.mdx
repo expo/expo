@@ -748,7 +748,7 @@ export default createRunOncePlugin(
 - **Split up plugins by platform**: For example — `withIosSplash`, `withAndroidSplash`. This makes using the `--platform` flag in `expo prebuild` a bit easier to follow in `EXPO_DEBUG` mode.
 - **Unit test your plugin**: Write Jest tests for complex modifications. If your plugin requires access to the filesystem,
   use a mock system (we strongly recommend [`memfs`][memfs]), you can see examples of this in the [`expo-notifications`](https://github.com/expo/expo/blob/fc3fb2e81ad3a62332fa1ba6956c1df1c3186464/packages/expo-notifications/plugin/src/__tests__/withNotificationsAndroid-test.ts#L34) plugin tests.
-  - Notice the root [**/**mocks\*\*\*\*](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/__mocks__) folder and [**plugin/jest.config.js**](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/jest.config.js).
+  - Notice the root [\*\*/\_\_mocks\_\_/\*\*/*](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/__mocks__) folder and [**plugin/jest.config.js**](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/jest.config.js).
 - A TypeScript plugin is always better than a JavaScript plugin. Check out the [`expo-module-script` plugin][ems-plugin] tooling for more info.
 - Do not modify the `sdkVersion` via a config plugin, this can break commands like `expo install` and cause other unexpected issues.
 
