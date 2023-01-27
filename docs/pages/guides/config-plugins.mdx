@@ -584,16 +584,16 @@ const { /* @hide ...*//* @end */ } = require('@expo/config-plugins');
 
 ### Tooling
 
-We highly recommend installing the [Expo config VS Code plugin](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo)
+We highly recommend installing the [Expo Tools VS Code plugin](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo)
 as this will perform automatic validation on the plugins and surface error information along with other quality of life improvements for Config Plugin development.
 
 ### Setting up a playground environment
 
 You can develop plugins easily using JS, but if you want to setup Jest tests and use TypeScript, you will want a monorepo.
 
-A monorepo will enable you to work on a node module and import it in your Expo config like you would if it were published to NPM. Expo config plugins have full monorepo support built-in so all you need to do is setup a project.
+A monorepo will enable you to work on a node module and import it in your Expo config like you would if it were published to npm.
+Expo config plugins have full monorepo support built-in so all you need to do is setup a project.
 
-We recommend using [`expo-yarn-workspaces`](https://www.npmjs.com/package/expo-yarn-workspaces) which makes Expo monorepos very easy to setup.
 In your monorepo's `packages/` folder, create a module, and [bootstrap a config plugin](https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin) in it.
 
 ### Manually running a plugin
@@ -603,7 +603,7 @@ If you aren't comfortable with setting up a monorepo, you can try manually runni
 - Run `npm pack` in the package with the config plugin
 - In your test project, run `npm install path/to/react-native-my-package-1.0.0.tgz`, this will add the package to your **package.json** `dependencies` object.
 - Add the package to the `plugins` array in your **app.json**: `{ "plugins": ["react-native-my-package"] }`
-  - If you have [vscode expo][vscode-expo] installed, autocomplete should work for the plugin.
+  - If you have [VS Code Expo Tools][vscode-expo] installed, autocomplete should work for the plugin.
 - If you need to update the package, change the `version` in the package's **package.json** and repeat the process.
 
 ### Modifying the AndroidManifest.xml
@@ -784,7 +784,7 @@ interface StaticObject {
 Static properties are required because the Expo config must be serializable to JSON for use as the app manifest.
 Static properties can also enable tooling that generates JSON schema type checking for autocomplete and IntelliSense.
 
-If possible, attempt to make your plugin work without props, this will help resolution tooling like [`expo install`](#expo-install) or [vscode expo][vscode-expo] work better.
+If possible, attempt to make your plugin work without props, this will help resolution tooling like [`expo install`](#expo-install) or [VS Code Expo Tools][vscode-expo] work better.
 Remember that every property you add increases complexity, making it harder to change in the future and increase the amount of features you'll need to test.
 Good default values are preferred over mandatory configuration when feasible.
 
