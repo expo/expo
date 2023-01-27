@@ -65,7 +65,11 @@ export default function DevLoadingView() {
 }
 const styles = StyleSheet.create({
     animatedContainer: {
-        position: 'absolute',
+        // @ts-expect-error: fixed is not a valid value for position in Yoga but it is on web.
+        position: Platform.select({
+            web: 'fixed',
+            default: 'absolute',
+        }),
         bottom: 0,
         left: 0,
         right: 0,

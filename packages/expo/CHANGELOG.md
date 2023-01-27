@@ -10,6 +10,7 @@
 
 - Use React 18 mounting pattern on web to avoid web warning. ([#20965](https://github.com/expo/expo/pull/20965) by [@EvanBacon](https://github.com/EvanBacon))
 - Skip mounting root component when DOM is not available. ([#20916](https://github.com/expo/expo/pull/20916) by [@EvanBacon](https://github.com/EvanBacon))
+- Use position `fixed` to float fast refresh indicator to the bottom on web. ([#20966](https://github.com/expo/expo/pull/20966) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
