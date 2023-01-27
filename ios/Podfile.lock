@@ -1365,13 +1365,6 @@ PODS:
     - MLKitVision (= 3.0.0)
   - EXFileSystem (15.1.1):
     - ExpoModulesCore
-  - EXFirebaseAnalytics (8.0.0):
-    - EXFirebaseCore
-    - ExpoModulesCore
-    - Firebase/Core (= 9.5.0)
-  - EXFirebaseCore (6.0.0):
-    - ExpoModulesCore
-    - Firebase/Core (= 9.5.0)
   - EXFont (11.0.1):
     - ExpoModulesCore
   - EXImageLoader (4.0.0):
@@ -2412,8 +2405,6 @@ DEPENDENCIES:
   - EXErrorRecovery (from `../packages/expo-error-recovery/ios`)
   - EXFaceDetector (from `../packages/expo-face-detector/ios`)
   - EXFileSystem (from `../packages/expo-file-system/ios`)
-  - EXFirebaseAnalytics (from `../packages/expo-firebase-analytics/ios`)
-  - EXFirebaseCore (from `../packages/expo-firebase-core/ios`)
   - EXFont (from `../packages/expo-font/ios`)
   - EXImageLoader (from `../packages/expo-image-loader/ios`)
   - EXJSONUtils (from `../packages/expo-json-utils/ios`)
@@ -3056,10 +3047,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-face-detector/ios"
   EXFileSystem:
     :path: "../packages/expo-file-system/ios"
-  EXFirebaseAnalytics:
-    :path: "../packages/expo-firebase-analytics/ios"
-  EXFirebaseCore:
-    :path: "../packages/expo-firebase-core/ios"
   EXFont:
     :path: "../packages/expo-font/ios"
   EXImageLoader:
@@ -3503,8 +3490,6 @@ SPEC CHECKSUMS:
   EXErrorRecovery: ae43433feb0608a64dc5b1c8363b3e7769a9ea24
   EXFaceDetector: 0bb666598a78ae4a787689a45a58ddb68e3bd86e
   EXFileSystem: ed61548927905e157b95b3b49bd83a26ff24e1ce
-  EXFirebaseAnalytics: 58d70e698859b070b2450ad8664d7b5bc6c6e3e1
-  EXFirebaseCore: d0d88cb904e893af07f809ab08c0892489bc6956
   EXFont: 319606bfe48c33b5b5063fb0994afdc496befe80
   EXImageLoader: 84b65e6bd9d3345d6fbb3ab936a546c54496a64d
   EXJSONUtils: 09aef2c1fba1a116ca8c73a2c8299aac00d96b43
