@@ -100,8 +100,12 @@ const renderAPI = (
 
     const props = filterDataByKind(
       data,
-      TypeDocKind.TypeAlias,
-      entry => isProp(entry) && !!(entry.type.types || entry.type.declaration?.children)
+      [TypeDocKind.TypeAlias, TypeDocKind.Interface],
+      entry =>
+        isProp(entry) &&
+        (entry.kind === TypeDocKind.TypeAlias
+          ? !!(entry.type.types || entry.type.declaration?.children)
+          : true)
     );
     const defaultProps = filterDataByKind(
       data
@@ -113,7 +117,11 @@ const renderAPI = (
     )[0];
 
     const enums = filterDataByKind(data, TypeDocKind.Enum, entry => entry.name !== 'default');
-    const interfaces = filterDataByKind(data, TypeDocKind.Interface);
+    const interfaces = filterDataByKind(
+      data,
+      TypeDocKind.Interface,
+      entry => !entry.name.includes('Props')
+    );
     const constants = filterDataByKind(data, TypeDocKind.Variable, entry => isConstant(entry));
 
     const components = filterDataByKind(
@@ -124,8 +132,10 @@ const renderAPI = (
     const componentsPropNames = components.map(
       ({ name, children }) => `${getComponentName(name, children)}Props`
     );
-    const componentsProps = filterDataByKind(props, TypeDocKind.TypeAlias, entry =>
-      componentsPropNames.includes(entry.name)
+    const componentsProps = filterDataByKind(
+      props,
+      [TypeDocKind.TypeAlias, TypeDocKind.Interface],
+      entry => componentsPropNames.includes(entry.name)
     );
 
     const namespaces = filterDataByKind(data, TypeDocKind.Namespace);
