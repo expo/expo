@@ -11,7 +11,6 @@ const workingDir = path.resolve(repoRoot, '..');
 const EXPO_ACCOUNT_NAME = 'myusername';
 
 /**
- *
  * This generates a project at the location TEST_PROJECT_ROOT,
  * set up to use the latest bits from the current repo source,
  * and can be used to test different expo-updates and EAS updates workflows.
@@ -42,12 +41,7 @@ function transformAppJson(appJson, projectName, runtimeVersion) {
 }
 
 (async function () {
-  if (
-    !process.env.ARTIFACTS_DEST ||
-    !process.env.EXPO_REPO_ROOT ||
-    !process.env.UPDATES_HOST ||
-    !process.env.UPDATES_PORT
-  ) {
+  if (!process.env.EXPO_REPO_ROOT) {
     throw new Error(
       'Missing one or more environment variables; see instructions in e2e/__tests__/setup/index.js'
     );

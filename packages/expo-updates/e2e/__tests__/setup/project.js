@@ -44,6 +44,28 @@ async function packExpoDependency(repoRoot, projectRoot, destPath, dependencyNam
   } else {
     dependencyPath = path.resolve(repoRoot, 'packages', dependencyComponents[0]);
   }
+
+  // Save a copy of package.json
+  const packageJsonPath = path.resolve(dependencyPath, 'package.json');
+  const packageJsonCopyPath = `${packageJsonPath}-original`;
+  await fs.copyFile(packageJsonPath, packageJsonCopyPath);
+  // Extract the version from package.json
+  const packageJson = require(packageJsonPath);
+  const originalVersion = packageJson.version;
+  // Add string to the version to ensure that yarn uses the tarball and not the published version
+  const e2eVersion = `${originalVersion}-${new Date().getTime()}`;
+  await fs.writeFile(
+    packageJsonPath,
+    JSON.stringify(
+      {
+        ...packageJson,
+        version: e2eVersion,
+      },
+      null,
+      2
+    )
+  );
+
   await spawnAsync('npm', ['pack', '--pack-destination', destPath], {
     cwd: dependencyPath,
     stdio: 'ignore',
@@ -60,13 +82,15 @@ async function packExpoDependency(repoRoot, projectRoot, destPath, dependencyNam
     throw new Error(`Failed to locate packed ${dependencyName} in ${destPath}`);
   }
 
+  // Restore the original package JSON
+  await fs.copyFile(packageJsonCopyPath, packageJsonPath);
+  await fs.rm(packageJsonCopyPath);
+
   // Return the dependency in the form needed by package.json, as a relative path
   const dependency = `.${path.sep}${path.relative(projectRoot, dependencyTarballPath)}`;
-  // We also need the exact version string for each package
-  const version = require(path.resolve(dependencyPath, 'package.json')).version;
   return {
     dependency,
-    version,
+    e2eVersion,
   };
 }
 
@@ -382,11 +406,6 @@ async function setupBasicAppAsync(projectRoot) {
     stdio: 'inherit',
   });
 
-  // copy exported update to artifacts
-  await fs.cp(path.join(projectRoot, 'dist'), path.join(process.env.ARTIFACTS_DEST, 'dist-basic'), {
-    recursive: true,
-  });
-
   // move exported update to "updates" directory for EAS testing
   await fs.rename(path.join(projectRoot, 'dist'), path.join(projectRoot, 'updates'));
 
@@ -420,15 +439,6 @@ async function setupAssetsAppAsync(projectRoot, localCliBin) {
     cwd: projectRoot,
     stdio: 'inherit',
   });
-
-  // copy exported update to artifacts
-  await fs.cp(
-    path.join(projectRoot, 'dist'),
-    path.join(process.env.ARTIFACTS_DEST, 'dist-assets'),
-    {
-      recursive: true,
-    }
-  );
 
   // move exported update to "updates" directory for EAS testing
   await fs.rename(path.join(projectRoot, 'dist'), path.join(projectRoot, 'updates'));
