@@ -12,7 +12,7 @@ export function DevServerExplainerModal() {
 
       <View bg="secondary" border="default" rounded="medium" padding="medium">
         <Text type="mono" size="small">
-          expo start --dev-client
+          npx expo start --dev-client
         </Text>
       </View>
 
