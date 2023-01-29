@@ -20,25 +20,6 @@ function useSnacksQuery({ accountName }: { accountName: string }) {
       variables: {
         offset: snacks?.length || 0,
       },
-      updateQuery: (previousData, { fetchMoreResult }) => {
-        if (!fetchMoreResult?.account?.byName) {
-          return previousData;
-        }
-        return {
-          account: {
-            ...previousData.account,
-            ...fetchMoreResult.account,
-            byName: {
-              ...previousData.account.byName,
-              ...fetchMoreResult.account.byName,
-              snacks: [
-                ...previousData.account.byName.snacks,
-                ...fetchMoreResult.account.byName.snacks,
-              ],
-            },
-          },
-        };
-      },
     });
   }, [fetchMore, snacks]);
 
