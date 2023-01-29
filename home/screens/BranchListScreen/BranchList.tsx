@@ -49,25 +49,6 @@ function useBranchesQuery({
       variables: {
         offset: app?.updateBranches.length || 0,
       },
-      updateQuery: (previousData, { fetchMoreResult }) => {
-        if (!fetchMoreResult?.app?.byId) {
-          return previousData;
-        }
-        return {
-          app: {
-            ...previousData.app,
-            ...fetchMoreResult.app,
-            byId: {
-              ...previousData.app.byId,
-              ...fetchMoreResult.app.byId,
-              updateBranches: [
-                ...previousData.app.byId.updateBranches,
-                ...fetchMoreResult.app.byId.updateBranches,
-              ],
-            },
-          },
-        };
-      },
     });
   }, [fetchMore, app]);
 

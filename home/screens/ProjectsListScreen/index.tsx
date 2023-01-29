@@ -23,23 +23,6 @@ function useProjectsForAccountQuery({ accountName }: { accountName: string }) {
       variables: {
         offset: apps?.length || 0,
       },
-      updateQuery(previousData, { fetchMoreResult }) {
-        if (!fetchMoreResult?.account?.byName) {
-          return previousData;
-        }
-
-        return {
-          account: {
-            ...previousData.account,
-            ...fetchMoreResult.account,
-            byName: {
-              ...previousData.account.byName,
-              ...fetchMoreResult.account.byName,
-              apps: [...previousData.account.byName.apps, ...fetchMoreResult.account.byName.apps],
-            },
-          },
-        };
-      },
     });
   }, [fetchMore, apps]);
 

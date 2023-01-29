@@ -3,7 +3,6 @@ import dedent from 'dedent';
 import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { FlatList, ActivityIndicator, ListRenderItem, View as RNView } from 'react-native';
-import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import PrimaryButton from '../../components/PrimaryButton';
 import { ProjectsListItem } from '../../components/ProjectsListItem';
@@ -110,8 +109,12 @@ function ProjectListView({ data, loadMoreAsync }: Props) {
   const theme = useExpoTheme();
   const extractKey = (item: CommonAppDataFragment) => item.id;
 
+  const currentAppCount = data.apps?.length ?? 0;
+  const totalAppCount = data.appCount ?? 0;
+  const canLoadMore = currentAppCount < totalAppCount;
+
   const handleLoadMoreAsync = async () => {
-    if (isLoading.current) return;
+    if (isLoading.current || !canLoadMore) return;
     isLoading.current = true;
 
     try {
@@ -122,10 +125,6 @@ function ProjectListView({ data, loadMoreAsync }: Props) {
       isLoading.current = false;
     }
   };
-
-  const currentAppCount = data.apps?.length ?? 0;
-  const totalAppCount = data.appCount ?? 0;
-  const canLoadMore = currentAppCount < totalAppCount;
 
   const renderItem: ListRenderItem<CommonAppDataFragment> = React.useCallback(
     ({ item: app, index }) => {
@@ -157,10 +156,8 @@ function ProjectListView({ data, loadMoreAsync }: Props) {
         renderItem={renderItem}
         contentContainerStyle={{ padding: spacing[4] }}
         ItemSeparatorComponent={() => <Divider style={{ height: 1 }} />}
-        renderScrollComponent={(props) => <InfiniteScrollView {...props} />}
-        // @ts-expect-error typescript cannot infer that props should include infinite-scroll-view props
-        canLoadMore={canLoadMore}
-        onLoadMoreAsync={handleLoadMoreAsync}
+        onEndReachedThreshold={0.2}
+        onEndReached={handleLoadMoreAsync}
       />
     </View>
   );
