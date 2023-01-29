@@ -130,21 +130,9 @@ See the list of all [default Uglify options](https://github.com/facebook/metro/b
 
 A useful way to debug your source code is by exploring the source maps with [`react-native-bundle-visualizer`](https://github.com/IjzerenHein/react-native-bundle-visualizer).
 
-<Step label="1">
+To use it, run the following command:
 
-Install it with the following command in your project as a dev dependency:
-
-<Terminal cmd={['$ yarn add --dev react-native-bundle-visualizer']} />
-
-</Step>
-
-<Step label="2">
-
-To run it, use the following command:
-
-<Terminal cmd={['$ yarn add --dev npx react-native-bundle-visualizer']} />
-
-</Step>
+<Terminal cmd={['$ npx react-native-bundle-visualizer']} />
 
 This will show an interactive breakdown of what makes up your JavaScript bundle. Using this, you can find large packages that you may not have intended to bundle into your project. The smaller the bundle, the faster your app will start.
 
@@ -170,7 +158,7 @@ Universal Expo Metro is designed to be fully universal, meaning any web bundling
 | Bundle command   | `npx expo export`                | `npx expo export:web`  |
 | Output folder    | **dist**                         | **web-build**          |
 | Static folder    | **public**                       | **web**                |
-| Config file      | `metro.config.js`                | `webpack.config.js`    |
+| Config file      | **metro.config.js**              | **webpack.config.js**  |
 | Default config   | `@expo/metro-config`             | `@expo/webpack-config` |
 | Fast Refresh     | <PendingIcon /> (coming soon)    | <NoIcon />             |
 | Tree Shaking     | <NoIcon />                       | <YesIcon />            |
