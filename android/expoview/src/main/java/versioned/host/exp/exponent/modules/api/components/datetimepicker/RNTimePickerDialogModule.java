@@ -20,7 +20,6 @@ import android.os.Bundle;
 import android.widget.TimePicker;
 
 import androidx.annotation.NonNull;
-import androidx.annotation.Nullable;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
@@ -94,8 +93,7 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void open(@Nullable final ReadableMap options, final Promise promise) {
-
+  public void open(final ReadableMap options, final Promise promise) {
     FragmentActivity activity = (FragmentActivity) getCurrentActivity();
     if (activity == null) {
       promise.reject(
@@ -113,16 +111,14 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
         RNTimePickerDialogFragment oldFragment =
                 (RNTimePickerDialogFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG);
 
-        if (oldFragment != null && options != null) {
+        if (oldFragment != null) {
           oldFragment.update(createFragmentArguments(options));
           return;
         }
 
         RNTimePickerDialogFragment fragment = new RNTimePickerDialogFragment();
 
-        if (options != null) {
-          fragment.setArguments(createFragmentArguments(options));
-        }
+        fragment.setArguments(createFragmentArguments(options));
 
         final TimePickerDialogListener listener = new TimePickerDialogListener(promise);
         fragment.setOnDismissListener(listener);
@@ -144,14 +140,8 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
     if (options.hasKey(RNConstants.ARG_DISPLAY) && !options.isNull(RNConstants.ARG_DISPLAY)) {
       args.putString(RNConstants.ARG_DISPLAY, options.getString(RNConstants.ARG_DISPLAY));
     }
-    if (options.hasKey(RNConstants.ARG_NEUTRAL_BUTTON_LABEL) && !options.isNull(RNConstants.ARG_NEUTRAL_BUTTON_LABEL)) {
-      args.putString(RNConstants.ARG_NEUTRAL_BUTTON_LABEL, options.getString(RNConstants.ARG_NEUTRAL_BUTTON_LABEL));
-    }
-    if (options.hasKey(RNConstants.ARG_POSITIVE_BUTTON_LABEL) && !options.isNull(RNConstants.ARG_POSITIVE_BUTTON_LABEL)) {
-      args.putString(RNConstants.ARG_POSITIVE_BUTTON_LABEL, options.getString(RNConstants.ARG_POSITIVE_BUTTON_LABEL));
-    }
-    if (options.hasKey(RNConstants.ARG_NEGATIVE_BUTTON_LABEL) && !options.isNull(RNConstants.ARG_NEGATIVE_BUTTON_LABEL)) {
-      args.putString(RNConstants.ARG_NEGATIVE_BUTTON_LABEL, options.getString(RNConstants.ARG_NEGATIVE_BUTTON_LABEL));
+    if (options.hasKey(RNConstants.ARG_DIALOG_BUTTONS) && !options.isNull(RNConstants.ARG_DIALOG_BUTTONS)) {
+      args.putBundle(RNConstants.ARG_DIALOG_BUTTONS, Arguments.toBundle(options.getMap(RNConstants.ARG_DIALOG_BUTTONS)));
     }
     if (options.hasKey(RNConstants.ARG_INTERVAL) && !options.isNull(RNConstants.ARG_INTERVAL)) {
       args.putInt(RNConstants.ARG_INTERVAL, options.getInt(RNConstants.ARG_INTERVAL));

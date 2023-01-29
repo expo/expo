@@ -34,7 +34,6 @@ class MinuteIntervalSnappableTimePickerDialog extends TimePickerDialog {
             RNTimePickerDisplay display
     ) {
         super(context, listener, hourOfDay, minute, is24HourView);
-		setCanceledOnTouchOutside(true);
         mTimePickerInterval = minuteInterval;
         mTimeSetListener = listener;
         mDisplay = display;
@@ -52,7 +51,6 @@ class MinuteIntervalSnappableTimePickerDialog extends TimePickerDialog {
             RNTimePickerDisplay display
     ) {
         super(context, theme, listener, hourOfDay, minute, is24HourView);
-		setCanceledOnTouchOutside(true);
         mTimePickerInterval = minuteInterval;
         mTimeSetListener = listener;
         mDisplay = display;

@@ -9,6 +9,10 @@ package versioned.host.exp.exponent.modules.api.components.datetimepicker;
 
 import host.exp.expoview.R;
 
+import static versioned.host.exp.exponent.modules.api.components.datetimepicker.Common.getDisplayDate;
+import static versioned.host.exp.exponent.modules.api.components.datetimepicker.Common.setButtonTextColor;
+import static versioned.host.exp.exponent.modules.api.components.datetimepicker.Common.setButtonTitles;
+
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
@@ -38,12 +42,13 @@ public class RNDatePickerDialogFragment extends DialogFragment {
   @Nullable
   private OnDismissListener mOnDismissListener;
   @Nullable
-  private static OnClickListener mOnNeutralButtonActionListener;
+  private OnClickListener mOnNeutralButtonActionListener;
 
+  @NonNull
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     Bundle args = getArguments();
-    instance = createDialog(args, getActivity(), mOnDateSetListener);
+    instance = createDialog(args);
     return instance;
   }
 
@@ -57,62 +62,51 @@ public class RNDatePickerDialogFragment extends DialogFragment {
           Bundle args,
           Context activityContext,
           @Nullable OnDateSetListener onDateSetListener) {
-
     final RNDate date = new RNDate(args);
     final int year = date.year();
     final int month = date.month();
     final int day = date.day();
 
-    RNDatePickerDisplay display = RNDatePickerDisplay.DEFAULT;
+    RNDatePickerDisplay display = getDisplayDate(args);
 
     if (args != null && args.getString(RNConstants.ARG_DISPLAY, null) != null) {
       display = RNDatePickerDisplay.valueOf(args.getString(RNConstants.ARG_DISPLAY).toUpperCase(Locale.US));
     }
 
-    switch (display) {
-      case CALENDAR:
-      case SPINNER:
-        int theme = display == RNDatePickerDisplay.CALENDAR
-                ? R.style.CalendarDatePickerDialog
-                : R.style.SpinnerDatePickerDialog;
-        return new RNDismissableDatePickerDialog(
-                activityContext,
-                theme,
-                onDateSetListener,
-                year,
-                month,
-                day,
-                display
-        );
-      default:
-        return new RNDismissableDatePickerDialog(
-                activityContext,
-                onDateSetListener,
-                year,
-                month,
-                day,
-                display
-        );
+    if (display == RNDatePickerDisplay.SPINNER) {
+      return new RNDismissableDatePickerDialog(
+        activityContext,
+        R.style.SpinnerDatePickerDialog,
+        onDateSetListener,
+        year,
+        month,
+        day,
+        display
+      );
     }
+    return new RNDismissableDatePickerDialog(
+      activityContext,
+      onDateSetListener,
+      year,
+      month,
+      day,
+      display
+    );
   }
 
-  static DatePickerDialog createDialog(
-          Bundle args,
-          Context activityContext,
-          @Nullable OnDateSetListener onDateSetListener) {
-
+  private DatePickerDialog createDialog(Bundle args) {
+    Context activityContext = getActivity();
     final Calendar c = Calendar.getInstance();
 
-    DatePickerDialog dialog = getDialog(args, activityContext, onDateSetListener);
+    DatePickerDialog dialog = getDialog(args, activityContext, mOnDateSetListener);
 
-    if (args != null && args.containsKey(RNConstants.ARG_NEUTRAL_BUTTON_LABEL)) {
-      dialog.setButton(DialogInterface.BUTTON_NEUTRAL, args.getString(RNConstants.ARG_NEUTRAL_BUTTON_LABEL), mOnNeutralButtonActionListener);
-    }
-    if (args != null && args.containsKey(RNConstants.ARG_POSITIVE_BUTTON_LABEL)) {
-      dialog.setButton(DialogInterface.BUTTON_POSITIVE, args.getString(RNConstants.ARG_POSITIVE_BUTTON_LABEL), dialog);
-    }
-    if (args != null && args.containsKey(RNConstants.ARG_NEGATIVE_BUTTON_LABEL)) {
-      dialog.setButton(DialogInterface.BUTTON_NEGATIVE, args.getString(RNConstants.ARG_NEGATIVE_BUTTON_LABEL), dialog);
+    if (args != null) {
+      setButtonTitles(args, dialog, mOnNeutralButtonActionListener);
+      if (activityContext != null) {
+        RNDatePickerDisplay display = getDisplayDate(args);
+        boolean needsColorOverride = display == RNDatePickerDisplay.SPINNER;
+        dialog.setOnShowListener(setButtonTextColor(activityContext, dialog, args, needsColorOverride));
+      }
     }
 
     final DatePicker datePicker = dialog.getDatePicker();
@@ -147,6 +141,11 @@ public class RNDatePickerDialogFragment extends DialogFragment {
       datePicker.setMaxDate(c.getTimeInMillis() - getOffset(c, timeZoneOffsetInMilliseconds));
     }
 
+    if (args != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+      && (args.containsKey(RNConstants.ARG_MAXDATE) || args.containsKey(RNConstants.ARG_MINDATE))) {
+      datePicker.setOnDateChangedListener(new KeepDateInRangeListener(args));
+    }
+
     return dialog;
   }
 
@@ -168,7 +167,7 @@ public class RNDatePickerDialogFragment extends DialogFragment {
   }
 
   @Override
-  public void onDismiss(DialogInterface dialog) {
+  public void onDismiss(@NonNull DialogInterface dialog) {
     super.onDismiss(dialog);
     if (mOnDismissListener != null) {
       mOnDismissListener.onDismiss(dialog);
