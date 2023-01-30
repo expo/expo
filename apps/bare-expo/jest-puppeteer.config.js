@@ -12,7 +12,7 @@ const port = 19007;
 
 function getCommand() {
   if (!isProduction) {
-    return `expo-cli start:web ${projectPath} -p ${port} --non-interactive --https`;
+    return `npx expo start ${projectPath} --web --https -p ${port}`;
   }
 
   // Production mode
