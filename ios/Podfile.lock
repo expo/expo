@@ -1418,7 +1418,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (12.1.0):
     - ExpoModulesCore
-  - ExpoImage (1.0.0-beta.2):
+  - ExpoImage (1.0.0-beta.3):
     - ExpoModulesCore
     - SDWebImage (~> 5.15.0)
     - SDWebImageAVIFCoder (~> 0.9.4)
@@ -3524,7 +3524,7 @@ SPEC CHECKSUMS:
   ExpoDevice: 458bb44dab3e955480e3642ecdfb6f8240955dbf
   ExpoGL: 5cc4c55cb83a9620c08ba6d797cb0ec812038e62
   ExpoHaptics: 129d3f8d44c2205adcdf8db760602818463d5437
-  ExpoImage: 4380f14eaa66bc60dee17a78ca6cd03f74cd93a7
+  ExpoImage: 6e361d58652e030f1d9c2b12809d4bb294648fb3
   ExpoImageManipulator: 5f3c1ab8dd81de11491b5051bb925abc91fe57e4
   ExpoImagePicker: 3851acac688e36cbf49973ff03fe395fa7f0fbf4
   ExpoKeepAwake: 69b59d0a8d2b24de9f82759c39b3821fec030318
