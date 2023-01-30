@@ -59,9 +59,7 @@ jobs:
       - name: Build expo-updates CLI
         working-directory: packages/expo-updates
         run: yarn build:cli
-      - name: 🔧 Install Expo CLI
-        run: yarn global add expo-cli
-      - name: Install eas-cli
+      - name: 🔧 Install eas-cli
         run: yarn global add eas-cli
       - name: 🌳 Add EXPO_REPO_ROOT to environment
         run: echo "EXPO_REPO_ROOT=$GITHUB_WORKSPACE" >> $GITHUB_ENV
@@ -76,7 +74,6 @@ jobs:
       - name: 📦 Set test project location
         run: echo "TEST_PROJECT_ROOT=$GITHUB_WORKSPACE/updates-e2e" >> $GITHUB_ENV
       - name: 📦 Setup test project
-
         run: node packages/expo-updates/e2e/__tests__/setup/create-eas-project-basic.js
       - name: 🚀 Build with EAS for iOS
         uses: ./.github/actions/eas-build
