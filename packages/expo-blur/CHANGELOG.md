@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Add `-webkit-backdrop-filter` to support blurring on Safari.
+- Add `-webkit-backdrop-filter` to support blurring on Safari. ([#21003](https://github.com/expo/expo/pull/21003) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
