@@ -89,7 +89,7 @@ export default function App() {
 
 ### Expo config
 
-To configure `expo-splash-screen`, use the built-in [config plugin](/guides/config-plugins) in the Expo config (**app.json** or **app.config.js**) for [EAS Build](/build/introduction) or with `npx expo run:[android|ios]`. The plugin allows you to configure the following properties that cannot be set at runtime and require building a new app binary to take effect:
+To configure `expo-splash-screen`, use the built-in [config plugin](/guides/config-plugins) in the [Expo config](/workflow/configuration/) for [EAS Build](/build/introduction) or with `npx expo run:[android|ios]`. The plugin allows you to configure the following properties that cannot be set at runtime and require building a new app binary to take effect:
 
 <ConfigPluginProperties
   properties={[
@@ -105,7 +105,7 @@ To configure `expo-splash-screen`, use the built-in [config plugin](/guides/conf
     {
       name: '<platform>.image',
       description:
-        'Image to render on the splash screen, must be a png file. Both local paths or remote URLs are supported.',
+        'Image to render on the splash screen, must be a PNG file. Both local paths or remote URLs are supported.',
     },
     {
       name: '<platform>.dark.*',
@@ -115,32 +115,32 @@ To configure `expo-splash-screen`, use the built-in [config plugin](/guides/conf
       name: 'ios.tabletImage',
       platform: 'ios',
       description:
-        'Image to render on the splash screen on tablets, must be a png file. Both local paths or remote URLs are supported.',
+        'Image to render on the splash screen on tablets, must be a PNG file. Both local paths or remote URLs are supported.',
     },
     {
       name: 'android.mdpi',
       platform: 'android',
-      description: 'The natural sized image, or baseline, of the splash screen image, must be a .png file.',
+      description: 'The natural sized image, or baseline, of the splash screen image, must be a PNG file.',
     },
     {
       name: 'android.hdpi',
       platform: 'android',
-      description: 'The 1.5x scale of the sized image of the splash screen image, must be a .png file.',
+      description: 'The 1.5x scale of the sized image of the splash screen image, must be a PNG file.',
     },
     {
       name: 'android.xhdpi',
       platform: 'android',
-      description: 'The 2x scale of the sized image of the splash screen image, must be a .png file.',
+      description: 'The 2x scale of the sized image of the splash screen image, must be a PNG file.',
     },
     {
       name: 'android.xxhdpi',
       platform: 'android',
-      description: 'The 3x scale of the sized image of the splash screen image, must be a .png file.',
+      description: 'The 3x scale of the sized image of the splash screen image, must be a PNG file.',
     },
     {
       name: 'android.xxxhdpi',
       platform: 'android',
-      description: 'The 4x scale of the sized image of the splash screen image, must be a .png file.',
+      description: 'The 4x scale of the sized image of the splash screen image, must be a PNG file.',
     },
   ]}
 />
@@ -181,7 +181,7 @@ Here is an example of using the config plugin in the Expo config file:
 
 <ConfigClassic>
 
-Learn how to configure notifications with the app manifest `splash` properties.
+For more information on configuring notifications with the app manifest `splash` properties:
 
 - [`splash`](../config/app.mdx#splash)
 - [`android.splash`](../config/app.mdx#splash-2)
@@ -191,7 +191,7 @@ Learn how to configure notifications with the app manifest `splash` properties.
 
 <ConfigReactNative>
 
-Learn how to configure the native projects in the [installation instructions in the `expo-splash-screen` repository](https://github.com/expo/expo/tree/main/packages/expo-splash-screen#-installation-in-managed-expo-projects).
+See how to configure the native projects in the [installation instructions in the `expo-splash-screen` repository](https://github.com/expo/expo/tree/main/packages/expo-splash-screen#-installation-in-bare-react-native-projects).
 
 </ConfigReactNative>
 
