@@ -208,7 +208,7 @@ file("$reactNativeRootDir/ReactAndroid/gradle.properties").withInputStream { rea
 def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
 def REACT_NATIVE_MINOR_VERSION = REACT_NATIVE_VERSION.startsWith("0.0.0-") ? 1000 : REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
 def REANIMATED_PACKAGE_BUILD = System.getenv("REANIMATED_PACKAGE_BUILD")
-def REANIMATED_VERSION = "2.14.0"
+def REANIMATED_VERSION = "2.14.4"
 def REANIMATED_MAJOR_VERSION = 2
 
 // for React Native <= 0.70
@@ -483,7 +483,7 @@ android {
         debug {
             externalNativeBuild {
                 cmake {
-                    if (JS_RUNTIME == "hermes") {
+                    if (JS_RUNTIME == "hermes" && !REANIMATED_PACKAGE_BUILD) {
                         arguments "-DHERMES_ENABLE_DEBUGGER=1"
                     } else {
                         arguments "-DHERMES_ENABLE_DEBUGGER=0"
