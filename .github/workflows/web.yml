@@ -45,8 +45,6 @@ jobs:
       - name: 🧶 Install workspace node modules
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🔧 Install Expo CLI v3
-        run: yarn global add expo-cli@3
 
       # - name: Publish Expo app
       #   working-directory: ./apps/native-component-list
