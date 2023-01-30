@@ -18,12 +18,7 @@ const runtimeVersion = '1.0.0';
  */
 
 (async function () {
-  if (
-    !process.env.ARTIFACTS_DEST ||
-    !process.env.EXPO_REPO_ROOT ||
-    !process.env.UPDATES_HOST ||
-    !process.env.UPDATES_PORT
-  ) {
+  if (!process.env.EXPO_REPO_ROOT || !process.env.UPDATES_HOST || !process.env.UPDATES_PORT) {
     throw new Error(
       'Missing one or more environment variables; see instructions in e2e/__tests__/setup/index.js'
     );

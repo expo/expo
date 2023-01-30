@@ -44,8 +44,6 @@ jobs:
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🔧 Install Expo CLI
-        run: yarn global add expo-cli
       - name: 🧪 Run Web tests
         run: yarn test:web
         working-directory: apps/bare-expo

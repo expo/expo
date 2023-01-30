@@ -157,16 +157,16 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (12.1.0):
     - ExpoModulesCore
-  - ExpoImage (1.0.0-beta.0):
+  - ExpoImage (1.0.0-beta.3):
     - ExpoModulesCore
-    - SDWebImage (~> 5.14.2)
-    - SDWebImageAVIFCoder (~> 0.9.3)
+    - SDWebImage (~> 5.15.0)
+    - SDWebImageAVIFCoder (~> 0.9.4)
     - SDWebImageSVGCoder (~> 1.6.1)
     - SDWebImageWebPCoder (~> 0.9.1)
   - ExpoImageManipulator (11.0.0):
     - EXImageLoader
     - ExpoModulesCore
-  - ExpoImagePicker (14.0.3):
+  - ExpoImagePicker (14.1.0):
     - ExpoModulesCore
   - ExpoKeepAwake (11.0.1):
     - ExpoModulesCore
@@ -548,11 +548,11 @@ PODS:
   - React-jsinspector (0.71.0)
   - React-logger (0.71.0):
     - glog
-  - react-native-netinfo (9.3.5):
+  - react-native-netinfo (9.3.7):
     - React-Core
-  - react-native-pager-view (6.0.1):
+  - react-native-pager-view (6.1.2):
     - React-Core
-  - react-native-safe-area-context (4.4.1):
+  - react-native-safe-area-context (4.5.0):
     - RCT-Folly
     - RCTRequired
     - RCTTypeSafety
@@ -560,11 +560,11 @@ PODS:
     - ReactCommon/turbomodule/core
   - react-native-segmented-control (2.4.0):
     - React-Core
-  - react-native-slider (4.2.4):
+  - react-native-slider (4.4.1):
     - React-Core
-  - react-native-view-shot (3.4.0):
+  - react-native-view-shot (3.5.0):
     - React-Core
-  - react-native-webview (11.23.1):
+  - react-native-webview (11.26.0):
     - React-Core
   - React-perflogger (0.71.0)
   - React-RCTActionSheet (0.71.0):
@@ -653,13 +653,13 @@ PODS:
     - React-Core
   - RNCPicker (2.4.8):
     - React-Core
-  - RNDateTimePicker (6.5.2):
+  - RNDateTimePicker (6.7.3):
     - React-Core
   - RNFlashList (1.3.1):
     - React-Core
-  - RNGestureHandler (2.8.0):
+  - RNGestureHandler (2.9.0):
     - React-Core
-  - RNReanimated (2.14.0):
+  - RNReanimated (2.14.4):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -686,17 +686,17 @@ PODS:
     - React-RCTText
     - ReactCommon/turbomodule/core
     - Yoga
-  - RNScreens (3.18.0):
+  - RNScreens (3.19.0):
     - React-Core
     - React-RCTImage
-  - RNSharedElement (0.8.7):
+  - RNSharedElement (0.8.8):
     - React-Core
   - RNSVG (13.4.0):
     - React-Core
-  - SDWebImage (5.14.2):
-    - SDWebImage/Core (= 5.14.2)
-  - SDWebImage/Core (5.14.2)
-  - SDWebImageAVIFCoder (0.9.3):
+  - SDWebImage (5.15.0):
+    - SDWebImage/Core (= 5.15.0)
+  - SDWebImage/Core (5.15.0)
+  - SDWebImageAVIFCoder (0.9.4):
     - libavif (>= 0.9.1)
     - SDWebImage (~> 5.10)
   - SDWebImageSVGCoder (1.6.1):
@@ -1210,7 +1210,7 @@ SPEC CHECKSUMS:
   expo-dev-launcher: 044db39b2cf5d2946199e956a32b63c924a8f180
   expo-dev-menu: f9a412d2f1cb0173545516185c9ae66a221a2db9
   expo-dev-menu-interface: c8ad2dc7bb9513c6668c0b0fdf2391727a3d19a7
-  ExpoAppleAuthentication: c0e39d8cf1aec4495e719ea108f5fb8c9970c2db
+  ExpoAppleAuthentication: 01abfb8434e01e0dd23629291da0e3ce040112c0
   ExpoBattery: 41fab48a6bad4aacff2e7d3108f6a3f636e73d3c
   ExpoBlur: 6802b7e333badc26aa37d1fdd085fa27d961476b
   ExpoBrightness: 5d8971ae90d471cc59792cf1f3ef10d56239da01
@@ -1220,9 +1220,9 @@ SPEC CHECKSUMS:
   ExpoDevice: 458bb44dab3e955480e3642ecdfb6f8240955dbf
   ExpoGL: 5cc4c55cb83a9620c08ba6d797cb0ec812038e62
   ExpoHaptics: 129d3f8d44c2205adcdf8db760602818463d5437
-  ExpoImage: 564f9a8074700cba8952f678b2504e9d0764d752
+  ExpoImage: 6e361d58652e030f1d9c2b12809d4bb294648fb3
   ExpoImageManipulator: 5f3c1ab8dd81de11491b5051bb925abc91fe57e4
-  ExpoImagePicker: ce37302446e70145bb413f0f74886441abdae022
+  ExpoImagePicker: 3851acac688e36cbf49973ff03fe395fa7f0fbf4
   ExpoKeepAwake: 69b59d0a8d2b24de9f82759c39b3821fec030318
   ExpoLinearGradient: b40c2133ad57ae105b1b12a319e314463c817f6b
   ExpoLocalAuthentication: 933c9bfa88da946fc67ab51c8ddaa17d1c4a3d59
@@ -1292,13 +1292,13 @@ SPEC CHECKSUMS:
   React-jsiexecutor: 060dd495f1e2af3d87216f7ca8a94c55ec885b4f
   React-jsinspector: 5061fcbec93fd672183dfb39cc2f65e55a0835db
   React-logger: a6c0b3a807a8e81f6d7fea2e72660766f55daa50
-  react-native-netinfo: 85b2a435c4d3705c08b0c42ff2d6ef6b9622ea0a
-  react-native-pager-view: 3051346698a0ba0c4e13e40097cc11b00ee03cca
-  react-native-safe-area-context: 99b24a0c5acd0d5dcac2b1a7f18c49ea317be99a
+  react-native-netinfo: 2517ad504b3d303e90d7a431b0fcaef76d207983
+  react-native-pager-view: 54bed894cecebe28cede54c01038d9d1e122de43
+  react-native-safe-area-context: 39c2d8be3328df5d437ac1700f4f3a4f75716acc
   react-native-segmented-control: 06607462630512ff8eef652ec560e6235a30cc3e
-  react-native-slider: cecabb58ecffad671d2ad3ccc58c7f4d2d029e95
-  react-native-view-shot: a60a98a18c72bcaaaf2138f9aab960ae9b0d96c7
-  react-native-webview: d33e2db8925d090871ffeb232dfa50cb3a727581
+  react-native-slider: a0d45ce5ea1be39f149954cae4367afff44d5a32
+  react-native-view-shot: 792829857bbb23a9c8acdad9a640554bdee397a3
+  react-native-webview: 994b9f8fbb504d6314dc40d83f94f27c6831b3bf
   React-perflogger: e5fc4149e9bbb972b8520277f3b23141faa47a36
   React-RCTActionSheet: 991de88216bf03ab9bb1d213d73c62ecbe64ade7
   React-RCTAnimation: b74e3d1bf5280891a573e447b487fa1db0713b5b
@@ -1315,15 +1315,15 @@ SPEC CHECKSUMS:
   RNCAsyncStorage: 8616bd5a58af409453ea4e1b246521bb76578d60
   RNCMaskedView: bc0170f389056201c82a55e242e5d90070e18e5a
   RNCPicker: 0bf8ef8f7800524f32d2bb2a8bcadd53eda0ecd1
-  RNDateTimePicker: 3f32aa2247836c12618d346113e5e82ea60ddd9c
+  RNDateTimePicker: 00247f26c34683c80be94207f488f6f13448586e
   RNFlashList: 18d906a373da5ff16776e5013df9495d826edc7e
-  RNGestureHandler: 62232ba8f562f7dea5ba1b3383494eb5bf97a4d3
-  RNReanimated: 3882aa3f7a30d3c74aa05d6c230399942690a043
-  RNScreens: f3230dd008a7d0ce5c0a8bc78ff12cf2315bda24
-  RNSharedElement: 14409838520c8b50850aa4d33e15d0b8afdf7052
+  RNGestureHandler: 071d7a9ad81e8b83fe7663b303d132406a7d8f39
+  RNReanimated: addc4900bf47882118d0a1b21747fa6705fa8cff
+  RNScreens: ea4cd3a853063cda19a4e3c28d2e52180c80f4eb
+  RNSharedElement: 504fa28a235b12505b6daedbb452a9ec96809bd0
   RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
-  SDWebImage: b9a731e1d6307f44ca703b3976d18c24ca561e84
-  SDWebImageAVIFCoder: 6337ea93faf8de93edf3433d75be6055add74552
+  SDWebImage: 9bec4c5cdd9579e1f57104735ee0c37df274d593
+  SDWebImageAVIFCoder: 5bf07409ab8a02f0a8e0ac976719b321d8fce209
   SDWebImageSVGCoder: 6fc109f9c2a82ab44510fff410b88b1a6c271ee8
   SDWebImageWebPCoder: 18503de6621dd2c420d680e33d46bf8e1d5169b0
   UMAppLoader: 354d71d2d2ce8d6c19fb13d72b9c8209b18a8c56

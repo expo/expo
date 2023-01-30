@@ -2,6 +2,7 @@
 
 import SDWebImage
 import ExpoModulesCore
+import VisionKit
 
 typealias SDWebImageContext = [SDWebImageContextOption: Any]
 
@@ -333,6 +334,10 @@ public final class ImageView: ExpoView {
   private func setImage(_ image: UIImage?, contentFit: ContentFit) {
     sdImageView.contentMode = contentFit.toContentMode()
     sdImageView.image = image
+
+    if enableLiveTextInteraction {
+      analyzeImage()
+    }
   }
 
   // MARK: - Helpers
@@ -369,5 +374,57 @@ public final class ImageView: ExpoView {
    */
   var hasAnySource: Bool {
     return sources?.isEmpty == false
+  }
+
+  // MARK: - Live Text Interaction
+
+  @available(iOS 16.0, *)
+  static let imageAnalyzer = ImageAnalyzer.isSupported ? ImageAnalyzer() : nil
+
+  var enableLiveTextInteraction: Bool = false {
+    didSet {
+      guard #available(iOS 16.0, *), oldValue != enableLiveTextInteraction, ImageAnalyzer.isSupported else {
+        return
+      }
+      if enableLiveTextInteraction {
+        let imageAnalysisInteraction = ImageAnalysisInteraction()
+        sdImageView.addInteraction(imageAnalysisInteraction)
+      } else if let interaction = findImageAnalysisInteraction() {
+        sdImageView.removeInteraction(interaction)
+      }
+    }
+  }
+
+  private func analyzeImage() {
+    guard #available(iOS 16.0, *), ImageAnalyzer.isSupported, let image = sdImageView.image else {
+      return
+    }
+
+    Task {
+      guard let imageAnalyzer = Self.imageAnalyzer, let imageAnalysisInteraction = findImageAnalysisInteraction() else {
+        return
+      }
+      let configuration = ImageAnalyzer.Configuration([.text, .machineReadableCode])
+
+      do {
+        let imageAnalysis = try await imageAnalyzer.analyze(image, configuration: configuration)
+
+        // Make sure the image haven't changed in the meantime.
+        if image == sdImageView.image {
+          imageAnalysisInteraction.analysis = imageAnalysis
+          imageAnalysisInteraction.preferredInteractionTypes = .automatic
+        }
+      } catch {
+        log.error(error)
+      }
+    }
+  }
+
+  @available(iOS 16.0, *)
+  private func findImageAnalysisInteraction() -> ImageAnalysisInteraction? {
+    let interaction = sdImageView.interactions.first {
+      return $0 is ImageAnalysisInteraction
+    }
+    return interaction as? ImageAnalysisInteraction
   }
 }

@@ -89,6 +89,32 @@
   }
 }
 
++ (RNSScreenDetentType)RNSScreenDetentTypeFromAllowedDetents:
+    (facebook::react::RNSScreenSheetAllowedDetents)allowedDetents
+{
+  switch (allowedDetents) {
+    case facebook::react::RNSScreenSheetAllowedDetents::All:
+      return RNSScreenDetentTypeAll;
+    case facebook::react::RNSScreenSheetAllowedDetents::Large:
+      return RNSScreenDetentTypeLarge;
+    case facebook::react::RNSScreenSheetAllowedDetents::Medium:
+      return RNSScreenDetentTypeMedium;
+  }
+}
+
++ (RNSScreenDetentType)RNSScreenDetentTypeFromLargestUndimmedDetent:
+    (facebook::react::RNSScreenSheetLargestUndimmedDetent)detent
+{
+  switch (detent) {
+    case facebook::react::RNSScreenSheetLargestUndimmedDetent::All:
+      return RNSScreenDetentTypeAll;
+    case facebook::react::RNSScreenSheetLargestUndimmedDetent::Large:
+      return RNSScreenDetentTypeLarge;
+    case facebook::react::RNSScreenSheetLargestUndimmedDetent::Medium:
+      return RNSScreenDetentTypeMedium;
+  }
+}
+
 + (NSDictionary *)gestureResponseDistanceDictFromCppStruct:
     (const facebook::react::RNSScreenGestureResponseDistanceStruct &)gestureResponseDistance
 {

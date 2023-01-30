@@ -17,5 +17,6 @@ export declare const Time: React.ComponentType<TimeProps>;
 export declare const Strong: React.ComponentType<TextProps>;
 export declare const Del: React.ComponentType<TextProps>;
 export declare const EM: React.ComponentType<TextProps>;
+export declare const Span: React.ComponentType<TextProps>;
 export {};
 //# sourceMappingURL=Text.d.ts.map

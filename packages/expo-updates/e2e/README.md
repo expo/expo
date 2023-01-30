@@ -5,7 +5,6 @@ To run the updates e2e tests locally, do the following:
 ```bash
 export EXPO_REPO_ROOT=/Users/me/myCode/expo
 export WORKING_DIR_ROOT=/Users/me/myCode/e2eworking
-export ARTIFACTS_DEST=$WORKING_DIR_ROOT/e2eartifacts
 export TEST_PROJECT_ROOT=$WORKING_DIR_ROOT/updates-e2e
 export UPDATES_HOST=localhost
 export UPDATES_PORT=4747

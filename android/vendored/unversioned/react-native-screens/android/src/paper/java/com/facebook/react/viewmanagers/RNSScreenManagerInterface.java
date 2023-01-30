@@ -14,6 +14,11 @@ import androidx.annotation.Nullable;
 import com.facebook.react.bridge.ReadableMap;
 
 public interface RNSScreenManagerInterface<T extends View> {
+  void setSheetAllowedDetents(T view, @Nullable String value);
+  void setSheetLargestUndimmedDetent(T view, @Nullable String value);
+  void setSheetGrabberVisible(T view, boolean value);
+  void setSheetCornerRadius(T view, float value);
+  void setSheetExpandsWhenScrolledToEdge(T view, boolean value);
   void setCustomAnimationOnSwipe(T view, boolean value);
   void setFullScreenSwipeEnabled(T view, boolean value);
   void setHomeIndicatorHidden(T view, boolean value);
