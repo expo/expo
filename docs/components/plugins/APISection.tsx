@@ -261,8 +261,7 @@ const renderAPI = (
         <APISectionEnums data={enums} />
       </>
     );
-  } catch (e) {
-    console.error(e);
+  } catch {
     return <P>No API data file found, sorry!</P>;
   }
 };
