@@ -18,6 +18,11 @@ export function isEnableHermesManaged(expoConfig: ExpoConfig, platform: Platform
         // Hermes on Android is supported after SDK 42.
         return false;
       }
+      if (gteSdkVersion(expoConfig, '48.0.0')) {
+        // Hermes on Android is enabled by default after SDK 48.
+        return (expoConfig.android?.jsEngine ?? expoConfig.jsEngine) !== 'jsc';
+      }
+
       return (expoConfig.android?.jsEngine ?? expoConfig.jsEngine) === 'hermes';
     }
     case 'ios': {
@@ -25,6 +30,11 @@ export function isEnableHermesManaged(expoConfig: ExpoConfig, platform: Platform
         // Hermes on iOS is supported after SDK 43.
         return false;
       }
+      if (gteSdkVersion(expoConfig, '48.0.0')) {
+        // Hermes on Android is enabled by default after SDK 48.
+        return (expoConfig.ios?.jsEngine ?? expoConfig.jsEngine) !== 'jsc';
+      }
+
       return (expoConfig.ios?.jsEngine ?? expoConfig.jsEngine) === 'hermes';
     }
     default:
