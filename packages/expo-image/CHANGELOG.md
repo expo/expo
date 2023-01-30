@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed a crash on iOS below 16.0 introduced by the Live Text interaction feature. ([#20987](https://github.com/expo/expo/pull/20987) by [@tsapeta](https://github.com/tsapeta))
-
 ### 💡 Others
+
+## 1.0.0-beta.3 — 2023-01-30
+
+### 🐛 Bug fixes
+
+- Fixed a crash on iOS below 16.0 introduced by the Live Text interaction feature. ([#20987](https://github.com/expo/expo/pull/20987) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.0.0-beta.2 — 2023-01-25
 
