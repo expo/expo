@@ -71,7 +71,7 @@ const isConstant = ({ name, type }: GeneratedData) =>
   !(type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name));
 
 const hasCategoryHeader = ({ signatures }: GeneratedData): boolean =>
-  (signatures[0] &&
+  (signatures &&
     signatures[0].comment?.blockTags &&
     signatures[0].comment.blockTags.length > 0 &&
     signatures[0].comment.blockTags.filter(tag => tag?.tag === '@header').length > 0) ??
