@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add `-webkit-backdrop-filter` to support blurring on Safari.
+
 ### 💡 Others
 
 ## 12.1.0 — 2022-12-30
