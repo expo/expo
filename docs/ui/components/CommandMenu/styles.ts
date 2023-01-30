@@ -64,10 +64,6 @@ export const commandMenuStyles = css`
     &::placeholder {
       color: ${theme.icon.secondary};
     }
-
-    &::selection {
-      color: ${theme.palette.white};
-    }
   }
 
   [cmdk-item] {
