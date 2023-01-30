@@ -60,7 +60,7 @@ react {
 
 // Override `hermesEnabled` by `expo.jsEngine`
 ext {
-  hermesEnabled = (findProperty('expo.jsEngine') ?: "jsc") == "hermes"
+  hermesEnabled = (findProperty('expo.jsEngine') ?: "hermes") == "hermes"
 }
 
 // Override `debuggableVariants` for expo-updates debugging
