@@ -59,9 +59,7 @@ jobs:
       - name: Build expo-updates CLI
         working-directory: packages/expo-updates
         run: yarn build:cli
-      - name: 🔧 Install Expo CLI
-        run: yarn global add expo-cli
-      - name: Install eas-cli
+      - name: 🔧 Install eas-cli
         run: yarn global add eas-cli
       - name: 🌳 Add EXPO_REPO_ROOT to environment
         run: echo "EXPO_REPO_ROOT=$GITHUB_WORKSPACE" >> $GITHUB_ENV
