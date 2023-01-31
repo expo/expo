@@ -77,7 +77,7 @@ If testing for a new SDK release, ensure to test against the latest version of t
 
 ### Test applications
 
-1. A test app without `**expo-updates**` (checks the core functionality).
+1. A test app without **expo-updates** (checks the core functionality).
    1. Run `yarn expo-test-runner create-project -a dev-client-e2e --path <path where the project will be created>` to create a test app. Next, you can go to the project directory and run `npx uri-scheme add dev-client-release`.
    2. You can run `npx expo start` in the main directory of the test project to run bundler.
 2. Prebuild
