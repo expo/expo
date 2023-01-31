@@ -112,13 +112,12 @@ target_include_directories(
 
 # linking
 
+include("${REACT_NATIVE_DIR}/ReactAndroid/cmake-utils/folly-flags.cmake")
+
 target_compile_options(
         ${PACKAGE_NAME}
-        PRIVATE -DFOLLY_NO_CONFIG=1
-        -DFOLLY_HAVE_CLOCK_GETTIME=1
-        -DFOLLY_HAVE_MEMRCHR=1
-        -DFOLLY_USE_LIBCPP=1
-        -DFOLLY_MOBILE=1
+        PRIVATE
+        ${folly_FLAGS}
 )
 
 target_link_libraries(
