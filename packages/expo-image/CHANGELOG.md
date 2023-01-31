@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `No virtual method setScreenReaderFocusable` crash on Android.
+
 ### 💡 Others
 
 ## 1.0.0-beta.3 — 2023-01-30

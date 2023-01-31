@@ -6,6 +6,7 @@ import android.content.Context
 import android.graphics.Rect
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
+import android.os.Build
 import android.widget.FrameLayout
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
@@ -124,7 +125,12 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   internal var accessible: Boolean = false
     set(value) {
       field = value
-      activeView.isScreenReaderFocusable = value
+
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+        activeView.isScreenReaderFocusable = value
+      } else {
+        activeView.isFocusable = value
+      }
     }
 
   internal var accessibilityLabel: String? = null
@@ -181,7 +187,11 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     view.setBackgroundColor(backgroundColor)
     view.setTintColor(tintColor)
     view.isFocusable = isFocusableProp
-    view.isScreenReaderFocusable = accessible
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      view.isScreenReaderFocusable = accessible
+    } else {
+      view.isFocusable = accessible
+    }
     view.contentDescription = accessibilityLabel
     borderColor.forEachIndexed { index, (rgb, alpha) ->
       view.setBorderColor(index, rgb, alpha)
