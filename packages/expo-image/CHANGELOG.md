@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.0.0-beta.4 — 2023-01-31
+
+_This version does not introduce any user-facing changes._
+
 ## 1.0.0-beta.3 — 2023-01-30
 
 ### 🐛 Bug fixes
