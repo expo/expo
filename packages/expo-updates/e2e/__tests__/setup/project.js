@@ -9,6 +9,7 @@ const expoDependencyNames = [
   'expo',
   '@expo/config-plugins',
   '@expo/config-types',
+  '@expo/dev-server',
   'expo-application',
   'expo-constants',
   'expo-eas-client',
@@ -391,6 +392,37 @@ async function initAsync(
     path.join(projectRoot, 'android', 'gradle.properties'),
     '\nandroid.enableProguardInReleaseBuilds=true',
     'utf-8'
+  );
+
+  // Revert Hermes default change in android/app/build.gradle
+  // and android/gradle.properties
+  // (The change breaks expo export in the global Expo CLI)
+  const buildGradleText = await fs.readFile(
+    path.join(projectRoot, 'android', 'app', 'build.gradle'),
+    'utf8'
+  );
+  const buildGradleTextEdited = buildGradleText.replace(
+    'hermesEnabled = (findProperty(\'expo.jsEngine\') ?: "hermes") == "hermes"',
+    'hermesEnabled = (findProperty(\'expo.jsEngine\') ?: "jsc") == "hermes"'
+  );
+  await fs.writeFile(
+    path.join(projectRoot, 'android', 'app', 'build.gradle'),
+    buildGradleTextEdited,
+    'utf8'
+  );
+
+  const gradlePropertiesText = await fs.readFile(
+    path.join(projectRoot, 'android', 'gradle.properties'),
+    'utf8'
+  );
+  const gradlePropertiesTextEdited = gradlePropertiesText.replace(
+    'expo.jsEngine=hermes',
+    'expo.jsEngine=jsc'
+  );
+  await fs.writeFile(
+    path.join(projectRoot, 'android', 'gradle.properties'),
+    gradlePropertiesTextEdited,
+    'utf8'
   );
 
   return projectRoot;

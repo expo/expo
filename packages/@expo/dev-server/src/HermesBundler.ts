@@ -157,7 +157,7 @@ export async function maybeInconsistentEngineAndroidAsync(
     const content = await fs.readFile(appBuildGradlePath, 'utf8');
     const isPropsReference =
       content.search(
-        /^\s*(enableHermes:|hermesEnabled\s*=)\s*\(findProperty\('expo.jsEngine'\) \?: "jsc"\) == "hermes",?\s+/m
+        /^\s*(enableHermes:|hermesEnabled\s*=)\s*\(findProperty\('expo.jsEngine'\) \?: "(jsc|hermes)"\) == "hermes",?\s+/m
       ) >= 0;
     const isHermesBare = content.search(/^\s*(enableHermes:|hermesEnabled\s*=)\s*true,?\s+/m) >= 0;
 
