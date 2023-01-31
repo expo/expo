@@ -409,7 +409,9 @@ void nativeBuildDependsOn(project, dependsOnTask, buildTypesIncludes) {
 }
 
 afterEvaluate {
-  nativeBuildDependsOn(project, prepareBoost, null)
+  if (REACT_NATIVE_TARGET_VERSION < 71) {
+    nativeBuildDependsOn(project, prepareBoost, null)
+  }
   if (USE_HERMES) {
     nativeBuildDependsOn(project, prepareHermes, null)
     if (hasHermesProject && !prebuiltHermesCacheHit) {
