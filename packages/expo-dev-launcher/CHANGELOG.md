@@ -14,6 +14,7 @@
 
 - Locked `layoutDirection` to LTR to prevent incorrect rendering when used together with a RTL enabled app. ([#19634](https://github.com/expo/expo/pull/19634) by [@aleqsio](https://github.com/aleqsio))
 - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- Update copy for expo start for development builds. ([#20985](https://github.com/expo/expo/pull/20985) by [@kbrandwijk](https://github.com/kbrandwijk))
 
 ## 2.0.2 - 2022-11-21
 
