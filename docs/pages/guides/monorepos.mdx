@@ -256,7 +256,7 @@ Like standard packages, we need to add our **cool-package** as a dependency to o
 
 Now you should be able to use the package inside your app! To test this, let's edit the **App.js** in our app and render the `greeting` text from our **cool-package**.
 
-```js App.js
+```jsx App.js
 import { greeting } from 'cool-package';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
@@ -311,7 +311,7 @@ The default settings of tools like [pnpm](https://pnpm.io/) do not follow these 
 
 ### Script '...' does not exist
 
-React Native uses packages to ship both JavaScript and native files. These files also need to be linked, like the [**react-native/react.Gradle**](https://github.com/facebook/react-native/blob/main/react.gradle) file from **android/app/build.Gradle**. Usually, this path is hardcoded to something like:
+React Native uses packages to ship both JavaScript and native files. These native files also need to be linked, like the [**react-native/react.Gradle**](https://github.com/facebook/react-native/blob/v0.70.6/react.gradle) file from **android/app/build.Gradle**. Usually, this path is hardcoded to something like:
 
 **Android** ([source](https://github.com/facebook/react-native/blob/e918362be3cb03ae9dee3b8d50a240c599f6723f/template/android/app/build.gradle#L84))
 
@@ -321,13 +321,13 @@ apply from: "../../node_modules/react-native/react.gradle"
 
 **iOS** ([source](https://github.com/facebook/react-native/blob/e918362be3cb03ae9dee3b8d50a240c599f6723f/template/ios/Podfile#L1))
 
-```objc
+```ruby
 require_relative '../node_modules/react-native/scripts/react_native_pods'
 ```
 
 Unfortunately, this path can be different in monorepos because of [hoisting](https://classic.yarnpkg.com/blog/2018/02/15/nohoist/). It also doesn't use the [Node module resolution](https://nodejs.org/api/modules.html#all-together). You can avoid this issue by using Node to find the location of the package instead of hardcoding this:
 
-**Android** ([source](https://github.com/expo/expo/blob/6877c1f5cdca62b395b0d5f49d87f2f3dbb50bec/templates/expo-template-bare-minimum/android/app/build.gradle#L87)
+**Android** ([source](https://github.com/expo/expo/blob/6877c1f5cdca62b395b0d5f49d87f2f3dbb50bec/templates/expo-template-bare-minimum/android/app/build.gradle#L87))
 
 ```groovy
 apply from: new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim(), "../react.gradle")
@@ -335,7 +335,7 @@ apply from: new File(["node", "--print", "require.resolve('react-native/package.
 
 **iOS** ([source](https://github.com/expo/expo/blob/61cbd9a5092af319b44c319f7d51e4093210e81b/templates/expo-template-bare-minimum/ios/Podfile#L2))
 
-```objc
+```ruby
 require File.join(File.dirname(`node --print "require.resolve('react-native/package.json')"`), "scripts/react_native_pods")
 ```
 
