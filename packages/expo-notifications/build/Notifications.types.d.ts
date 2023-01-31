@@ -173,34 +173,35 @@ export interface FirebaseRemoteMessage {
     sentTime: number;
     to: string | null;
     ttl: number;
-    notification: null | {
-        body: string | null;
-        bodyLocalizationArgs: string[] | null;
-        bodyLocalizationKey: string | null;
-        channelId: string | null;
-        clickAction: string | null;
-        color: string | null;
-        usesDefaultLightSettings: boolean;
-        usesDefaultSound: boolean;
-        usesDefaultVibrateSettings: boolean;
-        eventTime: number | null;
-        icon: string | null;
-        imageUrl: string | null;
-        lightSettings: number[] | null;
-        link: string | null;
-        localOnly: boolean;
-        notificationCount: number | null;
-        notificationPriority: number | null;
-        sound: string | null;
-        sticky: boolean;
-        tag: string | null;
-        ticker: string | null;
-        title: string | null;
-        titleLocalizationArgs: string[] | null;
-        titleLocalizationKey: string | null;
-        vibrateTimings: number[] | null;
-        visibility: number | null;
-    };
+    notification: null | FirebaseRemoteMessageNotification;
+}
+export interface FirebaseRemoteMessageNotification {
+    body: string | null;
+    bodyLocalizationArgs: string[] | null;
+    bodyLocalizationKey: string | null;
+    channelId: string | null;
+    clickAction: string | null;
+    color: string | null;
+    usesDefaultLightSettings: boolean;
+    usesDefaultSound: boolean;
+    usesDefaultVibrateSettings: boolean;
+    eventTime: number | null;
+    icon: string | null;
+    imageUrl: string | null;
+    lightSettings: number[] | null;
+    link: string | null;
+    localOnly: boolean;
+    notificationCount: number | null;
+    notificationPriority: number | null;
+    sound: string | null;
+    sticky: boolean;
+    tag: string | null;
+    ticker: string | null;
+    title: string | null;
+    titleLocalizationArgs: string[] | null;
+    titleLocalizationKey: string | null;
+    vibrateTimings: number[] | null;
+    visibility: number | null;
 }
 /**
  * Represents a notification trigger that is unknown to `expo-notifications` and that it didn't know how to serialize for JS.
