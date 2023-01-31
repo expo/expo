@@ -75,7 +75,7 @@ interface Region {
 }
 
 /**
- * A circular geographic region, specified as a center point and radius.
+ * A circular geographic region, specified as a center point and radius. Based on Core Location [`CLCircularRegion`](https://developer.apple.com/documentation/corelocation/clcircularregion) class.
  * @platform ios
  */
 export interface CircularRegion extends Region {
@@ -94,7 +94,7 @@ export interface CircularRegion extends Region {
 }
 
 /**
- * A region used to detect the presence of iBeacon devices.
+ * A region used to detect the presence of iBeacon devices. Based on Core Location [`CLBeaconRegion`](https://developer.apple.com/documentation/corelocation/clbeaconregion) class.
  * @platform ios
  */
 export interface BeaconRegion extends Region {
@@ -145,7 +145,9 @@ export interface TimeIntervalNotificationTrigger {
 }
 
 /**
- * A trigger related to a daily notification. This is an Android-only type, the same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
+ * A trigger related to a daily notification.
+ * > The same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
+ * @platform android
  */
 export interface DailyNotificationTrigger {
   type: 'daily';
@@ -154,7 +156,9 @@ export interface DailyNotificationTrigger {
 }
 
 /**
- * A trigger related to a weekly notification. This is an Android-only type, the same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
+ * A trigger related to a weekly notification.
+ * > The same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
+ * @platform android
  */
 export interface WeeklyNotificationTrigger {
   type: 'weekly';
@@ -164,7 +168,9 @@ export interface WeeklyNotificationTrigger {
 }
 
 /**
- * A trigger related to a yearly notification. This is an Android-only type, the same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
+ * A trigger related to a yearly notification.
+ * > The same functionality will be achieved on iOS with a `CalendarNotificationTrigger`.
+ * @platform android
  */
 export interface YearlyNotificationTrigger {
   type: 'yearly';
@@ -351,8 +357,9 @@ export type NotificationContent = {
    */
   title: string | null;
   /**
-   * On Android - subText - the display depends on the device.
-   * On iOS - subtitle - the bold text displayed between title and the rest of the content.
+   * On Android: `subText` - the display depends on the device.
+   *
+   * On iOS: `subtitle` - the bold text displayed between title and the rest of the content.
    */
   subtitle: string | null;
   /**
@@ -462,8 +469,9 @@ export type NotificationContentInput = {
    */
   title?: string | null;
   /**
-   * On Android - `subText` - the display depends on the device.
-   * On iOS - `subtitle` - the bold text displayed between title and the rest of the content.
+   * On Android: `subText` - the display depends on the device.
+   *
+   * On iOS: `subtitle` - the bold text displayed between title and the rest of the content.
    */
   subtitle?: string | null;
   /**
@@ -574,7 +582,7 @@ export interface NotificationBehavior {
 export interface NotificationAction {
   /**
    * A unique string that identifies this action. If a user takes this action (for example, selects this button in the system's Notification UI),
-   * your app will receive this `actionIdentifier` via the [`NotificationResponseReceivedListener`](#notificationsaddnotificationresponsereceivedlistenerlistener).
+   * your app will receive this `actionIdentifier` via the [`NotificationResponseReceivedListener`](#addnotificationresponsereceivedlistenerlistener).
    */
   identifier: string;
   /**
