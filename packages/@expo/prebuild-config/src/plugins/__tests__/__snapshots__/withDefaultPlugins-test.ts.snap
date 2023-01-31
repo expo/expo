@@ -245,10 +245,6 @@ exports[`built-in plugins compiles mods 1`] = `
         "name": "expo-document-picker",
         "version": "UNVERSIONED",
       },
-      "expo-facebook": {
-        "name": "expo-facebook",
-        "version": "UNVERSIONED",
-      },
       "expo-navigation-bar": {
         "name": "expo-navigation-bar",
         "version": "UNVERSIONED",
@@ -400,27 +396,11 @@ exports[`built-in plugins compiles mods 1`] = `
             "com.googleusercontent.apps.1234567890123-abcdef",
           ],
         },
-        {
-          "CFBundleURLSchemes": [
-            "fb1234567890",
-          ],
-        },
       ],
       "CFBundleVersion": "6.5.0",
-      "FacebookAdvertiserIDCollectionEnabled": true,
-      "FacebookAppID": "1234567890",
-      "FacebookAutoInitEnabled": true,
-      "FacebookAutoLogAppEventsEnabled": true,
-      "FacebookDisplayName": "my-fb-test-app",
       "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
       "GMSApiKey": "TEST_googleMapsApiKey",
       "ITSAppUsesNonExemptEncryption": true,
-      "LSApplicationQueriesSchemes": [
-        "fbapi",
-        "fb-messenger-api",
-        "fbauth2",
-        "fbshareextension",
-      ],
       "LSRequiresIPhoneOS": true,
       "NSAppTransportSecurity": {
         "NSAllowsArbitraryLoads": true,
@@ -431,14 +411,6 @@ exports[`built-in plugins compiles mods 1`] = `
         },
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
-      "SKAdNetworkItems": [
-        {
-          "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork",
-        },
-        {
-          "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork",
-        },
-      ],
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
         "armv7",
@@ -803,74 +775,8 @@ exports[`built-in plugins introspects mods 1`] = `
                       "android:name": "com.facebook.react.devsupport.DevSettingsActivity",
                     },
                   },
-                  {
-                    "$": {
-                      "android:exported": "true",
-                      "android:name": "com.facebook.CustomTabActivity",
-                    },
-                    "intent-filter": [
-                      {
-                        "action": [
-                          {
-                            "$": {
-                              "android:name": "android.intent.action.VIEW",
-                            },
-                          },
-                        ],
-                        "category": [
-                          {
-                            "$": {
-                              "android:name": "android.intent.category.DEFAULT",
-                            },
-                          },
-                          {
-                            "$": {
-                              "android:name": "android.intent.category.BROWSABLE",
-                            },
-                          },
-                        ],
-                        "data": [
-                          {
-                            "$": {
-                              "android:scheme": "fb1234567890",
-                            },
-                          },
-                        ],
-                      },
-                    ],
-                  },
                 ],
                 "meta-data": [
-                  {
-                    "$": {
-                      "android:name": "com.facebook.sdk.ApplicationId",
-                      "android:value": "@string/facebook_app_id",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "com.facebook.sdk.ApplicationName",
-                      "android:value": "my-fb-test-app",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "com.facebook.sdk.AutoInitEnabled",
-                      "android:value": "true",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "com.facebook.sdk.AutoLogAppEventsEnabled",
-                      "android:value": "true",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "com.facebook.sdk.AdvertiserIDCollectionEnabled",
-                      "android:value": "true",
-                    },
-                  },
                   {
                     "$": {
                       "android:name": "io.branch.sdk.BranchKey",
@@ -1030,12 +936,6 @@ exports[`built-in plugins introspects mods 1`] = `
                 },
                 "_": "true",
               },
-              {
-                "$": {
-                  "name": "facebook_app_id",
-                },
-                "_": "1234567890",
-              },
             ],
           },
         },
@@ -1150,27 +1050,11 @@ exports[`built-in plugins introspects mods 1`] = `
                 "com.googleusercontent.apps.1234567890123-abcdef",
               ],
             },
-            {
-              "CFBundleURLSchemes": [
-                "fb1234567890",
-              ],
-            },
           ],
           "CFBundleVersion": "6.5.0",
-          "FacebookAdvertiserIDCollectionEnabled": true,
-          "FacebookAppID": "1234567890",
-          "FacebookAutoInitEnabled": true,
-          "FacebookAutoLogAppEventsEnabled": true,
-          "FacebookDisplayName": "my-fb-test-app",
           "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
           "GMSApiKey": "TEST_googleMapsApiKey",
           "ITSAppUsesNonExemptEncryption": true,
-          "LSApplicationQueriesSchemes": [
-            "fbapi",
-            "fb-messenger-api",
-            "fbauth2",
-            "fbshareextension",
-          ],
           "LSRequiresIPhoneOS": true,
           "NSAppTransportSecurity": {
             "NSAllowsArbitraryLoads": true,
@@ -1181,14 +1065,6 @@ exports[`built-in plugins introspects mods 1`] = `
             },
           },
           "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
-          "SKAdNetworkItems": [
-            {
-              "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork",
-            },
-            {
-              "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork",
-            },
-          ],
           "UILaunchStoryboardName": "SplashScreen",
           "UIRequiredDeviceCapabilities": [
             "armv7",
@@ -1454,10 +1330,6 @@ exports[`built-in plugins introspects mods 1`] = `
         "name": "expo-document-picker",
         "version": "UNVERSIONED",
       },
-      "expo-facebook": {
-        "name": "expo-facebook",
-        "version": "UNVERSIONED",
-      },
       "expo-navigation-bar": {
         "name": "expo-navigation-bar",
         "version": "UNVERSIONED",
@@ -1609,27 +1481,11 @@ exports[`built-in plugins introspects mods 1`] = `
             "com.googleusercontent.apps.1234567890123-abcdef",
           ],
         },
-        {
-          "CFBundleURLSchemes": [
-            "fb1234567890",
-          ],
-        },
       ],
       "CFBundleVersion": "6.5.0",
-      "FacebookAdvertiserIDCollectionEnabled": true,
-      "FacebookAppID": "1234567890",
-      "FacebookAutoInitEnabled": true,
-      "FacebookAutoLogAppEventsEnabled": true,
-      "FacebookDisplayName": "my-fb-test-app",
       "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
       "GMSApiKey": "TEST_googleMapsApiKey",
       "ITSAppUsesNonExemptEncryption": true,
-      "LSApplicationQueriesSchemes": [
-        "fbapi",
-        "fb-messenger-api",
-        "fbauth2",
-        "fbshareextension",
-      ],
       "LSRequiresIPhoneOS": true,
       "NSAppTransportSecurity": {
         "NSAllowsArbitraryLoads": true,
@@ -1640,14 +1496,6 @@ exports[`built-in plugins introspects mods 1`] = `
         },
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
-      "SKAdNetworkItems": [
-        {
-          "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork",
-        },
-        {
-          "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork",
-        },
-      ],
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
         "armv7",
@@ -1901,78 +1749,12 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                       "android:name": "com.facebook.react.devsupport.DevSettingsActivity",
                     },
                   },
-                  {
-                    "$": {
-                      "android:exported": "true",
-                      "android:name": "com.facebook.CustomTabActivity",
-                    },
-                    "intent-filter": [
-                      {
-                        "action": [
-                          {
-                            "$": {
-                              "android:name": "android.intent.action.VIEW",
-                            },
-                          },
-                        ],
-                        "category": [
-                          {
-                            "$": {
-                              "android:name": "android.intent.category.DEFAULT",
-                            },
-                          },
-                          {
-                            "$": {
-                              "android:name": "android.intent.category.BROWSABLE",
-                            },
-                          },
-                        ],
-                        "data": [
-                          {
-                            "$": {
-                              "android:scheme": "fb1234567890",
-                            },
-                          },
-                        ],
-                      },
-                    ],
-                  },
                 ],
                 "meta-data": [
                   {
                     "$": {
                       "android:name": "expo.modules.updates.EXPO_UPDATE_URL",
                       "android:value": "https://exp.host/@bacon/mycoolapp",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "com.facebook.sdk.ApplicationId",
-                      "android:value": "@string/facebook_app_id",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "com.facebook.sdk.ApplicationName",
-                      "android:value": "my-fb-test-app",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "com.facebook.sdk.AutoInitEnabled",
-                      "android:value": "true",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "com.facebook.sdk.AutoLogAppEventsEnabled",
-                      "android:value": "true",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "com.facebook.sdk.AdvertiserIDCollectionEnabled",
-                      "android:value": "true",
                     },
                   },
                   {
@@ -2143,12 +1925,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                 },
                 "_": "true",
               },
-              {
-                "$": {
-                  "name": "facebook_app_id",
-                },
-                "_": "1234567890",
-              },
             ],
           },
         },
@@ -2257,27 +2033,11 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                 "com.googleusercontent.apps.1234567890123-abcdef",
               ],
             },
-            {
-              "CFBundleURLSchemes": [
-                "fb1234567890",
-              ],
-            },
           ],
           "CFBundleVersion": "6.5.0",
-          "FacebookAdvertiserIDCollectionEnabled": true,
-          "FacebookAppID": "1234567890",
-          "FacebookAutoInitEnabled": true,
-          "FacebookAutoLogAppEventsEnabled": true,
-          "FacebookDisplayName": "my-fb-test-app",
           "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
           "GMSApiKey": "TEST_googleMapsApiKey",
           "ITSAppUsesNonExemptEncryption": true,
-          "LSApplicationQueriesSchemes": [
-            "fbapi",
-            "fb-messenger-api",
-            "fbauth2",
-            "fbshareextension",
-          ],
           "LSRequiresIPhoneOS": true,
           "NSAppTransportSecurity": {
             "NSAllowsArbitraryLoads": true,
@@ -2288,14 +2048,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
             },
           },
           "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
-          "SKAdNetworkItems": [
-            {
-              "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork",
-            },
-            {
-              "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork",
-            },
-          ],
           "UILaunchStoryboardName": "SplashScreen",
           "UIRequiredDeviceCapabilities": [
             "armv7",
@@ -2562,10 +2314,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         "name": "expo-document-picker",
         "version": "UNVERSIONED",
       },
-      "expo-facebook": {
-        "name": "expo-facebook",
-        "version": "UNVERSIONED",
-      },
       "expo-navigation-bar": {
         "name": "expo-navigation-bar",
         "version": "UNVERSIONED",
@@ -2717,27 +2465,11 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
             "com.googleusercontent.apps.1234567890123-abcdef",
           ],
         },
-        {
-          "CFBundleURLSchemes": [
-            "fb1234567890",
-          ],
-        },
       ],
       "CFBundleVersion": "6.5.0",
-      "FacebookAdvertiserIDCollectionEnabled": true,
-      "FacebookAppID": "1234567890",
-      "FacebookAutoInitEnabled": true,
-      "FacebookAutoLogAppEventsEnabled": true,
-      "FacebookDisplayName": "my-fb-test-app",
       "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
       "GMSApiKey": "TEST_googleMapsApiKey",
       "ITSAppUsesNonExemptEncryption": true,
-      "LSApplicationQueriesSchemes": [
-        "fbapi",
-        "fb-messenger-api",
-        "fbauth2",
-        "fbshareextension",
-      ],
       "LSRequiresIPhoneOS": true,
       "NSAppTransportSecurity": {
         "NSAllowsArbitraryLoads": true,
@@ -2748,14 +2480,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
-      "SKAdNetworkItems": [
-        {
-          "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork",
-        },
-        {
-          "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork",
-        },
-      ],
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
         "armv7",

@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Removed deprecated facebook types and plugins. ([#21018](https://github.com/expo/expo/pull/21018) by [@byCedric](https://github.com/expo/expo/pull/21018))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
