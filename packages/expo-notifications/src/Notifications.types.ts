@@ -11,7 +11,7 @@ import { CalendarTriggerInput as NativeCalendarTriggerInput } from './Notificati
  * An object represents a notification delivered by a push notification system.
  *
  * On Android under `remoteMessage` field a JS version of the Firebase `RemoteMessage` may be accessed.
- * On iOS under `payload` you may find full contents of [`UNNotificationContent`'s](https://developer.apple.com/documentation/usernotifications/unnotificationcontent?language=objc) [`userInfo`](https://developer.apple.com/documentation/usernotifications/unnotificationcontent/1649869-userinfo?language=objc), i.e. [remote notification payload](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CreatingtheNotificationPayload.html)
+ * On iOS under `payload` you may find full contents of [`UNNotificationContent`'s](https://developer.apple.com/documentation/usernotifications/unnotificationcontent?language=objc) [`userInfo`](https://developer.apple.com/documentation/usernotifications/unnotificationcontent/1649869-userinfo?language=objc), for example [remote notification payload](https://developer.apple.com/library/archive/documentation/NetworkingInternet/Conceptual/RemoteNotificationsPG/CreatingtheNotificationPayload.html)
  * On web there is no extra data.
  */
 export type PushNotificationTrigger = {
@@ -459,16 +459,16 @@ export type NotificationContentInput = {
    */
   title?: string | null;
   /**
-   * On Android - subText - the display depends on the device.
-   * On iOS - subtitle - the bold text displayed between title and the rest of the content.
+   * On Android - `subText` - the display depends on the device.
+   * On iOS - `subtitle` - the bold text displayed between title and the rest of the content.
    */
   subtitle?: string | null;
   /**
-   * Notification body - the main content of the notification.
+   * The main content of the notification.
    */
   body?: string | null;
   /**
-   * Data associated with the notification, not displayed
+   * Data associated with the notification, not displayed.
    */
   data?: Record<string, any>;
   /**
@@ -516,7 +516,7 @@ export type NotificationContentInput = {
    * will be dismissed automatically). Corresponds directly to Android's `setAutoCancel`
    * behavior. In Firebase terms this property of a notification is called `sticky`.
    *
-   * See [Apple documentation](https://developer.android.com/reference/android/app/Notification.Builder#setAutoCancel(boolean))
+   * See [Android developer documentation](https://developer.android.com/reference/android/app/Notification.Builder#setAutoCancel(boolean))
    * and [Firebase documentation](https://firebase.google.com/docs/reference/fcm/rest/v1/projects.messages#AndroidNotification.FIELDS.sticky)
    * for more details.
    * @platform android
@@ -548,7 +548,7 @@ export interface Notification {
 
 /**
  * An object represents user's interaction with the notification.
- * > **Note:** If the user taps on a notification `actionIdentifier` will be equal to `Notifications.DEFAULT_ACTION_IDENTIFIER`.
+ * > **Note:** If the user taps on a notification `actionIdentifier` will be equal to [`Notifications.DEFAULT_ACTION_IDENTIFIER`](#notificationsdefault_action_identifier).
  */
 export interface NotificationResponse {
   notification: Notification;
@@ -570,7 +570,7 @@ export interface NotificationBehavior {
 
 export interface NotificationAction {
   /**
-   * A unique string that identifies this action. If a user takes this action (i.e. selects this button in the system's Notification UI),
+   * A unique string that identifies this action. If a user takes this action (for example, selects this button in the system's Notification UI),
    * your app will receive this `actionIdentifier` via the [`NotificationResponseReceivedListener`](#notificationsaddnotificationresponsereceivedlistenerlistener).
    */
   identifier: string;
@@ -609,7 +609,8 @@ export interface NotificationAction {
     isAuthenticationRequired?: boolean;
     /**
      * Boolean indicating whether triggering this action foregrounds the app.
-     * If `false` and your app is killed (not just backgrounded), [`NotificationResponseReceived` listeners](#addnotificationresponsereceivedlistenerlistener-event-notificationresponse--void-void) will not be triggered when a user selects this action.
+     * If `false` and your app is killed (not just backgrounded), [`NotificationResponseReceived` listeners](#addnotificationresponsereceivedlistenerlistener)
+     * will not be triggered when a user selects this action.
      * @default true
      */
     opensAppToForeground?: boolean;

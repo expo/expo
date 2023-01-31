@@ -7,7 +7,7 @@ import { NotificationContentInput } from './Notifications.types';
 let warningMessageShown = false;
 
 /**
- * @deprecated This method has been deprecated in favor of using an explicit `NotificationHandler` and the [`scheduleNotificationAsync`](#notificationsschedulenotificationasyncrequest) method. More info may be found at https://expo.fyi/presenting-notifications-deprecated.
+ * @deprecated This method has been deprecated in favor of using an explicit `NotificationHandler` and the [`scheduleNotificationAsync`](#notificationsschedulenotificationasyncrequest) method. More information can be found in our [FYI document](https://expo.fyi/presenting-notifications-deprecated).
  * Schedules a notification for immediate trigger.
  * @param content An object representing the notification content.
  * @param identifier
