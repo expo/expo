@@ -13,6 +13,7 @@ import { useRouter } from 'next/router';
 import { SidebarSingleEntry } from './SidebarSingleEntry';
 import { ArchiveIcon } from './icons/Archive';
 
+import { getPageSection } from '~/common/routes';
 import { customIconContainerStyle } from '~/ui/components/Sidebar/icons/styles';
 
 export const SidebarFooter = () => {
@@ -27,11 +28,11 @@ export const SidebarFooter = () => {
             <ArchiveIcon />
           </div>
         )}
-        isActive={pathname.startsWith('/archive')}
+        isActive={getPageSection(pathname) === 'archive'}
       />
       <SidebarSingleEntry
         href="https://snack.expo.dev"
-        title="Expo Snack (Playground)"
+        title="Expo Snack"
         Icon={SnackLogo}
         isExternal
       />

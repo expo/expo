@@ -3,23 +3,23 @@ import { IconProps } from '@expo/styleguide/dist/types';
 
 export const ArchiveIcon = ({ size = iconSize.sm }: IconProps) => {
   return (
-    <svg width={size} height={size} viewBox="0 0 15 16" fill="none">
+    <svg width={size} height={size} viewBox="0 0 16 13" fill="none">
       <path
-        d="M12.75 5.50537V13.0887H2.25V5.50537"
+        d="M13.727 4.05554V12H2.27246V4.05554"
         stroke={theme.icon.default}
         strokeWidth="1.16667"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M13.9168 2.58875H1.0835V5.50541H13.9168V2.58875Z"
+        d="M15 1H1V4.05557H15V1Z"
         stroke={theme.icon.default}
         strokeWidth="1.16667"
         strokeLinecap="round"
         strokeLinejoin="round"
       />
       <path
-        d="M6.33325 7.83875H8.66658"
+        d="M6.72705 6.5H7.99978H9.27251"
         stroke={theme.icon.default}
         strokeWidth="1.16667"
         strokeLinecap="round"
