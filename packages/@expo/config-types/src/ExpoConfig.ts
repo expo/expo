@@ -228,30 +228,6 @@ export interface ExpoConfig {
         };
   };
   /**
-   * Used for all Facebook libraries. Set up your Facebook App ID at https://developers.facebook.com.
-   */
-  facebookAppId?: string;
-  /**
-   * Whether the Facebook SDK should be initialized automatically. The default in Expo (Client and in standalone apps) is `false`.
-   */
-  facebookAutoInitEnabled?: boolean;
-  /**
-   * Whether the Facebook SDK log app events automatically. If you don't set this property, Facebook's default will be used. (Applicable only to standalone apps.) Note: The Facebook SDK must be initialized for app events to work. You may autoinitialize Facebook SDK by setting `facebookAutoInitEnabled` to `true`
-   */
-  facebookAutoLogAppEventsEnabled?: boolean;
-  /**
-   * Whether the Facebook SDK should collect advertiser ID properties, like the Apple IDFA and Android Advertising ID, automatically. If you don't set this property, Facebook's default policy will be used. (Applicable only to standalone apps.)
-   */
-  facebookAdvertiserIDCollectionEnabled?: boolean;
-  /**
-   * Used for native Facebook login.
-   */
-  facebookDisplayName?: string;
-  /**
-   * Used for Facebook native login. Starts with 'fb' and followed by a string of digits, like 'fb1234567890'. You can find your scheme [here](https://developers.facebook.com/docs/facebook-login/ios)in the 'Configuring Your info.plist' section (only applicable to standalone apps and custom Expo Go apps).
-   */
-  facebookScheme?: string;
-  /**
    * Is app detached
    */
   isDetached?: boolean;
