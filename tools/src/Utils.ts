@@ -171,6 +171,7 @@ export async function applyPatchAsync(options: {
 export async function runWithSpinner<Result>(
   title: string,
   action: (step: ora.Ora) => Promise<Result> | Result,
+  succeedText: string | null = null,
   options: ora.Options = {}
 ): Promise<Result> {
   const disabled = process.env.CI || process.env.EXPO_DEBUG;
@@ -184,7 +185,12 @@ export async function runWithSpinner<Result>(
   step.start();
 
   try {
-    return await action(step);
+    const result = await action(step);
+
+    if (succeedText) {
+      step.succeed(succeedText);
+    }
+    return result;
   } catch (error) {
     step.fail();
     console.error(error);

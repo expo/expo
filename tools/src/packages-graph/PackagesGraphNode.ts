@@ -61,6 +61,23 @@ export default class PackagesGraphNode {
     return [...new Set(this.getAllDependentEdges(kinds).map((edge) => edge.origin))];
   }
 
+  getAllDependencyEdges(kinds: DependencyKind[] = DefaultDependencyKind): PackagesGraphEdge[] {
+    const allDependencyEdges = this.outgoingEdges
+      .map((edge) => {
+        if (!edge.isCyclic && kinds.includes(edge.getDominantKind())) {
+          return [edge, ...edge.destination.getAllDependencyEdges(kinds)];
+        }
+        return [];
+      })
+      .flat();
+
+    return [...new Set(allDependencyEdges)];
+  }
+
+  getAllDependencies(kinds: DependencyKind[] = DefaultDependencyKind): PackagesGraphNode[] {
+    return [...new Set(this.getAllDependencyEdges(kinds).map((edge) => edge.destination))];
+  }
+
   getOutgoingEdgesOfKinds(kinds: DependencyKind[]): PackagesGraphEdge[] {
     return this.outgoingEdges.filter((edge) => {
       return kinds.some((kind) => edge.isOfKind(kind));

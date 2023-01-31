@@ -11,7 +11,7 @@ import { commentOnIssuesTask } from './commentOnIssuesTask';
 import { commitStagedChanges } from './commitStagedChanges';
 import { cutOffChangelogs } from './cutOffChangelogs';
 import { grantTeamAccessToPackages } from './grantTeamAccessToPackages';
-import { prepareParcels } from './prepareParcels';
+import { loadRequestedParcels } from './loadRequestedParcels';
 import { publishPackages } from './publishPackages';
 import { pushCommittedChanges } from './pushCommittedChanges';
 import { selectPackagesToPublish } from './selectPackagesToPublish';
@@ -33,7 +33,7 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
     dependsOn: [
       checkEnvironmentTask,
       checkRepositoryStatus,
-      prepareParcels,
+      loadRequestedParcels,
       checkPackagesIntegrity,
       selectPackagesToPublish,
       updatePackageVersions,

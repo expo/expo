@@ -33,8 +33,8 @@ export const addPublishedLabelToPullRequests = new Task<TaskArgs>(
     const pullRequestIds: number[] = [];
 
     // Find all pull requests mentioned in changelogs
-    for (const { state } of parcels) {
-      const versionChanges = state.changelogChanges?.versions[UNPUBLISHED_VERSION_NAME];
+    for (const { changelogChanges } of parcels) {
+      const versionChanges = changelogChanges.versions[UNPUBLISHED_VERSION_NAME];
 
       if (!versionChanges) {
         continue;
