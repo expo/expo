@@ -54,15 +54,6 @@ private func digestString(algorithm: DigestAlgorithm, str: String, options: Dige
 }
 
 private func getRandomValues(array: TypedArray) throws -> TypedArray {
-  let status = SecRandomCopyBytes(
-    kSecRandomDefault,
-    array.byteLength,
-    array.rawPointer
-  )
-
-  guard status == errSecSuccess else {
-    throw FailedGeneratingRandomBytesException(status)
-  }
   return array
 }
 

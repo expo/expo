@@ -29,14 +29,6 @@ export default {
     }
     throw new CodedError('ERR_CRYPTO_DIGEST', 'Invalid encoding type provided.');
   },
-  getRandomBytes(length: number): Uint8Array {
-    const array = new Uint8Array(length);
-    return getCrypto().getRandomValues(array);
-  },
-  async getRandomBytesAsync(length: number): Promise<Uint8Array> {
-    const array = new Uint8Array(length);
-    return getCrypto().getRandomValues(array);
-  },
   getRandomValues(typedArray: TypedArray) {
     return getCrypto().getRandomValues(typedArray);
   },

@@ -20,14 +20,6 @@ export default {
         }
         throw new CodedError('ERR_CRYPTO_DIGEST', 'Invalid encoding type provided.');
     },
-    getRandomBytes(length) {
-        const array = new Uint8Array(length);
-        return getCrypto().getRandomValues(array);
-    },
-    async getRandomBytesAsync(length) {
-        const array = new Uint8Array(length);
-        return getCrypto().getRandomValues(array);
-    },
     getRandomValues(typedArray) {
         return getCrypto().getRandomValues(typedArray);
     },
