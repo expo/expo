@@ -84,7 +84,7 @@ import { Text, View } from 'react-native';
 export default function App() {
   return (
     <View style={{ flex: 1, alignItems: 'center', justifyContent: 'center' }}>
-      <Text>Api key: {ExpoNativeConfiguration.getApiKey()}</Text>
+      <Text>API key: {ExpoNativeConfiguration.getApiKey()}</Text>
     </View>
   );
 }
@@ -113,7 +113,7 @@ Now let's run the example project to make sure everything is working. We'll need
   ]}
 />
 
-We should see a screen with a text saying `Api key: api-key`. Now let's develop the plugin to inject our custom API key.
+We should see a screen with a text saying `API key: api-key`. Now let's develop the plugin to inject our custom API key.
 
 ## 4. Creating a new config plugin
 
@@ -171,7 +171,7 @@ Let's start by creating our plugin with this minimal boilerplate. This will crea
    module.exports = require('./plugin/build');
    ```
 
-With that set, we can already run `npm run build plugin` to start the Typescript compiler in watch mode. The only thing left to configure is our example project to use our plugin. We can achieve this by adding the following line to the **example/app.json** file.
+With that set, we can already run `npm run build plugin` to start the TypeScript compiler in watch mode. The only thing left to configure is our example project to use our plugin. We can achieve this by adding the following line to the **example/app.json** file.
 
 ```json example/app.json
 {
