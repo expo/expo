@@ -38,6 +38,7 @@
     "kernel": {
       "iosManifestPath": "../ios/Exponent/Supporting/kernel-manifest.json",
       "androidManifestPath": "../android/app/src/main/assets/kernel-manifest.json"
-    }
+    },
+    "jsEngine": "hermes"
   }
 }
