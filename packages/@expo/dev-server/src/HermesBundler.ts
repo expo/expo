@@ -31,7 +31,7 @@ export function isEnableHermesManaged(expoConfig: ExpoConfig, platform: Platform
         return false;
       }
       if (gteSdkVersion(expoConfig, '48.0.0')) {
-        // Hermes on Android is enabled by default after SDK 48.
+        // Hermes on iOS is enabled by default after SDK 48.
         return (expoConfig.ios?.jsEngine ?? expoConfig.jsEngine) !== 'jsc';
       }
 
