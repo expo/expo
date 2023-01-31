@@ -68,5 +68,8 @@ export declare function addNotificationResponseReceivedListener(listener: (event
  * @header listen
  */
 export declare function removeNotificationSubscription(subscription: Subscription): void;
+/**
+ * @header listen
+ */
 export declare function getLastNotificationResponseAsync(): Promise<NotificationResponse | null>;
 //# sourceMappingURL=NotificationsEmitter.d.ts.map

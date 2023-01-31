@@ -10,6 +10,7 @@ const didReceiveNotificationEventName = 'onDidReceiveNotification';
 const didDropNotificationsEventName = 'onNotificationsDeleted';
 const didReceiveNotificationResponseEventName = 'onDidReceiveNotificationResponse';
 
+// @docsMissing
 export const DEFAULT_ACTION_IDENTIFIER = 'expo.modules.notifications.actions.DEFAULT';
 
 /**
@@ -99,6 +100,9 @@ export function removeNotificationSubscription(subscription: Subscription) {
 }
 
 // @docsMissing
+/**
+ * @header listen
+ */
 export async function getLastNotificationResponseAsync(): Promise<NotificationResponse | null> {
   if (!NotificationsEmitterModule.getLastNotificationResponseAsync) {
     throw new UnavailabilityError('ExpoNotifications', 'getLastNotificationResponseAsync');

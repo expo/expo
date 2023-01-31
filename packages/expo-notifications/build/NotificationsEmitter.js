@@ -5,6 +5,7 @@ const emitter = new EventEmitter(NotificationsEmitterModule);
 const didReceiveNotificationEventName = 'onDidReceiveNotification';
 const didDropNotificationsEventName = 'onNotificationsDeleted';
 const didReceiveNotificationResponseEventName = 'onDidReceiveNotificationResponse';
+// @docsMissing
 export const DEFAULT_ACTION_IDENTIFIER = 'expo.modules.notifications.actions.DEFAULT';
 /**
  * Listeners registered by this method will be called whenever a notification is received while the app is running.
@@ -82,6 +83,9 @@ export function removeNotificationSubscription(subscription) {
     emitter.removeSubscription(subscription);
 }
 // @docsMissing
+/**
+ * @header listen
+ */
 export async function getLastNotificationResponseAsync() {
     if (!NotificationsEmitterModule.getLastNotificationResponseAsync) {
         throw new UnavailabilityError('ExpoNotifications', 'getLastNotificationResponseAsync');
