@@ -40,7 +40,7 @@ export interface NotificationHandler {
  * otherwise (or on timeout) `handleError` will be called.
  *
  * The default behavior when the handler is not set or does not respond in time is not to show the notification.
- * @param handler A single parameter which should be either `null` (if you want to clear the handler) or a [`NotificationHandler`](#notificationhandler] object.
+ * @param handler A single parameter which should be either `null` (if you want to clear the handler) or a [`NotificationHandler`](#notificationhandler) object.
  *
  * @example Implementing a notification handler that always shows the notification when it is received.
  * ```jsx
