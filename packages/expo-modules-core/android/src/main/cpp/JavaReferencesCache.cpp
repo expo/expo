@@ -2,6 +2,8 @@
 
 #include "JavaReferencesCache.h"
 
+#include <vector>
+
 namespace expo {
 std::shared_ptr<JavaReferencesCache> JavaReferencesCache::instance() {
   static std::shared_ptr<JavaReferencesCache> singleton{new JavaReferencesCache};
