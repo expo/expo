@@ -59,7 +59,7 @@ android {
       java {
         if (safeExtGet("excludeAppGlideModule", false)) {
           srcDir "src"
-          exclude "**/ExpoImageAppGlideModule.java"
+          exclude "**/ExpoImageAppGlideModule.kt"
         }
       }
     }
