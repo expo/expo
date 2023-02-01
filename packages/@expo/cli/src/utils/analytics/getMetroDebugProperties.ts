@@ -9,11 +9,11 @@ export type DebugTool = {
 
 export function getMetroDebugProperties(
   projectRoot: string,
-  debugTool: DebugTool,
-  exp?: ExpoConfig
+  exp: ExpoConfig,
+  debugTool: DebugTool
 ) {
   return {
-    sdkVersion: exp?.sdkVersion,
+    sdkVersion: exp.sdkVersion,
     metroVersion: resolveMetroVersionFromProject(projectRoot),
     toolName: debugTool.name,
     toolVersion: debugTool.version,

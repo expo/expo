@@ -16,7 +16,7 @@ describe(getMetroDebugProperties, () => {
     jest.mocked(resolveMetroVersionFromProject).mockReturnValue('1.33.7');
 
     const debugTool = { name: 'flipper', version: '4.2.0' };
-    const properties = getMetroDebugProperties('/fake-project', debugTool, fakeExpoConfig);
+    const properties = getMetroDebugProperties('/fake-project', fakeExpoConfig, debugTool);
 
     expect(properties).toMatchObject({
       sdkVersion: fakeExpoConfig.sdkVersion,
@@ -26,7 +26,7 @@ describe(getMetroDebugProperties, () => {
 
   it('returns the debug tool', () => {
     const debugTool = { name: 'flipper', version: '4.2.0' };
-    const properties = getMetroDebugProperties('/fake-project', debugTool, fakeExpoConfig);
+    const properties = getMetroDebugProperties('/fake-project', fakeExpoConfig, debugTool);
 
     expect(properties).toMatchObject({
       toolName: debugTool.name,

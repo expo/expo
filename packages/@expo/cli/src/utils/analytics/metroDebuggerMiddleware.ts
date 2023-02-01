@@ -29,7 +29,7 @@ export function createDebuggerTelemetryMiddleware(
     const debugTool = findDebugTool(req);
     if (debugTool) {
       hasReported = true;
-      logEventAsync('metro debug', getMetroDebugProperties(projectRoot, debugTool, exp));
+      logEventAsync('metro debug', getMetroDebugProperties(projectRoot, exp, debugTool));
     }
 
     return next(undefined);
