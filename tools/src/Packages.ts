@@ -216,7 +216,7 @@ export class Package {
       // for that package, something is wrong.
       if (this.packageName === 'expo-in-app-purchases' && match === -1) {
         throw new Error(
-          "'isIncludedInExpoClientOnPlatform' is not behaving correctly, please check expoview/build.gradle format"
+          "'isIncludedInExpoClientOnPlatform' is not behaving correctly, please check android/settings.gradle format"
         );
       }
       return match === -1;
