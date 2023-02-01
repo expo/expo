@@ -60,5 +60,5 @@ export function importCliSaveAssetsFromProject(
 
 /** Resolve the installed Metro version from project */
 export function resolveMetroVersionFromProject(projectRoot: string): string {
-  return require(importFromProject(projectRoot, 'metro/package.json')).version;
+  return importFromProject(projectRoot, 'metro/package.json').version;
 }
