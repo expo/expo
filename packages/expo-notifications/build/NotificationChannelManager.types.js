@@ -1,3 +1,4 @@
+// @docsMissing
 export var AndroidNotificationVisibility;
 (function (AndroidNotificationVisibility) {
     AndroidNotificationVisibility[AndroidNotificationVisibility["UNKNOWN"] = 0] = "UNKNOWN";
@@ -5,6 +6,7 @@ export var AndroidNotificationVisibility;
     AndroidNotificationVisibility[AndroidNotificationVisibility["PRIVATE"] = 2] = "PRIVATE";
     AndroidNotificationVisibility[AndroidNotificationVisibility["SECRET"] = 3] = "SECRET";
 })(AndroidNotificationVisibility || (AndroidNotificationVisibility = {}));
+// @docsMissing
 export var AndroidAudioContentType;
 (function (AndroidAudioContentType) {
     AndroidAudioContentType[AndroidAudioContentType["UNKNOWN"] = 0] = "UNKNOWN";
@@ -13,6 +15,7 @@ export var AndroidAudioContentType;
     AndroidAudioContentType[AndroidAudioContentType["MOVIE"] = 3] = "MOVIE";
     AndroidAudioContentType[AndroidAudioContentType["SONIFICATION"] = 4] = "SONIFICATION";
 })(AndroidAudioContentType || (AndroidAudioContentType = {}));
+// @docsMissing
 export var AndroidImportance;
 (function (AndroidImportance) {
     AndroidImportance[AndroidImportance["UNKNOWN"] = 0] = "UNKNOWN";
@@ -21,11 +24,14 @@ export var AndroidImportance;
     AndroidImportance[AndroidImportance["MIN"] = 3] = "MIN";
     AndroidImportance[AndroidImportance["LOW"] = 4] = "LOW";
     AndroidImportance[AndroidImportance["DEFAULT"] = 5] = "DEFAULT";
-    /** @deprecated use `DEFAULT` instead */
+    /**
+     * @deprecated Use `DEFAULT` instead.
+     */
     AndroidImportance[AndroidImportance["DEEFAULT"] = 5] = "DEEFAULT";
     AndroidImportance[AndroidImportance["HIGH"] = 6] = "HIGH";
     AndroidImportance[AndroidImportance["MAX"] = 7] = "MAX";
 })(AndroidImportance || (AndroidImportance = {}));
+// @docsMissing
 export var AndroidAudioUsage;
 (function (AndroidAudioUsage) {
     AndroidAudioUsage[AndroidAudioUsage["UNKNOWN"] = 0] = "UNKNOWN";

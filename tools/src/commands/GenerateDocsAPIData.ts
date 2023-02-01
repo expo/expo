@@ -74,6 +74,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-media-library': ['MediaLibrary.ts'],
   'expo-navigation-bar': ['NavigationBar.ts'],
   'expo-network': ['Network.ts'],
+  'expo-notifications': ['index.ts'],
   'expo-pedometer': ['Pedometer.ts', 'expo-sensors'],
   'expo-print': ['Print.ts'],
   'expo-random': ['Random.ts'],
@@ -140,6 +141,8 @@ const executeCommand = async (
     hideGenerator: true,
     excludePrivate: true,
     excludeProtected: true,
+    skipErrorChecking: true,
+    pretty: !MINIFY_JSON,
   });
 
   const project = app.convert();

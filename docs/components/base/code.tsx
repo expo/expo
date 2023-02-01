@@ -244,8 +244,13 @@ const codeBlockContainerStyle = {
   padding: `3px 6px`,
 };
 
+const codeBlockInlineStyle = {
+  padding: 4,
+};
+
 const codeBlockInlineContainerStyle = {
   display: 'inline-flex',
+  padding: 0,
 };
 
 type CodeBlockProps = React.PropsWithChildren<{ inline?: boolean }>;
@@ -260,7 +265,9 @@ export const CodeBlock = ({ children, inline = false }: CodeBlockProps) => {
         inline && codeBlockInlineContainerStyle,
       ]}
       {...attributes}>
-      <CODE css={[STYLES_CODE_BLOCK, { fontSize: '80%' }]}>{children}</CODE>
+      <CODE css={[STYLES_CODE_BLOCK, inline && codeBlockInlineStyle, { fontSize: '80%' }]}>
+        {children}
+      </CODE>
     </Element>
   );
 };
