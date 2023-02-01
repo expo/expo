@@ -167,9 +167,17 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
         detox: '^19.12.1',
         express: '^4.18.2',
         jest: '^29.3.1',
+        'legacy-expo-cli': 'npm:expo-cli@6.2.1',
         'jest-circus': '^29.3.1',
       }
     : {};
+
+  const metroDependencies = {
+    metro: '0.71.1',
+    'metro-config': '0.71.1',
+    'metro-react-native-babel-preset': '0.71.1',
+    'metro-source-map': '0.71.1',
+  };
 
   // Remove the default Expo dependencies from create-expo-app
   let packageJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'package.json'), 'utf-8'));
@@ -191,10 +199,12 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
     },
     devDependencies: {
       ...extraDevDependencies,
+      ...metroDependencies,
       ...packageJson.devDependencies,
     },
     resolutions: {
       ...expoResolutions,
+      ...metroDependencies,
       ...packageJson.resolutions,
     },
   };
@@ -269,7 +279,7 @@ function transformAppJsonForE2E(appJson, projectName, runtimeVersion) {
       name: projectName,
       owner: 'expo-ci',
       runtimeVersion,
-      jsEngine: 'jsc',
+      jsEngine: 'hermes',
       plugins: ['expo-updates', '@config-plugins/detox'],
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
@@ -394,50 +404,37 @@ async function initAsync(
     'utf-8'
   );
 
-  // Revert Hermes default change in android/app/build.gradle
-  // and android/gradle.properties
-  // (The change breaks expo export in the global Expo CLI)
-  const buildGradleText = await fs.readFile(
-    path.join(projectRoot, 'android', 'app', 'build.gradle'),
-    'utf8'
-  );
-  const buildGradleTextEdited = buildGradleText.replace(
-    'hermesEnabled = (findProperty(\'expo.jsEngine\') ?: "hermes") == "hermes"',
-    'hermesEnabled = (findProperty(\'expo.jsEngine\') ?: "jsc") == "hermes"'
-  );
-  await fs.writeFile(
-    path.join(projectRoot, 'android', 'app', 'build.gradle'),
-    buildGradleTextEdited,
-    'utf8'
-  );
-
-  const gradlePropertiesText = await fs.readFile(
-    path.join(projectRoot, 'android', 'gradle.properties'),
-    'utf8'
-  );
-  const gradlePropertiesTextEdited = gradlePropertiesText.replace(
-    'expo.jsEngine=hermes',
-    'expo.jsEngine=jsc'
-  );
-  await fs.writeFile(
-    path.join(projectRoot, 'android', 'gradle.properties'),
-    gradlePropertiesTextEdited,
-    'utf8'
-  );
-
   return projectRoot;
+}
+
+// This step requires the old expo-cli; however installing it globally
+// breaks this step because it has a dependency on an old @expo/dev-server.
+// Solution is to import it as a devDependency so it picks up the resolution
+// to our correct @expo/dev-server.
+async function createUpdateBundleAsync(projectRoot) {
+  await fs.rm(path.join(projectRoot, 'dist'), { force: true, recursive: true });
+  await spawnAsync(
+    'node',
+    [
+      'node_modules/legacy-expo-cli/bin/expo.js',
+      'export',
+      '--public-url',
+      'https://u.expo.dev/dummy-url',
+    ],
+    {
+      //await spawnAsync('expo-cli', ['export', '--public-url', 'https://u.expo.dev/dummy-url'], {
+      //await spawnAsync(localCliBin, ['export'], {
+      cwd: projectRoot,
+      stdio: 'inherit',
+    }
+  );
 }
 
 async function setupBasicAppAsync(projectRoot) {
   await copyCommonFixturesToProject(projectRoot, 'App.js');
 
   // export update for test server to host
-  await fs.rm(path.join(projectRoot, 'dist'), { force: true, recursive: true });
-  await spawnAsync('expo-cli', ['export', '--public-url', 'https://u.expo.dev/dummy-url'], {
-    //await spawnAsync(localCliBin, ['export'], {
-    cwd: projectRoot,
-    stdio: 'inherit',
-  });
+  await createUpdateBundleAsync(projectRoot);
 
   // move exported update to "updates" directory for EAS testing
   await fs.rename(path.join(projectRoot, 'dist'), path.join(projectRoot, 'updates'));
@@ -466,12 +463,7 @@ async function setupAssetsAppAsync(projectRoot, localCliBin) {
   });
 
   // export update for test server to host
-  await fs.rm(path.join(projectRoot, 'dist'), { force: true, recursive: true });
-  await spawnAsync('expo-cli', ['export', '--public-url', 'https://u.expo.dev/dummy-url'], {
-    //await spawnAsync(localCliBin, ['export'], {
-    cwd: projectRoot,
-    stdio: 'inherit',
-  });
+  await createUpdateBundleAsync(projectRoot);
 
   // move exported update to "updates" directory for EAS testing
   await fs.rename(path.join(projectRoot, 'dist'), path.join(projectRoot, 'updates'));
