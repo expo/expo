@@ -10,7 +10,6 @@ import com.bumptech.glide.signature.ApplicationVersionSignature
 import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper
 import expo.modules.image.GlideBlurhashModel
 import expo.modules.image.GlideModel
-import expo.modules.image.GlideOptions
 import expo.modules.image.GlideRawModel
 import expo.modules.image.GlideUriModel
 import expo.modules.image.GlideUrlModel
@@ -105,7 +104,7 @@ data class SourceMap(
           // sure the cache does not return the wrong image, we should clear the cache when the
           // application version changes.
           apply(
-            GlideOptions.signatureOf(ApplicationVersionSignature.obtain(context))
+            RequestOptions.signatureOf(ApplicationVersionSignature.obtain(context))
           )
         }
       }

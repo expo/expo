@@ -54,15 +54,11 @@ android {
   lintOptions {
     abortOnError false
   }
-  sourceSets {
-    main {
-      java {
-        if (safeExtGet("excludeAppGlideModule", false)) {
-          srcDir "src"
-          exclude "**/ExpoImageAppGlideModule.kt"
-        }
-      }
-    }
+}
+
+if (safeExtGet("excludeAppGlideModule", false)) {
+  tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
+    exclude("**/ExpoImageAppGlideModule.kt")
   }
 }
 
