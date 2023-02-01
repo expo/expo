@@ -1,14 +1,19 @@
-import { ExpoConfig, getExpoSDKVersion } from '@expo/config';
+import { ExpoConfig } from '@expo/config';
 
 import { resolveMetroVersionFromProject } from '../../start/server/metro/resolveFromProject';
 
+export type DebugTool = {
+  name: string;
+  version?: string;
+};
+
 export function getMetroDebugProperties(
   projectRoot: string,
-  debugTool: { name: string; version?: string },
+  debugTool: DebugTool,
   exp?: ExpoConfig
 ) {
   return {
-    sdkVersion: exp?.sdkVersion ?? getExpoSDKVersion(projectRoot),
+    sdkVersion: exp?.sdkVersion,
     metroVersion: resolveMetroVersionFromProject(projectRoot),
     toolName: debugTool.name,
     toolVersion: debugTool.version,

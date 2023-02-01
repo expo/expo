@@ -3,8 +3,6 @@ import assert from 'assert';
 import chalk from 'chalk';
 
 import * as Log from '../../log';
-import { getMetroDebugProperties } from '../../utils/analytics/getMetroDebugProperties';
-import { logEventAsync } from '../../utils/analytics/rudderstackClient';
 import { learnMore } from '../../utils/link';
 import { selectAsync } from '../../utils/prompts';
 import { DevServerManager } from '../server/DevServerManager';
@@ -78,10 +76,6 @@ export class DevServerManagerActions {
     for (const app of apps) {
       openJsInspector(app);
     }
-    logEventAsync(
-      'metro debug',
-      getMetroDebugProperties(this.devServerManager.projectRoot, { name: 'Chrome' })
-    );
   }
 
   reloadApp() {
