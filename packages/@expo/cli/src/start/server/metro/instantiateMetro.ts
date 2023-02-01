@@ -7,6 +7,7 @@ import { Terminal } from 'metro-core';
 
 import { Log } from '../../../log';
 import { getMetroProperties } from '../../../utils/analytics/getMetroProperties';
+import { createFlipperTelemetryMiddleware } from '../../../utils/analytics/metroFlipperMiddleware';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
@@ -80,6 +81,8 @@ export async function instantiateMetroAsync(
     }
     return middleware.use(metroMiddleware);
   };
+
+  middleware.use(createFlipperTelemetryMiddleware(projectRoot, exp));
 
   const server = await Metro.runServer(metroConfig, {
     hmrEnabled: true,
