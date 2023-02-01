@@ -99,6 +99,14 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
         },
       ],
     },
+    'react-native-pager-view': {
+      content: [
+        {
+          find: /\b(import (static )?)(com.reactnativepagerview.)/g,
+          replaceWith: `$1${prefix}.$3`,
+        },
+      ],
+    },
   };
 }
 
@@ -143,6 +151,12 @@ export function exponentPackageTransforms(prefix: string): Record<string, String
     '@react-native-async-storage/async-storage': [
       {
         find: /\bimport (com.reactnativecommunity.asyncstorage.)/g,
+        replaceWith: `import ${prefix}.$1`,
+      },
+    ],
+    'react-native-pager-view': [
+      {
+        find: /\bimport (com.reactnativepagerview.)/g,
         replaceWith: `import ${prefix}.$1`,
       },
     ],

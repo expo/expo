@@ -203,7 +203,7 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
       },
       {
         paths: 'build.gradle',
-        find: /\b(compileOnly|implementation|api)\s+['"]com.facebook.react:react-(native|android):.*['"]/gm,
+        find: /\b(compileOnly|implementation|api)\s+['"]com.facebook.react:react-(native|android)(:\+)?['"]/gm,
         replaceWith:
           `implementation 'host.exp:reactandroid-${prefix}:1.0.0'` +
           '\n' +
@@ -212,6 +212,7 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
           `    compileOnly 'com.facebook.yoga:proguard-annotations:+'\n` +
           `    compileOnly 'com.facebook.soloader:soloader:+'\n` +
           `    compileOnly 'com.facebook.fresco:fbcore:+'\n` +
+          `    compileOnly 'com.facebook.infer.annotation:infer-annotation:+'\n` +
           `    compileOnly 'androidx.annotation:annotation:+'\n` +
           `    compileOnly 'com.google.code.findbugs:jsr305:+'\n` +
           `    compileOnly 'androidx.appcompat:appcompat:+'\n`,
