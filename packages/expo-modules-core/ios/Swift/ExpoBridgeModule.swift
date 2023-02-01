@@ -41,6 +41,25 @@ public final class ExpoBridgeModule: NSObject, RCTBridgeModule {
   public var bridge: RCTBridge! {
     didSet {
       appContext.reactBridge = bridge
+      
+      if bridge.responds(to: Selector(("runtime"))) {
+        let result = bridge.perform(Selector(("runtime")))
+        if (result == nil) {
+          bridge.dispatchBlock({ [weak self] in
+            guard let self = self, let bridge = self.appContext.reactBridge else {
+              return
+            }
+            bridge.dispatchBlock({ [weak self] in
+              guard let self = self, let bridge = self.appContext.reactBridge else {
+                return
+              }
+              self.appContext.runtime = EXJavaScriptRuntimeManager.runtime(fromBridge: bridge)
+            }, queue: RCTJSThread)
+          }, queue: DispatchQueue.main)
+          return
+        }
+      }
+      
       bridge.dispatchBlock({ [weak self] in
         guard let self = self, let bridge = self.appContext.reactBridge else {
           return
