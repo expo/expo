@@ -56,12 +56,12 @@ export type DocumentResult = {
      */
     lastModified?: number;
     /**
-     * File object for the parity with web File API.
+     * `File` object for the parity with web File API.
      * @platform web
      */
     file?: File;
     /**
-     * File list array for the parity with web File API.
+     * `FileList` object for the parity with web File API.
      * @platform web
      */
     output?: FileList | null;
