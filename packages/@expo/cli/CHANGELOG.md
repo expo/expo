@@ -41,7 +41,7 @@
 - Fix tests. ([#20510](https://github.com/expo/expo/pull/20510) by [@EvanBacon](https://github.com/EvanBacon))
 - Simplify the Xcode warnings. ([#20512](https://github.com/expo/expo/pull/20512) by [@EvanBacon](https://github.com/EvanBacon))
 - Simply Metro watch mode detection to `CI=true`, and log when disabled. ([#20939](https://github.com/expo/expo/pull/20939) by [@byCedric](https://github.com/byCedric))
-- Add telemetry for experimental Metro config options. ([#20885]https://github.com/expo/expo/pull/20885) by [@byCedric](https://github.com/byCedric))
+- Add telemetry for experimental Metro config options. ([#20885](https://github.com/expo/expo/pull/20885) by [@byCedric](https://github.com/byCedric))
 
 ## 0.4.10 - 2022-11-22
 
