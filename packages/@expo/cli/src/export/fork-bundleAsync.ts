@@ -117,13 +117,14 @@ export async function bundleAsync(
 
   const buildAsync = async (bundle: BundleOptions): Promise<BundleOutput> => {
     const buildID = `bundle_${nextBuildID++}_${bundle.platform}`;
+    const isHermes = isEnableHermesManaged(expoConfig, bundle.platform);
     const bundleOptions: Metro.BundleOptions = {
       ...Server.DEFAULT_BUNDLE_OPTIONS,
       bundleType: 'bundle',
       platform: bundle.platform,
       entryFile: bundle.entryPoint,
       dev: bundle.dev ?? false,
-      minify: bundle.minify ?? !bundle.dev,
+      minify: !isHermes && (bundle.minify ?? !bundle.dev),
       inlineSourceMap: false,
       sourceMapUrl: bundle.sourceMapUrl,
       createModuleIdFactory: config.serializer.createModuleIdFactory,
@@ -185,7 +186,7 @@ export async function bundleAsync(
         projectRoot,
         bundleOutput.code,
         bundleOutput.map!,
-        bundle.minify
+        bundle.minify ?? !bundle.dev
       );
       bundleOutput.hermesBytecodeBundle = hermesBundleOutput.hbc;
       bundleOutput.hermesSourcemap = hermesBundleOutput.sourcemap;
