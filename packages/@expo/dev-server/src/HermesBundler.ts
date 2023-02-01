@@ -194,6 +194,8 @@ export async function maybeInconsistentEngineIosAsync(
       /^\s*:hermes_enabled\s*=>\s*flags\[:hermes_enabled\]\s*\|\|\s*podfile_properties\['expo.jsEngine'\]\s*==\s*'hermes',?/m,
       // <= sdk 44
       /^\s*:hermes_enabled\s*=>\s*podfile_properties\['expo.jsEngine'\] == 'hermes',?\s+/m,
+      // sdk 48
+      /^\s*:hermes_enabled\s*=>\s*podfile_properties\['expo.jsEngine'\]\s*==\s*nil\s*\|\|\s*podfile_properties\['expo.jsEngine'\]\s*==\s*'hermes',?/m,
     ];
     const isPropsReference = hermesPropReferences.reduce(
       (prev, curr) => prev || content.search(curr) >= 0,

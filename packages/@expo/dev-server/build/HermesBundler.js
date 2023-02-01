@@ -185,7 +185,9 @@ async function maybeInconsistentEngineIosAsync(projectRoot, isHermesManaged) {
     // sdk 45
     /^\s*:hermes_enabled\s*=>\s*flags\[:hermes_enabled\]\s*\|\|\s*podfile_properties\['expo.jsEngine'\]\s*==\s*'hermes',?/m,
     // <= sdk 44
-    /^\s*:hermes_enabled\s*=>\s*podfile_properties\['expo.jsEngine'\] == 'hermes',?\s+/m];
+    /^\s*:hermes_enabled\s*=>\s*podfile_properties\['expo.jsEngine'\] == 'hermes',?\s+/m,
+    // sdk 48
+    /^\s*:hermes_enabled\s*=>\s*podfile_properties\['expo.jsEngine'\]\s*==\s*nil\s*\|\|\s*podfile_properties\['expo.jsEngine'\]\s*==\s*'hermes',?/m];
     const isPropsReference = hermesPropReferences.reduce((prev, curr) => prev || content.search(curr) >= 0, false);
     const isHermesBare = content.search(/^\s*:hermes_enabled\s*=>\s*true,?\s+/m) >= 0;
     if (!isPropsReference && isHermesManaged !== isHermesBare) {
