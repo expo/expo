@@ -131,6 +131,13 @@ class Env {
   get HTTP_PROXY(): string {
     return process.env.HTTP_PROXY || process.env.http_proxy || '';
   }
+
+  /**
+   * Force Expo CLI to use static site generation for Metro web projects. This only works with Expo Router.
+   */
+  get EXPO_USE_STATIC(): boolean {
+    return boolish('EXPO_USE_STATIC', false);
+  }
 }
 
 export const env = new Env();

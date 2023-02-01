@@ -12,6 +12,7 @@ import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAsset
 import { resolveEntryPoint } from './resolveEntryPoint';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
+import { env } from '../../../utils/env';
 
 /** Info about the computer hosting the dev server. */
 export interface HostInfo {
@@ -236,6 +237,16 @@ export abstract class ManifestMiddleware<
     await resolveGoogleServicesFile(this.projectRoot, manifest);
   }
 
+  public getWebBundleUrl() {
+    const platform = 'web';
+    // Read from headers
+    const mainModuleName = this.resolveMainModuleName(this.initialProjectConfig, platform);
+    return this._getBundleUrlPath({
+      platform,
+      mainModuleName,
+    });
+  }
+
   /**
    * Web platforms should create an index.html response using the same script resolution as native.
    *
@@ -243,13 +254,8 @@ export abstract class ManifestMiddleware<
    * to an `index.html`, this enables the web platform to load JavaScript from the server.
    */
   private async handleWebRequestAsync(req: ServerRequest, res: ServerResponse) {
-    const platform = 'web';
     // Read from headers
-    const mainModuleName = this.resolveMainModuleName(this.initialProjectConfig, platform);
-    const bundleUrl = this._getBundleUrlPath({
-      platform,
-      mainModuleName,
-    });
+    const bundleUrl = this.getWebBundleUrl();
 
     res.setHeader('Content-Type', 'text/html');
 
@@ -262,7 +268,7 @@ export abstract class ManifestMiddleware<
   }
 
   /** Exposed for testing. */
-  async checkBrowserRequestAsync(req: ServerRequest, res: ServerResponse) {
+  async checkBrowserRequestAsync(req: ServerRequest, res: ServerResponse, next: ServerNext) {
     // Read the config
     const bundlers = getPlatformBundlers(this.initialProjectConfig.exp);
     if (bundlers.web === 'metro') {
@@ -272,8 +278,14 @@ export abstract class ManifestMiddleware<
       const platform = parsePlatformHeader(req);
       // On web, serve the public folder
       if (!platform || platform === 'web') {
-        await this.handleWebRequestAsync(req, res);
-        return true;
+        // Skip the spa-styled index.html when static generation is enabled.
+        if (env.EXPO_USE_STATIC) {
+          next();
+          return true;
+        } else {
+          await this.handleWebRequestAsync(req, res);
+          return true;
+        }
       }
     }
     return false;
@@ -285,7 +297,7 @@ export abstract class ManifestMiddleware<
     next: ServerNext
   ): Promise<void> {
     // First check for standard JavaScript runtimes (aka legacy browsers like Chrome).
-    if (await this.checkBrowserRequestAsync(req, res)) {
+    if (await this.checkBrowserRequestAsync(req, res, next)) {
       return;
     }
 
