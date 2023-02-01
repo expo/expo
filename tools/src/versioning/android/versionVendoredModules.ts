@@ -203,7 +203,7 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
       },
       {
         paths: 'build.gradle',
-        find: /\b(compileOnly|implementation|api)\s+['"]com.facebook.react:react-(native|android)(:\+)?['"]/gm,
+        find: /\b(compileOnly|implementation|api)\s+['"]com.facebook.react:react-(native|android):?.*['"]/gm,
         replaceWith:
           `implementation 'host.exp:reactandroid-${prefix}:1.0.0'` +
           '\n' +
