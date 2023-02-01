@@ -1,8 +1,9 @@
 export { Sidebar } from './Sidebar';
 export { SidebarCollapsible } from './SidebarCollapsible';
 export { SidebarGroup } from './SidebarGroup';
+export { SidebarFooter } from './SidebarFooter';
 export { SidebarHead } from './SidebarHead';
-export { SidebarHeadEntry } from './SidebarHeadEntry';
+export { SidebarSingleEntry } from './SidebarSingleEntry';
 export { SidebarLink } from './SidebarLink';
 export { SidebarSection } from './SidebarSection';
 export { SidebarTitle } from './SidebarTitle';

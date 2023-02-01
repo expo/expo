@@ -7,7 +7,7 @@ import { Logo } from './Logo';
 import { ThemeSelector } from './ThemeSelector';
 
 import { Button } from '~/ui/components/Button';
-import { SidebarHead } from '~/ui/components/Sidebar';
+import { SidebarFooter, SidebarHead } from '~/ui/components/Sidebar';
 import { BOLD } from '~/ui/components/Text';
 
 type HeaderProps = {
@@ -60,6 +60,7 @@ export const Header = ({
         <div css={mobileSidebarStyle}>
           <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
           {sidebar}
+          <SidebarFooter />
         </div>
       )}
     </>
