@@ -58,7 +58,7 @@
     ]
   },
   "dependencies": {
-    "@babel/runtime": "^7.14.0",
+    "@babel/runtime": "^7.20.0",
     "@react-native-async-storage/async-storage": "1.17.11",
     "@react-native-community/datetimepicker": "6.7.3",
     "@react-native-community/netinfo": "9.3.7",
@@ -79,7 +79,7 @@
     "native-component-list": "*",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.71.0",
+    "react-native": "0.71.2",
     "react-native-gesture-handler": "~2.9.0",
     "react-native-pager-view": "6.1.2",
     "react-native-reanimated": "~2.14.4",
@@ -92,7 +92,7 @@
     "test-suite": "*"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9",
+    "@babel/core": "^7.20.0",
     "@types/react": "~18.0.14",
     "babel-plugin-module-resolver": "^4.1.0",
     "babel-preset-expo": "~9.2.0",
