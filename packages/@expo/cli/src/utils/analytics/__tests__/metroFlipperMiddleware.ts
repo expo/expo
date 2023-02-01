@@ -13,9 +13,10 @@ const fakeExpoConfig = {
 
 describe(findDebugTool, () => {
   it('returns flipper from user agent', () => {
-    expect(findDebugTool('Flipper/0.107.0')).toMatchObject({
+    const userAgent = `Mozilla/5.0 (Macintosh; Intel Mac OS X 10_15_7) AppleWebKit/537.36 (KHTML, like Gecko) Flipper/0.177.0 Chrome/100.0.4896.143 Electron/18.2.0 Safari/537.36`;
+    expect(findDebugTool(userAgent)).toMatchObject({
       name: 'flipper',
-      version: '0.107.0',
+      version: '0.177.0',
     });
   });
 });
