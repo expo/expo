@@ -8,9 +8,9 @@ import NotificationsEmitterModule from './NotificationsEmitterModule';
  * > If you don't want to use a hook, you can use `Notifications.getLastNotificationResponseAsync()` instead.
  *
  * @return The hook may return one of these three types/values:
- * - `undefined` -- until we're sure of what to return,
- * - `null` -- if no notification response has been received yet,
- * - a [`NotificationResponse`](#notificationresponse) object -- if a notification response was received.
+ * - `undefined` - until we're sure of what to return,
+ * - `null` - if no notification response has been received yet,
+ * - a [`NotificationResponse`](#notificationresponse) object - if a notification response was received.
  *
  * @example Responding to a notification tap by opening a URL that could be put into the notification's `data`
  * (opening the URL is your responsibility and is not a part of the `expo-notifications` API):
