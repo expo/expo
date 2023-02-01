@@ -16,6 +16,7 @@
 - Bumped `eslint-plugin-prettier` from 4.0.0 to 4.2.1. ([#20374](https://github.com/expo/expo/pull/20374) by [@Simek](https://github.com/Simek))
 - Bumped `eslint-plugin-react` from 7.30.0 to 7.31.11. ([#20374](https://github.com/expo/expo/pull/20374) by [@Simek](https://github.com/Simek))
 - Bumped `eslint-plugin-react-hooks` from 4.5.0 to 4.6.0. ([#20374](https://github.com/expo/expo/pull/20374) by [@Simek](https://github.com/Simek))
+- Upgrade typescript-eslint packages. ([#21025](https://github.com/expo/expo/pull/21025) by [@wschurman](https://github.com/wschurman))
 
 ## 11.1.1 — 2022-10-25
 
