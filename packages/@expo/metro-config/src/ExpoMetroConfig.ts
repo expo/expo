@@ -50,6 +50,8 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     '/InternalBytecode/InternalBytecode\\.js$',
     // Block native code invocations
     `\\[native code\\]`,
+    // Hide react-dom (web)
+    'node_modules/react-dom/.+\\.js$',
   ].join('|')
 );
 
