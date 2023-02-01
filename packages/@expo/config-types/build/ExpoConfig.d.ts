@@ -245,7 +245,7 @@ export interface ExpoConfig {
     plugins?: (string | [] | [string] | [string, any])[];
     splash?: Splash;
     /**
-     * Specifies the JavaScript engine for apps. Supported only on EAS Build. Defaults to `jsc`. Valid values: `hermes`, `jsc`.
+     * Specifies the JavaScript engine for apps. Supported only on EAS Build. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
      */
     jsEngine?: 'hermes' | 'jsc';
     ios?: IOS;
@@ -434,6 +434,28 @@ export interface IOS {
          * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
          */
         tabletImage?: string;
+        /**
+         * Configuration for loading and splash screen for standalone iOS apps in dark mode.
+         */
+        dark?: {
+            /**
+             * Color to fill the loading screen background
+             */
+            backgroundColor?: string;
+            /**
+             * Determines how the `image` will be displayed in the splash loading screen. Must be one of `cover` or `contain`, defaults to `contain`.
+             */
+            resizeMode?: 'cover' | 'contain';
+            /**
+             * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+             */
+            image?: string;
+            /**
+             * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+             */
+            tabletImage?: string;
+            [k: string]: any;
+        };
         [k: string]: any;
     };
     /**
@@ -642,6 +664,54 @@ export interface Android {
          *  `Scale 4x`
          */
         xxxhdpi?: string;
+        /**
+         * Configuration for loading and splash screen for managed and standalone Android apps in dark mode.
+         */
+        dark?: {
+            /**
+             * Color to fill the loading screen background
+             */
+            backgroundColor?: string;
+            /**
+             * Determines how the `image` will be displayed in the splash loading screen. Must be one of `cover`, `contain` or `native`, defaults to `contain`.
+             */
+            resizeMode?: 'cover' | 'contain' | 'native';
+            /**
+             * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+             */
+            image?: string;
+            /**
+             * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
+             *
+             *  `Natural sized image (baseline)`
+             */
+            mdpi?: string;
+            /**
+             * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
+             *
+             *  `Scale 1.5x`
+             */
+            hdpi?: string;
+            /**
+             * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
+             *
+             *  `Scale 2x`
+             */
+            xhdpi?: string;
+            /**
+             * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
+             *
+             *  `Scale 3x`
+             */
+            xxhdpi?: string;
+            /**
+             * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
+             *
+             *  `Scale 4x`
+             */
+            xxxhdpi?: string;
+            [k: string]: any;
+        };
         [k: string]: any;
     };
     /**
