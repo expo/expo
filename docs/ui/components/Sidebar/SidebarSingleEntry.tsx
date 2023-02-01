@@ -1,18 +1,32 @@
 import { css } from '@emotion/react';
-import { borderRadius, spacing, theme, typography, iconSize } from '@expo/styleguide';
+import {
+  borderRadius,
+  spacing,
+  theme,
+  typography,
+  iconSize,
+  ArrowUpRightIcon,
+} from '@expo/styleguide';
 import { IconProps } from '@expo/styleguide/dist/types';
 import { ComponentType } from 'react';
 
 import { A } from '../Text';
 
-type SidebarHeadEntryProps = {
+type SidebarSingleEntryProps = {
   href: string;
   title: string;
-  isActive: boolean;
   Icon: ComponentType<IconProps>;
+  isActive?: boolean;
+  isExternal?: boolean;
 };
 
-export const SidebarHeadEntry = ({ href, title, isActive, Icon }: SidebarHeadEntryProps) => {
+export const SidebarSingleEntry = ({
+  href,
+  title,
+  Icon,
+  isActive = false,
+  isExternal = false,
+}: SidebarSingleEntryProps) => {
   return (
     <A href={href} css={[entryContainerStyle, isActive && activeEntryContainerStyle]} isStyled>
       <Icon
@@ -21,6 +35,9 @@ export const SidebarHeadEntry = ({ href, title, isActive, Icon }: SidebarHeadEnt
         width={iconSize.sm}
       />
       <span>{title}</span>
+      {isExternal && (
+        <ArrowUpRightIcon color={theme.icon.secondary} css={css({ marginLeft: 'auto' })} />
+      )}
     </A>
   );
 };
