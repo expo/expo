@@ -1,5 +1,9 @@
 import { ProxyNativeModule } from 'expo-modules-core';
 import { NotificationChannel } from './NotificationChannelManager.types';
+/**
+ * An object represents a notification channel group.
+ * @platform android
+ */
 export interface NotificationChannelGroup {
     id: string;
     name: string | null;
@@ -7,6 +11,10 @@ export interface NotificationChannelGroup {
     isBlocked?: boolean;
     channels: NotificationChannel[];
 }
+/**
+ * An object represents a notification channel group to be set.
+ * @platform android
+ */
 export interface NotificationChannelGroupInput {
     name: string | null;
     description?: string | null;

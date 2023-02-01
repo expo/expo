@@ -40,6 +40,7 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
     <CommentTextBlock comment={comment} includePlatforms={false} />
     {children.sort(sortByValue).map((enumValue: EnumValueData) => (
       <div css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]} key={enumValue.name}>
+        <APISectionDeprecationNote comment={enumValue.comment} />
         <APISectionPlatformTags comment={enumValue.comment} prefix="Only for:" />
         <H4 css={enumValueNameStyle}>
           <CODE>{enumValue.name}</CODE>
