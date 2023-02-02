@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Added support for React Native 0.71.x. ([#20799](https://github.com/expo/expo/pull/20799) [#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 9.2.2 — 2022-11-03
