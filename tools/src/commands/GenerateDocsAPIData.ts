@@ -51,8 +51,6 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-error-recovery': ['ErrorRecovery.ts'],
   'expo-face-detector': ['FaceDetector.ts'],
   'expo-file-system': ['index.ts'],
-  'expo-firebase-analytics': ['Analytics.ts'],
-  'expo-firebase-core': ['FirebaseCore.ts'],
   'expo-font': ['index.ts'],
   'expo-gl': ['index.ts'],
   'expo-gyroscope': [['Gyroscope.ts', 'DeviceSensor.ts'], 'expo-sensors'],
