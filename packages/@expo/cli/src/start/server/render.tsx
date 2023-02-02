@@ -1,6 +1,6 @@
 import { ServerContainer, ServerContainerRef } from '@react-navigation/native';
-import Head from 'expo-router/head';
 import { App } from 'expo-router/entry';
+import Head from 'expo-router/head';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
 import { AppRegistry } from 'react-native-web';
@@ -12,24 +12,18 @@ export function getManifest() {
 }
 
 export function serverRenderUrl(location: URL): string {
-  const { element, getStyleElement } = AppRegistry.getApplication('App');
+  const headContext = {};
 
   const ref = React.createRef<ServerContainerRef>();
 
+  const { element, getStyleElement } = AppRegistry.getApplication('App');
+
   const out = React.createElement(Root, {
     children: element,
-    scripts: <></>,
-    styles: (
-      <>
-        <style id="expo-reset" dangerouslySetInnerHTML={{ __html: style }} />
-        {getStyleElement()}
-      </>
-    ),
+    styles: <></>,
   });
 
-  const headContext = {};
-
-  let html = ReactDOMServer.renderToString(
+  const html = ReactDOMServer.renderToString(
     <Head.Provider context={headContext}>
       <ServerContainer ref={ref} location={location}>
         {out}
@@ -37,7 +31,14 @@ export function serverRenderUrl(location: URL): string {
     </Head.Provider>
   );
 
-  return '<!DOCTYPE html>' + mixHeadComponentsWithStaticResults(headContext.helmet, html);
+  // Eval the CSS after the HTML is rendered so that the CSS is in the same order
+  const css = ReactDOMServer.renderToStaticMarkup(getStyleElement());
+
+  let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
+
+  output = output.replace('<head>', `<head>${css}`);
+
+  return '<!DOCTYPE html>' + output;
 }
 
 function mixHeadComponentsWithStaticResults(helmet: any, html: string) {
@@ -87,7 +88,7 @@ body {
 }
 `;
 
-export function Root({ children, scripts, styles }) {
+export function Root({ children, styles }) {
   return (
     <html lang="en" style={{ height: '100%' }}>
       <head>
@@ -97,11 +98,11 @@ export function Root({ children, scripts, styles }) {
           name="viewport"
           content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1.00001,viewport-fit=cover"
         />
+        <style id="expo-reset" dangerouslySetInnerHTML={{ __html: style }} />
         {styles}
       </head>
       <body style={{ height: '100%', overflow: 'hidden' }}>
         <div id="root">{children}</div>
-        {scripts}
       </body>
     </html>
   );
