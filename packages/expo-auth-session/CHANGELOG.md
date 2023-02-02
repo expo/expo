@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Removed usage of the deprecated `expo-random` package.
+
 ## 3.7.2 — 2022-10-25
 
 ### 💡 Others
