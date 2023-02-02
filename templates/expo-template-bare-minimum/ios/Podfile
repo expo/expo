@@ -13,22 +13,22 @@ install! 'cocoapods',
 
 prepare_react_native_project!
 
+# Flipper support in expo via build properties plugin
+expo_flipper = FlipperConfiguration.disabled
+if ENV['NO_FLIPPER'] != "1" && defined?(podfile_properties['ios.flipper']) then
+  if podfile_properties['ios.flipper'] == 'true' then
+    expo_flipper = FlipperConfiguration.enabled(["Debug", "Release"])
+  elsif podfile_properties['ios.flipper'] != 'false' then
+    expo_flipper = FlipperConfiguration.enabled(["Debug", "Release"], { 'Flipper' => podfile_properties['ios.flipper'] })
+  end
+end
+
 target 'HelloWorld' do
   use_expo_modules!
   config = use_native_modules!
 
   use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
   use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
-
-  # Flipper support in expo via build properties plugin
-  expo_flipper = FlipperConfiguration.disabled
-  if ENV['NO_FLIPPER'] != "1" && defined?(podfile_properties['ios.flipper']) then
-    if podfile_properties['ios.flipper'] == 'true' then
-      expo_flipper = FlipperConfiguration.enabled(["Debug", "Release"])
-    elsif podfile_properties['ios.flipper'] != 'false' then
-      expo_flipper = FlipperConfiguration.enabled(["Debug", "Release"], { 'Flipper' => podfile_properties['ios.flipper'] })
-    end
-  end
 
   # Flags change depending on the env values.
   flags = get_default_flags()
