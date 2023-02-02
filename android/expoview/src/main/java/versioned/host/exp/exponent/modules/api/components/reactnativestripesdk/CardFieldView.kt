@@ -2,7 +2,6 @@ package versioned.host.exp.exponent.modules.api.components.reactnativestripesdk
 
 import android.content.res.ColorStateList
 import android.graphics.Color
-import android.graphics.Typeface
 import android.os.Build
 import android.text.Editable
 import android.text.InputFilter
@@ -11,9 +10,11 @@ import android.util.Log
 import android.widget.FrameLayout
 import androidx.core.os.LocaleListCompat
 import com.facebook.react.bridge.ReadableMap
+import com.facebook.react.uimanager.PixelUtil
 import com.facebook.react.uimanager.ThemedReactContext
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.events.EventDispatcher
+import com.facebook.react.views.text.ReactTypefaceUtils
 import com.google.android.material.shape.CornerFamily
 import com.google.android.material.shape.MaterialShapeDrawable
 import com.google.android.material.shape.ShapeAppearanceModel
@@ -124,7 +125,8 @@ class CardFieldView(context: ThemedReactContext) : FrameLayout(context) {
     }
     fontFamily?.let {
       for (editTextBinding in bindings) {
-        editTextBinding.typeface = Typeface.create(it, Typeface.NORMAL)
+        // Load custom font from assets, and fallback to default system font
+        editTextBinding.typeface = ReactTypefaceUtils.applyStyles(null, -1, -1, it.takeIf { it.isNotEmpty() }, context.assets)
       }
     }
     cursorColor?.let {
@@ -140,18 +142,18 @@ class CardFieldView(context: ThemedReactContext) : FrameLayout(context) {
       }
     }
 
-    mCardWidget.setPadding(40, 0, 40, 0)
+    mCardWidget.setPadding(20, 0, 20, 0)
     mCardWidget.background = MaterialShapeDrawable(
       ShapeAppearanceModel()
         .toBuilder()
-        .setAllCorners(CornerFamily.ROUNDED, (borderRadius * 2).toFloat())
+        .setAllCorners(CornerFamily.ROUNDED, PixelUtil.toPixelFromDIP(borderRadius.toDouble()))
         .build()
     ).also { shape ->
       shape.strokeWidth = 0.0f
       shape.strokeColor = ColorStateList.valueOf(Color.parseColor("#000000"))
       shape.fillColor = ColorStateList.valueOf(Color.parseColor("#FFFFFF"))
       borderWidth?.let {
-        shape.strokeWidth = (it * 2).toFloat()
+        shape.strokeWidth = PixelUtil.toPixelFromDIP(it.toDouble())
       }
       borderColor?.let {
         shape.strokeColor = ColorStateList.valueOf(Color.parseColor(it))
@@ -201,6 +203,10 @@ class CardFieldView(context: ThemedReactContext) : FrameLayout(context) {
 
   fun setPostalCodeEnabled(isEnabled: Boolean) {
     mCardWidget.postalCodeEnabled = isEnabled
+
+    if (isEnabled === false) {
+      mCardWidget.postalCodeRequired = false
+    }
   }
 
   /**

@@ -4,11 +4,12 @@
 //
 //  Created by Charles Cruzan on 5/11/22.
 //
-import Stripe
+import StripePaymentSheet
 
-extension StripeSdk {
-    func buildPaymentSheetAppearance(userParams: NSDictionary) throws -> PaymentSheet.Appearance {
+internal class PaymentSheetAppearance {
+    class func buildAppearanceFromParams(userParams: NSDictionary?) throws -> PaymentSheet.Appearance {
         var appearance = PaymentSheet.Appearance()
+        guard let userParams = userParams else { return appearance }
         
         if let fontParams = userParams[PaymentSheetAppearanceKeys.FONT] as? NSDictionary {
             appearance.font = try buildFont(params: fontParams)
@@ -30,8 +31,8 @@ extension StripeSdk {
         return appearance
     }
     
-    private func buildFont(params: NSDictionary) throws -> Stripe.PaymentSheet.Appearance.Font {
-        var font = Stripe.PaymentSheet.Appearance.Font()
+    private class func buildFont(params: NSDictionary) throws -> PaymentSheet.Appearance.Font {
+        var font = PaymentSheet.Appearance.Font()
         if let fontName = params[PaymentSheetAppearanceKeys.FAMILY] as? String {
             guard let customFont = UIFont(name: fontName, size: UIFont.systemFontSize) else {
                 throw PaymentSheetAppearanceError.missingFont(fontName)
@@ -41,9 +42,9 @@ extension StripeSdk {
         font.sizeScaleFactor = params[PaymentSheetAppearanceKeys.SCALE] as? CGFloat ?? PaymentSheet.Appearance.default.font.sizeScaleFactor
         return font
     }
-    
-    private func buildColors(params: NSDictionary) throws -> Stripe.PaymentSheet.Appearance.Colors {
-        var colors = Stripe.PaymentSheet.Appearance.Colors()
+
+    private class func buildColors(params: NSDictionary) throws -> PaymentSheet.Appearance.Colors {
+        var colors = PaymentSheet.Appearance.Colors()
         
         if (params.object(forKey: PaymentSheetAppearanceKeys.LIGHT) != nil && params.object(forKey: PaymentSheetAppearanceKeys.DARK) == nil ||
             params.object(forKey: PaymentSheetAppearanceKeys.DARK) != nil && params.object(forKey: PaymentSheetAppearanceKeys.LIGHT) == nil) {
@@ -53,25 +54,25 @@ extension StripeSdk {
         let lightModeParams = params[PaymentSheetAppearanceKeys.LIGHT] as? NSDictionary ?? params
         let darkModeParams = params[PaymentSheetAppearanceKeys.DARK] as? NSDictionary ?? params
         
-        colors.primary = try StripeSdk.buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.PRIMARY, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.primary
-        colors.background = try StripeSdk.buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.BACKGROUND, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.background
-        colors.componentBackground = try StripeSdk.buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.COMPONENT_BACKGROUND, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.componentBackground
-        colors.componentBorder = try StripeSdk.buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.COMPONENT_BORDER, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.componentBorder
-        colors.componentDivider = try StripeSdk.buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.COMPONENT_DIVIDER, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.componentDivider
-        colors.text = try StripeSdk.buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.PRIMARY_TEXT, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.text
-        colors.textSecondary = try StripeSdk.buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.SECONDARY_TEXT, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.textSecondary
-        colors.componentText = try StripeSdk.buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.COMPONENT_TEXT, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.componentText
-        colors.componentPlaceholderText = try StripeSdk.buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.PLACEHOLDER_TEXT, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.componentPlaceholderText
-        colors.icon = try StripeSdk.buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.ICON, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.icon
-        colors.danger = try StripeSdk.buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.ERROR, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.danger
+        colors.primary = try buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.PRIMARY, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.primary
+        colors.background = try buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.BACKGROUND, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.background
+        colors.componentBackground = try buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.COMPONENT_BACKGROUND, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.componentBackground
+        colors.componentBorder = try buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.COMPONENT_BORDER, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.componentBorder
+        colors.componentDivider = try buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.COMPONENT_DIVIDER, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.componentDivider
+        colors.text = try buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.PRIMARY_TEXT, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.text
+        colors.textSecondary = try buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.SECONDARY_TEXT, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.textSecondary
+        colors.componentText = try buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.COMPONENT_TEXT, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.componentText
+        colors.componentPlaceholderText = try buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.PLACEHOLDER_TEXT, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.componentPlaceholderText
+        colors.icon = try buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.ICON, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.icon
+        colors.danger = try buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.ERROR, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.colors.danger
         
         return colors
     }
     
-    private func buildShadow(params: NSDictionary) throws -> PaymentSheet.Appearance.Shadow {
+    private class func buildShadow(params: NSDictionary) throws -> PaymentSheet.Appearance.Shadow {
         var shadow = PaymentSheet.Appearance.Shadow()
         
-        if let color = try StripeSdk.buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.SHADOW_COLOR, lightParams: params, darkParams: params) {
+        if let color = try buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.SHADOW_COLOR, lightParams: params, darkParams: params) {
             shadow.color = color
         }
         if let opacity = params[PaymentSheetAppearanceKeys.OPACITY] as? CGFloat {
@@ -89,7 +90,7 @@ extension StripeSdk {
         return shadow
     }
     
-    private func buildPrimaryButton(params: NSDictionary) throws -> PaymentSheet.Appearance.PrimaryButton {
+    private class func buildPrimaryButton(params: NSDictionary) throws -> PaymentSheet.Appearance.PrimaryButton {
         var primaryButton = PaymentSheet.Appearance.PrimaryButton()
         
         if let fontName = (params[PaymentSheetAppearanceKeys.FONT] as? NSDictionary)?[PaymentSheetAppearanceKeys.FAMILY] as? String {
@@ -118,15 +119,15 @@ extension StripeSdk {
             let lightModeParams = colorParams[PaymentSheetAppearanceKeys.LIGHT] as? NSDictionary ?? colorParams
             let darkModeParams = colorParams[PaymentSheetAppearanceKeys.DARK] as? NSDictionary ?? colorParams
             
-            primaryButton.backgroundColor = try StripeSdk.buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.BACKGROUND, lightParams: lightModeParams, darkParams: darkModeParams)
-            primaryButton.textColor = try StripeSdk.buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.TEXT, lightParams: lightModeParams, darkParams: darkModeParams)
-            primaryButton.borderColor = try StripeSdk.buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.BORDER, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.primaryButton.borderColor
+            primaryButton.backgroundColor = try buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.BACKGROUND, lightParams: lightModeParams, darkParams: darkModeParams)
+            primaryButton.textColor = try buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.TEXT, lightParams: lightModeParams, darkParams: darkModeParams)
+            primaryButton.borderColor = try buildUserInterfaceStyleAwareColor(key: PaymentSheetAppearanceKeys.BORDER, lightParams: lightModeParams, darkParams: darkModeParams) ?? PaymentSheet.Appearance.default.primaryButton.borderColor
         }
         
         return primaryButton
     }
     
-    private static func buildUserInterfaceStyleAwareColor(key: String, lightParams: NSDictionary, darkParams: NSDictionary) throws -> UIColor? {
+    private class func buildUserInterfaceStyleAwareColor(key: String, lightParams: NSDictionary, darkParams: NSDictionary) throws -> UIColor? {
         guard let lightHexString = lightParams[key] as? String, let darkHexString = darkParams[key] as? String else {
             return nil
         }

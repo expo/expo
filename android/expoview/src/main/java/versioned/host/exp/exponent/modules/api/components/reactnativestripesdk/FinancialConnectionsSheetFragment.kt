@@ -125,7 +125,7 @@ class FinancialConnectionsSheetFragment : Fragment() {
   private fun commitFragmentAndStartFlow(currentActivity: AppCompatActivity) {
     try {
       currentActivity.supportFragmentManager.beginTransaction()
-        .add(this, "financial_connections_sheet_launch_fragment")
+        .add(this, TAG)
         .commit()
     } catch (error: IllegalStateException) {
       promise.resolve(createError(ErrorType.Failed.toString(), error.message))
@@ -133,6 +133,8 @@ class FinancialConnectionsSheetFragment : Fragment() {
   }
 
   companion object {
+    internal const val TAG = "financial_connections_sheet_launch_fragment"
+
     private fun createTokenResult(result: FinancialConnectionsSheetForTokenResult.Completed): WritableMap {
       return WritableNativeMap().also {
         it.putMap("session", mapFromSession(result.financialConnectionsSession))
@@ -237,7 +239,9 @@ class FinancialConnectionsSheetFragment : Fragment() {
         FinancialConnectionsAccount.Permissions.BALANCES -> "balances"
         FinancialConnectionsAccount.Permissions.OWNERSHIP -> "ownership"
         FinancialConnectionsAccount.Permissions.TRANSACTIONS -> "transactions"
+        FinancialConnectionsAccount.Permissions.ACCOUNT_NUMBERS -> "accountNumbers"
         FinancialConnectionsAccount.Permissions.UNKNOWN -> "unparsable"
+        FinancialConnectionsAccount.Permissions.ACCOUNT_NUMBERS -> "accountNumbers"
       }
     }
 

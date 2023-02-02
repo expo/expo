@@ -6,6 +6,7 @@ import android.view.inputmethod.InputMethodManager
 import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReadableMap
 
 fun View.showSoftKeyboard() {
   post {
@@ -29,4 +30,8 @@ fun Fragment.removeFragment(context: ReactApplicationContext) {
       it.beginTransaction().remove(this).commitAllowingStateLoss()
     }
   }
+}
+
+fun ReadableMap.getBooleanOr(key: String, default: Boolean): Boolean {
+  return if (this.hasKey(key)) this.getBoolean(key) else default
 }
