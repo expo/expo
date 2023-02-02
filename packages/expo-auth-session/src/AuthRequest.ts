@@ -166,8 +166,6 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
       returnUrl = sessionUrlProvider.getDefaultReturnUrl(proxyOptions?.path, proxyOptions);
       startUrl = sessionUrlProvider.getStartUrl(url, returnUrl, options.projectNameForProxy);
     }
-    console.log('returnUrl', returnUrl);
-    console.log('startUrl', startUrl);
     // Prevent multiple sessions from running at the same time, WebBrowser doesn't
     // support it this makes the behavior predictable.
     if (_authLock) {
