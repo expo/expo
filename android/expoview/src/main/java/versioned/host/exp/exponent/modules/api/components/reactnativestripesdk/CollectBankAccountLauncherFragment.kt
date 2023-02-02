@@ -91,6 +91,6 @@ class CollectBankAccountLauncherFragment(
   }
 
   companion object {
-    const val TAG = "collect_bank_account_launcher_fragment"
+    internal const val TAG = "collect_bank_account_launcher_fragment"
   }
 }
