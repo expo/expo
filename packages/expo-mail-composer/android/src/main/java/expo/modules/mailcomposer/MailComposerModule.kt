@@ -1,5 +1,6 @@
 package expo.modules.mailcomposer
 
+import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.content.pm.LabeledIntent
@@ -12,13 +13,15 @@ import expo.modules.core.Promise
 import expo.modules.core.arguments.ReadableArguments
 import expo.modules.core.interfaces.ActivityProvider
 import expo.modules.core.interfaces.ExpoMethod
-import expo.modules.core.interfaces.LifecycleEventListener
+import expo.modules.core.interfaces.ActivityEventListener
+import expo.modules.core.interfaces.services.UIManager
 
 class MailComposerModule(
   context: Context,
   private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
-) : ExportedModule(context), LifecycleEventListener {
+) : ExportedModule(context), ActivityEventListener {
   private var composerOpened = false
+  private val uiManager: UIManager by moduleRegistry()
   private var pendingPromise: Promise? = null
   override fun getName() = "ExpoMailComposer"
   private val activityProvider: ActivityProvider by moduleRegistry()
@@ -27,6 +30,11 @@ class MailComposerModule(
 
   override fun onCreate(moduleRegistry: ModuleRegistry) {
     moduleRegistryDelegate.onCreate(moduleRegistry)
+    uiManager.registerActivityEventListener(this)
+  }
+
+  override fun onDestroy() {
+    uiManager.unregisterActivityEventListener(this)
   }
 
   @ExpoMethod
@@ -65,25 +73,26 @@ class MailComposerModule(
       null
     ).apply {
       putExtra(Intent.EXTRA_INITIAL_INTENTS, mailIntents.toTypedArray())
-      addFlags(Intent.FLAG_ACTIVITY_NEW_TASK)
       addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
     }
     pendingPromise = promise
-    context.startActivity(chooser)
+    activityProvider.currentActivity.startActivityForResult(chooser, REQUEST_CODE)
     composerOpened = true
   }
 
-  override fun onHostResume() {
-    val promise = pendingPromise ?: return
-    if (composerOpened) {
-      composerOpened = false
-      promise.resolve(Bundle().apply { putString("status", "sent") })
+  override fun onNewIntent(intent: Intent) = Unit
+
+  override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
+    if (requestCode == REQUEST_CODE && pendingPromise != null) {
+      val promise = pendingPromise ?: return
+      if (composerOpened) {
+        composerOpened = false
+        promise.resolve(Bundle().apply { putString("status", "sent") })
+      }
     }
   }
 
-  override fun onHostPause() = Unit
-
-  override fun onHostDestroy() {
-    // do nothing
+  companion object {
+    private const val REQUEST_CODE = 8675
   }
 }
