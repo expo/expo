@@ -36,7 +36,7 @@ export function serverRenderUrl(location: URL): string {
 
   let output = mixHeadComponentsWithStaticResults(headContext.helmet, html);
 
-  output = output.replace('<head>', `<head>${css}`);
+  output = output.replace('</head>', `${css}</head>`);
 
   return '<!DOCTYPE html>' + output;
 }
