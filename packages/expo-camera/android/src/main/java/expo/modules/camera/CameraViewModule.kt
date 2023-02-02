@@ -228,6 +228,9 @@ class CameraViewModule : Module() {
       }
 
       Prop("barCodeScannerSettings") { view: ExpoCameraView, settings: Map<String, Any?>? ->
+        if (settings == null) {
+          return@Prop
+        }
         view.setBarCodeScannerSettings(BarCodeScannerSettings(settings))
       }
 

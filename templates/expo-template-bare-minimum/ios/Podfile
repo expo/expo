@@ -13,13 +13,26 @@ install! 'cocoapods',
 
 prepare_react_native_project!
 
-# Flipper support in expo via build properties plugin
-expo_flipper = FlipperConfiguration.disabled
-if ENV['NO_FLIPPER'] != "1" && defined?(podfile_properties['ios.flipper']) then
+# If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
+# because `react-native-flipper` depends on (FlipperKit,...) that will be excluded
+#
+# To fix this you can also exclude `react-native-flipper` using a `react-native.config.js`
+# ```js
+# module.exports = {
+#   dependencies: {
+#     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
+# ```
+flipper_config = FlipperConfiguration.disabled
+if ENV['NO_FLIPPER'] == "1" || ENV['CI'] then
+  # Explicitly disabled via ENV settings
+  flipper_config = FlipperConfiguration.disabled
+elsif defined?(podfile_properties['ios.flipper']) then
+  # Flipper support in expo via build properties plugin
+  # Configured via podfile properties
   if podfile_properties['ios.flipper'] == 'true' then
-    expo_flipper = FlipperConfiguration.enabled(["Debug", "Release"])
+    flipper_config = FlipperConfiguration.enabled(["Debug", "Release"])
   elsif podfile_properties['ios.flipper'] != 'false' then
-    expo_flipper = FlipperConfiguration.enabled(["Debug", "Release"], { 'Flipper' => podfile_properties['ios.flipper'] })
+    flipper_config = FlipperConfiguration.enabled(["Debug", "Release"], { 'Flipper' => podfile_properties['ios.flipper'] })
   end
 end
 
@@ -35,12 +48,12 @@ target 'HelloWorld' do
 
   use_react_native!(
     :path => config[:reactNativePath],
-    :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes',
+    :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
     :fabric_enabled => flags[:fabric_enabled],
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/..",
     # Note that if you have use_frameworks! enabled, Flipper will not work if enabled
-    :flipper_configuration => expo_flipper
+    :flipper_configuration => flipper_config
   )
 
   post_install do |installer|

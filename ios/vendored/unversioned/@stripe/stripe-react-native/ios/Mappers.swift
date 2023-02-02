@@ -1,4 +1,5 @@
 import Stripe
+import StripePaymentSheet
 
 class Mappers {
     class func createResult(_ key: String, _ value: NSDictionary?) -> NSDictionary {
@@ -53,7 +54,7 @@ class Mappers {
         guard let bankAccount = bankAccount else {
             return nil
         }
-        
+
         let result: NSDictionary = [
             "id": bankAccount.stripeID,
             "bankName": bankAccount.bankName ?? NSNull(),
@@ -145,7 +146,7 @@ class Mappers {
         let tokenMap: NSDictionary = [
             "id": token.tokenId,
             "bankAccount": mapFromBankAccount(token.bankAccount) ?? NSNull(),
-            "created": convertDateToUnixTimestamp(date: token.created) ?? NSNull(),
+            "created": convertDateToUnixTimestampMilliseconds(date: token.created) ?? NSNull(),
             "card": mapFromCard(token.card) ?? NSNull(),
             "livemode": token.livemode,
             "type": mapFromTokenType(token.type) ?? NSNull(),
@@ -179,13 +180,24 @@ class Mappers {
     }
 
     class func mapFromShippingMethod(shippingMethod: PKShippingMethod) -> NSDictionary {
-        let method: NSDictionary = [
+        let method: NSMutableDictionary = [
             "detail": shippingMethod.detail ?? "",
             "identifier": shippingMethod.identifier ?? "",
             "amount": shippingMethod.amount.stringValue,
-            "type": shippingMethod.type,
+            "isPending": shippingMethod.type == .pending,
             "label": shippingMethod.label
         ]
+        
+        if #available(iOS 15.0, *) {
+            if let dateComponentsRange = shippingMethod.dateComponentsRange {
+                method.setObject(
+                    convertDateToUnixTimestampSeconds(date: dateComponentsRange.startDateComponents.date) ?? NSNull(),
+                    forKey: "startDate" as NSCopying)
+                method.setObject(
+                    convertDateToUnixTimestampSeconds(date: dateComponentsRange.endDateComponents.date) ?? NSNull(),
+                    forKey: "endDate" as NSCopying)
+            }
+        }
 
         return method
     }
@@ -369,9 +381,10 @@ class Mappers {
             "receiptEmail": paymentIntent.receiptEmail ?? NSNull(),
             "livemode": paymentIntent.livemode,
             "paymentMethodId": paymentIntent.paymentMethodId ?? NSNull(),
+            "paymentMethod": mapFromPaymentMethod(paymentIntent.paymentMethod) ?? NSNull(),
             "captureMethod": mapCaptureMethod(paymentIntent.captureMethod),
             "confirmationMethod": mapConfirmationMethod(paymentIntent.confirmationMethod),
-            "created": convertDateToUnixTimestamp(date: paymentIntent.created) ?? NSNull(),
+            "created": convertDateToUnixTimestampMilliseconds(date: paymentIntent.created) ?? NSNull(),
             "amount": paymentIntent.amount,
             "lastPaymentError": NSNull(),
             "shipping": NSNull(),
@@ -396,7 +409,7 @@ class Mappers {
         }
 
         if let canceledAt = paymentIntent.canceledAt {
-            intent.setValue(convertDateToUnixTimestamp(date: canceledAt), forKey: "canceledAt")
+            intent.setValue(convertDateToUnixTimestampMilliseconds(date: canceledAt), forKey: "canceledAt")
         }
 
         return intent;
@@ -490,19 +503,19 @@ class Mappers {
             return nil
         }
         let billing = STPPaymentMethodBillingDetails()
-        billing.email = RCTConvert.nsString(billingDetails["email"])
-        billing.phone = RCTConvert.nsString(billingDetails["phone"])
-        billing.name = RCTConvert.nsString(billingDetails["name"])
+        billing.email = billingDetails["email"] as? String
+        billing.phone = billingDetails["phone"] as? String
+        billing.name = billingDetails["name"] as? String
 
         let address = STPPaymentMethodAddress()
 
         if let addressMap = billingDetails["address"] as? NSDictionary {
-            address.city = RCTConvert.nsString(addressMap["city"])
-            address.postalCode = RCTConvert.nsString(addressMap["postalCode"])
-            address.country = RCTConvert.nsString(addressMap["country"])
-            address.line1 = RCTConvert.nsString(addressMap["line1"])
-            address.line2 = RCTConvert.nsString(addressMap["line2"])
-            address.state = RCTConvert.nsString(addressMap["state"])
+            address.city = addressMap["city"] as? String
+            address.postalCode = addressMap["postalCode"] as? String
+            address.country = addressMap["country"] as? String
+            address.line1 = addressMap["line1"] as? String
+            address.line2 = addressMap["line2"] as? String
+            address.state = addressMap["state"] as? String
         }
 
         billing.address = address
@@ -594,8 +607,11 @@ class Mappers {
             "expMonth": paymentMethod.card?.expMonth ?? NSNull(),
             "fingerprint": paymentMethod.card?.fingerprint ?? NSNull(),
             "funding": paymentMethod.card?.funding ?? NSNull(),
-            "last4": paymentMethod.card?.last4 ?? NSNull()
+            "last4": paymentMethod.card?.last4 ?? NSNull(),
+            "preferredNetwork": paymentMethod.card?.networks?.preferred ?? NSNull(),
+            "availableNetworks": paymentMethod.card?.networks?.available ?? NSNull(),
         ]
+        
         let sepaDebit: NSDictionary = [
             "bankCode": paymentMethod.sepaDebit?.bankCode ?? NSNull(),
             "country": paymentMethod.sepaDebit?.country ?? NSNull(),
@@ -703,6 +719,7 @@ class Mappers {
             "paymentMethodTypes": NSArray(),
             "usage": mapFromSetupIntentUsage(usage: setupIntent.usage),
             "paymentMethodId": setupIntent.paymentMethodID ?? NSNull(),
+            "paymentMethod": mapFromPaymentMethod(setupIntent.paymentMethod) ?? NSNull(),
             "created": NSNull(),
             "lastSetupError": NSNull(),
             "nextAction": mapNextAction(nextAction: setupIntent.nextAction) ?? NSNull(),
@@ -714,7 +731,7 @@ class Mappers {
         }
 
         intent.setValue(types, forKey: "paymentMethodTypes")
-        intent.setValue(convertDateToUnixTimestamp(date: setupIntent.created), forKey: "created")
+        intent.setValue(convertDateToUnixTimestampMilliseconds(date: setupIntent.created), forKey: "created")
 
         if let lastSetupError = setupIntent.lastSetupError {
             let setupError: NSMutableDictionary = [
@@ -741,6 +758,10 @@ class Mappers {
 
     class func mapToReturnURL(urlScheme: String) -> String {
         return urlScheme + "://safepay"
+    }
+
+    class func mapToFinancialConnectionsReturnURL(urlScheme: String) -> String {
+        return urlScheme + "://financial_connections_redirect"
     }
 
     class func mapUICustomization(_ params: NSDictionary) -> STPThreeDSUICustomization {
@@ -920,9 +941,17 @@ class Mappers {
         return uiCustomization
     }
 
-    class func convertDateToUnixTimestamp(date: Date?) -> String? {
+    class func convertDateToUnixTimestampMilliseconds(date: Date?) -> String? {
         if let date = date {
             let value = date.timeIntervalSince1970 * 1000.0
+            return String(format: "%.0f", value)
+        }
+        return nil
+    }
+    
+    class func convertDateToUnixTimestampSeconds(date: Date?) -> String? {
+        if let date = date {
+            let value = date.timeIntervalSince1970
             return String(format: "%.0f", value)
         }
         return nil

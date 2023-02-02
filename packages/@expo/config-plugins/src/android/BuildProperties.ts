@@ -51,7 +51,7 @@ export const withJsEngineGradleProps = createBuildGradlePropsConfigPlugin<ExpoCo
   [
     {
       propName: 'expo.jsEngine',
-      propValueGetter: (config) => config.android?.jsEngine ?? config.jsEngine ?? 'jsc',
+      propValueGetter: (config) => config.android?.jsEngine ?? config.jsEngine ?? 'hermes',
     },
   ],
   'withJsEngineGradleProps'

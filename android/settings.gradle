@@ -39,6 +39,7 @@ project(":expo-random").projectDir = new File("../packages/expo-random/android")
 useExpoModules([
     exclude : [
         'expo-module-template',
+        'expo-in-app-purchases',
         'react-native-reanimated',
         'expo-dev-menu-interface',
         'expo-dev-menu',

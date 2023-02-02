@@ -6,7 +6,12 @@ import android.content.Context
 import android.graphics.Rect
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
+import android.os.Build
+import android.view.View
 import android.widget.FrameLayout
+import androidx.core.view.AccessibilityDelegateCompat
+import androidx.core.view.ViewCompat
+import androidx.core.view.accessibility.AccessibilityNodeInfoCompat
 import androidx.core.view.isVisible
 import com.bumptech.glide.Glide
 import com.bumptech.glide.RequestManager
@@ -124,7 +129,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   internal var accessible: Boolean = false
     set(value) {
       field = value
-      activeView.isScreenReaderFocusable = value
+      setIsScreenReaderFocusable(activeView, value)
     }
 
   internal var accessibilityLabel: String? = null
@@ -181,7 +186,6 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     view.setBackgroundColor(backgroundColor)
     view.setTintColor(tintColor)
     view.isFocusable = isFocusableProp
-    view.isScreenReaderFocusable = accessible
     view.contentDescription = accessibilityLabel
     borderColor.forEachIndexed { index, (rgb, alpha) ->
       view.setBorderColor(index, rgb, alpha)
@@ -191,6 +195,26 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     }
     borderWidth.forEachIndexed { index, value ->
       view.setBorderWidth(index, value)
+    }
+    setIsScreenReaderFocusable(view, accessible)
+  }
+
+  /**
+   * Allows `isScreenReaderFocusable` to be set on apis below level 28
+   */
+  private fun setIsScreenReaderFocusable(view: View, value: Boolean) {
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.P) {
+      view.isScreenReaderFocusable = value
+    } else {
+      ViewCompat.setAccessibilityDelegate(
+        this,
+        object : AccessibilityDelegateCompat() {
+          override fun onInitializeAccessibilityNodeInfo(host: View, info: AccessibilityNodeInfoCompat) {
+            info.isScreenReaderFocusable = value
+            super.onInitializeAccessibilityNodeInfo(host, info)
+          }
+        }
+      )
     }
   }
 

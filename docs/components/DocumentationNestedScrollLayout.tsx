@@ -5,7 +5,7 @@ import { css } from '@emotion/react';
 import { breakpoints, theme } from '@expo/styleguide';
 import * as React from 'react';
 
-import { SidebarHead } from '~/ui/components/Sidebar/SidebarHead';
+import { SidebarHead, SidebarFooter } from '~/ui/components/Sidebar';
 
 const STYLES_CONTAINER = css`
   width: 100%;
@@ -227,6 +227,7 @@ export default class DocumentationNestedScrollLayout extends React.Component<Pro
             <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
             <ScrollContainer ref={this.sidebarRef} scrollPosition={sidebarScrollPosition}>
               {sidebar}
+              <SidebarFooter />
             </ScrollContainer>
           </div>
           <div css={[STYLES_CENTER, isMobileMenuVisible && STYLES_HIDDEN]}>
