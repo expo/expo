@@ -18,7 +18,7 @@
 
 ## 3.7.2 — 2023-02-02
 
-- Handle more generic issuer / discovery urls for the likes of Azure B2C
+- Handle more generic issuer / discovery urls for the likes of Azure B2C ([#21059](https://github.com/expo/expo/pull/21059) by [@kerrpeter](https://github.com/kerrpeter))
 
 ## 3.7.1 — 2022-07-16
 
