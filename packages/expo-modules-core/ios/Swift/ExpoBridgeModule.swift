@@ -42,35 +42,32 @@ public final class ExpoBridgeModule: NSObject, RCTBridgeModule {
     didSet {
       appContext.reactBridge = bridge
 
+      let attachRuntime = { [weak self] in
+        guard let self = self, let bridge = self.appContext.reactBridge else {
+          return
+        }
+        self.appContext.runtime = EXJavaScriptRuntimeManager.runtime(fromBridge: bridge)
+      }
+
       if bridge.responds(to: Selector(("runtime"))) {
         // Getting the `runtime` on a different thread than JS is considered to be dangerous.
         // However, we just checking if it exists. We don't do anything with it.
         let result = bridge.perform(Selector(("runtime")))
         if result == nil {
           // When exporting expo modules using `extraModulesForBridge` (e.g. in Expo Go),
-          // the runtime won't be initiated before the bidge didSet method is called.
+          // the runtime won't be initiated before the bridge didSet method is called.
           // Therefore, we need to wait for the main thread to complete its initialization by dispatching on it first.
           bridge.dispatchBlock({ [weak self] in
             guard let self = self, let bridge = self.appContext.reactBridge else {
               return
             }
-            bridge.dispatchBlock({ [weak self] in
-              guard let self = self, let bridge = self.appContext.reactBridge else {
-                return
-              }
-              self.appContext.runtime = EXJavaScriptRuntimeManager.runtime(fromBridge: bridge)
-            }, queue: RCTJSThread)
+            bridge.dispatchBlock(attachRuntime, queue: RCTJSThread)
           }, queue: DispatchQueue.main)
           return
         }
       }
 
-      bridge.dispatchBlock({ [weak self] in
-        guard let self = self, let bridge = self.appContext.reactBridge else {
-          return
-        }
-        self.appContext.runtime = EXJavaScriptRuntimeManager.runtime(fromBridge: bridge)
-      }, queue: RCTJSThread)
+      bridge.dispatchBlock(attachRuntime, queue: RCTJSThread)
     }
   }
   
