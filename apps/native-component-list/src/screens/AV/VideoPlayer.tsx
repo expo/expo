@@ -86,7 +86,9 @@ export default function VideoPlayer(props: {
     <View>
       <AndroidImplementationSelector
         onToggle={toggleAndroidImplementation}
-        title={`Use ${isMediaPlayerImplementation() ? 'SimpleExoPlayer' : 'MediaPlayer'}`}
+        title={`Current player: ${
+          isMediaPlayerImplementation() ? 'MediaPlayer' : 'SimpleExoPlayer'
+        }`}
         toggled={isMediaPlayerImplementation()}
       />
 

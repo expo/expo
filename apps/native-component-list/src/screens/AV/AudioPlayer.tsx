@@ -159,7 +159,9 @@ export default class AudioPlayer extends React.Component<Props, State> {
       <View>
         <AndroidImplementationSelector
           onToggle={this._toggleAndroidImplementation}
-          title={`Use ${this._isMediaPlayerImplementation() ? 'SimpleExoPlayer' : 'MediaPlayer'}`}
+          title={`Current player: ${
+            this._isMediaPlayerImplementation() ? 'MediaPlayer' : 'SimpleExoPlayer'
+          }`}
           toggled={this._isMediaPlayerImplementation()}
         />
 
