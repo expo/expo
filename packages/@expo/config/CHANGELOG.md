@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Remove originalFullName currentFullName hack from exported config. ([#21070](https://github.com/expo/expo/pull/21070) by [@wschurman](https://github.com/wschurman))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes

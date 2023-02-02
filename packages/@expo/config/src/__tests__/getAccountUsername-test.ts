@@ -1,6 +1,6 @@
 import { mkdirSync } from 'fs';
 
-import { getAccountUsername } from '../getFullName';
+import { getAccountUsername } from '../getAccountUsername';
 import { getExpoHomeDirectory, getUserState } from '../getUserState';
 
 jest.mock('os');
