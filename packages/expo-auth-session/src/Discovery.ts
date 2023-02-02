@@ -208,7 +208,9 @@ export type IssuerOrDiscovery = Issuer | DiscoveryDocument;
  * https://tools.ietf.org/html/rfc5785
  */
 export function issuerWithWellKnownUrl(issuer: Issuer): string {
-  return `${issuer}/.well-known/openid-configuration`;
+  return issuer.includes('.well-known/openid-configuration')
+    ? issuer
+    : `${issuer}/.well-known/openid-configuration`;
 }
 
 // @needsAudit
