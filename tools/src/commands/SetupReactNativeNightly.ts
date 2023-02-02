@@ -2,14 +2,18 @@ import { Command } from '@expo/commander';
 import JsonFile from '@expo/json-file';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
+import fs from 'fs-extra';
 import glob from 'glob-promise';
 import path from 'path';
 
-import { EXPO_DIR } from '../Constants';
+import { EXPO_DIR, EXPOTOOLS_DIR } from '../Constants';
 import logger from '../Logger';
 import { getPackageViewAsync } from '../Npm';
 import { transformFileAsync } from '../Transforms';
+import { applyPatchAsync } from '../Utils';
 import { installAsync as workspaceInstallAsync } from '../Workspace';
+
+const PATCHES_ROOT = path.join(EXPOTOOLS_DIR, 'src', 'react-native-nightlies', 'patches');
 
 export default (program: Command) => {
   program
@@ -39,6 +43,7 @@ async function main() {
   await updateReactNativePackageAsync();
 
   await patchReanimatedAsync(nightlyVersion);
+  await patchDetoxAsync();
 
   logger.info('Setting up Expo modules files');
   await updateExpoModulesAsync();
@@ -153,6 +158,12 @@ async function patchReanimatedAsync(nightlyVersion: string) {
       replaceWith: `$1\n    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",`,
     },
   ]);
+}
+
+async function patchDetoxAsync() {
+  const patchFile = path.join(PATCHES_ROOT, 'detox.patch');
+  const patchContent = await fs.readFile(patchFile, 'utf8');
+  await applyPatchAsync({ patchContent, cwd: EXPO_DIR, stripPrefixNum: 1 });
 }
 
 async function updateExpoModulesAsync() {
