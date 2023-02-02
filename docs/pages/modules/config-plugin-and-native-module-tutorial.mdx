@@ -103,6 +103,7 @@ Now let's run the example project to make sure everything is working. Start the 
 />
 
 In another terminal window, compile and run the example app:
+
 <Terminal
   cmdCopy="cd example && npx expo run:ios"
   cmd={[
@@ -135,7 +136,7 @@ However, there are a few considerations that we should follow when writing confi
 - Plugins should be synchronous and their return value should be serializable, except for any `mods` that are added.
 - `plugins` are always invoked when the config is read by the `expo/config` method `getConfig`. However, `mods` are only invoked during the "syncing" phase of `npx expo prebuild`.
 
-Although not required, we can use [`expo-module-scripts`](https://www.npmjs.com/package/expo-module-scripts) to make plugin development easier — it provides a recommended default configuration for TypeScript and Jest. For more information, see [config plugins guide](https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin).
+> Although not required, we can use [`expo-module-scripts`](https://www.npmjs.com/package/expo-module-scripts) to make plugin development easier — it provides a recommended default configuration for TypeScript and Jest. For more information, see [config plugins guide](https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin).
 
 Let's start by creating our plugin with this minimal boilerplate. This will create a **plugin** folder where we will write the plugin in TypeScript and add a **app.plugin.js** file in the project root, which will be the entry file for the plugin.
 
@@ -271,8 +272,6 @@ Now with the plugin ready to be used, let's update the example app to pass our A
   }
 }
 ```
-
-This tells the example app to use our custom plugin, and passes in the API key as a configuration option.
 
 After making this change, we can test that the plugin is working correctly by running the command `npx expo prebuild --clean` inside the **example** folder. This will execute our plugin and update native files, injecting "MY_CUSTOM_API_KEY" into **AndroidManifest.xml** and **Info.plist**. You can verify this by checking the contents of **example/android/app/src/main/AndroidManifest.xml**.
 
