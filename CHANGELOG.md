@@ -17,7 +17,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-safe-area-context` from `4.4.1` to `4.5.0`. ([#20899](https://github.com/expo/expo/pull/20899) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Updated `react-native-screens` from `3.18.0` to `3.19.0`. ([#20938](https://github.com/expo/expo/pull/20938) by [@lukmccall](https://github.com/lukmccall))
 - Updated `react-native-pager-view` from `6.0.1` to `6.1.2`. ([#20932](https://github.com/expo/expo/pull/20932) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Updated `@react-native-community/slider` from `4.2.4` to `4.4.1`. ([#20903](https://github.com/expo/expo/pull/20903) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Updated `@react-native-community/slider` from `4.2.4` to `4.4.2`. ([#20903](https://github.com/expo/expo/pull/20903) by [@gabrieldonadel](https://github.com/gabrieldonadel), [#21055](https://github.com/expo/expo/pull/21055) by [@kudo](https://github.com/kudo))
 - Updated `react-native-shared-element` from `0.8.7` to `0.8.8`. ([#20929](https://github.com/expo/expo/pull/20929) by [@byCedric](https://github.com/byCedric))
 - Updated `@react-native-community/datetimepicker` from `6.5.2` to `6.7.3`. ([#20926](https://github.com/expo/expo/pull/20926) by [@byCedric](https://github.com/byCedric))
 - Updated `@shopify/flash-list` from `1.3.1` to `1.4.0`. ([#20927](https://github.com/expo/expo/pull/20927) by [@lukmccall](https://github.com/lukmccall))
