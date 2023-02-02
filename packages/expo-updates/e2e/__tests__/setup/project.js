@@ -172,13 +172,6 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
       }
     : {};
 
-  const metroDependencies = {
-    metro: '0.71.1',
-    'metro-config': '0.71.1',
-    'metro-react-native-babel-preset': '0.71.1',
-    'metro-source-map': '0.71.1',
-  };
-
   // Remove the default Expo dependencies from create-expo-app
   let packageJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'package.json'), 'utf-8'));
   for (const dependencyName of expoDependencyNames) {
@@ -199,12 +192,10 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
     },
     devDependencies: {
       ...extraDevDependencies,
-      ...metroDependencies,
       ...packageJson.devDependencies,
     },
     resolutions: {
       ...expoResolutions,
-      ...metroDependencies,
       ...packageJson.resolutions,
     },
   };
@@ -279,7 +270,7 @@ function transformAppJsonForE2E(appJson, projectName, runtimeVersion) {
       name: projectName,
       owner: 'expo-ci',
       runtimeVersion,
-      jsEngine: 'jsc',
+      jsEngine: 'hermes',
       plugins: ['expo-updates', '@config-plugins/detox'],
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
