@@ -20,7 +20,6 @@ export function serverRenderUrl(location: URL): string {
 
   const out = React.createElement(Root, {
     children: element,
-    styles: <></>,
   });
 
   const html = ReactDOMServer.renderToString(
@@ -88,7 +87,8 @@ body {
 }
 `;
 
-export function Root({ children, styles }) {
+// TODO: Expose this to the developer
+export function Root({ children }) {
   return (
     <html lang="en" style={{ height: '100%' }}>
       <head>
@@ -99,7 +99,6 @@ export function Root({ children, styles }) {
           content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1.00001,viewport-fit=cover"
         />
         <style id="expo-reset" dangerouslySetInnerHTML={{ __html: style }} />
-        {styles}
       </head>
       <body style={{ height: '100%', overflow: 'hidden' }}>
         <div id="root">{children}</div>
