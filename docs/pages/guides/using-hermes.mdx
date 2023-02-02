@@ -11,16 +11,16 @@ import { Terminal } from '~/ui/components/Snippet';
 
 ## Support
 
-The Hermes engine is fully supported across all Expo tooling. See the table below to check if your project is using a compatible version:
+The Hermes engine is the default JavaScript engine used by Expo and it is fully supported across all Expo tooling. See the table below to check if your project is using a compatible version:
 
 | Platform | Expo Go | [Development Builds](/development/introduction) |
 | -------- | ------- | ----------------------------------------------- |
 | Android  | SDK 42  | SDK 42                                          |
 | iOS      | SDK 47  | SDK 43                                          |
 
-## Setup
+<Collapsible summary="Using SDK 47 or lower?">
 
-To get started, open your **app.json** and add the `jsEngine` field:
+For SDK 47 and lower, JSC is the default JavaScript engine and to use Hermes you need to add the `jsEngine` field in [Expo config](/workflow/configuration):
 
 {/* prettier-ignore */}
 ```js
@@ -34,6 +34,8 @@ To get started, open your **app.json** and add the `jsEngine` field:
 ```
 
 Development builds will need to be recompiled with `eas build`.
+
+</Collapsible>
 
 ### Switch JavaScript engine on a specific platform
 
