@@ -1,6 +1,6 @@
 'use strict';
 
-import Image from 'expo-image';
+import { Image } from 'expo-image';
 import React from 'react';
 
 import { mountAndWaitFor, mountAndWaitForWithTimeout, TimeoutError } from './helpers';
