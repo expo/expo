@@ -199,11 +199,9 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
       ...packageJson.resolutions,
     },
   };
-  await fs.writeFile(
-    path.join(projectRoot, 'package.json'),
-    JSON.stringify(packageJson, null, 2),
-    'utf-8'
-  );
+
+  const packageJsonString = JSON.stringify(packageJson, null, 2);
+  await fs.writeFile(path.join(projectRoot, 'package.json'), packageJsonString, 'utf-8');
 }
 
 async function prepareLocalUpdatesModule(repoRoot) {
@@ -378,6 +376,7 @@ async function initAsync(
   await spawnAsync(localCliBin, ['prebuild', '--no-install', '--template', localTemplatePathName], {
     env: {
       ...process.env,
+      EX_UPDATES_NATIVE_DEBUG: '1',
       EXPO_DEBUG: '1',
       CI: '1',
     },
@@ -388,12 +387,30 @@ async function initAsync(
   // We are done with template tarball
   await fs.rm(localTemplatePathName);
 
+  // Prebuild mangles the package.json expo dependency, fix it
+  const packageJsonPath = path.resolve(projectRoot, 'package.json');
+  let packageJsonString = await fs.readFile(packageJsonPath, 'utf-8');
+  const packageJson = JSON.parse(packageJsonString);
+  packageJson.dependencies.expo = packageJson.resolutions.expo;
+  packageJsonString = JSON.stringify(packageJson, null, 2);
+  await fs.rm(packageJsonPath);
+  await fs.writeFile(packageJsonPath, packageJsonString, 'utf-8');
+
   // enable proguard on Android
   await fs.appendFile(
     path.join(projectRoot, 'android', 'gradle.properties'),
     '\nandroid.enableProguardInReleaseBuilds=true',
     'utf-8'
   );
+
+  // Force bundling on iOS for debug builds
+  const iosProjectPath = glob.sync(
+    path.join(projectRoot, 'ios', '*.xcodeproj', 'project.pbxproj')
+  )[0];
+  const iosProject = await fs.readFile(iosProjectPath, 'utf-8');
+  const iosProjectEdited = iosProject.replace('SKIP', 'FORCE');
+  await fs.rm(iosProjectPath);
+  await fs.writeFile(iosProjectPath, iosProjectEdited, 'utf-8');
 
   return projectRoot;
 }

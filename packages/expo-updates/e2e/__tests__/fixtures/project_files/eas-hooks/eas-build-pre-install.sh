@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 set -eox pipefail
-npm i -g expo-cli
 
 if [[ "$EAS_BUILD_RUNNER" == "eas-build" && "$EAS_BUILD_PROFILE" == "updates_testing" ]]; then
   if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then

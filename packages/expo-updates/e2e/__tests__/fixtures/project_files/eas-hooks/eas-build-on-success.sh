@@ -34,7 +34,7 @@ if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
 fi
 
 # Basic tests
-detox test --configuration $EAS_BUILD_PLATFORM.release --headless 2>&1 | tee ./logs/detox-tests-basic.log
+detox test --configuration $EAS_BUILD_PLATFORM.debug --headless 2>&1 | tee ./logs/detox-tests-basic.log
 
 # -- Remove old files and directories
 rm -rf .detoxrc.json .expo .git .gitignore App.js android app.json assets babel.config.js certs dependencies e2e eas-hooks eas.json index.js ios keys metro.config.js node_modules package.json updates
@@ -47,10 +47,10 @@ yarn
 if [[ "$EAS_BUILD_PLATFORM" == "ios" ]]; then
   npx pod-install
 fi
-detox build --configuration $EAS_BUILD_PLATFORM.release
+detox build --configuration $EAS_BUILD_PLATFORM.debug
 
 # -- Execute Detox assets tests
-detox test --configuration $EAS_BUILD_PLATFORM.release --headless 2>&1 | tee ./logs/detox-tests-assets.log
+detox test --configuration $EAS_BUILD_PLATFORM.debug --headless 2>&1 | tee ./logs/detox-tests-assets.log
 
 
 if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
