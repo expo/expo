@@ -163,7 +163,7 @@
                                          ]];
   }
   if (!result) {
-    result = @"jsc";
+    result = @"hermes";
   }
   return result;
 }

@@ -657,7 +657,7 @@ exports[`built-in plugins introspects mods 1`] = `
           {
             "key": "expo.jsEngine",
             "type": "property",
-            "value": "jsc",
+            "value": "hermes",
           },
         ],
         "manifest": {
@@ -1088,7 +1088,7 @@ exports[`built-in plugins introspects mods 1`] = `
           },
         },
         "podfileProperties": {
-          "expo.jsEngine": "jsc",
+          "expo.jsEngine": "hermes",
         },
         "splashScreenStoryboard": {
           "document": {
@@ -1627,7 +1627,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
           {
             "key": "expo.jsEngine",
             "type": "property",
-            "value": "jsc",
+            "value": "hermes",
           },
         ],
         "manifest": {
@@ -2072,7 +2072,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
           },
         },
         "podfileProperties": {
-          "expo.jsEngine": "jsc",
+          "expo.jsEngine": "hermes",
         },
         "splashScreenStoryboard": {
           "document": {
