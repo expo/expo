@@ -58,7 +58,7 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
-    "@babel/runtime": "^7.14.0",
+    "@babel/runtime": "^7.20.0",
     "@expo/cli": "0.4.6",
     "@expo/vector-icons": "^13.0.0",
     "@expo/config-plugins": "5.0.4",
@@ -93,6 +93,6 @@
     "expo-module-scripts": "^3.0.5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.71.0"
+    "react-native": "0.71.2"
   }
 }

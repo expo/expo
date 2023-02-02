@@ -19,12 +19,12 @@
     "expo-splash-screen": "~0.17.0",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.71.0",
+    "react-native": "0.71.2",
     "react-native-web": "~0.18.10",
     "expo-status-bar": "~1.4.2"
   },
   "devDependencies": {
-    "@babel/core": "^7.18.6"
+    "@babel/core": "^7.20.0"
   },
   "private": true
 }
