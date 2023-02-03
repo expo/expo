@@ -186,14 +186,7 @@ At the root of your project, run `npm run build plugin` to start the TypeScript 
 
 Now when running `npx expo prebuild` inside our **example** folder we should see our 'my custom plugin’ console.log statement in the terminal.
 
-<Terminal
-  cmd={[
-    '# Run this in the root of the project to start the TypeScript compiler',
-    '$ npm run build plugin',
-    '$ cd example',
-    '$ npx expo prebuild --clean',
-  ]}
-/>
+<Terminal cmd={['$ cd example', '$ npx expo prebuild --clean']} />
 
 To inject our custom API keys into **AndroidManifest.xml** and **Info.plist** we can use a few helper [`mods` provided by `expo/config-plugins`](/guides/config-plugins/#mod-plugins), which makes it easy to modify native files. In our example, we will use two of them, `withAndroidManifest` and `withInfoPlist`.
 
