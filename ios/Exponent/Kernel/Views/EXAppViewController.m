@@ -269,7 +269,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (bool)_readSupportsRTLFromManifest:(EXManifestsManifest *)manifest
 {
-  return [[[[manifest rawManifestJSON] valueForKey:@"extra"] valueForKey: @"supportsRTL"] boolValue];
+  return [[[[manifest expoClientConfigRootObject] valueForKey:@"extra"] valueForKey: @"supportsRTL"] boolValue];
 }
 
 - (void)appStateDidBecomeActive
