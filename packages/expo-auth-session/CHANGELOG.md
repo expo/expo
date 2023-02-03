@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Removed usage of the deprecated `expo-random` package.
+- Removed usage of the deprecated `expo-random` package. ([#21063](https://github.com/expo/expo/pull/21063) by [@lukmccall](https://github.com/lukmccall))
 
 ## 3.7.2 — 2022-10-25
 
