@@ -35,6 +35,10 @@ const schema = {
                 kotlinVersion: { type: 'string', nullable: true },
                 enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
                 extraProguardRules: { type: 'string', nullable: true },
+                flipper: {
+                    type: 'string',
+                    nullable: true,
+                },
                 packagingOptions: {
                     type: 'object',
                     properties: {
@@ -54,6 +58,10 @@ const schema = {
                 newArchEnabled: { type: 'boolean', nullable: true },
                 deploymentTarget: { type: 'string', pattern: '\\d+\\.\\d+', nullable: true },
                 useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
+                flipper: {
+                    type: ['boolean', 'string'],
+                    nullable: true,
+                },
             },
             nullable: true,
         },
@@ -112,11 +120,16 @@ function maybeThrowInvalidVersions(config) {
  * @ignore
  */
 function validateConfig(config) {
-    const validate = new ajv_1.default().compile(schema);
+    const validate = new ajv_1.default({ allowUnionTypes: true }).compile(schema);
     if (!validate(config)) {
         throw new Error('Invalid expo-build-properties config: ' + JSON.stringify(validate.errors));
     }
     maybeThrowInvalidVersions(config);
+    // explicitly block using use_frameworks and Flipper in iOS
+    // https://github.com/facebook/flipper/issues/2414
+    if (config?.ios?.flipper !== undefined && config?.ios?.useFrameworks !== undefined) {
+        throw new Error('`ios.flipper` cannot be enabled when `ios.useFrameworks` is set.');
+    }
     return config;
 }
 exports.validateConfig = validateConfig;
