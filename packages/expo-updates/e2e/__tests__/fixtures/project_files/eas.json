@@ -19,7 +19,7 @@
       "android": {
         "gradleCommand": ":app:assembleDebug :app:assembleAndroidTest -DtestBuildType=debug",
         "withoutCredentials": true,
-        "resourceClass": "m1-medium"
+        "resourceClass": "large"
       },
       "ios": {
         "simulator": true,
