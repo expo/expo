@@ -134,14 +134,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           const location = new URL(req.url, devServerUrl);
 
           try {
-            const serverRenderLocation = (
+            const getStaticContent = (
               await getStaticRenderFunctions(this.projectRoot, devServerUrl, {
                 minify: options.mode === 'production',
-                // dev: options.mode !== 'production',
+                dev: options.mode !== 'production',
               })
-            ).serverRenderUrl;
+            ).getStaticContent;
 
-            let content = serverRenderLocation(location);
+            let content = getStaticContent(location);
 
             //TODO: Not this -- disable injection some other way
             if (options.mode !== 'production') {

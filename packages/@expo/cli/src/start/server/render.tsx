@@ -1,5 +1,13 @@
+/**
+ * Copyright © 2022 650 Industries.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 import { ServerContainer, ServerContainerRef } from '@react-navigation/native';
-import { App } from 'expo-router/entry';
+// @ts-expect-error: expo-router is not added as a dev dependency
+import App from 'expo-router/_root';
+// @ts-expect-error: expo-router is not added as a dev dependency
 import Head from 'expo-router/head';
 import React from 'react';
 import ReactDOMServer from 'react-dom/server';
@@ -11,15 +19,28 @@ export function getManifest() {
   return require('expo-router/_getRoutesManifest').getManifest();
 }
 
-export function serverRenderUrl(location: URL): string {
-  const headContext = {};
+export function getStaticContent(location: URL): string {
+  const headContext: { helmet?: any } = {};
 
   const ref = React.createRef<ServerContainerRef>();
 
-  const { element, getStyleElement } = AppRegistry.getApplication('App');
+  const {
+    // Skipping the `element` that's returned to ensure the HTML
+    // matches what's used in the client -- this results in two extra Views and
+    // the seemingly unused `RootTagContext.Provider` from being added.
+    getStyleElement,
+  } = AppRegistry.getApplication('App');
 
   const out = React.createElement(Root, {
-    children: element,
+    // TODO: Use RNW view after they fix hydration for React 18
+    // https://github.com/necolas/react-native-web/blob/e8098fd029102d7801c32c1ede792bce01808c00/packages/react-native-web/src/exports/render/index.js#L10
+    // Otherwise this wraps the app with two extra divs
+    children: (
+      // Inject the root tag
+      <div id="root">
+        <App />
+      </div>
+    ),
   });
 
   const html = ReactDOMServer.renderToString(
@@ -43,15 +64,15 @@ export function serverRenderUrl(location: URL): string {
 function mixHeadComponentsWithStaticResults(helmet: any, html: string) {
   // Head components
   for (const key of ['title', 'priority', 'meta', 'link', 'script', 'style'].reverse()) {
-    const result = helmet[key].toString();
+    const result = helmet?.[key]?.toString();
     if (result) {
       html = html.replace('<head>', `<head>${result}`);
     }
   }
 
   // attributes
-  html = html.replace('<html ', `<html ${helmet.htmlAttributes.toString()} `);
-  html = html.replace('<body ', `<body ${helmet.bodyAttributes.toString()} `);
+  html = html.replace('<html ', `<html ${helmet?.htmlAttributes.toString()} `);
+  html = html.replace('<body ', `<body ${helmet?.bodyAttributes.toString()} `);
 
   return html;
 }
@@ -87,7 +108,11 @@ body {
 }
 `;
 
-// TODO: Expose this to the developer
+function StyleReset() {
+  return <style id="expo-reset" dangerouslySetInnerHTML={{ __html: style }} />;
+}
+
+// TODO(EvanBacon): Expose this to the developer
 export function Root({ children }) {
   return (
     <html lang="en" style={{ height: '100%' }}>
@@ -98,11 +123,9 @@ export function Root({ children }) {
           name="viewport"
           content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1.00001,viewport-fit=cover"
         />
-        <style id="expo-reset" dangerouslySetInnerHTML={{ __html: style }} />
+        <StyleReset />
       </head>
-      <body style={{ height: '100%', overflow: 'hidden' }}>
-        <div id="root">{children}</div>
-      </body>
+      <body style={{ height: '100%', overflow: 'hidden' }}>{children}</body>
     </html>
   );
 }

@@ -37,7 +37,14 @@ function wrapBundle(str: string) {
 export async function getStaticRenderFunctions(
   projectRoot: string,
   devServerUrl: string,
-  { dev = false, minify = false }: { dev?: boolean; minify?: boolean } = {}
+  {
+    dev = false,
+    minify = false,
+  }: {
+    // Ensure the style format is `css-xxxx` (prod) instead of `css-view-xxxx` (dev)
+    dev?: boolean;
+    minify?: boolean;
+  } = {}
 ): Promise<any> {
   await createNodeEntryAsync(projectRoot);
   const content = await fetch(
