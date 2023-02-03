@@ -4,6 +4,7 @@ import {
   withAndroidBuildProperties,
   withAndroidProguardRules,
   withAndroidPurgeProguardRulesOnce,
+  withAndroidFlipper,
 } from './android';
 import { withIosBuildProperties, withIosDeploymentTarget } from './ios';
 import { PluginConfigType, validateConfig } from './pluginConfig';
@@ -27,6 +28,7 @@ export const withBuildProperties: ConfigPlugin<PluginConfigType> = (config, prop
   // plugins order matter: the later one would run first
   config = withAndroidPurgeProguardRulesOnce(config);
 
+  config = withAndroidFlipper(config, pluginConfig);
   config = withIosBuildProperties(config, pluginConfig);
   config = withIosDeploymentTarget(config, pluginConfig);
 

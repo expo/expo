@@ -22,7 +22,19 @@ prepare_react_native_project!
 #   dependencies: {
 #     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
 # ```
-flipper_config = ENV['NO_FLIPPER'] == "1" || ENV['CI'] ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
+flipper_config = FlipperConfiguration.disabled
+if ENV['NO_FLIPPER'] == "1" || ENV['CI'] then
+  # Explicitly disabled via ENV settings
+  flipper_config = FlipperConfiguration.disabled
+elsif defined?(podfile_properties['ios.flipper']) then
+  # Flipper support in expo via build properties plugin
+  # Configured via podfile properties
+  if podfile_properties['ios.flipper'] == 'true' then
+    flipper_config = FlipperConfiguration.enabled(["Debug", "Release"])
+  elsif podfile_properties['ios.flipper'] != 'false' then
+    flipper_config = FlipperConfiguration.enabled(["Debug", "Release"], { 'Flipper' => podfile_properties['ios.flipper'] })
+  end
+end
 
 target 'HelloWorld' do
   use_expo_modules!
@@ -40,10 +52,8 @@ target 'HelloWorld' do
     :fabric_enabled => flags[:fabric_enabled],
     # An absolute path to your application root.
     :app_path => "#{Pod::Config.instance.installation_root}/..",
-    #
-    # Uncomment to opt-in to using Flipper
-    # Note that if you have use_frameworks! enabled, Flipper will not work
-    # :flipper_configuration => flipper_config,
+    # Note that if you have use_frameworks! enabled, Flipper will not work if enabled
+    :flipper_configuration => flipper_config
   )
 
   post_install do |installer|
