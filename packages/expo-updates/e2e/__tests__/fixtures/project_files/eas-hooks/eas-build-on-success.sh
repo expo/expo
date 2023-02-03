@@ -13,6 +13,8 @@ export UPDATES_HOST=localhost
 export UPDATES_PORT=4747
 export PROJECT_ROOT=$PWD
 
+export EX_UPDATES_NATIVE_DEBUG=1
+
 mkdir ./logs
 
 
