@@ -56,7 +56,10 @@ const WEB_STYLES = [
   'willChange',
 ];
 
-export function filterStyles(styleProp = {}) {
+export function filterStyles(styleProp) {
+  if (!styleProp) {
+    return styleProp;
+  }
   const style = StyleSheet.flatten(styleProp);
 
   const filteredStyle = Object.fromEntries(

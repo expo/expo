@@ -54,7 +54,10 @@ const WEB_STYLES = [
     'userSelect',
     'willChange',
 ];
-export function filterStyles(styleProp = {}) {
+export function filterStyles(styleProp) {
+    if (!styleProp) {
+        return styleProp;
+    }
     const style = StyleSheet.flatten(styleProp);
     const filteredStyle = Object.fromEntries(Object.entries(style).filter(([k]) => !WEB_STYLES.includes(k)));
     return processNativeStyles(filteredStyle);
