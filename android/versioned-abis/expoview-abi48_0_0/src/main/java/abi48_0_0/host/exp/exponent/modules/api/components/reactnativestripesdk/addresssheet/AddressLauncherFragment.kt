@@ -26,8 +26,11 @@ class AddressLauncherFragment : Fragment() {
   private var configuration = AddressLauncher.Configuration()
   private var callback: ((error: WritableMap?, address: AddressDetails?) -> Unit)? = null
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                            savedInstanceState: Bundle?): View {
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View {
     return FrameLayout(requireActivity()).also {
       it.visibility = View.GONE
     }
@@ -35,8 +38,10 @@ class AddressLauncherFragment : Fragment() {
 
   override fun onViewCreated(view: View, savedInstanceState: Bundle?) {
     publishableKey?.let { publishableKey ->
-      addressLauncher = AddressLauncher(this,
-                                        ::onAddressLauncherResult).also {
+      addressLauncher = AddressLauncher(
+        this,
+        ::onAddressLauncherResult
+      ).also {
         it.present(
           publishableKey = publishableKey,
           configuration = configuration
@@ -77,7 +82,8 @@ class AddressLauncherFragment : Fragment() {
     googlePlacesApiKey: String?,
     autocompleteCountries: Set<String>,
     additionalFields: AddressLauncher.AdditionalFieldsConfiguration?,
-    callback: ((error: WritableMap?, address: AddressDetails?) -> Unit)) {
+    callback: ((error: WritableMap?, address: AddressDetails?) -> Unit)
+  ) {
     configuration = AddressLauncher.Configuration(
       appearance = appearance,
       address = defaultAddress,

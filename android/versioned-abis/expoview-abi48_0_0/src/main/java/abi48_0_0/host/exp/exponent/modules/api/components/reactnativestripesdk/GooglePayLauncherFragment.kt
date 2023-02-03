@@ -26,8 +26,11 @@ class GooglePayLauncherFragment : Fragment() {
   private lateinit var currencyCode: String
   private lateinit var callback: (result: GooglePayLauncher.Result?, error: WritableMap?) -> Unit
 
-  override fun onCreateView(inflater: LayoutInflater, container: ViewGroup?,
-                            savedInstanceState: Bundle?): View {
+  override fun onCreateView(
+    inflater: LayoutInflater,
+    container: ViewGroup?,
+    savedInstanceState: Bundle?
+  ): View {
     return FrameLayout(requireActivity()).also {
       it.visibility = View.GONE
     }
