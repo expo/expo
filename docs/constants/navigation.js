@@ -115,6 +115,7 @@ const general = [
     makePage('modules/get-started.mdx'),
     makePage('modules/native-module-tutorial.mdx'),
     makePage('modules/native-view-tutorial.mdx'),
+    makePage('modules/config-plugin-and-native-module-tutorial.mdx'),
     makePage('modules/existing-library.mdx'),
     makePage('modules/module-api.mdx'),
     makePage('modules/android-lifecycle-listeners.mdx'),
