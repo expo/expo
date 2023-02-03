@@ -1,7 +1,7 @@
 import { ExpoConfig } from '@expo/config';
 import { Middleware } from 'metro-config';
 
-import { createFlipperTelemetryMiddleware, findDebugTool } from '../metroDebuggerMiddleware';
+import { createDebuggerTelemetryMiddleware, findDebugTool } from '../metroDebuggerMiddleware';
 import { logEventAsync } from '../rudderstackClient';
 
 jest.mock('../getMetroDebugProperties');
@@ -40,9 +40,9 @@ describe(findDebugTool, () => {
   });
 });
 
-describe(createFlipperTelemetryMiddleware, () => {
+describe(createDebuggerTelemetryMiddleware, () => {
   it('reports known tool from user agent', () => {
-    const middleware = createFlipperTelemetryMiddleware('/fake-project', fakeExpoConfig);
+    const middleware = createDebuggerTelemetryMiddleware('/fake-project', fakeExpoConfig);
     const next = jest.fn();
 
     middleware(req({ url: '/json', userAgent: FLIPPER_UA }), {} as any, next);
@@ -51,7 +51,7 @@ describe(createFlipperTelemetryMiddleware, () => {
   });
 
   it('only reports known tool once', () => {
-    const middleware = createFlipperTelemetryMiddleware('/fake-project', fakeExpoConfig);
+    const middleware = createDebuggerTelemetryMiddleware('/fake-project', fakeExpoConfig);
     const next = jest.fn();
 
     middleware(req({ url: '/json', userAgent: FLIPPER_UA }), {} as any, next);
@@ -62,7 +62,7 @@ describe(createFlipperTelemetryMiddleware, () => {
   });
 
   it('does not report with unknown user agent', () => {
-    const middleware = createFlipperTelemetryMiddleware('/fake-project', fakeExpoConfig);
+    const middleware = createDebuggerTelemetryMiddleware('/fake-project', fakeExpoConfig);
     const next = jest.fn();
 
     middleware(req({ url: '/json', userAgent: 'unknown/4.2.0' }), {} as any, next);
@@ -73,7 +73,7 @@ describe(createFlipperTelemetryMiddleware, () => {
   it('does not report when telemetry is turned off', () => {
     process.env.EXPO_NO_TELEMETRY = 'true';
 
-    const middleware = createFlipperTelemetryMiddleware('/fake-project', fakeExpoConfig);
+    const middleware = createDebuggerTelemetryMiddleware('/fake-project', fakeExpoConfig);
     const next = jest.fn();
 
     middleware(req({ url: '/json', userAgent: FLIPPER_UA }), {} as any, next);
@@ -85,7 +85,7 @@ describe(createFlipperTelemetryMiddleware, () => {
 
   it('does not report when app is not using hermes', () => {
     const expoConfig = { ...fakeExpoConfig, jsEngine: 'jsc' as const };
-    const middleware = createFlipperTelemetryMiddleware('/fake-project', expoConfig);
+    const middleware = createDebuggerTelemetryMiddleware('/fake-project', expoConfig);
     const next = jest.fn();
 
     middleware(req({ url: '/json', userAgent: FLIPPER_UA }), {} as any, next);
