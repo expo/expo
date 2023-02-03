@@ -6,6 +6,7 @@ import {
   TextStyle as NativeTextStyle,
 } from 'react-native';
 
+import { createSafeStyledView } from '../css/createSafeStyledView';
 import { WebViewStyle } from './View';
 
 // https://github.com/necolas/react-native-web/issues/832
@@ -65,4 +66,4 @@ export type TextProps = Omit<NativeTextProps, 'style' | 'accessibilityRole'> & W
 
 const Text = NativeText as ComponentType<TextProps>;
 
-export default Text;
+export default createSafeStyledView(Text) as ComponentType<TextProps>;
