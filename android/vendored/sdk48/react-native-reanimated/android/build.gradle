@@ -203,7 +203,7 @@ if (CLIENT_SIDE_BUILD) {
 def reactNativeRootDir = Paths.get(projectDir.getPath(), '../../../../versioned-react-native').toFile()
 
 def reactProperties = new Properties()
-file("$reactNativeRootDir/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
+file("$rootDir/../react-native-lab/react-native/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
 
 def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
 def REACT_NATIVE_MINOR_VERSION = REACT_NATIVE_VERSION.startsWith("0.0.0-") ? 1000 : REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
