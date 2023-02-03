@@ -4,9 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Drop support for `.expo.*` extensions (deprecated in SDK 41). ([#19910](https://github.com/expo/expo/pull/19910) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 48.0.0 — 2023-02-03
+
+### 🛠 Breaking changes
+
+- Drop support for `.expo.*` extensions (deprecated in SDK 41). ([#19910](https://github.com/expo/expo/pull/19910) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 

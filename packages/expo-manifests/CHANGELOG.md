@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Switch default JS engine to Hermes. ([#21001](https://github.com/expo/expo/pull/21001) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.5.0 — 2023-02-03
+
+### 🎉 New features
+
+- Switch default JS engine to Hermes. ([#21001](https://github.com/expo/expo/pull/21001) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 

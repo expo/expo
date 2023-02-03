@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+## 3.0.6 — 2023-02-03
+
 ### 📚 3rd party library updates
 
 - Upgrade jest to v29. ([#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo))

@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 1.4.3 — 2023-02-03
+
+### 💡 Others
+
 - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
 
 ## 1.4.2 — 2022-11-02
