@@ -64,7 +64,7 @@ function getReanimatedPipe() {
       new Print(MessageType.WARNING, 'You have to adjust the installation steps of the react-native-reanimated to work well with the react-native-gesture-handler. For more information go to the https://github.com/expo/expo/pull/17878 and https://github.com/expo/expo/pull/18562' ),
       new Clone({
         url: 'git@github.com:software-mansion/react-native-reanimated.git',
-        tag: '2.10.0',
+        tag: '2.14.4',
       }),
       new RemoveDirectory({
         name: 'clean vendored folder',
