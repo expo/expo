@@ -1,6 +1,6 @@
 #pragma once
 
-#if defined(ONANDROID)
+#ifdef ANDROID
 #include "DevMenuLogger.h"
 #include "DevMenuLoggerInterface.h"
 #include "DevMenuSpeedChecker.h"

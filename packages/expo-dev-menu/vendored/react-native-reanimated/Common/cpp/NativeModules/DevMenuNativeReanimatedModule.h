@@ -13,6 +13,7 @@
 #include "DevMenuRuntimeDecorator.h"
 #include "DevMenuRuntimeManager.h"
 #include "DevMenuScheduler.h"
+#include "DevMenuSingleInstanceChecker.h"
 
 namespace devmenureanimated {
 
@@ -111,6 +112,10 @@ class NativeReanimatedModule : public NativeReanimatedModuleSpec,
   ConfigurePropsFunction configurePropsPlatformFunction;
   KeyboardEventSubscribeFunction subscribeForKeyboardEventsFunction;
   KeyboardEventUnsubscribeFunction unsubscribeFromKeyboardEventsFunction;
+
+#ifdef DEBUG
+  SingleInstanceChecker<NativeReanimatedModule> singleInstanceChecker_;
+#endif
 };
 
 } // namespace devmenureanimated

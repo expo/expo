@@ -2,15 +2,31 @@
 #import "DevMenuREAModule.h"
 #import "DevMenuREANodesManager.h"
 #import "DevMenuREATransitionManager.h"
+#import "DevMenuReanimatedVersion.h"
+#import "SingleInstanceChecker.h"
+
+using namespace facebook::react;
+using namespace devmenureanimated;
 
 typedef void (^AnimatedOperation)(DevMenuREANodesManager *nodesManager);
 
 @implementation DevMenuREAModule {
   NSMutableArray<AnimatedOperation> *_operations;
   DevMenuREATransitionManager *_transitionManager;
+#ifdef DEBUG
+  SingleInstanceChecker<DevMenuREAModule> singleInstanceChecker_;
+#endif
+  bool hasListeners;
 }
 
 + (NSString *)moduleName { return @"ReanimatedModule"; };
+
+#ifdef RCT_NEW_ARCH_ENABLED
++ (BOOL)requiresMainQueueSetup
+{
+  return YES;
+}
+#endif // RCT_NEW_ARCH_ENABLED
 
 - (void)invalidate
 {
@@ -32,12 +48,11 @@ typedef void (^AnimatedOperation)(DevMenuREANodesManager *nodesManager);
 - (void)setBridge:(RCTBridge *)bridge
 {
   [super setBridge:bridge];
-
 }
-
+  
 - (void)setUpUiManager:(RCTBridge *)bridge
 {
-  [super setBridge:bridge];
+  [self setBridge:bridge];
   _nodesManager = [[DevMenuREANodesManager alloc] initWithModule:self uiManager:self.bridge.uiManager];
   _operations = [NSMutableArray new];
 
@@ -184,6 +199,23 @@ RCT_EXPORT_METHOD(triggerRender)
 {
   // Events can be dispatched from any queue
   [_nodesManager dispatchEvent:event];
+}
+
+- (void)startObserving
+{
+  hasListeners = YES;
+}
+
+- (void)stopObserving
+{
+  hasListeners = NO;
+}
+
+- (void)sendEventWithName:(NSString *)eventName body:(id)body
+{
+  if (hasListeners) {
+    [super sendEventWithName:eventName body:body];
+  }
 }
 
 @end

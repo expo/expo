@@ -4,7 +4,7 @@
 #include <string>
 #include <vector>
 
-#ifdef ONANDROID
+#ifdef ANDROID
 #include "TurboModule.h"
 #else
 #include <ReactCommon/TurboModule.h>
