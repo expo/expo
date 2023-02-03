@@ -51,7 +51,8 @@ export const withJsEngineGradleProps = createBuildGradlePropsConfigPlugin<ExpoCo
   [
     {
       propName: 'hermesEnabled',
-      propValueGetter: (config) => ((config.android?.jsEngine ?? config.jsEngine ?? 'hermes') === 'hermes').toString(),
+      propValueGetter: (config) =>
+        ((config.android?.jsEngine ?? config.jsEngine ?? 'hermes') === 'hermes').toString(),
     },
   ],
   'withJsEngineGradleProps'

@@ -12,7 +12,6 @@ jest.mock('../../plugins/android-plugins');
 const HERMES_PROP_KEY = 'hermesEnabled';
 
 describe(withJsEngineGradleProps, () => {
-
   it('set the property from shared `jsEngine` config', async () => {
     const { modResults } = await compileMockModWithResultsAsync(
       { jsEngine: 'hermes' },
@@ -74,7 +73,8 @@ describe(updateAndroidBuildPropertiesFromConfig, () => {
     const configToPropertyRules = [
       {
         propName: HERMES_PROP_KEY,
-        propValueGetter: (config) => ((config.android?.jsEngine ?? config.jsEngine ?? 'hermes') === 'hermes').toString(),
+        propValueGetter: (config) =>
+          ((config.android?.jsEngine ?? config.jsEngine ?? 'hermes') === 'hermes').toString(),
       },
     ];
 
