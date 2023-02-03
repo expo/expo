@@ -17,10 +17,10 @@
   "dependencies": {
     "ABI47_0_0React-Core": [],
     "Stripe": [
-      "~> 22.8.1"
+      "~> 23.3.0"
     ],
     "StripeFinancialConnections": [
-      "~> 22.8.1"
+      "~> 23.3.0"
     ]
   },
   "testspecs": [

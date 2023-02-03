@@ -22,6 +22,7 @@ function transformAppJson(appJson, projectName, runtimeVersion) {
       ...appJson.expo,
       name: projectName,
       runtimeVersion,
+      jsEngine: 'jsc',
       updates: {
         ...appJson.expo.updates,
         requestHeaders: {

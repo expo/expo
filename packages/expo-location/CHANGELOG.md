@@ -8,6 +8,12 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 15.1.0 — 2023-02-03
+
+### 🐛 Bug fixes
+
 - Removed strict null checks for expo location and avoid crash on android. ([#20792](https://github.com/expo/expo/pull/20792) by [@jayshah123](https://github.com/jayshah123) and [@forki](https://github.com/forki))
 - Export types with type-only annotation to fix build when using `isolatedModules` flag. ([#20239](https://github.com/expo/expo/pull/20239) by [@zakharchenkoAndrii](https://github.com/zakharchenkoAndrii))
 

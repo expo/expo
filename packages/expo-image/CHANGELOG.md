@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 1.0.0-beta.5 — 2023-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.0-beta.4 — 2023-01-31
+
+### 🐛 Bug fixes
+
+- Fixed a crash on Android where `isScreenReaderFocusable` crashes devices below api 28. ([#21012](https://github.com/expo/expo/pull/21012) by [@alanhughes](https://github.com/alanjhughes))
+
 ## 1.0.0-beta.3 — 2023-01-30
 
 ### 🐛 Bug fixes

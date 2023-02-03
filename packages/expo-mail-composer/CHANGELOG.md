@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 12.1.0 — 2023-02-03
+
+### 🐛 Bug fixes
+
+- Fix `composeAsync` not resolving promise after sending/ discarding email. ([#20869](https://github.com/expo/expo/pull/20869) by [@keith-kurak](https://github.com/keith-kurak))
+
+### 💡 Others
+
 - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
 
 ## 12.0.0 — 2022-10-25

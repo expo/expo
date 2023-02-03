@@ -12,25 +12,33 @@ internal class PushProvisioningUtils {
     class func canAddCardToWallet(
         last4: String,
         primaryAccountIdentifier: String,
-        testEnv: Bool
-    ) -> (canAddCard: Bool, status: AddCardToWalletStatus?) {
+        testEnv: Bool,
+        hasPairedAppleWatch: Bool,
+        completion: @escaping (_ canAddCard: Bool, _ status: AddCardToWalletStatus?) -> Void
+    ) {
         if (!PKAddPassesViewController.canAddPasses()) {
-            return (false, AddCardToWalletStatus.UNSUPPORTED_DEVICE)
+            completion(false, AddCardToWalletStatus.UNSUPPORTED_DEVICE)
         }
         
-        var status : AddCardToWalletStatus? = nil
-        var canAddCard = PushProvisioningUtils.canAddPaymentPass(
+        let canAddCard = canAddPaymentPass(
             primaryAccountIdentifier: primaryAccountIdentifier,
             isTestMode: testEnv)
         
         if (!canAddCard) {
-            status = AddCardToWalletStatus.MISSING_CONFIGURATION
-        } else if (PushProvisioningUtils.passExistsWith(last4: last4)) {
-            canAddCard = false
-            status = AddCardToWalletStatus.CARD_ALREADY_EXISTS
+            completion(canAddCard, AddCardToWalletStatus.MISSING_CONFIGURATION)
+        } else {
+            PaymentPassFinder.findPassWithLast4(last4: last4, hasPairedAppleWatch: hasPairedAppleWatch) { canAddCardToADevice, passLocations in
+                var status: AddCardToWalletStatus? = nil
+                if (!canAddCardToADevice) {
+                    status = AddCardToWalletStatus.CARD_ALREADY_EXISTS
+                } else if (passLocations.contains(.PAIRED_DEVICE)) {
+                    status = AddCardToWalletStatus.CARD_EXISTS_ON_PAIRED_DEVICE
+                } else if (passLocations.contains(.CURRENT_DEVICE)) {
+                    status = AddCardToWalletStatus.CARD_EXISTS_ON_CURRENT_DEVICE
+                }
+                completion(canAddCardToADevice, status)
+            }
         }
-
-        return (canAddCard, status)
     }
     
     class func canAddPaymentPass(primaryAccountIdentifier: String, isTestMode: Bool) -> Bool {
@@ -45,20 +53,35 @@ internal class PushProvisioningUtils {
         }
     }
     
-    class func passExistsWith(last4: String) -> Bool {
-        let existingPass: PKPass? = {
+    class func getPassLocation(last4: String) -> PaymentPassFinder.PassLocation? {
+        let existingPassOnDevice: PKPass? = {
             if #available(iOS 13.4, *) {
-                return PKPassLibrary().passes(of: PKPassType.secureElement).first(where: {$0.secureElementPass?.primaryAccountNumberSuffix == last4})
+                return PKPassLibrary().passes(of: PKPassType.secureElement)
+                    .first(where: { $0.secureElementPass?.primaryAccountNumberSuffix == last4 && $0.secureElementPass?.passActivationState != .suspended && !$0.isRemotePass })
             } else {
-                return PKPassLibrary().passes(of: PKPassType.payment).first(where: {$0.paymentPass?.primaryAccountNumberSuffix == last4})
+                return PKPassLibrary().passes(of: PKPassType.payment)
+                    .first(where: { $0.paymentPass?.primaryAccountNumberSuffix == last4 && $0.paymentPass?.passActivationState != .suspended && !$0.isRemotePass })
             }
         }()
-        return existingPass != nil
+        
+        let existingPassOnPairedDevices: PKPass? = {
+            if #available(iOS 13.4, *) {
+                return PKPassLibrary().remoteSecureElementPasses
+                    .first(where: { $0.secureElementPass?.primaryAccountNumberSuffix == last4 && $0.secureElementPass?.passActivationState != .suspended })
+            } else {
+                return PKPassLibrary().remotePaymentPasses()
+                    .first(where: { $0.paymentPass?.primaryAccountNumberSuffix == last4 && $0.paymentPass?.passActivationState != .suspended })
+            }
+        }()
+        
+        return existingPassOnDevice != nil ? PaymentPassFinder.PassLocation.CURRENT_DEVICE : (existingPassOnPairedDevices != nil ? PaymentPassFinder.PassLocation.PAIRED_DEVICE : nil)
     }
     
     enum AddCardToWalletStatus: String {
         case UNSUPPORTED_DEVICE
         case MISSING_CONFIGURATION
         case CARD_ALREADY_EXISTS
+        case CARD_EXISTS_ON_CURRENT_DEVICE
+        case CARD_EXISTS_ON_PAIRED_DEVICE
     }
 }

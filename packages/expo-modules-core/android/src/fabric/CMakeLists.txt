@@ -9,13 +9,11 @@ add_library(fabric STATIC
   ${SOURCES}
 )
 
+include("${REACT_NATIVE_DIR}/ReactAndroid/cmake-utils/folly-flags.cmake")
+
 target_compile_options(fabric PRIVATE
   "-std=c++17"
-  -DFOLLY_NO_CONFIG=1
-  -DFOLLY_HAVE_CLOCK_GETTIME=1
-  -DFOLLY_HAVE_MEMRCHR=1
-  -DFOLLY_USE_LIBCPP=1
-  -DFOLLY_MOBILE=1
+  ${folly_FLAGS}
 )
 
 find_package(ReactAndroid REQUIRED CONFIG)
