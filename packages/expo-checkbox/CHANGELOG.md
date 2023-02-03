@@ -8,11 +8,13 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 2.3.0 — 2023-02-03
+
 ### ⚠️ Notices
 
 - Remove deprecated `isAvailableAsync()` method. ([#20961](https://github.com/expo/expo/pull/20961) by [@Simek](https://github.com/Simek))
-
-### 💡 Others
 
 ## 2.2.2 — 2022-11-02
 

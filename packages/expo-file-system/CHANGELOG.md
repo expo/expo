@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 15.2.0 — 2023-02-03
+
+### 💡 Others
+
 - Extract nested object definitions to the separate types, which adds: `DeletingOptions`, `InfoOptions`, `RelocatingOptions` and `MakeDirectoryOptions` types. ([#20103](https://github.com/expo/expo/pull/20103) by [@Simek](https://github.com/Simek))
 - Simplify the way in which types are exported from the package. ([#20103](https://github.com/expo/expo/pull/20103) by [@Simek](https://github.com/Simek))
 - Rename `UploadProgressData` `totalByteSent` field to `totalBytesSent`. ([#20804](https://github.com/expo/expo/pull/20804) by [@gabrieldonadel](https://github.com/gabrieldonadel))

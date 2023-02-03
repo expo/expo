@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.18.0 — 2023-02-03
+
+### 💡 Others
+
 - Update `getExpoPushTokenAsync` to make `projectId` required. ([#20833](https://github.com/expo/expo/pull/20833) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
 - Add JSDoc comments, perform type changes related to documentation autogeneration. ([#21002](https://github.com/expo/expo/pull/21002) by [@Simek](https://github.com/Simek))
