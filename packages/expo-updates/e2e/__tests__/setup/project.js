@@ -387,14 +387,21 @@ async function initAsync(
   // We are done with template tarball
   await fs.rm(localTemplatePathName);
 
-  // Prebuild mangles the package.json expo dependency, fix it
-  // const packageJsonPath = path.resolve(projectRoot, 'package.json');
-  // let packageJsonString = await fs.readFile(packageJsonPath, 'utf-8');
-  // const packageJson = JSON.parse(packageJsonString);
+  // For now, we need to force the expo dependency to SDK 47,
+  // otherwise the legacy Expo CLI will not create update bundles correctly
+  // This can be removed once SDK 48 is live
+  const packageJsonPath = path.resolve(projectRoot, 'package.json');
+  let packageJsonString = await fs.readFile(packageJsonPath, 'utf-8');
+  const packageJson = JSON.parse(packageJsonString);
   // packageJson.dependencies.expo = packageJson.resolutions.expo;
-  // packageJsonString = JSON.stringify(packageJson, null, 2);
-  // await fs.rm(packageJsonPath);
-  // await fs.writeFile(packageJsonPath, packageJsonString, 'utf-8');
+  packageJson.dependencies.expo = '47.0.12';
+  packageJsonString = JSON.stringify(packageJson, null, 2);
+  await fs.rm(packageJsonPath);
+  await fs.writeFile(packageJsonPath, packageJsonString, 'utf-8');
+  await spawnAsync('yarn', [], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
 
   // enable proguard on Android
   await fs.appendFile(
