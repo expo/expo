@@ -45,14 +45,6 @@
     "@types/qs": "^6.9.7",
     "expo-module-scripts": "^3.0.0"
   },
-  "peerDependencies": {
-    "expo-random": "*"
-  },
-  "peerDependenciesMeta": {
-    "expo-random": {
-      "optional": true
-    }
-  },
   "jest": {
     "preset": "expo-module-scripts"
   }

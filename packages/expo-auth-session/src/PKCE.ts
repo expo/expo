@@ -1,5 +1,4 @@
 import * as Crypto from 'expo-crypto';
-import * as Random from 'expo-random';
 import invariant from 'invariant';
 
 const CHARSET = 'ABCDEFGHIJKLMNOPQRSTUVWXYZabcdefghijklmnopqrstuvwxyz0123456789';
@@ -9,7 +8,7 @@ function getRandomValues(input: Uint8Array): Uint8Array {
   // Get access to the underlying raw bytes
   if (input.byteLength !== input.length) input = new Uint8Array(input.buffer);
 
-  const bytes = Random.getRandomBytes(input.length);
+  const bytes = Crypto.getRandomBytes(input.length);
 
   for (let i = 0; i < bytes.length; i++) input[i] = bytes[i];
 
