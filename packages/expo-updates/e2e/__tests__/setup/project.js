@@ -6,10 +6,11 @@ const path = require('path');
 const dirName = __dirname; /* eslint-disable-line */
 
 const expoDependencyNames = [
-  'expo',
+  // 'expo',
   '@expo/config-plugins',
   '@expo/config-types',
   '@expo/dev-server',
+  'expo-asset',
   'expo-application',
   'expo-constants',
   'expo-eas-client',
@@ -388,13 +389,13 @@ async function initAsync(
   await fs.rm(localTemplatePathName);
 
   // Prebuild mangles the package.json expo dependency, fix it
-  const packageJsonPath = path.resolve(projectRoot, 'package.json');
-  let packageJsonString = await fs.readFile(packageJsonPath, 'utf-8');
-  const packageJson = JSON.parse(packageJsonString);
-  packageJson.dependencies.expo = packageJson.resolutions.expo;
-  packageJsonString = JSON.stringify(packageJson, null, 2);
-  await fs.rm(packageJsonPath);
-  await fs.writeFile(packageJsonPath, packageJsonString, 'utf-8');
+  // const packageJsonPath = path.resolve(projectRoot, 'package.json');
+  // let packageJsonString = await fs.readFile(packageJsonPath, 'utf-8');
+  // const packageJson = JSON.parse(packageJsonString);
+  // packageJson.dependencies.expo = packageJson.resolutions.expo;
+  // packageJsonString = JSON.stringify(packageJson, null, 2);
+  // await fs.rm(packageJsonPath);
+  // await fs.writeFile(packageJsonPath, packageJsonString, 'utf-8');
 
   // enable proguard on Android
   await fs.appendFile(
