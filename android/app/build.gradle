@@ -183,6 +183,11 @@ dependencies {
   // ADD_NEW_SDKS_HERE
 
 
+  // BEGIN_SDK_48
+  versionedImplementation(project(':expoview-abi48_0_0'))
+  // END_SDK_48
+
+
   // BEGIN_SDK_47
   versionedImplementation(project(':expoview-abi47_0_0'))
   // END_SDK_47
