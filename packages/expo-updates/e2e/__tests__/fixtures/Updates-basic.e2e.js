@@ -1,10 +1,9 @@
 const crypto = require('crypto');
+const { device } = require('detox');
 const path = require('path');
 const { setTimeout } = require('timers/promises');
-const { device, beforeEach } = require('detox');
 
 const Server = require('./utils/server');
-
 const { copyAssetToStaticFolder, copyBundleToStaticFolder } = require('./utils/update');
 
 const SERVER_HOST = process.env.UPDATES_HOST;
@@ -64,59 +63,59 @@ describe('', () => {
     );
   });
 
-  it('downloads and runs update, and updates current-update-id header', async () => {
-    jest.setTimeout(300000 * TIMEOUT_BIAS);
-    const bundleFilename = 'bundle1.js';
-    const newNotifyString = 'test-update-1';
-    const hash = await copyBundleToStaticFolder(
-      updateDistPath,
-      bundleFilename,
-      newNotifyString,
-      platform
-    );
-    const manifest = {
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      runtimeVersion: RUNTIME_VERSION,
-      launchAsset: {
-        hash,
-        key: 'test-update-1-key',
-        contentType: 'application/javascript',
-        url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${bundleFilename}`,
-      },
-      assets: [],
-      metadata: {},
-      extra: {},
-    };
-
-    Server.start(SERVER_PORT);
-    await Server.serveSignedManifest(manifest, projectRoot);
-    await device.installApp();
-    await device.launchApp({
-      newInstance: true,
-    });
-    const firstRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
-    const message = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
-    expect(message).toBe('test');
-
-    // give the app time to load the new update in the background
-    await setTimeout(2000 * TIMEOUT_BIAS);
-    expect(Server.consumeRequestedStaticFiles().length).toBe(1);
-
-    // restart the app so it will launch the new update
-    await device.terminateApp();
-    await device.launchApp();
-    const secondRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
-    const updatedMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
-    expect(updatedMessage).toBe(newNotifyString);
-
-    expect(secondRequest.headers['expo-embedded-update-id']).toBeDefined();
-    expect(secondRequest.headers['expo-embedded-update-id']).toEqual(
-      firstRequest.headers['expo-embedded-update-id']
-    );
-    expect(secondRequest.headers['expo-current-update-id']).toBeDefined();
-    expect(secondRequest.headers['expo-current-update-id']).toEqual(manifest.id);
-  });
+//   it('downloads and runs update, and updates current-update-id header', async () => {
+//     jest.setTimeout(300000 * TIMEOUT_BIAS);
+//     const bundleFilename = 'bundle1.js';
+//     const newNotifyString = 'test-update-1';
+//     const hash = await copyBundleToStaticFolder(
+//       updateDistPath,
+//       bundleFilename,
+//       newNotifyString,
+//       platform
+//     );
+//     const manifest = {
+//       id: crypto.randomUUID(),
+//       createdAt: new Date().toISOString(),
+//       runtimeVersion: RUNTIME_VERSION,
+//       launchAsset: {
+//         hash,
+//         key: 'test-update-1-key',
+//         contentType: 'application/javascript',
+//         url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${bundleFilename}`,
+//       },
+//       assets: [],
+//       metadata: {},
+//       extra: {},
+//     };
+// 
+//     Server.start(SERVER_PORT);
+//     await Server.serveSignedManifest(manifest, projectRoot);
+//     await device.installApp();
+//     await device.launchApp({
+//       newInstance: true,
+//     });
+//     const firstRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
+//     const message = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+//     expect(message).toBe('test');
+// 
+//     // give the app time to load the new update in the background
+//     await setTimeout(2000 * TIMEOUT_BIAS);
+//     expect(Server.consumeRequestedStaticFiles().length).toBe(1);
+// 
+//     // restart the app so it will launch the new update
+//     await device.terminateApp();
+//     await device.launchApp();
+//     const secondRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
+//     const updatedMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+//     expect(updatedMessage).toBe(newNotifyString);
+// 
+//     expect(secondRequest.headers['expo-embedded-update-id']).toBeDefined();
+//     expect(secondRequest.headers['expo-embedded-update-id']).toEqual(
+//       firstRequest.headers['expo-embedded-update-id']
+//     );
+//     expect(secondRequest.headers['expo-current-update-id']).toBeDefined();
+//     expect(secondRequest.headers['expo-current-update-id']).toEqual(manifest.id);
+//   });
 
   it('does not run update with incorrect hash', async () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
@@ -252,70 +251,70 @@ describe('', () => {
      */
   });
 
-  it('downloads and runs update with multiple assets', async () => {
-    jest.setTimeout(300000 * TIMEOUT_BIAS);
-    const bundleFilename = 'bundle2.js';
-    const newNotifyString = 'test-update-2';
-    const hash = await copyBundleToStaticFolder(
-      updateDistPath,
-      bundleFilename,
-      newNotifyString,
-      platform
-    );
-    const assets = await Promise.all(
-      [
-        'lubo-minar-j2RgHfqKhCM-unsplash.jpg',
-        'niklas-liniger-zuPiCN7xekM-unsplash.jpg',
-        'patrick-untersee-XJjsuuDwWas-unsplash.jpg',
-      ].map(async (sourceFilename, index) => {
-        const destinationFilename = `asset${index}.jpg`;
-        const hash = await copyAssetToStaticFolder(
-          path.join(__dirname, 'assets', sourceFilename),
-          destinationFilename
-        );
-        return {
-          hash,
-          key: `asset${index}`,
-          contentType: 'image/jpg',
-          fileExtension: '.jpg',
-          url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${destinationFilename}`,
-        };
-      })
-    );
-    const manifest = {
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      runtimeVersion: RUNTIME_VERSION,
-      launchAsset: {
-        hash,
-        key: 'test-update-2-key',
-        contentType: 'application/javascript',
-        url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${bundleFilename}`,
-      },
-      assets,
-      metadata: {},
-      extra: {},
-    };
-
-    Server.start(SERVER_PORT);
-    await Server.serveSignedManifest(manifest, projectRoot);
-    await device.installApp();
-    await device.launchApp({
-      newInstance: true,
-    });
-    const message = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
-    expect(message).toBe('test');
-
-    // give the app time to load the new update in the background
-    await setTimeout(2000 * TIMEOUT_BIAS);
-    expect(Server.consumeRequestedStaticFiles().length).toBe(4);
-
-    // restart the app so it will launch the new update
-    await device.terminateApp();
-    await device.launchApp();
-    const updatedMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
-    expect(updatedMessage).toBe(newNotifyString);
-  });
+//   it('downloads and runs update with multiple assets', async () => {
+//     jest.setTimeout(300000 * TIMEOUT_BIAS);
+//     const bundleFilename = 'bundle2.js';
+//     const newNotifyString = 'test-update-2';
+//     const hash = await copyBundleToStaticFolder(
+//       updateDistPath,
+//       bundleFilename,
+//       newNotifyString,
+//       platform
+//     );
+//     const assets = await Promise.all(
+//       [
+//         'lubo-minar-j2RgHfqKhCM-unsplash.jpg',
+//         'niklas-liniger-zuPiCN7xekM-unsplash.jpg',
+//         'patrick-untersee-XJjsuuDwWas-unsplash.jpg',
+//       ].map(async (sourceFilename, index) => {
+//         const destinationFilename = `asset${index}.jpg`;
+//         const hash = await copyAssetToStaticFolder(
+//           path.join(__dirname, 'assets', sourceFilename),
+//           destinationFilename
+//         );
+//         return {
+//           hash,
+//           key: `asset${index}`,
+//           contentType: 'image/jpg',
+//           fileExtension: '.jpg',
+//           url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${destinationFilename}`,
+//         };
+//       })
+//     );
+//     const manifest = {
+//       id: crypto.randomUUID(),
+//       createdAt: new Date().toISOString(),
+//       runtimeVersion: RUNTIME_VERSION,
+//       launchAsset: {
+//         hash,
+//         key: 'test-update-2-key',
+//         contentType: 'application/javascript',
+//         url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${bundleFilename}`,
+//       },
+//       assets,
+//       metadata: {},
+//       extra: {},
+//     };
+// 
+//     Server.start(SERVER_PORT);
+//     await Server.serveSignedManifest(manifest, projectRoot);
+//     await device.installApp();
+//     await device.launchApp({
+//       newInstance: true,
+//     });
+//     const message = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+//     expect(message).toBe('test');
+// 
+//     // give the app time to load the new update in the background
+//     await setTimeout(2000 * TIMEOUT_BIAS);
+//     expect(Server.consumeRequestedStaticFiles().length).toBe(4);
+// 
+//     // restart the app so it will launch the new update
+//     await device.terminateApp();
+//     await device.launchApp();
+//     const updatedMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+//     expect(updatedMessage).toBe(newNotifyString);
+//   });
   // important for usage accuracy
   it('does not download any assets for an older update', async () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);

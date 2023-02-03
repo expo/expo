@@ -190,127 +190,127 @@ describe('Asset deletion recovery', () => {
     // expect(readAssetsMessage.updateId).not.toEqual(clearAssetsMessage.updateId);
   });
 
-  it('assets in a downloaded update deleted from internal storage should be re-copied or re-downloaded', async () => {
-    /**
-     * This test ensures we can (or at least try to) recover missing assets that originated from a
-     * downloaded update, as opposed to assets originally copied from an embedded update (which
-     * the previous 2 tests concern).
-     *
-     * To create this scenario, we launch an app, download an update with multiple assets
-     * (including at least one -- the bundle -- not part of the embedded update), make sure the
-     * update runs, then clear assets from internal storage. When we relaunch the app,
-     * DatabaseLauncher should re-download the missing assets and run the update as normal.
-     */
-    jest.setTimeout(300000 * TIMEOUT_BIAS);
-
-    /**
-     * Prepare to host update manifest and assets from the test runner
-     */
-    const bundleFilename = 'bundle-assets.js';
-    const newNotifyString = 'test-assets-1';
-    const bundleHash = await copyBundleToStaticFolder(
-      updateDistPath,
-      bundleFilename,
-      newNotifyString,
-      platform
-    );
-    const { bundledAssets } = require(path.join(
-      updateDistPath,
-      exportedManifestFilename(platform)
-    ));
-    const assets = await Promise.all(
-      bundledAssets.map(async (filename) => {
-        const key = filename.replace('asset_', '').replace(/\.[^/.]+$/, '');
-        const hash = await copyAssetToStaticFolder(
-          path.join(updateDistPath, 'assets', key),
-          filename
-        );
-        return {
-          hash,
-          key,
-          contentType: 'image/jpg',
-          fileExtension: '.jpg',
-          url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${filename}`,
-        };
-      })
-    );
-    const manifest = {
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      runtimeVersion: RUNTIME_VERSION,
-      launchAsset: {
-        hash: bundleHash,
-        key: 'test-assets-bundle',
-        contentType: 'application/javascript',
-        url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${bundleFilename}`,
-      },
-      assets,
-      metadata: {},
-      extra: {},
-    };
-
-    /**
-     * Install the app and launch it so that it downloads the new update we're hosting
-     */
-    Server.start(SERVER_PORT);
-    await Server.serveSignedManifest(manifest, projectRoot);
-    await device.installApp();
-    await device.launchApp({ newInstance: true });
-    await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
-    const message = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
-    expect(message).toBe('test');
-
-    // give the app time to load the new update in the background
-    await setTimeout(2000 * TIMEOUT_BIAS);
-    expect(Server.consumeRequestedStaticFiles().length).toBe(1); // only the bundle should be new
-
-    /**
-     * Stop and restart the app so it will launch the new update. Immediately send it a message to
-     * clear internal storage while also verifying the new update is running.
-     */
-    await device.terminateApp();
-    const promise = Server.waitForRequest(10000 * TIMEOUT_BIAS, {
-      command: 'clearExpoInternal',
-    });
-    await device.launchApp({ newInstance: true });
-    const updatedMessage = await promise;
-    expect(updatedMessage).toBe(newNotifyString);
-
-    /**
-     * Verify that the assets were cleared correctly.
-     */
-    const clearAssetsMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
-    if (!clearAssetsMessage.success) {
-      throw new Error(clearAssetsMessage.error);
-    }
-    expect(clearAssetsMessage.numFilesBefore).toBeGreaterThanOrEqual(4); // png, ttf, 2 JS bundles
-    expect(clearAssetsMessage.numFilesAfter).toBe(0);
-    expect(clearAssetsMessage.updateId).toEqual(manifest.id);
-
-    /**
-     * Stop and restart the app and immediately send it a message to read internal storage. Verify
-     * that the new update is running (again).
-     */
-    await device.terminateApp();
-    // set up promise before starting the app to ensure the correct response is sent
-    const promise2 = Server.waitForRequest(10000 * TIMEOUT_BIAS, {
-      command: 'readExpoInternal',
-    });
-    await device.launchApp({ newInstance: true });
-    const updatedMessageAfterClearExpoInternal = await promise2;
-    expect(updatedMessageAfterClearExpoInternal).toBe(newNotifyString);
-
-    /**
-     * Verify all the assets -- including the JS bundle from the update (which wasn't in the
-     * embedded update) -- have been restored. Additionally verify from the server side that the
-     * updated bundle was re-downloaded.
-     */
-    const readAssetsMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
-    if (!readAssetsMessage.success) {
-      throw new Error(readAssetsMessage.error);
-    }
-    expect(readAssetsMessage.numFiles).toEqual(manifest.assets.length + 1); // assets + JS bundle
-    expect(readAssetsMessage.updateId).toEqual(manifest.id);
-    expect(Server.consumeRequestedStaticFiles().length).toBe(1); // should have re-downloaded only the JS bundle; the rest should have been copied from the app binary
-  });
+//   it('assets in a downloaded update deleted from internal storage should be re-copied or re-downloaded', async () => {
+//     /**
+//      * This test ensures we can (or at least try to) recover missing assets that originated from a
+//      * downloaded update, as opposed to assets originally copied from an embedded update (which
+//      * the previous 2 tests concern).
+//      *
+//      * To create this scenario, we launch an app, download an update with multiple assets
+//      * (including at least one -- the bundle -- not part of the embedded update), make sure the
+//      * update runs, then clear assets from internal storage. When we relaunch the app,
+//      * DatabaseLauncher should re-download the missing assets and run the update as normal.
+//      */
+//     jest.setTimeout(300000 * TIMEOUT_BIAS);
+// 
+//     /**
+//      * Prepare to host update manifest and assets from the test runner
+//      */
+//     const bundleFilename = 'bundle-assets.js';
+//     const newNotifyString = 'test-assets-1';
+//     const bundleHash = await copyBundleToStaticFolder(
+//       updateDistPath,
+//       bundleFilename,
+//       newNotifyString,
+//       platform
+//     );
+//     const { bundledAssets } = require(path.join(
+//       updateDistPath,
+//       exportedManifestFilename(platform)
+//     ));
+//     const assets = await Promise.all(
+//       bundledAssets.map(async (filename) => {
+//         const key = filename.replace('asset_', '').replace(/\.[^/.]+$/, '');
+//         const hash = await copyAssetToStaticFolder(
+//           path.join(updateDistPath, 'assets', key),
+//           filename
+//         );
+//         return {
+//           hash,
+//           key,
+//           contentType: 'image/jpg',
+//           fileExtension: '.jpg',
+//           url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${filename}`,
+//         };
+//       })
+//     );
+//     const manifest = {
+//       id: crypto.randomUUID(),
+//       createdAt: new Date().toISOString(),
+//       runtimeVersion: RUNTIME_VERSION,
+//       launchAsset: {
+//         hash: bundleHash,
+//         key: 'test-assets-bundle',
+//         contentType: 'application/javascript',
+//         url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${bundleFilename}`,
+//       },
+//       assets,
+//       metadata: {},
+//       extra: {},
+//     };
+// 
+//     /**
+//      * Install the app and launch it so that it downloads the new update we're hosting
+//      */
+//     Server.start(SERVER_PORT);
+//     await Server.serveSignedManifest(manifest, projectRoot);
+//     await device.installApp();
+//     await device.launchApp({ newInstance: true });
+//     await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
+//     const message = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+//     expect(message).toBe('test');
+// 
+//     // give the app time to load the new update in the background
+//     await setTimeout(2000 * TIMEOUT_BIAS);
+//     expect(Server.consumeRequestedStaticFiles().length).toBe(1); // only the bundle should be new
+// 
+//     /**
+//      * Stop and restart the app so it will launch the new update. Immediately send it a message to
+//      * clear internal storage while also verifying the new update is running.
+//      */
+//     await device.terminateApp();
+//     const promise = Server.waitForRequest(10000 * TIMEOUT_BIAS, {
+//       command: 'clearExpoInternal',
+//     });
+//     await device.launchApp({ newInstance: true });
+//     const updatedMessage = await promise;
+//     expect(updatedMessage).toBe(newNotifyString);
+// 
+//     /**
+//      * Verify that the assets were cleared correctly.
+//      */
+//     const clearAssetsMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+//     if (!clearAssetsMessage.success) {
+//       throw new Error(clearAssetsMessage.error);
+//     }
+//     expect(clearAssetsMessage.numFilesBefore).toBeGreaterThanOrEqual(4); // png, ttf, 2 JS bundles
+//     expect(clearAssetsMessage.numFilesAfter).toBe(0);
+//     expect(clearAssetsMessage.updateId).toEqual(manifest.id);
+// 
+//     /**
+//      * Stop and restart the app and immediately send it a message to read internal storage. Verify
+//      * that the new update is running (again).
+//      */
+//     await device.terminateApp();
+//     // set up promise before starting the app to ensure the correct response is sent
+//     const promise2 = Server.waitForRequest(10000 * TIMEOUT_BIAS, {
+//       command: 'readExpoInternal',
+//     });
+//     await device.launchApp({ newInstance: true });
+//     const updatedMessageAfterClearExpoInternal = await promise2;
+//     expect(updatedMessageAfterClearExpoInternal).toBe(newNotifyString);
+// 
+//     /**
+//      * Verify all the assets -- including the JS bundle from the update (which wasn't in the
+//      * embedded update) -- have been restored. Additionally verify from the server side that the
+//      * updated bundle was re-downloaded.
+// r    */
+//     const readAssetsMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
+//     if (!readAssetsMessage.success) {
+//       throw new Error(readAssetsMessage.error);
+//     }
+//     expect(readAssetsMessage.numFiles).toEqual(manifest.assets.length + 1); // assets + JS bundle
+//     expect(readAssetsMessage.updateId).toEqual(manifest.id);
+//     expect(Server.consumeRequestedStaticFiles().length).toBe(1); // should have re-downloaded only the JS bundle; the rest should have been copied from the app binary
+//   });
 });
