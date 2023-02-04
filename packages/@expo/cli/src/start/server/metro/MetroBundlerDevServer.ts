@@ -134,12 +134,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           const location = new URL(req.url, devServerUrl);
 
           try {
-            const getStaticContent = (
-              await getStaticRenderFunctions(this.projectRoot, devServerUrl, {
+            const { getStaticContent } = await getStaticRenderFunctions(
+              this.projectRoot,
+              devServerUrl,
+              {
                 minify: options.mode === 'production',
                 dev: options.mode !== 'production',
-              })
-            ).getStaticContent;
+              }
+            );
 
             let content = getStaticContent(location);
 
