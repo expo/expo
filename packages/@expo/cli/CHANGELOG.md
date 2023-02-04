@@ -18,7 +18,7 @@
 
 ### 🎉 New features
 
-- Add `EXPO_USE_METRO_WORKSPACE_ROOT` to enable using the workspace root for serving files.
+- Add `EXPO_USE_METRO_WORKSPACE_ROOT` to enable using the workspace root for serving files. ([#21088](https://github.com/expo/expo/pull/21088) by [@EvanBacon](https://github.com/EvanBacon))
 - Skip uninstalling Expo Go when running in UNVERSIONED (internal). ([#20754](https://github.com/expo/expo/pull/20754) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
