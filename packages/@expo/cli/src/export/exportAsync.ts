@@ -18,7 +18,4 @@ export async function exportAsync(projectRoot: string, options: Options) {
 
   // Final notes
   Log.log(`Export was successful. Your exported files can be found in ${options.outputDir}`);
-
-  // TODO: Tear down the server correctly.
-  process.exit(0);
 }
