@@ -14,7 +14,7 @@ import { getWatchFolders } from './getWatchFolders';
 import { importMetroConfigFromProject } from './importMetroFromProject';
 
 export const EXPO_DEBUG = boolish('EXPO_DEBUG', false);
-const EXPO_NO_METRO_SERVER_ROOT = boolish('EXPO_NO_METRO_SERVER_ROOT', false);
+const EXPO_USE_METRO_SERVER_ROOT = boolish('EXPO_USE_METRO_SERVER_ROOT', false);
 const EXPO_USE_EXOTIC = boolish('EXPO_USE_EXOTIC', false);
 
 // Import only the types here, the values will be imported from the project, at runtime.
@@ -196,9 +196,9 @@ export function getDefaultConfig(
       // NOTE(EvanBacon): Moves the server root down to the monorepo root.
       // This enables proper monorepo support for web.
       // @ts-expect-error: not on type
-      unstable_serverRoot: EXPO_NO_METRO_SERVER_ROOT
-        ? projectRoot
-        : getWorkspaceRoot(projectRoot) ?? projectRoot,
+      unstable_serverRoot: EXPO_USE_METRO_SERVER_ROOT
+        ? getWorkspaceRoot(projectRoot) ?? projectRoot
+        : projectRoot,
     },
     symbolicator: {
       customizeFrame: (frame) => {
