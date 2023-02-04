@@ -4,35 +4,30 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import fs from 'fs';
 import fetch from 'node-fetch';
 import path from 'path';
 import requireString from 'require-from-string';
+import resolveFrom from 'resolve-from';
 
 import { profile } from '../../utils/profile';
-
-const INJECT_FILE_NAME = 'render';
-
-// Copy a local Node file into the project so we don't have to modify watchFolders.
-async function createNodeEntryAsync(projectRoot: string) {
-  const tempFileLocation = path.join(projectRoot, '.expo', 'web', INJECT_FILE_NAME + '.js');
-
-  await fs.promises.mkdir(path.dirname(tempFileLocation), { recursive: true });
-
-  // NOTE: This is only needed for development, otherwise the file is already in the project.
-  const templatePath = path.join(__dirname, INJECT_FILE_NAME + '.js');
-  const template = fs.readFileSync(templatePath, 'utf8');
-
-  fs.writeFileSync(tempFileLocation, template);
-
-  return tempFileLocation;
-}
 
 function wrapBundle(str: string) {
   // Skip the metro runtime so debugging is a bit easier.
   // Replace the __r() call with an export statement.
   return str.replace(/^(__r\(.*\);)$/m, 'module.exports = $1');
 }
+
+// TODO(EvanBacon): Group all the code together and version.
+const getRenderModuleId = (projectRoot: string): string => {
+  const moduleId = resolveFrom.silent(projectRoot, 'expo-router/node/render.js');
+  if (!moduleId) {
+    throw new Error(
+      `A version of expo-router with Node.js support is not installed in the project.`
+    );
+  }
+  // remove extension:
+  return path.relative(projectRoot, moduleId).replace(/\.js$/, '');
+};
 
 export async function getStaticRenderFunctions(
   projectRoot: string,
@@ -46,9 +41,10 @@ export async function getStaticRenderFunctions(
     minify?: boolean;
   } = {}
 ): Promise<any> {
-  await createNodeEntryAsync(projectRoot);
+  const moduleId = getRenderModuleId(projectRoot);
+  // TODO: Error handling
   const content = await fetch(
-    `${devServerUrl}/.expo/web/${INJECT_FILE_NAME}.bundle?platform=web&dev=${dev}&minify=${minify}`
+    `${devServerUrl}/${moduleId}.bundle?platform=web&dev=${dev}&minify=${minify}`
   ).then((res) => res.text());
   return profile(requireString, 'eval-metro-bundle')(wrapBundle(content));
 }
