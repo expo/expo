@@ -32,7 +32,7 @@ export function getWorkspaceRoot(projectRoot: string): string | null {
 }
 
 export function getMetroServerRoot(projectRoot: string) {
-  if (env.EXPO_USE_METRO_SERVER_ROOT) {
+  if (env.EXPO_USE_METRO_WORKSPACE_ROOT) {
     return getWorkspaceRoot(projectRoot) ?? projectRoot;
   }
 

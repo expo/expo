@@ -74,7 +74,7 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 
 const EXPO_DEBUG = (0, _getenv().boolish)('EXPO_DEBUG', false);
 exports.EXPO_DEBUG = EXPO_DEBUG;
-const EXPO_USE_METRO_SERVER_ROOT = (0, _getenv().boolish)('EXPO_USE_METRO_SERVER_ROOT', false);
+const EXPO_USE_METRO_WORKSPACE_ROOT = (0, _getenv().boolish)('EXPO_USE_METRO_WORKSPACE_ROOT', false);
 const EXPO_USE_EXOTIC = (0, _getenv().boolish)('EXPO_USE_EXOTIC', false);
 
 // Import only the types here, the values will be imported from the project, at runtime.
@@ -219,7 +219,7 @@ function getDefaultConfig(projectRoot, options = {}) {
       // NOTE(EvanBacon): Moves the server root down to the monorepo root.
       // This enables proper monorepo support for web.
       // @ts-expect-error: not on type
-      unstable_serverRoot: EXPO_USE_METRO_SERVER_ROOT ? (_getWorkspaceRoot = (0, _getModulesPaths().getWorkspaceRoot)(projectRoot)) !== null && _getWorkspaceRoot !== void 0 ? _getWorkspaceRoot : projectRoot : projectRoot
+      unstable_serverRoot: EXPO_USE_METRO_WORKSPACE_ROOT ? (_getWorkspaceRoot = (0, _getModulesPaths().getWorkspaceRoot)(projectRoot)) !== null && _getWorkspaceRoot !== void 0 ? _getWorkspaceRoot : projectRoot : projectRoot
     },
     symbolicator: {
       customizeFrame: frame => {
