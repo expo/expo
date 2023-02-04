@@ -14,7 +14,8 @@
     },
     "updates_testing": {
       "env": {
-        "EX_UPDATES_NATIVE_DEBUG": "1"
+        "EX_UPDATES_NATIVE_DEBUG": "1",
+        "NO_FLIPPER": "1"
       },
       "android": {
         "gradleCommand": ":app:assembleDebug :app:assembleAndroidTest -DtestBuildType=debug",

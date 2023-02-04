@@ -32,7 +32,7 @@ const runtimeVersion = '1.0.0';
 
   await initAsync(projectRoot, { repoRoot, runtimeVersion, localCliBin });
 
-  await setupBasicAppAsync(projectRoot);
+  await setupBasicAppAsync(projectRoot, localCliBin);
 
   // Build assets project as a subdirectory in the project
   const assetsProjectRoot = path.join(process.env.TEST_PROJECT_ROOT, 'updates-e2e');

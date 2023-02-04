@@ -6,7 +6,8 @@ const path = require('path');
 const dirName = __dirname; /* eslint-disable-line */
 
 const expoDependencyNames = [
-  // 'expo',
+  'expo',
+  '@expo/cli',
   '@expo/config-plugins',
   '@expo/config-types',
   '@expo/dev-server',
@@ -167,7 +168,6 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
         detox: '^19.12.1',
         express: '^4.18.2',
         jest: '^29.3.1',
-        'legacy-expo-cli': 'npm:expo-cli@6.2.1',
         'jest-circus': '^29.3.1',
       }
     : {};
@@ -268,7 +268,7 @@ function transformAppJsonForE2E(appJson, projectName, runtimeVersion) {
       name: projectName,
       owner: 'expo-ci',
       runtimeVersion,
-      jsEngine: 'hermes',
+      jsEngine: 'jsc',
       plugins: ['expo-updates', '@config-plugins/detox'],
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
@@ -387,14 +387,11 @@ async function initAsync(
   // We are done with template tarball
   await fs.rm(localTemplatePathName);
 
-  // For now, we need to force the expo dependency to SDK 47,
-  // otherwise the legacy Expo CLI will not create update bundles correctly
-  // This can be removed once SDK 48 is live
+  // Restore expo dependency after prebuild
   const packageJsonPath = path.resolve(projectRoot, 'package.json');
   let packageJsonString = await fs.readFile(packageJsonPath, 'utf-8');
   const packageJson = JSON.parse(packageJsonString);
-  // packageJson.dependencies.expo = packageJson.resolutions.expo;
-  packageJson.dependencies.expo = '47.0.12';
+  packageJson.dependencies.expo = packageJson.resolutions.expo;
   packageJsonString = JSON.stringify(packageJson, null, 2);
   await fs.rm(packageJsonPath);
   await fs.writeFile(packageJsonPath, packageJsonString, 'utf-8');
@@ -422,34 +419,19 @@ async function initAsync(
   return projectRoot;
 }
 
-// This step requires the old expo-cli; however installing it globally
-// breaks this step because it has a dependency on an old @expo/dev-server.
-// Solution is to import it as a devDependency so it picks up the resolution
-// to our correct @expo/dev-server.
-async function createUpdateBundleAsync(projectRoot) {
+async function createUpdateBundleAsync(projectRoot, localCliBin) {
   await fs.rm(path.join(projectRoot, 'dist'), { force: true, recursive: true });
-  await spawnAsync(
-    'node',
-    [
-      'node_modules/legacy-expo-cli/bin/expo.js',
-      'export',
-      '--public-url',
-      'https://u.expo.dev/dummy-url',
-    ],
-    {
-      //await spawnAsync('expo-cli', ['export', '--public-url', 'https://u.expo.dev/dummy-url'], {
-      //await spawnAsync(localCliBin, ['export'], {
-      cwd: projectRoot,
-      stdio: 'inherit',
-    }
-  );
+  await spawnAsync(localCliBin, ['export'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
 }
 
-async function setupBasicAppAsync(projectRoot) {
+async function setupBasicAppAsync(projectRoot, localCliBin) {
   await copyCommonFixturesToProject(projectRoot, 'App.js');
 
   // export update for test server to host
-  await createUpdateBundleAsync(projectRoot);
+  await createUpdateBundleAsync(projectRoot, localCliBin);
 
   // move exported update to "updates" directory for EAS testing
   await fs.rename(path.join(projectRoot, 'dist'), path.join(projectRoot, 'updates'));
@@ -478,7 +460,7 @@ async function setupAssetsAppAsync(projectRoot, localCliBin) {
   });
 
   // export update for test server to host
-  await createUpdateBundleAsync(projectRoot);
+  await createUpdateBundleAsync(projectRoot, localCliBin);
 
   // move exported update to "updates" directory for EAS testing
   await fs.rename(path.join(projectRoot, 'dist'), path.join(projectRoot, 'updates'));

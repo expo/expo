@@ -4,16 +4,15 @@ const fs = require('fs/promises');
 const path = require('path');
 
 const STATIC_FOLDER_PATH = path.resolve(__dirname, '..', '.static');
-const EXPORT_PUBLIC_URL = 'https://u.expo.dev/dummy-url';
 
 function exportedManifestFilename(platform) {
-  return `${platform}-index.json`;
+  return 'metadata.json';
 }
 
 function findBundlePath(updateDistPath, platform) {
-  const classicManifest = require(path.join(updateDistPath, exportedManifestFilename(platform)));
-  const { bundleUrl } = classicManifest;
-  return path.join(updateDistPath, bundleUrl.replace(EXPORT_PUBLIC_URL, ''));
+  const manifest = require(path.join(updateDistPath, exportedManifestFilename(platform)));
+  const bundleUrl = manifest.fileMetadata[platform].bundle;
+  return path.join(updateDistPath, bundleUrl);
 }
 
 async function copyBundleToStaticFolder(
