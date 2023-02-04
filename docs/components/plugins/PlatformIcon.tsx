@@ -7,21 +7,21 @@ export type PlatformIconProps = {
 };
 
 export const PlatformIcon = ({ platform }: PlatformIconProps) => {
-  const size = iconSize.micro;
+  const size = iconSize['2xs'];
 
   switch (platform) {
     case 'ios':
-      return <AppleIcon color={theme.palette.blue['900']} size={size} />;
+      return <AppleIcon color={theme.palette.blue12} size={size} />;
     case 'android':
-      return <AndroidIcon color={theme.palette.green['900']} size={size} />;
+      return <AndroidIcon color={theme.palette.green12} size={size} />;
     case 'web':
-      return <AtSignIcon color={theme.palette.orange['900']} size={size} />;
+      return <AtSignIcon color={theme.palette.orange12} size={size} />;
     case 'expo':
       return (
         <ExpoGoLogo
-          width={iconSize.micro}
-          height={iconSize.micro}
-          color={theme.palette.purple['900']}
+          width={iconSize['2xs']}
+          height={iconSize['2xs']}
+          color={theme.palette.purple12}
           size={size}
         />
       );

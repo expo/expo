@@ -19,17 +19,17 @@ class PinchableBox extends React.Component {
 
   _baseScale: Animated.Value;
   _pinchScale: Animated.Value;
-  _scale: Animated.AnimatedMultiplication;
+  _scale: Animated.AnimatedMultiplication<number>;
   _lastScale: number;
   _onPinchGestureEvent: (...args: any[]) => void;
 
   _rotate: Animated.Value;
-  _rotateStr: Animated.AnimatedInterpolation;
+  _rotateStr: Animated.AnimatedInterpolation<number>;
   _lastRotate: number;
   _onRotateGestureEvent?: (...args: any[]) => void;
 
   _tilt: Animated.Value;
-  _tiltStr: Animated.AnimatedInterpolation;
+  _tiltStr: Animated.AnimatedInterpolation<number>;
   _lastTilt: number;
   _onTiltGestureEvent: (...args: any[]) => void;
 

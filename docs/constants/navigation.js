@@ -115,6 +115,7 @@ const general = [
     makePage('modules/get-started.mdx'),
     makePage('modules/native-module-tutorial.mdx'),
     makePage('modules/native-view-tutorial.mdx'),
+    makePage('modules/config-plugin-and-native-module-tutorial.mdx'),
     makePage('modules/existing-library.mdx'),
     makePage('modules/module-api.mdx'),
     makePage('modules/android-lifecycle-listeners.mdx'),
@@ -175,9 +176,8 @@ const general = [
     makePage('push-notifications/overview.mdx'),
     makePage('push-notifications/push-notifications-setup.mdx'),
     makePage('push-notifications/sending-notifications.mdx'),
-    makePage('push-notifications/sending-notifications-custom.mdx'),
     makePage('push-notifications/receiving-notifications.mdx'),
-    makePage('push-notifications/using-fcm.mdx'),
+    makePage('push-notifications/sending-notifications-custom.mdx'),
     makePage('push-notifications/faq.mdx'),
   ]),
   makeSection('UI programming', [
@@ -199,6 +199,7 @@ const general = [
   makeSection('Regulatory compliance', sortAlphabetical(pagesFromDir('regulatory-compliance')), {}),
   makeSection('Technical specs', [
     makePage('technical-specs/expo-updates-0.mdx'),
+    makePage('technical-specs/expo-updates-1-draft.mdx'),
     makePage('technical-specs/expo-sfv-0.mdx'),
   ]),
   makeSection('Deprecated', [

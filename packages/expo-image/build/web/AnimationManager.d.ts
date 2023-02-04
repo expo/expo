@@ -4,6 +4,7 @@ type Callbacks = {
     onReady?: (() => void) | null;
     onAnimationFinished?: (() => void) | null;
     onMount?: (() => void) | null;
+    onError?: (() => void) | null;
 };
 type AnimationManagerNode = [
     key: string,

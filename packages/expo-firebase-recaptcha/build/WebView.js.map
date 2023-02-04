@@ -1,1 +1,0 @@
-{"version":3,"file":"WebView.js","sourceRoot":"","sources":["../src/WebView.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,OAAO,EAAE,MAAM,sBAAsB,CAAC","sourcesContent":["export { WebView } from 'react-native-webview';\n"]}

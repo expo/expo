@@ -6,7 +6,7 @@ import { CommentData } from '~/components/plugins/api/APIDataTypes';
 import {
   getCommentContent,
   getTagData,
-  mdInlineComponents,
+  mdComponents,
 } from '~/components/plugins/api/APISectionUtils';
 import { Callout } from '~/ui/components/Callout';
 import { BOLD } from '~/ui/components/Text';
@@ -27,8 +27,7 @@ export const APISectionDeprecationNote = ({ comment }: Props) => {
     <div css={deprecationNoticeStyle}>
       <Callout type="warning" key="deprecation-note">
         {content.length ? (
-          <ReactMarkdown
-            components={mdInlineComponents}>{`**Deprecated.** ${content}`}</ReactMarkdown>
+          <ReactMarkdown components={mdComponents}>{`**Deprecated.** ${content}`}</ReactMarkdown>
         ) : (
           <BOLD>Deprecated</BOLD>
         )}

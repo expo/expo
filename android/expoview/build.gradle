@@ -5,8 +5,6 @@ apply plugin: 'de.undercouch.download'
 apply plugin: 'kotlin-kapt'
 apply from: new File(rootDir, "versioning_linking.gradle")
 
-def hasHermesEngineDeps = false
-
 def reactProperties = new Properties()
 file("${project(':ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
 
@@ -94,7 +92,7 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 31)
+    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 1
     versionName "1.0"
 
@@ -170,9 +168,6 @@ dependencies {
 
   testImplementation 'junit:junit:4.12'
 
-
-  api("com.facebook.fbjni:fbjni-java-only:0.2.2")
-
   // WHEN_VERSIONING_REPLACE_WITH_DEPENDENCIES
 
   // WHEN_VERSIONING_REMOVE_FROM_HERE
@@ -189,7 +184,6 @@ dependencies {
       exclude(group:'com.facebook.fbjni', module: 'fbjni')
     }
   }
-  hasHermesEngineDeps = true
 
   // Expo modules
   api project(':expo')
@@ -213,7 +207,7 @@ dependencies {
   api("androidx.autofill:autofill:${reactProperties.getProperty('ANDROIDX_AUTOFILL_VERSION')}")
   api("androidx.swiperefreshlayout:swiperefreshlayout:${reactProperties.getProperty('SWIPEREFRESH_LAYOUT_VERSION')}")
 
-  api("com.facebook.fbjni:fbjni-java-only:${reactProperties.getProperty('FBJNI_VERSION')}")
+  api("com.facebook.fbjni:fbjni:${reactProperties.getProperty('FBJNI_VERSION')}")
   api("com.facebook.fresco:fresco:${reactProperties.getProperty('FRESCO_VERSION')}")
   api("com.facebook.fresco:imagepipeline-okhttp3:${reactProperties.getProperty('FRESCO_VERSION')}")
   api("com.facebook.fresco:ui-common:${reactProperties.getProperty('FRESCO_VERSION')}")
@@ -273,7 +267,7 @@ dependencies {
     }
   }
 
-  api 'com.google.firebase:firebase-core:17.2.3'
+  api 'com.google.firebase:firebase-core:21.1.0'
   api 'com.google.firebase:firebase-messaging:22.0.0'
   api 'com.google.maps.android:android-maps-utils:0.5'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
@@ -296,6 +290,14 @@ dependencies {
   implementation "com.google.android.play:review:2.0.1"
   implementation "com.google.android.play:review-ktx:2.0.0"
 
+  // expo-image
+  def GLIDE_VERSION = "4.13.2"
+  implementation "com.github.zjupure:webpdecoder:2.1.${GLIDE_VERSION}"
+  api "com.github.bumptech.glide:glide:${GLIDE_VERSION}"
+  kapt "com.github.bumptech.glide:compiler:${GLIDE_VERSION}"
+  implementation "com.github.bumptech.glide:avif-integration:${GLIDE_VERSION}"
+  implementation "jp.wasabeef:glide-transformations:4.3.0"
+
   //dbflow
   kapt "com.github.Raizlabs.DBFlow:dbflow-processor:${safeExtGet('dbFlowVersion', '4.2.4')}"
   implementation "com.github.Raizlabs.DBFlow:dbflow-core:${safeExtGet('dbFlowVersion', '4.2.4')}"
@@ -307,8 +309,8 @@ dependencies {
   api 'com.github.troZee:ViewPager2:v1.0.6'
 
   // stripe-react-native
-  implementation('com.stripe:stripe-android:20.12.+')
-  implementation('com.stripe:financial-connections:20.12.+')
+  implementation('com.stripe:stripe-android:20.19.+')
+  implementation('com.stripe:financial-connections:20.19.+')
   compileOnly 'com.stripe:stripe-android-issuing-push-provisioning:1.1.0'
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"

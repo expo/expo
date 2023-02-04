@@ -103,11 +103,7 @@ repositories {
 }
 
 dependencies {
-    if (isNewArchitectureEnabled()) {
-        implementation project(":ReactAndroid")
-    } else {
-        implementation 'com.facebook.react:react-native:+'
-    }
+    implementation 'com.facebook.react:react-native:+'
     implementation 'androidx.appcompat:appcompat:1.1.0'
     implementation 'androidx.fragment:fragment:1.2.1'
     implementation 'androidx.coordinatorlayout:coordinatorlayout:1.1.0'

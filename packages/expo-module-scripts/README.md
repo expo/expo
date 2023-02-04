@@ -71,7 +71,7 @@ Besides, running `yarn prepare` script will also synchronize optional files from
 
 ### 🔌 Config Plugin
 
-To create a [config plugin](https://github.com/expo/expo-cli/blob/main/packages/config-plugins/README.md) that automatically configures your native code, you have two options:
+To create a [config plugin](https://github.com/expo/expo/blob/main/packages/@expo/config-plugins/README.md) that automatically configures your native code, you have two options:
 
 1. Create a `plugin` folder and write your plugin in TypeScript (recommended).
 2. Create an `app.plugin.js` file in the project root and write the plugin in pure Node.js-compliant JavaScript.
@@ -144,7 +144,7 @@ Use the following scripts to interact with the plugin:
 
 ### 🤡 Jest
 
-The Jest preset extends [`jest-expo`](https://github.com/expo/expo/tree/main/packages/jest-expo) or [`jest-expo-enzyme`](https://github.com/expo/expo/tree/main/packages/jest-expo-enzyme) and adds proper TypeScript support and type declarations to the presets.
+The Jest preset extends [`jest-expo`](https://github.com/expo/expo/tree/main/packages/jest-expo) and adds proper TypeScript support and type declarations to the presets.
 
 **For unit testing API-based modules:**
 

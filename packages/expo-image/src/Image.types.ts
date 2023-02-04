@@ -1,4 +1,4 @@
-import { ImageStyle as RNImageStyle } from 'react-native';
+import { ImageStyle as RNImageStyle, ViewProps } from 'react-native';
 
 export type ImageSource = {
   /**
@@ -8,6 +8,8 @@ export type ImageSource = {
   uri?: string;
   /**
    * An object representing the HTTP headers to send along with the request for a remote image.
+   * @platform android
+   * @platform ios
    */
   headers?: Record<string, string>;
   /**
@@ -45,7 +47,7 @@ export type ImageStyle = RNImageStyle;
  * Some props are from React Native Image that Expo Image supports (more or less) for easier migration,
  * but all of them are deprecated and might be removed in the future.
  */
-export type ImageProps = {
+export interface ImageProps extends ViewProps {
   /** @hidden */
   style?: RNImageStyle | RNImageStyle[];
 
@@ -101,8 +103,6 @@ export type ImageProps = {
    * The radius of the blur in points, `0` means no blur effect.
    * This effect is not applied to placeholders.
    * @default 0
-   * @platform android
-   * @platform ios
    */
   blurRadius?: number;
 
@@ -200,7 +200,41 @@ export type ImageProps = {
    * Instead use [`transition`](#transition) with the provided duration.
    */
   fadeDuration?: number;
-};
+
+  /**
+   * Whether this View should be focusable with a non-touch input device and receive focus with a hardware keyboard.
+   * @default false
+   * @platform android
+   */
+  focusable?: boolean;
+
+  /**
+   * When true, indicates that the view is an accessibility element.
+   * When a view is an accessibility element, it groups its children into a single selectable component.
+   *
+   * On Android, the `accessible` property will be translated into the native `isScreenReaderFocusable`,
+   * so it's only affecting the screen readers behaviour.
+   * @default false
+   * @platform android
+   * @platform ios
+   */
+  accessible?: boolean;
+
+  /**
+   * The text that's read by the screen reader when the user interacts with the image.
+   * @default undefined
+   * @platform android
+   * @platform ios
+   */
+  accessibilityLabel?: string;
+
+  /**
+   * Enables Live Text interaction with the image. Check official [Apple documentation](https://developer.apple.com/documentation/visionkit/enabling_live_text_interactions_with_images) for more details.
+   * @default false
+   * @platform ios 16.0+
+   */
+  enableLiveTextInteraction?: boolean;
+}
 
 /**
  * It narrows down some props to types expected by the native/web side.

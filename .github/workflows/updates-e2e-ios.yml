@@ -42,7 +42,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '16'
+          node-version: 16
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(yarn global bin)" >> $GITHUB_PATH
       - name: ♻️ Restore caches
@@ -59,9 +59,7 @@ jobs:
       - name: Build expo-updates CLI
         working-directory: packages/expo-updates
         run: yarn build:cli
-      - name: 🔧 Install Expo CLI
-        run: yarn global add expo-cli
-      - name: Install eas-cli
+      - name: 🔧 Install eas-cli
         run: yarn global add eas-cli
       - name: 🌳 Add EXPO_REPO_ROOT to environment
         run: echo "EXPO_REPO_ROOT=$GITHUB_WORKSPACE" >> $GITHUB_ENV
@@ -76,7 +74,6 @@ jobs:
       - name: 📦 Set test project location
         run: echo "TEST_PROJECT_ROOT=$GITHUB_WORKSPACE/updates-e2e" >> $GITHUB_ENV
       - name: 📦 Setup test project
-
         run: node packages/expo-updates/e2e/__tests__/setup/create-eas-project-basic.js
       - name: 🚀 Build with EAS for iOS
         uses: ./.github/actions/eas-build
@@ -86,7 +83,6 @@ jobs:
           profile: 'updates_testing'
           projectRoot: './updates-e2e'
           expoToken: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
-          resourceClass: large
           noWait: ${{ github.event.schedule }}
           message: ${{ github.event.pull_request.title }}
       - name: On iOS workflow canceled

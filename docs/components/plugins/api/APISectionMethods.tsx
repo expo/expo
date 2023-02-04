@@ -86,7 +86,7 @@ export const renderMethod = (
                 <LI>
                   <UndoIcon
                     color={theme.icon.secondary}
-                    size={iconSize.small}
+                    size={iconSize.sm}
                     css={returnIconStyles}
                   />
                   <APIDataType typeDefinition={type} />
@@ -116,7 +116,7 @@ const APISectionMethods = ({
 }: APISectionMethodsProps) =>
   data?.length ? (
     <>
-      <H2 key="methods-header">{header}</H2>
+      <H2 key={`${header}-header`}>{header}</H2>
       {data.map((method: MethodDefinitionData | PropData) =>
         renderMethod(method, { apiName, header, exposeInSidebar })
       )}

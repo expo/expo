@@ -7,7 +7,7 @@ import { Logo } from './Logo';
 import { ThemeSelector } from './ThemeSelector';
 
 import { Button } from '~/ui/components/Button';
-import { SidebarHead } from '~/ui/components/Sidebar';
+import { SidebarFooter, SidebarHead } from '~/ui/components/Sidebar';
 import { BOLD } from '~/ui/components/Text';
 
 type HeaderProps = {
@@ -41,7 +41,7 @@ export const Header = ({
               onClick={() => {
                 setMobileMenuVisible(!isMobileMenuVisible);
               }}>
-              <HamburgerIcon size={iconSize.small} />
+              <HamburgerIcon size={iconSize.sm} />
             </Button>
           </div>
         </div>
@@ -60,6 +60,7 @@ export const Header = ({
         <div css={mobileSidebarStyle}>
           <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
           {sidebar}
+          <SidebarFooter />
         </div>
       )}
     </>
@@ -125,17 +126,17 @@ const mobileButtonStyle = css`
   margin-left: ${spacing[2]}px;
 
   &:hover {
-    background-color: ${theme.background.tertiary};
+    background-color: ${theme.background.element};
     box-shadow: none;
   }
 `;
 
 const mobileButtonActiveStyle = css`
-  background-color: ${theme.background.secondary};
+  background-color: ${theme.background.subtle};
 `;
 
 const mobileSidebarStyle = css`
-  background-color: ${theme.background.secondary};
+  background-color: ${theme.background.subtle};
   height: calc(100vh - (60px * 2));
   overflow-y: auto;
   overflow-x: hidden;

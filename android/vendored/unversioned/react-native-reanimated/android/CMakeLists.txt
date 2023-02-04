@@ -160,48 +160,54 @@ else()
         set (JSI_LIB "")
     else()
         find_library(
-                JSI_LIB
-                jsi
-                PATHS ${LIBRN_DIR}
-                NO_CMAKE_FIND_ROOT_PATH
+            JSI_LIB
+            jsi
+            PATHS ${LIBRN_DIR}
+            NO_DEFAULT_PATH
+            NO_CMAKE_FIND_ROOT_PATH
         )
     endif()
 
     find_library(
-            GLOG_LIB
-            glog
-            PATHS ${LIBRN_DIR}
-            NO_CMAKE_FIND_ROOT_PATH
+        GLOG_LIB
+        glog
+        PATHS ${LIBRN_DIR}
+        NO_DEFAULT_PATH
+        NO_CMAKE_FIND_ROOT_PATH
     )
 
     find_library(
-            FBJNI_LIB
-            fbjni
-            PATHS ${LIBRN_DIR}
-            NO_CMAKE_FIND_ROOT_PATH
+        FBJNI_LIB
+        fbjni
+        PATHS ${LIBRN_DIR}
+        NO_DEFAULT_PATH
+        NO_CMAKE_FIND_ROOT_PATH
     )
 
     if(${REACT_NATIVE_MINOR_VERSION} LESS 69)
         find_library(
-                FOLLY_LIB
-                folly_json
-                PATHS ${LIBRN_DIR}
-                NO_CMAKE_FIND_ROOT_PATH
+            FOLLY_LIB
+            folly_json
+            PATHS ${LIBRN_DIR}
+            NO_DEFAULT_PATH
+            NO_CMAKE_FIND_ROOT_PATH
         )
     else()
         find_library(
-                FOLLY_LIB
-                folly_runtime
-                PATHS ${LIBRN_DIR}
-                NO_CMAKE_FIND_ROOT_PATH
+            FOLLY_LIB
+            folly_runtime
+            PATHS ${LIBRN_DIR}
+            NO_DEFAULT_PATH
+            NO_CMAKE_FIND_ROOT_PATH
         )
     endif()
 
     find_library(
-            REACTNATIVEJNI_LIB
-            reactnativejni
-            PATHS ${LIBRN_DIR}
-            NO_CMAKE_FIND_ROOT_PATH
+        REACTNATIVEJNI_LIB
+        reactnativejni
+        PATHS ${LIBRN_DIR}
+        NO_DEFAULT_PATH
+        NO_CMAKE_FIND_ROOT_PATH
     )
 
     target_link_libraries(
@@ -247,10 +253,11 @@ if(${JS_RUNTIME} STREQUAL "hermes")
             set(HERMES_EXECUTOR_LIB ReactAndroid::hermes_executor)
         else()
             find_library(
-                    HERMES_EXECUTOR_LIB
-                    hermes-executor-debug
-                    PATHS ${LIBRN_DIR}
-                    NO_CMAKE_FIND_ROOT_PATH
+                HERMES_EXECUTOR_LIB
+                hermes-executor-debug
+                PATHS ${LIBRN_DIR}
+                NO_DEFAULT_PATH
+                NO_CMAKE_FIND_ROOT_PATH
             )
         endif()
         target_link_libraries(
@@ -270,6 +277,7 @@ elseif(${JS_RUNTIME} STREQUAL "v8")
             V8EXECUTOR_LIB
             v8executor
             PATHS ${V8_SO_DIR}
+            NO_DEFAULT_PATH
             NO_CMAKE_FIND_ROOT_PATH
     )
     target_link_libraries(
@@ -282,10 +290,11 @@ elseif(${JS_RUNTIME} STREQUAL "jsc")
         set(JSEXECUTOR_LIB ReactAndroid::jscexecutor)
     else()
         find_library(
-                JSEXECUTOR_LIB
-                jscexecutor
-                PATHS ${LIBRN_DIR}
-                NO_CMAKE_FIND_ROOT_PATH
+            JSEXECUTOR_LIB
+            jscexecutor
+            PATHS ${LIBRN_DIR}
+            NO_DEFAULT_PATH
+            NO_CMAKE_FIND_ROOT_PATH
         )
     endif()
     target_link_libraries(${PACKAGE_NAME} ${JSEXECUTOR_LIB})

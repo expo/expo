@@ -17,7 +17,13 @@ import Colors from '../../constants/Colors';
 // TODO (barthap): Fix the root cause and normalize them between platforms
 const inputRange = Platform.OS === 'ios' ? [0, 0.3] : [0, 1];
 
-export function JsiAudioBar({ sound, isPlaying }: { sound: Audio.Sound; isPlaying: boolean }) {
+export function JsiAudioBar({
+  sound,
+  isPlaying,
+}: {
+  sound: Audio.Sound | undefined;
+  isPlaying: boolean;
+}) {
   const isJsiAudioSupported = React.useMemo(() => {
     try {
       // @ts-expect-error that method is private

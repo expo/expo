@@ -98,7 +98,7 @@ public:
             if (s.empty()) {
                 return nullptr;
             }
-            if (hash == s.hash && key == Traits::GetKey(*s)) {
+            if (hash == s.fHash && key == Traits::GetKey(*s)) {
                 return &*s;
             }
             index = this->next(index);
@@ -125,7 +125,7 @@ public:
         for (int n = 0; n < fCapacity; n++) {
             Slot& s = fSlots[index];
             SkASSERT(s.has_value());
-            if (hash == s.hash && key == Traits::GetKey(*s)) {
+            if (hash == s.fHash && key == Traits::GetKey(*s)) {
                this->removeSlot(index);
                if (4 * fCount <= fCapacity && fCapacity > 4) {
                    this->resize(fCapacity / 2);
@@ -269,7 +269,7 @@ private:
                 fCount++;
                 return &*s;
             }
-            if (hash == s.hash && key == Traits::GetKey(*s)) {
+            if (hash == s.fHash && key == Traits::GetKey(*s)) {
                 // Overwrite previous entry.
                 // Note: this triggers extra copies when adding the same value repeatedly.
                 s.emplace(std::move(val), hash);
@@ -304,7 +304,7 @@ private:
                     emptySlot.reset();
                     return;
                 }
-                originalIndex = s.hash & (fCapacity - 1);
+                originalIndex = s.fHash & (fCapacity - 1);
             } while ((index <= originalIndex && originalIndex < emptyIndex)
                      || (originalIndex < emptyIndex && emptyIndex < index)
                      || (emptyIndex < index && index <= originalIndex));
@@ -325,7 +325,8 @@ private:
         return hash ? hash : 1;  // We reserve hash 0 to mark empty.
     }
 
-    struct Slot {
+    class Slot {
+    public:
         Slot() = default;
         ~Slot() { this->reset(); }
 
@@ -334,17 +335,17 @@ private:
             if (this == &that) {
                 return *this;
             }
-            if (hash) {
-                if (that.hash) {
-                    val.storage = that.val.storage;
-                    hash = that.hash;
+            if (fHash) {
+                if (that.fHash) {
+                    fVal.fStorage = that.fVal.fStorage;
+                    fHash = that.fHash;
                 } else {
                     this->reset();
                 }
             } else {
-                if (that.hash) {
-                    new (&val.storage) T(that.val.storage);
-                    hash = that.hash;
+                if (that.fHash) {
+                    new (&fVal.fStorage) T(that.fVal.fStorage);
+                    fHash = that.fHash;
                 } else {
                     // do nothing, no value on either side
                 }
@@ -357,17 +358,17 @@ private:
             if (this == &that) {
                 return *this;
             }
-            if (hash) {
-                if (that.hash) {
-                    val.storage = std::move(that.val.storage);
-                    hash = that.hash;
+            if (fHash) {
+                if (that.fHash) {
+                    fVal.fStorage = std::move(that.fVal.fStorage);
+                    fHash = that.fHash;
                 } else {
                     this->reset();
                 }
             } else {
-                if (that.hash) {
-                    new (&val.storage) T(std::move(that.val.storage));
-                    hash = that.hash;
+                if (that.fHash) {
+                    new (&fVal.fStorage) T(std::move(that.fVal.fStorage));
+                    fHash = that.fHash;
                 } else {
                     // do nothing, no value on either side
                 }
@@ -375,37 +376,37 @@ private:
             return *this;
         }
 
-        T& operator*() & { return val.storage; }
-        const T& operator*() const& { return val.storage; }
-        T&& operator*() && { return std::move(val.storage); }
-        const T&& operator*() const&& { return std::move(val.storage); }
+        T& operator*() & { return fVal.fStorage; }
+        const T& operator*() const& { return fVal.fStorage; }
+        T&& operator*() && { return std::move(fVal.fStorage); }
+        const T&& operator*() const&& { return std::move(fVal.fStorage); }
 
         Slot& emplace(T&& v, uint32_t h) {
             this->reset();
-            new (&val.storage) T(std::move(v));
-            hash = h;
+            new (&fVal.fStorage) T(std::move(v));
+            fHash = h;
             return *this;
         }
 
-        bool has_value() const { return hash != 0; }
+        bool has_value() const { return fHash != 0; }
         explicit operator bool() const { return this->has_value(); }
         bool empty() const { return !this->has_value(); }
 
         void reset() {
-            if (hash) {
-                val.storage.~T();
-                hash = 0;
+            if (fHash) {
+                fVal.fStorage.~T();
+                fHash = 0;
             }
         }
 
-        uint32_t hash = 0;
+        uint32_t fHash = 0;
 
     private:
         union Storage {
-            T storage;
+            T fStorage;
             Storage() {}
             ~Storage() {}
-        } val;
+        } fVal;
     };
 
     int fCount    = 0,

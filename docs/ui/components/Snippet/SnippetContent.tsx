@@ -36,10 +36,10 @@ export const SnippetContent = forwardRef<HTMLDivElement, SnippetContentProps>(
 
 const contentStyle = css`
   color: ${theme.text.default};
-  background-color: ${theme.background.secondary};
+  background-color: ${theme.background.subtle};
   border: 1px solid ${theme.border.default};
-  border-bottom-left-radius: ${borderRadius.medium}px;
-  border-bottom-right-radius: ${borderRadius.medium}px;
+  border-bottom-left-radius: ${borderRadius.md}px;
+  border-bottom-right-radius: ${borderRadius.md}px;
   padding: ${spacing[4]}px;
   overflow-x: auto;
 

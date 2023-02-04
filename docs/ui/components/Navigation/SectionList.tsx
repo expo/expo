@@ -21,7 +21,7 @@ export function SectionList({ route, isActive, children }: SectionListProps) {
       open={isActive || route.expanded}
       summary={
         <div css={summaryStyle}>
-          <ChevronDownIcon css={iconStyle} size={iconSize.small} />
+          <ChevronDownIcon css={iconStyle} size={iconSize.sm} />
           <CALLOUT css={textStyle} tag="span">
             {route.name}
           </CALLOUT>

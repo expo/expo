@@ -177,6 +177,7 @@ class PaymentLauncherFragment(
   private fun retrieveSetupIntent(clientSecret: String, stripeAccountId: String?) {
     stripe.retrieveSetupIntent(
       clientSecret, stripeAccountId,
+      emptyList(),
       object : ApiResultCallback<SetupIntent> {
         override fun onError(e: Exception) {
           promise.resolve(createError(ConfirmSetupIntentErrorType.Failed.toString(), e))
@@ -221,6 +222,7 @@ class PaymentLauncherFragment(
   private fun retrievePaymentIntent(clientSecret: String, stripeAccountId: String?) {
     stripe.retrievePaymentIntent(
       clientSecret, stripeAccountId,
+      emptyList(),
       object : ApiResultCallback<PaymentIntent> {
         override fun onError(e: Exception) {
           promise.resolve(createError(ConfirmPaymentErrorType.Failed.toString(), e))
@@ -275,6 +277,7 @@ class PaymentLauncherFragment(
       StripeIntent.NextActionType.AlipayRedirect,
       StripeIntent.NextActionType.BlikAuthorize,
       StripeIntent.NextActionType.WeChatPayRedirect,
+      StripeIntent.NextActionType.UpiAwaitNotification,
       null -> false
     }
   }

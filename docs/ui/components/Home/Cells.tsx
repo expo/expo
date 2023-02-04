@@ -75,7 +75,7 @@ type CommunityGridCellProps = APIGridCellProps & {
 
 export const CommunityGridCell = ({
   icon,
-  iconBackground = palette.light.gray['800'],
+  iconBackground = palette.light.gray11,
   title,
   link,
   description,
@@ -127,7 +127,7 @@ const cellHoverStyle = css`
   }
 
   &:hover {
-    box-shadow: ${shadows.tiny};
+    box-shadow: ${shadows.sm};
 
     svg {
       transform: scale(1.05);
@@ -148,7 +148,7 @@ const cellStyle = css({
   borderWidth: 1,
   borderStyle: 'solid',
   borderColor: theme.border.default,
-  borderRadius: borderRadius.large,
+  borderRadius: borderRadius.lg,
 
   h2: {
     marginTop: 0,
@@ -162,7 +162,7 @@ const cellStyle = css({
 
 const cellAPIStyle = css({
   display: 'block',
-  backgroundColor: theme.background.secondary,
+  backgroundColor: theme.background.subtle,
   padding: 0,
   overflow: 'hidden',
   textDecoration: 'none',
@@ -204,7 +204,7 @@ const cellCommunityIconWrapperStyle = css({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  borderRadius: borderRadius.large,
+  borderRadius: borderRadius.lg,
   marginRight: spacing[3],
 });
 
@@ -228,7 +228,7 @@ const cellCommunityDescriptionStyle = css({
 const cellCommunityLinkIconStyle = css({
   marginLeft: spacing[1.5],
   alignSelf: 'center',
-  minWidth: iconSize.regular,
+  minWidth: iconSize.md,
 });
 
 const cellCommunityHoverStyle = css`
@@ -241,7 +241,7 @@ const cellCommunityHoverStyle = css`
   }
 
   &:hover {
-    box-shadow: ${shadows.tiny};
+    box-shadow: ${shadows.sm};
 
     svg {
       transform: scale(1.075);

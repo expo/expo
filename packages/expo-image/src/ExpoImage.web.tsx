@@ -47,6 +47,7 @@ export default function ExpoImage({
   responsivePolicy,
   onLoadEnd,
   priority,
+  blurRadius,
   ...props
 }: ImageNativeProps) {
   const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
@@ -83,6 +84,7 @@ export default function ExpoImage({
                         source={placeholder?.[0]}
                         style={{
                           objectFit: 'scale-down',
+                          ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
                           ...style,
                         }}
                         className={className}
@@ -100,19 +102,20 @@ export default function ExpoImage({
             : null
         }>
         {(selectedSource as any)?.uri || placeholder?.[0]?.uri}
-        {({ onAnimationFinished, onReady, onMount }) =>
+        {({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) =>
           (className, style) =>
             (
               <ImageWrapper
                 source={selectedSource || placeholder?.[0]}
                 events={{
-                  onError: [onErrorAdapter(onError), onLoadEnd],
+                  onError: [onErrorAdapter(onError), onLoadEnd, onErrorInner],
                   onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
                   onMount: [onMount],
                   onTransitionEnd: [onAnimationFinished],
                 }}
                 style={{
                   objectFit: selectedSource ? contentFit : 'scale-down',
+                  ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
                   ...style,
                 }}
                 className={className}

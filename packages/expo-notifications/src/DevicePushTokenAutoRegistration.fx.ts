@@ -25,7 +25,7 @@ export type DevicePushTokenRegistration = {
 /**
  * Sets the registration information so that the device push token gets pushed
  * to the given registration endpoint
- * @param registration Registration endpoint to inform of new tokens
+ * @param enabled
  */
 export async function setAutoServerRegistrationEnabledAsync(enabled: boolean) {
   // We are overwriting registration, so we shouldn't let
@@ -41,9 +41,7 @@ export async function setAutoServerRegistrationEnabledAsync(enabled: boolean) {
   );
 }
 
-/**
- * This function is exported only for testing purposes.
- */
+// note(Chmiela): This function is exported only for testing purposes.
 export async function __handlePersistedRegistrationInfoAsync(
   registrationInfo: string | null | undefined
 ) {

@@ -98,7 +98,9 @@ const INTERNAL_CALLSITES_REGEX = new RegExp(['/Libraries/Renderer/implementation
 // Hide Hermes internal bytecode
 '/InternalBytecode/InternalBytecode\\.js$',
 // Block native code invocations
-`\\[native code\\]`].join('|'));
+`\\[native code\\]`,
+// Hide react-dom (web)
+'node_modules/react-dom/.+\\.js$'].join('|'));
 exports.INTERNAL_CALLSITES_REGEX = INTERNAL_CALLSITES_REGEX;
 function isUrl(value) {
   try {
@@ -199,7 +201,9 @@ function getDefaultConfig(projectRoot, options = {}) {
     resolver: {
       resolverMainFields,
       platforms: ['ios', 'android', 'native', 'testing'],
-      assetExts: metroDefaultValues.resolver.assetExts.filter(assetExt => !sourceExts.includes(assetExt)),
+      assetExts: metroDefaultValues.resolver.assetExts.concat(
+      // Add default support for `expo-image` file types.
+      ['heic', 'avif']).filter(assetExt => !sourceExts.includes(assetExt)),
       sourceExts,
       nodeModulesPaths
     },

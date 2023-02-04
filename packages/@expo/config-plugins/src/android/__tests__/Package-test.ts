@@ -18,7 +18,8 @@ const EXAMPLE_BUILD_GRADLE = `
   android {
       compileSdkVersion rootProject.ext.compileSdkVersion
       buildToolsVersion rootProject.ext.buildToolsVersion
-  
+
+      namespace "com.helloworld"
       defaultConfig {
           applicationId "com.helloworld"
           minSdkVersion rootProject.ext.minSdkVersion
@@ -52,6 +53,12 @@ describe('package', () => {
     expect(
       setPackageInBuildGradle({ android: { package: 'my.new.app' } }, EXAMPLE_BUILD_GRADLE)
     ).toMatch("applicationId 'my.new.app'");
+  });
+
+  it(`sets the namespace in build.gradle if package is given`, () => {
+    expect(
+      setPackageInBuildGradle({ android: { package: 'my.new.app' } }, EXAMPLE_BUILD_GRADLE)
+    ).toMatch("namespace 'my.new.app'");
   });
 
   it('adds package to android manifest', async () => {

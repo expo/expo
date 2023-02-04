@@ -55,9 +55,6 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
     // Overriding expo-updates UpdatesService
     moduleRegistry.registerInternalModule(UpdatesBinding(scopedContext, experienceProperties))
 
-    // Overriding expo-firebase-core
-    moduleRegistry.registerInternalModule(ScopedFirebaseCoreService(scopedContext, manifest, experienceKey))
-
     // Overriding expo-notifications classes
     moduleRegistry.registerExportedModule(ScopedNotificationsEmitter(scopedContext, experienceKey))
     moduleRegistry.registerExportedModule(ScopedNotificationsHandler(scopedContext, experienceKey))

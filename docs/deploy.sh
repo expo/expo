@@ -162,6 +162,9 @@ redirects[tutorial/planning]=tutorial/introduction/
 redirects[tutorial/sharing]=tutorial/introduction/
 redirects[tutorial/text]=tutorial/introduction/
 
+# Push notifications
+redirects[push-notifications/using-fcm/]=push-notifications/push-notifications-setup/
+
 # Removed API reference docs
 redirects[versions/latest/sdk/facebook]=guides/authentication/
 redirects[versions/latest/sdk/taskmanager]=versions/latest/sdk/task-manager/
@@ -169,6 +172,9 @@ redirects[versions/latest/sdk/videothumbnails]=versions/latest/sdk/video-thumbna
 redirects[versions/latest/sdk/appearance]=versions/latest/react-native/appearance/
 redirects[versions/latest/sdk/app-loading]=versions/latest/sdk/splash-screen/
 redirects[versions/latest/sdk/app-auth]=guides/authentication/
+redirects[versions/latest/sdk/firebase-core]=guides/using-firebase/
+redirects[versions/latest/sdk/firebase-analytics]=guides/using-firebase/
+redirects[versions/latest/sdk/firebase-recaptcha]=guides/using-firebase/
 redirects[versions/latest/sdk/google-sign-in]=guides/authentication/
 redirects[versions/latest/sdk/google]=guides/authentication/
 redirects[versions/latest/sdk/amplitude/]=guides/using-analytics/

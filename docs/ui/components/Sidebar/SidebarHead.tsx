@@ -1,13 +1,13 @@
 import { css } from '@emotion/react';
 import { spacing, theme, PlanEnterpriseIcon, iconSize } from '@expo/styleguide';
-import * as React from 'react';
 
 import { APIIcon, APIInactiveIcon } from './icons/API';
 import { DocumentationIcon, DocumentationInactiveIcon } from './icons/Documentation';
 import { PreviewIcon, PreviewInactiveIcon } from './icons/Preview';
 
 import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags.cjs';
-import { SidebarHeadEntry } from '~/ui/components/Sidebar/SidebarHeadEntry';
+import { SidebarSingleEntry } from '~/ui/components/Sidebar/SidebarSingleEntry';
+import { customIconContainerStyle } from '~/ui/components/Sidebar/icons/styles';
 
 type SidebarHeadProps = {
   sidebarActiveGroup: string;
@@ -16,33 +16,33 @@ type SidebarHeadProps = {
 export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
   return (
     <div css={sidebarHeadContainer}>
-      <SidebarHeadEntry
+      <SidebarSingleEntry
         href="/"
         title="Guides"
         Icon={sidebarActiveGroup === 'general' ? DocumentationIcon : DocumentationInactiveIcon}
         isActive={sidebarActiveGroup === 'general'}
       />
-      <SidebarHeadEntry
+      <SidebarSingleEntry
         href="/eas"
         title="Expo Application Services"
         Icon={() => (
-          <div css={easIconContainerStyle}>
+          <div css={customIconContainerStyle}>
             <PlanEnterpriseIcon
-              color={sidebarActiveGroup === 'eas' ? theme.link.default : theme.icon.default}
-              size={iconSize.small}
+              color={sidebarActiveGroup === 'eas' ? theme.text.link : theme.icon.default}
+              size={iconSize.sm}
             />
           </div>
         )}
         isActive={sidebarActiveGroup === 'eas'}
       />
-      <SidebarHeadEntry
+      <SidebarSingleEntry
         href="/versions/latest"
         title="API Reference"
         Icon={sidebarActiveGroup === 'reference' ? APIIcon : APIInactiveIcon}
         isActive={sidebarActiveGroup === 'reference'}
       />
       {shouldShowFeaturePreviewLink() && (
-        <SidebarHeadEntry
+        <SidebarSingleEntry
           href="/feature-preview"
           title="Feature Preview"
           Icon={
@@ -63,13 +63,4 @@ const sidebarHeadContainer = css({
   padding: spacing[4],
   borderBottom: `1px solid ${theme.border.default}`,
   background: theme.background.default,
-});
-
-const easIconContainerStyle = css({
-  height: spacing[5],
-  width: spacing[5],
-  display: 'flex',
-  alignItems: 'center',
-  justifyContent: 'center',
-  marginRight: spacing[2.5],
 });

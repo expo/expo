@@ -51,6 +51,8 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     '/InternalBytecode/InternalBytecode\\.js$',
     // Block native code invocations
     `\\[native code\\]`,
+    // Hide react-dom (web)
+    'node_modules/react-dom/.+\\.js$',
   ].join('|')
 );
 
@@ -178,9 +180,12 @@ export function getDefaultConfig(
     resolver: {
       resolverMainFields,
       platforms: ['ios', 'android', 'native', 'testing'],
-      assetExts: metroDefaultValues.resolver.assetExts.filter(
-        (assetExt) => !sourceExts.includes(assetExt)
-      ),
+      assetExts: metroDefaultValues.resolver.assetExts
+        .concat(
+          // Add default support for `expo-image` file types.
+          ['heic', 'avif']
+        )
+        .filter((assetExt) => !sourceExts.includes(assetExt)),
       sourceExts,
       nodeModulesPaths,
     },

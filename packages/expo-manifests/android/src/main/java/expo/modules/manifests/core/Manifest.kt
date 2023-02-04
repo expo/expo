@@ -170,7 +170,7 @@ abstract class Manifest(protected val json: JSONObject) {
   val jsEngine: String by lazy {
     val expoClientConfig = getExpoClientConfigRootObject()
     expoClientConfig
-      ?.getNullable<JSONObject>("android")?.getNullable<String>("jsEngine") ?: expoClientConfig?.getNullable<String>("jsEngine") ?: "jsc"
+      ?.getNullable<JSONObject>("android")?.getNullable<String>("jsEngine") ?: expoClientConfig?.getNullable<String>("jsEngine") ?: "hermes"
   }
 
   fun getIconUrl(): String? {

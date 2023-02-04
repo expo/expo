@@ -1,7 +1,7 @@
-import { iconSize } from '@expo/styleguide';
+import { iconSize, palette } from '@expo/styleguide';
 import { IconProps } from '@expo/styleguide/dist/types';
 
-export const APIIcon = ({ size = iconSize.regular, className }: IconProps) => {
+export const APIIcon = ({ size = iconSize.md, className }: IconProps) => {
   return (
     <svg
       width={size}
@@ -13,49 +13,49 @@ export const APIIcon = ({ size = iconSize.regular, className }: IconProps) => {
       <path
         id="799c51f2c18cff385eca6270b7c5e556"
         d="M4.73128 8.00812L4.73096 18.0381L13.5385 12.397L13.4188 3.04907L4.73128 8.00812Z"
-        fill="#2E2496"
+        fill={palette.light.blue12}
       />
       <path
         id="afa974ad3fd9cdc55bb1235a0506f9ad"
         d="M1.71517 5.96136L1.71484 15.9913L10.5224 10.3502L10.4027 1.00232L1.71517 5.96136Z"
-        fill="#2E2496"
+        fill={palette.light.blue12}
       />
       <path
         d="M4.73089 18.0381L4.73122 8.00818L3.03849 7.11475L3.01611 16.9659L4.73089 18.0381Z"
-        fill="#664FFF"
+        fill={palette.light.blue11}
       />
       <path
         d="M4.73089 18.0381L4.73122 8.00818L3.03849 7.11475L3.01611 16.9659L4.73089 18.0381Z"
-        fill="#664FFF"
+        fill={palette.light.blue11}
       />
       <path
         d="M1.71478 15.9914L1.7151 5.96143L0.0223727 5.06799L0 14.9191L1.71478 15.9914Z"
-        fill="#664FFF"
+        fill={palette.light.blue11}
       />
       <path
         d="M1.71478 15.9914L1.7151 5.96143L0.0223727 5.06799L0 14.9191L1.71478 15.9914Z"
-        fill="#664FFF"
+        fill={palette.light.blue11}
       />
       <path
         d="M11.7712 2.10494L13.321 3.05051L4.73085 7.95395L3.14223 7.11547L11.7712 2.10494Z"
-        fill="#D2CAFD"
-        stroke="#664FFF"
+        fill={palette.light.blue6}
+        stroke={palette.light.blue11}
         strokeWidth="0.1"
       />
       <path
         d="M8.75512 0.0581856L10.3049 1.00376L1.71474 5.9072L0.126114 5.06871L8.75512 0.0581856Z"
-        fill="#D2CAFD"
-        stroke="#664FFF"
+        fill={palette.light.blue6}
+        stroke={palette.light.blue11}
         strokeWidth="0.1"
       />
       <path
         d="M6.15186 9.68127L4.73096 10.2028L7.82774 20L9.32823 19.4943L6.15186 9.68127Z"
-        fill="#664FFF"
+        fill={palette.light.blue11}
       />
       <path
         d="M6.2007 9.71282L14.7784 5.2247L17.9396 14.957L9.34587 19.4295L6.2007 9.71282Z"
-        fill="#D2CAFD"
-        stroke="#664FFF"
+        fill={palette.light.blue6}
+        stroke={palette.light.blue11}
         strokeWidth="0.1"
       />
       <path
@@ -72,7 +72,7 @@ export const APIIcon = ({ size = iconSize.regular, className }: IconProps) => {
   );
 };
 
-export const APIInactiveIcon = ({ size = iconSize.regular, className }: IconProps) => {
+export const APIInactiveIcon = ({ size = iconSize.md, className }: IconProps) => {
   return (
     <svg
       width={size}
