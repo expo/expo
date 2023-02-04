@@ -642,7 +642,11 @@ PODS:
   - ABI46_0_0stripe-react-native (0.13.1):
     - ABI46_0_0React-Core
     - Stripe (~> 23.3.0)
+    - StripeApplePay (~> 23.3.0)
     - StripeFinancialConnections (~> 23.3.0)
+    - StripePayments (~> 23.3.0)
+    - StripePaymentSheet (~> 23.3.0)
+    - StripePaymentsUI (~> 23.3.0)
   - ABI46_0_0UMAppLoader (3.1.0)
   - ABI46_0_0Yoga (1.14.0)
   - ABI47_0_0EASClient (0.4.0):
@@ -1306,7 +1310,11 @@ PODS:
   - ABI47_0_0stripe-react-native (0.19.0):
     - ABI47_0_0React-Core
     - Stripe (~> 23.3.0)
+    - StripeApplePay (~> 23.3.0)
     - StripeFinancialConnections (~> 23.3.0)
+    - StripePayments (~> 23.3.0)
+    - StripePaymentSheet (~> 23.3.0)
+    - StripePaymentsUI (~> 23.3.0)
   - ABI47_0_0UMAppLoader (4.0.0)
   - ABI47_0_0Yoga (1.14.0)
   - ABI48_0_0EASClient (0.5.0):
@@ -4483,7 +4491,7 @@ SPEC CHECKSUMS:
   ABI46_0_0RNGestureHandler: 42f00c4ce0ac12c4c51081de65e2ba831dfd5cb7
   ABI46_0_0RNReanimated: c68969af1eae15d09ee5b8b3b61407feb5db9884
   ABI46_0_0RNScreens: f521a4613dc2207aab4fcd72b5bb7cef74104a39
-  ABI46_0_0stripe-react-native: 4dd52a4a1d8eea53b0a98ca8040fbe337a015c1c
+  ABI46_0_0stripe-react-native: 8552dcbc30ff4f9421642865f6f3eade43afd60c
   ABI46_0_0UMAppLoader: 271ab738d153f711d91da6b1b7a3a981d668dcfe
   ABI46_0_0Yoga: 898c6ba86e91d19b0810efa11e8a6c7e5559a64d
   ABI47_0_0EASClient: 6736a1df49422a126aa94f9ce746cfa0793b18b1
@@ -4593,7 +4601,7 @@ SPEC CHECKSUMS:
   ABI47_0_0RNReanimated: fb0af774050ede9a36f59af894db4270a28f0e12
   ABI47_0_0RNScreens: b7b92c672e91734079636fbcf8fdac5a249aca8d
   ABI47_0_0RNSVG: 6ebc184a6e7f101269a30971df3bae6e93422b65
-  ABI47_0_0stripe-react-native: 3d4ec195884d62beafe5f0687306a598e1d62695
+  ABI47_0_0stripe-react-native: 0da072b30eb714649506414f85e18a19911511d1
   ABI47_0_0UMAppLoader: b6f390d4e683ebfb1042a15ac2ec8ecdca796eb9
   ABI47_0_0Yoga: 00f64b690ab46751611af3a78fb2032b31a3287d
   ABI48_0_0EASClient: 08455175361c13879c5b26c947a0c7822629f3cf
