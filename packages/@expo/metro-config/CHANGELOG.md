@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `EXPO_USE_METRO_SERVER_ROOT` to enable using the workspace root for serving files.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
