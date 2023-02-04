@@ -10,6 +10,7 @@ import requireString from 'require-from-string';
 import resolveFrom from 'resolve-from';
 
 import { profile } from '../../utils/profile';
+const debug = require('debug')('expo:start:server:node-renderer') as typeof console.log;
 
 function wrapBundle(str: string) {
   // Skip the metro runtime so debugging is a bit easier.
@@ -42,9 +43,16 @@ export async function getStaticRenderFunctions(
   } = {}
 ): Promise<any> {
   const moduleId = getRenderModuleId(projectRoot);
+  debug('Loading render functions from:', moduleId);
+  if (moduleId.startsWith('..')) {
+    throw new Error(
+      `expo-router/node/render.js is not in the project root. This is not supported.`
+    );
+  }
   // TODO: Error handling
   const content = await fetch(
     `${devServerUrl}/${moduleId}.bundle?platform=web&dev=${dev}&minify=${minify}`
+    // `${devServerUrl}/${moduleId}.bundle?platform=web&dev=${dev}&minify=${minify}`
   ).then((res) => res.text());
   return profile(requireString, 'eval-metro-bundle')(wrapBundle(content));
 }

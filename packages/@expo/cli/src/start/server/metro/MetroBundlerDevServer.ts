@@ -13,6 +13,7 @@ import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import { getStaticRenderFunctions } from '../getStaticRenderFunctions';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
@@ -22,7 +23,6 @@ import {
 } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
-import { getStaticRenderFunctions } from '../node-renderer';
 import { instantiateMetroAsync } from './instantiateMetro';
 
 /** Default port to use for apps running in Expo Go. */
