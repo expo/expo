@@ -10,7 +10,7 @@ import { getPlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
 import { ExpoMiddleware } from './ExpoMiddleware';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
-import { resolveAbsoluteEntryPoint, resolveEntryPoint } from './resolveEntryPoint';
+import { resolveAbsoluteEntryPoint } from './resolveEntryPoint';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
 
@@ -31,12 +31,12 @@ export function getWorkspaceRoot(projectRoot: string): string | null {
   }
 }
 
-function getMetroServerRoot(projectRoot: string) {
-  if (env.EXPO_NO_METRO_SERVER_ROOT) {
-    return projectRoot;
+export function getMetroServerRoot(projectRoot: string) {
+  if (env.EXPO_USE_METRO_SERVER_ROOT) {
+    return getWorkspaceRoot(projectRoot) ?? projectRoot;
   }
 
-  return getWorkspaceRoot(projectRoot) ?? projectRoot;
+  return projectRoot;
 }
 
 /** Info about the computer hosting the dev server. */

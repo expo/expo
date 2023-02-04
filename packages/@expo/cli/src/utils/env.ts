@@ -89,9 +89,9 @@ class Env {
     return string('EXPO_EDITOR', '');
   }
 
-  /** Disable auto server root detection for Metro. This will force the server root to be the project root. */
-  get EXPO_NO_METRO_SERVER_ROOT(): boolean {
-    return boolish('EXPO_NO_METRO_SERVER_ROOT', false);
+  /** Enable auto server root detection for Metro. This will change the server root to the workspace root. */
+  get EXPO_USE_METRO_SERVER_ROOT(): boolean {
+    return boolish('EXPO_USE_METRO_SERVER_ROOT', false);
   }
 
   /**
