@@ -18,7 +18,7 @@ ABI48_0_0RCT_EXPORT_MODULE(SkiaPictureView)
 
 - (ABI48_0_0SkiaManager*) skiaManager {
   auto bridge = [ABI48_0_0RCTBridge currentBridge];
-  auto skiaModule = (ABI48_0_0RNSkiaModule*)[bridge moduleForName:@"ABI48_0_0RNSkia"];
+  auto skiaModule = (ABI48_0_0RNSkiaModule*)[bridge moduleForName:@"RNSkia"];
   return [skiaModule manager];
 }
 
