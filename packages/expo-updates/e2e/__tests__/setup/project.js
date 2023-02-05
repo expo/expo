@@ -206,29 +206,46 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
 
 async function prepareLocalUpdatesModule(repoRoot) {
   // copy UpdatesE2ETest exported module into the local package
+  const iosE2ETestModuleHPath = path.join(
+    repoRoot,
+    'packages',
+    'expo-updates',
+    'ios',
+    'EXUpdates',
+    'EXUpdatesE2ETestModule.h'
+  );
+  const iosE2ETestModuleMPath = path.join(
+    repoRoot,
+    'packages',
+    'expo-updates',
+    'ios',
+    'EXUpdates',
+    'EXUpdatesE2ETestModule.m'
+  );
+  const androidE2ETestModuleKTPath = path.join(
+    repoRoot,
+    'packages',
+    'expo-updates',
+    'android',
+    'src',
+    'main',
+    'java',
+    'expo',
+    'modules',
+    'updates',
+    'UpdatesE2ETestModule.kt'
+  );
   await fs.copyFile(
     path.resolve(dirName, '..', 'fixtures', 'EXUpdatesE2ETestModule.h'),
-    path.join(repoRoot, 'packages', 'expo-updates', 'ios', 'EXUpdates', 'EXUpdatesE2ETestModule.h')
+    iosE2ETestModuleHPath
   );
   await fs.copyFile(
     path.resolve(dirName, '..', 'fixtures', 'EXUpdatesE2ETestModule.m'),
-    path.join(repoRoot, 'packages', 'expo-updates', 'ios', 'EXUpdates', 'EXUpdatesE2ETestModule.m')
+    iosE2ETestModuleMPath
   );
   await fs.copyFile(
     path.resolve(dirName, '..', 'fixtures', 'UpdatesE2ETestModule.kt'),
-    path.join(
-      repoRoot,
-      'packages',
-      'expo-updates',
-      'android',
-      'src',
-      'main',
-      'java',
-      'expo',
-      'modules',
-      'updates',
-      'UpdatesE2ETestModule.kt'
-    )
+    androidE2ETestModuleKTPath
   );
 
   // export module from UpdatesPackage on Android
@@ -245,7 +262,8 @@ async function prepareLocalUpdatesModule(repoRoot) {
     'updates',
     'UpdatesPackage.kt'
   );
-  let updatesPackageFileContents = await fs.readFile(updatesPackageFilePath, 'utf8');
+  const originalUpdatesPackageFileContents = await fs.readFile(updatesPackageFilePath, 'utf8');
+  let updatesPackageFileContents = originalUpdatesPackageFileContents;
   if (!updatesPackageFileContents) {
     throw new Error('Failed to read UpdatesPackage.kt; was the file renamed or moved?');
   }
@@ -258,6 +276,14 @@ async function prepareLocalUpdatesModule(repoRoot) {
     throw new Error('Failed to modify UpdatesPackage.kt to insert UpdatesE2ETestModule');
   }
   await fs.writeFile(updatesPackageFilePath, updatesPackageFileContents, 'utf8');
+
+  // Return cleanup function
+  return async () => {
+    await fs.writeFile(updatesPackageFilePath, originalUpdatesPackageFileContents, 'utf8');
+    await fs.rm(iosE2ETestModuleHPath, { force: true });
+    await fs.rm(iosE2ETestModuleMPath, { force: true });
+    await fs.rm(androidE2ETestModuleKTPath, { force: true });
+  };
 }
 
 function transformAppJsonForE2E(appJson, projectName, runtimeVersion) {
@@ -337,8 +363,9 @@ async function initAsync(
     stdio: 'inherit',
   });
 
+  let cleanupLocalUpdatesModule;
   if (configureE2E) {
-    await prepareLocalUpdatesModule(repoRoot);
+    cleanupLocalUpdatesModule = await prepareLocalUpdatesModule(repoRoot);
   }
 
   await preparePackageJson(projectRoot, repoRoot, configureE2E);
@@ -415,6 +442,11 @@ async function initAsync(
   const iosProjectEdited = iosProject.replace('SKIP', 'FORCE');
   await fs.rm(iosProjectPath);
   await fs.writeFile(iosProjectPath, iosProjectEdited, 'utf-8');
+
+  // Cleanup local updates module if needed
+  if (cleanupLocalUpdatesModule) {
+    await cleanupLocalUpdatesModule();
+  }
 
   return projectRoot;
 }
