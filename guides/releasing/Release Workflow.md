@@ -254,35 +254,7 @@ In the managed workflow, we use our forked `react-native` repository because we 
 - Go through the [Quality Assurance](Quality%20Assurance.md) guide.
 - Commit any fixes to `main` and cherry-pick to the `sdk-XX` branch.
 
-## 2.2. Standalone App Quality Assurance
-
-**Why:** There are often a few key differences between these two environments, and if they go undetected then users will end up finding out stuff is broken when they think their app is ready to release to the stores. This reduces trust in the whole Expo ecosystem, so it's really important we head this off by QA'ing everything we put out for people to use.
-
-| Prerequisites                                                                                                          |
-| ---------------------------------------------------------------------------------------------------------------------- |
-| [1.4. Update JS dependencies required for build](#14-update-js-dependencies-required-for-build)                        |
-| [2.1. Versioned Quality Assurance - Expo Go for iOS/Android](#21-versioned-quality-assurance---expo-go-for-iosandroid) |
-
-**How:**
-
-- Go through another guide about [Quality Assurance](Quality%20Assurance.md). Run `native-component-list` and `test-suite` in standalone apps and repeat the same tests as above.
-- Before proceeding, you may want to publish `native-component-list` for the SDK version that you are testing.
-
-- **Android**:
-  - The process for building a standalone app locally is to publish the app you want to build and then run `et android-build-packages` and then `et android-shell-app --url <url> --sdkVersion XX.X.X`. Once the app is built you can find it in `/tmp/shell-debug.apk`.
-  - Once you're done testing this, delete `~/.m2/repository` or you will not be able to build other React Native Android projects.
-- **iOS**:
-  - To create a workspace that you can open up in Xcode and build/run/debug:
-    - `et ios-shell-app --action create-workspace -u "https://exp.host/@username/project-slug/index.exp?sdkVersion=xx.0.0" -s xx.0.0 --skipRepoUpdate`.
-    - Open `shellAppWorkspaces/default/ios` in Xcode. Drag the assets from `shellAppWorkspaces/default/ios/ExpoKitApp/` into the ExpoKitApp group in Xcode.
-    - Build and run.
-  - To test the end-to-end standalone app build process, it's easiest to use a simulator build:
-    - Delete any `shellAppWorkspaces*` directories from previous QA.
-    - Run `et ios-shell-app --action build --type simulator --configuration Release`
-    - Run `et ios-shell-app --url "https://exp.host/@username/project-slug/index.exp?sdkVersion=41.0.0" --action configure --type simulator -s xx.0.0 --archivePath shellAppBase-simulator/Build/Products/Release-iphonesimulator/ExpoKitApp.app --output app.tar.gz`
-    - Find the simulator build in `shellAppBase-simulator/Build/Products/Release-iphonesimulator/` and drag it into your simulator to run it.
-
-## 2.3. Web Quality Assurance
+## 2.2. Web Quality Assurance
 
 **Why:** We really care about the quality of the code that we release for the users. Quality Assurance is the most important task during the release process, so please don't ignore any steps and also focus on things that have been changed/reworked/refactored in this cycle.
 
@@ -296,13 +268,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 - Run `expo build:web`, `npx serve web-build` and then `open http://localhost:5000/`. Ensure the built version of the app loads successfully.
 - Finally, test deploying the app by running `npx now web-build`.
 
-## 2.4. Cherry-pick Versioned Code to `main`
-
-| Prerequisites                                                                                                          |
-| ---------------------------------------------------------------------------------------------------------------------- |
-| [2.1. Versioned Quality Assurance - Expo Go for iOS/Android](#21-versioned-quality-assurance---expo-go-for-iosandroid) |
-| [2.2. Standalone App Quality Assurance](#22-standalone-app-quality-assurance)                                          |
-| [2.3. Web Quality Assurance](#23-web-quality-assurance)                                                                |
+## 2.3. Cherry-pick Versioned Code to `main`
 
 **Why:** Most commits should flow in the `main` -> `sdk-XX` branch direction. Versioning is an exception to this because we explicitly want to version the set of code on the `sdk-XX` branch, but we want that versioned code on main for later releases.
 
@@ -310,13 +276,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 
 - Cherry-pick all versioning commits from `sdk-XX` to `main`.
 
-## 2.5. Publish demo apps
-
-| Prerequisites                                                                                                          |
-| ---------------------------------------------------------------------------------------------------------------------- |
-| [2.1. Versioned Quality Assurance - Expo Go for iOS/Android](#21-versioned-quality-assurance---expo-go-for-iosandroid) |
-| [2.2. Standalone App Quality Assurance](#22-standalone-app-quality-assurance)                                          |
-| [2.3. Web Quality Assurance](#23-web-quality-assurance)                                                                |
+## 2.4. Publish demo apps
 
 **Why:** We need to publish `native-component-list` so other people can try it out (including app reviewers from Apple).
 
@@ -326,13 +286,7 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 - Run `expo publish` for both `community` and `applereview` accounts.
 - Open `native-component-list` from `applereview` account and make sure it launches as expected.
 
-## 2.6. Publish any missing or changed packages
-
-| Prerequisites                                                                                                          |
-| ---------------------------------------------------------------------------------------------------------------------- |
-| [2.1. Versioned Quality Assurance - Expo Go for iOS/Android](#21-versioned-quality-assurance---expo-go-for-iosandroid) |
-| [2.2. Standalone App Quality Assurance](#22-standalone-app-quality-assurance)                                          |
-| [2.3. Web Quality Assurance](#21-web-quality-assurance)                                                                |
+## 2.5. Publish any missing or changed packages
 
 **Why:** Any changes that have been made to packages during QA / since the initial publish (step [0.7](#07-publish-next-packages)) still need to be published for bare workflow users (and managed, for TS changes).
 
@@ -346,10 +300,6 @@ Web is comparatively well-tested in CI, so a few manual smoke tests suffice for 
 # Stage 3 - Expo Go
 
 ## 3.1. Publish home
-
-| Prerequisites                                                           |
-| ----------------------------------------------------------------------- |
-| [1.3. Unversioned Quality Assurance](#13-unversioned-quality-assurance) |
 
 **Why:** We need to publish a new version of home in order to embed it in the Expo Go apps before building them.
 
@@ -462,10 +412,6 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 
 ## 5.4. Promote versions to production with new SDK version flagged as beta
 
-| Prerequisites          |
-| ---------------------- |
-| **All previous steps** |
-
 **Why:** It's time for everything that uses the production versions endpoint to know about this new SDK version!
 
 **How:**
@@ -475,11 +421,6 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 - Double check every change before pressing `y`!
 
 ## 5.5. Add SDK support to Snack
-
-| Prerequisites                                                                               |
-| ------------------------------------------------------------------------------------------- |
-| [2.6. Publish any missing or changed packages](#26-publish-any-missing-or-changed-packages) |
-| [4.2. Making a simulator/emulator build](#42-making-a-simulatoremulator-build)              |
 
 **How:** Reach out to Cedric (@byCedric)
 
@@ -590,9 +531,9 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 
 ## 6.7. Press release
 
-| Prerequisites          |
-| ---------------------- |
-| **All previous steps** |
+| Prerequisites      |
+| ------------------ |
+| All previous tasks |
 
 This should be ready to publish immediately after the previous step is finished!
 
