@@ -9,7 +9,7 @@ var _exportNames = {
 Object.defineProperty(exports, "getAccountUsername", {
   enumerable: true,
   get: function () {
-    return _getFullName().getAccountUsername;
+    return _getAccountUsername().getAccountUsername;
   }
 });
 var _Config = require("./Config");
@@ -60,9 +60,9 @@ Object.keys(_Errors).forEach(function (key) {
     }
   });
 });
-function _getFullName() {
-  const data = require("./getFullName");
-  _getFullName = function () {
+function _getAccountUsername() {
+  const data = require("./getAccountUsername");
+  _getAccountUsername = function () {
     return data;
   };
   return data;
