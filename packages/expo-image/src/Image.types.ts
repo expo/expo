@@ -85,6 +85,27 @@ export interface ImageProps extends ViewProps {
   contentFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
 
   /**
+   * Determines how the placeholder should be resized to fit its container. This property tells the image to fill the container
+   * in a variety of ways; such as "preserve that aspect ratio" or "stretch up and take up as much space as possible".
+   * It mirrors the CSS [`object-fit`](https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit) property.
+   *
+   * - `'cover'` - The placeholder is sized to maintain its aspect ratio while filling the container box.
+   * If the image's aspect ratio does not match the aspect ratio of its box, then the object will be clipped to fit.
+   *
+   * - `'contain'` - The placeholder is scaled down or up to maintain its aspect ratio while fitting within the container box.
+   *
+   * - `'fill'` - The placeholder is sized to entirely fill the container box. If necessary, the image will be stretched or squished to fit.
+   *
+   * - `'none'` - The placeholder is not resized and is centered by default.
+   * When specified, the exact position can be controlled with [`contentPosition`](#contentposition) prop.
+   *
+   * - `'scale-down'` - The placeholder is sized as if `none` or `contain` were specified, whichever would result in a smaller concrete image size.
+   *
+   * @default 'scale-down'
+   */
+  placeholderContentFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
+
+  /**
    * It is used together with [`contentFit`](#contentfit) to specify how the image should be positioned with x/y coordinates inside its own container.
    * An equivalent of the CSS [`object-position`](https://developer.mozilla.org/en-US/docs/Web/CSS/object-position) property.
    * @default 'center'

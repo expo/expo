@@ -23,7 +23,7 @@ class ExpoImageView(
 ) : AppCompatImageView(context) {
   var currentTarget: ImageViewWrapperTarget? = null
   var isPlaceholder: Boolean = false
-  var placeholderContentFit: ContentFit? = null
+  var placeholderContentFit: ContentFit = ContentFit.ScaleDown
 
   fun recycleView(): ImageViewWrapperTarget? {
     setImageDrawable(null)
@@ -35,7 +35,6 @@ class ExpoImageView(
     currentTarget = null
     isVisible = false
     isPlaceholder = false
-    placeholderContentFit = null
 
     return target
   }
@@ -72,7 +71,7 @@ class ExpoImageView(
     }
 
     if (isPlaceholder) {
-      applyTransformationMatrix(drawable, placeholderContentFit ?: ContentFit.ScaleDown)
+      applyTransformationMatrix(drawable, placeholderContentFit)
     } else {
       applyTransformationMatrix(drawable, contentFit, contentPosition)
     }
