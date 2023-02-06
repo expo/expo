@@ -1,8 +1,10 @@
 import { ExpoConfig, ExpoGoConfig, getConfig, ProjectConfig } from '@expo/config';
+import findWorkspaceRoot from 'find-yarn-workspace-root';
 import path from 'path';
 import { resolve } from 'url';
 
 import * as Log from '../../../log';
+import { env } from '../../../utils/env';
 import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
@@ -13,9 +15,6 @@ import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAsset
 import { resolveAbsoluteEntryPoint } from './resolveEntryPoint';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
-
-import findWorkspaceRoot from 'find-yarn-workspace-root';
-import { env } from '../../../utils/env';
 
 const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
 
