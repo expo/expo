@@ -312,7 +312,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       it.setImageDrawable(resource)
 
       it.isPlaceholder = isPlaceholder
-      it.placeholderContentFit = target.placeholderContentFit
+      it.placeholderContentFit = target.placeholderContentFit ?: ContentFit.ScaleDown
       copyProps(it)
 
       it.isVisible = true
