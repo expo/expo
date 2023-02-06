@@ -642,7 +642,11 @@ PODS:
   - ABI46_0_0stripe-react-native (0.13.1):
     - ABI46_0_0React-Core
     - Stripe (~> 23.3.0)
+    - StripeApplePay (~> 23.3.0)
     - StripeFinancialConnections (~> 23.3.0)
+    - StripePayments (~> 23.3.0)
+    - StripePaymentSheet (~> 23.3.0)
+    - StripePaymentsUI (~> 23.3.0)
   - ABI46_0_0UMAppLoader (3.1.0)
   - ABI46_0_0Yoga (1.14.0)
   - ABI47_0_0EASClient (0.4.0):
@@ -1306,9 +1310,748 @@ PODS:
   - ABI47_0_0stripe-react-native (0.19.0):
     - ABI47_0_0React-Core
     - Stripe (~> 23.3.0)
+    - StripeApplePay (~> 23.3.0)
     - StripeFinancialConnections (~> 23.3.0)
+    - StripePayments (~> 23.3.0)
+    - StripePaymentSheet (~> 23.3.0)
+    - StripePaymentsUI (~> 23.3.0)
   - ABI47_0_0UMAppLoader (4.0.0)
   - ABI47_0_0Yoga (1.14.0)
+  - ABI48_0_0EASClient (0.5.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0EXApplication (5.1.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0EXAV (13.2.0):
+    - ABI48_0_0ExpoModulesCore
+    - ABI48_0_0ReactCommon/turbomodule/core
+  - ABI48_0_0EXBackgroundFetch (11.1.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0EXBarCodeScanner (12.3.0):
+    - ABI48_0_0EXImageLoader
+    - ABI48_0_0ExpoModulesCore
+    - ZXingObjC/OneD
+    - ZXingObjC/PDF417
+  - ABI48_0_0EXCalendar (11.1.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0EXCamera (13.2.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0EXConstants (14.2.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0EXContacts (12.0.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0EXDocumentPicker (11.2.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0EXErrorRecovery (4.1.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0EXFaceDetector (12.1.0):
+    - ABI48_0_0ExpoModulesCore
+    - GoogleMLKit/FaceDetection (= 2.6.0)
+    - MLKitCommon (= 5.0.0)
+    - MLKitFaceDetection (= 1.5.0)
+    - MLKitVision (= 3.0.0)
+  - ABI48_0_0EXFileSystem (15.2.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0EXFont (11.1.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0EXImageLoader (4.1.0):
+    - ABI48_0_0ExpoModulesCore
+    - ABI48_0_0React-Core
+  - ABI48_0_0EXJSONUtils (0.5.0)
+  - ABI48_0_0EXLocation (15.1.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0EXManifests (0.5.0):
+    - ABI48_0_0EXJSONUtils
+  - ABI48_0_0EXMediaLibrary (15.2.0):
+    - ABI48_0_0ExpoModulesCore
+    - ABI48_0_0React-Core
+  - ABI48_0_0EXNotifications (0.18.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0EXPermissions (14.1.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0Expo (48.0.0-beta.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoAppleAuthentication (6.0.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoBattery (7.1.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoBlur (12.2.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoBrightness (11.2.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoCellular (5.1.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoClipboard (4.1.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoCrypto (12.2.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoDevice (5.2.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoGL (12.3.0):
+    - ABI48_0_0ExpoModulesCore
+    - ABI48_0_0ReactCommon/turbomodule/core
+  - ABI48_0_0ExpoHaptics (12.2.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoImage (1.0.0-beta.5):
+    - ABI48_0_0ExpoModulesCore
+    - SDWebImage (~> 5.15.0)
+    - SDWebImageAVIFCoder (~> 0.9.4)
+    - SDWebImageSVGCoder (~> 1.6.1)
+    - SDWebImageWebPCoder (~> 0.9.1)
+  - ABI48_0_0ExpoImageManipulator (11.1.0):
+    - ABI48_0_0EXImageLoader
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoImagePicker (14.1.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoKeepAwake (12.0.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoKit/Expo (48.0.0):
+    - ABI48_0_0EASClient
+    - ABI48_0_0EXApplication
+    - ABI48_0_0EXAV
+    - ABI48_0_0EXBackgroundFetch
+    - ABI48_0_0EXBarCodeScanner
+    - ABI48_0_0EXCalendar
+    - ABI48_0_0EXCamera
+    - ABI48_0_0EXConstants
+    - ABI48_0_0EXContacts
+    - ABI48_0_0EXDocumentPicker
+    - ABI48_0_0EXErrorRecovery
+    - ABI48_0_0EXFaceDetector
+    - ABI48_0_0EXFileSystem
+    - ABI48_0_0EXFont
+    - ABI48_0_0EXImageLoader
+    - ABI48_0_0EXJSONUtils
+    - ABI48_0_0EXLocation
+    - ABI48_0_0EXManifests
+    - ABI48_0_0EXMediaLibrary
+    - ABI48_0_0EXNotifications
+    - ABI48_0_0EXPermissions
+    - ABI48_0_0Expo
+    - ABI48_0_0ExpoAppleAuthentication
+    - ABI48_0_0ExpoBattery
+    - ABI48_0_0ExpoBlur
+    - ABI48_0_0ExpoBrightness
+    - ABI48_0_0ExpoCellular
+    - ABI48_0_0ExpoClipboard
+    - ABI48_0_0ExpoCrypto
+    - ABI48_0_0ExpoDevice
+    - ABI48_0_0ExpoGL
+    - ABI48_0_0ExpoHaptics
+    - ABI48_0_0ExpoImage
+    - ABI48_0_0ExpoImageManipulator
+    - ABI48_0_0ExpoImagePicker
+    - ABI48_0_0ExpoKeepAwake
+    - ABI48_0_0ExpoLinearGradient
+    - ABI48_0_0ExpoLocalAuthentication
+    - ABI48_0_0ExpoLocalization
+    - ABI48_0_0ExpoMailComposer
+    - ABI48_0_0ExpoModulesCore
+    - ABI48_0_0ExpoModulesProvider
+    - ABI48_0_0ExpoNetwork
+    - ABI48_0_0ExpoRandom
+    - ABI48_0_0ExpoSMS
+    - ABI48_0_0ExpoStoreReview
+    - ABI48_0_0ExpoSystemUI
+    - ABI48_0_0ExpoTrackingTransparency
+    - ABI48_0_0ExpoVideoThumbnails
+    - ABI48_0_0ExpoWebBrowser
+    - ABI48_0_0EXPrint
+    - ABI48_0_0EXScreenCapture
+    - ABI48_0_0EXScreenOrientation
+    - ABI48_0_0EXSecureStore
+    - ABI48_0_0EXSensors
+    - ABI48_0_0EXSharing
+    - ABI48_0_0EXSpeech
+    - ABI48_0_0EXSplashScreen
+    - ABI48_0_0EXSQLite
+    - ABI48_0_0EXStructuredHeaders
+    - ABI48_0_0EXTaskManager
+    - ABI48_0_0EXUpdates
+    - ABI48_0_0EXUpdatesInterface
+    - ABI48_0_0RCTRequired
+    - ABI48_0_0RCTTypeSafety
+    - ABI48_0_0React-Core
+    - ABI48_0_0React-Core/DevSupport
+    - ABI48_0_0React-hermes
+    - ABI48_0_0ReactCommon
+    - ABI48_0_0UMAppLoader
+    - Amplitude
+    - Analytics
+    - AppAuth
+    - Branch
+    - EXBranch
+    - FBAudienceNetwork
+    - FBSDKCoreKit
+    - Google-Maps-iOS-Utils
+    - Google-Mobile-Ads-SDK
+    - GoogleMaps
+    - GoogleSignIn
+    - JKBigInteger
+    - lottie-ios
+    - RCT-Folly
+  - ABI48_0_0ExpoKit/ExpoOptional (48.0.0):
+    - ABI48_0_0ExpoKit/Expo
+  - ABI48_0_0ExpoLinearGradient (12.1.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoLocalAuthentication (13.2.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoLocalization (14.1.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoMailComposer (12.1.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoMaps (0.0.1):
+    - ABI48_0_0ExpoModulesCore
+    - GoogleMaps (= 7.1.0)
+    - GooglePlaces (= 7.1.0)
+  - ABI48_0_0ExpoModulesCore (1.2.0):
+    - ABI48_0_0React-Core
+    - ABI48_0_0React-RCTAppDelegate
+    - ABI48_0_0ReactCommon/turbomodule/core
+  - ABI48_0_0ExpoModulesProvider (48):
+    - ABI48_0_0EASClient
+    - ABI48_0_0EXAV
+    - ABI48_0_0EXBarCodeScanner
+    - ABI48_0_0EXCamera
+    - ABI48_0_0EXConstants
+    - ABI48_0_0ExpoAppleAuthentication
+    - ABI48_0_0ExpoBattery
+    - ABI48_0_0ExpoBlur
+    - ABI48_0_0ExpoBrightness
+    - ABI48_0_0ExpoCellular
+    - ABI48_0_0ExpoClipboard
+    - ABI48_0_0ExpoCrypto
+    - ABI48_0_0ExpoDevice
+    - ABI48_0_0ExpoGL
+    - ABI48_0_0ExpoHaptics
+    - ABI48_0_0ExpoImage
+    - ABI48_0_0ExpoImageManipulator
+    - ABI48_0_0ExpoImagePicker
+    - ABI48_0_0ExpoKeepAwake
+    - ABI48_0_0ExpoLinearGradient
+    - ABI48_0_0ExpoLocalAuthentication
+    - ABI48_0_0ExpoLocalization
+    - ABI48_0_0ExpoMailComposer
+    - ABI48_0_0ExpoModulesCore
+    - ABI48_0_0ExpoNetwork
+    - ABI48_0_0ExpoRandom
+    - ABI48_0_0ExpoSMS
+    - ABI48_0_0ExpoStoreReview
+    - ABI48_0_0ExpoSystemUI
+    - ABI48_0_0ExpoTrackingTransparency
+    - ABI48_0_0ExpoVideoThumbnails
+    - ABI48_0_0ExpoWebBrowser
+    - ABI48_0_0EXScreenOrientation
+    - ABI48_0_0EXUpdates
+  - ABI48_0_0ExpoNetwork (5.2.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoRandom (13.1.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoSMS (11.2.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoStoreReview (6.2.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoSystemUI (2.2.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoTrackingTransparency (3.0.2):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoVideoThumbnails (7.2.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0ExpoWebBrowser (12.1.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0EXPrint (12.2.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0EXScreenCapture (5.1.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0EXScreenOrientation (5.1.0):
+    - ABI48_0_0ExpoModulesCore
+    - ABI48_0_0React-Core
+  - ABI48_0_0EXSecureStore (12.1.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0EXSensors (12.1.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0EXSharing (11.2.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0EXSpeech (11.1.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0EXSplashScreen (0.18.0):
+    - ABI48_0_0ExpoModulesCore
+    - ABI48_0_0React-Core
+  - ABI48_0_0EXSQLite (11.1.0):
+    - ABI48_0_0ExpoModulesCore
+  - ABI48_0_0EXStructuredHeaders (3.1.0)
+  - ABI48_0_0EXTaskManager (11.1.0):
+    - ABI48_0_0ExpoModulesCore
+    - ABI48_0_0UMAppLoader
+  - ABI48_0_0EXUpdates (0.16.0):
+    - ABI48_0_0EASClient
+    - ABI48_0_0EXManifests
+    - ABI48_0_0ExpoModulesCore
+    - ABI48_0_0EXStructuredHeaders
+    - ABI48_0_0EXUpdatesInterface
+    - ABI48_0_0React-Core
+    - ASN1Decoder (~> 1.8)
+  - ABI48_0_0EXUpdatesInterface (0.9.0)
+  - ABI48_0_0FBLazyVector (0.71.2)
+  - ABI48_0_0FBReactNativeSpec (0.71.2):
+    - ABI48_0_0RCTRequired (= 0.71.2)
+    - ABI48_0_0RCTTypeSafety (= 0.71.2)
+    - ABI48_0_0React-Core (= 0.71.2)
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.2)
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0hermes-engine (0.71.2):
+    - ABI48_0_0hermes-engine/Pre-built (= 0.71.2)
+  - ABI48_0_0hermes-engine/Pre-built (0.71.2)
+  - ABI48_0_0lottie-react-native (5.1.4):
+    - ABI48_0_0React-Core
+    - lottie-ios (~> 3.4.0)
+  - ABI48_0_0RCTRequired (0.71.2)
+  - ABI48_0_0RCTTypeSafety (0.71.2):
+    - ABI48_0_0FBLazyVector (= 0.71.2)
+    - ABI48_0_0RCTRequired (= 0.71.2)
+    - ABI48_0_0React-Core (= 0.71.2)
+  - ABI48_0_0React (0.71.2):
+    - ABI48_0_0React-Core (= 0.71.2)
+    - ABI48_0_0React-Core/DevSupport (= 0.71.2)
+    - ABI48_0_0React-Core/RCTWebSocket (= 0.71.2)
+    - ABI48_0_0React-RCTActionSheet (= 0.71.2)
+    - ABI48_0_0React-RCTAnimation (= 0.71.2)
+    - ABI48_0_0React-RCTBlob (= 0.71.2)
+    - ABI48_0_0React-RCTImage (= 0.71.2)
+    - ABI48_0_0React-RCTLinking (= 0.71.2)
+    - ABI48_0_0React-RCTNetwork (= 0.71.2)
+    - ABI48_0_0React-RCTSettings (= 0.71.2)
+    - ABI48_0_0React-RCTText (= 0.71.2)
+    - ABI48_0_0React-RCTVibration (= 0.71.2)
+  - ABI48_0_0React-callinvoker (0.71.2)
+  - ABI48_0_0React-Codegen (0.71.2):
+    - ABI48_0_0FBReactNativeSpec
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0RCTRequired
+    - ABI48_0_0RCTTypeSafety
+    - ABI48_0_0React-Core
+    - ABI48_0_0React-jsi
+    - ABI48_0_0React-jsiexecutor
+    - ABI48_0_0ReactCommon/turbomodule/bridging
+    - ABI48_0_0ReactCommon/turbomodule/core
+    - RCT-Folly
+  - ABI48_0_0React-Core (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-Core/Default (= 0.71.2)
+    - ABI48_0_0React-cxxreact (= 0.71.2)
+    - ABI48_0_0React-hermes
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-jsiexecutor (= 0.71.2)
+    - ABI48_0_0React-perflogger (= 0.71.2)
+    - ABI48_0_0Yoga
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-Core/CoreModulesHeaders (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-Core/Default
+    - ABI48_0_0React-cxxreact (= 0.71.2)
+    - ABI48_0_0React-hermes
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-jsiexecutor (= 0.71.2)
+    - ABI48_0_0React-perflogger (= 0.71.2)
+    - ABI48_0_0Yoga
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-Core/Default (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-cxxreact (= 0.71.2)
+    - ABI48_0_0React-hermes
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-jsiexecutor (= 0.71.2)
+    - ABI48_0_0React-perflogger (= 0.71.2)
+    - ABI48_0_0Yoga
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-Core/DevSupport (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-Core/Default (= 0.71.2)
+    - ABI48_0_0React-Core/RCTWebSocket (= 0.71.2)
+    - ABI48_0_0React-cxxreact (= 0.71.2)
+    - ABI48_0_0React-hermes
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-jsiexecutor (= 0.71.2)
+    - ABI48_0_0React-jsinspector (= 0.71.2)
+    - ABI48_0_0React-perflogger (= 0.71.2)
+    - ABI48_0_0Yoga
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-Core/RCTActionSheetHeaders (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-Core/Default
+    - ABI48_0_0React-cxxreact (= 0.71.2)
+    - ABI48_0_0React-hermes
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-jsiexecutor (= 0.71.2)
+    - ABI48_0_0React-perflogger (= 0.71.2)
+    - ABI48_0_0Yoga
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-Core/RCTAnimationHeaders (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-Core/Default
+    - ABI48_0_0React-cxxreact (= 0.71.2)
+    - ABI48_0_0React-hermes
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-jsiexecutor (= 0.71.2)
+    - ABI48_0_0React-perflogger (= 0.71.2)
+    - ABI48_0_0Yoga
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-Core/RCTBlobHeaders (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-Core/Default
+    - ABI48_0_0React-cxxreact (= 0.71.2)
+    - ABI48_0_0React-hermes
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-jsiexecutor (= 0.71.2)
+    - ABI48_0_0React-perflogger (= 0.71.2)
+    - ABI48_0_0Yoga
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-Core/RCTImageHeaders (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-Core/Default
+    - ABI48_0_0React-cxxreact (= 0.71.2)
+    - ABI48_0_0React-hermes
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-jsiexecutor (= 0.71.2)
+    - ABI48_0_0React-perflogger (= 0.71.2)
+    - ABI48_0_0Yoga
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-Core/RCTLinkingHeaders (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-Core/Default
+    - ABI48_0_0React-cxxreact (= 0.71.2)
+    - ABI48_0_0React-hermes
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-jsiexecutor (= 0.71.2)
+    - ABI48_0_0React-perflogger (= 0.71.2)
+    - ABI48_0_0Yoga
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-Core/RCTNetworkHeaders (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-Core/Default
+    - ABI48_0_0React-cxxreact (= 0.71.2)
+    - ABI48_0_0React-hermes
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-jsiexecutor (= 0.71.2)
+    - ABI48_0_0React-perflogger (= 0.71.2)
+    - ABI48_0_0Yoga
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-Core/RCTSettingsHeaders (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-Core/Default
+    - ABI48_0_0React-cxxreact (= 0.71.2)
+    - ABI48_0_0React-hermes
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-jsiexecutor (= 0.71.2)
+    - ABI48_0_0React-perflogger (= 0.71.2)
+    - ABI48_0_0Yoga
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-Core/RCTTextHeaders (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-Core/Default
+    - ABI48_0_0React-cxxreact (= 0.71.2)
+    - ABI48_0_0React-hermes
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-jsiexecutor (= 0.71.2)
+    - ABI48_0_0React-perflogger (= 0.71.2)
+    - ABI48_0_0Yoga
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-Core/RCTVibrationHeaders (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-Core/Default
+    - ABI48_0_0React-cxxreact (= 0.71.2)
+    - ABI48_0_0React-hermes
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-jsiexecutor (= 0.71.2)
+    - ABI48_0_0React-perflogger (= 0.71.2)
+    - ABI48_0_0Yoga
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-Core/RCTWebSocket (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-Core/Default (= 0.71.2)
+    - ABI48_0_0React-cxxreact (= 0.71.2)
+    - ABI48_0_0React-hermes
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-jsiexecutor (= 0.71.2)
+    - ABI48_0_0React-perflogger (= 0.71.2)
+    - ABI48_0_0Yoga
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-CoreModules (0.71.2):
+    - ABI48_0_0RCTTypeSafety (= 0.71.2)
+    - ABI48_0_0React-Codegen (= 0.71.2)
+    - ABI48_0_0React-Core/CoreModulesHeaders (= 0.71.2)
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-RCTBlob
+    - ABI48_0_0React-RCTImage (= 0.71.2)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.2)
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-cxxreact (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-callinvoker (= 0.71.2)
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-jsinspector (= 0.71.2)
+    - ABI48_0_0React-logger (= 0.71.2)
+    - ABI48_0_0React-perflogger (= 0.71.2)
+    - ABI48_0_0React-runtimeexecutor (= 0.71.2)
+    - boost (= 1.76.0)
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-hermes (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-cxxreact (= 0.71.2)
+    - ABI48_0_0React-jsi
+    - ABI48_0_0React-jsiexecutor (= 0.71.2)
+    - ABI48_0_0React-jsinspector (= 0.71.2)
+    - ABI48_0_0React-perflogger (= 0.71.2)
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+    - RCT-Folly/Futures (= 2021.07.22.00)
+  - ABI48_0_0React-jsc (0.71.2):
+    - ABI48_0_0React-jsc/Fabric (= 0.71.2)
+    - ABI48_0_0React-jsi (= 0.71.2)
+  - ABI48_0_0React-jsc/Fabric (0.71.2):
+    - ABI48_0_0React-jsi (= 0.71.2)
+  - ABI48_0_0React-jsi (0.71.2):
+    - boost (= 1.76.0)
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-jsiexecutor (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-cxxreact (= 0.71.2)
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-perflogger (= 0.71.2)
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-jsinspector (0.71.2)
+  - ABI48_0_0React-logger (0.71.2):
+    - glog
+  - ABI48_0_0react-native-netinfo (9.3.7):
+    - ABI48_0_0React-Core
+  - ABI48_0_0react-native-pager-view (6.1.2):
+    - ABI48_0_0React-Core
+  - ABI48_0_0react-native-safe-area-context (4.5.0):
+    - ABI48_0_0RCTRequired
+    - ABI48_0_0RCTTypeSafety
+    - ABI48_0_0React-Core
+    - ABI48_0_0ReactCommon/turbomodule/core
+    - RCT-Folly
+  - ABI48_0_0react-native-segmented-control (2.4.0):
+    - ABI48_0_0React-Core
+  - ABI48_0_0react-native-skia (0.1.172):
+    - ABI48_0_0React
+    - ABI48_0_0React-callinvoker
+    - ABI48_0_0React-Core
+    - ABI48_0_0react-native-skia/ABI48_0_0RNSkia (= 0.1.172)
+    - ABI48_0_0react-native-skia/Api (= 0.1.172)
+    - ABI48_0_0react-native-skia/Jsi (= 0.1.172)
+    - ABI48_0_0react-native-skia/SkiaHeaders (= 0.1.172)
+    - ABI48_0_0react-native-skia/Utils (= 0.1.172)
+  - ABI48_0_0react-native-skia/ABI48_0_0RNSkia (0.1.172):
+    - ABI48_0_0React
+    - ABI48_0_0React-callinvoker
+    - ABI48_0_0React-Core
+  - ABI48_0_0react-native-skia/Api (0.1.172):
+    - ABI48_0_0React
+    - ABI48_0_0React-callinvoker
+    - ABI48_0_0React-Core
+  - ABI48_0_0react-native-skia/Jsi (0.1.172):
+    - ABI48_0_0React
+    - ABI48_0_0React-callinvoker
+    - ABI48_0_0React-Core
+  - ABI48_0_0react-native-skia/SkiaHeaders (0.1.172):
+    - ABI48_0_0React
+    - ABI48_0_0React-callinvoker
+    - ABI48_0_0React-Core
+  - ABI48_0_0react-native-skia/Utils (0.1.172):
+    - ABI48_0_0React
+    - ABI48_0_0React-callinvoker
+    - ABI48_0_0React-Core
+  - ABI48_0_0react-native-slider (4.4.2):
+    - ABI48_0_0React-Core
+  - ABI48_0_0react-native-webview (11.26.0):
+    - ABI48_0_0React-Core
+  - ABI48_0_0React-perflogger (0.71.2)
+  - ABI48_0_0React-RCTActionSheet (0.71.2):
+    - ABI48_0_0React-Core/RCTActionSheetHeaders (= 0.71.2)
+  - ABI48_0_0React-RCTAnimation (0.71.2):
+    - ABI48_0_0RCTTypeSafety (= 0.71.2)
+    - ABI48_0_0React-Codegen (= 0.71.2)
+    - ABI48_0_0React-Core/RCTAnimationHeaders (= 0.71.2)
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.2)
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-RCTAppDelegate (0.71.2):
+    - ABI48_0_0RCTRequired
+    - ABI48_0_0RCTTypeSafety
+    - ABI48_0_0React-Core
+    - ABI48_0_0ReactCommon/turbomodule/core
+    - RCT-Folly
+  - ABI48_0_0React-RCTBlob (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-Codegen (= 0.71.2)
+    - ABI48_0_0React-Core/RCTBlobHeaders (= 0.71.2)
+    - ABI48_0_0React-Core/RCTWebSocket (= 0.71.2)
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-RCTNetwork (= 0.71.2)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.2)
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-RCTImage (0.71.2):
+    - ABI48_0_0RCTTypeSafety (= 0.71.2)
+    - ABI48_0_0React-Codegen (= 0.71.2)
+    - ABI48_0_0React-Core/RCTImageHeaders (= 0.71.2)
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-RCTNetwork (= 0.71.2)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.2)
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-RCTLinking (0.71.2):
+    - ABI48_0_0React-Codegen (= 0.71.2)
+    - ABI48_0_0React-Core/RCTLinkingHeaders (= 0.71.2)
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.2)
+  - ABI48_0_0React-RCTNetwork (0.71.2):
+    - ABI48_0_0RCTTypeSafety (= 0.71.2)
+    - ABI48_0_0React-Codegen (= 0.71.2)
+    - ABI48_0_0React-Core/RCTNetworkHeaders (= 0.71.2)
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.2)
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-RCTSettings (0.71.2):
+    - ABI48_0_0RCTTypeSafety (= 0.71.2)
+    - ABI48_0_0React-Codegen (= 0.71.2)
+    - ABI48_0_0React-Core/RCTSettingsHeaders (= 0.71.2)
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.2)
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-RCTText (0.71.2):
+    - ABI48_0_0React-Core/RCTTextHeaders (= 0.71.2)
+  - ABI48_0_0React-RCTVibration (0.71.2):
+    - ABI48_0_0React-Codegen (= 0.71.2)
+    - ABI48_0_0React-Core/RCTVibrationHeaders (= 0.71.2)
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.2)
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-runtimeexecutor (0.71.2):
+    - ABI48_0_0React-jsi (= 0.71.2)
+  - ABI48_0_0ReactCommon (0.71.2):
+    - ABI48_0_0React-logger (= 0.71.2)
+    - ABI48_0_0ReactCommon/react_debug_core (= 0.71.2)
+    - ABI48_0_0ReactCommon/turbomodule (= 0.71.2)
+  - ABI48_0_0ReactCommon/react_debug_core (0.71.2):
+    - ABI48_0_0React-logger (= 0.71.2)
+  - ABI48_0_0ReactCommon/turbomodule (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-callinvoker (= 0.71.2)
+    - ABI48_0_0React-Core (= 0.71.2)
+    - ABI48_0_0React-cxxreact (= 0.71.2)
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-logger (= 0.71.2)
+    - ABI48_0_0React-perflogger (= 0.71.2)
+    - ABI48_0_0ReactCommon/turbomodule/bridging (= 0.71.2)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.2)
+    - ABI48_0_0ReactCommon/turbomodule/samples (= 0.71.2)
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0ReactCommon/turbomodule/bridging (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-callinvoker (= 0.71.2)
+    - ABI48_0_0React-Core (= 0.71.2)
+    - ABI48_0_0React-cxxreact (= 0.71.2)
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-logger (= 0.71.2)
+    - ABI48_0_0React-perflogger (= 0.71.2)
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0ReactCommon/turbomodule/core (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-callinvoker (= 0.71.2)
+    - ABI48_0_0React-Core (= 0.71.2)
+    - ABI48_0_0React-cxxreact (= 0.71.2)
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-logger (= 0.71.2)
+    - ABI48_0_0React-perflogger (= 0.71.2)
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0ReactCommon/turbomodule/samples (0.71.2):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-callinvoker (= 0.71.2)
+    - ABI48_0_0React-Core (= 0.71.2)
+    - ABI48_0_0React-cxxreact (= 0.71.2)
+    - ABI48_0_0React-jsi (= 0.71.2)
+    - ABI48_0_0React-logger (= 0.71.2)
+    - ABI48_0_0React-perflogger (= 0.71.2)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.2)
+    - DoubleConversion
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0RNCAsyncStorage (1.17.11):
+    - ABI48_0_0React-Core
+  - ABI48_0_0RNFlashList (1.4.0):
+    - ABI48_0_0React-Core
+  - ABI48_0_0RNGestureHandler (2.9.0):
+    - ABI48_0_0React-Core
+  - ABI48_0_0RNReanimated (2.14.4):
+    - ABI48_0_0RCTRequired
+    - ABI48_0_0RCTTypeSafety
+    - ABI48_0_0React-callinvoker
+    - ABI48_0_0React-Core
+    - ABI48_0_0React-Core/DevSupport
+    - ABI48_0_0React-Core/RCTWebSocket
+    - ABI48_0_0React-CoreModules
+    - ABI48_0_0React-cxxreact
+    - ABI48_0_0React-jsi
+    - ABI48_0_0React-jsiexecutor
+    - ABI48_0_0React-jsinspector
+    - ABI48_0_0React-RCTActionSheet
+    - ABI48_0_0React-RCTAnimation
+    - ABI48_0_0React-RCTBlob
+    - ABI48_0_0React-RCTImage
+    - ABI48_0_0React-RCTLinking
+    - ABI48_0_0React-RCTNetwork
+    - ABI48_0_0React-RCTSettings
+    - ABI48_0_0React-RCTText
+    - ABI48_0_0ReactCommon/turbomodule/core
+    - DoubleConversion
+    - FBLazyVector
+    - FBReactNativeSpec
+    - glog
+    - RCT-Folly
+    - Yoga
+  - ABI48_0_0RNScreens (3.19.0):
+    - ABI48_0_0React-Core
+    - ABI48_0_0React-RCTImage
+  - ABI48_0_0RNSVG (13.4.0):
+    - ABI48_0_0React-Core
+  - ABI48_0_0stripe-react-native (0.23.1):
+    - ABI48_0_0React-Core
+    - Stripe (~> 23.3.0)
+    - StripeApplePay (~> 23.3.0)
+    - StripeFinancialConnections (~> 23.3.0)
+    - StripePayments (~> 23.3.0)
+    - StripePaymentSheet (~> 23.3.0)
+    - StripePaymentsUI (~> 23.3.0)
+  - ABI48_0_0UMAppLoader (4.1.0)
+  - ABI48_0_0Yoga (1.14.0)
   - Amplitude (6.0.0)
   - Analytics (4.1.7)
   - AppAuth (1.6.0):
@@ -1619,6 +2362,7 @@ PODS:
     - MLKitFaceDetection (~> 1.5.0)
   - GoogleMLKit/MLKitCore (2.6.0):
     - MLKitCommon (~> 5.0.0)
+  - GooglePlaces (7.1.0)
   - GoogleSignIn (7.0.0):
     - AppAuth (~> 1.5)
     - GTMAppAuth (< 3.0, >= 1.3)
@@ -2436,6 +3180,120 @@ DEPENDENCIES:
   - "ABI47_0_0stripe-react-native (from `./vendored/sdk47/@stripe/stripe-react-native`)"
   - ABI47_0_0UMAppLoader (from `./versioned/sdk47/UMAppLoader`)
   - ABI47_0_0Yoga (from `./versioned-react-native/ABI47_0_0/ReactNative/ReactCommon/yoga`)
+  - ABI48_0_0EASClient (from `./versioned/sdk48/EASClient`)
+  - ABI48_0_0EXApplication (from `./versioned/sdk48/EXApplication`)
+  - ABI48_0_0EXAV (from `./versioned/sdk48/EXAV`)
+  - ABI48_0_0EXBackgroundFetch (from `./versioned/sdk48/EXBackgroundFetch`)
+  - ABI48_0_0EXBarCodeScanner (from `./versioned/sdk48/EXBarCodeScanner`)
+  - ABI48_0_0EXCalendar (from `./versioned/sdk48/EXCalendar`)
+  - ABI48_0_0EXCamera (from `./versioned/sdk48/EXCamera`)
+  - ABI48_0_0EXConstants (from `./versioned/sdk48/EXConstants`)
+  - ABI48_0_0EXContacts (from `./versioned/sdk48/EXContacts`)
+  - ABI48_0_0EXDocumentPicker (from `./versioned/sdk48/EXDocumentPicker`)
+  - ABI48_0_0EXErrorRecovery (from `./versioned/sdk48/EXErrorRecovery`)
+  - ABI48_0_0EXFaceDetector (from `./versioned/sdk48/EXFaceDetector`)
+  - ABI48_0_0EXFileSystem (from `./versioned/sdk48/EXFileSystem`)
+  - ABI48_0_0EXFont (from `./versioned/sdk48/EXFont`)
+  - ABI48_0_0EXImageLoader (from `./versioned/sdk48/EXImageLoader`)
+  - ABI48_0_0EXJSONUtils (from `./versioned/sdk48/EXJSONUtils`)
+  - ABI48_0_0EXLocation (from `./versioned/sdk48/EXLocation`)
+  - ABI48_0_0EXManifests (from `./versioned/sdk48/EXManifests`)
+  - ABI48_0_0EXMediaLibrary (from `./versioned/sdk48/EXMediaLibrary`)
+  - ABI48_0_0EXNotifications (from `./versioned/sdk48/EXNotifications`)
+  - ABI48_0_0EXPermissions (from `./versioned/sdk48/EXPermissions`)
+  - ABI48_0_0Expo (from `./versioned/sdk48/Expo`)
+  - ABI48_0_0ExpoAppleAuthentication (from `./versioned/sdk48/ExpoAppleAuthentication`)
+  - ABI48_0_0ExpoBattery (from `./versioned/sdk48/ExpoBattery`)
+  - ABI48_0_0ExpoBlur (from `./versioned/sdk48/ExpoBlur`)
+  - ABI48_0_0ExpoBrightness (from `./versioned/sdk48/ExpoBrightness`)
+  - ABI48_0_0ExpoCellular (from `./versioned/sdk48/ExpoCellular`)
+  - ABI48_0_0ExpoClipboard (from `./versioned/sdk48/ExpoClipboard`)
+  - ABI48_0_0ExpoCrypto (from `./versioned/sdk48/ExpoCrypto`)
+  - ABI48_0_0ExpoDevice (from `./versioned/sdk48/ExpoDevice`)
+  - ABI48_0_0ExpoGL (from `./versioned/sdk48/ExpoGL`)
+  - ABI48_0_0ExpoHaptics (from `./versioned/sdk48/ExpoHaptics`)
+  - ABI48_0_0ExpoImage (from `./versioned/sdk48/ExpoImage`)
+  - ABI48_0_0ExpoImageManipulator (from `./versioned/sdk48/ExpoImageManipulator`)
+  - ABI48_0_0ExpoImagePicker (from `./versioned/sdk48/ExpoImagePicker`)
+  - ABI48_0_0ExpoKeepAwake (from `./versioned/sdk48/ExpoKeepAwake`)
+  - ABI48_0_0ExpoKit/Expo (from `./versioned-react-native/ABI48_0_0/Expo/ExpoKit`)
+  - ABI48_0_0ExpoKit/ExpoOptional (from `./versioned-react-native/ABI48_0_0/Expo/ExpoKit`)
+  - ABI48_0_0ExpoLinearGradient (from `./versioned/sdk48/ExpoLinearGradient`)
+  - ABI48_0_0ExpoLocalAuthentication (from `./versioned/sdk48/ExpoLocalAuthentication`)
+  - ABI48_0_0ExpoLocalization (from `./versioned/sdk48/ExpoLocalization`)
+  - ABI48_0_0ExpoMailComposer (from `./versioned/sdk48/ExpoMailComposer`)
+  - ABI48_0_0ExpoMaps (from `./versioned/sdk48/ExpoMaps`)
+  - ABI48_0_0ExpoModulesCore (from `./versioned/sdk48/ExpoModulesCore`)
+  - ABI48_0_0ExpoModulesProvider (from `./versioned/sdk48/ExpoModulesProvider`)
+  - ABI48_0_0ExpoNetwork (from `./versioned/sdk48/ExpoNetwork`)
+  - ABI48_0_0ExpoRandom (from `./versioned/sdk48/ExpoRandom`)
+  - ABI48_0_0ExpoSMS (from `./versioned/sdk48/ExpoSMS`)
+  - ABI48_0_0ExpoStoreReview (from `./versioned/sdk48/ExpoStoreReview`)
+  - ABI48_0_0ExpoSystemUI (from `./versioned/sdk48/ExpoSystemUI`)
+  - ABI48_0_0ExpoTrackingTransparency (from `./versioned/sdk48/ExpoTrackingTransparency`)
+  - ABI48_0_0ExpoVideoThumbnails (from `./versioned/sdk48/ExpoVideoThumbnails`)
+  - ABI48_0_0ExpoWebBrowser (from `./versioned/sdk48/ExpoWebBrowser`)
+  - ABI48_0_0EXPrint (from `./versioned/sdk48/EXPrint`)
+  - ABI48_0_0EXScreenCapture (from `./versioned/sdk48/EXScreenCapture`)
+  - ABI48_0_0EXScreenOrientation (from `./versioned/sdk48/EXScreenOrientation`)
+  - ABI48_0_0EXSecureStore (from `./versioned/sdk48/EXSecureStore`)
+  - ABI48_0_0EXSensors (from `./versioned/sdk48/EXSensors`)
+  - ABI48_0_0EXSharing (from `./versioned/sdk48/EXSharing`)
+  - ABI48_0_0EXSpeech (from `./versioned/sdk48/EXSpeech`)
+  - ABI48_0_0EXSplashScreen (from `./versioned/sdk48/EXSplashScreen`)
+  - ABI48_0_0EXSQLite (from `./versioned/sdk48/EXSQLite`)
+  - ABI48_0_0EXStructuredHeaders (from `./versioned/sdk48/EXStructuredHeaders`)
+  - ABI48_0_0EXTaskManager (from `./versioned/sdk48/EXTaskManager`)
+  - ABI48_0_0EXUpdates (from `./versioned/sdk48/EXUpdates`)
+  - ABI48_0_0EXUpdatesInterface (from `./versioned/sdk48/EXUpdatesInterface`)
+  - ABI48_0_0FBLazyVector (from `./versioned-react-native/ABI48_0_0/ReactNative/Libraries/FBLazyVector`)
+  - ABI48_0_0FBReactNativeSpec (from `./versioned-react-native/ABI48_0_0/ReactNative/React/FBReactNativeSpec`)
+  - ABI48_0_0hermes-engine (from `./versioned-react-native/ABI48_0_0/ReactNative/sdks/hermes-engine/ABI48_0_0hermes-engine.podspec`)
+  - ABI48_0_0lottie-react-native (from `./vendored/sdk48/lottie-react-native`)
+  - ABI48_0_0RCTRequired (from `./versioned-react-native/ABI48_0_0/ReactNative/Libraries/RCTRequired`)
+  - ABI48_0_0RCTTypeSafety (from `./versioned-react-native/ABI48_0_0/ReactNative/Libraries/TypeSafety`)
+  - ABI48_0_0React (from `./versioned-react-native/ABI48_0_0/ReactNative/`)
+  - ABI48_0_0React-callinvoker (from `./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/callinvoker`)
+  - ABI48_0_0React-Codegen (from `versioned-react-native/ABI48_0_0/ReactNative/codegen/ios`)
+  - ABI48_0_0React-Core (from `./versioned-react-native/ABI48_0_0/ReactNative/`)
+  - ABI48_0_0React-Core/RCTWebSocket (from `./versioned-react-native/ABI48_0_0/ReactNative/`)
+  - ABI48_0_0React-CoreModules (from `./versioned-react-native/ABI48_0_0/ReactNative/React/CoreModules`)
+  - ABI48_0_0React-cxxreact (from `./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/cxxreact`)
+  - ABI48_0_0React-hermes (from `./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/hermes`)
+  - ABI48_0_0React-jsc (from `./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/jsc`)
+  - ABI48_0_0React-jsi (from `./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/jsi`)
+  - ABI48_0_0React-jsiexecutor (from `./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/jsiexecutor`)
+  - ABI48_0_0React-jsinspector (from `./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/jsinspector`)
+  - ABI48_0_0React-logger (from `./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/logger`)
+  - "ABI48_0_0react-native-netinfo (from `./vendored/sdk48/@react-native-community/netinfo`)"
+  - ABI48_0_0react-native-pager-view (from `./vendored/sdk48/react-native-pager-view`)
+  - ABI48_0_0react-native-safe-area-context (from `./vendored/sdk48/react-native-safe-area-context`)
+  - "ABI48_0_0react-native-segmented-control (from `./vendored/sdk48/@react-native-segmented-control/segmented-control`)"
+  - "ABI48_0_0react-native-skia (from `./vendored/sdk48/@shopify/react-native-skia`)"
+  - "ABI48_0_0react-native-slider (from `./vendored/sdk48/@react-native-community/slider`)"
+  - ABI48_0_0react-native-webview (from `./vendored/sdk48/react-native-webview`)
+  - ABI48_0_0React-perflogger (from `./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/reactperflogger`)
+  - ABI48_0_0React-RCTActionSheet (from `./versioned-react-native/ABI48_0_0/ReactNative/Libraries/ActionSheetIOS`)
+  - ABI48_0_0React-RCTAnimation (from `./versioned-react-native/ABI48_0_0/ReactNative/Libraries/NativeAnimation`)
+  - ABI48_0_0React-RCTAppDelegate (from `./versioned-react-native/ABI48_0_0/ReactNative/Libraries/AppDelegate`)
+  - ABI48_0_0React-RCTBlob (from `./versioned-react-native/ABI48_0_0/ReactNative/Libraries/Blob`)
+  - ABI48_0_0React-RCTImage (from `./versioned-react-native/ABI48_0_0/ReactNative/Libraries/Image`)
+  - ABI48_0_0React-RCTLinking (from `./versioned-react-native/ABI48_0_0/ReactNative/Libraries/LinkingIOS`)
+  - ABI48_0_0React-RCTNetwork (from `./versioned-react-native/ABI48_0_0/ReactNative/Libraries/Network`)
+  - ABI48_0_0React-RCTSettings (from `./versioned-react-native/ABI48_0_0/ReactNative/Libraries/Settings`)
+  - ABI48_0_0React-RCTText (from `./versioned-react-native/ABI48_0_0/ReactNative/Libraries/Text`)
+  - ABI48_0_0React-RCTVibration (from `./versioned-react-native/ABI48_0_0/ReactNative/Libraries/Vibration`)
+  - ABI48_0_0React-runtimeexecutor (from `./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/runtimeexecutor`)
+  - ABI48_0_0ReactCommon/turbomodule/core (from `./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon`)
+  - "ABI48_0_0RNCAsyncStorage (from `./vendored/sdk48/@react-native-async-storage/async-storage`)"
+  - "ABI48_0_0RNFlashList (from `./vendored/sdk48/@shopify/flash-list`)"
+  - ABI48_0_0RNGestureHandler (from `./vendored/sdk48/react-native-gesture-handler`)
+  - ABI48_0_0RNReanimated (from `./vendored/sdk48/react-native-reanimated`)
+  - ABI48_0_0RNScreens (from `./vendored/sdk48/react-native-screens`)
+  - ABI48_0_0RNSVG (from `./vendored/sdk48/react-native-svg`)
+  - "ABI48_0_0stripe-react-native (from `./vendored/sdk48/@stripe/stripe-react-native`)"
+  - ABI48_0_0UMAppLoader (from `./versioned/sdk48/UMAppLoader`)
+  - ABI48_0_0Yoga (from `./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/yoga`)
   - Amplitude
   - boost (from `../react-native-lab/react-native/third-party-podspecs/boost.podspec`)
   - CocoaLumberjack (~> 3.5.3)
@@ -2595,6 +3453,7 @@ SPEC REPOS:
     - GoogleDataTransport
     - GoogleMaps
     - GoogleMLKit
+    - GooglePlaces
     - GoogleSignIn
     - GoogleToolboxForMac
     - GoogleUserMessagingPlatform
@@ -3068,6 +3927,230 @@ EXTERNAL SOURCES:
     :path: "./versioned/sdk47/UMAppLoader"
   ABI47_0_0Yoga:
     :path: "./versioned-react-native/ABI47_0_0/ReactNative/ReactCommon/yoga"
+  ABI48_0_0EASClient:
+    :path: "./versioned/sdk48/EASClient"
+  ABI48_0_0EXApplication:
+    :path: "./versioned/sdk48/EXApplication"
+  ABI48_0_0EXAV:
+    :path: "./versioned/sdk48/EXAV"
+  ABI48_0_0EXBackgroundFetch:
+    :path: "./versioned/sdk48/EXBackgroundFetch"
+  ABI48_0_0EXBarCodeScanner:
+    :path: "./versioned/sdk48/EXBarCodeScanner"
+  ABI48_0_0EXCalendar:
+    :path: "./versioned/sdk48/EXCalendar"
+  ABI48_0_0EXCamera:
+    :path: "./versioned/sdk48/EXCamera"
+  ABI48_0_0EXConstants:
+    :path: "./versioned/sdk48/EXConstants"
+  ABI48_0_0EXContacts:
+    :path: "./versioned/sdk48/EXContacts"
+  ABI48_0_0EXDocumentPicker:
+    :path: "./versioned/sdk48/EXDocumentPicker"
+  ABI48_0_0EXErrorRecovery:
+    :path: "./versioned/sdk48/EXErrorRecovery"
+  ABI48_0_0EXFaceDetector:
+    :path: "./versioned/sdk48/EXFaceDetector"
+  ABI48_0_0EXFileSystem:
+    :path: "./versioned/sdk48/EXFileSystem"
+  ABI48_0_0EXFont:
+    :path: "./versioned/sdk48/EXFont"
+  ABI48_0_0EXImageLoader:
+    :path: "./versioned/sdk48/EXImageLoader"
+  ABI48_0_0EXJSONUtils:
+    :path: "./versioned/sdk48/EXJSONUtils"
+  ABI48_0_0EXLocation:
+    :path: "./versioned/sdk48/EXLocation"
+  ABI48_0_0EXManifests:
+    :path: "./versioned/sdk48/EXManifests"
+  ABI48_0_0EXMediaLibrary:
+    :path: "./versioned/sdk48/EXMediaLibrary"
+  ABI48_0_0EXNotifications:
+    :path: "./versioned/sdk48/EXNotifications"
+  ABI48_0_0EXPermissions:
+    :path: "./versioned/sdk48/EXPermissions"
+  ABI48_0_0Expo:
+    :path: "./versioned/sdk48/Expo"
+  ABI48_0_0ExpoAppleAuthentication:
+    :path: "./versioned/sdk48/ExpoAppleAuthentication"
+  ABI48_0_0ExpoBattery:
+    :path: "./versioned/sdk48/ExpoBattery"
+  ABI48_0_0ExpoBlur:
+    :path: "./versioned/sdk48/ExpoBlur"
+  ABI48_0_0ExpoBrightness:
+    :path: "./versioned/sdk48/ExpoBrightness"
+  ABI48_0_0ExpoCellular:
+    :path: "./versioned/sdk48/ExpoCellular"
+  ABI48_0_0ExpoClipboard:
+    :path: "./versioned/sdk48/ExpoClipboard"
+  ABI48_0_0ExpoCrypto:
+    :path: "./versioned/sdk48/ExpoCrypto"
+  ABI48_0_0ExpoDevice:
+    :path: "./versioned/sdk48/ExpoDevice"
+  ABI48_0_0ExpoGL:
+    :path: "./versioned/sdk48/ExpoGL"
+  ABI48_0_0ExpoHaptics:
+    :path: "./versioned/sdk48/ExpoHaptics"
+  ABI48_0_0ExpoImage:
+    :path: "./versioned/sdk48/ExpoImage"
+  ABI48_0_0ExpoImageManipulator:
+    :path: "./versioned/sdk48/ExpoImageManipulator"
+  ABI48_0_0ExpoImagePicker:
+    :path: "./versioned/sdk48/ExpoImagePicker"
+  ABI48_0_0ExpoKeepAwake:
+    :path: "./versioned/sdk48/ExpoKeepAwake"
+  ABI48_0_0ExpoKit:
+    :path: "./versioned-react-native/ABI48_0_0/Expo/ExpoKit"
+  ABI48_0_0ExpoLinearGradient:
+    :path: "./versioned/sdk48/ExpoLinearGradient"
+  ABI48_0_0ExpoLocalAuthentication:
+    :path: "./versioned/sdk48/ExpoLocalAuthentication"
+  ABI48_0_0ExpoLocalization:
+    :path: "./versioned/sdk48/ExpoLocalization"
+  ABI48_0_0ExpoMailComposer:
+    :path: "./versioned/sdk48/ExpoMailComposer"
+  ABI48_0_0ExpoMaps:
+    :path: "./versioned/sdk48/ExpoMaps"
+  ABI48_0_0ExpoModulesCore:
+    :path: "./versioned/sdk48/ExpoModulesCore"
+  ABI48_0_0ExpoModulesProvider:
+    :path: "./versioned/sdk48/ExpoModulesProvider"
+  ABI48_0_0ExpoNetwork:
+    :path: "./versioned/sdk48/ExpoNetwork"
+  ABI48_0_0ExpoRandom:
+    :path: "./versioned/sdk48/ExpoRandom"
+  ABI48_0_0ExpoSMS:
+    :path: "./versioned/sdk48/ExpoSMS"
+  ABI48_0_0ExpoStoreReview:
+    :path: "./versioned/sdk48/ExpoStoreReview"
+  ABI48_0_0ExpoSystemUI:
+    :path: "./versioned/sdk48/ExpoSystemUI"
+  ABI48_0_0ExpoTrackingTransparency:
+    :path: "./versioned/sdk48/ExpoTrackingTransparency"
+  ABI48_0_0ExpoVideoThumbnails:
+    :path: "./versioned/sdk48/ExpoVideoThumbnails"
+  ABI48_0_0ExpoWebBrowser:
+    :path: "./versioned/sdk48/ExpoWebBrowser"
+  ABI48_0_0EXPrint:
+    :path: "./versioned/sdk48/EXPrint"
+  ABI48_0_0EXScreenCapture:
+    :path: "./versioned/sdk48/EXScreenCapture"
+  ABI48_0_0EXScreenOrientation:
+    :path: "./versioned/sdk48/EXScreenOrientation"
+  ABI48_0_0EXSecureStore:
+    :path: "./versioned/sdk48/EXSecureStore"
+  ABI48_0_0EXSensors:
+    :path: "./versioned/sdk48/EXSensors"
+  ABI48_0_0EXSharing:
+    :path: "./versioned/sdk48/EXSharing"
+  ABI48_0_0EXSpeech:
+    :path: "./versioned/sdk48/EXSpeech"
+  ABI48_0_0EXSplashScreen:
+    :path: "./versioned/sdk48/EXSplashScreen"
+  ABI48_0_0EXSQLite:
+    :path: "./versioned/sdk48/EXSQLite"
+  ABI48_0_0EXStructuredHeaders:
+    :path: "./versioned/sdk48/EXStructuredHeaders"
+  ABI48_0_0EXTaskManager:
+    :path: "./versioned/sdk48/EXTaskManager"
+  ABI48_0_0EXUpdates:
+    :path: "./versioned/sdk48/EXUpdates"
+  ABI48_0_0EXUpdatesInterface:
+    :path: "./versioned/sdk48/EXUpdatesInterface"
+  ABI48_0_0FBLazyVector:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/Libraries/FBLazyVector"
+  ABI48_0_0FBReactNativeSpec:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/React/FBReactNativeSpec"
+  ABI48_0_0hermes-engine:
+    :podspec: "./versioned-react-native/ABI48_0_0/ReactNative/sdks/hermes-engine/ABI48_0_0hermes-engine.podspec"
+  ABI48_0_0lottie-react-native:
+    :path: "./vendored/sdk48/lottie-react-native"
+  ABI48_0_0RCTRequired:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/Libraries/RCTRequired"
+  ABI48_0_0RCTTypeSafety:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/Libraries/TypeSafety"
+  ABI48_0_0React:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/"
+  ABI48_0_0React-callinvoker:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/callinvoker"
+  ABI48_0_0React-Codegen:
+    :path: versioned-react-native/ABI48_0_0/ReactNative/codegen/ios
+  ABI48_0_0React-Core:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/"
+  ABI48_0_0React-CoreModules:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/React/CoreModules"
+  ABI48_0_0React-cxxreact:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/cxxreact"
+  ABI48_0_0React-hermes:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/hermes"
+  ABI48_0_0React-jsc:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/jsc"
+  ABI48_0_0React-jsi:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/jsi"
+  ABI48_0_0React-jsiexecutor:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/jsiexecutor"
+  ABI48_0_0React-jsinspector:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/jsinspector"
+  ABI48_0_0React-logger:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/logger"
+  ABI48_0_0react-native-netinfo:
+    :path: "./vendored/sdk48/@react-native-community/netinfo"
+  ABI48_0_0react-native-pager-view:
+    :path: "./vendored/sdk48/react-native-pager-view"
+  ABI48_0_0react-native-safe-area-context:
+    :path: "./vendored/sdk48/react-native-safe-area-context"
+  ABI48_0_0react-native-segmented-control:
+    :path: "./vendored/sdk48/@react-native-segmented-control/segmented-control"
+  ABI48_0_0react-native-skia:
+    :path: "./vendored/sdk48/@shopify/react-native-skia"
+  ABI48_0_0react-native-slider:
+    :path: "./vendored/sdk48/@react-native-community/slider"
+  ABI48_0_0react-native-webview:
+    :path: "./vendored/sdk48/react-native-webview"
+  ABI48_0_0React-perflogger:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/reactperflogger"
+  ABI48_0_0React-RCTActionSheet:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/Libraries/ActionSheetIOS"
+  ABI48_0_0React-RCTAnimation:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/Libraries/NativeAnimation"
+  ABI48_0_0React-RCTAppDelegate:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/Libraries/AppDelegate"
+  ABI48_0_0React-RCTBlob:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/Libraries/Blob"
+  ABI48_0_0React-RCTImage:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/Libraries/Image"
+  ABI48_0_0React-RCTLinking:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/Libraries/LinkingIOS"
+  ABI48_0_0React-RCTNetwork:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/Libraries/Network"
+  ABI48_0_0React-RCTSettings:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/Libraries/Settings"
+  ABI48_0_0React-RCTText:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/Libraries/Text"
+  ABI48_0_0React-RCTVibration:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/Libraries/Vibration"
+  ABI48_0_0React-runtimeexecutor:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/runtimeexecutor"
+  ABI48_0_0ReactCommon:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon"
+  ABI48_0_0RNCAsyncStorage:
+    :path: "./vendored/sdk48/@react-native-async-storage/async-storage"
+  ABI48_0_0RNFlashList:
+    :path: "./vendored/sdk48/@shopify/flash-list"
+  ABI48_0_0RNGestureHandler:
+    :path: "./vendored/sdk48/react-native-gesture-handler"
+  ABI48_0_0RNReanimated:
+    :path: "./vendored/sdk48/react-native-reanimated"
+  ABI48_0_0RNScreens:
+    :path: "./vendored/sdk48/react-native-screens"
+  ABI48_0_0RNSVG:
+    :path: "./vendored/sdk48/react-native-svg"
+  ABI48_0_0stripe-react-native:
+    :path: "./vendored/sdk48/@stripe/stripe-react-native"
+  ABI48_0_0UMAppLoader:
+    :path: "./versioned/sdk48/UMAppLoader"
+  ABI48_0_0Yoga:
+    :path: "./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/yoga"
   boost:
     :podspec: "../react-native-lab/react-native/third-party-podspecs/boost.podspec"
   DoubleConversion:
@@ -3408,7 +4491,7 @@ SPEC CHECKSUMS:
   ABI46_0_0RNGestureHandler: 42f00c4ce0ac12c4c51081de65e2ba831dfd5cb7
   ABI46_0_0RNReanimated: c68969af1eae15d09ee5b8b3b61407feb5db9884
   ABI46_0_0RNScreens: f521a4613dc2207aab4fcd72b5bb7cef74104a39
-  ABI46_0_0stripe-react-native: 4dd52a4a1d8eea53b0a98ca8040fbe337a015c1c
+  ABI46_0_0stripe-react-native: 8552dcbc30ff4f9421642865f6f3eade43afd60c
   ABI46_0_0UMAppLoader: 271ab738d153f711d91da6b1b7a3a981d668dcfe
   ABI46_0_0Yoga: 898c6ba86e91d19b0810efa11e8a6c7e5559a64d
   ABI47_0_0EASClient: 6736a1df49422a126aa94f9ce746cfa0793b18b1
@@ -3518,9 +4601,121 @@ SPEC CHECKSUMS:
   ABI47_0_0RNReanimated: fb0af774050ede9a36f59af894db4270a28f0e12
   ABI47_0_0RNScreens: b7b92c672e91734079636fbcf8fdac5a249aca8d
   ABI47_0_0RNSVG: 6ebc184a6e7f101269a30971df3bae6e93422b65
-  ABI47_0_0stripe-react-native: 3d4ec195884d62beafe5f0687306a598e1d62695
+  ABI47_0_0stripe-react-native: 0da072b30eb714649506414f85e18a19911511d1
   ABI47_0_0UMAppLoader: b6f390d4e683ebfb1042a15ac2ec8ecdca796eb9
   ABI47_0_0Yoga: 00f64b690ab46751611af3a78fb2032b31a3287d
+  ABI48_0_0EASClient: 08455175361c13879c5b26c947a0c7822629f3cf
+  ABI48_0_0EXApplication: 4372a2df9972fccecda1e51a2dd4511b2e09fb98
+  ABI48_0_0EXAV: 49404ba269ac5098b531baa96d009533a60e0ab9
+  ABI48_0_0EXBackgroundFetch: cd477b03c7c6ee4f74b38b21ffc8e2d7728e6946
+  ABI48_0_0EXBarCodeScanner: 13893c7ff78ba3e5c1cc6ab663790c84b3d40ec9
+  ABI48_0_0EXCalendar: 948d3a4783cd8a9108afc1f68d04e32ee7be7ad4
+  ABI48_0_0EXCamera: 9e137be99c014a2e1f91a91ab5cfade0e7978d71
+  ABI48_0_0EXConstants: eac846b0a8abef98e6d408dec5ce4091d3c0e85c
+  ABI48_0_0EXContacts: ee8d55d53584f864052db6a6e463101dff51e63d
+  ABI48_0_0EXDocumentPicker: ae50fc0550645c166ad076fe016d8a0702e04fe6
+  ABI48_0_0EXErrorRecovery: 7fbda71caee2c9f415eec962fa6c756f2b13ac61
+  ABI48_0_0EXFaceDetector: 28964dd07378a3e630c3068a0b37263cac902c2f
+  ABI48_0_0EXFileSystem: 59856fc59aa219c5eefb5c5ab596b8467af13f85
+  ABI48_0_0EXFont: 1394eb694a9c4440aef3eba4eadad476606b3260
+  ABI48_0_0EXImageLoader: cffc91ddcdc6273bdd5c04759cdb3edd7c6f2c11
+  ABI48_0_0EXJSONUtils: 96edb4f28daf354d0ad160d363629e107caa91be
+  ABI48_0_0EXLocation: 13de8357cec7fb0694672c9a1019e66af41eef3d
+  ABI48_0_0EXManifests: 4fc523362bc912aae11dbe6d00899e626b7b7c84
+  ABI48_0_0EXMediaLibrary: fb41cf0d6324f88e7a4250427280ff7740184c44
+  ABI48_0_0EXNotifications: b6bd5a0fc8f837e26ed4c1d478d0531a0b511984
+  ABI48_0_0EXPermissions: 0661a116109e9d1f6e3c05ce9814d321403544aa
+  ABI48_0_0Expo: af6bbce3f479b3d2406b2280c1bb7eb0dc892cc0
+  ABI48_0_0ExpoAppleAuthentication: 856c9a2523e1e832e4136215315c53a11513f6b7
+  ABI48_0_0ExpoBattery: d3f31f0a7ea9606bd2d301d795273f2b0c0bb86b
+  ABI48_0_0ExpoBlur: b0e25519687e8a1ec263ae20554c31a67e55a558
+  ABI48_0_0ExpoBrightness: dd0b2f7d991fad1fe8c6aa6c133806566799b335
+  ABI48_0_0ExpoCellular: 0a9f4dbaa459b67fca553eabee5a9dce55e2fc84
+  ABI48_0_0ExpoClipboard: 8156a76c301f080b8a841eb597a80f53ccbac991
+  ABI48_0_0ExpoCrypto: b0af0d683a5d113369ed0c833e985b96c9f28c24
+  ABI48_0_0ExpoDevice: 5ab3e25a1fefa734d252f0994e8f5c6f6bfe8ff5
+  ABI48_0_0ExpoGL: ca63af3bcfb4663825bea66fe49752552a0f8e59
+  ABI48_0_0ExpoHaptics: cfb7784b2d30c4d91daaa300eda573dbbc5c8c32
+  ABI48_0_0ExpoImage: b8cf6fd26775566f2d89c160962fc9872a1417ac
+  ABI48_0_0ExpoImageManipulator: 455044744565e5527e210e7f7173c44083cfcdd6
+  ABI48_0_0ExpoImagePicker: b0735a3ee16e43b9f311eb7a891c50e7733205c2
+  ABI48_0_0ExpoKeepAwake: 0aea82d749703325d67ab97b7b54806789648d5c
+  ABI48_0_0ExpoKit: 342bdf2691aaba9f4252ac6102e444a344f7a866
+  ABI48_0_0ExpoLinearGradient: 9ecab8e86860a960208e49662c231d01e524f3cd
+  ABI48_0_0ExpoLocalAuthentication: 3bcdbb1f70199da9bef162fce270a63216de5af3
+  ABI48_0_0ExpoLocalization: 2c7d78b402141ac90b443baf2c106f5f33b7053d
+  ABI48_0_0ExpoMailComposer: 3a6d4dc621e3ca4390b82b1e5b3d767fe62446d7
+  ABI48_0_0ExpoMaps: bbf318517183f67b9381871fc78de56d5360f7a1
+  ABI48_0_0ExpoModulesCore: c19c70283f791c1e40dcafc404bfe64b1b69c245
+  ABI48_0_0ExpoModulesProvider: 0ded590cc0f4056333f8f7b71834a7b1f46432b3
+  ABI48_0_0ExpoNetwork: a2cc3011ba2bc43ba44d8a0db5baf4da981b47e9
+  ABI48_0_0ExpoRandom: 042f428ec422ed664a27d2900c7906f92f425a3c
+  ABI48_0_0ExpoSMS: d6dd930af0166baa8ad3eebc8b68a3275775f0d7
+  ABI48_0_0ExpoStoreReview: caeeb93909cb043333905c616765691560512373
+  ABI48_0_0ExpoSystemUI: bce08528615723f2aa03e58420598d8e6d8bafa1
+  ABI48_0_0ExpoTrackingTransparency: 4bd593903d968977c36a83a24ef208a17e3cd1d8
+  ABI48_0_0ExpoVideoThumbnails: aca275dfe7dec8c898dbf98b401c9689f3bd0aa6
+  ABI48_0_0ExpoWebBrowser: 4500359e20ff0f355404ee048f9274c9ba174a5a
+  ABI48_0_0EXPrint: b84d85b43d1eaad4c89d4fab2a927b03315dad8d
+  ABI48_0_0EXScreenCapture: 816fc8f4c918583853cbacd39bbb34b8afabaa03
+  ABI48_0_0EXScreenOrientation: 080e1e333d0289f3c152880bb0bbfc07092f0456
+  ABI48_0_0EXSecureStore: e427c800c150621b5ff255db38c049a0ef7b60b6
+  ABI48_0_0EXSensors: 91c4c17192bf7ba7b7757a093d1ea81e89206ee3
+  ABI48_0_0EXSharing: bde735843fb92e34f4dde7a1c5b7f966e67d1e0b
+  ABI48_0_0EXSpeech: 9c954243a323f2ccf60a654c5552a75eecedebfe
+  ABI48_0_0EXSplashScreen: c355256ccc631d88ac02cfd52843524b2e54d6ec
+  ABI48_0_0EXSQLite: 84fd7e0cc0f17d8d8638172b35efa559118c21eb
+  ABI48_0_0EXStructuredHeaders: 640b8c1549a75ef4d007c089c6fbb4978b111b58
+  ABI48_0_0EXTaskManager: fbde8ee7d5c518fbea49d0b02617f13786f7813d
+  ABI48_0_0EXUpdates: ce7833c4a976570d8c3c3b918718c8fc169a9eee
+  ABI48_0_0EXUpdatesInterface: 776fdf581d6065e62e1fa5a5e6814072ec7ba6f1
+  ABI48_0_0FBLazyVector: 3015e3c756858973301f96fe7278b9e0e76b555b
+  ABI48_0_0FBReactNativeSpec: a5db579fcf341a0692c6e6ef3c6a15afea46c161
+  ABI48_0_0hermes-engine: 8031099734c0175879918b680a31e84635a5a7f0
+  ABI48_0_0lottie-react-native: e75c2a083fd686dbf0a69602103912b6317815bc
+  ABI48_0_0RCTRequired: e955dc4765183e5fea2fa64ae58f06111ed36c0f
+  ABI48_0_0RCTTypeSafety: eb821d0bbd50a648c7e98ff53b6068190a4ee98d
+  ABI48_0_0React: 369b0b7d4a7a58164dcf6ae6825751588bd67191
+  ABI48_0_0React-callinvoker: 1fdf7ff42ab72d357bdab74c7db59df8a3f858dc
+  ABI48_0_0React-Codegen: fb9fb62004d4f3dbc2f7948c74e5d419ab41ab7e
+  ABI48_0_0React-Core: 76081dce52172518920eefee371a575ff2f2ce7b
+  ABI48_0_0React-CoreModules: da504910b685013924b24fa431c7536943ff1d42
+  ABI48_0_0React-cxxreact: 30ba6a7b2ec930a376416f756784d092b08089fe
+  ABI48_0_0React-hermes: eb4008e54567d7bed7e3503defc6268240acd5f9
+  ABI48_0_0React-jsc: f723f51c7c14dcf28081e6d07bdd4398a901995b
+  ABI48_0_0React-jsi: 880ccdcbcf37f7f66aa1e321aaf16ac91516abf9
+  ABI48_0_0React-jsiexecutor: 724562f04ce2057b8dd90f5e2892b74f58413e3f
+  ABI48_0_0React-jsinspector: 3a139962cbde00698b957106e888eb2eb84c95ab
+  ABI48_0_0React-logger: c62697ab46c06453eb74807461b8d6aa9c2577cd
+  ABI48_0_0react-native-netinfo: ebd6d5549363a65c06bb17e0cfe5fcbbe6b33872
+  ABI48_0_0react-native-pager-view: d305600a3bfed406e34eced45440aa49db7443ee
+  ABI48_0_0react-native-safe-area-context: 20f8ba0ac5f1e77db9004646322ea28940571596
+  ABI48_0_0react-native-segmented-control: 94be546da127ec3ba7700218365155097b71c691
+  ABI48_0_0react-native-skia: f798aadeab90f76f65e880f7f6ce226cfdb08168
+  ABI48_0_0react-native-slider: 945bf10759c027ee55ab625ebc963f0d71c79a3e
+  ABI48_0_0react-native-webview: 5865178c5798f4d992d530583f83a211c1f20024
+  ABI48_0_0React-perflogger: 8b205014b18a86a2bcdcb5c367bc9527d5bcaebc
+  ABI48_0_0React-RCTActionSheet: 71408b8cf1f5a1ca347ff951480aad8d13dd74e3
+  ABI48_0_0React-RCTAnimation: 676dc2c7219b79b051855ce6e4e9f1b1ab2a65be
+  ABI48_0_0React-RCTAppDelegate: 806603b13ab71e72a84376c63b877f6443843f8c
+  ABI48_0_0React-RCTBlob: 111404e588bcf1b39a2839ba5c04720026398521
+  ABI48_0_0React-RCTImage: 9cdeb1c60abd46b65e054c5b3880d2f364b38523
+  ABI48_0_0React-RCTLinking: 11c7f136d0360bce955f166060e87569986e9477
+  ABI48_0_0React-RCTNetwork: e6b9fbdb8751ff6912bfca2d8bb097094f862625
+  ABI48_0_0React-RCTSettings: 3ebe1d5e0afb65f18bec647a20c1c619c430ccee
+  ABI48_0_0React-RCTText: 9a9a68d594fe15c8964fc60466c76e94ed0faee2
+  ABI48_0_0React-RCTVibration: 326ecb021df25ea06171d5442ac6315c7e24c83f
+  ABI48_0_0React-runtimeexecutor: 55feec1b46b5be174c837ce0430fb7a300e33715
+  ABI48_0_0ReactCommon: 8697f267dcec42a6c0536e3c8b3e731f3b37ba69
+  ABI48_0_0RNCAsyncStorage: 3f46749427aa9be4bc903863f7d8dcf8cd3c7276
+  ABI48_0_0RNFlashList: 2ea187efe7559fd148b6f86f51b4a75495cf460d
+  ABI48_0_0RNGestureHandler: 4ca478526fa36acac7af93af4d976c4bc69c88bc
+  ABI48_0_0RNReanimated: b30e21ab20767525a7f7970650cfede925e7ec05
+  ABI48_0_0RNScreens: f4e165935f3205248cebaee59a6e4821b93c471a
+  ABI48_0_0RNSVG: 505e6c30ec1af5196e1ebc63b15f7f4883e37821
+  ABI48_0_0stripe-react-native: 3881bf4188f9f8b8cb122a998d806f2d2ec99e14
+  ABI48_0_0UMAppLoader: 53ad457a547ae1c313877d22866478764526c93f
+  ABI48_0_0Yoga: 13a232e4a5d1ecd44a45e050b5983aa20116b1fa
   Amplitude: cc34fcd8dfffc3470bc2e05f3a4abb0178f6d963
   Analytics: 3106b5af9b799c934f98a68ab8ba199f1c603fdb
   AppAuth: 8fca6b5563a5baef2c04bee27538025e4ceb2add
@@ -3613,6 +4808,7 @@ SPEC CHECKSUMS:
   GoogleDataTransport: 1c8145da7117bd68bbbed00cf304edb6a24de00f
   GoogleMaps: bc56ffb0324e345a2d91bac1a64a920f9c8f1b20
   GoogleMLKit: 755661c46990a85e42278015f26400286d98ad95
+  GooglePlaces: 187946335ec3dc624de71c0a9ddcc712f19b0ee1
   GoogleSignIn: b232380cf495a429b8095d3178a8d5855b42e842
   GoogleToolboxForMac: 8bef7c7c5cf7291c687cf5354f39f9db6399ad34
   GoogleUserMessagingPlatform: 5f8b30daf181805317b6b985bb51c1ff3beca054

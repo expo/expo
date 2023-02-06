@@ -1,0 +1,19 @@
+{
+  "name": "ABI48_0_0react-native-pager-view",
+  "version": "6.1.2",
+  "summary": "ABI48_0_0React Native wrapper for Android and iOS ViewPager",
+  "homepage": "https://github.com/callstack/react-native-pager-view#readme",
+  "license": "MIT",
+  "authors": "troZee <hello@callstack.com> (https://github.com/callstack)",
+  "platforms": {
+    "ios": "10.0"
+  },
+  "source": {
+    "git": "https://github.com/callstack/react-native-pager-view.git",
+    "tag": "6.1.2"
+  },
+  "source_files": "ios/**/*.{h,m,mm}",
+  "dependencies": {
+    "ABI48_0_0React-Core": []
+  }
+}

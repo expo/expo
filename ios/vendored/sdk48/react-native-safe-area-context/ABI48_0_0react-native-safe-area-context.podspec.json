@@ -1,0 +1,30 @@
+{
+  "name": "ABI48_0_0react-native-safe-area-context",
+  "version": "4.5.0",
+  "summary": "A flexible way to handle safe area, also works on Android and web.",
+  "license": "MIT",
+  "authors": "Janic Duplessis <janicduplessis@gmail.com>",
+  "homepage": "https://github.com/th3rdwave/react-native-safe-area-context#readme",
+  "platforms": {
+    "ios": "11.0",
+    "tvos": "11.0"
+  },
+  "source": {
+    "git": "https://github.com/th3rdwave/react-native-safe-area-context.git",
+    "tag": "v4.5.0"
+  },
+  "source_files": "ios/**/*.{h,m,mm}",
+  "exclude_files": "ios/Fabric",
+  "compiler_flags": "-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32",
+  "pod_target_xcconfig": {
+    "HEADER_SEARCH_PATHS": "\"$(PODS_ROOT)/boost\"",
+    "CLANG_CXX_LANGUAGE_STANDARD": "c++17"
+  },
+  "dependencies": {
+    "ABI48_0_0React-Core": [],
+    "RCT-Folly": [],
+    "ABI48_0_0RCTRequired": [],
+    "ABI48_0_0RCTTypeSafety": [],
+    "ABI48_0_0ReactCommon/turbomodule/core": []
+  }
+}

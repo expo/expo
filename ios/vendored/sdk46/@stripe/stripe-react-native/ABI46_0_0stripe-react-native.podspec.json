@@ -18,6 +18,18 @@
     "Stripe": [
       "~> 23.3.0"
     ],
+    "StripePaymentSheet": [
+      "~> 23.3.0"
+    ],
+    "StripePayments": [
+      "~> 23.3.0"
+    ],
+    "StripePaymentsUI": [
+      "~> 23.3.0"
+    ],
+    "StripeApplePay": [
+      "~> 23.3.0"
+    ],
     "StripeFinancialConnections": [
       "~> 23.3.0"
     ]
