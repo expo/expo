@@ -22,7 +22,6 @@ export function resolveEntryPoint(
 /** @returns the absolute entry file for the project.  */
 export function resolveAbsoluteEntryPoint(
   projectRoot: string,
-
   platform?: string,
   projectConfig?: ProjectConfig
 ): string {
