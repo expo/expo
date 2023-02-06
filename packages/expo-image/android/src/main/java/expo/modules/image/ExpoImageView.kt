@@ -23,7 +23,6 @@ class ExpoImageView(
 ) : AppCompatImageView(context) {
   var currentTarget: ImageViewWrapperTarget? = null
   var isPlaceholder: Boolean = false
-  var placeholderContentFit: ContentFit = ContentFit.ScaleDown
 
   fun recycleView(): ImageViewWrapperTarget? {
     setImageDrawable(null)
@@ -104,6 +103,12 @@ class ExpoImageView(
 
   // region Component Props
   internal var contentFit: ContentFit = ContentFit.Cover
+    set(value) {
+      field = value
+      transformationMatrixChanged = true
+    }
+
+  internal var placeholderContentFit: ContentFit = ContentFit.ScaleDown
     set(value) {
       field = value
       transformationMatrixChanged = true
