@@ -9,16 +9,13 @@ const {
   copyAssetToStaticFolder,
   copyBundleToStaticFolder,
   findAssets,
+  updateManifestForBundleFilename,
+  server_host,
+  server_port,
 } = require('./utils/update');
 
-const SERVER_HOST = process.env.UPDATES_HOST;
-const SERVER_PORT = parseInt(process.env.UPDATES_PORT || '', 10);
-
 const projectRoot = process.env.PROJECT_ROOT || process.cwd();
-const updateDistPath = path.join(projectRoot, 'updates');
 const platform = process.env.DETOX_CONFIGURATION.split('.')[0];
-
-const RUNTIME_VERSION = '1.0.0';
 
 const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
 
@@ -46,7 +43,7 @@ describe('Asset deletion recovery', () => {
      * DatabaseLauncher should copy all the missing assets and run the update as normal.
      */
     jest.setTimeout(300000 * TIMEOUT_BIAS);
-    Server.start(SERVER_PORT);
+    Server.start(server_port);
 
     /**
      * Install the app and immediately send it a message to clear internal storage. Verify storage
@@ -127,7 +124,7 @@ describe('Asset deletion recovery', () => {
      * the missing assets and run the update as normal.
      */
     jest.setTimeout(300000 * TIMEOUT_BIAS);
-    Server.start(SERVER_PORT);
+    Server.start(server_port);
 
     /**
      * Install the app and immediately send it a message to clear internal storage. Verify storage
@@ -221,38 +218,28 @@ describe('Asset deletion recovery', () => {
         const filename = path.basename(asset.path);
         const mimeType = asset.ext === 'ttf' ? 'font/ttf' : 'image/png';
         const key = filename.replace('asset_', '').replace(/\.[^/.]+$/, '');
-        const hash = await copyAssetToStaticFolder(
-          asset.path,
-          filename
-        );
+        const hash = await copyAssetToStaticFolder(asset.path, filename);
         return {
           hash,
           key,
           contentType: mimeType,
           fileExtension: asset.ext,
-          url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${filename}`,
+          url: `http://${server_host}:${server_port}/static/${filename}`,
         };
       })
     );
-    const manifest = {
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      runtimeVersion: RUNTIME_VERSION,
-      launchAsset: {
-        hash: bundleHash,
-        key: 'test-assets-bundle',
-        contentType: 'application/javascript',
-        url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${bundleFilename}`,
-      },
-      assets,
-      metadata: {},
-      extra: {},
-    };
+    const manifest = updateManifestForBundleFilename(
+      new Date(),
+      bundleHash,
+      'test-assets-bundle',
+      bundleFilename,
+      assets
+    );
 
     /**
      * Install the app and launch it so that it downloads the new update we're hosting
      */
-    Server.start(SERVER_PORT);
+    Server.start(server_port);
     await Server.serveSignedManifest(manifest, projectRoot);
     await device.installApp();
     await device.launchApp({ newInstance: true });

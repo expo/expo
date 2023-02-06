@@ -4,15 +4,16 @@ const path = require('path');
 const { setTimeout } = require('timers/promises');
 
 const Server = require('./utils/server');
-const { copyAssetToStaticFolder, copyBundleToStaticFolder } = require('./utils/update');
-
-const SERVER_HOST = process.env.UPDATES_HOST;
-const SERVER_PORT = parseInt(process.env.UPDATES_PORT || '', 10);
+const {
+  copyAssetToStaticFolder,
+  copyBundleToStaticFolder,
+  updateManifestForBundleFilename,
+  server_host,
+  server_port
+} = require('./utils/update');
 
 const projectRoot = process.env.PROJECT_ROOT || process.cwd();
 const platform = process.env.DETOX_CONFIGURATION.split('.')[0];
-
-const RUNTIME_VERSION = '1.0.0';
 
 const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
 
@@ -24,7 +25,7 @@ describe('', () => {
 
   it('starts app, stops, and starts again', async () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
-    Server.start(SERVER_PORT);
+    Server.start(server_port);
     await device.installApp();
     await device.launchApp({
       newInstance: true,
@@ -47,7 +48,7 @@ describe('', () => {
 
   it('initial request includes correct update-id headers', async () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
-    Server.start(SERVER_PORT);
+    Server.start(server_port);
     await device.installApp();
     await device.launchApp({
       newInstance: true,
@@ -72,28 +73,23 @@ describe('', () => {
       newNotifyString,
       platform
     );
-    const manifest = {
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      runtimeVersion: RUNTIME_VERSION,
-      launchAsset: {
-        hash,
-        key: 'test-update-1-key',
-        contentType: 'application/javascript',
-        url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${bundleFilename}`,
-      },
-      assets: [],
-      metadata: {},
-      extra: {},
-    };
+    const manifest = updateManifestForBundleFilename(
+      new Date(),
+      hash,
+      'test-update-1-key',
+      bundleFilename,
+      []
+    );
 
-    Server.start(SERVER_PORT);
+    Server.start(server_port);
     await Server.serveSignedManifest(manifest, projectRoot);
     await device.installApp();
     await device.launchApp({
       newInstance: true,
     });
-    const firstRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
+    const firstRequest = await Server.waitForUpdateRequest(
+      10000 * TIMEOUT_BIAS
+    );
     const message = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
     expect(message).toBe('test');
 
@@ -104,7 +100,9 @@ describe('', () => {
     // restart the app so it will launch the new update
     await device.terminateApp();
     await device.launchApp();
-    const secondRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
+    const secondRequest = await Server.waitForUpdateRequest(
+      10000 * TIMEOUT_BIAS
+    );
     const updatedMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
     expect(updatedMessage).toBe(newNotifyString);
 
@@ -113,31 +111,31 @@ describe('', () => {
       firstRequest.headers['expo-embedded-update-id']
     );
     expect(secondRequest.headers['expo-current-update-id']).toBeDefined();
-    expect(secondRequest.headers['expo-current-update-id']).toEqual(manifest.id);
+    expect(secondRequest.headers['expo-current-update-id']).toEqual(
+      manifest.id
+    );
   });
 
   it('does not run update with incorrect hash', async () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle-invalid-hash.js';
     const newNotifyString = 'test-update-invalid-hash';
-    await copyBundleToStaticFolder(projectRoot, bundleFilename, newNotifyString, platform);
+    await copyBundleToStaticFolder(
+      projectRoot,
+      bundleFilename,
+      newNotifyString,
+      platform
+    );
     const hash = 'invalid-hash';
-    const manifest = {
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      runtimeVersion: RUNTIME_VERSION,
-      launchAsset: {
-        hash,
-        key: 'test-update-1-key',
-        contentType: 'application/javascript',
-        url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${bundleFilename}`,
-      },
-      assets: [],
-      metadata: {},
-      extra: {},
-    };
+    const manifest = updateManifestForBundleFilename(
+      new Date(),
+      hash,
+      'test-update-1-key',
+      bundleFilename,
+      []
+    );
 
-    Server.start(SERVER_PORT);
+    Server.start(server_port);
     await Server.serveSignedManifest(manifest, projectRoot);
     await device.installApp();
     await device.launchApp({
@@ -182,30 +180,25 @@ describe('', () => {
         );
         return {
           hash:
-            index === 0 ? hash.substring(1, 2) + hash.substring(0, 1) + hash.substring(2) : hash,
+            index === 0
+              ? hash.substring(1, 2) + hash.substring(0, 1) + hash.substring(2)
+              : hash,
           key: `asset${index}`,
           contentType: 'image/jpg',
           fileExtension: '.jpg',
-          url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${destinationFilename}`,
+          url: `http://${server_host}:${server_port}/static/${destinationFilename}`,
         };
       })
     );
-    const manifest = {
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      runtimeVersion: RUNTIME_VERSION,
-      launchAsset: {
-        hash,
-        key: 'test-update-2-key',
-        contentType: 'application/javascript',
-        url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${bundleFilename}`,
-      },
-      assets,
-      metadata: {},
-      extra: {},
-    };
+    const manifest = updateManifestForBundleFilename(
+      new Date(),
+      hash,
+      'test-update-2-key',
+      bundleFilename,
+      assets
+    );
 
-    Server.start(SERVER_PORT);
+    Server.start(server_port);
     await Server.serveSignedManifest(manifest, projectRoot);
     await device.installApp();
     await device.launchApp({
@@ -276,26 +269,19 @@ describe('', () => {
           key: `asset${index}`,
           contentType: 'image/jpg',
           fileExtension: '.jpg',
-          url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${destinationFilename}`,
+          url: `http://${server_host}:${server_port}/static/${destinationFilename}`,
         };
       })
     );
-    const manifest = {
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      runtimeVersion: RUNTIME_VERSION,
-      launchAsset: {
-        hash,
-        key: 'test-update-2-key',
-        contentType: 'application/javascript',
-        url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${bundleFilename}`,
-      },
-      assets,
-      metadata: {},
-      extra: {},
-    };
+    const manifest = updateManifestForBundleFilename(
+      new Date(),
+      hash,
+      'test-update-2-key',
+      bundleFilename,
+      assets
+    );
 
-    Server.start(SERVER_PORT);
+    Server.start(server_port);
     await Server.serveSignedManifest(manifest, projectRoot);
     await device.installApp();
     await device.launchApp({
@@ -336,22 +322,15 @@ describe('', () => {
       'test-update-older',
       platform
     );
-    const manifest = {
-      id: crypto.randomUUID(),
-      createdAt: new Date(Date.now() - 1000 * 60 * 60 * 24).toISOString(), // yesterday
-      runtimeVersion: RUNTIME_VERSION,
-      launchAsset: {
-        hash,
-        key: 'test-update-old-key',
-        contentType: 'application/javascript',
-        url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${bundleFilename}`,
-      },
-      assets: [],
-      metadata: {},
-      extra: {},
-    };
+    const manifest = updateManifestForBundleFilename(
+      new Date(Date.now() - 1000 * 60 * 60 * 24),
+      hash,
+      'test-update-old-key',
+      bundleFilename,
+      []
+    );
 
-    Server.start(SERVER_PORT);
+    Server.start(server_port);
     await Server.serveSignedManifest(manifest, projectRoot);
     await device.installApp();
     await device.launchApp({

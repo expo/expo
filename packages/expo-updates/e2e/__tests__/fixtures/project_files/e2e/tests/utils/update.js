@@ -4,10 +4,19 @@ const fs = require('fs/promises');
 const path = require('path');
 
 const STATIC_FOLDER_PATH = path.resolve(__dirname, '..', '.static');
+const RUNTIME_VERSION = '1.0.0';
+const server_host = process.env.UPDATES_HOST;
+const server_port = parseInt(process.env.UPDATES_PORT || '', 10);
+
+const urlForBundleFilename = (bundleFilename) =>
+  `http://${server_host}:${server_port}/static/${bundleFilename}`;
 
 function findBundlePath(projectRoot, platform, notifyString) {
   const testUpdateBundlesPath = path.join(projectRoot, 'test-update-bundles');
-  const testUpdateBundlesJsonPath = path.join(testUpdateBundlesPath, 'test-updates.json');
+  const testUpdateBundlesJsonPath = path.join(
+    testUpdateBundlesPath,
+    'test-updates.json'
+  );
   const testUpdateBundlesJson = require(testUpdateBundlesJsonPath);
   const bundleUrl = testUpdateBundlesJson[notifyString][platform];
   return path.join(testUpdateBundlesPath, bundleUrl);
@@ -17,10 +26,10 @@ function findAssets(projectRoot, platform) {
   const updatesPath = path.join(projectRoot, 'updates');
   const updatesJson = require(path.join(updatesPath, 'metadata.json'));
   const assets = updatesJson.fileMetadata[platform].assets;
-  return assets.map(asset => {
+  return assets.map((asset) => {
     return {
       path: path.join(updatesPath, asset.path),
-      ext: asset.ext
+      ext: asset.ext,
     };
   });
 }
@@ -35,7 +44,12 @@ async function shaHash(filePath) {
   });
 }
 
-async function copyBundleToStaticFolder(projectRoot, filename, notifyString, platform) {
+async function copyBundleToStaticFolder(
+  projectRoot,
+  filename,
+  notifyString,
+  platform
+) {
   await fs.mkdir(STATIC_FOLDER_PATH, { recursive: true });
   const bundleSrcPath = findBundlePath(projectRoot, platform, notifyString);
   const bundleDestPath = path.join(STATIC_FOLDER_PATH, filename);
@@ -50,10 +64,30 @@ async function copyAssetToStaticFolder(sourcePath, filename) {
   return await shaHash(destinationPath);
 }
 
+function updateManifestForBundleFilename(date, hash, key, bundleFilename, assets) {
+  return {
+    id: crypto.randomUUID(),
+    createdAt: date.toISOString(),
+    runtimeVersion: RUNTIME_VERSION,
+    launchAsset: {
+      hash,
+      key,
+      contentType: 'application/javascript',
+      url: urlForBundleFilename(bundleFilename)
+    },
+    assets,
+    metadata: {},
+    extra: {},
+  };
+}
+
 const Updates = {
   copyBundleToStaticFolder,
   copyAssetToStaticFolder,
   findAssets,
+  updateManifestForBundleFilename,
+  server_host,
+  server_port,
 };
 
 module.exports = Updates;
