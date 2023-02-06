@@ -51,7 +51,11 @@ elsif File.exist?(hermestag_file) && isInCI
 else
   # Sample url from Maven:
   # https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/0.71.0/react-native-artifacts-0.71.0-hermes-ios-debug.tar.gz
-  source[:http] = "https://repo1.maven.org/maven2/com/facebook/react/react-native-artifacts/#{version}/react-native-artifacts-#{version}-hermes-ios-#{build_type.to_s}.tar.gz"
+  if File.exist?(File.join(__dir__, "destroot"))
+    source[:path] = '.'
+  else
+    source[:http] = 'https://github.com/expo/react-native/releases/download/sdk-48.0.0/ABI48_0_0hermes.tar.gz'
+  end
 end
 
 Pod::Spec.new do |spec|
