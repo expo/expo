@@ -39,6 +39,11 @@ export type ImageSource = {
  */
 export type ImageStyle = RNImageStyle;
 /**
+ * Determines how the image should be resized to fit its container.
+ * @hidden Described in the {@link ImageProps['contentFit']}
+ */
+export type ImageContentFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
+/**
  * Some props are from React Native Image that Expo Image supports (more or less) for easier migration,
  * but all of them are deprecated and might be removed in the future.
  */
@@ -74,7 +79,13 @@ export interface ImageProps extends ViewProps {
      *
      * @default 'cover'
      */
-    contentFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
+    contentFit?: ImageContentFit;
+    /**
+     * Determines how the placeholder should be resized to fit its container
+     * @hidden Described in the {@link ImageProps['contentFit']}
+     * @default 'scale-down'
+     */
+    placeholderContentFit?: ImageContentFit;
     /**
      * It is used together with [`contentFit`](#contentfit) to specify how the image should be positioned with x/y coordinates inside its own container.
      * An equivalent of the CSS [`object-position`](https://developer.mozilla.org/en-US/docs/Web/CSS/object-position) property.
@@ -216,11 +227,6 @@ export interface ImageNativeProps extends ImageProps {
     contentPosition?: ImageContentPositionObject;
     transition?: ImageTransition | null;
 }
-/**
- * Determines how the image should be resized to fit its container.
- * @hidden Described in the {@link ImageProps['contentFit']}
- */
-export type ImageContentFit = ImageProps['contentFit'];
 /**
  * A value that represents the relative position of a single axis.
  *
