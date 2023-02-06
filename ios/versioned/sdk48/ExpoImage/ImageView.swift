@@ -158,7 +158,7 @@ public final class ImageView: ExpoView {
     onProgress([
       "loaded": isPhotoLibraryAsset ? nil : receivedSize,
       "total": isPhotoLibraryAsset ? nil : expectedSize,
-      "progress": Double(receivedSize) / Double(expectedSize)
+      "progress": expectedSize > 0 ? Double(receivedSize) / Double(expectedSize) : 0.0
     ])
   }
 
@@ -197,10 +197,13 @@ public final class ImageView: ExpoView {
         scale: scale,
         contentFit: contentFit
       ).rounded(.up)
-      let image = processImage(image, idealSize: idealSize, scale: scale)
 
-      applyContentPosition(contentSize: idealSize, containerSize: frame.size)
-      renderImage(image)
+      Task {
+        let image = await processImage(image, idealSize: idealSize, scale: scale)
+
+        applyContentPosition(contentSize: idealSize, containerSize: frame.size)
+        renderImage(image)
+      }
     } else {
       displayPlaceholderIfNecessary()
     }
@@ -226,9 +229,8 @@ public final class ImageView: ExpoView {
    Content fit for the placeholder. `scale-down` seems to be the best choice for spinners
    and that the placeholders are usually smaller than the proper image, but it doesn't
    apply to blurhash that by default could use the same fitting as the proper image.
-   - ToDo: Add `placeholderContentFit` prop to control this.
    */
-  var placeholderContentFit: ContentFit?
+  var placeholderContentFit: ContentFit = .scaleDown
 
   /**
    Same as `bestSource`, but for placeholders.
@@ -270,7 +272,7 @@ public final class ImageView: ExpoView {
         return
       }
       self.placeholderImage = placeholder
-      self.placeholderContentFit = isBlurhash ? self.contentFit : .scaleDown
+      self.placeholderContentFit = isBlurhash ? self.contentFit : self.placeholderContentFit
       self.displayPlaceholderIfNecessary()
     }
   }
@@ -282,7 +284,7 @@ public final class ImageView: ExpoView {
     guard isViewEmpty || !hasAnySource, let placeholder = placeholderImage else {
       return
     }
-    setImage(placeholder, contentFit: placeholderContentFit ?? .scaleDown)
+    setImage(placeholder, contentFit: placeholderContentFit)
   }
 
   // MARK: - Processing
@@ -295,13 +297,13 @@ public final class ImageView: ExpoView {
     return SDImagePipelineTransformer(transformers: transformers)
   }
 
-  private func processImage(_ image: UIImage?, idealSize: CGSize, scale: Double) -> UIImage? {
+  private func processImage(_ image: UIImage?, idealSize: CGSize, scale: Double) async -> UIImage? {
     guard let image = image, !bounds.isEmpty else {
       return nil
     }
     // Downscale the image only when necessary
     if shouldDownscale(image: image, toSize: idealSize, scale: scale) {
-      return resize(animatedImage: image, toSize: idealSize, scale: scale)
+      return await resize(animatedImage: image, toSize: idealSize, scale: scale)
     }
     return image
   }
