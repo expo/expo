@@ -37,6 +37,10 @@ public final class ImageModule: Module {
         view.contentFit = contentFit ?? .cover
       }
 
+      Prop("placeholderContentFit") { (view, placeholderContentFit: ContentFit?) in
+        view.placeholderContentFit = placeholderContentFit ?? .scaleDown
+      }
+
       Prop("contentPosition") { (view, contentPosition: ContentPosition?) in
         view.contentPosition = contentPosition ?? .center
       }

@@ -229,9 +229,8 @@ public final class ImageView: ExpoView {
    Content fit for the placeholder. `scale-down` seems to be the best choice for spinners
    and that the placeholders are usually smaller than the proper image, but it doesn't
    apply to blurhash that by default could use the same fitting as the proper image.
-   - ToDo: Add `placeholderContentFit` prop to control this.
    */
-  var placeholderContentFit: ContentFit?
+  var placeholderContentFit: ContentFit = .scaleDown
 
   /**
    Same as `bestSource`, but for placeholders.
@@ -273,7 +272,7 @@ public final class ImageView: ExpoView {
         return
       }
       self.placeholderImage = placeholder
-      self.placeholderContentFit = isBlurhash ? self.contentFit : .scaleDown
+      self.placeholderContentFit = isBlurhash ? self.contentFit : self.placeholderContentFit
       self.displayPlaceholderIfNecessary()
     }
   }
@@ -285,7 +284,7 @@ public final class ImageView: ExpoView {
     guard isViewEmpty || !hasAnySource, let placeholder = placeholderImage else {
       return
     }
-    setImage(placeholder, contentFit: placeholderContentFit ?? .scaleDown)
+    setImage(placeholder, contentFit: placeholderContentFit)
   }
 
   // MARK: - Processing
