@@ -137,6 +137,21 @@ android {
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 import org.apache.tools.ant.taskdefs.condition.Os
 
+class DownloadVersionedAarsPlugin implements Plugin<Project> {
+  @Override
+  void apply(org.gradle.api.Project target) {
+    target.exec {
+      workingDir '../../bin'
+
+      if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine 'cmd.exe', '/c', 'expotools android-download-versioned-aars'
+      } else {
+        commandLine './expotools', 'android-download-versioned-aars'
+      }
+    }
+  }
+}
+
 class GenerateDynamicMacrosPlugin implements Plugin<Project> {
   @Override
   void apply(org.gradle.api.Project target) {
@@ -156,6 +171,7 @@ class GenerateDynamicMacrosPlugin implements Plugin<Project> {
   }
 }
 
+apply plugin: DownloadVersionedAarsPlugin
 apply plugin: GenerateDynamicMacrosPlugin
 
 // WHEN_VERSIONING_REMOVE_TO_HERE
@@ -193,6 +209,9 @@ dependencies {
 
   // Versioned react native
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_48
+  versionedApi 'host.exp:reactandroid-abi48_0_0:1.0.0'
+  // END_SDK_48
   // BEGIN_SDK_47
   versionedApi 'host.exp:reactandroid-abi47_0_0:1.0.0'
   // END_SDK_47
