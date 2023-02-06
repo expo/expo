@@ -83,6 +83,13 @@ export const ImageScreens = [
       return optionalRequire(() => require('./ImageCacheKeyScreen'));
     },
   },
+  {
+    name: 'List of GIFs',
+    route: 'image/gifs',
+    getComponent() {
+      return optionalRequire(() => require('./ImageGifsScreen'));
+    },
+  },
 ];
 
 if (Platform.OS === 'ios') {
