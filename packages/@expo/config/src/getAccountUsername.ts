@@ -5,17 +5,12 @@ import { getUserState } from './getUserState';
 const ANONYMOUS_USERNAME = 'anonymous';
 
 /**
- * Used in expo-constants to generate the `id` property statically for an app in custom managed workflow.
- * This `id` is used for legacy Expo services AuthSession proxy and Expo notifications device ID.
+ * Get the owner of the project from the manifest if specified, falling back to a bunch of different things
+ * which may or may not be the owner of the project.
  *
- * @param manifest
- * @returns
+ * @deprecated This may not actually be the owner of the project. Prefer to fetch the project owner using
+ * the EAS project ID, falling back to the `owner` field.
  */
-export function getFullName(manifest: Pick<ExpoConfig, 'owner' | 'slug'>): string {
-  const username = getAccountUsername(manifest);
-  return `@${username}/${manifest.slug}`;
-}
-
 export function getAccountUsername(manifest: Pick<ExpoConfig, 'owner'> = {}): string {
   // TODO: Must match what's generated in Expo Go.
   const username =
