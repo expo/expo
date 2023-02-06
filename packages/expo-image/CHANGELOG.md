@@ -6,13 +6,11 @@
 
 ### 🎉 New features
 
+- Added new prop `placeholderContentFit` to specify custom content fit on the placeholder. ([#21096](https://github.com/expo/expo/pull/21096) by [@magrinj](https://github.com/magrinj))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
-
-## 1.0.0-beta.6
-
-- Added new prop `placeholderContentFit` to specify custom content fit on the placeholder. ([#21096](https://github.com/expo/expo/pull/21096) by [@magrinj](https://github.com/magrinj))
 
 ## 1.0.0-beta.5 — 2023-02-03
 
