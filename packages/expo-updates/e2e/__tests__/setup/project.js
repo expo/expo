@@ -541,6 +541,9 @@ async function setupAssetsAppAsync(projectRoot, localCliBin) {
   // export update for test server to host
   await createUpdateBundleAsync(projectRoot, localCliBin);
 
+  // create test bundles with different notify strings
+  await createTestUpdateBundles(projectRoot, localCliBin, ['test-assets-1']);
+
   // move exported update to "updates" directory for EAS testing
   await fs.rename(path.join(projectRoot, 'dist'), path.join(projectRoot, 'updates'));
 

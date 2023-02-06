@@ -8,7 +8,7 @@ const Server = require('./utils/server');
 const {
   copyAssetToStaticFolder,
   copyBundleToStaticFolder,
-  exportedManifestFilename,
+  findAssets,
 } = require('./utils/update');
 
 const SERVER_HOST = process.env.UPDATES_HOST;
@@ -209,27 +209,27 @@ describe('Asset deletion recovery', () => {
     const bundleFilename = 'bundle-assets.js';
     const newNotifyString = 'test-assets-1';
     const bundleHash = await copyBundleToStaticFolder(
-      updateDistPath,
+      projectRoot,
       bundleFilename,
       newNotifyString,
       platform
     );
-    const { bundledAssets } = require(path.join(
-      updateDistPath,
-      exportedManifestFilename(platform)
-    ));
+
+    const bundledAssets = findAssets(projectRoot, platform);
     const assets = await Promise.all(
-      bundledAssets.map(async (filename) => {
+      bundledAssets.map(async (asset) => {
+        const filename = path.basename(asset.path);
+        const mimeType = asset.ext === 'ttf' ? 'font/ttf' : 'image/png';
         const key = filename.replace('asset_', '').replace(/\.[^/.]+$/, '');
         const hash = await copyAssetToStaticFolder(
-          path.join(updateDistPath, 'assets', key),
+          asset.path,
           filename
         );
         return {
           hash,
           key,
-          contentType: 'image/jpg',
-          fileExtension: '.jpg',
+          contentType: mimeType,
+          fileExtension: asset.ext,
           url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${filename}`,
         };
       })
