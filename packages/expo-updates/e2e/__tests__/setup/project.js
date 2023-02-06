@@ -414,11 +414,12 @@ async function initAsync(
   // We are done with template tarball
   await fs.rm(localTemplatePathName);
 
-  // Restore expo dependency after prebuild
+  // Restore expo dependencies after prebuild
   const packageJsonPath = path.resolve(projectRoot, 'package.json');
   let packageJsonString = await fs.readFile(packageJsonPath, 'utf-8');
   const packageJson = JSON.parse(packageJsonString);
   packageJson.dependencies.expo = packageJson.resolutions.expo;
+  packageJson.dependencies['expo-splash-screen'] = packageJson.resolutions['expo-splash-screen'];
   packageJsonString = JSON.stringify(packageJson, null, 2);
   await fs.rm(packageJsonPath);
   await fs.writeFile(packageJsonPath, packageJsonString, 'utf-8');
