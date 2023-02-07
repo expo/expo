@@ -32,6 +32,7 @@ const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
  */
 describe('Asset deletion recovery', () => {
   afterEach(async () => {
+    await device.terminateApp();
     await device.uninstallApp();
     Server.stop();
   });
@@ -291,7 +292,7 @@ describe('Asset deletion recovery', () => {
      * Verify all the assets -- including the JS bundle from the update (which wasn't in the
      * embedded update) -- have been restored. Additionally verify from the server side that the
      * updated bundle was re-downloaded.
-r    */
+     */
     const readAssetsMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
     if (!readAssetsMessage.success) {
       throw new Error(readAssetsMessage.error);

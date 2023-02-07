@@ -19,6 +19,7 @@ const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
 
 describe('', () => {
   afterEach(async () => {
+    await device.terminateApp();
     await device.uninstallApp();
     Server.stop();
   });
@@ -298,17 +299,6 @@ describe('', () => {
     await device.terminateApp();
     await device.launchApp();
     const updatedMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
-
-    /**
-     * Check readLogEntriesAsync
-     */
-    const logEntries = await Server.waitForLogEntries(10000 * TIMEOUT_BIAS);
-    console.warn(
-      'Total number of log entries = ' +
-        logEntries.length +
-        '\n' +
-        JSON.stringify(logEntries, null, 2)
-    );
 
     expect(updatedMessage).toBe(newNotifyString);
   });
