@@ -7,9 +7,9 @@ const {
   copyAssetToStaticFolder,
   copyBundleToStaticFolder,
   findAssets,
-  updateManifestForBundleFilename,
-  server_host,
-  server_port,
+  getUpdateManifestForBundleFilename,
+  serverHost,
+  serverPort,
 } = require('./utils/update');
 
 const projectRoot = process.env.PROJECT_ROOT || process.cwd();
@@ -41,7 +41,7 @@ describe('Asset deletion recovery', () => {
      * DatabaseLauncher should copy all the missing assets and run the update as normal.
      */
     jest.setTimeout(300000 * TIMEOUT_BIAS);
-    Server.start(server_port);
+    Server.start(serverPort);
 
     /**
      * Install the app and immediately send it a message to clear internal storage. Verify storage
@@ -122,7 +122,7 @@ describe('Asset deletion recovery', () => {
      * the missing assets and run the update as normal.
      */
     jest.setTimeout(300000 * TIMEOUT_BIAS);
-    Server.start(server_port);
+    Server.start(serverPort);
 
     /**
      * Install the app and immediately send it a message to clear internal storage. Verify storage
@@ -222,11 +222,11 @@ describe('Asset deletion recovery', () => {
           key,
           contentType: mimeType,
           fileExtension: asset.ext,
-          url: `http://${server_host}:${server_port}/static/${filename}`,
+          url: `http://${serverHost}:${serverPort}/static/${filename}`,
         };
       })
     );
-    const manifest = updateManifestForBundleFilename(
+    const manifest = getUpdateManifestForBundleFilename(
       new Date(),
       bundleHash,
       'test-assets-bundle',
@@ -237,7 +237,7 @@ describe('Asset deletion recovery', () => {
     /**
      * Install the app and launch it so that it downloads the new update we're hosting
      */
-    Server.start(server_port);
+    Server.start(serverPort);
     await Server.serveSignedManifest(manifest, projectRoot);
     await device.installApp();
     await device.launchApp({ newInstance: true });

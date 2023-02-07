@@ -6,9 +6,9 @@ const Server = require('./utils/server');
 const {
   copyAssetToStaticFolder,
   copyBundleToStaticFolder,
-  updateManifestForBundleFilename,
-  server_host,
-  server_port,
+  getUpdateManifestForBundleFilename,
+  serverHost,
+  serverPort,
 } = require('./utils/update');
 
 const projectRoot = process.env.PROJECT_ROOT || process.cwd();
@@ -24,7 +24,7 @@ describe('', () => {
 
   it('starts app, stops, and starts again', async () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
-    Server.start(server_port);
+    Server.start(serverPort);
     await device.installApp();
     await device.launchApp({
       newInstance: true,
@@ -47,7 +47,7 @@ describe('', () => {
 
   it('initial request includes correct update-id headers', async () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
-    Server.start(server_port);
+    Server.start(serverPort);
     await device.installApp();
     await device.launchApp({
       newInstance: true,
@@ -72,7 +72,7 @@ describe('', () => {
       newNotifyString,
       platform
     );
-    const manifest = updateManifestForBundleFilename(
+    const manifest = getUpdateManifestForBundleFilename(
       new Date(),
       hash,
       'test-update-1-key',
@@ -80,7 +80,7 @@ describe('', () => {
       []
     );
 
-    Server.start(server_port);
+    Server.start(serverPort);
     await Server.serveSignedManifest(manifest, projectRoot);
     await device.installApp();
     await device.launchApp({
@@ -115,7 +115,7 @@ describe('', () => {
     const newNotifyString = 'test-update-invalid-hash';
     await copyBundleToStaticFolder(projectRoot, bundleFilename, newNotifyString, platform);
     const hash = 'invalid-hash';
-    const manifest = updateManifestForBundleFilename(
+    const manifest = getUpdateManifestForBundleFilename(
       new Date(),
       hash,
       'test-update-1-key',
@@ -123,7 +123,7 @@ describe('', () => {
       []
     );
 
-    Server.start(server_port);
+    Server.start(serverPort);
     await Server.serveSignedManifest(manifest, projectRoot);
     await device.installApp();
     await device.launchApp({
@@ -172,11 +172,11 @@ describe('', () => {
           key: `asset${index}`,
           contentType: 'image/jpg',
           fileExtension: '.jpg',
-          url: `http://${server_host}:${server_port}/static/${destinationFilename}`,
+          url: `http://${serverHost}:${serverPort}/static/${destinationFilename}`,
         };
       })
     );
-    const manifest = updateManifestForBundleFilename(
+    const manifest = getUpdateManifestForBundleFilename(
       new Date(),
       hash,
       'test-update-2-key',
@@ -184,7 +184,7 @@ describe('', () => {
       assets
     );
 
-    Server.start(server_port);
+    Server.start(serverPort);
     await Server.serveSignedManifest(manifest, projectRoot);
     await device.installApp();
     await device.launchApp({
@@ -255,11 +255,11 @@ describe('', () => {
           key: `asset${index}`,
           contentType: 'image/jpg',
           fileExtension: '.jpg',
-          url: `http://${server_host}:${server_port}/static/${destinationFilename}`,
+          url: `http://${serverHost}:${serverPort}/static/${destinationFilename}`,
         };
       })
     );
-    const manifest = updateManifestForBundleFilename(
+    const manifest = getUpdateManifestForBundleFilename(
       new Date(),
       hash,
       'test-update-2-key',
@@ -267,7 +267,7 @@ describe('', () => {
       assets
     );
 
-    Server.start(server_port);
+    Server.start(serverPort);
     await Server.serveSignedManifest(manifest, projectRoot);
     await device.installApp();
     await device.launchApp({
@@ -297,7 +297,7 @@ describe('', () => {
       'test-update-older',
       platform
     );
-    const manifest = updateManifestForBundleFilename(
+    const manifest = getUpdateManifestForBundleFilename(
       new Date(Date.now() - 1000 * 60 * 60 * 24),
       hash,
       'test-update-old-key',
@@ -305,7 +305,7 @@ describe('', () => {
       []
     );
 
-    Server.start(server_port);
+    Server.start(serverPort);
     await Server.serveSignedManifest(manifest, projectRoot);
     await device.installApp();
     await device.launchApp({

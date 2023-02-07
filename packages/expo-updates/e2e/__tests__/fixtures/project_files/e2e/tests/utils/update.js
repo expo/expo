@@ -2,14 +2,15 @@ const crypto = require('crypto');
 const { createReadStream } = require('fs');
 const fs = require('fs/promises');
 const path = require('path');
+const { pipeline } = require('stream/promises');
 
 const STATIC_FOLDER_PATH = path.resolve(__dirname, '..', '.static');
 const RUNTIME_VERSION = '1.0.0';
-const server_host = process.env.UPDATES_HOST;
-const server_port = parseInt(process.env.UPDATES_PORT || '', 10);
+const serverHost = process.env.UPDATES_HOST;
+const serverPort = parseInt(process.env.UPDATES_PORT || '', 10);
 
 const urlForBundleFilename = (bundleFilename) =>
-  `http://${server_host}:${server_port}/static/${bundleFilename}`;
+  `http://${serverHost}:${serverPort}/static/${bundleFilename}`;
 
 /**
  * Find the pregenerated bundle corresponding to the string that is expected
@@ -41,11 +42,8 @@ function findAssets(projectRoot, platform) {
 async function shaHash(filePath) {
   const hash = crypto.createHash('sha256');
   const stream = createReadStream(filePath);
-  return new Promise((resolve, reject) => {
-    stream.on('error', (err) => reject(err));
-    stream.on('data', (chunk) => hash.update(chunk));
-    stream.on('end', () => resolve(hash.digest('base64url')));
-  });
+  await pipeline(stream, hash);
+  return hash.digest('base64url');
 }
 
 /**
@@ -74,7 +72,7 @@ async function copyAssetToStaticFolder(sourcePath, filename) {
 /**
  * Common method used in all the tests to create valid update manifests
  */
-function updateManifestForBundleFilename(date, hash, key, bundleFilename, assets) {
+function getUpdateManifestForBundleFilename(date, hash, key, bundleFilename, assets) {
   return {
     id: crypto.randomUUID(),
     createdAt: date.toISOString(),
@@ -95,9 +93,9 @@ const Updates = {
   copyBundleToStaticFolder,
   copyAssetToStaticFolder,
   findAssets,
-  updateManifestForBundleFilename,
-  server_host,
-  server_port,
+  getUpdateManifestForBundleFilename,
+  serverHost,
+  serverPort,
 };
 
 module.exports = Updates;
