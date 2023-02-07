@@ -11,17 +11,21 @@ const server_port = parseInt(process.env.UPDATES_PORT || '', 10);
 const urlForBundleFilename = (bundleFilename) =>
   `http://${server_host}:${server_port}/static/${bundleFilename}`;
 
+/**
+ * Find the pregenerated bundle corresponding to the string that is expected
+ * in the responses for a given E2E test
+ */
 function findBundlePath(projectRoot, platform, notifyString) {
   const testUpdateBundlesPath = path.join(projectRoot, 'test-update-bundles');
-  const testUpdateBundlesJsonPath = path.join(
-    testUpdateBundlesPath,
-    'test-updates.json'
-  );
+  const testUpdateBundlesJsonPath = path.join(testUpdateBundlesPath, 'test-updates.json');
   const testUpdateBundlesJson = require(testUpdateBundlesJsonPath);
   const bundleUrl = testUpdateBundlesJson[notifyString][platform];
   return path.join(testUpdateBundlesPath, bundleUrl);
 }
 
+/**
+ * Returns all the assets in the updates bundle, both paths and file types
+ */
 function findAssets(projectRoot, platform) {
   const updatesPath = path.join(projectRoot, 'updates');
   const updatesJson = require(path.join(updatesPath, 'metadata.json'));
@@ -44,12 +48,11 @@ async function shaHash(filePath) {
   });
 }
 
-async function copyBundleToStaticFolder(
-  projectRoot,
-  filename,
-  notifyString,
-  platform
-) {
+/**
+ * Copies a bundle to the location where the test server reads it,
+ * and returns the SHA hash
+ */
+async function copyBundleToStaticFolder(projectRoot, filename, notifyString, platform) {
   await fs.mkdir(STATIC_FOLDER_PATH, { recursive: true });
   const bundleSrcPath = findBundlePath(projectRoot, platform, notifyString);
   const bundleDestPath = path.join(STATIC_FOLDER_PATH, filename);
@@ -57,6 +60,10 @@ async function copyBundleToStaticFolder(
   return await shaHash(bundleDestPath);
 }
 
+/**
+ * Copies an asset to the location where the test server reads it,
+ * and returns the SHA hash
+ */
 async function copyAssetToStaticFolder(sourcePath, filename) {
   await fs.mkdir(STATIC_FOLDER_PATH, { recursive: true });
   const destinationPath = path.join(STATIC_FOLDER_PATH, filename);
@@ -64,6 +71,9 @@ async function copyAssetToStaticFolder(sourcePath, filename) {
   return await shaHash(destinationPath);
 }
 
+/**
+ * Common method used in all the tests to create valid update manifests
+ */
 function updateManifestForBundleFilename(date, hash, key, bundleFilename, assets) {
   return {
     id: crypto.randomUUID(),
@@ -73,7 +83,7 @@ function updateManifestForBundleFilename(date, hash, key, bundleFilename, assets
       hash,
       key,
       contentType: 'application/javascript',
-      url: urlForBundleFilename(bundleFilename)
+      url: urlForBundleFilename(bundleFilename),
     },
     assets,
     metadata: {},

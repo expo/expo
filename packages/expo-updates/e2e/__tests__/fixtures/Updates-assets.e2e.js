@@ -1,10 +1,8 @@
-const crypto = require('crypto');
+const { device } = require('detox');
 const path = require('path');
 const { setTimeout } = require('timers/promises');
-const { device, beforeEach } = require('detox');
 
 const Server = require('./utils/server');
-
 const {
   copyAssetToStaticFolder,
   copyBundleToStaticFolder,

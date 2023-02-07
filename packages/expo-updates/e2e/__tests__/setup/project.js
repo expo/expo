@@ -32,6 +32,11 @@ const expoDependencyNames = [
 const expoResolutions = {};
 const expoVersions = {};
 
+/**
+ * Executes `npm pack` on one of the Expo packages used in updates E2E
+ * Adds a dateTime stamp to the version to ensure that it is unique and that
+ * only this version will be used when yarn installs dependencies in the test app.
+ */
 async function packExpoDependency(repoRoot, projectRoot, destPath, dependencyName) {
   // Pack up the named Expo package into the destination folder
   const dependencyComponents = dependencyName.split('/');
@@ -128,6 +133,9 @@ async function copyCommonFixturesToProject(projectRoot, appJsFileName) {
   await fs.rm(projectFilesTarballPath);
 }
 
+/**
+ * Adds all the dependencies and other properties needed for the E2E test app
+ */
 async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
   // Create the project subfolder to hold NPM tarballs built from the current state of the repo
   const dependenciesPath = path.join(projectRoot, 'dependencies');
@@ -204,6 +212,10 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
   await fs.writeFile(path.join(projectRoot, 'package.json'), packageJsonString, 'utf-8');
 }
 
+/**
+ * Adds Detox modules to both iOS and Android expo-updates code.
+ * Returns a function that cleans up these changes to the repo once E2E setup is complete
+ */
 async function prepareLocalUpdatesModule(repoRoot) {
   // copy UpdatesE2ETest exported module into the local package
   const iosE2ETestModuleHPath = path.join(
@@ -286,6 +298,9 @@ async function prepareLocalUpdatesModule(repoRoot) {
   };
 }
 
+/**
+ * Modifies app.json in the E2E test app to add the properties we need
+ */
 function transformAppJsonForE2E(appJson, projectName, runtimeVersion) {
   return {
     ...appJson,
@@ -460,6 +475,13 @@ async function createUpdateBundleAsync(projectRoot, localCliBin) {
   });
 }
 
+/**
+ * Originally, the E2E tests would directly modify the text of the minified JS in update bundles
+ * when testing to make sure that the correct update was applied.
+ *
+ * Since Hermes bundles are bytecode and not readable JS, we instead pre-generate Hermes bundles
+ * corresponding to each test case, and save them in the `test-update-bundles` directory in the test app.
+ */
 async function createTestUpdateBundles(projectRoot, localCliBin, notifyStrings) {
   const testUpdateBundlesPath = path.join(projectRoot, 'test-update-bundles');
   await fs.rm(testUpdateBundlesPath, { recursive: true, force: true });

@@ -1,4 +1,3 @@
-const crypto = require('crypto');
 const { device } = require('detox');
 const path = require('path');
 const { setTimeout } = require('timers/promises');
@@ -9,7 +8,7 @@ const {
   copyBundleToStaticFolder,
   updateManifestForBundleFilename,
   server_host,
-  server_port
+  server_port,
 } = require('./utils/update');
 
 const projectRoot = process.env.PROJECT_ROOT || process.cwd();
@@ -87,9 +86,7 @@ describe('', () => {
     await device.launchApp({
       newInstance: true,
     });
-    const firstRequest = await Server.waitForUpdateRequest(
-      10000 * TIMEOUT_BIAS
-    );
+    const firstRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
     const message = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
     expect(message).toBe('test');
 
@@ -100,9 +97,7 @@ describe('', () => {
     // restart the app so it will launch the new update
     await device.terminateApp();
     await device.launchApp();
-    const secondRequest = await Server.waitForUpdateRequest(
-      10000 * TIMEOUT_BIAS
-    );
+    const secondRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
     const updatedMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
     expect(updatedMessage).toBe(newNotifyString);
 
@@ -111,21 +106,14 @@ describe('', () => {
       firstRequest.headers['expo-embedded-update-id']
     );
     expect(secondRequest.headers['expo-current-update-id']).toBeDefined();
-    expect(secondRequest.headers['expo-current-update-id']).toEqual(
-      manifest.id
-    );
+    expect(secondRequest.headers['expo-current-update-id']).toEqual(manifest.id);
   });
 
   it('does not run update with incorrect hash', async () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle-invalid-hash.js';
     const newNotifyString = 'test-update-invalid-hash';
-    await copyBundleToStaticFolder(
-      projectRoot,
-      bundleFilename,
-      newNotifyString,
-      platform
-    );
+    await copyBundleToStaticFolder(projectRoot, bundleFilename, newNotifyString, platform);
     const hash = 'invalid-hash';
     const manifest = updateManifestForBundleFilename(
       new Date(),
@@ -180,9 +168,7 @@ describe('', () => {
         );
         return {
           hash:
-            index === 0
-              ? hash.substring(1, 2) + hash.substring(0, 1) + hash.substring(2)
-              : hash,
+            index === 0 ? hash.substring(1, 2) + hash.substring(0, 1) + hash.substring(2) : hash,
           key: `asset${index}`,
           contentType: 'image/jpg',
           fileExtension: '.jpg',
