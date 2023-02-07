@@ -1,5 +1,5 @@
 import { PermissionStatus, PermissionExpiration, PermissionHookOptions, PermissionResponse } from 'expo-modules-core';
-import { CameraPermissionResponse, MediaLibraryPermissionResponse, ImagePickerResult, ImagePickerAsset, ImagePickerErrorResult, MediaTypeOptions, ImagePickerOptions, VideoExportPreset, ExpandImagePickerResult, ImageInfo, ImagePickerMultipleResult, ImagePickerCancelledResult, OpenFileBrowserOptions, UIImagePickerControllerQualityType, UIImagePickerPresentationStyle } from './ImagePicker.types';
+import { CameraPermissionResponse, MediaLibraryPermissionResponse, ImagePickerResult, ImagePickerErrorResult, ImagePickerOptions } from './ImagePicker.types';
 /**
  * Checks user's permissions for accessing camera.
  * @return A promise that fulfills with an object of type [CameraPermissionResponse](#camerapermissionresponse).
@@ -94,9 +94,6 @@ export declare function launchCameraAsync(options?: ImagePickerOptions): Promise
  * the selected media assets which have a form of [`ImagePickerAsset`](#imagepickerasset).
  */
 export declare function launchImageLibraryAsync(options?: ImagePickerOptions): Promise<ImagePickerResult>;
-export { MediaTypeOptions, ImagePickerOptions, ImagePickerResult, ImagePickerErrorResult, ImagePickerAsset, VideoExportPreset, CameraPermissionResponse, MediaLibraryPermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions, PermissionResponse, ImageInfo, // deprecated
-ImagePickerMultipleResult, // deprecated
-ImagePickerCancelledResult, // deprecated
-OpenFileBrowserOptions, ExpandImagePickerResult, // deprecated
-UIImagePickerControllerQualityType, UIImagePickerPresentationStyle, };
+export * from './ImagePicker.types';
+export { PermissionStatus, PermissionExpiration, PermissionHookOptions, PermissionResponse };
 //# sourceMappingURL=ImagePicker.d.ts.map

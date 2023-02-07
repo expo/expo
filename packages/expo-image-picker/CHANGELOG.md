@@ -8,6 +8,10 @@
 
 ### 🐛 Bug fixes
 
+### ⚠️ Notices
+
+- Removed deprecated fields from pick result type and deprecated `UIImagePickerPresentationStyle` enum values. ([#21078](https://github.com/expo/expo/pull/21078) by [@Simek](https://github.com/Simek))
+
 ### 💡 Others
 
 ## 14.1.0 — 2023-01-26
