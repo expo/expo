@@ -29,9 +29,7 @@ const productionBaseUrl = 'https://exp.host/--/api/v2/';
  * import * as Notifications from 'expo-notifications';
  *
  * export async function registerForPushNotificationsAsync(userId: string) {
- *   const expoPushToken = await Notifications.getExpoPushTokenAsync({
- *     experienceId: '@username/example',
- *   });
+ *   const expoPushToken = await Notifications.getExpoPushTokenAsync();
  *
  *   await fetch('https://example.com/', {
  *     method: 'POST',
