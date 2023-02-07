@@ -103,6 +103,11 @@ module Expo
       @options.fetch(:providerName, Constants::MODULES_PROVIDER_FILE_NAME)
     end
 
+    # Absolute path to `Pods/Target Support Files/<pods target name>/<modules provider file>` within the project path
+    public def modules_provider_path(target)
+      File.join(target.support_files_dir, modules_provider_name)
+    end
+
     # For now there is no need to generate the modules provider for testing.
     public def should_generate_modules_provider?
       return !@options.fetch(:testsOnly, false)
@@ -156,11 +161,32 @@ module Expo
       args
     end
 
+    public def base_command_args
+      search_paths = @options.fetch(:searchPaths, @options.fetch(:modules_paths, nil))
+      ignore_paths = @options.fetch(:ignorePaths, nil)
+      exclude = @options.fetch(:exclude, [])
+      args = []
+
+      if !search_paths.nil? && !search_paths.empty?
+        args.concat(search_paths)
+      end
+
+      if !ignore_paths.nil? && !ignore_paths.empty?
+        args.concat(['--ignore-paths'], ignore_paths)
+      end
+
+      if !exclude.nil? && !exclude.empty?
+        args.concat(['--exclude'], exclude)
+      end
+
+      args
+    end
+
     private def resolve_command_args
       node_command_args('resolve').concat(['--json'])
     end
 
-    private def generate_package_list_command_args(target_path)
+    public def generate_package_list_command_args(target_path)
       node_command_args('generate-package-list').concat([
         '--target',
         target_path

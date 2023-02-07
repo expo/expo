@@ -233,6 +233,7 @@
 			buildConfigurationList = 00E357021AD99517003FC87E /* Build configuration list for PBXNativeTarget "BareExpoTests" */;
 			buildPhases = (
 				05C668AB4BB217A320BE1977 /* [CP] Check Pods Manifest.lock */,
+				D0DF8D1444FE87409F10169F /* [Expo] Configure project */,
 				00E356EA1AD99517003FC87E /* Sources */,
 				00E356EB1AD99517003FC87E /* Frameworks */,
 				00E356EC1AD99517003FC87E /* Resources */,
@@ -257,6 +258,7 @@
 				7677BD1511B47107F041C6F8 /* [CP] Check Pods Manifest.lock */,
 				21646C4123F2D18200CB927F /* Generate Dynamic Macros */,
 				FD4C38642228810C00325AF5 /* Start Packager */,
+				5834C135EA791757779CF476 /* [Expo] Configure project */,
 				13B07F871A680F5B00A75B9A /* Sources */,
 				13B07F8C1A680F5B00A75B9A /* Frameworks */,
 				13B07F8E1A680F5B00A75B9A /* Resources */,
@@ -281,6 +283,7 @@
 				93314C9A2612C4EC2FE419FE /* [CP] Check Pods Manifest.lock */,
 				B2C0264B256BDB3E008FD925 /* Generate Dynamic Macros */,
 				B2C0264C256BDB3E008FD925 /* Start Packager */,
+				4EE64A1CBBA28379FDF452DA /* [Expo] Configure project */,
 				B2C0264D256BDB3E008FD925 /* Sources */,
 				B2C02650256BDB3E008FD925 /* Frameworks */,
 				B2C02653256BDB3E008FD925 /* Resources */,
@@ -522,6 +525,44 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BareExpoMain-BareExpoTests/Pods-BareExpoMain-BareExpoTests-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		4EE64A1CBBA28379FDF452DA /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-BareExpoMain-BareExpoDetox/expo-configure-project.sh\"\n";
+		};
+		5834C135EA791757779CF476 /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-BareExpoMain-BareExpo/expo-configure-project.sh\"\n";
+		};
 		7677BD1511B47107F041C6F8 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -700,6 +741,25 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-BareExpoMain-BareExpoTests/Pods-BareExpoMain-BareExpoTests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		D0DF8D1444FE87409F10169F /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-BareExpoMain-BareExpoTests/expo-configure-project.sh\"\n";
 		};
 		FD4C38642228810C00325AF5 /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
