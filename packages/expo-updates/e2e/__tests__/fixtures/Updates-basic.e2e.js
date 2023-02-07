@@ -19,7 +19,6 @@ const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
 
 describe('', () => {
   afterEach(async () => {
-    await device.terminateApp();
     await device.uninstallApp();
     Server.stop();
   });

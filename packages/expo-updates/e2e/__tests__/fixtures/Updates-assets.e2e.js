@@ -32,7 +32,6 @@ const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
  */
 describe('Asset deletion recovery', () => {
   afterEach(async () => {
-    await device.terminateApp();
     await device.uninstallApp();
     Server.stop();
   });
