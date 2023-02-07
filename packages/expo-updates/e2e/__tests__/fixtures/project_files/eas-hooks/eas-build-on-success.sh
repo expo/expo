@@ -50,10 +50,10 @@ yarn
 if [[ "$EAS_BUILD_PLATFORM" == "ios" ]]; then
   npx pod-install
 fi
-detox build --configuration $EAS_BUILD_PLATFORM.debug
+detox build --configuration $EAS_BUILD_PLATFORM.release
 
 # -- Execute Detox assets tests
-detox test --configuration $EAS_BUILD_PLATFORM.debug --headless 2>&1 | tee ./logs/detox-tests-assets.log
+detox test --configuration $EAS_BUILD_PLATFORM.release --headless 2>&1 | tee ./logs/detox-tests-assets.log
 
 
 if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
