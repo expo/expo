@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added `placeholderContentFit` prop implementation on the web.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
