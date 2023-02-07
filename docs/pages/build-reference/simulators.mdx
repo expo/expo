@@ -7,7 +7,7 @@ Running a build of your app in an iOS Simulator is particularly useful in manage
 
 ## Configuring a profile to build for simulators
 
-To build your app for installation into an iOS Simulator, you can create a new profile in **eas.json** and set the `ios.simulator` value to `true`:
+To build your app for installation on an iOS Simulator, you can create a new profile in **eas.json** and set the `ios.simulator` value to `true`:
 
 ```json
 {
@@ -22,11 +22,11 @@ To build your app for installation into an iOS Simulator, you can create a new p
 }
 ```
 
-Now, to run your build run `eas build -p ios --profile preview`. Remember that you can name the profile whatever you like; we named the profile `"preview"`, however, you could call it "simulator", `"local"`,`"simulator"`, or whatever makes the most sense for you.
+To run your build run `eas build -p ios --profile preview`. Remember that you can name the profile whatever you like. In the example, it is named `"preview"`, however, you can call it `"local"`,`"simulator"`, or whatever makes the most sense for you.
 
 ## Installing your build on the simulator
 
-> If you haven't installed or run the iOS Simulator before, follow the [iOS Simulator guide](/workflow/ios-simulator.mdx) before proceeding.
+> If you haven't installed or run the iOS Simulator before, follow the [iOS Simulator guide](/workflow/ios-simulator) before proceeding.
 
 - Once your build is completed, download the build from the build details page or the link provided when `eas build` is done. This will be a `.tar.gz` file.
 - Extract the file by opening it. You will now have a file like `myapp.app`.
