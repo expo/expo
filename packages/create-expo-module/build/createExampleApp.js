@@ -7,6 +7,7 @@ exports.createExampleApp = void 0;
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const getenv_1 = __importDefault(require("getenv"));
+const os_1 = __importDefault(require("os"));
 const path_1 = __importDefault(require("path"));
 const packageManager_1 = require("./packageManager");
 const utils_1 = require("./utils");
@@ -56,8 +57,13 @@ async function createExampleApp(data, targetDir, packageManager) {
     await modifyPackageJson(appTargetPath);
     await (0, utils_1.newStep)('Installing dependencies in the example app', async (step) => {
         await (0, packageManager_1.installDependencies)(packageManager, appTargetPath);
-        await podInstall(appTargetPath);
-        step.succeed('Installed dependencies in the example app');
+        if (os_1.default.platform() === 'darwin') {
+            await podInstall(appTargetPath);
+            step.succeed('Installed dependencies in the example app');
+        }
+        else {
+            step.succeed('Installed dependencies in the example app (skipped installing CocoaPods)');
+        }
     });
 }
 exports.createExampleApp = createExampleApp;
