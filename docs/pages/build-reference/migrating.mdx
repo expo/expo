@@ -105,9 +105,9 @@ Run the following command to install the `expo-system-ui` library:
 
 <Terminal cmd={['$ npx expo install expo-system-ui']} />
 
-## EAS Update
+## Updates
 
-For in-depth information on how to migrate your project to EAS Update, see [Migrating from Classic updates to EAS Update](/eas-update/migrate-to-eas-update).
+If you are migrating from `expo build` and using `expo publish` to update your app, you are using [Classic Updates](/archive/classic-updates/introduction/). Once you migrate to EAS Build, you can also take advantage of our new-and-improved updates service, [EAS Update](https://docs.expo.dev/eas-update/introduction/). For in-depth information on how to migrate your project to EAS Update, see [Migrating from Classic updates to EAS Update](/eas-update/migrate-to-eas-update).
 
 ### No more automatic publishing before building
 
@@ -121,7 +121,7 @@ Since we no longer publish at build time, `postPublish` hooks in **app.json** wi
 
 Since we no longer publish the app before builds, no update manifest is available until the app downloads an update. Usually, this means that for the first launch of the app, you won't have some fields available.
 
-If you are using `Constants.manifest.channel` or `Updates.releaseChannel`, you should switch to `Updates.channel` from the [`expo-updates`](/versions/latest/sdk/updates) library.
+If you are using `Constants.manifest.channel`, you should switch to `Updates.releaseChannel` (for Classic Updates) or `Updates.channel` (for EAS Update) from the [`expo-updates`](/versions/latest/sdk/updates) library.
 
 ### `Constants.appOwnership` will be `null` in the resulting standalone app
 
