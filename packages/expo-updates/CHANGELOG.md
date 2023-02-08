@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Convert E2E tests to Hermes. ([#21065](https://github.com/expo/expo/pull/21065) by [@douglowder](https://github.com/douglowder))
+
 ## 0.16.0 — 2023-02-03
 
 ### 🐛 Bug fixes

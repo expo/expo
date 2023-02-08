@@ -1,24 +1,19 @@
-const crypto = require('crypto');
+const { device } = require('detox');
 const path = require('path');
 const { setTimeout } = require('timers/promises');
-const { device, beforeEach } = require('detox');
 
 const Server = require('./utils/server');
-
 const {
   copyAssetToStaticFolder,
   copyBundleToStaticFolder,
-  exportedManifestFilename,
+  findAssets,
+  getUpdateManifestForBundleFilename,
+  serverHost,
+  serverPort,
 } = require('./utils/update');
 
-const SERVER_HOST = process.env.UPDATES_HOST;
-const SERVER_PORT = parseInt(process.env.UPDATES_PORT || '', 10);
-
 const projectRoot = process.env.PROJECT_ROOT || process.cwd();
-const updateDistPath = path.join(projectRoot, 'updates');
 const platform = process.env.DETOX_CONFIGURATION.split('.')[0];
-
-const RUNTIME_VERSION = '1.0.0';
 
 const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
 
@@ -46,7 +41,7 @@ describe('Asset deletion recovery', () => {
      * DatabaseLauncher should copy all the missing assets and run the update as normal.
      */
     jest.setTimeout(300000 * TIMEOUT_BIAS);
-    Server.start(SERVER_PORT);
+    Server.start(serverPort);
 
     /**
      * Install the app and immediately send it a message to clear internal storage. Verify storage
@@ -127,7 +122,7 @@ describe('Asset deletion recovery', () => {
      * the missing assets and run the update as normal.
      */
     jest.setTimeout(300000 * TIMEOUT_BIAS);
-    Server.start(SERVER_PORT);
+    Server.start(serverPort);
 
     /**
      * Install the app and immediately send it a message to clear internal storage. Verify storage
@@ -209,50 +204,40 @@ describe('Asset deletion recovery', () => {
     const bundleFilename = 'bundle-assets.js';
     const newNotifyString = 'test-assets-1';
     const bundleHash = await copyBundleToStaticFolder(
-      updateDistPath,
+      projectRoot,
       bundleFilename,
       newNotifyString,
       platform
     );
-    const { bundledAssets } = require(path.join(
-      updateDistPath,
-      exportedManifestFilename(platform)
-    ));
+
+    const bundledAssets = findAssets(projectRoot, platform);
     const assets = await Promise.all(
-      bundledAssets.map(async (filename) => {
+      bundledAssets.map(async (asset) => {
+        const filename = path.basename(asset.path);
+        const mimeType = asset.ext === 'ttf' ? 'font/ttf' : 'image/png';
         const key = filename.replace('asset_', '').replace(/\.[^/.]+$/, '');
-        const hash = await copyAssetToStaticFolder(
-          path.join(updateDistPath, 'assets', key),
-          filename
-        );
+        const hash = await copyAssetToStaticFolder(asset.path, filename);
         return {
           hash,
           key,
-          contentType: 'image/jpg',
-          fileExtension: '.jpg',
-          url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${filename}`,
+          contentType: mimeType,
+          fileExtension: asset.ext,
+          url: `http://${serverHost}:${serverPort}/static/${filename}`,
         };
       })
     );
-    const manifest = {
-      id: crypto.randomUUID(),
-      createdAt: new Date().toISOString(),
-      runtimeVersion: RUNTIME_VERSION,
-      launchAsset: {
-        hash: bundleHash,
-        key: 'test-assets-bundle',
-        contentType: 'application/javascript',
-        url: `http://${SERVER_HOST}:${SERVER_PORT}/static/${bundleFilename}`,
-      },
-      assets,
-      metadata: {},
-      extra: {},
-    };
+    const manifest = getUpdateManifestForBundleFilename(
+      new Date(),
+      bundleHash,
+      'test-assets-bundle',
+      bundleFilename,
+      assets
+    );
 
     /**
      * Install the app and launch it so that it downloads the new update we're hosting
      */
-    Server.start(SERVER_PORT);
+    Server.start(serverPort);
     await Server.serveSignedManifest(manifest, projectRoot);
     await device.installApp();
     await device.launchApp({ newInstance: true });

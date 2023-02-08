@@ -2,56 +2,100 @@ const crypto = require('crypto');
 const { createReadStream } = require('fs');
 const fs = require('fs/promises');
 const path = require('path');
+const { pipeline } = require('stream/promises');
 
 const STATIC_FOLDER_PATH = path.resolve(__dirname, '..', '.static');
-const EXPORT_PUBLIC_URL = 'https://u.expo.dev/dummy-url';
+const RUNTIME_VERSION = '1.0.0';
+const serverHost = process.env.UPDATES_HOST;
+const serverPort = parseInt(process.env.UPDATES_PORT || '', 10);
 
-function exportedManifestFilename(platform) {
-  return `${platform}-index.json`;
+const urlForBundleFilename = (bundleFilename) =>
+  `http://${serverHost}:${serverPort}/static/${bundleFilename}`;
+
+/**
+ * Find the pregenerated bundle corresponding to the string that is expected
+ * in the responses for a given E2E test
+ */
+function findBundlePath(projectRoot, platform, notifyString) {
+  const testUpdateBundlesPath = path.join(projectRoot, 'test-update-bundles');
+  const testUpdateBundlesJsonPath = path.join(testUpdateBundlesPath, 'test-updates.json');
+  const testUpdateBundlesJson = require(testUpdateBundlesJsonPath);
+  const bundleUrl = testUpdateBundlesJson[notifyString][platform];
+  return path.join(testUpdateBundlesPath, bundleUrl);
 }
 
-function findBundlePath(updateDistPath, platform) {
-  const classicManifest = require(path.join(updateDistPath, exportedManifestFilename(platform)));
-  const { bundleUrl } = classicManifest;
-  return path.join(updateDistPath, bundleUrl.replace(EXPORT_PUBLIC_URL, ''));
+/**
+ * Returns all the assets in the updates bundle, both paths and file types
+ */
+function findAssets(projectRoot, platform) {
+  const updatesPath = path.join(projectRoot, 'updates');
+  const updatesJson = require(path.join(updatesPath, 'metadata.json'));
+  const assets = updatesJson.fileMetadata[platform].assets;
+  return assets.map((asset) => {
+    return {
+      path: path.join(updatesPath, asset.path),
+      ext: asset.ext,
+    };
+  });
 }
 
-async function copyBundleToStaticFolder(
-  updateDistPath,
-  filename,
-  notifyString,
-  platform
-) {
+async function shaHash(filePath) {
+  const hash = crypto.createHash('sha256');
+  const stream = createReadStream(filePath);
+  await pipeline(stream, hash);
+  return hash.digest('base64url');
+}
+
+/**
+ * Copies a bundle to the location where the test server reads it,
+ * and returns the SHA hash
+ */
+async function copyBundleToStaticFolder(projectRoot, filename, notifyString, platform) {
   await fs.mkdir(STATIC_FOLDER_PATH, { recursive: true });
-  let bundleString = await fs.readFile(findBundlePath(updateDistPath, platform), 'utf-8');
-  if (notifyString) {
-    bundleString = bundleString.replace('/notify/test', `/notify/${notifyString}`);
-  }
-  await fs.writeFile(path.join(STATIC_FOLDER_PATH, filename), bundleString, 'utf-8');
-  return crypto.createHash('sha256').update(bundleString, 'utf-8').digest('base64url');
+  const bundleSrcPath = findBundlePath(projectRoot, platform, notifyString);
+  const bundleDestPath = path.join(STATIC_FOLDER_PATH, filename);
+  await fs.copyFile(bundleSrcPath, bundleDestPath);
+  return await shaHash(bundleDestPath);
 }
 
-async function copyAssetToStaticFolder(
-  sourcePath,
-  filename
-) {
+/**
+ * Copies an asset to the location where the test server reads it,
+ * and returns the SHA hash
+ */
+async function copyAssetToStaticFolder(sourcePath, filename) {
   await fs.mkdir(STATIC_FOLDER_PATH, { recursive: true });
   const destinationPath = path.join(STATIC_FOLDER_PATH, filename);
   await fs.copyFile(sourcePath, destinationPath);
+  return await shaHash(destinationPath);
+}
 
-  const hash = crypto.createHash('sha256');
-  const stream = createReadStream(destinationPath);
-  return new Promise((resolve, reject) => {
-    stream.on('error', (err) => reject(err));
-    stream.on('data', (chunk) => hash.update(chunk));
-    stream.on('end', () => resolve(hash.digest('base64url')));
-  });
+/**
+ * Common method used in all the tests to create valid update manifests
+ */
+function getUpdateManifestForBundleFilename(date, hash, key, bundleFilename, assets) {
+  return {
+    id: crypto.randomUUID(),
+    createdAt: date.toISOString(),
+    runtimeVersion: RUNTIME_VERSION,
+    launchAsset: {
+      hash,
+      key,
+      contentType: 'application/javascript',
+      url: urlForBundleFilename(bundleFilename),
+    },
+    assets,
+    metadata: {},
+    extra: {},
+  };
 }
 
 const Updates = {
   copyBundleToStaticFolder,
   copyAssetToStaticFolder,
-  exportedManifestFilename,
+  findAssets,
+  getUpdateManifestForBundleFilename,
+  serverHost,
+  serverPort,
 };
 
 module.exports = Updates;
