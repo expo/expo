@@ -41,6 +41,7 @@ export default function ExpoImage({
   placeholder,
   contentFit,
   contentPosition,
+  placeholderContentFit,
   onLoad,
   transition,
   onError,
@@ -51,7 +52,10 @@ export default function ExpoImage({
   ...props
 }: ImageNativeProps) {
   const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
-
+  const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
+  const blurhashStyle = {
+    objectFit: placeholderContentFit || contentFit,
+  };
   const { containerRef, source: selectedSource } = useSourceSelection(
     source,
     responsivePolicy,
@@ -83,7 +87,7 @@ export default function ExpoImage({
                       <ImageWrapper
                         source={placeholder?.[0]}
                         style={{
-                          objectFit: 'scale-down',
+                          objectFit: imagePlaceholderContentFit,
                           ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
                           ...style,
                         }}
@@ -93,9 +97,7 @@ export default function ExpoImage({
                         }}
                         contentPosition={{ left: '50%', top: '50%' }}
                         blurhashContentPosition={contentPosition}
-                        blurhashStyle={{
-                          objectFit: contentFit,
-                        }}
+                        blurhashStyle={blurhashStyle}
                       />
                     ),
               ]
@@ -114,7 +116,7 @@ export default function ExpoImage({
                   onTransitionEnd: [onAnimationFinished],
                 }}
                 style={{
-                  objectFit: selectedSource ? contentFit : 'scale-down',
+                  objectFit: selectedSource ? contentFit : imagePlaceholderContentFit,
                   ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
                   ...style,
                 }}
@@ -122,9 +124,7 @@ export default function ExpoImage({
                 priority={priority}
                 contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
                 blurhashContentPosition={contentPosition}
-                blurhashStyle={{
-                  objectFit: contentFit,
-                }}
+                blurhashStyle={blurhashStyle}
               />
             )}
       </AnimationManager>
