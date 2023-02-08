@@ -82,7 +82,7 @@ export async function createExampleApp(
       await podInstall(appTargetPath);
       step.succeed('Installed dependencies in the example app');
     } else {
-      step.succeed('Installed dependencies in the example app (skipped pod install)');
+      step.succeed('Installed dependencies in the example app (skipped installing CocoaPods)');
     }
   });
 }
