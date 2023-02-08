@@ -99,7 +99,11 @@ export interface ExpoPushTokenOptions {
   /**
    * The ID of the project to which the token should be attributed.
    * Defaults to [`Constants.expoConfig.extra.eas.projectId`](/constants/#easconfig) exposed by `expo-constants`.
-   * If you are not using EAS Build, it will fallback to [`Constants.manifest.projectId`](/constants/#constantsmanifest).
+   *
+   * When using EAS Build, this value is automatically set. However, it is
+   * **recommended** to set it manually. Once you have EAS Build configured, you can find
+   * the value in **app.json** under `extra.eas.projectId`. You can copy and paste it into your code.
+   * If you are not using EAS Build, it will fallback to [`Constants.manifest.projectId`](/constants/#manifest).
    */
   projectId?: string;
   /**

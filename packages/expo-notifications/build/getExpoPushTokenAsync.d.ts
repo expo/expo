@@ -19,7 +19,9 @@ import { ExpoPushToken, ExpoPushTokenOptions } from './Tokens.types';
  * import * as Notifications from 'expo-notifications';
  *
  * export async function registerForPushNotificationsAsync(userId: string) {
- *   const expoPushToken = await Notifications.getExpoPushTokenAsync();
+ *   const expoPushToken = await Notifications.getExpoPushTokenAsync({
+ *    projectId: 'your-project-id',
+ *   });
  *
  *   await fetch('https://example.com/', {
  *     method: 'POST',
