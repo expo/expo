@@ -9,7 +9,7 @@ buildscript {
 
     dbFlowVersion = '4.2.4'
     buildToolsVersion = '33.0.0'
-    kotlinVersion = '1.6.10'
+    kotlinVersion = '1.8.10'
     gradlePluginVersion = '7.3.1'
     gradleDownloadTaskVersion = '5.0.1'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
@@ -100,10 +100,6 @@ allprojects {
         .because("Building React Native from source")
     }
     // WHEN_DISTRIBUTING_REMOVE_TO_HERE
-
-    // Newer androidx.annotation:annotation use kotlin 1.8, we should stick on old version.
-    // Remove this when we upgrade kotlin to 1.8
-    resolutionStrategy.force("androidx.annotation:annotation:1.4.0")
   }
 }
 

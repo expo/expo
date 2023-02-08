@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.WritableMap
 import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.ErrorType
@@ -89,19 +89,19 @@ class AddressLauncherFragment : Fragment() {
       autocompleteCountries = autocompleteCountries,
     )
     this.callback = callback
-    (context.currentActivity as? AppCompatActivity)?.let {
+    (context.currentActivity as? FragmentActivity)?.let {
       attemptToCleanupPreviousFragment(it)
       commitFragmentAndStartFlow(it)
     }
   }
 
-  private fun attemptToCleanupPreviousFragment(currentActivity: AppCompatActivity) {
+  private fun attemptToCleanupPreviousFragment(currentActivity: FragmentActivity) {
     currentActivity.supportFragmentManager.beginTransaction()
       .remove(this)
       .commitAllowingStateLoss()
   }
 
-  private fun commitFragmentAndStartFlow(currentActivity: AppCompatActivity) {
+  private fun commitFragmentAndStartFlow(currentActivity: FragmentActivity) {
     try {
       currentActivity.supportFragmentManager.beginTransaction()
         .add(this, TAG)
