@@ -49,7 +49,9 @@ Remember that you can name the profile whatever you like. We named the profile `
 
 > If you haven't installed or run an Android Emulator before, follow the [Android Studio emulator guide](/workflow/android-studio-emulator) before proceeding.
 
-Once your build is completed, run the `eas build:run` command to download the build and automatically install it on the Android Emulator:
+Once your build is completed, the CLI will prompt you to automatically download and install it on the Android Emulator. When prompted, press <kbd>Y</kbd> to directly install it on the emulator.
+
+In case you have multiple builds, you can also run the `eas build:run` command at any time to download a specific build and automatically install it on the Android Emulator:
 
 <Terminal cmd={['$ eas build:run -p android']} />
 

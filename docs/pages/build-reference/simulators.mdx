@@ -35,7 +35,9 @@ Remember that a profile can be named whatever you like. In the above example, it
 
 > If you haven't installed or run the iOS Simulator before, follow the [iOS Simulator guide](/workflow/ios-simulator) before proceeding.
 
-Once your build is completed, run the `eas build:run` command to download the build and automatically install it on the iOS Simulator:
+Once your build is completed, the CLI will prompt you to automatically download and install it on the iOS Simulator. When prompted, press <kbd>Y</kbd> to directly install it on the simulator.
+
+In case you have multiple builds, you can also run the `eas build:run` command at any time to download a specific build and automatically install it on the iOS Simulator:
 
 <Terminal cmd={['$ eas build:run -p ios']} />
 
