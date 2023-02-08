@@ -21,6 +21,8 @@ export interface EntryAnimationsValues {
   targetHeight: number;
   targetGlobalOriginX: number;
   targetGlobalOriginY: number;
+  windowWidth: number;
+  windowHeight: number;
 }
 
 export interface ExitAnimationsValues {
@@ -30,6 +32,8 @@ export interface ExitAnimationsValues {
   currentHeight: number;
   currentGlobalOriginX: number;
   currentGlobalOriginY: number;
+  windowWidth: number;
+  windowHeight: number;
 }
 
 export type EntryExitAnimationFunction = (

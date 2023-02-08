@@ -1,10 +1,13 @@
 #include <cxxabi.h>
+#include <utility>
+
 #include "DevMenuFrozenObject.h"
 #include "DevMenuMutableValue.h"
 #include "DevMenuMutableValueSetterProxy.h"
 #include "DevMenuRemoteObject.h"
 #include "DevMenuRuntimeDecorator.h"
 #include "DevMenuRuntimeManager.h"
+#include "DevMenuShareableValue.h"
 #include "DevMenuSharedParent.h"
 
 namespace devmenureanimated {
@@ -394,8 +397,10 @@ jsi::Value ShareableValue::toJSValue(jsi::Runtime &rt) {
             } else {
               res = funPtr->call(rt, args, count);
             }
-          } catch (jsi::JSError &e) {
-            throw e;
+          } catch (std::exception &e) {
+            std::string str = e.what();
+            runtimeManager->errorHandler->setError(str);
+            runtimeManager->errorHandler->raise();
           } catch (...) {
             if (demangleExceptionName(
                     abi::__cxa_current_exception_type()->name()) ==

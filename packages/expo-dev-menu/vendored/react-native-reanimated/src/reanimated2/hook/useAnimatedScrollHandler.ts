@@ -10,7 +10,9 @@ export interface ScrollHandler<TContext extends Context>
   (event: NativeScrollEvent, context?: TContext): void;
 }
 
-interface ScrollEvent extends NativeScrollEvent, NativeEvent<ScrollEvent> {
+export interface ScrollEvent
+  extends NativeScrollEvent,
+    NativeEvent<ScrollEvent> {
   eventName: string;
 }
 export interface ScrollHandlers<TContext extends Context> {

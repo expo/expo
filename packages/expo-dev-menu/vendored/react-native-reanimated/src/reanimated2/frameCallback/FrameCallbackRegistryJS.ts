@@ -1,5 +1,5 @@
 import { runOnUI } from '../core';
-import { prepareUIRegistry } from './FrameCallbackRegistryUI';
+import { FrameInfo, prepareUIRegistry } from './FrameCallbackRegistryUI';
 
 export default class FrameCallbackRegistryJS {
   private nextCallbackId = 0;
@@ -8,7 +8,7 @@ export default class FrameCallbackRegistryJS {
     prepareUIRegistry();
   }
 
-  registerFrameCallback(callback: () => void): number {
+  registerFrameCallback(callback: (frameInfo: FrameInfo) => void): number {
     if (!callback) {
       return -1;
     }
@@ -24,20 +24,17 @@ export default class FrameCallbackRegistryJS {
     return callbackId;
   }
 
-  unregisterFrameCallback(frameCallbackId: number): void {
+  unregisterFrameCallback(callbackId: number): void {
     runOnUI(() => {
       'worklet';
-      global._frameCallbackRegistry.unregisterFrameCallback(frameCallbackId);
+      global._frameCallbackRegistry.unregisterFrameCallback(callbackId);
     })();
   }
 
-  manageStateFrameCallback(frameCallbackId: number, state: boolean): void {
+  manageStateFrameCallback(callbackId: number, state: boolean): void {
     runOnUI(() => {
       'worklet';
-      global._frameCallbackRegistry.manageStateFrameCallback(
-        frameCallbackId,
-        state
-      );
+      global._frameCallbackRegistry.manageStateFrameCallback(callbackId, state);
     })();
   }
 }

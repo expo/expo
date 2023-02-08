@@ -2,6 +2,9 @@
 #include "DevMenuMutableValue.h"
 #include "DevMenuValueWrapper.h"
 
+#include <memory>
+#include <utility>
+
 namespace devmenureanimated {
 
 AnimatedSensorModule::AnimatedSensorModule(

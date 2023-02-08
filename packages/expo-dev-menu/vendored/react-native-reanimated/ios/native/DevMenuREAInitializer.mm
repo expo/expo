@@ -1,6 +1,7 @@
 #import "DevMenuREAInitializer.h"
 #import "DevMenuREAUIManager.h"
 #import "DevMenuREAEventDispatcher.h"
+#import "DevMenuReanimatedVersion.h"
 
 @interface RCTEventDispatcher (DevMenuReanimated)
 
@@ -59,6 +60,9 @@ JSIExecutor::RuntimeInstaller DevMenuREAJSIExecutorRuntimeInstaller(
     workletRuntimeData[0] = reinterpret_cast<uintptr_t>(reanimatedModule->runtime.get());
 
     runtime.global().setProperty(runtime, "_WORKLET_RUNTIME", workletRuntimeValue);
+
+    auto version = getReanimatedVersionString(runtime);
+    runtime.global().setProperty(runtime, "_REANIMATED_VERSION_CPP", version);
 
     runtime.global().setProperty(
         runtime,

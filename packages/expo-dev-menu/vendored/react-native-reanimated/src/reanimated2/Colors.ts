@@ -573,11 +573,12 @@ function HSVtoRGB(h: any, s?: any, v?: any) {
 export const hsvToColor = (
   h: number,
   s: number,
-  v: number
+  v: number,
+  a: number
 ): number | string => {
   'worklet';
   const { r, g, b } = HSVtoRGB(h, s, v);
-  return rgbaColor(r, g, b);
+  return rgbaColor(r, g, b, a);
 };
 
 export function processColorInitially(
@@ -634,19 +635,45 @@ export function processColor(color: unknown): number | null | undefined {
 
 export type ParsedColorArray = [number, number, number, number];
 
-export function convertToHSVA(color: unknown): ParsedColorArray {
+export function convertToRGBA(color: unknown): ParsedColorArray {
   'worklet';
   const processedColor = processColorInitially(color)!; // argb;
   const a = (processedColor >>> 24) / 255;
-  const r = (processedColor << 8) >>> 24;
-  const g = (processedColor << 16) >>> 24;
-  const b = (processedColor << 24) >>> 24;
-  const { h, s, v } = RGBtoHSV(r, g, b);
-  return [h, s, v, a];
+  const r = ((processedColor << 8) >>> 24) / 255;
+  const g = ((processedColor << 16) >>> 24) / 255;
+  const b = ((processedColor << 24) >>> 24) / 255;
+  return [r, g, b, a];
 }
 
-export function toRGBA(HSVA: ParsedColorArray): string {
+export function rgbaArrayToRGBAColor(RGBA: ParsedColorArray): string {
   'worklet';
-  const { r, g, b } = HSVtoRGB(HSVA[0], HSVA[1], HSVA[2]);
-  return `rgba(${r}, ${g}, ${b}, ${HSVA[3]})`;
+  return `rgba(${Math.round(RGBA[0] * 255)}, ${Math.round(
+    RGBA[1] * 255
+  )}, ${Math.round(RGBA[2] * 255)}, ${RGBA[3]})`;
+}
+
+export function toLinearSpace(
+  RGBA: ParsedColorArray,
+  gamma = 2.2
+): ParsedColorArray {
+  'worklet';
+  const res = [];
+  for (let i = 0; i < 3; ++i) {
+    res.push(Math.pow(RGBA[i], gamma));
+  }
+  res.push(RGBA[3]);
+  return res as ParsedColorArray;
+}
+
+export function toGammaSpace(
+  RGBA: ParsedColorArray,
+  gamma = 2.2
+): ParsedColorArray {
+  'worklet';
+  const res = [];
+  for (let i = 0; i < 3; ++i) {
+    res.push(Math.pow(RGBA[i], 1 / gamma));
+  }
+  res.push(RGBA[3]);
+  return res as ParsedColorArray;
 }

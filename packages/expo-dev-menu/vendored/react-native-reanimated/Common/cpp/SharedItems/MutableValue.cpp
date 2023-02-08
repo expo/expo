@@ -4,6 +4,8 @@
 #include "DevMenuShareableValue.h"
 #include "DevMenuSharedParent.h"
 
+#include <string>
+
 namespace devmenureanimated {
 
 void MutableValue::setValue(jsi::Runtime &rt, const jsi::Value &newValue) {

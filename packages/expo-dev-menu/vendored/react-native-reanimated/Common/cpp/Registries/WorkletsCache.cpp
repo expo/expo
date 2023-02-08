@@ -2,6 +2,9 @@
 #include "DevMenuFrozenObject.h"
 #include "DevMenuShareableValue.h"
 
+#include <string>
+#include <utility>
+
 using namespace facebook;
 
 namespace devmenureanimated {
