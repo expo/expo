@@ -1,12 +1,13 @@
 package versioned.host.exp.exponent.modules.api.components.reactnativestripesdk
 
+import android.content.Context
 import android.graphics.Color
 import android.os.Bundle
 import com.facebook.react.bridge.ReactContext
 import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.PaymentSheetAppearanceException
 import com.stripe.android.paymentsheet.PaymentSheet
 
-fun buildPaymentSheetAppearance(userParams: Bundle?, context: ReactContext): PaymentSheet.Appearance {
+fun buildPaymentSheetAppearance(userParams: Bundle?, context: Context): PaymentSheet.Appearance {
   val colorParams = userParams?.getBundle(PaymentSheetAppearanceKeys.COLORS)
   val lightColorParams = colorParams?.getBundle(PaymentSheetAppearanceKeys.LIGHT) ?: colorParams
   val darkColorParams = colorParams?.getBundle(PaymentSheetAppearanceKeys.DARK) ?: colorParams
@@ -20,7 +21,7 @@ fun buildPaymentSheetAppearance(userParams: Bundle?, context: ReactContext): Pay
   )
 }
 
-private fun buildTypography(fontParams: Bundle?, context: ReactContext): PaymentSheet.Typography {
+private fun buildTypography(fontParams: Bundle?, context: Context): PaymentSheet.Typography {
   return PaymentSheet.Typography.default.copy(
     sizeScaleFactor = getFloatOr(fontParams, PaymentSheetAppearanceKeys.SCALE, PaymentSheet.Typography.default.sizeScaleFactor),
     fontResId = getFontResId(fontParams, PaymentSheetAppearanceKeys.FAMILY, PaymentSheet.Typography.default.fontResId, context)
@@ -65,7 +66,7 @@ private fun buildShapes(shapeParams: Bundle?): PaymentSheet.Shapes {
   )
 }
 
-private fun buildPrimaryButton(params: Bundle?, context: ReactContext): PaymentSheet.PrimaryButton {
+private fun buildPrimaryButton(params: Bundle?, context: Context): PaymentSheet.PrimaryButton {
   if (params == null) {
     return PaymentSheet.PrimaryButton()
   }
@@ -121,7 +122,7 @@ private fun getFloatOrNull(bundle: Bundle?, key: String): Float? {
 }
 
 @Throws(PaymentSheetAppearanceException::class)
-private fun getFontResId(bundle: Bundle?, key: String, defaultValue: Int?, context: ReactContext): Int? {
+private fun getFontResId(bundle: Bundle?, key: String, defaultValue: Int?, context: Context): Int? {
   val fontErrorPrefix = "Encountered an error when setting a custom font:"
   if (bundle?.containsKey(key) != true) {
     return defaultValue
