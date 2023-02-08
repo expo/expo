@@ -1,5 +1,5 @@
 ---
-title: Building APKs for Android Emulators and devices
+title: Build APKs for Android Emulators and devices
 description: Learn how to configure and install an .apk for Android Emulators and devices when using EAS Build.
 ---
 
@@ -49,11 +49,11 @@ Remember that you can name the profile whatever you like. We named the profile `
 
 > If you haven't installed or run an Android Emulator before, follow the [Android Studio emulator guide](/workflow/android-studio-emulator) before proceeding.
 
-Once your build is completed, run the `eas build:run` command to download the build and automatically extract it on the Android Emulator:
+Once your build is completed, run the `eas build:run` command to download the build and automatically install it on the Android Emulator:
 
 <Terminal cmd={['$ eas build:run -p android']} />
 
-The command also shows a list of available builds of your project. You can select the build to install on the emulator from this list. Each build in the list has a build ID, the time elapsed since the build was created, the build number, the version number, and the git commit information. The list also displays invalid builds if a project has any.
+The command also shows a list of available builds of your project. You can select the build to install on the emulator from this list. Each build in the list has a build ID, the time elapsed since the build creation, the build number, the version number, and the git commit information. The list also displays invalid builds if a project has any.
 
 For example, the image below lists the build of a project:
 

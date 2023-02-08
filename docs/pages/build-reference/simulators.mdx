@@ -1,5 +1,5 @@
 ---
-title: Building for iOS Simulators
+title: Build for iOS Simulators
 description: Learn how to configure and install build for iOS simulators when using EAS Build.
 ---
 
@@ -10,9 +10,7 @@ Running a build of your app on an iOS Simulator is useful. You can configure the
 
 ## Configuring a profile to build for simulators
 
-To install a build of your app on an iOS Simulator, you need to create a new or modify an existing build profile in **eas.json**. In this profile, set the `ios.simulator` property's value to `true`. This will tell EAS Build to build your app for the iOS Simulator.
-
-For example, in the following **eas.json**, the `preview` profile is configured to build for the iOS Simulator:
+To install a build of your app on an iOS Simulator, modify the build profile in [**eas.json**](/build/eas-json/) and set the `ios.simulator` value to `true`:
 
 ```json eas.json
 {
@@ -37,11 +35,11 @@ Remember that a profile can be named whatever you like. In the above example, it
 
 > If you haven't installed or run the iOS Simulator before, follow the [iOS Simulator guide](/workflow/ios-simulator) before proceeding.
 
-Once your build is completed, run the `eas build:run` command to download the build and automatically extract it on the iOS Simulator:
+Once your build is completed, run the `eas build:run` command to download the build and automatically install it on the iOS Simulator:
 
 <Terminal cmd={['$ eas build:run -p ios']} />
 
-The command also shows a list of available builds of your project. You can select the build to install on the simulator from this list. Each build in the list has a build ID, the time elapsed since the build was created, the build number, the version number, and the git commit information. The list also displays invalid builds if a project has any.
+The command also shows a list of available builds of your project. You can select the build to install on the simulator from this list. Each build in the list has a build ID, the time elapsed since the build creation, the build number, the version number, and the git commit information. The list also displays invalid builds if a project has any.
 
 For example, the image below lists two previous builds of a project:
 
