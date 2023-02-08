@@ -2,7 +2,7 @@ const crypto = require('crypto');
 const express = require('express');
 const fs = require('fs');
 const path = require('path');
-const { Dictionary, serializeDictionary } = require('structured-headers');
+const { serializeDictionary } = require('structured-headers');
 const { setTimeout } = require('timers/promises');
 
 const app = express();
@@ -97,10 +97,13 @@ async function waitForRequest(timeout, responseToServe) {
 async function waitForLogEntries(timeout) {
   const finishTime = new Date().getTime() + timeout;
 
-  while (!logEntries.length) {
+  while (!logEntries.length && server) {
     const currentTime = new Date().getTime();
     if (currentTime >= finishTime) {
       throw new Error('Timed out waiting for message');
+    }
+    if (!server) {
+      throw new Error('Server killed while waiting for message');
     }
     await setTimeout(50);
   }
@@ -124,10 +127,13 @@ app.get('/update', (req, res) => {
 
 async function waitForUpdateRequest(timeout) {
   const finishTime = new Date().getTime() + timeout;
-  while (!updateRequest) {
+  while (!updateRequest && server) {
     const currentTime = new Date().getTime();
     if (currentTime >= finishTime) {
       throw new Error('Timed out waiting for update request');
+    }
+    if (!server) {
+      throw new Error('Server killed while waiting for update');
     }
     await setTimeout(50);
   }

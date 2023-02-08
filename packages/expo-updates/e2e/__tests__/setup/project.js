@@ -7,6 +7,7 @@ const dirName = __dirname; /* eslint-disable-line */
 
 const expoDependencyNames = [
   'expo',
+  '@expo/cli',
   '@expo/config-plugins',
   '@expo/config-types',
   '@expo/dev-server',
@@ -31,6 +32,11 @@ const expoDependencyNames = [
 const expoResolutions = {};
 const expoVersions = {};
 
+/**
+ * Executes `npm pack` on one of the Expo packages used in updates E2E
+ * Adds a dateTime stamp to the version to ensure that it is unique and that
+ * only this version will be used when yarn installs dependencies in the test app.
+ */
 async function packExpoDependency(repoRoot, projectRoot, destPath, dependencyName) {
   // Pack up the named Expo package into the destination folder
   const dependencyComponents = dependencyName.split('/');
@@ -127,6 +133,9 @@ async function copyCommonFixturesToProject(projectRoot, appJsFileName) {
   await fs.rm(projectFilesTarballPath);
 }
 
+/**
+ * Adds all the dependencies and other properties needed for the E2E test app
+ */
 async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
   // Create the project subfolder to hold NPM tarballs built from the current state of the repo
   const dependenciesPath = path.join(projectRoot, 'dependencies');
@@ -167,17 +176,9 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
         detox: '^19.12.1',
         express: '^4.18.2',
         jest: '^29.3.1',
-        'legacy-expo-cli': 'npm:expo-cli@6.2.1',
         'jest-circus': '^29.3.1',
       }
     : {};
-
-  const metroDependencies = {
-    metro: '0.71.1',
-    'metro-config': '0.71.1',
-    'metro-react-native-babel-preset': '0.71.1',
-    'metro-source-map': '0.71.1',
-  };
 
   // Remove the default Expo dependencies from create-expo-app
   let packageJson = JSON.parse(await fs.readFile(path.join(projectRoot, 'package.json'), 'utf-8'));
@@ -199,47 +200,64 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
     },
     devDependencies: {
       ...extraDevDependencies,
-      ...metroDependencies,
       ...packageJson.devDependencies,
     },
     resolutions: {
       ...expoResolutions,
-      ...metroDependencies,
       ...packageJson.resolutions,
     },
   };
-  await fs.writeFile(
-    path.join(projectRoot, 'package.json'),
-    JSON.stringify(packageJson, null, 2),
-    'utf-8'
-  );
+
+  const packageJsonString = JSON.stringify(packageJson, null, 2);
+  await fs.writeFile(path.join(projectRoot, 'package.json'), packageJsonString, 'utf-8');
 }
 
+/**
+ * Adds Detox modules to both iOS and Android expo-updates code.
+ * Returns a function that cleans up these changes to the repo once E2E setup is complete
+ */
 async function prepareLocalUpdatesModule(repoRoot) {
   // copy UpdatesE2ETest exported module into the local package
+  const iosE2ETestModuleHPath = path.join(
+    repoRoot,
+    'packages',
+    'expo-updates',
+    'ios',
+    'EXUpdates',
+    'EXUpdatesE2ETestModule.h'
+  );
+  const iosE2ETestModuleMPath = path.join(
+    repoRoot,
+    'packages',
+    'expo-updates',
+    'ios',
+    'EXUpdates',
+    'EXUpdatesE2ETestModule.m'
+  );
+  const androidE2ETestModuleKTPath = path.join(
+    repoRoot,
+    'packages',
+    'expo-updates',
+    'android',
+    'src',
+    'main',
+    'java',
+    'expo',
+    'modules',
+    'updates',
+    'UpdatesE2ETestModule.kt'
+  );
   await fs.copyFile(
     path.resolve(dirName, '..', 'fixtures', 'EXUpdatesE2ETestModule.h'),
-    path.join(repoRoot, 'packages', 'expo-updates', 'ios', 'EXUpdates', 'EXUpdatesE2ETestModule.h')
+    iosE2ETestModuleHPath
   );
   await fs.copyFile(
     path.resolve(dirName, '..', 'fixtures', 'EXUpdatesE2ETestModule.m'),
-    path.join(repoRoot, 'packages', 'expo-updates', 'ios', 'EXUpdates', 'EXUpdatesE2ETestModule.m')
+    iosE2ETestModuleMPath
   );
   await fs.copyFile(
     path.resolve(dirName, '..', 'fixtures', 'UpdatesE2ETestModule.kt'),
-    path.join(
-      repoRoot,
-      'packages',
-      'expo-updates',
-      'android',
-      'src',
-      'main',
-      'java',
-      'expo',
-      'modules',
-      'updates',
-      'UpdatesE2ETestModule.kt'
-    )
+    androidE2ETestModuleKTPath
   );
 
   // export module from UpdatesPackage on Android
@@ -256,7 +274,8 @@ async function prepareLocalUpdatesModule(repoRoot) {
     'updates',
     'UpdatesPackage.kt'
   );
-  let updatesPackageFileContents = await fs.readFile(updatesPackageFilePath, 'utf8');
+  const originalUpdatesPackageFileContents = await fs.readFile(updatesPackageFilePath, 'utf8');
+  let updatesPackageFileContents = originalUpdatesPackageFileContents;
   if (!updatesPackageFileContents) {
     throw new Error('Failed to read UpdatesPackage.kt; was the file renamed or moved?');
   }
@@ -269,8 +288,19 @@ async function prepareLocalUpdatesModule(repoRoot) {
     throw new Error('Failed to modify UpdatesPackage.kt to insert UpdatesE2ETestModule');
   }
   await fs.writeFile(updatesPackageFilePath, updatesPackageFileContents, 'utf8');
+
+  // Return cleanup function
+  return async () => {
+    await fs.writeFile(updatesPackageFilePath, originalUpdatesPackageFileContents, 'utf8');
+    await fs.rm(iosE2ETestModuleHPath, { force: true });
+    await fs.rm(iosE2ETestModuleMPath, { force: true });
+    await fs.rm(androidE2ETestModuleKTPath, { force: true });
+  };
 }
 
+/**
+ * Modifies app.json in the E2E test app to add the properties we need
+ */
 function transformAppJsonForE2E(appJson, projectName, runtimeVersion) {
   return {
     ...appJson,
@@ -279,7 +309,7 @@ function transformAppJsonForE2E(appJson, projectName, runtimeVersion) {
       name: projectName,
       owner: 'expo-ci',
       runtimeVersion,
-      jsEngine: 'jsc',
+      jsEngine: 'hermes',
       plugins: ['expo-updates', '@config-plugins/detox'],
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
@@ -348,8 +378,9 @@ async function initAsync(
     stdio: 'inherit',
   });
 
+  let cleanupLocalUpdatesModule;
   if (configureE2E) {
-    await prepareLocalUpdatesModule(repoRoot);
+    cleanupLocalUpdatesModule = await prepareLocalUpdatesModule(repoRoot);
   }
 
   await preparePackageJson(projectRoot, repoRoot, configureE2E);
@@ -387,6 +418,7 @@ async function initAsync(
   await spawnAsync(localCliBin, ['prebuild', '--no-install', '--template', localTemplatePathName], {
     env: {
       ...process.env,
+      EX_UPDATES_NATIVE_DEBUG: '1',
       EXPO_DEBUG: '1',
       CI: '1',
     },
@@ -397,6 +429,20 @@ async function initAsync(
   // We are done with template tarball
   await fs.rm(localTemplatePathName);
 
+  // Restore expo dependencies after prebuild
+  const packageJsonPath = path.resolve(projectRoot, 'package.json');
+  let packageJsonString = await fs.readFile(packageJsonPath, 'utf-8');
+  const packageJson = JSON.parse(packageJsonString);
+  packageJson.dependencies.expo = packageJson.resolutions.expo;
+  packageJson.dependencies['expo-splash-screen'] = packageJson.resolutions['expo-splash-screen'];
+  packageJsonString = JSON.stringify(packageJson, null, 2);
+  await fs.rm(packageJsonPath);
+  await fs.writeFile(packageJsonPath, packageJsonString, 'utf-8');
+  await spawnAsync('yarn', [], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
+
   // enable proguard on Android
   await fs.appendFile(
     path.join(projectRoot, 'android', 'gradle.properties'),
@@ -404,37 +450,90 @@ async function initAsync(
     'utf-8'
   );
 
+  // Force bundling on iOS for debug builds
+  const iosProjectPath = glob.sync(
+    path.join(projectRoot, 'ios', '*.xcodeproj', 'project.pbxproj')
+  )[0];
+  const iosProject = await fs.readFile(iosProjectPath, 'utf-8');
+  const iosProjectEdited = iosProject.replace('SKIP', 'FORCE');
+  await fs.rm(iosProjectPath);
+  await fs.writeFile(iosProjectPath, iosProjectEdited, 'utf-8');
+
+  // Cleanup local updates module if needed
+  if (cleanupLocalUpdatesModule) {
+    await cleanupLocalUpdatesModule();
+  }
+
   return projectRoot;
 }
 
-// This step requires the old expo-cli; however installing it globally
-// breaks this step because it has a dependency on an old @expo/dev-server.
-// Solution is to import it as a devDependency so it picks up the resolution
-// to our correct @expo/dev-server.
-async function createUpdateBundleAsync(projectRoot) {
+async function createUpdateBundleAsync(projectRoot, localCliBin) {
   await fs.rm(path.join(projectRoot, 'dist'), { force: true, recursive: true });
-  await spawnAsync(
-    'node',
-    [
-      'node_modules/legacy-expo-cli/bin/expo.js',
-      'export',
-      '--public-url',
-      'https://u.expo.dev/dummy-url',
-    ],
-    {
-      //await spawnAsync('expo-cli', ['export', '--public-url', 'https://u.expo.dev/dummy-url'], {
-      //await spawnAsync(localCliBin, ['export'], {
-      cwd: projectRoot,
-      stdio: 'inherit',
-    }
-  );
+  await spawnAsync(localCliBin, ['export'], {
+    cwd: projectRoot,
+    stdio: 'inherit',
+  });
 }
 
-async function setupBasicAppAsync(projectRoot) {
+/**
+ * Originally, the E2E tests would directly modify the text of the minified JS in update bundles
+ * when testing to make sure that the correct update was applied.
+ *
+ * Since Hermes bundles are bytecode and not readable JS, we instead pre-generate Hermes bundles
+ * corresponding to each test case, and save them in the `test-update-bundles` directory in the test app.
+ */
+async function createTestUpdateBundles(projectRoot, localCliBin, notifyStrings) {
+  const testUpdateBundlesPath = path.join(projectRoot, 'test-update-bundles');
+  await fs.rm(testUpdateBundlesPath, { recursive: true, force: true });
+  await fs.mkdir(testUpdateBundlesPath);
+  const appJsPath = path.join(projectRoot, 'App.js');
+  const originalAppJs = await fs.readFile(appJsPath, 'utf-8');
+  const testUpdateJson = {};
+  for (const notifyString of ['test', ...notifyStrings]) {
+    console.log(`Creating bundle for string '${notifyString}'...`);
+    const modifiedAppJs = originalAppJs.replace('/notify/test', `/notify/${notifyString}`);
+    await fs.rm(appJsPath);
+    await fs.writeFile(appJsPath, modifiedAppJs, 'utf-8');
+    await createUpdateBundleAsync(projectRoot, localCliBin);
+    const manifestJsonString = await fs.readFile(
+      path.join(projectRoot, 'dist', 'metadata.json'),
+      'utf-8'
+    );
+    const manifest = JSON.parse(manifestJsonString);
+    const iosBundlePath = path.join(projectRoot, 'dist', manifest.fileMetadata.ios.bundle);
+    const androidBundlePath = path.join(projectRoot, 'dist', manifest.fileMetadata.android.bundle);
+    const iosBundleDestPath = path.join(testUpdateBundlesPath, path.basename(iosBundlePath));
+    const androidBundleDestPath = path.join(
+      testUpdateBundlesPath,
+      path.basename(androidBundlePath)
+    );
+    await fs.copyFile(iosBundlePath, iosBundleDestPath);
+    await fs.copyFile(androidBundlePath, androidBundleDestPath);
+    testUpdateJson[notifyString] = {
+      ios: path.basename(iosBundlePath),
+      android: path.basename(androidBundlePath),
+    };
+  }
+  const testUpdateBundlesJsonPath = path.join(testUpdateBundlesPath, 'test-updates.json');
+  await fs.writeFile(testUpdateBundlesJsonPath, JSON.stringify(testUpdateJson, null, 2), 'utf-8');
+  await fs.rm(appJsPath);
+  await fs.writeFile(appJsPath, originalAppJs, 'utf-8');
+  console.log('Done creating test bundles');
+}
+
+async function setupBasicAppAsync(projectRoot, localCliBin) {
   await copyCommonFixturesToProject(projectRoot, 'App.js');
 
   // export update for test server to host
-  await createUpdateBundleAsync(projectRoot);
+  await createUpdateBundleAsync(projectRoot, localCliBin);
+
+  // create test bundles with different notify strings
+  await createTestUpdateBundles(projectRoot, localCliBin, [
+    'test-update-1',
+    'test-update-2',
+    'test-update-invalid-hash',
+    'test-update-older',
+  ]);
 
   // move exported update to "updates" directory for EAS testing
   await fs.rename(path.join(projectRoot, 'dist'), path.join(projectRoot, 'updates'));
@@ -463,7 +562,10 @@ async function setupAssetsAppAsync(projectRoot, localCliBin) {
   });
 
   // export update for test server to host
-  await createUpdateBundleAsync(projectRoot);
+  await createUpdateBundleAsync(projectRoot, localCliBin);
+
+  // create test bundles with different notify strings
+  await createTestUpdateBundles(projectRoot, localCliBin, ['test-assets-1']);
 
   // move exported update to "updates" directory for EAS testing
   await fs.rename(path.join(projectRoot, 'dist'), path.join(projectRoot, 'updates'));
