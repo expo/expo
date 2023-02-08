@@ -2919,7 +2919,7 @@ PODS:
     - StripePayments (= 23.3.0)
     - StripePaymentsUI (= 23.3.0)
     - StripeUICore (= 23.3.0)
-  - stripe-react-native (0.23.1):
+  - stripe-react-native (0.23.3):
     - React-Core
     - Stripe (~> 23.3.0)
     - StripeApplePay (~> 23.3.0)
@@ -4883,7 +4883,7 @@ SPEC CHECKSUMS:
   SDWebImageSVGCoder: 6fc109f9c2a82ab44510fff410b88b1a6c271ee8
   SDWebImageWebPCoder: 18503de6621dd2c420d680e33d46bf8e1d5169b0
   Stripe: 8a2e7c77fc28bff1d0961a129fac0cb2ed91ddcb
-  stripe-react-native: 50d7148eac46ba2d93e669a5725712093fdd8b36
+  stripe-react-native: c71683ecc56c63eecbb7172c2f97c8ac737fa37c
   StripeApplePay: 7b7a5e10891d2ea428cf1a3a737a07fe874f7e7d
   StripeCore: 8122b0ffc76922ef0d3f3af3ecffd70c3bfabfc0
   StripeFinancialConnections: 84eba7226fb5fde44287c537dbc0b265ac90e2c4
