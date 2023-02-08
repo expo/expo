@@ -45,6 +45,11 @@ async function getExpoRoutesAsync(devServerManager: DevServerManager) {
   return server.getRoutesAsync();
 }
 
+/** Match `(page)` -> `page` */
+function matchGroupName(name: string): string | undefined {
+  return name.match(/^\(([^/]+?)\)$/)?.[1];
+}
+
 async function exportFromServerAsync(
   devServerManager: DevServerManager,
   { outputDir, scripts }: Options
@@ -65,14 +70,16 @@ async function exportFromServerAsync(
       const filename = name + '.html';
 
       if (typeof segment !== 'string') {
+        const cleanSegment = matchGroupName(segment.path) ? '' : segment.path;
         return Promise.all(
-          fetchScreens(segment.screens, [additionPath, segment.path].filter(Boolean).join('/'))
+          fetchScreens(segment.screens, [additionPath, cleanSegment].filter(Boolean).join('/'))
         );
       }
 
       // TODO: handle dynamic routes
       if (segment !== '*') {
-        const fullSegment = [additionPath, segment].filter(Boolean).join('/');
+        const cleanSegment = matchGroupName(segment) ? '' : segment;
+        const fullSegment = [additionPath, cleanSegment].filter(Boolean).join('/');
         debug('render:', `${devServerUrl}/${fullSegment}`);
         try {
           const screen = await fetch(`${devServerUrl}/${fullSegment}`).then((res) => res.text());
