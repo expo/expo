@@ -96,6 +96,7 @@ async function exportFromServerAsync(
         } catch (e: any) {
           Log.error('Failed to statically render route:', fullSegment);
           Log.exception(e);
+          throw e;
         }
       }
       return null;
