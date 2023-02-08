@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added `placeholderContentFit` prop implementation on the web.
+- Added `placeholderContentFit` prop implementation on the web. ([#21106](https://github.com/expo/expo/pull/21106) by [@aleqsio](https://github.com/aleqsio))
 
 ### 🐛 Bug fixes
 
