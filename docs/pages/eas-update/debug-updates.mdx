@@ -275,6 +275,12 @@ To make it easier to test and debug native code in an environment that is closer
 - Set the debug environment variable: `export EX_UPDATES_NATIVE_DEBUG=1`
 - Reinstall pods with `npx pod-install`. The `expo-updates` podspec now detects this environment variable, and makes changes so that the debug code that would normally load from the Metro packager is bypassed, and the app is built with the EXUpdates bundle and other dependencies needed to load updates from EAS.
 - [Ensure the desired channel is set in your **Expo.plist**](/bare/updating-your-app/#configuring-the-channel-manually)
+- Modify the application Xcode project file to force bundling of the application JavaScript for both release and debug builds:
+
+```
+sed -i '' 's/SKIP_BUNDLING/FORCE_BUNDLING/g;' ios/&lt;project name&gt;.xcodeproj/project.pbxproj
+```
+
 - Execute a [debug build](/workflow/debugging/#native-debugging) of the app with Xcode or from the command line.
 
 #### Android local builds

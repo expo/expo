@@ -3,10 +3,13 @@ title: Getting started
 description: Learn how to get started with EAS Update and use in your project.
 ---
 
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
 Setting up EAS Update allows you to push critical bug fixes and improvements that your users need right away.
+
+In this introduction, we create a new Expo app, run it in our local development environment, publish an update, and show that the app downloads and runs the update when restarted.
 
 ## Prerequisites
 
@@ -15,6 +18,8 @@ EAS Update requires the following versions or greater:
 - EAS CLI >= 0.50.0
 - Expo SDK >= 45.0.0
 - expo-updates >= 0.13.0
+
+The example app shown here is based on SDK 48, which supports the new `requestHeaders` property in **app.json**.
 
 <Step label="1">
 ## Install the latest EAS CLI
@@ -47,83 +52,177 @@ To configure your project, run the following commands in the order they are spec
     '# Install the latest `expo-updates` library',
     '$ npx expo install expo-updates',
     '',
+    '# Initialize the app in EAS',
+    '$ eas init',
+    '',
     '# Initialize your project with EAS Update',
     '$ eas update:configure',
     '',
-    '# Set up the configuration file for builds',
-    '$ eas build:configure',
   ]}
-  cmdCopy="expo install expo-updates && eas update:configure && eas build:configure"
+  cmdCopy="npx expo install expo-updates && eas init && eas update:configure"
 />
 
-After running these commands, **eas.json** file will be created in the root directory of your project.
+Inside **app.json**, make changes to use a fixed `runtimeVersion` property, and to add a request header that the app will use to specify a channel when downloading updates from EAS.
 
-Inside the `preview` and `production` build profiles in **eas.json**, add a `channel` property for each:
-
-```json eas.json
-{
-  "build": {
-    "preview": {
-      "channel": "preview"
-      // ...
-    },
-    "production": {
-      "channel": "production"
-      // ...
+{/* prettier-ignore */}
+```json app.json
+  "expo": {
+    /* @hide ... your existing configuration */ /* @end */
+    "updates": {
+      /* @hide ... */ /* @end */
+      "requestHeaders": {
+        "expo-channel-name": "main"
+      }
+      /* @hide ... */ /* @end */
     }
+    /* @hide ... */ /* @end */
+    runtimeVersion: '1.0.0',
+    /* @hide ... */ /* @end */
   }
-}
 ```
 
 The `channel` allows you to point updates at builds. For example, if we set up a GitHub Action to publish changes on merge, it will make it so that we can merge code into the "production" Git branch. Then, each commit will trigger a GitHub Action that will publish an update that will be available to builds with the channel "production".
 
-> **Optional**: If your project is a bare React Native project, see [Updating bare app](/bare/updating-your-app) for any additional configuration.
-
 </Step>
 
 <Step label="4">
-## Create a build for the project
+## Build the project
 
-Next, we'll need to create a build for Android or iOS. [Learn more](/build/setup).
+Run the following commands in order to get the app running on iOS or Android.
 
-We recommend creating a build with the `preview` build profile first. [Learn more](/build/internal-distribution) about setting up your devices for internal distribution.
+<Terminal
+  cmd={[
+    '# Run prebuild to install and configure the ios and android directories, and install Cocoapods for iOS.',
+    '$ npx expo prebuild',
+    '',
+    '# iOS: Build and run the app on a local iOS Simulator.',
+    '$ npx expo run:ios --configuration Release',
+    '',
+    '# Android: Build and run the app on a local Android Emulator',
+    '$ npx expo run:android --variant release',
+    '',
+  ]}
+  cmdCopy="npx expo prebuild && npx expo run:ios --configuration Release && npx expo run:android --variant release"
+/>
 
-Once you have a build running on your device or in a simulator, we'll be ready to send it an update.
+(We build the release version of the app, not the debug version. By default, a debug build expects to connect to a local React Native packager to load the application bundle, and so will not connect to the EAS update service.
+
+It is possible to create a "native debug" build that will connect to the EAS update service and allow debugging of native code. See the [last section of this document](/eas-update/getting-started/#testing-updates-with-a-debug-build-of-your-app) for the changes needed.)
 
 </Step>
 
 <Step label="5">
-## Make changes locally
 
-Once we've created a build, we're ready to iterate on our project. Start a local development server with:
+Make the modifications below to **App.js** so that the app uses the `Updates` API to show if it has downloaded and run an update.
 
-<Terminal cmd={['$ npx expo start']} />
+{/* prettier-ignore */}
+``` jsx App.js
+import { StatusBar } from 'expo-status-bar';
+import { StyleSheet, Text, View } from 'react-native';
+/* @info New */ import * as Updates from 'expo-updates'; /* @end */
 
-Then, make any desired changes to your project's JavaScript, styling, or image assets.
+export default function App() {
+  /* @info New */ const runTypeMessage = Updates.isEmbeddedLaunch /* @end */
+  /* @info New */   ? 'This app is running from built-in code' /* @end */
+  /* @info New */   : 'This app is running an update'; /* @end */
+  return (
+    <View style={styles.container}>
+      <Text>Open up App.js to start working on your app!</Text>
+      /* @info New */ <Text>{runTypeMessage}</Text> /* @end */
+      <StatusBar style="auto" />
+    </View>
+  );
+}
 
-</Step>
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: '#fff',
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+});
+```
 
-<Step label="6">
-## Publish an update
-
-Now we're ready to publish an update to the build created in the previous step.
-
-Then publish an update with the following command:
+Then build and run the app again:
 
 <Terminal
   cmd={[
-    '$ eas update --branch [branch] --message [message]',
+    '# iOS: Build and run the app on a local iOS Simulator.',
+    '$ npx expo run:ios --configuration Release',
     '',
-    '# Example',
-    '$ eas update --branch preview --message "Updating the app"',
+    '# Android: Build and run the app on a local Android Emulator',
+    '$ npx expo run:android --variant release',
+    '',
+  ]}
+  cmdCopy="npx expo run:ios --configuration Release && npx expo run:android --variant release"
+/>
+
+The app should appear as in the screenshot below.
+
+<ImageSpotlight
+  alt="App running for the first time"
+  src="/static/images/eas-update/getting-started-before-update.png"
+  style={{maxHeight: 600, width: 'auto'}}/>
+</Step>
+
+<Step label="6">
+
+## Publish an update
+
+Now we're ready to publish an update that will include our changes.
+
+After optionally making additional changes to **App.js**, publish an update with the following command:
+
+<Terminal cmd={['$ eas update', '']} cmdCopy="eas update" />
+
+There will be a prompt for the branch to publish on; select the default branch "main".
+
+There will be a second prompt for entering an update message; select the default "Initial commit", or type in a custom message.
+
+Once the update is built and uploaded to EAS and the command completes, force close and reopen your app up to two times to download and view the update.
+
+The app should now appear as in the screenshot below.
+
+<ImageSpotlight
+  alt="App running update after being restarted twice"
+  src="/static/images/eas-update/getting-started-after-update.png"
+  style={{ maxHeight: 600, width: 'auto' }}
+/>
+
+</Step>
+
+## Testing updates with a debug build of your app
+
+It is possible to [create a debug build that will load updates from EAS instead of loading from a React Native packager](/eas-update/debug-updates/#debugging-of-native-code-while-loading-the-app-through-expo-updates).
+
+To do this for the above app, we need to modify step 4 above as follows:
+
+<Terminal
+  cmd={[
+    '# Set the environment variable needed for native debug builds',
+    '$ export EX_UPDATES_NATIVE_DEBUG=1',
+    '',
+    '# Run prebuild to install and configure the ios and android directories, and install Cocoapods for iOS.',
+    '$ npx expo prebuild',
+    '',
+    '# iOS: Modify the application project so that the application JavaScript',
+    '',
+    '# is bundled into the app for both debug and release builds.',
+    "$ sed -i '' 's/SKIP_BUNDLING/FORCE_BUNDLING/g;' ios/<project name>.xcodeproj/project.pbxproj",
+    '',
+    '# iOS: Build and run the app on a local iOS Simulator.',
+    '$ npx expo run:ios --configuration Debug',
+    '',
+    '# Android: Build and run the app on a local Android Emulator',
+    '$ npx expo run:android --variant debug',
+    '',
   ]}
   cmdCopy={null}
 />
 
-Once the update is built and uploaded to EAS and the command completes, force close and reopen your app up to two times to download and view the update.
-
-</Step>
+The resulting app will be fully debuggable with Xcode or Android Studio, but will work with the EAS update service the same way as a release build, and will not connect to a local packager.
 
 ## Next steps
 
-You can publish updates continuously with GitHub Actions. Learn more: [Using GitHub Actions with EAS Update](/eas-update/github-actions)
+Use EAS Build and Update together. Learn more: [Using EAS Build and Update together](/eas-update/build-and-update)

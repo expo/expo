@@ -271,6 +271,7 @@ const eas = [
       makeGroup('EAS Update', [
         makePage('eas-update/introduction.mdx'),
         makePage('eas-update/getting-started.mdx'),
+        makePage('eas-update/build-and-update.mdx'),
         makePage('eas-update/github-actions.mdx'),
         makePage('eas-update/developing-with-eas-update.mdx'),
         makePage('eas-update/how-eas-update-works.mdx'),
