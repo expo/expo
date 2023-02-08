@@ -55,7 +55,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const url = this.getDevServerUrl();
     assert(url, 'Dev server must be started');
     const { getManifest } = await getStaticRenderFunctions(this.projectRoot, url);
-    return getManifest();
+    return getManifest({ fetchData: true });
   }
 
   protected async startImplementationAsync(

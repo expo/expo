@@ -49,6 +49,7 @@ async function getExpoRoutesAsync(devServerManager: DevServerManager) {
 function matchGroupName(name: string): string | undefined {
   return name.match(/^\(([^/]+?)\)$/)?.[1];
 }
+import { inspect } from 'util';
 
 async function exportFromServerAsync(
   devServerManager: DevServerManager,
@@ -58,7 +59,7 @@ async function exportFromServerAsync(
 
   const manifest = await getExpoRoutesAsync(devServerManager);
 
-  debug('Routes:', manifest);
+  debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
   // name : contents
   const files: { filepath: string; contents: string }[] = [];
 
