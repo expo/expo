@@ -55,8 +55,8 @@ def reanimatedFolder = file("${reanimatedPath}/${minorCopy}-${engine}")
 while (!reanimatedFolder.exists()) {
   minorCopy -= 1
   reanimatedFolder = file("${reanimatedPath}/${minorCopy}-${engine}")
-  if (minorCopy < 70) {
-    throw new GradleException('No matching aar for react-native-reanimated found. Upgrade react-native to 0.70.x or later in order to use the expo-dev-menu package.')
+  if (minorCopy < 71) {
+    throw new GradleException('No matching aar for react-native-reanimated found. Upgrade react-native to 0.71.x or later in order to use the expo-dev-menu package.')
   }
 }
 def reanimatedVersion = minorCopy
