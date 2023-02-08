@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix crash when reloading app while expo-av video is playing. ([#21118](https://github.com/expo/expo/pull/21118) by [@janicduplessis](https://github.com/janicduplessis))
+
 ### 💡 Others
 
 ## 1.2.0 — 2023-02-03
