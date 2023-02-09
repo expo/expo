@@ -36,7 +36,19 @@ export default function createJsInspectorMiddleware(): NextHandleFunction {
       });
       res.end(data);
     } else if (req.method === 'POST' || req.method === 'PUT') {
-      openJsInspector(app);
+      try {
+        await openJsInspector(app);
+      } catch (error: any) {
+        // abort(Error: Command failed: osascript -e POSIX path of (path to application "google chrome")
+        // 15:50: execution error: Google Chrome got an error: Application isn’t running. (-600)
+
+        console.error(
+          chalk.red('Error launching JS inspector: ' + (error?.message ?? 'Unknown error occurred'))
+        );
+        res.writeHead(500);
+        res.end();
+        return;
+      }
       res.end();
     } else {
       res.writeHead(405);
