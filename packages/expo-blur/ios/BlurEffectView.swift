@@ -19,6 +19,16 @@ final class BlurEffectView: UIVisualEffectView {
       visualEffect = UIBlurEffect(style: blurEffectStyleFrom(tint))
     }
   }
+ 
+   
+  @Containing(values: ["fill", "default", "fillSecondary", "fillTertiary"])
+  var vibrancy: String = "default" {
+    didSet {
+      if (vibrancy != "default") {
+        visualEffect = UIVibrancyEffect(blurEffect: UIBlurEffect(style: blurEffectStyleFrom(blurEffectStyle)), style: vibrancyEffectStyleFrom(vibrancy))  
+      }
+    }
+  }
 
   private var visualEffect: UIVisualEffect = UIBlurEffect(style: blurEffectStyleFrom("default")) {
     didSet {
@@ -54,6 +64,15 @@ private func blurEffectStyleFrom(_ tint: String) -> UIBlurEffect.Style {
   case "dark": return .dark
   case "default": return .light
   default: return .dark
+  }
+}
+
+private func vibrancyEffectStyleFrom(_ style: String) -> UIVibrancyEffectStyle {
+  switch style {
+  case "fill": return .fill
+  case "fillSecondary": return .fillSecondary
+  case "fillTertiary": return .fillTertiary
+  default: return .fill
   }
 }
 
