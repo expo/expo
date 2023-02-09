@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 4.0.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
 ## 4.0.0 — 2023-02-03
 
 ### 🛠 Breaking changes

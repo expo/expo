@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.18.1 — 2023-02-09
+
+### 💡 Others
+
 - Export `getExpoPushTokenAsync` parameter type. ([#21104](https://github.com/expo/expo/pull/21104) by [@Simek](https://github.com/Simek))
 
 ## 0.18.0 — 2023-02-03
