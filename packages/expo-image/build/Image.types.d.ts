@@ -95,8 +95,6 @@ export interface ImageProps extends ViewProps {
     /**
      * Describes how the image view should transition the contents when switching the image source.\
      * If provided as a number, it is the duration in milliseconds of the `'cross-dissolve'` effect.
-     * @platform ios
-     * @platform web
      */
     transition?: ImageTransition | number | null;
     /**
@@ -285,8 +283,6 @@ type OnlyObject<T> = T extends object ? T : never;
 export type ImageContentPositionObject = OnlyObject<ImageContentPosition>;
 /**
  * An object that describes the smooth transition when switching the image source.
- * @platform ios
- * @platform web
  */
 export type ImageTransition = {
     /**
@@ -302,6 +298,9 @@ export type ImageTransition = {
     /**
      * An animation effect used for transition.
      * @default 'cross-dissolve'
+     *
+     * On Android, only `'cross-dissolve'` is supported.
+     * On Web, `'curl-up'` and `'curl-down'` effects are not supported.
      */
     effect?: 'cross-dissolve' | 'flip-from-top' | 'flip-from-right' | 'flip-from-bottom' | 'flip-from-left' | 'curl-up' | 'curl-down' | null;
 };
