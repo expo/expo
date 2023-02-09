@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Add utf-8 uri support on iOS. ([#21098](https://github.com/expo/expo/pull/21098) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 💡 Others
+
+## 15.2.1 — 2023-02-09
+
+### 🐛 Bug fixes
+
+- Add utf-8 uri support on iOS. ([#21098](https://github.com/expo/expo/pull/21098) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 15.2.0 — 2023-02-03
 

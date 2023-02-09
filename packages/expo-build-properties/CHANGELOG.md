@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Add support for enabling [Flipper](https://fbflipper.com/) as bundled with react-native. ([#20890](https://github.com/expo/expo/pull/20861) by [@jakobo](https://github.com/jakobo))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 0.5.1 — 2023-02-09
+
+### 🎉 New features
+
+- Add support for enabling [Flipper](https://fbflipper.com/) as bundled with react-native. ([#20890](https://github.com/expo/expo/pull/20861) by [@jakobo](https://github.com/jakobo))
 
 ## 0.5.0 — 2023-02-03
 
