@@ -20,6 +20,7 @@
 
 ### 🎉 New features
 
+- Support Hermes debugger on native when Metro web is running. ([#21068](https://github.com/expo/expo/pull/21068) by [@EvanBacon](https://github.com/EvanBacon))
 - Skip uninstalling Expo Go when running in UNVERSIONED (internal). ([#20754](https://github.com/expo/expo/pull/20754) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
