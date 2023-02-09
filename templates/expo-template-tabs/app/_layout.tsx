@@ -2,7 +2,6 @@ import { SourceCodePro_400Regular, useFonts } from '@expo-google-fonts/source-co
 import FontAwesome from '@expo/vector-icons/FontAwesome';
 import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
 import { SplashScreen, Stack } from 'expo-router';
-import { StatusBar } from 'expo-status-bar';
 import { useEffect } from 'react';
 import { useColorScheme } from 'react-native';
 
@@ -12,6 +11,7 @@ export {
 } from 'expo-router';
 
 export const unstable_settings = {
+  // Ensure that reloading on `/modal` keeps a back button present.
   initialRouteName: '(tabs)',
 };
 
@@ -53,7 +53,6 @@ function RootLayoutNav() {
           <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
         </Stack>
       </ThemeProvider>
-      <StatusBar />
     </>
   );
 }
