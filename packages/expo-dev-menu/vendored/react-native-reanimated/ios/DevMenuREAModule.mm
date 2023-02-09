@@ -3,7 +3,7 @@
 #import "DevMenuREANodesManager.h"
 #import "DevMenuREATransitionManager.h"
 #import "DevMenuReanimatedVersion.h"
-#import "SingleInstanceChecker.h"
+#import "DevMenuSingleInstanceChecker.h"
 
 using namespace facebook::react;
 using namespace devmenureanimated;
