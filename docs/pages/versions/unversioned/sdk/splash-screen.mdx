@@ -4,6 +4,11 @@ sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-splash-scre
 packageName: 'expo-splash-screen'
 ---
 
+import {
+  ConfigClassic,
+  ConfigReactNative,
+  ConfigPluginProperties,
+} from '~/components/plugins/ConfigSection';
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
@@ -79,6 +84,116 @@ export default function App() {
   );
 }
 ```
+
+## Configuration
+
+### Expo config
+
+To configure `expo-splash-screen`, use the built-in [config plugin](/guides/config-plugins) in the [Expo config](/workflow/configuration/) for [EAS Build](/build/introduction) or with `npx expo run:[android|ios]`. The plugin allows you to configure the following properties that cannot be set at runtime and require building a new app binary to take effect:
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: '<platform>.backgroundColor',
+      description: 'Color to fill the splash screen screen background.',
+    },
+    {
+      name: '<platform>.resizeMode',
+      default: 'contain',
+      description: 'Resize mode to render the splash screen image on a device, must be one of "cover", "contain" or "native".',
+    },
+    {
+      name: '<platform>.image',
+      description:
+        'Image to render on the splash screen, must be a PNG file. Both local paths or remote URLs are supported.',
+    },
+    {
+      name: '<platform>.dark.*',
+      description: 'Dark mode specific configuration for the splash screen, defined as nested object, with the same properties without the ".dark" prefix.'
+    },
+    {
+      name: 'ios.tabletImage',
+      platform: 'ios',
+      description:
+        'Image to render on the splash screen on tablets, must be a PNG file. Both local paths or remote URLs are supported.',
+    },
+    {
+      name: 'android.mdpi',
+      platform: 'android',
+      description: 'The natural sized image, or baseline, of the splash screen image, must be a PNG file.',
+    },
+    {
+      name: 'android.hdpi',
+      platform: 'android',
+      description: 'The 1.5x scale of the sized image of the splash screen image, must be a PNG file.',
+    },
+    {
+      name: 'android.xhdpi',
+      platform: 'android',
+      description: 'The 2x scale of the sized image of the splash screen image, must be a PNG file.',
+    },
+    {
+      name: 'android.xxhdpi',
+      platform: 'android',
+      description: 'The 3x scale of the sized image of the splash screen image, must be a PNG file.',
+    },
+    {
+      name: 'android.xxxhdpi',
+      platform: 'android',
+      description: 'The 4x scale of the sized image of the splash screen image, must be a PNG file.',
+    },
+  ]}
+/>
+
+Here is an example of using the config plugin in the Expo config file:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-splash-screen",
+        {
+          "android": {
+            "resizeMode": "contain",
+            "backgroundColor": "#FFFFFF",
+            "image": "./assets/splash-android.png",
+            "dark": {
+              "backgroundColor": "#000000",
+              "image": "./assets/splash-android-dark.png"
+            }
+          },
+          "ios": {
+            "resizeMode": "contain",
+            "backgroundColor": "#FFFFFF",
+            "image": "./assets/splash-ios.png",
+            "dark": {
+              "backgroundColor": "#000000",
+              "image": "./assets/splash-ios-dark.png"
+            }
+          }
+        }
+      ]
+    ]
+  }
+}
+```
+
+<ConfigClassic>
+
+For more information on configuring notifications with the app manifest `splash` properties:
+
+- [`splash`](../config/app.mdx#splash)
+- [`android.splash`](../config/app.mdx#splash-2)
+- [`ios.splash`](../config/app.mdx#splash-1)
+
+</ConfigClassic>
+
+<ConfigReactNative>
+
+See how to configure the native projects in the [installation instructions in the `expo-splash-screen` repository](https://github.com/expo/expo/tree/main/packages/expo-splash-screen#-installation-in-bare-react-native-projects).
+
+</ConfigReactNative>
 
 ### Animating the splash screen
 
