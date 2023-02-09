@@ -22,7 +22,7 @@ buildscript {
     if (ext.has("kotlinVersion")) {
       ext.kotlinVersion()
     } else {
-      ext.safeExtGet("kotlinVersion", "1.6.10")
+      ext.safeExtGet("kotlinVersion", "1.8.10")
     }
   }
 
@@ -91,7 +91,9 @@ dependencies {
   testImplementation 'org.mockito:mockito-core:1.10.19'
   testImplementation 'io.mockk:mockk:1.12.3'
 
-  androidTestImplementation 'org.amshove.kluent:kluent-android:1.68'
+  androidTestImplementation('org.amshove.kluent:kluent-android:1.72') {
+    exclude group: 'org.jetbrains.kotlin'
+  }
   androidTestImplementation 'androidx.test:runner:1.4.0'
   androidTestImplementation 'androidx.test:core:1.4.0'
   androidTestImplementation 'androidx.test:rules:1.4.0'

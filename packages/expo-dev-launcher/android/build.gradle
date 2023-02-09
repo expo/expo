@@ -21,7 +21,7 @@ buildscript {
     if (ext.has("kotlinVersion")) {
       ext.kotlinVersion()
     } else {
-      ext.safeExtGet("kotlinVersion", "1.6.10")
+      ext.safeExtGet("kotlinVersion", "1.8.10")
     }
   }
 
@@ -170,7 +170,7 @@ configurations.all {
   resolutionStrategy.eachDependency { DependencyResolveDetails details ->
     def requested = details.requested
     if (requested.group == 'org.jetbrains.kotlin') {
-      details.useVersion safeExtGet('kotlinVersion', '1.6.10')
+      details.useVersion safeExtGet('kotlinVersion', '1.8.10')
     }
   }
 }
