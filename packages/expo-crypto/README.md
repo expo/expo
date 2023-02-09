@@ -1,4 +1,11 @@
-# expo-crypto
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/crypto/">
+    <img
+      src="../../.github/resources/expo-crypto.svg"
+      alt="expo-crypto"
+      height="64" />
+  </a>
+</p>
 
 Provides cryptography primitives.
 

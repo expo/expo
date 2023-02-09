@@ -1,4 +1,11 @@
-# expo-localization
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/localization/">
+    <img
+      src="../../.github/resources/expo-localization.svg"
+      alt="expo-localization"
+      height="64" />
+  </a>
+</p>
 
 Provides an interface for native user localization information.
 

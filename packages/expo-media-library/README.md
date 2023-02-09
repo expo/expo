@@ -1,4 +1,11 @@
-# expo-media-library
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/media-library/">
+    <img
+      src="../../.github/resources/expo-media-library.svg"
+      alt="expo-media-library"
+      height="64" />
+  </a>
+</p>
 
 Provides access to user's media library.
 
