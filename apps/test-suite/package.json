@@ -16,7 +16,7 @@
     "async-retry": "^1.1.4",
     "expo": "~48.0.0-beta.0",
     "expo-application": "~5.1.0",
-    "expo-asset": "~8.8.0",
+    "expo-asset": "~8.9.0",
     "expo-av": "~13.2.0",
     "expo-background-fetch": "~11.1.0",
     "expo-barcode-scanner": "~12.3.0",
