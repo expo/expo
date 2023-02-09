@@ -6,6 +6,9 @@ import Metro from 'metro';
 import { Terminal } from 'metro-core';
 
 import { Log } from '../../../log';
+import { getMetroProperties } from '../../../utils/analytics/getMetroProperties';
+import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metroDebuggerMiddleware';
+import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
@@ -51,8 +54,11 @@ export async function instantiateMetroAsync(
     skipSDKVersionRequirement: true,
     skipPlugins: true,
   });
+
   const platformBundlers = getPlatformBundlers(exp);
   metroConfig = await withMetroMultiPlatformAsync(projectRoot, metroConfig, platformBundlers);
+
+  logEventAsync('metro config', getMetroProperties(projectRoot, exp, metroConfig));
 
   const {
     middleware,
@@ -75,6 +81,8 @@ export async function instantiateMetroAsync(
     }
     return middleware.use(metroMiddleware);
   };
+
+  middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
 
   const server = await Metro.runServer(metroConfig, {
     hmrEnabled: true,

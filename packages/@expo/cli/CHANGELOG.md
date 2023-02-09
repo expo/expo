@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Add telemetry for experimental Metro config options. ([#20885](https://github.com/expo/expo/pull/20885) by [@byCedric](https://github.com/byCedric))
+
 ## 0.5.0 — 2023-02-03
 
 ### 🛠 Breaking changes
