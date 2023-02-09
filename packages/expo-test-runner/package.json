@@ -45,6 +45,5 @@
     "fs-extra": "^10.0.0",
     "node-fetch": "^2.6.1",
     "tempy": "^0.7.1"
-  },
-  "gitHead": "eab2b09c735fb0fc2bf734a3f29a6593adba3838"
+  }
 }
