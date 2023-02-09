@@ -15,6 +15,7 @@
   },
   "dependencies": {
     "@expo/vector-icons": "^13.0.0",
+    "@expo-google-fonts/source-code-pro": "~0.2.2",
     "@react-navigation/bottom-tabs": "^6.0.5",
     "@react-navigation/native": "^6.0.2",
     "@react-navigation/native-stack": "^6.1.0",
@@ -27,6 +28,7 @@
     "expo-status-bar": "~1.4.3",
     "expo-system-ui": "~2.2.0",
     "expo-web-browser": "~12.1.0",
+    "expo-router": "^1.0.0-rc5",
     "react": "18.2.0",
     "react-dom": "18.2.0",
     "react-native": "0.71.2",

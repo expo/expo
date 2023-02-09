@@ -1,22 +1,18 @@
-import {
-  SourceCodePro_400Regular,
-  useFonts,
-} from "@expo-google-fonts/source-code-pro";
-import FontAwesome from "@expo/vector-icons/FontAwesome";
-import {
-  DarkTheme,
-  DefaultTheme,
-  ThemeProvider,
-} from "@react-navigation/native";
-import { SplashScreen, Stack } from "expo-router";
-import { StatusBar } from "expo-status-bar";
-import { useEffect } from "react";
-import { useColorScheme } from "react-native";
+import { SourceCodePro_400Regular, useFonts } from '@expo-google-fonts/source-code-pro';
+import FontAwesome from '@expo/vector-icons/FontAwesome';
+import { DarkTheme, DefaultTheme, ThemeProvider } from '@react-navigation/native';
+import { SplashScreen, Stack } from 'expo-router';
+import { StatusBar } from 'expo-status-bar';
+import { useEffect } from 'react';
+import { useColorScheme } from 'react-native';
 
-export { ErrorBoundary } from "expo-router";
+export {
+  // Catch any errors thrown by the Layout component.
+  ErrorBoundary,
+} from 'expo-router';
 
 export const unstable_settings = {
-  initialRouteName: "(tabs)",
+  initialRouteName: '(tabs)',
 };
 
 /** In the future, `useFont` should probably throw an error that will either be caught by an Error Boundary or uncaught. Either option is better than being ignored. */
@@ -51,10 +47,10 @@ function RootLayoutNav() {
 
   return (
     <>
-      <ThemeProvider value={colorScheme === "dark" ? DarkTheme : DefaultTheme}>
+      <ThemeProvider value={colorScheme === 'dark' ? DarkTheme : DefaultTheme}>
         <Stack>
           <Stack.Screen name="(tabs)" options={{ headerShown: false }} />
-          <Stack.Screen name="modal" options={{ presentation: "modal" }} />
+          <Stack.Screen name="modal" options={{ presentation: 'modal' }} />
         </Stack>
       </ThemeProvider>
       <StatusBar />
