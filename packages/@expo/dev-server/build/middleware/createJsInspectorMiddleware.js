@@ -67,7 +67,18 @@ function createJsInspectorMiddleware() {
       });
       res.end(data);
     } else if (req.method === 'POST' || req.method === 'PUT') {
-      (0, _JsInspector().openJsInspector)(app);
+      try {
+        await (0, _JsInspector().openJsInspector)(app);
+      } catch (error) {
+        var _error$message;
+        // abort(Error: Command failed: osascript -e POSIX path of (path to application "google chrome")
+        // 15:50: execution error: Google Chrome got an error: Application isn’t running. (-600)
+
+        console.error(_chalk().default.red('Error launching JS inspector: ' + ((_error$message = error === null || error === void 0 ? void 0 : error.message) !== null && _error$message !== void 0 ? _error$message : 'Unknown error occurred')));
+        res.writeHead(500);
+        res.end();
+        return;
+      }
       res.end();
     } else {
       res.writeHead(405);
