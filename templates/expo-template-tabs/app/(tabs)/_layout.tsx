@@ -24,7 +24,6 @@ export default function TabLayout() {
       }}>
       <Tabs.Screen
         name="index"
-        // TODO: Type
         options={{
           title: 'Tab One',
           tabBarIcon: ({ color }) => <TabBarIcon name="code" color={color} />,
@@ -54,5 +53,3 @@ export default function TabLayout() {
     </Tabs>
   );
 }
-
-//

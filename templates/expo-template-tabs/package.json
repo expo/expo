@@ -2,7 +2,6 @@
   "name": "expo-template-tabs",
   "description": "The Tab Navigation project template includes several example screens.",
   "version": "48.0.1",
-  "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
@@ -14,14 +13,8 @@
     "preset": "jest-expo"
   },
   "dependencies": {
-    "@expo/vector-icons": "^13.0.0",
-    "@expo-google-fonts/source-code-pro": "~0.2.2",
-    "@react-navigation/bottom-tabs": "^6.0.5",
     "@react-navigation/native": "^6.0.2",
-    "@react-navigation/native-stack": "^6.1.0",
     "expo": "~48.0.0-beta.0",
-    "expo-asset": "~8.8.0",
-    "expo-constants": "~14.2.0",
     "expo-font": "~11.1.0",
     "expo-linking": "~4.0.0",
     "expo-splash-screen": "~0.18.0",
