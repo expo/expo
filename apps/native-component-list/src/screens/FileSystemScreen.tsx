@@ -233,23 +233,6 @@ export default class FileSystemScreen extends React.Component<object, State> {
     }
   };
 
-  _createUTF8Uri = async () => {
-    const folderName = '中文';
-    const folderUri = FileSystem.documentDirectory + folderName;
-
-    const dirInfo = await FileSystem.getInfoAsync(folderUri);
-    if (dirInfo.exists) {
-      await FileSystem.deleteAsync(folderUri);
-    }
-
-    await FileSystem.makeDirectoryAsync(folderUri);
-    const newDirInfo = await FileSystem.getInfoAsync(folderUri);
-
-    if (newDirInfo.exists && newDirInfo.isDirectory) {
-      alert(`${folderName} directory was successfully created`);
-    }
-  };
-
   _alertFreeSpace = async () => {
     const freeBytes = await FileSystem.getFreeDiskStorageAsync();
     alert(`${Math.round(freeBytes / 1024 / 1024)} MB available`);
@@ -352,7 +335,6 @@ export default class FileSystemScreen extends React.Component<object, State> {
         <ListButton onPress={this._readAsset} title="Read Asset" />
         <ListButton onPress={this._getInfoAsset} title="Get Info Asset" />
         <ListButton onPress={this._copyAndReadAsset} title="Copy and Read Asset" />
-        <ListButton onPress={this._createUTF8Uri} title="Create UTF-8 uri" />
         <ListButton onPress={this._alertFreeSpace} title="Alert free space" />
         {Platform.OS === 'android' && (
           <>
