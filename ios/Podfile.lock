@@ -2042,7 +2042,7 @@ PODS:
     - ABI48_0_0React-RCTImage
   - ABI48_0_0RNSVG (13.4.0):
     - ABI48_0_0React-Core
-  - ABI48_0_0stripe-react-native (0.23.1):
+  - ABI48_0_0stripe-react-native (0.23.3):
     - ABI48_0_0React-Core
     - Stripe (~> 23.3.0)
     - StripeApplePay (~> 23.3.0)
@@ -4713,7 +4713,7 @@ SPEC CHECKSUMS:
   ABI48_0_0RNReanimated: b30e21ab20767525a7f7970650cfede925e7ec05
   ABI48_0_0RNScreens: f4e165935f3205248cebaee59a6e4821b93c471a
   ABI48_0_0RNSVG: 505e6c30ec1af5196e1ebc63b15f7f4883e37821
-  ABI48_0_0stripe-react-native: 3881bf4188f9f8b8cb122a998d806f2d2ec99e14
+  ABI48_0_0stripe-react-native: 10d38e575f12896c284962183534058ece127c5e
   ABI48_0_0UMAppLoader: 53ad457a547ae1c313877d22866478764526c93f
   ABI48_0_0Yoga: 13a232e4a5d1ecd44a45e050b5983aa20116b1fa
   Amplitude: cc34fcd8dfffc3470bc2e05f3a4abb0178f6d963
