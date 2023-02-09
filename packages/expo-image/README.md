@@ -1,4 +1,11 @@
-# expo-image
+<p>
+  <a href="https://docs.expo.dev/versions/unversioned/sdk/image/">
+    <img
+      src="../../.github/resources/expo-image.svg"
+      alt="expo-image"
+      height="64" />
+  </a>
+</p>
 
 A cross-platform, performant image component for React Native and Expo.
 
