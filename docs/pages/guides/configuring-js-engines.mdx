@@ -1,21 +1,21 @@
 ---
-title: Configuring JS Engines
+title: Configure JS engines
 sidebar_title: Configuring JS Engines
-description: A guide on configuring JS Engines for both Android and iOS in an Expo project.
+description: A guide on configuring JS engines for both Android and iOS in an Expo project.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 
-JavaScript engines are responsible for executing your application code and providing various features like memory management, optimization, and error handling. Expo projects, by default, use [Hermes](https://hermesengine.dev/) as the JavaScript engine (in SDK 47 and lower, the default was JSC). It is also possible to switch to other engines like JSC or V8 for both Android and iOS platforms, but not for web because the JavaScript engine is included in the web browser.
+JavaScript engines execute your application code and provide various features such as memory management, optimization, and error handling. By default, Expo projects use [Hermes](https://hermesengine.dev/) as the JavaScript engine (in SDK 47 and lower, the default was [JavaScriptCore]((https://developer.apple.com/documentation/javascriptcore)). Switching to other engines, such as JSC or V8, for Android and iOS platforms is possible. However, not for the web because the JavaScript engine is included in the web browser.
 
-### Configuring the `jsEngine` through Expo config
+## Configuring the `jsEngine` through Expo config
 
-We recommend Hermes because it is purpose built and optimized for React Native apps, and it has the best debugging experience. If you are familiar with the tradeoffs of different JavaScript engines and would like to change away from Hermes, the `jsEngine` field inside **app.json** allows you to specify the JavaScript engine for your app.
+We recommend Hermes because it is purpose built and optimized for React Native apps, and it has the best debugging experience. If you are familiar with the tradeoffs of different JavaScript engines and would like to change away from Hermes, the [`jsEngine`](/versions/latest/config/app/#jsengine) field inside [Expo config](/workflow/configuration/) allows you to specify the JavaScript engine for your app. The default value is `hermes`. 
 
-The default value is `hermes`. If you would like to use [JavaScriptCore](https://developer.apple.com/documentation/javascriptcore) instead, set the `jsEngine` field in your **app.json**:
+If you want to use JSC instead, set the `jsEngine` field in the Expo config:
 
-```json
+```json app.json
 {
   "expo": {
     "jsEngine": "jsc"
@@ -25,19 +25,19 @@ The default value is `hermes`. If you would like to use [JavaScriptCore](https:/
 
 <Collapsible summary="Are you using the bare workflow?">
 
-To change the JavaScript engine in a bare React Native project, update the `expo.jsEngine` value in **ios/Podfile.properties.json** and **android/gradle.properties**
+To change the JavaScript engine in a bare React Native project, update the `expo.jsEngine` value in **android/gradle.properties** and **ios/Podfile.properties.json**.
 
 </Collapsible>
 
 It's important to highlight that changing the JS engine will require you to recompile development builds with `eas build` to work properly.
 
-### Using the V8 Engine
+## Using the V8 Engine
 
-To use the V8 engine, you need to install [react-native-v8](https://github.com/Kudo/react-native-v8), an opt-in package that adds V8 runtime support for React Native. You can install it by running the following command:
+To use the V8 engine, you need to install [`react-native-v8`](https://github.com/Kudo/react-native-v8), an opt-in package that adds V8 runtime support for React Native. You can install it by running the following command:
 
 <Terminal cmd={['$ npx expo install react-native-v8 v8-android-jit']} />
 
-Make sure to remove the `jsEngine` field from **app.json**
+Make sure to remove the `jsEngine` field from the Expo config.
 
 <Collapsible summary="Are you using the bare workflow?">
 
@@ -45,12 +45,12 @@ You can run `expo prebuild -p android --clean` after the installation to prebu
 
 </Collapsible>
 
-### Switch JavaScript engine on a specific platform
+## Switch JavaScript engine on a specific platform
 
-You may want to use a different engine on one specific platform, one way to do this is to set one `"jsEngine"` value at the top level and then override it with a different value under the `"android"`/`"ios"` key.
+To use a different engine on one specific platform, you can set the `"jsEngine"` value at the top level and then override it with a different value under the `"android"` or `"ios"` key. The value specified for the platform will take precedence over the common field.
 
 {/* prettier-ignore */}
-```js
+```js app.json
 {
   "expo": {
     "jsEngine": "hermes",
