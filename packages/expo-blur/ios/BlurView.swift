@@ -21,4 +21,8 @@ public final class BlurView: ExpoView {
   public func setIntensity(_ intensity: Double) {
     blurEffectView.intensity = intensity
   }
+  
+  public func setVibrancy(_ vibrancy: String) {
+    blurEffectView.vibrancy = vibrancy
+  }
 }
