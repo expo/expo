@@ -4,60 +4,10 @@ import { Platform, CodedError, UnavailabilityError } from 'expo-modules-core';
 
 import { setAutoServerRegistrationEnabledAsync } from './DevicePushTokenAutoRegistration.fx';
 import ServerRegistrationModule from './ServerRegistrationModule';
-import { DevicePushToken, ExpoPushToken } from './Tokens.types';
+import { DevicePushToken, ExpoPushToken, ExpoPushTokenOptions } from './Tokens.types';
 import getDevicePushTokenAsync from './getDevicePushTokenAsync';
 
 const productionBaseUrl = 'https://exp.host/--/api/v2/';
-
-interface Options {
-  /**
-   * Endpoint URL override.
-   */
-  baseUrl?: string;
-  /**
-   * Request URL override.
-   */
-  url?: string;
-  /**
-   * Request body override.
-   */
-  type?: string;
-  // @missingDocs
-  deviceId?: string;
-  /**
-   * Makes sense only on iOS, where there are two push notification services: "sandbox" and "production".
-   * This defines whether the push token is supposed to be used with the sandbox platform notification service.
-   * Defaults to [`Application.getIosPushNotificationServiceEnvironmentAsync()`](/application/#applicationgetiospushnotificationserviceenvironmentasync)
-   * exposed by `expo-application` or `false`. Most probably you won't need to customize that.
-   * You may want to customize that if you don't want to install `expo-application` and still use the sandbox APNs.
-   * @platform ios
-   */
-  development?: boolean;
-  /**
-   * @deprecated Use `projectId` instead.
-   * The ID of the experience to which the token should be attributed.
-   * Defaults to [`Constants.manifest.id`](/constants/#constantsmanifest) exposed by `expo-constants`.
-   * When building with EAS Build, or in the bare workflow, **this is required** and you must provide a value which takes the shape `@username/projectSlug`,
-   * where `username` is the Expo account that the project is associated with, and `projectSlug` is your [`slug`](/config/app.mdx#slug) from Expo config.
-   */
-  experienceId?: string;
-  /**
-   * The ID of the project to which the token should be attributed.
-   * Defaults to [`Constants.expoConfig.extra.eas.projectId`](/constants/#easconfig) exposed by `expo-constants`.
-   * If you are not using EAS Build, it will fallback to [`Constants.manifest.projectId`](/constants/#constantsmanifest).
-   */
-  projectId?: string;
-  /**
-   * The ID of the application to which the token should be attributed.
-   * Defaults to [`Application.applicationId`](/application/#applicationapplicationid) exposed by `expo-application`.
-   */
-  applicationId?: string;
-  /**
-   * The device push token with which to register at the backend.
-   * Defaults to a token fetched with [`getDevicePushTokenAsync()`](#getdevicepushtokenasync-devicepushtoken).
-   */
-  devicePushToken?: DevicePushToken;
-}
 
 /**
  * Returns an Expo token that can be used to send a push notification to the device using Expo's push notifications service.
@@ -80,7 +30,7 @@ interface Options {
  *
  * export async function registerForPushNotificationsAsync(userId: string) {
  *   const expoPushToken = await Notifications.getExpoPushTokenAsync({
- *     experienceId: '@username/example',
+ *    projectId: 'your-project-id',
  *   });
  *
  *   await fetch('https://example.com/', {
@@ -96,7 +46,9 @@ interface Options {
  * }
  * ```
  */
-export default async function getExpoPushTokenAsync(options: Options = {}): Promise<ExpoPushToken> {
+export default async function getExpoPushTokenAsync(
+  options: ExpoPushTokenOptions = {}
+): Promise<ExpoPushToken> {
   const devicePushToken = options.devicePushToken || (await getDevicePushTokenAsync());
 
   const deviceId = options.deviceId || (await getDeviceIdAsync());
