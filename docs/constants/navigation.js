@@ -156,6 +156,7 @@ const general = [
     makePage('guides/adopting-prebuild.mdx'),
     makePage('guides/ios-developer-mode.mdx'),
     makePage('guides/localization.mdx'),
+    makePage('guides/configuring-js-engines.mdx'),
   ]),
   makeSection('Expo accounts', [
     makePage('accounts/account-types.mdx'),
