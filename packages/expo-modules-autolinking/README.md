@@ -1,4 +1,11 @@
-# expo-modules-autolinking
+<p>
+  <a href="https://docs.expo.dev/modules/autolinking/">
+    <img
+      src="../../.github/resources/expo-modules-autolinking.svg"
+      alt="expo-modules-autolinking"
+      height="64" />
+  </a>
+</p>
 
 Scripts that autolink Expo modules.
 

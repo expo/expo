@@ -1,4 +1,11 @@
-# expo-haptics
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/haptics/">
+    <img
+      src="../../.github/resources/expo-haptics.svg"
+      alt="expo-haptics"
+      height="64" />
+  </a>
+</p>
 
 Provides access to the system's haptics engine on iOS and vibration effects on Android.
 

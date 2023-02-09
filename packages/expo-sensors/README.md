@@ -1,4 +1,11 @@
-# expo-sensors
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/sensors/">
+    <img
+      src="../../.github/resources/expo-sensors.svg"
+      alt="expo-sensors"
+      height="64" />
+  </a>
+</p>
 
 Provides access to a hardware device's accelerometer, gyroscope, magnetometer, and pedometer.
 

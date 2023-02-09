@@ -1,4 +1,11 @@
-# expo-location
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/location/">
+    <img
+      src="../../.github/resources/expo-location.svg"
+      alt="expo-location"
+      height="64" />
+  </a>
+</p>
 
 Allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.
 

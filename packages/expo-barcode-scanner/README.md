@@ -1,4 +1,11 @@
-# expo-barcode-scanner
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/bar-code-scanner/">
+    <img
+      src="../../.github/resources/expo-barcode-scanner.svg"
+      alt="expo-barcode-scanner"
+      height="64" />
+  </a>
+</p>
 
 Allows scanning variety of supported barcodes both as standalone module and as extension for expo-camera. It also allows scanning barcodes from existing images.
 
