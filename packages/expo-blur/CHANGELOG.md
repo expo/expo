@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Add `WebkitBackdropFilter` to support `react-native-web` styling.
+- Add `WebkitBackdropFilter` to support `react-native-web` styling. ([#21146](https://github.com/expo/expo/pull/21146) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
