@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add `WebkitBackdropFilter` to support `react-native-web` styling.
+
 ### 💡 Others
 
 ## 12.2.1 — 2023-02-09
