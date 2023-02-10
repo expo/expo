@@ -63,7 +63,6 @@ export async function exportAppAsync(
     {
       platforms,
       dev,
-      useDevServer: true,
       // TODO: Disable source map generation if we aren't outputting them.
     }
   );

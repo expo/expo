@@ -8,6 +8,7 @@ import assert from 'assert';
 import fs from 'fs';
 import fetch from 'node-fetch';
 import path from 'path';
+import { inspect } from 'util';
 
 import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
@@ -49,8 +50,6 @@ async function getExpoRoutesAsync(devServerManager: DevServerManager) {
 function matchGroupName(name: string): string | undefined {
   return name.match(/^\(([^/]+?)\)$/)?.[1];
 }
-import { inspect } from 'util';
-
 async function exportFromServerAsync(
   devServerManager: DevServerManager,
   { outputDir, scripts }: Options

@@ -105,6 +105,8 @@ export abstract class BundlerDevServer {
   /** Manages the creation of dev server URLs. */
   protected urlCreator?: UrlCreator | null = null;
 
+  private notifier: FileNotifier | null = null;
+
   constructor(
     /** Project root folder. */
     public projectRoot: string,
@@ -215,8 +217,11 @@ export abstract class BundlerDevServer {
   protected abstract getConfigModuleIds(): string[];
 
   protected watchConfig() {
-    const notifier = new FileNotifier(this.projectRoot, this.getConfigModuleIds());
-    notifier.startObserving();
+    if (this.notifier) {
+      this.notifier.stopObserving();
+    }
+    this.notifier = new FileNotifier(this.projectRoot, this.getConfigModuleIds());
+    this.notifier.startObserving();
   }
 
   /** Create ngrok instance and start the tunnel server. Exposed for testing. */
@@ -293,6 +298,9 @@ export abstract class BundlerDevServer {
 
   /** Stop the running dev server instance. */
   async stopAsync() {
+    // Stop file watching.
+    this.notifier?.stopObserving();
+
     // Stop the dev session timer and tell Expo API to remove dev session.
     await this.devSession?.closeAsync();
 
