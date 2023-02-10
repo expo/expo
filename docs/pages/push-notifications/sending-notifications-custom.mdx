@@ -97,7 +97,7 @@ Here's how to construct the request:
 const http2 = require('http2');
 
 const client = http2.connect(
-  IS_PRODUCTION ? 'https://api.push.apple.com' : 'https://api.sandbox.push.apple.com'
+  IS_PRODUCTION ? 'https://api.push.apple.com' : 'https://api.development.push.apple.com'
 );
 
 const request = client.request({

@@ -18,7 +18,7 @@ const token = jwt.sign(
 
 const IS_PRODUCTION = false; // TODO: your check
 const client = http2.connect(
-  IS_PRODUCTION ? 'https://api.push.apple.com' : 'https://api.sandbox.push.apple.com'
+  IS_PRODUCTION ? 'https://api.push.apple.com' : 'https://api.development.push.apple.com'
 );
 
 const deviceToken = 'device token grabbed cient-side';
