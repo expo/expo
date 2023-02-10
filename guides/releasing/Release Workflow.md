@@ -1,56 +1,4 @@
-# Expo release workflow <!-- omit in toc -->
-
-- [Stage 0 - Infra & Prerelease](#stage-0---infra--prerelease)
-  - [0.1. Drop old SDKs](#01-drop-old-sdks)
-  - [0.2. Update vendored modules](#02-update-vendored-modules)
-  - [0.3. Update schema](#03-update-schema)
-  - [0.4. Update versions on staging](#04-update-versions-on-staging)
-  - [0.5. Cut branch, sync, and tag React Native](#05-cut-branch-sync-and-tag-react-native)
-  - [0.6. Generate new mocks](#06-generate-new-mocks)
-  - [0.7. Publish `next` packages](#07-publish-next-packages)
-  - [0.8. Merge and cutoff changelogs](#08-merge-and-cutoff-changelogs)
-  - [0.9. Publish `sdk-XX` project templates](#09-publish-sdk-xx-project-templates)
-  - [0.10. Generate new SDK docs](#010-generate-new-sdk-docs)
-- [Stage 1 - Unversioned Quality Assurance and Versioning](#stage-1---unversioned-quality-assurance-and-versioning)
-  - [1.1. Cut off release branch](#11-cut-off-release-branch)
-  - [1.2. Unversioned Quality Assurance](#12-unversioned-quality-assurance)
-  - [1.3. Version code for the new SDK](#13-version-code-for-the-new-sdk)
-- [Stage 2 - Quality Assurance](#stage-2---quality-assurance)
-  - [2.1. Versioned Quality Assurance - Expo Go for iOS/Android](#21-versioned-quality-assurance---expo-go-for-iosandroid)
-  - [2.2. Web Quality Assurance](#23-web-quality-assurance)
-  - [2.3. Cherry-pick Versioned Code to `main`](#24-cherry-pick-versioned-code-to-main)
-  - [2.4. Publish demo apps](#25-publish-demo-apps)
-  - [2.5. Publish any missing or changed packages](#26-publish-any-missing-or-changed-packages)
-- [Stage 3 - Expo Go](#stage-3---expo-go)
-  - [3.1. Publish home](#31-publish-home)
-  - [3.2. Build and submit](#32-build-and-submit)
-  - [3.3. Make a simulator/emulator build](#33-make-a-simulatoremulator-build)
-- [Stage 4 - Sync with EAS Build](#stage-4---sync-with-eas-build)
-  - [4.1. Update default image for the new SDK version](#41-update-default-image-for-the-new-sdk-version)
-- [Stage 5 - Beta release](#stage-5---beta-release)
-  - [5.1. Deploy new docs with beta version](#51-deploy-new-docs-with-beta-version)
-  - [5.2. Add related packages to versions endpoint](#52-add-related-packages-to-versions-endpoint)
-  - [5.3. Re-publish project templates](#53-re-publish-project-templates)
-  - [5.4. Promote versions to production with new SDK version flagged as beta](#54-promote-versions-to-production-with-new-sdk-version-flagged-as-beta)
-  - [5.5. Add SDK support to Snack](#55-add-sdk-support-to-snack)
-  - [5.6. Announce beta availability](#56-announce-beta-availability)
-  - [5.7. Test, fix, and monitor](#57-test-fix-and-monitor)
-  - [5.8. Submit iOS Expo Go for review](#58-submit-ios-expo-go-for-review)
-  - [5.9. Start release notes document](#59-start-release-notes-document)
-- [Stage 6 - Final release](#stage-6---final-release)
-  - [6.1. Release Expo Go for iOS/Android to the general public](#61-release-expo-go-for-iosandroid-to-the-general-public)
-  - [6.2. Promote packages to latest on NPM registry](#62-promote-packages-to-latest-on-npm-registry)
-  - [6.3. Remove beta tag from new SDK on versions endpoint](#63-remove-beta-tag-from-new-sdk-on-versions-endpoint)
-  - [6.4. Remove beta tag from new SDK on Snack](#64-remove-beta-tag-from-new-sdk-on-snack)
-  - [6.5. Deploy final docs](#65-deploy-final-docs)
-  - [6.6. Publish final project templates](#66-publish-final-project-templates)
-  - [6.7. Press release](#67-press-release)
-  - [6.8. Follow-up](#68-follow-up)
-- [Stage 7 - Clean up](#stage-7---clean-up)
-  - [7.1. Remove old SDK from Turtle](#71-remove-old-sdk-from-turtle)
-  - [7.2. Mark old SDK as deprecated](#72-mark-old-sdk-as-deprecated)
-
-<!-- NOTE: you can update the toc using https://marketplace.visualstudio.com/items?itemName=yzhang.markdown-all-in-one -->
+# Expo release workflow
 
 # Stage 0 - Infra & Prerelease
 
@@ -79,13 +27,12 @@
 
 - Wait until as close as possible to the branch cutoff to do this, as we generally want the most up-to-date versions of these libraries as possible.
 - Run `et update-vendored-module --list-outdated`.
+- Assign someone to update each listed module. If you're not sure who to assign, look at who updated it previously.
 - Update each listed module separately, and test examples in NCL/test-suite to make sure none of the changes are unexpectedly breaking.
   - If there are unexpected breaking changes/instabilities in any libraries, it's ok to revert. We want to ship the best and most stable/feature-full product to our users, and if that means staying a little behind on versions sometimes, that's ok - use your best judgment or ask someone else on the team.
 - Pay extra attention to messages and warnings printed along the way for each module. Sometimes these's need for some extra manual work to be done in the updated files.
 - Add a CHANGELOG entry for each updated library and open a PR. Check the docs to make sure nothing needs to be updated (we generally just link directly to the third-party documentation).
 - Make sure that each individual library update lands on `main` as a **separate commit** so that it's easy to revert later on if needed.
-
-- Finally, talk to @brentvatne or @tsapeta about any modules extracted from RN that we need to include community versions of.
 
 ## 0.3. Update schema
 
@@ -111,11 +58,9 @@
 
 If we're planning to update React Native version for the upcoming SDK then it should have been done before starting any of this!
 
-If we didn't update the React Native version, now is a good time to check if we need to cherry-pick commits from the latest version (for example: bug fixes that landed since our previous release). This should be done from the `exp-latest` branch - reset it to the latest released SDK version if it isn't already pointing there. After that's done, proceed to this step. If unsure about any of this, check with Brent (@brentvatne).
-
 **Why:**
 
-In the managed workflow, we use our forked `react-native` repository because we need to deviate slightly from the upstream version in order to pull in some set of fixes and improvements. The submodule under `react-native-lab/react-native` is the source of truth for `react-native` version used throughout the `expo/expo` repository. Each SDK version has its own tagged version of React Native, even if it ends up being the same upstream version number (eg: 0.63.3) as the previous release.
+We use our fork of React Native for building Expo Go, but it is not used otherwise. The submodule under `react-native-lab/react-native` is the source of truth for `react-native` version used throughout the `expo/expo` repository. Each SDK version has its own tagged version of React Native, even if it ends up being the exact same as upstream for that version or for a previous SDK release.
 
 **How:**
 
@@ -165,28 +110,27 @@ In the managed workflow, we use our forked `react-native` repository because we 
 | --------------------------------------------------------------------------- |
 | [0.7. Publish `next` packages](#07-publish-any-missing-or-changed-packages) |
 
-**Why:** We also need to prepare project templates that are used when people run `expo init` command and publish them to NPM registry to test in QA.
+**Why:** We also need to prepare project templates that are used when people run `npx create-expo-app` command and publish them to NPM registry to test in QA.
 
 **How:**
 
 - On main branch, run `et update-project-templates`/`et upt` that checks all `expo-template-*` packages under `templates` directory and bumps dependency versions wherever possible – based on versions stored in `packages/expo/bundledNativeModules.json` for Expo modules and 3rd-party libraries, `react-native` fork with appropriate SDK version and `expo` package itself.
 - Update the native project files in bare templates based on the diffs on https://react-native-community.github.io/upgrade-helper/
-- Test these project templates - you don't have to use `expo init` at this point, just `expo start` them locally. You will need to set `"sdkVersion": "UNVERSIONED"` in `app.json` for managed templates to test them at this point.
-- Run `et publish-templates`/`et ppt` and answer to questions it asks. **IMPORTANT:** These versions should be tagged as `sdk-XX` and not `latest`. (If tagged as `latest` they will be used by default whenever anyone runs `expo init`.)
+- Test these project templates - you don't have to use `create-expo-app` at this point, just `npx expo start` them locally. You will need to set `"sdkVersion": "UNVERSIONED"` in `app.json` for managed templates to test them at this point.
+- Run `et publish-templates`/`et ppt` and answer to questions it asks. **IMPORTANT:** These versions should be tagged as `sdk-XX` and not `latest`. (If tagged as `latest` they will be used by default whenever anyone runs `npx create-expo-app`.)
 - If everything works as expected, commit changes to main.
-- You can now `init` from templates by using the package name and tag, for example: `expo init --template expo-template-bare-typescript@sdk-40`.
+- You can now init from templates by using the package name and tag, for example: `npx create-expo-app@latest --template blank@sdk-48`.
 
 ## 0.10. Generate new SDK docs
 
-**Why:** We store separate versions of docs for each SDK version. We need to version the docs as soon as we cut the release branch so that docs changes that land on main between cutting the release branch and the release date get applied to the new SDK version or not, as appropriate.
+**Why:** We store separate versions of API reference docs for each SDK version. We need to version the docs as soon as we cut the release branch so that docs changes that land on main between cutting the release branch and the release date get applied to the new SDK version or not, as appropriate.
 
 **How:**
 
 - Do this step immediately before cutting the release branch.
 - Run `et generate-docs-api-data` to regenerate `unversioned` API data files before cutting new documentation version.
-- Run `et generate-sdk-docs --sdk XX.X.X` to generate versioned docs for the new SDK. If we've upgraded React Native version in this release, we should also use `--update-react-native-docs` flag which imports the current version of React Native docs that also show up on our docs page. (If there are issues with this, talk with @byCedric.)
-- Run `yarn run schema-sync XX` (`XX` being the major version number) in `docs` directory and then change the schema import in `pages/versions/<version>/config/app.md` from `unversioned` to the new versioned schema file.
-- In the Expo CLI repo, inside of `packages/expo-cli`, run `yarn introspect md | pbcopy` to generate the updated Expo CLI documentation and copy it to your clipboard. Replace everything under the `<Terminal ..>` in `docs/pages/workflow/expo-cli.md` with it, and remove the junk included in your pasted output above the first heading and the "Done in .." bit at the end. Sanity check the diff.
+- Run `et generate-sdk-docs --sdk XX.X.X` to generate versioned docs for the new SDK.
+- Run `yarn run schema-sync XX` (`XX` being the major version number) in `docs` directory and then change the schema import in `pages/versions/<version>/config/app.mdx` from `unversioned` to the new versioned schema file.
 - Ensure that the `version` in package.json has NOT been updated to the new SDK version. SDK versions greater than the `version` in package.json will be hidden in production docs, and we do not want the new version to show up until the SDK has been released.
 - Commit and push changes to main.
 
@@ -198,9 +142,9 @@ In the managed workflow, we use our forked `react-native` repository because we 
 | ------------------ |
 | All previous tasks |
 
-**Why:** Since we are about to start QA, cutting a branch ensures that we aren't testing and versioning code that is changing under our feet.
+**Why:** Since we are about to start QA, cutting a branch ensures that we aren't testing and versioning code that is changing under our feet. You can alternatively defer this until later if you don't have any reason to defer from `main` yet. Some later steps in this guide will need to be performed from the release branch.
 
-**How:** After the SDK branch cutoff deadline, cut the `sdk-XX` branch from `main` and push it to the remote repo.
+**How:** After the SDK branch cutoff deadline, cut the `sdk-XX` branch from `main` and push it to the remote repo. You can continue to rebase the release branch on top of `main` until `main` starts to include commits that you do not want to pull in to the SDK branch, at which point you will need to cherry-pick.
 
 ## 1.2. Unversioned Quality Assurance
 
@@ -208,12 +152,12 @@ In the managed workflow, we use our forked `react-native` repository because we 
 | --------------------------------------------------- |
 | [1.2. Update React Native](#12-update-react-native) |
 
-**Why:** This step is especially important on Android because we build ReactAndroid into an aar in the versioning step, so if there are any issues that are discovered after versioning you have to redo the whole versioning step (which takes quite a while 😞).
+**Why:** Smoke test and manual QA before versioning, so that we know that any regressions in versioning are due to the versioning process.
 
 **How:**
 
 - Go through the [Quality Assurance](Quality%20Assurance.md) guide. Use `UNVERSIONED` as a `sdkVersion`.
-- Fix everything you noticed in quality assurance steps or delegate these issues to other people in a team (preferably unimodule owners). Fixes for all discovered bugs should land on `main` and then be cherry-picked to the `sdk-XX` branch (if it exists) before versioning.
+- Take notes of everything that you find, and share those notes with the team when you are done. If there are some quick fixes you can do during QA, feel free to do those, or self assign and take care of them after you finish QA.
 
 ## 1.3. Version code for the new SDK
 
@@ -396,7 +340,6 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
   - `@types/react-dom`
   - `react-native-web`
   - `babel-preset-expo`
-  - `@types/react-native`
   - `@expo/config-plugins`
   - `@expo/webpack-config`
   - `@expo/prebuild-config`
@@ -440,7 +383,7 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 **How:**
 
 - Monitor GitHub issues.
-- Expo team should all update any dogfooding apps they work on, including re-building standalone apps.
+- Expo team should all update any dogfooding apps they work on, including building on EAS Build, deploying updates with EAS Update, and ideally even submitting to stores.
 - Test out new features.
 - Report updates in the umbrealla issue.
 - Fix, test, repeat.
@@ -466,7 +409,7 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 
 - Copy the previous release notes blog post and replace versions with new versions, remove all content that doesn't apply to this version. Fill in the blanks.
 - Check for any notes in the release notes Linear task
-- Share the link in the #blog channels and ask for suggestions.
+- Share the link in the #blog and #sdk-release channels, ask for suggestions.
 
 # Stage 6 - Final release
 
@@ -506,7 +449,7 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 
 **Why:** Once the new SDK is available publicly, we should switch to using it by default on Snack.
 
-**How:** Reach out to Hein (@ijzerenhein)
+**How:** Reach out to Cedric
 
 ## 6.5. Deploy final docs
 
@@ -519,12 +462,12 @@ Once everything above is completed and Apple has approved Expo Go (iOS) for the 
 
 ## 6.6. Publish final project templates
 
-**Why:** We need to make sure the templates point to the latest versions of our packages and update the tags on npm so they will be used by default with `expo init`.
+**Why:** We need to make sure the templates point to the latest versions of our packages and update the tags on npm so they will be used by default with `npx create-expo-app`.
 
 **How:**
 
 - Update the templates to point to the final versions of the released packages.
-- Test these project templates in Expo Go or by building them (bare workflow) - you don't have to use `expo init` at this point, just `expo start` them locally.
+- Test these project templates in Expo Go or by building them (bare workflow) - you don't have to use `npx create-expo-app` at this point, just run `npx expo start` to run them locally.
 - Run `et publish-templates`/`et ppt` and answer to questions it asks. **IMPORTANT:** These versions should be tagged as `latest` and `sdk-xx` where `xx` is the major version for the SDK being released.
 - If everything works as expected, commit changes to main and make sure to cherry-pick that commit to the release branch as well.
 
@@ -540,7 +483,7 @@ This should be ready to publish immediately after the previous step is finished!
 
 **How:**
 
-- Publish release notes to Medium/dev.to. Coordinate with Eric (@esamelson) on this.
+- Publish release notes to Medium.
 - Tweet a link on the @expo account.
 
 ## 6.8. Follow-up
@@ -555,13 +498,7 @@ This should be ready to publish immediately after the previous step is finished!
 
 # Stage 7 - Clean up
 
-## 7.1. Remove old SDK from Turtle
-
-**Why:** We don't support old Turtle shell apps indefinitely, and this is a good time to clean up.
-
-**How:** Remove the corresponding shell tarballs from the turtle repository. Deploy to production when convenient, there is no rush on this.
-
-## 7.2. Mark old SDK as deprecated
+## 7.1. Mark old SDK as deprecated
 
 **Why:** A few expo-cli commands use this flag to determine which SDK versions are still supported.
 

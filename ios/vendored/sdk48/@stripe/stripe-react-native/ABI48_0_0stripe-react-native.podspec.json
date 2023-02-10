@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0stripe-react-native",
-  "version": "0.23.1",
+  "version": "0.23.3",
   "summary": "Stripe SDK for ABI48_0_0React Native",
   "homepage": "https://github.com/stripe/stripe-react-native/#readme",
   "license": "MIT",
@@ -10,7 +10,7 @@
   },
   "source": {
     "git": "https://github.com/stripe/stripe-react-native.git",
-    "tag": "0.23.1"
+    "tag": "0.23.3"
   },
   "source_files": "ios/**/*.{h,m,mm,swift}",
   "exclude_files": "ios/Tests/",

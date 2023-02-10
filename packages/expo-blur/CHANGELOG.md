@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- Add `WebkitBackdropFilter` to support `react-native-web` styling. ([#21146](https://github.com/expo/expo/pull/21146) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
+
+## 12.2.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
 
 ## 12.2.0 — 2023-02-03
 
