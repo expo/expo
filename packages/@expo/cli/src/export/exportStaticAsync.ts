@@ -84,7 +84,7 @@ async function exportFromServerAsync(
       // Full filtered pathname to request.
       const pathname = [additionPath, cleanSegment].filter(Boolean).join('/');
 
-      const outputPath = [additionPath, filename].filter(Boolean).join('/');
+      const outputPath = [additionPath, filename].filter(Boolean).join('/').replace(/^\//, '');
       // TODO: Ensure no duplicates in the manifest.
       if (files.has(outputPath)) {
         return;
@@ -135,7 +135,7 @@ async function exportFromServerAsync(
       .sort(([a], [b]) => a.localeCompare(b))
       .map(async ([file, contents]) => {
         const length = Buffer.byteLength(contents, 'utf8');
-        Log.log(file.replace(/^\//, ''), chalk.gray`(${prettyBytes(length)})`);
+        Log.log(file, chalk.gray`(${prettyBytes(length)})`);
         const outputPath = path.join(outputDir, file);
         await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
         await fs.promises.writeFile(outputPath, contents);
