@@ -5,14 +5,17 @@
  * LICENSE file in the root directory of this source tree.
  */
 import assert from 'assert';
+import chalk from 'chalk';
 import fs from 'fs';
 import fetch from 'node-fetch';
 import path from 'path';
+import prettyBytes from 'pretty-bytes';
 import { inspect } from 'util';
 
 import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
+import { stripAnsi } from '../utils/ansi';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
@@ -50,6 +53,14 @@ async function getExpoRoutesAsync(devServerManager: DevServerManager) {
 function matchGroupName(name: string): string | undefined {
   return name.match(/^\(([^/]+?)\)$/)?.[1];
 }
+
+function appendScriptsToHtml(html: string, scripts: string[]) {
+  return html.replace(
+    '</body>',
+    scripts.map((script) => `<script src="${script}" defer></script>`).join('') + '</body>'
+  );
+}
+
 async function exportFromServerAsync(
   devServerManager: DevServerManager,
   { outputDir, scripts }: Options
@@ -60,15 +71,45 @@ async function exportFromServerAsync(
 
   debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
   // name : contents
-  const files: { filepath: string; contents: string }[] = [];
+  const files = new Map<string, string>();
 
   const fetchScreens = (
     screens: Record<string, any>,
     additionPath: string = ''
   ): Promise<any>[] => {
+    async function fetchScreenAsync({ segment, filename }: { segment: string; filename: string }) {
+      // Strip group names from the segment
+      const cleanSegment = matchGroupName(segment) ? '' : segment;
+
+      // Full filtered pathname to request.
+      const pathname = [additionPath, cleanSegment].filter(Boolean).join('/');
+
+      const outputPath = [additionPath, filename].filter(Boolean).join('/');
+      // TODO: Ensure no duplicates in the manifest.
+      if (files.has(outputPath)) {
+        return;
+      }
+      // Prevent duplicate requests while running in parallel.
+      files.set(outputPath, '');
+
+      let screen: string;
+      try {
+        screen = await fetch(`${devServerUrl}/${pathname}`).then((res) => res.text());
+      } catch (e: any) {
+        // TODO: Format Metro error message better...
+        Log.error('Failed to statically render route:', pathname);
+        e.message = stripAnsi(e.message);
+        Log.exception(e);
+        throw e;
+      }
+
+      files.set(outputPath, appendScriptsToHtml(screen, scripts));
+    }
+
     return Object.entries(screens).map(async ([name, segment]) => {
       const filename = name + '.html';
 
+      // Segment is a directory.
       if (typeof segment !== 'string') {
         const cleanSegment = matchGroupName(segment.path) ? '' : segment.path;
         return Promise.all(
@@ -78,25 +119,7 @@ async function exportFromServerAsync(
 
       // TODO: handle dynamic routes
       if (segment !== '*') {
-        const cleanSegment = matchGroupName(segment) ? '' : segment;
-        const fullSegment = [additionPath, cleanSegment].filter(Boolean).join('/');
-        debug('render:', `${devServerUrl}/${fullSegment}`);
-        try {
-          const screen = await fetch(`${devServerUrl}/${fullSegment}`).then((res) => res.text());
-          const contents = screen.replace(
-            '</body>',
-            scripts.map((script) => `<script src="${script}" defer></script>`).join('') + '</body>'
-          );
-
-          files.push({
-            filepath: [additionPath, filename].filter(Boolean).join('/'),
-            contents,
-          });
-        } catch (e: any) {
-          Log.error('Failed to statically render route:', fullSegment);
-          Log.exception(e);
-          throw e;
-        }
+        await fetchScreenAsync({ segment, filename });
       }
       return null;
     });
@@ -106,10 +129,16 @@ async function exportFromServerAsync(
 
   fs.mkdirSync(path.join(outputDir), { recursive: true });
 
-  files.forEach((file) => {
-    const outputPath = path.join(outputDir, file.filepath);
-    fs.mkdirSync(path.dirname(outputPath), { recursive: true });
-    fs.writeFileSync(outputPath, file.contents);
-    Log.log(`Writing:`, file.filepath);
-  });
+  Log.log(`Exporting ${files.size} files:`);
+  await Promise.all(
+    [...files.entries()]
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(async ([file, contents]) => {
+        const length = Buffer.byteLength(contents, 'utf8');
+        Log.log(file.replace(/^\//, ''), chalk.gray`(${prettyBytes(length)})`);
+        const outputPath = path.join(outputDir, file);
+        await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
+        await fs.promises.writeFile(outputPath, contents);
+      })
+  );
 }
