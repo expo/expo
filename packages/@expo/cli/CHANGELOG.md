@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix log format when modifying `tsconfig.json`.
+
 ### 💡 Others
 
 ## 0.5.1 — 2023-02-09
