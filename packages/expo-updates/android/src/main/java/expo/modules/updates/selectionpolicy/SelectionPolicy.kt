@@ -9,10 +9,9 @@ import org.json.JSONObject
  * here.
  *
  * The default/basic implementations of these methods use an ordering based on `commitTime` (with
- * allowances for EAS Update branches). This has implications for rollbacks (rolled back updates
- * must have a new `id` and `commitTime` in order to take effect), amongst other things, and so this
- * class was designed to be pluggable in order to allow different implementations to be swapped in
- * with relative ease, in situations with different tradeoffs.
+ * allowances for EAS Update branches). This class was designed to be pluggable in order to allow
+ * different implementations to be swapped in with relative ease, in situations with different
+ * tradeoffs.
  *
  * The three methods are individually pluggable to allow for different behavior of specific parts of
  * the module in different situations. For example, in a development client, our policy for

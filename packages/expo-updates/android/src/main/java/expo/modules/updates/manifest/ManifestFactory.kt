@@ -14,14 +14,14 @@ object ManifestFactory {
   private val TAG = ManifestFactory::class.java.simpleName
 
   @Throws(Exception::class)
-  fun getManifest(manifestJson: JSONObject, manifestHeaderData: ManifestHeaderData, extensions: JSONObject?, configuration: UpdatesConfiguration?): UpdateManifest {
-    val expoProtocolVersion = manifestHeaderData.protocolVersion
-    return when {
-      expoProtocolVersion == null -> {
+  fun getManifest(manifestJson: JSONObject, responseHeaderData: ResponseHeaderData, extensions: JSONObject?, configuration: UpdatesConfiguration?): UpdateManifest {
+    val expoProtocolVersion = responseHeaderData.protocolVersion
+    return when (expoProtocolVersion?.let { Integer.valueOf(it) }) {
+      null -> {
         LegacyUpdateManifest.fromLegacyManifest(LegacyManifest(manifestJson), configuration!!)
       }
-      Integer.valueOf(expoProtocolVersion) == 0 -> {
-        NewUpdateManifest.fromNewManifest(NewManifest(manifestJson), manifestHeaderData, extensions, configuration!!)
+      0, 1 -> {
+        NewUpdateManifest.fromNewManifest(NewManifest(manifestJson), extensions, configuration!!)
       }
       else -> {
         throw Exception("Unsupported expo-protocol-version: $expoProtocolVersion")

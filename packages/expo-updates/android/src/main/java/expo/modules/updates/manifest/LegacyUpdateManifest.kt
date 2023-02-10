@@ -11,7 +11,6 @@ import expo.modules.updates.loader.EmbeddedLoader
 import expo.modules.manifests.core.LegacyManifest
 import org.json.JSONArray
 import org.json.JSONException
-import org.json.JSONObject
 import java.net.URI
 import java.text.ParseException
 import java.util.*
@@ -34,10 +33,6 @@ class LegacyUpdateManifest private constructor(
   private val mBundleUrl: Uri,
   private val mAssets: JSONArray?
 ) : UpdateManifest {
-  override val serverDefinedHeaders: JSONObject? = null
-
-  override val manifestFilters: JSONObject? = null
-
   override val updateEntity: UpdateEntity by lazy {
     UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
       manifest = this@LegacyUpdateManifest.manifest.getRawJson()

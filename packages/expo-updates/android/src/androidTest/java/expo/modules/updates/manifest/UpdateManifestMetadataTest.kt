@@ -44,13 +44,11 @@ class UpdateManifestMetadataTest {
   @Test
   @Throws(JSONException::class)
   fun testManifestFilters_OverwriteAllFields() {
-    val headers1 = ManifestHeaderData(manifestFilters = "branch-name=\"rollout-1\",test=\"value\"")
-    val updateManifest1: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers1, null, config)
-    ManifestMetadata.saveMetadata(updateManifest1, db, config)
+    val headers1 = ResponseHeaderData(manifestFiltersRaw = "branch-name=\"rollout-1\",test=\"value\"")
+    ManifestMetadata.saveMetadata(headers1, db, config)
 
-    val headers2 = ManifestHeaderData(manifestFilters = "branch-name=\"rollout-2\"")
-    val updateManifest2: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers2, null, config)
-    ManifestMetadata.saveMetadata(updateManifest2, db, config)
+    val headers2 = ResponseHeaderData(manifestFiltersRaw = "branch-name=\"rollout-2\"")
+    ManifestMetadata.saveMetadata(headers2, db, config)
 
     val actual = ManifestMetadata.getManifestFilters(db, config)
     Assert.assertNotNull(actual)
@@ -61,13 +59,11 @@ class UpdateManifestMetadataTest {
   @Test
   @Throws(JSONException::class)
   fun testManifestFilters_OverwriteEmpty() {
-    val headers1 = ManifestHeaderData(manifestFilters = "branch-name=\"rollout-1\"")
-    val updateManifest1: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers1, null, config)
-    ManifestMetadata.saveMetadata(updateManifest1, db, config)
+    val headers1 = ResponseHeaderData(manifestFiltersRaw = "branch-name=\"rollout-1\"")
+    ManifestMetadata.saveMetadata(headers1, db, config)
 
-    val headers2 = ManifestHeaderData(manifestFilters = "")
-    val updateManifest2: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers2, null, config)
-    ManifestMetadata.saveMetadata(updateManifest2, db, config)
+    val headers2 = ResponseHeaderData(manifestFiltersRaw = "")
+    ManifestMetadata.saveMetadata(headers2, db, config)
 
     val actual = ManifestMetadata.getManifestFilters(db, config)
     Assert.assertNotNull(actual)
@@ -77,13 +73,11 @@ class UpdateManifestMetadataTest {
   @Test
   @Throws(JSONException::class)
   fun testManifestFilters_OverwriteNull() {
-    val headers1 = ManifestHeaderData(manifestFilters = "branch-name=\"rollout-1\"")
-    val updateManifest1: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers1, null, config)
-    ManifestMetadata.saveMetadata(updateManifest1, db, config)
+    val headers1 = ResponseHeaderData(manifestFiltersRaw = "branch-name=\"rollout-1\"")
+    ManifestMetadata.saveMetadata(headers1, db, config)
 
-    val headers2 = ManifestHeaderData()
-    val updateManifest2: UpdateManifest = NewUpdateManifest.fromNewManifest(manifest, headers2, null, config)
-    ManifestMetadata.saveMetadata(updateManifest2, db, config)
+    val headers2 = ResponseHeaderData()
+    ManifestMetadata.saveMetadata(headers2, db, config)
 
     val actual = ManifestMetadata.getManifestFilters(db, config)
     Assert.assertNotNull(actual)
