@@ -128,7 +128,6 @@ export class LockdowndClient extends ServiceClient<LockdownProtocolClient> {
       if (resp.EnableSessionSSL) {
         this.protocolClient.socket = new tls.TLSSocket(this.protocolClient.socket, {
           secureContext: tls.createSecureContext({
-            secureProtocol: 'TLSv1_method',
             cert: pairRecord.RootCertificate,
             key: pairRecord.RootPrivateKey,
           }),
