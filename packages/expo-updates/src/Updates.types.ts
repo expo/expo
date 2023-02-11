@@ -102,7 +102,7 @@ type UpdateFetchResultFailure = {
  */
 type UpdateFetchResultRollbackToEmbedded = {
   /**
-   * Signifies that the app is already running the latest available update.
+   * Signifies that the update was a roll back to the embedded update.
    */
   isRollBackToEmbedded: true;
 };
