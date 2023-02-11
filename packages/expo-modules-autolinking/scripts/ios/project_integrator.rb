@@ -132,6 +132,8 @@ module Expo
       end
     end
 
+    # Makes sure that the build script configuring the project is installed,
+    # is up-to-date and is placed before the "Compile Sources" phase.
     def self.integrate_build_script(autolinking_manager, project, target, native_target)
       build_phases = native_target.build_phases
       modules_provider_path = autolinking_manager.modules_provider_path(target)
@@ -142,6 +144,7 @@ module Expo
       }
 
       if xcode_build_script.nil?
+        # Inform the user that we added a build script.
         puts "[Expo] ".blue << "Installing the build script for target " << native_target.name.green
 
         # Create a new build script in the target, it's added as the last phase
@@ -183,6 +186,9 @@ module Expo
       xcode_build_script.shell_script = generate_xcode_build_script(support_script_relative_path)
     end
 
+    # Generates the shell script of the build script phase.
+    # Try not to modify this since it involves changes in the pbxproj so
+    # it's better to modify the support script instead, if possible.
     def self.generate_xcode_build_script(script_relative_path)
       <<~XCODE_BUILD_SCRIPT
       # This script configures Expo modules
@@ -190,6 +196,7 @@ module Expo
       XCODE_BUILD_SCRIPT
     end
 
+    # Generates the support script that is executed by the build script phase.
     def self.generate_support_script(autolinking_manager, modules_provider_path)
       args = autolinking_manager.base_command_args.map { |arg| "\"#{arg}\"" }.join(' ')
 
@@ -220,7 +227,7 @@ module Expo
           echo "Node found at: ${NODE_BINARY}"
         else
           cat >&2 << NODE_NOT_FOUND
-      error: Could not find "node" while running an Xcode build script.
+      error: Could not find "node" executable while running an Xcode build script.
       You need to specify the path to your Node.js executable by defining an environment variable named NODE_BINARY in your project's .xcode.env or .xcode.env.local file.
       You can set this up quickly by running:
 
@@ -238,9 +245,9 @@ module Expo
         fi
       }
 
-      node --no-warnings --eval "require(\'expo-modules-autolinking\')(process.argv.slice(1))" generate-package-list #{args} --target "#{modules_provider_path}"
+      node --eval "require(\'expo-modules-autolinking\')(process.argv.slice(1))" generate-package-list #{args} --target "#{modules_provider_path}"
       SUPPORT_SCRIPT
     end
 
-  end # module ExpoAutolinkingExtension
+  end # module ProjectIntegrator
 end # module Expo

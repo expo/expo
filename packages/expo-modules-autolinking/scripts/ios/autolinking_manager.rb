@@ -131,36 +131,6 @@ module Expo
       end
     end
 
-    private def node_command_args(command_name)
-      search_paths = @options.fetch(:searchPaths, @options.fetch(:modules_paths, nil))
-      ignore_paths = @options.fetch(:ignorePaths, nil)
-      exclude = @options.fetch(:exclude, [])
-
-      args = [
-        'node',
-        '--no-warnings',
-        '--eval',
-        'require(\'expo-modules-autolinking\')(process.argv.slice(1))',
-        command_name,
-        '--platform',
-        'ios'
-      ]
-
-      if !search_paths.nil? && !search_paths.empty?
-        args.concat(search_paths)
-      end
-
-      if !ignore_paths.nil? && !ignore_paths.empty?
-        args.concat(['--ignore-paths'], ignore_paths)
-      end
-
-      if !exclude.nil? && !exclude.empty?
-        args.concat(['--exclude'], exclude)
-      end
-
-      args
-    end
-
     public def base_command_args
       search_paths = @options.fetch(:searchPaths, @options.fetch(:modules_paths, nil))
       ignore_paths = @options.fetch(:ignorePaths, nil)
@@ -180,6 +150,18 @@ module Expo
       end
 
       args
+    end
+
+    private def node_command_args(command_name)
+      eval_command_args = [
+        'node',
+        '--eval',
+        'require(\'expo-modules-autolinking\')(process.argv.slice(1))',
+        command_name,
+        '--platform',
+        'ios'
+      ]
+      return eval_command_args.concat(base_command_args())
     end
 
     private def resolve_command_args
