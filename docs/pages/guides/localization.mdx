@@ -274,12 +274,11 @@ Because of this, each `<Text>` tag needs to have the `textDirection: left` or `t
 It's best to define this style in your custom reusable `<Text>` component that you can then import everywhere you need to render text strings.
 
 ```tsx MobileText.tsx
-import { Text as RNText, TextProps as RNTextProps, Platform } from 'react-native';
-import { getLocales } from "expo-localization";
+import { Text as RNText, TextProps as RNTextProps } from 'react-native';
 
-const MobileText = ({props}: RNTextProps) => {
-    return <RNText style={{ textDirection: left, ...props.style }} {...props}>
-}
+const MobileText = (props: RNTextProps) => {
+  return <RNText style={{ textAlign: 'left', ...props.style }} {...props} />;
+};
 export default MobileText;
 ```
 
