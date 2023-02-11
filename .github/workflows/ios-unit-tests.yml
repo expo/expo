@@ -5,6 +5,7 @@ on:
   pull_request:
     paths:
       - .github/workflows/ios-unit-tests.yml
+      - apps/native-tests/**
       - ios/**
       - packages/**/ios/**
       - tools/src/dynamic-macros/**
@@ -20,6 +21,7 @@ on:
     branches: [main]
     paths:
       - .github/workflows/ios-unit-tests.yml
+      - apps/native-tests/**
       - ios/**
       - packages/**/ios/**
       - tools/src/dynamic-macros/**
