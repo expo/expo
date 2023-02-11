@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed convertible implementation for `URL` type to support unencoded UTF8 urls and file paths.
+
 ### 💡 Others
 
 ## 1.2.1 — 2023-02-09
