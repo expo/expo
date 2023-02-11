@@ -2013,6 +2013,7 @@
 			buildPhases = (
 				F9FE21357CDA656D80CBF8B4 /* [CP] Check Pods Manifest.lock */,
 				78CEE2F21ACDF25E0095B124 /* Generate Dynamic Macros */,
+				C34A59B047C2543CA455E850 /* [Expo] Configure project */,
 				78CEE2BC1ACD07D70095B124 /* Sources */,
 				78CEE2BD1ACD07D70095B124 /* Frameworks */,
 				78CEE2BE1ACD07D70095B124 /* Resources */,
@@ -2036,6 +2037,7 @@
 			buildConfigurationList = B505BA1720CAF77A0046ACFB /* Build configuration list for PBXNativeTarget "Tests" */;
 			buildPhases = (
 				B9B26483058A19438FCA6016 /* [CP] Check Pods Manifest.lock */,
+				B915B6736A073215103D76E4 /* [Expo] Configure project */,
 				B505BA0A20CAF77A0046ACFB /* Sources */,
 				B505BA0B20CAF77A0046ACFB /* Frameworks */,
 				B505BA0C20CAF77A0046ACFB /* Resources */,
@@ -2057,6 +2059,7 @@
 			buildConfigurationList = B513334A1CE649FE00E9FC9E /* Build configuration list for PBXNativeTarget "ExponentIntegrationTests" */;
 			buildPhases = (
 				2DA4AA338E6D5422567DE1EB /* [CP] Check Pods Manifest.lock */,
+				A04F3C9AC66B709E16F4F5AB /* [Expo] Configure project */,
 				B513333C1CE649FE00E9FC9E /* Sources */,
 				B513333D1CE649FE00E9FC9E /* Frameworks */,
 				B513333E1CE649FE00E9FC9E /* Resources */,
@@ -2077,6 +2080,7 @@
 			buildPhases = (
 				1638D644853BCA1A2A438A9B /* [CP] Check Pods Manifest.lock */,
 				F14217DC262CB68600BB97E6 /* Generate Dynamic Macros */,
+				16FCED03E1D4FCCEA7984FA4 /* [Expo] Configure project */,
 				F14217DD262CB68600BB97E6 /* Sources */,
 				F142190B262CB68600BB97E6 /* Frameworks */,
 				F142190E262CB68600BB97E6 /* Resources */,
@@ -2286,6 +2290,25 @@
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
 		};
+		16FCED03E1D4FCCEA7984FA4 /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-Expo\\ Go-Expo\\ Go\\ (versioned)/expo-configure-project.sh\"\n";
+		};
 		2DA4AA338E6D5422567DE1EB /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2480,6 +2503,25 @@
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Expo Go (unversioned)/Pods-Expo Go-Expo Go (unversioned)-resources.sh\"\n";
 			showEnvVarsInLog = 0;
 		};
+		A04F3C9AC66B709E16F4F5AB /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-ExponentIntegrationTests/expo-configure-project.sh\"\n";
+		};
 		B2C4E74600B5875B0118890B /* [CP] Embed Pods Frameworks */ = {
 			isa = PBXShellScriptBuildPhase;
 			buildActionMask = 2147483647;
@@ -2497,6 +2539,25 @@
 			shellPath = /bin/sh;
 			shellScript = "\"${PODS_ROOT}/Target Support Files/Pods-Expo Go-Tests/Pods-Expo Go-Tests-frameworks.sh\"\n";
 			showEnvVarsInLog = 0;
+		};
+		B915B6736A073215103D76E4 /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-Expo\\ Go-Tests/expo-configure-project.sh\"\n";
 		};
 		B9B26483058A19438FCA6016 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -2519,6 +2580,25 @@
 			shellPath = /bin/sh;
 			shellScript = "diff \"${PODS_PODFILE_DIR_PATH}/Podfile.lock\" \"${PODS_ROOT}/Manifest.lock\" > /dev/null\nif [ $? != 0 ] ; then\n    # print error to STDERR\n    echo \"error: The sandbox is not in sync with the Podfile.lock. Run 'pod install' or update your CocoaPods installation.\" >&2\n    exit 1\nfi\n# This output is used by Xcode 'outputs' to avoid re-running this script phase.\necho \"SUCCESS\" > \"${SCRIPT_OUTPUT_FILE_0}\"\n";
 			showEnvVarsInLog = 0;
+		};
+		C34A59B047C2543CA455E850 /* [Expo] Configure project */ = {
+			isa = PBXShellScriptBuildPhase;
+			alwaysOutOfDate = 1;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			inputFileListPaths = (
+			);
+			inputPaths = (
+			);
+			name = "[Expo] Configure project";
+			outputFileListPaths = (
+			);
+			outputPaths = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+			shellPath = /bin/sh;
+			shellScript = "# This script configures Expo modules\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-Expo\\ Go-Expo\\ Go\\ (unversioned)/expo-configure-project.sh\"\n";
 		};
 		C9D8FB1F6F0BC1A178671F84 /* [CP] Copy Pods Resources */ = {
 			isa = PBXShellScriptBuildPhase;
