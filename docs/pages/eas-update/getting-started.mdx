@@ -86,15 +86,50 @@ The `channel` allows you to point updates at builds. For example, if we set up a
 </Step>
 
 <Step label="4">
-## Build the project
+## Run prebuild
 
-Run the following commands in order to get the app running on iOS or Android.
+This is run automatically when executing `npx expo run:ios` or `npx expo run:android`; however, we call this step out separately in this guide. In SDK 48 and later, this step adds our desired request headers to **Expo.plist** and **AndroidManifest.xml** in the iOS and Android builds, respectively.
 
 <Terminal
   cmd={[
     '# Run prebuild to install and configure the ios and android directories, and install Cocoapods for iOS.',
     '$ npx expo prebuild',
     '',
+  ]}
+  cmdCopy="npx expo prebuild"
+/>
+
+After running the above, inspect **iOS/&lt;your project name&gt;/Supporting/Expo.plist** and **android/app/src/main/AndroidManifest.xml** to see the changes that were added.
+
+{/* prettier-ignore */}
+```xml Expo.plist
+<!-- @hide ... your existing configuration --> <!-- @end -->
+    <!-- @info New --> <key>EXUpdatesRequestHeaders</key> <!-- @end -->
+    <!-- @info New --> <dict> <!-- @end -->
+      <!-- @info New --> <key>expo-channel-name</key> <!-- @end -->
+      <!-- @info New --> <string>main</string> <!-- @end -->
+    <!-- @info New --> </dict> <!-- @end -->
+<!-- @hide ... your existing configuration --><!-- @end -->
+```
+
+{/* prettier-ignore */}
+```xml AndroidManifest.xml
+<!-- @hide ... your existing configuration --> <!-- @end -->
+    <!-- @info New --> <meta-data android:name="expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY" android:value="{&quot;expo-channel-name&quot;:&quot;main&quot;}"/> <!-- @end -->
+<!-- @hide ... your existing configuration --><!-- @end -->
+```
+
+> If you do not see the above lines added to these files, it means that you are using SDK 47 or earlier, and you should add these lines manually.
+
+</Step>
+
+<Step label="5">
+## Build the project
+
+Run the following commands in order to get the app running on iOS or Android.
+
+<Terminal
+  cmd={[
     '# iOS: Build and run the app on a local iOS Simulator.',
     '$ npx expo run:ios --configuration Release',
     '',
@@ -102,7 +137,7 @@ Run the following commands in order to get the app running on iOS or Android.
     '$ npx expo run:android --variant release',
     '',
   ]}
-  cmdCopy="npx expo prebuild && npx expo run:ios --configuration Release && npx expo run:android --variant release"
+  cmdCopy="npx expo run:ios --configuration Release && npx expo run:android --variant release"
 />
 
 (We build the release version of the app, not the debug version. By default, a debug build expects to connect to a local React Native packager to load the application bundle, and so will not connect to the EAS update service.
@@ -111,7 +146,7 @@ It is possible to create a "native debug" build that will connect to the EAS upd
 
 </Step>
 
-<Step label="5">
+<Step label="6">
 
 Make the modifications below to **App.js** so that the app uses the `Updates` API to show if it has downloaded and run an update.
 
@@ -166,7 +201,7 @@ The app should appear as in the screenshot below.
   style={{maxHeight: 600, width: 'auto'}}/>
 </Step>
 
-<Step label="6">
+<Step label="7">
 
 ## Publish an update
 
