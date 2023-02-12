@@ -1,6 +1,6 @@
 {
   "name": "expo-module-template",
-  "version": "10.3.0",
+  "version": "10.7.16",
   "description": "ExpoModuleTemplate standalone module",
   "main": "build/ModuleTemplate.js",
   "types": "build/ModuleTemplate.d.ts",
@@ -22,10 +22,6 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/module-template",
   "dependencies": {},
-  "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
-  },
-  "peerDependencies": {
-    "expo": "*"
-  }
+  "devDependencies": {},
+  "peerDependencies": {}
 }

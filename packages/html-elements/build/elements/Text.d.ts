@@ -11,11 +11,12 @@ export declare const BlockQuote: React.ComponentType<BlockQuoteProps>;
 export declare const BR: React.ComponentType<TextProps>;
 export declare const Mark: React.ComponentType<TextProps>;
 export declare const Code: React.ComponentType<TextProps>;
-declare type PreProps = TextProps | ViewProps;
+type PreProps = TextProps | ViewProps;
 export declare const Pre: React.ComponentType<PreProps>;
 export declare const Time: React.ComponentType<TimeProps>;
 export declare const Strong: React.ComponentType<TextProps>;
 export declare const Del: React.ComponentType<TextProps>;
 export declare const EM: React.ComponentType<TextProps>;
+export declare const Span: React.ComponentType<TextProps>;
 export {};
 //# sourceMappingURL=Text.d.ts.map

@@ -37,8 +37,6 @@ const Button: React.FunctionComponent<TouchableOpacityProps> = (props) => {
 
 const ActionSheetProviderScreen = () => (
   <ActionSheetProvider>
-    {/*
-    // @ts-ignore */}
     <App />
   </ActionSheetProvider>
 );
@@ -103,7 +101,7 @@ interface State {
 
 // @ts-ignore
 @connectActionSheet
-class App extends React.Component<{ showActionSheetWithOptions: any }, State> {
+class App extends React.Component<{ showActionSheetWithOptions?: any }, State> {
   readonly state: State = {};
 
   _updateSelectionText = (selectedIndex: number) => {

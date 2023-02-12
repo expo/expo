@@ -1,7 +1,6 @@
 import { Camera, CameraType } from 'expo-camera';
 import * as GL from 'expo-gl';
 import { GLView } from 'expo-gl';
-import * as Permissions from 'expo-permissions';
 import React from 'react';
 import { StyleSheet, Text, TouchableOpacity, View } from 'react-native';
 
@@ -54,7 +53,7 @@ class GLCameraScreen extends React.Component<{}, State> {
   }
 
   async createCameraTexture(): Promise<WebGLTexture> {
-    const { status } = await Permissions.askAsync(Permissions.CAMERA);
+    const { status } = await Camera.requestCameraPermissionsAsync();
 
     if (status !== 'granted') {
       throw new Error('Denied camera permissions!');

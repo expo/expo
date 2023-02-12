@@ -37,12 +37,12 @@ export async function versionExpoModulesProviderAsync(sdkNumber: number) {
     transforms: {
       content: [
         {
-          find: /\bimport (Expo|EX)/g,
+          find: /\bimport (Expo|EX|EAS)/g,
           replaceWith: `import ${prefix}$1`,
         },
         {
-          find: /@objc\((Expo.*?)\)/g,
-          replaceWith: `@objc(${prefix}$1)`,
+          find: /@objc\((Expo|EAS)(.*?)\)/g,
+          replaceWith: `@objc(${prefix}$1$2)`,
         },
       ],
     },
@@ -60,7 +60,7 @@ export async function versionExpoModulesProviderAsync(sdkNumber: number) {
     homepage: 'https://expo.dev',
     license: 'MIT',
     platforms: {
-      ios: '12.0',
+      ios: '13.0',
     },
     source: {
       git: 'https://github.com/expo/expo.git',

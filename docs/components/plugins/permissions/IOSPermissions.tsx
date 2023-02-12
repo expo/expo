@@ -1,42 +1,42 @@
-import React from 'react';
+import { useMemo } from 'react';
 
 import { IOSPermission, iosPermissions, PermissionReference } from './data';
 
-import Permalink from '~/components/Permalink';
-import { InlineCode } from '~/components/base/code';
+import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
+import { P, CODE, createPermalinkedComponent } from '~/ui/components/Text';
 
 type IOSPermissionsProps = {
   permissions: PermissionReference<IOSPermission>[];
 };
 
+const PermissionPermalink = createPermalinkedComponent(P, {
+  baseNestingLevel: 4,
+});
+
 export function IOSPermissions(props: IOSPermissionsProps) {
-  const list = React.useMemo(() => getPermissions(props.permissions), [props.permissions]);
+  const list = useMemo(() => getPermissions(props.permissions), [props.permissions]);
 
   return (
-    <table>
-      <thead>
-        <tr>
-          <th>Info.plist Key</th>
-          <th>Description</th>
-        </tr>
-      </thead>
+    <Table>
+      <TableHead>
+        <Row>
+          <HeaderCell>Info.plist Key</HeaderCell>
+          <HeaderCell>Description</HeaderCell>
+        </Row>
+      </TableHead>
       <tbody>
         {list.map(permission => (
-          <tr key={permission.name}>
-            <td>
-              <Permalink id={`permission-${permission.name.toLowerCase()}`}>
-                <span>
-                  <InlineCode>{permission.name}</InlineCode>
-                </span>
-              </Permalink>
-            </td>
-            <td>
-              <p>{permission.description}</p>
-            </td>
-          </tr>
+          <Row key={permission.name}>
+            <Cell>
+              <PermissionPermalink id={`permission-${permission.name.toLowerCase()}`}>
+                <CODE>{permission.name}</CODE>
+              </PermissionPermalink>
+            </Cell>
+            <Cell>{permission.description}</Cell>
+          </Row>
         ))}
       </tbody>
-    </table>
+    </Table>
   );
 }
 

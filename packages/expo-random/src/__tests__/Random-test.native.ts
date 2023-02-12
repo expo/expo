@@ -15,6 +15,7 @@ it(`returns an array with the desired number of bytes`, async () => {
 });
 
 it(`accepts valid byte counts`, async () => {
+  ExpoRandom.getRandomBase64StringAsync.mockImplementation(async () => '');
   await expect(Random.getRandomBytesAsync(0));
   await expect(Random.getRandomBytesAsync(1024));
   await expect(Random.getRandomBytesAsync(512.5));

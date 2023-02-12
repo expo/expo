@@ -3,8 +3,8 @@
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
 
+#import "RNGHTouchEventType.h"
 #import "RNGestureHandlerState.h"
-#import "RNTouchEventType.h"
 
 @interface RNGestureHandlerEventExtraData : NSObject
 
@@ -36,7 +36,7 @@
                                 withAnchorPoint:(CGPoint)anchorPoint
                                    withVelocity:(CGFloat)velocity
                             withNumberOfTouches:(NSUInteger)numberOfTouches;
-+ (RNGestureHandlerEventExtraData *)forEventType:(RNTouchEventType)eventType
++ (RNGestureHandlerEventExtraData *)forEventType:(RNGHTouchEventType)eventType
                              withChangedPointers:(NSArray<NSDictionary *> *)changedPointers
                                  withAllPointers:(NSArray<NSDictionary *> *)allPointers
                              withNumberOfTouches:(NSUInteger)numberOfTouches;
@@ -48,11 +48,10 @@
 - (instancetype)initWithReactTag:(NSNumber *)reactTag
                       handlerTag:(NSNumber *)handlerTag
                            state:(RNGestureHandlerState)state
-                       extraData:(RNGestureHandlerEventExtraData*)extraData
+                       extraData:(RNGestureHandlerEventExtraData *)extraData
                    coalescingKey:(uint16_t)coalescingKey NS_DESIGNATED_INITIALIZER;
 
 @end
-
 
 @interface RNGestureHandlerStateChange : NSObject <RCTEvent>
 
@@ -60,6 +59,6 @@
                       handlerTag:(NSNumber *)handlerTag
                            state:(RNGestureHandlerState)state
                        prevState:(RNGestureHandlerState)prevState
-                       extraData:(RNGestureHandlerEventExtraData*)extraData NS_DESIGNATED_INITIALIZER;
+                       extraData:(RNGestureHandlerEventExtraData *)extraData NS_DESIGNATED_INITIALIZER;
 
 @end

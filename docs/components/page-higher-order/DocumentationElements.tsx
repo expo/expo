@@ -1,11 +1,13 @@
 import GithubSlugger from 'github-slugger';
-import { useRouter } from 'next/router';
-import React, { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
 
 import { HeadingManager } from '~/common/headingManager';
 import DocumentationPage from '~/components/DocumentationPage';
 import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
+import { PageApiVersionProvider } from '~/providers/page-api-version';
+import { PageMetadataContext } from '~/providers/page-metadata';
 import { PageMetadata, RemarkHeading } from '~/types/common';
+import { AnchorContext } from '~/ui/components/Text';
 
 type DocumentationElementsProps = PropsWithChildren<{
   meta: PageMetadata;
@@ -13,24 +15,29 @@ type DocumentationElementsProps = PropsWithChildren<{
 }>;
 
 export default function DocumentationElements(props: DocumentationElementsProps) {
-  const router = useRouter();
-  const manager = new HeadingManager(new GithubSlugger(), {
+  const slugger = new GithubSlugger();
+  const manager = new HeadingManager(slugger, {
     ...props.meta,
     headings: props.headings,
   });
 
   return (
-    <HeadingsContext.Provider value={manager}>
-      <DocumentationPage
-        title={props.meta.title || ''}
-        url={router}
-        asPath={router.asPath}
-        packageName={props.meta.packageName}
-        sourceCodeUrl={props.meta.sourceCodeUrl}
-        tocVisible={!props.meta.hideTOC}
-        hideFromSearch={props.meta.hideFromSearch}>
-        {props.children}
-      </DocumentationPage>
-    </HeadingsContext.Provider>
+    <AnchorContext.Provider value={slugger}>
+      <HeadingsContext.Provider value={manager}>
+        <PageMetadataContext.Provider value={props.meta}>
+          <PageApiVersionProvider>
+            <DocumentationPage
+              title={props.meta.title || ''}
+              description={props.meta.description || ''}
+              sourceCodeUrl={props.meta.sourceCodeUrl}
+              tocVisible={!props.meta.hideTOC}
+              hideFromSearch={props.meta.hideFromSearch}
+              packageName={props.meta.packageName}>
+              {props.children}
+            </DocumentationPage>
+          </PageApiVersionProvider>
+        </PageMetadataContext.Provider>
+      </HeadingsContext.Provider>
+    </AnchorContext.Provider>
   );
 }

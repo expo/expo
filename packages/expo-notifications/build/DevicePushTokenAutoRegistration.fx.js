@@ -14,7 +14,7 @@ async function updatePushTokenAsync(token) {
 /**
  * Sets the registration information so that the device push token gets pushed
  * to the given registration endpoint
- * @param registration Registration endpoint to inform of new tokens
+ * @param enabled
  */
 export async function setAutoServerRegistrationEnabledAsync(enabled) {
     // We are overwriting registration, so we shouldn't let
@@ -25,9 +25,7 @@ export async function setAutoServerRegistrationEnabledAsync(enabled) {
     }
     await ServerRegistrationModule.setRegistrationInfoAsync(enabled ? JSON.stringify({ isEnabled: enabled }) : null);
 }
-/**
- * This function is exported only for testing purposes.
- */
+// note(Chmiela): This function is exported only for testing purposes.
 export async function __handlePersistedRegistrationInfoAsync(registrationInfo) {
     if (!registrationInfo) {
         // No registration info, nothing to do

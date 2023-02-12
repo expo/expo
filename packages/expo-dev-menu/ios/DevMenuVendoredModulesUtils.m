@@ -2,11 +2,15 @@
 
 #import "DevMenuVendoredModulesUtils.h"
 
+#import <React/RCTBridge+Private.h>
+
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Weverything"
 
 #if __has_include("DevMenuREAModule.h")
 #import "DevMenuREAModule.h"
+#import "DevMenuREAEventDispatcher.h"
+#import "DevMenuREAUIManager.h"
 #endif
 
 #if __has_include("DevMenuRNGestureHandlerModule.h")
@@ -25,11 +29,17 @@
 
 @implementation DevMenuVendoredModulesUtils
 
-+ (NSArray<id<RCTBridgeModule>>*)vendoredModules
++ (NSArray<id<RCTBridgeModule>>*)vendoredModules:(RCTBridge *)bridge addReanimated2:(BOOL)addReanimated2
 {
   NSMutableArray<id<RCTBridgeModule>> *modules = [NSMutableArray new];
 #if __has_include("DevMenuREAModule.h")
-  [modules addObject:[DevMenuREAModule new]];
+  if (addReanimated2) {
+    // Creates a `DevMenuREAEventDispatcher`
+    // It was moved from the `REAJSIExecutorRuntimeInstaller` function
+    [modules addObject:[DevMenuREAEventDispatcher new]];
+
+    [modules addObject:[DevMenuREAModule new]];
+  }
 #endif
 #if __has_include("DevMenuRNGestureHandlerModule.h")
   [modules addObject:[DevMenuRNGestureHandlerModule new]];

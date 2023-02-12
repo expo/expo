@@ -55,6 +55,52 @@ class UpdatesConfigurationInstrumentationTest {
   }
 
   @Test
+  fun test_defaultValues() {
+    val testPackageName = "test"
+    val context = mockk<Context> {
+      every { packageName } returns testPackageName
+      every { packageManager } returns mockk {
+        every { getApplicationInfo(testPackageName, PackageManager.GET_META_DATA) } returns mockk {
+          metaData = Bundle()
+        }
+      }
+    }
+
+    val config = UpdatesConfiguration(context, null)
+    Assert.assertEquals(true, config.isEnabled)
+    Assert.assertEquals(false, config.expectsSignedManifest)
+    Assert.assertEquals("default", config.releaseChannel)
+    Assert.assertEquals(0, config.launchWaitMs)
+    Assert.assertEquals(UpdatesConfiguration.CheckAutomaticallyConfiguration.ALWAYS, config.checkOnLaunch)
+    Assert.assertEquals(true, config.hasEmbeddedUpdate)
+    Assert.assertEquals(false, config.codeSigningIncludeManifestResponseCertificateChain)
+  }
+
+  @Test
+  fun test_primitiveTypeFields_nonDefaultValues() {
+    val testPackageName = "test"
+    val context = mockk<Context> {
+      every { packageName } returns testPackageName
+      every { packageManager } returns mockk {
+        every { getApplicationInfo(testPackageName, PackageManager.GET_META_DATA) } returns mockk {
+          metaData = Bundle().apply {
+            putBoolean("expo.modules.updates.ENABLED", false)
+            putInt("expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS", 1000)
+            putBoolean("expo.modules.updates.HAS_EMBEDDED_UPDATE", false)
+            putBoolean("expo.modules.updates.CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN", true)
+          }
+        }
+      }
+    }
+
+    val config = UpdatesConfiguration(context, null)
+    Assert.assertEquals(false, config.isEnabled)
+    Assert.assertEquals(1000, config.launchWaitMs)
+    Assert.assertEquals(false, config.hasEmbeddedUpdate)
+    Assert.assertEquals(true, config.codeSigningIncludeManifestResponseCertificateChain)
+  }
+
+  @Test
   fun test_initialization_mapTakesPrecedenceOverContext() {
     val testPackageName = "test"
 

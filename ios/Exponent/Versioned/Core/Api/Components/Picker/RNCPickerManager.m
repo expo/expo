@@ -42,5 +42,18 @@ RCT_CUSTOM_VIEW_PROPERTY(fontFamily, NSString, RNCPicker)
 {
   view.font = [RCTFont updateFont:view.font withFamily:json ?: defaultView.font.familyName];
 }
+RCT_CUSTOM_VIEW_PROPERTY(themeVariant, NSString, RNCPicker)
+{
+    if (@available(iOS 13.4, *)) {
+            if (json) {
+                if ([json isEqual:@"dark"])
+                    view.overrideUserInterfaceStyle = UIUserInterfaceStyleDark;
+                else if ([json isEqual:@"light"])
+                    view.overrideUserInterfaceStyle = UIUserInterfaceStyleLight;
+                else
+                    view.overrideUserInterfaceStyle = UIUserInterfaceStyleUnspecified;
+            }
+        }
+}
 
 @end

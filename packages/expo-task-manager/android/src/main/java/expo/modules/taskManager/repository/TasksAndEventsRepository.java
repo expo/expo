@@ -5,13 +5,13 @@ import android.content.SharedPreferences;
 import android.content.pm.PackageManager;
 import android.os.Bundle;
 
-import org.unimodules.interfaces.taskManager.TaskInterface;
-
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
 
 import androidx.annotation.NonNull;
+
+import expo.modules.interfaces.taskManager.TaskInterface;
 
 /**
  * Class used to store Tasks and Events for TaskManager.

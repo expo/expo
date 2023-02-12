@@ -8,4 +8,14 @@ fragment CommonAppData on App {
   description
   sdkVersion
   privacy
+  updateBranches(limit: 100, offset: 0) {
+    id
+    name
+    updates(
+      limit: 1
+      offset: 0
+    ) {
+      id
+    }
+  }
 }

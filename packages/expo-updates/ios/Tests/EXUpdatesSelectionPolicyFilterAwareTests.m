@@ -163,6 +163,12 @@
   XCTAssertFalse([_selectionPolicy shouldLoadNewUpdate:_updateRollout1 withLaunchedUpdate:_updateRollout1 filters:_manifestFilters]);
 }
 
+- (void)testShouldLoadNewUpdate_NormalCase_OlderUpdate
+{
+  // this could happen if the embedded update is newer than the most recently published update
+  XCTAssertFalse([_selectionPolicy shouldLoadNewUpdate:_updateRollout1 withLaunchedUpdate:_updateRollout2 filters:_manifestFilters]);
+}
+
 - (void)testShouldLoadNewUpdate_NoneMatchingFilters
 {
   XCTAssertTrue([_selectionPolicy shouldLoadNewUpdate:_updateRollout1 withLaunchedUpdate:_updateDefault2 filters:_manifestFilters], @"should choose to load an older update if the current update doesn't match the manifest filters");

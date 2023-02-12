@@ -6,6 +6,9 @@ import expo.modules.updates.UpdatesConfiguration
 import org.apache.commons.io.IOUtils
 import org.json.JSONObject
 
+/**
+ * Helper object for accessing and memoizing the manifest embedded in the application package.
+ */
 object EmbeddedManifest {
   private val TAG = EmbeddedManifest::class.java.simpleName
 

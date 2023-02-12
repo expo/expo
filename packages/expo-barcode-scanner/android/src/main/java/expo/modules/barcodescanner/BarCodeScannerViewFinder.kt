@@ -1,5 +1,6 @@
 package expo.modules.barcodescanner
 
+import android.annotation.SuppressLint
 import android.content.Context
 import android.graphics.SurfaceTexture
 import android.hardware.Camera
@@ -7,11 +8,11 @@ import android.hardware.Camera.PreviewCallback
 import android.util.Log
 import android.view.TextureView
 import android.view.TextureView.SurfaceTextureListener
-import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.errors.ModuleDestroyedException
 import expo.modules.interfaces.barcodescanner.BarCodeScannerInterface
 import expo.modules.interfaces.barcodescanner.BarCodeScannerProviderInterface
 import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
+import expo.modules.kotlin.AppContext
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.cancel
@@ -19,17 +20,15 @@ import kotlinx.coroutines.isActive
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 
+@SuppressLint("ViewConstructor")
 internal class BarCodeScannerViewFinder(
   context: Context,
   private var cameraType: Int,
   private var barCodeScannerView: BarCodeScannerView,
-  private val moduleRegistryDelegate: ModuleRegistryDelegate
+  private val appContext: AppContext,
 ) : TextureView(context), SurfaceTextureListener, PreviewCallback {
   private var finderSurfaceTexture: SurfaceTexture? = null
   private val coroutineScope = CoroutineScope(Dispatchers.Default)
-
-  private inline fun <reified T> moduleRegistry() =
-    moduleRegistryDelegate.getFromModuleRegistry<T>()
 
   @Volatile
   private var isStarting = false
@@ -42,7 +41,8 @@ internal class BarCodeScannerViewFinder(
   private var camera: Camera? = null
 
   // Scanner instance for the barcode scanning
-  private lateinit var barCodeScanner: BarCodeScannerInterface
+  private var barCodeScanner: BarCodeScannerInterface? = null
+
   override fun onSurfaceTextureAvailable(surface: SurfaceTexture, width: Int, height: Int) {
     finderSurfaceTexture = surface
     startCamera()
@@ -99,10 +99,11 @@ internal class BarCodeScannerViewFinder(
 
   @Synchronized
   private fun startCamera() {
-    if (!isStarting) {
+    if (!isStarting && !isStopping) {
       isStarting = true
       try {
-        ExpoBarCodeScanner.instance.acquireCameraInstance(cameraType)?.run {
+        camera = ExpoBarCodeScanner.instance.acquireCameraInstance(cameraType)
+        camera?.run {
           val temporaryParameters = parameters
           // set autofocus
           val focusModes = temporaryParameters.supportedFocusModes
@@ -162,8 +163,8 @@ internal class BarCodeScannerViewFinder(
    * Additionally supports [codabar, code128, upc_a]
    */
   private fun initBarCodeScanner() {
-    val barCodeScannerProvider: BarCodeScannerProviderInterface by moduleRegistry()
-    barCodeScanner = barCodeScannerProvider.createBarCodeDetectorWithContext(context)
+    val barCodeScannerProvider = appContext.legacyModule<BarCodeScannerProviderInterface>()
+    barCodeScanner = barCodeScannerProvider?.createBarCodeDetectorWithContext(context)
   }
 
   override fun onPreviewFrame(data: ByteArray, innerCamera: Camera) {
@@ -174,7 +175,7 @@ internal class BarCodeScannerViewFinder(
   }
 
   fun setBarCodeScannerSettings(settings: BarCodeScannerSettings?) {
-    barCodeScanner.setSettings(settings)
+    barCodeScanner?.setSettings(settings)
   }
 
   private fun scanForBarcodes(camera: Camera?, mImageData: ByteArray) {
@@ -196,7 +197,7 @@ internal class BarCodeScannerViewFinder(
           val width = size.width
           val height = size.height
           val properRotation = ExpoBarCodeScanner.instance.rotation
-          val result = barCodeScanner.scan(
+          val result = barCodeScanner?.scan(
             mImageData, width,
             height, properRotation
           )

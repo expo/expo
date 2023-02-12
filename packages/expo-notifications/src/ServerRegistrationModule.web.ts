@@ -22,7 +22,7 @@ export default {
         installationId = uuidv4();
         localStorage.setItem(INSTALLATION_ID_KEY, installationId);
       }
-    } catch (error) {
+    } catch {
       installationId = getFallbackInstallationId();
     }
 

@@ -2,23 +2,23 @@ import * as React from 'react';
 import { StyleSheet, View, ViewStyle } from 'react-native';
 
 import { defaultImage } from './images';
-import { ImageProps } from './types';
+import { ImageTestComponent, ImageTestProps } from './types';
 
 type PropsType = {
   style?: ViewStyle;
-  imageProps: ImageProps;
-  ImageComponent: React.ComponentType<any>;
+  imageProps: ImageTestProps;
+  ImageComponent: ImageTestComponent;
   loadOnDemand?: boolean;
 };
 
 export default class ImageTestView extends React.PureComponent<PropsType> {
   render() {
     const { imageProps, ImageComponent, loadOnDemand } = this.props;
-    const { style, defaultStyle, source, ...otherImageProps } = imageProps;
+    const { style, source, ...otherImageProps } = imageProps;
     return (
       <View style={styles.container}>
         <ImageComponent
-          style={[defaultStyle || styles.image, defaultStyle ? undefined : this.props.style, style]}
+          style={[styles.image, this.props.style, style]}
           source={source && !loadOnDemand ? source : defaultImage}
           {...otherImageProps}
         />

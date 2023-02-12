@@ -49,7 +49,7 @@ export default {
                 localStorage.setItem(ID_KEY, installationId);
             }
         }
-        catch (error) {
+        catch {
             installationId = _sessionId;
         }
         finally {

@@ -1,12 +1,13 @@
-import path from 'path';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import xcode from 'xcode';
 import glob from 'glob-promise';
+import once from 'lodash/once';
 import ncp from 'ncp';
+import path from 'path';
+import xcode from 'xcode';
 
-import * as Directories from '../Directories';
 import { EXPO_DIR } from '../Constants';
+import * as Directories from '../Directories';
 
 interface VendoredModuleUpdateStep {
   iosPrefix?: string;
@@ -19,9 +20,13 @@ interface VendoredModuleUpdateStep {
   recursive?: boolean;
   updatePbxproj?: boolean;
 
+  // should cleanup target path before vendoring
+  cleanupTargetPath?: boolean;
+
   /**
    * Hook that is fired by the end of vendoring an Android file.
    * You should use it to perform some extra operations that are not covered by the main flow.
+   * @deprecated Use {@link VendoredModuleConfig.moduleModifier} instead.
    */
   onDidVendorAndroidFile?: (file: string) => Promise<void>;
 }
@@ -39,6 +44,9 @@ interface VendoredModuleConfig {
   semverPrefix?: '~' | '^';
   skipCleanup?: boolean;
   steps: VendoredModuleUpdateStep[];
+  /**
+   * These modifiers are run before files are copied to the target directory.
+   */
   moduleModifier?: ModuleModifier;
   warnings?: string[];
 }
@@ -79,30 +87,6 @@ const ReanimatedModifier: ModuleModifier = async function (
   const JNIOldPackagePrefix = firstStep.sourceAndroidPackage!.split('.').join('/');
   const JNINewPackagePrefix = firstStep.targetAndroidPackage!.split('.').join('/');
 
-  const replaceHermesByJSC = async () => {
-    const nativeProxyPath = path.join(
-      clonedProjectPath,
-      'android',
-      'src',
-      'main',
-      'cpp',
-      'NativeProxy.cpp'
-    );
-    const runtimeCreatingLineJSC = 'jsc::makeJSCRuntime();';
-    const jscImportingLine = '#include <jsi/JSCRuntime.h>';
-    const runtimeCreatingLineHermes = 'facebook::hermes::makeHermesRuntime();';
-    const hermesImportingLine = '#include <hermes/hermes.h>';
-
-    const content = await fs.readFile(nativeProxyPath, 'utf8');
-    let transformedContent = content.replace(runtimeCreatingLineHermes, runtimeCreatingLineJSC);
-    transformedContent = transformedContent.replace(
-      new RegExp(hermesImportingLine, 'g'),
-      jscImportingLine
-    );
-
-    await fs.writeFile(nativeProxyPath, transformedContent, 'utf8');
-  };
-
   const replaceJNIPackages = async () => {
     const cppPattern = path.join(androidMainPathReanimated, 'cpp', '**', '*.@(h|cpp)');
     const androidCpp = await glob(cppPattern);
@@ -115,7 +99,7 @@ const ReanimatedModifier: ModuleModifier = async function (
 
   const copyCPP = async () => {
     const dirs = ['Common', 'cpp'];
-    for (let dir of dirs) {
+    for (const dir of dirs) {
       await fs.remove(path.join(androidMainPathExpoview, dir)); // clean
       // copy
       await new Promise<void>((res, rej) => {
@@ -137,7 +121,7 @@ const ReanimatedModifier: ModuleModifier = async function (
     const commonFiles = await glob(patternCommon);
     const iosOnlyFiles = await glob(patternNative);
     const files = [...commonFiles, ...iosOnlyFiles];
-    for (let file of files) {
+    for (const file of files) {
       console.log(file);
       const fileName = file.split(path.sep).slice(-1)[0];
       await fs.copy(file, path.join(clonedProjectPath, 'ios', fileName));
@@ -161,7 +145,7 @@ const ReanimatedModifier: ModuleModifier = async function (
   };
 
   const applyRNVersionPatches = async () => {
-    const rnVersion = '0.64.3';
+    const rnVersion = '0.67.2';
     const patchVersion = rnVersion.split('.')[1];
     const patchSourceDir = path.join(clonedProjectPath, 'android', 'rnVersionPatch', patchVersion);
     const javaFiles = await glob('**/*.java', {
@@ -187,56 +171,154 @@ const ReanimatedModifier: ModuleModifier = async function (
   };
 
   await applyRNVersionPatches();
-  await replaceHermesByJSC();
   await replaceJNIPackages();
   await copyCPP();
   await prepareIOSNativeFiles();
   await transformGestureHandlerImports();
 };
 
-const GestureHandlerModifier: ModuleModifier = async function (
-  moduleConfig: VendoredModuleConfig,
-  clonedProjectPath: string
-): Promise<void> {
-  const baseSrcDir = path.join(
-    clonedProjectPath,
-    'android',
-    'src',
-    'main',
-    'java',
-    'com',
-    'swmansion',
-    'gesturehandler',
-    'react'
-  );
-
+const PickerModifier: ModuleModifier = once(async function (moduleConfig, clonedProjectPath) {
   const addResourceImportAsync = async () => {
-    const files = [path.join(baseSrcDir, 'RNGestureHandlerButtonViewManager.kt')];
+    const files = [
+      `${clonedProjectPath}/android/src/main/java/com/reactnativecommunity/picker/ReactPicker.java`,
+      `${clonedProjectPath}/android/src/main/java/com/reactnativecommunity/picker/ReactPickerManager.java`,
+    ];
     await Promise.all(
-      files.map(async (file) => {
-        let content = await fs.readFile(file, 'utf8');
-        content = content.replace(/^(package .+)$/gm, '$1\nimport host.exp.expoview.R');
-        await fs.writeFile(file, content, 'utf8');
-      })
-    );
-  };
-
-  const transformImportsAsync = async () => {
-    const files = [path.join(baseSrcDir, 'RNGestureHandlerModule.kt')];
-    await Promise.all(
-      files.map(async (file) => {
-        let content = await fs.readFile(file, 'utf8');
-        content = content.replace(
-          /^import com\.swmansion\.common\./gm,
-          'import versioned.host.exp.exponent.modules.api.components.gesturehandler.'
-        );
-        await fs.writeFile(file, content, 'utf8');
-      })
+      files
+        .map((file) => path.resolve(file))
+        .map(async (file) => {
+          let content = await fs.readFile(file, 'utf8');
+          content = content.replace(/^(package .+)$/gm, '$1\n\nimport host.exp.expoview.R;');
+          await fs.writeFile(file, content, 'utf8');
+        })
     );
   };
 
   await addResourceImportAsync();
+});
+
+const GestureHandlerModifier: ModuleModifier = async function (
+  moduleConfig: VendoredModuleConfig,
+  clonedProjectPath: string
+): Promise<void> {
+  const addResourceImportAsync = async () => {
+    const files = [
+      `${clonedProjectPath}/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerButtonViewManager.kt`,
+    ];
+    await Promise.all(
+      files
+        .map((file) => path.resolve(file))
+        .map(async (file) => {
+          let content = await fs.readFile(file, 'utf8');
+          content = content.replace(/^(package .+)$/gm, '$1\nimport host.exp.expoview.R');
+          await fs.writeFile(file, content, 'utf8');
+        })
+    );
+  };
+
+  const replaceOrAddBuildConfigImportAsync = async () => {
+    const files = [
+      `${clonedProjectPath}/android/lib/src/main/java/com/swmansion/gesturehandler/GestureHandler.kt`,
+      `${clonedProjectPath}/android/src/main/java/com/swmansion/gesturehandler/RNGestureHandlerPackage.kt`,
+      `${clonedProjectPath}/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerModule.kt`,
+    ];
+    await Promise.all(
+      files
+        .map((file) => path.resolve(file))
+        .map(async (file) => {
+          let content = await fs.readFile(file, 'utf8');
+          content = content
+            .replace(/^.*\.BuildConfig$/gm, '')
+            .replace(/^(package .+)$/gm, '$1\nimport host.exp.expoview.BuildConfig');
+          await fs.writeFile(file, content, 'utf8');
+        })
+    );
+  };
+
+  const transformImportsAsync = async () => {
+    const files = [
+      `${clonedProjectPath}/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerModule.kt`,
+    ];
+    await Promise.all(
+      files
+        .map((file) => path.resolve(file))
+        .map(async (file) => {
+          let content = await fs.readFile(file, 'utf8');
+          content = content.replace(
+            /^import com\.swmansion\.common\./gm,
+            'import versioned.host.exp.exponent.modules.api.components.gesturehandler.'
+          );
+          await fs.writeFile(file, content, 'utf8');
+        })
+    );
+  };
+
+  const commentOurReanimatedCode = async () => {
+    const files = [
+      `${clonedProjectPath}/android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerModule.kt`,
+    ];
+    await Promise.all(
+      files
+        .map((file) => path.resolve(file))
+        .map(async (file) => {
+          let content = await fs.readFile(file, 'utf8');
+          content = content.replace(
+            'ReanimatedEventDispatcher.sendEvent(event, reactApplicationContext)',
+            '// $& // COMMENTED OUT BY VENDORING SCRIPT'
+          );
+          await fs.writeFile(file, content, 'utf8');
+        })
+    );
+  };
+
+  await addResourceImportAsync();
+  await replaceOrAddBuildConfigImportAsync();
   await transformImportsAsync();
+  await commentOurReanimatedCode();
+};
+
+const ScreensModifier: ModuleModifier = async function (
+  moduleConfig: VendoredModuleConfig,
+  clonedProjectPath: string
+): Promise<void> {
+  const viewmanagersExpoviewDir = path.join(
+    ANDROID_DIR,
+    'expoview',
+    'src',
+    'main',
+    'java',
+    'com',
+    'facebook',
+    'react',
+    'viewmanagers'
+  );
+
+  const copyPaperViewManager = async () => {
+    await fs.remove(viewmanagersExpoviewDir); // clean
+    // copy
+    await new Promise<void>((res, rej) => {
+      ncp(
+        path.join(
+          clonedProjectPath,
+          'android',
+          'src',
+          'paper',
+          'java',
+          'com',
+          'facebook',
+          'react',
+          'viewmanagers'
+        ),
+        viewmanagersExpoviewDir,
+        { dereference: true },
+        () => {
+          res();
+        }
+      );
+    });
+  };
+
+  await copyPaperViewManager();
 };
 
 const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
@@ -247,31 +329,39 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     moduleModifier: GestureHandlerModifier,
     steps: [
       {
-        sourceAndroidPath: 'android/lib/src/main/java/com/swmansion/gesturehandler',
+        sourceAndroidPath: 'android/src/main/java/com/swmansion/gesturehandler',
         targetAndroidPath: 'modules/api/components/gesturehandler',
         sourceAndroidPackage: 'com.swmansion.gesturehandler',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
       },
       {
-        sourceAndroidPath: 'android/src/main/java/com/swmansion/common',
+        sourceAndroidPath: 'android/lib/src/main/java/com/swmansion/gesturehandler',
+        targetAndroidPath: 'modules/api/components/gesturehandler',
+        sourceAndroidPackage: 'com.swmansion.gesturehandler',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
+        cleanupTargetPath: false, // first step cleans parent directory
+      },
+      {
+        sourceAndroidPath: 'android/common/src/main/java/com/swmansion/common',
         targetAndroidPath: 'modules/api/components/gesturehandler/common',
         sourceAndroidPackage: 'com.swmansion.common',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
+        cleanupTargetPath: false, // first steps cleans parent directory
       },
       {
-        recursive: true,
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/GestureHandler',
-        sourceAndroidPath: 'android/src/main/java/com/swmansion/gesturehandler/react',
-        targetAndroidPath: 'modules/api/components/gesturehandler/react',
+        sourceAndroidPath: 'android/src/paper/java/com/facebook/react/viewmanagers',
+        targetAndroidPath: '../../../../com/facebook/react/viewmanagers',
+        sourceAndroidPackage: 'com.facebook.react.viewmanagers',
+        targetAndroidPackage: 'com.facebook.react.viewmanagers',
+        cleanupTargetPath: false,
+      },
+      {
+        sourceAndroidPath: 'android/src/paper/java/com/swmansion/gesturehandler',
+        targetAndroidPath: 'modules/api/components/gesturehandler',
         sourceAndroidPackage: 'com.swmansion.gesturehandler',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.gesturehandler',
+        cleanupTargetPath: false,
       },
-    ],
-    warnings: [
-      `NOTE: Any files in ${chalk.magenta(
-        'com.facebook.react'
-      )} will not be updated -- you'll need to add these to expoview manually!`,
     ],
   },
   'react-native-reanimated': {
@@ -320,7 +410,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       `NOTE: Any files in ${chalk.magenta(
         'com.facebook.react'
       )} will not be updated -- you'll need to add these to expoview manually!`,
-      `NOTE: Some imports have to be changed from ${chalk.magenta('<>')} form to 
+      `NOTE: Some imports have to be changed from ${chalk.magenta('<>')} form to
       ${chalk.magenta('""')}`,
     ],
   },
@@ -328,6 +418,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     repoUrl: 'https://github.com/software-mansion/react-native-screens.git',
     installableInManagedApps: true,
     semverPrefix: '~',
+    moduleModifier: ScreensModifier,
     steps: [
       {
         sourceIosPath: 'ios',
@@ -336,21 +427,46 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/screens',
         sourceAndroidPackage: 'com.swmansion.rnscreens',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.screens',
+        onDidVendorAndroidFile: async (file: string) => {
+          const filename = path.basename(file);
+          const CHANGES = {
+            'ScreenStack.kt': {
+              find: /(?=^class ScreenStack\()/m,
+              replaceWith: `import host.exp.expoview.R\n\n`,
+            },
+            'ScreenStackHeaderConfig.kt': {
+              find: /(?=^class ScreenStackHeaderConfig\()/m,
+              replaceWith: `import host.exp.expoview.BuildConfig\nimport host.exp.expoview.R\n\n`,
+            },
+            'RNScreensPackage.kt': {
+              find: /(?=^class RNScreensPackage\ :)/m,
+              replaceWith: `import host.exp.expoview.BuildConfig\n\n`,
+            },
+            'Screen.kt': {
+              find: /(?=^@SuppressLint\(\"ViewConstructor\"\)\nclass Screen)/m,
+              replaceWith: `import host.exp.expoview.BuildConfig\n\n`,
+            },
+          };
+
+          const fileConfig = CHANGES[filename];
+          if (!fileConfig) {
+            return;
+          }
+
+          const originalFileContent = await fs.readFile(file, 'utf8');
+          const newFileContent = originalFileContent.replace(
+            fileConfig.find,
+            fileConfig.replaceWith
+          );
+          await fs.writeFile(file, newFileContent, 'utf8');
+        },
       },
-    ],
-  },
-  'react-native-appearance': {
-    repoUrl: 'https://github.com/expo/react-native-appearance.git',
-    installableInManagedApps: true,
-    semverPrefix: '~',
-    steps: [
       {
-        sourceIosPath: 'ios/Appearance',
-        targetIosPath: 'Api/Appearance',
-        sourceAndroidPath: 'android/src/main/java/io/expo/appearance',
-        targetAndroidPath: 'modules/api/appearance/rncappearance',
-        sourceAndroidPackage: 'io.expo.appearance',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.appearance.rncappearance',
+        cleanupTargetPath: false,
+        sourceAndroidPath: 'android/src/paper/java/com/swmansion/rnscreens',
+        targetAndroidPath: 'modules/api/screens',
+        sourceAndroidPackage: 'com.swmansion.rnscreens',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.screens',
       },
     ],
   },
@@ -434,14 +550,14 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     installableInManagedApps: true,
     steps: [
       {
-        sourceIosPath: 'lib/ios/AirGoogleMaps',
+        sourceIosPath: 'ios/AirGoogleMaps',
         targetIosPath: 'Api/Components/GoogleMaps',
       },
       {
         recursive: true,
-        sourceIosPath: 'lib/ios/AirMaps',
+        sourceIosPath: 'ios/AirMaps',
         targetIosPath: 'Api/Components/Maps',
-        sourceAndroidPath: 'lib/android/src/main/java/com/airbnb/android/react/maps',
+        sourceAndroidPath: 'android/src/main/java/com/airbnb/android/react/maps',
         targetAndroidPath: 'modules/api/components/maps',
         sourceAndroidPackage: 'com.airbnb.android.react.maps',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.maps',
@@ -480,20 +596,43 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
     repoUrl: 'https://github.com/th3rdwave/react-native-safe-area-context',
     steps: [
       {
-        sourceIosPath: 'ios/SafeAreaView',
+        sourceIosPath: 'ios',
         targetIosPath: 'Api/SafeAreaContext',
         sourceAndroidPath: 'android/src/main/java/com/th3rdwave/safeareacontext',
         targetAndroidPath: 'modules/api/safeareacontext',
         sourceAndroidPackage: 'com.th3rdwave.safeareacontext',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.safeareacontext',
+        onDidVendorAndroidFile: async (file: string) => {
+          const fileName = path.basename(file);
+          if (fileName === 'SafeAreaContextPackage.kt') {
+            let content = await fs.readFile(file, 'utf8');
+            content = content.replace(
+              /^(package .+)$/gm,
+              '$1\nimport host.exp.expoview.BuildConfig'
+            );
+            await fs.writeFile(file, content, 'utf8');
+          }
+        },
       },
-    ],
-    warnings: [
-      chalk.bold.yellow(
-        `Last time checked, ${chalk.green('react-native-safe-area-context')} used ${chalk.blue(
-          'androidx'
-        )} which wasn't at that time supported by Expo. Please ensure that the project builds on Android after upgrading or remove this warning.`
-      ),
+      {
+        sourceIosPath: 'ios/SafeAreaContextSpec',
+        targetIosPath: 'Api/SafeAreaContext',
+        cleanupTargetPath: false,
+      },
+      {
+        sourceAndroidPath: 'android/src/paper/java/com/th3rdwave/safeareacontext',
+        targetAndroidPath: 'modules/api/safeareacontext',
+        sourceAndroidPackage: 'com.th3rdwave.safeareacontext',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.safeareacontext',
+        cleanupTargetPath: false,
+      },
+      {
+        sourceAndroidPath: 'android/src/paper/java/com/facebook/react/viewmanagers',
+        targetAndroidPath: 'modules/api/safeareacontext',
+        sourceAndroidPackage: 'com.facebook.react.viewmanagers',
+        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.safeareacontext',
+        cleanupTargetPath: false,
+      },
     ],
   },
   '@react-native-community/datetimepicker': {
@@ -531,20 +670,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  'react-native-pager-view': {
-    repoUrl: 'https://github.com/callstack/react-native-pager-view',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/PagerView',
-        sourceAndroidPath: 'android/src/main/java/com/reactnativepagerview/',
-        targetAndroidPath: 'modules/api/components/pagerview',
-        sourceAndroidPackage: 'com.reactnativepagerview',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.pagerview',
-      },
-    ],
-  },
   'react-native-shared-element': {
     repoUrl: 'https://github.com/IjzerenHein/react-native-shared-element',
     installableInManagedApps: true,
@@ -572,6 +697,7 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
   '@react-native-picker/picker': {
     repoUrl: 'https://github.com/react-native-picker/picker',
     installableInManagedApps: true,
+    moduleModifier: PickerModifier,
     steps: [
       {
         sourceIosPath: 'ios',
@@ -580,21 +706,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/picker',
         sourceAndroidPackage: 'com.reactnativecommunity.picker',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.picker',
-      },
-    ],
-  },
-  '@react-native-community/slider': {
-    repoUrl: 'https://github.com/react-native-community/react-native-slider',
-    installableInManagedApps: true,
-    packageJsonPath: 'src',
-    steps: [
-      {
-        sourceIosPath: 'src/ios',
-        targetIosPath: 'Api/Components/Slider',
-        sourceAndroidPath: 'src/android/src/main/java/com/reactnativecommunity/slider',
-        targetAndroidPath: 'modules/api/components/slider',
-        sourceAndroidPackage: 'com.reactnativecommunity.slider',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.slider',
       },
     ],
   },
@@ -768,17 +879,20 @@ export async function legacyVendorModuleAsync(
 
     step.recursive = step.recursive === true;
     step.updatePbxproj = !(step.updatePbxproj === false);
+    const cleanupTargetPath = step.cleanupTargetPath ?? true;
 
     // iOS
     if (executeIOS && step.sourceIosPath && step.targetIosPath) {
       const sourceDir = path.join(tmpDir, step.sourceIosPath);
       const targetDir = path.join(IOS_DIR, 'Exponent', 'Versioned', 'Core', step.targetIosPath);
 
-      console.log(
-        `\nCleaning up iOS files at ${chalk.magenta(path.relative(IOS_DIR, targetDir))} ...`
-      );
+      if (cleanupTargetPath) {
+        console.log(
+          `\nCleaning up iOS files at ${chalk.magenta(path.relative(IOS_DIR, targetDir))} ...`
+        );
 
-      await fs.remove(targetDir);
+        await fs.remove(targetDir);
+      }
       await fs.mkdirs(targetDir);
 
       console.log('\nCopying iOS files ...');
@@ -848,11 +962,15 @@ export async function legacyVendorModuleAsync(
         step.targetAndroidPath
       );
 
-      console.log(
-        `\nCleaning up Android files at ${chalk.magenta(path.relative(ANDROID_DIR, targetDir))} ...`
-      );
+      if (cleanupTargetPath) {
+        console.log(
+          `\nCleaning up Android files at ${chalk.magenta(
+            path.relative(ANDROID_DIR, targetDir)
+          )} ...`
+        );
 
-      await fs.remove(targetDir);
+        await fs.remove(targetDir);
+      }
       await fs.mkdirs(targetDir);
 
       console.log('\nCopying Android files ...');

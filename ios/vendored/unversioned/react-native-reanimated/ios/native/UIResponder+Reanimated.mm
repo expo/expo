@@ -1,6 +1,6 @@
-#import "REAInitializer.h"
-#import "REAUIManager.h"
-#import "UIResponder+Reanimated.h"
+#import <RNReanimated/REAInitializer.h>
+#import <RNReanimated/REAUIManager.h>
+#import <RNReanimated/UIResponder+Reanimated.h>
 
 #if __has_include(<reacthermes/HermesExecutorFactory.h>)
 #import <reacthermes/HermesExecutorFactory.h>
@@ -20,7 +20,7 @@ typedef JSCExecutorFactory ExecutorFactory;
 {
   const auto installer = reanimated::REAJSIExecutorRuntimeInstaller(bridge, NULL);
 
-#if RNVERSION >= 64
+#if REACT_NATIVE_MINOR_VERSION >= 64
   // installs globals such as console, nativePerformanceNow, etc.
   return std::make_unique<ExecutorFactory>(RCTJSIExecutorRuntimeInstaller(installer));
 #else

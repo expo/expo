@@ -10,6 +10,39 @@
 
 ### 💡 Others
 
+## 4.0.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0 — 2023-02-03
+
+### 💡 Others
+
+- Removed usage of the deprecated `expo-random` package. ([#21063](https://github.com/expo/expo/pull/21063) by [@lukmccall](https://github.com/lukmccall))
+
+## 3.7.2 — 2022-10-25
+
+### 💡 Others
+
+- Update docs to remove mentions of `expo start:web`. ([#18419](https://github.com/expo/expo/pull/18419) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 3.7.1 — 2022-07-16
+
+_This version does not introduce any user-facing changes._
+
+## 3.7.0 — 2022-07-07
+
+### 🎉 New features
+
+- Add projectNameForProxy option. ([#17327](https://github.com/expo/expo/pull/17327) by [@wschurman](https://github.com/wschurman))
+
+## 3.6.0 — 2022-04-18
+
+### 💡 Others
+
+- Export provider specific config types: `FacebookAuthRequestConfig` and `GoogleAuthRequestConfig`. ([#16223](https://github.com/expo/expo/pull/16223) by [@Simek](https://github.com/Simek))
+- Add missing `language` field to the `GoogleAuthRequestConfig`. ([#16223](https://github.com/expo/expo/pull/16223) by [@Simek](https://github.com/Simek))
+
 ## 3.5.0 — 2021-12-03
 
 _This version does not introduce any user-facing changes._

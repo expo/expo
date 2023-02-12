@@ -16,7 +16,7 @@ import org.koin.core.component.inject
 import java.lang.IllegalStateException
 
 interface DevLauncherAppLoaderFactoryInterface {
-  suspend fun createAppLoader(url: Uri, manifestParser: DevLauncherManifestParser): DevLauncherAppLoader
+  suspend fun createAppLoader(url: Uri, projectUrl: Uri, manifestParser: DevLauncherManifestParser): DevLauncherAppLoader
   fun getManifest(): Manifest?
   fun shouldUseDeveloperSupport(): Boolean
 }
@@ -32,7 +32,7 @@ class DevLauncherAppLoaderFactory : DevLauncherKoinComponent, DevLauncherAppLoad
   private var manifest: Manifest? = null
   private var useDeveloperSupport = true
 
-  override suspend fun createAppLoader(url: Uri, manifestParser: DevLauncherManifestParser): DevLauncherAppLoader {
+  override suspend fun createAppLoader(url: Uri, projectUrl: Uri, manifestParser: DevLauncherManifestParser): DevLauncherAppLoader {
     instanceWasCreated = true
     return if (!manifestParser.isManifestUrl()) {
       // It's (maybe) a raw React Native bundle
@@ -45,7 +45,7 @@ class DevLauncherAppLoaderFactory : DevLauncherKoinComponent, DevLauncherAppLoad
         }
         DevLauncherLocalAppLoader(manifest!!, appHost, context, controller)
       } else {
-        val configuration = createUpdatesConfigurationWithUrl(url, installationIDHelper.getOrCreateInstallationID(context))
+        val configuration = createUpdatesConfigurationWithUrl(url, projectUrl, installationIDHelper.getOrCreateInstallationID(context))
         val update = updatesInterface!!.loadUpdate(configuration, context) {
           manifest = Manifest.fromManifestJson(it) // TODO: might be able to pass actual manifest object in here
           return@loadUpdate !manifest!!.isUsingDeveloperTool()
@@ -73,4 +73,3 @@ class DevLauncherAppLoaderFactory : DevLauncherKoinComponent, DevLauncherAppLoad
     return block()
   }
 }
-

@@ -1,0 +1,33 @@
+<manifest xmlns:android="http://schemas.android.com/apk/res/android"
+  package="expo.modules.devlauncher">
+
+  <application>
+    <meta-data
+      android:name="expo.modules.updates.AUTO_SETUP"
+      android:value="false" />
+
+    <activity
+      android:name="expo.modules.devlauncher.launcher.DevLauncherActivity"
+      android:exported="true"
+      android:launchMode="singleTask"
+      android:theme="@style/Theme.DevLauncher.LauncherActivity">
+      <intent-filter>
+        <action android:name="android.intent.action.VIEW" />
+
+        <category android:name="android.intent.category.DEFAULT" />
+        <category android:name="android.intent.category.BROWSABLE" />
+
+        <data android:scheme="expo-dev-launcher" />
+      </intent-filter>
+    </activity>
+
+    <activity
+      android:name="expo.modules.devlauncher.launcher.errors.DevLauncherErrorActivity"
+      android:screenOrientation="portrait"
+      android:theme="@style/Theme.DevLauncher.ErrorActivity" />
+  </application>
+
+  <queries>
+    <package android:name="host.exp.exponent" />
+  </queries>
+</manifest>

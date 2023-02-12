@@ -4,6 +4,7 @@ import android.app.Activity
 import android.app.Application
 import android.content.Context
 import android.content.Intent
+import android.graphics.Typeface
 import android.hardware.SensorManager
 import android.os.Bundle
 import android.util.Log
@@ -12,17 +13,14 @@ import android.view.MotionEvent
 import android.view.inputmethod.InputMethodManager
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
-import com.facebook.react.bridge.LifecycleEventListener
-import com.facebook.react.bridge.ReactContext
-import com.facebook.react.bridge.ReadableMap
-import com.facebook.react.bridge.UiThreadUtil
+import com.facebook.react.bridge.*
+import com.facebook.react.views.text.ReactFontManager
 import com.facebook.react.modules.core.DeviceEventManagerModule
 import expo.interfaces.devmenu.DevMenuDelegateInterface
 import expo.interfaces.devmenu.DevMenuExtensionInterface
 import expo.interfaces.devmenu.DevMenuExtensionSettingsInterface
 import expo.interfaces.devmenu.DevMenuManagerInterface
-import expo.interfaces.devmenu.DevMenuSettingsInterface
-import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
+import expo.interfaces.devmenu.DevMenuPreferencesInterface
 import expo.interfaces.devmenu.items.DevMenuCallableProvider
 import expo.interfaces.devmenu.items.DevMenuDataSourceInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceItem
@@ -34,38 +32,44 @@ import expo.interfaces.devmenu.items.DevMenuScreen
 import expo.interfaces.devmenu.items.DevMenuScreenItem
 import expo.interfaces.devmenu.items.KeyCommand
 import expo.interfaces.devmenu.items.getItemsOfType
-import expo.modules.devmenu.api.DevMenuExpoApiClient
 import expo.modules.devmenu.api.DevMenuMetroClient
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
-import expo.modules.devmenu.modules.DevMenuSettings
+import expo.modules.devmenu.modules.DevMenuPreferences
 import expo.modules.devmenu.react.DevMenuPackagerCommandHandlersSwapper
 import expo.modules.devmenu.react.DevMenuShakeDetectorListenerSwapper
 import expo.modules.devmenu.tests.DevMenuDisabledTestInterceptor
 import expo.modules.devmenu.tests.DevMenuTestInterceptor
 import expo.modules.devmenu.websockets.DevMenuCommandHandlersProvider
+import expo.modules.manifests.core.Manifest
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import java.lang.ref.WeakReference
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
   val metroClient: DevMenuMetroClient by lazy { DevMenuMetroClient() }
+  private var fontsWereLoaded = false
 
   private var shakeDetector: ShakeDetector? = null
   private var threeFingerLongPressDetector: ThreeFingerLongPressDetector? = null
-  private var session: DevMenuSession? = null
-  private var settings: DevMenuSettingsInterface? = null
+  private var preferences: DevMenuPreferencesInterface? = null
   internal var delegate: DevMenuDelegateInterface? = null
   private var extensionSettings: DevMenuExtensionSettingsInterface = DevMenuDefaultExtensionSettings(this)
   private var shouldLaunchDevMenuOnStart: Boolean = false
   private lateinit var devMenuHost: DevMenuHost
   private var currentReactInstanceManager: WeakReference<ReactInstanceManager?> = WeakReference(null)
   private var currentScreenName: String? = null
-  private val expoApiClient = DevMenuExpoApiClient()
   private var canLaunchDevMenuOnStart = true
   var testInterceptor: DevMenuTestInterceptor = DevMenuDisabledTestInterceptor()
 
+  var currentManifest: Manifest? = null
+  var currentManifestURL: String? = null
+
   //region helpers
+
+  fun getReactInstanceManager(): ReactInstanceManager? {
+    return delegate?.reactInstanceManager()
+  }
 
   private val delegateReactContext: ReactContext?
     get() = delegate?.reactInstanceManager()?.currentReactContext
@@ -167,12 +171,6 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       devMenuHost = DevMenuHost(application)
       UiThreadUtil.runOnUiThread {
         devMenuHost.reactInstanceManager.createReactContextInBackground()
-
-        // Hermes inspector will use latest executed script for Chrome DevTools Protocol.
-        // It will be EXDevMenuApp.android.js in our case.
-        // To let Hermes aware target bundle, we try to reload here as a workaround solution.
-        // @see <a href="https://github.com/facebook/react-native/blob/0.63-stable/ReactCommon/hermes/inspector/Inspector.cpp#L231>code here</a>
-        currentReactInstanceManager.get()?.devSupportManager?.handleReloadJS()
       }
     }
   }
@@ -208,30 +206,88 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     }
   }
 
+  private fun hasDisableOnboardingQueryParam(urlString: String): Boolean {
+    return urlString.contains("disableOnboarding=1")
+  }
+
   /**
-   * Starts dev menu if wasn't initialized, prepares for opening menu at launch if needed and gets [DevMenuSettings].
+   * Starts dev menu if wasn't initialized, prepares for opening menu at launch if needed and gets [DevMenuPreferences].
    * We can't open dev menu here, cause then the app will crash - two react instance try to render.
    * So we wait until the [reactContext] activity will be ready.
    */
   private fun handleLoadedDelegateContext(reactContext: ReactContext) {
     Log.i(DEV_MENU_TAG, "Delegate's context was loaded.")
 
-    maybeInitDevMenuHost(reactContext.currentActivity?.application
-        ?: reactContext.applicationContext as Application)
+    maybeInitDevMenuHost(
+      reactContext.currentActivity?.application
+        ?: reactContext.applicationContext as Application
+    )
     maybeStartDetectors(devMenuHost.getContext())
-
-    settings = (testInterceptor.overrideSettings()
-        ?: if (reactContext.hasNativeModule(DevMenuSettings::class.java)) {
-          reactContext.getNativeModule(DevMenuSettings::class.java)!!
+    preferences = (
+      testInterceptor.overrideSettings()
+        ?: if (reactContext.hasNativeModule(DevMenuPreferences::class.java)) {
+          reactContext.getNativeModule(DevMenuPreferences::class.java)!!
         } else {
-          DevMenuDefaultSettings()
-        }).also {
-          shouldLaunchDevMenuOnStart = canLaunchDevMenuOnStart && (it.showsAtLaunch || !it.isOnboardingFinished)
-          if (shouldLaunchDevMenuOnStart) {
-            reactContext.addLifecycleEventListener(this)
-          }
+          DevMenuDefaultPreferences()
         }
+      ).also {
+      if (hasDisableOnboardingQueryParam(currentManifestURL.orEmpty())) {
+        it.isOnboardingFinished = true
+      }
+    }.also {
+      shouldLaunchDevMenuOnStart = canLaunchDevMenuOnStart && (it.showsAtLaunch || !it.isOnboardingFinished)
+      if (shouldLaunchDevMenuOnStart) {
+        reactContext.addLifecycleEventListener(this)
+      }
+    }
   }
+
+  fun getAppInfo(): Bundle {
+    val reactContext = delegateReactContext ?: return Bundle.EMPTY
+    val instanceManager = delegate?.reactInstanceManager() ?: return Bundle.EMPTY
+
+    return DevMenuAppInfo.getAppInfo(instanceManager, reactContext)
+  }
+
+  fun getDevSettings(): Bundle {
+    if (delegate?.reactInstanceManager() != null) {
+      val reactInstanceManager = delegate!!.reactInstanceManager()
+      return DevMenuDevSettings.getDevSettings(reactInstanceManager)
+    }
+
+    return Bundle.EMPTY
+  }
+
+  fun loadFonts(applicationContext: ReactApplicationContext) {
+    if (fontsWereLoaded) {
+      return
+    }
+    fontsWereLoaded = true
+
+    val fonts = arrayOf(
+      "Inter-Black",
+      "Inter-ExtraBold",
+      "Inter-Bold",
+      "Inter-SemiBold",
+      "Inter-Medium",
+      "Inter-Regular",
+      "Inter-Light",
+      "Inter-ExtraLight",
+      "Inter-Thin"
+    )
+
+    val assets = applicationContext.assets
+
+    fonts.map { familyName ->
+      val font = Typeface.createFromAsset(assets, "$familyName.otf")
+      ReactFontManager.getInstance().setTypeface(familyName, Typeface.NORMAL, font)
+    }
+  }
+
+  // captures any callbacks that are registered via the `registerDevMenuItems` module method
+  // it is set and unset by the public facing `DevMenuModule`
+  // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty array
+  var registeredCallbacks = arrayListOf<String>()
 
   //endregion
 
@@ -256,7 +312,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
    * Handles shake gesture which simply toggles the dev menu.
    */
   private fun onShakeGesture() {
-    if (settings?.motionGestureEnabled == true) {
+    if (preferences?.motionGestureEnabled == true) {
       delegateActivity?.let {
         toggleMenu(it)
       }
@@ -267,7 +323,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
    * Handles three finger long press which simply toggles the dev menu.
    */
   private fun onThreeFingerLongPress() {
-    if (settings?.touchGestureEnabled == true) {
+    if (preferences?.touchGestureEnabled == true) {
       delegateActivity?.let {
         toggleMenu(it)
       }
@@ -301,13 +357,12 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   override fun openMenu(activity: Activity, screen: String?) {
     setCurrentScreen(null)
-    session = DevMenuSession(
-      initReactInstanceManager = delegate!!.reactInstanceManager(),
-      initAppInfo = delegate!!.appInfo(),
-      screen = screen
-    )
 
     activity.startActivity(Intent(activity, DevMenuActivity::class.java))
+
+    hostReactContext
+      ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
+      ?.emit("openDevMenu", null)
   }
 
   /**
@@ -351,7 +406,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
       return true
     }
 
-    if (settings?.keyCommandsEnabled != true) {
+    if (preferences?.keyCommandsEnabled != true) {
       return false
     }
 
@@ -424,13 +479,9 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   override fun serializedScreens(): List<Bundle> = delegateScreens.map { it.serialize() }
 
-  override fun getSession(): DevMenuSession? = session
-
-  override fun getSettings(): DevMenuSettingsInterface? = settings
+  override fun getSettings(): DevMenuPreferencesInterface? = preferences
 
   override fun getMenuHost(): ReactNativeHost = devMenuHost
-
-  override fun getExpoApiClient(): DevMenuExpoApiClientInterface = expoApiClient
 
   override fun setCanLaunchDevMenuOnStart(canLaunchDevMenuOnStart: Boolean) {
     this.canLaunchDevMenuOnStart = canLaunchDevMenuOnStart
@@ -445,6 +496,12 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   override fun setCurrentScreen(screen: String?) {
     currentScreenName = screen
+  }
+
+  fun getMenuPreferences(): Bundle {
+    return Bundle().apply {
+      putBoolean("isOnboardingFinished", getSettings()?.isOnboardingFinished ?: false)
+    }
   }
 
   //endregion

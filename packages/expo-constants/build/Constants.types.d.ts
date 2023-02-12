@@ -1,7 +1,7 @@
 import { ExpoConfig } from '@expo/config-types';
 export declare enum AppOwnership {
     /**
-     * It is a [standalone app](../../../distribution/building-standalone-apps#building-standalone-apps).
+     * It is a [standalone app](/classic/building-standalone-apps#building-standalone-apps).
      */
     Standalone = "standalone",
     /**
@@ -38,23 +38,23 @@ export interface IOSManifest {
     buildNumber: string | null;
     /**
      * The Apple internal model identifier for this device, e.g. `iPhone1,1`.
-     * @deprecated Deprecated. Use `expo-device`'s [`Device.modelId`](../device/#devicemodelid).
+     * @deprecated Use `expo-device`'s [`Device.modelId`](./device/#devicemodelid).
      */
     platform: string;
     /**
      * The human-readable model name of this device, e.g. `"iPhone 7 Plus"` if it can be determined,
      * otherwise will be `null`.
-     * @deprecated Deprecated. Moved to `expo-device` as [`Device.modelName`](../device/#devicemodelname).
+     * @deprecated Moved to `expo-device` as [`Device.modelName`](./device/#devicemodelname).
      */
     model: string | null;
     /**
      * The user interface idiom of this device, i.e. whether the app is running on an iPhone or an iPad.
-     * @deprecated Deprecated. Use `expo-device`'s [`Device.getDeviceTypeAsync()`](../device/#devicegetdevicetypeasync).
+     * @deprecated Use `expo-device`'s [`Device.getDeviceTypeAsync()`](./device/#devicegetdevicetypeasync).
      */
     userInterfaceIdiom: UserInterfaceIdiom;
     /**
      * The version of iOS running on this device, e.g. `10.3`.
-     * @deprecated Deprecated. Use `expo-device`'s [`Device.osVersion`](../device/#deviceosversion).
+     * @deprecated Use `expo-device`'s [`Device.osVersion`](./device/#deviceosversion).
      */
     systemVersion: string;
     [key: string]: any;
@@ -63,7 +63,7 @@ export interface AndroidManifest {
     /**
      * The version code set by `android.versionCode` in app.json.
      * The value is set to `null` in case you run your app in Expo Go.
-     * @deprecated Deprecated. Use `expo-application`'s [`Application.nativeBuildVersion`](../application/#applicationnativebuildversion).
+     * @deprecated Use `expo-application`'s [`Application.nativeBuildVersion`](./application/#applicationnativebuildversion).
      */
     versionCode: number;
     [key: string]: any;
@@ -77,7 +77,7 @@ export interface ManifestAsset {
 /**
  * A modern manifest.
  */
-export declare type Manifest = {
+export type Manifest = {
     id: string;
     createdAt: string;
     runtimeVersion: string;
@@ -86,26 +86,31 @@ export declare type Manifest = {
     metadata: object;
     extra?: ManifestExtra;
 };
-export declare type ManifestExtra = ClientScopingConfig & {
-    expoClient?: ExpoClientConfig;
+export type ManifestExtra = ClientScopingConfig & {
+    expoClient?: ExpoConfig & {
+        /**
+         * Only present during development using @expo/cli.
+         */
+        hostUri?: string;
+    };
     expoGo?: ExpoGoConfig;
     eas?: EASConfig;
 };
-export declare type EASConfig = {
+export type EASConfig = {
     /**
      * The ID for this project if it's using EAS. UUID. This value will not change when a project is
      * transferred between accounts or renamed.
      */
     projectId?: string;
 };
-export declare type ClientScopingConfig = {
+export type ClientScopingConfig = {
     /**
      * An opaque unique string for scoping client-side data to this project. This value
      * will not change when a project is transferred between accounts or renamed.
      */
     scopeKey?: string;
 };
-export declare type ExpoGoConfig = {
+export type ExpoGoConfig = {
     mainModuleName?: string;
     debuggerHost?: string;
     logUrl?: string;
@@ -115,7 +120,7 @@ export declare type ExpoGoConfig = {
     };
     packagerOpts?: ExpoGoPackagerOpts;
 };
-export declare type ExpoGoPackagerOpts = {
+export type ExpoGoPackagerOpts = {
     hostType?: string;
     dev?: boolean;
     strict?: boolean;
@@ -125,7 +130,7 @@ export declare type ExpoGoPackagerOpts = {
     lanType?: string;
     [key: string]: any;
 };
-export declare type ExpoClientConfig = ExpoConfig & {
+export type ExpoClientConfig = ExpoConfig & {
     /**
      * Published apps only.
      */
@@ -155,12 +160,9 @@ export declare type ExpoClientConfig = ExpoConfig & {
     currentFullName?: string;
 };
 /**
- * @hidden
- * A classic manifest https://docs.expo.io/guides/how-expo-works/#expo-manifest
+ * Represents an intersection of all possible Config types.
  */
-export declare type AppManifest = ExpoClientConfig & ExpoGoConfig & EASConfig & ClientScopingConfig & {
-    [key: string]: any;
-};
+export type AppManifest = ExpoClientConfig & ExpoGoConfig & EASConfig & ClientScopingConfig & Record<string, any>;
 export interface PlatformManifest {
     ios?: IOSManifest;
     android?: AndroidManifest;
@@ -175,10 +177,10 @@ export interface PlatformManifest {
     developer?: string;
     [key: string]: any;
 }
-/**
- * @hidden
- */
 export interface NativeConstants {
+    /**
+     * @hidden
+     */
     name: 'ExponentConstants';
     /**
      * Returns `expo`, `standalone`, or `guest`. This property only applies to the managed workflow
@@ -193,7 +195,7 @@ export interface NativeConstants {
     deviceName?: string;
     /**
      * The [device year class](https://github.com/facebook/device-year-class) of this device.
-     * @deprecated Deprecated. Moved to `expo-device` as [`Device.deviceYearClass`](../device/#deviceyearclass).
+     * @deprecated Moved to `expo-device` as [`Device.deviceYearClass`](./device/#deviceyearclass).
      */
     deviceYearClass: number | null;
     executionEnvironment: ExecutionEnvironment;
@@ -210,12 +212,12 @@ export interface NativeConstants {
      * An identifier that is unique to this particular device and whose lifetime is at least as long
      * as the installation of the app.
      * @deprecated `Constants.installationId` is deprecated in favor of generating your own ID and
-     * storing it. This API will be removed in SDK 44.
+     * storing it.
      */
     installationId: string;
     /**
      * `true` if the app is running on a device, `false` if running in a simulator or emulator.
-     * @deprecated Deprecated. Use `expo-device`'s [`Device.isDevice`](../device/#deviceisdevice).
+     * @deprecated Use `expo-device`'s [`Device.isDevice`](./device/#deviceisdevice).
      */
     isDevice: boolean;
     isHeadless: boolean;
@@ -223,26 +225,35 @@ export interface NativeConstants {
     /**
      * The **Info.plist** value for `CFBundleShortVersionString` on iOS and the version name set
      * by `version` in app.json on Android at the time the native app was built.
-     * @deprecated Deprecated. Use `expo-application`'s [`Application.nativeApplicationVersion`](../application/#applicationnativeapplicationversion).
+     * @deprecated Use `expo-application`'s [`Application.nativeApplicationVersion`](./application/#applicationnativeapplicationversion).
      */
     nativeAppVersion: string | null;
     /**
      * The **Info.plist** value for `CFBundleVersion` on iOS (set with `ios.buildNumber` value in
      * **app.json** in a standalone app) and the version code set by `android.versionCode` in
      * **app.json** on Android at the time the native app was built.
-     * @deprecated Deprecated. Use `expo-application`'s [`Application.nativeBuildVersion`](../application/#applicationnativebuildversion).
+     * @deprecated Use `expo-application`'s [`Application.nativeBuildVersion`](./application/#applicationnativebuildversion).
      */
     nativeBuildVersion: string | null;
     /**
-     * Classic manifest for Expo apps using classic updates.
+     * Classic manifest for Expo apps using classic updates and the updates embedded in builds.
      * Returns `null` in bare workflow and when `manifest2` is non-null.
+     * > Use `Constants.expoConfig` instead, which behaves more consistently across EAS Build
+     * and Update.
      */
     manifest: AppManifest | null;
     /**
-     * New manifest for Expo apps using modern Expo Updates.
-     * Returns `null` in bare workflow and when `manifest` is non-null.
+     * Manifest for Expo apps using modern Expo Updates from a remote source, such as apps that
+     * use EAS Update. Returns `null` in bare workflow and when `manifest` is non-null.
+     * > Use `Constants.expoConfig` instead, which behaves more consistently across EAS Build
+     * and Update.
      */
     manifest2: Manifest | null;
+    /**
+     * The standard Expo config object defined in `app.json` and `app.config.js` files. For both
+     * classic and modern manifests, whether they are embedded or remote.
+     */
+    expoConfig: ExpoConfig | null;
     /**
      * A string that is unique to the current session of your app. It is different across apps and
      * across multiple launches of the same app.

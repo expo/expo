@@ -118,6 +118,10 @@ export default class NotificationScreen extends React.Component<
           </Text>
         )}
         <ListButton onPress={this._sendNotificationAsync} title="Send me a push notification" />
+        <ListButton
+          onPress={this._unregisterForNotificationsAsync}
+          title="Unregister for push notifications"
+        />
         <BackgroundNotificationHandlingSection />
         <HeadingText>Badge Number</HeadingText>
         <ListButton
@@ -319,6 +323,14 @@ export default class NotificationScreen extends React.Component<
     const permission = await this._obtainRemoteNotifPermissionsAsync();
     if (permission.status === 'granted') {
       registerForPushNotificationsAsync();
+    }
+  };
+
+  _unregisterForNotificationsAsync = async () => {
+    try {
+      await Notifications.unregisterForNotificationsAsync();
+    } catch (e) {
+      Alert.alert(`An error occurred un-registering for notifications: ${e}`);
     }
   };
 

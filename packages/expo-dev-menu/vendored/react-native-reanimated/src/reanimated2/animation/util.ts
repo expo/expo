@@ -1,20 +1,30 @@
 import {
-  Animation,
-  AnimationObject,
   HigherOrderAnimation,
   NextAnimation,
-  PrimitiveValue,
-  Timestamp,
+  DelayAnimation,
+  RepeatAnimation,
+  SequenceAnimation,
+  StyleLayoutAnimation,
 } from './commonTypes';
 /* global _WORKLET */
-import { ParsedColorArray, convertToHSVA, isColor, toRGBA } from '../Colors';
+import {
+  ParsedColorArray,
+  isColor,
+  convertToRGBA,
+  rgbaArrayToRGBAColor,
+  toGammaSpace,
+  toLinearSpace,
+} from '../Colors';
 
-import { AnimatedStyle, SharedValue } from '../commonTypes';
-import { DelayAnimation } from './delay';
-import NativeReanimated from '../NativeReanimated';
-import { RepeatAnimation } from './repeat';
-import { SequenceAnimation } from './sequence';
-import { StyleLayoutAnimation } from './styleAnimation';
+import {
+  AnimatedStyle,
+  SharedValue,
+  AnimatableValue,
+  Animation,
+  AnimationObject,
+  Timestamp,
+} from '../commonTypes';
+import NativeReanimatedModule from '../NativeReanimated';
 
 let IN_STYLE_UPDATER = false;
 
@@ -32,7 +42,7 @@ interface RecognizedPrefixSuffix {
   strippedValue: number;
 }
 
-function recognizePrefixSuffix(value: PrimitiveValue): RecognizedPrefixSuffix {
+function recognizePrefixSuffix(value: string | number): RecognizedPrefixSuffix {
   'worklet';
   if (typeof value === 'string') {
     const match = value.match(
@@ -68,7 +78,7 @@ function decorateAnimation<T extends AnimationObject | StyleLayoutAnimation>(
 
   const prefNumberSuffOnStart = (
     animation: Animation<AnimationObject>,
-    value: PrimitiveValue,
+    value: string | number,
     timestamp: number,
     previousAnimation: Animation<AnimationObject>
   ) => {
@@ -78,13 +88,20 @@ function decorateAnimation<T extends AnimationObject | StyleLayoutAnimation>(
     animation.__suffix = suffix;
     animation.strippedCurrent = strippedValue;
     const { strippedValue: strippedToValue } = recognizePrefixSuffix(
-      animation.toValue as PrimitiveValue
+      animation.toValue as string | number
     );
     animation.current = strippedValue;
     animation.startValue = strippedValue;
     animation.toValue = strippedToValue;
     if (previousAnimation && previousAnimation !== animation) {
-      previousAnimation.current = previousAnimation.strippedCurrent;
+      const {
+        prefix: paPrefix,
+        suffix: paSuffix,
+        strippedValue: paStrippedValue,
+      } = recognizePrefixSuffix(previousAnimation.current as string | number);
+      previousAnimation.current = paStrippedValue;
+      previousAnimation.__prefix = paPrefix;
+      previousAnimation.__suffix = paSuffix;
     }
 
     baseOnStart(animation, strippedValue, timestamp, previousAnimation);
@@ -115,55 +132,94 @@ function decorateAnimation<T extends AnimationObject | StyleLayoutAnimation>(
     return res;
   };
 
-  const tab = ['H', 'S', 'V', 'A'];
+  const tab = ['R', 'G', 'B', 'A'];
   const colorOnStart = (
     animation: Animation<AnimationObject>,
     value: string | number,
     timestamp: Timestamp,
     previousAnimation: Animation<AnimationObject>
   ): void => {
-    let HSVAValue: ParsedColorArray;
-    let HSVACurrent: ParsedColorArray;
-    let HSVAToValue: ParsedColorArray;
+    let RGBAValue: ParsedColorArray;
+    let RGBACurrent: ParsedColorArray;
+    let RGBAToValue: ParsedColorArray;
     const res: Array<number> = [];
     if (isColor(value)) {
-      HSVACurrent = convertToHSVA(animation.current);
-      HSVAValue = convertToHSVA(value);
+      RGBACurrent = toLinearSpace(convertToRGBA(animation.current));
+      RGBAValue = toLinearSpace(convertToRGBA(value));
       if (animation.toValue) {
-        HSVAToValue = convertToHSVA(animation.toValue);
+        RGBAToValue = toLinearSpace(convertToRGBA(animation.toValue));
       }
     }
     tab.forEach((i, index) => {
       animation[i] = Object.assign({}, animationCopy);
-      animation[i].current = HSVACurrent[index];
-      animation[i].toValue = HSVAToValue ? HSVAToValue[index] : undefined;
+      animation[i].current = RGBACurrent[index];
+      animation[i].toValue = RGBAToValue ? RGBAToValue[index] : undefined;
       animation[i].onStart(
         animation[i],
-        HSVAValue[index],
+        RGBAValue[index],
         timestamp,
         previousAnimation ? previousAnimation[i] : undefined
       );
       res.push(animation[i].current);
     });
 
-    animation.current = toRGBA(res as ParsedColorArray);
+    animation.current = rgbaArrayToRGBAColor(
+      toGammaSpace(res as ParsedColorArray)
+    );
   };
 
   const colorOnFrame = (
     animation: Animation<AnimationObject>,
     timestamp: Timestamp
   ): boolean => {
-    const HSVACurrent = convertToHSVA(animation.current);
+    const RGBACurrent = toLinearSpace(convertToRGBA(animation.current));
     const res: Array<number> = [];
     let finished = true;
     tab.forEach((i, index) => {
-      animation[i].current = HSVACurrent[index];
+      animation[i].current = RGBACurrent[index];
       // @ts-ignore: disable-next-line
       finished &= animation[i].onFrame(animation[i], timestamp);
       res.push(animation[i].current);
     });
 
-    animation.current = toRGBA(res as ParsedColorArray);
+    animation.current = rgbaArrayToRGBAColor(
+      toGammaSpace(res as ParsedColorArray)
+    );
+    return finished;
+  };
+
+  const arrayOnStart = (
+    animation: Animation<AnimationObject>,
+    value: Array<number>,
+    timestamp: Timestamp,
+    previousAnimation: Animation<AnimationObject>
+  ): void => {
+    value.forEach((v, i) => {
+      animation[i] = Object.assign({}, animationCopy);
+      animation[i].current = v;
+      animation[i].toValue = (animation.toValue as Array<number>)[i];
+      animation[i].onStart(
+        animation[i],
+        v,
+        timestamp,
+        previousAnimation ? previousAnimation[i] : undefined
+      );
+    });
+
+    animation.current = value;
+  };
+
+  const arrayOnFrame = (
+    animation: Animation<AnimationObject>,
+    timestamp: Timestamp
+  ): boolean => {
+    let finished = true;
+    (animation.current as Array<number>).forEach((v, i) => {
+      // @ts-ignore: disable-next-line
+      finished &= animation[i].onFrame(animation[i], timestamp);
+      (animation.current as Array<number>)[i] = animation[i].current;
+    });
+
     return finished;
   };
 
@@ -177,6 +233,10 @@ function decorateAnimation<T extends AnimationObject | StyleLayoutAnimation>(
       colorOnStart(animation, value, timestamp, previousAnimation);
       animation.onFrame = colorOnFrame;
       return;
+    } else if (Array.isArray(value)) {
+      arrayOnStart(animation, value, timestamp, previousAnimation);
+      animation.onFrame = arrayOnFrame;
+      return;
     } else if (typeof value === 'string') {
       prefNumberSuffOnStart(animation, value, timestamp, previousAnimation);
       animation.onFrame = prefNumberSuffOnFrame;
@@ -186,17 +246,16 @@ function decorateAnimation<T extends AnimationObject | StyleLayoutAnimation>(
   };
 }
 
-type AnimationToDecoration<
-  T extends AnimationObject | StyleLayoutAnimation
-> = T extends StyleLayoutAnimation
-  ? Record<string, unknown>
-  : T extends DelayAnimation
-  ? NextAnimation<DelayAnimation>
-  : T extends RepeatAnimation
-  ? NextAnimation<RepeatAnimation>
-  : T extends SequenceAnimation
-  ? NextAnimation<SequenceAnimation>
-  : PrimitiveValue | T;
+type AnimationToDecoration<T extends AnimationObject | StyleLayoutAnimation> =
+  T extends StyleLayoutAnimation
+    ? Record<string, unknown>
+    : T extends DelayAnimation
+    ? NextAnimation<DelayAnimation>
+    : T extends RepeatAnimation
+    ? NextAnimation<RepeatAnimation>
+    : T extends SequenceAnimation
+    ? NextAnimation<SequenceAnimation>
+    : AnimatableValue | T;
 
 export function defineAnimation<
   T extends AnimationObject | StyleLayoutAnimation
@@ -212,7 +271,7 @@ export function defineAnimation<
     return animation;
   };
 
-  if (_WORKLET || !NativeReanimated.native) {
+  if (_WORKLET || !NativeReanimatedModule.native) {
     return create();
   }
   // @ts-ignore: eslint-disable-line
@@ -227,7 +286,7 @@ export function cancelAnimation<T>(sharedValue: SharedValue<T>): void {
 
 // TODO it should work only if there was no animation before.
 export function withStartValue(
-  startValue: PrimitiveValue,
+  startValue: AnimatableValue,
   animation: NextAnimation<AnimationObject>
 ): Animation<AnimationObject> {
   'worklet';

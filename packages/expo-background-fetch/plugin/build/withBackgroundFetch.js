@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-background-fetch/package.json');
 const withBackgroundFetch = (config) => {
     // TODO: Maybe entitlements are needed

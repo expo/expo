@@ -1,5 +1,5 @@
 import { IOSConfig, InfoPlist, withInfoPlist, ConfigPlugin } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from 'expo/config';
 
 import getDefaultScheme from './getDefaultScheme';
 

@@ -164,7 +164,7 @@ export enum ResultCode {
  * returns to the app.
  * @param activityAction The action to be performed, e.g. `IntentLauncher.ActivityAction.WIRELESS_SETTINGS`.
  * There are a few pre-defined constants you can use for this parameter.
- * You can find them at [expo-intent-launcher/src/IntentLauncher.ts](https://github.com/expo/expo/blob/master/packages/expo-intent-launcher/src/IntentLauncher.ts).
+ * You can find them at [expo-intent-launcher/src/IntentLauncher.ts](https://github.com/expo/expo/blob/main/packages/expo-intent-launcher/src/IntentLauncher.ts).
  * @param params An object of intent parameters.
  * @return A promise which fulfils with `IntentLauncherResult` object.
  */

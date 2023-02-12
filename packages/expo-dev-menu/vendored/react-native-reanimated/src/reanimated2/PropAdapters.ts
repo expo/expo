@@ -1,4 +1,3 @@
-// @ts-ignore JS file
 import { addWhitelistedNativeProps } from '../ConfigHelper';
 import { AdapterWorkletFunction } from './commonTypes';
 

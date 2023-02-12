@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const withBranchAndroid_1 = require("./withBranchAndroid");
 const withBranchIOS_1 = require("./withBranchIOS");
 const pkg = require('expo-branch/package.json');

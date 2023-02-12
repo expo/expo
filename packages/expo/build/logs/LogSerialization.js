@@ -94,7 +94,7 @@ async function _symbolicateErrorAsync(error) {
         // than the one in DefinitelyTyped.
         symbolicatedStack = (await symbolicateStackTrace(parsedStack))?.stack ?? null;
     }
-    catch (error) {
+    catch {
         return parsedStack;
     }
     // In this context an unsymbolicated stack is better than no stack

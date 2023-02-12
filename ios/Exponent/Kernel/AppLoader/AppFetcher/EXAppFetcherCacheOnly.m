@@ -1,14 +1,14 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXAppFetcherCacheOnly.h"
-#import "EXAppLoader.h"
+#import "EXAbstractLoader.h"
 #import "EXEnvironment.h"
 
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXAppFetcherCacheOnly
 
-- (instancetype)initWithAppLoader:(EXAppLoader *)appLoader manifest:(EXManifestsManifest *)manifest;
+- (instancetype)initWithAppLoader:(EXAbstractLoader *)appLoader manifest:(EXManifestsManifest *)manifest;
 {
   if (self = [super initWithAppLoader:appLoader]) {
     self.manifest = manifest;

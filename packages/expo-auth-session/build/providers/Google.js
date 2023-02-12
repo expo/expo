@@ -19,6 +19,10 @@ export const discovery = {
     revocationEndpoint: 'https://oauth2.googleapis.com/revoke',
     userInfoEndpoint: 'https://openidconnect.googleapis.com/v1/userinfo',
 };
+// @needsAudit
+/**
+ * Extends [`AuthRequest`](#authrequest) and accepts [`GoogleAuthRequestConfig`](#googleauthrequestconfig) in the constructor.
+ */
 class GoogleAuthRequest extends AuthRequest {
     nonce;
     constructor({ language, loginHint, selectAccount, extraParams = {}, clientSecret, ...config }) {
@@ -76,7 +80,7 @@ class GoogleAuthRequest extends AuthRequest {
  *
  * The id token can be retrieved with `response.params.id_token`.
  *
- * - [Get Started](https://docs.expo.io/guides/authentication/#google)
+ * - [Get Started](https://docs.expo.dev/guides/authentication/#google)
  *
  * @param config
  * @param redirectUriOptions
@@ -100,7 +104,7 @@ export function useIdTokenAuthRequest(config, redirectUriOptions = {}) {
  * Returns a loaded request, a response, and a prompt method.
  * When the prompt method completes, then the response will be fulfilled.
  *
- * - [Get Started](https://docs.expo.io/guides/authentication/#google)
+ * - [Get Started](https://docs.expo.dev/guides/authentication/#google)
  *
  * @param config
  * @param redirectUriOptions

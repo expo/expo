@@ -1,9 +1,8 @@
-import Quick
-import Nimble
+import ExpoModulesTestCore
 
 @testable import ExpoModulesCore
 
-class ModuleRegistrySpec: QuickSpec {
+class ModuleRegistrySpec: ExpoSpec {
   override func spec() {
     let appContext = AppContext()
 

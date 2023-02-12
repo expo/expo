@@ -1,4 +1,4 @@
-import { BarCodeScanner, BarCodePoint, BarCodeBounds, usePermissions } from 'expo-barcode-scanner';
+import { BarCodeScanner, BarCodePoint, BarCodeBounds } from 'expo-barcode-scanner';
 import * as ScreenOrientation from 'expo-screen-orientation';
 import React from 'react';
 import { Button, Platform, StyleSheet, Text, View } from 'react-native';
@@ -37,7 +37,7 @@ function reducer(state: State, action: Partial<State>): State {
 }
 
 export default function BarcodeScannerScreen() {
-  const [permission, requestPermission] = usePermissions();
+  const [permission, requestPermission] = BarCodeScanner.usePermissions();
 
   if (!permission) {
     return null;

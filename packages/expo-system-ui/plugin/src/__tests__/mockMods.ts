@@ -1,5 +1,5 @@
 import { ExpoConfig } from '@expo/config';
-import { ConfigPlugin, ExportedConfigWithProps, Mod } from '@expo/config-plugins';
+import { ConfigPlugin, ExportedConfigWithProps, Mod } from 'expo/config-plugins';
 
 // Usage: add the following mock to the mods you are using:
 // jest.mock('../../plugins/android-plugins');

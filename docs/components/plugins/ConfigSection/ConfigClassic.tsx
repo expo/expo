@@ -1,7 +1,7 @@
-import React, { PropsWithChildren, useEffect } from 'react';
+import { PropsWithChildren, useEffect } from 'react';
 
-import { InlineCode } from '~/components/base/code';
-import { B } from '~/components/base/paragraph';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { CODE } from '~/ui/components/Text';
 
 type Props = PropsWithChildren<object>;
 
@@ -9,18 +9,20 @@ export const ConfigClassic = ({ children }: Props) => {
   useEffect(() => {
     if (typeof children === 'string') {
       throw new Error(
-        `Content inside 'ConfigClassic' needs to be surrounded by new lines to be parsed as markdown.\n\nMake sure there is a blank new line before and after this content: '${children}'`
+        `Content inside 'ConfigClassic' needs to be surrounded by new lines to be parsed as markdown.\n\n` +
+          `Make sure there is a blank new line before and after this content: '${children}'`
       );
     }
   }, [children]);
 
   return (
-    <details>
-      <summary>
-        <B>Are you using the classic build system?</B> (
-        <InlineCode>expo build:[android|ios]</InlineCode>)
-      </summary>
+    <Collapsible
+      summary={
+        <span>
+          Are you using the classic build system? (<CODE>expo build:[android|ios]</CODE>)
+        </span>
+      }>
       {children}
-    </details>
+    </Collapsible>
   );
 };

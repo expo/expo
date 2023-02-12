@@ -76,7 +76,6 @@ function runPropUpdates() {
   loopID += 1;
 }
 
-const setImmediate = (fun) => setTimeout(fun, 0);
 const scheduleUpdates =
   Platform.OS === 'web' ? requestAnimationFrame : setImmediate;
 

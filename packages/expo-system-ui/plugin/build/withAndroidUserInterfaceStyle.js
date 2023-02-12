@@ -4,8 +4,8 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 };
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setStrings = exports.resolveProps = exports.withAndroidUserInterfaceStyle = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
 const assert_1 = __importDefault(require("assert"));
+const config_plugins_1 = require("expo/config-plugins");
 // strings.xml keys, this should not change.
 const USER_INTERFACE_STYLE_KEY = 'expo_system_ui_user_interface_style';
 const withAndroidUserInterfaceStyle = (config) => {
@@ -16,8 +16,7 @@ const withAndroidUserInterfaceStyle = (config) => {
 };
 exports.withAndroidUserInterfaceStyle = withAndroidUserInterfaceStyle;
 function resolveProps(config) {
-    var _a, _b;
-    const userInterfaceStyle = (_b = (_a = config.android) === null || _a === void 0 ? void 0 : _a.userInterfaceStyle) !== null && _b !== void 0 ? _b : config.userInterfaceStyle;
+    const userInterfaceStyle = config.android?.userInterfaceStyle ?? config.userInterfaceStyle;
     (0, assert_1.default)(!userInterfaceStyle || ['automatic', 'light', 'dark'].includes(userInterfaceStyle), `expo-system-ui: Invalid userInterfaceStyle: "${userInterfaceStyle}"`);
     return { userInterfaceStyle };
 }

@@ -11,7 +11,7 @@ public class EXDevLauncherErrorViewController: UIViewController, UITableViewData
   @IBOutlet weak var errorStack: UITableView!
 
   @IBAction func reload(_ sender: Any) {
-    guard let appUrl = manager?.controller?.sourceUrl() else {
+    guard let appUrl = manager?.controller?.appManifestURLWithFallback() else {
       // We don't have app url. So we fallback to launcher.
       // Shoudn't happen.
       navigateToLauncher()
@@ -60,6 +60,8 @@ public class EXDevLauncherErrorViewController: UIViewController, UITableViewData
   }
 
   private func navigateToLauncher() {
-    manager?.controller?.navigateToLauncher()
+    RCTExecuteOnMainQueue { [self]
+      self.manager?.controller?.navigateToLauncher()
+    }
   }
 }

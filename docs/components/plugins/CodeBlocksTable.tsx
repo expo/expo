@@ -1,8 +1,10 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
-import * as React from 'react';
+import { breakpoints, spacing } from '@expo/styleguide';
+import { PropsWithChildren } from 'react';
 
-import * as Constants from '~/constants/theme';
+import { Snippet } from '~/ui/components/Snippet/Snippet';
+import { SnippetContent } from '~/ui/components/Snippet/SnippetContent';
+import { SnippetHeader } from '~/ui/components/Snippet/SnippetHeader';
 
 const MDX_CLASS_NAME_TO_TAB_NAME: Record<string, string> = {
   'language-swift': 'Swift',
@@ -14,68 +16,16 @@ const MDX_CLASS_NAME_TO_TAB_NAME: Record<string, string> = {
   'language-groovy': 'Gradle',
 };
 
-const CodeSamplesCSS = css`
-  display: flex;
-  flex-direction: row;
-  max-width: 100%;
-  margin: 20px 0px;
-
-  .code-block-column {
-    display: flex;
-    flex-direction: column;
-    flex: 1;
-    margin-right: -1px;
-    min-width: 0px;
-
-    pre {
-      border-top-left-radius: 0px;
-      border-top-right-radius: 0px;
-    }
-    &:not(:first-child) pre {
-      border-bottom-left-radius: 0px;
-    }
-    &:not(:last-child) pre {
-      border-bottom-right-radius: 0px;
-    }
-    &:first-child .code-block-header {
-      border-top-left-radius: 4px;
-    }
-    &:last-child .code-block-header {
-      border-top-right-radius: 4px;
-    }
-  }
-  .code-block-header {
-    padding: 6px 16px;
-    background-color: ${theme.background.secondary};
-    border: 1px solid ${theme.border.default};
-    border-bottom-width: 0px;
-
-    span {
-      color: ${theme.text.default};
-      font-family: ${Constants.fonts.mono};
-      font-size: 15px;
-    }
-  }
-  .code-block-content {
-    flex: 1;
-    overflow-x: scroll;
-
-    pre {
-      height: 100%;
-      margin: 0px;
-    }
-  }
-`;
-
-type Props = {
-  children: JSX.Element[];
+type Props = PropsWithChildren<{
   tabs?: string[];
-};
+  connected?: boolean;
+}>;
 
-export function CodeBlocksTable({ children, tabs }: Props) {
+export function CodeBlocksTable({ children, tabs, connected = true, ...rest }: Props) {
   const childrenArray = Array.isArray(children) ? children : [children];
   const codeBlocks = childrenArray.filter(
-    ({ props }) => props.mdxType === 'pre' && props.children.props.className
+    ({ props }) =>
+      props.children.props.className && props.children.props.className.startsWith('language-')
   );
   const tabNames =
     tabs ||
@@ -85,15 +35,69 @@ export function CodeBlocksTable({ children, tabs }: Props) {
     });
 
   return (
-    <div css={CodeSamplesCSS}>
+    <div css={[codeBlocksWrapperStyle, connected && codeBlockConnectedWrapperStyle]} {...rest}>
       {codeBlocks.map((codeBlock, index) => (
-        <div key={index} className="code-block-column">
-          <div className="code-block-header">
-            <span>{tabNames[index]}</span>
-          </div>
-          <div className="code-block-content">{codeBlock}</div>
-        </div>
+        <Snippet key={index} css={snippetWrapperStyle}>
+          <SnippetHeader title={tabNames[index]} />
+          <SnippetContent skipPadding css={snippetContentStyle}>
+            {codeBlock}
+          </SnippetContent>
+        </Snippet>
       ))}
     </div>
   );
 }
+
+const codeBlocksWrapperStyle = css({
+  display: 'grid',
+  gridTemplateColumns: 'minmax(0, 1fr) minmax(0, 1fr)',
+  gap: spacing[4],
+  gridAutoRows: '1fr',
+
+  pre: {
+    border: 0,
+    margin: 0,
+    gridTemplateRows: 'minmax(100px, 1fr)',
+    height: '100%',
+  },
+
+  [`@media screen and (max-width: ${breakpoints.large}px)`]: {
+    gridTemplateColumns: 'minmax(0, 1fr)',
+    gridAutoRows: 'auto',
+  },
+});
+
+const codeBlockConnectedWrapperStyle = css({
+  [`@media screen and (min-width: ${breakpoints.large}px)`]: {
+    gridGap: 0,
+
+    '> div:nth-of-type(odd)': {
+      '> div': {
+        borderRight: 0,
+        borderTopRightRadius: 0,
+        borderBottomRightRadius: 0,
+      },
+    },
+
+    '> div:nth-of-type(even)': {
+      '> div': {
+        borderTopLeftRadius: 0,
+        borderBottomLeftRadius: 0,
+      },
+    },
+  },
+});
+
+const snippetWrapperStyle = css({
+  [`@media screen and (max-width: ${breakpoints.large}px)`]: {
+    marginBottom: 0,
+
+    '&:last-of-type': {
+      marginBottom: spacing[4],
+    },
+  },
+});
+
+const snippetContentStyle = css({
+  height: '100%',
+});

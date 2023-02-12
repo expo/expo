@@ -31,6 +31,8 @@
     [renderer addPrintFormatter:webView.viewPrintFormatter startingAtPageAtIndex:0];
 
     CGRect paperRect = CGRectMake(0, 0, self.pageSize.width, self.pageSize.height);
+    // Setting paperRect has no effect on actual page size, but HTML will not render
+    // without both paperRect and printableRect.
     [renderer setValue:[NSValue valueWithCGRect:paperRect] forKey:@"paperRect"];
     CGRect printableRect = CGRectMake(self.pageMargins.left, self.pageMargins.top, paperRect.size.width - self.pageMargins.left - self.pageMargins.right, paperRect.size.height - self.pageMargins.top - self.pageMargins.bottom);
     [renderer setValue:[NSValue valueWithCGRect:printableRect] forKey:@"printableRect"];
@@ -39,7 +41,8 @@
     UIGraphicsBeginPDFContextToData(data, CGRectZero /* paperRect */, nil);
     [renderer prepareForDrawingPages: NSMakeRange(0, renderer.numberOfPages)];
     for (int i = 0; i < renderer.numberOfPages; i++) {
-      UIGraphicsBeginPDFPage();
+      // this actually constrains the page to a particular size
+      UIGraphicsBeginPDFPageWithInfo(paperRect, nil);
       [renderer drawPageAtIndex:i inRect: UIGraphicsGetPDFContextBounds()];
     }
     UIGraphicsEndPDFContext();

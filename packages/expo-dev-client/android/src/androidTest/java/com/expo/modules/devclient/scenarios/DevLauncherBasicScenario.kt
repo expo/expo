@@ -15,7 +15,7 @@ import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.koin.DevLauncherKoinContext
 import expo.modules.devlauncher.launcher.DevLauncherActivity
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
-import expo.modules.devmenu.DevMenuDefaultSettings
+import expo.modules.devmenu.DevMenuDefaultPreferences
 import expo.modules.devmenu.DevMenuManager
 import java.lang.ref.WeakReference
 
@@ -93,7 +93,7 @@ internal class DevLauncherBasicScenario(
   }
 
   private fun defaultDevMenuTestInterceptor(): expo.modules.devmenu.tests.DevMenuTestInterceptor {
-    return DevMenuTestInterceptor(object : DevMenuDefaultSettings() {
+    return DevMenuTestInterceptor(object : DevMenuDefaultPreferences() {
       override var showsAtLaunch: Boolean
         get() = false
         set(_) {}

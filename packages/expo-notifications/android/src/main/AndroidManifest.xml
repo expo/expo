@@ -2,6 +2,7 @@
   package="expo.modules.notifications">
 
   <uses-permission android:name="android.permission.RECEIVE_BOOT_COMPLETED" />
+  <uses-permission android:name="android.permission.POST_NOTIFICATIONS"/>
 
   <application>
     <service
@@ -27,5 +28,14 @@
         <action android:name="android.intent.action.MY_PACKAGE_REPLACED" />
       </intent-filter>
     </receiver>
+
+    <activity android:name=".service.NotificationForwarderActivity"
+      android:theme="@android:style/Theme.Translucent.NoTitleBar"
+      android:exported="false"
+      android:excludeFromRecents="true"
+      android:noHistory="true"
+      android:launchMode="standard"
+      android:taskAffinity=""
+      />
   </application>
 </manifest>

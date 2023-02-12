@@ -1,9 +1,61 @@
 import { css } from '@emotion/react';
-import { theme, palette } from '@expo/styleguide';
-
-import * as Constants from '~/constants/theme';
+import { darkTheme, spacing, theme, typography } from '@expo/styleguide';
 
 export const globalExtras = css`
+  html {
+    background: ${theme.background.default};
+  }
+
+  body {
+    ${typography.body.paragraph}
+    text-rendering: optimizeLegibility;
+    line-height: 1;
+  }
+
+  ::selection {
+    background-color: ${theme.palette.blue5};
+    color: ${theme.text.default};
+  }
+
+  ::-webkit-scrollbar {
+    width: 6px;
+    height: 6px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background-color: transparent;
+    cursor: pointer;
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: ${theme.background.element};
+    border-radius: 10px;
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: ${theme.background.hover};
+  }
+
+  html[data-expo-theme='light'] div[class*='SnippetContent'] {
+    ::-webkit-scrollbar-thumb {
+      background: ${darkTheme.background.hover};
+    }
+
+    ::-webkit-scrollbar-thumb:hover {
+      background: ${darkTheme.icon.secondary};
+    }
+  }
+
+  a {
+    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
+    color: ${theme.text.link};
+  }
+
+  img {
+    max-width: 768px;
+    width: 100%;
+  }
+
   img.wide-image {
     max-width: 900px;
   }
@@ -18,134 +70,79 @@ export const globalExtras = css`
     outline: none;
   }
 
-  details {
-    margin-bottom: 1rem;
-    padding-top: 1rem;
-  }
-
-  details summary {
-    outline: none;
-    cursor: pointer;
-    margin-bottom: 0.5rem;
-    color: ${theme.text.default};
-
-    ::-webkit-details-marker {
-      color: ${theme.icon.default};
-    }
-  }
-
-  details summary h3 {
-    font-size: 1.2rem;
-    font-weight: 500;
-    font-family: ${Constants.fonts.demi};
-    color: ${theme.text.default};
-    display: inline-block;
-  }
-
-  details summary h4 {
-    font-family: ${Constants.fonts.demi};
-    color: ${theme.text.default};
-    font-size: 1rem;
-    font-weight: 500;
-    display: inline-block;
-    vertical-align: text-top;
-    max-width: 90%;
-  }
-
-  details summary p {
-    margin-top: 0.5rem;
-    margin-right: 1rem;
-    line-height: 160%;
-  }
-
-  details summary:hover {
-    opacity: 0.75;
-  }
-
-  details p {
-    margin-left: 1rem;
-  }
-
-  .snack-inline-example-button {
-    display: grid;
-    grid-template-columns: 16px 1fr;
-    grid-gap: 8px;
-    align-items: center;
-    border: none;
-    border-radius: 4px;
-    padding: 0 16px;
-    height: 40px;
-    margin: 0;
-    margin-bottom: 0.5rem;
-    text-decoration: none;
-    background: ${theme.button.primary.background};
-    color: ${palette.dark.white};
-    font-family: ${Constants.fontFamilies.book};
-    font-size: 1rem;
-    cursor: pointer;
-    -webkit-appearance: none;
-    -moz-appearance: none;
-    transition: all 170ms linear;
-  }
-
-  .snack-inline-example-button:hover,
-  .snack-inline-example-button:focus {
-    box-shadow: 0 2px 8px rgba(0, 1, 0, 0.2);
-    opacity: 0.85;
-  }
-
-  .snack-inline-example-button:focus {
-    outline: 0;
-    border: 0;
-  }
-
-  .snack-inline-example-button:active {
-    outline: 0;
-    border: 0;
-  }
-
-  .diff-container {
-    border: 1px solid ${theme.border.default};
-    border-radius: 2px;
-    margin-bottom: 10px;
-  }
-
-  .diff-container table {
-    font-size: 0.9rem;
-    border-radius: none;
-    border: none;
-  }
-
-  .diff-container td,
-  .diff-container th {
-    border-bottom: none;
-    border-right: none;
-  }
-
-  .diff-container .diff-gutter-insert {
-    background: ${theme.background.success};
-  }
-
-  .diff-container .diff-gutter-delete {
-    background: ${theme.background.error};
-  }
-
-  .diff-container .diff-code-insert {
-    background: ${theme.background.success};
-  }
-
-  .diff-container .diff-code-delete {
-    background: ${theme.background.error};
-  }
-
   .strike {
     text-decoration: line-through;
   }
 
-  // TODO: investigate why some style is forcing nested ordered lists to have
-  // 1rem bottom margin!
+  // TODO(simek): investigate why some style is forcing nested ordered lists to have 1rem bottom margin!
   ul ul,
   ol ul {
     margin-bottom: 0 !important;
+  }
+
+  // Global styles for react-diff-view
+
+  .diff-unified {
+    ${typography.fontSizes[13]};
+    border-collapse: collapse;
+    white-space: pre-wrap;
+    width: 100%;
+
+    td,
+    th {
+      border-bottom: none;
+    }
+  }
+
+  .diff-line:first-of-type {
+    height: 29px;
+
+    td {
+      padding-top: ${spacing[2]}px;
+    }
+  }
+
+  .diff-line:last-of-type {
+    height: 29px;
+  }
+
+  .diff-gutter-col {
+    width: ${spacing[10]}px;
+    background-color: ${theme.background.element};
+  }
+
+  .diff-gutter {
+    ${typography.fontSizes[12]};
+    text-align: right;
+    padding: 0 ${spacing[2]}px;
+  }
+
+  .diff-gutter-normal {
+    color: ${theme.icon.secondary};
+  }
+
+  .diff-code {
+    word-break: break-word;
+    padding-left: ${spacing[4]}px;
+  }
+
+  .diff-code-insert {
+    background-color: ${theme.palette.green2};
+    color: ${theme.text.success};
+  }
+
+  .diff-gutter-insert {
+    background-color: ${theme.palette.green4};
+    color: ${theme.text.success};
+  }
+
+  .diff-code-delete {
+    background-color: ${theme.palette.red2};
+    color: ${theme.text.danger};
+  }
+
+  .diff-gutter-delete {
+    background-color: ${theme.palette.red4};
+    color: ${theme.text.danger};
   }
 `;

@@ -1,10 +1,14 @@
-import { NativeModulesProxy, requireNativeViewManager } from 'expo-modules-core';
+import { requireNativeModule, requireNativeViewManager } from 'expo-modules-core';
 import React from 'react';
-import { View, StyleSheet, ViewProps, findNodeHandle } from 'react-native';
+import { View, StyleSheet, findNodeHandle } from 'react-native';
 
 import { BlurViewProps } from './BlurView.types';
 
-class BlurView extends React.Component<BlurViewProps & { forwardedRef: React.ForwardedRef<View> }> {
+type BlurViewForwardedRefProp = {
+  forwardedRef: React.ForwardedRef<View>;
+};
+
+class BlurView extends React.Component<BlurViewProps & BlurViewForwardedRefProp> {
   private blurViewRef = React.createRef<View>();
 
   /**
@@ -27,15 +31,14 @@ class BlurView extends React.Component<BlurViewProps & { forwardedRef: React.For
     const originalSetNativeProps = view.setNativeProps.bind(view);
 
     // Override `setNativeProps` (https://reactnative.dev/docs/animations#setnativeprops)
-    view.setNativeProps = ({ tint, intensity, ...nativeProps }: BlurViewProps & ViewProps) => {
+    view.setNativeProps = ({ tint, intensity, ...nativeProps }: BlurViewProps) => {
+      const ExpoBlurView = requireNativeModule('ExpoBlurView');
+
       // Call the original method with all View-based props
       view && originalSetNativeProps(nativeProps);
-      // Invoke `setNativeProps` native expo method defined by `ExpoBlurViewManager`
+      // Invoke `setNativeProps` native expo method defined by `ExpoBlurView` module
       this.blurViewRef.current &&
-        NativeModulesProxy.ExpoBlurViewManager.setNativeProps(
-          { tint, intensity },
-          findNodeHandle(this.blurViewRef.current)
-        );
+        ExpoBlurView.setNativeProps({ tint, intensity }, findNodeHandle(this.blurViewRef.current));
     };
 
     // mimic `forwardedRef` logic
@@ -75,13 +78,15 @@ const styles = StyleSheet.create({
 
 const NativeBlurView = requireNativeViewManager('ExpoBlurView');
 
+// This `forwardedRef` mechanism is necessary to make this component work properly
+// with React's `ref` prop and to react to props updates as expected.
 /**
- * @skip
- * This `forwardedRef` mechanism is necessary to make this component work properly
- * with React's `ref` prop and to react to props updates as expected.
+ * A React component that blurs everything underneath the view.
  */
-const BlurViewWithForwardedRef = React.forwardRef<View, BlurViewProps>((props, forwardRef) => (
-  <BlurView {...props} forwardedRef={forwardRef} />
-));
+const BlurViewWithForwardedRef = React.forwardRef<View, BlurViewProps>(
+  (props: BlurViewProps, forwardRef: React.ForwardedRef<View>) => (
+    <BlurView {...props} forwardedRef={forwardRef} />
+  )
+);
 
 export default BlurViewWithForwardedRef;

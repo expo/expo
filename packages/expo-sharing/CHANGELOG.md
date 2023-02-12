@@ -10,6 +10,52 @@
 
 ### 💡 Others
 
+## 11.2.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 11.2.0 — 2023-02-03
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 11.1.0 — 2022-12-30
+
+### 🎉 New features
+
+- Migrated Android implementation to Expo Modules API. ([#20112](https://github.com/expo/expo/pull/20112) by [@alanhughes](https://github.com/alanjhughes))
+
+## 11.0.1 — 2022-10-27
+
+### 🐛 Bug fixes
+
+- On iOS, dismiss share sheet after sharing to an app is canceled, so the file doesn't fail to attach when trying to share again ([#19656](https://github.com/expo/expo/pull/19656) by [@keith-kurak](https://github.com/keith-kurak))
+
+## 11.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+## 10.3.0 — 2022-07-07
+
+### 🛠 Breaking changes
+
+- Changed the return type of the `shareAsync` function. The promise now resolves to `void` instead of an empty object. ([#18019](https://github.com/expo/expo/pull/18019) by [@barthap](https://github.com/barthap))
+
+## 10.2.0 — 2022-04-18
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+## 10.1.1 - 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+
 ## 10.1.0 — 2021-12-03
 
 _This version does not introduce any user-facing changes._

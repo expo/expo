@@ -10,7 +10,71 @@
 
 ### 💡 Others
 
+## 13.2.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.0 — 2023-02-03
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 13.1.0 — 2022-12-30
+
+### 🎉 New features
+
+- Native module on iOS is now written in Swift using the Sweet API. ([#19980](https://github.com/expo/expo/pull/19980) by [@fobos531](https://github.com/fobos531))
+
+## 13.0.2 — 2022-11-02
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.1 — 2022-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))
+- Updated docs link. ([#18972](https://github.com/expo/expo/pull/18972) by [@EvanBacon](https://github.com/EvanBacon))
+- Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 12.3.0 — 2022-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 12.2.0 — 2022-04-18
+
+### 🎉 New features
+
+- Add the ability to set confirmation requirement on Android. ([#16793](https://github.com/expo/expo/pull/16793) by [@fguitton](https://github.com/fguitton))
+
+### 🐛 Bug fixes
+
+- On Android fixed `BiometricPrompt.ERROR_CANCELED` returned when fallbacking to PIN/Pattern/Password authentication method. ([#16927](https://github.com/expo/expo/pull/16927) by [@bbarthec](https://github.com/bbarthec), [@Polidoro-root](https://github.com/Polidoro-root))
+
+### 💡 Others
+
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
+- Updated `androix.biometric.biometric` from `1.1.0` to `1.2.0-alphas04`. ([#16927](https://github.com/expo/expo/pull/16927) by [@bbarthec](https://github.com/bbarthec), ([#16927](https://github.com/expo/expo/pull/16927) by [@bbarthec](https://github.com/bbarthec), [@Polidoro-root](https://github.com/Polidoro-root))
+- Bumped `compileSdkVersion` from `30` to `31`. ([#16927](https://github.com/expo/expo/pull/16927) by [@bbarthec](https://github.com/bbarthec), ([#16927](https://github.com/expo/expo/pull/16927) by [@bbarthec](https://github.com/bbarthec), [@Polidoro-root](https://github.com/Polidoro-root))
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+## 12.1.1 - 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 
 ## 12.1.0 — 2021-12-03
 
@@ -122,3 +186,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Added estimate of supported authentication types for Android. ([#8431](https://github.com/expo/expo/pull/8431) by [@bycedric](https://github.com/bycedric))
+
+### 💡 Others
+
+- Removed `console.warn` from the `authenticateAsync` function, preventing running it every time the user cancels authentication or authentication fails. ([#19803](https://github.com/expo/expo/pull/19803) by [@GustavoMont](https://github.com/GustavoMont))

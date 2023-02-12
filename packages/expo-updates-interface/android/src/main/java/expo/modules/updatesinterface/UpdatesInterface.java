@@ -5,6 +5,8 @@ import android.content.Context;
 import org.json.JSONObject;
 
 import java.util.HashMap;
+import java.util.List;
+import java.util.UUID;
 
 /**
  * Interface for modules that depend on expo-updates for loading production updates but do not want
@@ -25,6 +27,11 @@ public interface UpdatesInterface {
     boolean onManifestLoaded(JSONObject manifest);
   }
 
+  interface QueryCallback {
+    void onFailure(Exception e);
+    void onSuccess(List<UUID> updateIds);
+  }
+  
   interface Update {
     JSONObject getManifest();
     String getLaunchAssetPath();
@@ -33,4 +40,6 @@ public interface UpdatesInterface {
   void reset();
 
   void fetchUpdateWithConfiguration(HashMap<String, Object> configuration, Context context, UpdateCallback callback);
+
+  void storedUpdateIdsWithConfiguration(HashMap<String, Object> configuration, Context context, QueryCallback callback);
 }

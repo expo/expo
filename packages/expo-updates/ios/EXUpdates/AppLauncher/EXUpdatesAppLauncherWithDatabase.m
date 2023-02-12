@@ -30,6 +30,24 @@ NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
 
+/**
+ * Implementation of EXUpdatesAppLauncher that uses the SQLite database and expo-updates file store
+ * as the source of updates.
+ *
+ * Uses the EXUpdatesSelectionPolicy to choose an update from SQLite to launch, then ensures that
+ * the update is safe and ready to launch (i.e. all the assets that SQLite expects to be stored on
+ * disk are actually there).
+ *
+ * This class also includes failsafe code to attempt to re-download any assets unexpectedly missing
+ * from disk (since it isn't necessarily safe to just revert to an older update in this case).
+ * Distinct from the EXUpdatesAppLoader classes, though, this class does *not* make any major
+ * modifications to the database; its role is mostly to read the database and ensure integrity with
+ * the file system.
+ *
+ * It's important that the update to launch is selected *before* any other checks, e.g. the above
+ * check for assets on disk. This is to preserve the invariant that no older update should ever be
+ * launched after a newer one has been launched.
+ */
 @implementation EXUpdatesAppLauncherWithDatabase
 
 - (instancetype)initWithConfig:(EXUpdatesConfig *)config
@@ -115,6 +133,21 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
   } else {
     [self _finishLaunch];
   }
+}
+
++ (void)storedUpdateIdsInDatabase:(EXUpdatesDatabase *)database
+                       completion:(EXUpdatesAppLauncherQueryCompletionBlock)completionBlock
+{
+  dispatch_async(database.databaseQueue,^{
+    NSArray<NSUUID *> *readyUpdateIds;
+    NSError *dbError = nil;
+    readyUpdateIds = [database allUpdateIdsWithStatus:EXUpdatesUpdateStatusReady error:&dbError];
+    if (dbError != nil) {
+      completionBlock(dbError, @[]);
+    } else {
+      completionBlock(nil, readyUpdateIds);
+    }
+  });
 }
 
 - (BOOL)isUsingEmbeddedAssets
@@ -290,24 +323,15 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
   }
   dispatch_async([EXUpdatesFileDownloader assetFilesQueue], ^{
     [self.downloader downloadFileFromURL:asset.url
+                           verifyingHash:asset.expectedHash
                                   toPath:[assetLocalUrl path]
                             extraHeaders:asset.extraRequestHeaders ?: @{}
-                            successBlock:^(NSData *data, NSURLResponse *response) {
+                            successBlock:^(NSData *data, NSURLResponse *response, NSString *base64URLEncodedSHA256Hash) {
       dispatch_async(self->_launcherQueue, ^{
-        NSString *hashHexString = [EXUpdatesUtils sha256WithData:data];
-        if (asset.expectedHash && ![asset.expectedHash.lowercaseString isEqualToString:hashHexString.lowercaseString]) {
-          completion([NSError errorWithDomain:EXUpdatesAppLauncherErrorDomain
-                                         code:1016
-                                     userInfo:@{NSLocalizedDescriptionKey: [NSString stringWithFormat:@"Asset hash invalid: %@; expectedHash: %@; actualHash: %@", asset.key, asset.expectedHash.lowercaseString, hashHexString.lowercaseString]}],
-                     asset,
-                     assetLocalUrl);
-          return;
-        }
-        
         if ([response isKindOfClass:[NSHTTPURLResponse class]]) {
           asset.headers = ((NSHTTPURLResponse *)response).allHeaderFields;
         }
-        asset.contentHash = hashHexString;
+        asset.contentHash = base64URLEncodedSHA256Hash;
         asset.downloadTime = [NSDate date];
         completion(nil, asset, assetLocalUrl);
       });

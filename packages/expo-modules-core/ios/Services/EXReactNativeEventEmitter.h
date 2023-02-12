@@ -9,10 +9,10 @@
 
 // Swift compatibility headers (e.g. `ExpoModulesCore-Swift.h`) are not available in headers,
 // so we use class forward declaration here. Swift header must be imported in the `.m` file.
-@class SwiftInteropBridge;
+@class EXAppContext;
 
 @interface EXReactNativeEventEmitter : RCTEventEmitter <EXInternalModule, EXBridgeModule, EXModuleRegistryConsumer, EXEventEmitterService>
 
-@property (nonatomic, strong) SwiftInteropBridge *swiftInteropBridge;
+@property (nonatomic, strong) EXAppContext *appContext;
 
 @end

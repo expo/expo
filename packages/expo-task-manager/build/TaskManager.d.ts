@@ -28,7 +28,8 @@ export interface TaskManagerTaskBody<T = object> {
  */
 export interface TaskManagerTaskBodyExecutionInfo {
     /**
-     * __(iOS only)__ State of the application.
+     * State of the application.
+     * @platform ios
      */
     appState?: 'active' | 'background' | 'inactive';
     /**
@@ -66,7 +67,7 @@ export interface RegisteredTask extends TaskManagerTask {
 /**
  * Type of task executor – a function that handles the task.
  */
-export declare type TaskManagerTaskExecutor = (body: TaskManagerTaskBody) => void;
+export type TaskManagerTaskExecutor = (body: TaskManagerTaskBody) => void;
 /**
  * Defines task function. It must be called in the global scope of your JavaScript bundle.
  * In particular, it cannot be called in any of React lifecycle methods like `componentDidMount`.

@@ -11,7 +11,6 @@ package versioned.host.exp.exponent.modules.api.components.datetimepicker;
  * Date picker display options.
  */
 public enum RNDatePickerDisplay {
-  CALENDAR,
   SPINNER,
   DEFAULT
 }

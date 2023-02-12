@@ -1,6 +1,7 @@
 package expo.modules.medialibrary.albums
 
 import android.provider.MediaStore
+import expo.modules.medialibrary.AlbumException
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.MockContext
@@ -8,21 +9,21 @@ import expo.modules.medialibrary.MockData
 import expo.modules.medialibrary.mockContentResolver
 import expo.modules.medialibrary.mockCursor
 import expo.modules.medialibrary.throwableContentResolver
+import expo.modules.test.core.PromiseMock
+import expo.modules.test.core.assertRejectedWithCode
+import expo.modules.test.core.promiseResolved
 import io.mockk.every
 import io.mockk.just
 import io.mockk.mockkStatic
 import io.mockk.runs
 import io.mockk.slot
 import org.junit.Assert.assertEquals
+import org.junit.Assert.assertThrows
 import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import org.junit.runner.RunWith
 import org.robolectric.RobolectricTestRunner
-import org.unimodules.test.core.PromiseMock
-import org.unimodules.test.core.assertRejected
-import org.unimodules.test.core.assertRejectedWithCode
-import org.unimodules.test.core.promiseResolved
 
 @RunWith(RobolectricTestRunner::class)
 internal class GetAlbumInfoTests {
@@ -57,7 +58,7 @@ internal class GetAlbumInfoTests {
     val albumName = "testAlbumName"
 
     // act
-    GetAlbum(context, albumName, promise).doInBackground()
+    GetAlbum(context, albumName, promise).execute()
 
     // assert
     assertTrue(selectionSlot.captured.contains(expectedSelection, ignoreCase = true))
@@ -99,10 +100,10 @@ internal class GetAlbumInfoTests {
     val context = mockContext with mockContentResolver(null)
 
     // act
-    queryAlbum(context, "", emptyArray(), promise)
-
     // assert
-    assertRejected(promise)
+    assertThrows(AlbumException::class.java) {
+      queryAlbum(context, "", emptyArray(), promise)
+    }
   }
 
   @Test

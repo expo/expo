@@ -4,7 +4,7 @@ import * as React from 'react';
 import { Dimensions } from 'react-native';
 import Canvas from './Canvas';
 function getImageForAsset(asset) {
-    if (asset != null && typeof asset === 'object' && asset !== null && asset.downloadAsync) {
+    if (asset != null && typeof asset === 'object' && asset.downloadAsync) {
         const dataURI = asset.localUri || asset.uri || '';
         const image = new Image();
         image.src = dataURI;

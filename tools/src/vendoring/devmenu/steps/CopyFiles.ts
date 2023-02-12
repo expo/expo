@@ -1,8 +1,9 @@
-import { Task } from './Task';
-import path from 'path';
 import chalk from 'chalk';
 import fs from 'fs-extra';
+import path from 'path';
+
 import { toRepoPath, findFiles } from '../utils';
+import { Task } from './Task';
 
 export type CopyFilesSettings = {
   from?: string;
@@ -70,8 +71,8 @@ export class CopyFiles extends Task {
     }
   }
 
-  protected overrideWorkingDirectory(): string | undefined {
-    return this.from;
+  protected overrideWorkingDirectory(): string {
+    return this.from || '<workingDirectory>';
   }
 
   async execute() {
@@ -83,7 +84,7 @@ export class CopyFiles extends Task {
         : workDirectory;
 
       this.logSubStep(
-        `📝 copy ${chalk.green(this.from || '<workingDirectory>')}/${chalk.green(
+        `📝 copy ${chalk.green(this.overrideWorkingDirectory())}/${chalk.green(
           this.subDirectory ? this.subDirectory + '/' : ''
         )}${chalk.yellow(pattern)} into ${chalk.magenta(this.to)}`
       );

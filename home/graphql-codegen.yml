@@ -15,3 +15,6 @@ generates:
       reactApolloVersion: 3
       preResolveTypes: true
       dedupeOperationSuffix: true
+  ./graphql.schema.json:
+    plugins:
+      - 'introspection'

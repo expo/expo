@@ -2,7 +2,7 @@ import { PermissionResponse, PermissionStatus, SyntheticPlatformEmitter } from '
 
 import type { AVPlaybackNativeSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV.types';
 import type { RecordingStatus } from './Audio/Recording.types';
-import { RECORDING_OPTIONS_PRESET_HIGH_QUALITY } from './Audio/RecordingConstants';
+import { RecordingOptionsPresets } from './Audio/RecordingConstants';
 
 async function getPermissionWithQueryAsync(
   name: PermissionNameWithAdditionalValues
@@ -19,8 +19,8 @@ async function getPermissionWithQueryAsync(
       default:
         return PermissionStatus.UNDETERMINED;
     }
-  } catch (error) {
-    // FireFox - TypeError: 'microphone' (value of 'name' member of PermissionDescriptor) is not a valid value for enumeration PermissionName.
+  } catch {
+    // Firefox - TypeError: 'microphone' (value of 'name' member of PermissionDescriptor) is not a valid value for enumeration PermissionName.
     return PermissionStatus.UNDETERMINED;
   }
 }
@@ -83,6 +83,7 @@ function getStatusFromMedia(media?: HTMLMediaElement): AVPlaybackStatus {
     // TODO: Bacon: This seems too complicated right now: https://webaudio.github.io/web-audio-api/#dom-biquadfilternode-frequency
     shouldCorrectPitch: false,
     volume: media.volume,
+    audioPan: 0,
     isMuted: media.muted,
     isLooping: media.loop,
     didJustFinish: media.ended,
@@ -91,10 +92,10 @@ function getStatusFromMedia(media?: HTMLMediaElement): AVPlaybackStatus {
   return status;
 }
 
-function setStatusForMedia(
+async function setStatusForMedia(
   media: HTMLMediaElement,
   status: AVPlaybackStatusToSet
-): AVPlaybackStatus {
+): Promise<AVPlaybackStatus> {
   if (status.positionMillis !== undefined) {
     media.currentTime = status.positionMillis / 1000;
   }
@@ -112,9 +113,9 @@ function setStatusForMedia(
   // }
   if (status.shouldPlay !== undefined) {
     if (status.shouldPlay) {
-      media.play();
+      await media.play();
     } else {
-      media.pause();
+      await media.pause();
     }
   }
   if (status.rate !== undefined) {
@@ -202,7 +203,7 @@ export default {
       });
     };
 
-    const status = setStatusForMedia(media, fullInitialStatus);
+    const status = await setStatusForMedia(media, fullInitialStatus);
 
     return [media, status];
   },
@@ -252,7 +253,7 @@ export default {
 
     mediaRecorder = new (window as any).MediaRecorder(
       stream,
-      options?.web || RECORDING_OPTIONS_PRESET_HIGH_QUALITY.web
+      options?.web || RecordingOptionsPresets.HIGH_QUALITY.web
     );
 
     mediaRecorder.addEventListener('pause', () => {
@@ -370,7 +371,7 @@ export default {
         canAskAgain: true,
         granted: true,
       };
-    } catch (e) {
+    } catch {
       return {
         status: PermissionStatus.DENIED,
         expires: 'never',

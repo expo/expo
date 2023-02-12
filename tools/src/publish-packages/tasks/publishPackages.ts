@@ -3,11 +3,11 @@ import chalk from 'chalk';
 import path from 'path';
 
 import Git from '../../Git';
-import * as Npm from '../../Npm';
 import logger from '../../Logger';
+import * as Npm from '../../Npm';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
-import { resolveReleaseTypeAndVersion } from './resolveReleaseTypeAndVersion';
+import { selectPackagesToPublish } from './selectPackagesToPublish';
 
 const { green, cyan, yellow } = chalk;
 
@@ -17,7 +17,7 @@ const { green, cyan, yellow } = chalk;
 export const publishPackages = new Task<TaskArgs>(
   {
     name: 'publishPackages',
-    dependsOn: [resolveReleaseTypeAndVersion],
+    dependsOn: [selectPackagesToPublish],
   },
   async (parcels: Parcel[], options: CommandOptions) => {
     logger.info('\n🚀 Publishing packages...');

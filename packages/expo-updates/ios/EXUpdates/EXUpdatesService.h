@@ -17,8 +17,10 @@ typedef void (^EXUpdatesAppRelaunchCompletionBlock)(BOOL success);
 @property (nonatomic, readonly) EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, readonly) NSURL *directory;
 
+@property (nullable, nonatomic, readonly, strong) EXUpdatesUpdate *embeddedUpdate;
 @property (nullable, nonatomic, readonly, strong) EXUpdatesUpdate *launchedUpdate;
 @property (nullable, nonatomic, readonly, strong) NSDictionary *assetFilesMap;
+@property (nonatomic, readonly, assign) BOOL isEmbeddedLaunch;
 @property (nonatomic, readonly, assign) BOOL isUsingEmbeddedAssets;
 @property (nonatomic, readonly, assign) BOOL isStarted;
 @property (nonatomic, readonly, assign) BOOL isEmergencyLaunch;

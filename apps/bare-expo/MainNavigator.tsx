@@ -1,5 +1,5 @@
 import { createBottomTabNavigator } from '@react-navigation/bottom-tabs';
-import { NavigationContainer } from '@react-navigation/native';
+import { LinkingOptions, NavigationContainer } from '@react-navigation/native';
 import { createStackNavigator } from '@react-navigation/stack';
 import * as Linking from 'expo-linking';
 import React from 'react';
@@ -26,7 +26,7 @@ type NativeComponentListExportsType = null | {
 export function optionalRequire(requirer: () => { default: React.ComponentType }) {
   try {
     return requirer().default;
-  } catch (e) {
+  } catch {
     return null;
   }
 }
@@ -48,7 +48,7 @@ const Search = optionalRequire(() =>
   require('native-component-list/src/screens/SearchScreen')
 ) as any;
 
-let nclLinking: Record<string, any> = {};
+const nclLinking: Record<string, any> = {};
 if (NativeComponentList) {
   routes.apis = NativeComponentList.apis.navigator;
   routes.components = NativeComponentList.components.navigator;
@@ -59,8 +59,13 @@ if (NativeComponentList) {
 const Tab = createBottomTabNavigator();
 const Switch = createStackNavigator();
 
-const linking = {
-  prefixes: [Platform.select({ web: Linking.createURL('/', { scheme: 'bareexpo' }), default: 'bareexpo://' })],
+const linking: LinkingOptions<object> = {
+  prefixes: [
+    Platform.select({
+      web: Linking.createURL('/', { scheme: 'bareexpo' }),
+      default: 'bareexpo://',
+    }),
+  ],
   config: {
     screens: {
       main: {
@@ -79,20 +84,26 @@ const linking = {
       },
     },
   },
+  // react-navigation internally has a 150ms timeout for `Linking.getInitialURL`.
+  // https://github.com/react-navigation/react-navigation/blob/f93576624282c3d65e359cca2826749f56221e8c/packages/native/src/useLinking.native.tsx#L29-L37
+  // The timeout is too short for GitHub Actions CI with Hermes and causes test failures.
+  // For detox testing, we use the raw `Linking.getInitialURL` instead.
+  ...(global.DETOX ? { getInitialURL: Linking.getInitialURL } : null),
 };
 
 function TabNavigator() {
   return (
     <Tab.Navigator
-      tabBarOptions={{
-        activeTintColor: Colors.activeTintColor,
-        inactiveTintColor: Colors.inactiveTintColor,
-        safeAreaInsets: {
-          top: 5,
-        },
+      screenOptions={{
+        headerShown: false,
+        tabBarActiveTintColor: Colors.activeTintColor,
+        tabBarInactiveTintColor: Colors.inactiveTintColor,
+      }}
+      safeAreaInsets={{
+        top: 5,
       }}
       initialRouteName="test-suite">
-      {Object.keys(routes).map(name => (
+      {Object.keys(routes).map((name) => (
         <Tab.Screen
           name={name}
           key={name}
@@ -106,9 +117,9 @@ function TabNavigator() {
 
 export default () => (
   <NavigationContainer linking={linking}>
-    <Switch.Navigator headerMode="none" initialRouteName="main">
+    <Switch.Navigator screenOptions={{ headerShown: false }} initialRouteName="main">
       {Redirect && <Switch.Screen name="redirect" component={Redirect} />}
-      {Search && <Switch.Screen name="search" component={Search} />}
+      {Search && <Switch.Screen name="searchNavigator" component={Search} />}
       <Switch.Screen name="main" component={TabNavigator} />
     </Switch.Navigator>
   </NavigationContainer>

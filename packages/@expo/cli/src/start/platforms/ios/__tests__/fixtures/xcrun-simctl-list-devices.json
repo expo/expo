@@ -1,0 +1,126 @@
+{
+    "devices": {
+        "com.apple.CoreSimulator.SimRuntime.iOS-15-0": [
+            {
+                "dataPath": "\/Users\/evanbacon\/Library\/Developer\/CoreSimulator\/Devices\/0288B8DC-5EC9-43EB-A8E9-A3E3AA43352E\/data",
+                "logPath": "\/Users\/evanbacon\/Library\/Logs\/CoreSimulator\/0288B8DC-5EC9-43EB-A8E9-A3E3AA43352E",
+                "udid": "0288B8DC-5EC9-43EB-A8E9-A3E3AA43352E",
+                "isAvailable": true,
+                "deviceTypeIdentifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-SE--2nd-generation-",
+                "state": "Shutdown",
+                "name": "iPhone SE (2nd generation)"
+            },
+            {
+                "dataPath": "\/Users\/evanbacon\/Library\/Developer\/CoreSimulator\/Devices\/E3F2EAAD-5A58-4003-A029-5C642E00C9F4\/data",
+                "logPath": "\/Users\/evanbacon\/Library\/Logs\/CoreSimulator\/E3F2EAAD-5A58-4003-A029-5C642E00C9F4",
+                "udid": "E3F2EAAD-5A58-4003-A029-5C642E00C9F4",
+                "isAvailable": true,
+                "deviceTypeIdentifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-13-Pro",
+                "state": "Shutdown",
+                "name": "iPhone 13 Pro"
+            },
+            {
+                "dataPath": "\/Users\/evanbacon\/Library\/Developer\/CoreSimulator\/Devices\/62E87705-28B9-40B7-BAA9-6E792E15C208\/data",
+                "logPath": "\/Users\/evanbacon\/Library\/Logs\/CoreSimulator\/62E87705-28B9-40B7-BAA9-6E792E15C208",
+                "udid": "62E87705-28B9-40B7-BAA9-6E792E15C208",
+                "isAvailable": true,
+                "deviceTypeIdentifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-13-Pro-Max",
+                "state": "Shutdown",
+                "name": "iPhone 13 Pro Max"
+            },
+            {
+                "dataPath": "\/Users\/evanbacon\/Library\/Developer\/CoreSimulator\/Devices\/90518806-B32C-4F68-A4B9-679556F84CE8\/data",
+                "logPath": "\/Users\/evanbacon\/Library\/Logs\/CoreSimulator\/90518806-B32C-4F68-A4B9-679556F84CE8",
+                "udid": "90518806-B32C-4F68-A4B9-679556F84CE8",
+                "isAvailable": true,
+                "deviceTypeIdentifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-13-mini",
+                "state": "Shutdown",
+                "name": "iPhone 13 mini"
+            },
+            {
+                "dataPath": "\/Users\/evanbacon\/Library\/Developer\/CoreSimulator\/Devices\/FEC3899E-5DC9-4A2C-8F17-E126E3FCD0F8\/data",
+                "logPath": "\/Users\/evanbacon\/Library\/Logs\/CoreSimulator\/FEC3899E-5DC9-4A2C-8F17-E126E3FCD0F8",
+                "udid": "FEC3899E-5DC9-4A2C-8F17-E126E3FCD0F8",
+                "isAvailable": true,
+                "deviceTypeIdentifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-13",
+                "state": "Shutdown",
+                "name": "iPhone 13"
+            },
+            {
+                "dataPath": "\/Users\/evanbacon\/Library\/Developer\/CoreSimulator\/Devices\/6581D3B3-CF1C-4D3E-B04A-D77DAF38B109\/data",
+                "logPath": "\/Users\/evanbacon\/Library\/Logs\/CoreSimulator\/6581D3B3-CF1C-4D3E-B04A-D77DAF38B109",
+                "udid": "6581D3B3-CF1C-4D3E-B04A-D77DAF38B109",
+                "isAvailable": true,
+                "deviceTypeIdentifier": "com.apple.CoreSimulator.SimDeviceType.iPad-9th-generation",
+                "state": "Shutdown",
+                "name": "iPad (9th generation)"
+            },
+            {
+                "dataPath": "\/Users\/evanbacon\/Library\/Developer\/CoreSimulator\/Devices\/194894B4-129F-4986-A7C5-720AB6157526\/data",
+                "logPath": "\/Users\/evanbacon\/Library\/Logs\/CoreSimulator\/194894B4-129F-4986-A7C5-720AB6157526",
+                "udid": "194894B4-129F-4986-A7C5-720AB6157526",
+                "isAvailable": true,
+                "deviceTypeIdentifier": "com.apple.CoreSimulator.SimDeviceType.iPad-mini-6th-generation",
+                "state": "Shutdown",
+                "name": "iPad mini (6th generation)"
+            }
+        ],
+        "com.apple.CoreSimulator.SimRuntime.tvOS-15-0": [],
+        "com.apple.CoreSimulator.SimRuntime.watchOS-8-0": [
+            {
+                "dataPath": "\/Users\/evanbacon\/Library\/Developer\/CoreSimulator\/Devices\/BE99E61A-37C2-4DE2-91DB-D5508C8FD1C8\/data",
+                "logPath": "\/Users\/evanbacon\/Library\/Logs\/CoreSimulator\/BE99E61A-37C2-4DE2-91DB-D5508C8FD1C8",
+                "udid": "BE99E61A-37C2-4DE2-91DB-D5508C8FD1C8",
+                "isAvailable": true,
+                "deviceTypeIdentifier": "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-7-41mm",
+                "state": "Shutdown",
+                "name": "Apple Watch Series 7 - 41mm"
+            },
+            {
+                "dataPath": "\/Users\/evanbacon\/Library\/Developer\/CoreSimulator\/Devices\/361C6911-A1D5-41F8-9C73-84A72A348413\/data",
+                "logPath": "\/Users\/evanbacon\/Library\/Logs\/CoreSimulator\/361C6911-A1D5-41F8-9C73-84A72A348413",
+                "udid": "361C6911-A1D5-41F8-9C73-84A72A348413",
+                "isAvailable": true,
+                "deviceTypeIdentifier": "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-7-45mm",
+                "state": "Shutdown",
+                "name": "Apple Watch Series 7 - 45mm"
+            }
+        ],
+        "com.apple.CoreSimulator.SimRuntime.tvOS-14-5": [
+            {
+                "availabilityError": "runtime profile not found",
+                "dataPath": "\/Users\/evanbacon\/Library\/Developer\/CoreSimulator\/Devices\/93D9CCCB-F928-4F94-AB1D-3C421EA4AE35\/data",
+                "logPath": "\/Users\/evanbacon\/Library\/Logs\/CoreSimulator\/93D9CCCB-F928-4F94-AB1D-3C421EA4AE35",
+                "udid": "93D9CCCB-F928-4F94-AB1D-3C421EA4AE35",
+                "isAvailable": false,
+                "deviceTypeIdentifier": "com.apple.CoreSimulator.SimDeviceType.Apple-TV-1080p",
+                "state": "Shutdown",
+                "name": "Apple TV"
+            }
+        ],
+        "com.apple.CoreSimulator.SimRuntime.iOS-14-5": [
+            {
+                "availabilityError": "runtime profile not found",
+                "dataPath": "\/Users\/evanbacon\/Library\/Developer\/CoreSimulator\/Devices\/E88A6439-8B43-4E13-B389-C4BA639D1667\/data",
+                "logPath": "\/Users\/evanbacon\/Library\/Logs\/CoreSimulator\/E88A6439-8B43-4E13-B389-C4BA639D1667",
+                "udid": "E88A6439-8B43-4E13-B389-C4BA639D1667",
+                "isAvailable": false,
+                "deviceTypeIdentifier": "com.apple.CoreSimulator.SimDeviceType.iPhone-8",
+                "state": "Shutdown",
+                "name": "iPhone 8"
+            }
+        ],
+        "com.apple.CoreSimulator.SimRuntime.watchOS-7-4": [
+            {
+                "availabilityError": "runtime profile not found",
+                "dataPath": "\/Users\/evanbacon\/Library\/Developer\/CoreSimulator\/Devices\/03201BEC-770A-4036-A5CE-15505439FE43\/data",
+                "logPath": "\/Users\/evanbacon\/Library\/Logs\/CoreSimulator\/03201BEC-770A-4036-A5CE-15505439FE43",
+                "udid": "03201BEC-770A-4036-A5CE-15505439FE43",
+                "isAvailable": false,
+                "deviceTypeIdentifier": "com.apple.CoreSimulator.SimDeviceType.Apple-Watch-Series-4-40mm",
+                "state": "Shutdown",
+                "name": "Apple Watch Series 4 - 40mm"
+            }
+        ]
+    }
+}

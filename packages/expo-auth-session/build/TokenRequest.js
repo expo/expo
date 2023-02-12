@@ -337,34 +337,42 @@ export class RevokeTokenRequest extends Request {
         return queryBody;
     }
 }
+// @needsAudit
 /**
- * Exchange an auth code for an access token that can be used to get data from the provider.
+ * Exchange an authorization code for an access token that can be used to get data from the provider.
  *
- * @param config
+ * @param config Configuration used to exchange the code for a token.
  * @param discovery The `tokenEndpoint` for a provider.
+ * @return Returns a discovery document with a valid `tokenEndpoint` URL.
  */
 export function exchangeCodeAsync(config, discovery) {
     const request = new AccessTokenRequest(config);
     return request.performAsync(discovery);
 }
+// @needsAudit
 /**
- * Refresh an access token. Often this just requires the `refreshToken` and `scopes` parameters.
+ * Refresh an access token.
+ * - If the provider didn't return a `refresh_token` then the access token may not be refreshed.
+ * - If the provider didn't return a `expires_in` then it's assumed that the token does not expire.
+ * - Determine if a token needs to be refreshed via `TokenResponse.isTokenFresh()` or `shouldRefresh()` on an instance of `TokenResponse`.
  *
- * [Section 6](https://tools.ietf.org/html/rfc6749#section-6)
+ * @see [Section 6](https://tools.ietf.org/html/rfc6749#section-6).
  *
- * @param config
+ * @param config Configuration used to refresh the given access token.
  * @param discovery The `tokenEndpoint` for a provider.
+ * @return Returns a discovery document with a valid `tokenEndpoint` URL.
  */
 export function refreshAsync(config, discovery) {
     const request = new RefreshTokenRequest(config);
     return request.performAsync(discovery);
 }
+// @needsAudit
 /**
- * Revoke a token with a provider.
- * This makes the token unusable, effectively requiring the user to login again.
+ * Revoke a token with a provider. This makes the token unusable, effectively requiring the user to login again.
  *
- * @param config
+ * @param config Configuration used to revoke a refresh or access token.
  * @param discovery The `revocationEndpoint` for a provider.
+ * @return Returns a discovery document with a valid `revocationEndpoint` URL. Many providers do not support this feature.
  */
 export function revokeAsync(config, discovery) {
     const request = new RevokeTokenRequest(config);
@@ -373,7 +381,7 @@ export function revokeAsync(config, discovery) {
 /**
  * Fetch generic user info from the provider's OpenID Connect `userInfoEndpoint` (if supported).
  *
- * [UserInfo](https://openid.net/specs/openid-connect-core-1_0.html#UserInfo)
+ * @see [UserInfo](https://openid.net/specs/openid-connect-core-1_0.html#UserInfo).
  *
  * @param config The `accessToken` for a user, returned from a code exchange or auth request.
  * @param discovery The `userInfoEndpoint` for a provider.

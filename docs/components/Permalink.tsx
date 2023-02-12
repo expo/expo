@@ -3,35 +3,35 @@ import * as React from 'react';
 
 import { AdditionalProps } from '~/common/headingManager';
 import PermalinkIcon from '~/components/icons/Permalink';
-import withHeadingManager from '~/components/page-higher-order/withHeadingManager';
+import withHeadingManager, {
+  HeadingManagerProps,
+} from '~/components/page-higher-order/withHeadingManager';
+import { LinkBase } from '~/ui/components/Text';
 
-type BaseProps = {
+type BaseProps = React.PropsWithChildren<{
   component: any;
   className?: string;
-};
+  style?: React.CSSProperties;
+}>;
 
-type EnhancedProps = {
-  children: React.ReactNode;
+type EnhancedProps = React.PropsWithChildren<{
+  // Sidebar heading level override
   nestingLevel?: number;
   additionalProps?: AdditionalProps;
-  customIconStyle?: React.CSSProperties;
   id?: string;
-};
-
-const STYLES_PERMALINK = css`
-  position: relative;
-`;
+}>;
 
 const STYLES_PERMALINK_TARGET = css`
   display: block;
   position: absolute;
-  top: -100px;
+  top: -46px;
   visibility: hidden;
 `;
 
 const STYLES_PERMALINK_LINK = css`
+  position: relative;
   color: inherit;
-  text-decoration: inherit;
+  text-decoration: none !important;
 
   /* Disable link when used in collapsible, to allow expand on click */
   details & {
@@ -62,7 +62,7 @@ const STYLES_PERMALINK_ICON = css`
   }
 `;
 
-const PermalinkBase: React.FC<BaseProps> = ({ component, children, className, ...rest }) =>
+const PermalinkBase = ({ component, children, className, ...rest }: BaseProps) =>
   React.cloneElement(
     component,
     {
@@ -72,47 +72,36 @@ const PermalinkBase: React.FC<BaseProps> = ({ component, children, className, ..
     children
   );
 
-/**
- * Props:
- * - children: Title or component containing title text
- * - nestingLevel: Sidebar heading level override
- * - additionalProps: Additional properties passed to component
- */
-const Permalink: React.FC<EnhancedProps> = withHeadingManager(props => {
-  // NOTE(jim): Not the greatest way to generate permalinks.
-  // for now I've shortened the length of permalinks.
-  const component = props.children as JSX.Element;
-  const children = component.props.children || '';
+const Permalink: React.FC<EnhancedProps> = withHeadingManager(
+  (props: EnhancedProps & HeadingManagerProps) => {
+    // NOTE(jim): Not the greatest way to generate permalinks.
+    // for now I've shortened the length of permalinks.
+    const component = props.children as JSX.Element;
+    const children = component.props.children || '';
 
-  let permalinkKey = props.id;
-  let heading;
+    if (!props.nestingLevel) {
+      return children;
+    }
 
-  if (props.nestingLevel) {
-    heading = props.headingManager.addHeading(
+    const heading = props.headingManager.addHeading(
       children,
       props.nestingLevel,
       props.additionalProps,
-      permalinkKey
+      props.id
     );
-  }
 
-  if (!permalinkKey && heading?.slug) {
-    permalinkKey = heading.slug;
-  }
-
-  return (
-    <PermalinkBase component={component} data-components-heading>
-      <div css={STYLES_PERMALINK} ref={heading?.ref}>
-        <span css={STYLES_PERMALINK_TARGET} id={permalinkKey} />
-        <a css={STYLES_PERMALINK_LINK} href={'#' + permalinkKey}>
+    return (
+      <PermalinkBase component={component} style={props.additionalProps?.style}>
+        <LinkBase css={STYLES_PERMALINK_LINK} href={'#' + heading.slug} ref={heading.ref}>
+          <span css={STYLES_PERMALINK_TARGET} id={heading.slug} />
           <span css={STYLED_PERMALINK_CONTENT}>{children}</span>
-          <span css={STYLES_PERMALINK_ICON} style={props.customIconStyle}>
+          <span css={STYLES_PERMALINK_ICON}>
             <PermalinkIcon />
           </span>
-        </a>
-      </div>
-    </PermalinkBase>
-  );
-});
+        </LinkBase>
+      </PermalinkBase>
+    );
+  }
+);
 
 export default Permalink;

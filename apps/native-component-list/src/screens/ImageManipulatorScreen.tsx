@@ -17,7 +17,7 @@ import Colors from '../constants/Colors';
 
 interface State {
   ready: boolean;
-  image?: Asset | ImageManipulator.ImageResult;
+  image?: Asset | ImageManipulator.ImageResult | ImagePicker.ImagePickerAsset;
   original?: Asset;
 }
 
@@ -123,11 +123,11 @@ export default class ImageManipulatorScreen extends React.Component<{}, State> {
     const result = await ImagePicker.launchImageLibraryAsync({
       allowsEditing: false,
     });
-    if (result.cancelled) {
+    if (result.canceled) {
       alert('No image selected!');
       return;
     }
-    this.setState({ image: result });
+    this.setState({ image: result.assets[0] });
   };
 
   _rotate = async (deg: number) => {

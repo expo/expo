@@ -10,9 +10,6 @@ public protocol DevMenuManagerProtocol {
   @objc
   var isVisible: Bool { get }
 
-  @objc
-  var delegate: DevMenuDelegateProtocol? { get set }
-
   /**
    Opens up the dev menu.
    */
@@ -44,7 +41,4 @@ public protocol DevMenuManagerProtocol {
   @objc
   @discardableResult
   func toggleMenu() -> Bool
-
-  @objc
-  var expoApiClient: DevMenuExpoApiClientProtocol { get }
 }

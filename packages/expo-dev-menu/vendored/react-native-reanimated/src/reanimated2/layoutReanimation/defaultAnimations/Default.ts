@@ -1,42 +1,48 @@
 import {
   LayoutAnimationFunction,
-  EntryExitAnimationFunction,
+  EntryAnimationsValues,
+  ExitAnimationsValues,
+  AnimationConfigFunction,
 } from '../animationBuilder/commonTypes';
 
 export const DefaultLayout: LayoutAnimationFunction = (values) => {
   'worklet';
   return {
     initialValues: {
-      originX: values.originX,
-      originY: values.originY,
-      width: values.width,
-      height: values.height,
+      originX: values.targetOriginX,
+      originY: values.targetOriginY,
+      width: values.targetWidth,
+      height: values.targetHeight,
     },
     animations: {},
   };
 };
 
-export const DefaultEntering: EntryExitAnimationFunction = (targetValues) => {
+export const DefaultEntering: AnimationConfigFunction<EntryAnimationsValues> = (
+  values
+) => {
   'worklet';
   return {
     initialValues: {
-      originX: targetValues.originX,
-      originY: targetValues.originY,
-      width: targetValues.width,
-      height: targetValues.height,
+      originX: values.targetOriginX,
+      originY: values.targetOriginY,
+      width: values.targetWidth,
+      height: values.targetHeight,
     },
     animations: {},
   };
 };
 
-export const DefaultExiting: EntryExitAnimationFunction = (startValues) => {
+export const DefaultExiting: AnimationConfigFunction<ExitAnimationsValues> = (
+  values
+) => {
   'worklet';
   return {
     initialValues: {
-      originX: startValues.originX,
-      originY: startValues.originY,
-      width: startValues.width,
-      height: startValues.height,
+      originX: values.currentOriginX,
+      originY: values.currentOriginY,
+      width: values.currentWidth,
+      height: values.currentHeight,
     },
     animations: {},
   };

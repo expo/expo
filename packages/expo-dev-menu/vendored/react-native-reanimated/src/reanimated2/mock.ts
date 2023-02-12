@@ -1,19 +1,21 @@
-/* eslint-disable standard/no-callback-literal */
+/* eslint-disable node/no-callback-literal */
 // eslint-disable-next-line @typescript-eslint/ban-ts-comment
 // @ts-nocheck
 const NOOP = () => {
   // noop
 };
 const ID = (t) => t;
+const IMMEDIATE_CB_INVOCATION = (cb: () => unknown) => cb();
 
 const ReanimatedV2 = {
   useSharedValue: (v) => ({ value: v }),
   useDerivedValue: (a) => ({ value: a() }),
   useAnimatedScrollHandler: () => NOOP,
   useAnimatedGestureHandler: () => NOOP,
-  useAnimatedStyle: (style) => style,
+  useAnimatedStyle: IMMEDIATE_CB_INVOCATION,
   useAnimatedRef: () => ({ current: null }),
   useAnimatedReaction: NOOP,
+  useAnimatedProps: IMMEDIATE_CB_INVOCATION,
 
   withTiming: (toValue, _, cb) => {
     cb && cb(true);
@@ -57,13 +59,20 @@ const ReanimatedV2 = {
     elastic: ID,
     back: ID,
     bounce: ID,
-    bezier: ID,
+    bezier: () => ({ factory: ID }),
+    bezierFn: ID,
     in: ID,
     out: ID,
     inOut: ID,
   },
+  Extrapolation: {
+    EXTEND: 'extend',
+    CLAMP: 'clamp',
+    IDENTITY: 'identity',
+  },
 
   runOnJS: (fn) => fn,
+  runOnUI: (fn) => fn,
 };
 
 module.exports = {

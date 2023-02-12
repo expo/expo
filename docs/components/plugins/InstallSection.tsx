@@ -1,73 +1,60 @@
-import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
-import * as React from 'react';
+import { PropsWithChildren, useContext } from 'react';
 
-import DocumentationPageContext from '../DocumentationPageContext';
-import TerminalBlock from './TerminalBlock';
+import { PageApiVersionContext } from '~/providers/page-api-version';
+import { usePageMetadata } from '~/providers/page-metadata';
+import { Terminal } from '~/ui/components/Snippet';
+import { A, P, DEMI } from '~/ui/components/Text';
 
-import * as Constants from '~/constants/theme';
-
-const STYLES_P = css`
-  line-height: 1.8rem;
-  margin-top: 1.4rem;
-  margin-bottom: 1.4rem;
-  color: ${theme.text.default};
-`;
-
-const STYLES_BOLD = css`
-  font-family: ${Constants.fonts.demi};
-  font-weight: 400;
-  text-decoration: none;
-  color: ${theme.link.default};
-  :hover {
-    text-decoration: underline;
-  }
-`;
-const STYLES_LINK = css`
-  text-decoration: none;
-  color: ${theme.link.default};
-  :hover {
-    text-decoration: underline;
-  }
-`;
-
-type Props = {
+type InstallSectionProps = PropsWithChildren<{
   packageName: string;
   hideBareInstructions?: boolean;
   cmd?: string[];
   href?: string;
-};
+}>;
 
 const getPackageLink = (packageNames: string) =>
-  `https://github.com/expo/expo/tree/master/packages/${packageNames.split(' ')[0]}`;
+  `https://github.com/expo/expo/tree/main/packages/${packageNames.split(' ')[0]}`;
 
-const InstallSection: React.FC<Props> = ({
+const getInstallCmd = (packageName: string) => `$ npx expo install ${packageName}`;
+
+const InstallSection = ({
   packageName,
   hideBareInstructions = false,
-  cmd = [`expo install ${packageName}`],
+  cmd = [getInstallCmd(packageName)],
   href = getPackageLink(packageName),
-}) => (
-  <div>
-    <TerminalBlock cmd={cmd} />
-    {hideBareInstructions ? null : (
-      <p css={STYLES_P}>
-        If you're installing this in a{' '}
-        <a css={STYLES_LINK} href="/introduction/managed-vs-bare/#bare-workflow">
-          bare React Native app
-        </a>
-        , you should also follow{' '}
-        <a css={STYLES_BOLD} href={href}>
-          these additional installation instructions
-        </a>
-        .
-      </p>
-    )}
-  </div>
-);
+}: InstallSectionProps) => {
+  const { sourceCodeUrl } = usePageMetadata();
+  const { version } = useContext(PageApiVersionContext);
+
+  // Recommend just `expo install` for SDK 45.
+  // TODO: remove this when we drop SDK 45 from docs
+  if (version.startsWith('v45')) {
+    if (cmd[0] === getInstallCmd(packageName)) {
+      cmd[0] = cmd[0].replace('npx expo', 'expo');
+    }
+  }
+
+  return (
+    <>
+      <Terminal cmd={cmd} />
+      {hideBareInstructions ? null : (
+        <P>
+          If you're installing this in a{' '}
+          <A href="/introduction/managed-vs-bare/#bare-workflow">bare React Native app</A>, you
+          should also follow{' '}
+          <A href={sourceCodeUrl ?? href}>
+            <DEMI>these additional installation instructions</DEMI>
+          </A>
+          .
+        </P>
+      )}
+    </>
+  );
+};
 
 export default InstallSection;
 
-export const APIInstallSection: React.FC<Props> = props => {
-  const context = React.useContext(DocumentationPageContext);
-  return <InstallSection {...props} packageName={props.packageName ?? context.packageName} />;
+export const APIInstallSection = (props: InstallSectionProps) => {
+  const { packageName } = usePageMetadata();
+  return <InstallSection {...props} packageName={props.packageName ?? packageName} />;
 };

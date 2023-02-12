@@ -64,6 +64,7 @@ export default function ScrollViewScreen() {
           }}
           scrollEventThrottle={200}
           scrollEnabled={isEnabled}
+          nestedScrollEnabled
           horizontal={isHorizontal}
           ref={scrollView}
           style={styles.scrollView}>
@@ -107,7 +108,6 @@ export default function ScrollViewScreen() {
           disabled={Platform.OS !== 'web'}
           onPress={() => {
             if (scrollView.current) {
-              // @ts-ignore: web-only
               scrollView.current.flashScrollIndicators();
             }
           }}

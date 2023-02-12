@@ -1,7 +1,8 @@
+import basicSpawnAsync, { SpawnResult, SpawnOptions, SpawnPromise } from '@expo/spawn-async';
+import chalk from 'chalk';
 import { IOptions as GlobOptions } from 'glob';
 import glob from 'glob-promise';
-import chalk from 'chalk';
-import basicSpawnAsync, { SpawnResult, SpawnOptions, SpawnPromise } from '@expo/spawn-async';
+import ora from 'ora';
 
 import { EXPO_DIR } from './Constants';
 
@@ -139,4 +140,60 @@ export function arrayize<T>(value: T | T[]): T[] {
     return value;
   }
   return value != null ? [value] : [];
+}
+
+/**
+ * Execute `patch` command for given patch content
+ */
+export async function applyPatchAsync(options: {
+  patchContent: string;
+  cwd: string;
+  reverse?: boolean;
+  stripPrefixNum?: number;
+}) {
+  const args: string[] = [];
+  if (options.stripPrefixNum != null) {
+    // -pN passing to the `patch` command for striping slashed prefixes
+    args.push(`-p${options.stripPrefixNum}`);
+  }
+  if (options.reverse) {
+    args.push('-R');
+  }
+
+  const procPromise = spawnAsync('patch', args, {
+    cwd: options.cwd,
+  });
+  procPromise.child.stdin?.write(options.patchContent);
+  procPromise.child.stdin?.end();
+  await procPromise;
+}
+
+export async function runWithSpinner<Result>(
+  title: string,
+  action: (step: ora.Ora) => Promise<Result> | Result,
+  succeedText: string | null = null,
+  options: ora.Options = {}
+): Promise<Result> {
+  const disabled = process.env.CI || process.env.EXPO_DEBUG;
+  const step = ora({
+    text: chalk.bold(title),
+    isEnabled: !disabled,
+    stream: disabled ? process.stdout : process.stderr,
+    ...options,
+  });
+
+  step.start();
+
+  try {
+    const result = await action(step);
+
+    if (succeedText) {
+      step.succeed(succeedText);
+    }
+    return result;
+  } catch (error) {
+    step.fail();
+    console.error(error);
+    process.exit(1);
+  }
 }

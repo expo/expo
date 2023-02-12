@@ -1,11 +1,3 @@
-declare let ExpoAppleAuthenticationButtonSignInWhite: any;
-declare let ExpoAppleAuthenticationButtonSignInWhiteOutline: any;
-declare let ExpoAppleAuthenticationButtonSignInBlack: any;
-declare let ExpoAppleAuthenticationButtonContinueWhite: any;
-declare let ExpoAppleAuthenticationButtonContinueWhiteOutline: any;
-declare let ExpoAppleAuthenticationButtonContinueBlack: any;
-declare let ExpoAppleAuthenticationButtonSignUpWhite: any;
-declare let ExpoAppleAuthenticationButtonSignUpWhiteOutline: any;
-declare let ExpoAppleAuthenticationButtonSignUpBlack: any;
-export { ExpoAppleAuthenticationButtonSignInWhite, ExpoAppleAuthenticationButtonSignInWhiteOutline, ExpoAppleAuthenticationButtonSignInBlack, ExpoAppleAuthenticationButtonContinueWhite, ExpoAppleAuthenticationButtonContinueWhiteOutline, ExpoAppleAuthenticationButtonContinueBlack, ExpoAppleAuthenticationButtonSignUpWhite, ExpoAppleAuthenticationButtonSignUpWhiteOutline, ExpoAppleAuthenticationButtonSignUpBlack, };
+declare let ExpoAppleAuthenticationButton: any;
+export default ExpoAppleAuthenticationButton;
 //# sourceMappingURL=ExpoAppleAuthenticationButton.d.ts.map

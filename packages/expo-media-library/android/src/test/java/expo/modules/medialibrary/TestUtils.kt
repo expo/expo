@@ -40,7 +40,7 @@ class MockContext {
   private val context = mockk<Context>()
 
   infix fun with(contentResolver: ContentResolver): Context {
-    every { context.getContentResolver() } returns contentResolver
+    every { context.contentResolver } returns contentResolver
     return context
   }
 

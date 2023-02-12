@@ -68,7 +68,7 @@ it(`serializes symbols`, async () => {
 
 it(`serializes promises`, async () => {
   const result = await LogSerialization.serializeLogDataAsync(
-    [Promise.resolve('test'), Promise.reject(new Error('Expected'))],
+    [Promise.resolve('test'), Promise.reject(new Error('Expected')).catch(() => {})],
     'info'
   );
   expect(result.body.length).toBe(2);

@@ -3,7 +3,7 @@
 exports[`renders Caption 1`] = `
 <Text
   style={
-    Object {
+    {
       "fontSize": 32,
       "textAlign": "center",
     }
@@ -18,7 +18,7 @@ exports[`renders TBody 1`] = `<View />`;
 exports[`renders TD 1`] = `
 <Text
   style={
-    Object {
+    {
       "flex": 1,
       "fontSize": 32,
     }
@@ -33,7 +33,7 @@ exports[`renders TFoot 1`] = `<View />`;
 exports[`renders TH 1`] = `
 <Text
   style={
-    Object {
+    {
       "flex": 1,
       "fontSize": 32,
       "fontWeight": "bold",
@@ -50,7 +50,7 @@ exports[`renders THead 1`] = `<View />`;
 exports[`renders TR 1`] = `
 <View
   style={
-    Object {
+    {
       "flexDirection": "row",
     }
   }

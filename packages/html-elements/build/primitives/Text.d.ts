@@ -1,6 +1,7 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
 import { AccessibilityRole, StyleProp, Text as NativeText, TextStyle as NativeTextStyle } from 'react-native';
-declare type NativeTextProps = ComponentProps<typeof NativeText> & ClassAttributes<typeof NativeText>;
+import { WebViewStyle } from './View';
+type NativeTextProps = ComponentProps<typeof NativeText> & ClassAttributes<typeof NativeText>;
 export interface WebTextStyle {
     /** string is only available on web */
     fontSize?: NativeTextStyle['fontSize'] | string;
@@ -21,14 +22,31 @@ export interface WebTextStyle {
     /** @platform web */
     wordWrap?: string;
 }
-export declare type TextStyle = Omit<NativeTextStyle, 'fontSize' | 'lineHeight'> & WebTextStyle;
-export declare type WebTextProps = {
+export type TextStyle = Omit<NativeTextStyle, 'position' | 'fontSize' | 'lineHeight'> & WebTextStyle & WebViewStyle;
+export type WebTextProps = {
     style?: StyleProp<TextStyle>;
     /** @platform web */
     tabIndex?: number;
-    accessibilityRole?: 'listitem' | AccessibilityRole;
+    /** @platform web */
+    accessibilityLevel?: number;
+    accessibilityRole?: 'listitem' | 'heading' | AccessibilityRole;
+    /** @platform web */
+    href?: string;
+    /** @deprecated use the prop `hrefAttrs={{ target: '...' }}` instead. */
+    target?: string;
+    /** @platform web */
+    hrefAttrs?: {
+        /** @platform web */
+        target?: string;
+        /** @platform web */
+        rel?: string;
+        /** @platform web */
+        download?: boolean | string;
+    };
+    /** @platform web */
+    lang?: string;
 };
-export declare type TextProps = Omit<NativeTextProps, 'style' | 'accessibilityRole'> & WebTextProps;
-declare const Text: ComponentType<TextProps>;
-export default Text;
+export type TextProps = Omit<NativeTextProps, 'style' | 'accessibilityRole'> & WebTextProps;
+declare const _default: ComponentType<TextProps>;
+export default _default;
 //# sourceMappingURL=Text.d.ts.map

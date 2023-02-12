@@ -12,11 +12,11 @@ import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactPackage;
 import com.facebook.soloader.SoLoader;
 
-import expo.interfaces.devmenu.DevMenuSettingsInterface;
+import expo.interfaces.devmenu.DevMenuPreferencesInterface;
 import expo.modules.ApplicationLifecycleDispatcher;
 import expo.modules.ReactNativeHostWrapper;
 import expo.modules.devlauncher.DevLauncherController;
-import expo.modules.devmenu.DevMenuDefaultSettings;
+import expo.modules.devmenu.DevMenuDefaultPreferences;
 import expo.modules.devmenu.DevMenuManager;
 import expo.modules.devmenu.tests.DevMenuTestInterceptor;
 
@@ -55,8 +55,8 @@ public class MainApplication extends Application implements ReactApplication {
     DevMenuManager.INSTANCE.setTestInterceptor(new DevMenuTestInterceptor() {
       @Nullable
       @Override
-      public DevMenuSettingsInterface overrideSettings() {
-        return new DevMenuDefaultSettings() {
+      public DevMenuPreferencesInterface overrideSettings() {
+        return new DevMenuDefaultPreferences() {
           @Override
           public boolean getShowsAtLaunch() {
             return false;

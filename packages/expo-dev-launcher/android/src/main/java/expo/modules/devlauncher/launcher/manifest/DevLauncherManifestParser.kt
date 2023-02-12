@@ -18,9 +18,9 @@ class DevLauncherManifestParser(
     val response = fetch(url, "HEAD", getHeaders()).await(httpClient)
     val contentType = response.header("Content-Type")
     // published projects may respond unsuccessfully to HEAD requests sent with no headers
-    return !response.isSuccessful
-        || response.header("Exponent-Server", null) != null
-        || (contentType != null && contentType.startsWith("application/json"))
+    return !response.isSuccessful ||
+      response.header("Exponent-Server", null) != null ||
+      (contentType != null && !contentType.startsWith("text/html") && !contentType.contains("/javascript"))
   }
 
   private suspend fun downloadManifest(): Reader {

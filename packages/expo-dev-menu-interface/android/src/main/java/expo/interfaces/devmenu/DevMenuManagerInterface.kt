@@ -6,7 +6,6 @@ import android.view.KeyEvent
 import android.view.MotionEvent
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.bridge.ReadableMap
-import expo.interfaces.devmenu.expoapi.DevMenuExpoApiClientInterface
 import expo.interfaces.devmenu.items.DevMenuDataSourceItem
 import kotlinx.coroutines.CoroutineScope
 
@@ -34,12 +33,12 @@ interface DevMenuManagerInterface {
   fun toggleMenu(activity: Activity)
 
   /**
-   * Handles `onKeyEvent`. It's active only if [DevMenuSettingsInterface.keyCommandsEnabled] is true.
+   * Handles `onKeyEvent`. It's active only if [DevMenuPreferencesInterface.keyCommandsEnabled] is true.
    */
   fun onKeyEvent(keyCode: Int, event: KeyEvent): Boolean
 
   /**
-   * Handles `onTouchEvent`. It's active only if [DevMenuSettingsInterface.touchGestureEnabled] is true.
+   * Handles `onTouchEvent`. It's active only if [DevMenuPreferencesInterface.touchGestureEnabled] is true.
    */
   fun onTouchEvent(ev: MotionEvent?)
 
@@ -70,16 +69,10 @@ interface DevMenuManagerInterface {
   fun serializedScreens(): List<Bundle>
 
   /**
-   * @return a instance of [DevMenuSessionInterface] that keeps the details of the currently opened dev menu session,
-   * or `null` if menu isn't opened.
-   */
-  fun getSession(): DevMenuSessionInterface?
-
-  /**
-   * @return a instance of [DevMenuSettingsInterface] that keeps all settings for current dev menu delegate,
+   * @return a instance of [DevMenuPreferencesInterface] that keeps all settings for current dev menu delegate,
    * or `null` if delegate wasn't provided.
    */
-  fun getSettings(): DevMenuSettingsInterface?
+  fun getSettings(): DevMenuPreferencesInterface?
 
   /**
    * @return the dev menu application host.
@@ -95,11 +88,6 @@ interface DevMenuManagerInterface {
    * Set the current screen on which all action will be dispatched.
    */
   fun setCurrentScreen(screen: String?)
-
-  /**
-   * @return a instance of [DevMenuExpoApiClientInterface]
-   */
-  fun getExpoApiClient(): DevMenuExpoApiClientInterface
 
   /**
    * Sends an event to the delegate's bridge if exists.

@@ -1,4 +1,4 @@
-import { Audio, Video } from 'expo-av';
+import { Video } from 'expo-av';
 import { Camera } from 'expo-camera';
 import React from 'react';
 import { Platform } from 'react-native';
@@ -30,10 +30,10 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
 
     t.beforeAll(async () => {
       await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-        return Camera.requestPermissionsAsync();
+        return Camera.requestCameraPermissionsAsync();
       });
       await TestUtils.acceptPermissionsAndRunCommandAsync(() => {
-        return Audio.requestPermissionsAsync();
+        return Camera.requestMicrophonePermissionsAsync();
       });
 
       originalTimeout = t.jasmine.DEFAULT_TIMEOUT_INTERVAL;
@@ -45,13 +45,27 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
     });
 
     t.beforeEach(async () => {
-      const { status } = await Camera.getPermissionsAsync();
+      const { status } = await Camera.getCameraPermissionsAsync();
       t.expect(status).toEqual('granted');
     });
 
     t.afterEach(async () => {
       instance = null;
       await cleanupPortal();
+    });
+
+    t.describe('Camera.getCameraPermissionsAsync', () => {
+      t.it('is granted', async () => {
+        const { status } = await Camera.getCameraPermissionsAsync();
+        t.expect(status).toEqual('granted');
+      });
+    });
+
+    t.describe('Camera.getMicrophonePermissionsAsync', () => {
+      t.it('is granted', async () => {
+        const { status } = await Camera.getMicrophonePermissionsAsync();
+        t.expect(status).toEqual('granted');
+      });
     });
 
     if (Platform.OS === 'android') {
@@ -92,6 +106,25 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
           picture = await instance.takePictureAsync({ exif: true });
           t.expect(picture).toBeDefined();
           t.expect(picture.exif).toBeDefined();
+        });
+
+        t.it('adds additional EXIF only if requested', async () => {
+          await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
+          const additionalExif = {
+            GPSLatitude: 30.82123,
+            GPSLongitude: 150.25582,
+            GPSAltitude: 80.808,
+          };
+          let picture = await instance.takePictureAsync({ exif: false, additionalExif });
+          t.expect(picture).toBeDefined();
+          t.expect(picture.exif).not.toBeDefined();
+
+          picture = await instance.takePictureAsync({ exif: true, additionalExif });
+          t.expect(picture).toBeDefined();
+          t.expect(picture.exif).toBeDefined();
+          t.expect(picture.exif.GPSLatitude).toBe(additionalExif.GPSLatitude);
+          t.expect(picture.exif.GPSLongitude).toBe(additionalExif.GPSLongitude);
+          t.expect(picture.exif.GPSAltitude).toBe(additionalExif.GPSAltitude);
         });
 
         t.it(

@@ -14,7 +14,7 @@ var __generator = (this && this.__generator) || function (thisArg, body) {
     function verb(n) { return function (v) { return step([n, v]); }; }
     function step(op) {
         if (f) throw new TypeError("Generator is already executing.");
-        while (_) try {
+        while (g && (g = 0, op[0] && (_ = 0)), _) try {
             if (f = 1, y && (t = op[0] & 2 ? y["return"] : op[0] ? y["throw"] || ((t = y["return"]) && t.call(y), 0) : y.next) && !(t = t.call(y, op[1])).done) return t;
             if (y = 0, t) op = [op[0] & 2, t.value];
             switch (op[0]) {
@@ -45,11 +45,11 @@ var path_1 = __importDefault(require("path"));
 var shared_1 = require("../shared");
 function initAsync(config) {
     return __awaiter(this, void 0, void 0, function () {
-        var projectRoot, watchRoot, pathToStories, pathToStoryFile, pathToStoryManifest, storyManifest, emptyManifest, emptyManifestAsString;
+        var projectRoot, watchRoots, pathToStories, pathToStoryFile, pathToStoryManifest, storyManifest, emptyManifest, emptyManifestAsString;
         return __generator(this, function (_a) {
             switch (_a.label) {
                 case 0:
-                    projectRoot = config.projectRoot, watchRoot = config.watchRoot;
+                    projectRoot = config.projectRoot, watchRoots = config.watchRoots;
                     pathToStories = (0, shared_1.getStoriesDir)(config);
                     if (!!fs_extra_1.default.existsSync(pathToStories)) return [3 /*break*/, 2];
                     return [4 /*yield*/, fs_extra_1.default.mkdir(pathToStories, { recursive: true })];
@@ -69,14 +69,14 @@ function initAsync(config) {
                     pathToStoryManifest = path_1.default.resolve(pathToStories, 'storyManifest.json');
                     if (!fs_extra_1.default.existsSync(pathToStoryManifest)) return [3 /*break*/, 6];
                     storyManifest = require(pathToStoryManifest);
-                    if (!(storyManifest.watchRoot !== watchRoot || storyManifest.projectRoot !== projectRoot)) return [3 /*break*/, 6];
+                    if (!(storyManifest.watchRoot !== watchRoots || storyManifest.projectRoot !== projectRoot)) return [3 /*break*/, 6];
                     return [4 /*yield*/, fs_extra_1.default.unlink(pathToStoryManifest)];
                 case 5:
                     _a.sent();
                     _a.label = 6;
                 case 6:
                     emptyManifest = {
-                        watchRoot: watchRoot,
+                        watchRoots: watchRoots,
                         projectRoot: projectRoot,
                         files: {},
                     };

@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.setUserInterfaceStyle = exports.getUserInterfaceStyle = exports.withIosUserInterfaceStyle = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const withIosUserInterfaceStyle = (config) => {
     return (0, config_plugins_1.withInfoPlist)(config, (config) => {
         config.modResults = setUserInterfaceStyle(config, config.modResults);
@@ -10,8 +10,7 @@ const withIosUserInterfaceStyle = (config) => {
 };
 exports.withIosUserInterfaceStyle = withIosUserInterfaceStyle;
 function getUserInterfaceStyle(config) {
-    var _a, _b, _c;
-    return (_c = (_b = (_a = config.ios) === null || _a === void 0 ? void 0 : _a.userInterfaceStyle) !== null && _b !== void 0 ? _b : config.userInterfaceStyle) !== null && _c !== void 0 ? _c : 'light';
+    return config.ios?.userInterfaceStyle ?? config.userInterfaceStyle ?? 'light';
 }
 exports.getUserInterfaceStyle = getUserInterfaceStyle;
 function setUserInterfaceStyle(config, { UIUserInterfaceStyle, ...infoPlist }) {

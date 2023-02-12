@@ -5,7 +5,7 @@ next time you need to upgrade, install a new module, or otherwise change the nat
 
 ## Documentation
 
-You can find the documentation under [https://docs.expo.io/clients/introduction](https://docs.expo.dev/clients/introduction).
+You can find the documentation under [https://docs.expo.dev/clients/introduction](https://docs.expo.dev/clients/introduction).
 
 ## Issues
 

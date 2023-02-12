@@ -141,6 +141,15 @@ class SpeechModule(
               emitter.emit("Exponent.speakingStarted", idToMap(utteranceId))
             }
 
+            override fun onRangeStart(utteranceId: String, start: Int, end: Int, frame: Int) {
+              var map = Bundle().apply {
+                putString("id", utteranceId)
+                putInt("charIndex", start)
+                putInt("charLength", end - start)
+              }
+              emitter.emit("Exponent.speakingWillSayNextString", map)
+            }
+
             override fun onDone(utteranceId: String) {
               emitter.emit("Exponent.speakingDone", idToMap(utteranceId))
             }

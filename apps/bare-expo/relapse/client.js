@@ -7,7 +7,7 @@ let socket;
 
 export async function addListener(listener) {
   listeners.push(listener);
-  return () => (listeners = listeners.filter(l => l !== listener));
+  return () => (listeners = listeners.filter((l) => l !== listener));
 }
 
 export async function startAsync() {
@@ -15,7 +15,7 @@ export async function startAsync() {
     console.warn('Socket is already running');
     return () => socket.close();
   }
-  await new Promise(resolve => {
+  await new Promise((resolve) => {
     socket = new WebSocket('ws://127.0.0.1:8085');
     socket.onopen = () => resolve();
   });
@@ -23,7 +23,7 @@ export async function startAsync() {
     let parsed;
     try {
       parsed = JSON.parse(data);
-    } catch (error) {
+    } catch {
       parsed = data;
     } finally {
       for (const listener of listeners) listener(parsed);
@@ -40,7 +40,7 @@ export function send(message) {
   let json;
   try {
     json = JSON.stringify(message);
-  } catch (e) {
+  } catch {
     json = JSON.stringify({ code: RelapseCode.SerializationError, call: message.call });
   }
   socket.send(json);

@@ -1,4 +1,4 @@
-import { unmockAllProperties } from 'jest-expo';
+import { unmockAllProperties, mockLinking } from 'jest-expo';
 
 import ExpoWebBrowser from '../ExpoWebBrowser';
 import * as WebBrowser from '../WebBrowser';
@@ -8,6 +8,7 @@ const fakeReturnValue = {
 };
 
 function applyMocks() {
+  mockLinking();
   ExpoWebBrowser.openBrowserAsync.mockImplementation(async () => fakeReturnValue);
 }
 

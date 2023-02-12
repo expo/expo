@@ -17,17 +17,16 @@
                       config:(nonnull NSDictionary *)config;
 
 - (void)attachGestureHandler:(nonnull NSNumber *)handlerTag
-               toViewWithTag:(nonnull NSNumber *)viewTag;
-
-- (void)attachGestureHandlerForDeviceEvents:(nonnull NSNumber *)handlerTag
-                              toViewWithTag:(nonnull NSNumber *)viewTag;
+               toViewWithTag:(nonnull NSNumber *)viewTag
+              withActionType:(RNGestureHandlerActionType)actionType;
 
 - (void)updateGestureHandler:(nonnull NSNumber *)handlerTag config:(nonnull NSDictionary *)config;
 
 - (void)dropGestureHandler:(nonnull NSNumber *)handlerTag;
 
-- (void)handleSetJSResponder:(nonnull NSNumber *)viewTag
-        blockNativeResponder:(nonnull NSNumber *)blockNativeResponder;
+- (void)dropAllGestureHandlers;
+
+- (void)handleSetJSResponder:(nonnull NSNumber *)viewTag blockNativeResponder:(nonnull NSNumber *)blockNativeResponder;
 
 - (void)handleClearJSResponder;
 

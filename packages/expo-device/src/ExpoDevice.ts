@@ -1,2 +1,2 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-export default NativeModulesProxy.ExpoDevice;
+import { requireNativeModule } from 'expo-modules-core';
+export default requireNativeModule('ExpoDevice');

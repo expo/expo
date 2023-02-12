@@ -5,7 +5,14 @@
 #import <React/RCTComponent.h>
 #import <React/RCTRootView.h>
 #import <React/RCTTouchHandler.h>
+#import <React/RCTUIManager.h>
+#import <React/RCTEventDispatcher.h>
+
+#if __has_include(<React/RCTRootContentView.h>)
 #import <React/RCTRootContentView.h>
+#else
+#import "RCTRootContentView.h"
+#endif
 
 #import "DevMenuRNGestureHandlerState.h"
 #import "DevMenuRNGestureHandler.h"
@@ -20,6 +27,7 @@
 #import "Handlers/DevMenuRNPinchHandler.h"
 #import "Handlers/DevMenuRNRotationHandler.h"
 #import "Handlers/DevMenuRNForceTouchHandler.h"
+#import "Handlers/DevMenuRNManualHandler.h"
 
 // We use the method below instead of RCTLog because we log out messages after the bridge gets
 // turned down in some cases. Which normally with RCTLog would cause a crash in DEBUG mode
@@ -33,7 +41,7 @@
 {
     DevMenuRNGestureHandlerRegistry *_registry;
     RCTUIManager *_uiManager;
-    NSMutableSet<UIView*> *_rootViews;
+    NSHashTable<DevMenuRNRootViewGestureRecognizer *> *_rootViewGestureRecognizers;
     RCTEventDispatcher *_eventDispatcher;
 }
 
@@ -44,7 +52,7 @@
         _uiManager = uiManager;
         _eventDispatcher = eventDispatcher;
         _registry = [DevMenuRNGestureHandlerRegistry new];
-        _rootViews = [NSMutableSet new];
+        _rootViewGestureRecognizers = [NSHashTable hashTableWithOptions:NSPointerFunctionsWeakMemory];
     }
     return self;
 }
@@ -65,6 +73,7 @@
                 @"PinchGestureHandler": [DevMenuRNPinchGestureHandler class],
                 @"RotationGestureHandler": [DevMenuRNRotationGestureHandler class],
                 @"ForceTouchGestureHandler": [DevMenuRNForceTouchHandler class],
+                @"ManualGestureHandler": [DevMenuRNManualGestureHandler class],
                 };
     });
     
@@ -90,8 +99,19 @@
 
     [_registry attachHandlerWithTag:handlerTag toView:view];
 
-    // register root view if not already there
-    [self registerRootViewIfNeeded:view];
+    // register view if not already there
+    [self registerViewWithGestureRecognizerAttachedIfNeeded:view];
+}
+
+- (void)attachGestureHandlerForDeviceEvents:(nonnull NSNumber *)handlerTag
+                              toViewWithTag:(nonnull NSNumber *)viewTag
+{
+    UIView *view = [_uiManager viewForReactTag:viewTag];
+
+    [_registry attachHandlerWithTagForDeviceEvents:handlerTag toView:view];
+
+    // register view if not already there
+    [self registerViewWithGestureRecognizerAttachedIfNeeded:view];
 }
 
 - (void)updateGestureHandler:(NSNumber *)handlerTag config:(NSDictionary *)config
@@ -108,12 +128,8 @@
 - (void)handleSetJSResponder:(NSNumber *)viewTag blockNativeResponder:(NSNumber *)blockNativeResponder
 {
     if ([blockNativeResponder boolValue]) {
-        for (RCTRootView *rootView in _rootViews) {
-            for (UIGestureRecognizer *recognizer in rootView.gestureRecognizers) {
-                if ([recognizer isKindOfClass:[DevMenuRNRootViewGestureRecognizer class]]) {
-                    [(DevMenuRNRootViewGestureRecognizer *)recognizer blockOtherRecognizers];
-                }
-            }
+        for (DevMenuRNRootViewGestureRecognizer *recognizer in _rootViewGestureRecognizers) {
+            [recognizer blockOtherRecognizers];
         }
     }
 }
@@ -123,27 +139,43 @@
     // ignore...
 }
 
+- (id)handlerWithTag:(NSNumber *)handlerTag
+{
+  return [_registry handlerWithTag:handlerTag];
+}
+
+
 #pragma mark Root Views Management
 
-- (void)registerRootViewIfNeeded:(UIView*)childView
+- (void)registerViewWithGestureRecognizerAttachedIfNeeded:(UIView *)childView
 {
     UIView *parent = childView;
-    while (parent != nil && ![parent isKindOfClass:[RCTRootView class]]) parent = parent.superview;
-    
-    RCTRootView *rootView = (RCTRootView *)parent;
-    UIView *rootContentView = rootView.contentView;
-    if (rootContentView != nil && ![_rootViews containsObject:rootContentView]) {
-        RCTLifecycleLog(@"[GESTURE HANDLER] Initialize gesture handler for root view %@", rootContentView);
-        [_rootViews addObject:rootContentView];
-        DevMenuRNRootViewGestureRecognizer *recognizer = [DevMenuRNRootViewGestureRecognizer new];
-        recognizer.delegate = self;
-        rootContentView.userInteractionEnabled = YES;
-        [rootContentView addGestureRecognizer:recognizer];
+    while (parent != nil && ![parent respondsToSelector:@selector(touchHandler)]) parent = parent.superview;
+
+    // Many views can return the same touchHandler so we check if the one we want to register
+    // is not already present in the set.
+    UIView *touchHandlerView = [[parent performSelector:@selector(touchHandler)] view];
+  
+    if (touchHandlerView == nil) {
+      return;
     }
+  
+    for (UIGestureRecognizer *recognizer in touchHandlerView.gestureRecognizers) {
+      if ([recognizer isKindOfClass:[DevMenuRNRootViewGestureRecognizer class]]) {
+        return;
+      }
+    }
+  
+    RCTLifecycleLog(@"[GESTURE HANDLER] Initialize gesture handler for view %@", touchHandlerView);
+    DevMenuRNRootViewGestureRecognizer *recognizer = [DevMenuRNRootViewGestureRecognizer new];
+    recognizer.delegate = self;
+    touchHandlerView.userInteractionEnabled = YES;
+    [touchHandlerView addGestureRecognizer:recognizer];
+    [_rootViewGestureRecognizers addObject:recognizer];
 }
 
 - (void)gestureRecognizer:(UIGestureRecognizer *)gestureRecognizer
-    didActivateInRootView:(UIView *)rootContentView
+    didActivateInViewWithTouchHandler:(UIView *)viewWithTouchHandler
 {
     // Cancel touches in DevMenuRN's root view in order to cancel all in-js recognizers
 
@@ -158,17 +190,8 @@
     // Once the upstream fix lands the line below along with this comment can be removed
     if ([gestureRecognizer.view isKindOfClass:[UIScrollView class]]) return;
 
-    UIView *parent = rootContentView.superview;
-    if ([parent isKindOfClass:[RCTRootView class]]) {
-        [((RCTRootContentView*)rootContentView).touchHandler cancel];
-    }
-}
-
-- (void)dealloc
-{
-    if ([_rootViews count] > 0) {
-        RCTLifecycleLog(@"[GESTURE HANDLER] Tearing down gesture handler registered for views %@", _rootViews);
-    }
+    RCTTouchHandler *touchHandler = [viewWithTouchHandler performSelector:@selector(touchHandler)];
+    [touchHandler cancel];
 }
 
 #pragma mark Events
@@ -181,6 +204,18 @@
 - (void)sendStateChangeEvent:(DevMenuRNGestureHandlerStateChange *)event
 {
     [_eventDispatcher sendEvent:event];
+}
+
+- (void)sendTouchDeviceEvent:(DevMenuRNGestureHandlerEvent *)event
+{
+    NSMutableDictionary *body = [[event arguments] objectAtIndex:2];
+    [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerEvent" body:body];
+}
+
+- (void)sendStateChangeDeviceEvent:(DevMenuRNGestureHandlerStateChange *)event
+{
+    NSMutableDictionary *body = [[event arguments] objectAtIndex:2];
+    [_eventDispatcher sendDeviceEventWithName:@"onGestureHandlerStateChange" body:body];
 }
 
 @end

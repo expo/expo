@@ -11,7 +11,6 @@ import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
 import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
-import expo.modules.updates.loader.FileDownloader.ManifestDownloadCallback
 import expo.modules.updates.loader.Loader.LoaderCallback
 import expo.modules.updates.manifest.LegacyUpdateManifest
 import expo.modules.updates.manifest.UpdateManifest
@@ -26,6 +25,7 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
 import java.io.IOException
+import java.util.*
 
 @RunWith(AndroidJUnit4ClassRunner::class)
 class RemoteLoaderTest {
@@ -47,7 +47,7 @@ class RemoteLoaderTest {
     configuration = UpdatesConfiguration(null, configMap)
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     db = Room.inMemoryDatabaseBuilder(context, UpdatesDatabase::class.java).build()
-    mockLoaderFiles = mockk()
+    mockLoaderFiles = mockk(relaxed = true)
     mockFileDownloader = mockk()
     loader = RemoteLoader(
       context,
@@ -55,6 +55,7 @@ class RemoteLoaderTest {
       db,
       mockFileDownloader,
       File("testDirectory"),
+      null,
       mockLoaderFiles
     )
     manifest = LegacyUpdateManifest.fromLegacyManifest(
@@ -62,19 +63,25 @@ class RemoteLoaderTest {
       configuration
     )
 
-    every { mockFileDownloader.downloadManifest(any(), any(), any(), any()) } answers {
-      val callback = arg<ManifestDownloadCallback>(3)
-      callback.onSuccess(manifest)
+    every { mockFileDownloader.downloadRemoteUpdate(any(), any(), any(), any()) } answers {
+      val callback = arg<FileDownloader.RemoteUpdateDownloadCallback>(3)
+      callback.onSuccess(
+        UpdateResponse(
+          responseHeaderData = null,
+          manifestUpdateResponsePart = UpdateResponsePart.ManifestUpdateResponsePart(manifest),
+          directiveUpdateResponsePart = null
+        )
+      )
     }
 
-    every { mockFileDownloader.downloadAsset(any(), any(), any(), any()) } answers {
+    every { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any()) } answers {
       val asset = firstArg<AssetEntity>()
-      val callback = arg<AssetDownloadCallback>(3)
+      val callback = arg<AssetDownloadCallback>(4)
       callback.onSuccess(asset, true)
     }
 
     mockCallback = mockk(relaxUnitFun = true)
-    every { mockCallback.onUpdateManifestLoaded(any()) } returns true
+    every { mockCallback.onUpdateResponseLoaded(any()) } returns Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
   }
 
   @Test
@@ -83,7 +90,7 @@ class RemoteLoaderTest {
 
     verify { mockCallback.onSuccess(any()) }
     verify(exactly = 0) { mockCallback.onFailure(any()) }
-    verify(exactly = 2) { mockFileDownloader.downloadAsset(any(), any(), any(), any()) }
+    verify(exactly = 2) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size)
@@ -94,9 +101,9 @@ class RemoteLoaderTest {
 
   @Test
   fun testRemoteLoader_FailureToDownloadAssets() {
-    every { mockFileDownloader.downloadAsset(any(), any(), any(), any()) } answers {
+    every { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any()) } answers {
       val asset = firstArg<AssetEntity>()
-      val callback = arg<AssetDownloadCallback>(3)
+      val callback = arg<AssetDownloadCallback>(4)
       callback.onFailure(IOException("mock failed to download asset"), asset)
     }
 
@@ -104,7 +111,7 @@ class RemoteLoaderTest {
 
     verify(exactly = 0) { mockCallback.onSuccess(any()) }
     verify { mockCallback.onFailure(any()) }
-    verify(exactly = 2) { mockFileDownloader.downloadAsset(any(), any(), any(), any()) }
+    verify(exactly = 2) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size)
@@ -129,7 +136,7 @@ class RemoteLoaderTest {
     verify(exactly = 0) { mockCallback.onFailure(any()) }
 
     // only 1 asset (bundle) should be downloaded since the other asset already exists
-    verify(exactly = 1) { mockFileDownloader.downloadAsset(any(), any(), any(), any()) }
+    verify(exactly = 1) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size)
@@ -156,7 +163,7 @@ class RemoteLoaderTest {
     verify(exactly = 0) { mockCallback.onFailure(any()) }
 
     // both assets should be downloaded regardless of what the database says
-    verify(exactly = 2) { mockFileDownloader.downloadAsset(any(), any(), any(), any()) }
+    verify(exactly = 2) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size)
@@ -185,7 +192,7 @@ class RemoteLoaderTest {
 
     verify { mockCallback.onSuccess(any()) }
     verify(exactly = 0) { mockCallback.onFailure(any()) }
-    verify(exactly = 0) { mockFileDownloader.downloadAsset(any(), any(), any(), any()) }
+    verify(exactly = 0) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size)
@@ -208,7 +215,7 @@ class RemoteLoaderTest {
     verify(exactly = 0) { mockCallback.onFailure(any()) }
 
     // missing assets should still be downloaded
-    verify(exactly = 2) { mockFileDownloader.downloadAsset(any(), any(), any(), any()) }
+    verify(exactly = 2) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size)
@@ -231,7 +238,7 @@ class RemoteLoaderTest {
 
     verify { mockCallback.onSuccess(any()) }
     verify(exactly = 0) { mockCallback.onFailure(any()) }
-    verify(exactly = 0) { mockFileDownloader.downloadAsset(any(), any(), any(), any()) }
+    verify(exactly = 0) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size)
@@ -247,16 +254,22 @@ class RemoteLoaderTest {
       configuration
     )
 
-    every { mockFileDownloader.downloadManifest(any(), any(), any(), any()) } answers {
-      val callback = arg<ManifestDownloadCallback>(3)
-      callback.onSuccess(manifest)
+    every { mockFileDownloader.downloadRemoteUpdate(any(), any(), any(), any()) } answers {
+      val callback = arg<FileDownloader.RemoteUpdateDownloadCallback>(3)
+      callback.onSuccess(
+        UpdateResponse(
+          responseHeaderData = null,
+          manifestUpdateResponsePart = UpdateResponsePart.ManifestUpdateResponsePart(manifest),
+          directiveUpdateResponsePart = null
+        )
+      )
     }
 
     loader.start(mockCallback)
 
     verify { mockCallback.onSuccess(any()) }
     verify(exactly = 0) { mockCallback.onFailure(any()) }
-    verify(exactly = 0) { mockFileDownloader.downloadAsset(any(), any(), any(), any()) }
+    verify(exactly = 0) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any()) }
 
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size)

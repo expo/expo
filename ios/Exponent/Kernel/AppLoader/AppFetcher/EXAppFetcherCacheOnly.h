@@ -7,7 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface EXAppFetcherCacheOnly : EXAppFetcher
 
-- (instancetype)initWithAppLoader:(EXAppLoader *)appLoader manifest:(EXManifestsManifest *)manifest;
+- (instancetype)initWithAppLoader:(EXAbstractLoader *)appLoader manifest:(EXManifestsManifest *)manifest;
 
 @end
 

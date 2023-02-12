@@ -1,24 +1,9 @@
-import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
-import MDX from '@mdx-js/runtime';
-import * as React from 'react';
+import ReactMarkdown from 'react-markdown';
 
-import * as components from '~/common/translate-markdown';
-
-const STYLES_TABLE = css`
-  font-size: 1rem;
-  margin-top: 24px;
-`;
-
-const STYLES_HEAD = css`
-  background-color: ${theme.background.tertiary};
-`;
-
-const STYLES_DESCRIPTION_CELL = css`
-  word-break: break-word;
-  white-space: break-spaces;
-  padding-bottom: 0.2rem;
-`;
+import { HeadingType } from '~/common/headingManager';
+import { mdComponentsNoValidation } from '~/components/plugins/api/APISectionUtils';
+import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
+import { P, CODE, createPermalinkedComponent } from '~/ui/components/Text';
 
 export type Property = {
   description?: string[];
@@ -33,6 +18,21 @@ type FormattedProperty = {
   description: string;
   nestingLevel: number;
 };
+
+type Props = {
+  schema: Property[];
+};
+
+const Anchor = createPermalinkedComponent(P, {
+  baseNestingLevel: 3,
+  sidebarType: HeadingType.InlineCode,
+});
+
+const PropertyName = ({ name, nestingLevel }: Pick<FormattedProperty, 'name' | 'nestingLevel'>) => (
+  <Anchor level={nestingLevel}>
+    <CODE>{name}</CODE>
+  </Anchor>
+);
 
 export function formatSchema(rawSchema: Property[]) {
   const formattedSchema: FormattedProperty[] = [];
@@ -53,9 +53,7 @@ function appendProperty(
   let nestingLevel = _nestingLevel;
 
   formattedSchema.push({
-    name: nestingLevel
-      ? `<subpropertyAnchor level={${nestingLevel}}><inlineCode>${property.name}</inlineCode></subpropertyAnchor>`
-      : `<propertyAnchor level={0}><inlineCode>${property.name}</inlineCode></propertyAnchor>`,
+    name: property.name,
     description: createDescription(property),
     nestingLevel,
   });
@@ -86,45 +84,40 @@ export function createDescription(property: Property) {
   return propertyDescription;
 }
 
-export default class EasJsonPropertiesTable extends React.Component<{
-  schema: Property[];
-}> {
-  render() {
-    const formattedSchema = formatSchema(this.props.schema);
+export const EasJsonPropertiesTable = ({ schema }: Props) => {
+  const formattedSchema = formatSchema(schema);
 
-    return (
-      <table css={STYLES_TABLE}>
-        <thead css={STYLES_HEAD}>
-          <tr>
-            <td>Property</td>
-            <td>Description</td>
-          </tr>
-        </thead>
-        <tbody>
-          {formattedSchema.map((property, index) => {
-            return (
-              <tr key={index}>
-                <td>
-                  <div
-                    data-testid={property.name}
-                    style={{
-                      marginLeft: `${property.nestingLevel * 32}px`,
-                      display: property.nestingLevel ? 'list-item' : 'block',
-                      listStyleType: property.nestingLevel % 2 ? 'default' : 'circle',
-                      width: 'fit-content',
-                      overflowX: 'visible',
-                    }}>
-                    <MDX components={components}>{property.name}</MDX>
-                  </div>
-                </td>
-                <td css={STYLES_DESCRIPTION_CELL}>
-                  <MDX components={components}>{property.description}</MDX>
-                </td>
-              </tr>
-            );
-          })}
-        </tbody>
-      </table>
-    );
-  }
-}
+  return (
+    <Table>
+      <TableHead>
+        <Row>
+          <HeaderCell>Property</HeaderCell>
+          <HeaderCell>Description</HeaderCell>
+        </Row>
+      </TableHead>
+      <tbody>
+        {formattedSchema.map((property, index) => (
+          <Row key={index}>
+            <Cell fitContent>
+              <div
+                data-testid={property.name}
+                style={{
+                  marginLeft: `${property.nestingLevel * 32}px`,
+                  display: property.nestingLevel ? 'list-item' : 'block',
+                  listStyleType: property.nestingLevel % 2 ? 'default' : 'circle',
+                  overflowX: 'visible',
+                }}>
+                <PropertyName name={property.name} nestingLevel={property.nestingLevel} />
+              </div>
+            </Cell>
+            <Cell>
+              <ReactMarkdown components={mdComponentsNoValidation}>
+                {property.description}
+              </ReactMarkdown>
+            </Cell>
+          </Row>
+        ))}
+      </tbody>
+    </Table>
+  );
+};

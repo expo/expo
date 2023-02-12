@@ -16,18 +16,46 @@
 
 #pragma mark DevMenuRNDummyGestureRecognizer
 
-@implementation DevMenuRNDummyGestureRecognizer
+@implementation DevMenuRNDummyGestureRecognizer {
+  __weak DevMenuRNGestureHandler *_gestureHandler;
+}
+
+- (id)initWithGestureHandler:(DevMenuRNGestureHandler *)gestureHandler
+{
+    if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
+        _gestureHandler = gestureHandler;
+    }
+    return self;
+}
+
+- (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
+}
+
+- (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
+{
+    [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
+}
 
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
+    [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
     self.state = UIGestureRecognizerStateFailed;
     [self reset];
 }
 
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
+    [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
     self.state = UIGestureRecognizerStateCancelled;
     [self reset];
+}
+
+-(void)reset
+{
+  [_gestureHandler.pointerTracker reset];
+  [super reset];
 }
 
 @end
@@ -42,7 +70,7 @@
 - (instancetype)initWithTag:(NSNumber *)tag
 {
     if ((self = [super initWithTag:tag])) {
-        _recognizer = [[DevMenuRNDummyGestureRecognizer alloc] init];
+        _recognizer = [[DevMenuRNDummyGestureRecognizer alloc] initWithGestureHandler:self];
     }
     return self;
 }

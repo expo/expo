@@ -3,9 +3,9 @@ import {
   Animation,
   AnimationCallback,
   AnimationObject,
-  PrimitiveValue,
+  AnimatableValue,
   Timestamp,
-} from './commonTypes';
+} from '../commonTypes';
 import { Platform } from 'react-native';
 
 interface DecayConfig {
@@ -27,7 +27,7 @@ export interface DecayAnimation extends Animation<DecayAnimation> {
   startTimestamp: Timestamp;
   initialVelocity: number;
   velocity: number;
-  current: PrimitiveValue;
+  current: AnimatableValue;
 }
 
 export interface InnerDecayAnimation

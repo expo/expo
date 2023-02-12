@@ -10,7 +10,86 @@
 
 ### 💡 Others
 
+## 0.18.1 — 2023-02-09
+
+### 💡 Others
+
+- Export `getExpoPushTokenAsync` parameter type. ([#21104](https://github.com/expo/expo/pull/21104) by [@Simek](https://github.com/Simek))
+
+## 0.18.0 — 2023-02-03
+
+### 💡 Others
+
+- Update `getExpoPushTokenAsync` to make `projectId` required. ([#20833](https://github.com/expo/expo/pull/20833) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- Add JSDoc comments, perform type changes related to documentation autogeneration. ([#21002](https://github.com/expo/expo/pull/21002) by [@Simek](https://github.com/Simek))
+
+## 0.17.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- [plugin] Upgrade minimum runtime requirement to Node 14 (LTS). ([#18204](https://github.com/expo/expo/pull/18204) by [@EvanBacon](https://github.com/EvanBacon))
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Fixed build error for setting `compileSdkVersion` to 33. ([#19432](https://github.com/expo/expo/pull/19432) by [@kudo](https://github.com/kudo))
+- Fixed the `POST_NOTIFICATIONS` runtime permission integration when `targerSdkVersion` is set to 33. ([#19672](https://github.com/expo/expo/pull/19672) by [@kudo](https://github.com/kudo), [@kudo](https://github.com/kudo))
+- Fixed `projectId` variable not found reference error when using development builds. ([#20276](https://github.com/expo/expo/pull/20276) by [@amandeepmittal](https://github.com/amandeepmittal))
+
+### 💡 Others
+
+- [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))
+- Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 0.16.1 — 2022-07-16
+
+_This version does not introduce any user-facing changes._
+
+## 0.16.0 — 2022-07-07
+
+### 🛠 Breaking changes
+
+- [android] Set the "notification number" (sometimes used to increment badge count on some launchers) from the notification payload `badge` field. ([#17171](https://github.com/expo/expo/pull/17171) by [@danstepanov](https://github.com/danstepanov))
+
+### 🐛 Bug fixes
+
+- Fixed Android 12+ runtime crash caused by `PendingIntent` misconfiguration. ([#17333](https://github.com/expo/expo/pull/17333) by [@kudo](https://github.com/kudo))
+- Fix app not bringing to foreground when clicking notification on Android 12+. ([#17686](https://github.com/expo/expo/pull/17686) by [@kudo](https://github.com/kudo))
+- Fixed Android data-only FCM notifications (i.e. notifications without a title and message) appearing in the notification drawer ([#17707](https://github.com/expo/expo/pull/17707) by [@sausti](https://github.com/sausti))
+- Add support for unregistering from push notifications on Android and iOS ([#17812](https://github.com/expo/expo/pull/17812) by [@sausti](https://github.com/sausti))
+- Fix another Android 12+ trampoline issue from push notifications. ([#17871](https://github.com/expo/expo/pull/17871) by [@kudo](https://github.com/kudo))
+- Fixed `useLastNotificationResponse` returns latest received notification but not the clicked notification on Android. ([#17974](https://github.com/expo/expo/pull/17974) by [@kudo](https://github.com/kudo))
+
+### ⚠️ Notices
+
+- Fixed exception on Android 12+ devices for missing `SCHEDULE_EXACT_ALARM` permission. If `scheduleNotificationAsync` needs a precise timer, the `SCHEDULE_EXACT_ALARM` should be explicitly added to **AndroidManifest.xml**. ([#17334](https://github.com/expo/expo/pull/17334) by [@kudo](https://github.com/kudo))
+
+## 0.15.1 — 2022-04-27
+
+### 💡 Others
+
+- Remove badge deadcode ([#17205](https://github.com/expo/expo/pull/17205) by [@wschurman](https://github.com/wschurman))
+
+## 0.15.0 — 2022-04-18
+
+### 🐛 Bug fixes
+
+- Upgrade firebase messaging dependency to v21. This means `expo-notifications` no longer relies on `FirebaseInstanceId`. If you added `com.google.firebase:firebase-iid` to your `android/app/build.gradle` file for this library, it is no longer required and you can safely remove that dependency. ([#15010](https://github.com/expo/expo/pull/15010) by [@cruzach](https://github.com/cruzach))
+
+### 💡 Others
+
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` and `@expo/image-utils` from `^0.3.16` to `^0.3.18` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+## 0.14.1 - 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 
 ## 0.14.0 — 2021-12-03
 

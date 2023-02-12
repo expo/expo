@@ -1,7 +1,7 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.modifyAndroidManifest = void 0;
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-media-library/package.json');
 const READ_PHOTOS_USAGE = 'Allow $(PRODUCT_NAME) to access your photos';
 const WRITE_PHOTOS_USAGE = 'Allow $(PRODUCT_NAME) to save photos';
@@ -37,7 +37,7 @@ const withMediaLibrary = (config, { photosPermission, savePhotosPermission, isAc
             [
                 'android.permission.READ_EXTERNAL_STORAGE',
                 'android.permission.WRITE_EXTERNAL_STORAGE',
-                isAccessMediaLocationEnabled !== null && isAccessMediaLocationEnabled !== void 0 ? isAccessMediaLocationEnabled : 'android.permission.ACCESS_MEDIA_LOCATION',
+                isAccessMediaLocationEnabled && 'android.permission.ACCESS_MEDIA_LOCATION',
             ].filter(Boolean),
         ],
         withMediaLibraryExternalStorage,

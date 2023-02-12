@@ -10,8 +10,147 @@
 
 ### 💡 Others
 
+## 14.1.1 — 2023-02-09
+
+### ⚠️ Notices
+
+- Removed deprecated fields from pick result type and deprecated `UIImagePickerPresentationStyle` enum values. ([#21078](https://github.com/expo/expo/pull/21078) by [@Simek](https://github.com/Simek))
+
+## 14.1.0 — 2023-01-26
+
+### 🎉 New features
+
+- Add support for [granular permissions](https://developer.android.com/about/versions/13/behavior-changes-13) on Android 13. ([#20908](https://github.com/expo/expo/pull/20908) by [@alanhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 14.0.3 — 2022-12-30
+
+### 💡 Others
+
+- Avoid dependency on `uuid`. ([#20476](https://github.com/expo/expo/pull/20476) by [@LinusU](https://github.com/LinusU))
+
+## 14.0.2 - 2022-11-21
+
+### 🐛 Bug fixes
+
+- Fix support for animated GIFs on iOS. ([#20034](https://github.com/expo/expo/pull/20034) by [@barthap](https://github.com/barthap))
+
+## 14.0.1 - 2022-11-08
+
+### 🐛 Bug fixes
+
+- Fix incorrect asset type for videos on iOS. ([#19932](https://github.com/expo/expo/pull/19932) by [@tsapeta](https://github.com/tsapeta))
+
+## 14.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Remove deprecated `requestCameraRollPermissionsAsync` and `getCameraRollPermissionsAsync` methods, as well as associated to them `CameraRollPermissionResponse` type. ([#18600](https://github.com/expo/expo/pull/18600) by [@Simek](https://github.com/Simek))
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+- Reworked the picking result object for simplicity and better compatibility with the multiple selection. ([#19570](https://github.com/expo/expo/pull/19570) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- The new `PHPickerViewController` is now default picker interface on iOS 14+. ([#18871](https://github.com/expo/expo/pull/18871) by [@barthap](https://github.com/barthap))
+
+### 🐛 Bug fixes
+
+- Fix images taken with `launchCameraAsync` being translated incorrectly on some camera orientations. ([#19185](https://github.com/expo/expo/pull/19185) by [@jacobjaffe](https://github.com/JacobJaffe) and [@reececox](https://github.com/reececox))
+- Fix error where `launchImageLibraryAsync()` saved the photo to a global cache directory that was inaccessible in Expo Go. ([#19205](https://github.com/expo/expo/pull/19205) by [@aleqsio](https://github.com/aleqsio))
+
+### 💡 Others
+
+- Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 13.3.1 — 2022-07-25
+
+_This version does not introduce any user-facing changes._
+
+## 13.3.0 — 2022-07-16
+
+### 🎉 New features
+
+- On iOS 14+ added support for selection limit and on iOS 15+ for ordered selection. ([#18142](https://github.com/expo/expo/pull/18142), [#18143](https://github.com/expo/expo/pull/18143) by [@barthap](https://github.com/barthap))
+- The picker now resolves media library asset ID. ([#18236](https://github.com/expo/expo/pull/18236), [#18185](https://github.com/expo/expo/pull/18185) by [@barthap](https://github.com/barthap))
+- On iOS, the picker now resolves file name and size and media library asset ID. ([#18179](https://github.com/expo/expo/pull/18179) by [@barthap](https://github.com/barthap))
+- On Android added support for selecting multiple images/videos. ([#18161](https://github.com/expo/expo/pull/18161) by [@bbarthec](https://github.com/bbarthec))
+
+### 🐛 Bug fixes
+
+- On Android restored support for `allowsEditing` option that was disabled when migrating to `registerForActivityResult` mechanism. ([#17963](https://github.com/expo/expo/pull/17963) by [@bbarthec](https://github.com/bbarthec))
+
+## 13.2.1 — 2022-07-11
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.0 — 2022-07-07
+
+### 🎉 New features
+
+- On iOS 14+ added support for selecting multiple images/videos. ([#18102](https://github.com/expo/expo/pull/18102), [#18138](https://github.com/expo/expo/pull/18138), [#18145](https://github.com/expo/expo/pull/18145) by [@barthap](https://github.com/barthap))
+
+### 🐛 Bug fixes
+
+- Fix crash when picking a GIF image on iOS. ([#18135](https://github.com/expo/expo/pull/18135) by [@barthap](https://github.com/barthap))
+
+### 💡 Others
+
+- On Android migrated to the new `registerForActivityResult` mechanism. This migration disables `allowsEditing` option. ([#17671](https://github.com/expo/expo/pull/17671), ([#17987](https://github.com/expo/expo/pull/17987) by [@bbarthec](https://github.com/bbarthec))
+- Native module on Android is now written in Kotlin using [Sweet API](https://docs.expo.dev/modules/module-api). ([#17668](https://github.com/expo/expo/pull/17668) by [@bbarthec](https://github.com/bbarthec))
+- Migrated Expo modules definitions to the new naming convention. ([#17193](https://github.com/expo/expo/pull/17193) by [@tsapeta](https://github.com/tsapeta))
+
+## 13.1.1 — 2022-04-27
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.0 — 2022-04-25
+
+### 🎉 New features
+
+- [plugin] Added ability to disable permissions. ([#17168](https://github.com/expo/expo/pull/17168) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 13.0.1 — 2022-04-20
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0 — 2022-04-18
+
+### 🛠 Breaking changes
+
+- On Android migrated cropping library from `com.theartofdev.edmodo:android-image-cropper@2.8.0` (available from `jcenter()`) to `com.github.CanHub:Android-Image-Cropper@1.1.1` (available from `jitpack.io`). ([#11647](https://github.com/expo/expo/pull/11647) by [@bbarthec](https://github.com/bbarthec))
+
+### 🎉 New features
+
+- Native module on iOS is now written in Swift using the new API. ([#15977](https://github.com/expo/expo/pull/15977) by [@bbarthec](https://github.com/bbarthec))
+
+### 🐛 Bug fixes
+
+- Fixed crashes on Android after image is picked by adding missing dependency `expo-image-loader`. ([#17019](https://github.com/expo/expo/pull/17019) by [@M1ST4KE](https://github.com/M1ST4KE))
+- Fix failure on Android when `allowsEditing` is `true` and non-jpeg file picked. ([#16615](https://github.com/expo/expo/pull/16615) by [@mnightingale](https://github.com/mnightingale))
+
+### ⚠ Notices
+
+- Deleted the `UIImagePickerPresentationStyle.BlurOverFullScreen` option as it does not work on iOS. ([#16925](https://github.com/expo/expo/pull/16925) by [@barthap](https://github.com/barthap))
+- Deprecated all `PascalCase` values of the `UIImagePickerPresentationStyle` enum. Use their `SNAKE_UPPERCASE` counterparts instead. ([#16925](https://github.com/expo/expo/pull/16925) by [@barthap](https://github.com/barthap))
+- Underlying values of the `UIImagePickerPresentationStyle` are now strings. They were integers before. ([#16925](https://github.com/expo/expo/pull/16925) by [@barthap](https://github.com/barthap))
+
+### 💡 Others
+
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
 - Export missing `PermissionResponse` type. ([#15744](https://github.com/expo/expo/pull/15744) by [@Simek](https://github.com/Simek))
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+## 12.0.2 - 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 
 ## 12.0.1 — 2021-12-15
 

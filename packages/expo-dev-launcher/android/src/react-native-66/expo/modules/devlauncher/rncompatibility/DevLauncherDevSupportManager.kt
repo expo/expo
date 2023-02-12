@@ -36,7 +36,6 @@ import java.util.concurrent.ExecutionException
 import java.util.concurrent.TimeUnit
 import java.util.concurrent.TimeoutException
 
-
 class DevLauncherDevSupportManager(
   applicationContext: Context?,
   val reactInstanceManagerHelper: ReactInstanceDevHelper?,
@@ -55,7 +54,8 @@ class DevLauncherDevSupportManager(
   devBundleDownloadListener,
   minNumShakes,
   customPackagerCommandHandlers
-), DevLauncherKoinComponent {
+),
+  DevLauncherKoinComponent {
   private val controller: DevLauncherControllerInterface by inject()
   // copied from https://github.com/facebook/react-native/blob/aa4da248c12e3ba41ecc9f1c547b21c208d9a15f/ReactAndroid/src/main/java/com/facebook/react/devsupport/BridgeDevSupportManager.java#L65
   private var mIsSamplingProfilerEnabled = false
@@ -70,15 +70,18 @@ class DevLauncherDevSupportManager(
         Toast.makeText(
           applicationContext,
           "JS Sampling Profiler was already running, so did not start the sampling profiler",
-          Toast.LENGTH_LONG)
+          Toast.LENGTH_LONG
+        )
           .show()
       }
     }
 
     addCustomDevOption(
       if (mIsSamplingProfilerEnabled) applicationContext!!.getString(
-        R.string.catalyst_sample_profiler_disable) else applicationContext!!.getString(
-        R.string.catalyst_sample_profiler_enable)
+        R.string.catalyst_sample_profiler_disable
+      ) else applicationContext!!.getString(
+        R.string.catalyst_sample_profiler_enable
+      )
     ) { toggleJSSamplingProfiler() }
     if (!devSettings.isDeviceDebugEnabled) {
       // For remote debugging, we open up Chrome running the app in a web worker.
@@ -114,7 +117,9 @@ class DevLauncherDevSupportManager(
 
   // copied from https://github.com/facebook/react-native/blob/aa4da248c12e3ba41ecc9f1c547b21c208d9a15f/ReactAndroid/src/main/java/com/facebook/react/devsupport/BridgeDevSupportManager.java#L136-L156
   override fun loadSplitBundleFromServer(
-    bundlePath: String?, callback: DevSplitBundleCallback) {
+    bundlePath: String?,
+    callback: DevSplitBundleCallback
+  ) {
     fetchSplitBundleAndCreateBundleLoader(
       bundlePath,
       object : CallbackWithBundleLoader {
@@ -129,12 +134,14 @@ class DevLauncherDevSupportManager(
         override fun onError(url: String, cause: Throwable) {
           callback.onError(url, cause)
         }
-      })
+      }
+    )
   }
 
   // copied from https://github.com/facebook/react-native/blob/aa4da248c12e3ba41ecc9f1c547b21c208d9a15f/ReactAndroid/src/main/java/com/facebook/react/devsupport/BridgeDevSupportManager.java#L158-L165
   private fun getExecutorConnectCallback(
-    future: SimpleSettableFuture<Boolean>): JSExecutorConnectCallback {
+    future: SimpleSettableFuture<Boolean>
+  ): JSExecutorConnectCallback {
     return object : JSExecutorConnectCallback {
       override fun onSuccess() {
         future.set(true)
@@ -147,7 +154,9 @@ class DevLauncherDevSupportManager(
         future.setException(
           IOException(
             applicationContext.getString(R.string.catalyst_debug_error),
-            cause))
+            cause
+          )
+        )
       }
     }
   }
@@ -161,7 +170,8 @@ class DevLauncherDevSupportManager(
       val executor = WebsocketJavaScriptExecutor()
       val future = SimpleSettableFuture<Boolean>()
       executor.connect(
-        devServerHelper.websocketProxyURL, getExecutorConnectCallback(future))
+        devServerHelper.websocketProxyURL, getExecutorConnectCallback(future)
+      )
       // TODO(t9349129) Don't use timeout
       try {
         future[90, TimeUnit.SECONDS]
@@ -182,7 +192,8 @@ class DevLauncherDevSupportManager(
     UiThreadUtil.assertOnUiThread()
     ReactMarker.logMarker(
       ReactMarkerConstants.RELOAD,
-      devSettings.packagerConnectionSettings.debugServerHost)
+      devSettings.packagerConnectionSettings.debugServerHost
+    )
 
     // dismiss redbox if exists
     hideRedboxDialog()
@@ -213,7 +224,8 @@ class DevLauncherDevSupportManager(
         Toast.makeText(
           applicationContext,
           "$javaScriptExecutorFactory does not support Sampling Profiler",
-          Toast.LENGTH_LONG)
+          Toast.LENGTH_LONG
+        )
           .show()
       } finally {
         mIsSamplingProfilerEnabled = true
@@ -221,23 +233,27 @@ class DevLauncherDevSupportManager(
     } else {
       try {
         val outputPath: String = File.createTempFile(
-          "sampling-profiler-trace", ".cpuprofile", applicationContext.cacheDir)
+          "sampling-profiler-trace", ".cpuprofile", applicationContext.cacheDir
+        )
           .path
         javaScriptExecutorFactory.stopSamplingProfiler(outputPath)
         Toast.makeText(
           applicationContext,
           "Saved results from Profiler to $outputPath",
-          Toast.LENGTH_LONG)
+          Toast.LENGTH_LONG
+        )
           .show()
       } catch (e: IOException) {
         FLog.e(
           ReactConstants.TAG,
-          "Could not create temporary file for saving results from Sampling Profiler")
+          "Could not create temporary file for saving results from Sampling Profiler"
+        )
       } catch (e: UnsupportedOperationException) {
         Toast.makeText(
           applicationContext,
           javaScriptExecutorFactory.toString() + "does not support Sampling Profiler",
-          Toast.LENGTH_LONG)
+          Toast.LENGTH_LONG
+        )
           .show()
       } finally {
         mIsSamplingProfilerEnabled = false

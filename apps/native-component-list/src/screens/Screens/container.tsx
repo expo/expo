@@ -20,7 +20,7 @@ export class LazyTabs extends React.Component<{ renderScreen: (key: string) => J
   renderScreen = (key: string) => {
     const active = key === this.state.active ? 1 : 0;
     return (
-      <Screen style={StyleSheet.absoluteFill} key={key} active={active}>
+      <Screen style={StyleSheet.absoluteFill} key={key} activityState={active}>
         {this.props.renderScreen(key)}
       </Screen>
     );

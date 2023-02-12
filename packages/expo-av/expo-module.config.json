@@ -1,0 +1,10 @@
+{
+  "name": "expo-av",
+  "platforms": ["ios", "android"],
+  "ios": {
+    "modules": ["VideoViewModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.av.video.VideoViewModule"]
+  }
+}

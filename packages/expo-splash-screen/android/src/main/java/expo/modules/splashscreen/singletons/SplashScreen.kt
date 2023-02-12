@@ -118,7 +118,7 @@ object SplashScreen : SingletonModule {
     failureCallback: (reason: String) -> Unit
   ) {
     if (!controllers.containsKey(activity)) {
-      return failureCallback("No native splash screen registered for provided activity. Please configure your application's main Activity to call 'SplashScreen.show' (https://github.com/expo/expo/tree/master/packages/expo-splash-screen#-configure-android).")
+      return failureCallback("No native splash screen registered for provided activity. Please configure your application's main Activity to call 'SplashScreen.show' (https://github.com/expo/expo/tree/main/packages/expo-splash-screen#-configure-android).")
     }
 
     controllers[activity]?.preventAutoHide(successCallback, failureCallback)
@@ -140,7 +140,7 @@ object SplashScreen : SingletonModule {
     failureCallback: (reason: String) -> Unit
   ) {
     if (!controllers.containsKey(activity)) {
-      return failureCallback("No native splash screen registered for provided activity. Please configure your application's main Activity to call 'SplashScreen.show' (https://github.com/expo/expo/tree/master/packages/expo-splash-screen#-configure-android).")
+      return failureCallback("No native splash screen registered for provided activity. Please configure your application's main Activity to call 'SplashScreen.show' (https://github.com/expo/expo/tree/main/packages/expo-splash-screen#-configure-android).")
     }
 
     controllers[activity]?.hideSplashScreen(successCallback, failureCallback)

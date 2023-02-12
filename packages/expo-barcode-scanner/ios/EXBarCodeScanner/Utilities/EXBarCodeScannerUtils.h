@@ -1,7 +1,8 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
 #import <Foundation/Foundation.h>
-#import <ZXingObjC/ZXingObjCCore.h>
+
+@class ZXResult;
 
 @interface EXBarCodeScannerUtils : NSObject
 

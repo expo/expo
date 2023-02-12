@@ -1,14 +1,16 @@
-name: Publish Native Component List Web
+name: Publish Native Component List Website & Update
 on:
   workflow_dispatch: {}
   push:
     branches:
-      - master
+      - main
     paths:
-      - .github/workflows/web.yml
+      - .github/workflows/publish-demo.yml
       - yarn.lock
       - apps/**
       - packages/**
+      # Ignore Expo CLI for now...
+      - '!packages/@expo/cli/**'
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
@@ -16,60 +18,48 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-latest
+    runs-on: ubuntu-20.04
     steps:
-      - uses: actions/checkout@v2
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
         with:
           submodules: true
-      - name: Get cache key of git lfs files
-        id: git-lfs
-        run: echo "::set-output name=sha256::$(git lfs ls-files | openssl dgst -sha256)"
-      - uses: actions/cache@v2
+      - name: ⬢ Setup Node
+        uses: actions/setup-node@v3
         with:
-          path: .git/lfs
-          key: ${{ steps.git-lfs.outputs.sha256 }}
-      - run: git lfs pull
-      - uses: actions/setup-node@v2
+          node-version: 16
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
         with:
-          node-version: '14.17'
-      - run: yarn global add expo-cli@3
-      - name: Cache Node.js modules
-        uses: actions/cache@v2
+          yarn-workspace: 'true'
+          git-lfs: 'true'
+      - name: 🚚 Pull Git LFS files
+        run: git lfs pull
+      - name: Setup Expo
+        uses: expo/expo-github-action@v7
         with:
-          path: ${{ github.workspace }}/node_modules
-          key: ${{ runner.OS }}-node_modules-${{ hashFiles('yarn.lock') }}
-      #  Setup Expo CLI action
-      # - name: Setup Expo
-      #   uses: expo/expo-github-action@v5
-      #   with:
-      #     expo-version: 3.x
-      #     expo-username: ${{ secrets.EXPO_CLI_USERNAME }}
-      #     expo-password: ${{ secrets.EXPO_CLI_PASSWORD }}
-      #     expo-cache: true
-
-      - run: yarn --frozen-lockfile
-
-      # - name: Publish Expo app
-      #   working-directory: ./apps/native-component-list
-      #   run: expo publish --release-channel=pr-${{ github.event.number }}
-      # # Get Expo link for the comment
-      # - name: Get expo link
-      #   id: expo
-      #   run: echo "::set-output name=path::@community/native-component-list?release-channel=pr-${{ github.event.number }}"
-      # Build the Expo website
-      - name: Build Website
+          expo-version: latest
+          eas-version: latest
+          token: ${{ secrets.COMMUNITY_EXPO_ACCESS_TOKEN }}
+      - name: 🧶 Install workspace node modules
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
+      - name: Publish update
+        working-directory: ./apps/native-component-list
+        run: EXPO_SDK_VERSION=45.0.0 eas update --branch main --message "Publishing ${{ github.sha }}"
+      - name: 🏗️ Build the NCL website
         working-directory: ./apps/native-component-list
         run: yarn build:web
-      # Deploy Expo web to now
-      - name: Publish Website
-        working-directory: ./apps/native-component-list
-        env:
-          ZEIT_TOKEN: ${{ secrets.ZEIT_TOKEN }}
-          BUILD_ID: ${{ github.sha }}
-        run: npx now deploy web-build --env NODE_ENV=production --confirm --public --no-clipboard --token=${ZEIT_TOKEN} > deploy-url.txt
-      # Save variable
-      - name: Set deploy url to env variable
-        run: echo "ZEIT_DEPLOY=$(cat deploy-url.txt)" >> $GITHUB_ENV
+      # - name: 🌐 Publish NCL website
+      #   working-directory: ./apps/native-component-list
+      #   env:
+      #     ZEIT_TOKEN: ${{ secrets.ZEIT_TOKEN }}
+      #     BUILD_ID: ${{ github.sha }}
+      #   run: npx now deploy web-build --env NODE_ENV=production --confirm --public --no-clipboard --token=${ZEIT_TOKEN} > deploy-url.txt
+      # - name: ➕ Add deploy url to GITHUB_ENV
+      #   run: echo "ZEIT_DEPLOY=$(cat deploy-url.txt)" >> $GITHUB_ENV
+
       # Alias the now deployment URL
       #
       # NOTE(brentvatne): this is currently disabled because aliasing is failing with:

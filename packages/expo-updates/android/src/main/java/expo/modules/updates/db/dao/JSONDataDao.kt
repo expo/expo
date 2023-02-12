@@ -7,6 +7,9 @@ import androidx.room.Transaction
 import expo.modules.updates.db.entity.JSONDataEntity
 import java.util.*
 
+/**
+ * Utility class for accessing and modifying data in the `json_data` SQLite table.
+ */
 @Dao
 abstract class JSONDataDao {
   /**

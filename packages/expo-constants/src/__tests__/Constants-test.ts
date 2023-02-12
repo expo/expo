@@ -1,6 +1,7 @@
 import { Platform } from 'react-native';
 
 import Constants, { ExecutionEnvironment } from '../Constants';
+import { AppManifest, Manifest } from '../Constants.types';
 
 it(`defines a manifest`, () => {
   expect(Constants.manifest).toBeTruthy();
@@ -12,9 +13,32 @@ it(`defines a linking URI`, () => {
 });
 
 describe(`manifest`, () => {
-  const fakeManifest = { id: '@jester/manifest' };
-  const fakeManifest2 = { id: '@jester/manifest2' };
-  const fakeManifestNew = { id: 'fakeid', metadata: {} };
+  const fakeManifest: AppManifest = {
+    id: '@jester/manifest',
+    name: 'manifest',
+    slug: 'manifest',
+    bundleUrl: '',
+  };
+  const fakeManifest2: AppManifest = {
+    id: '@jester/manifest2',
+    name: 'manifest2',
+    slug: 'manifest2',
+    bundleUrl: '',
+  };
+  const fakeManifestNew: Manifest = {
+    id: 'fakeid',
+    metadata: {},
+    createdAt: '',
+    runtimeVersion: '1',
+    launchAsset: { url: '' },
+    assets: [],
+    extra: {
+      expoClient: {
+        slug: 'hello',
+        name: 'hello',
+      },
+    },
+  };
 
   beforeEach(() => {
     jest.resetModules();
@@ -161,6 +185,24 @@ describe(`manifest`, () => {
     expect(ConstantsWithMock.manifest).toBeNull();
     expect(ConstantsWithMock.manifest2).toEqual(fakeManifestNew);
     expect(console.warn).not.toHaveBeenCalled();
+  });
+
+  describe('expoConfig', () => {
+    it('is present for classic manifests', () => {
+      mockExponentConstants({ manifest: fakeManifest });
+      mockExpoUpdates({ manifest: fakeManifest });
+      const ConstantsWithMock = require('../Constants').default;
+      expect(ConstantsWithMock.expoConfig).toEqual(fakeManifest);
+      expect(console.warn).not.toHaveBeenCalled();
+    });
+
+    it('is present for new manifests', () => {
+      mockExponentConstants({ manifest: fakeManifestNew });
+      mockExpoUpdates({ manifest: fakeManifestNew });
+      const ConstantsWithMock = require('../Constants').default;
+      expect(ConstantsWithMock.expoConfig).toEqual(fakeManifestNew.extra?.expoClient);
+      expect(console.warn).not.toHaveBeenCalled();
+    });
   });
 
   // web will only ever be in bare environment

@@ -8,8 +8,8 @@
 
 @interface DevMenuREAVisibilityTransition : DevMenuREATransition
 @property (nonatomic) DevMenuREATransitionAnimationType animationType;
-- (DevMenuREATransitionAnimation *)appearView:(UIView*)view inParent:(UIView*)parent;
-- (DevMenuREATransitionAnimation *)disappearView:(UIView*)view fromParent:(UIView*)parent;
+- (DevMenuREATransitionAnimation *)appearView:(UIView *)view inParent:(UIView *)parent;
+- (DevMenuREATransitionAnimation *)disappearView:(UIView *)view fromParent:(UIView *)parent;
 - (instancetype)initWithConfig:(NSDictionary *)config;
 @end
 

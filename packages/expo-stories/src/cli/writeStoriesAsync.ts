@@ -1,11 +1,12 @@
 import fse from 'fs-extra';
 import path from 'path';
 
-import { StoryOptions, StoryFile } from '../types';
+import { StoryFile } from '../types';
 import { getStoriesDir, getStoryManifest } from './shared';
 
-export async function writeStoriesAsync(config: StoryOptions) {
-  const storyManifest = getStoryManifest(config.projectRoot);
+export async function writeStoriesAsync(config: { projectRoot: string }) {
+  const { projectRoot } = config;
+  const storyManifest = getStoryManifest(projectRoot);
   const stories = Object.keys(storyManifest.files).map((id) => storyManifest.files[id]);
 
   let template = `
@@ -20,7 +21,7 @@ export async function writeStoriesAsync(config: StoryOptions) {
     }).code;
   }
 
-  const storiesDir = getStoriesDir(config);
+  const storiesDir = getStoriesDir({ projectRoot });
   const writeRequiresPath = path.resolve(storiesDir, 'stories.js');
   await fse.writeFile(writeRequiresPath, template, { encoding: 'utf-8' });
 }

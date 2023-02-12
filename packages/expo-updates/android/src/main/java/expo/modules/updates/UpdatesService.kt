@@ -7,6 +7,7 @@ import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.FileDownloader
+import expo.modules.updates.manifest.EmbeddedManifest
 import expo.modules.updates.selectionpolicy.SelectionPolicy
 import java.io.File
 
@@ -16,6 +17,14 @@ import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesController
 /* ktlint-enable no-unused-imports */
 
+/**
+ * Internal module whose purpose is to connect [UpdatesModule] with the central updates entry point.
+ * In most apps, this is [UpdatesController].
+ *
+ * In other cases, this module can be overridden at runtime to redirect [UpdatesModule] to a
+ * different entry point. This is the case in Expo Go, where this module is overridden by
+ * [UpdatesBinding] in order to get data from [ExpoUpdatesAppLoader].
+ */
 open class UpdatesService(protected var context: Context) : InternalModule, UpdatesInterface {
   override fun getExportedInterfaces(): List<Class<*>> {
     return listOf(UpdatesInterface::class.java as Class<*>)
@@ -33,6 +42,8 @@ open class UpdatesService(protected var context: Context) : InternalModule, Upda
     get() = UpdatesController.instance.databaseHolder
   override val isEmergencyLaunch: Boolean
     get() = UpdatesController.instance.isEmergencyLaunch
+  override val isEmbeddedLaunch: Boolean
+    get() = launchedUpdate?.id?.equals(embeddedUpdate?.id) ?: false
   override val isUsingEmbeddedAssets: Boolean
     get() = UpdatesController.instance.isUsingEmbeddedAssets
 
@@ -40,6 +51,8 @@ open class UpdatesService(protected var context: Context) : InternalModule, Upda
     return configuration.isEnabled && launchedUpdate != null
   }
 
+  override val embeddedUpdate: UpdateEntity?
+    get() = EmbeddedManifest.get(context, configuration)?.updateEntity
   override val launchedUpdate: UpdateEntity?
     get() = UpdatesController.instance.launchedUpdate
   override val localAssetFiles: Map<AssetEntity, String>?

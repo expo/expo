@@ -2,7 +2,7 @@ import { Easing, EasingFn } from '../../Easing';
 import { withDelay, withSequence, withTiming } from '../../animation';
 import {
   AnimationFunction,
-  EntryExitAnimationBuild,
+  EntryExitAnimationFunction,
   IEntryExitAnimationBuilder,
   KeyframeProps,
 } from './commonTypes';
@@ -74,9 +74,8 @@ export class Keyframe implements IEntryExitAnimationBuilder {
       if (styleProp === 'transform') {
         initialValues[styleProp]?.forEach((transformStyle, index) => {
           Object.keys(transformStyle).forEach((transformProp: string) => {
-            parsedKeyframes[
-              index.toString() + '_transform:' + transformProp
-            ] = [];
+            parsedKeyframes[index.toString() + '_transform:' + transformProp] =
+              [];
           });
         });
       } else {
@@ -188,7 +187,7 @@ export class Keyframe implements IEntryExitAnimationBuilder {
         };
   }
 
-  build: EntryExitAnimationBuild = () => {
+  build = (): EntryExitAnimationFunction => {
     const delay = this.delayV;
     const delayFunction = this.getDelayFunction();
     const { keyframes, initialValues } = this.parseDefinitions();

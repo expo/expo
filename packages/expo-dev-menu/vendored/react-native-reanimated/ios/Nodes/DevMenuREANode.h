@@ -3,7 +3,7 @@
 
 @class DevMenuREANodesManager;
 
-typedef NSObject<NSCopying>* DevMenuREANodeID;
+typedef NSObject<NSCopying> *DevMenuREANodeID;
 
 @protocol DevMenuREAFinalNode
 
@@ -12,15 +12,14 @@ typedef NSObject<NSCopying>* DevMenuREANodeID;
 @end
 
 @interface DevMenuREAUpdateContext : NSObject
-@property (nonatomic) NSString* callID;
+@property (nonatomic) NSString *callID;
 @end
 
 @interface DevMenuREANode : NSObject
 
 + (void)runPropUpdates:(nonnull DevMenuREAUpdateContext *)context;
 
-- (instancetype)initWithID:(DevMenuREANodeID)nodeID
-                    config:(NSDictionary<NSString *, id> *)config NS_DESIGNATED_INITIALIZER;
+- (instancetype)initWithID:(DevMenuREANodeID)nodeID config:(NSDictionary<NSString *, id> *)config NS_DESIGNATED_INITIALIZER;
 
 @property (nonatomic, weak, nullable) DevMenuREANodesManager *nodesManager;
 @property (nonatomic, nullable) DevMenuREAUpdateContext *updateContext;

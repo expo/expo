@@ -63,38 +63,14 @@ EX_EXPORT_METHOD_AS(print,
       reject(errorDetails[@"code"], errorDetails[@"message"], EXErrorWithMessage(errorDetails[@"message"]));
       return;
     }
-    
-    UIPrintInteractionController *printInteractionController = [self _makePrintInteractionControllerWithOptions:options];
-    
-    if (printingData == nil) {
-      // Missing printing data.
-      // Let's check if someone wanted to use previous implementation for `html` option
-      // which uses print formatter instead of NSData instance.
 
-      NSString *htmlString = nil;
-      if ([options[@"useMarkupFormatter"] boolValue]) {
-        htmlString = options[@"html"];
-      } else if (options[@"markupFormatterIOS"] && [options[@"markupFormatterIOS"] isKindOfClass:[NSString class]]) {
-        htmlString = options[@"markupFormatterIOS"];
-      } else {
-        reject(@"E_NOTHING_TO_PRINT", @"No data to print. You must specify `uri` or `html` option.", nil);
-        return;
-      }
-      if (htmlString != nil) {
-        UIMarkupTextPrintFormatter *formatter = [[UIMarkupTextPrintFormatter alloc] initWithMarkupText:htmlString];
-        printInteractionController.printFormatter = formatter;
-      } else {
-        NSString *message = [NSString stringWithFormat:@"The specified html string is not valid for printing."];
-        reject(@"E_HTML_INVALID", message, EXErrorWithMessage(message));
-        return;
-      }
-    }
-    
+    UIPrintInteractionController *printInteractionController = [self _makePrintInteractionControllerWithOptions:options];
+
     printInteractionController.printingItem = printingData;
-    
+
     NSString *printerURL;
     UIPrinter *printer;
-    
+
     if (options[@"printerUrl"] && [options[@"printerUrl"] isKindOfClass:[NSString class]]) {
       // @tsapeta: Printing to the printer created with given URL ([UIPrinter printerWithURL:]) doesn't work for me,
       // it seems to be a bug in iOS however I've found confirmation only on Xamarin forums.
@@ -102,29 +78,29 @@ EX_EXPORT_METHOD_AS(print,
       // The hacky solution is to save all UIPrinters that have been selected using `selectPrinter` method and reuse
       // them when printing to specific printer.
       // I guess it's also safe to fall back to this not working solution since it might be fixed in the future.
-      
+
       printerURL = options[@"printerUrl"];
       printer = [self.printers objectForKey:printerURL];
-      
+
       if (printer == nil) {
         printer = [UIPrinter printerWithURL:[NSURL URLWithString:printerURL]];
       }
     }
-    
+
     void (^completionHandler)(UIPrintInteractionController *, BOOL, NSError *) =
     ^(UIPrintInteractionController *printController, BOOL completed, NSError *error) {
       if (error != nil) {
         reject(@"E_CANNOT_PRINT", @"Printing job encountered an error.", error);
         return;
       }
-      
+
       if (completed) {
         resolve(nil);
       } else {
         reject(@"E_PRINT_INCOMPLETE", @"Printing did not complete.", nil);
       }
     };
-    
+
     if (printer != nil) {
       [printInteractionController printToPrinter:printer completionHandler:completionHandler];
     } else if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) { // iPad
@@ -140,9 +116,9 @@ EX_EXPORT_METHOD_AS(selectPrinter,selectPrinter:(EXPromiseResolveBlock)resolve
                   rejecter:(EXPromiseRejectBlock)reject)
 {
   UIPrinterPickerController *printPicker = [UIPrinterPickerController printerPickerControllerWithInitiallySelectedPrinter:nil];
-  
+
   printPicker.delegate = self;
-  
+
   void (^completionHandler)(UIPrinterPickerController *, BOOL, NSError *) = ^(UIPrinterPickerController *printerPicker, BOOL userDidSelect, NSError *error) {
     if (!userDidSelect && error) {
       reject(@"E_PRINTER_SELECT_ERROR", @"There was a problem with the printer picker.", error);
@@ -151,7 +127,7 @@ EX_EXPORT_METHOD_AS(selectPrinter,selectPrinter:(EXPromiseResolveBlock)resolve
       if (userDidSelect) {
         UIPrinter *pickedPrinter = printerPicker.selectedPrinter;
         [self->_printers setObject:pickedPrinter forKey:pickedPrinter.URL.absoluteString];
-        
+
         resolve(@{
                   @"name" : pickedPrinter.displayName,
                   @"url" : pickedPrinter.URL.absoluteString,
@@ -161,7 +137,7 @@ EX_EXPORT_METHOD_AS(selectPrinter,selectPrinter:(EXPromiseResolveBlock)resolve
       }
     }
   };
-  
+
   if ([UIDevice currentDevice].userInterfaceIdiom == UIUserInterfaceIdiomPad) { // iPad
     UIView *view = [[UIApplication sharedApplication] keyWindow].rootViewController.view;
     [printPicker presentFromRect:view.frame inView:view animated:YES completionHandler:completionHandler];
@@ -179,7 +155,7 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
   NSString *htmlString = options[@"html"] ?: @"";
   CGSize paperSize = [self _paperSizeFromOptions:options];
   UIEdgeInsets pageMargins = [self _pageMarginsFromOptions:options];
-    
+
   void (^completionHandler)(NSError * _Nullable, NSData * _Nullable, int) =
     ^(NSError * _Nullable error, NSData * _Nullable pdfData, int pagesCount) {
       renderTask = nil;
@@ -212,14 +188,14 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
     };
 
   NSString *format = options[@"format"];
-  
+
   if (format != nil && ![format isEqualToString:@"pdf"]) {
     reject(@"E_PRINT_UNSUPPORTED_FORMAT", [NSString stringWithFormat:@"Given format '%@' is not supported.", format], nil);
     return;
   }
 
   if ([options[@"useMarkupFormatter"] boolValue]) {
-    [self pdfWithHtmlMarkupFormatter:htmlString pageSize:paperSize completionHandler:completionHandler];
+    [self pdfWithHtmlMarkupFormatter:htmlString pageSize:paperSize pageMargins:pageMargins completionHandler:completionHandler];
   } else {
     renderTask = [EXWKPDFRenderer new];
     [renderTask PDFWithHtml:htmlString pageSize:paperSize pageMargins:pageMargins completionHandler:completionHandler];
@@ -247,11 +223,11 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
 - (NSData *)_dataFromUri:(NSString *)uri
 {
   NSURL *candidateURL = [NSURL URLWithString:uri];
-  
+
   // iCloud url looks like: `file:///private/var/mobile/Containers/Data/Application/[...].pdf`
   // data url looks like: `data:application/pdf;base64,JVBERi0x...`
   BOOL isValidURL = (candidateURL && candidateURL.scheme);
-  
+
   if (isValidURL) {
     // TODO: This needs updated to use NSURLSession dataTaskWithURL:completionHandler:
     return [NSData dataWithContentsOfURL:candidateURL];
@@ -264,14 +240,14 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
   NSString *uri = options[@"uri"];
   UIPrintInteractionController *printInteractionController = [UIPrintInteractionController sharedPrintController];
   printInteractionController.delegate = self;
-  
+
   UIPrintInfo *printInfo = [UIPrintInfo printInfo];
-  
+
   printInfo.outputType = UIPrintInfoOutputGeneral;
   printInfo.jobName = [uri lastPathComponent];
   printInfo.duplex = UIPrintInfoDuplexLongEdge;
   printInfo.orientation = [self _getPrintOrientationFromOption:options[@"orientation"]];
-  
+
   printInteractionController.printInfo = printInfo;
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdeprecated-declarations"
@@ -280,18 +256,18 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
 #pragma clang diagnostic pop
   printInteractionController.showsNumberOfCopies = YES;
   printInteractionController.showsPaperSelectionForLoadedPapers = YES;
-  
+
   return printInteractionController;
 }
 
 - (void)_getPrintingDataForOptions:(nonnull NSDictionary *)options callback:(void(^)(NSData *, NSDictionary *))callback
 {
   NSData *printData;
-  
+
   if (options[@"uri"]) {
     NSString *uri = options[@"uri"];
     printData = [self _dataFromUri:uri];
-    
+
     if (printData != nil) {
       callback(printData, nil);
     } else {
@@ -303,12 +279,13 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
     return;
   }
 
+  NSString *htmlString = options[@"html"] ?: @"";
+  CGSize paperSize = [self _paperSizeFromOptions:options];
+  UIEdgeInsets pageMargins = [self _pageMarginsFromOptions:options];
+
   if (options[@"html"] && ![options[@"useMarkupFormatter"] boolValue]) {
     __block EXWKPDFRenderer *renderTask = [EXWKPDFRenderer new];
 
-    NSString *htmlString = options[@"html"] ?: @"";
-    CGSize paperSize = [self _paperSizeFromOptions:options];
-    UIEdgeInsets pageMargins = [self _pageMarginsFromOptions:options];
     [renderTask PDFWithHtml:htmlString pageSize:paperSize pageMargins:pageMargins completionHandler:^(NSError * _Nullable error, NSData * _Nullable pdfData, int pagesCount) {
       if (pdfData != nil) {
         callback(pdfData, nil);
@@ -320,10 +297,30 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
       }
       renderTask = nil;
     }];
-    return;
+  } else {
+    if ([options[@"useMarkupFormatter"] boolValue]) {
+      htmlString = options[@"html"];
+    // check deprecated implementation
+    } else if (options[@"markupFormatterIOS"] && [options[@"markupFormatterIOS"] isKindOfClass:[NSString class]]) {
+      htmlString = options[@"markupFormatterIOS"];
+    } else {
+      callback(nil, @{
+                      @"code": @"E_NOTHING_TO_PRINT",
+                      @"message": @"No data to print. You must specify `uri` or `html` option.",
+                      });
+      return;
+    }
+    [self pdfWithHtmlMarkupFormatter:htmlString pageSize:paperSize pageMargins:pageMargins completionHandler:^(NSError * _Nullable error, NSData * _Nullable pdfData, int pagesCount) {
+      if (pdfData != nil) {
+        callback(pdfData, nil);
+      } else {
+        callback(nil, @{
+                        @"code": @"E_PRINT_PDF_NOT_RENDERED",
+                        @"message": @"Error occurred while printing HTML to PDF format.",
+                        });
+      }
+    }];
   }
-  
-  callback(nil, nil);
 }
 
 - (UIPrintInfoOrientation)_getPrintOrientationFromOption:(NSString *)orientation
@@ -383,24 +380,25 @@ EX_EXPORT_METHOD_AS(printToFileAsync,
   NSString *directory = [fileSystem.cachesDirectory stringByAppendingPathComponent:@"Print"];
   NSString *fileName = [[[NSUUID UUID] UUIDString] stringByAppendingString:@".pdf"];
   [fileSystem ensureDirExistsWithPath:directory];
-  
+
   return [directory stringByAppendingPathComponent:fileName];
 }
 
-- (void)pdfWithHtmlMarkupFormatter:(NSString *)html pageSize:(CGSize)pageSize completionHandler:(void (^)(NSError * _Nullable, NSData * _Nullable, int))onFinished
+- (void)pdfWithHtmlMarkupFormatter:(NSString *)html pageSize:(CGSize)pageSize pageMargins:(UIEdgeInsets)pageMargins completionHandler:(void (^)(NSError * _Nullable, NSData * _Nullable, int))onFinished
 {
   UIMarkupTextPrintFormatter *formatter = [[UIMarkupTextPrintFormatter alloc] initWithMarkupText:html];
   UIPrintPageRenderer *renderer = [[UIPrintPageRenderer alloc] init];
   [renderer addPrintFormatter:formatter startingAtPageAtIndex:0];
-    
-  CGRect frame = CGRectMake(0, 0, pageSize.width, pageSize.height);
-  [renderer setValue:[NSValue valueWithCGRect:frame] forKey:@"paperRect"];
-  [renderer setValue:[NSValue valueWithCGRect:frame] forKey:@"printableRect"];
+
+  CGRect paperRect = CGRectMake(0, 0, pageSize.width, pageSize.height);
+  [renderer setValue:[NSValue valueWithCGRect:paperRect] forKey:@"paperRect"];
+  CGRect printableRect = CGRectMake(pageMargins.left, pageMargins.top, paperRect.size.width - pageMargins.left - pageMargins.right, paperRect.size.height - pageMargins.top - pageMargins.bottom);
+  [renderer setValue:[NSValue valueWithCGRect:printableRect] forKey:@"printableRect"];
 
   NSMutableData* data = [[NSMutableData alloc] init];
   UIGraphicsBeginPDFContextToData(data, CGRectZero, NULL);
   for (int i = 0; i < renderer.numberOfPages; i++) {
-    UIGraphicsBeginPDFPage();
+    UIGraphicsBeginPDFPageWithInfo(paperRect, nil);
     [renderer drawPageAtIndex:i inRect: UIGraphicsGetPDFContextBounds()];
   }
   UIGraphicsEndPDFContext();

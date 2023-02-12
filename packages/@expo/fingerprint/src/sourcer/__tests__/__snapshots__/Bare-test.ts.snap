@@ -1,0 +1,29 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getRncliAutolinkingSourcesAsync should contain rn-cli autolinking projects 1`] = `
+[
+  {
+    "filePath": "node_modules/react-native-reanimated",
+    "reasons": [
+      "bareRncliAutolinking",
+    ],
+    "type": "dir",
+  },
+  {
+    "contents": "{"sourceDir":"node_modules/react-native-reanimated/android","packageImportPath":"import com.swmansion.reanimated.ReanimatedPackage;","packageInstance":"new ReanimatedPackage()","buildTypes":[],"componentDescriptors":[],"androidMkPath":"node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/Android.mk","cmakeListsPath":"node_modules/react-native-reanimated/android/build/generated/source/codegen/jni/CMakeLists.txt"}",
+    "id": "rncliAutolinkingConfig:react-native-reanimated:android",
+    "reasons": [
+      "bareRncliAutolinking",
+    ],
+    "type": "contents",
+  },
+  {
+    "contents": "{"podspecPath":"node_modules/react-native-reanimated/RNReanimated.podspec","configurations":[],"scriptPhases":[]}",
+    "id": "rncliAutolinkingConfig:react-native-reanimated:ios",
+    "reasons": [
+      "bareRncliAutolinking",
+    ],
+    "type": "contents",
+  },
+]
+`;

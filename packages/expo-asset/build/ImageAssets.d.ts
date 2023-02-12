@@ -1,4 +1,4 @@
-declare type ImageInfo = {
+type ImageInfo = {
     name: string;
     width: number;
     height: number;

@@ -7,9 +7,11 @@ import Platform from './Platform';
 import SyntheticPlatformEmitter from './SyntheticPlatformEmitter';
 import { CodedError } from './errors/CodedError';
 import { UnavailabilityError } from './errors/UnavailabilityError';
+import './sweet/setUpErrorManager.fx';
 export { default as deprecate } from './deprecate';
 export { DeviceEventEmitter, EventEmitter, NativeModulesProxy, ProxyNativeModule, Platform, Subscription, SyntheticPlatformEmitter, requireNativeViewManager, CodedError, UnavailabilityError, };
 export * from './requireNativeModule';
+export * from './TypedArrays.types';
 /**
  * @deprecated renamed to `DeviceEventEmitter`
  */

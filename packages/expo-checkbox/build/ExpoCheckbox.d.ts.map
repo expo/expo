@@ -1,1 +1,1 @@
-{"version":3,"file":"ExpoCheckbox.d.ts","sourceRoot":"","sources":["../src/ExpoCheckbox.tsx"],"names":[],"mappings":"AAGA,OAAO,EAAE,iBAAiB,EAAE,MAAM,kBAAkB,CAAC;AAKrD,QAAA,MAAM,YAAY,EAAE,iBAiCnB,CAAC;AAIF,eAAe,YAAY,CAAC"}
+{"version":3,"file":"ExpoCheckbox.d.ts","sourceRoot":"","sources":["../src/ExpoCheckbox.tsx"],"names":[],"mappings":"AAAA,OAAO,KAAK,MAAM,OAAO,CAAC;AAG1B,OAAO,EAAE,aAAa,EAAE,MAAM,kBAAkB,CAAC;AAKjD,MAAM,CAAC,OAAO,OAAO,YAAa,SAAQ,KAAK,CAAC,aAAa,CAAC,aAAa,CAAC;IAC1E,OAAO,CAAC,YAAY,CAElB;IAEF,MAAM;CA8BP"}

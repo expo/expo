@@ -38,6 +38,7 @@
   self = [super init];
   if (self) {
     _hitTestEdgeInsets = UIEdgeInsetsZero;
+    _userEnabled = YES;
 #if !TARGET_OS_TV
     [self setExclusiveTouch:YES];
 #endif
@@ -47,7 +48,12 @@
 
 - (BOOL)shouldHandleTouch:(UIView *)view
 {
-    return [view isKindOfClass:[UIControl class]] || [view.gestureRecognizers count] > 0;
+  if ([view isKindOfClass:[RNGestureHandlerButton class]]) {
+    RNGestureHandlerButton *button = (RNGestureHandlerButton *)view;
+    return button.userEnabled;
+  }
+
+  return [view isKindOfClass:[UIControl class]] || [view.gestureRecognizers count] > 0;
 }
 
 - (BOOL)pointInside:(CGPoint)point withEvent:(UIEvent *)event
@@ -61,10 +67,11 @@
 
 - (UIView *)hitTest:(CGPoint)point withEvent:(UIEvent *)event
 {
-    UIView *inner = [super hitTest:point withEvent:event];
-    while (inner && ![self shouldHandleTouch:inner]) inner = inner.superview;
-    return inner;
+  UIView *inner = [super hitTest:point withEvent:event];
+  while (inner && ![self shouldHandleTouch:inner]) {
+    inner = inner.superview;
+  }
+  return inner;
 }
 
 @end
-

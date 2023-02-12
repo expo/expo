@@ -4,8 +4,8 @@ exports[`SafeAreaContext does not render child until inset values are received 1
 <RNCSafeAreaProvider
   onInsetsChange={[Function]}
   style={
-    Array [
-      Object {
+    [
+      {
         "flex": 1,
       },
       undefined,
@@ -18,8 +18,8 @@ exports[`SafeAreaContext renders 1`] = `
 <RNCSafeAreaProvider
   onInsetsChange={[Function]}
   style={
-    Array [
-      Object {
+    [
+      {
         "flex": 1,
       },
       undefined,
@@ -32,8 +32,8 @@ exports[`SafeAreaContext renders child when inset values are received 1`] = `
 <RNCSafeAreaProvider
   onInsetsChange={[Function]}
   style={
-    Array [
-      Object {
+    [
+      {
         "flex": 1,
       },
       undefined,
@@ -46,8 +46,8 @@ exports[`SafeAreaContext renders child when inset values are received 2`] = `
 <RNCSafeAreaProvider
   onInsetsChange={[Function]}
   style={
-    Array [
-      Object {
+    [
+      {
         "flex": 1,
       },
       undefined,
@@ -56,7 +56,7 @@ exports[`SafeAreaContext renders child when inset values are received 2`] = `
 >
   <View
     style={
-      Object {
+      {
         "height": 100,
         "left": 0,
         "paddingBottom": 4,
@@ -75,8 +75,8 @@ exports[`SafeAreaContext supports setting initial insets 1`] = `
 <RNCSafeAreaProvider
   onInsetsChange={[Function]}
   style={
-    Array [
-      Object {
+    [
+      {
         "flex": 1,
       },
       undefined,
@@ -85,7 +85,7 @@ exports[`SafeAreaContext supports setting initial insets 1`] = `
 >
   <View
     style={
-      Object {
+      {
         "height": 100,
         "left": 0,
         "paddingBottom": 4,
@@ -104,8 +104,8 @@ exports[`SafeAreaContext uses inner insets 1`] = `
 <RNCSafeAreaProvider
   onInsetsChange={[Function]}
   style={
-    Array [
-      Object {
+    [
+      {
         "flex": 1,
       },
       undefined,
@@ -115,8 +115,8 @@ exports[`SafeAreaContext uses inner insets 1`] = `
   <RNCSafeAreaProvider
     onInsetsChange={[Function]}
     style={
-      Array [
-        Object {
+      [
+        {
           "flex": 1,
         },
         undefined,
@@ -125,7 +125,7 @@ exports[`SafeAreaContext uses inner insets 1`] = `
   >
     <View
       style={
-        Object {
+        {
           "height": 16,
           "left": 0,
           "paddingBottom": 5,
@@ -145,8 +145,8 @@ exports[`SafeAreaContext uses parent insets when available 1`] = `
 <RNCSafeAreaProvider
   onInsetsChange={[Function]}
   style={
-    Array [
-      Object {
+    [
+      {
         "flex": 1,
       },
       undefined,
@@ -156,8 +156,8 @@ exports[`SafeAreaContext uses parent insets when available 1`] = `
   <RNCSafeAreaProvider
     onInsetsChange={[Function]}
     style={
-      Array [
-        Object {
+      [
+        {
           "flex": 1,
         },
         undefined,
@@ -166,7 +166,7 @@ exports[`SafeAreaContext uses parent insets when available 1`] = `
   >
     <View
       style={
-        Object {
+        {
           "height": 100,
           "left": 0,
           "paddingBottom": 4,

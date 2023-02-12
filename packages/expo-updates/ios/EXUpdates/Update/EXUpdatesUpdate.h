@@ -45,6 +45,21 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
   EXUpdatesUpdateStatusDevelopment = 6
 };
 
+
+/**
+ * Represents an update object and all its associated properties.
+ *
+ * expo-updates treats most fields (other than `status`, `keep`, `lastAccessed`, and the launch
+ * counts) as effectively immutable once in the database. This means an update server should never
+ * host two manifests with the same `id` that differ in any other field, as expo-updates will not
+ * take the difference into account.
+ *
+ * The `scopeKey` field is only relevant in environments such as Expo Go in which updates from
+ * multiple scopes can be launched.
+ *
+ * The methods in this class initialize an update object from a manifest by determining the
+ * manifest type and then parsing it.
+ */
 @interface EXUpdatesUpdate : NSObject
 
 @property (nonatomic, strong, readonly) NSUUID *updateId;
@@ -53,11 +68,16 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
 @property (nonatomic, strong, readonly) NSString *runtimeVersion;
 @property (nonatomic, strong, readonly, nullable) NSDictionary *manifestJSON;
 @property (nonatomic, assign, readonly) BOOL keep;
+/**
+ * Accessing this property may lazily load the assets from the database, if this update object
+ * originated from the database.
+ */
 @property (nonatomic, strong, readonly) NSArray<EXUpdatesAsset *> *assets;
 @property (nonatomic, assign, readonly) BOOL isDevelopmentMode;
 
 @property (nonatomic, strong, readonly, nullable) NSDictionary *serverDefinedHeaders;
 @property (nonatomic, strong, readonly, nullable) NSDictionary *manifestFilters;
+@property (nonatomic, strong, readonly, nullable) NSString *loggingId;
 
 @property (nonatomic, strong, readonly) EXManifestsManifest *manifest;
 

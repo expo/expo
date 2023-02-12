@@ -83,21 +83,17 @@ export default class SMSScreen extends React.Component<{}, State> {
           value={this.state.message}
           onChangeText={(message) => this.setState({ message })}
         />
-        <Button title="Send" disabled={!this.state.message} onPress={this._sendSMS}>
-          Send SMS
-        </Button>
+        <Button title="Send" disabled={!this.state.message} onPress={this._sendSMS} />
         <Button
           title="Send message with null recipient"
           disabled={!this.state.message}
-          onPress={() => this._sendSMSWithInvalidRecipient(undefined)}>
-          Send SMS
-        </Button>
+          onPress={() => this._sendSMSWithInvalidRecipient(undefined)}
+        />
         <Button
           title="Send message with undefined recipient"
           disabled={!this.state.message}
-          onPress={() => this._sendSMSWithInvalidRecipient(null)}>
-          Send SMS
-        </Button>
+          onPress={() => this._sendSMSWithInvalidRecipient(null)}
+        />
         {this.state.error && (
           <View style={[styles.textView, styles.errorView]}>
             <Text style={styles.errorText}>{this.state.error}</Text>

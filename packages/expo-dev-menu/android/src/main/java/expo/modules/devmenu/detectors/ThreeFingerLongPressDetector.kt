@@ -43,8 +43,10 @@ class ThreeFingerLongPressDetector(val longPressListener: () -> Unit) {
     for (i in 0..2) {
       val out = MotionEvent.PointerCoords()
       event.getPointerCoords(i, out)
-      if (abs(out.x - startPosition[i].x) > PRECISION ||
-        abs(out.y - startPosition[i].y) > PRECISION) {
+      if (
+        abs(out.x - startPosition[i].x) > PRECISION ||
+        abs(out.y - startPosition[i].y) > PRECISION
+      ) {
         startedDetecting = false
         return
       }

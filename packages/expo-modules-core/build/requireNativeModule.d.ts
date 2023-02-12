@@ -1,4 +1,13 @@
+type ExpoObject = {
+    modules: undefined | {
+        [key: string]: any;
+    };
+};
 declare global {
+    var expo: ExpoObject | undefined;
+    /**
+     * @deprecated `global.ExpoModules` is deprecated, use `global.expo.modules` instead.
+     */
     var ExpoModules: undefined | {
         [key: string]: any;
     };
@@ -13,4 +22,5 @@ declare global {
  * @throws Error when there is no native module with given name.
  */
 export declare function requireNativeModule<ModuleType = any>(moduleName: string): ModuleType;
+export {};
 //# sourceMappingURL=requireNativeModule.d.ts.map

@@ -1,3 +1,3 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-export default NativeModulesProxy.ExpoVideoThumbnails;
+import { requireNativeModule } from 'expo-modules-core';
+export default requireNativeModule('ExpoVideoThumbnails');
 //# sourceMappingURL=ExpoVideoThumbnails.js.map

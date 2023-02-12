@@ -1,5 +1,5 @@
-import path from 'path';
 import spawnAsync from '@expo/spawn-async';
+import path from 'path';
 
 import { getExpoRepositoryRootDir } from './Directories';
 

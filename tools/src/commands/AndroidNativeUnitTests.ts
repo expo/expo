@@ -15,7 +15,7 @@ const excludedInTests = [
   'expo-notifications',
   'expo-in-app-purchases',
   'expo-splash-screen',
-  'unimodules-test-core',
+  'expo-modules-test-core',
   'expo-dev-client',
 ];
 
@@ -52,23 +52,17 @@ export async function androidNativeUnitTests({
   const packageNamesFilter = packages ? packages.split(',') : [];
 
   const androidPackages = await filterAsync(allPackages, async (pkg) => {
-    const pkgSlug = pkg.packageSlug;
-
     if (packageNamesFilter.length > 0 && !packageNamesFilter.includes(pkg.packageName)) {
       return false;
     }
 
     let includesTests;
-    if (type === 'instrumented') {
-      includesTests =
-        pkg.isSupportedOnPlatform('android') &&
-        (await pkg.hasNativeInstrumentationTestsAsync('android')) &&
-        !excludedInTests.includes(pkgSlug);
-    } else {
-      includesTests =
-        pkg.isSupportedOnPlatform('android') &&
-        (await pkg.hasNativeTestsAsync('android')) &&
-        !excludedInTests.includes(pkgSlug);
+    if (pkg.isSupportedOnPlatform('android') && !excludedInTests.includes(pkg.packageSlug)) {
+      if (type === 'instrumented') {
+        includesTests = await pkg.hasNativeInstrumentationTestsAsync('android');
+      } else {
+        includesTests = await pkg.hasNativeTestsAsync('android');
+      }
     }
 
     if (!includesTests && packageNamesFilter.includes(pkg.packageName)) {
@@ -85,23 +79,53 @@ export async function androidNativeUnitTests({
     console.log(chalk.yellow(pkg.packageSlug));
   });
 
-  const testCommand = type === 'instrumented' ? 'connectedAndroidTest' : 'testDebugUnitTest';
-
   const partition = <T>(arr: T[], condition: (T) => boolean) => {
     const trues = arr.filter((el) => condition(el));
     const falses = arr.filter((el) => !condition(el));
     return [trues, falses];
   };
 
-  const [
-    androidPackagesTestedUsingBareProject,
-    androidPackagesTestedUsingExpoProject,
-  ] = partition(androidPackages, (element) =>
-    packagesNeedToBeTestedUsingBareExpo.includes(element.packageName)
+  const [androidPackagesTestedUsingBareProject, androidPackagesTestedUsingExpoProject] = partition(
+    androidPackages,
+    (element) => packagesNeedToBeTestedUsingBareExpo.includes(element.packageName)
   );
 
-  await runGradlew(androidPackagesTestedUsingExpoProject, testCommand, ANDROID_DIR);
-  await runGradlew(androidPackagesTestedUsingBareProject, testCommand, BARE_EXPO_DIR);
+  if (type === 'instrumented') {
+    const testCommand = 'connectedAndroidTest';
+    const uninstallTestCommand = 'uninstallDebugAndroidTest';
+
+    // TODO: remove this once avd cache saved to storage
+    await runGradlew(androidPackagesTestedUsingExpoProject, uninstallTestCommand, ANDROID_DIR);
+    await runGradlew(androidPackagesTestedUsingBareProject, uninstallTestCommand, BARE_EXPO_DIR);
+
+    // We should build and test expo-modules-core first
+    // that to make the `isExpoModulesCoreTests` in _expo-modules-core/android/build.gradle_ working.
+    // Otherwise, the `./gradlew :expo-modules-core:connectedAndroidTest :expo-eas-client:connectedAndroidTest`
+    // will have duplicated fbjni.so when building expo-eas-client.
+    const isExpoModulesCore = (pkg: Packages.Package) => pkg.packageName === 'expo-modules-core';
+    const isNotExpoModulesCore = (pkg: Packages.Package) => pkg.packageName !== 'expo-modules-core';
+    await runGradlew(androidPackages.filter(isExpoModulesCore), testCommand, ANDROID_DIR);
+
+    await runGradlew(
+      androidPackagesTestedUsingExpoProject.filter(isNotExpoModulesCore),
+      testCommand,
+      ANDROID_DIR
+    );
+    await runGradlew(
+      androidPackagesTestedUsingBareProject.filter(isNotExpoModulesCore),
+      testCommand,
+      BARE_EXPO_DIR
+    );
+
+    // Cleanup installed test app
+    await runGradlew(androidPackagesTestedUsingExpoProject, uninstallTestCommand, ANDROID_DIR);
+    await runGradlew(androidPackagesTestedUsingBareProject, uninstallTestCommand, BARE_EXPO_DIR);
+  } else {
+    const testCommand = 'testDebugUnitTest';
+    await runGradlew(androidPackagesTestedUsingExpoProject, testCommand, ANDROID_DIR);
+    await runGradlew(androidPackagesTestedUsingBareProject, testCommand, BARE_EXPO_DIR);
+  }
+
   console.log(chalk.green('Finished android unit tests successfully.'));
 }
 

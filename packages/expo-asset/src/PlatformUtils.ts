@@ -59,13 +59,13 @@ export async function downloadAsync(uri, hash, type, name): Promise<string> {
 async function _downloadAsyncManagedEnv(uri, hash, type, name): Promise<string> {
   const cacheFileId = hash || computeMd5(uri);
   const localUri = `${FileSystem.cacheDirectory}ExponentAsset-${cacheFileId}.${type}`;
-  let { exists, md5 } = await FileSystem.getInfoAsync(localUri, {
+  const fileInfo = await FileSystem.getInfoAsync(localUri, {
     md5: true,
   });
-  if (!exists || (hash !== null && md5 !== hash)) {
-    ({ md5 } = await FileSystem.downloadAsync(uri, localUri, {
+  if (!fileInfo.exists || (hash !== null && fileInfo.md5 !== hash)) {
+    const { md5 } = await FileSystem.downloadAsync(uri, localUri, {
       md5: true,
-    }));
+    });
     if (hash !== null && md5 !== hash) {
       throw new Error(
         `Downloaded file for asset '${name}.${type}' ` +

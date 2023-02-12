@@ -326,6 +326,12 @@ CGRect unionRect(CGRect a, CGRect b) {
     _reloadImageCancellationBlock = nil;
   }
 
+  if (!_realMarker.icon) {
+    // prevent glitch with marker (cf. https://github.com/react-native-maps/react-native-maps/issues/3657)
+    UIImage *emptyImage = [[UIImage alloc] init];
+    _realMarker.icon = emptyImage;
+  }
+
   _reloadImageCancellationBlock =
   [[_bridge moduleForName:@"ImageLoader"] loadImageWithURLRequest:[RCTConvert NSURLRequest:_iconSrc]
                                           size:self.bounds.size
@@ -389,6 +395,14 @@ CGRect unionRect(CGRect a, CGRect b) {
 
 - (BOOL)draggable {
   return _realMarker.draggable;
+}
+
+- (void)setTappable:(BOOL)tappable {
+  _realMarker.tappable = tappable;
+}
+
+- (BOOL)tappable {
+  return _realMarker.tappable;
 }
 
 - (void)setFlat:(BOOL)flat {

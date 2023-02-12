@@ -1,69 +1,96 @@
 package expo.modules.localization
 
-import android.os.Bundle
-import android.view.View
-import android.text.TextUtils
 import android.content.Context
+import android.icu.util.LocaleData
+import android.icu.util.ULocale
 import android.os.Build.VERSION
 import android.os.Build.VERSION_CODES
-
-import expo.modules.core.Promise
-import expo.modules.core.ExportedModule
-import expo.modules.core.interfaces.ExpoMethod
-
-import kotlin.collections.ArrayList
-import java.lang.ref.WeakReference
+import android.os.Bundle
+import android.text.TextUtils
+import android.text.TextUtils.getLayoutDirectionFromLocale
+import android.text.format.DateFormat
+import android.util.LayoutDirection
+import android.view.View
+import androidx.core.os.LocaleListCompat
+import androidx.core.os.bundleOf
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 import java.text.DecimalFormatSymbols
 import java.util.*
 
-class LocalizationModule(context: Context) : ExportedModule(context) {
-  private val contextRef: WeakReference<Context> = WeakReference(context)
+// EXPO_VERSIONING_NEEDS_EXPOVIEW_R
 
-  private val applicationContext: Context?
-    get() = contextRef.get()?.applicationContext
+// must be kept in sync with https://github.com/facebook/react-native/blob/main/ReactAndroid/src/main/java/com/facebook/react/modules/i18nmanager/I18nUtil.java
+private const val SHARED_PREFS_NAME = "com.facebook.react.modules.i18nmanager.I18nUtil"
+private const val KEY_FOR_PREFS_ALLOWRTL = "RCTI18nUtil_allowRTL"
 
-  override fun getName() = "ExpoLocalization"
+class LocalizationModule : Module() {
+  override fun definition() = ModuleDefinition {
+    Name("ExpoLocalization")
 
-  override fun getConstants(): Map<String, Any> {
-    val constants = HashMap<String, Any>()
-    val bundle = bundledConstants
-    for (key in bundle.keySet()) {
-      constants[key] = bundle[key] as Any
+    Constants {
+      bundledConstants.toShallowMap()
     }
-    return constants
+
+    AsyncFunction("getLocalizationAsync") {
+      return@AsyncFunction bundledConstants
+    }
+
+    Function("getLocales") {
+      return@Function getPreferredLocales()
+    }
+
+    Function("getCalendars") {
+      return@Function getCalendars()
+    }
+
+    OnCreate {
+      appContext?.reactContext?.let {
+        setRTLFromStringResources(it)
+      }
+    }
   }
 
-  @ExpoMethod
-  fun getLocalizationAsync(promise: Promise) {
-    promise.resolve(bundledConstants)
+  private fun setRTLFromStringResources(context: Context) {
+    // These keys are used by React Native here: https://github.com/facebook/react-native/blob/main/React/Modules/RCTI18nUtil.m
+    // We set them before React loads to ensure it gets rendered correctly the first time the app is opened.
+    val supportsRTL = appContext.reactContext?.getString(R.string.ExpoLocalization_supportsRTL)
+    if (supportsRTL != "true" && supportsRTL != "false") return
+    context
+      .getSharedPreferences(SHARED_PREFS_NAME, Context.MODE_PRIVATE)
+      .edit()
+      .also {
+        it.putBoolean(KEY_FOR_PREFS_ALLOWRTL, supportsRTL == "true")
+        it.apply()
+      }
   }
 
   // TODO: Bacon: add set language
   private val bundledConstants: Bundle
     get() {
       val locale = Locale.getDefault()
-      val locales = locales
       val localeNames = getLocaleNames(locales)
       val isRTL = TextUtils.getLayoutDirectionFromLocale(locale) == View.LAYOUT_DIRECTION_RTL
       val region = getRegionCode(locale)
       val symbols = DecimalFormatSymbols(locale)
-      return Bundle().apply {
-        putString("currency", getCurrencyCode(locale))
-        putString("decimalSeparator", symbols.decimalSeparator.toString())
-        putString("digitGroupingSeparator", symbols.groupingSeparator.toString())
-        putStringArrayList("isoCurrencyCodes", iSOCurrencyCodes)
-        putBoolean("isMetric", !USES_IMPERIAL.contains(region))
-        putBoolean("isRTL", isRTL)
-        putString("locale", localeNames[0])
-        putStringArrayList("locales", localeNames)
-        putString("region", region)
-        putString("timezone", TimeZone.getDefault().id)
-      }
+      return bundleOf(
+        "currency" to getCurrencyCode(locale),
+        "decimalSeparator" to symbols.decimalSeparator.toString(),
+        "digitGroupingSeparator" to symbols.groupingSeparator.toString(),
+        "isoCurrencyCodes" to ISOCurrencyCodes,
+        "isMetric" to !USES_IMPERIAL.contains(region),
+        "isRTL" to isRTL,
+        // TODO: (barthap) this can throw IndexOutOfBounds exception - handle this properly
+        "locale" to localeNames[0],
+        "locales" to localeNames,
+        "region" to region,
+        "timezone" to TimeZone.getDefault().id
+      )
     }
 
-  private val locales: ArrayList<Locale>
+  private val locales: List<Locale>
     get() {
-      val context = applicationContext ?: return ArrayList()
+      val context = appContext.reactContext ?: return emptyList()
       val configuration = context.resources.configuration
       return if (VERSION.SDK_INT > VERSION_CODES.N) {
         val locales = ArrayList<Locale>()
@@ -72,7 +99,7 @@ class LocalizationModule(context: Context) : ExportedModule(context) {
         }
         locales
       } else {
-        arrayListOf(configuration.locale)
+        listOf(configuration.locale)
       }
     }
 
@@ -80,6 +107,86 @@ class LocalizationModule(context: Context) : ExportedModule(context) {
     val miuiRegion = getSystemProperty("ro.miui.region")
     return if (!TextUtils.isEmpty(miuiRegion)) {
       miuiRegion
-    } else getCountryCode(locale)
+    } else {
+      getCountryCode(locale)
+    }
   }
+
+  private fun getMeasurementSystem(locale: Locale): String? {
+    return if (VERSION.SDK_INT >= VERSION_CODES.P) {
+      when (LocaleData.getMeasurementSystem(ULocale.forLocale(locale))) {
+        LocaleData.MeasurementSystem.SI -> "metric"
+        LocaleData.MeasurementSystem.UK -> "uk"
+        LocaleData.MeasurementSystem.US -> "us"
+        else -> "metric"
+      }
+    } else {
+      if (getRegionCode(locale).equals("uk")) "uk"
+      else if (USES_IMPERIAL.contains(getRegionCode(locale))) "us"
+      else "metric"
+    }
+  }
+
+  private fun getPreferredLocales(): List<Map<String, Any?>> {
+    val locales = mutableListOf<Map<String, Any?>>()
+    val localeList: LocaleListCompat = LocaleListCompat.getDefault()
+    for (i in 0 until localeList.size()) {
+      val locale: Locale = localeList.get(i) ?: continue
+      val decimalFormat = DecimalFormatSymbols.getInstance(locale)
+      locales.add(
+        mapOf(
+          "languageTag" to locale.toLanguageTag(),
+          "regionCode" to getRegionCode(locale),
+          "textDirection" to if (getLayoutDirectionFromLocale(locale) == LayoutDirection.RTL) "rtl" else "ltr",
+          "languageCode" to locale.language,
+
+          // the following two properties should be deprecated once Intl makes it way to RN, instead use toLocaleString
+          "decimalSeparator" to decimalFormat.decimalSeparator.toString(),
+          "digitGroupingSeparator" to decimalFormat.groupingSeparator.toString(),
+
+          "measurementSystem" to getMeasurementSystem(locale),
+          "currencyCode" to decimalFormat.currency.currencyCode,
+
+          // currency symbol can be localized to display locale (1st on the list) or to the locale for the currency (as done here).
+          "currencySymbol" to Currency.getInstance(locale).getSymbol(locale),
+        )
+      )
+    }
+    return locales
+  }
+
+  private fun uses24HourClock(): Boolean {
+    if (appContext.reactContext == null) return false
+    return DateFormat.is24HourFormat(appContext.reactContext)
+  }
+
+  private fun getCalendarType(): String {
+    return if (VERSION.SDK_INT >= VERSION_CODES.O) {
+      Calendar.getInstance().calendarType.toString()
+    } else {
+      "gregory"
+    }
+  }
+
+  private fun getCalendars(): List<Map<String, Any?>> {
+    return listOf(
+      mapOf(
+        "calendar" to getCalendarType(),
+        "uses24hourClock" to uses24HourClock(), // we ideally would use hourCycle (one of h12, h23, h11, h24) instead, but not sure how to get it on android and ios
+        "firstWeekday" to Calendar.getInstance().firstDayOfWeek,
+        "timeZone" to Calendar.getInstance().timeZone.id
+      )
+    )
+  }
+}
+
+/**
+ * Creates a shallow [Map] from the [Bundle]. Does not traverse nested arrays and bundles.
+ */
+private fun Bundle.toShallowMap(): Map<String, Any?> {
+  val map = HashMap<String, Any?>()
+  for (key in this.keySet()) {
+    map[key] = this[key]
+  }
+  return map
 }

@@ -1,6 +1,6 @@
 {
   "name": "babel-preset-expo",
-  "version": "9.0.1",
+  "version": "9.3.0",
   "description": "The Babel preset for Expo projects",
   "main": "index.js",
   "files": [
@@ -28,12 +28,12 @@
     "metro",
     "webpack"
   ],
-  "author": "Expo <support@expo.io>",
+  "author": "Expo <support@expo.dev>",
   "license": "MIT",
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
   },
-  "homepage": "https://github.com/expo/expo/tree/master/packages/babel-preset-expo#readme",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/babel-preset-expo#readme",
   "eslintConfig": {
     "extends": "universe/node"
   },
@@ -46,14 +46,15 @@
   },
   "dependencies": {
     "@babel/plugin-proposal-decorators": "^7.12.9",
+    "@babel/plugin-proposal-object-rest-spread": "^7.12.13",
     "@babel/plugin-transform-react-jsx": "^7.12.17",
-    "@babel/preset-env": "^7.12.9",
+    "@babel/preset-env": "^7.20.0",
     "babel-plugin-module-resolver": "^4.1.0",
-    "babel-plugin-react-native-web": "~0.17.1",
-    "metro-react-native-babel-preset": "~0.66.2"
+    "babel-plugin-react-native-web": "~0.18.10",
+    "metro-react-native-babel-preset": "0.73.7"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9",
-    "jest": "^26.6.3"
+    "@babel/core": "^7.20.0",
+    "jest": "^29.2.1"
   }
 }

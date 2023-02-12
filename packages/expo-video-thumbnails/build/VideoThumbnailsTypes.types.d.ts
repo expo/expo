@@ -1,4 +1,4 @@
-export declare type VideoThumbnailsResult = {
+export type VideoThumbnailsResult = {
     /**
      * URI to the created image (usable as the source for an Image/Video element).
      */
@@ -12,7 +12,7 @@ export declare type VideoThumbnailsResult = {
      */
     height: number;
 };
-export declare type VideoThumbnailsOptions = {
+export type VideoThumbnailsOptions = {
     /**
      * A value in range `0.0` - `1.0` specifying quality level of the result image. `1` means no
      * compression (highest quality) and `0` the highest compression (lowest quality).

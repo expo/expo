@@ -50,13 +50,13 @@ import expo.modules.core.interfaces.ExpoMethod;
 import expo.modules.core.interfaces.LifecycleEventListener;
 import expo.modules.core.interfaces.services.EventEmitter;
 import expo.modules.core.interfaces.services.UIManager;
-import org.unimodules.interfaces.taskManager.TaskManagerInterface;
 
 import androidx.annotation.RequiresApi;
 
 import expo.modules.interfaces.permissions.Permissions;
 import expo.modules.interfaces.permissions.PermissionsResponse;
 import expo.modules.interfaces.permissions.PermissionsStatus;
+import expo.modules.interfaces.taskManager.TaskManagerInterface;
 import expo.modules.location.exceptions.LocationBackgroundUnauthorizedException;
 import expo.modules.location.exceptions.LocationRequestRejectedException;
 import expo.modules.location.exceptions.LocationSettingsUnsatisfiedException;
@@ -787,7 +787,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     if (isMissingForegroundPermissions() || mGeofield == null) {
       return -1;
     }
-    return magNorth + mGeofield.getDeclination();
+    return (magNorth + mGeofield.getDeclination()) % 360;
   }
 
   private void stopHeadingWatch() {
@@ -841,8 +841,15 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   private Bundle handleForegroundLocationPermissions(Map<String, PermissionsResponse> result) {
     PermissionsResponse accessFineLocation = result.get(Manifest.permission.ACCESS_FINE_LOCATION);
     PermissionsResponse accessCoarseLocation = result.get(Manifest.permission.ACCESS_COARSE_LOCATION);
-    Objects.requireNonNull(accessFineLocation);
-    Objects.requireNonNull(accessCoarseLocation);
+    /**
+     * Missing permissions from OS callback should be considered as denied permissions
+     */
+    if(accessFineLocation == null) {
+      accessFineLocation = new PermissionsResponse(PermissionsStatus.DENIED, true);
+    }
+    if(accessCoarseLocation == null) {
+      accessCoarseLocation = new PermissionsResponse(PermissionsStatus.DENIED, true);
+    }
 
     PermissionsStatus status = PermissionsStatus.UNDETERMINED;
     String accuracy = "none";

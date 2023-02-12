@@ -141,6 +141,7 @@ class MediaPlayerData extends PlayerData implements
 
   @Override
   public synchronized void release() {
+    super.release();
     stopUpdatingProgressIfNecessary();
     if (mMediaPlayer != null) {
       mMediaPlayer.setOnBufferingUpdateListener(null);
@@ -151,6 +152,11 @@ class MediaPlayerData extends PlayerData implements
       mMediaPlayer.release();
       mMediaPlayer = null;
     }
+  }
+
+  @Override
+  protected double getCurrentPositionSeconds() {
+    return (double)mMediaPlayer.getCurrentPosition() / 1000.0;
   }
 
   @Override
@@ -325,7 +331,14 @@ class MediaPlayerData extends PlayerData implements
   public void updateVolumeMuteAndDuck() {
     if (mMediaPlayer != null) {
       final float value = mAVModule.getVolumeForDuckAndFocus(mIsMuted, mVolume);
-      mMediaPlayer.setVolume(value, value);
+      float leftValue = value;
+      float rightValue = value;
+      if (mPan > 0) {
+        leftValue *= (1.0f - mPan);
+      } else if (mPan < 0) {
+        rightValue *= (1.0f + mPan);
+      }
+      mMediaPlayer.setVolume(leftValue, rightValue);
     }
   }
 

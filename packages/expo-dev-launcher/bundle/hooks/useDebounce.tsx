@@ -24,7 +24,7 @@ export function useDebounce(value: any, delay: number) {
 
 export function useThrottle<T>(value: T, interval = 500): T {
   const [throttledValue, setThrottledValue] = React.useState<T>(value);
-  const lastExecuted = React.useRef<number>(Date.now());
+  const lastExecuted = React.useRef<number>(Date.now() - interval);
 
   React.useEffect(() => {
     if (Date.now() >= lastExecuted.current + interval) {

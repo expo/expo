@@ -2,6 +2,30 @@ import { EventEmitter, Platform, UnavailabilityError } from 'expo-modules-core';
 import { PlaybackMixin, assertStatusValuesInBounds, getNativeSourceAndFullInitialStatusForLoadAsync, getUnloadedStatus, } from '../AV';
 import ExponentAV from '../ExponentAV';
 import { throwIfAudioIsDisabled } from './AudioAvailability';
+// @needsAudit
+/**
+ * This class represents a sound corresponding to an Asset or URL.
+ * @return A newly constructed instance of `Audio.Sound`.
+ *
+ * @example
+ * ```ts
+ * const sound = new Audio.Sound();
+ * try {
+ *   await sound.loadAsync(require('./assets/sounds/hello.mp3'));
+ *   await sound.playAsync();
+ *   // Your sound is playing!
+ *
+ *   // Don't forget to unload the sound from memory
+ *   // when you are done using the Sound object
+ *   await sound.unloadAsync();
+ * } catch (error) {
+ *   // An error occurred!
+ * }
+ * ```
+ *
+ * > Method not described below and the rest of the API for `Audio.Sound` is the same as the imperative playback API for `Video`.
+ * > See the [AV documentation](/versions/latest/sdk/av) for further information.
+ */
 export class Sound {
     _loaded = false;
     _loading = false;
@@ -19,6 +43,50 @@ export class Sound {
         console.warn(`Sound.create is deprecated in favor of Sound.createAsync with the same API except for the new method name`);
         return Sound.createAsync(source, initialStatus, onPlaybackStatusUpdate, downloadFirst);
     };
+    /**
+     * Creates and loads a sound from source.
+     *
+     * ```ts
+     * const { sound } = await Audio.Sound.createAsync(
+     *   source,
+     *   initialStatus,
+     *   onPlaybackStatusUpdate,
+     *   downloadFirst
+     * );
+     *
+     * // Which is equivalent to the following:
+     * const sound = new Audio.Sound();
+     * sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+     * await sound.loadAsync(source, initialStatus, downloadFirst);
+     * ```
+     *
+     * @param source The source of the sound. See the [AV documentation](/versions/latest/sdk/av/#playback-api) for details on the possible `source` values.
+     *
+     * @param initialStatus The initial intended `PlaybackStatusToSet` of the sound, whose values will override the default initial playback status.
+     * This value defaults to `{}` if no parameter is passed. See the [AV documentation](/versions/latest/sdk/av) for details on `PlaybackStatusToSet` and the default
+     * initial playback status.
+     *
+     * @param onPlaybackStatusUpdate A function taking a single parameter `PlaybackStatus`. This value defaults to `null` if no parameter is passed.
+     * See the [AV documentation](/versions/latest/sdk/av) for details on the functionality provided by `onPlaybackStatusUpdate`
+     *
+     * @param downloadFirst If set to true, the system will attempt to download the resource to the device before loading. This value defaults to `true`.
+     * Note that at the moment, this will only work for `source`s of the form `require('path/to/file')` or `Asset` objects.
+     *
+     * @example
+     * ```ts
+     * try {
+     *   const { sound: soundObject, status } = await Audio.Sound.createAsync(
+     *     require('./assets/sounds/hello.mp3'),
+     *     { shouldPlay: true }
+     *   );
+     *   // Your sound is playing!
+     * } catch (error) {
+     *   // An error occurred!
+     * }
+     * ```
+     *
+     * @return A `Promise` that is rejected if creation failed, or fulfilled with the `SoundObject` if creation succeeded.
+     */
     static createAsync = async (source, initialStatus = {}, onPlaybackStatusUpdate = null, downloadFirst = true) => {
         const sound = new Sound();
         sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
@@ -49,8 +117,11 @@ export class Sound {
     }
     _updateAudioSampleReceivedCallback() {
         if (global.__EXAV_setOnAudioSampleReceivedCallback == null) {
-            if (Platform.OS === 'ios') {
-                throw new Error('Failed to set Audio Sample Buffer callback! The JSI function seems to not be installed correctly.');
+            if (Platform.OS === 'ios' || Platform.OS === 'android') {
+                console.warn('expo-av: Failed to set up Audio Sample Buffer callback. ' +
+                    "Do you have 'Remote Debugging' enabled in your app's Developer Menu (https://docs.expo.dev/workflow/debugging)? " +
+                    'Audio Sample Buffer callbacks are not supported while using Remote Debugging, you will need to disable it to use them.');
+                return;
             }
             else {
                 throw new UnavailabilityError('expo-av', 'setOnAudioSampleReceived');
@@ -108,16 +179,33 @@ export class Sound {
         this._callOnPlaybackStatusUpdateForNewStatus(status);
         return status;
     };
+    /**
+     * Sets a function to be called regularly with the `AVPlaybackStatus` of the playback object.
+     *
+     * `onPlaybackStatusUpdate` will be called whenever a call to the API for this playback object completes
+     * (such as `setStatusAsync()`, `getStatusAsync()`, or `unloadAsync()`), nd will also be called at regular intervals
+     * while the media is in the loaded state.
+     *
+     * Set `progressUpdateIntervalMillis` via `setStatusAsync()` or `setProgressUpdateIntervalAsync()` to modify
+     * the interval with which `onPlaybackStatusUpdate` is called while loaded.
+     *
+     * @param onPlaybackStatusUpdate A function taking a single parameter `AVPlaybackStatus`.
+     */
     setOnPlaybackStatusUpdate(onPlaybackStatusUpdate) {
         this._onPlaybackStatusUpdate = onPlaybackStatusUpdate;
         this.getStatusAsync();
     }
+    /**
+     * Sets a function to be called whenever the metadata of the sound object changes, if one is set.
+     * @param onMetadataUpdate A function taking a single object of type `AVMetadata` as a parameter.
+     * @platform ios
+     */
     setOnMetadataUpdate(onMetadataUpdate) {
         this._onMetadataUpdate = onMetadataUpdate;
     }
     /**
      * Sets a function to be called during playback, receiving the audio sample as parameter.
-     * @param callback a function taking the {@link AudioSample} as parameter
+     * @param callback A function taking the `AudioSampleCallback` as parameter.
      */
     setOnAudioSampleReceived(callback) {
         this._onAudioSampleReceived = callback;

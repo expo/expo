@@ -21,7 +21,6 @@ export default function DrawerLayoutAndroidScreen() {
   return Platform.OS === 'android' ? (
     <DrawerLayoutAndroid
       drawerWidth={300}
-      // @ts-ignore
       drawerPosition={isRight ? 'right' : 'left'}
       renderNavigationView={renderNavigationView}>
       <View style={{ flex: 1, padding: 16 }}>

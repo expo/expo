@@ -13,36 +13,37 @@ class EXDevLauncherRecentlyOpenedAppsRegistry3DaysAgo: EXDevLauncherRecentlyOpen
 class EXDevLauncherRecentlyOpenedAppsRegistryTests: XCTestCase {
   func testAddAppToRegistry() {
     let urlString = "http://localhost:8081"
-    let name = "test-app"
     let registry = EXDevLauncherRecentlyOpenedAppsRegistry()
-    registry.appWasOpened(urlString, name: name)
+    registry.appWasOpened(urlString, queryParams: [:], manifest: nil)
     let recentlyOpenedApps = registry.recentlyOpenedApps()
-    XCTAssertEqual(name, recentlyOpenedApps[urlString] as! String)
+    XCTAssertNotNil(recentlyOpenedApps[0])
+    XCTAssertEqual(recentlyOpenedApps[0]["url"] as! String, urlString)
   }
 
   func testRegistryPersistence() {
     // instance of the registry class shouldn't matter
     // if this fails, testRemoveOldAppFromRegistry could have a false positive
     let urlString = "http://localhost:8081"
-    let name = "test-app"
 
     let registry1 = EXDevLauncherRecentlyOpenedAppsRegistry()
-    registry1.appWasOpened(urlString, name: name)
+    registry1.appWasOpened(urlString, queryParams:[:], manifest: nil)
 
     let registry2 = EXDevLauncherRecentlyOpenedAppsRegistry()
     let recentlyOpenedApps = registry2.recentlyOpenedApps()
-    XCTAssertEqual(name, recentlyOpenedApps[urlString] as! String)
+    
+    XCTAssertNotNil(recentlyOpenedApps[0])
+    XCTAssertEqual(recentlyOpenedApps[0]["url"] as! String, urlString)
   }
 
   func testRemoveOldAppFromRegistry() {
     let urlString = "http://localhost:8081"
-    let name = "test-app"
 
     let registryOld = EXDevLauncherRecentlyOpenedAppsRegistry3DaysAgo()
-    registryOld.appWasOpened(urlString, name: name)
+    registryOld.appWasOpened(urlString, queryParams: [:], manifest: nil)
 
     let registryNew = EXDevLauncherRecentlyOpenedAppsRegistry()
     let recentlyOpenedApps = registryNew.recentlyOpenedApps()
-    XCTAssertNil(recentlyOpenedApps[urlString])
+    
+    XCTAssertTrue(recentlyOpenedApps.count == 0)
   }
 }

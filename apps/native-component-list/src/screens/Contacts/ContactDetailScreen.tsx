@@ -1,4 +1,3 @@
-// tslint:disable max-classes-per-file
 import Ionicons from '@expo/vector-icons/build/Ionicons';
 import * as Contacts from 'expo-contacts';
 import * as ImagePicker from 'expo-image-picker';
@@ -41,7 +40,6 @@ export default function ContactDetailScreen(props: any) {
             name="md-open"
             onPress={async () => {
               await Contacts.presentFormAsync(props.route.params.id);
-              // tslint:disable-next-line no-console
               console.log('the native contact form has been closed');
             }}
           />
@@ -93,7 +91,6 @@ function ContactDetailView({
       await Contacts.removeContactAsync(id);
       navigation.goBack();
     } catch ({ message }) {
-      // tslint:disable-next-line no-console
       console.error(message);
     }
   };
@@ -146,7 +143,7 @@ function ContactDetailView({
     for (const key of Object.keys(contact)) {
       const value = (contact as any)[key];
       if (Array.isArray(value) && value.length > 0) {
-        const data = value.map((item) => {
+        const data: DetailListItem[] = value.map((item) => {
           let transform: Partial<DetailListItem> = {};
           switch (key) {
             case Contacts.Fields.Relationships:
@@ -171,8 +168,6 @@ function ContactDetailView({
                 value: item.url,
                 onPress: () => {
                   const webUrl = item.url.indexOf('://') === -1 ? 'http://' + item.url : item.url;
-
-                  // tslint:disable-next-line no-console
                   console.log('open', item.url, webUrl);
                   Linking.openURL(webUrl);
                 },
@@ -220,7 +215,7 @@ function ContactDetailView({
           };
         });
         items.push({
-          title: ContactUtils.parseKey(key),
+          title: ContactUtils.parseKey(key) ?? 'unknown',
           data,
         });
       }
@@ -247,7 +242,6 @@ function ContactDetailView({
         [Contacts.Fields.Image]: uri,
       } as any);
     } catch ({ message }) {
-      // tslint:disable-next-line no-console
       console.error(message);
     }
 
@@ -264,8 +258,8 @@ function ContactDetailView({
       aspect: [4, 3],
     });
 
-    if (!result.cancelled) {
-      _setNewPhoto(result.uri);
+    if (!result.canceled) {
+      _setNewPhoto(result.assets[0].uri);
     }
   };
 

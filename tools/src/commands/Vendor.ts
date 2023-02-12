@@ -1,45 +1,98 @@
 import { Command } from '@expo/commander';
-import os from 'os';
 import chalk from 'chalk';
+import fs from 'fs-extra';
 import inquirer from 'inquirer';
+import os from 'os';
 import path from 'path';
+
+import { Podspec, readPodspecAsync } from '../CocoaPods';
 import {
+  buildFrameworksForProjectAsync,
+  cleanTemporaryFilesAsync,
+  generateXcodeProjectSpecFromPodspecAsync,
+} from '../prebuilds/Prebuilder';
+import {
+  Append,
   Clone,
   CopyFiles,
   Pipe,
+  Platform,
+  PrefixHeaders,
+  prefixPackage,
+  RemoveDirectory,
+  renameClass,
+  renameIOSFiles,
+  renameIOSSymbols,
   TransformFilesContent,
   TransformFilesName,
-  RemoveDirectory,
-  prefixPackage,
-  renameIOSSymbols,
-  renameIOSFiles,
-  Platform,
-  renameClass,
-  Append,
 } from '../vendoring/devmenu';
+import { GenerateJsonFromPodspec } from '../vendoring/devmenu/steps/GenerateJsonFromPodspec';
+import { MessageType, Print } from '../vendoring/devmenu/steps/Print';
+import { RemoveFiles } from '../vendoring/devmenu/steps/RemoveFiles';
+import { toRepoPath } from '../vendoring/devmenu/utils';
 
-const CONFIGURATIONS = {
+async function getRequierdIosVersion(): Promise<string> {
+  const devMenuPodspec = await readPodspecAsync(
+    toRepoPath('packages/expo-dev-menu/expo-dev-menu.podspec')
+  );
+
+  return devMenuPodspec['platforms']['ios'] as string;
+}
+
+type Config = {
+  transformations: Pipe;
+  prebuild?: PrebuildConfig;
+};
+
+type PrebuildConfig = {
+  podspecPath: string;
+  output: string;
+};
+
+const CONFIGURATIONS: { [name: string]: Config } = {
   '[dev-menu] reanimated': getReanimatedPipe(),
   '[dev-menu] gesture-handler': getGestureHandlerPipe(),
-  '[dev-menu] safe-area-context': getSafeAreaPipe(),
+  '[dev-menu] safe-area-context': getSafeAreaConfig(),
 };
 
 function getReanimatedPipe() {
   const destination = 'packages/expo-dev-menu/vendored/react-native-reanimated';
 
   // prettier-ignore
-  return new Pipe().addSteps(
+  const transformations = new Pipe().addSteps(
     'all',
+      new Print(MessageType.WARNING, 'You have to adjust the installation steps of the react-native-reanimated to work well with the react-native-gesture-handler. For more information go to the https://github.com/expo/expo/pull/17878 and https://github.com/expo/expo/pull/18562' ),
       new Clone({
         url: 'git@github.com:software-mansion/react-native-reanimated.git',
-        tag: '1.13.0',
+        tag: '2.14.4',
       }),
       new RemoveDirectory({
         name: 'clean vendored folder',
         target: destination,
       }),
+      new TransformFilesContent({
+        filePattern: '**/*.@(h|cpp)',
+        find: 'namespace reanimated',
+        replace: 'namespace devmenureanimated',
+      }),
+      new TransformFilesContent({
+         filePattern: '**/*.@(h|cpp)',
+         find: 'reanimated::',
+         replace: 'devmenureanimated::',
+       }),
+      new TransformFilesContent({
+        filePattern: 'Common/**/ReanimatedHiddenHeaders.h',
+        find: 'Common/cpp',
+        replace: 'vendored/react-native-reanimated/Common/cpp',
+      }),
+      new PrefixHeaders({
+        prefix: "DevMenu",
+        subPath: 'Common',
+        filePattern: "**/*.@(h|cpp|m|mm)",
+        debug: true
+      }),
       new CopyFiles({
-        filePattern: ['src/**/*.*', '*.d.ts'],
+        filePattern: ['src/**/*.*', '*.d.ts', 'plugin.js', 'Common/**/*.@(h|cpp)'],
         to: destination,
       }),
 
@@ -48,25 +101,86 @@ function getReanimatedPipe() {
         packageName: 'com.swmansion.reanimated',
         prefix: 'devmenu',
       }),
+      prefixPackage({
+        packageName: 'com.swmansion.common',
+        prefix: 'devmenu',
+      }),
       renameClass({
         filePattern: 'android/**/*.@(java|kt)',
         className: 'UIManagerReanimatedHelper',
         newClassName: 'DevMenuUIManagerReanimatedHelper'
       }),
-      new CopyFiles({
-        subDirectory: 'android/src/main/java/com/swmansion',
-        filePattern: '**/*.@(java|kt|xml)',
-        to: path.join(destination, 'android/devmenu/com/swmansion'),
+       new TransformFilesContent({
+        filePattern: 'android/src/main/cpp/**/*.@(h|cpp)',
+        find: 'Lcom/swmansion/reanimated',
+        replace: 'Ldevmenu/com/swmansion/reanimated',
       }),
-      new CopyFiles({
-        subDirectory: 'android/src/main/java/com/facebook',
-        filePattern: '**/*.@(java|kt|xml)',
-        to: path.join(destination, 'android/com/facebook'),
+      new TransformFilesContent({
+        filePattern: 'android/**/*.@(java|kt)',
+        find: 'System\\.loadLibrary\\("reanimated"\\)',
+        replace: 'System.loadLibrary("devmenureanimated")',
       }),
-
-    'ios',
+      new TransformFilesContent({
+        filePattern: 'android/CMakeLists.txt',
+        find: 'set \\(PACKAGE_NAME "reanimated"\\)',
+        replace: 'set (PACKAGE_NAME "devmenureanimated")',
+      }),
       new TransformFilesName({
-        filePattern: 'ios/**/*REA*.@(m|h)',
+        filePattern: 'android/**/ReanimatedUIManager.java',
+        find: 'ReanimatedUIManager',
+        replace: 'DevMenuReanimatedUIManager',
+      }),
+      new TransformFilesContent({
+        filePattern: 'android/**/*.@(java|kt)',
+        find: 'ReaUiImplementationProvider',
+        replace: 'DevMenuReaUiImplementationProvider',
+      }),
+      new TransformFilesContent({
+        filePattern: 'android/**/*.@(java|kt)',
+        find: 'ReanimatedUIManager',
+        replace: 'DevMenuReanimatedUIManager',
+      }),
+      new TransformFilesName({
+        filePattern: 'android/**/ReanimatedUIImplementation.java',
+        find: 'ReanimatedUIImplementation',
+        replace: 'DevMenuReanimatedUIImplementation',
+      }),
+      new TransformFilesContent({
+        filePattern: 'android/**/*.@(java|kt)',
+        find: 'ReanimatedUIImplementation',
+        replace: 'DevMenuReanimatedUIImplementation',
+      }),
+      new TransformFilesContent({
+        filePattern: 'android/**/ReanimatedPackage.java',
+        find: 'public class ReanimatedPackage extends TurboReactPackage implements ReactPackage {',
+        replace: 'public class ReanimatedPackage extends TurboReactPackage implements ReactPackage {\n  public ReactInstanceManager instanceManager;\n',
+      }),
+      new TransformFilesContent({
+        filePattern: 'android/**/ReanimatedPackage.java',
+        find: 'public ReactInstanceManager getReactInstanceManager(ReactApplicationContext reactContext) {',
+        replace: 'public ReactInstanceManager getReactInstanceManager(ReactApplicationContext reactContext) {\nreturn instanceManager;\n',
+      }),
+    'ios',
+      new RemoveFiles({
+        filePattern: 'ios/native/UIResponder+*'
+      }),
+      new TransformFilesContent({
+        filePattern: 'ios/**/*.@(h|mm)',
+        find: 'namespace reanimated',
+        replace: 'namespace devmenureanimated',
+      }),
+      new TransformFilesContent({
+         filePattern: 'ios/**/*.@(h|mm)',
+         find: 'reanimated::',
+         replace: 'devmenureanimated::',
+       }),
+      new TransformFilesContent({
+        filePattern: 'ios/**/*.@(h|m|mm)',
+        find: '#import <RNReanimated\\/(.*)>',
+        replace: '#import "$1"',
+      }),
+      new TransformFilesName({
+        filePattern: 'ios/**/*REA*.@(h|m|mm)',
         find: 'REA',
         replace: 'DevMenuREA',
       }),
@@ -74,40 +188,76 @@ function getReanimatedPipe() {
         find: 'REA',
         replace: 'DevMenuREA',
       }),
+      new TransformFilesName({
+        filePattern: 'ios/**/*Reanimated*.@(h|m|mm)',
+        find: 'Reanimated',
+        replace: 'DevMenuReanimated',
+      }),
+      renameIOSSymbols({
+        find: 'Reanimated',
+        replace: 'DevMenuReanimated',
+      }),
       new TransformFilesContent({
-        filePattern: 'ios/**/*.@(m|h)',
+        filePattern: 'ios/**/*.@(h|m|mm)',
         find: 'SimAnimationDragCoefficient',
         replace: 'DevMenuSimAnimationDragCoefficient',
       }),
       new TransformFilesContent({
-        filePattern: 'ios/**/*.@(m|h)',
+        filePattern: 'ios/**/*.@(h|m|mm)',
         find: '^RCT_EXPORT_MODULE\\((.*)\\)',
         replace: '+ (NSString *)moduleName { return @"$1"; }',
       }),
+      new TransformFilesName({
+        filePattern: 'ios/RNGestureHandlerStateManager.h',
+        find: 'RNGestureHandlerStateManager',
+        replace: 'DevMenuRNGestureHandlerStateManager',
+      }),
+      new TransformFilesContent({
+        filePattern: 'ios/**/*.@(h|m|mm)',
+        find: 'RNGestureHandlerStateManager',
+        replace: 'DevMenuRNGestureHandlerStateManager',
+      }),
+      new TransformFilesContent({
+        filePattern: 'ios/**/RNGestureHandler.m',
+        find: 'UIGestureRecognizer (GestureHandler)',
+        replace: 'UIGestureRecognizer (DevMenuGestureHandler)'
+      }),
+      new TransformFilesContent({
+        filePattern: 'ios/**/RNGestureHandler.m',
+        find: 'gestureHandler',
+        replace: 'devmenugestureHandler'
+      }),
       new CopyFiles({
-        filePattern: 'ios/**/*.@(m|h)',
+        filePattern: 'ios/**/*.@(m|h|mm)',
         to: destination,
-      })
+      }),
   );
+
+  return { transformations };
 }
 
 function getGestureHandlerPipe() {
   const destination = 'packages/expo-dev-menu/vendored/react-native-gesture-handler';
 
   // prettier-ignore
-  return new Pipe().addSteps(
+  const transformations = new Pipe().addSteps(
     'all',
       new Clone({
         url: 'git@github.com:software-mansion/react-native-gesture-handler.git',
-        tag: '1.7.0',
+        tag: '2.1.2',
       }),
       new RemoveDirectory({
         name: 'clean vendored folder',
         target: destination,
       }),
       new CopyFiles({
-        filePattern: ['*.js', 'touchables/*.js', '*.d.ts'],
+        subDirectory: 'src',
+        filePattern: ['**/*.ts', '**/*.tsx'],
         to: path.join(destination, 'src'),
+      }),
+      new CopyFiles({
+        filePattern: 'jestSetup.js',
+        to: destination,
       }),
 
     'android',
@@ -127,6 +277,11 @@ function getGestureHandlerPipe() {
       }),
       new CopyFiles({
         subDirectory: 'android/lib/src/main/java',
+        filePattern: '**/*.@(java|kt|xml)',
+        to: path.join(destination, 'android/devmenu'),
+      }),
+      new CopyFiles({
+        subDirectory: 'android/common/src/main/java',
         filePattern: '**/*.@(java|kt|xml)',
         to: path.join(destination, 'android/devmenu'),
       }),
@@ -160,6 +315,16 @@ function getGestureHandlerPipe() {
         find: '@interface DevMenuRNGestureHandlerButtonManager([\\s\\S]*?)@end',
         replace: ''
       }),
+      new TransformFilesContent({
+        filePattern: 'ios/**/DevMenuRNGestureHandler',
+        find: 'UIGestureRecognizer (GestureHandler)',
+        replace: 'UIGestureRecognizer \(DevMenuGestureHandler\)'
+      }),
+      new TransformFilesContent({
+        filePattern: 'ios/**/DevMenuRNGestureHandler',
+        find: 'gestureHandler',
+        replace: 'devMenuGestureHandler'
+      }),
       new Append({
         filePattern: 'ios/**/DevMenuRNGestureHandlerModule.h',
         append: `@interface DevMenuRNGestureHandlerButtonManager : RCTViewManager
@@ -167,21 +332,35 @@ function getGestureHandlerPipe() {
 `
       }),
       new CopyFiles({
-        filePattern: 'ios/**/*.@(m|h)',
+        filePattern: 'ios/**/*.@(h|m)',
         to: destination,
+      }),
+      new GenerateJsonFromPodspec({
+        from: 'RNGestureHandler.podspec',
+        saveTo: `${destination}/RNGestureHandler.podspec.json`,
+        transform: async (podspec) => ({...podspec, name: 'DevMenuRNGestureHandler', platforms: {'ios': await getRequierdIosVersion()}})
       })
   );
+
+  return {
+    transformations,
+    prebuild: {
+      podspecPath: `${destination}/RNGestureHandler.podspec.json`,
+      output: destination,
+    },
+  };
 }
 
-function getSafeAreaPipe() {
+function getSafeAreaConfig() {
   const destination = 'packages/expo-dev-menu/vendored/react-native-safe-area-context';
+  const version = '3.3.2';
 
   // prettier-ignore
-  return new Pipe().addSteps(
+  const transformations = new Pipe().addSteps(
     'all',
       new Clone({
         url: 'git@github.com:th3rdwave/react-native-safe-area-context.git',
-        tag: 'v3.3.2',
+        tag: `v${version}`,
       }),
       new RemoveDirectory({
         name: 'clean vendored folder',
@@ -241,7 +420,6 @@ function getSafeAreaPipe() {
         find: '^RCT_EXPORT_MODULE\\((.*)\\)',
         replace: '+ (NSString *)moduleName { return @"RNCSafeAreaView"; }',
       }),
-      
       new TransformFilesContent({
         filePattern: 'ios/**/DevMenuRNCSafeAreaProviderManager.@(m|h)',
         find: 'constantsToExport',
@@ -305,12 +483,24 @@ function getSafeAreaPipe() {
 @end
 `
       }),
-      
       new CopyFiles({
         filePattern: 'ios/**/*.@(m|h)',
         to: destination,
       }),
+      new GenerateJsonFromPodspec({
+        from: 'react-native-safe-area-context.podspec',
+        saveTo: `${destination}/react-native-safe-area-context.podspec.json`,
+        transform: async (podspec) => ({...podspec, name: 'dev-menu-react-native-safe-area-context', platforms: {'ios': await getRequierdIosVersion()}})
+      })
   );
+
+  return {
+    transformations,
+    prebuild: {
+      podspecPath: `${destination}/react-native-safe-area-context.podspec.json`,
+      output: destination,
+    },
+  };
 }
 
 async function askForConfigurations(): Promise<string[]> {
@@ -329,20 +519,38 @@ async function askForConfigurations(): Promise<string[]> {
 type ActionOptions = {
   platform: Platform;
   configuration: string[];
+  onlyPrebuild: boolean;
 };
 
-async function action({ configuration, platform }: ActionOptions) {
+async function action({ configuration, platform, onlyPrebuild }: ActionOptions) {
   if (!configuration.length) {
     configuration = await askForConfigurations();
   }
 
-  const pipes = configuration.map((name) => ({ name, pipe: CONFIGURATIONS[name] as Pipe }));
+  const configurations = configuration.map((name) => ({ name, config: CONFIGURATIONS[name] }));
   const tmpdir = os.tmpdir();
-  for (const { name, pipe } of pipes) {
+  for (const { name, config } of configurations) {
     console.log(`Run configuration: ${chalk.green(name)}`);
-    pipe.setWorkingDirectory(path.join(tmpdir, name));
-    await pipe.start(platform);
-    console.log();
+    const { transformations, prebuild } = config;
+    if (!onlyPrebuild) {
+      transformations.setWorkingDirectory(path.join(tmpdir, name));
+      await transformations.start(platform);
+      console.log();
+    }
+
+    if (prebuild) {
+      const { podspecPath, output } = prebuild;
+      console.log('🏗 Prebuilding ...');
+
+      const podspec = JSON.parse(await fs.readFile(toRepoPath(podspecPath), 'utf8')) as Podspec;
+      const xcodeProject = await generateXcodeProjectSpecFromPodspecAsync(
+        podspec,
+        toRepoPath(output)
+      );
+      await buildFrameworksForProjectAsync(xcodeProject);
+      await cleanTemporaryFilesAsync(xcodeProject);
+      console.log();
+    }
   }
 }
 
@@ -356,6 +564,7 @@ export default (program: Command) => {
       "A platform on which the vendored module will be updated. Valid options: 'all' | 'ios' | 'android'.",
       'all'
     )
+    .option('--only-prebuild', 'Run only prebuild script.')
     .option(
       '-c, --configuration [string]',
       'Vendor configuration which should be run. Can be passed multiple times.',

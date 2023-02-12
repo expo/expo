@@ -18,9 +18,9 @@ jest.mock('react-native-reanimated', () => {
 jest.mock('react-native/Libraries/Components/Switch/Switch', () => {
   const View = require('react-native/Libraries/Components/View/View');
   const React = require('react');
-  function MockSwitch(props) {
+  const MockSwitch = React.forwardRef((props, ref) => {
     return React.createElement(View, { ...props, onPress: props.onValueChange });
-  }
+  });
 
   // workaround to be compatible with modern `Switch` in RN 0.66 which has ESM export
   // Use `return { default: MockSwitch };` when we drop support for SDK 44
@@ -30,6 +30,7 @@ jest.mock('react-native/Libraries/Components/Switch/Switch', () => {
 });
 
 jest.mock('./app/native-modules/DevMenu');
+jest.mock('./app/native-modules/DevLauncher');
 
 const MOCK_INITIAL_METRICS = {
   frame: {

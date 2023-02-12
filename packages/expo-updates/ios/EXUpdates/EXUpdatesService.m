@@ -1,22 +1,37 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAppController.h>
+#import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesService.h>
 #import <ExpoModulesCore/EXUtilities.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * Internal module whose purpose is to connect EXUpdatesModule with the central updates entry point.
+ * In most apps, this is EXUpdatesAppController.
+ *
+ * In other cases, this module can be overridden at runtime to redirect EXUpdatesModule to a
+ * different entry point. This is the case in Expo Go, where this module is overridden by
+ * EXUpdatesBinding in order to get data from EXAppLoaderExpoUpdates.
+ */
 @implementation EXUpdatesService
 
 EX_REGISTER_MODULE();
 
 + (const NSArray<Protocol *> *)exportedInterfaces
 {
+#if SUPPRESS_EXPO_UPDATES_SERVICE // used in Expo Go
+  return @[];
+#endif
   return @[@protocol(EXUpdatesModuleInterface)];
 }
 
 - (EXUpdatesConfig *)config
 {
+#if SUPPRESS_EXPO_UPDATES_SERVICE // used in Expo Go
+  return nil;
+#endif
   return EXUpdatesAppController.sharedInstance.config;
 }
 
@@ -35,6 +50,11 @@ EX_REGISTER_MODULE();
   return EXUpdatesAppController.sharedInstance.updatesDirectory;
 }
 
+- (nullable EXUpdatesUpdate *)embeddedUpdate
+{
+  return [EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:self.config database:self.database];
+}
+
 - (nullable EXUpdatesUpdate *)launchedUpdate
 {
   return EXUpdatesAppController.sharedInstance.launchedUpdate;
@@ -48,6 +68,14 @@ EX_REGISTER_MODULE();
 - (BOOL)isUsingEmbeddedAssets
 {
   return EXUpdatesAppController.sharedInstance.isUsingEmbeddedAssets;
+}
+
+- (BOOL)isEmbeddedLaunch
+{
+  // True if the embedded update and its ID are not nil, and match
+  // the ID of the launched update
+  return [[self embeddedUpdate] updateId] != nil &&
+  [[[self embeddedUpdate] updateId] isEqual:[[self launchedUpdate] updateId]];
 }
 
 - (BOOL)isStarted

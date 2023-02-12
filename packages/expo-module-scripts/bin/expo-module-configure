@@ -10,7 +10,7 @@ shopt -s dotglob
 # and its content contains the string `@generated`.
 OPTIONAL_TEMPLATE_FILES=(
   # add a relative file path from `templates/` for each new optional file
-  "scripts/source-login-scripts.sh"
+  "scripts/with-node.sh"
 )
 
 # returns relative file paths inside a given directory without the leading "./".

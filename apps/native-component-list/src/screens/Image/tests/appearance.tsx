@@ -72,6 +72,7 @@ const imageTests: ImageTestGroup = {
     {
       name: 'Tint color',
       props: {
+        tintColor,
         style: {
           tintColor,
         },
@@ -80,6 +81,7 @@ const imageTests: ImageTestGroup = {
     {
       name: 'Tint color 2',
       props: {
+        tintColor: tintColor2,
         style: {
           tintColor: tintColor2,
         },

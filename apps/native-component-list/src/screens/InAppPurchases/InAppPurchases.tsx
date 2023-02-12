@@ -130,13 +130,17 @@ export default class InAppPurchases extends React.Component<any, any> {
         {record.productId === 'gold_monthly' ? (
           <Button
             title="Upgrade to yearly"
-            onPress={() => purchaseItemAsync('gold_yearly', record.purchaseToken)}
+            onPress={() =>
+              purchaseItemAsync('gold_yearly', { oldPurchaseToken: record.purchaseToken })
+            }
           />
         ) : null}
         {record.productId === 'gold_yearly' ? (
           <Button
             title="Downgrade to monthly"
-            onPress={() => purchaseItemAsync('gold_monthly', record.purchaseToken)}
+            onPress={() =>
+              purchaseItemAsync('gold_monthly', { oldPurchaseToken: record.purchaseToken })
+            }
           />
         ) : null}
       </View>

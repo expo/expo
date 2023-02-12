@@ -1,4 +1,4 @@
-import { ConfigPlugin } from '@expo/config-plugins';
+import { ConfigPlugin } from 'expo/config-plugins';
 export declare const DEFAULT_NSUserTrackingUsageDescription = "Allow this app to collect app-related data that can be used for tracking you or your device.";
 export declare const withUserTrackingPermission: ConfigPlugin<{
     userTrackingPermission?: string;

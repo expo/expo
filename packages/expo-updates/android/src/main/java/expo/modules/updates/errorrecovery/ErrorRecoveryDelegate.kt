@@ -3,6 +3,10 @@ package expo.modules.updates.errorrecovery
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.launcher.Launcher
 
+/**
+ * Interface for a delegate that will execute the actions prescribed by the error recovery
+ * pipeline. Implemented by [UpdatesController].
+ */
 interface ErrorRecoveryDelegate {
 
   enum class RemoteLoadStatus {

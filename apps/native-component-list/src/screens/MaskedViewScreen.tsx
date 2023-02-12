@@ -88,7 +88,7 @@ export default class MaskedViewScreen extends React.Component<{}, State> {
               <Image
                 style={{ width }}
                 resizeMode="contain"
-                source={require('../../assets/images/exponent-wordmark.png')}
+                source={require('../../assets/images/logo-wordmark.png')}
               />
               <Animated.Text
                 key={this.state.text}
@@ -109,7 +109,7 @@ export default class MaskedViewScreen extends React.Component<{}, State> {
               </Animated.Text>
             </View>
           }>
-          <Image style={{ width, height }} source={require('../../assets/images/example3.jpg')} />
+          <Image style={{ width, height }} source={require('../../assets/images/example1.jpg')} />
         </AnimatedMaskView>
       </View>
     );

@@ -1,6 +1,6 @@
-import { ConfigPlugin, createRunOncePlugin, InfoPlist, withInfoPlist } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
 import assert from 'assert';
+import { ExpoConfig } from 'expo/config';
+import { ConfigPlugin, createRunOncePlugin, InfoPlist, withInfoPlist } from 'expo/config-plugins';
 
 const pkg = require('expo-screen-orientation/package.json');
 

@@ -6,9 +6,37 @@
 
 ### 🎉 New features
 
-- Support looking up .cjs (still the bundler's job to be able to handle these files; EYW just allows them to be found) ([#15836](https://github.com/expo/expo/pull/15836) by [@ide](https://github.com/ide))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.1.0 — 2023-02-03
+
+### 💡 Others
+
+- Bump `@expo/metro-config`, `@expo/webpack-config`. ([#20720](https://github.com/expo/expo/pull/20720) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 2.0.4 — 2022-10-25
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.2 — 2022-07-25
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.1 — 2022-07-16
+
+_This version does not introduce any user-facing changes._
+
+## 2.0.0 — 2022-04-18
+
+### 🛠 Breaking changes
+
+- Remove deprecated metro config `blacklistRE` and drop `react-native@<0.64.0` support. ([#16479](https://github.com/expo/expo/pull/16479) by [@kudo](https://github.com/kudo))
+
+### 🎉 New features
+
+- Support looking up .cjs (still the bundler's job to be able to handle these files; EYW just allows them to be found) ([#15836](https://github.com/expo/expo/pull/15836) by [@ide](https://github.com/ide))
 
 ### 💡 Others
 

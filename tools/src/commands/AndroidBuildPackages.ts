@@ -28,7 +28,7 @@ export const EXCLUDED_PACKAGE_SLUGS = [
   'expo-dev-menu',
   'expo-dev-menu-interface',
   'expo-module-template',
-  'unimodules-test-core',
+  'expo-modules-test-core',
   'unimodules-core',
   'unimodules-react-native-adapter',
 ];
@@ -80,7 +80,7 @@ async function _isPackageUpToDate(sourceDir: string, buildDir: string): Promise<
       }
     );
     return true;
-  } catch (e) {
+  } catch {
     return false;
   }
 }
@@ -100,7 +100,7 @@ async function _gitLogAsync(path: string): Promise<{ lines: string[] }> {
 }
 
 async function _getSuggestedPackagesToBuild(packages: Package[]): Promise<string[]> {
-  let packagesToBuild: string[] = [];
+  const packagesToBuild: string[] = [];
   for (const pkg of packages) {
     const isUpToDate = await _isPackageUpToDate(
       pkg.sourceDir,
@@ -118,15 +118,15 @@ async function _regexFileAsync(
   regex: RegExp | string,
   replace: string
 ): Promise<void> {
-  let file = await fs.readFile(filename);
-  let fileString = file.toString();
+  const file = await fs.readFile(filename);
+  const fileString = file.toString();
   await fs.writeFile(filename, fileString.replace(regex, replace));
 }
 
-let savedFiles = {};
+const savedFiles = {};
 async function _stashFilesAsync(filenames: string[]): Promise<void> {
   for (const filename of filenames) {
-    let file = await fs.readFile(filename);
+    const file = await fs.readFile(filename);
     savedFiles[filename] = file.toString();
   }
 }
@@ -161,9 +161,9 @@ async function _uncommentWhenDistributing(filenames: string[]): Promise<void> {
 }
 
 async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Promise<number> {
-  let appBuildGradle = path.join(ANDROID_DIR, 'app', 'build.gradle');
-  let rootBuildGradle = path.join(ANDROID_DIR, 'build.gradle');
-  let expoViewBuildGradle = path.join(ANDROID_DIR, 'expoview', 'build.gradle');
+  const appBuildGradle = path.join(ANDROID_DIR, 'app', 'build.gradle');
+  const rootBuildGradle = path.join(ANDROID_DIR, 'build.gradle');
+  const expoViewBuildGradle = path.join(ANDROID_DIR, 'expoview', 'build.gradle');
   const settingsGradle = path.join(ANDROID_DIR, 'settings.gradle');
   const constantsJava = path.join(
     ANDROID_DIR,
@@ -182,7 +182,7 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
     `api 'com.facebook.react:react-native:${sdkVersion}'`
   );
   await _regexFileAsync(
-    path.join(ANDROID_DIR, 'ReactAndroid', 'release.gradle'),
+    path.join(ANDROID_DIR, 'ReactAndroid', 'build.gradle'),
     /version = '[\d.]+'/,
     `version = '${sdkVersion}'`
   );
@@ -235,11 +235,11 @@ async function _updateExpoViewAsync(packages: Package[], sdkVersion: string): Pr
     packages.splice(expoviewIndex, 0, EXPOVIEW_PKG);
   }
 
-  let failedPackages: string[] = [];
+  const failedPackages: string[] = [];
   for (const pkg of packages) {
     process.stdout.write(` 🛠   Building ${pkg.name}...`);
     try {
-      await spawnAsync('./gradlew', [`:${pkg.name}:uploadArchives`], {
+      await spawnAsync('./gradlew', [`:${pkg.name}:publish`], {
         cwd: ANDROID_DIR,
       });
       readline.clearLine(process.stdout, 0);

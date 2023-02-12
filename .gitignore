@@ -2,6 +2,7 @@
 .expo
 __generated__
 web-build
+bare-apps
 
 # macOS
 .DS_Store
@@ -58,7 +59,12 @@ xcuserdata
 /android/captures
 /android/expoview/libs/ReactAndroid-temp
 /android/versioned-react-native/ReactAndroid
+/android/versioned-react-native/ReactCommon
+/android/versioned-react-native/codegen
+/android/versioned-react-native/sdks
 ReactAndroid-temp.aar
+/android/prebuiltHermes
+/android/versioned-abis/**/*.aar
 
 # Tools
 jarjar-rules.txt
@@ -88,6 +94,11 @@ jarjar-rules.txt
 templates/**/android/**/generated/*
 templates/**/android/app/build
 templates/**/Pods/**
+templates/**/Podfile.lock
+templates/**/yarn.lock
+
+# EYW template
+/packages/expo-yarn-workspaces/workspace-template/yarn.lock
 
 # Codemod
 .codemod.bookmark
@@ -97,6 +108,7 @@ templates/**/Pods/**
 /fastlane/report.xml
 /fastlane/Preview.html
 /fastlane/Deployment
+/fastlane/test_output
 /Preview.html
 /gc_keys.json
 /fastlane/gc_keys.json
@@ -121,6 +133,9 @@ shellAppWorkspaces
 .env.production.local
 apps/bare-expo/deploy-url.txt
 
+# Temporary files created by Metro to check the health of the file watcher
+.metro-health-check*
+
 # Expo Doc merging
 docs/pages/versions/*/react-native/ADDED_*.md
 docs/pages/versions/*/react-native/REMOVED_*.md
@@ -134,5 +149,8 @@ docs/pages/versions/*/react-native/*.diff
 /packages/**/*.spec.json
 /packages/**/Info-generated.plist
 
-# Pods
+# iOS
 /ios/Pods
+/ios/build
+**/ios/.xcode.env.local
+/ios/versioned-react-native/*/ReactNative/sdks/hermes-engine/destroot

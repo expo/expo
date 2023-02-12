@@ -6,6 +6,10 @@ import expo.modules.updates.db.UpdatesDatabase
 import org.json.JSONObject
 import java.util.*
 
+/**
+ * Utility methods for reading and writing JSON metadata from manifests (e.g. `serverDefinedHeaders`
+ * and `manifestFilters`, both used for rollouts) to and from SQLite.
+ */
 object ManifestMetadata {
   private val TAG = ManifestMetadata::class.java.simpleName
 
@@ -42,16 +46,16 @@ object ManifestMetadata {
   }
 
   fun saveMetadata(
-    updateManifest: UpdateManifest,
+    responseHeaderData: ResponseHeaderData,
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration
   ) {
     val fieldsToSet = mutableMapOf<String, String>()
-    if (updateManifest.serverDefinedHeaders != null) {
-      fieldsToSet[MANIFEST_SERVER_DEFINED_HEADERS_KEY] = updateManifest.serverDefinedHeaders.toString()
+    if (responseHeaderData.serverDefinedHeaders != null) {
+      fieldsToSet[MANIFEST_SERVER_DEFINED_HEADERS_KEY] = responseHeaderData.serverDefinedHeaders.toString()
     }
-    if (updateManifest.manifestFilters != null) {
-      fieldsToSet[MANIFEST_FILTERS_KEY] = updateManifest.manifestFilters.toString()
+    if (responseHeaderData.manifestFilters != null) {
+      fieldsToSet[MANIFEST_FILTERS_KEY] = responseHeaderData.manifestFilters.toString()
     }
     if (fieldsToSet.isNotEmpty()) {
       database.jsonDataDao()!!.setMultipleFields(fieldsToSet, configuration.scopeKey!!)

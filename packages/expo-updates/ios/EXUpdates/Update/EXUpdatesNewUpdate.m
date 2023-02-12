@@ -11,6 +11,11 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXUpdatesNewUpdate
 
+/**
+ * Method for initializing updates with modern format manifests that conform to the Expo Updates
+ * specification (https://docs.expo.dev/technical-specs/expo-updates-0/). This is used by EAS
+ * Update.
+ */
 + (EXUpdatesUpdate *)updateWithNewManifest:(EXManifestsNewManifest *)manifest
                            manifestHeaders:(EXUpdatesManifestHeaders *)manifestHeaders
                                 extensions:(NSDictionary *)extensions

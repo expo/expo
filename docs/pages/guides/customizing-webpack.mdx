@@ -1,0 +1,102 @@
+---
+title: Bundling with webpack
+description: Learn about different webpack bundler configurations that can be customized.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+
+When you run `npx expo start --web` or `expo export:web` the CLI will check to see if your project has a **webpack.config.js** in the root directory. If the project doesn't then Expo will use the default `@expo/webpack-config` (preferred).
+
+> This is similar to `react-scripts` and `create-react-app`.
+
+To edit the config, install `@expo/webpack-config` as a dev dependency and create a template **webpack.config.js** at the root of your project. This can be done by running the following command:
+
+<Terminal cmd={['$ npx expo customize webpack.config.js']} />
+
+<Collapsible summary="Using SDK 45 or below?">
+
+For SDK 45 or below, run the following command:
+
+<Terminal cmd={['$ npx expo customize:web']} />
+
+</Collapsible>
+
+You can now make changes to a config object based on the default config and return it for Expo CLI to use. Deleting the config will cause Expo to fall back to the default again.
+
+If you create a new webpack config or make any changes to it you'll need to restart your webpack dev server by running:
+
+<Terminal cmd={['$ npx expo start']} />
+
+## Example
+
+```js webpack.config.js
+const createExpoWebpackConfigAsync = require('@expo/webpack-config');
+
+// Expo CLI will await this method so you can optionally return a promise.
+module.exports = async function (env, argv) {
+  const config = await createExpoWebpackConfigAsync(env, argv);
+  // If you want to add a new alias to the config.
+  config.resolve.alias['moduleA'] = 'moduleB';
+
+  // Maybe you want to turn off compression in dev mode.
+  if (config.mode === 'development') {
+    config.devServer.compress = false;
+  }
+
+  // Or prevent minimizing the bundle when you build.
+  if (config.mode === 'production') {
+    config.optimization.minimize = false;
+  }
+
+  // Finally return the new config for the CLI to use.
+  return config;
+};
+```
+
+## Polyfills
+
+React Native for Web uses [some advanced browser features](https://github.com/necolas/react-native-web/blob/e4ed0fd3c863e6c61aa3ea8afeff79b7fa74b461/packages/docs/src/introduction.stories.mdx#install) that might not be available in every browser. Expo web tries to include these features with `@expo/webpack-config`.
+
+### ResizeObserver
+
+**TL;DR:** To fully support `onLayout` install `resize-observer-polyfill`.
+
+The `onLayout` prop that's used in all of the core primitives such as View, Image, Text, ScrollView, and so on, requires an API called [`ResizeObserver`](https://drafts.csswg.org/resize-observer-1/). This API isn't fully [supported across all browsers](https://caniuse.com/#feat=resizeobserver), for example, iOS Safari (in iOS 13). If the device doesn't support `ResizeObserver` then `react-native-web` will fallback on `window.onresize` and you'll see a warning in the logs:
+
+```
+onLayout relies on ResizeObserver which is not supported by your browser.
+Please include a polyfill, e.g., https://github.com/que-etc/resize-observer-polyfill.
+Falling back to window.onresize.
+```
+
+To get everything working properly, you'll want to install and include a global polyfill for `ResizeObserver`.
+
+### Adding ResizeObserver
+
+- Install the polyfill:
+  <Terminal cmd={['$ npx expo install resize-observer-polyfill']} />
+- Restart the project and `@expo/webpack-config` will automatically include the polyfill.
+
+The reason it automatically includes the polyfill is that `react-native-web` needs it included immediately. webpack can inject the polyfill before any of the application code has been executed. Alternatively, you can customize the webpack config and include the polyfill in the `entry` field yourself.
+
+### Testing the ResizeObserver polyfill
+
+- Open the running Expo project in iOS Safari.
+- Connect the device to an Apple computer.
+- Open Safari on the computer in go to `Develop > [YOUR DEVICE] > [YOUR HOST]`.
+- Ensure the logs don't have the `onLayout relies on ResizeObserver...` warning.
+
+## Editing static files
+
+You can also use `npx expo customize` to generate the static project files: **index.html**, **serve.json**, and so on. These can be used to customize your project more familiarly.
+
+All of the files you select from the terminal prompt will be copied to a **web** directory in your project's root directory. Think of this directory as **public** in Create React App. The **web** is used instead of **public** because Expo webpack is web-only, the static directory does not work for Android or iOS apps. For mobile platforms, the platform-specific project files are included in **android** and **ios** directories.
+
+Deleting any of these files will cause Expo webpack to fallback to their respective default copies.
+
+### Why
+
+- Customizing the favicon icon.
+- Adding third-party API code to the `<head/>` in your **index.html**.
+- Changing the caching policy in the **serve.json** file.

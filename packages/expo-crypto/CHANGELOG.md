@@ -10,6 +10,61 @@
 
 ### 💡 Others
 
+## 12.2.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 12.2.0 — 2023-02-03
+
+### 🎉 New features
+
+- Added a `digest` method to get a cryptographic digest of a typed array. ([#20886](https://github.com/expo/expo/pull/20886) by [@aleqsio](https://github.com/aleqsio))
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 12.1.0 — 2022-12-30
+
+### 🎉 New features
+
+- Added a `randomUUID` method to get a random UUIDv4 string. ([#20274](https://github.com/expo/expo/pull/20274) by [@aleqsio](https://github.com/aleqsio))
+- Added a `getRandomValues` method to fill typed arrays. ([#20257](https://github.com/expo/expo/pull/20257) by [@aleqsio](https://github.com/aleqsio))
+- Ported over `getRandomBytes`, `getRandomBytesAsync` methods from `expo-random`. ([#20217](https://github.com/expo/expo/pull/20217) by [@aleqsio](https://github.com/aleqsio))
+
+## 12.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+## 11.0.0 — 2022-07-07
+
+### 🎉 New features
+
+- The module on Android now uses JSI host object instead of the bridge module for communication between JavaScript and native code. ([#17614](https://github.com/expo/expo/pull/17614) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- Migrated Expo modules definitions to the new naming convention. ([#17193](https://github.com/expo/expo/pull/17193) by [@tsapeta](https://github.com/tsapeta))
+
+## 10.2.0 — 2022-04-18
+
+### 🎉 New features
+
+- Native module on iOS is now written in Swift using the new API. ([#16129](https://github.com/expo/expo/pull/16129) by [@tsapeta](https://github.com/tsapeta))
+- Use JSI host object instead of the bridge module for communication between JavaScript and native code. ([#16972](https://github.com/expo/expo/pull/16972) by [@tsapeta](https://github.com/tsapeta))
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+## 10.1.2 - 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
+
 ## 10.1.1 — 2021-12-08
 
 _This version does not introduce any user-facing changes._

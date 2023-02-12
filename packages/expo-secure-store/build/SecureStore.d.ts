@@ -1,4 +1,4 @@
-export declare type KeychainAccessibilityConstant = number;
+export type KeychainAccessibilityConstant = number;
 /**
  * The data in the keychain item cannot be accessed after a restart until the device has been
  * unlocked once by the user. This may be useful if you need to access the item when the phone
@@ -33,7 +33,7 @@ export declare const WHEN_UNLOCKED: KeychainAccessibilityConstant;
  * a backup.
  */
 export declare const WHEN_UNLOCKED_THIS_DEVICE_ONLY: KeychainAccessibilityConstant;
-export declare type SecureStoreOptions = {
+export type SecureStoreOptions = {
     /**
      * - iOS: The item's service, equivalent to `kSecAttrService`
      * - Android: Equivalent of the public/private key pair `Alias`
@@ -43,10 +43,9 @@ export declare type SecureStoreOptions = {
     /**
      * Option responsible for enabling the usage of the user authentication methods available on the device while
      * accessing data stored in SecureStore.
-     *
-     * - iOS: Equivalent to `kSecAccessControlUserPresence`
-     * - Android: Equivalent to `setUserAuthenticationRequired(true)` (requires API 23). Complete functionality
-     * is unlocked only with a freshly generated key - this would not work in tandem with the `keychainService`
+     * - iOS: Equivalent to `kSecAccessControlBiometryCurrentSet`
+     * - Android: Equivalent to `setUserAuthenticationRequired(true)` (requires API 23).
+     * Complete functionality is unlocked only with a freshly generated key - this would not work in tandem with the `keychainService`
      * value used for the others non-authenticated operations.
      */
     requireAuthentication?: boolean;
@@ -55,9 +54,10 @@ export declare type SecureStoreOptions = {
      */
     authenticationPrompt?: string;
     /**
-     * __(iOS only)__ Specifies when the stored entry is accessible, using iOS's `kSecAttrAccessible`
-     * property. See Apple's documentation on [keychain item accessibility](https://developer.apple.com/library/content/documentation/Security/Conceptual/keychainServConcepts/02concepts/concepts.html#//apple_ref/doc/uid/TP30000897-CH204-SW18).
-     * Default value: `SecureStore.WHEN_UNLOCKED`.
+     * Specifies when the stored entry is accessible, using iOS's `kSecAttrAccessible` property.
+     * @see Apple's documentation on [keychain item accessibility](https://developer.apple.com/library/content/documentation/Security/Conceptual/keychainServConcepts/02concepts/concepts.html).
+     * @default SecureStore.WHEN_UNLOCKED
+     * @platform ios
      */
     keychainAccessible?: KeychainAccessibilityConstant;
 };

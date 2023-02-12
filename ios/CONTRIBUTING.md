@@ -8,15 +8,15 @@ To get the Expo Client running (on either platform), follow the README in the pa
 
 ## Branch Organization
 
-- We try to stay on, or near, `master`.
+- We try to stay on, or near, `main`.
 - When we release a new SDK version, we push a release branch of the form `ios/sdkNN`.
 - Specific versions of the iOS Expo Client are tagged from that release branch, such as `ios/1.19.0`.
-- New changes are written on master. When we cut a new release, we either cherry-pick from master to the release branch (for small changes) or just recreate the release branch.
-- If we're near the end of a SDK cycle, we may be operating on a SDK candidate branch instead of master.
+- New changes are written on `main`. When we cut a new release, we either cherry-pick from `main` to the release branch (for small changes) or just recreate the release branch.
+- If we're near the end of a SDK cycle, we may be operating on a SDK candidate branch instead of `main`.
 
 ## Pull Requests
 
-- Target `master` most of the time. If there's a SDK candidate branch (a few days near the end of the cycle), target that instead.
+- Target `main` most of the time. If there's a SDK candidate branch (a few days near the end of the cycle), target that instead.
 - We don't maintain an explicit style guide, so for now it's best to just observe what the rest of the codebase does and mimic that.
 - Make sure your xcode file tree reflects the directory structure on disk.
 

@@ -10,6 +10,9 @@ static NSString * const EXUpdatesCryptoPublicKeyUrl = @"https://exp.host/--/mani
 static NSString * const EXUpdatesCryptoPublicKeyTag = @"exp.host.publickey";
 static NSString * const EXUpdatesCryptoPublicKeyFilename = @"manifestPublicKey.pem";
 
+/**
+ * Methods for signature verification of manifests and assets.
+ */
 @implementation EXUpdatesCrypto
 
 + (void)verifySignatureWithData:(NSString *)data

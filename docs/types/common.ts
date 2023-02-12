@@ -1,5 +1,6 @@
 export type PageMetadata = {
   title?: string;
+  description?: string;
   sourceCodeUrl?: string;
   packageName?: string;
   maxHeadingDepth?: number;
@@ -27,13 +28,22 @@ export type Url = {
   pathname: string;
 };
 
+export type NavigationType = 'section' | 'group' | 'page';
+
 export type NavigationRoute = {
-  as?: string;
-  hidden: boolean;
-  href: string;
+  type: NavigationType;
   name: string;
+  href: string;
+  as?: string;
+  hidden?: boolean;
+  expanded?: boolean;
   sidebarTitle?: string;
   weight?: number;
   children?: NavigationRoute[];
-  posts?: NavigationRoute[];
 };
+
+/**
+ * Available platforms supported by our APIs.
+ * Temporarily it also accepts other strings for compatibility reasons.
+ */
+export type PlatformName = 'ios' | 'android' | 'web' | 'expo' | string;

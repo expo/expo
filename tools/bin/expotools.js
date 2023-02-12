@@ -1,4 +1,3 @@
-#!/usr/bin/env node
 'use strict';
 /* eslint-env node */
 
@@ -59,12 +58,11 @@ async function maybeRebuildAndRun() {
 
     try {
       // Compile TypeScript files into build folder.
-      await spawnAsync('yarn', ['run', 'tsc']);
+      await spawnAsync('yarn', ['run', 'build']);
       state.schema = await getCommandsSchemaAsync();
     } catch (error) {
       console.error(LogModifiers.error(` 💥 Rebuilding failed: ${error.stack}`));
       process.exit(1);
-      return;
     }
     console.log(` ✨ Successfully built ${LogModifiers.name('expotools')}\n`);
   }
@@ -111,7 +109,18 @@ async function calculateSourceChecksumAsync() {
       exclude: ['build', 'cache', 'node_modules'],
     },
     files: {
-      include: ['*.ts', 'expotools.js', 'tsconfig.json'],
+      include: [
+        // source files
+        '**.ts',
+        // src/versioning files
+        '**.json',
+        'expotools.js',
+        // swc build files
+        'taskfile.js',
+        'taskfile-swc.js',
+        // type checking
+        'tsconfig.json',
+      ],
     },
   });
 }
@@ -178,6 +187,7 @@ function readState() {
 }
 
 function saveState(state) {
+  fs.mkdirSync(path.dirname(STATE_PATH), { recursive: true });
   fs.writeFileSync(STATE_PATH, JSON.stringify(state, null, 2));
 }
 
@@ -208,7 +218,7 @@ function canRequire(packageName) {
   try {
     require.resolve(packageName);
     return true;
-  } catch (error) {
+  } catch {
     return false;
   }
 }

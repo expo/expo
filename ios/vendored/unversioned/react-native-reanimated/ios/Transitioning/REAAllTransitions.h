@@ -1,4 +1,4 @@
-#import "REATransition.h"
+#import <RNReanimated/REATransition.h>
 
 @interface REATransitionGroup : REATransition
 @property (nonatomic) BOOL sequence;

@@ -1,16 +1,16 @@
 import { Command } from '@expo/commander';
 import chalk from 'chalk';
 import fs from 'fs-extra';
-import inquirer from 'inquirer';
+import inquirer, { QuestionCollection } from 'inquirer';
 import path from 'path';
 
 import * as Changelogs from '../Changelogs';
 import * as Directories from '../Directories';
-import logger from '../Logger';
 import { formatChangelogEntry } from '../Formatter';
+import logger from '../Logger';
 
 type ActionOptions = {
-  package: string;
+  packageNames: string[];
   // true means that the user didn't use --pull-request or --no-pull-request
   // unfortunately, we can't change this value
   pullRequest: number[] | true;
@@ -27,13 +27,16 @@ async function checkOrAskForOptions(options: ActionOptions): Promise<ActionOptio
     validate: lengthValidator,
   };
 
-  const questions: inquirer.Question[] = [];
-  if (!options.package) {
+  const questions: QuestionCollection[] = [];
+  if (options.packageNames.length === 0) {
     questions.push({
       type: 'input',
       name: 'package',
-      message: 'What is the package that you want to add?',
+      message: 'What are the packages that you want to add a changelog entry?',
       ...stringValidator,
+      transformer(input) {
+        return input.split(/\s+/g);
+      },
     });
   }
 
@@ -45,7 +48,7 @@ async function checkOrAskForOptions(options: ActionOptions): Promise<ActionOptio
       filter: (pullRequests) =>
         pullRequests
           .split(',')
-          .map((pullrequest) => parseInt(pullrequest, 10))
+          .map((pr) => parseInt(pr, 10))
           .filter(Boolean),
       validate: lengthValidator,
     });
@@ -79,7 +82,7 @@ async function checkOrAskForOptions(options: ActionOptions): Promise<ActionOptio
       type: 'list',
       name: 'type',
       message: 'What is the type?',
-      choices: ['bug-fix', 'new-feature', 'breaking-change', 'library-upgrade', 'notice'],
+      choices: ['bug-fix', 'new-feature', 'breaking-change', 'library-upgrade', 'notice', 'other'],
     });
   }
 
@@ -100,24 +103,24 @@ function toChangeType(type: string): Changelogs.ChangeType | null {
       return Changelogs.ChangeType.LIBRARY_UPGRADES;
     case 'notice':
       return Changelogs.ChangeType.NOTICES;
+    case 'other':
+      return Changelogs.ChangeType.OTHERS;
   }
   return null;
 }
 
-async function action(options: ActionOptions) {
+async function action(packageNames: string[], options: ActionOptions) {
+  options.packageNames = packageNames;
+
   if (!process.env.CI) {
     options = await checkOrAskForOptions(options);
   }
-
-  if (
-    !options.author.length ||
-    !options.entry ||
-    !options.package ||
-    !options.type ||
-    options.pullRequest === true
-  ) {
+  if (options.packageNames.length === 0) {
+    throw new Error('No packages provided');
+  }
+  if (!options.author.length || !options.entry || !options.type || options.pullRequest === true) {
     throw new Error(
-      `Must run with --package <string> --entry <string> --author <string> --pull-request <number> --type <string>`
+      `Must run with --entry <string> --author <string> --pull-request <number> --type <string>`
     );
   }
 
@@ -126,49 +129,43 @@ async function action(options: ActionOptions) {
     throw new Error(`Invalid type: ${chalk.cyan(options.type)}`);
   }
 
-  const packagePath = path.join(Directories.getPackagesDir(), options.package, 'CHANGELOG.md');
-  if (!(await fs.pathExists(packagePath))) {
-    throw new Error(`Package ${chalk.green(options.package)} doesn't have changelog file.`);
-  }
+  for (const packageName of options.packageNames) {
+    const packagePath = path.join(Directories.getPackagesDir(), packageName, 'CHANGELOG.md');
+    if (!(await fs.pathExists(packagePath))) {
+      throw new Error(`Package ${chalk.green(packageName)} doesn't have changelog file.`);
+    }
 
-  const changelog = Changelogs.loadFrom(packagePath);
+    const changelog = Changelogs.loadFrom(packagePath);
 
-  const message = options.entry.slice(-1) === '.' ? options.entry : `${options.entry}.`;
-  const insertedEntries = await changelog.insertEntriesAsync(options.version, type, null, [
-    {
-      message,
-      pullRequests: options.pullRequest,
-      authors: options.author,
-    },
-  ]);
+    const message = options.entry.slice(-1) === '.' ? options.entry : `${options.entry}.`;
+    const insertedEntries = await changelog.insertEntriesAsync(options.version, type, null, [
+      {
+        message,
+        pullRequests: options.pullRequest,
+        authors: options.author,
+      },
+    ]);
 
-  if (insertedEntries.length > 0) {
-    logger.info(
-      `\n➕ Inserted ${chalk.magenta(options.type)} entry to ${chalk.green(options.package)}:`
-    );
-    insertedEntries.forEach((entry) => {
-      logger.log('  ', formatChangelogEntry(Changelogs.getChangeEntryLabel(entry)));
-    });
+    if (insertedEntries.length > 0) {
+      await changelog.saveAsync();
 
-    logger.info('\n💾 Saving changelog file...');
-
-    await changelog.saveAsync();
-
-    logger.success('\n✅ Successfully inserted new entry.');
-  } else {
-    logger.success('\n✅ Specified entry is already there.');
+      logger.info(
+        `\n➕ Inserted ${chalk.magenta(options.type)} entry to ${chalk.green(packageName)}:`
+      );
+      insertedEntries.forEach((entry) => {
+        logger.log('  ', formatChangelogEntry(Changelogs.getChangeEntryLabel(entry)));
+      });
+    } else {
+      logger.info(`\n👌 Specified entry is already added to ${chalk.green(packageName)} changelog`);
+    }
   }
 }
 
 export default (program: Command) => {
   program
-    .command('add-changelog')
+    .command('add-changelog [packageNames...]')
     .alias('ac')
     .description('Adds changelog entry to the package.')
-    .option(
-      '-p, --package <string>',
-      'Package name. For example `expo-image-picker` or `unimodules-file-system-interface.'
-    )
     .option('-e, --entry <string>', 'Change note to put into the changelog.')
     .option(
       '-a, --author <string>',
@@ -177,7 +174,7 @@ export default (program: Command) => {
       []
     )
     .option(
-      '-r, --pull-request <number>',
+      '-p, --pull-request <number>',
       'Pull request number. Can be passed multiple times.',
       (value, previous) => {
         if (typeof previous === 'boolean') {
@@ -189,7 +186,7 @@ export default (program: Command) => {
     )
     .option(
       '--no-pull-request',
-      'If changes were pushed directly to the master.',
+      'If changes were pushed directly to the main.',
       (value, previous) => {
         // we need to change how no-flag works in commander to be able to pass an array
         if (!value) {
@@ -200,7 +197,7 @@ export default (program: Command) => {
     )
     .option(
       '-t, --type <string>',
-      'Type of change that determines the section into which the entry should be added. Possible options: bug-fix | new-feature | breaking-change | library-upgrade | notice.'
+      'Type of change that determines the section into which the entry should be added. Possible options: bug-fix | new-feature | breaking-change | library-upgrade | notice | other.'
     )
     .option(
       '-v, --version [string]',

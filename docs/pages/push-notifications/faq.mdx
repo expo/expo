@@ -1,0 +1,172 @@
+---
+title: Push notifications troubleshooting & FAQ
+sidebar_title: Troubleshooting and FAQ
+description: A collection of common questions about Expo's push notification service.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+
+A collection of common issues and FAQs when setting up push notifications with the `expo-notifications` library and Expo's push notification service.
+
+## Expo's push notification service
+
+### Cost of the push notification service
+
+There is no cost associated with sending notifications through Expo's classic push notification service. EAS Notify, an upcoming iteration of Expo's push notification service, will be a part of EAS's pricing plans.
+
+### Limit of sending notifications
+
+There is a limit of 600 notifications per second per project that can be sent. If you exceed this rate, subsequent requests will fail until the rate falls below 600 per second again.
+
+For best results, we recommend you add throttling (which is handled automatically in the [`expo-server-sdk-node`](https://github.com/expo/expo-server-sdk-node)) and retry logic to your server.
+
+### Using Expo's push notification service is not mandatory
+
+You can use any push notification service for Expo projects. The [`getDevicePushTokenAsync` method from `expo-notifications`](/versions/latest/sdk/notifications/#getdevicepushtokenasync-devicepushtoken) allows you to get the native device push token, which you can then use with other services, or even [send your notifications directly through FCM and APNs](/push-notifications/sending-notifications-custom).
+
+### Connections to notification service are encrypted
+
+Expo's connections to Apple and Google are encrypted and use HTTPS.
+
+### Contents of the notification are not stored
+
+Expo doesn't store the contents of push notifications any longer than it takes to deliver the notifications to the push notification services operated by Apple, Google, and so on. Notifications are stored only in memory and in message queues and not stored in databases.
+
+### Contents of the notifications may be seen by Expo staff
+
+If the Expo team is actively debugging the push notifications service, we may see notification contents (for example, at a breakpoint) but Expo cannot see push notification contents otherwise.
+
+### Delivery guarantees
+
+Expo makes the best effort to deliver notifications to the push notification services operated by Google and Apple. Expo's infrastructure is designed for at-least-once delivery to the underlying push notification services. In some cases, a notification may be delivered to Google or Apple more than once or not at all, although these cases are rare.
+
+After a notification has been handed off to an underlying push notification service, Expo creates a "push receipt" that records whether the handoff was successful. A push receipt denotes whether the underlying push notification service received the notification.
+
+Finally, the push notification services from Google, Apple, and so on follow their policies to deliver the notification to the device.
+
+## Push notifications
+
+### Notifications aren't working
+
+Push notifications have a lot of moving parts, so this can be due to a wide variety of reasons. To narrow things down, check the [push ticket](/push-notifications/sending-notifications/#push-tickets) and [push receipt](/push-notifications/sending-notifications/#push-receipts) for error messages.
+
+You can also narrow things even further by testing [local notifications](/versions/latest/sdk/notifications/#schedulenotificationasyncnotificationrequest-notificationrequestinput-promisestring) in your app. This will ensure all of your client-side logic is correct, and narrow things down to the server side or app credentials.
+
+<Collapsible summary="See here for some quick terminal commands you can use to get the push receipt">
+
+1. Send a notification:
+
+```shell
+curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/send" -d '{
+  "to": "ExponentPushToken[xxxxxxxxxxxxxxxxxxxxxx]",
+  "title":"hello",
+  "body": "world"
+}'
+```
+
+2. Use the resulting ticket `id` to request the push receipt:
+
+```shell
+curl -H "Content-Type: application/json" -X POST "https://exp.host/--/api/v2/push/getReceipts" -d '{
+  "ids": [
+    "XXXXXXXX-XXXX-XXXX-XXXX-XXXXXXXXXXXX"
+  ]
+}'
+```
+
+</Collapsible>
+
+### When and why does the `ExpoPushToken` change
+
+The `ExpoPushToken` will remain the same across app upgrades. On iOS, it will also remain the same even after uninstalling the app and reinstalling it. On Android, this results in the push token changing.
+
+It will also change if you change your [`applicationId`](/versions/latest/sdk/application.mdx#applicationapplicationid) or `experienceId` (usually `@expoUsername/projectSlug`).
+
+The `ExpoPushToken` will never expire. However, if one of your users uninstalls the app, you'll receive a `DeviceNotRegistered` error back from Expo's servers. This means you should stop sending notifications to this app.
+
+### Notifications work in development, but not after building the app
+
+This indicates that you have either misconfigured your credentials or didn't configure them at all in your production app. Expo Go uses Expo's credentials, which allows working on notifications in development.
+
+When you build your app for the app stores, you need to generate and use your own credentials. On Android, follow [this guide](/push-notifications/push-notifications-setup/#android). On iOS, this is handled by your [push key](/app-signing/app-credentials/#push-notification-keys) (revoking the push key associated with your app will result in your notifications failing to be delivered. To fix that, add a new push key with `eas credentials`).
+
+For more information, see [app signing](/app-signing/app-credentials).
+
+### Notifications occasionally stop coming through on Android
+
+This is likely due to the `priority` level of the notifications you're sending. You can learn more about [Android priority](https://firebase.google.com/docs/cloud-messaging/http-server-ref#downstream-http-messages-json). [Expo accepts four priorities](/push-notifications/sending-notifications/#message-request-format):
+
+- `default`: manually mapped to the default priority documented by Apple and Google
+- `high`: mapped to the high priority level documented by Apple and Google
+- `normal`: mapped to the normal priority level documented by Apple and Google
+- (priority omitted): treated exactly as if `default` were specified
+
+And setting the priority to `high` gives your notification the greatest likelihood that the Android will display the notification.
+
+### Handle expired push notification credentials
+
+When your push notification credentials have expired, run `eas credentials`, choose iOS and a build profile, then remove your push notification key and generate a new one.
+
+### Error message when sending a notification
+
+Check the `details` property of the returned push ticket or receipt for more information. [Read this](/push-notifications/sending-notifications/#errors) for common error code responses and their associated solutions.
+
+### Fetching a push token takes a long time on iOS
+
+`getDevicePushTokenAsync` and `getExpoPushTokenAsync` can sometimes take a long time to resolve on iOS. This is outside of `expo-notifications`'s control, as stated in Apple's [Troubleshooting Push Notifications](https://developer.apple.com/library/archive/technotes/tn2265/_index.html) technical note:
+
+> This is not necessarily an error condition. The system may not have Internet connectivity at all because it is out of range of any cell towers or Wi-Fi access points, or it may be in airplane mode. Instead of treating this as an error, your app should continue normally, disabling only that functionality that relies on push notifications.
+
+Here are some ways our community members have resolved this issue:
+
+<Collapsible summary={<span>Read the Apple's <a href="https://developer.apple.com/library/archive/technotes/tn2265/_index.html">Technical Note on troubleshooting push notifications</a></span>}>
+
+Read Apple's [Technical Note on troubleshooting push notifications](https://developer.apple.com/library/archive/technotes/tn2265/_index.html)! This is the single most reliable source of information on this problem. To help you grasp what they're suggesting:
+
+- Make sure the device has a reliable connection to the Internet (try turning off Wi-Fi or switching to another network, and disabling the firewall block on port 5223, as suggested in [this SO answer](https://stackoverflow.com/a/34332047/1123156)).
+- **Bare React Native apps** must [manually enable the **Push Notifications** capability](/build-reference/ios-capabilities#manual-setup). If you have trouble setting this up, refer to [this Stack Overflow answer](https://stackoverflow.com/a/10791240/1123156). You may also want to try to debug this even further by logging persistent connection debug information as outlined by [this Stack Overflow answer](https://stackoverflow.com/a/8036052/1123156).
+
+</Collapsible>
+
+<Collapsible summary="Try again in a little while">
+
+- APNS servers near the device may be down as indicated by [this forum thread](https://developer.apple.com/forums/thread/52224). Take a walk and try again later!
+- Try again in a few days as suggested by [this GitHub comment](https://github.com/expo/expo/issues/10369#issuecomment-717872956).
+
+</Collapsible>
+
+<Collapsible summary="Disable network sharing on your device">
+
+You may need to disable network sharing as this may impact the registration as suggested by [this Stack Overflow answer](https://stackoverflow.com/a/59156989/1123156).
+
+</Collapsible>
+
+<Collapsible summary="Restart your device">
+
+If you just changed the APNS servers where the app should be registering (by installing a TestFlight build over an Xcode build on the same device) you may need to restart your device as suggested by [this Stack Overflow answer](https://stackoverflow.com/a/59864028/1123156).
+
+</Collapsible>
+
+<Collapsible summary="Setup your device with a SIM card">
+
+If the device you're experiencing this on hasn't been setup with a SIM card it looks like configuring it may help mitigate this bug as suggested by [this Stack Overflow answer](https://stackoverflow.com/a/19432504/1123156).
+
+</Collapsible>
+
+## Miscellaneous
+
+### Sending notifications directly through FCM and APNs
+
+If you are not using [Expo's push notification service](/push-notifications/sending-notifications) and instead, would like to communicate with Google and Apple directly, see [Send notifications with FCM & APNs](/push-notifications/sending-notifications-custom), paying **special attention to the payload formats**, since providing different formats can result in unexpected behavior on both platforms.
+
+### Notification icon on Android is a grey or white square
+
+This indicates an issue with the image asset you're providing. The image should be all white with a transparent background (this is required and enforced by Google, not Expo). For more information, see [this article](https://clevertap.com/blog/fixing-notification-icon-for-android-lollipop-and-above/).
+
+### Play a custom sound when I send a notification
+
+The Expo push notification service currently doesn't support custom sounds. You will need to use FCM and APNs directly with the native device tokens received from `expo-notifications` in standalone apps.
+
+### Migrate from Expo's `LegacyNotifications` library
+
+For more information on how to migrate from Expo's `LegacyNotifications` library to use `expo-notifications`, see [the migration guide](https://expo.fyi/legacy-notifications-to-expo-notifications).

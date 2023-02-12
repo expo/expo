@@ -1,4 +1,4 @@
-import { ExponentFileSystemModule } from './FileSystem.types';
+import { ExponentFileSystemModule } from './types';
 
 const platformModule: ExponentFileSystemModule = {
   get name(): 'ExponentFileSystem' {

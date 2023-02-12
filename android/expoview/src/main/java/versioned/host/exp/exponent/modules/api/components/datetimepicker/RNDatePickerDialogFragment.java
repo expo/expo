@@ -7,6 +7,12 @@
 
 package versioned.host.exp.exponent.modules.api.components.datetimepicker;
 
+import host.exp.expoview.R;
+
+import static versioned.host.exp.exponent.modules.api.components.datetimepicker.Common.getDisplayDate;
+import static versioned.host.exp.exponent.modules.api.components.datetimepicker.Common.setButtonTextColor;
+import static versioned.host.exp.exponent.modules.api.components.datetimepicker.Common.setButtonTitles;
+
 import android.annotation.SuppressLint;
 import android.app.DatePickerDialog;
 import android.app.DatePickerDialog.OnDateSetListener;
@@ -25,6 +31,7 @@ import android.widget.DatePicker;
 
 import java.util.Calendar;
 import java.util.Locale;
+import java.util.TimeZone;
 
 @SuppressLint("ValidFragment")
 public class RNDatePickerDialogFragment extends DialogFragment {
@@ -35,12 +42,13 @@ public class RNDatePickerDialogFragment extends DialogFragment {
   @Nullable
   private OnDismissListener mOnDismissListener;
   @Nullable
-  private static OnClickListener mOnNeutralButtonActionListener;
+  private OnClickListener mOnNeutralButtonActionListener;
 
+  @NonNull
   @Override
   public Dialog onCreateDialog(Bundle savedInstanceState) {
     Bundle args = getArguments();
-    instance = createDialog(args, getActivity(), mOnDateSetListener);
+    instance = createDialog(args);
     return instance;
   }
 
@@ -54,62 +62,59 @@ public class RNDatePickerDialogFragment extends DialogFragment {
           Bundle args,
           Context activityContext,
           @Nullable OnDateSetListener onDateSetListener) {
-
     final RNDate date = new RNDate(args);
     final int year = date.year();
     final int month = date.month();
     final int day = date.day();
 
-    RNDatePickerDisplay display = RNDatePickerDisplay.DEFAULT;
+    RNDatePickerDisplay display = getDisplayDate(args);
 
     if (args != null && args.getString(RNConstants.ARG_DISPLAY, null) != null) {
       display = RNDatePickerDisplay.valueOf(args.getString(RNConstants.ARG_DISPLAY).toUpperCase(Locale.US));
     }
 
-    switch (display) {
-      case CALENDAR:
-      case SPINNER:
-        String resourceName = display == RNDatePickerDisplay.CALENDAR
-                ? "CalendarDatePickerDialog"
-                : "SpinnerDatePickerDialog";
-        return new RNDismissableDatePickerDialog(
-                activityContext,
-                activityContext.getResources().getIdentifier(
-                        resourceName,
-                        "style",
-                        activityContext.getPackageName()),
-                onDateSetListener,
-                year,
-                month,
-                day,
-                display
-        );
-      default:
-        return new RNDismissableDatePickerDialog(
-                activityContext,
-                onDateSetListener,
-                year,
-                month,
-                day,
-                display
-        );
+    if (display == RNDatePickerDisplay.SPINNER) {
+      return new RNDismissableDatePickerDialog(
+        activityContext,
+        R.style.SpinnerDatePickerDialog,
+        onDateSetListener,
+        year,
+        month,
+        day,
+        display
+      );
     }
+    return new RNDismissableDatePickerDialog(
+      activityContext,
+      onDateSetListener,
+      year,
+      month,
+      day,
+      display
+    );
   }
 
-  static DatePickerDialog createDialog(
-          Bundle args,
-          Context activityContext,
-          @Nullable OnDateSetListener onDateSetListener) {
-
+  private DatePickerDialog createDialog(Bundle args) {
+    Context activityContext = getActivity();
     final Calendar c = Calendar.getInstance();
 
-    DatePickerDialog dialog = getDialog(args, activityContext, onDateSetListener);
+    DatePickerDialog dialog = getDialog(args, activityContext, mOnDateSetListener);
 
-    if (args != null && args.containsKey(RNConstants.ARG_NEUTRAL_BUTTON_LABEL)) {
-      dialog.setButton(DialogInterface.BUTTON_NEUTRAL, args.getString(RNConstants.ARG_NEUTRAL_BUTTON_LABEL), mOnNeutralButtonActionListener);
+    if (args != null) {
+      setButtonTitles(args, dialog, mOnNeutralButtonActionListener);
+      if (activityContext != null) {
+        RNDatePickerDisplay display = getDisplayDate(args);
+        boolean needsColorOverride = display == RNDatePickerDisplay.SPINNER;
+        dialog.setOnShowListener(setButtonTextColor(activityContext, dialog, args, needsColorOverride));
+      }
     }
 
     final DatePicker datePicker = dialog.getDatePicker();
+
+    Integer timeZoneOffsetInMilliseconds = getTimeZoneOffset(args);
+    if (timeZoneOffsetInMilliseconds != null) {
+      c.setTimeZone(TimeZone.getTimeZone("GMT"));
+    }
 
     if (args != null && args.containsKey(RNConstants.ARG_MINDATE)) {
       // Set minDate to the beginning of the day. We need this because of clowniness in datepicker
@@ -120,7 +125,7 @@ public class RNDatePickerDialogFragment extends DialogFragment {
       c.set(Calendar.MINUTE, 0);
       c.set(Calendar.SECOND, 0);
       c.set(Calendar.MILLISECOND, 0);
-      datePicker.setMinDate(c.getTimeInMillis());
+      datePicker.setMinDate(c.getTimeInMillis() - getOffset(c, timeZoneOffsetInMilliseconds));
     } else {
       // This is to work around a bug in DatePickerDialog where it doesn't display a title showing
       // the date under certain conditions.
@@ -133,14 +138,36 @@ public class RNDatePickerDialogFragment extends DialogFragment {
       c.set(Calendar.MINUTE, 59);
       c.set(Calendar.SECOND, 59);
       c.set(Calendar.MILLISECOND, 999);
-      datePicker.setMaxDate(c.getTimeInMillis());
+      datePicker.setMaxDate(c.getTimeInMillis() - getOffset(c, timeZoneOffsetInMilliseconds));
+    }
+
+    if (args != null && Build.VERSION.SDK_INT >= Build.VERSION_CODES.O
+      && (args.containsKey(RNConstants.ARG_MAXDATE) || args.containsKey(RNConstants.ARG_MINDATE))) {
+      datePicker.setOnDateChangedListener(new KeepDateInRangeListener(args));
     }
 
     return dialog;
   }
 
+  private static Integer getTimeZoneOffset(Bundle args) {
+    if (args != null && args.containsKey(RNConstants.ARG_TZOFFSET_MINS)) {
+      long timeZoneOffsetInMinutesFallback = args.getLong(RNConstants.ARG_TZOFFSET_MINS);
+      int timeZoneOffsetInMinutes = args.getInt(RNConstants.ARG_TZOFFSET_MINS, (int) timeZoneOffsetInMinutesFallback);
+      return timeZoneOffsetInMinutes * 60000;
+    }
+
+    return null;
+  }
+
+  private static int getOffset(Calendar c, Integer timeZoneOffsetInMilliseconds) {
+    if (timeZoneOffsetInMilliseconds != null) {
+      return TimeZone.getDefault().getOffset(c.getTimeInMillis()) - timeZoneOffsetInMilliseconds;
+    }
+    return 0;
+  }
+
   @Override
-  public void onDismiss(DialogInterface dialog) {
+  public void onDismiss(@NonNull DialogInterface dialog) {
     super.onDismiss(dialog);
     if (mOnDismissListener != null) {
       mOnDismissListener.onDismiss(dialog);

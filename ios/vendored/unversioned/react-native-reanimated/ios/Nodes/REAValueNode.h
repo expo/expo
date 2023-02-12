@@ -1,6 +1,4 @@
-#import <UIKit/UIKit.h>
-
-#import "REANode.h"
+#import <RNReanimated/REANode.h>
 
 @class REAValueNode;
 

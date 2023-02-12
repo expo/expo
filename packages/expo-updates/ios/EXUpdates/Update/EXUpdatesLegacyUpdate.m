@@ -15,6 +15,14 @@ static NSString * const EXUpdatesExpoTestDomain = @"expo.test";
 
 @implementation EXUpdatesLegacyUpdate
 
+/**
+ * Method for initializing updates with manifests in the classic format (i.e. come from Expo's
+ * classic updates service or a self-hosted service following the classic updates format, such as
+ * one making use of `expo-cli export`).
+ *
+ * Asset URLs are relative in this format, and we assume that if no base URL is explicitly provided,
+ * the base URL is Expo's classic asset CDN.
+ */
 + (EXUpdatesUpdate *)updateWithLegacyManifest:(EXManifestsLegacyManifest *)manifest
                                        config:(EXUpdatesConfig *)config
                                      database:(EXUpdatesDatabase *)database

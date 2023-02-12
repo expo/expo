@@ -1,7 +1,7 @@
 'use strict';
 
 import { Asset } from 'expo-asset';
-import { Video } from 'expo-av';
+import { Video, VideoFullscreenUpdate } from 'expo-av';
 import { forEach } from 'lodash';
 import React from 'react';
 import { Platform } from 'react-native';
@@ -185,7 +185,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
                 />
               );
               t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
-            } catch (error) {
+            } catch {
               hasBeenRejected = true;
             }
             t.expect(hasBeenRejected).toBe(false);
@@ -201,7 +201,7 @@ export function test(t, { setPortalChild, cleanupPortal }) {
                 <Video style={style} source={{ uri: hlsStreamUriWithRedirect }} />
               );
               t.expect(status).toEqual(t.jasmine.objectContaining({ isLoaded: true }));
-            } catch (error) {
+            } catch {
               hasBeenRejected = true;
             }
             t.expect(hasBeenRejected).toBe(false);
@@ -390,18 +390,18 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         await waitFor(1000);
 
         t.expect(fullscreenUpdates).toEqual([
-          Video.FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT,
-          Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT,
+          VideoFullscreenUpdate.PLAYER_WILL_PRESENT,
+          VideoFullscreenUpdate.PLAYER_DID_PRESENT,
         ]);
 
         await instance.dismissFullscreenPlayer();
         await waitFor(1000);
 
         t.expect(fullscreenUpdates).toEqual([
-          Video.FULLSCREEN_UPDATE_PLAYER_WILL_PRESENT,
-          Video.FULLSCREEN_UPDATE_PLAYER_DID_PRESENT,
-          Video.FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS,
-          Video.FULLSCREEN_UPDATE_PLAYER_DID_DISMISS,
+          VideoFullscreenUpdate.PLAYER_WILL_PRESENT,
+          VideoFullscreenUpdate.PLAYER_DID_PRESENT,
+          VideoFullscreenUpdate.PLAYER_WILL_DISMISS,
+          VideoFullscreenUpdate.PLAYER_DID_DISMISS,
         ]);
       });
 
@@ -417,7 +417,9 @@ export function test(t, { setPortalChild, cleanupPortal }) {
             instance.presentFullscreenPlayer().catch((error) => {
               presentationError = error;
             });
+            await waitFor(1000);
             await instance.dismissFullscreenPlayer();
+            await waitFor(1000);
           } catch (error) {
             dismissalError = error;
           }
@@ -434,8 +436,10 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         );
         let error = null;
         const presentationPromise = instance.presentFullscreenPlayer();
+        await waitFor(1000);
         try {
           await instance.dismissFullscreenPlayer();
+          await waitFor(1000);
         } catch (err) {
           error = err;
         }
@@ -451,8 +455,10 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         );
         let error = null;
         const presentationPromise = instance.presentFullscreenPlayer();
+        await waitFor(1000);
         try {
           await instance.presentFullscreenPlayer();
+          await waitFor(1000);
         } catch (err) {
           error = err;
         }
@@ -460,57 +466,6 @@ export function test(t, { setPortalChild, cleanupPortal }) {
         await presentationPromise;
         await instance.dismissFullscreenPlayer();
       });
-
-      // NOTE(2018-10-17): Some of these tests are failing on iOS
-      const unreliablyIt = Platform.OS === 'ios' ? t.xit : t.it;
-
-      unreliablyIt(
-        'rejects all but the last request to change fullscreen mode before the video loads',
-        async () => {
-          // Adding second clause sometimes crashes the application,
-          // because by the time we call `present` second time,
-          // the video loads, so it handles the first request properly,
-          // rejects the second and it may reject the third request
-          // if it tries to be handled while the first presentation request
-          // is being handled.
-          let firstErrored = false;
-          // let secondErrored = false;
-          let thirdErrored = false;
-          // We're using remote source as this gives us time to request changes
-          // before the video loads.
-          const instance = await mountAndWaitFor(
-            <Video style={style} source={videoRemoteSource} />,
-            'ref'
-          );
-          instance.dismissFullscreenPlayer().catch(() => {
-            firstErrored = true;
-          });
-          // instance.presentFullscreenPlayer().catch(() => (secondErrored = true));
-          try {
-            await instance.dismissFullscreenPlayer();
-          } catch (_error) {
-            thirdErrored = true;
-          }
-
-          if (!firstErrored) {
-            // First present request finished too early so we cannot
-            // test this behavior at all. Normally I would put
-            // `t.pending` here, but as for the end of 2017 it doesn't work.
-          } else {
-            t.expect(firstErrored).toBe(true);
-            // t.expect(secondErrored).toBe(true);
-            t.expect(thirdErrored).toBe(false);
-          }
-          const pleaseDismiss = async () => {
-            try {
-              await instance.dismissFullscreenPlayer();
-            } catch (error) {
-              pleaseDismiss();
-            }
-          };
-          await pleaseDismiss();
-        }
-      );
     });
 
     // Actually values 2.0 and -0.5 shouldn't be allowed, however at the moment

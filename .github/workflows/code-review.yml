@@ -7,7 +7,7 @@ on:
         description: 'Number of the pull request to review'
         required: true
   pull_request_target:
-    branches: [master, sdk-*]
+    branches: [main, sdk-*]
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event.inputs.pullNumber || github.event.number }}
@@ -15,19 +15,34 @@ concurrency:
 
 jobs:
   code_review:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
+    timeout-minutes: 30
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v2
-      - name: ♻️ Restore node modules in tools
-        uses: actions/cache@v2
-        id: tools-modules-cache
+        uses: actions/checkout@v3
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
         with:
-          path: tools/node_modules
-          key: ${{ runner.os }}-tools-modules-${{ hashFiles('tools/yarn.lock') }}
-          restore-keys: |
-            ${{ runner.os }}-tools-modules-
+          yarn-tools: 'true'
+
+      ### This job is run on Ubuntu which doesn't have SwiftLint installed, so we need to build it from sources.
+      ### Building it on each run may take too much time, so we bundle the binary in `@expo/swiftlint` package.
+      ### To update SwiftLint, uncomment steps below, download the artifact and update that package.
+      # - name: 👷 Build and install SwiftLint
+      #   run: |
+      #     git clone https://github.com/realm/SwiftLint.git --branch 0.50.1 --depth 1
+      #     cd SwiftLint
+      #     swift build -c release
+      #     cp .build/release/swiftlint /usr/local/bin/
+      # - name: 📦 Make an artifact
+      #   uses: actions/upload-artifact@v2
+      #   with:
+      #     name: swiftlint
+      #     path: SwiftLint/.build
+
       - name: 🔬 Reviewing a pull request
-        run: bin/expotools code-review --pr ${{ github.event.inputs.pullNumber || github.event.number }}
+        run: expotools code-review --pr ${{ github.event.inputs.pullNumber || github.event.number }}
         env:
           GITHUB_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}

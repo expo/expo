@@ -19,7 +19,7 @@ async function getTemplateSubstitutionsFromSecrets(): Promise<TemplateSubstituti
     return await new JsonFile<TemplateSubstitutions>(
       path.join(EXPO_DIR, 'secrets', 'keys.json')
     ).readAsync();
-  } catch (e) {
+  } catch {
     // Don't have access to decrypted secrets, use public keys
     console.log(
       "You don't have access to decrypted secrets. Falling back to `template-files/keys.json`."
@@ -37,7 +37,7 @@ async function getTemplateSubstitutionsAsync() {
     // Keys from secrets/template-files can be overwritten by private-keys.json file.
     const privateKeys = await new JsonFile(path.join(EXPO_DIR, 'private-keys.json')).readAsync();
     return { ...defaultKeys, ...privateKeys };
-  } catch (error) {
+  } catch {
     return defaultKeys;
   }
 }
@@ -108,7 +108,7 @@ async function generateDynamicMacrosAsync(args) {
 async function readExistingSourceAsync(filepath): Promise<string | null> {
   try {
     return await fs.readFile(filepath, 'utf8');
-  } catch (e) {
+  } catch {
     return null;
   }
 }

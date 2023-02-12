@@ -1,18 +1,19 @@
 package expo.modules.medialibrary.assets
 
-import android.os.AsyncTask
-import android.content.ContentValues
-import android.provider.MediaStore
 import android.content.ContentUris
+import android.content.ContentValues
 import android.content.Context
 import android.media.MediaScannerConnection
 import android.net.Uri
 import android.os.Build
+import android.provider.MediaStore
 import androidx.annotation.RequiresApi
-import expo.modules.core.Promise
 import expo.modules.core.utilities.ifNull
+import expo.modules.kotlin.Promise
+import expo.modules.medialibrary.AssetException
+import expo.modules.medialibrary.AssetFileException
+import expo.modules.medialibrary.ContentEntryException
 import expo.modules.medialibrary.ERROR_IO_EXCEPTION
-import expo.modules.medialibrary.ERROR_NO_FILE_EXTENSION
 import expo.modules.medialibrary.ERROR_UNABLE_TO_LOAD_PERMISSION
 import expo.modules.medialibrary.ERROR_UNABLE_TO_SAVE
 import expo.modules.medialibrary.MediaLibraryUtils
@@ -20,14 +21,13 @@ import java.io.File
 import java.io.FileInputStream
 import java.io.FileOutputStream
 import java.io.IOException
-import java.lang.Exception
 
 class CreateAsset @JvmOverloads constructor(
   private val context: Context,
   uri: String,
   private val promise: Promise,
   private val resolveWithAdditionalData: Boolean = true
-) : AsyncTask<Void?, Void?, Void?>() {
+) {
   private val mUri = normalizeAssetUri(uri)
 
   private fun normalizeAssetUri(uri: String): Uri {
@@ -93,8 +93,7 @@ class CreateAsset @JvmOverloads constructor(
   @Throws(IOException::class)
   private fun createAssetUsingContentResolver() {
     val assetUri = createContentResolverAssetEntry().ifNull {
-      promise.reject(ERROR_UNABLE_TO_SAVE, "Could not create content entry.")
-      return
+      throw ContentEntryException()
     }
     writeFileContentsToAsset(File(mUri.path!!), assetUri)
 
@@ -111,44 +110,40 @@ class CreateAsset @JvmOverloads constructor(
    * Creates asset using filesystem. Legacy method - do not use above API 29
    */
   @Throws(IOException::class)
-  private fun createAssetFileLegacy(): File? {
+  private fun createAssetFileLegacy(): File {
     val localFile = File(mUri.path!!)
 
     val destDir = MediaLibraryUtils.getEnvDirectoryForAssetType(
       MediaLibraryUtils.getMimeType(context.contentResolver, mUri),
       true
     ).ifNull {
-      promise.reject(ERROR_UNABLE_TO_SAVE, "Could not guess file type.")
-      return null
+      throw AssetFileException("Could not guess file type.")
     }
 
     val destFile = MediaLibraryUtils.safeCopyFile(localFile, destDir)
     if (!destDir.exists() || !destFile.isFile) {
-      promise.reject(ERROR_UNABLE_TO_SAVE, "Could not create asset record. Related file is not existing.")
-      return null
+      throw AssetFileException("Could not create asset record. Related file does not exist.")
     }
     return destFile
   }
 
-  override fun doInBackground(vararg params: Void?): Void? {
+  fun execute() {
     if (!isFileExtensionPresent) {
-      promise.reject(ERROR_NO_FILE_EXTENSION, "Could not get the file's extension.")
-      return null
+      throw AssetFileException("Could not get the file's extension.")
     }
     try {
       if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
         createAssetUsingContentResolver()
-        return null
+        return
       }
 
-      val asset = createAssetFileLegacy() ?: return null
+      val asset = createAssetFileLegacy()
       MediaScannerConnection.scanFile(
         context, arrayOf(asset.path),
         null
       ) { path: String, uri: Uri? ->
         if (uri == null) {
-          promise.reject(ERROR_UNABLE_TO_SAVE, "Could not add image to gallery.")
-          return@scanFile
+          throw AssetException()
         }
         if (resolveWithAdditionalData) {
           val selection = MediaStore.Images.Media.DATA + "=?"
@@ -168,6 +163,5 @@ class CreateAsset @JvmOverloads constructor(
     } catch (e: Exception) {
       promise.reject(ERROR_UNABLE_TO_SAVE, "Could not create asset.", e)
     }
-    return null
   }
 }

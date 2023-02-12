@@ -1,3 +1,4 @@
+import { EmitterSubscription } from 'react-native';
 import { CreateURLOptions, ParsedURL, QueryParams, SendIntentExtras, URLListener } from './Linking.types';
 /**
  * Create a URL that works for the environment the app is currently running in.
@@ -54,17 +55,10 @@ export declare function parse(url: string): ParsedURL;
  * @param type The only valid type is `'url'`.
  * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
  * [`EventType`](#eventype).
+ * @return An EmitterSubscription that has the remove method from EventSubscription
  * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#addeventlistener).
  */
-export declare function addEventListener(type: string, handler: URLListener): void;
-/**
- * Remove a handler by passing the `url` event type and the handler.
- * @param type The only valid type is `'url'`.
- * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
- * [`EventType`](#eventype).
- * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#removeeventlistener).
- */
-export declare function removeEventListener(type: string, handler: URLListener): void;
+export declare function addEventListener(type: 'url', handler: URLListener): EmitterSubscription;
 /**
  * Helper method which wraps React Native's `Linking.getInitialURL()` in `Linking.parse()`.
  * Parses the deep link information out of the URL used to open the experience initially.
@@ -75,14 +69,13 @@ export declare function removeEventListener(type: string, handler: URLListener):
 export declare function parseInitialURLAsync(): Promise<ParsedURL>;
 /**
  * Launch an Android intent with extras.
- * > Use [IntentLauncher](../intent-launcher) instead, `sendIntent` is only included in
+ * > Use [IntentLauncher](./intent-launcher) instead, `sendIntent` is only included in
  * > `Linking` for API compatibility with React Native's Linking API.
  * @platform android
  */
 export declare function sendIntent(action: string, extras?: SendIntentExtras[]): Promise<void>;
 /**
  * Open the operating system settings app and displays the app’s custom settings, if it has any.
- * @platform ios
  */
 export declare function openSettings(): Promise<void>;
 /**
@@ -107,7 +100,7 @@ export declare function openURL(url: string): Promise<true>;
  * `false` if not.
  *
  * The `Promise` will reject on Android if it was impossible to check if the URL can be opened, and
- * on iOS if you didn't [add the specific scheme in the `LSApplicationQueriesSchemes` key inside **Info.plist**](/guides/linking#opening-links-to-other-apps).
+ * on iOS if you didn't [add the specific scheme in the `LSApplicationQueriesSchemes` key inside **Info.plist**](/guides/linking#linking-from-your-app).
  */
 export declare function canOpenURL(url: string): Promise<boolean>;
 /**
@@ -116,4 +109,5 @@ export declare function canOpenURL(url: string): Promise<boolean>;
  */
 export declare function useURL(): string | null;
 export * from './Linking.types';
+export * from './Schemes';
 //# sourceMappingURL=Linking.d.ts.map

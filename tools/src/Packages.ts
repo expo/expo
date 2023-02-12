@@ -17,6 +17,21 @@ const PACKAGES_DIR = Directories.getPackagesDir();
  */
 let cachedPackages: Package[] | null = null;
 
+export interface CodegenConfigLibrary {
+  name: string;
+  type: 'modules' | 'components';
+  jsSrcsDir: string;
+}
+
+export enum DependencyKind {
+  Normal = 'dependencies',
+  Dev = 'devDependencies',
+  Peer = 'peerDependencies',
+  Optional = 'optionalDependencies',
+}
+
+export const DefaultDependencyKind = [DependencyKind.Normal, DependencyKind.Dev];
+
 /**
  * An object representing `package.json` structure.
  */
@@ -25,6 +40,13 @@ export type PackageJson = {
   version: string;
   scripts: Record<string, string>;
   gitHead?: string;
+  codegenConfig?: {
+    libraries: CodegenConfigLibrary[];
+  };
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+  peerDependencies?: Record<string, string>;
+  optionalDependencies?: Record<string, string>;
   [key: string]: unknown;
 };
 
@@ -33,7 +55,7 @@ export type PackageJson = {
  */
 export type PackageDependency = {
   name: string;
-  group: string;
+  kind: DependencyKind;
   versionRange: string;
 };
 
@@ -98,20 +120,12 @@ export class Package {
       return this.expoModuleConfig.ios.podspecPath;
     }
 
-    const iosConfig = {
-      subdirectory: 'ios',
-      ...(this.expoModuleConfig?.ios ?? {}),
-    };
-
-    // Obtain podspecName by looking for podspecs
-    const podspecPaths = glob.sync('*.podspec', {
-      cwd: path.join(this.path, iosConfig.subdirectory),
+    // Obtain podspecName by looking for podspecs in both package's root directory and ios subdirectory.
+    const [podspecPath] = glob.sync(`{*,${this.iosSubdirectory}/*}.podspec`, {
+      cwd: this.path,
     });
 
-    if (!podspecPaths || podspecPaths.length === 0) {
-      return null;
-    }
-    return path.join(iosConfig.subdirectory, podspecPaths[0]);
+    return podspecPath || null;
   }
 
   get podspecName(): string | null {
@@ -160,17 +174,22 @@ export class Package {
     return !!this.expoModuleConfig;
   }
 
+  containsPodspecFile() {
+    return [
+      ...fs.readdirSync(this.path),
+      ...fs.readdirSync(path.join(this.path, this.iosSubdirectory)),
+    ].some((path) => path.endsWith('.podspec'));
+  }
+
   isSupportedOnPlatform(platform: 'ios' | 'android'): boolean {
-    if (this.expoModuleConfig) {
+    if (this.expoModuleConfig && !fs.existsSync(path.join(this.path, 'react-native.config.js'))) {
+      // check platform support from expo autolinking but not rn-cli linking which is not platform aware
       return this.expoModuleConfig.platforms?.includes(platform) ?? false;
     } else if (platform === 'android') {
       return fs.existsSync(path.join(this.path, this.androidSubdirectory, 'build.gradle'));
     } else if (platform === 'ios') {
       return (
-        fs.existsSync(path.join(this.path, this.iosSubdirectory)) &&
-        fs
-          .readdirSync(path.join(this.path, this.iosSubdirectory))
-          .some((path) => path.endsWith('.podspec'))
+        fs.existsSync(path.join(this.path, this.iosSubdirectory)) && this.containsPodspecFile()
       );
     }
     return false;
@@ -197,7 +216,7 @@ export class Package {
       // for that package, something is wrong.
       if (this.packageName === 'expo-in-app-purchases' && match === -1) {
         throw new Error(
-          "'isIncludedInExpoClientOnPlatform' is not behaving correctly, please check expoview/build.gradle format"
+          "'isIncludedInExpoClientOnPlatform' is not behaving correctly, please check android/settings.gradle format"
         );
       }
       return match === -1;
@@ -223,23 +242,17 @@ export class Package {
     return await Npm.getPackageViewAsync(this.packageName, this.packageVersion);
   }
 
-  getDependencies(includeDev: boolean = false): PackageDependency[] {
-    const depsGroups = ['dependencies', 'peerDependencies', 'optionalDependencies'];
-
-    if (includeDev) {
-      depsGroups.push('devDependencies');
-    }
-
-    const dependencies = depsGroups.map((group) => {
-      const deps = this.packageJson[group] as Record<string, string>;
+  getDependencies(kinds: DependencyKind[] = [DependencyKind.Normal]): PackageDependency[] {
+    const dependencies = kinds.map((kind) => {
+      const deps = this.packageJson[kind];
 
       return !deps
         ? []
         : Object.entries(deps).map(([name, versionRange]) => {
             return {
               name,
-              group,
-              versionRange: versionRange as string,
+              kind,
+              versionRange,
             };
           });
     });
@@ -354,15 +367,17 @@ export async function getListOfPackagesAsync(): Promise<Package[]> {
   if (!cachedPackages) {
     const paths = await glob('**/package.json', {
       cwd: PACKAGES_DIR,
-      ignore: ['**/example/**', '**/node_modules/**'],
+      ignore: ['**/example/**', '**/node_modules/**', '**/__tests__/**', '**/__mocks__/**'],
     });
-    cachedPackages = paths.map((packageJsonPath) => {
-      const fullPackageJsonPath = path.join(PACKAGES_DIR, packageJsonPath);
-      const packagePath = path.dirname(fullPackageJsonPath);
-      const packageJson = require(fullPackageJsonPath);
+    cachedPackages = paths
+      .map((packageJsonPath) => {
+        const fullPackageJsonPath = path.join(PACKAGES_DIR, packageJsonPath);
+        const packagePath = path.dirname(fullPackageJsonPath);
+        const packageJson = require(fullPackageJsonPath);
 
-      return new Package(packagePath, packageJson);
-    });
+        return new Package(packagePath, packageJson);
+      })
+      .filter((pkg) => !!pkg.packageName);
   }
   return cachedPackages;
 }
@@ -373,7 +388,7 @@ function readExpoModuleConfigJson(dir: string) {
   const unimoduleJsonPath = path.join(dir, 'unimodule.json');
   try {
     return require(expoModuleConfigJsonExists ? expoModuleConfigJsonPath : unimoduleJsonPath);
-  } catch (error) {
+  } catch {
     return null;
   }
 }

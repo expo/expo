@@ -1,8 +1,8 @@
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
 import { useRef } from 'react';
 import { makeMutable } from './core';
-import { SharedValue } from './hook/commonTypes';
+import { SharedValue } from './commonTypes';
+import { Descriptor } from './hook/commonTypes';
+import { shouldBeUseWeb } from './PlatformChecker';
 
 export interface ViewRefSet<T> {
   items: Set<T>;
@@ -24,10 +24,12 @@ export interface ViewDescriptorsSet {
   ) => void;
 }
 
+const scheduleUpdates = shouldBeUseWeb() ? requestAnimationFrame : setImmediate;
+
 export function makeViewDescriptorsSet(): ViewDescriptorsSet {
-  const ref = useRef(null);
+  const ref = useRef<ViewDescriptorsSet | null>(null);
   if (ref.current === null) {
-    const data = {
+    const data: ViewDescriptorsSet = {
       batchToRemove: new Set(),
       tags: new Set(),
       waitForInsertSync: false,
@@ -45,10 +47,10 @@ export function makeViewDescriptorsSet(): ViewDescriptorsSet {
         if (!data.waitForInsertSync) {
           data.waitForInsertSync = true;
 
-          setTimeout(() => {
+          scheduleUpdates(() => {
             data.sharableViewDescriptors.value = data.items;
             data.waitForInsertSync = false;
-          }, 0);
+          });
         }
       },
 
@@ -58,7 +60,7 @@ export function makeViewDescriptorsSet(): ViewDescriptorsSet {
         if (!data.waitForRemoveSync) {
           data.waitForRemoveSync = true;
 
-          setTimeout(() => {
+          scheduleUpdates(() => {
             const items = [];
             for (const item of data.items) {
               if (data.batchToRemove.has(item.tag)) {
@@ -71,7 +73,7 @@ export function makeViewDescriptorsSet(): ViewDescriptorsSet {
             data.sharableViewDescriptors.value = items;
             data.batchToRemove = new Set();
             data.waitForRemoveSync = false;
-          }, 0);
+          });
         }
       },
 
@@ -87,18 +89,18 @@ export function makeViewDescriptorsSet(): ViewDescriptorsSet {
   return ref.current;
 }
 
-export function makeViewsRefSet(): ViewRefSet {
-  const ref = useRef(null);
+export function makeViewsRefSet<T>(): ViewRefSet<T> {
+  const ref = useRef<ViewRefSet<T> | null>(null);
   if (ref.current === null) {
-    const data = {
+    const data: ViewRefSet<T> = {
       items: new Set(),
 
-      add: (item) => {
+      add: (item: T) => {
         if (data.items.has(item)) return;
         data.items.add(item);
       },
 
-      remove: (item) => {
+      remove: (item: T) => {
         data.items.delete(item);
       },
     };

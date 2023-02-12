@@ -1,3 +1,4 @@
+// @needsAudit
 export var GLLoggingOption;
 (function (GLLoggingOption) {
     /**

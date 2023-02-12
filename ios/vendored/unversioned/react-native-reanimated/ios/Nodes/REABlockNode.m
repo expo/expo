@@ -1,5 +1,5 @@
-#import "REABlockNode.h"
-#import "REANodesManager.h"
+#import <RNReanimated/REABlockNode.h>
+#import <RNReanimated/REANodesManager.h>
 
 @implementation REABlockNode {
   NSArray<NSNumber *> *_block;

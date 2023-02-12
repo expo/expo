@@ -5,12 +5,17 @@ import { DevicePushToken } from './Tokens.types';
 
 let nativeTokenPromise: Promise<string> | null = null;
 
+/**
+ * Returns a native FCM, APNs token or a [`PushSubscription` data](https://developer.mozilla.org/en-US/docs/Web/API/PushSubscription)
+ * that can be used with another push notification service.
+ * @header fetch
+ */
 export default async function getDevicePushTokenAsync(): Promise<DevicePushToken> {
   if (!PushTokenManager.getDevicePushTokenAsync) {
     throw new UnavailabilityError('ExpoNotifications', 'getDevicePushTokenAsync');
   }
 
-  let devicePushToken: string | null = null;
+  let devicePushToken: string | null;
   if (nativeTokenPromise) {
     // Reuse existing Promise
     devicePushToken = await nativeTokenPromise;

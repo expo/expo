@@ -1,44 +1,45 @@
-import { Dimensions } from 'react-native';
 import { withSequence, withTiming } from '../../animation';
-import { BaseAnimationBuilder } from '../animationBuilder/BaseAnimationBuilder';
+import { ComplexAnimationBuilder } from '../animationBuilder';
 import {
-  EntryExitAnimationBuild,
+  EntryExitAnimationFunction,
   IEntryExitAnimationBuilder,
 } from '../animationBuilder/commonTypes';
 
-const { width } = Dimensions.get('window');
-
 export class LightSpeedInRight
-  extends BaseAnimationBuilder
-  implements IEntryExitAnimationBuilder {
+  extends ComplexAnimationBuilder
+  implements IEntryExitAnimationBuilder
+{
   static createInstance(): LightSpeedInRight {
     return new LightSpeedInRight();
   }
 
-  build: EntryExitAnimationBuild = () => {
+  build = (): EntryExitAnimationFunction => {
     const delayFunction = this.getDelayFunction();
     const [animation, config] = this.getAnimationAndConfig();
-    const delay = this.delayV;
-    const duration = this.durationV ? this.durationV : 250;
+    const delay = this.getDelay();
+    const duration = this.getDuration();
     const callback = this.callbackV;
+    const initialValues = this.initialValues;
 
-    return () => {
+    return (values) => {
       'worklet';
       return {
         animations: {
-          opacity: delayFunction(
-            delay,
-            withTiming(1, { duration: duration * 1.5 })
-          ),
+          opacity: delayFunction(delay, withTiming(1, { duration: duration })),
           transform: [
-            { translateX: delayFunction(delay, animation(0, config)) },
+            {
+              translateX: delayFunction(
+                delay,
+                animation(0, { ...config, duration: duration * 0.7 })
+              ),
+            },
             {
               skewX: delayFunction(
                 delay,
                 withSequence(
-                  withTiming('10deg', { duration: duration }),
-                  withTiming('-5deg', { duration: duration / 5 }),
-                  withTiming('0deg', { duration: duration / 5 })
+                  withTiming('10deg', { duration: duration * 0.7 }),
+                  withTiming('-5deg', { duration: duration * 0.15 }),
+                  withTiming('0deg', { duration: duration * 0.15 })
                 )
               ),
             },
@@ -46,7 +47,8 @@ export class LightSpeedInRight
         },
         initialValues: {
           opacity: 0,
-          transform: [{ translateX: width }, { skewX: '-45deg' }],
+          transform: [{ translateX: values.windowWidth }, { skewX: '-45deg' }],
+          ...initialValues,
         },
         callback: callback,
       };
@@ -55,38 +57,40 @@ export class LightSpeedInRight
 }
 
 export class LightSpeedInLeft
-  extends BaseAnimationBuilder
-  implements IEntryExitAnimationBuilder {
+  extends ComplexAnimationBuilder
+  implements IEntryExitAnimationBuilder
+{
   static createInstance(): LightSpeedInLeft {
     return new LightSpeedInLeft();
   }
 
-  build: EntryExitAnimationBuild = () => {
+  build = (): EntryExitAnimationFunction => {
     const delayFunction = this.getDelayFunction();
     const [animation, config] = this.getAnimationAndConfig();
-    const delay = this.delayV;
-    const duration = this.durationV ? this.durationV : 250;
+    const delay = this.getDelay();
+    const duration = this.getDuration();
     const callback = this.callbackV;
+    const initialValues = this.initialValues;
 
-    return () => {
+    return (values) => {
       'worklet';
       return {
         animations: {
-          opacity: delayFunction(
-            delay,
-            withTiming(1, { duration: duration * 1.5 })
-          ),
+          opacity: delayFunction(delay, withTiming(1, { duration: duration })),
           transform: [
             {
-              translateX: delayFunction(delay, animation(0, config)),
+              translateX: delayFunction(
+                delay,
+                animation(0, { ...config, duration: duration * 0.7 })
+              ),
             },
             {
               skewX: delayFunction(
                 delay,
                 withSequence(
-                  withTiming('-10deg', { duration: duration }),
-                  withTiming('5deg', { duration: duration / 5 }),
-                  withTiming('0deg', { duration: duration / 5 })
+                  withTiming('-10deg', { duration: duration * 0.7 }),
+                  withTiming('5deg', { duration: duration * 0.15 }),
+                  withTiming('0deg', { duration: duration * 0.15 })
                 )
               ),
             },
@@ -94,7 +98,8 @@ export class LightSpeedInLeft
         },
         initialValues: {
           opacity: 0,
-          transform: [{ translateX: -width }, { skewX: '45deg' }],
+          transform: [{ translateX: -values.windowWidth }, { skewX: '45deg' }],
+          ...initialValues,
         },
         callback: callback,
       };
@@ -103,26 +108,31 @@ export class LightSpeedInLeft
 }
 
 export class LightSpeedOutRight
-  extends BaseAnimationBuilder
-  implements IEntryExitAnimationBuilder {
+  extends ComplexAnimationBuilder
+  implements IEntryExitAnimationBuilder
+{
   static createInstance(): LightSpeedOutRight {
     return new LightSpeedOutRight();
   }
 
-  build: EntryExitAnimationBuild = () => {
+  build = (): EntryExitAnimationFunction => {
     const delayFunction = this.getDelayFunction();
     const [animation, config] = this.getAnimationAndConfig();
-    const delay = this.delayV;
+    const delay = this.getDelay();
     const callback = this.callbackV;
+    const initialValues = this.initialValues;
 
-    return () => {
+    return (values) => {
       'worklet';
       return {
         animations: {
           opacity: delayFunction(delay, animation(0, config)),
           transform: [
             {
-              translateX: delayFunction(delay, animation(width, config)),
+              translateX: delayFunction(
+                delay,
+                animation(values.windowWidth, config)
+              ),
             },
             {
               skewX: delayFunction(delay, animation('-45deg', config)),
@@ -132,6 +142,7 @@ export class LightSpeedOutRight
         initialValues: {
           opacity: 1,
           transform: [{ translateX: 0 }, { skewX: '0deg' }],
+          ...initialValues,
         },
         callback: callback,
       };
@@ -140,26 +151,31 @@ export class LightSpeedOutRight
 }
 
 export class LightSpeedOutLeft
-  extends BaseAnimationBuilder
-  implements IEntryExitAnimationBuilder {
+  extends ComplexAnimationBuilder
+  implements IEntryExitAnimationBuilder
+{
   static createInstance(): LightSpeedOutLeft {
     return new LightSpeedOutLeft();
   }
 
-  build: EntryExitAnimationBuild = () => {
+  build = (): EntryExitAnimationFunction => {
     const delayFunction = this.getDelayFunction();
     const [animation, config] = this.getAnimationAndConfig();
-    const delay = this.delayV;
+    const delay = this.getDelay();
     const callback = this.callbackV;
+    const initialValues = this.initialValues;
 
-    return () => {
+    return (values) => {
       'worklet';
       return {
         animations: {
           opacity: delayFunction(delay, animation(0, config)),
           transform: [
             {
-              translateX: delayFunction(delay, animation(-width, config)),
+              translateX: delayFunction(
+                delay,
+                animation(-values.windowWidth, config)
+              ),
             },
             {
               skewX: delayFunction(delay, animation('45deg', config)),
@@ -169,6 +185,7 @@ export class LightSpeedOutLeft
         initialValues: {
           opacity: 1,
           transform: [{ translateX: 0 }, { skewX: '0deg' }],
+          ...initialValues,
         },
         callback: callback,
       };

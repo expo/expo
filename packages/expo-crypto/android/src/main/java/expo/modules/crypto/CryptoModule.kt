@@ -1,46 +1,64 @@
 package expo.modules.crypto
 
-import android.content.Context
 import android.util.Base64
-
-import expo.modules.core.ExportedModule
-import expo.modules.core.Promise
-import expo.modules.core.interfaces.ExpoMethod
-
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.kotlin.typedarray.TypedArray
 import java.security.MessageDigest
-import java.security.NoSuchAlgorithmException
+import java.security.SecureRandom
+import java.util.UUID
 
-class CryptoModule(context: Context) : ExportedModule(context) {
-  override fun getName() = "ExpoCrypto"
+class CryptoModule : Module() {
+  private val secureRandom by lazy { SecureRandom() }
 
-  @ExpoMethod
-  fun digestStringAsync(algorithm: String, data: String, options: Map<String, Any?>, promise: Promise) {
-    val encoding = options["encoding"] as String?
+  override fun definition() = ModuleDefinition {
+    Name("ExpoCrypto")
 
-    val messageDigest = try {
-      MessageDigest.getInstance(algorithm).apply { update(data.toByteArray()) }
-    } catch (e: NoSuchAlgorithmException) {
-      promise.reject("ERR_CRYPTO_DIGEST", e)
-      return
+    Function("digestString", this@CryptoModule::digestString)
+    AsyncFunction("digestStringAsync", this@CryptoModule::digestString)
+    Function("getRandomBase64String", this@CryptoModule::getRandomBase64String)
+    AsyncFunction("getRandomBase64StringAsync", this@CryptoModule::getRandomBase64String)
+    Function("getRandomValues", this@CryptoModule::getRandomValues)
+    Function("digest", this@CryptoModule::digest)
+    Function("randomUUID") {
+      UUID.randomUUID().toString()
     }
+  }
+
+  private fun getRandomBase64String(randomByteCount: Int): String {
+    val output = ByteArray(randomByteCount)
+    secureRandom.nextBytes(output)
+    return Base64.encodeToString(output, Base64.NO_WRAP)
+  }
+
+  private fun digestString(algorithm: DigestAlgorithm, data: String, options: DigestOptions): String {
+    val messageDigest = MessageDigest.getInstance(algorithm.value).apply { update(data.toByteArray()) }
 
     val digest: ByteArray = messageDigest.digest()
-    when (encoding) {
-      "base64" -> {
-        val output = Base64.encodeToString(digest, Base64.NO_WRAP)
-        promise.resolve(output)
+    return when (options.encoding) {
+      DigestOptions.Encoding.BASE64 -> {
+        Base64.encodeToString(digest, Base64.NO_WRAP)
       }
-      "hex" -> {
-        val output = digest.joinToString(separator = "") { byte ->
+      DigestOptions.Encoding.HEX -> {
+        digest.joinToString(separator = "") { byte ->
           ((byte.toInt() and 0xff) + 0x100)
             .toString(radix = 16)
             .substring(startIndex = 1)
         }
-        promise.resolve(output)
-      }
-      else -> {
-        promise.reject("ERR_CRYPTO_DIGEST", "Invalid encoding type provided.")
       }
     }
+  }
+
+  private fun digest(algorithm: DigestAlgorithm, output: TypedArray, data: TypedArray) {
+    val messageDigest = MessageDigest.getInstance(algorithm.value).apply { update(data.toDirectBuffer()) }
+
+    val digest: ByteArray = messageDigest.digest()
+    output.write(digest, output.byteOffset, output.byteLength)
+  }
+
+  private fun getRandomValues(typedArray: TypedArray) {
+    val array = ByteArray(typedArray.byteLength)
+    secureRandom.nextBytes(array)
+    typedArray.write(array, typedArray.byteOffset, typedArray.byteLength)
   }
 }

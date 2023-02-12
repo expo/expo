@@ -49,7 +49,7 @@ public class AirMapHeatmap extends AirMapFeature {
     }
     
     public void setOpacity(double opacity) {
-        this.opacity = new Double(opacity);
+        this.opacity = opacity;
         if (heatmapTileProvider != null) {
             heatmapTileProvider.setOpacity(opacity);
         }
@@ -59,7 +59,7 @@ public class AirMapHeatmap extends AirMapFeature {
     }
 
     public void setRadius(int radius) {
-        this.radius = new Integer(radius);
+        this.radius = radius;
         if (heatmapTileProvider != null) {
             heatmapTileProvider.setRadius(radius);
         }

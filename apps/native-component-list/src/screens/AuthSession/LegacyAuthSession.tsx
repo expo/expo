@@ -24,10 +24,7 @@ function toQueryString(params: object) {
  */
 export default function LegacyAuthSession() {
   const [result, setResult] = React.useState<any | null>(null);
-  const id =
-    Constants.manifest?.originalFullName ??
-    Constants.manifest2?.extra?.expoClient?.originalFullName ??
-    Constants.manifest?.id;
+  const id = Constants.expoConfig?.originalFullName ?? Constants.manifest?.id;
   const isInvalid = id !== '@community/native-component-list';
 
   if (isInvalid) {
@@ -48,7 +45,7 @@ export default function LegacyAuthSession() {
       </View>
     );
   }
-  const redirectUrl = AuthSession.getRedirectUrl();
+  const redirectUrl = AuthSession.makeRedirectUri();
   const auth0Domain = 'https://expo-testing.auth0.com';
   const authUrl =
     `${auth0Domain}/authorize` +

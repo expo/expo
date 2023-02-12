@@ -1,4 +1,5 @@
 import { StdioOptions } from 'child_process';
+
 import { spawnAsync, spawnJSONCommandAsync } from './Utils';
 
 /**
@@ -11,14 +12,18 @@ export type Podspec = {
   header_dir?: string;
   source_files: string | string[];
   exclude_files: string | string[];
+  public_header_files?: string | string[];
   preserve_paths: string | string[];
   compiler_flags: string;
   frameworks: string | string[];
+  vendored_frameworks: string | string[];
   pod_target_xcconfig: Record<string, string>;
   xcconfig: Record<string, string>;
   dependencies: Record<string, any>;
   info_plist: Record<string, string>;
   ios?: Podspec;
+  default_subspecs: string | string[];
+  subspecs: Podspec[];
 };
 
 /**

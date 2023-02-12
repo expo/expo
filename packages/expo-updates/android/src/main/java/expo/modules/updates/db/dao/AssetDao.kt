@@ -6,6 +6,9 @@ import expo.modules.updates.db.entity.UpdateAssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import java.util.*
 
+/**
+ * Utility class for accessing and modifying data in SQLite relating to assets.
+ */
 @Dao
 abstract class AssetDao {
   /**

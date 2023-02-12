@@ -2,13 +2,25 @@
   "name": "<%- project.slug %>",
   "version": "<%- project.version %>",
   "description": "<%- project.description %>",
-  "main": "build/<%- project.name %>.js",
-  "types": "build/<%- project.name %>.d.ts",
+  "main": "build/index.js",
+  "types": "build/index.d.ts",
   "scripts": {
-    "build": "tsc",
-    "lint": "eslint ."
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module",
+    "open:ios": "open -a \"Xcode\" example/ios",
+    "open:android": "open -a \"Android Studio\" example/android"
   },
-  "keywords": ["react-native", "expo", "<%- project.slug %>", "<%- project.name %>"],
+  "keywords": [
+    "react-native",
+    "expo",
+    "<%- project.slug %>",
+    "<%- project.name %>"
+  ],
   "repository": "<%- repo %>",
   "bugs": {
     "url": "<%- repo %>/issues"
@@ -18,9 +30,13 @@
   "homepage": "<%- repo %>#readme",
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
+    "@types/react": "^18.0.25",
+    "expo-module-scripts": "^3.0.7",
+    "expo-modules-core": "^1.2.1"
   },
   "peerDependencies": {
-    "expo": "*"
+    "expo": "*",
+    "react": "*",
+    "react-native": "*"
   }
 }

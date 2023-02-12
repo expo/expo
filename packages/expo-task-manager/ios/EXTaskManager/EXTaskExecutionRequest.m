@@ -4,7 +4,7 @@
 
 @interface EXTaskExecutionRequest ()
 
-@property (nonatomic, strong, nullable) NSMutableSet<id<UMTaskInterface>> *tasks;
+@property (nonatomic, strong, nullable) NSMutableSet<id<EXTaskInterface>> *tasks;
 @property (nonatomic, strong, nullable) NSMutableArray<id> *results;
 @property (nonatomic, assign) int tasksCount;
 
@@ -23,19 +23,19 @@
   return self;
 }
 
-- (void)addTask:(nonnull id<UMTaskInterface>)task
+- (void)addTask:(nonnull id<EXTaskInterface>)task
 {
   [_tasks addObject:task];
 }
 
-- (void)task:(nonnull id<UMTaskInterface>)task didFinishWithResult:(id)result
+- (void)task:(nonnull id<EXTaskInterface>)task didFinishWithResult:(id)result
 {
   [_tasks removeObject:task];
   [_results addObject:result];
   [self maybeEvaluate];
 }
 
-- (BOOL)isIncludingTask:(nullable id<UMTaskInterface>)task
+- (BOOL)isIncludingTask:(nullable id<EXTaskInterface>)task
 {
   return task && [_tasks containsObject:task];
 }

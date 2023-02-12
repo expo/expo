@@ -6,16 +6,16 @@ import inquirer from 'inquirer';
 import path from 'path';
 
 import { EXPO_DIR } from '../Constants';
-import askForPlatformAsync from '../utils/askForPlatformAsync';
-import askForSdkVersionAsync from '../utils/askForSDKVersionAsync';
 import { link } from '../Formatter';
 import Git from '../Git';
 import logger from '../Logger';
-import { modifySdkVersionsAsync, getSdkVersionsAsync } from '../Versions';
-import { ClientBuilder, ClientBuildFlavor, Platform } from '../client-build/types';
-import IosClientBuilder from '../client-build/IosClientBuilder';
-import AndroidClientBuilder from '../client-build/AndroidClientBuilder';
 import { getNewestSDKVersionAsync } from '../ProjectVersions';
+import { modifySdkVersionsAsync, getSdkVersionsAsync } from '../Versions';
+import AndroidClientBuilder from '../client-build/AndroidClientBuilder';
+import IosClientBuilder from '../client-build/IosClientBuilder';
+import { ClientBuilder, ClientBuildFlavor, Platform } from '../client-build/types';
+import askForPlatformAsync from '../utils/askForPlatformAsync';
+import askForSdkVersionAsync from '../utils/askForSDKVersionAsync';
 
 const s3Client = new aws.S3({ region: 'us-east-1' });
 const { yellow, blue, magenta } = chalk;

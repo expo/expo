@@ -8,12 +8,24 @@ exports[`doesn't conflict with Prettier: message 1`] = `
 exports[`doesn't conflict with Prettier: success 1`] = `true`;
 
 exports[`lints with the default config: fixtures/all-00.js 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [],
+  "messages": [
+    {
+      "column": 14,
+      "endColumn": 15,
+      "endLine": 30,
+      "line": 30,
+      "message": "'e' is defined but never used. Allowed unused args must match /^_/u.",
+      "messageId": "unusedVar",
+      "nodeType": "Identifier",
+      "ruleId": "no-unused-vars",
+      "severity": 1,
+    },
+  ],
   "output": "import 'hi';
 
 import a from 'a';
@@ -38,12 +50,18 @@ export class Example {
 
   hi() {
     _fn() ?? this.byeAsync();
-    m &&= {};
-    s?.a?.();
+    this.m &&= {};
+    Example.s?.a?.();
 
     try {
       _fn();
-    } catch {
+    } catch (e) {
+      _fn();
+    }
+
+    try {
+      _fn();
+    } catch (_ignored) {
       _fn();
     }
 
@@ -68,19 +86,20 @@ function _fn() {}
 
 function* gen() {}
 ",
-  "usedDeprecatedRules": Array [],
-  "warningCount": 0,
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
+  "warningCount": 1,
 }
 `;
 
 exports[`lints with the default config: fixtures/all-01.ts 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [
-    Object {
+  "messages": [
+    {
       "column": 3,
       "endColumn": 18,
       "endLine": 18,
@@ -89,6 +108,17 @@ Object {
       "messageId": "unexpected",
       "nodeType": "PropertyDefinition",
       "ruleId": "@typescript-eslint/no-dupe-class-members",
+      "severity": 1,
+    },
+    {
+      "column": 14,
+      "endColumn": 25,
+      "endLine": 25,
+      "line": 25,
+      "message": "'_notIgnored' is defined but never used.",
+      "messageId": "unusedVar",
+      "nodeType": "Identifier",
+      "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
   ],
@@ -113,6 +143,12 @@ export class Example {
 
   hi(): void {
     _fn();
+
+    try {
+      _fn();
+    } catch (_notIgnored) {
+      _fn();
+    }
   }
 
   async byeAsync(): Promise<void> {
@@ -122,19 +158,20 @@ export class Example {
 
 function _fn(...args: any): void {}
 ",
-  "usedDeprecatedRules": Array [],
-  "warningCount": 1,
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
+  "warningCount": 2,
 }
 `;
 
 exports[`lints with the default config: fixtures/all-02.js 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [
-    Object {
+  "messages": [
+    {
       "column": 7,
       "endColumn": 14,
       "endLine": 1,
@@ -142,10 +179,10 @@ Object {
       "message": "'unused1' is assigned a value but never used.",
       "messageId": "unusedVar",
       "nodeType": "Identifier",
-      "ruleId": "@typescript-eslint/no-unused-vars",
+      "ruleId": "no-unused-vars",
       "severity": 1,
     },
-    Object {
+    {
       "column": 10,
       "endColumn": 17,
       "endLine": 3,
@@ -153,10 +190,10 @@ Object {
       "message": "'unused2' is defined but never used.",
       "messageId": "unusedVar",
       "nodeType": "Identifier",
-      "ruleId": "@typescript-eslint/no-unused-vars",
+      "ruleId": "no-unused-vars",
       "severity": 1,
     },
-    Object {
+    {
       "column": 9,
       "endColumn": 16,
       "endLine": 4,
@@ -164,7 +201,7 @@ Object {
       "message": "'unused3' is assigned a value but never used.",
       "messageId": "unusedVar",
       "nodeType": "Identifier",
-      "ruleId": "@typescript-eslint/no-unused-vars",
+      "ruleId": "no-unused-vars",
       "severity": 1,
     },
   ],
@@ -174,19 +211,20 @@ function unused2() {
   const unused3 = 'hi';
 }
 ",
-  "usedDeprecatedRules": Array [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 3,
 }
 `;
 
 exports[`lints with the default config: fixtures/all-03.ts 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [
-    Object {
+  "messages": [
+    {
       "column": 7,
       "endColumn": 16,
       "endLine": 1,
@@ -197,7 +235,7 @@ Object {
       "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
-    Object {
+    {
       "column": 10,
       "endColumn": 19,
       "endLine": 3,
@@ -208,7 +246,7 @@ Object {
       "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
-    Object {
+    {
       "column": 9,
       "endColumn": 15,
       "endLine": 5,
@@ -219,7 +257,7 @@ Object {
       "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
-    Object {
+    {
       "column": 9,
       "endColumn": 25,
       "endLine": 6,
@@ -230,7 +268,7 @@ Object {
       "ruleId": "@typescript-eslint/no-unused-vars",
       "severity": 1,
     },
-    Object {
+    {
       "column": 28,
       "endColumn": 37,
       "endLine": 6,
@@ -250,48 +288,51 @@ function tsUnused2() {
   const angleBracketCast = <string>x;
 }
 ",
-  "usedDeprecatedRules": Array [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 5,
 }
 `;
 
 exports[`lints with the default config: fixtures/all-04.ts 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [],
+  "messages": [],
   "output": "export const blah = (): string[] => {
   return ['1'];
 };
 ",
-  "usedDeprecatedRules": Array [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 0,
 }
 `;
 
 exports[`lints with the default config: fixtures/all-05.ts 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [],
+  "messages": [],
   "output": "export const blah = 3!;
 ",
-  "usedDeprecatedRules": Array [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 0,
 }
 `;
 
 exports[`lints with the default config: fixtures/all-06.ts 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [],
+  "messages": [],
   "output": "export const numberTest: number | null = null;
 export const booleanTest: boolean | null = null;
 export const symbolTest: symbol | null = null;
@@ -299,18 +340,19 @@ export const objectTest: object | null = null;
 export const stringTest: string | null = null;
 export const objectShorthandTest: object | null = null;
 ",
-  "usedDeprecatedRules": Array [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 0,
 }
 `;
 
 exports[`lints with the default config: fixtures/all-07.js 1`] = `
-Object {
+{
   "errorCount": 0,
   "fatalErrorCount": 0,
   "fixableErrorCount": 0,
   "fixableWarningCount": 0,
-  "messages": Array [],
+  "messages": [],
   "output": "import b from 'b';
 import c from 'c';
 
@@ -321,7 +363,8 @@ const e = require('e');
 
 export default a + b + c + d + e;
 ",
-  "usedDeprecatedRules": Array [],
+  "suppressedMessages": [],
+  "usedDeprecatedRules": [],
   "warningCount": 0,
 }
 `;

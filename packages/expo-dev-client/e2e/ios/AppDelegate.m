@@ -5,6 +5,7 @@
 #import <React/RCTRootView.h>
 #import <React/RCTLinkingManager.h>
 
+@import ExpoModulesCore;
 @import EXDevMenu;
 
 #import <EXDevLauncher/EXDevLauncherController.h>

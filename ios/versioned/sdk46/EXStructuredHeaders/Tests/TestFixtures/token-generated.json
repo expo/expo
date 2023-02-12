@@ -1,0 +1,2862 @@
+[
+    {
+        "name": "0x00 in token",
+        "raw": [
+            "a\u0000a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x01 in token",
+        "raw": [
+            "a\u0001a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x02 in token",
+        "raw": [
+            "a\u0002a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x03 in token",
+        "raw": [
+            "a\u0003a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x04 in token",
+        "raw": [
+            "a\u0004a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x05 in token",
+        "raw": [
+            "a\u0005a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x06 in token",
+        "raw": [
+            "a\u0006a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x07 in token",
+        "raw": [
+            "a\u0007a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x08 in token",
+        "raw": [
+            "a\ba"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x09 in token",
+        "raw": [
+            "a\ta"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x0a in token",
+        "raw": [
+            "a\na"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x0b in token",
+        "raw": [
+            "a\u000ba"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x0c in token",
+        "raw": [
+            "a\fa"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x0d in token",
+        "raw": [
+            "a\ra"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x0e in token",
+        "raw": [
+            "a\u000ea"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x0f in token",
+        "raw": [
+            "a\u000fa"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x10 in token",
+        "raw": [
+            "a\u0010a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x11 in token",
+        "raw": [
+            "a\u0011a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x12 in token",
+        "raw": [
+            "a\u0012a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x13 in token",
+        "raw": [
+            "a\u0013a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x14 in token",
+        "raw": [
+            "a\u0014a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x15 in token",
+        "raw": [
+            "a\u0015a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x16 in token",
+        "raw": [
+            "a\u0016a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x17 in token",
+        "raw": [
+            "a\u0017a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x18 in token",
+        "raw": [
+            "a\u0018a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x19 in token",
+        "raw": [
+            "a\u0019a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x1a in token",
+        "raw": [
+            "a\u001aa"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x1b in token",
+        "raw": [
+            "a\u001ba"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x1c in token",
+        "raw": [
+            "a\u001ca"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x1d in token",
+        "raw": [
+            "a\u001da"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x1e in token",
+        "raw": [
+            "a\u001ea"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x1f in token",
+        "raw": [
+            "a\u001fa"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x20 in token",
+        "raw": [
+            "a a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x21 in token",
+        "raw": [
+            "a!a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a!a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x22 in token",
+        "raw": [
+            "a\"a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x23 in token",
+        "raw": [
+            "a#a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a#a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x24 in token",
+        "raw": [
+            "a$a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a$a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x25 in token",
+        "raw": [
+            "a%a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a%a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x26 in token",
+        "raw": [
+            "a&a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a&a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x27 in token",
+        "raw": [
+            "a'a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a'a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x28 in token",
+        "raw": [
+            "a(a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x29 in token",
+        "raw": [
+            "a)a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x2a in token",
+        "raw": [
+            "a*a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a*a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x2b in token",
+        "raw": [
+            "a+a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a+a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x2c in token",
+        "raw": [
+            "a,a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x2d in token",
+        "raw": [
+            "a-a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a-a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x2e in token",
+        "raw": [
+            "a.a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a.a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x2f in token",
+        "raw": [
+            "a/a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a/a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x30 in token",
+        "raw": [
+            "a0a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a0a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x31 in token",
+        "raw": [
+            "a1a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a1a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x32 in token",
+        "raw": [
+            "a2a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a2a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x33 in token",
+        "raw": [
+            "a3a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a3a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x34 in token",
+        "raw": [
+            "a4a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a4a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x35 in token",
+        "raw": [
+            "a5a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a5a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x36 in token",
+        "raw": [
+            "a6a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a6a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x37 in token",
+        "raw": [
+            "a7a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a7a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x38 in token",
+        "raw": [
+            "a8a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a8a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x39 in token",
+        "raw": [
+            "a9a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a9a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x3a in token",
+        "raw": [
+            "a:a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a:a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x3b in token",
+        "raw": [
+            "a;a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a"
+            },
+            [
+                [
+                    "a",
+                    true
+                ]
+            ]
+        ]
+    },
+    {
+        "name": "0x3c in token",
+        "raw": [
+            "a<a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x3d in token",
+        "raw": [
+            "a=a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x3e in token",
+        "raw": [
+            "a>a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x3f in token",
+        "raw": [
+            "a?a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x40 in token",
+        "raw": [
+            "a@a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x41 in token",
+        "raw": [
+            "aAa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aAa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x42 in token",
+        "raw": [
+            "aBa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aBa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x43 in token",
+        "raw": [
+            "aCa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aCa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x44 in token",
+        "raw": [
+            "aDa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aDa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x45 in token",
+        "raw": [
+            "aEa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aEa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x46 in token",
+        "raw": [
+            "aFa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aFa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x47 in token",
+        "raw": [
+            "aGa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aGa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x48 in token",
+        "raw": [
+            "aHa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aHa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x49 in token",
+        "raw": [
+            "aIa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aIa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x4a in token",
+        "raw": [
+            "aJa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aJa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x4b in token",
+        "raw": [
+            "aKa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aKa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x4c in token",
+        "raw": [
+            "aLa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aLa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x4d in token",
+        "raw": [
+            "aMa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aMa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x4e in token",
+        "raw": [
+            "aNa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aNa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x4f in token",
+        "raw": [
+            "aOa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aOa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x50 in token",
+        "raw": [
+            "aPa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aPa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x51 in token",
+        "raw": [
+            "aQa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aQa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x52 in token",
+        "raw": [
+            "aRa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aRa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x53 in token",
+        "raw": [
+            "aSa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aSa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x54 in token",
+        "raw": [
+            "aTa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aTa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x55 in token",
+        "raw": [
+            "aUa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aUa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x56 in token",
+        "raw": [
+            "aVa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aVa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x57 in token",
+        "raw": [
+            "aWa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aWa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x58 in token",
+        "raw": [
+            "aXa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aXa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x59 in token",
+        "raw": [
+            "aYa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aYa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x5a in token",
+        "raw": [
+            "aZa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aZa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x5b in token",
+        "raw": [
+            "a[a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x5c in token",
+        "raw": [
+            "a\\a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x5d in token",
+        "raw": [
+            "a]a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x5e in token",
+        "raw": [
+            "a^a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a^a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x5f in token",
+        "raw": [
+            "a_a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a_a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x60 in token",
+        "raw": [
+            "a`a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a`a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x61 in token",
+        "raw": [
+            "aaa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aaa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x62 in token",
+        "raw": [
+            "aba"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aba"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x63 in token",
+        "raw": [
+            "aca"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aca"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x64 in token",
+        "raw": [
+            "ada"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "ada"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x65 in token",
+        "raw": [
+            "aea"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aea"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x66 in token",
+        "raw": [
+            "afa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "afa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x67 in token",
+        "raw": [
+            "aga"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aga"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x68 in token",
+        "raw": [
+            "aha"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aha"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x69 in token",
+        "raw": [
+            "aia"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aia"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x6a in token",
+        "raw": [
+            "aja"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aja"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x6b in token",
+        "raw": [
+            "aka"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aka"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x6c in token",
+        "raw": [
+            "ala"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "ala"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x6d in token",
+        "raw": [
+            "ama"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "ama"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x6e in token",
+        "raw": [
+            "ana"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "ana"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x6f in token",
+        "raw": [
+            "aoa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aoa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x70 in token",
+        "raw": [
+            "apa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "apa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x71 in token",
+        "raw": [
+            "aqa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aqa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x72 in token",
+        "raw": [
+            "ara"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "ara"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x73 in token",
+        "raw": [
+            "asa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "asa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x74 in token",
+        "raw": [
+            "ata"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "ata"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x75 in token",
+        "raw": [
+            "aua"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aua"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x76 in token",
+        "raw": [
+            "ava"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "ava"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x77 in token",
+        "raw": [
+            "awa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "awa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x78 in token",
+        "raw": [
+            "axa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "axa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x79 in token",
+        "raw": [
+            "aya"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aya"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x7a in token",
+        "raw": [
+            "aza"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aza"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x7b in token",
+        "raw": [
+            "a{a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x7c in token",
+        "raw": [
+            "a|a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a|a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x7d in token",
+        "raw": [
+            "a}a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x7e in token",
+        "raw": [
+            "a~a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a~a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x7f in token",
+        "raw": [
+            "a\u007fa"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x00 starting an token",
+        "raw": [
+            "\u0000a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x01 starting an token",
+        "raw": [
+            "\u0001a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x02 starting an token",
+        "raw": [
+            "\u0002a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x03 starting an token",
+        "raw": [
+            "\u0003a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x04 starting an token",
+        "raw": [
+            "\u0004a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x05 starting an token",
+        "raw": [
+            "\u0005a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x06 starting an token",
+        "raw": [
+            "\u0006a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x07 starting an token",
+        "raw": [
+            "\u0007a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x08 starting an token",
+        "raw": [
+            "\ba"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x09 starting an token",
+        "raw": [
+            "\ta"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x0a starting an token",
+        "raw": [
+            "\na"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x0b starting an token",
+        "raw": [
+            "\u000ba"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x0c starting an token",
+        "raw": [
+            "\fa"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x0d starting an token",
+        "raw": [
+            "\ra"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x0e starting an token",
+        "raw": [
+            "\u000ea"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x0f starting an token",
+        "raw": [
+            "\u000fa"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x10 starting an token",
+        "raw": [
+            "\u0010a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x11 starting an token",
+        "raw": [
+            "\u0011a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x12 starting an token",
+        "raw": [
+            "\u0012a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x13 starting an token",
+        "raw": [
+            "\u0013a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x14 starting an token",
+        "raw": [
+            "\u0014a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x15 starting an token",
+        "raw": [
+            "\u0015a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x16 starting an token",
+        "raw": [
+            "\u0016a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x17 starting an token",
+        "raw": [
+            "\u0017a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x18 starting an token",
+        "raw": [
+            "\u0018a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x19 starting an token",
+        "raw": [
+            "\u0019a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x1a starting an token",
+        "raw": [
+            "\u001aa"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x1b starting an token",
+        "raw": [
+            "\u001ba"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x1c starting an token",
+        "raw": [
+            "\u001ca"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x1d starting an token",
+        "raw": [
+            "\u001da"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x1e starting an token",
+        "raw": [
+            "\u001ea"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x1f starting an token",
+        "raw": [
+            "\u001fa"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x20 starting an token",
+        "raw": [
+            " a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "a"
+            },
+            []
+        ],
+        "canonical": [
+            "a"
+        ]
+    },
+    {
+        "name": "0x21 starting an token",
+        "raw": [
+            "!a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x22 starting an token",
+        "raw": [
+            "\"a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x23 starting an token",
+        "raw": [
+            "#a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x24 starting an token",
+        "raw": [
+            "$a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x25 starting an token",
+        "raw": [
+            "%a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x26 starting an token",
+        "raw": [
+            "&a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x27 starting an token",
+        "raw": [
+            "'a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x28 starting an token",
+        "raw": [
+            "(a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x29 starting an token",
+        "raw": [
+            ")a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x2a starting an token",
+        "raw": [
+            "*a"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "*a"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x2b starting an token",
+        "raw": [
+            "+a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x2c starting an token",
+        "raw": [
+            ",a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x2d starting an token",
+        "raw": [
+            "-a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x2e starting an token",
+        "raw": [
+            ".a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x2f starting an token",
+        "raw": [
+            "/a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x30 starting an token",
+        "raw": [
+            "0a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x31 starting an token",
+        "raw": [
+            "1a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x32 starting an token",
+        "raw": [
+            "2a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x33 starting an token",
+        "raw": [
+            "3a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x34 starting an token",
+        "raw": [
+            "4a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x35 starting an token",
+        "raw": [
+            "5a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x36 starting an token",
+        "raw": [
+            "6a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x37 starting an token",
+        "raw": [
+            "7a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x38 starting an token",
+        "raw": [
+            "8a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x39 starting an token",
+        "raw": [
+            "9a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x3a starting an token",
+        "raw": [
+            ":a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x3b starting an token",
+        "raw": [
+            ";a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x3c starting an token",
+        "raw": [
+            "<a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x3d starting an token",
+        "raw": [
+            "=a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x3e starting an token",
+        "raw": [
+            ">a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x3f starting an token",
+        "raw": [
+            "?a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x40 starting an token",
+        "raw": [
+            "@a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x41 starting an token",
+        "raw": [
+            "Aa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Aa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x42 starting an token",
+        "raw": [
+            "Ba"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Ba"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x43 starting an token",
+        "raw": [
+            "Ca"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Ca"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x44 starting an token",
+        "raw": [
+            "Da"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Da"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x45 starting an token",
+        "raw": [
+            "Ea"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Ea"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x46 starting an token",
+        "raw": [
+            "Fa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Fa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x47 starting an token",
+        "raw": [
+            "Ga"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Ga"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x48 starting an token",
+        "raw": [
+            "Ha"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Ha"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x49 starting an token",
+        "raw": [
+            "Ia"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Ia"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x4a starting an token",
+        "raw": [
+            "Ja"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Ja"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x4b starting an token",
+        "raw": [
+            "Ka"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Ka"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x4c starting an token",
+        "raw": [
+            "La"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "La"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x4d starting an token",
+        "raw": [
+            "Ma"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Ma"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x4e starting an token",
+        "raw": [
+            "Na"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Na"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x4f starting an token",
+        "raw": [
+            "Oa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Oa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x50 starting an token",
+        "raw": [
+            "Pa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Pa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x51 starting an token",
+        "raw": [
+            "Qa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Qa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x52 starting an token",
+        "raw": [
+            "Ra"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Ra"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x53 starting an token",
+        "raw": [
+            "Sa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Sa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x54 starting an token",
+        "raw": [
+            "Ta"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Ta"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x55 starting an token",
+        "raw": [
+            "Ua"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Ua"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x56 starting an token",
+        "raw": [
+            "Va"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Va"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x57 starting an token",
+        "raw": [
+            "Wa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Wa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x58 starting an token",
+        "raw": [
+            "Xa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Xa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x59 starting an token",
+        "raw": [
+            "Ya"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Ya"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x5a starting an token",
+        "raw": [
+            "Za"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "Za"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x5b starting an token",
+        "raw": [
+            "[a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x5c starting an token",
+        "raw": [
+            "\\a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x5d starting an token",
+        "raw": [
+            "]a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x5e starting an token",
+        "raw": [
+            "^a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x5f starting an token",
+        "raw": [
+            "_a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x60 starting an token",
+        "raw": [
+            "`a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x61 starting an token",
+        "raw": [
+            "aa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "aa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x62 starting an token",
+        "raw": [
+            "ba"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "ba"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x63 starting an token",
+        "raw": [
+            "ca"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "ca"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x64 starting an token",
+        "raw": [
+            "da"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "da"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x65 starting an token",
+        "raw": [
+            "ea"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "ea"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x66 starting an token",
+        "raw": [
+            "fa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "fa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x67 starting an token",
+        "raw": [
+            "ga"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "ga"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x68 starting an token",
+        "raw": [
+            "ha"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "ha"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x69 starting an token",
+        "raw": [
+            "ia"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "ia"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x6a starting an token",
+        "raw": [
+            "ja"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "ja"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x6b starting an token",
+        "raw": [
+            "ka"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "ka"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x6c starting an token",
+        "raw": [
+            "la"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "la"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x6d starting an token",
+        "raw": [
+            "ma"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "ma"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x6e starting an token",
+        "raw": [
+            "na"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "na"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x6f starting an token",
+        "raw": [
+            "oa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "oa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x70 starting an token",
+        "raw": [
+            "pa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "pa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x71 starting an token",
+        "raw": [
+            "qa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "qa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x72 starting an token",
+        "raw": [
+            "ra"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "ra"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x73 starting an token",
+        "raw": [
+            "sa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "sa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x74 starting an token",
+        "raw": [
+            "ta"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "ta"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x75 starting an token",
+        "raw": [
+            "ua"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "ua"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x76 starting an token",
+        "raw": [
+            "va"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "va"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x77 starting an token",
+        "raw": [
+            "wa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "wa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x78 starting an token",
+        "raw": [
+            "xa"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "xa"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x79 starting an token",
+        "raw": [
+            "ya"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "ya"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x7a starting an token",
+        "raw": [
+            "za"
+        ],
+        "header_type": "item",
+        "expected": [
+            {
+                "__type": "token",
+                "value": "za"
+            },
+            []
+        ]
+    },
+    {
+        "name": "0x7b starting an token",
+        "raw": [
+            "{a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x7c starting an token",
+        "raw": [
+            "|a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x7d starting an token",
+        "raw": [
+            "}a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x7e starting an token",
+        "raw": [
+            "~a"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    },
+    {
+        "name": "0x7f starting an token",
+        "raw": [
+            "\u007fa"
+        ],
+        "header_type": "item",
+        "must_fail": true
+    }
+]

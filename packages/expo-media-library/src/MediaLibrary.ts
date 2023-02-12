@@ -10,7 +10,7 @@ import {
 } from 'expo-modules-core';
 import { Platform } from 'react-native';
 
-import MediaLibrary from './ExponentMediaLibrary';
+import MediaLibrary from './ExpoMediaLibrary';
 
 const eventEmitter = new EventEmitter(MediaLibrary);
 
@@ -152,7 +152,7 @@ export type MediaSubtype =
 export type MediaLibraryAssetInfoQueryOptions = {
   /**
    * Whether allow the asset to be downloaded from network. Only available in iOS with iCloud assets.
-   * @default `true`
+   * @default true
    */
   shouldDownloadFromNetwork?: boolean;
 };
@@ -248,7 +248,7 @@ export type AlbumsOptions = {
 export type AssetsOptions = {
   /**
    * The maximum number of items on a single page.
-   * @default `20`
+   * @default 20
    */
   first?: number;
   /**
@@ -270,7 +270,7 @@ export type AssetsOptions = {
   sortBy?: SortByValue[] | SortByValue;
   /**
    * An array of [MediaTypeValue](#expomedialibrarymediatypevalue)s or a single `MediaTypeValue`.
-   * @default `MediaType.photo`
+   * @default MediaType.photo
    */
   mediaType?: MediaTypeValue[] | MediaTypeValue;
   /**
@@ -431,7 +431,7 @@ export async function getPermissionsAsync(writeOnly: boolean = false): Promise<P
  *
  * @example
  * ```ts
- * const [status, requestPermission] = MediaLibrary.usePermissions();
+ * const [permissionResponse, requestPermission] = MediaLibrary.usePermissions();
  * ```
  */
 export const usePermissions = createPermissionHook<PermissionResponse, { writeOnly?: boolean }>({
@@ -460,7 +460,7 @@ export async function presentPermissionsPickerAsync(): Promise<void> {
 
 // @needsAudit
 /**
- * Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](../camera).
+ * Creates an asset from existing file. The most common use case is to save a picture taken by [Camera](./camera).
  * This method requires `CAMERA_ROLL` permission.
  *
  * @example
@@ -592,7 +592,7 @@ export async function deleteAssetsAsync(assets: AssetRef[] | AssetRef): Promise<
  * Provides more information about an asset, including GPS location, local URI and EXIF metadata.
  * @param asset An [Asset](#asset) or its ID.
  * @param options
- * @return [AssetInfo](#assetinfo) object, which is an `Asset` extended by an additional fields.
+ * @return An [AssetInfo](#assetinfo) object, which is an `Asset` extended by an additional fields.
  */
 export async function getAssetInfoAsync(
   asset: AssetRef,

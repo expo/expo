@@ -1,4 +1,3 @@
-import React from 'react';
 import { AppleAuthenticationButtonProps } from './AppleAuthentication.types';
 /**
  * This component displays the proprietary "Sign In with Apple" / "Continue with Apple" button on
@@ -23,6 +22,5 @@ import { AppleAuthenticationButtonProps } from './AppleAuthentication.types';
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton)
  * for more details.
  */
-declare const AppleAuthenticationButton: React.FC<AppleAuthenticationButtonProps>;
-export default AppleAuthenticationButton;
+export default function AppleAuthenticationButton({ onPress, ...restProps }: AppleAuthenticationButtonProps): JSX.Element | null;
 //# sourceMappingURL=AppleAuthenticationButton.d.ts.map

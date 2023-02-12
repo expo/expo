@@ -5,8 +5,9 @@
 #import <ExpoModulesCore/EXModuleRegistry.h>
 #import <ExpoModulesCore/EXAppLifecycleListener.h>
 #import <EXBarCodeScanner/EXBarCodeScannerView.h>
+#import <ExpoModulesCore/EXLegacyExpoViewProtocol.h>
 
-@interface EXBarCodeScannerView : UIView <EXAppLifecycleListener>
+@interface EXBarCodeScannerView : UIView <EXAppLifecycleListener, EXLegacyExpoViewProtocol>
 
 @property (nonatomic, assign) NSInteger presetCamera;
 @property (nonatomic, strong) NSArray *barCodeTypes;

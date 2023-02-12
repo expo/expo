@@ -6,7 +6,7 @@ import { NativeLinearGradientPoint } from './NativeLinearGradient.types';
  * at which the gradient starts or ends, as a fraction of the overall size of the gradient ranging
  * from `0` to `1`, inclusive.
  */
-export declare type LinearGradientPoint = {
+export type LinearGradientPoint = {
     /**
      * A number ranging from `0` to `1`, representing the position of gradient transformation.
      */
@@ -16,7 +16,7 @@ export declare type LinearGradientPoint = {
      */
     y: number;
 } | NativeLinearGradientPoint;
-export declare type LinearGradientProps = ViewProps & {
+export type LinearGradientProps = ViewProps & {
     /**
      * An array of colors that represent stops in the gradient. At least two colors are required
      * (for a single-color background, use the `style.backgroundColor` prop on a `View` component).
@@ -25,6 +25,7 @@ export declare type LinearGradientProps = ViewProps & {
     /**
      * An array that contains `number`s ranging from `0` to `1`, inclusive, and is the same length as the `colors` property.
      * Each number indicates a color-stop location where each respective color should be located.
+     * If not specified, the colors will be distributed evenly across the gradient.
      *
      * For example, `[0.5, 0.8]` would render:
      * - the first color, solid, from the beginning of the gradient view to 50% through (the middle);
@@ -32,7 +33,7 @@ export declare type LinearGradientProps = ViewProps & {
      * - the second color, solid, from the 80% point to the end of the gradient view.
      *
      * > The color-stop locations must be ascending from least to greatest.
-     * @default [0.0, 1.0]
+     * @default []
      */
     locations?: number[] | null;
     /**

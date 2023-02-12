@@ -1,64 +1,64 @@
-def DEFAULT_COMPILE_SDK_VERSION = 30
-def DEFAULT_BUILD_TOOLS_VERSION = '30.0.2'
-def DEFAULT_MIN_SDK_VERSION = 21
-def DEFAULT_TARGET_SDK_VERSION = 30
-
-def DEFAULT_OKHTTP_VERSION = '3.14.9'
-
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
-apply plugin: 'maven'
+apply plugin: 'maven-publish'
 apply plugin: 'kotlin-kapt'
 
 buildscript {
+  def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
+  if (expoModulesCorePlugin.exists()) {
+    apply from: expoModulesCorePlugin
+    applyKotlinExpoModulesCorePlugin()
+  }
+
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->
     rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
   }
 
-  // The Android Gradle plugin is only required when opening the android folder stand-alone.
-  // This avoids unnecessary downloads and potential conflicts when the library is included as a
-  // module dependency in an application project.
-  // ref: https://docs.gradle.org/current/userguide/tutorial_using_tasks.html#sec:build_script_external_dependencies
-  if (project == rootProject) {
-    repositories {
-      google()
-      jcenter()
+  // Ensures backward compatibility
+  ext.getKotlinVersion = {
+    if (ext.has("kotlinVersion")) {
+      ext.kotlinVersion()
+    } else {
+      ext.safeExtGet("kotlinVersion", "1.8.10")
     }
-    dependencies {
-      classpath 'com.android.tools.build:gradle:4.2.2'
-      classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${safeExtGet('kotlinVersion', '1.6.10')}")
-    }
+  }
+
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
   }
 }
 
 android {
-  compileSdkVersion safeExtGet('compileSdkVersion', DEFAULT_COMPILE_SDK_VERSION)
-  buildToolsVersion safeExtGet('buildToolsVersion', DEFAULT_BUILD_TOOLS_VERSION)
+  compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
   compileOptions {
-    sourceCompatibility JavaVersion.VERSION_1_8
-    targetCompatibility JavaVersion.VERSION_1_8
+    sourceCompatibility JavaVersion.VERSION_11
+    targetCompatibility JavaVersion.VERSION_11
+  }
+
+  kotlinOptions {
+    jvmTarget = JavaVersion.VERSION_11.majorVersion
   }
 
   defaultConfig {
-    minSdkVersion safeExtGet('minSdkVersion', DEFAULT_MIN_SDK_VERSION)
-    targetSdkVersion safeExtGet('targetSdkVersion', DEFAULT_TARGET_SDK_VERSION)
+    minSdkVersion safeExtGet("minSdkVersion", 21)
+    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 1
-    versionName "0.2.0"
+    versionName "1.0.0-rc.0"
   }
   lintOptions {
     abortOnError false
   }
-  sourceSets {
-    main {
-      java {
-        if (safeExtGet("excludeAppGlideModule", false)) {
-          srcDir "src"
-          exclude "**/ExpoImageAppGlideModule.java"
-        }
-      }
-    }
+}
+
+if (safeExtGet("excludeAppGlideModule", false)) {
+  tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
+    exclude("**/ExpoImageAppGlideModule.kt")
   }
 }
 
@@ -78,39 +78,25 @@ repositories {
 }
 
 dependencies {
-  def GLIDE_VERSION = "4.12.0"
+  def GLIDE_VERSION = "4.13.2"
+
+  implementation project(':expo-modules-core')
 
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'  // From node_modules
 
-  implementation "com.github.zjupure:webpdecoder:2.0.${GLIDE_VERSION}"
+  implementation "com.github.zjupure:webpdecoder:2.1.${GLIDE_VERSION}"
   api "com.github.bumptech.glide:glide:${GLIDE_VERSION}"
   kapt "com.github.bumptech.glide:compiler:${GLIDE_VERSION}"
   api 'com.caverock:androidsvg-aar:1.4'
 
+  implementation "com.github.penfeizhou.android.animation:glide-plugin:2.24.0"
+  implementation "com.github.bumptech.glide:avif-integration:${GLIDE_VERSION}"
+
   api 'com.github.bumptech.glide:okhttp3-integration:4.11.0'
-  api "com.squareup.okhttp3:okhttp:${safeExtGet("okHttpVersion", DEFAULT_OKHTTP_VERSION)}"
+  api "com.squareup.okhttp3:okhttp:${safeExtGet("okHttpVersion", '4.9.2')}"
 
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.5.1'
-  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
+  implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
   implementation "jp.wasabeef:glide-transformations:4.3.0"
 }
-
-// [BEGIN] Workaround okhttp/okio compatibility issue
-// Remove when we drop support for SDK 44
-def okhttpPinnedArtifacts = []
-configurations.api.getDependencies().removeIf { it ->
-  if (['com.squareup.okhttp3', 'com.squareup.okio'].contains(it.group)) {
-    okhttpPinnedArtifacts.add("${it.group}:${it.name}:${it.version}")
-    return true
-  }
-  return false
-}
-okhttpPinnedArtifacts.each { artifact ->
-  dependencies.add('compileOnly', artifact)
-  dependencies.add('testApi', artifact)
-  configurations.all {
-    resolutionStrategy.force(artifact)
-  }
-}
-// [END] Workaround okhttp/okio compatibility issue

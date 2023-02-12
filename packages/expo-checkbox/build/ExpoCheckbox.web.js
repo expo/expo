@@ -7,38 +7,40 @@
  *
  * see: https://github.com/necolas/react-native-web
  */
-import React, { useCallback } from 'react';
+import React from 'react';
 // @ts-ignore
 import { StyleSheet, View, unstable_createElement as createElement } from 'react-native';
-const ExpoCheckbox = (props) => {
-    const { color, disabled, onChange, onValueChange, style, value, ...other } = props;
-    const handleChange = useCallback((event) => {
+export default class ExpoCheckbox extends React.PureComponent {
+    handleChange = (event) => {
         const value = event.nativeEvent.target.checked;
         event.nativeEvent.value = value;
-        onChange && onChange(event);
-        onValueChange && onValueChange(value);
-    }, [onChange, onValueChange]);
-    const fakeControl = (React.createElement(View, { pointerEvents: "none", style: [
-            styles.fakeControl,
-            value && styles.fakeControlChecked,
-            // custom color
-            !!color && { backgroundColor: value ? color : undefined, borderColor: color },
-            disabled && styles.fakeControlDisabled,
-            value && disabled && styles.fakeControlCheckedAndDisabled,
-        ] }));
-    const nativeControl = createElement('input', {
-        accessibilityState: { disabled, checked: value },
-        checked: value,
-        disabled,
-        onChange: handleChange,
-        style: [styles.nativeControl, styles.cursorInherit],
-        type: 'checkbox',
-    });
-    return (React.createElement(View, { ...other, style: [styles.root, style, disabled && styles.cursorDefault] },
-        nativeControl,
-        fakeControl));
-};
-ExpoCheckbox.displayName = 'Checkbox';
+        this.props.onChange?.(event);
+        this.props.onValueChange?.(value);
+    };
+    render() {
+        const { color, disabled, onChange, onValueChange, style, value, ...other } = this.props;
+        const fakeControl = (React.createElement(View, { pointerEvents: "none", style: [
+                styles.fakeControl,
+                value && styles.fakeControlChecked,
+                // custom color
+                !!color && { backgroundColor: value ? color : undefined, borderColor: color },
+                disabled && styles.fakeControlDisabled,
+                value && disabled && styles.fakeControlCheckedAndDisabled,
+            ] }));
+        const nativeControl = createElement('input', {
+            accessibilityChecked: value,
+            accessibilityDisabled: disabled,
+            checked: value,
+            disabled,
+            onChange: this.handleChange,
+            style: [styles.nativeControl, styles.cursorInherit],
+            type: 'checkbox',
+        });
+        return (React.createElement(View, { ...other, style: [styles.root, style, disabled && styles.cursorDefault] },
+            nativeControl,
+            fakeControl));
+    }
+}
 const styles = StyleSheet.create({
     root: {
         // @ts-ignore
@@ -91,10 +93,5 @@ const styles = StyleSheet.create({
         WebkitAppearance: 'none',
     },
 });
-export default ExpoCheckbox;
-ExpoCheckbox.isAvailableAsync = () => {
-    console.warn('Checkbox.isAvailableAsync() is deprecated and will be removed in future releases');
-    return Promise.resolve(true);
-};
 export const name = 'ExpoCheckbox';
 //# sourceMappingURL=ExpoCheckbox.web.js.map

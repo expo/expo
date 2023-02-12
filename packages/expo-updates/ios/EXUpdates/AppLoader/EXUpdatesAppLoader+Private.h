@@ -12,6 +12,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, strong) EXUpdatesConfig *config;
 @property (nonatomic, strong) EXUpdatesDatabase *database;
 @property (nonatomic, strong) NSURL *directory;
+@property (nonatomic, strong, nullable) EXUpdatesUpdate *launchedUpdate;
 @property (nonatomic, strong) EXUpdatesUpdate *updateManifest;
 @property (nonatomic, copy) EXUpdatesAppLoaderManifestBlock manifestBlock;
 @property (nonatomic, copy) EXUpdatesAppLoaderAssetBlock assetBlock;

@@ -4,43 +4,68 @@ import { Platform, CodedError, UnavailabilityError } from 'expo-modules-core';
 
 import { setAutoServerRegistrationEnabledAsync } from './DevicePushTokenAutoRegistration.fx';
 import ServerRegistrationModule from './ServerRegistrationModule';
-import { DevicePushToken, ExpoPushToken } from './Tokens.types';
+import { DevicePushToken, ExpoPushToken, ExpoPushTokenOptions } from './Tokens.types';
 import getDevicePushTokenAsync from './getDevicePushTokenAsync';
 
 const productionBaseUrl = 'https://exp.host/--/api/v2/';
 
-interface Options {
-  // Endpoint URL override
-  baseUrl?: string;
-
-  // Request URL override
-  url?: string;
-
-  // Request body overrides
-  type?: string;
-  deviceId?: string;
-  development?: boolean;
-  experienceId?: string;
-  projectId?: string;
-  applicationId?: string;
-  devicePushToken?: DevicePushToken;
-}
-
-export default async function getExpoPushTokenAsync(options: Options = {}): Promise<ExpoPushToken> {
+/**
+ * Returns an Expo token that can be used to send a push notification to the device using Expo's push notifications service.
+ *
+ * This method makes requests to the Expo's servers. It can get rejected in cases where the request itself fails
+ * (for example, due to the device being offline, experiencing a network timeout, or other HTTPS request failures).
+ * To provide offline support to your users, you should `try/catch` this method and implement retry logic to attempt
+ * to get the push token later, once the device is back online.
+ *
+ * > For Expo's backend to be able to send notifications to your app, you will need to provide it with push notification keys.
+ * For more information, see [credentials](/push-notifications/push-notifications-setup/#get-credentials-for-development-builds) in the push notifications setup.
+ *
+ * @param options Object allowing you to pass in push notification configuration.
+ * @return Returns a `Promise` that resolves to an object representing acquired push token.
+ * @header fetch
+ *
+ * @example
+ * ```ts
+ * import * as Notifications from 'expo-notifications';
+ *
+ * export async function registerForPushNotificationsAsync(userId: string) {
+ *   const expoPushToken = await Notifications.getExpoPushTokenAsync({
+ *    projectId: 'your-project-id',
+ *   });
+ *
+ *   await fetch('https://example.com/', {
+ *     method: 'POST',
+ *     headers: {
+ *       'Content-Type': 'application/json',
+ *     },
+ *     body: JSON.stringify({
+ *       userId,
+ *       expoPushToken,
+ *     }),
+ *   });
+ * }
+ * ```
+ */
+export default async function getExpoPushTokenAsync(
+  options: ExpoPushTokenOptions = {}
+): Promise<ExpoPushToken> {
   const devicePushToken = options.devicePushToken || (await getDevicePushTokenAsync());
 
   const deviceId = options.deviceId || (await getDeviceIdAsync());
 
   const experienceId =
-    options.experienceId ||
-    Constants.manifest?.originalFullName ||
-    Constants.manifest2?.extra?.expoClient?.originalFullName ||
-    Constants.manifest?.id;
+    options.experienceId || Constants.expoConfig?.originalFullName || Constants.manifest?.id;
 
   const projectId =
     options.projectId ||
-    Constants.manifest2?.extra?.eas?.projectId ||
+    Constants.expoConfig?.extra?.eas?.projectId ||
     Constants.manifest?.projectId;
+
+  if (!projectId) {
+    console.warn(
+      'Calling getExpoPushTokenAsync without specifying a projectId is deprecated and will no longer be supported in SDK 49+'
+    );
+  }
 
   if (!experienceId && !projectId) {
     throw new CodedError(
@@ -89,7 +114,7 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
     let body: string | undefined = undefined;
     try {
       body = await response.text();
-    } catch (error) {
+    } catch {
       // do nothing
     }
     throw new CodedError(
@@ -124,7 +149,7 @@ export default async function getExpoPushTokenAsync(options: Options = {}): Prom
 async function parseResponse(response: Response) {
   try {
     return await response.json();
-  } catch (error) {
+  } catch {
     try {
       throw new CodedError(
         'ERR_NOTIFICATIONS_SERVER_ERROR',
@@ -132,7 +157,7 @@ async function parseResponse(response: Response) {
           await response.text()
         )}.`
       );
-    } catch (innerError) {
+    } catch {
       throw new CodedError(
         'ERR_NOTIFICATIONS_SERVER_ERROR',
         `Expected a JSON response from server when fetching Expo token, received response: ${JSON.stringify(
@@ -198,7 +223,7 @@ async function shouldUseDevelopmentNotificationService() {
       if (notificationServiceEnvironment === 'development') {
         return true;
       }
-    } catch (e) {
+    } catch {
       // We can't do anything here, we'll fallback to false then.
     }
   }

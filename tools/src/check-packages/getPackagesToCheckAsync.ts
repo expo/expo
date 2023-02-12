@@ -1,8 +1,8 @@
 import chalk from 'chalk';
 
+import { formatCommitHash } from '../Formatter';
 import Git from '../Git';
 import logger from '../Logger';
-import { formatCommitHash } from '../Formatter';
 import { getListOfPackagesAsync } from '../Packages';
 import { ActionOptions } from './types';
 
@@ -37,7 +37,7 @@ export default async function getPackagesToCheckAsync(options: ActionOptions) {
     });
   }
 
-  const sinceRef = options.since ?? 'master';
+  const sinceRef = options.since ?? 'main';
   const mergeBase = await safeGetMergeBaseAsync(sinceRef);
 
   if (!mergeBase) {

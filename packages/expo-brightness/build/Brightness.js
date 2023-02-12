@@ -1,6 +1,7 @@
-import { createPermissionHook, PermissionStatus, UnavailabilityError, } from 'expo-modules-core';
+import { createPermissionHook, PermissionStatus, UnavailabilityError, EventEmitter, } from 'expo-modules-core';
 import { Platform } from 'react-native';
 import ExpoBrightness from './ExpoBrightness';
+const BrightnessEventEmitter = new EventEmitter(ExpoBrightness);
 // @needsAudit
 export var BrightnessMode;
 (function (BrightnessMode) {
@@ -94,6 +95,13 @@ export async function setSystemBrightnessAsync(brightnessValue) {
     }
     return await ExpoBrightness.setSystemBrightnessAsync(clampedBrightnessValue);
 }
+/**
+ * @deprecated Use [`restoreSystemBrightnessAsync`](#brightnessrestoresystembrightnessasync) method instead.
+ * @platform android
+ */
+export async function useSystemBrightnessAsync() {
+    return restoreSystemBrightnessAsync();
+}
 // @needsAudit
 /**
  * Resets the brightness setting of the current activity to use the system-wide
@@ -101,12 +109,11 @@ export async function setSystemBrightnessAsync(brightnessValue) {
  * @return A `Promise` that fulfils when the setting has been successfully changed.
  * @platform android
  */
-export async function useSystemBrightnessAsync() {
+export async function restoreSystemBrightnessAsync() {
     if (Platform.OS !== 'android') {
         return;
     }
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    return await ExpoBrightness.useSystemBrightnessAsync();
+    return await ExpoBrightness.restoreSystemBrightnessAsync();
 }
 // @needsAudit
 /**
@@ -172,11 +179,25 @@ export async function requestPermissionsAsync() {
  *
  * @example
  * ```ts
- * const [status, requestPermission] = Brightness.usePermissions();
+ * const [permissionResponse, requestPermission] = Brightness.usePermissions();
  * ```
  */
 export const usePermissions = createPermissionHook({
     getMethod: getPermissionsAsync,
     requestMethod: requestPermissionsAsync,
 });
+// @needsAudit
+/**
+ * Subscribe to brightness (iOS) updates. The event fires whenever
+ * the power mode is toggled.
+ *
+ * On web and android the event never fires.
+ * @param listener A callback that is invoked when brightness (iOS) changes.
+ * The callback is provided a single argument that is an object with a `brightness` key.
+ * @return A `Subscription` object on which you can call `remove()` to unsubscribe from the listener.
+ * @platform ios
+ */
+export function addBrightnessListener(listener) {
+    return BrightnessEventEmitter.addListener('Expo.brightnessDidChange', listener);
+}
 //# sourceMappingURL=Brightness.js.map

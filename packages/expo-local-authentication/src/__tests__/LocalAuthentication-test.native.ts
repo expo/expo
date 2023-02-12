@@ -12,6 +12,7 @@ it(`uses options`, async () => {
     cancelLabel: 'Abort',
     fallbackLabel: 'Use passcode',
     disableDeviceFallback: false,
+    requireConfirmation: true,
   };
   await LocalAuthentication.authenticateAsync(options);
 

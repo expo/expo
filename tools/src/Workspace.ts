@@ -1,9 +1,9 @@
 import JsonFile from '@expo/json-file';
 import path from 'path';
 
+import { EXPO_DIR } from './Constants';
 import { Package } from './Packages';
 import { spawnAsync, spawnJSONCommandAsync } from './Utils';
-import { EXPO_DIR } from './Constants';
 
 const NATIVE_APPS_PATHS = [EXPO_DIR, path.join(EXPO_DIR, 'apps/bare-expo')];
 

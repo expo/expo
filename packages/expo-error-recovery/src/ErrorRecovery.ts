@@ -2,14 +2,16 @@ import { setRecoveryPropsToSave } from './ErroRecoveryStore';
 import ExpoErrorRecovery from './ExpoErrorRecovery';
 import './ErrorRecovery.fx';
 
-// @docsMissing
+/** @deprecated This package only works with the deprecated classic Expo build service. */
 export const recoveredProps = _getRecoveredProps();
 
-// @docsMissing
+/** @deprecated This package only works with the deprecated classic Expo build service. */
 export type ErrorRecoveryProps = Record<string, any>;
 
 // @needsAudit
 /**
+ * @deprecated This package only works with the deprecated classic Expo build service.
+ *
  * Set arbitrary error recovery props. If your project crashes in production as a result of a fatal
  * JS error, Expo will reload your project. If you've set these props, they'll be passed to your
  * reloaded project's initial props under `exp.errorRecovery`. Access to `localStorage` is required

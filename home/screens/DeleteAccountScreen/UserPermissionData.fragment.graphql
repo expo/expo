@@ -1,0 +1,11 @@
+fragment UserPermissionData on UserPermission {
+  permissions
+  role
+  user {
+    id
+    fullName
+    profilePhoto
+    username
+    email
+  }
+}

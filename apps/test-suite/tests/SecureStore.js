@@ -108,7 +108,7 @@ export function test(t) {
             t.fail(result);
           } catch (e) {
             t.expect(e).toBeTruthy();
-            t.expect(e.message).toMatch(`Could not decrypt the item in SecureStore`);
+            t.expect(e.message).toMatch(`Could not encrypt/decrypt the value for SecureStore`);
           }
         });
       }

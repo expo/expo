@@ -10,6 +10,60 @@
 
 ### 💡 Others
 
+## 4.0.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0 — 2023-02-03
+
+### 🛠 Breaking changes
+
+- Removed the deprecated `Linking.removeEventListener`. ([#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Fix link in README that was incorrectly pointing to to expo-asset. ([#20616](https://github.com/expo/expo/pull/20616) by [@stereoplegic](https://github.com/stereoplegic))
+
+## 3.2.3 — 2022-10-25
+
+### 🐛 Bug fixes
+
+- Recognize EAS Updates (u.expo.dev) URL's as Expo-hosted so `createURL` can make a valid default URL for expo-auth-session ([#19258](https://github.com/expo/expo/pull/19258) by [@confraria](https://github.com/confraria)) and [@keith-kurak](https://github.com/keith-kurak))
+
+### 💡 Others
+
+- Update docs link. ([#18935](https://github.com/expo/expo/pull/18935) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 3.2.2 — 2022-07-25
+
+_This version does not introduce any user-facing changes._
+
+## 3.2.1 — 2022-07-16
+
+_This version does not introduce any user-facing changes._
+
+## 3.2.0 — 2022-07-07
+
+### 🐛 Bug fixes
+
+- Fix bug in isExpoHosted for new manifests. ([#17402](https://github.com/expo/expo/pull/17402) by [@wschurman](https://github.com/wschurman))
+- Fix `addEventListener` not returning a subscription on web. ([#17925](https://github.com/expo/expo/pull/17925) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 3.1.0 — 2022-04-18
+
+### 🎉 New features
+
+- `addEventListener` returns `EmitterSubscription` rather than `void` ([#17014](https://github.com/expo/expo/pull/17014) by [@frankcalise](https://github.com/frankcalise))
+
+### 🐛 Bug fixes
+
+- `addEventListener` and `removeEventListener` only accept `'url'` as `type` param, rather than `string`
+- `useURL` hook now cleans up `addEventListener` via `remove` rather than `removeEventListener` ([#17014](https://github.com/expo/expo/pull/17014) by [@frankcalise](https://github.com/frankcalise))
+
+### 💡 Others
+
+- Export public `Schemes` methods in main file. ([#17058](https://github.com/expo/expo/pull/17058) by [@Simek](https://github.com/Simek))
+
 ## 3.0.0 — 2021-12-03
 
 ### 🛠 Breaking changes

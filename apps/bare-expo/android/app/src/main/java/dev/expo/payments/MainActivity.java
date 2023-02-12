@@ -1,19 +1,19 @@
 package dev.expo.payments;
 
-import android.app.Activity;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.net.Uri;
 import android.os.Bundle;
 
+import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
-import com.facebook.react.ReactRootView;
+import com.facebook.react.defaults.DefaultNewArchitectureEntryPoint;
+import com.facebook.react.defaults.DefaultReactActivityDelegate;
+
 
 import expo.modules.ReactActivityDelegateWrapper;
-import expo.modules.devlauncher.DevLauncherController;
-import expo.modules.devmenu.react.DevMenuAwareReactActivity;
 
-public class MainActivity extends DevMenuAwareReactActivity {
+public class MainActivity extends ReactActivity {
 
   /**
    * Returns the name of the main component registered from JavaScript.
@@ -25,10 +25,28 @@ public class MainActivity extends DevMenuAwareReactActivity {
   }
 
   @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    // https://github.com/software-mansion/react-native-screens/issues/17#issuecomment-424704067
+    // https://reactnavigation.org/docs/getting-started/#installing-dependencies-into-a-bare-react-native-project
+    super.onCreate(null);
+  }
+
+  /**
+   * Returns the instance of the {@link ReactActivityDelegate}. Here we use a util class {@link
+   * DefaultReactActivityDelegate} which allows you to easily enable Fabric and Concurrent React
+   * (aka React 18) with two boolean flags.
+   */
+  @Override
   protected ReactActivityDelegate createReactActivityDelegate() {
-    Activity activity = this;
-    ReactActivityDelegate delegate = new ReactActivityDelegateWrapper(this,
-      new ReactActivityDelegate(this, getMainComponentName()) {
+    return new ReactActivityDelegateWrapper(this, BuildConfig.IS_NEW_ARCHITECTURE_ENABLED, new DefaultReactActivityDelegate(
+        this,
+        getMainComponentName(),
+        // If you opted-in for the New Architecture, we enable the Fabric Renderer.
+        DefaultNewArchitectureEntryPoint.getFabricEnabled(), // fabricEnabled
+        // If you opted-in for the New Architecture, we enable Concurrent React (i.e. React 18).
+        DefaultNewArchitectureEntryPoint.getConcurrentReactEnabled() // concurrentRootEnabled
+        ) {
+
       @Override
       protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -47,21 +65,5 @@ public class MainActivity extends DevMenuAwareReactActivity {
         }
       }
     });
-
-    if (MainApplication.USE_DEV_CLIENT) {
-      return DevLauncherController.wrapReactActivityDelegate(this, () -> delegate);
-    }
-
-    return delegate;
-  }
-
-  @Override
-  public void onNewIntent(Intent intent) {
-    if (MainApplication.USE_DEV_CLIENT) {
-      if (DevLauncherController.tryToHandleIntent(this, intent)) {
-        return;
-      }
-    }
-    super.onNewIntent(intent);
   }
 }

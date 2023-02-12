@@ -4,7 +4,7 @@
 #import "EXKernel.h"
 #import "EXRemoteNotificationManager.h"
 #import "EXEnvironment.h"
-#import "EXAppLoader.h"
+#import "EXAbstractLoader.h"
 
 static NSString * const scopedIdentifierSeparator = @":";
 
@@ -66,12 +66,6 @@ static NSString * const scopedIdentifierSeparator = @":";
       // If user specifically set `notification.iosDisplayInForeground` in `app.json`.
       shouldDisplayInForeground = [visibleAppManifest.notificationPreferences[@"iosDisplayInForeground"] boolValue];
     }
-  }
-
-  NSDictionary *userInfo = notification.request.content.userInfo;
-  if (userInfo && userInfo[@"body"] && userInfo[@"body"][@"_displayInForeground"]) {
-    // If user specifically set `_displayInForeground` in the notification, it always override `notification.iosDisplayInForeground` in `app.json`.
-    shouldDisplayInForeground = [userInfo[@"body"][@"_displayInForeground"] boolValue];
   }
 
   // Notifications were only shown while the app wasn't active or if the user specifies to do so.

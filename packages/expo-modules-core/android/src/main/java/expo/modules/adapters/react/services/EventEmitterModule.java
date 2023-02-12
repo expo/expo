@@ -5,12 +5,15 @@ import android.os.Bundle;
 import com.facebook.react.bridge.Arguments;
 import com.facebook.react.bridge.ReactContext;
 import com.facebook.react.modules.core.DeviceEventManagerModule;
+import com.facebook.react.uimanager.UIManagerHelper;
 import com.facebook.react.uimanager.UIManagerModule;
+import com.facebook.react.uimanager.events.EventDispatcher;
 import com.facebook.react.uimanager.events.RCTEventEmitter;
 
 import java.util.Collections;
 import java.util.List;
 
+import expo.modules.adapters.react.views.ViewManagerAdapterUtils;
 import expo.modules.core.interfaces.InternalModule;
 import expo.modules.core.interfaces.services.EventEmitter;
 
@@ -28,20 +31,22 @@ public class EventEmitterModule implements EventEmitter, InternalModule {
 
   @Override
   public void emit(final int viewId, final Event event) {
-    mReactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(getReactEventFromEvent(viewId, event));
+    final EventDispatcher dispatcher = UIManagerHelper.getEventDispatcherForReactTag(mReactContext, viewId);
+    dispatcher.dispatchEvent(getReactEventFromEvent(viewId, event));
   }
 
   @Override
   public void emit(final int viewId, final String eventName, final Bundle eventBody) {
-    mReactContext.getNativeModule(UIManagerModule.class).getEventDispatcher().dispatchEvent(new com.facebook.react.uimanager.events.Event(viewId) {
+    final EventDispatcher dispatcher = UIManagerHelper.getEventDispatcherForReactTag(mReactContext, viewId);
+    dispatcher.dispatchEvent(new com.facebook.react.uimanager.events.Event(viewId) {
       @Override
       public String getEventName() {
-        return eventName;
+        return ViewManagerAdapterUtils.normalizeEventName(eventName);
       }
 
       @Override
       public void dispatch(RCTEventEmitter rctEventEmitter) {
-        rctEventEmitter.receiveEvent(viewId, eventName, eventBody != null ? Arguments.fromBundle(eventBody) : null);
+        rctEventEmitter.receiveEvent(viewId, getEventName(), eventBody != null ? Arguments.fromBundle(eventBody) : null);
       }
 
       @Override
@@ -65,12 +70,12 @@ public class EventEmitterModule implements EventEmitter, InternalModule {
     return new com.facebook.react.uimanager.events.Event(viewId) {
       @Override
       public String getEventName() {
-        return event.getEventName();
+        return ViewManagerAdapterUtils.normalizeEventName(event.getEventName());
       }
 
       @Override
       public void dispatch(RCTEventEmitter rctEventEmitter) {
-        rctEventEmitter.receiveEvent(viewId, event.getEventName(), Arguments.fromBundle(event.getEventBody()));
+        rctEventEmitter.receiveEvent(viewId, getEventName(), Arguments.fromBundle(event.getEventBody()));
       }
 
       @Override

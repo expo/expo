@@ -37,7 +37,7 @@ export function createAnimatedFunction(cb) {
   for (let i = 0; i < params.length; i++) {
     params[i] = createAnimatedParam();
   }
-  // eslint-disable-next-line standard/no-callback-literal
+  // eslint-disable-next-line node/no-callback-literal
   const what = cb(...params);
   const func = new AnimatedFunction(what, ...params);
   return (...args) => {

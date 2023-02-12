@@ -100,6 +100,37 @@ EX_EXPORT_METHOD_AS(close,
   }
 }
 
+EX_EXPORT_METHOD_AS(deleteAsync,
+                    deleteDbName:(NSString *)dbName
+                    resolver:(EXPromiseResolveBlock)resolve
+                    rejecter:(EXPromiseRejectBlock)reject)
+{
+  NSString *errorCode = @"E_SQLITE_DELETE_DATABASE";
+
+  @synchronized(self) {
+    if ([cachedDatabases objectForKey:dbName]) {
+      reject(errorCode, [NSString stringWithFormat:@"Unable to delete database '%@' that is currently open. Close it prior to deletion.", dbName], nil);
+      return;
+    }
+  }
+
+  NSString *path = [self pathForDatabaseName:dbName];
+  if (!path) {
+    reject(errorCode, @"No FileSystem module.", nil);
+    return;
+  }
+  if (![[NSFileManager defaultManager] fileExistsAtPath:path]) {
+    reject(errorCode, [NSString stringWithFormat:@"Database '%@' not found", dbName], nil);
+    return;
+  }
+  NSError *error;
+  if (![[NSFileManager defaultManager] removeItemAtPath:path error:&error]) {
+    reject(errorCode, [NSString stringWithFormat:@"Unable to delete the database file for '%@' database", dbName], error);
+    return;
+  }
+  resolve(nil);
+}
+
 - (id)getSqlValueForColumnType:(int)columnType withStatement:(sqlite3_stmt*)statement withIndex:(int)i
 {
   switch (columnType) {

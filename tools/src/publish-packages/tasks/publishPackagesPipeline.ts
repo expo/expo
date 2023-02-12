@@ -3,22 +3,22 @@ import chalk from 'chalk';
 import logger from '../../Logger';
 import { Task } from '../../TasksRunner';
 import { CommandOptions, Parcel, TaskArgs } from '../types';
+import { addPublishedLabelToPullRequests } from './addPublishedLabelToPullRequests';
 import { checkEnvironmentTask } from './checkEnvironmentTask';
 import { checkPackagesIntegrity } from './checkPackagesIntegrity';
 import { checkRepositoryStatus } from './checkRepositoryStatus';
-import { cleanPrebuildsTask } from './cleanPrebuildsTask';
 import { commentOnIssuesTask } from './commentOnIssuesTask';
 import { commitStagedChanges } from './commitStagedChanges';
 import { cutOffChangelogs } from './cutOffChangelogs';
 import { grantTeamAccessToPackages } from './grantTeamAccessToPackages';
-import { prebuildPackagesTask } from './prebuildPackagesTask';
-import { prepareParcels } from './prepareParcels';
+import { loadRequestedParcels } from './loadRequestedParcels';
 import { publishPackages } from './publishPackages';
 import { pushCommittedChanges } from './pushCommittedChanges';
 import { selectPackagesToPublish } from './selectPackagesToPublish';
 import { updateAndroidProjects } from './updateAndroidProjects';
 import { updateBundledNativeModulesFile } from './updateBundledNativeModulesFile';
 import { updateIosProjects } from './updateIosProjects';
+import { updateModuleTemplate } from './updateModuleTemplate';
 import { updatePackageVersions } from './updatePackageVersions';
 import { updateWorkspaceProjects } from './updateWorkspaceProjects';
 
@@ -33,21 +33,21 @@ export const publishPackagesPipeline = new Task<TaskArgs>(
     dependsOn: [
       checkEnvironmentTask,
       checkRepositoryStatus,
-      prepareParcels,
+      loadRequestedParcels,
       checkPackagesIntegrity,
       selectPackagesToPublish,
       updatePackageVersions,
       updateBundledNativeModulesFile,
+      updateModuleTemplate,
       updateWorkspaceProjects,
       updateAndroidProjects,
       updateIosProjects,
       cutOffChangelogs,
       commitStagedChanges,
       pushCommittedChanges,
-      prebuildPackagesTask,
       publishPackages,
-      cleanPrebuildsTask,
       grantTeamAccessToPackages,
+      addPublishedLabelToPullRequests,
       commentOnIssuesTask,
     ],
   },

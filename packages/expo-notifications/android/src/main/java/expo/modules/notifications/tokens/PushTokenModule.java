@@ -5,8 +5,7 @@ import android.os.Bundle;
 
 import com.google.android.gms.tasks.OnCompleteListener;
 import com.google.android.gms.tasks.Task;
-import com.google.firebase.iid.FirebaseInstanceId;
-import com.google.firebase.iid.InstanceIdResult;
+import com.google.firebase.messaging.FirebaseMessaging;
 
 import expo.modules.core.ExportedModule;
 import expo.modules.core.ModuleRegistry;
@@ -25,6 +24,7 @@ public class PushTokenModule extends ExportedModule implements PushTokenListener
   private final static String NEW_TOKEN_EVENT_TOKEN_KEY = "devicePushToken";
 
   private final static String REGISTRATION_FAIL_CODE = "E_REGISTRATION_FAILED";
+  private final static String UNREGISTER_FOR_NOTIFICATIONS_FAIL_CODE = "E_UNREGISTER_FOR_NOTIFICATIONS_FAILED";
 
   private PushTokenManager mPushTokenManager;
   private EventEmitter mEventEmitter;
@@ -61,10 +61,10 @@ public class PushTokenModule extends ExportedModule implements PushTokenListener
    */
   @ExpoMethod
   public void getDevicePushTokenAsync(final Promise promise) {
-    FirebaseInstanceId.getInstance().getInstanceId()
-        .addOnCompleteListener(new OnCompleteListener<InstanceIdResult>() {
+    FirebaseMessaging.getInstance().getToken()
+        .addOnCompleteListener(new OnCompleteListener<String>() {
           @Override
-          public void onComplete(@NonNull Task<InstanceIdResult> task) {
+          public void onComplete(@NonNull Task<String> task) {
             if (!task.isSuccessful() || task.getResult() == null) {
               if (task.getException() == null) {
                 promise.reject(REGISTRATION_FAIL_CODE, "Fetching the token failed.");
@@ -74,12 +74,29 @@ public class PushTokenModule extends ExportedModule implements PushTokenListener
               return;
             }
 
-            String token = task.getResult().getToken();
+            String token = task.getResult();
 
             promise.resolve(token);
             onNewToken(token);
           }
         });
+  }
+
+  @ExpoMethod
+  public void unregisterForNotificationsAsync(final Promise promise) {
+    FirebaseMessaging.getInstance().deleteToken()
+      .addOnCompleteListener(task -> {
+        if (!task.isSuccessful()) {
+          if (task.getException() == null) {
+            promise.reject(UNREGISTER_FOR_NOTIFICATIONS_FAIL_CODE, "Unregistering for notifications failed.");
+          } else {
+            promise.reject(UNREGISTER_FOR_NOTIFICATIONS_FAIL_CODE, "Unregistering for notifications failed: " + task.getException().getMessage(), task.getException());
+          }
+          return;
+        }
+
+        promise.resolve(null);
+      });
   }
 
   /**

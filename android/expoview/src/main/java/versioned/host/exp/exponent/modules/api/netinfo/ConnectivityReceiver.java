@@ -21,8 +21,13 @@ import versioned.host.exp.exponent.modules.api.netinfo.types.CellularGeneration;
 import versioned.host.exp.exponent.modules.api.netinfo.types.ConnectionType;
 
 import java.math.BigInteger;
+import java.net.Inet4Address;
 import java.net.InetAddress;
+import java.net.InterfaceAddress;
 import java.net.NetworkInterface;
+import java.net.SocketException;
+import java.util.Enumeration;
+import java.util.List;
 import java.util.Locale;
 
 import javax.annotation.Nonnull;
@@ -34,6 +39,7 @@ public abstract class ConnectivityReceiver {
     private final WifiManager mWifiManager;
     private final TelephonyManager mTelephonyManager;
     private final ReactApplicationContext mReactContext;
+    public boolean hasListener = false;
 
     @Nonnull
     private ConnectionType mConnectionType = ConnectionType.UNKNOWN;
@@ -41,6 +47,29 @@ public abstract class ConnectivityReceiver {
     private CellularGeneration mCellularGeneration = null;
     private boolean mIsInternetReachable = false;
     private Boolean mIsInternetReachableOverride;
+
+    private static String getSubnet(InetAddress inetAddress) throws SocketException {
+        NetworkInterface netAddress = NetworkInterface.getByInetAddress(inetAddress);
+        List<InterfaceAddress> addresses = netAddress.getInterfaceAddresses();
+
+        short networkPrefixLength = 0;
+        for (InterfaceAddress address : addresses) {
+            boolean isIpV4 = address.getAddress().getAddress().length == 4;
+            if (isIpV4) {
+                networkPrefixLength = address.getNetworkPrefixLength();
+                break;
+            }
+        }
+
+        int mask = 0xffffffff << (32 - networkPrefixLength);
+        return String.format(
+                Locale.US,
+                "%d.%d.%d.%d",
+                (mask >> 24 & 0xff),
+                (mask >> 16 & 0xff),
+                (mask >> 8 & 0xff),
+                (mask & 0xff));
+    }
 
     ConnectivityReceiver(ReactApplicationContext reactContext) {
         mReactContext = reactContext;
@@ -96,7 +125,9 @@ public abstract class ConnectivityReceiver {
             mConnectionType = connectionType;
             mCellularGeneration = cellularGeneration;
             mIsInternetReachable = isInternetReachable;
-            sendConnectivityChangedEvent();
+            if (hasListener) {
+                sendConnectivityChangedEvent();
+            }
         }
     }
 
@@ -121,7 +152,7 @@ public abstract class ConnectivityReceiver {
         // Add the connection state information
         boolean isConnected =
                 !mConnectionType.equals(ConnectionType.NONE)
-                        && !mConnectionType.equals(ConnectionType.UNKNOWN);
+                && !mConnectionType.equals(ConnectionType.UNKNOWN);
         event.putBoolean("isConnected", isConnected);
 
         // Add the internet reachable information
@@ -155,6 +186,25 @@ public abstract class ConnectivityReceiver {
                 String carrier = mTelephonyManager.getNetworkOperatorName();
                 if (carrier != null) {
                     details.putString("carrier", carrier);
+                }
+                break;
+            case "ethernet":
+                try {
+                    for (Enumeration<NetworkInterface> en = NetworkInterface.getNetworkInterfaces(); en.hasMoreElements(); ) {
+                        NetworkInterface netInterface = en.nextElement();
+
+                        for (Enumeration<InetAddress> ea = netInterface.getInetAddresses(); ea.hasMoreElements(); ) {
+                            InetAddress inetAddress = ea.nextElement();
+                            if (!inetAddress.isLoopbackAddress() && inetAddress instanceof Inet4Address) {
+                                String ipAddress = inetAddress.getHostAddress();
+                                details.putString("ipAddress", ipAddress);
+                                details.putString("subnet", getSubnet(inetAddress));
+                                return details;
+                            }
+                        }
+                    }
+                } catch (Exception e) {
+                    e.printStackTrace();
                 }
                 break;
             case "wifi":
@@ -221,24 +271,38 @@ public abstract class ConnectivityReceiver {
                                     BigInteger.valueOf(wifiInfo.getIpAddress()).toByteArray();
                             NetInfoUtils.reverseByteArray(ipAddressByteArray);
                             InetAddress inetAddress = InetAddress.getByAddress(ipAddressByteArray);
-                            NetworkInterface netAddress =
-                                    NetworkInterface.getByInetAddress(inetAddress);
-                            int mask =
-                                    0xffffffff
-                                            << (32
-                                            - netAddress
-                                            .getInterfaceAddresses()
-                                            .get(1)
-                                            .getNetworkPrefixLength());
-                            String subnet =
-                                    String.format(
-                                            Locale.US,
-                                            "%d.%d.%d.%d",
-                                            (mask >> 24 & 0xff),
-                                            (mask >> 16 & 0xff),
-                                            (mask >> 8 & 0xff),
-                                            (mask & 0xff));
-                            details.putString("subnet", subnet);
+                            details.putString("subnet", getSubnet(inetAddress));
+                        } catch (Exception e) {
+                            // Ignore errors
+                        }
+
+                        // Get the link speed
+                        try {
+                            int linkSpeed =
+                                    wifiInfo.getLinkSpeed();
+                            details.putInt("linkSpeed", linkSpeed);
+                        } catch (Exception e) {
+                            // Ignore errors
+                        }
+
+                        // Get the current receive link speed in Mbps
+                        try {
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                                int rxLinkSpeed =
+                                        wifiInfo.getRxLinkSpeedMbps();
+                                details.putInt("rxLinkSpeed", rxLinkSpeed);
+                            }
+                        } catch (Exception e) {
+                            // Ignore errors
+                        }
+
+                        // Get the current transmit link speed in Mbps
+                        try {
+                            if (android.os.Build.VERSION.SDK_INT >= android.os.Build.VERSION_CODES.Q) {
+                                int txLinkSpeed =
+                                        wifiInfo.getTxLinkSpeedMbps();
+                                details.putInt("txLinkSpeed", txLinkSpeed);
+                            }
                         } catch (Exception e) {
                             // Ignore errors
                         }

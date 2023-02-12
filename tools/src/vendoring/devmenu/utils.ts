@@ -1,6 +1,7 @@
-import * as Directories from '../../Directories';
-import path from 'path';
 import glob from 'glob-promise';
+import path from 'path';
+
+import * as Directories from '../../Directories';
 
 /**
  * @param pathToConvert

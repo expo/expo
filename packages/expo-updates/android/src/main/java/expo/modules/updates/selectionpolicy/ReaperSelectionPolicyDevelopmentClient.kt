@@ -11,6 +11,8 @@ private const val DEFAULT_MAX_UPDATES_TO_KEEP = 10
  * ReaperSelectionPolicy which keeps a predefined maximum number of updates across all scopes, and,
  * once that number is surpassed, selects the updates least recently accessed (and then least
  * recently published) to delete. Ignores filters and scopes.
+ *
+ * Uses the `lastAccessed` property to determine ordering of updates.
  */
 class ReaperSelectionPolicyDevelopmentClient @JvmOverloads constructor(private val maxUpdatesToKeep: Int = DEFAULT_MAX_UPDATES_TO_KEEP) :
   ReaperSelectionPolicy {

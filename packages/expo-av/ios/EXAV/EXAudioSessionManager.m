@@ -18,6 +18,8 @@
 @property (nonatomic, strong) NSMapTable<id, NSNumber *> *activeModules;
 @property (nonatomic, strong) NSMapTable<id, NSString *> *moduleCategory;
 @property (nonatomic, strong) NSMapTable<id, NSNumber *> *moduleCategoryOptions;
+@property (nonatomic, strong) NSArray<AVAudioSessionPortDescription *>* availableInputs;
+@property (nonatomic, strong) AVAudioSessionPortDescription *activeInput;
 
 @end
 
@@ -117,6 +119,43 @@ EX_REGISTER_SINGLETON_MODULE(AudioSessionManager);
   return nil;
 }
 
+- (NSArray<AVAudioSessionPortDescription *>*)availableInputs
+{
+  return [[AVAudioSession sharedInstance] availableInputs];
+}
+
+- (void)setActiveInput:(AVAudioSessionPortDescription *)activeInput
+{
+  NSError *error;
+  [[AVAudioSession sharedInstance] setPreferredInput:activeInput error:&error];
+}
+
+- (AVAudioSessionPortDescription *)activeInput
+{
+  // If a current route exists for this recording, return the initial route input.
+  AVAudioSessionRouteDescription *currentRoute = [[AVAudioSession sharedInstance] currentRoute];
+  NSArray *inputsForRoute = currentRoute.inputs;
+  if ([inputsForRoute count] > 0) {
+    return [inputsForRoute objectAtIndex:0];
+  }
+
+  // If we've already set a preferred input, return it
+  AVAudioSessionPortDescription *preferredInput = [[AVAudioSession sharedInstance] preferredInput];
+  if (preferredInput != Nil) {
+    return preferredInput;
+  }
+
+  // If we don't have a current route, select the first available input and set it as preferred input.
+  NSArray *availInputs = [[AVAudioSession sharedInstance] availableInputs];
+  if ([availInputs count] > 0) {
+    AVAudioSessionPortDescription *defaultInput = [availInputs objectAtIndex:0];
+    [self setActiveInput:defaultInput];
+    return defaultInput;
+  }
+
+  return nil;
+}
+
 - (void)moduleDidBackground:(id)backgroundingModule
 {
   for (int i = 0; i < _foregroundedModules.count; i++) {
@@ -174,6 +213,19 @@ EX_REGISTER_SINGLETON_MODULE(AudioSessionManager);
   // If the session ought to be deactivated let's deactivate it and then configure.
   // And if the session should be activated, let's configure it first!
 
+  // After ample discussion, testing and consideration, it makes no sense to constantly
+  // disable AVAudioSession as it is a synchronous and blocking process. There were no regressions
+  // in various tests. With this change, pauseAsync() function calls are effectively instant
+  // without frame drops. To avoid triggering unnecessary setActive:YES calls, we still set the variable
+  // without actually disabling the session. We agreed to go this way and in case of
+  // doubt look for another approach in a regression.
+  // See https://github.com/expo/expo/issues/15873
+  
+  if (!shouldBeActive && _sessionIsActive) {
+    _sessionIsActive = NO;
+  }
+  
+  /*
   if (!shouldBeActive && _sessionIsActive) {
     [session setActive:NO error:&error];
     if (!error) {
@@ -184,6 +236,7 @@ EX_REGISTER_SINGLETON_MODULE(AudioSessionManager);
   if (error) {
     return error;
   }
+  */
 
   if (!_activeCategory || ![category isEqualToString:_activeCategory] || options != _activeOptions) {
     [session setCategory:category withOptions:options error:&error];

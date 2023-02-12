@@ -5,14 +5,50 @@ import * as GitHub from '../GitHub';
 import logger from '../Logger';
 import { COMMENT_HEADER, generateReportFromOutputs } from './reports';
 import checkMissingChangelogs from './reviewers/checkMissingChangelogs';
+import lintSwiftFiles from './reviewers/lintSwiftFiles';
 import reviewChangelogEntries from './reviewers/reviewChangelogEntries';
 import reviewForbiddenFiles from './reviewers/reviewForbiddenFiles';
-import { ReviewEvent, ReviewComment, ReviewInput, ReviewOutput, ReviewStatus } from './types';
+import {
+  ReviewEvent,
+  ReviewComment,
+  ReviewInput,
+  ReviewOutput,
+  ReviewStatus,
+  Reviewer,
+} from './types';
 
 /**
  * An array with functions whose purpose is to check and review the diff.
  */
-const REVIEWERS = [checkMissingChangelogs, reviewChangelogEntries, reviewForbiddenFiles];
+const REVIEWERS: Reviewer[] = [
+  {
+    id: 'changelog-checks',
+    action: checkMissingChangelogs,
+  },
+  {
+    id: 'changelog-review',
+    action: reviewChangelogEntries,
+  },
+  {
+    id: 'file-checks',
+    action: reviewForbiddenFiles,
+  },
+  {
+    id: 'swiftlint',
+    action: lintSwiftFiles,
+  },
+];
+
+/**
+ * The maximum number of comments included in the single review.
+ */
+const COMMENTS_LIMIT = 10;
+
+/**
+ * A magic comment template for a reviewer. Magic comments are used to disable specific reviewers.
+ * Available reviewers: {@link REVIEWERS}
+ */
+const getMagicCommentForReviewer = (reviewer: Reviewer) => `<!-- disable:${reviewer.id} -->`;
 
 enum Label {
   PASSED_CHECKS = 'bot: passed checks',
@@ -42,11 +78,12 @@ export async function reviewPullRequestAsync(prNumber: number) {
     diff,
   };
 
-  // Run all the checks asynchronously and collects their outputs.
+  // Filter out the disabled checks, run the checks asynchronously and collects their outputs.
   logger.info('🕵️‍♀️  Reviewing changes');
-  const outputs = (await Promise.all(REVIEWERS.map((reviewer) => reviewer(input)))).filter(
-    Boolean
-  ) as ReviewOutput[];
+  const reviewActions = REVIEWERS.filter(
+    (reviewer) => !pr.body?.includes(getMagicCommentForReviewer(reviewer))
+  ).map(({ action }) => action(input));
+  const outputs = (await Promise.all(reviewActions)).filter(Boolean) as ReviewOutput[];
 
   // Only active (non-passive) outputs will be reported in the review body.
   const activeOutputs = outputs.filter(
@@ -68,7 +105,11 @@ export async function reviewPullRequestAsync(prNumber: number) {
 
   // Submit a review if there is any review comment (usually suggestion).
   if (reviewComments.length > 0) {
-    await submitReviewWithCommentsAsync(pr.number, reviewComments);
+    // As described on GitHub's API docs (https://docs.github.com/en/rest/pulls/reviews#create-a-review-for-a-pull-request),
+    // submitting a review triggers notifications and thus is a subject for rate limiting.
+    // Even though this sends just one request, we've got rate limited once when we sent included many comments.
+    // As an attempt to prevent that, we limit the number of comments.
+    await submitReviewWithCommentsAsync(pr.number, reviewComments.splice(0, COMMENTS_LIMIT));
   }
 
   // Log the success if there is nothing to complain.

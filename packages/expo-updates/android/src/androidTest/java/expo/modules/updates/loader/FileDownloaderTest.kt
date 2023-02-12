@@ -6,9 +6,14 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.entity.AssetEntity
+import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.manifest.ManifestMetadata
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.mockkObject
+import io.mockk.unmockkObject
 import okhttp3.*
+import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import org.json.JSONException
 import org.json.JSONObject
 import org.junit.Assert
@@ -35,7 +40,7 @@ class FileDownloaderTest {
       "usesLegacyManifest" to true
     )
     val config = UpdatesConfiguration(null, configMap)
-    val actual = FileDownloader.createRequestForManifest(config, null, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(config, null, context)
     Assert.assertNull(actual.header("Cache-Control"))
   }
 
@@ -47,7 +52,7 @@ class FileDownloaderTest {
       "usesLegacyManifest" to false
     )
     val config = UpdatesConfiguration(null, configMap)
-    val actual = FileDownloader.createRequestForManifest(config, null, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(config, null, context)
     Assert.assertNull(actual.header("Cache-Control"))
   }
 
@@ -64,12 +69,15 @@ class FileDownloaderTest {
       put("expo-string", "test")
       put("expo-number", 47.5)
       put("expo-boolean", true)
+      put("expo-null", JSONObject.NULL)
     }
 
-    val actual = FileDownloader.createRequestForManifest(config, extraHeaders, context)
+    // manifest extraHeaders should have their values coerced to strings
+    val actual = FileDownloader.createRequestForRemoteUpdate(config, extraHeaders, context)
     Assert.assertEquals("test", actual.header("expo-string"))
     Assert.assertEquals("47.5", actual.header("expo-number"))
     Assert.assertEquals("true", actual.header("expo-boolean"))
+    Assert.assertEquals("null", actual.header(("expo-null")))
   }
 
   @Test
@@ -89,7 +97,7 @@ class FileDownloaderTest {
     val extraHeaders = JSONObject()
     extraHeaders.put("expo-platform", "ios")
 
-    val actual = FileDownloader.createRequestForManifest(config, extraHeaders, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(config, extraHeaders, context)
     Assert.assertEquals("android", actual.header("expo-platform"))
     Assert.assertEquals("custom", actual.header("expo-updates-environment"))
   }
@@ -113,9 +121,71 @@ class FileDownloaderTest {
     }
 
     // assetRequestHeaders should not be able to override preset headers
-    val actual = FileDownloader.createRequestForAsset(assetEntity, config)
+    val actual = FileDownloader.createRequestForAsset(assetEntity, config, context)
     Assert.assertEquals("android", actual.header("expo-platform"))
     Assert.assertEquals("custom", actual.header("expo-updates-environment"))
+  }
+
+  @Test
+  @Throws(JSONException::class)
+  fun testAssetExtraHeaders_ObjectTypes() {
+    val configMap = mapOf<String, Any>(
+      "updateUrl" to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
+      "runtimeVersion" to "1.0",
+    )
+
+    val config = UpdatesConfiguration(null, configMap)
+
+    val extraHeaders = JSONObject().apply {
+      put("expo-string", "test")
+      put("expo-number", 47.5)
+      put("expo-boolean", true)
+      put("expo-null", JSONObject.NULL)
+    }
+
+    val assetEntity = AssetEntity("test", "jpg").apply {
+      url = Uri.parse("https://example.com")
+      extraRequestHeaders = extraHeaders
+    }
+
+    // assetRequestHeaders should have their values coerced to strings
+    val actual = FileDownloader.createRequestForAsset(assetEntity, config, context)
+    Assert.assertEquals("test", actual.header("expo-string"))
+    Assert.assertEquals("47.5", actual.header("expo-number"))
+    Assert.assertEquals("true", actual.header("expo-boolean"))
+    Assert.assertEquals("null", actual.header("expo-null"))
+  }
+
+  @Test
+  fun testGetExtraHeaders() {
+    mockkObject(ManifestMetadata)
+    every { ManifestMetadata.getServerDefinedHeaders(any(), any()) } returns null
+
+    val launchedUpdateUUIDString = "7c1d2bd0-f88b-454d-998c-7fa92a924dbf"
+    val launchedUpdate = UpdateEntity(UUID.fromString(launchedUpdateUUIDString), Date(), "1.0", "test")
+    val embeddedUpdateUUIDString = "9433b1ed-4006-46b8-8aa7-fdc7eeb203fd"
+    val embeddedUpdate = UpdateEntity(UUID.fromString(embeddedUpdateUUIDString), Date(), "1.0", "test")
+
+    val extraHeaders = FileDownloader.getExtraHeaders(mockk(), mockk(), launchedUpdate, embeddedUpdate)
+
+    Assert.assertEquals(launchedUpdateUUIDString, extraHeaders.get("Expo-Current-Update-ID"))
+    Assert.assertEquals(embeddedUpdateUUIDString, extraHeaders.get("Expo-Embedded-Update-ID"))
+
+    // cleanup
+    unmockkObject(ManifestMetadata)
+  }
+
+  @Test
+  fun testGetExtraHeaders_NoLaunchedOrEmbeddedUpdate() {
+    mockkObject(ManifestMetadata)
+    every { ManifestMetadata.getServerDefinedHeaders(any(), any()) } returns null
+
+    val extraHeaders = FileDownloader.getExtraHeaders(mockk(), mockk(), null, null)
+    Assert.assertFalse(extraHeaders.has("Expo-Current-Update-ID"))
+    Assert.assertFalse(extraHeaders.has("Expo-Embedded-Update-ID"))
+
+    // cleanup
+    unmockkObject(ManifestMetadata)
   }
 
   @Test
@@ -140,7 +210,7 @@ class FileDownloaderTest {
             mockk(),
             mockk {
               every { isSuccessful } returns true
-              every { body() } returns ResponseBody.create(MediaType.parse("text/plain; charset=utf-8"), "hello")
+              every { body } returns ResponseBody.create("text/plain; charset=utf-8".toMediaTypeOrNull(), "hello")
             }
           )
         }
@@ -150,8 +220,8 @@ class FileDownloaderTest {
     var error: Exception? = null
     var didSucceed = false
 
-    FileDownloader(client).downloadAsset(
-      assetEntity, File(context.cacheDir, "test"), config,
+    FileDownloader(context, client).downloadAsset(
+      assetEntity, File(context.cacheDir, "test"), config, context,
       object : FileDownloader.AssetDownloadCallback {
         override fun onFailure(e: Exception, assetEntity: AssetEntity) {
           error = e
@@ -163,7 +233,55 @@ class FileDownloaderTest {
       }
     )
 
-    Assert.assertTrue(error!!.message!!.contains("Asset hash invalid"))
+    Assert.assertTrue(error!!.message!!.contains("File download was successful but base64url-encoded SHA-256 did not match expected"))
     Assert.assertFalse(didSucceed)
+  }
+
+  @Test
+  fun test_downloadAsset_nullExpectedAssetHash() {
+    val configMap = mapOf<String, Any>(
+      UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
+      UpdatesConfiguration.UPDATES_CONFIGURATION_RUNTIME_VERSION_KEY to "1.0",
+    )
+
+    val config = UpdatesConfiguration(null, configMap)
+
+    val assetEntity = AssetEntity(UUID.randomUUID().toString(), "jpg").apply {
+      url = Uri.parse("https://example.com")
+      extraRequestHeaders = JSONObject().apply { put("expo-platform", "ios") }
+    }
+
+    val client = mockk<OkHttpClient>() {
+      every { newCall(any()) } returns mockk {
+        every { enqueue(any()) } answers {
+          firstArg<Callback>().onResponse(
+            mockk(),
+            mockk {
+              every { isSuccessful } returns true
+              every { body } returns ResponseBody.create("text/plain; charset=utf-8".toMediaTypeOrNull(), "hello")
+            }
+          )
+        }
+      }
+    }
+
+    var error: Exception? = null
+    var didSucceed = false
+
+    FileDownloader(context, client).downloadAsset(
+      assetEntity, File(context.cacheDir, "test"), config, context,
+      object : FileDownloader.AssetDownloadCallback {
+        override fun onFailure(e: Exception, assetEntity: AssetEntity) {
+          error = e
+        }
+
+        override fun onSuccess(assetEntity: AssetEntity, isNew: Boolean) {
+          didSucceed = true
+        }
+      }
+    )
+
+    Assert.assertNull(error)
+    Assert.assertTrue(didSucceed)
   }
 }

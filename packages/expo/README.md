@@ -1,35 +1,10 @@
 # expo
 
-The `expo` package is an umbrella package that contains the client-side code (ex: JavaScript) for accessing system functionality such as contacts, camera, and location in Expo apps.
+The `expo` package is a single package you can install in any React Native app to begin using Expo modules.
 
-Some of the Expo APIs are implemented in this package, while others are implemented in universal modules under the parent `packages` directory.
+- includes core infrastructure for Expo modules: `expo-modules-core` and `expo-modules-autolinking`.
+- bundles a minimal set of Expo modules that are required by nearly every app, such as `expo-asset`.
+- provides [`@expo/cli`](https://github.com/expo/expo/blob/main/packages/%40expo/cli/README.md), a small CLI that provides a clean interface around both bundlers (such as Metro and Webpack) and native build tools (Xcode, Simulator.app, Android Studio, ADB, etc.), can generate native projects with `npx expo prebuild`, and aligns compatible package versions with `npx expo install`.
+- exposes a JavaScript module that configures an app at runtime as needed to use `expo-font` and to function in Expo Go (optional, only if applicable).
 
-See [CONTRIBUTING](./CONTRIBUTING.md) for instructions on working on this package and the universal modules.
-
-## CLI
-
-```
-npx expo
-```
-
-### Contributing
-
-To develop the CLI run (defaults to watch mode):
-
-```
-yarn build:cli
-```
-
-We highly recommend setting up an alias for the Expo CLI so you can try it in projects all around your computer. Open your `.zshrc` or other config file and add:
-
-```
-alias nexpo="/path/to/expo/packages/expo/build-cli/bin/cli"
-```
-
-Then use it with `nexpo` like `nexpo config`. You can also setup a debug version:
-
-```
-alias expo-inspect="node --inspect /path/to/expo/packages/expo/build-cli/bin/cli"
-```
-
-Then you can run it, and visit `chrome://inspect/#devices` in Chrome, and press "Open dedicated DevTools for Node" to get a debugger attached to your process. When debugging the CLI, you'll want to disable workers whenever possible, this will make all code run on the same thread, this is mostly applicable to the `start` command, i.e. `expo-inspect start --max-workers 0`.
+See [CONTRIBUTING](./CONTRIBUTING.md) for instructions on working on this package.

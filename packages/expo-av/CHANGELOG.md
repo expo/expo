@@ -8,11 +8,174 @@
 
 ### 🐛 Bug fixes
 
-- Fix iOS build with Expo SDK 44 and React Native 0.65+. ([#15661](https://github.com/expo/expo/pull/15661) by [@schiller-manuel](https://github.com/schiller-manuel))
+### 💡 Others
+
+## 13.2.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.0 — 2023-02-03
+
+### 🐛 Bug fixes
+
+- Fixed `HTMLMediaElement.play` and `HTMLMediaElement.pause` calls on the Web aren't properly awaited. ([#20439](https://github.com/expo/expo/pull/20439)) by [@zhigang1992](https://github.com/zhigang1992)
+- Added support for React Native 0.71.x. ([#20799](https://github.com/expo/expo/pull/20799) [#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo))
+- Fixed JSI audio sampling buffer issues when using `SimpleExoPlayer` implementation on Android. ([#21055](https://github.com/expo/expo/pull/21055) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 13.1.0 — 2022-12-30
+
+### 🐛 Bug fixes
+
+- Fixed build errors when testing on React Native nightly builds. ([#19805](https://github.com/expo/expo/pull/19805) by [@kudo](https://github.com/kudo))
+- Fixed crashes when ProGuard or R8 is enabled on Android. ([#20197](https://github.com/expo/expo/pull/20197) by [@lukmccall](https://github.com/lukmccall))
+- Added React Native 0.71 support. ([#20470](https://github.com/expo/expo/pull/20470) by [@kudo](https://github.com/kudo))
+
+## 13.0.2 - 2022-11-29
+
+### 🐛 Bug fixes
+
+- Fixed error for duplicated META-INF files when building on Android. ([#20251](https://github.com/expo/expo/pull/20251) by [@kudo](https://github.com/kudo))
+
+## 13.0.1 — 2022-10-30
+
+### 🎉 New features
+
+- Added `PosterComponent` prop to `Video` component. ([#19625](https://github.com/expo/expo/pull/19625) by [@youedd](https://github.com/youedd)
+
+## 13.0.0 — 2022-10-25
+
+_This version does not introduce any user-facing changes._
+
+## 13.0.0-beta.1 — 2022-10-06
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 🎉 New features
+
+- Added support for audio panning on Android (MediaPlayer implementation only) via `audioPan` prop. ([#15530](https://github.com/expo/expo/pull/15530) by [@DominickVale](https://github.com/DominickVale))
+- Added `videoStyle` prop for Video component. ([#18549](https://github.com/expo/expo/pull/18549) by [@alantoa](https://github.com/alantoa))
+- Native module for video view is now written in Swift using the new API. ([#18633](https://github.com/expo/expo/pull/18633) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Fixed promise rejection catching when `Video` is unmounted. ([#18471](https://github.com/expo/expo/pull/18471) by [@barthap](https://github.com/barthap))
+
+### 💡 Others
+
+- [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))
+- Drop `@expo/config-plugins` dependency in favor of peer dependency on `expo`. ([#18595](https://github.com/expo/expo/pull/18595) by [@EvanBacon](https://github.com/EvanBacon))
+- Remove unnecessary CocoaPods dependency on `ReactCommon` and `React-runtimeexecutor`. ([#19067](https://github.com/expo/expo/pull/19067) by [@tsapeta](https://github.com/tsapeta))
+
+### 📚 3rd party library updates
+
+- Upgraded ExoPlayer dependencies to 2.18.1 on Android. ([#19332](https://github.com/expo/expo/pull/19332) by [@kudo](https://github.com/kudo))
+
+## 12.0.2 — 2022-07-18
+
+### 🐛 Bug fixes
+
+- Fixed unhandled promise rejection when `Video` is unmounted. ([#18281](https://github.com/expo/expo/pull/18281) by [@barthap](https://github.com/barthap))
+
+## 12.0.1 — 2022-07-16
+
+### 🐛 Bug fixes
+
+- Automatically unload `Video` component before React Native initiates an unmount to prevent memory leak crashes. ([#18173](https://github.com/expo/expo/pull/18173) by [@hirbod](https://github.com/hirbod) and [@Pickleboyonline](https://github.com/Pickleboyonline))
+
+## 12.0.0 — 2022-07-07
+
+### 🛠 Breaking changes
+
+- Replace `RecordingOptions` related constants with enums. Check out the PR for the migration hints. ([#17954](https://github.com/expo/expo/pull/17954) by [@Simek](https://github.com/Simek))
+- Rename the `RecordingOptions` preset constant to `RecordingOptionsPresets` and edit export. Check out the PR for the migration hints. ([#17954](https://github.com/expo/expo/pull/17954) by [@Simek](https://github.com/Simek))
+
+### 🐛 Bug fixes
+
+- On Android fix `Video` component crashes when activity loses focus due to accessing player from the wrong thread. ([#17280](https://github.com/expo/expo/pull/17280) by [@mnightingale](https://github.com/mnightingale))
+- Added support for React Native 0.69.x. ([#18006](https://github.com/expo/expo/pull/18006) by [@kudo](https://github.com/kudo))
+- On Android fix `Audio.setAudioModeAsync` and `Audio.setIsEnabledAsync` crashes due to accessing player from the wrong thread. ([#17840](https://github.com/expo/expo/pull/17840) by [@mnightingale](https://github.com/mnightingale))
+
+### 💡 Others
+
+- Extract types defined in `createAsync` methods return to separate types: `RecordingObject` and `SoundObject`. ([#17954](https://github.com/expo/expo/pull/17954) by [@Simek](https://github.com/Simek))
+- Extract platform related nested object types from `RecordingOptions` to the separate types: `RecordingOptionsAndroid`, `RecordingOptionsIOS` and `RecordingOptionsWeb`. ([#17954](https://github.com/expo/expo/pull/17954) by [@Simek](https://github.com/Simek))
+
+## 11.2.2 — 2022-04-27
+
+### 🐛 Bug fixes
+
+- Fixed displaying warning about `Sound.setOnAudioSampleReceived` unavailable when debugging remotely. ([#17210](https://github.com/expo/expo/pull/17210) by [@barthap](https://github.com/barthap))
+- Fixed crash when remote debugging is enabled on Android. ([#17212](https://github.com/expo/expo/pull/17212) by [@barthap](https://github.com/barthap))
+
+## 11.2.1 — 2022-04-20
+
+### 🐛 Bug fixes
+
+- On iOS fix crash caused by updating `AVPlaybackStatus` from both `<Video />` props and the Playback API at the same time. Also prevented a crash on iOS caused by removing the Video without unlisting its underlying native `EXAVPlayerData` as an observer. ([#17036](https://github.com/expo/expo/pull/17036) by [@Pickleboyonline](https://github.com/Pickleboyonline))
+
+## 11.2.0 — 2022-04-18
+
+### 🎉 New features
+
+- Add new `Sound.setOnAudioSampleReceived` API to support streaming audio sample buffers in realtime. ([#14904](https://github.com/expo/expo/pull/14904), [#16075](https://github.com/expo/expo/pull/16075) by [@barthap](https://github.com/barthap))
+
+### 🐛 Bug fixes
+
+- On Android fix crashes caused by accessing player from the wrong thread ([#16611](https://github.com/expo/expo/pull/16611) by [@mnightingale](https://github.com/mnightingale))
+
+### 💡 Others
+
+- Extract `tolerances` param type definition, used across the package methods, to the separate type `AVPlaybackTolerance`. ([#16905](https://github.com/expo/expo/pull/16905) by [@Simek](https://github.com/Simek))
+
+### ⚠️ Notices
+
+- On Android bump `compileSdkVersion` to `31`, `targetSdkVersion` to `31` and `Java` version to `11`. ([#16941](https://github.com/expo/expo/pull/16941) by [@bbarthec](https://github.com/bbarthec))
+
+## 11.1.0 — 2022-03-10
+
+### 🐛 Bug fixes
+
+- On iOS fix `pauseAsync` causing framedrops and being delayed by not disabling `AVAudioSession` when there is no need for it ([#15873](https://github.com/expo/expo/pull/15873) by [@hirbod](https://github.com/hirbod) and [@mnightingale](https://github.com/mnightingale))
+
+## 11.0.1 — 2022-03-07
+
+### 🐛 Bug fixes
+
+- Fix local asset localUri not being used in development ([#16544](https://github.com/expo/expo/pull/16544) by [@mnightingale](https://github.com/mnightingale))
+
+## 11.0.0 — 2022-03-03
+
+### 🛠 Breaking changes
+
+- Remove `Video` component's static constants `FULLSCREEN_UPDATE_PLAYER_WILL_RESENT`, `FULLSCREEN_UPDATE_PLAYER_DID_RESENT`, `FULLSCREEN_UPDATE_PLAYER_WILL_DISMISS`, `FULLSCREEN_UPDATE_PLAYER_DID_DISMISS` and replace them with new `VideoFullscreenUpdate` enum. ([#16059](https://github.com/expo/expo/pull/16059) by [@Simek](https://github.com/Simek))
+- Remove `Video` component's static constants `RESIZE_MODE_CONTAIN`, `RESIZE_MODE_COVER`, `RESIZE_MODE_STRETCH`. Use `ResizeMode` enum values instead. ([#16059](https://github.com/expo/expo/pull/16059) by [@Simek](https://github.com/Simek))
+- Remove deprecated `presentIOSFullscreenPlayer` and `dismissIOSFullscreenPlayer` method from `Video` component. ([#16059](https://github.com/expo/expo/pull/16059) by [@Simek](https://github.com/Simek))
+- Remove deprecated `onIOSFullscreenUpdate` prop from `Video` component. ([#16059](https://github.com/expo/expo/pull/16059) by [@Simek](https://github.com/Simek))
+- Remove unused `presentFullscreenPlayerAsync` method from `Video` component. ([#16059](https://github.com/expo/expo/pull/16059) by [@Simek](https://github.com/Simek))
+- Remove `INTERRUPTION_MODE_*` constants in favor of `InterruptionModeAndroid` and `InterruptionModeIOS` enums. ([#16145](https://github.com/expo/expo/pull/16145) by [@Simek](https://github.com/Simek))
+- On Android upgrade `com.google.android.exoplayer:*:2.9.2` (available from `jcenter()`) to `com.google.android.exoplayer:*:2.13.3` (available from `google()`). ([#16123](https://github.com/expo/expo/pull/16123) by [@bbarthec](https://github.com/bbarthec))
+
+### 🎉 New features
+
+- Add methods to get and set audio recording inputs. ([#15806](https://github.com/expo/expo/pull/15806) by [@computerjazz](https://github.com/computerjazz))
 
 ### 💡 Others
 
 - Updated `@expo/config-plugins` from `4.0.2` to `4.0.14` ([#15621](https://github.com/expo/expo/pull/15621) by [@EvanBacon](https://github.com/EvanBacon))
+- Add missing `AudioMode` type export. ([#16145](https://github.com/expo/expo/pull/16145) by [@Simek](https://github.com/Simek))
+
+## 10.2.1 - 2022-02-01
+
+### 🐛 Bug fixes
+
+- Fix iOS build with Expo SDK 44 and React Native 0.65+. ([#15661](https://github.com/expo/expo/pull/15661) by [@schiller-manuel](https://github.com/schiller-manuel))
+- Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 
 ## 10.2.0 — 2021-12-03
 

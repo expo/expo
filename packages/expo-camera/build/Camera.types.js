@@ -78,7 +78,10 @@ export var VideoCodec;
     VideoCodec["AppleProRes422"] = "apcn";
     VideoCodec["AppleProRes4444"] = "ap4h";
 })(VideoCodec || (VideoCodec = {}));
-// @needsAudit
+/**
+ * This option specifies the stabilization mode to use when recording a video.
+ * @platform ios
+ */
 export var VideoStabilization;
 (function (VideoStabilization) {
     VideoStabilization["off"] = "off";
@@ -86,7 +89,7 @@ export var VideoStabilization;
     VideoStabilization["cinematic"] = "cinematic";
     VideoStabilization["auto"] = "auto";
 })(VideoStabilization || (VideoStabilization = {}));
-// @needsAudit
+// @docsMissing
 export var VideoQuality;
 (function (VideoQuality) {
     VideoQuality["2160p"] = "2160p";

@@ -7,7 +7,7 @@ import StoreReview from './ExpoStoreReview';
  * Determines if the platform has the capabilities to use `StoreReview.requestReview()`.
  * @return
  * This returns a promise fulfills with `boolean`, depending on the platform:
- * - On iOS, it will resolve to `true` if the device is running iOS 10.3+.
+ * - On iOS, it will always resolve to `true`.
  * - On Android, it will resolve to `true` if the device is running Android 5.0+.
  * - On Web, it will resolve to `false`.
  */
@@ -18,8 +18,7 @@ export async function isAvailableAsync() {
 /**
  * In ideal circumstances this will open a native modal and allow the user to select a star rating
  * that will then be applied to the App Store, without leaving the app. If the device is running
- * a version of iOS lower than 10.3, or a version of Android lower than 5.0, this will attempt
- * to get the store URL and link the user to it.
+ * a version of Android lower than 5.0, this will attempt to get the store URL and link the user to it.
  */
 export async function requestReview() {
     if (StoreReview?.requestReview) {

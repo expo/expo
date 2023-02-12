@@ -1,6 +1,7 @@
 #import "DevMenuRNGestureHandlerState.h"
 #import "DevMenuRNGestureHandlerDirection.h"
 #import "DevMenuRNGestureHandlerEvents.h"
+#import "DevMenuRNGestureHandlerPointerTracker.h"
 
 #import <Foundation/Foundation.h>
 #import <UIKit/UIKit.h>
@@ -15,7 +16,7 @@
 
 #define APPLY_PROP(recognizer, config, type, prop, propName) do { \
 id value = config[propName]; \
-if (value != nil) recognizer.prop = [RCTConvert type:value]; \
+if (value != nil) { recognizer.prop = [RCTConvert type:value]; }\
 } while(0)
 
 #define APPLY_FLOAT_PROP(prop) do { APPLY_PROP(recognizer, config, CGFloat, prop, @#prop); } while(0)
@@ -28,13 +29,17 @@ if (value != nil) recognizer.prop = [RCTConvert type:value]; \
 
 - (void)sendStateChangeEvent:(nonnull DevMenuRNGestureHandlerStateChange *)event;
 
+- (void)sendTouchDeviceEvent:(nonnull DevMenuRNGestureHandlerEvent *)event;
+
+- (void)sendStateChangeDeviceEvent:(nonnull DevMenuRNGestureHandlerStateChange *)event;
+
 @end
 
 
 @protocol DevMenuRNRootViewGestureRecognizerDelegate <UIGestureRecognizerDelegate>
 
 - (void)gestureRecognizer:(nullable UIGestureRecognizer *)gestureRecognizer
-    didActivateInRootView:(nullable UIView *)rootView;
+    didActivateInViewWithTouchHandler:(nullable UIView *)viewWithTouchHandler;
 
 @end
 
@@ -53,21 +58,30 @@ if (value != nil) recognizer.prop = [RCTConvert type:value]; \
 @property (nonatomic, readonly, nonnull) NSNumber *tag;
 @property (nonatomic, weak, nullable) id<DevMenuRNGestureHandlerEventEmitter> emitter;
 @property (nonatomic, readonly, nullable) UIGestureRecognizer *recognizer;
+@property (nonatomic, readonly, nullable) DevMenuRNGestureHandlerPointerTracker *pointerTracker;
 @property (nonatomic) BOOL enabled;
-@property(nonatomic) BOOL shouldCancelWhenOutside;
+@property (nonatomic) BOOL usesDeviceEvents;
+@property (nonatomic) BOOL shouldCancelWhenOutside;
+@property (nonatomic) BOOL needsPointerData;
+@property (nonatomic) BOOL manualActivation;
 
 - (void)bindToView:(nonnull UIView *)view;
 - (void)unbindFromView;
+- (void)resetConfig NS_REQUIRES_SUPER;
 - (void)configure:(nullable NSDictionary *)config NS_REQUIRES_SUPER;
 - (void)handleGesture:(nonnull id)recognizer;
 - (BOOL)containsPointInView;
 - (DevMenuRNGestureHandlerState)state;
 - (nullable DevMenuRNGestureHandlerEventExtraData *)eventExtraData:(nonnull id)recognizer;
 
+- (void)stopActivationBlocker;
 - (void)reset;
 - (void)sendEventsInState:(DevMenuRNGestureHandlerState)state
            forViewWithTag:(nonnull NSNumber *)reactTag
-            withExtraData:(DevMenuRNGestureHandlerEventExtraData *)extraData;
+            withExtraData:(nonnull DevMenuRNGestureHandlerEventExtraData *)extraData;
+- (void)sendStateChangeEvent:(nonnull DevMenuRNGestureHandlerStateChange *)event;
+- (void)sendTouchEventInState:(DevMenuRNGestureHandlerState)state
+                 forViewWithTag:(nonnull NSNumber *)reactTag;
 
 @end
 

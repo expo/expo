@@ -3,12 +3,15 @@ module Expo
   module ProjectIntegrator
     include Pod
 
+    CONFIGURATION_FLAG_PREFIX = 'EXPO_CONFIGURATION_'
+    SWIFT_FLAGS = 'OTHER_SWIFT_FLAGS'
+
     # Integrates targets in the project and generates modules providers.
     def self.integrate_targets_in_project(targets, project)
       # Find the targets that use expo modules and need the modules provider
       targets_with_modules_provider = targets.select do |target|
         autolinking_manager = target.target_definition.autolinking_manager
-        autolinking_manager.present?
+        autolinking_manager.present? && autolinking_manager.should_generate_modules_provider?
       end
 
       # Find existing PBXGroup for modules providers.
@@ -96,6 +99,33 @@ module Expo
 
     def self.modules_providers_group(project, autocreate = false)
       project.main_group.find_subpath(Constants::GENERATED_GROUP_NAME, autocreate)
+    end
+
+    # Sets EXPO_CONFIGURATION_* compiler flag for Swift.
+    def self.set_autolinking_configuration(project)
+      project.native_targets.each do |native_target|
+        native_target.build_configurations.each do |build_configuration|
+          configuration_flag = "-D #{CONFIGURATION_FLAG_PREFIX}#{build_configuration.debug? ? "DEBUG" : "RELEASE"}"          
+          build_settings = build_configuration.build_settings
+
+          # For some targets it might be `nil` by default which is an equivalent to `$(inherited)`
+          if build_settings[SWIFT_FLAGS].nil?
+            build_settings[SWIFT_FLAGS] ||= '$(inherited)'
+          end
+
+          # If the correct flag is not set yet
+          if !build_settings[SWIFT_FLAGS].include?(configuration_flag)
+            # Remove existing flag to make sure we don't put another one each time
+            build_settings[SWIFT_FLAGS] = build_settings[SWIFT_FLAGS].gsub(/\b-D\s+#{Regexp.quote(CONFIGURATION_FLAG_PREFIX)}\w+/, '')
+  
+            # Add the correct flag
+            build_settings[SWIFT_FLAGS] << ' ' << configuration_flag
+
+            # Make sure the project will be saved as we did some changes 
+            project.mark_dirty!
+          end
+        end
+      end
     end
 
   end # module ExpoAutolinkingExtension

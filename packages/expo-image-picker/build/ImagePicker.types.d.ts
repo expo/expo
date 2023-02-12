@@ -2,21 +2,16 @@ import { PermissionResponse } from 'expo-modules-core';
 /**
  * Alias for `PermissionResponse` type exported by `expo-modules-core`.
  */
-export declare type CameraPermissionResponse = PermissionResponse;
+export type CameraPermissionResponse = PermissionResponse;
 /**
- * Extends `PermissionResponse` type exported by `expo-modules-core` and contains additional iOS-specific field.
+ * Extends `PermissionResponse` type exported by `expo-modules-core`, containing additional iOS-specific field.
  */
-export declare type MediaLibraryPermissionResponse = PermissionResponse & {
+export type MediaLibraryPermissionResponse = PermissionResponse & {
     /**
      * @platform ios
      */
     accessPrivileges?: 'all' | 'limited' | 'none';
 };
-/**
- * An alias for the `MediaLibraryPermissionResponse` object.
- * @deprecated Deprecated. Use `ImagePicker.MediaLibraryPermissionResponse` instead.
- */
-export declare type CameraRollPermissionResponse = MediaLibraryPermissionResponse;
 export declare enum MediaTypeOptions {
     /**
      * Images and videos.
@@ -125,23 +120,73 @@ export declare enum UIImagePickerControllerQualityType {
      */
     IFrame960x540 = 5
 }
+/**
+ * Picker presentation style. Its values are directly mapped to the [`UIModalPresentationStyle`](https://developer.apple.com/documentation/uikit/uiviewcontroller/1621355-modalpresentationstyle).
+ *
+ * @platform ios
+ */
 export declare enum UIImagePickerPresentationStyle {
-    FullScreen = 0,
-    PageSheet = 1,
-    FormSheet = 2,
-    CurrentContext = 3,
-    OverFullScreen = 5,
-    OverCurrentContext = 6,
-    Popover = 7,
-    BlurOverFullScreen = 8,
-    Automatic = -2
+    /**
+     * A presentation style in which the presented picker covers the screen.
+     */
+    FULL_SCREEN = "fullScreen",
+    /**
+     * A presentation style that partially covers the underlying content.
+     */
+    PAGE_SHEET = "pageSheet",
+    /**
+     * A presentation style that displays the picker centered in the screen.
+     */
+    FORM_SHEET = "formSheet",
+    /**
+     * A presentation style where the picker is displayed over the app's content.
+     */
+    CURRENT_CONTEXT = "currentContext",
+    /**
+     * A presentation style in which the picker view covers the screen.
+     */
+    OVER_FULL_SCREEN = "overFullScreen",
+    /**
+     * A presentation style where the picker is displayed over the app's content.
+     */
+    OVER_CURRENT_CONTEXT = "overCurrentContext",
+    /**
+     * A presentation style where the picker is displayed in a popover view.
+     */
+    POPOVER = "popover",
+    /**
+     * The default presentation style chosen by the system.
+     * On older iOS versions, falls back to `WebBrowserPresentationStyle.FullScreen`.
+     *
+     * @platform ios 13+
+     */
+    AUTOMATIC = "automatic"
 }
-export declare type ImageInfo = {
+/**
+ * @hidden
+ * @deprecated Use `ImagePickerAsset` instead
+ */
+export type ImageInfo = ImagePickerAsset;
+/**
+ * Represents an asset (image or video) returned by the image picker or camera.
+ */
+export type ImagePickerAsset = {
     /**
      * URI to the local image or video file (usable as the source of an `Image` element, in the case of
      * an image) and `width` and `height` specify the dimensions of the media.
      */
     uri: string;
+    /**
+     * The unique ID that represents the picked image or video, if picked from the library. It can be used
+     * by [expo-media-library](./media-library) to manage the picked asset.
+     *
+     * > This might be `null` when the ID is unavailable or the user gave limited permission to access the media library.
+     * > On Android, the ID is unavailable when the user selects a photo by directly browsing file system.
+     *
+     * @platform ios
+     * @platform android
+     */
+    assetId?: string | null;
     /**
      * Width of the image or video.
      */
@@ -155,34 +200,42 @@ export declare type ImageInfo = {
      */
     type?: 'image' | 'video';
     /**
+     * Preferred filename to use when saving this item. This might be `null` when the name is unavailable
+     * or user gave limited permission to access the media library.
+     *
+     * @platform ios
+     */
+    fileName?: string | null;
+    /**
+     * File size of the picked image or video, in bytes.
+     *
+     * @platform ios
+     */
+    fileSize?: number;
+    /**
      * The `exif` field is included if the `exif` option is truthy, and is an object containing the
      * image's EXIF data. The names of this object's properties are EXIF tags and the values are the
      * respective EXIF values for those tags.
      */
-    exif?: Record<string, any>;
+    exif?: Record<string, any> | null;
     /**
-     * Included if the `base64` option is truthy, and is a Base64-encoded string of the selected
-     * image's JPEG data. If you prepend this with `'data:image/jpeg;base64,'` to create a data URI,
+     * When the `base64` option is truthy, it is a Base64-encoded string of the selected image's JPEG data, otherwise `null`.
+     * If you prepend this with `'data:image/jpeg;base64,'` to create a data URI,
      * you can use it as the source of an `Image` element; for example:
      * ```ts
      * <Image
-     *   source={{ uri: 'data:image/jpeg;base64,' + launchCameraResult.base64 }}
+     *   source={{ uri: 'data:image/jpeg;base64,' + asset.base64 }}
      *   style={{ width: 200, height: 200 }}
      * />
      * ```
      */
-    base64?: string;
+    base64?: string | null;
     /**
-     * Length of the video in milliseconds.
+     * Length of the video in milliseconds or `null` if the asset is not a video.
      */
-    duration?: number;
-    /**
-     * Boolean flag which shows if request was cancelled. If asset data have been returned this should
-     * always be `false`.
-     */
-    cancelled: boolean;
+    duration?: number | null;
 };
-export declare type ImagePickerErrorResult = {
+export type ImagePickerErrorResult = {
     /**
      * The error code.
      */
@@ -197,21 +250,56 @@ export declare type ImagePickerErrorResult = {
     exception?: string;
 };
 /**
- * An object returned when the pick action has been cancelled by the user.
+ * Type representing successful and canceled pick result.
  */
-export declare type ImagePickerCancelledResult = {
-    cancelled: true;
+export type ImagePickerResult = ImagePickerSuccessResult | ImagePickerCanceledResult;
+/**
+ * Type representing successful pick result.
+ */
+export type ImagePickerSuccessResult = {
+    /**
+     * Boolean flag set to `false` showing that the request was successful.
+     */
+    canceled: false;
+    /**
+     * An array of picked assets.
+     */
+    assets: ImagePickerAsset[];
 };
-export declare type ImagePickerResult = ImagePickerCancelledResult | ImageInfo;
-export declare type ImagePickerMultipleResult = ImagePickerCancelledResult | {
-    cancelled: false;
-    selected: ImageInfo[];
+/**
+ * Type representing canceled pick result.
+ */
+export type ImagePickerCanceledResult = {
+    /**
+     * Boolean flag set to `true` showing that the request was canceled.
+     */
+    canceled: true;
+    /**
+     * `null` signifying that the request was canceled.
+     */
+    assets: null;
 };
-export declare type ImagePickerOptions = {
+/**
+ * @hidden
+ * @deprecated Use `ImagePickerResult` instead.
+ */
+export type ImagePickerCancelledResult = ImagePickerCanceledResult;
+/**
+ * @hidden
+ * @deprecated `ImagePickerMultipleResult` has been deprecated in favor of `ImagePickerResult`.
+ */
+export type ImagePickerMultipleResult = ImagePickerResult;
+export type ImagePickerOptions = {
     /**
      * Whether to show a UI to edit the image after it is picked. On Android the user can crop and
      * rotate the image and on iOS simply crop it.
+     *
+     * > Cropping multiple images is not supported - this option is mutually exclusive with `allowsMultipleSelection`.
+     * > On iOS, this option is ignored if `allowsMultipleSelection` is enabled.
+     *
      * @default false
+     * @platform ios
+     * @platform android
      */
     allowsEditing?: boolean;
     /**
@@ -225,6 +313,12 @@ export declare type ImagePickerOptions = {
      * `1` means compress for maximum quality.
      * > Note: If the selected image has been compressed before, the size of the output file may be
      * > bigger than the size of the original image.
+     *
+     * > Note: On iOS, if a `.bmp` or `.png` image is selected from the library, this option is ignored.
+     *
+     * @default 0.2
+     * @platform ios
+     * @platform android
      */
     quality?: number;
     /**
@@ -245,7 +339,7 @@ export declare type ImagePickerOptions = {
      * Specify preset which will be used to compress selected video.
      * @default ImagePicker.VideoExportPreset.Passthrough
      * @platform ios 11+
-     * @deprecated Deprecated. See [`videoExportPreset`](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/2890964-videoexportpreset?language=objc)
+     * @deprecated See [`videoExportPreset`](https://developer.apple.com/documentation/uikit/uiimagepickercontroller/2890964-videoexportpreset?language=objc)
      * in Apple documentation.
      */
     videoExportPreset?: VideoExportPreset;
@@ -257,9 +351,35 @@ export declare type ImagePickerOptions = {
     videoQuality?: UIImagePickerControllerQualityType;
     /**
      * Whether or not to allow selecting multiple media files at once.
+     *
+     * > Cropping multiple images is not supported - this option is mutually exclusive with `allowsEditing`.
+     * > If this option is enabled, then `allowsEditing` is ignored.
+     *
+     * @default false
+     * @platform ios 14+
+     * @platform android
      * @platform web
      */
     allowsMultipleSelection?: boolean;
+    /**
+     * The maximum number of items that user can select. Applicable when `allowsMultipleSelection` is enabled.
+     * Setting the value to `0` sets the selection limit to the maximum that the system supports.
+     *
+     * @platform ios 14+
+     * @default 0
+     */
+    selectionLimit?: number;
+    /**
+     * Whether to display number badges when assets are selected. The badges are numbered
+     * in selection order. Assets are then returned in the exact same order they were selected.
+     *
+     * > Assets should be returned in the selection order regardless of this option,
+     * > but there is no guarantee that it is always true when this option is disabled.
+     *
+     * @platform ios 15+
+     * @default false
+     */
+    orderedSelection?: boolean;
     /**
      * Maximum duration, in seconds, for video recording. Setting this to `0` disables the limit.
      * Defaults to `0` (no limit).
@@ -277,7 +397,7 @@ export declare type ImagePickerOptions = {
      */
     presentationStyle?: UIImagePickerPresentationStyle;
 };
-export declare type OpenFileBrowserOptions = {
+export type OpenFileBrowserOptions = {
     /**
      * Choose what type of media to pick.
      * @default ImagePicker.MediaTypeOptions.Images
@@ -294,7 +414,11 @@ export declare type OpenFileBrowserOptions = {
      */
     base64: boolean;
 };
-export declare type ExpandImagePickerResult<T extends ImagePickerOptions | OpenFileBrowserOptions> = T extends {
+/**
+ * @hidden
+ * @deprecated Use `ImagePickerResult` or `OpenFileBrowserOptions` instead.
+ */
+export type ExpandImagePickerResult<T extends ImagePickerOptions | OpenFileBrowserOptions> = T extends {
     allowsMultipleSelection: true;
-} ? ImagePickerMultipleResult : ImagePickerResult;
+} ? ImagePickerResult : ImagePickerResult;
 //# sourceMappingURL=ImagePicker.types.d.ts.map

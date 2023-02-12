@@ -7,6 +7,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.Animatable;
 import android.net.Uri;
 
+import androidx.annotation.Nullable;
+
 import com.facebook.common.references.CloseableReference;
 import com.facebook.datasource.DataSource;
 import com.facebook.drawee.backends.pipeline.Fresco;
@@ -25,8 +27,6 @@ import com.facebook.imagepipeline.request.ImageRequest;
 import com.facebook.imagepipeline.request.ImageRequestBuilder;
 import com.google.android.gms.maps.model.BitmapDescriptor;
 import com.google.android.gms.maps.model.BitmapDescriptorFactory;
-
-import javax.annotation.Nullable;
 
 public class ImageReader {
 
@@ -49,7 +49,7 @@ public class ImageReader {
             imageReference = dataSource.getResult();
             if (imageReference != null) {
               CloseableImage image = imageReference.get();
-              if (image != null && image instanceof CloseableStaticBitmap) {
+              if (image instanceof CloseableStaticBitmap) {
                 CloseableStaticBitmap closeableStaticBitmap = (CloseableStaticBitmap) image;
                 Bitmap bitmap = closeableStaticBitmap.getUnderlyingBitmap();
                 if (bitmap != null) {
@@ -104,11 +104,9 @@ public class ImageReader {
       logoHolder.setController(controller);
     } else {
       BitmapDescriptor iconBitmapDescriptor = getBitmapDescriptorByName(uri);
-      if (iconBitmapDescriptor != null) {
-        imp.setIconBitmapDescriptor(iconBitmapDescriptor);
-        imp.setIconBitmap(BitmapFactory.decodeResource(this.resources, getDrawableResourceByName
-            (uri)));
-      }
+      imp.setIconBitmapDescriptor(iconBitmapDescriptor);
+      imp.setIconBitmap(BitmapFactory.decodeResource(this.resources, getDrawableResourceByName
+          (uri)));
       imp.update();
     }
 

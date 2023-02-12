@@ -3,7 +3,7 @@ import {
   ConfigPlugin,
   createRunOncePlugin,
   withInfoPlist,
-} from '@expo/config-plugins';
+} from 'expo/config-plugins';
 
 const pkg = require('expo-av/package.json');
 

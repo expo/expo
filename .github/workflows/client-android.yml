@@ -21,7 +21,7 @@ on:
       - .ruby-version
       - yarn.lock
   push:
-    branches: [master, sdk-*]
+    branches: [main, sdk-*]
     paths:
       - .github/workflows/client-android.yml
       - secrets/**
@@ -37,68 +37,42 @@ concurrency:
 
 jobs:
   build:
-    runs-on: ubuntu-18.04
+    runs-on: ubuntu-20.04
+    env:
+      GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx3072m -XX:MaxMetaspaceSize=1024m
     steps:
       - name: 👀 Checkout
-        uses: actions/checkout@v2
+        uses: actions/checkout@v3
         with:
           submodules: true
-      - name: ♻️ Restore workspace node modules
-        uses: actions/cache@v2
-        id: node-modules-cache
+      - name: 🔨 Use JDK 11
+        uses: actions/setup-java@v3
         with:
-          path: |
-            # See "workspaces" → "packages" in the root package.json for the source of truth of
-            # which node_modules are affected by the root yarn.lock
-            node_modules
-            apps/*/node_modules
-            home/node_modules
-            packages/*/node_modules
-            packages/@unimodules/*/node_modules
-            react-native-lab/react-native/node_modules
-          key: ${{ runner.os }}-modules-${{ hashFiles('yarn.lock') }}
-      - run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: ♻️ Restore node modules in tools
-        uses: actions/cache@v2
-        with:
-          path: tools/node_modules
-          key: ${{ runner.os }}-tools-modules-${{ hashFiles('tools/yarn.lock') }}
-      - name: 🧶 Yarn install
-        run: yarn install --frozen-lockfile
+          distribution: 'temurin'
+          java-version: '11'
       - name: 💎 Setup Ruby and install gems
         uses: ruby/setup-ruby@v1
         with:
           bundler-cache: true
-      - name: 🐙 Install git-crypt
-        run: sudo apt-get install git-crypt
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+        with:
+          yarn-workspace: 'true'
+          yarn-tools: 'true'
+          gradle: 'true'
+          hermes-engine-aar: 'true'
+          ndk: 'true'
+          react-native-gradle-downloads: 'true'
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: 🧶 Yarn install
+        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
+        run: yarn install --frozen-lockfile
       - name: 🔓 Decrypt secrets if possible
-        env:
-          GIT_CRYPT_KEY_BASE64: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
-        run: |
-          if [ -z "${GIT_CRYPT_KEY_BASE64}" ]; then
-            echo 'git-crypt key not present in environment'
-          else
-            git crypt unlock <(echo $GIT_CRYPT_KEY_BASE64 | base64 --decode)
-          fi
-      - name: ♻️ Restore Gradle caches
-        uses: actions/cache@v2
+        uses: ./.github/actions/expo-git-decrypt
         with:
-          path: ~/.gradle/caches
-          key: ${{ runner.os }}-gradle-${{ hashFiles('android/*.gradle*') }}
-          restore-keys: |
-            ${{ runner.os }}-gradle-
-      - name: ♻️ Restore Android NDK from cache
-        uses: actions/cache@v2
-        id: cache-android-ndk
-        with:
-          path: /usr/local/lib/android/sdk/ndk/19.2.5345600/
-          key: ${{ runner.os }}-ndk-19.2.5345600
-          restore-keys: |
-            ${{ runner.os }}-ndk-
-      - name: 🛠 Install NDK
-        if: steps.cache-android-ndk.outputs.cache-hit != 'true'
-        run: |
-          sudo $ANDROID_SDK_ROOT/tools/bin/sdkmanager --install "ndk;19.2.5345600"
+          key: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
       - name: 🔎 Check which flavor to build
         id: flavor
         uses: dorny/paths-filter@v2
@@ -118,14 +92,14 @@ jobs:
           ANDROID_KEYSTORE_PASSWORD: ${{ secrets.ANDROID_KEYSTORE_PASSWORD }}
           ANDROID_KEY_ALIAS: ExponentKey
           ANDROID_KEY_PASSWORD: ${{ secrets.ANDROID_KEY_PASSWORD }}
-          ANDROID_NDK_HOME: /usr/local/lib/android/sdk/ndk/19.2.5345600/
+          IS_APP_BUNDLE: ${{ github.event.inputs.releaseGooglePlay == 'release-google-play' }}
           IS_RELEASE_BUILD: ${{ github.event.inputs.releaseAPK == 'release-apk' || github.event.inputs.releaseGooglePlay == 'release-google-play' }}
           IS_VERSIONED_FLAVOR: ${{ github.event_name == 'schedule' || steps.flavor.outputs.versioned == 'true' }}
         run: |
           if [ "$IS_RELEASE_BUILD" == "false" ]; then
-            export NDK_ABI_FILTERS="x86_64"
+            export ORG_GRADLE_PROJECT_reactNativeArchitectures="x86_64"
             BUILD_TYPE="Debug"
-            echo "Using ABI filters: $NDK_ABI_FILTERS"
+            echo "Using ABI filters: $ORG_GRADLE_PROJECT_reactNativeArchitectures"
           else
             BUILD_TYPE="Release"
           fi
@@ -133,38 +107,39 @@ jobs:
           echo "Building with $FLAVOR flavor"
           if [ -z "$ANDROID_KEYSTORE_B64" ]; then
             echo "External build detected, APK will not be signed"
-            bin/fastlane android build build_type:$BUILD_TYPE flavor:$FLAVOR sign:false
+            fastlane android build build_type:$BUILD_TYPE flavor:$FLAVOR sign:false
           else
             echo "Internal build detected, APK will be signed"
             echo $ANDROID_KEYSTORE_B64 | base64 -d > android/app/release-key.jks
-            bin/fastlane android build build_type:$BUILD_TYPE flavor:$FLAVOR
+            fastlane android build build_type:$BUILD_TYPE flavor:$FLAVOR aab:$IS_APP_BUNDLE
           fi
-      - name: 💾 Upload APK artifact
-        uses: actions/upload-artifact@v2
+      - name: 📤 Upload APK artifact
+        uses: actions/upload-artifact@v3
         with:
           name: android-apk
           path: android/app/build/outputs/apk
       - name: 💾 Store daemon logs for debugging crashes
         if: failure()
-        uses: actions/upload-artifact@v2
+        uses: actions/upload-artifact@v3
         with:
           name: gradle-daemon-logs
           path: ~/.gradle/daemon
       - name: 📤 Upload APK to S3 and update staging versions endpoint
         if: ${{ github.event.inputs.releaseAPK == 'release-apk' }}
-        run: bin/expotools client-build --platform android --release
+        run: expotools client-build --platform android --release
         env:
           AWS_ACCESS_KEY_ID: AKIAJ3SWUQ4QLNQC7FXA
           AWS_SECRET_ACCESS_KEY: ${{ secrets.android_client_build_aws_secret_key }}
+          AWS_DEFAULT_REGION: 'us-east-1'
           EXPO_VERSIONS_SECRET: ${{ secrets.expo_versions_secret }}
       - name: 📤 Upload APK to Google Play and release to production
         if: ${{ github.event.inputs.releaseGooglePlay == 'release-google-play' }}
-        run: bin/fastlane android prod_release
+        run: fastlane android prod_release
         env:
           SUPPLY_JSON_KEY_DATA: ${{ secrets.SUPPLY_JSON_KEY_DATA }}
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
-        if: failure() && (github.event.ref == 'refs/heads/master' || startsWith(github.event.ref, 'refs/heads/sdk-'))
+        if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_android }}

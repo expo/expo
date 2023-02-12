@@ -4,11 +4,9 @@ import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/do
 import React from 'react';
 
 import { globalExtras } from '~/global-styles/extras';
-import { globalFonts } from '~/global-styles/fonts';
 import { globalNProgress } from '~/global-styles/nprogress';
 import { globalPrism } from '~/global-styles/prism';
 import { globalReset } from '~/global-styles/reset';
-import { globalTables } from '~/global-styles/tables';
 import { globalTippy } from '~/global-styles/tippy';
 
 export default class MyDocument extends Document<{ css?: string }> {
@@ -24,25 +22,7 @@ export default class MyDocument extends Document<{ css?: string }> {
     return (
       <Html lang="en">
         <Head>
-          <Global
-            styles={[
-              globalFonts,
-              globalReset,
-              globalNProgress,
-              globalTables,
-              globalPrism,
-              globalTippy,
-              globalExtras,
-            ]}
-          />
-
-          <link
-            rel="preload"
-            href="/static/fonts/Inter-Regular.woff2?v=3.15"
-            as="font"
-            type="font/woff2"
-            crossOrigin="anonymous"
-          />
+          <Global styles={[globalReset, globalNProgress, globalPrism, globalTippy, globalExtras]} />
         </Head>
         <body>
           <BlockingSetInitialColorMode />

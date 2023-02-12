@@ -8,6 +8,7 @@ import android.app.PendingIntent
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.KeyEvent
@@ -24,8 +25,8 @@ import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
 import expo.modules.core.interfaces.Package
-import expo.modules.splashscreen.singletons.SplashScreen
 import expo.modules.manifests.core.Manifest
+import expo.modules.splashscreen.singletons.SplashScreen
 import host.exp.exponent.*
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus
@@ -46,6 +47,7 @@ import host.exp.exponent.storage.ExponentDBObject
 import host.exp.exponent.utils.AsyncCondition
 import host.exp.exponent.utils.AsyncCondition.AsyncConditionListener
 import host.exp.exponent.utils.ExperienceActivityUtils
+import host.exp.exponent.utils.ExperienceRTLManager
 import host.exp.exponent.utils.ExpoActivityIds
 import host.exp.expoview.Exponent
 import host.exp.expoview.Exponent.StartReactInstanceDelegate
@@ -406,6 +408,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       )
       showOrReconfigureManagedAppSplashScreen(optimisticManifest)
       setLoadingProgressStatusIfEnabled()
+      ExperienceRTLManager.setSupportsRTLFromManifest(this, optimisticManifest)
     }
   }
 
@@ -506,6 +509,8 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     }
 
     BranchManager.handleLink(this, intentUri, detachSdkVersion)
+
+    ExperienceRTLManager.setSupportsRTLFromManifest(this, manifest)
 
     runOnUiThread {
       if (!isInForeground) {
@@ -673,13 +678,16 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     val remoteViews = RemoteViews(packageName, R.layout.notification)
     remoteViews.setCharSequence(R.id.home_text_button, "setText", name)
 
+    // We're defaulting to the behaviour prior API 31 (mutable) even though Android recommends immutability
+    val mutableFlag = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.S) PendingIntent.FLAG_MUTABLE else 0
+
     // Home
     val homeIntent = Intent(this, LauncherActivity::class.java)
     remoteViews.setOnClickPendingIntent(
       R.id.home_image_button,
       PendingIntent.getActivity(
         this, 0,
-        homeIntent, 0
+        homeIntent, mutableFlag
       )
     )
 
@@ -688,7 +696,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       R.id.reload_button,
       PendingIntent.getService(
         this, 0,
-        ExponentIntentService.getActionReloadExperience(this, manifestUrl!!), PendingIntent.FLAG_UPDATE_CURRENT
+        ExponentIntentService.getActionReloadExperience(this, manifestUrl!!), PendingIntent.FLAG_UPDATE_CURRENT or mutableFlag
       )
     )
 

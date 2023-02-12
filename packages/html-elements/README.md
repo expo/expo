@@ -9,7 +9,7 @@
   <img alt="Supports Expo Android" longdesc="Supports Expo Android" src="https://img.shields.io/badge/Android-4630EB.svg?style=flat-square&logo=ANDROID&labelColor=A4C639&logoColor=fff" />
   <!-- Web -->
   <img alt="Supports Expo Web" longdesc="Supports Expo Web" src="https://img.shields.io/badge/web-4630EB.svg?style=flat-square&logo=GOOGLE-CHROME&labelColor=4285F4&logoColor=fff" />
-  <a aria-label="Circle CI" href="https://circleci.com/gh/expo/expo/tree/master">
+  <a aria-label="Circle CI" href="https://circleci.com/gh/expo/expo/tree/main">
     <img alt="Circle CI" src="https://flat.badgen.net/circleci/github/expo/expo?label=Circle%20CI&labelColor=555555&icon=circleci">
   </a>
 </p>
@@ -57,6 +57,7 @@ Here is a list of all the currently supported elements and the web feature they 
 | [`<caption />`][html-caption]       |    [`<Caption />`](#caption)    |
 | [`<code />`][html-code]             |       [`<Code />`](#code)       |
 | [`<del />`][html-del]               |        [`<Del />`](#del)        |
+| [`<div />`][html-div]               |        [`<Div />`](#div)        |
 | [`<em />`][html-em]                 |         [`<EM />`](#em)         |
 | [`<footer />`][html-footer]         |     [`<Footer />`](#footer)     |
 | [`<h1 />`][html-h1]                 |         [`<H1 />`](#h1)         |
@@ -76,6 +77,7 @@ Here is a list of all the currently supported elements and the web feature they 
 | [`<q />`][html-q]                   |          [`<Q />`](#q)          |
 | [`<s />`][html-s]                   |          [`<S />`](#s)          |
 | [`<section />`][html-section]       |    [`<Section />`](#section)    |
+| [`<span />`][html-span]             |       [`<Span />`](#span)       |
 | [`<strong />`][html-strong]         |     [`<Strong />`](#strong)     |
 | [`<table />`][html-table]           |      [`<Table />`](#table)      |
 | [`<tbody />`][html-tbody]           |      [`<TBody />`](#tbody)      |
@@ -105,13 +107,13 @@ Other features not implemented in this package can be found in different parts o
 | ------------------------------- | :------------------: | :--------------------------------------------------------------------------------------------------------------------: |
 | `<audio />`                     |       `Audio`        |                                                 [`expo-av`][ex-audio]                                                  |
 | `<button />`                    |     `<Button />`     |                                                     `react-native`                                                     |
-| `<input type="text" />`         |    `<TextInput />`    |                                                     `react-native`                                                     |
+| `<input type="text" />`         |   `<TextInput />`    |                                                     `react-native`                                                     |
 | `<input type="file" />`         |    `ImagePicker`     |                                            [`expo-image-picker`][ex-ipick]                                             |
 | `<input type="file" />`         |   `DocumentPicker`   |                                           [`expo-document-picker`][ex-dpick]                                           |
 | `<canvas />`                    |     `<GLView />`     |                                     [`expo-gl`][ex-gl] & [Expo Canvas][ex-canvas]                                      |
 | `<iframe />`                    |    `<WebView />`     | [`<WebView />`][ex-webview]. `@react-native-community/web-view` is not maintained by Expo and doesn't have web support |
-| [`<link />`][html-link]         |         None         |              Eject the `index.html` with `expo customize:web` and link resources directly with `<link />`              |
-| [`<noscript />`][html-noscript] |         None         |                Eject the `index.html` with `expo customize:web` and use `<noscript />` directly as HTML                |
+| [`<link />`][html-link]         |         None         |              Eject the `index.html` with `npx expo customize` and link resources directly with `<link />`              |
+| [`<noscript />`][html-noscript] |         None         |                Eject the `index.html` with `npx expo customize` and use `<noscript />` directly as HTML                |
 | `<div />`                       |      `<View />`      |                                                     `react-native`                                                     |
 | `<img />`                       |     `<Image />`      |                                                     `react-native`                                                     |
 | `<span />`                      |      `<Text />`      |                                                     `react-native`                                                     |
@@ -119,17 +121,17 @@ Other features not implemented in this package can be found in different parts o
 | `style="backdrop-filter"`       |    `<BlurView />`    |                                                 [`expo-blur`][ex-blur]                                                 |
 | `style="linear-gradient()"`     | `<LinearGradient />` |                                         [`expo-linear-gradient`][ex-gradient]                                          |
 
-[ex-gradient]: https://docs.expo.io/versions/latest/sdk/linear-gradient/
-[ex-webview]: https://docs.expo.io/versions/latest/sdk/webview/
-[ex-audio]: https://docs.expo.io/versions/latest/sdk/audio
-[ex-gl]: https://docs.expo.io/versions/latest/sdk/gl-view
+[ex-gradient]: https://docs.expo.dev/versions/latest/sdk/linear-gradient/
+[ex-webview]: https://docs.expo.dev/versions/latest/sdk/webview/
+[ex-audio]: https://docs.expo.dev/versions/latest/sdk/audio
+[ex-gl]: https://docs.expo.dev/versions/latest/sdk/gl-view
 [ex-canvas]: https://github.com/expo/expo-2d-context
 [html-noscript]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/noscript
 [html-link]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/link
-[ex-blur]: https://docs.expo.io/versions/latest/sdk/blur-view/
-[ex-vid]: https://docs.expo.io/versions/latest/sdk/video/
-[ex-ipick]: https://docs.expo.io/versions/latest/sdk/imagepicker/
-[ex-dpick]: https://docs.expo.io/versions/latest/sdk/document-picker/
+[ex-blur]: https://docs.expo.dev/versions/latest/sdk/blur-view/
+[ex-vid]: https://docs.expo.dev/versions/latest/sdk/video/
+[ex-ipick]: https://docs.expo.dev/versions/latest/sdk/imagepicker/
+[ex-dpick]: https://docs.expo.dev/versions/latest/sdk/document-picker/
 
 ## Headings
 
@@ -218,7 +220,7 @@ export default () => <H6>Example<H6/>
 You can use the anchor element with href prop to open links. On native this will attempt to use the `Linking` API to open the `href`.
 
 - The CSS style is fully normalized to match `<Text />`
-- For pseudo-class effects like hover and focus states check out the package [`react-native-web-hooks`](https://www.npmjs.com/package/react-native-web-hooks) | [tutorial](https://blog.expo.io/css-pseudo-class-effects-in-expo-for-web-56649f88eb6b)
+- For pseudo-class effects like hover and focus states check out the package [`react-native-web-hooks`](https://www.npmjs.com/package/react-native-web-hooks) | [tutorial](https://blog.expo.dev/css-pseudo-class-effects-in-expo-for-web-56649f88eb6b)
 
 ```tsx
 import { A } from '@expo/html-elements';
@@ -252,6 +254,26 @@ Consider the following: in your app you have a basic element at the top which wr
 - **web**: render an HTML 5 [`<header />`](https://developer.mozilla.org/en-US/docs/Web/HTML/Element/header) with the ARIA `role` set to [`"banner"`](https://developer.mozilla.org/en-US/docs/Web/Accessibility/ARIA/Roles/Banner_role).
 
 Some elements like `Footer` and `Main` have no iOS, or Android enhancements, but they'll still improve web. Using the proper HTML 5 elements will make your layout compliant with the [HTML5 outline algorithm](https://html.spec.whatwg.org/multipage/sections.html#outlines).
+
+### `<Div/>`
+
+Renders a `<div />` on web and a `View` with no ARIA set on mobile.
+
+```tsx
+import { Div } from '@expo/html-elements';
+
+export default () => (
+    <Div>
+      <P>Some content in the main element</P>
+    </Div>
+  );
+)
+```
+
+| Platform | Output     |
+| -------- | ---------- |
+| Web      | `<div />`  |
+| Native   | `<View />` |
 
 ### `<Nav/>`
 
@@ -393,8 +415,8 @@ export default () => (
 
 Standard paragraph element.
 
-| Platform  | Output                                                        |
-| --------- | ------------------------------------------------------------- |
+| Platform  | Output                                                     |
+| --------- | ---------------------------------------------------------- |
 | Universal | `<Text style={{ fontSize: 14, marginVertical: '1em' }} />` |
 
 ### `<B/>`
@@ -412,6 +434,14 @@ Alternate bold text.
 | Platform  | Output                                    |
 | --------- | ----------------------------------------- |
 | Universal | `<Text style={{ fontWeight: 'bold' }} />` |
+
+### `<Span/>`
+
+Inline text element.
+
+| Platform  | Output     |
+| --------- | ---------- |
+| Universal | `<Text />` |
 
 ### `<S/>`
 
@@ -712,11 +742,50 @@ Used to caption your table. Excepts text as a child.
 | Web      | `<caption />`               |
 | Native   | `<Text style={[Custom]} />` |
 
-## TODO
+# TODO
 
 - Improve relative imports for better tree-shaking.
 
-## Contributing
+# Babel
+
+You can write `react-dom` elements in your code and use the babel plugin to transform them to `@expo/html-elements` elements.
+
+```js
+// babel.config.js
+module.exports = {
+  plugins: ['@expo/html-elements/babel'],
+};
+```
+
+## Input
+
+```js
+export default function Page() {
+  return (
+    <div>
+      <h1>Hello World</h1>
+    </div>
+  );
+}
+```
+
+## Output
+
+The import is automatically added if it's not already present. All props are passed through without any additional transforms.
+
+```js
+import { Div, H1 } from '@expo/html-elements';
+
+export default function Page() {
+  return (
+    <Div>
+      <H1>Hello World</H1>
+    </Div>
+  );
+}
+```
+
+# Contributing
 
 Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).
 
@@ -733,6 +802,7 @@ Contributions are very welcome! Please refer to guidelines described in the [con
 [html-caption]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/caption
 [html-code]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/code
 [html-del]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/del
+[html-div]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/div
 [html-em]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/em
 [html-footer]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/footer
 [html-form]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/form
@@ -754,6 +824,7 @@ Contributions are very welcome! Please refer to guidelines described in the [con
 [html-q]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/q
 [html-s]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/s
 [html-section]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/section
+[html-span]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/span
 [html-small]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/small
 [html-strong]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/strong
 [html-table]: https://developer.mozilla.org/en-US/docs/Web/HTML/Element/table

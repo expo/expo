@@ -1,7 +1,7 @@
 package expo.modules.devmenu.tests
 
-import expo.interfaces.devmenu.DevMenuSettingsInterface
+import expo.interfaces.devmenu.DevMenuPreferencesInterface
 
 interface DevMenuTestInterceptor {
-  fun overrideSettings(): DevMenuSettingsInterface?
+  fun overrideSettings(): DevMenuPreferencesInterface?
 }

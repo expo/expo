@@ -324,9 +324,8 @@ export async function test(t) {
 
       t.describe('getNotificationChannelAsync()', () => {
         t.it('returns null if there is no such channel', async () => {
-          const channel = await Notifications.getNotificationChannelAsync(
-            'non-existent-channel-id'
-          );
+          const channel =
+            await Notifications.getNotificationChannelAsync('non-existent-channel-id');
           t.expect(channel).toBe(null);
         });
 
@@ -397,7 +396,7 @@ export async function test(t) {
               showBadge: false,
               sound: null,
               audioAttributes: {
-                usage: Notifications.AndroidAudioUsage.NOTIFICATION_COMMUNICATION_INSTANT,
+                usage: Notifications.AndroidAudioUsage.NOTIFICATION,
                 contentType: Notifications.AndroidAudioContentType.SONIFICATION,
                 flags: {
                   enforceAudibility: true,
@@ -496,9 +495,8 @@ export async function test(t) {
               testChannelGroupId,
               testChannelGroup
             );
-            const channel = await Notifications.getNotificationChannelGroupAsync(
-              testChannelGroupId
-            );
+            const channel =
+              await Notifications.getNotificationChannelGroupAsync(testChannelGroupId);
             await Notifications.deleteNotificationChannelGroupAsync(testChannelGroupId);
             t.expect(channel).toBeDefined();
           });
@@ -1525,6 +1523,7 @@ export async function test(t) {
             let notificationSent = false;
             Alert.alert(`Please move the app to the background and wait for 5 seconds`);
             let userInteractionTimeout = null;
+            let subscription = null;
             async function handleStateChange(state) {
               const identifier = 'test-interactive-notification';
               if (state === 'background' && !notificationSent) {
@@ -1549,7 +1548,10 @@ export async function test(t) {
                 t.expect(handleSuccessSpy).not.toHaveBeenCalled();
                 t.expect(handleErrorSpy).not.toHaveBeenCalledWith(identifier);
                 t.expect(notificationReceivedSpy).not.toHaveBeenCalled();
-                AppState.removeEventListener('change', handleStateChange);
+                if (subscription != null) {
+                  subscription.remove();
+                  subscription = null;
+                }
                 resolve();
               }
             }
@@ -1557,14 +1559,17 @@ export async function test(t) {
               console.warn(
                 "Scheduled notification test was skipped and marked as successful. It required user interaction which hasn't occured in time."
               );
-              AppState.removeEventListener('change', handleStateChange);
+              if (subscription != null) {
+                subscription.remove();
+                subscription = null;
+              }
               Alert.alert(
                 'Scheduled notification test was skipped',
                 `The test required user interaction which hasn't occurred in time (${secondsToTimeout} seconds). It has been marked as passing. Better luck next time!`
               );
               resolve();
             }, secondsToTimeout * 1000);
-            AppState.addEventListener('change', handleStateChange);
+            subscription = AppState.addEventListener('change', handleStateChange);
           }),
         30000
       );
@@ -1827,7 +1832,7 @@ export async function test(t) {
 // In this test app we contact the Expo push service directly. You *never*
 // should do this in a real app. You should always store the push tokens on your
 // own server or use the local notification API if you want to notify this user.
-const PUSH_ENDPOINT = 'https://expo.io/--/api/v2/push/send';
+const PUSH_ENDPOINT = 'https://exp.host/--/api/v2/push/send';
 
 async function sendTestPushNotification(expoPushToken, notificationOverrides) {
   // POST the token to the Expo push server

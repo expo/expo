@@ -4,10 +4,7 @@
     "slug": "sandbox",
     "privacy": "public",
     "sdkVersion": "UNVERSIONED",
-    "platforms": [
-      "ios",
-      "android"
-    ],
+    
     "version": "1.0.0",
     "orientation": "portrait",
     "icon": "./assets/icon.png",
@@ -26,8 +23,8 @@
     "ios": {
       "supportsTablet": true
     },
-    "packagerOpts": {
-      "config": "metro.config.js"
+    "web": {
+      "bundler": "metro"
     }
   }
 }

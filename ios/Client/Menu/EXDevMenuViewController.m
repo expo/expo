@@ -6,7 +6,7 @@
 #import "EXDevMenuViewController.h"
 #import "EXDevMenuManager.h"
 #import "EXKernel.h"
-#import "EXAppLoader.h"
+#import "EXAbstractLoader.h"
 #import "EXKernelAppRegistry.h"
 #import "EXUtil.h"
 

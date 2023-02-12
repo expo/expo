@@ -10,6 +10,9 @@ import com.facebook.react.bridge.ReactContext
 import expo.modules.devlauncher.launcher.DevLauncherClientHost
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplier
+import expo.modules.devlauncher.launcher.DevLauncherRecentlyOpenedAppsRegistry
+import expo.modules.devlauncher.launcher.DevLauncherAppEntry
+
 import expo.modules.manifests.core.Manifest
 import expo.modules.updatesinterface.UpdatesInterface
 import kotlinx.coroutines.CoroutineScope
@@ -47,10 +50,6 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
 
   override val useDeveloperSupport = false
 
-  override fun maybeInitDevMenuDelegate(context: ReactContext) {
-    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
-  }
-
   override fun getCurrentReactActivityDelegate(activity: ReactActivity, delegateSupplierDevLauncher: DevLauncherReactActivityDelegateSupplier): ReactActivityDelegate {
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
@@ -63,11 +62,11 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
 
-  override fun maybeSynchronizeDevMenuDelegate() {
+  override suspend fun loadApp(url: Uri, mainActivity: ReactActivity?) {
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
 
-  override suspend fun loadApp(url: Uri, mainActivity: ReactActivity?) {
+  override suspend fun loadApp(url: Uri, projectUrl: Uri?, mainActivity: ReactActivity?) {
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
 
@@ -79,7 +78,11 @@ class DevLauncherController private constructor() : DevLauncherControllerInterfa
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
 
-  override fun getRecentlyOpenedApps(): Map<String, String?> {
+  override fun getRecentlyOpenedApps(): List<DevLauncherAppEntry> {
+    throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
+  }
+
+  override fun clearRecentlyOpenedApps() {
     throw IllegalStateException(DEV_LAUNCHER_IS_NOT_AVAILABLE)
   }
 

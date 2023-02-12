@@ -38,15 +38,20 @@
   NSInteger _maxNumberOfTouches;
 }
 
+static const NSUInteger defaultNumberOfTaps = 1;
+static const NSInteger defaultMinPointers = 1;
+static const CGFloat defaultMaxDelay = 0.2;
+static const NSTimeInterval defaultMaxDuration = 0.5;
+
 - (id)initWithGestureHandler:(DevMenuRNGestureHandler*)gestureHandler
 {
   if ((self = [super initWithTarget:gestureHandler action:@selector(handleGesture:)])) {
     _gestureHandler = gestureHandler;
     _tapsSoFar = 0;
-    _numberOfTaps = 1;
-    _minPointers = 1;
-    _maxDelay = 0.2;
-    _maxDuration = NAN;
+    _numberOfTaps = defaultNumberOfTaps;
+    _minPointers = defaultMinPointers;
+    _maxDelay = defaultMaxDelay;
+    _maxDuration = defaultMaxDuration;
     _maxDeltaX = NAN;
     _maxDeltaY = NAN;
     _maxDistSq = NAN;
@@ -67,8 +72,14 @@
 - (void)touchesBegan:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesBegan:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesBegan:touches withEvent:event];
+  
   if (_tapsSoFar == 0) {
-    _initPosition = [self locationInView:self.view];
+    // this recognizer sends UNDETERMINED -> BEGAN state change event before gestureRecognizerShouldBegin
+    // is called (it resets the gesture handler), making it send whatever the last known state as oldState
+    // in the event. If we reset it here it correctly sends UNDETERMINED as oldState.
+    [_gestureHandler reset];
+    _initPosition = [self locationInView:self.view.window];
   }
   _tapsSoFar++;
   if (_tapsSoFar) {
@@ -88,6 +99,8 @@
 - (void)touchesMoved:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesMoved:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesMoved:touches withEvent:event];
+  
   NSInteger numberOfTouches = [touches count];
   if (numberOfTouches > _maxNumberOfTouches) {
     _maxNumberOfTouches = numberOfTouches;
@@ -109,7 +122,7 @@
 }
 
 - (CGPoint)translationInView {
-  CGPoint currentPosition = [self locationInView:self.view];
+  CGPoint currentPosition = [self locationInView:self.view.window];
   return CGPointMake(currentPosition.x - _initPosition.x, currentPosition.y - _initPosition.y);
 }
 
@@ -128,7 +141,7 @@
   if (TEST_MAX_IF_NOT_NAN(fabs(trans.y), _maxDeltaY)) {
     return YES;
   }
-  if (TEST_MAX_IF_NOT_NAN(fabs(trans.y * trans.y + trans.x + trans.x), _maxDistSq)) {
+  if (TEST_MAX_IF_NOT_NAN(fabs(trans.y * trans.y + trans.x * trans.x), _maxDistSq)) {
     return YES;
   }
   return NO;
@@ -137,6 +150,8 @@
 - (void)touchesEnded:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesEnded:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesEnded:touches withEvent:event];
+  
   if (_numberOfTaps == _tapsSoFar && _maxNumberOfTouches >= _minPointers) {
     self.state = UIGestureRecognizerStateEnded;
     [self reset];
@@ -148,6 +163,8 @@
 - (void)touchesCancelled:(NSSet<UITouch *> *)touches withEvent:(UIEvent *)event
 {
   [super touchesCancelled:touches withEvent:event];
+  [_gestureHandler.pointerTracker touchesCancelled:touches withEvent:event];
+  
   self.state = UIGestureRecognizerStateCancelled;
   [self reset];
 }
@@ -157,6 +174,8 @@
   if (self.state == UIGestureRecognizerStateFailed) {
     [self triggerAction];
   }
+  [_gestureHandler.pointerTracker reset];
+
   [NSObject cancelPreviousPerformRequestsWithTarget:self selector:@selector(cancel) object:nil];
   _tapsSoFar = 0;
   _maxNumberOfTouches = 0;
@@ -176,6 +195,20 @@
     _recognizer = [[DevMenuRNBetterTapGestureRecognizer alloc] initWithGestureHandler:self];
   }
   return self;
+}
+
+- (void)resetConfig
+{
+  [super resetConfig];
+  DevMenuRNBetterTapGestureRecognizer *recognizer = (DevMenuRNBetterTapGestureRecognizer *)_recognizer;
+  
+  recognizer.numberOfTaps = defaultNumberOfTaps;
+  recognizer.minPointers = defaultMinPointers;
+  recognizer.maxDeltaX = NAN;
+  recognizer.maxDeltaY = NAN;
+  recognizer.maxDelay = defaultMaxDelay;
+  recognizer.maxDuration = defaultMaxDuration;
+  recognizer.maxDistSq = NAN;
 }
 
 - (void)configure:(NSDictionary *)config
@@ -205,13 +238,27 @@
   }
 }
 
-- (DevMenuRNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer{
+- (DevMenuRNGestureHandlerEventExtraData *)eventExtraData:(UIGestureRecognizer *)recognizer
+{
     if (recognizer.state == UIGestureRecognizerStateEnded) {
         return _lastData;
     }
     
     _lastData = [super eventExtraData:recognizer];
     return _lastData;
+}
+
+- (BOOL)gestureRecognizerShouldBegin:(UIGestureRecognizer *)gestureRecognizer
+{
+  // UNDETERMINED -> BEGAN state change event is sent before this method is called,
+  // in DevMenuRNGestureHandler it resets _lastSatate variable, making is seem like handler
+  // went from UNDETERMINED to BEGAN and then from UNDETERMINED to ACTIVE.
+  // This way we preserve _lastState between events and keep correct state flow.
+  DevMenuRNGestureHandlerState savedState = _lastState;
+  BOOL shouldBegin = [super gestureRecognizerShouldBegin:gestureRecognizer];
+  _lastState = savedState;
+  
+  return shouldBegin;
 }
 
 @end

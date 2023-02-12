@@ -1,12 +1,12 @@
-import chalk from 'chalk';
-import semver from 'semver';
-import set from 'lodash/set';
-import inquirer from 'inquirer';
-import unset from 'lodash/unset';
-import cloneDeep from 'lodash/cloneDeep';
-import { Config, Versions } from '@expo/xdl';
-import * as jsondiffpatch from 'jsondiffpatch';
 import { Command } from '@expo/commander';
+import { Config, Versions } from '@expo/xdl';
+import chalk from 'chalk';
+import inquirer from 'inquirer';
+import * as jsondiffpatch from 'jsondiffpatch';
+import cloneDeep from 'lodash/cloneDeep';
+import set from 'lodash/set';
+import unset from 'lodash/unset';
+import semver from 'semver';
 
 import { STAGING_API_HOST, PRODUCTION_API_HOST } from '../Constants';
 import { sleepAsync } from '../Utils';
@@ -115,11 +115,7 @@ async function applyChangesToRootAsync(options: ActionOptions, versions: any) {
       console.log(chalk.red('`--key` flag requires `--value` or `--delete` flag.'));
       return;
     }
-    setConfigValueForKey(
-      newVersions,
-      options.key,
-      options.delete ? undefined : options.value
-    );
+    setConfigValueForKey(newVersions, options.key, options.delete ? undefined : options.value);
   }
 
   const delta = jsondiffpatch.diff(versions, newVersions);
@@ -170,11 +166,7 @@ async function applyChangesToSDKVersionAsync(options: ActionOptions, versions: a
       console.log(chalk.red('`--key` flag requires `--value` or `--delete` flag.'));
       return;
     }
-    setConfigValueForKey(
-      sdkVersionConfig,
-      options.key,
-      options.delete ? undefined : options.value
-    );
+    setConfigValueForKey(sdkVersionConfig, options.key, options.delete ? undefined : options.value);
   }
 
   const newVersions = {

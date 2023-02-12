@@ -1,7 +1,7 @@
 export interface Window {
     openDatabase?: (name: string, version: string, displayName: string, estimatedSize: number, creationCallback?: DatabaseCallback) => Database;
 }
-export declare type DatabaseCallback = (database: Database) => void;
+export type DatabaseCallback = (database: Database) => void;
 /**
  * `Database` objects are returned by calls to `SQLite.openDatabase()`. Such an object represents a
  * connection to a database on your device.
@@ -19,8 +19,8 @@ export interface Database {
     transaction(callback: SQLTransactionCallback, errorCallback?: SQLTransactionErrorCallback, successCallback?: () => void): void;
     readTransaction(callback: SQLTransactionCallback, errorCallback?: SQLTransactionErrorCallback, successCallback?: () => void): void;
 }
-export declare type SQLTransactionCallback = (transaction: SQLTransaction) => void;
-export declare type SQLTransactionErrorCallback = (error: SQLError) => void;
+export type SQLTransactionCallback = (transaction: SQLTransaction) => void;
+export type SQLTransactionErrorCallback = (error: SQLError) => void;
 /**
  * A `SQLTransaction` object is passed in as a parameter to the `callback` parameter for the
  * `db.transaction()` method on a `Database` (see above). It allows enqueuing SQL statements to
@@ -33,7 +33,7 @@ export interface SQLTransaction {
      * never construct SQL statements on the fly.
      * @param sqlStatement A string containing a database query to execute expressed as SQL. The string
      * may contain `?` placeholders, with values to be substituted listed in the `arguments` parameter.
-     * @param args An array of values (numbers or strings) to substitute for `?` placeholders in the
+     * @param args An array of values (numbers, strings or nulls) to substitute for `?` placeholders in the
      * SQL statement.
      * @param callback Called when the query is successfully completed during the transaction. Takes
      * two parameters: the transaction itself, and a `ResultSet` object (see below) with the results
@@ -41,11 +41,11 @@ export interface SQLTransaction {
      * @param errorCallback Called if an error occurred executing this particular query in the
      * transaction. Takes two parameters: the transaction itself, and the error object.
      */
-    executeSql(sqlStatement: string, args?: (number | string)[], callback?: SQLStatementCallback, errorCallback?: SQLStatementErrorCallback): void;
+    executeSql(sqlStatement: string, args?: (number | string | null)[], callback?: SQLStatementCallback, errorCallback?: SQLStatementErrorCallback): void;
 }
-export declare type SQLStatementCallback = (transaction: SQLTransaction, resultSet: SQLResultSet) => void;
-export declare type SQLStatementErrorCallback = (transaction: SQLTransaction, error: SQLError) => boolean;
-export declare type SQLResultSet = {
+export type SQLStatementCallback = (transaction: SQLTransaction, resultSet: SQLResultSet) => void;
+export type SQLStatementErrorCallback = (transaction: SQLTransaction, error: SQLError) => boolean;
+export type SQLResultSet = {
     /**
      * The row ID of the row that the SQL statement inserted into the database, if a row was inserted.
      */
@@ -86,19 +86,28 @@ export declare class SQLError {
 }
 export interface WebSQLDatabase extends Database {
     exec(queries: Query[], readOnly: boolean, callback: SQLiteCallback): void;
+    /**
+     * Close the database.
+     */
+    closeAsync(): void;
+    /**
+     * Delete the database file.
+     * > The database has to be closed prior to deletion.
+     */
+    deleteAsync(): Promise<void>;
 }
-export declare type Query = {
+export type Query = {
     sql: string;
     args: unknown[];
 };
-export declare type ResultSetError = {
+export type ResultSetError = {
     error: Error;
 };
 /**
  * `ResultSet` objects are returned through second parameter of the `success` callback for the
  * `tx.executeSql()` method on a `SQLTransaction` (see above).
  */
-export declare type ResultSet = {
+export type ResultSet = {
     /**
      * The row ID of the row that the SQL statement inserted into the database, if a row was inserted.
      */
@@ -111,5 +120,5 @@ export declare type ResultSet = {
         [column: string]: any;
     }[];
 };
-export declare type SQLiteCallback = (error?: Error | null, resultSet?: (ResultSetError | ResultSet)[]) => void;
+export type SQLiteCallback = (error?: Error | null, resultSet?: (ResultSetError | ResultSet)[]) => void;
 //# sourceMappingURL=SQLite.types.d.ts.map

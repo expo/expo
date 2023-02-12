@@ -6,17 +6,17 @@ import path from 'path';
 import { EXPO_DIR } from '../Constants';
 import Git from '../Git';
 import logger from '../Logger';
+import { getListOfPackagesAsync } from '../Packages';
 import { TaskRunner, Task, TasksRunnerBackup } from '../TasksRunner';
+import { PackagesGraph } from '../packages-graph';
 import { BACKUP_PATH, BACKUP_EXPIRATION_TIME } from '../publish-packages/constants';
 import { pickBackupableOptions, shouldUseBackupAsync } from '../publish-packages/helpers';
-import { CommandOptions, Parcel, TaskArgs, PublishBackupData } from '../publish-packages/types';
-import { getListOfPackagesAsync } from '../Packages';
-
 import { checkPackagesIntegrity } from '../publish-packages/tasks/checkPackagesIntegrity';
 import { grantTeamAccessToPackages } from '../publish-packages/tasks/grantTeamAccessToPackages';
 import { listUnpublished } from '../publish-packages/tasks/listUnpublished';
-import { prepareParcels, createParcelAsync } from '../publish-packages/tasks/prepareParcels';
+import { getCachedParcel } from '../publish-packages/tasks/loadRequestedParcels';
 import { publishPackagesPipeline } from '../publish-packages/tasks/publishPackagesPipeline';
+import { CommandOptions, Parcel, TaskArgs, PublishBackupData } from '../publish-packages/types';
 
 export default (program: Command) => {
   program
@@ -46,6 +46,7 @@ export default (program: Command) => {
       "Whether to force publishing packages when they don't have any changes.",
       false
     )
+    .option('--no-deps', 'Whether not to include dependencies of the requested packages', false)
 
     /* exclusive options */
     .option(
@@ -67,7 +68,7 @@ export default (program: Command) => {
     /* debug options */
     .option(
       '-S, --skip-repo-checks',
-      'Skips checking whether the command is run on master branch and there are no unstaged changes.',
+      'Skips checking whether the command is run on main branch and there are no unstaged changes.',
       false
     )
     .option(
@@ -166,12 +167,13 @@ async function main(packageNames: string[], options: CommandOptions): Promise<vo
       logger.info(`♻️  Restoring from backup saved on ${chalk.magenta(dateString)}...`);
 
       const allPackages = await getListOfPackagesAsync();
+      const graph = new PackagesGraph(allPackages);
 
       for (const [packageName, restoredState] of Object.entries(backup.data!.state)) {
-        const pkg = allPackages.find((pkg) => pkg.packageName === packageName);
+        const node = graph.getNode(packageName);
 
-        if (pkg) {
-          const parcel = await createParcelAsync(pkg);
+        if (node) {
+          const parcel = await getCachedParcel(node);
           parcel.state = { ...parcel.state, ...restoredState };
           parcels.push(parcel);
         }
@@ -202,7 +204,7 @@ function tasksForOptions(options: CommandOptions): Task<TaskArgs>[] {
     return [grantTeamAccessToPackages];
   }
   if (options.checkIntegrity) {
-    return [prepareParcels, checkPackagesIntegrity];
+    return [checkPackagesIntegrity];
   }
   return [publishPackagesPipeline];
 }

@@ -1,15 +1,22 @@
-# expo-crypto
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/crypto/">
+    <img
+      src="../../.github/resources/expo-crypto.svg"
+      alt="expo-crypto"
+      height="64" />
+  </a>
+</p>
 
 Provides cryptography primitives.
 
 # API documentation
 
-- [Documentation for the master branch](https://github.com/expo/expo/blob/master/docs/pages/versions/unversioned/sdk/crypto.md)
-- [Documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/crypto/)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/crypto.mdx)
+- [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/crypto/)
 
 # Installation in managed Expo projects
 
-For [managed](https://docs.expo.io/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.io/versions/latest/sdk/crypto/).
+For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/crypto/).
 
 # Installation in bare React Native projects
 

@@ -1,5 +1,6 @@
-#import "REAInitializer.h"
-#import "REAUIManager.h"
+#import <RNReanimated/REAInitializer.h>
+#import <RNReanimated/REAUIManager.h>
+#import <RNReanimated/ReanimatedVersion.h>
 
 @interface RCTEventDispatcher (Reanimated)
 
@@ -24,7 +25,7 @@ JSIExecutor::RuntimeInstaller REAJSIExecutorRuntimeInstaller(
 
   [bridge moduleForClass:[RCTEventDispatcher class]];
   RCTEventDispatcher *eventDispatcher = [REAEventDispatcher new];
-#if RNVERSION >= 66
+#if REACT_NATIVE_MINOR_VERSION >= 66
   RCTCallableJSModules *callableJSModules = [RCTCallableJSModules new];
   [bridge setValue:callableJSModules forKey:@"_callableJSModules"];
   [callableJSModules setBridge:bridge];
@@ -39,16 +40,25 @@ JSIExecutor::RuntimeInstaller REAJSIExecutorRuntimeInstaller(
     if (!bridge) {
       return;
     }
-#if RNVERSION >= 63
+#if REACT_NATIVE_MINOR_VERSION >= 63
     auto reanimatedModule = reanimated::createReanimatedModule(bridge, bridge.jsCallInvoker);
 #else
     auto callInvoker = std::make_shared<react::BridgeJSCallInvoker>(bridge.reactInstance);
     auto reanimatedModule = reanimated::createReanimatedModule(bridge, callInvoker);
 #endif
-    runtime.global().setProperty(
-        runtime,
-        "_WORKLET_RUNTIME",
-        static_cast<double>(reinterpret_cast<std::uintptr_t>(reanimatedModule->runtime.get())));
+    auto workletRuntimeValue = runtime.global()
+                                   .getProperty(runtime, "ArrayBuffer")
+                                   .asObject(runtime)
+                                   .asFunction(runtime)
+                                   .callAsConstructor(runtime, {static_cast<double>(sizeof(void *))});
+    uintptr_t *workletRuntimeData =
+        reinterpret_cast<uintptr_t *>(workletRuntimeValue.getObject(runtime).getArrayBuffer(runtime).data(runtime));
+    workletRuntimeData[0] = reinterpret_cast<uintptr_t>(reanimatedModule->runtime.get());
+
+    runtime.global().setProperty(runtime, "_WORKLET_RUNTIME", workletRuntimeValue);
+
+    auto version = getReanimatedVersionString(runtime);
+    runtime.global().setProperty(runtime, "_REANIMATED_VERSION_CPP", version);
 
     runtime.global().setProperty(
         runtime,

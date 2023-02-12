@@ -1,17 +1,8 @@
 import { mockProperty, unmockAllProperties } from 'jest-expo';
 
-const createMockInitializeCore = jest.fn(() => jest.fn());
-jest.doMock('react-native/Libraries/Core/InitializeCore', createMockInitializeCore);
-
 afterEach(() => {
   unmockAllProperties();
   jest.resetModules();
-});
-
-it(`initializes React Native`, () => {
-  expect(createMockInitializeCore).not.toHaveBeenCalled();
-  require('../validate.fx');
-  expect(createMockInitializeCore).toHaveBeenCalled();
 });
 
 it(`passes if we're running in Expo`, () => {

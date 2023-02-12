@@ -8,7 +8,45 @@
 
 ### 🐛 Bug fixes
 
+- Add `WebkitBackdropFilter` to support `react-native-web` styling. ([#21146](https://github.com/expo/expo/pull/21146) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
+
+## 12.2.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 12.2.0 — 2023-02-03
+
+### 🐛 Bug fixes
+
+- Add `-webkit-backdrop-filter` to support blurring on Safari. ([#21003](https://github.com/expo/expo/pull/21003) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 12.1.0 — 2022-12-30
+
+### 🎉 New features
+
+- Migrated iOS codebase to Swift and the new Expo modules API. ([#19786](https://github.com/expo/expo/pull/19786) by [@tsapeta](https://github.com/tsapeta))
+
+## 12.0.1 — 2022-11-02
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+## 11.2.0 — 2022-07-07
+
+_This version does not introduce any user-facing changes._
+
+## 11.1.0 — 2022-04-18
+
+### 🐛 Bug fixes
+
+- Fixed the component not rendering correctly when the border radius style is set. ([#16671](https://github.com/expo/expo/pull/16671) by [@tsapeta](https://github.com/tsapeta))
 
 ## 11.0.0 — 2021-12-03
 

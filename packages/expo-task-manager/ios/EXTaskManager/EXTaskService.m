@@ -1,10 +1,10 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import <ExpoModulesCore/EXDefines.h>
+#import <ExpoModulesCore/EXTaskConsumerInterface.h>
 
 #import <EXTaskManager/EXTask.h>
 #import <EXTaskManager/EXTaskService.h>
-#import <UMTaskManagerInterface/UMTaskConsumerInterface.h>
 
 #import <UMAppLoader/UMAppLoaderProvider.h>
 #import <UMAppLoader/UMAppRecordInterface.h>
@@ -20,11 +20,11 @@
 // Dictionary with app records of running background apps. Schema: { "<appId>": EXAppRecordInterface }
 @property (nonatomic, strong) NSMutableDictionary<NSString *, id<UMAppRecordInterface>> *appRecords;
 
-// MapTable with task managers of running (foregrounded) apps. Schema: { "<appId>": UMTaskManagerInterface }
-@property (nonatomic, strong) NSMapTable<NSString *, id<UMTaskManagerInterface>> *taskManagers;
+// MapTable with task managers of running (foregrounded) apps. Schema: { "<appId>": EXTaskManagerInterface }
+@property (nonatomic, strong) NSMapTable<NSString *, id<EXTaskManagerInterface>> *taskManagers;
 
 // Same as above but for headless (backgrounded) apps.
-@property (nonatomic, strong) NSMapTable<NSString *, id<UMTaskManagerInterface>> *headlessTaskManagers;
+@property (nonatomic, strong) NSMapTable<NSString *, id<EXTaskManagerInterface>> *headlessTaskManagers;
 
 // Dictionary with events queues storing event bodies that should be passed to the manager as soon as it's available.
 // Schema: { "<appId>": [<eventBodies...>] }
@@ -53,20 +53,20 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   return self;
 }
 
-# pragma mark - UMTaskServiceInterface
+# pragma mark - EXTaskServiceInterface
 
 /**
  *  Returns boolean value whether the task with given name is already registered for given appId.
  */
 - (BOOL)hasRegisteredTaskWithName:(nonnull NSString *)taskName forAppId:(nonnull NSString *)appId
 {
-  id<UMTaskInterface> task = [self _getTaskWithName:taskName forAppId:appId];
+  id<EXTaskInterface> task = [self _getTaskWithName:taskName forAppId:appId];
   return task != nil;
 }
 
 /**
  *  Creates a new task, registers it and saves to the config stored in user defaults.
- *  It can throw an exception if given consumer class doesn't conform to UMTaskConsumerInterface protocol
+ *  It can throw an exception if given consumer class doesn't conform to EXTaskConsumerInterface protocol
  *  or another task with the same name and appId is already registered.
  */
 - (void)registerTaskWithName:(NSString *)taskName
@@ -77,13 +77,13 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 {
   Class unversionedConsumerClass = [self _unversionedClassFromClass:consumerClass];
   
-  // Given consumer class doesn't conform to UMTaskConsumerInterface protocol
-  if (![unversionedConsumerClass conformsToProtocol:@protocol(UMTaskConsumerInterface)]) {
-    NSString *reason = @"Invalid `consumer` argument. It must be a class that conforms to UMTaskConsumerInterface protocol.";
+  // Given consumer class doesn't conform to EXTaskConsumerInterface protocol
+  if (![unversionedConsumerClass conformsToProtocol:@protocol(EXTaskConsumerInterface)]) {
+    NSString *reason = @"Invalid `consumer` argument. It must be a class that conforms to EXTaskConsumerInterface protocol.";
     @throw [NSException exceptionWithName:@"E_INVALID_TASK_CONSUMER" reason:reason userInfo:nil];
   }
   
-  id<UMTaskInterface> task = [self _getTaskWithName:taskName forAppId:appId];
+  id<EXTaskInterface> task = [self _getTaskWithName:taskName forAppId:appId];
   
   if (task && [task.consumer isMemberOfClass:unversionedConsumerClass]) {
     // Task already exists. Let's just update its options.
@@ -163,7 +163,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
             forAppId:(NSString *)appId
   hasConsumerOfClass:(Class)consumerClass
 {
-  id<UMTaskInterface> task = [self _getTaskWithName:taskName forAppId:appId];
+  id<EXTaskInterface> task = [self _getTaskWithName:taskName forAppId:appId];
   Class unversionedConsumerClass = [self _unversionedClassFromClass:consumerClass];
   return task ? [task.consumer isMemberOfClass:unversionedConsumerClass] : NO;
 }
@@ -171,17 +171,17 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 - (NSDictionary *)getOptionsForTaskName:(NSString *)taskName
                                forAppId:(NSString *)appId
 {
-  id<UMTaskInterface> task = [self _getTaskWithName:taskName forAppId:appId];
+  id<EXTaskInterface> task = [self _getTaskWithName:taskName forAppId:appId];
   return task.options;
 }
 
 - (NSArray *)getRegisteredTasksForAppId:(NSString *)appId
 {
-  NSDictionary<NSString *, id<UMTaskInterface>> *tasks = [self _getTasksForAppId:appId];
+  NSDictionary<NSString *, id<EXTaskInterface>> *tasks = [self _getTasksForAppId:appId];
   NSMutableArray *results = [NSMutableArray new];
   
   for (NSString *taskName in tasks) {
-    id<UMTaskInterface> task = tasks[taskName];
+    id<EXTaskInterface> task = tasks[taskName];
     
     if (task != nil) {
       [results addObject:@{
@@ -198,7 +198,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
                   forAppId:(NSString *)appId
      didFinishWithResponse:(NSDictionary *)response
 {
-  id<UMTaskInterface> task = [self _getTaskWithName:taskName forAppId:appId];
+  id<EXTaskInterface> task = [self _getTaskWithName:taskName forAppId:appId];
   NSString *eventId = response[@"eventId"];
   id result = response[@"result"];
   
@@ -235,7 +235,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   }
 }
 
-- (void)setTaskManager:(id<UMTaskManagerInterface>)taskManager
+- (void)setTaskManager:(id<EXTaskManagerInterface>)taskManager
               forAppId:(NSString *)appId
                withUrl:(NSString *)appUrl
 {
@@ -268,11 +268,11 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 
 # pragma mark - EXTaskDelegate
 
-- (void)executeTask:(nonnull id<UMTaskInterface>)task
+- (void)executeTask:(nonnull id<EXTaskInterface>)task
            withData:(nullable NSDictionary *)data
           withError:(nullable NSError *)error
 {
-  id<UMTaskManagerInterface> taskManager = [self _taskManagerForAppId:task.appId];
+  id<EXTaskManagerInterface> taskManager = [self _taskManagerForAppId:task.appId];
   NSDictionary *executionInfo = [self _executionInfoForTask:task];
   NSDictionary *body = @{
     @"executionInfo": executionInfo,
@@ -320,11 +320,11 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 {
   [self _restoreTasks];
   
-  UMTaskLaunchReason launchReason = [self _launchReasonForLaunchOptions:launchOptions];
+  EXTaskLaunchReason launchReason = [self _launchReasonForLaunchOptions:launchOptions];
   [self runTasksWithReason:launchReason userInfo:launchOptions completionHandler:nil];
 }
 
-- (void)runTasksWithReason:(UMTaskLaunchReason)launchReason
+- (void)runTasksWithReason:(EXTaskLaunchReason)launchReason
                   userInfo:(nullable NSDictionary *)userInfo
          completionHandler:(void (^)(UIBackgroundFetchResult))completionHandler
 {
@@ -357,7 +357,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 /**
  *  Returns the task object for given name and appId.
  */
-- (id<UMTaskInterface>)_getTaskWithName:(NSString *)taskName
+- (id<EXTaskInterface>)_getTaskWithName:(NSString *)taskName
                                forAppId:(NSString *)appId
 {
   return [self _getTasksForAppId:appId][taskName];
@@ -398,7 +398,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 /**
  *  Modifies existing config of registered task with given task.
  */
-- (void)_addTaskToConfig:(nonnull id<UMTaskInterface>)task
+- (void)_addTaskToConfig:(nonnull id<EXTaskInterface>)task
 {
   NSMutableDictionary *dict = [[self _dictionaryWithRegisteredTasks] mutableCopy] ?: [NSMutableDictionary new];
   NSMutableDictionary *appDict = [dict[task.appId] mutableCopy] ?: [NSMutableDictionary new];
@@ -456,13 +456,13 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   [userDefaults synchronize];
 }
 
-- (void)_iterateTasksUsingBlock:(void(^)(id<UMTaskInterface> task))block
+- (void)_iterateTasksUsingBlock:(void(^)(id<EXTaskInterface> task))block
 {
   for (NSString *appId in _tasks) {
     NSDictionary *appTasks = [self _getTasksForAppId:appId];
     
     for (NSString *taskName in appTasks) {
-      id<UMTaskInterface> task = [self _getTaskWithName:taskName forAppId:appId];
+      id<EXTaskInterface> task = [self _getTaskWithName:taskName forAppId:appId];
       block(task);
     }
   }
@@ -493,7 +493,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 /**
  *  Returns NSDictionary representing single task.
  */
-- (nullable NSDictionary *)_dictionaryFromTask:(id<UMTaskInterface>)task
+- (nullable NSDictionary *)_dictionaryFromTask:(id<EXTaskInterface>)task
 {
   return @{
     @"name": task.name,
@@ -503,7 +503,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   };
 }
 
-- (void)_runTasksSupportingLaunchReason:(UMTaskLaunchReason)launchReason
+- (void)_runTasksSupportingLaunchReason:(EXTaskLaunchReason)launchReason
                                userInfo:(nullable NSDictionary *)userInfo
                                callback:(void(^)(NSArray * _Nonnull results))callback
 {
@@ -520,7 +520,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   
   [_requests addObject:request];
   
-  [self _iterateTasksUsingBlock:^(id<UMTaskInterface> task) {
+  [self _iterateTasksUsingBlock:^(id<EXTaskInterface> task) {
     if ([task.consumer.class respondsToSelector:@selector(supportsLaunchReason:)] && [task.consumer.class supportsLaunchReason:launchReason]) {
       [self _addTask:task toRequest:request withInfo:userInfo];
     }
@@ -559,9 +559,9 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
 /**
  *  Returns task manager for given appId. Task managers initialized in non-headless contexts have precedence over headless one.
  */
-- (id<UMTaskManagerInterface>)_taskManagerForAppId:(NSString *)appId
+- (id<EXTaskManagerInterface>)_taskManagerForAppId:(NSString *)appId
 {
-  id<UMTaskManagerInterface> taskManager = [_taskManagers objectForKey:appId];
+  id<EXTaskManagerInterface> taskManager = [_taskManagers objectForKey:appId];
   return taskManager ?: [_headlessTaskManagers objectForKey:appId];
 }
 
@@ -629,7 +629,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   }
 }
 
-- (void)_addTask:(id<UMTaskInterface>)task toRequest:(EXTaskExecutionRequest *)request withInfo:(nullable NSDictionary *)info
+- (void)_addTask:(id<EXTaskInterface>)task toRequest:(EXTaskExecutionRequest *)request withInfo:(nullable NSDictionary *)info
 {
   [request addTask:task];
   
@@ -641,7 +641,7 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   }
 }
 
-- (NSDictionary *)_executionInfoForTask:(nonnull id<UMTaskInterface>)task
+- (NSDictionary *)_executionInfoForTask:(nonnull id<EXTaskInterface>)task
 {
   NSString *appState = [self _exportAppState:[[UIApplication sharedApplication] applicationState]];
   return @{
@@ -673,27 +673,27 @@ EX_REGISTER_SINGLETON_MODULE(TaskService)
   };
 }
 
-- (UMTaskLaunchReason)_launchReasonForLaunchOptions:(nullable NSDictionary *)launchOptions
+- (EXTaskLaunchReason)_launchReasonForLaunchOptions:(nullable NSDictionary *)launchOptions
 {
   if (launchOptions == nil) {
-    return UMTaskLaunchReasonUser;
+    return EXTaskLaunchReasonUser;
   }
   if (launchOptions[UIApplicationLaunchOptionsBluetoothCentralsKey]) {
-    return UMTaskLaunchReasonBluetoothCentrals;
+    return EXTaskLaunchReasonBluetoothCentrals;
   }
   if (launchOptions[UIApplicationLaunchOptionsBluetoothPeripheralsKey]) {
-    return UMTaskLaunchReasonBluetoothPeripherals;
+    return EXTaskLaunchReasonBluetoothPeripherals;
   }
   if (launchOptions[UIApplicationLaunchOptionsLocationKey]) {
-    return UMTaskLaunchReasonLocation;
+    return EXTaskLaunchReasonLocation;
   }
   if (launchOptions[UIApplicationLaunchOptionsNewsstandDownloadsKey]) {
-    return UMTaskLaunchReasonNewsstandDownloads;
+    return EXTaskLaunchReasonNewsstandDownloads;
   }
   if (launchOptions[UIApplicationLaunchOptionsRemoteNotificationKey]) {
-    return UMTaskLaunchReasonRemoteNotification;
+    return EXTaskLaunchReasonRemoteNotification;
   }
-  return UMTaskLaunchReasonUnrecognized;
+  return EXTaskLaunchReasonUnrecognized;
 }
 
 - (NSString *)_exportAppState:(UIApplicationState)appState

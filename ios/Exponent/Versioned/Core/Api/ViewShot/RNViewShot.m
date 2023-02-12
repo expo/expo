@@ -53,7 +53,7 @@ RCT_EXPORT_METHOD(captureRef:(nonnull NSNumber *)target
 
     if ([target intValue] == -1) {
       UIWindow *window = [[UIApplication sharedApplication] keyWindow];
-      view = window.rootViewController.view;
+      view = window;
     } else {
       view = viewRegistry[target];
     }
@@ -67,6 +67,7 @@ RCT_EXPORT_METHOD(captureRef:(nonnull NSNumber *)target
     CGSize size = [RCTConvert CGSize:options];
     NSString *format = [RCTConvert NSString:options[@"format"]];
     NSString *result = [RCTConvert NSString:options[@"result"]];
+    BOOL renderInContext = [RCTConvert BOOL:options[@"useRenderInContext"]];
     BOOL snapshotContentContainer = [RCTConvert BOOL:options[@"snapshotContentContainer"]];
 
     // Capture image
@@ -107,7 +108,15 @@ RCT_EXPORT_METHOD(captureRef:(nonnull NSNumber *)target
 
     UIGraphicsBeginImageContextWithOptions(size, NO, 0);
     
-    success = [rendered drawViewHierarchyInRect:(CGRect){CGPointZero, size} afterScreenUpdates:YES];
+    if (renderInContext) {
+      // this comes with some trade-offs such as inability to capture gradients or scrollview's content in full but it works for large views
+      [rendered.layer renderInContext: UIGraphicsGetCurrentContext()];
+      success = YES;
+    }
+    else {
+      // this doesn't work for large views and reports incorrect success even though the image is blank
+      success = [rendered drawViewHierarchyInRect:(CGRect){CGPointZero, size} afterScreenUpdates:YES];
+    }
     UIImage *image = UIGraphicsGetImageFromCurrentImageContext();
     UIGraphicsEndImageContext();
 

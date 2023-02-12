@@ -1,67 +1,156 @@
-import React from 'react';
+import ReactMarkdown from 'react-markdown';
 
-import { InlineCode } from '~/components/base/code';
-import { UL } from '~/components/base/list';
-import { B, P } from '~/components/base/paragraph';
-import { H2, H4 } from '~/components/plugins/Headings';
 import {
   ClassDefinitionData,
   GeneratedData,
   PropData,
 } from '~/components/plugins/api/APIDataTypes';
+import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import { renderMethod } from '~/components/plugins/api/APISectionMethods';
+import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import { renderProp } from '~/components/plugins/api/APISectionProps';
 import {
   CommentTextBlock,
+  getAPISectionHeader,
+  H3Code,
+  getTagData,
+  getTagNamesList,
+  mdComponents,
   resolveTypeName,
+  STYLES_APIBOX,
+  STYLES_APIBOX_NESTED,
+  STYLES_NESTED_SECTION_HEADER,
   TypeDocKind,
+  getCommentContent,
 } from '~/components/plugins/api/APISectionUtils';
+import { H2, H4, BOLD, P, CODE } from '~/ui/components/Text';
 
 export type APISectionClassesProps = {
   data: GeneratedData[];
 };
 
-const renderProperty = (prop: PropData) => {
-  return prop.signatures?.length ? renderMethod(prop) : renderProp(prop, prop?.defaultValue, true);
+const classNamesMap: Record<string, string> = {
+  AccelerometerSensor: 'Accelerometer',
+  BarometerSensor: 'Barometer',
+  DeviceMotionSensor: 'DeviceMotion',
+  GyroscopeSensor: 'Gyroscope',
+  MagnetometerSensor: 'Magnetometer',
+} as const;
+
+const isProp = (child: PropData) =>
+  child.kind === TypeDocKind.Property &&
+  !child.overwrites &&
+  !child.name.startsWith('_') &&
+  !child.implementationOf;
+
+const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
+  child.kind &&
+  [TypeDocKind.Method, TypeDocKind.Function, TypeDocKind.Accessor].includes(child.kind) &&
+  (allowOverwrites || !child.overwrites) &&
+  !child.name.startsWith('_') &&
+  !child?.implementationOf;
+
+const remapClass = (clx: ClassDefinitionData) => {
+  clx.isSensor = !!classNamesMap[clx.name] || Object.values(classNamesMap).includes(clx.name);
+  clx.name = classNamesMap[clx.name] ?? clx.name;
+
+  if (clx.isSensor && clx.extendedTypes) {
+    clx.extendedTypes = clx.extendedTypes.map(type => ({
+      ...type,
+      name: type.name === 'default' ? 'DeviceSensor' : type.name,
+    }));
+  }
+
+  return clx;
 };
 
-const renderClass = (
-  { name, comment, type, extendedTypes, children }: ClassDefinitionData,
-  classCount: number
-): JSX.Element => {
-  const properties = children?.filter(
-    child => child.kind === TypeDocKind.Property && !child.overwrites && !child.name.startsWith('_')
-  );
-  const methods = children?.filter(child => child.kind === TypeDocKind.Method && !child.overwrites);
+const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.Element => {
+  const { name, comment, type, extendedTypes, children, implementedTypes, isSensor } = clx;
+  const Header = getAPISectionHeader(exposeInSidebar);
+
+  const properties = children?.filter(isProp);
+  const methods = children
+    ?.filter(child => isMethod(child, isSensor))
+    .sort((a: PropData, b: PropData) => a.name.localeCompare(b.name));
+  const returnComment = getTagData('returns', comment);
+
   return (
-    <div key={`class-definition-${name}`}>
-      <H2>{name}</H2>
-      {extendedTypes?.length && (
+    <div key={`class-definition-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
+      <APISectionDeprecationNote comment={comment} />
+      <APISectionPlatformTags comment={comment} prefix="Only for:" />
+      <H3Code tags={getTagNamesList(comment)}>
+        <CODE>{name}</CODE>
+      </H3Code>
+      {(extendedTypes?.length || implementedTypes?.length) && (
         <P>
-          <B>Type: </B>
-          {type ? <InlineCode>{resolveTypeName(type)}</InlineCode> : 'Class'}
-          <span> extends </span>
-          <InlineCode>{resolveTypeName(extendedTypes[0])}</InlineCode>
+          <BOLD>Type: </BOLD>
+          {type ? <CODE>{resolveTypeName(type)}</CODE> : 'Class'}
+          {extendedTypes?.length && (
+            <>
+              <span> extends </span>
+              {extendedTypes.map(extendedType => (
+                <CODE key={`extends-${extendedType.name}`}>{resolveTypeName(extendedType)}</CODE>
+              ))}
+            </>
+          )}
+          {implementedTypes?.length && (
+            <>
+              <span> implements </span>
+              {implementedTypes.map(implementedType => (
+                <CODE key={`implements-${implementedType.name}`}>
+                  {resolveTypeName(implementedType)}
+                </CODE>
+              ))}
+            </>
+          )}
         </P>
       )}
-      <CommentTextBlock comment={comment} />
+      <CommentTextBlock comment={comment} includePlatforms={false} />
+      {returnComment && (
+        <>
+          <div css={STYLES_NESTED_SECTION_HEADER}>
+            <H4>Returns</H4>
+          </div>
+          <ReactMarkdown components={mdComponents}>
+            {getCommentContent(returnComment.content)}
+          </ReactMarkdown>
+        </>
+      )}
       {properties?.length ? (
         <>
-          {classCount === 1 ? <H2>{name} Properties</H2> : <H4>{name} Properties</H4>}
-          <UL>{properties.map(renderProperty)}</UL>
+          <div css={STYLES_NESTED_SECTION_HEADER}>
+            <Header>{name} Properties</Header>
+          </div>
+          <div>
+            {properties.map(property =>
+              renderProp(property, property?.defaultValue, exposeInSidebar)
+            )}
+          </div>
         </>
       ) : null}
-      {methods?.length ? (
+      {methods?.length && (
         <>
-          {classCount === 1 ? <H2>{name} Methods</H2> : <H4>{name} Methods</H4>}
-          <>{methods.map(renderProperty)}</>
+          <div css={STYLES_NESTED_SECTION_HEADER}>
+            <Header>{name} Methods</Header>
+          </div>
+          {methods.map(method => renderMethod(method, { exposeInSidebar }))}
         </>
-      ) : null}
+      )}
     </div>
   );
 };
 
-const APISectionClasses = ({ data }: APISectionClassesProps) =>
-  data?.length ? <>{data.map(cls => renderClass(cls, data?.length))}</> : null;
+const APISectionClasses = ({ data }: APISectionClassesProps) => {
+  if (data?.length) {
+    const exposeInSidebar = data.length < 2;
+    return (
+      <>
+        <H2>Classes</H2>
+        {data.map(clx => renderClass(remapClass(clx), exposeInSidebar))}
+      </>
+    );
+  }
+  return null;
+};
 
 export default APISectionClasses;

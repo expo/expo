@@ -11,13 +11,13 @@ import {
   XIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ActivityIndicator } from 'react-native';
+import { ActivityIndicator, ScrollView } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 
-import { LogoutConfirmationModal } from '../components/redesign/LogoutConfirmationModal';
+import { LogoutConfirmationModal } from '../components/LogoutConfirmationModal';
 import { UserAccount, UserData } from '../functions/getUserProfileAsync';
-import { useModalStack } from '../hooks/useModalStack';
-import { useUser, useUserActions } from '../hooks/useUser';
+import { useModalStack } from '../providers/ModalStackProvider';
+import { useUser, useUserActions } from '../providers/UserContextProvider';
 
 export function UserProfileScreen({ navigation }) {
   const { userData, selectedAccount } = useUser();
@@ -42,18 +42,15 @@ export function UserProfileScreen({ navigation }) {
   };
 
   const onLogoutPress = () => {
-    modalStack.push({
-      title: 'Confirm logout?',
-      element: (
-        <LogoutConfirmationModal
-          onClosePress={() => modalStack.pop()}
-          onLogoutPress={() => {
-            actions.logout();
-            modalStack.pop();
-          }}
-        />
-      ),
-    });
+    modalStack.push(() => (
+      <LogoutConfirmationModal
+        onClosePress={() => modalStack.pop()}
+        onLogoutPress={async () => {
+          await actions.logout();
+          modalStack.pop();
+        }}
+      />
+    ));
   };
 
   const onClosePress = () => {
@@ -63,8 +60,8 @@ export function UserProfileScreen({ navigation }) {
   const isAuthenticated = userData != null;
 
   return (
-    <SafeAreaView>
-      <View>
+    <SafeAreaView style={{ flex: 1 }}>
+      <ScrollView style={{ flex: 1 }}>
         <View>
           <AccountScreenHeader onClosePress={onClosePress} />
 
@@ -87,7 +84,7 @@ export function UserProfileScreen({ navigation }) {
             )}
           </View>
         </View>
-      </View>
+      </ScrollView>
     </SafeAreaView>
   );
 }
@@ -98,10 +95,10 @@ function AccountScreenHeader({ onClosePress }) {
       <Spacer.Vertical size="small" />
       <Row align="center">
         <View px="medium">
-          <Heading size="medium">Account</Heading>
+          <Heading size="large">Account</Heading>
         </View>
 
-        <Spacer.Horizontal size="flex" />
+        <Spacer.Horizontal />
 
         <Button.ScaleOnPressContainer
           onPress={onClosePress}
@@ -147,10 +144,10 @@ function LoginSignupCard({ onLoginPress, onSignupPress, isLoading }) {
         rounded="medium"
         onPress={onSignupPress}
         disabled={isLoading}
-        accessibilityLabel="Sign up">
+        accessibilityLabel="Sign Up">
         <View py="small">
           <Button.Text color="secondary" weight="semibold" align="center">
-            Sign up
+            Sign Up
           </Button.Text>
         </View>
       </Button.ScaleOnPressContainer>
@@ -186,38 +183,57 @@ function UserAccountSelector({
   onSelectAccount,
   onLogoutPress,
 }: UserAccountSelectorProps) {
+  const accounts: UserAccount[] = [];
+  const orgs: UserAccount[] = [];
+
+  for (const account of userData.accounts) {
+    if (account != null) {
+      if (account.owner != null) {
+        accounts.push(account);
+      } else {
+        orgs.push(account);
+      }
+    }
+  }
+
+  const accountsSortedByType: UserAccount[] = [...accounts, ...orgs];
+
   return (
     <View>
       <View>
-        {userData.accounts
-          .filter((account) => account && account.owner)
-          .map((account, index, arr) => {
-            const isLast = index === arr.length - 1;
-            const isFirst = index === 0;
-            const isSelected = account.id === selectedAccount?.id;
+        {accountsSortedByType.map((account, index, arr) => {
+          const isLast = index === arr.length - 1;
+          const isFirst = index === 0;
+          const isSelected = account.id === selectedAccount?.id;
 
-            return (
-              <Button.ScaleOnPressContainer
-                key={account.id}
-                onPress={() => onSelectAccount(account)}
-                bg="default"
-                roundedBottom={isLast ? 'large' : 'none'}
-                roundedTop={isFirst ? 'large' : 'none'}>
-                <Row align="center" py="small" px="medium">
-                  <Image size="large" rounded="full" source={{ uri: account.owner.profilePhoto }} />
-                  <Spacer.Horizontal size="small" />
+          return (
+            <Button.ScaleOnPressContainer
+              key={account.id}
+              onPress={() => onSelectAccount(account)}
+              bg="default"
+              roundedBottom={isLast ? 'large' : 'none'}
+              roundedTop={isFirst ? 'large' : 'none'}>
+              <Row align="center" py="small" px="medium" bg="default">
+                <View rounded="full" bg="secondary">
+                  <Image
+                    size="large"
+                    rounded="full"
+                    source={{ uri: account.owner?.profilePhoto }}
+                  />
+                </View>
+                <Spacer.Horizontal size="small" />
 
-                  <View>
-                    <Heading size="small">{account.owner.username}</Heading>
-                  </View>
+                <View>
+                  <Heading>{account.owner?.username ?? account.name}</Heading>
+                </View>
 
-                  <Spacer.Vertical size="flex" />
-                  {isSelected && <CheckIcon testID={`active-account-checkmark-${account.id}`} />}
-                </Row>
-                {!isLast && <Divider />}
-              </Button.ScaleOnPressContainer>
-            );
-          })}
+                <Spacer.Vertical />
+                {isSelected && <CheckIcon testID={`active-account-checkmark-${account.id}`} />}
+              </Row>
+              {!isLast && <Divider />}
+            </Button.ScaleOnPressContainer>
+          );
+        })}
       </View>
 
       <Spacer.Vertical size="medium" />

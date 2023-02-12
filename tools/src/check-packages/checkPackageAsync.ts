@@ -2,9 +2,9 @@ import chalk from 'chalk';
 
 import logger from '../Logger';
 import { Package } from '../Packages';
-import { ActionOptions } from './types';
-import runPackageScriptAsync from './runPackageScriptAsync';
 import checkBuildUniformityAsync from './checkBuildUniformityAsync';
+import runPackageScriptAsync from './runPackageScriptAsync';
+import { ActionOptions } from './types';
 
 const { green } = chalk;
 

@@ -1,46 +1,49 @@
-import React, { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
+import ReactMarkdown from 'react-markdown';
 
-import { InlineCode } from '~/components/base/code';
-import { B, P } from '~/components/base/paragraph';
-import { H3 } from '~/components/plugins/Headings';
+import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+import { mdComponents } from '~/components/plugins/api/APISectionUtils';
+import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
+import { P, CODE, H3 } from '~/ui/components/Text';
 
 type Props = PropsWithChildren<{
   properties: PluginProperty[];
 }>;
 
-const platformNames: Record<Exclude<PluginProperty['platform'], undefined>, string> = {
-  android: 'Android',
-  ios: 'iOS',
-  web: 'Web',
-};
-
 export const ConfigPluginProperties = ({ children, properties }: Props) => (
   <>
     <H3>Configurable properties</H3>
     {!!children && <P>{children}</P>}
-    <table>
-      <thead>
-        <tr>
-          <th>Name</th>
-          <th>Default</th>
-          <th>Description</th>
-        </tr>
-      </thead>
+    <Table>
+      <TableHead>
+        <Row>
+          <HeaderCell>Name</HeaderCell>
+          <HeaderCell>Default</HeaderCell>
+          <HeaderCell>Description</HeaderCell>
+        </Row>
+      </TableHead>
       <tbody>
         {properties.map(property => (
-          <tr key={property.name}>
-            <td>
-              <InlineCode>{property.name}</InlineCode>
-            </td>
-            <td>{!property.default ? '-' : <InlineCode>{property.default}</InlineCode>}</td>
-            <td>
-              {!!property.platform && <B>{platformNames[property.platform]} only </B>}
-              {property.description}
-            </td>
-          </tr>
+          <Row key={property.name}>
+            <Cell fitContent>
+              <CODE>{property.name}</CODE>
+            </Cell>
+            <Cell>{!property.default ? '-' : <CODE>{property.default}</CODE>}</Cell>
+            <Cell>
+              {!!property.platform && (
+                <APISectionPlatformTags
+                  prefix="Only for:"
+                  platforms={[
+                    { content: [{ kind: 'text', text: property.platform }], tag: 'platform' },
+                  ]}
+                />
+              )}
+              <ReactMarkdown components={mdComponents}>{property.description}</ReactMarkdown>
+            </Cell>
+          </Row>
         ))}
       </tbody>
-    </table>
+    </Table>
   </>
 );
 

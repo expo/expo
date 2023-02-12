@@ -9,6 +9,8 @@ function createView(nativeProps: ViewProps = {}): ComponentType<ViewProps> {
   }) as ComponentType<ViewProps>;
 }
 
+export const Div = createView();
+
 export const Nav = createView(
   Platform.select({
     web: {

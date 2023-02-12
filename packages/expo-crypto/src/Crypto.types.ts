@@ -1,10 +1,6 @@
 // @needsAudit
 /**
  * [`Cryptographic hash function`](https://developer.mozilla.org/en-US/docs/Glossary/Cryptographic_hash_function)
- * is an algorithm that can be used to generate a checksum value. They have a variety of applications in cryptography.
- * > Cryptographic hash functions like [`SHA1`](https://developer.mozilla.org/en-US/docs/Web/API/SubtleCrypto/digest#SHA-1),
- * > `MD5` are **vulnerable**! Attacks have been proven to significantly reduce their collision resistance.
- * > Message-digest algorithms shouldn't be used for creating secure digests.
  */
 export enum CryptoDigestAlgorithm {
   /**

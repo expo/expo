@@ -1,17 +1,22 @@
 {
   "name": "expo-updates",
-  "version": "0.11.2",
+  "version": "0.16.1",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "sideEffects": false,
+  "bin": {
+    "expo-updates": "bin/cli.js"
+  },
   "scripts": {
+    "build:cli": "tsc -p tsconfig.cli.json",
+    "test:cli": "jest --config jest.cli.config.js",
     "build": "expo-module build",
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
-    "prepublishOnly": "expo-module prepublishOnly",
+    "prepare": "npm run build:cli && expo-module prepare",
+    "prepublishOnly": "npm run build:cli && expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
   "keywords": [
@@ -34,18 +39,24 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/config": "^6.0.14",
-    "@expo/config-plugins": "^4.0.14",
-    "@expo/metro-config": "~0.3.7",
-    "expo-manifests": "~0.2.2",
-    "expo-structured-headers": "~2.1.0",
-    "expo-updates-interface": "~0.5.0",
-    "fbemitter": "^2.1.1",
-    "resolve-from": "^5.0.0",
-    "uuid": "^3.4.0"
+    "@expo/code-signing-certificates": "0.0.5",
+    "@expo/config": "~8.0.0",
+    "@expo/config-plugins": "~6.0.0",
+    "@expo/metro-config": "~0.6.0",
+    "arg": "4.1.0",
+    "expo-eas-client": "~0.5.0",
+    "expo-manifests": "~0.5.0",
+    "expo-structured-headers": "~3.1.0",
+    "expo-updates-interface": "~0.9.0",
+    "fbemitter": "^3.0.0",
+    "resolve-from": "^5.0.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0",
+    "@types/jest": "^29.2.1",
+    "@types/node": "^17.0.15",
+    "@types/node-forge": "^1.0.0",
+    "expo-module-scripts": "^3.0.0",
+    "express": "^4.17.2",
     "fs-extra": "^9.1.0",
     "memfs": "^3.2.0"
   },

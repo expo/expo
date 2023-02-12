@@ -101,7 +101,7 @@ export declare enum WebOrientation {
     LANDSCAPE_PRIMARY = "landscape-primary",
     LANDSCAPE_SECONDARY = "landscape-secondary"
 }
-export declare type PlatformOrientationInfo = {
+export type PlatformOrientationInfo = {
     /**
      * A constant to set using the Android native [API](https://developer.android.com/reference/android/R.attr.html#screenOrientation).
      * For example, in order to set the lock policy to [unspecified](https://developer.android.com/reference/android/content/pm/ActivityInfo.html#SCREEN_ORIENTATION_UNSPECIFIED),
@@ -120,7 +120,7 @@ export declare type PlatformOrientationInfo = {
      */
     screenOrientationLockWeb?: WebOrientationLock;
 };
-export declare type ScreenOrientationInfo = {
+export type ScreenOrientationInfo = {
     /**
      * The current orientation of the device.
      */
@@ -138,8 +138,8 @@ export declare type ScreenOrientationInfo = {
      */
     horizontalSizeClass?: SizeClassIOS;
 };
-export declare type OrientationChangeListener = (event: OrientationChangeEvent) => void;
-export declare type OrientationChangeEvent = {
+export type OrientationChangeListener = (event: OrientationChangeEvent) => void;
+export type OrientationChangeEvent = {
     /**
      * The current `OrientationLock` of the device.
      */

@@ -1,8 +1,8 @@
-export declare type Point = {
+export type Point = {
     x: number;
     y: number;
 };
-export declare type FaceFeature = {
+export type FaceFeature = {
     /**
      * An object containing face bounds.
      */
@@ -91,7 +91,7 @@ export declare type FaceFeature = {
      */
     faceID?: number;
 };
-export declare type FaceFeatureBounds = {
+export type FaceFeatureBounds = {
     /**
      * Size of the square containing the face in image coordinates,
      */
@@ -109,14 +109,14 @@ export declare enum FaceDetectorMode {
     accurate = 2
 }
 export declare enum FaceDetectorLandmarks {
-    all = 1,
-    none = 2
+    none = 1,
+    all = 2
 }
 export declare enum FaceDetectorClassifications {
-    all = 1,
-    none = 2
+    none = 1,
+    all = 2
 }
-export declare type Image = {
+export type Image = {
     /**
      * URI of the image.
      */
@@ -138,7 +138,7 @@ export declare type Image = {
  * In order to configure detector's behavior modules pass a settings object which is then
  * interpreted by this module.
  */
-export declare type DetectionOptions = {
+export type DetectionOptions = {
     /**
      * Whether to detect faces in fast or accurate mode. Use `FaceDetector.FaceDetectorMode.{fast, accurate}`.
      */
@@ -156,17 +156,17 @@ export declare type DetectionOptions = {
     /**
      * Minimal interval in milliseconds between two face detection events being submitted to JS.
      * Use, when you expect lots of faces for long time and are afraid of JS Bridge being overloaded.
-     * @default `0`
+     * @default 0
      */
     minDetectionInterval?: number;
     /**
      * Flag to enable tracking of faces between frames. If true, each face will be returned with
      * `faceID` attribute which should be consistent across frames.
-     * @default `false`
+     * @default false
      */
     tracking?: boolean;
 };
-export declare type DetectionResult = {
+export type DetectionResult = {
     /**
      * Array of faces objects.
      */

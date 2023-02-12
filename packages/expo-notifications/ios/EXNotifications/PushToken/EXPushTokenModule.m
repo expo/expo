@@ -45,6 +45,13 @@ EX_EXPORT_METHOD_AS(getDevicePushTokenAsync,
   });
 }
 
+EX_EXPORT_METHOD_AS(unregisterForNotificationsAsync,
+        	    unregisterForNotificationsAsync:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject)
+{
+  [[UIApplication sharedApplication] unregisterForRemoteNotifications];
+  resolve(nil);
+}
+
 # pragma mark - EXModuleRegistryConsumer
 
 - (void)setModuleRegistry:(EXModuleRegistry *)moduleRegistry

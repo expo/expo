@@ -1,5 +1,4 @@
 #import "DevMenuREANode.h"
-
 #import <React/RCTEventDispatcher.h>
 
 @interface DevMenuREAEventNode : DevMenuREANode

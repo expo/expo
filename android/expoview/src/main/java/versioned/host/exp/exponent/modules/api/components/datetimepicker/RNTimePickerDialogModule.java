@@ -19,7 +19,7 @@ import android.content.DialogInterface.OnClickListener;
 import android.os.Bundle;
 import android.widget.TimePicker;
 
-import androidx.annotation.Nullable;
+import androidx.annotation.NonNull;
 import androidx.fragment.app.FragmentActivity;
 import androidx.fragment.app.FragmentManager;
 
@@ -39,6 +39,7 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
     super(reactContext);
   }
 
+  @NonNull
   @Override
   public String getName() {
     return FRAGMENT_TAG;
@@ -54,7 +55,7 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
 
     @Override
     public void onTimeSet(TimePicker view, int hour, int minute) {
-      if (!mPromiseResolved && getReactApplicationContext().hasActiveCatalystInstance()) {
+      if (!mPromiseResolved && getReactApplicationContext().hasActiveReactInstance()) {
         WritableMap result = new WritableNativeMap();
         result.putString("action", RNConstants.ACTION_TIME_SET);
         result.putInt("hour", hour);
@@ -66,7 +67,7 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
 
     @Override
     public void onDismiss(DialogInterface dialog) {
-      if (!mPromiseResolved && getReactApplicationContext().hasActiveCatalystInstance()) {
+      if (!mPromiseResolved && getReactApplicationContext().hasActiveReactInstance()) {
         WritableMap result = new WritableNativeMap();
         result.putString("action", RNConstants.ACTION_DISMISSED);
         mPromise.resolve(result);
@@ -76,7 +77,7 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
-      if (!mPromiseResolved && getReactApplicationContext().hasActiveCatalystInstance()) {
+      if (!mPromiseResolved && getReactApplicationContext().hasActiveReactInstance()) {
         WritableMap result = new WritableNativeMap();
         result.putString("action", RNConstants.ACTION_NEUTRAL_BUTTON);
         mPromise.resolve(result);
@@ -92,8 +93,7 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
   }
 
   @ReactMethod
-  public void open(@Nullable final ReadableMap options, final Promise promise) {
-
+  public void open(final ReadableMap options, final Promise promise) {
     FragmentActivity activity = (FragmentActivity) getCurrentActivity();
     if (activity == null) {
       promise.reject(
@@ -111,16 +111,14 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
         RNTimePickerDialogFragment oldFragment =
                 (RNTimePickerDialogFragment) fragmentManager.findFragmentByTag(FRAGMENT_TAG);
 
-        if (oldFragment != null && options != null) {
+        if (oldFragment != null) {
           oldFragment.update(createFragmentArguments(options));
           return;
         }
 
         RNTimePickerDialogFragment fragment = new RNTimePickerDialogFragment();
 
-        if (options != null) {
-          fragment.setArguments(createFragmentArguments(options));
-        }
+        fragment.setArguments(createFragmentArguments(options));
 
         final TimePickerDialogListener listener = new TimePickerDialogListener(promise);
         fragment.setOnDismissListener(listener);
@@ -142,8 +140,8 @@ public class RNTimePickerDialogModule extends ReactContextBaseJavaModule {
     if (options.hasKey(RNConstants.ARG_DISPLAY) && !options.isNull(RNConstants.ARG_DISPLAY)) {
       args.putString(RNConstants.ARG_DISPLAY, options.getString(RNConstants.ARG_DISPLAY));
     }
-    if (options.hasKey(RNConstants.ARG_NEUTRAL_BUTTON_LABEL) && !options.isNull(RNConstants.ARG_NEUTRAL_BUTTON_LABEL)) {
-      args.putString(RNConstants.ARG_NEUTRAL_BUTTON_LABEL, options.getString(RNConstants.ARG_NEUTRAL_BUTTON_LABEL));
+    if (options.hasKey(RNConstants.ARG_DIALOG_BUTTONS) && !options.isNull(RNConstants.ARG_DIALOG_BUTTONS)) {
+      args.putBundle(RNConstants.ARG_DIALOG_BUTTONS, Arguments.toBundle(options.getMap(RNConstants.ARG_DIALOG_BUTTONS)));
     }
     if (options.hasKey(RNConstants.ARG_INTERVAL) && !options.isNull(RNConstants.ARG_INTERVAL)) {
       args.putInt(RNConstants.ARG_INTERVAL, options.getInt(RNConstants.ARG_INTERVAL));

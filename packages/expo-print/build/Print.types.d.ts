@@ -1,4 +1,4 @@
-export declare type PrintOptions = {
+export type PrintOptions = {
     /**
      * URI of a PDF file to print. Remote, local (ex. selected via `DocumentPicker`) or base64 data URI
      * starting with `data:application/pdf;base64,`. This only supports PDF, not other types of
@@ -52,7 +52,7 @@ export declare type PrintOptions = {
      */
     margins?: PageMargins;
 };
-export declare type Printer = {
+export type Printer = {
     /**
      * Name of the printer.
      */
@@ -69,13 +69,13 @@ export interface OrientationType {
     portrait: string;
     landscape: string;
 }
-export declare type PageMargins = {
+export type PageMargins = {
     top: number;
     right: number;
     bottom: number;
     left: number;
 };
-export declare type FilePrintOptions = {
+export type FilePrintOptions = {
     /**
      * HTML string to print into PDF file.
      */
@@ -106,7 +106,7 @@ export declare type FilePrintOptions = {
      */
     base64?: boolean;
 };
-export declare type FilePrintResult = {
+export type FilePrintResult = {
     /**
      * A URI to the printed PDF file.
      */

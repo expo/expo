@@ -7,11 +7,18 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
+import com.reactnativecommunity.slider.ReactSliderPackage
+import com.horcrux.svg.SvgPackage
+import com.reactnativepagerview.PagerViewPackage
+import com.shopify.reactnative.flash_list.ReactNativeFlashListPackage
+import com.shopify.reactnative.skia.RNSkiaPackage
+import com.swmansion.rnscreens.RNScreensPackage
+import com.swmansion.gesturehandler.RNGestureHandlerPackage
+import com.swmansion.gesturehandler.react.RNGestureHandlerModule
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
 import expo.modules.kotlin.ModulesProvider
-import expo.modules.random.RandomModule
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.Constants
 import host.exp.exponent.analytics.EXL
@@ -23,13 +30,8 @@ import host.exp.exponent.kernel.KernelConstants
 import host.exp.exponent.utils.ScopedContext
 import org.json.JSONException
 import versioned.host.exp.exponent.modules.api.*
-import versioned.host.exp.exponent.modules.api.appearance.ExpoAppearanceModule
-import versioned.host.exp.exponent.modules.api.appearance.ExpoAppearancePackage
-import versioned.host.exp.exponent.modules.api.appearance.rncappearance.RNCAppearanceModule
 import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule
 import versioned.host.exp.exponent.modules.api.components.datetimepicker.RNDateTimePickerPackage
-import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerModule
-import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerPackage
 import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage
 import versioned.host.exp.exponent.modules.api.components.maskedview.RNCMaskedViewPackage
@@ -37,17 +39,15 @@ import versioned.host.exp.exponent.modules.api.components.picker.RNCPickerPackag
 import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.StripeSdkPackage
 import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementModule
 import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementPackage
-import versioned.host.exp.exponent.modules.api.components.slider.ReactSliderPackage
-import versioned.host.exp.exponent.modules.api.components.svg.SvgPackage
-import versioned.host.exp.exponent.modules.api.components.pagerview.PagerViewPackage
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewModule
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewPackage
 import versioned.host.exp.exponent.modules.api.netinfo.NetInfoModule
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule
 import versioned.host.exp.exponent.modules.api.safeareacontext.SafeAreaContextPackage
-import versioned.host.exp.exponent.modules.api.screens.RNScreensPackage
 import versioned.host.exp.exponent.modules.api.viewshot.RNViewShotModule
 import versioned.host.exp.exponent.modules.internal.DevMenuModule
+import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule
+import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule
 import versioned.host.exp.exponent.modules.test.ExponentTestNativeModule
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter
 import versioned.host.exp.exponent.modules.universal.ScopedModuleRegistryAdapter
@@ -110,6 +110,7 @@ class ExponentPackage : ReactPackage {
       ShakeModule(reactContext),
       KeyboardModule(reactContext)
     )
+    nativeModules.add(if (isVerified) ExponentAsyncStorageModule(reactContext, manifest) else ExponentUnsignedAsyncStorageModule(reactContext))
 
     if (isKernel) {
       // WHEN_VERSIONING_REMOVE_FROM_HERE
@@ -127,7 +128,6 @@ class ExponentPackage : ReactPackage {
         val scopedContext = ScopedContext(reactContext, experienceKey)
         nativeModules.add(NotificationsModule(reactContext, experienceKey, manifest.getStableLegacyID(), manifest.getEASProjectID()))
         nativeModules.add(RNViewShotModule(reactContext, scopedContext))
-        nativeModules.add(RandomModule(reactContext))
         nativeModules.add(ExponentTestNativeModule(reactContext))
         nativeModules.add(PedometerModule(reactContext))
         nativeModules.add(ScreenOrientationModule(reactContext))
@@ -136,20 +136,11 @@ class ExponentPackage : ReactPackage {
         nativeModules.add(RNCWebViewModule(reactContext))
         nativeModules.add(NetInfoModule(reactContext))
         nativeModules.add(RNSharedElementModule(reactContext))
-
-        // @tsapeta: Using ExpoAppearanceModule in home app causes some issues with the dev menu,
-        // when home's setting is set to automatic and the system theme is different
-        // than this supported by the experience in which we opened the dev menu.
-        if (isKernel) {
-          nativeModules.add(RNCAppearanceModule(reactContext))
-        } else {
-          nativeModules.add(ExpoAppearanceModule(reactContext))
-        }
-
         nativeModules.addAll(SvgPackage().createNativeModules(reactContext))
         nativeModules.addAll(MapsPackage().createNativeModules(reactContext))
         nativeModules.addAll(RNDateTimePickerPackage().createNativeModules(reactContext))
         nativeModules.addAll(stripePackage.createNativeModules(reactContext))
+        nativeModules.addAll(skiaPackage.createNativeModules(reactContext))
 
         // Call to create native modules has to be at the bottom --
         // -- ExpoModuleRegistryAdapter uses the list of native modules
@@ -193,8 +184,9 @@ class ExponentPackage : ReactPackage {
         RNCPickerPackage(),
         ReactSliderPackage(),
         PagerViewPackage(),
-        ExpoAppearancePackage(),
-        stripePackage
+        stripePackage,
+        skiaPackage,
+        ReactNativeFlashListPackage()
       )
     )
     viewManagers.addAll(moduleRegistryAdapter.createViewManagers(reactContext))
@@ -225,8 +217,9 @@ class ExponentPackage : ReactPackage {
     private val singletonModules = mutableListOf<SingletonModule>()
     private val singletonModulesClasses = mutableSetOf<Class<*>>()
 
-    // Need to avoid initializing 2 StripeSdkPackages
+    // Need to avoid initializing duplicated packages
     private val stripePackage = StripeSdkPackage()
+    private val skiaPackage = RNSkiaPackage()
 
     fun kernelExponentPackage(
       context: Context,

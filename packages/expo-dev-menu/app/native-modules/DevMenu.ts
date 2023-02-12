@@ -1,12 +1,15 @@
 import { DeviceEventEmitter, NativeModules, EventSubscription } from 'react-native';
 
-export type BuildInfo = {
+export type JSEngine = 'Hermes' | 'JSC' | 'V8';
+
+export type AppInfo = {
   appIcon?: string;
   appVersion?: string;
   hostUrl?: string;
   appName?: string;
   sdkVersion?: string;
   runtimeVersion?: string;
+  engine?: JSEngine;
 };
 
 export type DevSettings = {
@@ -14,6 +17,15 @@ export type DevSettings = {
   isElementInspectorShown?: boolean;
   isHotLoadingEnabled?: boolean;
   isPerfMonitorShown?: boolean;
+  isRemoteDebuggingAvailable?: boolean;
+  isElementInspectorAvailable?: boolean;
+  isHotLoadingAvailable?: boolean;
+  isPerfMonitorAvailable?: boolean;
+  isJSInspectorAvailable?: boolean;
+};
+
+export type MenuPreferences = {
+  isOnboardingFinished?: boolean;
 };
 
 const DevMenu = NativeModules.ExpoDevMenuInternal;
@@ -41,10 +53,6 @@ export function openDevMenuFromReactNative() {
   DevMenu.openDevMenuFromReactNative();
 }
 
-export async function navigateToLauncherAsync(): Promise<void> {
-  return await dispatchCallableAsync('backToLauncher');
-}
-
 export async function togglePerformanceMonitorAsync() {
   return await dispatchCallableAsync('performance-monitor');
 }
@@ -65,14 +73,22 @@ export async function toggleFastRefreshAsync() {
   return await dispatchCallableAsync('fast-refresh');
 }
 
-export async function getDevSettingsAsync(): Promise<DevSettings> {
-  return await DevMenu.getDevSettingsAsync();
-}
-
-export async function getBuildInfoAsync(): Promise<BuildInfo> {
-  return await DevMenu.getBuildInfoAsync();
+export async function openJSInspector() {
+  return await dispatchCallableAsync('js-inspector');
 }
 
 export async function copyToClipboardAsync(content: string) {
   return await DevMenu.copyToClipboardAsync(content);
+}
+
+export async function setOnboardingFinishedAsync(isFinished: boolean) {
+  return await DevMenu.setOnboardingFinished(isFinished);
+}
+
+export async function loadFontsAsync() {
+  return await DevMenu.loadFontsAsync();
+}
+
+export async function fireCallbackAsync(name: string) {
+  return await DevMenu.fireCallback(name).catch((error) => console.warn(error.message));
 }

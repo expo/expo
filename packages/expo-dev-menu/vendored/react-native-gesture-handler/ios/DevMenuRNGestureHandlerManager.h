@@ -1,8 +1,11 @@
 #import <Foundation/Foundation.h>
 
 #import <React/RCTBridgeModule.h>
-#import <React/RCTUIManager.h>
-#import <React/RCTEventDispatcher.h>
+
+#import "DevMenuRNGestureHandler.h"
+
+@class RCTUIManager;
+@class RCTEventDispatcher;
 
 @interface DevMenuRNGestureHandlerManager : NSObject
 
@@ -16,6 +19,9 @@
 - (void)attachGestureHandler:(nonnull NSNumber *)handlerTag
                toViewWithTag:(nonnull NSNumber *)viewTag;
 
+- (void)attachGestureHandlerForDeviceEvents:(nonnull NSNumber *)handlerTag
+                              toViewWithTag:(nonnull NSNumber *)viewTag;
+
 - (void)updateGestureHandler:(nonnull NSNumber *)handlerTag config:(nonnull NSDictionary *)config;
 
 - (void)dropGestureHandler:(nonnull NSNumber *)handlerTag;
@@ -24,5 +30,7 @@
         blockNativeResponder:(nonnull NSNumber *)blockNativeResponder;
 
 - (void)handleClearJSResponder;
+
+- (nullable DevMenuRNGestureHandler *)handlerWithTag:(nonnull NSNumber *)handlerTag;
 
 @end

@@ -42,8 +42,8 @@ export async function isAvailableAsync() {
  * Gets an array of calendar objects with details about the different calendars stored on the device.
  * @param entityType __iOS Only.__ Not required, but if defined, filters the returned calendars to
  * a specific entity type. Possible values are `Calendar.EntityTypes.EVENT` (for calendars shown in
- * the Calendar app) and `Calendar.EntityTypes.REMINDER` (for the Reminders app). **Note:** if not
- * defined, you will need both permissions: **CALENDAR** and **REMINDERS**.
+ * the Calendar app) and `Calendar.EntityTypes.REMINDER` (for the Reminders app).
+ * > **Note:** If not defined, you will need both permissions: **CALENDAR** and **REMINDERS**.
  * @return An array of [calendar objects](#calendar 'Calendar') matching the provided entity type (if provided).
  */
 export async function getCalendarsAsync(entityType) {
@@ -488,7 +488,7 @@ export function openEventInCalendar(id) {
 } // Android
 // @needsAudit
 /**
- * @deprecated Deprecated. Use [`requestCalendarPermissionsAsync()`](#calendarrequestcalendarpermissionsasync) instead.
+ * @deprecated Use [`requestCalendarPermissionsAsync()`](#calendarrequestcalendarpermissionsasync) instead.
  */
 export async function requestPermissionsAsync() {
     console.warn('requestPermissionsAsync is deprecated. Use requestCalendarPermissionsAsync instead.');

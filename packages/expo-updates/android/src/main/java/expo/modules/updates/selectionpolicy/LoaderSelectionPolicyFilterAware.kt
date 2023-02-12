@@ -7,6 +7,8 @@ import org.json.JSONObject
  * LoaderSelectionPolicy which decides whether or not to load an update, taking filters into
  * account. Returns true (should load the update) if we don't have an existing newer update that
  * matches the given manifest filters.
+ *
+ * Uses `commitTime` to determine ordering of updates.
  */
 class LoaderSelectionPolicyFilterAware : LoaderSelectionPolicy {
   override fun shouldLoadNewUpdate(

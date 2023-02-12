@@ -53,24 +53,24 @@ export const checkRepositoryStatus = new Task<TaskArgs>(
 );
 
 /**
- * Checks whether the command is run on master branch or package side-branch.
+ * Checks whether the command is run on main branch or package side-branch.
  * Otherwise, it prompts to confirm that you know what you're doing.
- * On CI it returns `true` only if run on `master` branch.
+ * On CI it returns `true` only if run on `main` branch.
  */
 async function checkBranchNameAsync(branchName: string) {
   if (process.env.CI) {
-    // CI is allowed to publish only from master.
-    return branchName === 'master';
+    // CI is allowed to publish only from main.
+    return branchName === 'main';
   }
 
-  // Publishes can be run on `master` or package's side-branches like `expo-package/1.x.x`
-  if (branchName === 'master' || /^[\w\-@]+\/\d+\.(x\.x|\d+\.x)$/.test(branchName)) {
+  // Publishes can be run on `main` or package's side-branches like `expo-package/1.x.x`
+  if (branchName === 'main' || /^[\w\-@]+\/\d+\.(x\.x|\d+\.x)$/.test(branchName)) {
     return true;
   }
 
   logger.warn(
     '⚠️ ',
-    `It's recommended to publish from ${blue('master')} branch, while you're at ${blue(branchName)}`
+    `It's recommended to publish from ${blue('main')} branch, while you're at ${blue(branchName)}`
   );
 
   const { confirmed } = await inquirer.prompt<{ confirmed: boolean }>([

@@ -1,11 +1,11 @@
 'use strict';
-const { getManagedExtensions } = require('@expo/config/paths');
+const { getBareExtensions } = require('@expo/config/paths');
 
 const expoPreset = require('../jest-preset');
 const { withWatchPlugins } = require('./withWatchPlugins');
 
 function getPlatformPreset(displayOptions, extensions) {
-  const moduleFileExtensions = getManagedExtensions(extensions, {
+  const moduleFileExtensions = getBareExtensions(extensions, {
     isTS: true,
     isReact: true,
     isModern: false,
@@ -37,22 +37,14 @@ function getPlatformPreset(displayOptions, extensions) {
 // Combine React Native for web with React Native
 // Use RNWeb for the testEnvironment
 function getBaseWebPreset() {
-  let reactNativePreset;
-  try {
-    reactNativePreset = require('react-native-web/jest-preset');
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
   return {
     ...expoPreset,
-    ...reactNativePreset,
-    setupFiles: reactNativePreset.setupFiles,
+    setupFiles: [require.resolve('../src/preset/setup-web.js')],
     moduleNameMapper: {
       ...expoPreset.moduleNameMapper,
       // Add react-native-web alias
       // This makes the tests take ~2x longer
-      ...reactNativePreset.moduleNameMapper,
+      '^react-native$': 'react-native-web',
     },
   };
 }
@@ -62,6 +54,7 @@ module.exports = {
     return {
       ...getBaseWebPreset(),
       ...getPlatformPreset({ name: 'Web', color: 'magenta' }, ['web']),
+      testEnvironment: 'jsdom',
     };
   },
   getNodePreset() {

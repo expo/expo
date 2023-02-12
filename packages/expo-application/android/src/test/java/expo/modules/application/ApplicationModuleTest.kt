@@ -34,7 +34,7 @@ internal class ApplicationModuleTest {
   }
 
   @Test
-  fun `getConstants returns map with all the keys specified in doc`() { // https://docs.expo.io/versions/latest/sdk/application/
+  fun `getConstants returns map with all the keys specified in doc`() { // https://docs.expo.dev/versions/latest/sdk/application/
     val constants = applicationModule.constants
     assertTrue("Returned hash map does not contain \"applicationName\" key", constants.containsKey("applicationName"))
     assertTrue("Returned hash map does not contain \"applicationId\" key", constants.containsKey("applicationId"))

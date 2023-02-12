@@ -2,7 +2,7 @@
 export var AppOwnership;
 (function (AppOwnership) {
     /**
-     * It is a [standalone app](../../../distribution/building-standalone-apps#building-standalone-apps).
+     * It is a [standalone app](/classic/building-standalone-apps#building-standalone-apps).
      */
     AppOwnership["Standalone"] = "standalone";
     /**

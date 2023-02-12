@@ -1,0 +1,10 @@
+{
+  "name": "expo-store-review",
+  "platforms": ["ios", "android"],
+  "ios": {
+    "modules": ["StoreReviewModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.storereview.StoreReviewModule"]
+  }
+}

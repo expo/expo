@@ -5,19 +5,20 @@ import chunk from 'lodash/chunk';
 import React from 'react';
 import { ScrollView, StyleSheet, Text, View } from 'react-native';
 
+import DeprecatedHeading from '../components/DeprecatedHeading';
 import HeadingText from '../components/HeadingText';
 import ListButton from '../components/ListButton';
 import MonoText from '../components/MonoText';
 
 i18n.fallbacks = true;
-i18n.locale = Localization.locale;
+i18n.locale = Localization.getLocales()[0].languageTag;
 i18n.translations = {
   en: {
     phrase: 'Hello my friend',
     default: 'English language only',
   },
-  ru: {
-    phrase: 'Привет мой друг',
+  es: {
+    phrase: 'Hola mi amigo',
   },
 };
 
@@ -81,25 +82,15 @@ export default class LocalizationScreen extends React.Component<{}, State> {
     i18n.locale = locale;
     this.setState({ locale });
   };
-
   render() {
     return (
       <ScrollView>
         <View style={styles.container}>
-          <HeadingText>Current Locale</HeadingText>
-          <MonoText>{JSON.stringify(this.state.currentLocale, null, 2)}</MonoText>
-
           <HeadingText>Locales in Preference Order</HeadingText>
-          <ListButton title="Show preferred Locales" onPress={this.queryPreferredLocales} />
-          {this.state.preferredLocales && this.state.preferredLocales.length > 0 && (
-            <MonoText>{JSON.stringify(this.state.preferredLocales, null, 2)}</MonoText>
-          )}
+          <MonoText>{JSON.stringify(Localization.getLocales(), null, 2)}</MonoText>
 
-          <HeadingText>Currency Codes</HeadingText>
-          <ListButton title="Show first 100 currency codes" onPress={this.queryCurrencyCodes} />
-          {this.state.isoCurrencyCodes && this.state.isoCurrencyCodes.length > 0 && (
-            <MonoText>{this.prettyFormatCurrency()}</MonoText>
-          )}
+          <HeadingText>Calendars in Preference Order</HeadingText>
+          <MonoText>{JSON.stringify(Localization.getCalendars(), null, 2)}</MonoText>
 
           <HeadingText>Localization Table</HeadingText>
           <Picker
@@ -107,10 +98,8 @@ export default class LocalizationScreen extends React.Component<{}, State> {
             selectedValue={this.state.locale}
             onValueChange={(value) => this.changeLocale(`${value}`)}>
             <Picker.Item label="🇺🇸 English" value="en" />
-            <Picker.Item label="🇷🇺 Russian" value="ru" />
+            <Picker.Item label="🇪🇸 Spanish" value="es" />
           </Picker>
-
-          <MonoText>{JSON.stringify(Localization, null, 2)}</MonoText>
 
           <View style={styles.languageBox}>
             <View style={styles.row}>
@@ -122,6 +111,20 @@ export default class LocalizationScreen extends React.Component<{}, State> {
               <Text>{this.state.currentLocale ? i18n.t('default') : ''}</Text>
             </View>
           </View>
+
+          <DeprecatedHeading>Current Locale</DeprecatedHeading>
+          <MonoText>{JSON.stringify(this.state.currentLocale, null, 2)}</MonoText>
+          <DeprecatedHeading>Locales in Preference Order</DeprecatedHeading>
+          <ListButton title="Show preferred Locales" onPress={this.queryPreferredLocales} />
+          {this.state.preferredLocales && this.state.preferredLocales.length > 0 && (
+            <MonoText>{JSON.stringify(this.state.preferredLocales, null, 2)}</MonoText>
+          )}
+
+          <DeprecatedHeading>Currency Codes</DeprecatedHeading>
+          <ListButton title="Show first 100 currency codes" onPress={this.queryCurrencyCodes} />
+          {this.state.isoCurrencyCodes && this.state.isoCurrencyCodes.length > 0 && (
+            <MonoText>{this.prettyFormatCurrency()}</MonoText>
+          )}
         </View>
       </ScrollView>
     );

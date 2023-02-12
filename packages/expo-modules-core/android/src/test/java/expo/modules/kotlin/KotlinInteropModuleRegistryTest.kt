@@ -12,6 +12,9 @@ import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 import io.mockk.mockk
 import org.junit.Test
+import org.junit.runner.RunWith
+import org.robolectric.RobolectricTestRunner
+import org.robolectric.annotation.Config
 import java.lang.ref.WeakReference
 
 private class TestException : CodedException("Something went wrong")
@@ -23,14 +26,14 @@ private class TestRecord : Record {
 
 private class TestModule_1 : Module() {
   override fun definition() = ModuleDefinition {
-    name("test-1")
-    function("f1") {
+    Name("test-1")
+    AsyncFunction("f1") {
       throw NullPointerException()
     }
-    function<Int, TestRecord>("f2") {
+    AsyncFunction<Int, TestRecord>("f2") {
       throw NullPointerException()
     }
-    constants {
+    Constants {
       mapOf(
         "c1" to 123,
         "c2" to "123"
@@ -41,15 +44,15 @@ private class TestModule_1 : Module() {
 
 private class TestModule_2 : Module() {
   override fun definition() = ModuleDefinition {
-    name("test-2")
-    function("f1") {
+    Name("test-2")
+    AsyncFunction("f1") {
       throw TestException()
     }
-    function("f2") { arg1: Int ->
+    AsyncFunction("f2") { arg1: Int ->
       arg1
     }
-    viewManager {
-      view { mockk() }
+    ViewManager {
+      View { mockk() }
     }
   }
 }
@@ -63,6 +66,8 @@ private val provider = object : ModulesProvider {
   }
 }
 
+@RunWith(RobolectricTestRunner::class)
+@Config(sdk = [30])
 class KotlinInteropModuleRegistryTest {
   private val interopModuleRegistry = KotlinInteropModuleRegistry(
     provider,
@@ -79,7 +84,7 @@ class KotlinInteropModuleRegistryTest {
   @Test
   fun `should export constants`() {
     Truth.assertThat(interopModuleRegistry.exportedModulesConstants())
-      .containsExactly(
+      .containsAtLeast(
         "test-1", mapOf("c1" to 123, "c2" to "123"),
         "test-2", emptyMap<String, Any>()
       )
@@ -88,7 +93,7 @@ class KotlinInteropModuleRegistryTest {
   @Test
   fun `should export view manages`() {
     val rnManagers = interopModuleRegistry.exportViewManagers()
-    val expoManagersNames = interopModuleRegistry.exportedViewManagersNames()
+    val expoManagersNames = interopModuleRegistry.viewManagersMetadata().keys
 
     Truth.assertThat(rnManagers).hasSize(1)
     Truth.assertThat(rnManagers.first().name).isEqualTo("ViewManagerAdapter_test-2")
@@ -137,7 +142,7 @@ class KotlinInteropModuleRegistryTest {
         JavaOnlyArray().apply { pushInt(1) }
       ) to """
         Call to function 'test-1.f1' has been rejected.
-        → Caused by: Received 1 arguments, but 0 was expected.
+        → Caused by: Received 1 arguments, but 0 was expected
       """.trimIndent(),
       Triple(
         "test-2",
@@ -145,8 +150,8 @@ class KotlinInteropModuleRegistryTest {
         JavaOnlyArray().apply { pushString("string") }
       ) to """
         Call to function 'test-2.f2' has been rejected.
-        → Caused by: Argument at index '0' couldn't be casted to type 'kotlin.Int' (received 'String').
-        → Caused by: java.lang.ClassCastException: java.lang.String cannot be cast to java.lang.Number
+        → Caused by: The 1st argument cannot be cast to type kotlin.Int (received String)
+        → Caused by: java.lang.ClassCastException: class java.lang.String cannot be cast to class java.lang.Number (java.lang.String and java.lang.Number are in module java.base of loader 'bootstrap')
       """.trimIndent(),
       Triple(
         "test-2",
@@ -154,7 +159,7 @@ class KotlinInteropModuleRegistryTest {
         JavaOnlyArray()
       ) to """
         Call to function 'test-2.f2' has been rejected.
-        → Caused by: Received 0 arguments, but 1 was expected.
+        → Caused by: Received 0 arguments, but 1 was expected
       """.trimIndent(),
       Triple(
         "test-1",
@@ -162,10 +167,10 @@ class KotlinInteropModuleRegistryTest {
         JavaOnlyArray().apply { pushMap(JavaOnlyMap().apply { putInt("string", 10) }) }
       ) to """
         Call to function 'test-1.f2' has been rejected.
-        → Caused by: Argument at index '0' couldn't be casted to type 'expo.modules.kotlin.TestRecord' (received 'Map').
+        → Caused by: The 1st argument cannot be cast to type expo.modules.kotlin.TestRecord (received Map)
         → Caused by: Cannot create a record of the type: 'expo.modules.kotlin.TestRecord'.
         → Caused by: Cannot cast 'Number' for field 'string' ('kotlin.String').
-        → Caused by: java.lang.ClassCastException: java.lang.Double cannot be cast to java.lang.String
+        → Caused by: java.lang.ClassCastException: class java.lang.Double cannot be cast to class java.lang.String (java.lang.Double and java.lang.String are in module java.base of loader 'bootstrap')
       """.trimIndent()
     )
 
@@ -177,7 +182,7 @@ class KotlinInteropModuleRegistryTest {
       interopModuleRegistry.callMethod(callValues.first, callValues.second, callValues.third, promise)
 
       Truth.assertThat(promise.state).isEqualTo(PromiseState.REJECTED)
-      Truth.assertThat(promise.rejectMessage).isEqualTo(expected)
+      Truth.assertThat(promise.rejectMessage).contains(expected)
     }
   }
 }

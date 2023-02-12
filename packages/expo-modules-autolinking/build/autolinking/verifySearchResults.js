@@ -10,13 +10,12 @@ const path_1 = __importDefault(require("path"));
  * Verifies the search results by checking whether there are no duplicates.
  */
 function verifySearchResults(searchResults) {
-    var _a;
     const cwd = process.cwd();
     const relativePath = (pkg) => path_1.default.relative(cwd, pkg.path);
     let counter = 0;
     for (const moduleName in searchResults) {
         const revision = searchResults[moduleName];
-        if ((_a = revision.duplicates) === null || _a === void 0 ? void 0 : _a.length) {
+        if (revision.duplicates?.length) {
             console.warn(`⚠️  Found multiple revisions of ${chalk_1.default.green(moduleName)}`);
             console.log(` - ${chalk_1.default.magenta(relativePath(revision))} (${chalk_1.default.cyan(revision.version)})`);
             for (const duplicate of revision.duplicates) {

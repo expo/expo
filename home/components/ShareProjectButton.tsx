@@ -1,4 +1,4 @@
-import { useTheme } from '@react-navigation/native';
+import { useExpoTheme } from 'expo-dev-client-components';
 import * as React from 'react';
 import { Share, StyleSheet, TouchableOpacity } from 'react-native';
 
@@ -11,7 +11,7 @@ export default function ShareProjectButton(
     fullName: string;
   }
 ) {
-  const theme = useTheme();
+  const theme = useExpoTheme();
   const onPress = React.useCallback(() => {
     const url = `exp://${Config.api.host}/${props.fullName}`;
     const message = UrlUtils.normalizeUrl(url);
@@ -24,7 +24,7 @@ export default function ShareProjectButton(
 
   return (
     <TouchableOpacity style={[styles.container, props.style]} onPress={onPress}>
-      <Icons.Share size={24} color={theme.colors.primary} />
+      <Icons.Share size={24} color={theme.icon.default} />
     </TouchableOpacity>
   );
 }

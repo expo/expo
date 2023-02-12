@@ -1,10 +1,12 @@
 /* global _updateProps */
-// eslint-disable-next-line @typescript-eslint/ban-ts-comment
-// @ts-nocheck
+import { MutableRefObject } from 'react';
 import { processColor } from './Colors';
+import { AnimatedStyle, SharedValue, StyleProps } from './commonTypes';
 import { makeShareable, isConfigured } from './core';
+import { Descriptor } from './hook/commonTypes';
 import { _updatePropsJS } from './js-reanimated';
 import { shouldBeUseWeb } from './PlatformChecker';
+import { ViewRefSet } from './ViewDescriptorsSet';
 
 // copied from react-native/Libraries/Components/View/ReactNativeStyleAttributes
 export const colorProps = [
@@ -24,18 +26,28 @@ export const colorProps = [
   'overlayColor',
 ];
 
-const ColorProperties = !isConfigured() ? [] : makeShareable(colorProps);
+export const ColorProperties = !isConfigured() ? [] : makeShareable(colorProps);
 
 let updatePropsByPlatform;
 if (shouldBeUseWeb()) {
-  updatePropsByPlatform = (_, updates, maybeViewRef) => {
+  updatePropsByPlatform = (
+    _: SharedValue<Descriptor[]>,
+    updates: StyleProps | AnimatedStyle,
+    maybeViewRef: ViewRefSet<any> | undefined
+  ): void => {
     'worklet';
-    maybeViewRef.items.forEach((item, _) => {
-      _updatePropsJS(updates, item);
-    });
+    if (maybeViewRef) {
+      maybeViewRef.items.forEach((item, _) => {
+        _updatePropsJS(updates, item);
+      });
+    }
   };
 } else {
-  updatePropsByPlatform = (viewDescriptors, updates, _) => {
+  updatePropsByPlatform = (
+    viewDescriptors: SharedValue<Descriptor[]>,
+    updates: StyleProps | AnimatedStyle,
+    _: ViewRefSet<any> | undefined
+  ): void => {
     'worklet';
 
     for (const key in updates) {
@@ -54,15 +66,19 @@ if (shouldBeUseWeb()) {
   };
 }
 
-export const updateProps = updatePropsByPlatform;
+export const updateProps: (
+  viewDescriptor: SharedValue<Descriptor[]>,
+  updates: StyleProps | AnimatedStyle,
+  maybeViewRef: ViewRefSet<any> | undefined
+) => void = updatePropsByPlatform;
 
 export const updatePropsJestWrapper = (
-  viewDescriptors,
-  updates,
-  maybeViewRef,
-  animatedStyle,
-  adapters
-) => {
+  viewDescriptors: SharedValue<Descriptor[]>,
+  updates: AnimatedStyle,
+  maybeViewRef: ViewRefSet<any> | undefined,
+  animatedStyle: MutableRefObject<AnimatedStyle>,
+  adapters: ((updates: AnimatedStyle) => void)[]
+): void => {
   adapters.forEach((adapter) => {
     adapter(updates);
   });

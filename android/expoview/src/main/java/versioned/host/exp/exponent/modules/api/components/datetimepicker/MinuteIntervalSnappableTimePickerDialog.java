@@ -76,7 +76,7 @@ class MinuteIntervalSnappableTimePickerDialog extends TimePickerDialog {
      * @return returns 'real' minutes (0-59)
      */
     private int getRealMinutes(int minutesOrSpinnerIndex) {
-        if (mDisplay == RNTimePickerDisplay.SPINNER) {
+        if (isSpinner()) {
             return minutesOrSpinnerIndex * mTimePickerInterval;
         }
 
@@ -147,27 +147,42 @@ class MinuteIntervalSnappableTimePickerDialog extends TimePickerDialog {
         runnable = new Runnable() {
             @Override
             public void run() {
-                // set valid hour & minutes
-                if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-                    view.setHour(hourOfDay);
-                    view.setMinute(correctedMinutes);
-                } else {
-                    view.setCurrentHour(hourOfDay);
-                    // we need to set minutes to 0 for this to work on older android devices
-                    view.setCurrentMinute(0);
-                    view.setCurrentMinute(correctedMinutes);
-                }
-                if (pickerIsInTextInputMode()) {
-                    // move caret to the end of input
-                    View maybeTextInput = view.findFocus();
-                    if (maybeTextInput instanceof EditText) {
-                        final EditText textInput = (EditText) maybeTextInput;
-                        textInput.setSelection(textInput.getText().length());
-                    } else {
-                        Log.e("RN-datetimepicker", "could not set selection on time picker, this is a known issue on some Huawei devices");
-                    }
-                }
+				if (pickerIsInTextInputMode()) {
+					// only rewrite input when the value makes sense to be corrected
+					// eg. given interval 3, when user wants to enter 53
+					// we don't rewrite the first number "5" to 6, because it would be confusing
+					// but the value will be corrected in onTimeChanged()
+					// however, when they enter 10, we rewrite it to 9
+					boolean canRewriteTextInput = correctedMinutes > 5;
+					if (!canRewriteTextInput) {
+						return;
+					}
+					fixTime();
+					moveCursorToEnd();
+				} else {
+					fixTime();
+				}
             }
+			private void fixTime() {
+				if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+					view.setHour(hourOfDay);
+					view.setMinute(correctedMinutes);
+				} else {
+					view.setCurrentHour(hourOfDay);
+					// we need to set minutes to 0 first for this to work on older android devices
+					view.setCurrentMinute(0);
+					view.setCurrentMinute(correctedMinutes);
+				}
+			}
+			private void moveCursorToEnd() {
+				View maybeTextInput = view.findFocus();
+				if (maybeTextInput instanceof EditText) {
+					final EditText textInput = (EditText) maybeTextInput;
+					textInput.setSelection(textInput.getText().length());
+				} else {
+					Log.e("RN-datetimepicker", "could not set selection on time picker, this is a known issue on some Huawei devices");
+				}
+			}
         };
 
         handler.postDelayed(runnable, 500);
@@ -191,15 +206,17 @@ class MinuteIntervalSnappableTimePickerDialog extends TimePickerDialog {
 
     @Override
     public void onClick(DialogInterface dialog, int which) {
-        if (mTimePicker != null && which == BUTTON_POSITIVE && timePickerHasCustomMinuteInterval()) {
-            final int hours = mTimePicker.getCurrentHour();
-
-            final int realMinutes = getRealMinutes();
-            int validMinutes = isSpinner() ? realMinutes : snapRealMinutesToInterval(realMinutes);
-
-            if (mTimeSetListener != null) {
-                mTimeSetListener.onTimeSet(mTimePicker, hours, validMinutes);
-            }
+		boolean needsCustomHandling = timePickerHasCustomMinuteInterval() || isSpinner();
+        if (mTimePicker != null && which == BUTTON_POSITIVE && needsCustomHandling) {
+			mTimePicker.clearFocus();
+			final int hours = mTimePicker.getCurrentHour();
+			int realMinutes = getRealMinutes();
+			int reportedMinutes = timePickerHasCustomMinuteInterval()
+					? snapRealMinutesToInterval(realMinutes)
+					: realMinutes;
+			if (mTimeSetListener != null) {
+				mTimeSetListener.onTimeSet(mTimePicker, hours, reportedMinutes);
+			}
         } else {
             super.onClick(dialog, which);
         }
@@ -228,15 +245,19 @@ class MinuteIntervalSnappableTimePickerDialog extends TimePickerDialog {
     public void onAttachedToWindow() {
         super.onAttachedToWindow();
 
+		int timePickerId = mContext.getResources().getIdentifier("timePicker", "id", "android");
+		mTimePicker = this.findViewById(timePickerId);
+
         if (timePickerHasCustomMinuteInterval()) {
             setupPickerDialog();
         }
     }
 
     private void setupPickerDialog() {
-        int timePickerId = mContext.getResources().getIdentifier("timePicker", "id", "android");
-        mTimePicker = this.findViewById(timePickerId);
-
+		if (mTimePicker == null) {
+			Log.e("RN-datetimepicker", "time picker was null");
+			return;
+		}
         int realMinuteBackup = mTimePicker.getCurrentMinute();
 
         if (isSpinner()) {

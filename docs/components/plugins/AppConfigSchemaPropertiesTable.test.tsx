@@ -1,16 +1,12 @@
-import { render } from '@testing-library/react';
-import GithubSlugger from 'github-slugger';
-import * as React from 'react';
+import { screen } from '@testing-library/react';
 
 import AppConfigSchemaPropertiesTable, {
   formatSchema,
   createDescription,
-  _getType,
   Property,
 } from './AppConfigSchemaPropertiesTable';
 
-import { HeadingManager } from '~/common/headingManager';
-import { HeadingsContext } from '~/components/page-higher-order/withHeadingManager';
+import { renderWithHeadings } from '~/common/test-utilities';
 
 const testSchema: Record<string, Property> = {
   name: {
@@ -99,112 +95,72 @@ const testSchema: Record<string, Property> = {
 
 describe('AppConfigSchemaPropertiesTable', () => {
   test('correctly matches snapshot', () => {
-    const { container } = render(
-      <HeadingsContext.Provider value={new HeadingManager(new GithubSlugger(), { headings: [] })}>
-        <AppConfigSchemaPropertiesTable schema={testSchema} />
-      </HeadingsContext.Provider>
+    const { container } = renderWithHeadings(
+      <AppConfigSchemaPropertiesTable schema={testSchema} />
     );
     expect(container).toMatchSnapshot();
+  });
+
+  test('description includes all required components', () => {
+    renderWithHeadings(
+      <AppConfigSchemaPropertiesTable schema={{ entry: testSchema.androidNavigationBar }} />
+    );
+
+    expect(screen.getByText('Specifies the background color of the navigation bar.'));
+    expect(screen.getByText('6 character long hex color string, eg:'));
+    expect(screen.getByText('Set this property using just Xcode'));
+    expect(screen.getByText('Set this property using AppConstants.java.'));
   });
 });
 
 describe('formatSchema', () => {
   const formattedSchema = formatSchema(Object.entries(testSchema));
-  test('name is property nestingLevel 0', () => {
-    expect(formattedSchema[0].nestingLevel).toBe(0);
+  test('name is property at root level', () => {
+    expect(formattedSchema[0].name).toBe('name');
   });
-  test('androidNavigationBar is property nestingLevel 0', () => {
-    expect(formattedSchema[1].nestingLevel).toBe(0);
+  test('androidNavigationBar has two subproperties', () => {
+    expect(formattedSchema[1].subproperties.length).toBe(2);
   });
-  test('visible is subproperty nestingLevel 1', () => {
-    expect(formattedSchema[2].nestingLevel).toBe(1);
+  test('visible is androidNavigationBar subproperty', () => {
+    expect(formattedSchema[1].subproperties[0].name).toBe('visible');
   });
-  test('always is subproperty nestingLevel 2', () => {
-    expect(formattedSchema[3].nestingLevel).toBe(2);
+  test('always is visible subproperty', () => {
+    expect(formattedSchema[1].subproperties[0].subproperties[0].name).toBe('always');
   });
-  test('backgroundColor is subproperty nestingLevel 1', () => {
-    expect(formattedSchema[4].nestingLevel).toBe(1);
+  test('backgroundColor is androidNavigationBar subproperty', () => {
+    expect(formattedSchema[1].subproperties[1].name).toBe('backgroundColor');
   });
-  test('intentFilters is property nestingLevel 0', () => {
-    expect(formattedSchema[5].nestingLevel).toBe(0);
+  test('intentFilters is property at root level', () => {
+    expect(formattedSchema[2].name).toBe('intentFilters');
   });
-  test('autoVerify is subproperty nestingLevel 1', () => {
-    expect(formattedSchema[6].nestingLevel).toBe(1);
+  test('autoVerify is intentFilters subproperty', () => {
+    expect(formattedSchema[2].subproperties[0].name).toBe('autoVerify');
   });
-  test('data is subproperty nestingLevel 1', () => {
-    expect(formattedSchema[7].nestingLevel).toBe(1);
+  test('data is intentFilters subproperty', () => {
+    expect(formattedSchema[2].subproperties[1].name).toBe('data');
   });
-  test('host is subproperty nestingLevel 2', () => {
-    expect(formattedSchema[8].nestingLevel).toBe(2);
+  test('host is data subproperty', () => {
+    expect(formattedSchema[2].subproperties[1].subproperties[0].name).toBe('host');
   });
 });
 
 describe('createDescription', () => {
-  test('bareWorkflow, exampleString are both added correctly to intentFilters', () => {
+  test('type and description are rendered correctly', () => {
     const intentFiltersObject = Object.entries(testSchema)[2];
     const intentFiltersObjectValue = intentFiltersObject[1] as any;
     const result = createDescription(intentFiltersObject);
 
-    expect(result).toBe(
-      `**(${_getType(intentFiltersObjectValue)})** - ${
-        intentFiltersObjectValue.description
-      }<bareworkflowDetails>${
-        intentFiltersObjectValue.meta!.bareWorkflow
-      }</bareworkflowDetails>\n\n>${intentFiltersObjectValue.exampleString}`
-    );
+    expect(result).toBe(`${intentFiltersObjectValue.description}`);
   });
 
-  test('regexHuman is added correctly to backgroundColor', () => {
+  test('regexHuman is added correctly', () => {
     //Note: to access this subproperty is tedious without a call to formatSchema
     const backgroundColorObject = Object.entries(Object.values(testSchema)[1].properties!)[1];
     const backgroundColorObjectValue = backgroundColorObject[1];
     const result = createDescription(backgroundColorObject);
 
     expect(result).toBe(
-      `**(${_getType(backgroundColorObjectValue)})** - ${
-        backgroundColorObjectValue.description
-      }\n\n${backgroundColorObjectValue.meta!.regexHuman}`
-    );
-  });
-
-  test('expoKit is added correctly to visible', () => {
-    //Note: to access this subproperty is tedious without a call to formatSchema
-    const visibleObject = Object.entries(Object.values(testSchema)[1].properties!)[0];
-    const visibleObjectValue = visibleObject[1];
-    const result = createDescription(visibleObject);
-
-    expect(result).toBe(
-      `**(${_getType(visibleObjectValue)})** - ${visibleObjectValue.description}<expokitDetails>${
-        visibleObjectValue.meta!.expoKit
-      }</expokitDetails>`
-    );
-  });
-
-  test('bareWorkflow is added correctly to name', () => {
-    const nameObject = Object.entries(testSchema)[0];
-    const nameObjectValue = nameObject[1];
-    const result = createDescription(nameObject);
-
-    expect(result).toBe(
-      `**(${_getType(nameObjectValue)})** - ${nameObjectValue.description}<bareworkflowDetails>${
-        nameObjectValue.meta!.bareWorkflow
-      }</bareworkflowDetails>`
-    );
-  });
-
-  test('expoKit, bareWorkflow both added correctly to androidNavigationBar', () => {
-    const androidNavigationBarObject = Object.entries(testSchema)[1];
-    const androidNavigationBarObjectValue = androidNavigationBarObject[1] as any;
-    const result = createDescription(androidNavigationBarObject);
-
-    expect(result).toBe(
-      `**(${_getType(androidNavigationBarObjectValue)})** - ${
-        androidNavigationBarObjectValue.description
-      }<expokitDetails>${
-        androidNavigationBarObjectValue.meta!.expoKit
-      }</expokitDetails><bareworkflowDetails>${
-        androidNavigationBarObjectValue.meta!.bareWorkflow
-      }</bareworkflowDetails>`
+      `${backgroundColorObjectValue.description}\n\n${backgroundColorObjectValue.meta!.regexHuman}`
     );
   });
 });

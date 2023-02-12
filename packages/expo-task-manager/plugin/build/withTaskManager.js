@@ -1,6 +1,6 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
-const config_plugins_1 = require("@expo/config-plugins");
+const config_plugins_1 = require("expo/config-plugins");
 const pkg = require('expo-task-manager/package.json');
 const withTaskManager = (config) => {
     config = (0, config_plugins_1.withInfoPlist)(config, (config) => {

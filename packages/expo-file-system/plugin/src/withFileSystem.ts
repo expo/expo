@@ -1,4 +1,4 @@
-import { AndroidConfig, ConfigPlugin, createRunOncePlugin } from '@expo/config-plugins';
+import { AndroidConfig, ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
 
 const pkg = require('expo-file-system/package.json');
 

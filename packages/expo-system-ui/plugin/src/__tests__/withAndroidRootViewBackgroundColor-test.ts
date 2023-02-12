@@ -1,4 +1,4 @@
-import { AndroidConfig, withAndroidColors, withAndroidStyles, XML } from '@expo/config-plugins';
+import { AndroidConfig, withAndroidColors, withAndroidStyles, XML } from 'expo/config-plugins';
 
 import {
   getRootViewBackgroundColor,
@@ -11,8 +11,8 @@ const { parseXMLAsync } = XML;
 const { getColorsAsObject, getObjectAsColorsXml } = AndroidConfig.Colors;
 const { getAppThemeLightNoActionBarGroup, getStylesGroupAsObject } = AndroidConfig.Styles;
 
-jest.mock('@expo/config-plugins', () => {
-  const plugins = jest.requireActual('@expo/config-plugins');
+jest.mock('expo/config-plugins', () => {
+  const plugins = jest.requireActual('expo/config-plugins');
   return {
     ...plugins,
     withAndroidColors: jest.fn(),

@@ -1,7 +1,6 @@
 import * as SplashScreen from 'expo-splash-screen';
 import * as React from 'react';
 import { Platform, StatusBar } from 'react-native';
-import { AppearanceProvider } from 'react-native-appearance';
 
 import RootNavigation from './src/navigation/RootNavigation';
 import loadAssetsAsync from './src/utilities/loadAssetsAsync';
@@ -38,11 +37,7 @@ const App = () => {
     await loadAssetsAsync();
   });
 
-  return isLoadingCompleted ? (
-    <AppearanceProvider>
-      <RootNavigation />
-    </AppearanceProvider>
-  ) : null;
+  return isLoadingCompleted ? <RootNavigation /> : null;
 };
 
 export default App;

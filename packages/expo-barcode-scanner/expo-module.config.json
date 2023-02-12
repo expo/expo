@@ -1,0 +1,10 @@
+{
+  "name": "expo-barcode-scanner",
+  "platforms": ["ios", "android"],
+  "ios": {
+    "modules": ["BarCodeScannerModule"]
+  },
+  "android": {
+    "modules": ["expo.modules.barcodescanner.BarCodeScannerModule"]
+  }
+}

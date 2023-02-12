@@ -5,6 +5,7 @@ import com.facebook.react.modules.network.NetworkingModule
 import com.google.android.exoplayer2.upstream.DataSource
 import com.google.android.exoplayer2.upstream.DefaultDataSourceFactory
 import com.google.android.exoplayer2.upstream.TransferListener
+import expo.modules.av.player.datasource.CustomHeadersOkHttpDataSourceFactory
 
 class SharedCookiesDataSourceFactory(
   reactApplicationContext: ReactContext,

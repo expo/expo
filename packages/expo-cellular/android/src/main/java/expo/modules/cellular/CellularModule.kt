@@ -1,11 +1,15 @@
 package expo.modules.cellular
 
+import android.Manifest
 import android.annotation.SuppressLint
 import android.content.Context
 import android.net.sip.SipManager
 import android.os.Build
 import android.telephony.TelephonyManager
 import android.util.Log
+import expo.modules.interfaces.permissions.Permissions
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
@@ -13,8 +17,8 @@ const val moduleName = "ExpoCellular"
 
 class CellularModule : Module() {
   override fun definition() = ModuleDefinition {
-    name(moduleName)
-    constants {
+    Name(moduleName)
+    Constants {
       val telephonyManager = telephonyManager()
       mapOf(
         "allowsVoip" to SipManager.isVoipSupported(context),
@@ -25,7 +29,7 @@ class CellularModule : Module() {
       )
     }
 
-    function("getCellularGenerationAsync") {
+    AsyncFunction("getCellularGenerationAsync") {
       try {
         getCurrentGeneration()
       } catch (e: SecurityException) {
@@ -34,24 +38,40 @@ class CellularModule : Module() {
       }
     }
 
-    function("allowsVoipAsync") {
+    AsyncFunction("allowsVoipAsync") {
       SipManager.isVoipSupported(context)
     }
 
-    function("getIsoCountryCodeAsync") {
+    AsyncFunction("getIsoCountryCodeAsync") {
       telephonyManager()?.simCountryIso
     }
 
-    function("getCarrierNameAsync") {
+    AsyncFunction("getCarrierNameAsync") {
       telephonyManager()?.simOperatorName
     }
 
-    function("getMobileCountryCodeAsync") {
+    AsyncFunction("getMobileCountryCodeAsync") {
       telephonyManager()?.simOperator?.substring(0, 3)
     }
 
-    function("getMobileNetworkCodeAsync") {
+    AsyncFunction("getMobileNetworkCodeAsync") {
       telephonyManager()?.simOperator?.substring(3)
+    }
+
+    AsyncFunction("requestPermissionsAsync") { promise: Promise ->
+      Permissions.askForPermissionsWithPermissionsManager(
+        permissionsManager,
+        promise,
+        Manifest.permission.READ_PHONE_STATE
+      )
+    }
+
+    AsyncFunction("getPermissionsAsync") { promise: Promise ->
+      Permissions.getPermissionsWithPermissionsManager(
+        permissionsManager,
+        promise,
+        Manifest.permission.READ_PHONE_STATE
+      )
     }
   }
 
@@ -62,6 +82,9 @@ class CellularModule : Module() {
 
   private val context
     get() = requireNotNull(appContext.reactContext)
+
+  private val permissionsManager: Permissions
+    get() = appContext.permissions ?: throw Exceptions.PermissionsModuleNotFound()
 
   @SuppressLint("MissingPermission")
   private fun getCurrentGeneration(): Int {

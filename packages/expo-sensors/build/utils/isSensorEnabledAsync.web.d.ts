@@ -1,5 +1,5 @@
 import { PermissionResponse } from 'expo-modules-core';
-declare type SensorEventName = 'deviceorientation' | 'devicemotion';
+type SensorEventName = 'deviceorientation' | 'devicemotion';
 export declare function getPermissionsAsync(): Promise<PermissionResponse>;
 export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
 export declare function getRequestPermission(): (() => Promise<PermissionState>) | null;

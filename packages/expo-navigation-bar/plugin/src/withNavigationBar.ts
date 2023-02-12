@@ -1,13 +1,3 @@
-import {
-  ConfigPlugin,
-  createRunOncePlugin,
-  AndroidConfig,
-  withStringsXml,
-  WarningAggregator,
-  withAndroidColors,
-  withAndroidStyles,
-} from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
 // @ts-ignore: uses flow
 import normalizeColor from '@react-native/normalize-color';
 // @ts-ignore
@@ -18,6 +8,16 @@ import {
   NavigationBarPosition,
   NavigationBarButtonStyle,
 } from 'expo-navigation-bar';
+import { ExpoConfig } from 'expo/config';
+import {
+  ConfigPlugin,
+  createRunOncePlugin,
+  AndroidConfig,
+  withStringsXml,
+  WarningAggregator,
+  withAndroidColors,
+  withAndroidStyles,
+} from 'expo/config-plugins';
 
 const debug = Debug('expo:system-navigation-bar:plugin');
 
