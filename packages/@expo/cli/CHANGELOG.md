@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix log format when modifying `tsconfig.json`. ([#21166](https://github.com/expo/expo/pull/21166) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.5.1 — 2023-02-09
