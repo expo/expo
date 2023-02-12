@@ -58,7 +58,7 @@ export async function updateTSConfigAsync({
 function logModifications(modifications: string[][]) {
   Log.log();
 
-  Log.log(`\u203A {bold Required} modifications made to the {cyan tsconfig.json}:`);
+  Log.log(chalk`\u203A {bold Required} modifications made to the {cyan tsconfig.json}:`);
 
   Log.log();
 
