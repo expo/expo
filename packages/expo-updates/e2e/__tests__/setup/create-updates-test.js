@@ -8,7 +8,7 @@ const workingDir = path.resolve(repoRoot, '..');
 /*
  * Change this to your own Expo account name
  */
-const EXPO_ACCOUNT_NAME = process.env.EXPO_ACCOUNT_NAME || 'myusername';
+const EXPO_ACCOUNT_NAME = 'myusername';
 
 /**
  * This generates a project at the location TEST_PROJECT_ROOT,
