@@ -62,7 +62,7 @@ export interface ImageProps extends ViewProps {
    * When provided as an array of sources, the source that fits best into the container size and is closest to the screen scale
    * will be chosen. In this case it is important to provide `width`, `height` and `scale` properties.
    */
-  source?: ImageSource | string | number | ImageSource[] | string[] | null;
+  source?: ImageSource | string | number | ImageSource[] | string[] | null | undefined;
 
   /**
    * An image to display while loading the proper image and no image has been displayed yet or the source is unset.
