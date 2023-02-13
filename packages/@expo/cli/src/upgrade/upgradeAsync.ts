@@ -1,5 +1,6 @@
-import { getConfig } from '@expo/config';
+import { getConfig, PackageJSONConfig, ProjectConfig } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
+import { NodePackageManager } from '@expo/package-manager';
 import chalk from 'chalk';
 import semver from 'semver';
 
@@ -44,7 +45,7 @@ export async function upgradeAsync(
 
   let projectConfig = getConfig(projectRoot);
 
-  const initialPackages = {
+  const initialPackages: Record<string, string> = {
     ...projectConfig.pkg.dependencies,
     ...projectConfig.pkg.devDependencies,
   };
@@ -94,39 +95,7 @@ export async function upgradeAsync(
   });
 
   // Do some evergreen upgrades
-
-  const pkgsToInstall: string[] = [];
-  const pkgsToRemove: string[] = [];
-
-  // Remove deprecated packages
-  ['react-native-unimodules'].forEach((pkg) => {
-    if (projectConfig.pkg.dependencies?.[pkg] || projectConfig.pkg.devDependencies?.[pkg]) {
-      pkgsToRemove.push(pkg);
-    }
-  });
-
-  if (projectConfig.pkg.dependencies?.['@react-native-community/async-storage']) {
-    //@react-native-async-storage/async-storage
-    pkgsToInstall.push('@react-native-async-storage/async-storage');
-    pkgsToRemove.push('@react-native-community/async-storage');
-  }
-
-  if (projectConfig.pkg.dependencies?.['expo-auth-session']) {
-    pkgsToInstall.push('expo-random');
-  }
-
-  if (pkgsToRemove.length) {
-    Log.log(`Removing packages: ${pkgsToRemove.join(', ')}`);
-    await packageManager.removeAsync(pkgsToRemove);
-  }
-
-  if (pkgsToInstall.length) {
-    Log.log(`Adding packages: ${pkgsToInstall.join(', ')}`);
-    await installAsync(pkgsToInstall, {
-      projectRoot,
-      silent: false,
-    });
-  }
+  await performPackageModificationsAsync(projectRoot, projectConfig, packageManager);
 
   // Now perform versioned work...
 
@@ -211,4 +180,57 @@ export async function upgradeAsync(
       chalk`{yellow Native projects detected. Do one of the following:}\n- Automatically: {bold npx expo prebuild --clean} {gray Learn more: https://docs.expo.dev/workflow/prebuild/#clean}\n- Manually: {gray Learn more: ${upgradeHelperUrl}}`
     );
   }
+}
+
+async function performPackageModificationsAsync(
+  projectRoot: string,
+  projectConfig: ProjectConfig,
+  packageManager: NodePackageManager
+) {
+  const modifications = getPackagesToModify(projectConfig.pkg);
+
+  if (modifications.remove.length) {
+    Log.log(`Removing packages: ${modifications.remove.join(', ')}`);
+    await packageManager.removeAsync(modifications.remove);
+  }
+
+  if (modifications.add.length) {
+    Log.log(`Adding packages: ${modifications.add.join(', ')}`);
+    await installAsync(modifications.add, {
+      projectRoot,
+      silent: false,
+    });
+  }
+}
+
+export function getPackagesToModify(pkgJson: PackageJSONConfig): {
+  remove: string[];
+  add: string[];
+} {
+  // Do some evergreen upgrades
+
+  const pkgsToInstall: string[] = [];
+  const pkgsToRemove: string[] = [];
+
+  // Remove deprecated packages
+  ['react-native-unimodules'].forEach((pkg) => {
+    if (pkgJson.dependencies?.[pkg] || pkgJson.devDependencies?.[pkg]) {
+      pkgsToRemove.push(pkg);
+    }
+  });
+
+  if (pkgJson.dependencies?.['@react-native-community/async-storage']) {
+    //@react-native-async-storage/async-storage
+    pkgsToInstall.push('@react-native-async-storage/async-storage');
+    pkgsToRemove.push('@react-native-community/async-storage');
+  }
+
+  if (pkgJson.dependencies?.['expo-auth-session']) {
+    pkgsToInstall.push('expo-random');
+  }
+
+  return {
+    remove: pkgsToRemove,
+    add: pkgsToInstall,
+  };
 }
