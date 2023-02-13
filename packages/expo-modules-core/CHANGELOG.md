@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed convertible implementation for `URL` type to support unencoded UTF8 urls and file paths. ([#21139](https://github.com/expo/expo/pull/21139) by [@tsapeta](https://github.com/tsapeta))
+
 ### 💡 Others
+
+## 1.2.1 — 2023-02-09
+
+### 🐛 Bug fixes
+
+- Fix crash when reloading app while expo-av video is playing. ([#21118](https://github.com/expo/expo/pull/21118) by [@janicduplessis](https://github.com/janicduplessis))
 
 ## 1.2.0 — 2023-02-03
 

@@ -95,6 +95,13 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       transformationMatrixChanged = true
     }
 
+  internal var placeholderContentFit: ContentFit = ContentFit.ScaleDown
+    set(value) {
+      field = value
+      activeView.placeholderContentFit = value
+      transformationMatrixChanged = true
+    }
+
   internal var contentPosition: ContentPosition = ContentPosition.center
     set(value) {
       field = value
@@ -305,7 +312,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       it.setImageDrawable(resource)
 
       it.isPlaceholder = isPlaceholder
-      it.placeholderContentFit = target.placeholderContentFit
+      it.placeholderContentFit = target.placeholderContentFit ?: ContentFit.ScaleDown
       copyProps(it)
 
       it.isVisible = true
@@ -430,12 +437,12 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         .apply {
           if (placeholder != null) {
             thumbnail(requestManager.load(placeholder.glideData))
-            val placeholderContentFit = if (bestPlaceholder.isBlurhash()) {
+            val newPlaceholderContentFit = if (bestPlaceholder.isBlurhash()) {
               contentFit
             } else {
-              ContentFit.ScaleDown
+              placeholderContentFit
             }
-            newTarget.placeholderContentFit = placeholderContentFit
+            newTarget.placeholderContentFit = newPlaceholderContentFit
           }
         }
         .apply {

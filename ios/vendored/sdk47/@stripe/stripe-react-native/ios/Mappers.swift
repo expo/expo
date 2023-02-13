@@ -1,4 +1,5 @@
 import Stripe
+import StripePaymentSheet
 
 class Mappers {
     class func createResult(_ key: String, _ value: NSDictionary?) -> NSDictionary {

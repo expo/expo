@@ -179,25 +179,15 @@ export function canApplyOptimalisation(upadterFn: WorkletFunction): number {
 
 export function isAnimated(prop: NestedObjectValues<AnimationObject>): boolean {
   'worklet';
-  const propsToCheck: NestedObjectValues<AnimationObject>[] = [prop];
-  while (propsToCheck.length > 0) {
-    const currentProp: NestedObjectValues<AnimationObject> =
-      propsToCheck.pop() as NestedObjectValues<AnimationObject>;
-    if (Array.isArray(currentProp)) {
-      for (const item of currentProp) {
-        propsToCheck.push(item);
-      }
-    } else if (currentProp?.onFrame !== undefined) {
+  if (Array.isArray(prop)) {
+    return prop.some(isAnimated);
+  } else if (typeof prop === 'object') {
+    if (prop.onFrame !== undefined) {
       return true;
-    } else if (typeof currentProp === 'object') {
-      for (const item of Object.values(currentProp)) {
-        propsToCheck.push(item);
-      }
+    } else {
+      return Object.values(prop).some(isAnimated);
     }
-    // if none of the above, it's not the animated prop, check next one
   }
-
-  // when none of the props were animated return false
   return false;
 }
 

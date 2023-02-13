@@ -1,4 +1,11 @@
-# expo-image-manipulator
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/imagemanipulator/">
+    <img
+      src="../../.github/resources/expo-image-manipulator.svg"
+      alt="expo-image-manipulator"
+      height="64" />
+  </a>
+</p>
 
 Provides functions that let you manipulation images on the local file system, eg: resize, crop.
 

@@ -195,7 +195,7 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
         },
         {
           // The module name in bridge should be unversioned `RNSkia`
-          paths: 'SkiaDrawViewManager.mm',
+          paths: '*.mm',
           find: new RegExp(`(\\smoduleForName:@")${prefix}(RNSkia")`, 'g'),
           replaceWith: '$1$2',
         },

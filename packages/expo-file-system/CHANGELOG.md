@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 15.2.2 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 15.2.1 — 2023-02-09
+
+### 🐛 Bug fixes
+
+- Add utf-8 uri support on iOS. ([#21098](https://github.com/expo/expo/pull/21098) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 15.2.0 — 2023-02-03
 
 ### 💡 Others

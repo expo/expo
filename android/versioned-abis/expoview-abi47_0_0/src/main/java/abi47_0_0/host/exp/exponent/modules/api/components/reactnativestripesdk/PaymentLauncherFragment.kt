@@ -279,6 +279,7 @@ class PaymentLauncherFragment(
       StripeIntent.NextActionType.BlikAuthorize,
       StripeIntent.NextActionType.WeChatPayRedirect,
       StripeIntent.NextActionType.UpiAwaitNotification,
+      StripeIntent.NextActionType.CashAppRedirect,
       null -> false
     }
   }

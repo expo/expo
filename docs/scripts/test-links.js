@@ -19,7 +19,6 @@ const externalLinks = [
   '/versions/latest/guides/splash-screens/#differences-between-environments---android', // https://github.com/expo/expo-cli/blob/main/packages/xdl/src/Android.js
   '/versions/latest/sdk/overview/', // https://github.com/expo/expo-cli/blob/main/packages/xdl/src/project/Convert.js
   '/versions/latest/distribution/building-standalone-apps/#2-configure-appjson', // https://github.com/expo/expo-cli/blob/main/packages/expo-cli/src/commands/build/ios/IOSBuilder.js
-  '/versions/latest/expokit/eject/', // https://github.com/expo/expo-cli/blob/main/packages/expo-cli/src/commands/eject/Eject.js
   '/versions/latest/introduction/faq/#can-i-use-nodejs-packages-with-expo', // https://github.com/expo/expo-cli/blob/main/packages/xdl/src/logs/PackagerLogsStream.js
 ];
 
