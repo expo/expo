@@ -2,7 +2,6 @@ import spawnAsync, { SpawnPromise, SpawnResult } from '@expo/spawn-async';
 import assert from 'assert';
 import fs from 'fs';
 import path from 'path';
-import rimraf from 'rimraf';
 
 import { PackageManager, PackageManagerOptions } from '../PackageManager';
 import { PendingSpawnPromise } from '../utils/spawn';
@@ -78,9 +77,7 @@ export abstract class BasePackageManager implements PackageManager {
   async removeLockfileAsync() {
     const cwd = this.ensureCwdDefined('removeLockFile');
     const filePath = path.join(cwd, this.lockFile);
-    if (fs.existsSync(filePath)) {
-      rimraf.sync(filePath);
-    }
+    await fs.promises.rm(filePath, { force: true });
   }
 
   installAsync(flags: string[] = []): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult> {
@@ -90,8 +87,6 @@ export abstract class BasePackageManager implements PackageManager {
   async uninstallAsync() {
     const cwd = this.ensureCwdDefined('uninstallAsync');
     const modulesPath = path.join(cwd, 'node_modules');
-    if (fs.existsSync(modulesPath)) {
-      rimraf.sync(modulesPath);
-    }
+    await fs.promises.rm(modulesPath, { force: true, recursive: true });
   }
 }
