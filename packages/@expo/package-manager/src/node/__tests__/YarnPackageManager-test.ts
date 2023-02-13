@@ -134,10 +134,13 @@ describe('YarnPackageManager', () => {
     afterEach(() => vol.reset());
 
     it('removes node_modules folder relative to cwd', async () => {
-      vol.fromJSON({
-        [path.join(projectRoot, 'package.json')]: '{}',
-        [path.join(projectRoot, 'node_modules/expo/package.json')]: '{}',
-      });
+      vol.fromJSON(
+        {
+          'package.json': '{}',
+          'node_modules/expo/package.json': '{}',
+        },
+        projectRoot
+      );
 
       const yarn = new YarnPackageManager({ cwd: projectRoot });
       await yarn.uninstallAsync();
@@ -146,9 +149,7 @@ describe('YarnPackageManager', () => {
     });
 
     it('skips removing non-existing node_modules folder', async () => {
-      vol.fromJSON({
-        [path.join(projectRoot, 'package.json')]: '{}',
-      });
+      vol.fromJSON({ 'package.json': '{}' }, projectRoot);
 
       const yarn = new YarnPackageManager({ cwd: projectRoot });
       await yarn.uninstallAsync();
