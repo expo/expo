@@ -17,7 +17,6 @@ class MailComposerModule : Module() {
   private var composerOpened = false
   private var pendingPromise: Promise? = null
 
-
   override fun definition() = ModuleDefinition {
     Name("ExpoMailComposer")
 
@@ -31,19 +30,18 @@ class MailComposerModule : Module() {
       val resolveInfo = context.packageManager.queryIntentActivities(intent, 0)
 
       val mailIntents = resolveInfo.map { info ->
-        val isHtml = options.isHtml
         val mailIntentBuilder = MailIntentBuilder(options)
           .setComponentName(info.activityInfo.packageName, info.activityInfo.name)
           .putRecipients(Intent.EXTRA_EMAIL)
-          .putCCRecipients(Intent.EXTRA_CC)
-          .putBCCRecipients(Intent.EXTRA_BCC)
+          .putCcRecipients(Intent.EXTRA_CC)
+          .putBccRecipients(Intent.EXTRA_BCC)
           .putSubject(Intent.EXTRA_SUBJECT)
-          .putBody(Intent.EXTRA_TEXT, isHtml ?: false)
-          .putParcelableArrayListExtraIfKeyExists(
-            "attachments",
+          .putBody(Intent.EXTRA_TEXT, options.isHtml ?: false)
+          .putAttachments(
             Intent.EXTRA_STREAM,
             application
           )
+
         LabeledIntent(
           mailIntentBuilder.build(),
           info.activityInfo.packageName,
@@ -51,6 +49,7 @@ class MailComposerModule : Module() {
           info.icon
         )
       }.toMutableList()
+
       val chooser = Intent.createChooser(
         mailIntents.removeAt(mailIntents.size - 1),
         null
@@ -58,11 +57,11 @@ class MailComposerModule : Module() {
         putExtra(Intent.EXTRA_INITIAL_INTENTS, mailIntents.toTypedArray())
         addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
       }
+
       pendingPromise = promise
       currentActivity.startActivityForResult(chooser, REQUEST_CODE)
       composerOpened = true
     }
-
 
     OnActivityResult { _, payload ->
       if (payload.requestCode == REQUEST_CODE && pendingPromise != null) {

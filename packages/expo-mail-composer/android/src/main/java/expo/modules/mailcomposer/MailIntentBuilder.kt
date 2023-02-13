@@ -5,7 +5,6 @@ import android.content.ComponentName
 import android.content.Intent
 import android.net.Uri
 import android.text.Html
-import android.text.Html.FROM_HTML_MODE_LEGACY
 import android.util.Log
 import androidx.core.content.FileProvider
 import java.io.File
@@ -37,13 +36,13 @@ class MailIntentBuilder(
     }
   }
 
-  fun putCCRecipients(intentName: String) = apply {
+  fun putCcRecipients(intentName: String) = apply {
     options.ccRecipients?.let {
       mailIntent.putExtra(intentName, it.toTypedArray())
     }
   }
 
-  fun putBCCRecipients(intentName: String) = apply {
+  fun putBccRecipients(intentName: String) = apply {
     options.bccRecipients?.let {
       mailIntent.putExtra(intentName, it.toTypedArray())
     }
@@ -66,21 +65,20 @@ class MailIntentBuilder(
     }
   }
 
-  fun putParcelableArrayListExtraIfKeyExists(
-    key: String,
+  fun putAttachments(
     intentName: String,
     application: Application,
   ) = apply {
     try {
-      options.attachments?.let {
-        val requestedAttachments = it.toTypedArray()
-        val attachments = requestedAttachments.map { requestedAttachment ->
+      options.attachments?.let { requestedAttachments ->
+        val attachments = requestedAttachments.toTypedArray().map { requestedAttachment ->
           val path = Uri.parse(requestedAttachment).path
           requireNotNull(path) { "Path to attachment can not be null" }
 
           val attachmentFile = File(path)
           contentUriFromFile(attachmentFile, application)
         }.toCollection(ArrayList())
+
         mailIntent.putParcelableArrayListExtra(intentName, attachments)
       }
     } catch (error: IllegalArgumentException) {
