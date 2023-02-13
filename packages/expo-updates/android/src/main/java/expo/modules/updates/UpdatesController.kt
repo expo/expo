@@ -355,7 +355,7 @@ class UpdatesController private constructor(
 
           override fun onSuccess(loaderResult: Loader.LoaderResult) {
             setRemoteLoadStatus(
-              if (loaderResult.updateEntity != null) ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
+              if (loaderResult.updateEntity != null || loaderResult.updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
               else ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
             )
             releaseDatabase()
@@ -368,6 +368,7 @@ class UpdatesController private constructor(
             if (updateDirective != null) {
               return Loader.OnUpdateResponseLoadedResult(
                 shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
+                  is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
                   is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
                 }
               )

@@ -2,6 +2,7 @@ package expo.modules.updates.loader
 
 import expo.modules.jsonutils.getNullable
 import expo.modules.jsonutils.require
+import expo.modules.updates.UpdatesUtils.parseDateString
 import expo.modules.updates.manifest.ResponseHeaderData
 import expo.modules.updates.manifest.UpdateManifest
 import org.json.JSONObject
@@ -11,6 +12,7 @@ data class SigningInfo(val easProjectId: String, val scopeKey: String)
 
 sealed class UpdateDirective(val signingInfo: SigningInfo?) {
   class NoUpdateAvailableUpdateDirective(signingInfo: SigningInfo?) : UpdateDirective(signingInfo)
+  class RollBackToEmbeddedUpdateDirective(val commitTime: Date, signingInfo: SigningInfo?) : UpdateDirective(signingInfo)
 
   companion object {
     fun fromJSONString(jsonString: String): UpdateDirective {
@@ -20,6 +22,10 @@ sealed class UpdateDirective(val signingInfo: SigningInfo?) {
       }
       return when (val messageType = json.require<String>("type")) {
         "noUpdateAvailable" -> NoUpdateAvailableUpdateDirective(signingInfo)
+        "rollBackToEmbedded" -> RollBackToEmbeddedUpdateDirective(
+          parseDateString(json.require<JSONObject>("parameters").require("commitTime")),
+          signingInfo
+        )
         else -> throw Error("Invalid message messageType: $messageType")
       }
     }
