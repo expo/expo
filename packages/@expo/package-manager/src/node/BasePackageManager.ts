@@ -15,6 +15,7 @@ export abstract class BasePackageManager implements PackageManager {
     this.silent = !!silent;
     this.log = log ?? (!silent ? console.log : undefined);
     this.options = {
+      stdio: silent ? undefined : 'inherit',
       ...options,
       env: { ...this.getDefaultEnvironment(), ...env },
     };
@@ -68,13 +69,7 @@ export abstract class BasePackageManager implements PackageManager {
 
   runAsync(command: string[]) {
     this.log?.(`> ${this.name} ${command.join(' ')}`);
-    const spawn = spawnAsync(this.bin, command, this.options);
-
-    if (!this.silent) {
-      spawn.child.stderr?.pipe(process.stderr);
-    }
-
-    return spawn;
+    return spawnAsync(this.bin, command, this.options);
   }
 
   async versionAsync() {
