@@ -1,9 +1,9 @@
-import * as PackageManager from '@expo/package-manager';
+import { NodePackageManagerForProject } from '@expo/package-manager';
 
 import { CommandError } from '../utils/errors';
 import { assertUnexpectedVariadicFlags, parseVariadicArguments } from '../utils/variadic';
 
-export type Options = Pick<PackageManager.CreateForProjectOptions, 'npm' | 'pnpm' | 'yarn'> & {
+export type Options = Pick<NodePackageManagerForProject, 'npm' | 'pnpm' | 'yarn'> & {
   /** Check which packages need to be updated, does not install any provided packages. */
   check?: boolean;
   /** Should the dependencies be fixed automatically. */
