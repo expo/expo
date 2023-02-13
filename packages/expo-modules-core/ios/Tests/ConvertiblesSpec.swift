@@ -16,6 +16,62 @@ class ConvertiblesSpec: ExpoSpec {
         expect(url.absoluteString) == remoteUrlString
       }
 
+      it("converts from url with unencoded query") {
+        let query = "param=🥓"
+        let urlString = "https://expo.dev/?\(query)"
+        let url = try URL.convert(from: urlString)
+
+        if #available(iOS 16.0, *) {
+          expect(url.query(percentEncoded: true)) == "param=%F0%9F%A5%93"
+          expect(url.query(percentEncoded: false)) == query
+        }
+        expect(url.query) == "param=%F0%9F%A5%93"
+        expect(url.absoluteString) == "https://expo.dev/?param=%F0%9F%A5%93"
+        expect(url.absoluteString.removingPercentEncoding) == urlString
+      }
+
+      it("converts from url with encoded query") {
+        let query = "param=%F0%9F%A5%93"
+        let urlString = "https://expo.dev/?\(query)"
+        let url = try URL.convert(from: urlString)
+
+        if #available(iOS 16.0, *) {
+          expect(url.query(percentEncoded: true)) == query
+          expect(url.query(percentEncoded: false)) == "param=🥓"
+        }
+        expect(url.query) == query
+        expect(url.absoluteString) == urlString
+        expect(url.absoluteString.removingPercentEncoding) == "https://expo.dev/?param=🥓"
+      }
+
+      it("converts from url containing percent character") {
+        // The percent character alone requires percent-encoding to `%25`.
+        let query = "param=%"
+        let urlString = "https://expo.dev/?\(query)"
+        let url = try URL.convert(from: urlString)
+
+        if #available(iOS 16.0, *) {
+          expect(url.query(percentEncoded: true)) == "param=%25"
+          expect(url.query(percentEncoded: false)) == query
+        }
+        expect(url.query) == "param=%25"
+        expect(url.absoluteString) == "https://expo.dev/?param=%25"
+        expect(url.absoluteString.removingPercentEncoding) == urlString
+      }
+
+      it("converts from url containing the anchor") {
+        // The hash is not allowed in the query (requires percent-encoding),
+        // but we want it to be recognized as the beginning of the fragment,
+        // thus it cannot be percent-encoded.
+        let query = "param=#expo"
+        let urlString = "https://expo.dev/?\(query)"
+        let url = try URL.convert(from: urlString)
+
+        expect(url.query) == "param="
+        expect(url.fragment) == "expo"
+        expect(url.absoluteString) == urlString
+      }
+
       it("converts from file url") {
         let fileUrlString = "file:///expo/tmp"
         let url = try URL.convert(from: fileUrlString)
@@ -29,8 +85,27 @@ class ConvertiblesSpec: ExpoSpec {
         let filePath = "/expo/image.png"
         let url = try URL.convert(from: filePath)
 
+        expect(url.scheme) == "file"
         expect(url.path) == filePath
         expect(url.absoluteString) == "file://\(filePath)"
+        expect(url.isFileURL) == true
+      }
+
+      it("converts from file path with UTF8 characters") {
+        let filePath = "/中文ÅÄÖąÓśĆñ.gif"
+        let url = try URL.convert(from: filePath)
+
+        expect(url.scheme) == "file"
+        expect(url.path) == filePath
+        expect(url.isFileURL) == true
+      }
+
+      it("converts from file path containing percent character") {
+        let filePath = "/%.png"
+        let url = try URL.convert(from: filePath)
+
+        expect(url.scheme) == "file"
+        expect(url.path) == filePath
         expect(url.isFileURL) == true
       }
 
