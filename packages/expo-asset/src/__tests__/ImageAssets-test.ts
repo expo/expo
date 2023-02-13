@@ -28,11 +28,11 @@ describe('getImageInfoAsync', () => {
   beforeAll(() => {
     // @ts-ignore
     originalImage = global.Image;
-    Image = jest.fn();
+    globalThis.Image = jest.fn();
   });
 
   afterAll(() => {
-    Image = originalImage;
+    globalThis.Image = originalImage;
   });
 
   it(`fetches images by setting the "src" property`, () => {

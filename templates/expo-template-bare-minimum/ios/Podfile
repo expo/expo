@@ -32,7 +32,7 @@ elsif podfile_properties.key?('ios.flipper') then
   # Configure Flipper in Podfile.properties.json
   if podfile_properties['ios.flipper'] == 'true' then
     flipper_config = FlipperConfiguration.enabled(["Debug", "Release"])
-  elsif ppodfile_properties['ios.flipper'] != 'false' then
+  elsif podfile_properties['ios.flipper'] != 'false' then
     flipper_config = FlipperConfiguration.enabled(["Debug", "Release"], { 'Flipper' => podfile_properties['ios.flipper'] })
   end
 end

@@ -313,6 +313,10 @@ class LoaderTask(
             val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
             if (updateDirective != null) {
               return when (updateDirective) {
+                is UpdateDirective.RollBackToEmbeddedUpdateDirective -> {
+                  isUpToDate = false
+                  Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
+                }
                 is UpdateDirective.NoUpdateAvailableUpdateDirective -> {
                   isUpToDate = true
                   Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
@@ -342,7 +346,19 @@ class LoaderTask(
           }
 
           override fun onSuccess(loaderResult: Loader.LoaderResult) {
-            val updateEntity = loaderResult.updateEntity
+            var updateEntity = loaderResult.updateEntity
+            val updateDirective = loaderResult.updateDirective
+
+            // If directive is to roll-back to the embedded update and there is an embedded update,
+            // we need to update embedded update in the DB with the newer commitTime from the message so that
+            // the selection policy will choose it. That way future updates can continue to be applied
+            // over this roll back, but older ones won't.
+            // The embedded update is guaranteed to be in the DB from the earlier [EmbeddedLoader] call in this task.
+            if (updateDirective != null && updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective && configuration.hasEmbeddedUpdate) {
+              val embeddedUpdate = EmbeddedManifest.get(context, configuration)!!.updateEntity
+              database.updateDao().setUpdateCommitTime(embeddedUpdate!!, updateDirective.commitTime)
+              updateEntity = embeddedUpdate
+            }
 
             // a new update (or null update because onUpdateResponseLoaded returned false or it was just a message) has loaded successfully;
             // we need to launch it with a new Launcher and replace the old Launcher so that the callback fires with the new one

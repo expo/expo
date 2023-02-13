@@ -275,4 +275,28 @@ class RemoteLoaderTest {
     Assert.assertEquals(1, updates.size)
     Assert.assertEquals(UpdateStatus.DEVELOPMENT, updates[0].status)
   }
+
+  @Test
+  fun testRemoteLoader_RollBackDirective() {
+    val updateDirective = UpdateDirective.RollBackToEmbeddedUpdateDirective(commitTime = Date(), signingInfo = null)
+    every { mockFileDownloader.downloadRemoteUpdate(any(), any(), any(), any()) } answers {
+      val callback = arg<FileDownloader.RemoteUpdateDownloadCallback>(3)
+      callback.onSuccess(
+        UpdateResponse(
+          responseHeaderData = null,
+          manifestUpdateResponsePart = null,
+          directiveUpdateResponsePart = UpdateResponsePart.DirectiveUpdateResponsePart(updateDirective)
+        )
+      )
+    }
+
+    loader.start(mockCallback)
+
+    verify { mockCallback.onSuccess(Loader.LoaderResult(null, updateDirective)) }
+    verify(exactly = 0) { mockCallback.onFailure(any()) }
+    verify(exactly = 0) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any()) }
+
+    val updates = db.updateDao().loadAllUpdates()
+    Assert.assertEquals(0, updates.size)
+  }
 }
