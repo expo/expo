@@ -116,9 +116,9 @@ export class ExternalModule<TModule> {
 
       try {
         if (shouldGloballyInstall) {
-          await packageManager.addGlobalAsync(packageName);
+          await packageManager.addGlobalAsync([packageName]);
         } else {
-          await packageManager.addDevAsync(packageName);
+          await packageManager.addDevAsync([packageName]);
         }
         Log.log(`Installed ${packageName}`);
       } catch (error: any) {
