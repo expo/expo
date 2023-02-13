@@ -9,7 +9,7 @@ import { Step } from '~/ui/components/Step';
 
 Setting up EAS Update allows you to push critical bug fixes and improvements that your users need right away.
 
-In this introduction, we create a new Expo app, run it in our local development environment, publish an update, and show that the app downloads and runs the update when restarted.
+In this guide, you'll create a new Expo app, run it in our local development environment, publish an update, and show that the app downloads and runs the update when restarted.
 
 ## Prerequisites
 
@@ -19,7 +19,7 @@ EAS Update requires the following versions or greater:
 - Expo SDK >= 45.0.0
 - expo-updates >= 0.13.0
 
-The example app shown here is based on SDK 48, which supports the new `requestHeaders` property in **app.json**.
+The example app shown here is based on SDK 48, which supports the new [`requestHeaders`](/versions/latest/config/app/#requestheaders) property in Expo config.
 
 <Step label="1">
 ## Install the latest EAS CLI
@@ -62,7 +62,7 @@ To configure your project, run the following commands in the order they are spec
   cmdCopy="npx expo install expo-updates && eas init && eas update:configure"
 />
 
-Inside **app.json**, make changes to use a fixed `runtimeVersion` property, and to add a request header that the app will use to specify a channel when downloading updates from EAS.
+Inside the Expo config, make changes to use [`runtimeVersion`](/versions/latest/config/app/#runtimeversion) property with a fixed value and to add a request header that the app will use to specify a channel when downloading updates from EAS.
 
 {/* prettier-ignore */}
 ```json app.json
@@ -88,7 +88,7 @@ The `channel` allows you to point updates at builds. For example, if we set up a
 <Step label="4">
 ## Run prebuild
 
-This is run automatically when executing `npx expo run:ios` or `npx expo run:android`; however, we call this step out separately in this guide. In SDK 48 and later, this step adds our desired request headers to **Expo.plist** and **AndroidManifest.xml** in the iOS and Android builds, respectively.
+This runs automatically when executing `npx expo run:android` or `npx expo run:ios`. However, we want to call this step out separately in this guide. In SDK 48 and above, this step adds our desired request headers to **AndroidManifest.xml** and **Expo.plist** in the Android and iOS builds.
 
 <Terminal
   cmd={[
@@ -99,7 +99,7 @@ This is run automatically when executing `npx expo run:ios` or `npx expo run:and
   cmdCopy="npx expo prebuild"
 />
 
-After running the above, inspect **iOS/&lt;your project name&gt;/Supporting/Expo.plist** and **android/app/src/main/AndroidManifest.xml** to see the changes that were added.
+After running the above, inspect **android/app/src/main/AndroidManifest.xml** and **iOS/&lt;your project name&gt;/Supporting/Expo.plist** to see the added changes.
 
 {/* prettier-ignore */}
 ```xml Expo.plist
@@ -126,7 +126,7 @@ After running the above, inspect **iOS/&lt;your project name&gt;/Supporting/Expo
 <Step label="5">
 ## Build the project
 
-Run the following commands in order to get the app running on iOS or Android.
+Run the following commands to get the app running on Android or iOS.
 
 <Terminal
   cmd={[
@@ -140,9 +140,9 @@ Run the following commands in order to get the app running on iOS or Android.
   cmdCopy="npx expo run:ios --configuration Release && npx expo run:android --variant release"
 />
 
-(We build the release version of the app, not the debug version. By default, a debug build expects to connect to a local React Native packager to load the application bundle, and so will not connect to the EAS update service.
+We build the release version of the app, not the debug version. By default, a debug build expects to connect to a local React Native packager to load the application bundle and will not connect to the EAS update service.
 
-It is possible to create a "native debug" build that will connect to the EAS update service and allow debugging of native code. See the [last section of this document](/eas-update/getting-started/#testing-updates-with-a-debug-build-of-your-app) for the changes needed.)
+It is possible to create a **native debug** build that will connect to the EAS update service and allow debugging of native code. See [Testing updates with a debug build](#testing-updates-with-a-debug-build-of-your-app) section for the required changes.
 
 </Step>
 
@@ -211,13 +211,14 @@ After optionally making additional changes to **App.js**, publish an update with
 
 <Terminal cmd={['$ eas update', '']} cmdCopy="eas update" />
 
-There will be a prompt for the branch to publish on; select the default branch "main".
+Running the command will prompt the following:
 
-There will be a second prompt for entering an update message; select the default "Initial commit", or type in a custom message.
+- For the branch to publish on. Select the default branch: `main`.
+- For entering an update message. Select the default `Initial commit` message or type in a custom message.
 
 Once the update is built and uploaded to EAS and the command completes, force close and reopen your app up to two times to download and view the update.
 
-The app should now appear as in the screenshot below.
+The app should now appear as shown in the screenshot below:
 
 <ImageSpotlight
   alt="App running update after being restarted twice"
@@ -231,7 +232,7 @@ The app should now appear as in the screenshot below.
 
 It is possible to [create a debug build that will load updates from EAS instead of loading from a React Native packager](/eas-update/debug-updates/#debugging-of-native-code-while-loading-the-app-through-expo-updates).
 
-To do this for the above app, we need to modify step 4 above as follows:
+To do this for the above app, modify step 4 above as follows:
 
 <Terminal
   cmd={[
@@ -260,4 +261,4 @@ The resulting app will be fully debuggable with Xcode or Android Studio, but wil
 
 ## Next steps
 
-Use EAS Build and Update together. Learn more: [Using EAS Build and Update together](/eas-update/build-and-update)
+See [Using EAS Build and Update together](/eas-update/build-and-update).
