@@ -13,7 +13,7 @@ class BasePackageManager {
         this.silent = !!silent;
         this.log = log ?? (!silent ? console.log : undefined);
         this.options = {
-            stdio: !silent ? 'inherit' : undefined,
+            stdio: silent ? undefined : 'inherit',
             ...options,
             env: { ...this.getDefaultEnvironment(), ...env },
         };
