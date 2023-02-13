@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `You can't start or clear loads in RequestListener or Target callbacks` on Android.
+
 ### 💡 Others
 
 ## 1.0.0-rc.0 — 2023-02-09
