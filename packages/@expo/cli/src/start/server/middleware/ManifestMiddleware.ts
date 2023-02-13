@@ -1,7 +1,10 @@
 import { ExpoConfig, ExpoGoConfig, getConfig, ProjectConfig } from '@expo/config';
+import findWorkspaceRoot from 'find-yarn-workspace-root';
+import path from 'path';
 import { resolve } from 'url';
 
 import * as Log from '../../../log';
+import { env } from '../../../utils/env';
 import { stripExtension } from '../../../utils/url';
 import * as ProjectDevices from '../../project/devices';
 import { UrlCreator } from '../UrlCreator';
@@ -9,9 +12,31 @@ import { getPlatformBundlers } from '../platformBundlers';
 import { createTemplateHtmlFromExpoConfigAsync } from '../webTemplate';
 import { ExpoMiddleware } from './ExpoMiddleware';
 import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAssets';
-import { resolveEntryPoint } from './resolveEntryPoint';
+import { resolveAbsoluteEntryPoint } from './resolveEntryPoint';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
+
+const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
+
+/** Wraps `findWorkspaceRoot` and guards against having an empty `package.json` file in an upper directory. */
+export function getWorkspaceRoot(projectRoot: string): string | null {
+  try {
+    return findWorkspaceRoot(projectRoot);
+  } catch (error: any) {
+    if (error.message.includes('Unexpected end of JSON input')) {
+      return null;
+    }
+    throw error;
+  }
+}
+
+export function getMetroServerRoot(projectRoot: string) {
+  if (env.EXPO_USE_METRO_WORKSPACE_ROOT) {
+    return getWorkspaceRoot(projectRoot) ?? projectRoot;
+  }
+
+  return projectRoot;
+}
 
 /** Info about the computer hosting the dev server. */
 export interface HostInfo {
@@ -108,7 +133,13 @@ export abstract class ManifestMiddleware<
 
   /** Get the main entry module ID (file) relative to the project root. */
   private resolveMainModuleName(projectConfig: ProjectConfig, platform: string): string {
-    let entryPoint = resolveEntryPoint(this.projectRoot, platform, projectConfig);
+    let entryPoint = path.relative(
+      getMetroServerRoot(this.projectRoot),
+      resolveAbsoluteEntryPoint(this.projectRoot, platform, projectConfig)
+    );
+
+    debug(`Resolved entry point: ${entryPoint} (project root: ${this.projectRoot})`);
+
     // NOTE(Bacon): Webpack is currently hardcoded to index.bundle on native
     // in the future (TODO) we should move this logic into a Webpack plugin and use
     // a generated file name like we do on web.
