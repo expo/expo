@@ -25,7 +25,7 @@ Package-specific changes not released in any SDK will be added here just before 
 - Updated `react-native-reanimated` from `2.12.0` to `2.14.4`. ([#20798](https://github.com/expo/expo/pull/20798) by [@kudo](https://github.com/kudo), [#20990](https://github.com/expo/expo/pull/20990) by [@tsapeta](https://github.com/tsapeta))
 - Updated `@shopify/react-native-skia` from `0.1.157` to `0.1.172`. ([#20857](https://github.com/expo/expo/pull/20857), [#21014](https://github.com/expo/expo/pull/21014) by [@kudo](https://github.com/kudo))
 - Updated `react-native-safe-area-context` from `4.4.1` to `4.5.0`. ([#20899](https://github.com/expo/expo/pull/20899) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Updated `react-native-screens` from `3.18.0` to `3.19.0`. ([#20938](https://github.com/expo/expo/pull/20938) by [@lukmccall](https://github.com/lukmccall))
+- Updated `react-native-screens` from `3.18.0` to `3.20.0`. ([#20938](https://github.com/expo/expo/pull/20938) by [@lukmccall](https://github.com/lukmccall), [#21186](https://github.com/expo/expo/pull/21186) by [@tsapeta](https://github.com/tsapeta))
 - Updated `react-native-pager-view` from `6.0.1` to `6.1.2`. ([#20932](https://github.com/expo/expo/pull/20932) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Updated `@react-native-community/slider` from `4.2.4` to `4.4.2`. ([#20903](https://github.com/expo/expo/pull/20903) by [@gabrieldonadel](https://github.com/gabrieldonadel), [#21055](https://github.com/expo/expo/pull/21055) by [@kudo](https://github.com/kudo))
 - Updated `react-native-shared-element` from `0.8.7` to `0.8.8`. ([#20929](https://github.com/expo/expo/pull/20929) by [@byCedric](https://github.com/byCedric))
