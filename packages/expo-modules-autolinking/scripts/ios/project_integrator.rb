@@ -190,9 +190,11 @@ module Expo
     # Try not to modify this since it involves changes in the pbxproj so
     # it's better to modify the support script instead, if possible.
     def self.generate_xcode_build_script(script_relative_path)
+      escaped_path = script_relative_path.to_s.gsub(/[^a-zA-Z0-9,\._\+@%\/\-]/) { |char| "\\#{char}" }
+
       <<~XCODE_BUILD_SCRIPT
-      # This script configures Expo modules
-      bash -l -c "./#{script_relative_path.to_s.gsub(/ /, '\\ ')}"
+      # This script configures Expo modules and generates the modules provider file.
+      bash -l -c "./#{escaped_path}"
       XCODE_BUILD_SCRIPT
     end
 

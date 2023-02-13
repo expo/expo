@@ -542,7 +542,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-BareExpoMain-BareExpoDetox/expo-configure-project.sh\"\n";
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-BareExpoMain-BareExpoDetox/expo-configure-project.sh\"\n";
 		};
 		5834C135EA791757779CF476 /* [Expo] Configure project */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -561,7 +561,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-BareExpoMain-BareExpo/expo-configure-project.sh\"\n";
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-BareExpoMain-BareExpo/expo-configure-project.sh\"\n";
 		};
 		7677BD1511B47107F041C6F8 /* [CP] Check Pods Manifest.lock */ = {
 			isa = PBXShellScriptBuildPhase;
@@ -759,7 +759,7 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 			shellPath = /bin/sh;
-			shellScript = "# This script configures Expo modules\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-BareExpoMain-BareExpoTests/expo-configure-project.sh\"\n";
+			shellScript = "# This script configures Expo modules and generates the modules provider file.\nbash -l -c \"./Pods/Target\\ Support\\ Files/Pods-BareExpoMain-BareExpoTests/expo-configure-project.sh\"\n";
 		};
 		FD4C38642228810C00325AF5 /* Start Packager */ = {
 			isa = PBXShellScriptBuildPhase;
