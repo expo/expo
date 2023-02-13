@@ -71,28 +71,26 @@ describe('PnpmPackageManager', () => {
       expect(log).toHaveBeenCalledWith('> pnpm install --some-flag');
     });
 
-    it('pipes error output without silent', async () => {
-      const stderr = { pipe: jest.fn() };
+    it('inherits stdio output without silent', async () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot });
+      await pnpm.runAsync(['install']);
 
-      mockedSpawnAsync.mockImplementationOnce(() =>
-        mockSpawnPromise(Promise.reject(new Error('test')), { stderr })
+      expect(spawnAsync).toBeCalledWith(
+        expect.anything(),
+        expect.anything(),
+        expect.objectContaining({ stdio: 'inherit' })
       );
-
-      await expect(pnpm.runAsync(['install'])).rejects.toThrowError();
-      expect(stderr.pipe).toHaveBeenCalledWith(process.stderr);
     });
 
-    it('does not pipe error output with silent', async () => {
-      const stderr = { pipe: jest.fn() };
+    it('does not inherit stdio with silent', async () => {
       const pnpm = new PnpmPackageManager({ cwd: projectRoot, silent: true });
+      await pnpm.runAsync(['install']);
 
-      mockedSpawnAsync.mockImplementationOnce(() =>
-        mockSpawnPromise(Promise.reject(new Error('test')), { stderr })
+      expect(spawnAsync).toBeCalledWith(
+        expect.anything(),
+        expect.anything(),
+        expect.objectContaining({ stdio: undefined })
       );
-
-      await expect(pnpm.runAsync(['install'])).rejects.toThrowError();
-      expect(stderr.pipe).not.toHaveBeenCalledWith();
     });
 
     it('adds a single package with custom parameters', async () => {
