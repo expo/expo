@@ -121,7 +121,7 @@ exports[`APISection expo-apple-authentication 1`] = `
         React.Element
         &lt;
         <a
-          class="css-1pb9a83-A"
+          class="css-1na8e0o-A"
           href="#appleauthenticationbuttonprops"
         >
           AppleAuthenticationButtonProps
@@ -146,7 +146,7 @@ available via the provided properties.
     >
       You should only attempt to render this if 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="#isavailableasync"
       >
         <code
@@ -276,7 +276,7 @@ not appear on the screen.
           </strong>
            
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton"
             rel="noopener noreferrer"
             target="_blank"
@@ -407,7 +407,7 @@ for more details.
             data-text="true"
           >
             <a
-              class="css-1pb9a83-A"
+              class="css-1na8e0o-A"
               href="#appleauthenticationbuttonstyle"
             >
               AppleAuthenticationButtonStyle
@@ -491,7 +491,7 @@ for more details.
             data-text="true"
           >
             <a
-              class="css-1pb9a83-A"
+              class="css-1na8e0o-A"
               href="#appleauthenticationbuttontype"
             >
               AppleAuthenticationButtonType
@@ -677,7 +677,7 @@ for more details.
         >
           The method to call when the user presses the button. You should call 
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="#isavailableasync"
           >
             <code
@@ -769,7 +769,7 @@ in here.
             &lt;
             <span>
               <a
-                class="css-1pb9a83-A"
+                class="css-1na8e0o-A"
                 href="https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -779,7 +779,7 @@ in here.
               &lt;
               <span>
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="https://reactnative.dev/docs/view-style-props"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -883,7 +883,7 @@ properties.
             data-text="true"
           >
             <a
-              class="css-1pb9a83-A"
+              class="css-1na8e0o-A"
               href="https://reactnative.dev/docs/view#props"
               rel="noopener noreferrer"
               target="_blank"
@@ -1059,7 +1059,7 @@ properties.
                 The unique identifier for the user whose credential state you'd like to check.
 This should come from the user field of an 
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#appleauthenticationcredentialstate"
                 >
                   <code
@@ -1211,7 +1211,7 @@ This should come from the user field of an
           data-text="true"
         >
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -1221,7 +1221,7 @@ This should come from the user field of an
           &lt;
           <span>
             <a
-              class="css-1pb9a83-A"
+              class="css-1na8e0o-A"
               href="#appleauthenticationcredentialstate"
             >
               AppleAuthenticationCredentialState
@@ -1238,7 +1238,7 @@ This should come from the user field of an
     >
       A promise that fulfills with an 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="#appleauthenticationcredentialstate"
       >
         <code
@@ -1394,7 +1394,7 @@ value depending on the state of the credential.
           data-text="true"
         >
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -1536,7 +1536,7 @@ value depending on the state of the credential.
                 data-text="true"
               >
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#appleauthenticationrefreshoptions"
                 >
                   AppleAuthenticationRefreshOptions
@@ -1552,7 +1552,7 @@ value depending on the state of the credential.
               >
                 An 
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#appleauthenticationrefreshoptions"
                 >
                   <code
@@ -1658,7 +1658,7 @@ Calling this method will show the sign in modal before actually refreshing the u
           data-text="true"
         >
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -1668,7 +1668,7 @@ Calling this method will show the sign in modal before actually refreshing the u
           &lt;
           <span>
             <a
-              class="css-1pb9a83-A"
+              class="css-1na8e0o-A"
               href="#appleauthenticationcredential"
             >
               AppleAuthenticationCredential
@@ -1685,7 +1685,7 @@ Calling this method will show the sign in modal before actually refreshing the u
     >
       A promise that fulfills with an 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="#appleauthenticationcredential"
       >
         <code
@@ -1818,7 +1818,7 @@ refresh operation.
                 data-text="true"
               >
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#appleauthenticationsigninoptions"
                 >
                   AppleAuthenticationSignInOptions
@@ -1834,7 +1834,7 @@ refresh operation.
               >
                 An optional 
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#appleauthenticationsigninoptions"
                 >
                   <code
@@ -1879,7 +1879,7 @@ of these options at runtime.
 into your app, so you must store it for later use. It's best to store this information either
 server-side, or using 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="./securestore"
       >
         SecureStore
@@ -1887,7 +1887,7 @@ server-side, or using
       , so that the data persists across app installs.
 You can use 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="#appleauthenticationcredential"
       >
         <code
@@ -1981,7 +1981,7 @@ the user, since this remains the same for apps released by the same developer.
           data-text="true"
         >
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -1991,7 +1991,7 @@ the user, since this remains the same for apps released by the same developer.
           &lt;
           <span>
             <a
-              class="css-1pb9a83-A"
+              class="css-1na8e0o-A"
               href="#appleauthenticationcredential"
             >
               AppleAuthenticationCredential
@@ -2008,7 +2008,7 @@ the user, since this remains the same for apps released by the same developer.
     >
       A promise that fulfills with an 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="#appleauthenticationcredential"
       >
         <code
@@ -2135,7 +2135,7 @@ sign-in operation.
                 data-text="true"
               >
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#appleauthenticationsignoutoptions"
                 >
                   AppleAuthenticationSignOutOptions
@@ -2151,7 +2151,7 @@ sign-in operation.
               >
                 An 
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#appleauthenticationsignoutoptions"
                 >
                   <code
@@ -2186,7 +2186,7 @@ Calling this method will show the sign in modal before actually signing the user
 Instead of using this method it is recommended to simply clear all the user's data collected
 from using 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="./#signinasync"
       >
         <code
@@ -2198,7 +2198,7 @@ from using
       </a>
        or 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="./#refreshasync"
       >
         <code
@@ -2291,7 +2291,7 @@ from using
           data-text="true"
         >
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -2301,7 +2301,7 @@ from using
           &lt;
           <span>
             <a
-              class="css-1pb9a83-A"
+              class="css-1na8e0o-A"
               href="#appleauthenticationcredential"
             >
               AppleAuthenticationCredential
@@ -2318,7 +2318,7 @@ from using
     >
       A promise that fulfills with an 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="#appleauthenticationcredential"
       >
         <code
@@ -2587,7 +2587,7 @@ sign-out operation.
           data-text="true"
         >
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="#subscription"
           >
             Subscription
@@ -2705,7 +2705,7 @@ sign-out operation.
     >
       The object type returned from a successful call to 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="#appleauthenticationsigninasyncoptions"
       >
         <code
@@ -2718,7 +2718,7 @@ sign-out operation.
       ,
 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="#appleauthenticationrefreshasyncoptions"
       >
         <code
@@ -2730,7 +2730,7 @@ sign-out operation.
       </a>
       , or 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="#appleauthenticationsignoutasyncoptions"
       >
         <code
@@ -2782,7 +2782,7 @@ which contains all of the pertinent user and credential information.
           </strong>
            
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidcredential"
             rel="noopener noreferrer"
             target="_blank"
@@ -2942,7 +2942,7 @@ an Apple domain.
               >
                 <span>
                   <a
-                    class="css-1pb9a83-A"
+                    class="css-1na8e0o-A"
                     href="#appleauthenticationfullname"
                   >
                     AppleAuthenticationFullName
@@ -3047,7 +3047,7 @@ your app.
                 data-text="true"
               >
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#appleauthenticationuserdetectionstatus"
                 >
                   AppleAuthenticationUserDetectionStatus
@@ -3536,7 +3536,7 @@ may be
     >
       The options you can supply when making a call to 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="#appleauthenticationrefreshasyncoptions"
       >
         <code
@@ -3588,7 +3588,7 @@ You must include the ID string of the user whose credentials you'd like to refre
           </strong>
            
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
             rel="noopener noreferrer"
             target="_blank"
@@ -3657,7 +3657,7 @@ for more details.
                 data-text="true"
               >
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#appleauthenticationscope"
                 >
                   AppleAuthenticationScope
@@ -3741,7 +3741,7 @@ successful authentication. This can be used to verify that the response was from
 you made and avoid replay attacks. More information on this property is available in the
 OAuth 2.0 protocol 
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="https://tools.ietf.org/html/rfc6749#section-10.12"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -3845,7 +3845,7 @@ OAuth 2.0 protocol
     >
       The options you can supply when making a call to 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="#appleauthenticationsigninasyncoptions"
       >
         <code
@@ -3897,7 +3897,7 @@ None of these options are required.
           </strong>
            
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
             rel="noopener noreferrer"
             target="_blank"
@@ -3978,7 +3978,7 @@ for more details.
                 An arbitrary string that is used to prevent replay attacks. See more information on this in the
 
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowSteps"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -4015,7 +4015,7 @@ for more details.
                 data-text="true"
               >
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#appleauthenticationscope"
                 >
                   AppleAuthenticationScope
@@ -4099,7 +4099,7 @@ successful authentication. This can be used to verify that the response was from
 you made and avoid replay attacks. More information on this property is available in the
 OAuth 2.0 protocol 
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="https://tools.ietf.org/html/rfc6749#section-10.12"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -4175,7 +4175,7 @@ OAuth 2.0 protocol
     >
       The options you can supply when making a call to 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="#appleauthenticationsignoutasyncoptions"
       >
         <code
@@ -4227,7 +4227,7 @@ You must include the ID string of the user to sign out.
           </strong>
            
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
             rel="noopener noreferrer"
             target="_blank"
@@ -4310,7 +4310,7 @@ successful authentication. This can be used to verify that the response was from
 you made and avoid replay attacks. More information on this property is available in the
 OAuth 2.0 protocol 
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="https://tools.ietf.org/html/rfc6749#section-10.12"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -4580,7 +4580,7 @@ OAuth 2.0 protocol
     >
       An enum whose values control which pre-defined color scheme to use when rendering an 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="#appleauthenticationappleauthenticationbutton"
       >
         <code
@@ -4858,7 +4858,7 @@ OAuth 2.0 protocol
     >
       An enum whose values control which pre-defined text to use when rendering an 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="#appleauthenticationappleauthenticationbutton"
       >
         <code
@@ -5169,7 +5169,7 @@ OAuth 2.0 protocol
     >
       An enum whose values specify state of the credential when checked with 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="#appleauthenticationgetcredentialstateasyncuser"
       >
         <code
@@ -5220,7 +5220,7 @@ OAuth 2.0 protocol
           </strong>
            
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidprovidercredentialstate"
             rel="noopener noreferrer"
             target="_blank"
@@ -5853,7 +5853,7 @@ for more details.
     >
       An enum whose values specify scopes you can request when calling 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="#appleauthenticationsigninasyncoptions"
       >
         <code
@@ -5947,7 +5947,7 @@ You will still need to handle null values for any fields you request.
           </strong>
            
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationscope"
             rel="noopener noreferrer"
             target="_blank"
@@ -6185,7 +6185,7 @@ for more details.
           </strong>
            
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="https://developer.apple.com/documentation/authenticationservices/asuserdetectionstatus"
             rel="noopener noreferrer"
             target="_blank"
@@ -6529,7 +6529,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
         &lt;
         <span>
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="#barcodescannerprops"
           >
             BarCodeScannerProps
@@ -6684,7 +6684,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           </code>
            is one of these 
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="#supported-formats"
           >
             listed above
@@ -6784,7 +6784,7 @@ minimize battery usage.
             data-text="true"
           >
             <a
-              class="css-1pb9a83-A"
+              class="css-1na8e0o-A"
               href="#barcodescannedcallback"
             >
               BarCodeScannedCallback
@@ -6798,7 +6798,7 @@ minimize battery usage.
           A callback that is invoked when a bar code has been successfully scanned. The callback is
 provided with an 
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="#barcodescannerresult"
           >
             BarCodeScannerResult
@@ -7065,7 +7065,7 @@ Same as
             data-text="true"
           >
             <a
-              class="css-1pb9a83-A"
+              class="css-1na8e0o-A"
               href="https://reactnative.dev/docs/view#props"
               rel="noopener noreferrer"
               target="_blank"
@@ -7235,7 +7235,7 @@ Same as
                 data-text="true"
               >
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#permissionhookoptions"
                 >
                   PermissionHookOptions
@@ -7449,7 +7449,7 @@ This uses both
             </span>
             <span>
               <a
-                class="css-1pb9a83-A"
+                class="css-1na8e0o-A"
                 href="#permissionresponse"
               >
                 PermissionResponse
@@ -7462,7 +7462,7 @@ This uses both
             &lt;
             <span>
               <a
-                class="css-1pb9a83-A"
+                class="css-1na8e0o-A"
                 href="#permissionresponse"
               >
                 PermissionResponse
@@ -7476,7 +7476,7 @@ This uses both
             &lt;
             <span>
               <a
-                class="css-1pb9a83-A"
+                class="css-1na8e0o-A"
                 href="#permissionresponse"
               >
                 PermissionResponse
@@ -7679,7 +7679,7 @@ This uses both
           data-text="true"
         >
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -7689,7 +7689,7 @@ This uses both
           &lt;
           <span>
             <a
-              class="css-1pb9a83-A"
+              class="css-1na8e0o-A"
               href="#permissionresponse"
             >
               PermissionResponse
@@ -7706,7 +7706,7 @@ This uses both
     >
       Return a promise that fulfills to an object of type 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="#permissionresponse"
       >
         <code
@@ -7883,7 +7883,7 @@ This uses both
           data-text="true"
         >
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -7893,7 +7893,7 @@ This uses both
           &lt;
           <span>
             <a
-              class="css-1pb9a83-A"
+              class="css-1na8e0o-A"
               href="#permissionresponse"
             >
               PermissionResponse
@@ -7910,7 +7910,7 @@ This uses both
     >
       Return a promise that fulfills to an object of type 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="#permissionresponse"
       >
         <code
@@ -8219,7 +8219,7 @@ the platform.
           data-text="true"
         >
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -8229,7 +8229,7 @@ the platform.
           &lt;
           <span>
             <a
-              class="css-1pb9a83-A"
+              class="css-1na8e0o-A"
               href="#barcodescannerresult"
             >
               BarCodeScannerResult
@@ -8502,7 +8502,7 @@ in order to enable/disable the permission.
                 data-text="true"
               >
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#permissionexpiration"
                 >
                   PermissionExpiration
@@ -8573,7 +8573,7 @@ in order to enable/disable the permission.
                 data-text="true"
               >
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#permissionstatus"
                 >
                   PermissionStatus
@@ -8748,7 +8748,7 @@ in order to enable/disable the permission.
                 data-text="true"
               >
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#barcodepoint"
                 >
                   BarCodePoint
@@ -8786,7 +8786,7 @@ in order to enable/disable the permission.
                 data-text="true"
               >
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#barcodesize"
                 >
                   BarCodeSize
@@ -8872,7 +8872,7 @@ in order to enable/disable the permission.
         data-text="true"
       >
         <a
-          class="css-1pb9a83-A"
+          class="css-1na8e0o-A"
           href="#barcodescannerresult"
         >
           BarCodeScannerResult
@@ -9055,7 +9055,7 @@ in order to enable/disable the permission.
                 data-text="true"
               >
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#barcodeevent"
                 >
                   BarCodeEvent
@@ -9355,7 +9355,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                   data-text="true"
                 >
                   <a
-                    class="css-1pb9a83-A"
+                    class="css-1na8e0o-A"
                     href="#barcodeevent"
                   >
                     BarCodeEvent
@@ -9478,7 +9478,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                 data-text="true"
               >
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#barcodebounds"
                 >
                   BarCodeBounds
@@ -9494,7 +9494,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               >
                 The 
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#barcodebounds"
                 >
                   BarCodeBounds
@@ -9540,7 +9540,7 @@ For some types, they will represent the area used by the scanner.
                 data-text="true"
               >
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#barcodepoint"
                 >
                   BarCodePoint
@@ -10389,7 +10389,7 @@ exports[`APISection expo-pedometer 1`] = `
           data-text="true"
         >
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -10399,7 +10399,7 @@ exports[`APISection expo-pedometer 1`] = `
           &lt;
           <span>
             <a
-              class="css-1pb9a83-A"
+              class="css-1na8e0o-A"
               href="#permissionresponse"
             >
               PermissionResponse
@@ -10516,7 +10516,7 @@ exports[`APISection expo-pedometer 1`] = `
                 data-text="true"
               >
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -10556,7 +10556,7 @@ exports[`APISection expo-pedometer 1`] = `
                 data-text="true"
               >
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -10667,7 +10667,7 @@ exports[`APISection expo-pedometer 1`] = `
           data-text="true"
         >
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -10677,7 +10677,7 @@ exports[`APISection expo-pedometer 1`] = `
           &lt;
           <span>
             <a
-              class="css-1pb9a83-A"
+              class="css-1na8e0o-A"
               href="#pedometerresult"
             >
               PedometerResult
@@ -10694,7 +10694,7 @@ exports[`APISection expo-pedometer 1`] = `
     >
       Returns a promise that fulfills with a 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="#pedometerresult"
       >
         <code
@@ -10714,7 +10714,7 @@ exports[`APISection expo-pedometer 1`] = `
     >
       As 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="https://developer.apple.com/documentation/coremotion/cmpedometer/1613946-querypedometerdatafromdate?language=objc"
         rel="noopener noreferrer"
         target="_blank"
@@ -10909,7 +10909,7 @@ a start date that is more than seven days in the past returns only the available
           data-text="true"
         >
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -11082,7 +11082,7 @@ available on this device.
           data-text="true"
         >
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -11092,7 +11092,7 @@ available on this device.
           &lt;
           <span>
             <a
-              class="css-1pb9a83-A"
+              class="css-1na8e0o-A"
               href="#permissionresponse"
             >
               PermissionResponse
@@ -11209,7 +11209,7 @@ available on this device.
                 data-text="true"
               >
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#pedometerupdatecallback"
                 >
                   PedometerUpdateCallback
@@ -11226,7 +11226,7 @@ available on this device.
                 A callback that is invoked when new step count data is available. The callback is
 provided with a single argument that is 
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#pedometerresult"
                 >
                   <code
@@ -11331,7 +11331,7 @@ provided with a single argument that is
           data-text="true"
         >
           <a
-            class="css-1pb9a83-A"
+            class="css-1na8e0o-A"
             href="#subscription"
           >
             Subscription
@@ -11346,7 +11346,7 @@ provided with a single argument that is
     >
       Returns a 
       <a
-        class="css-1pb9a83-A"
+        class="css-1na8e0o-A"
         href="#subscription"
       >
         <code
@@ -11612,7 +11612,7 @@ in order to enable/disable the permission.
                 data-text="true"
               >
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#permissionexpiration"
                 >
                   PermissionExpiration
@@ -11683,7 +11683,7 @@ in order to enable/disable the permission.
                 data-text="true"
               >
                 <a
-                  class="css-1pb9a83-A"
+                  class="css-1na8e0o-A"
                   href="#permissionstatus"
                 >
                   PermissionStatus
@@ -11988,7 +11988,7 @@ in order to enable/disable the permission.
                   data-text="true"
                 >
                   <a
-                    class="css-1pb9a83-A"
+                    class="css-1na8e0o-A"
                     href="#pedometerresult"
                   >
                     PedometerResult
