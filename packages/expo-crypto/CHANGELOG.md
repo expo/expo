@@ -4,13 +4,13 @@
 
 ### 🛠 Breaking changes
 
-- Change return type of `randomUUID` to `string`. ([#21187](https://github.com/expo/expo/pull/21187) by [@KiwiKilian](https://github.com/KiwiKilian))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Change return type of `randomUUID` to `string`. ([#21187](https://github.com/expo/expo/pull/21187) by [@KiwiKilian](https://github.com/KiwiKilian))
 
 ## 12.2.1 — 2023-02-09
 
