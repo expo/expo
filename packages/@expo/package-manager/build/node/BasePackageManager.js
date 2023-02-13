@@ -8,7 +8,6 @@ const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const assert_1 = __importDefault(require("assert"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
-const rimraf_1 = __importDefault(require("rimraf"));
 class BasePackageManager {
     constructor({ silent, log, ...options } = {}) {
         this.silent = !!silent;
@@ -40,9 +39,7 @@ class BasePackageManager {
     async removeLockfileAsync() {
         const cwd = this.ensureCwdDefined('removeLockFile');
         const filePath = path_1.default.join(cwd, this.lockFile);
-        if (fs_1.default.existsSync(filePath)) {
-            rimraf_1.default.sync(filePath);
-        }
+        await fs_1.default.promises.rm(filePath, { force: true });
     }
     installAsync(flags = []) {
         return this.runAsync(['install', ...flags]);
@@ -50,9 +47,7 @@ class BasePackageManager {
     async uninstallAsync() {
         const cwd = this.ensureCwdDefined('uninstallAsync');
         const modulesPath = path_1.default.join(cwd, 'node_modules');
-        if (fs_1.default.existsSync(modulesPath)) {
-            rimraf_1.default.sync(modulesPath);
-        }
+        await fs_1.default.promises.rm(modulesPath, { force: true, recursive: true });
     }
 }
 exports.BasePackageManager = BasePackageManager;

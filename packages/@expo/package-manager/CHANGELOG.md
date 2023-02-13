@@ -16,6 +16,8 @@
 
 ### 💡 Others
 
+- Drop rimraf in favor of native fs API. ([#19764](https://github.com/expo/expo/pull/19764) by [@byCedric](https://github.com/byCedric))
+
 ## 0.0.58 — 2023-02-03
 
 ### 💡 Others
