@@ -191,6 +191,24 @@ export async function setupTestProjectAsync(name: string, fixtureName: string): 
   return projectRoot;
 }
 
+/** For use in the upgrade tests */
+export async function setupTestSDK45ProjectAsync(
+  name: string,
+  fixtureName: string
+): Promise<string> {
+  // If you're testing this locally, you can set the projectRoot to a local project (you created with expo init) to save time.
+  const projectRoot = await createFromFixtureAsync(os.tmpdir(), {
+    dirName: name,
+    reuseExisting: false,
+    fixtureName,
+  });
+
+  // Many of the factors in this test are based on the expected SDK version that we're testing against.
+  const { exp } = getConfig(projectRoot, { skipPlugins: true });
+  expect(exp.sdkVersion).toBe('45.0.0');
+  return projectRoot;
+}
+
 /** Returns a list of loaded modules relative to the repo root. Useful for preventing lazy loading from breaking unexpectedly.   */
 export async function getLoadedModulesAsync(statement: string): Promise<string[]> {
   const repoRoot = path.join(__dirname, '../../../../');

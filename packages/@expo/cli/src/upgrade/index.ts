@@ -25,11 +25,11 @@ export const expoUpgrade: Command = async (argv) => {
       `Upgrade the React project to a newer version of Expo. Does not update native code.`,
       `npx expo upgrade`,
       [
-        `--sdk-version     Expo SDK version to upgrade to`,
-        chalk`--npm       Use npm to install dependencies. {dim Default when package-lock.json exists}`,
-        chalk`--yarn      Use Yarn to install dependencies. {dim Default when yarn.lock exists}`,
-        chalk`--pnpm      Use pnpm to install dependencies. {dim Default when pnpm-lock.yaml exists}`,
-        `-h, --help  Usage info`,
+        `--sdk-version  Expo SDK version to upgrade to`,
+        chalk`--npm          Use npm to install dependencies. {dim Default when package-lock.json exists}`,
+        chalk`--yarn         Use Yarn to install dependencies. {dim Default when yarn.lock exists}`,
+        chalk`--pnpm         Use pnpm to install dependencies. {dim Default when pnpm-lock.yaml exists}`,
+        `-h, --help     Usage info`,
       ].join('\n')
     );
   }
