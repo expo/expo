@@ -19,12 +19,6 @@
 + (RNSScreenSwipeDirection)RNSScreenSwipeDirectionFromCppEquivalent:
     (facebook::react::RNSScreenSwipeDirection)swipeDirection;
 
-+ (RNSScreenDetentType)RNSScreenDetentTypeFromAllowedDetents:
-    (facebook::react::RNSScreenSheetAllowedDetents)allowedDetents;
-
-+ (RNSScreenDetentType)RNSScreenDetentTypeFromLargestUndimmedDetent:
-    (facebook::react::RNSScreenSheetLargestUndimmedDetent)detent;
-
 + (NSDictionary *)gestureResponseDistanceDictFromCppStruct:
     (const facebook::react::RNSScreenGestureResponseDistanceStruct &)gestureResponseDistance;
 
