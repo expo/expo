@@ -1,4 +1,4 @@
-import { isCI } from '../utils/env';
+import env from '../utils/env';
 import { findPnpmWorkspaceRoot, PNPM_LOCK_FILE } from '../utils/nodeWorkspaces';
 import { BasePackageManager } from './BasePackageManager';
 
@@ -22,7 +22,7 @@ export class PnpmPackageManager extends BasePackageManager {
   }
 
   installAsync(namesOrFlags: string[] = []) {
-    if (isCI() && !namesOrFlags.join(' ').includes('frozen-lockfile')) {
+    if (env.CI && !namesOrFlags.join(' ').includes('frozen-lockfile')) {
       namesOrFlags.unshift('--no-frozen-lockfile');
     }
 

@@ -1,7 +1,10 @@
 "use strict";
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.PnpmPackageManager = void 0;
-const env_1 = require("../utils/env");
+const env_1 = __importDefault(require("../utils/env"));
 const nodeWorkspaces_1 = require("../utils/nodeWorkspaces");
 const BasePackageManager_1 = require("./BasePackageManager");
 class PnpmPackageManager extends BasePackageManager_1.BasePackageManager {
@@ -24,7 +27,7 @@ class PnpmPackageManager extends BasePackageManager_1.BasePackageManager {
         return null;
     }
     installAsync(namesOrFlags = []) {
-        if ((0, env_1.isCI)() && !namesOrFlags.join(' ').includes('frozen-lockfile')) {
+        if (env_1.default.CI && !namesOrFlags.join(' ').includes('frozen-lockfile')) {
             namesOrFlags.unshift('--no-frozen-lockfile');
         }
         return this.runAsync(['install', ...namesOrFlags]);
