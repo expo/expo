@@ -95,8 +95,8 @@ export async function upgradeAsync(
 
   // Do some evergreen upgrades
 
-  const pkgsToInstall = [];
-  const pkgsToRemove = [];
+  const pkgsToInstall: string[] = [];
+  const pkgsToRemove: string[] = [];
 
   // Remove deprecated packages
   ['react-native-unimodules'].forEach((pkg) => {
@@ -133,10 +133,10 @@ export async function upgradeAsync(
   Log.log(`Upgrading Expo`);
 
   // Update Expo to the latest version.
-  await packageManager.addAsync([
+  await packageManager.addAsync(
     // TODO: custom version
-    `expo@${versionToInstall}`,
-  ]);
+    [`expo@${versionToInstall}`]
+  );
 
   Log.log();
   Log.log(chalk.bold`npx expo install --fix`);
