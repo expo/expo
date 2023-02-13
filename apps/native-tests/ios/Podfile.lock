@@ -77,7 +77,6 @@ PODS:
     - React-Core/RCTWebSocket
     - React-CoreModules
     - React-cxxreact
-    - React-jsc
     - React-jsi
     - React-jsiexecutor
     - React-jsinspector
