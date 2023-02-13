@@ -23,7 +23,6 @@ const MINIFY_JSON = true;
 
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-accelerometer': [['Accelerometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
-  'expo-app-loading': ['index.ts'],
   'expo-apple-authentication': ['index.ts'],
   'expo-application': ['Application.ts'],
   'expo-audio': [['Audio.ts', 'Audio.types.ts'], 'expo-av'],
