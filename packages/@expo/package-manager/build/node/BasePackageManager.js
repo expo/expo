@@ -13,6 +13,7 @@ class BasePackageManager {
         this.silent = !!silent;
         this.log = log ?? (!silent ? console.log : undefined);
         this.options = {
+            stdio: silent ? undefined : 'inherit',
             ...options,
             env: { ...this.getDefaultEnvironment(), ...env },
         };
@@ -34,11 +35,7 @@ class BasePackageManager {
     }
     runAsync(command) {
         this.log?.(`> ${this.name} ${command.join(' ')}`);
-        const spawn = (0, spawn_async_1.default)(this.bin, command, this.options);
-        if (!this.silent) {
-            spawn.child.stderr?.pipe(process.stderr);
-        }
-        return spawn;
+        return (0, spawn_async_1.default)(this.bin, command, this.options);
     }
     async versionAsync() {
         return await this.runAsync(['--version']).then(({ stdout }) => stdout.trim());
