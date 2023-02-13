@@ -22,7 +22,7 @@ const attributes = {
 };
 
 const STYLES_CODE_BLOCK = css`
-  ${{ ...typography.body.code, fontFamily: undefined }};
+  ${typography.body.code};
   color: ${theme.text.default};
   white-space: inherit;
   padding: 0;
