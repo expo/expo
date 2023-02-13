@@ -3,16 +3,28 @@ import { vol } from 'memfs';
 import path from 'path';
 
 import { mockSpawnPromise, mockedSpawnAsync } from '../../__tests__/spawn-utils';
-import env from '../../utils/env';
 import { PNPM_WORKSPACE_FILE } from '../../utils/nodeWorkspaces';
 import { PnpmPackageManager } from '../PnpmPackageManager';
 
 jest.mock('@expo/spawn-async');
 jest.mock('fs');
 
+const originalCI = process.env.CI;
+
 beforeAll(() => {
   // Disable logging to clean up test ouput
   jest.spyOn(console, 'log').mockImplementation();
+});
+
+beforeEach(() => {
+  // Pnpm changes behavior based on `CI=true`.
+  // Disable this behavior by default, to make these tests pass on CI.
+  // Some tests test this behavior and may override this value.
+  delete process.env.CI;
+});
+
+afterEach(() => {
+  process.env.CI = originalCI;
 });
 
 describe('PnpmPackageManager', () => {
@@ -129,8 +141,6 @@ describe('PnpmPackageManager', () => {
 
     describe('frozen lockfile', () => {
       it('does not add --no-frozen-lockfile when not in CI', async () => {
-        const spy = jest.spyOn(env, 'CI', 'get').mockReturnValue(false);
-
         const pnpm = new PnpmPackageManager({ cwd: projectRoot });
         await pnpm.installAsync();
 
@@ -139,12 +149,10 @@ describe('PnpmPackageManager', () => {
           ['install'],
           expect.objectContaining({ cwd: projectRoot })
         );
-
-        spy.mockRestore();
       });
 
       it('adds --no-frozen-lockfile when in CI', async () => {
-        const spy = jest.spyOn(env, 'CI', 'get').mockReturnValue(true);
+        process.env.CI = 'true';
 
         const pnpm = new PnpmPackageManager({ cwd: projectRoot });
         await pnpm.installAsync();
@@ -154,12 +162,10 @@ describe('PnpmPackageManager', () => {
           ['install', '--no-frozen-lockfile'],
           expect.objectContaining({ cwd: projectRoot })
         );
-
-        spy.mockRestore();
       });
 
       it('does not add --no-frozen-lockfile if passed as flag in CI', async () => {
-        const spy = jest.spyOn(env, 'CI', 'get').mockReturnValue(true);
+        process.env.CI = 'true';
 
         const pnpm = new PnpmPackageManager({ cwd: projectRoot });
         await pnpm.installAsync(['--frozen-lockfile']);
@@ -169,8 +175,6 @@ describe('PnpmPackageManager', () => {
           ['install', '--frozen-lockfile'],
           expect.objectContaining({ cwd: projectRoot })
         );
-
-        spy.mockRestore();
       });
     });
   });
