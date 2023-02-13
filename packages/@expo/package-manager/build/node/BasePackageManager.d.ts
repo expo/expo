@@ -5,13 +5,15 @@ export declare abstract class BasePackageManager implements PackageManager {
     readonly silent: boolean;
     readonly log?: (...args: any) => void;
     readonly options: PackageManagerOptions;
-    constructor({ silent, log, ...options }?: PackageManagerOptions);
+    constructor({ silent, log, env, ...options }?: PackageManagerOptions);
     /** Get the name of the package manager */
     abstract readonly name: string;
     /** Get the executable binary of the package manager */
     abstract readonly bin: string;
     /** Get the lockfile for this package manager */
     abstract readonly lockFile: string;
+    /** Get the default environment variables used when running the package manager. */
+    protected getDefaultEnvironment(): Record<string, string>;
     abstract addAsync(namesOrFlags: string[]): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
     abstract addDevAsync(namesOrFlags: string[]): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;
     abstract addGlobalAsync(namesOrFlags: string[]): SpawnPromise<SpawnResult> | PendingSpawnPromise<SpawnResult>;

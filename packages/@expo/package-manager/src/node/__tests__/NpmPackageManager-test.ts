@@ -21,6 +21,34 @@ describe('NpmPackageManager', () => {
     expect(npm.name).toBe('npm');
   });
 
+  describe('getDefaultEnvironment', () => {
+    it('runs npm with ADBLOCK=1 and DISABLE_OPENCOLLECTIVE=1', async () => {
+      const npm = new NpmPackageManager({ cwd: projectRoot });
+      await npm.installAsync();
+
+      expect(spawnAsync).toBeCalledWith(
+        expect.anything(),
+        expect.anything(),
+        expect.objectContaining({
+          env: expect.objectContaining({ ADBLOCK: '1', DISABLE_OPENCOLLECTIVE: '1' }),
+        })
+      );
+    });
+
+    it('runs with overwritten default environment', async () => {
+      const npm = new NpmPackageManager({ cwd: projectRoot, env: { ADBLOCK: '0' } });
+      await npm.installAsync();
+
+      expect(spawnAsync).toBeCalledWith(
+        expect.anything(),
+        expect.anything(),
+        expect.objectContaining({
+          env: { ADBLOCK: '0', DISABLE_OPENCOLLECTIVE: '1' },
+        })
+      );
+    });
+  });
+
   describe('runAsync', () => {
     it('logs executed command', async () => {
       const log = jest.fn();
