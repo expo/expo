@@ -30,7 +30,6 @@
 /packages/expo-dev-menu-interface               @lukmccall @douglowder
 /packages/expo-device                           @ide @tsapeta
 /packages/expo-document-picker                  @barthap
-/packages/expo-error-recovery                   @lukmccall
 /packages/expo-face-detector                    @kudo
 /packages/expo-file-system                      @brentvatne @kudo @ide @tsapeta
 /packages/expo-firebase-core                    @brentvatne
