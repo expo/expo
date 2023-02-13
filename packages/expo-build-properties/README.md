@@ -27,10 +27,12 @@ Add plugin to `app.json`. For example:
           "android": {
             "compileSdkVersion": 31,
             "targetSdkVersion": 31,
-            "buildToolsVersion": "31.0.0"
+            "buildToolsVersion": "31.0.0",
+            "flipper": true
           },
           "ios": {
-            "deploymentTarget": "13.0"
+            "deploymentTarget": "13.0",
+            "flipper": true
           }
         }
       ]
@@ -41,7 +43,7 @@ Add plugin to `app.json`. For example:
 
 ## Contributing
 
-Contributions are very welcome! Please refer to guidelines described in the [contributing guide][contributing].
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide][../../contributing.md].
 
 [docs-main]: https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/build-properties.mdx
 [docs-stable]: https://docs.expo.dev/versions/latest/sdk/build-properties/

@@ -2,11 +2,8 @@ import { AuthRequest } from '../AuthRequest';
 import { CodeChallengeMethod, Prompt } from '../AuthRequest.types';
 import { buildQueryString, getQueryParams } from '../QueryParams';
 
-jest.mock('expo-random', () => ({
-  getRandomBytes: jest.fn(() => ''),
-  getRandomBase64StringAsync: jest.fn(async () => ''),
-}));
 jest.mock('expo-crypto', () => ({
+  getRandomBytes: jest.fn(() => ''),
   digestStringAsync: jest.fn(async () => ''),
   CryptoDigestAlgorithm: { SHA256: 'SHA256' },
   CryptoEncoding: { BASE64: 'BASE64' },

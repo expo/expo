@@ -4,11 +4,21 @@
 
 ### 🛠 Breaking changes
 
-- Remove deprecated and legacy contact fields constants. ([#20269](https://github.com/expo/expo/pull/20269) by [@Simek](https://github.com/Simek))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 12.0.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.0 — 2023-02-03
+
+### 🛠 Breaking changes
+
+- Remove deprecated and legacy contact fields constants. ([#20269](https://github.com/expo/expo/pull/20269) by [@Simek](https://github.com/Simek))
 
 ### 💡 Others
 

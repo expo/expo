@@ -75,6 +75,15 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
             text + `\nandroid.packagingOptions.excludes.add("**/libhermes*.so")`,
         },
         {
+          paths: 'build.gradle',
+          // The `android/versioned-react-native/ReactAndroid/gradle.properties` is not committed to git,
+          // we use the `ReactAndroid/gradle.properties` for versioned reanimated instead.
+          // Even though it not always correct, e.g. when ReactAndroid upgrades to newer version, the versions are inconsistent.
+          // Since reanimated doesn't use these properties for react-native 0.71, that should be safe.
+          find: '$reactNativeRootDir/ReactAndroid/gradle.properties',
+          replaceWith: '$rootDir/../react-native-lab/react-native/ReactAndroid/gradle.properties',
+        },
+        {
           paths: 'CMakeLists.txt',
           find: /\b(hermes-engine::libhermes)/g,
           replaceWith: `$1_${prefix}`,

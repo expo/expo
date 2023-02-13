@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 4.0.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0 — 2023-02-03
+
+### 💡 Others
+
+- Removed usage of the deprecated `expo-random` package. ([#21063](https://github.com/expo/expo/pull/21063) by [@lukmccall](https://github.com/lukmccall))
+
 ## 3.7.2 — 2022-10-25
 
 ### 💡 Others

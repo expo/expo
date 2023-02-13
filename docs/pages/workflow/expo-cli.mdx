@@ -6,7 +6,7 @@ description: The Expo CLI is a command-line tool that is the primary interface b
 
 import { Terminal } from '~/ui/components/Snippet';
 
-> **info** This documentation refers to the Local Expo CLI (SDK 46 and above). For information on legacy Expo CLI, see [Global Expo CLI](/archived/expo-cli).
+> **info** This documentation refers to the Local Expo CLI (SDK 46 and above). For information on legacy Expo CLI, see [Global Expo CLI](/archive/expo-cli).
 
 The `expo` package provides a small and powerful CLI tool `npx expo` which is designed to keep you moving fast during app development.
 
@@ -292,7 +292,7 @@ Example:
   cmdCopy="npx expo install --check"
 />
 
-`npx expo install --check` prompts you about packages that are installed incorrectly. It also prompts about installing the these packages to their compatible versions locally. It exits with non-zero in Continuous Integration (CI). This means you can use this to do continuous immutable validation. In contrast, `npx expo install --fix` will always fix packages if needed, regardless of the environment.
+`npx expo install --check` prompts you about packages that are installed incorrectly. It also prompts about installing these packages to their compatible versions locally. It exits with non-zero in Continuous Integration (CI). This means you can use this to do continuous immutable validation. In contrast, `npx expo install --fix` will always fix packages if needed, regardless of the environment.
 
 You can validate specific packages by passing them:
 

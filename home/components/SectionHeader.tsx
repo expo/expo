@@ -1,11 +1,11 @@
-import { ViewStyle } from '@expo/html-elements/build/primitives/View';
 import { spacing } from '@expo/styleguide-native';
 import { Heading, Row } from 'expo-dev-client-components';
 import * as React from 'react';
+import { StyleProp, ViewStyle } from 'react-native';
 
 type Props = {
   header: string;
-  style?: ViewStyle;
+  style?: StyleProp<ViewStyle>;
 };
 
 export function SectionHeader({ header, style }: Props) {

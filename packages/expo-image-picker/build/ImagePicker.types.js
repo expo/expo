@@ -154,37 +154,5 @@ export var UIImagePickerPresentationStyle;
      * @platform ios 13+
      */
     UIImagePickerPresentationStyle["AUTOMATIC"] = "automatic";
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.FULL_SCREEN` instead.
-     */
-    UIImagePickerPresentationStyle["FullScreen"] = "fullScreen";
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.PAGE_SHEET` instead.
-     */
-    UIImagePickerPresentationStyle["PageSheet"] = "pageSheet";
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.FORM_SHEET` instead.
-     */
-    UIImagePickerPresentationStyle["FormSheet"] = "formSheet";
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.CURRENT_CONTEXT` instead.
-     */
-    UIImagePickerPresentationStyle["CurrentContext"] = "currentContext";
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.OVER_FULL_SCREEN` instead.
-     */
-    UIImagePickerPresentationStyle["OverFullScreen"] = "overFullScreen";
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.OVER_CURRENT_CONTEXT` instead.
-     */
-    UIImagePickerPresentationStyle["OverCurrentContext"] = "overCurrentContext";
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.POPOVER` instead.
-     */
-    UIImagePickerPresentationStyle["Popover"] = "popover";
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.AUTOMATIC` instead.
-     */
-    UIImagePickerPresentationStyle["Automatic"] = "automatic";
 })(UIImagePickerPresentationStyle || (UIImagePickerPresentationStyle = {}));
 //# sourceMappingURL=ImagePicker.types.js.map

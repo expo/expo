@@ -10,6 +10,26 @@
 
 ### 💡 Others
 
+## 1.0.0-rc.0 — 2023-02-09
+
+### 🎉 New features
+
+- Added `placeholderContentFit` prop implementation on the web. ([#21106](https://github.com/expo/expo/pull/21106) by [@aleqsio](https://github.com/aleqsio))
+
+## 1.0.0-beta.6 — 2023-02-06
+
+### 🎉 New features
+
+- Added new prop `placeholderContentFit` to specify custom content fit on the placeholder. ([#21096](https://github.com/expo/expo/pull/21096) by [@magrinj](https://github.com/magrinj))
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed possible freezes by processing images concurrently off the main thread. ([#21086](https://github.com/expo/expo/pull/21086) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.0.0-beta.5 — 2023-02-03
+
+_This version does not introduce any user-facing changes._
+
 ## 1.0.0-beta.4 — 2023-01-31
 
 ### 🐛 Bug fixes

@@ -43,7 +43,7 @@ async function main() {
   await updateReactNativePackageAsync();
 
   await patchReanimatedAsync(nightlyVersion);
-  await patchSkiaAsync(nightlyVersion);
+  await patchDetoxAsync();
 
   logger.info('Setting up Expo modules files');
   await updateExpoModulesAsync();
@@ -93,13 +93,6 @@ async function addPinnedPackagesAsync(packages: Record<string, string>) {
 
 async function updateReactNativePackageAsync() {
   const reactNativeRoot = path.join(EXPO_DIR, 'node_modules', 'react-native');
-  // Workaround duplicated libc++_shared.so from linked fbjni
-  await transformFileAsync(path.join(reactNativeRoot, 'ReactAndroid', 'build.gradle'), [
-    {
-      find: /^(\s*packagingOptions \{)$/gm,
-      replaceWith: '$1\n        pickFirst("**/libc++_shared.so")',
-    },
-  ]);
 
   // Update native ReactNativeVersion
   const versions = (process.env.REACT_NATIVE_OVERRIDE_VERSION ?? '9999.9999.9999').split('.');
@@ -154,103 +147,26 @@ async function patchReanimatedAsync(nightlyVersion: string) {
 
   await transformFileAsync(path.join(root, 'android', 'build.gradle'), [
     {
-      // add prefab support, setup task dependencies and hermes-engine dependencies
-      transform: (text: string) =>
-        text +
-        '\n\n' +
-        `android {\n` +
-        `  buildFeatures {\n` +
-        `    prefab true\n` +
-        `  }\n` +
-        `}\n` +
-        `\n` +
-        `dependencies {\n` +
-        `  compileOnly "com.facebook.react:hermes-android:${nightlyVersion}-SNAPSHOT"\n` +
-        `}\n`,
+      find: /\$minor/g,
+      replaceWith: '$rnMinorVersion',
     },
   ]);
 
-  const patchFile = path.join(PATCHES_ROOT, 'react-native-reanimated+2.12.0.patch');
+  await transformFileAsync(path.join(root, 'RNReanimated.podspec'), [
+    {
+      find: /^(\s*['"]USE_HEADERMAP['"]\s+=>\s+['"]YES['"],\s*)$/gm,
+      replaceWith: `$1\n    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",`,
+    },
+  ]);
+}
+
+async function patchDetoxAsync() {
+  const patchFile = path.join(PATCHES_ROOT, 'detox.patch');
   const patchContent = await fs.readFile(patchFile, 'utf8');
   await applyPatchAsync({ patchContent, cwd: EXPO_DIR, stripPrefixNum: 1 });
 }
 
-async function patchSkiaAsync(nightlyVersion: string) {
-  const root = path.join(EXPO_DIR, 'node_modules', '@shopify', 'react-native-skia');
-
-  await transformFileAsync(path.join(root, 'android', 'build.gradle'), [
-    {
-      // Add REACT_NATIVE_OVERRIDE_VERSION support
-      find: `def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME").split("\\.")[1].toInteger()`,
-      replaceWith: `def REACT_NATIVE_VERSION = (System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")).split("\\.")[1].toInteger()`,
-    },
-    {
-      // Remove builtin aar extraction from react-native node_modules
-      find: `defaultDir = file("$nodeModules/react-native/android")`,
-      replaceWith: `defaultDir = file("$nodeModules/react-native")`,
-    },
-    {
-      // Remove builtin aar extraction from react-native node_modules
-      find: /^\s*def rnAAR.*\n\s*extractJNI.*$/gm,
-      replaceWith: '',
-    },
-    {
-      // Add prefab support
-      transform: (text: string) =>
-        text +
-        '\n\n' +
-        `android {\n` +
-        `  buildFeatures {\n` +
-        `    prefab true\n` +
-        `  }\n` +
-        `}\n`,
-    },
-  ]);
-
-  await transformFileAsync(path.join(root, 'android', 'CMakeLists.txt'), [
-    {
-      find: /^(\s*target_link_libraries\(\s*)$/gm,
-      replaceWith: `\
-find_package(fbjni REQUIRED CONFIG)
-find_package(ReactAndroid REQUIRED CONFIG)
-$1`,
-    },
-    {
-      find: '${FBJNI_LIBRARY}',
-      replaceWith: 'fbjni::fbjni',
-    },
-    {
-      find: '${REACT_LIB}',
-      replaceWith: 'ReactAndroid::react_nativemodule_core',
-    },
-    {
-      find: '${JSI_LIB}',
-      replaceWith: 'ReactAndroid::jsi',
-    },
-    {
-      find: '${TURBOMODULES_LIB}',
-      replaceWith: 'ReactAndroid::turbomodulejsijni',
-    },
-  ]);
-}
-
 async function updateExpoModulesAsync() {
-  const gradleFiles = await glob('packages/**/build.gradle', { cwd: EXPO_DIR });
-  await Promise.all(
-    gradleFiles.map((file) =>
-      transformFileAsync(file, [
-        {
-          find: /\b(com.facebook.fbjni:fbjni):0\.2\.2/g,
-          replaceWith: '$1:0.3.0',
-        },
-        {
-          find: /ndkVersion = ['"]21\.4\.7075529['"]/g,
-          replaceWith: '',
-        },
-      ])
-    )
-  );
-
   await transformFileAsync(
     path.join(EXPO_DIR, 'packages/expo-modules-core/android/src/main/cpp/MethodMetadata.cpp'),
     [
@@ -266,29 +182,10 @@ async function updateExpoModulesAsync() {
 
 async function updateBareExpoAsync(nightlyVersion: string) {
   const root = path.join(EXPO_DIR, 'apps', 'bare-expo');
-  const patchFile = path.join(PATCHES_ROOT, 'bare-expo.patch');
-  const patchContent = await fs.readFile(patchFile, 'utf8');
-  await applyPatchAsync({ patchContent, cwd: EXPO_DIR, stripPrefixNum: 1 });
-
-  await transformFileAsync(path.join(root, 'ios', 'BareExpo', 'AppDelegate.mm'), [
+  await transformFileAsync(path.join(root, 'android', 'settings.gradle'), [
     {
-      // Remove this when we upgrade bare-expo to 0.71
-      find: `  RCTAppSetupPrepareApp(application);`,
-      replaceWith: `
-#if RCT_NEW_ARCH_ENABLED
-  RCTAppSetupPrepareApp(application, YES);
-#else
-  RCTAppSetupPrepareApp(application, NO);
-#endif
-`,
-    },
-  ]);
-
-  // Try to workaround detox hanging on CI
-  await transformFileAsync(path.join(root, 'ios', 'Podfile.properties.json'), [
-    {
-      find: `"expo.jsEngine": "hermes"`,
-      replaceWith: `"expo.jsEngine": "jsc"`,
+      find: /react-native-gradle-plugin/g,
+      replaceWith: '@react-native/gradle-plugin',
     },
   ]);
 }

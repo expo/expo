@@ -6,9 +6,19 @@
 
 ### 🎉 New features
 
-- Added a `digest` method to get a cryptographic digest of a typed array. ([#20886](https://github.com/expo/expo/pull/20886) by [@aleqsio](https://github.com/aleqsio))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 12.2.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 12.2.0 — 2023-02-03
+
+### 🎉 New features
+
+- Added a `digest` method to get a cryptographic digest of a typed array. ([#20886](https://github.com/expo/expo/pull/20886) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 

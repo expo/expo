@@ -61,7 +61,6 @@ const general = [
         [
           makePage('introduction/expo.mdx'),
           makePage('introduction/managed-vs-bare.mdx'),
-          // makePage('introduction/walkthrough.mdx'),
           makePage('introduction/why-not-expo.mdx'),
           makePage('introduction/faq.mdx'),
         ],
@@ -115,6 +114,7 @@ const general = [
     makePage('modules/get-started.mdx'),
     makePage('modules/native-module-tutorial.mdx'),
     makePage('modules/native-view-tutorial.mdx'),
+    makePage('modules/config-plugin-and-native-module-tutorial.mdx'),
     makePage('modules/existing-library.mdx'),
     makePage('modules/module-api.mdx'),
     makePage('modules/android-lifecycle-listeners.mdx'),
@@ -156,6 +156,7 @@ const general = [
     makePage('guides/adopting-prebuild.mdx'),
     makePage('guides/ios-developer-mode.mdx'),
     makePage('guides/localization.mdx'),
+    makePage('guides/configuring-js-engines.mdx'),
   ]),
   makeSection('Expo accounts', [
     makePage('accounts/account-types.mdx'),
@@ -200,16 +201,6 @@ const general = [
     makePage('technical-specs/expo-updates-0.mdx'),
     makePage('technical-specs/expo-updates-1-draft.mdx'),
     makePage('technical-specs/expo-sfv-0.mdx'),
-  ]),
-  makeSection('Deprecated', [
-    makeGroup('ExpoKit', [
-      makePage('expokit/overview.mdx'),
-      makePage('expokit/eject.mdx'),
-      makePage('expokit/expokit.mdx'),
-      makePage('expokit/advanced-expokit-topics.mdx'),
-      makePage('expokit/universal-modules-and-expokit.mdx'),
-    ]),
-    makeGroup('Archived', sortAlphabetical(pagesFromDir('archived'))),
   ]),
 ];
 
@@ -350,6 +341,26 @@ const archive = [
       expanded: true,
     }
   ),
+  makeSection(
+    'Deprecated',
+    [
+      makeGroup('ExpoKit', [
+        makePage('archive/expokit/overview.mdx'),
+        makePage('archive/expokit/eject.mdx'),
+        makePage('archive/expokit/expokit.mdx'),
+        makePage('archive/expokit/advanced-expokit-topics.mdx'),
+        makePage('archive/expokit/universal-modules-and-expokit.mdx'),
+      ]),
+    ],
+    {
+      expanded: true,
+    }
+  ),
+  makeGroup('Miscellaneous', [
+    makePage('archive/adhoc-builds.mdx'),
+    makePage('archive/expo-cli.mdx'),
+    makePage('archive/notification-channels.mdx'),
+  ]),
 ];
 
 const featurePreview = [];

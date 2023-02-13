@@ -1,6 +1,6 @@
 {
   "name": "expo-random",
-  "version": "13.0.0",
+  "version": "13.1.1",
   "description": "Expo universal module for random bytes",
   "main": "build/Random.js",
   "types": "build/Random.d.ts",

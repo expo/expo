@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 0.5.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.5.0 — 2023-02-03
+
+### 🎉 New features
+
+- Switch default JS engine to Hermes. ([#21001](https://github.com/expo/expo/pull/21001) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
 - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
 
 ## 0.4.0 — 2022-10-25

@@ -74,6 +74,14 @@ export interface PluginConfigTypeAndroid {
    * Interface representing available configuration for Android Gradle plugin [PackagingOptions](https://developer.android.com/reference/tools/gradle-api/7.0/com/android/build/api/dsl/PackagingOptions).
    */
   packagingOptions?: PluginConfigTypeAndroidPackagingOptions;
+
+  /**
+   * Change the [Flipper](https://fbflipper.com/) version when running your app on Android.
+   * Flipper is by default enabled with the version that comes bundled with react-native.
+   * However, you can set the `flipper` property to a semver string and specify an
+   * alternate Flipper version.
+   */
+  flipper?: string;
 }
 
 /**
@@ -91,11 +99,25 @@ export interface PluginConfigTypeIos {
    *  - `PBXNativeTarget` with "com.apple.product-type.application" `productType` in the app project.
    */
   deploymentTarget?: string;
+
   /**
    * Enable [`use_frameworks!`](https://guides.cocoapods.org/syntax/podfile.html#use_frameworks_bang)
    * in `Podfile` to use frameworks instead of static libraries for Pods.
+   *
+   * Note: You cannot use `useFrameworks` and `flipper` at the same time
    */
   useFrameworks?: 'static' | 'dynamic';
+
+  /**
+   * Enable [Flipper](https://fbflipper.com/) when running your app on iOS in
+   * Debug mode. Setting `true` enables the default version of Flipper, while
+   * setting a semver string will enable a specific version of Flipper you've
+   * declared in your package.json. The default for this configuration is `false`.
+   *
+   * Note: You cannot use `flipper` at the same time as `useFrameworks`, and
+   * doing so will generate an error.
+   */
+  flipper?: boolean | string;
 }
 
 /**
@@ -137,6 +159,11 @@ const schema: JSONSchemaType<PluginConfigType> = {
         enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
         extraProguardRules: { type: 'string', nullable: true },
 
+        flipper: {
+          type: 'string',
+          nullable: true,
+        },
+
         packagingOptions: {
           type: 'object',
           properties: {
@@ -156,6 +183,11 @@ const schema: JSONSchemaType<PluginConfigType> = {
         newArchEnabled: { type: 'boolean', nullable: true },
         deploymentTarget: { type: 'string', pattern: '\\d+\\.\\d+', nullable: true },
         useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
+
+        flipper: {
+          type: ['boolean', 'string'],
+          nullable: true,
+        },
       },
       nullable: true,
     },
@@ -221,11 +253,18 @@ function maybeThrowInvalidVersions(config: PluginConfigType) {
  * @ignore
  */
 export function validateConfig(config: any): PluginConfigType {
-  const validate = new Ajv().compile(schema);
+  const validate = new Ajv({ allowUnionTypes: true }).compile(schema);
   if (!validate(config)) {
     throw new Error('Invalid expo-build-properties config: ' + JSON.stringify(validate.errors));
   }
 
   maybeThrowInvalidVersions(config);
+
+  // explicitly block using use_frameworks and Flipper in iOS
+  // https://github.com/facebook/flipper/issues/2414
+  if (config?.ios?.flipper !== undefined && config?.ios?.useFrameworks !== undefined) {
+    throw new Error('`ios.flipper` cannot be enabled when `ios.useFrameworks` is set.');
+  }
+
   return config;
 }

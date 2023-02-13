@@ -1,6 +1,6 @@
 {
   "name": "expo-video-thumbnails",
-  "version": "7.1.0",
+  "version": "7.2.1",
   "description": "ExpoVideoThumbnails standalone module",
   "main": "build/VideoThumbnails.js",
   "types": "build/VideoThumbnails.d.ts",

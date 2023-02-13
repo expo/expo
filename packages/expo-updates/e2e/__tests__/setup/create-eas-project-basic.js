@@ -8,6 +8,9 @@ const repoRoot = process.env.EXPO_REPO_ROOT;
 const workingDir = path.resolve(repoRoot, '..');
 const runtimeVersion = '1.0.0';
 
+// Useful for local testing
+const skipAssetTestApp = process.env.EXPO_SKIP_ASSET_TEST_APP === '1';
+
 /**
  *
  * This generates a project at the location TEST_PROJECT_ROOT,
@@ -32,7 +35,11 @@ const runtimeVersion = '1.0.0';
 
   await initAsync(projectRoot, { repoRoot, runtimeVersion, localCliBin });
 
-  await setupBasicAppAsync(projectRoot);
+  await setupBasicAppAsync(projectRoot, localCliBin);
+
+  if (skipAssetTestApp) {
+    return;
+  }
 
   // Build assets project as a subdirectory in the project
   const assetsProjectRoot = path.join(process.env.TEST_PROJECT_ROOT, 'updates-e2e');

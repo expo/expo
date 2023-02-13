@@ -32,10 +32,10 @@ yarn add @expo/package-manager
 ```ts
 import * as PackageManager from '@expo/package-manager';
 
-const manager = await PackageManager.createForProject(projectRoot);
+const manager = PackageManager.createForProject(projectRoot);
 
 await Promise.all([
-  manager.addDevAsync('@expo/webpack-config'),
-  manager.addAsync('expo', 'expo-camera'),
+  manager.addDevAsync(['@expo/webpack-config']),
+  manager.addAsync(['expo', 'expo-camera']),
 ]);
 ```

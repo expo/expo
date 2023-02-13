@@ -1,4 +1,11 @@
-# expo-file-system
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/filesystem/">
+    <img
+      src="../../.github/resources/expo-file-system.svg"
+      alt="expo-file-system"
+      height="64" />
+  </a>
+</p>
 
 Provides access to the local file system on the device.
 

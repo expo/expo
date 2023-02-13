@@ -44,6 +44,12 @@ export type ImageSource = {
 export type ImageStyle = RNImageStyle;
 
 /**
+ * Determines how the image should be resized to fit its container.
+ * @hidden Described in the {@link ImageProps['contentFit']}
+ */
+export type ImageContentFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
+
+/**
  * Some props are from React Native Image that Expo Image supports (more or less) for easier migration,
  * but all of them are deprecated and might be removed in the future.
  */
@@ -82,7 +88,14 @@ export interface ImageProps extends ViewProps {
    *
    * @default 'cover'
    */
-  contentFit?: 'cover' | 'contain' | 'fill' | 'none' | 'scale-down';
+  contentFit?: ImageContentFit;
+
+  /**
+   * Determines how the placeholder should be resized to fit its container
+   * @hidden Described in the {@link ImageProps['contentFit']}
+   * @default 'scale-down'
+   */
+  placeholderContentFit?: ImageContentFit;
 
   /**
    * It is used together with [`contentFit`](#contentfit) to specify how the image should be positioned with x/y coordinates inside its own container.
@@ -94,8 +107,6 @@ export interface ImageProps extends ViewProps {
   /**
    * Describes how the image view should transition the contents when switching the image source.\
    * If provided as a number, it is the duration in milliseconds of the `'cross-dissolve'` effect.
-   * @platform ios
-   * @platform web
    */
   transition?: ImageTransition | number | null;
 
@@ -249,12 +260,6 @@ export interface ImageNativeProps extends ImageProps {
 }
 
 /**
- * Determines how the image should be resized to fit its container.
- * @hidden Described in the {@link ImageProps['contentFit']}
- */
-export type ImageContentFit = ImageProps['contentFit'];
-
-/**
  * A value that represents the relative position of a single axis.
  *
  * If `number`, it is a distance in points (logical pixels) from the respective edge.\
@@ -338,8 +343,6 @@ export type ImageContentPositionObject = OnlyObject<ImageContentPosition>;
 
 /**
  * An object that describes the smooth transition when switching the image source.
- * @platform ios
- * @platform web
  */
 export type ImageTransition = {
   /**
@@ -357,6 +360,9 @@ export type ImageTransition = {
   /**
    * An animation effect used for transition.
    * @default 'cross-dissolve'
+   *
+   * On Android, only `'cross-dissolve'` is supported.
+   * On Web, `'curl-up'` and `'curl-down'` effects are not supported.
    */
   effect?:
     | 'cross-dissolve'

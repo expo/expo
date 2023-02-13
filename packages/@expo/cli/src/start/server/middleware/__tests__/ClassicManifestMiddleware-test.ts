@@ -34,6 +34,9 @@ jest.mock('@expo/config', () => ({
 }));
 jest.mock('../resolveEntryPoint', () => ({
   resolveEntryPoint: jest.fn(() => './index.js'),
+  resolveAbsoluteEntryPoint: jest.fn((projectRoot: string) =>
+    require('path').join(projectRoot, './index.js')
+  ),
 }));
 
 const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;

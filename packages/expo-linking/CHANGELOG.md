@@ -4,11 +4,21 @@
 
 ### 🛠 Breaking changes
 
-- Removed the deprecated `Linking.removeEventListener`. ([#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 4.0.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0 — 2023-02-03
+
+### 🛠 Breaking changes
+
+- Removed the deprecated `Linking.removeEventListener`. ([#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

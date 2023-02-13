@@ -1,4 +1,11 @@
-# expo-sms
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/sms/">
+    <img
+      src="../../.github/resources/expo-sms.svg"
+      alt="expo-sms"
+      height="64" />
+  </a>
+</p>
 
 Provides access to the system's UI/app for sending SMS messages.
 

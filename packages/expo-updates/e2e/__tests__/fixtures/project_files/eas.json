@@ -13,14 +13,19 @@
       }
     },
     "updates_testing": {
+      "env": {
+        "EX_UPDATES_NATIVE_DEBUG": "1",
+        "NO_FLIPPER": "1"
+      },
       "android": {
-        "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
+        "gradleCommand": ":app:assembleDebug :app:assembleAndroidTest -DtestBuildType=debug",
         "withoutCredentials": true,
         "resourceClass": "large"
       },
       "ios": {
         "simulator": true,
-        "resourceClass": "m1-medium"
+        "resourceClass": "m1-medium",
+        "buildConfiguration": "Debug"
       },
       "distribution": "internal",
       "buildArtifactPaths": ["logs/*.log"]

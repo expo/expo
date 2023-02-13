@@ -57,3 +57,8 @@ export function importCliSaveAssetsFromProject(
     '@react-native-community/cli-plugin-metro/build/commands/bundle/saveAssets'
   ).default;
 }
+
+/** Resolve the installed Metro version from project */
+export function resolveMetroVersionFromProject(projectRoot: string): string {
+  return importFromProject(projectRoot, 'metro/package.json').version;
+}

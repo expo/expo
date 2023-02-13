@@ -1,6 +1,6 @@
 {
   "name": "expo-linking",
-  "version": "3.2.3",
+  "version": "4.0.1",
   "description": "Create and open deep links universally",
   "main": "build/Linking.js",
   "types": "build/Linking.d.ts",
@@ -31,7 +31,7 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/linking",
   "dependencies": {
     "@types/qs": "^6.9.7",
-    "expo-constants": "~14.1.0",
+    "expo-constants": "~14.2.0",
     "invariant": "^2.2.4",
     "qs": "^6.11.0",
     "url-parse": "^1.5.9"
