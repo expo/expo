@@ -14,7 +14,6 @@ const expoDependencyNames = [
   'expo-application',
   'expo-constants',
   'expo-eas-client',
-  'expo-error-recovery',
   'expo-file-system',
   'expo-font',
   'expo-json-utils',
