@@ -9,10 +9,20 @@ const assert_1 = __importDefault(require("assert"));
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 class BasePackageManager {
-    constructor({ silent, log, ...options } = {}) {
+    constructor({ silent, log, env = process.env, ...options } = {}) {
         this.silent = !!silent;
         this.log = log ?? (!silent ? console.log : undefined);
-        this.options = options;
+        this.options = {
+            ...options,
+            env: { ...this.getDefaultEnvironment(), ...env },
+        };
+    }
+    /** Get the default environment variables used when running the package manager. */
+    getDefaultEnvironment() {
+        return {
+            ADBLOCK: '1',
+            DISABLE_OPENCOLLECTIVE: '1',
+        };
     }
     /** Ensure the CWD is set to a non-empty string */
     ensureCwdDefined(method) {
