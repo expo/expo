@@ -23,51 +23,56 @@ export type DocumentPickerOptions = {
   multiple?: boolean;
 };
 
-// @needsAudit @docsMissing
 /**
- * First object represents the result when the document pick has been cancelled.
- * The second one represents the successful document pick result.
+ * Represents the result when the document pick has been cancelled.
  */
-export type DocumentResult =
-  | {
-      /**
-       * Field indicating that the document pick has been cancelled.
-       */
-      type: 'cancel';
-    }
-  | {
-      /**
-       * Field indicating that the document pick has been successful.
-       */
-      type: 'success';
-      /**
-       * Document original name.
-       */
-      name: string;
-      /**
-       * Document size in bytes.
-       */
-      size?: number;
-      /**
-       * An URI to the local document file.
-       */
-      uri: string;
-      /**
-       * Document MIME type.
-       */
-      mimeType?: string;
-      /**
-       * Timestamp of last document modification.
-       */
-      lastModified?: number;
-      /**
-       * `File` object for the parity with web File API.
-       * @platform web
-       */
-      file?: File;
-      /**
-       * `FileList` object for the parity with web File API.
-       * @platform web
-       */
-      output?: FileList | null;
-    };
+export type DocumentResultCancel = {
+  /**
+   * Field indicating that the document pick has been cancelled.
+   */
+  type: 'cancel';
+};
+
+/**
+ * Represents the successful document pick result.
+ */
+export type DocumentResultSuccess = {
+  /**
+   * Field indicating that the document pick has been successful.
+   */
+  type: 'success';
+  /**
+   * Document original name.
+   */
+  name: string;
+  /**
+   * Document size in bytes.
+   */
+  size?: number;
+  /**
+   * An URI to the local document file.
+   */
+  uri: string;
+  /**
+   * Document MIME type.
+   */
+  mimeType?: string;
+  /**
+   * Timestamp of last document modification.
+   */
+  lastModified?: number;
+  /**
+   * `File` object for the parity with web File API.
+   * @platform web
+   */
+  file?: File;
+  /**
+   * `FileList` object for the parity with web File API.
+   * @platform web
+   */
+  output?: FileList | null;
+};
+
+// @needsAudit @docsMissing
+export type DocumentResult = DocumentResultCancel | DocumentResultSuccess;
+
