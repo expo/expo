@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix attempting to import module on iOS. ([#21185](https://github.com/expo/expo/pull/21185) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 10.5.1 — 2023-02-09
