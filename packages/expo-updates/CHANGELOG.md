@@ -9,6 +9,8 @@
 
 ### 🎉 New features
 
+- [android] [expo-updates][android] Add rollback to embedded update directive. ([#21007](https://github.com/expo/expo/pull/21007) by [@wschurman](https://github.com/wschurman))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

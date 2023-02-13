@@ -98,6 +98,7 @@ class UpdatesDevLauncherController : UpdatesInterface {
         if (updateDirective != null) {
           return Loader.OnUpdateResponseLoadedResult(
             shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
+              is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
               is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
             }
           )

@@ -157,9 +157,17 @@ class UpdatesModule(
           }
 
           override fun onSuccess(updateResponse: UpdateResponse) {
+            val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
             val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
 
             val updateInfo = Bundle()
+            if (updateDirective != null) {
+              if (updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
+                updateInfo.putBoolean("isRollBackToEmbedded", true)
+                promise.resolve(updateInfo)
+                return
+              }
+            }
 
             if (updateManifest == null) {
               updateInfo.putBoolean("isAvailable", false)
@@ -242,6 +250,7 @@ class UpdatesModule(
                 if (updateDirective != null) {
                   return Loader.OnUpdateResponseLoadedResult(
                     shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
+                      is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
                       is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
                     }
                   )
@@ -262,15 +271,19 @@ class UpdatesModule(
                 databaseHolder.releaseDatabase()
                 val updateInfo = Bundle()
 
-                if (loaderResult.updateEntity == null) {
-                  updateInfo.putBoolean("isNew", false)
+                if (loaderResult.updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
+                  updateInfo.putBoolean("isRollBackToEmbedded", true)
                 } else {
-                  updatesServiceLocal.resetSelectionPolicy()
-                  updateInfo.putBoolean("isNew", true)
-                  updateInfo.putString(
-                    "manifestString",
-                    loaderResult.updateEntity.manifest.toString()
-                  )
+                  if (loaderResult.updateEntity == null) {
+                    updateInfo.putBoolean("isNew", false)
+                  } else {
+                    updatesServiceLocal.resetSelectionPolicy()
+                    updateInfo.putBoolean("isNew", true)
+                    updateInfo.putString(
+                      "manifestString",
+                      loaderResult.updateEntity.manifest.toString()
+                    )
+                  }
                 }
 
                 promise.resolve(updateInfo)
