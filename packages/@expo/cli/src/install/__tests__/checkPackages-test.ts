@@ -5,7 +5,7 @@ import {
   logIncorrectDependencies,
 } from '../../start/doctor/dependencies/validateDependenciesVersions';
 import { confirmAsync } from '../../utils/prompts';
-import { checkPackagesAsync } from '../checkPackages';
+import { checkPackagesAsync, checkPackagesInternalAsync } from '../checkPackages';
 import { fixPackagesAsync } from '../installAsync';
 
 jest.mock('../../log');
@@ -103,13 +103,15 @@ describe(checkPackagesAsync, () => {
 
     asMock(getVersionedDependenciesAsync).mockResolvedValueOnce(issues);
 
-    await checkPackagesAsync('/', {
-      packages: ['react-native', 'expo'],
-      options: { fix: true },
-      // @ts-expect-error
-      packageManager: {},
-      packageManagerArguments: [],
-    });
+    expect(
+      await checkPackagesInternalAsync('/', {
+        packages: ['react-native', 'expo'],
+        options: { fix: true },
+        // @ts-expect-error
+        packageManager: {},
+        packageManagerArguments: [],
+      })
+    ).toEqual(true);
 
     expect(fixPackagesAsync).toBeCalledWith('/', {
       packageManager: {},
