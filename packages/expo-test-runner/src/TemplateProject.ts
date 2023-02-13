@@ -65,7 +65,6 @@ export default class TemplateProject {
         'expo-constants': `file:${repoRoot}/packages/expo-constants`,
         'expo-dev-launcher': `file:${repoRoot}/packages/expo-dev-launcher`,
         'expo-dev-menu': `file:${repoRoot}/packages/expo-dev-menu`,
-        'expo-error-recovery': `file:${repoRoot}/packages/expo-error-recovery`,
         'expo-file-system': `file:${repoRoot}/packages/expo-file-system`,
         'expo-font': `file:${repoRoot}/packages/expo-font`,
         'expo-keep-awake': `file:${repoRoot}/packages/expo-keep-awake`,
