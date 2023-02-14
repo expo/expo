@@ -30,6 +30,17 @@ export function getWorkspaceRoot(projectRoot: string): string | null {
   }
 }
 
+export function getEntryWithServerRoot(
+  projectRoot: string,
+  projectConfig: ProjectConfig,
+  platform: string
+) {
+  return path.relative(
+    getMetroServerRoot(projectRoot),
+    resolveAbsoluteEntryPoint(projectRoot, platform, projectConfig)
+  );
+}
+
 export function getMetroServerRoot(projectRoot: string) {
   if (env.EXPO_USE_METRO_WORKSPACE_ROOT) {
     return getWorkspaceRoot(projectRoot) ?? projectRoot;
@@ -133,10 +144,7 @@ export abstract class ManifestMiddleware<
 
   /** Get the main entry module ID (file) relative to the project root. */
   private resolveMainModuleName(projectConfig: ProjectConfig, platform: string): string {
-    let entryPoint = path.relative(
-      getMetroServerRoot(this.projectRoot),
-      resolveAbsoluteEntryPoint(this.projectRoot, platform, projectConfig)
-    );
+    let entryPoint = getEntryWithServerRoot(this.projectRoot, projectConfig, platform);
 
     debug(`Resolved entry point: ${entryPoint} (project root: ${this.projectRoot})`);
 

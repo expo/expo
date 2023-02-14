@@ -16,6 +16,7 @@ import { Terminal } from 'metro-core';
 
 import { MetroTerminalReporter } from '../start/server/metro/MetroTerminalReporter';
 import { withMetroMultiPlatformAsync } from '../start/server/metro/withMetroMultiPlatform';
+import { getMetroServerRoot } from '../start/server/middleware/ManifestMiddleware';
 import { getPlatformBundlers } from '../start/server/platformBundlers';
 import { getMetroProperties } from '../utils/analytics/getMetroProperties';
 import { logEventAsync } from '../utils/analytics/rudderstackClient';
@@ -86,6 +87,7 @@ export async function bundleAsync(
   options: MetroDevServerOptions,
   bundles: BundleOptions[]
 ): Promise<BundleOutput[]> {
+  const serverRoot = getMetroServerRoot(projectRoot);
   // Assert early so the user doesn't have to wait until bundling is complete to find out that
   // Hermes won't be available.
   await Promise.all(
@@ -96,7 +98,7 @@ export async function bundleAsync(
   const Server = importMetroServerFromProject(projectRoot);
 
   const terminal = new Terminal(process.stdout);
-  const terminalReporter = new MetroTerminalReporter(projectRoot, terminal);
+  const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
   const reporter = {
     update(event: any) {

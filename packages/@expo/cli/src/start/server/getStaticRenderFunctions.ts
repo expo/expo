@@ -10,6 +10,7 @@ import requireString from 'require-from-string';
 import resolveFrom from 'resolve-from';
 
 import { profile } from '../../utils/profile';
+import { getMetroServerRoot } from './middleware/ManifestMiddleware';
 const debug = require('debug')('expo:start:server:node-renderer') as typeof console.log;
 
 function wrapBundle(str: string) {
@@ -42,17 +43,34 @@ export async function getStaticRenderFunctions(
     minify?: boolean;
   } = {}
 ): Promise<any> {
-  const moduleId = getRenderModuleId(projectRoot);
-  debug('Loading render functions from:', moduleId);
+  const root = getMetroServerRoot(projectRoot);
+  const moduleId = getRenderModuleId(root);
+  debug('Loading render functions from:', moduleId, root);
   if (moduleId.startsWith('..')) {
     throw new Error(
       `expo-router/node/render.js is not in the project root. This is not supported.`
     );
   }
-  // TODO: Error handling
-  const content = await fetch(
+
+  const res = await fetch(
     `${devServerUrl}/${moduleId}.bundle?platform=web&dev=${dev}&minify=${minify}`
     // `${devServerUrl}/${moduleId}.bundle?platform=web&dev=${dev}&minify=${minify}`
-  ).then((res) => res.text());
+  );
+
+  // TODO: Improve error handling
+  if (res.status === 500) {
+    const text = await res.text();
+    if (text.startsWith('{"originModulePath"')) {
+      const errorObject = JSON.parse(text);
+      throw new Error(errorObject.message);
+    }
+  }
+
+  if (!res.ok) {
+    throw new Error(`Error fetching bundle for static rendering: ${res.status} ${res.statusText}`);
+  }
+
+  const content = await res.text();
+
   return profile(requireString, 'eval-metro-bundle')(wrapBundle(content));
 }

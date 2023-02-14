@@ -24,6 +24,7 @@ import {
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { instantiateMetroAsync } from './instantiateMetro';
+import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 
 /** Default port to use for apps running in Expo Go. */
 const EXPO_GO_METRO_PORT = 19000;
