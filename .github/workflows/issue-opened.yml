@@ -1,5 +1,8 @@
 name: Process a newly opened issue
 
+env:
+  TRUSTED_USERS: 'RodolfoGS awinograd hesyifei LinusU SimenB actuallymentor derekstavis wscotten wcandillon tevonsb MaRaSu devashishsethia'
+
 on:
   issues:
     types: [opened]
@@ -11,7 +14,6 @@ jobs:
       - uses: 8398a7/action-slack@v3.8.0
         if: ${{ contains( env.TRUSTED_USERS, github.event.issue.user.login ) }}
         env:
-          TRUSTED_USERS: 'RodolfoGS awinograd hesyifei LinusU SimenB actuallymentor derekstavis wscotten wcandillon tevonsb MaRaSu devashishsethia'
           SLACK_WEBHOOK_URL: ${{ secrets.slack_webhook_expo_support }}
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         with:
@@ -21,6 +23,7 @@ jobs:
           author_name: ${{ github.event.issue.user.login }}
           fields: repo
       - uses: actions/github-script@v6
+        if: ${{ contains( env.TRUSTED_USERS, github.event.issue.user.login ) }}
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
