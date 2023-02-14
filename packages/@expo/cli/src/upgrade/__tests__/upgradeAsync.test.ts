@@ -6,11 +6,15 @@ describe(getPackagesToModify, () => {
       dependencies: {
         'react-native-unimodules': '0.14.0',
       },
+      devDependencies: {
+        '@types/react-native': '0.70.*',
+      },
     };
 
     const { remove, add } = getPackagesToModify(pkgJson);
 
-    expect(remove).toEqual(['react-native-unimodules']);
+    expect(remove).toContain('react-native-unimodules');
+    expect(remove).toContain('@types/react-native');
     expect(add).toEqual([]);
   });
 

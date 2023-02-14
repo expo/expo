@@ -229,6 +229,14 @@ export function getPackagesToModify(pkgJson: PackageJSONConfig): {
     pkgsToInstall.push('expo-random');
   }
 
+  // See: https://reactnative.dev/blog/2023/01/03/typescript-first#declarations-shipped-with-react-native
+  if (
+    pkgJson.dependencies?.['@types/react-native'] ||
+    pkgJson.devDependencies?.['@types/react-native']
+  ) {
+    pkgsToRemove.push('@types/react-native');
+  }
+
   return {
     remove: pkgsToRemove,
     add: pkgsToInstall,
