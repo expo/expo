@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed SVGs are not rendered in the release mode on Android. ([#21214](https://github.com/expo/expo/pull/21214) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 1.0.0-rc.0 — 2023-02-09
