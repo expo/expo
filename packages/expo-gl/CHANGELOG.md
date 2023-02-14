@@ -5,11 +5,16 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
-- Add support for the `GL_UNPACK_ALIGNMENT` parameter in the `pixelStorei` method. ([#21212](https://github.com/expo/expo/pull/21212) by [@BanBart](https://github.com/BanBart))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 12.4.0 — 2023-02-14
+
+### 🎉 New features
+
+- Add support for the `GL_UNPACK_ALIGNMENT` parameter in the `pixelStorei` method. ([#21212](https://github.com/expo/expo/pull/21212) by [@BanBart](https://github.com/BanBart))
 
 ## 12.3.1 — 2023-02-09
 

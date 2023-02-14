@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 1.2.2 — 2023-02-14
+
+### 🐛 Bug fixes
+
 - [iOS] Fixed convertible implementation for `URL` type to support unencoded UTF8 urls and file paths. ([#21139](https://github.com/expo/expo/pull/21139) by [@tsapeta](https://github.com/tsapeta))
 - Fixed AppDelegateSubscriber broken when running on iOS dynamic framework or static framework mode. ([#21206](https://github.com/expo/expo/pull/21206) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 1.2.1 — 2023-02-09
 

@@ -2126,13 +2126,13 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (14.1.1):
     - ExpoModulesCore
-  - Expo (48.0.0-beta.2):
+  - Expo (48.0.0):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.0.1):
     - ExpoModulesCore
   - ExpoBattery (7.1.1):
     - ExpoModulesCore
-  - ExpoBlur (12.2.1):
+  - ExpoBlur (12.2.2):
     - ExpoModulesCore
   - ExpoBrightness (11.2.1):
     - ExpoModulesCore
@@ -2147,7 +2147,7 @@ PODS:
     - ExpoModulesCore
   - ExpoDevice (5.2.1):
     - ExpoModulesCore
-  - ExpoGL (12.3.1):
+  - ExpoGL (12.4.0):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
   - ExpoHaptics (12.2.1):
@@ -2173,11 +2173,11 @@ PODS:
     - ExpoModulesCore
   - ExpoMailComposer (12.1.1):
     - ExpoModulesCore
-  - ExpoModulesCore (1.2.1):
+  - ExpoModulesCore (1.2.2):
     - React-Core
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
-  - ExpoModulesCore/Tests (1.2.1):
+  - ExpoModulesCore/Tests (1.2.2):
     - ExpoModulesTestCore
     - React-Core
     - React-RCTAppDelegate
@@ -4740,16 +4740,16 @@ SPEC CHECKSUMS:
   EXMediaLibrary: 945e03614e6b90e70d15be886b9aebedc9d4fade
   EXNotifications: dd628737af60fc8cc62dccebacd326b0fbbc0dcb
   EXPermissions: 2291c6736a823b4c680d5bf8e12d3c1c5d11da35
-  Expo: 1b7b4ec09bd939db6d98985231a0789aa3f6670a
+  Expo: 75e4aea2dd87a205b3be49577b1ba6b7afea8019
   ExpoAppleAuthentication: 7bd5e4150d59e8df37aa80b425850ae88adf9e65
   ExpoBattery: 678d2b710a8fc398c30258c4dc22c12340ee5411
-  ExpoBlur: 9f9002ed2dc81040d7905e1a26f0eaa0a91b7222
+  ExpoBlur: fac3c6318fdf409dd5740afd3313b2bd52a35bac
   ExpoBrightness: fa662d10f9a8547c86264cde7ad754226a1efa72
   ExpoCellular: 2daef47056576e5735f9e93e38739e3176e399ad
   ExpoClipboard: 8a36a8376ab93df9050c14577e9e0fcb805e9114
   ExpoCrypto: 477dfe89c81527b376f2c344ca1d2a01244b243c
   ExpoDevice: e0bebf68f978b3d353377ce42e73c20c0a070215
-  ExpoGL: 4153278a9e204e75203b99a2ac80328793c2aa02
+  ExpoGL: 8f8e40e494a462f33c1f513cf101bf7d6abe767e
   ExpoHaptics: 5156bc5160d8e04c170dd6e645a71154951a2ad9
   ExpoImage: a8b564f046f96133db39d7749eec9d6110d11243
   ExpoImageManipulator: 85ab87e9641b9d83108f8d603e0418c12fc19e2d
@@ -4759,7 +4759,7 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: b870b7a8df5e15b8b0be042185a2bb7764093096
   ExpoLocalization: f26cd431ad9ea3533c5b08c4fabd879176a794bb
   ExpoMailComposer: 0085b258d00ba40664f7acb40d96042b29a1da7d
-  ExpoModulesCore: 2f4bd2ae0cd03d30c3c286f5d843e22f72ccdb55
+  ExpoModulesCore: 79392ab654019ea3aadeae308919c3d9dd97879c
   ExpoModulesTestCore: faf43ba18dd6809d2e91567260e132b385a5842e
   ExpoNetwork: 242fe1bd68bfe744a2f69fccfe4bfe1d89d1e790
   ExpoRandom: 7ee07d62e7003b74d0536e0495e3a653fe1b2a74
