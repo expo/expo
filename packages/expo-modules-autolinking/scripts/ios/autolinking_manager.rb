@@ -133,6 +133,7 @@ module Expo
 
       args = [
         'node',
+        '--no-warnings',
         '--eval',
         'require(\'expo-modules-autolinking\')(process.argv.slice(1))',
         command_name,
