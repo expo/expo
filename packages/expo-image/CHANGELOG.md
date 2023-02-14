@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `You can't start or clear loads in RequestListener or Target callbacks` on Android.
+- Fixed `You can't start or clear loads in RequestListener or Target callbacks` on Android. ([#21192](https://github.com/expo/expo/pull/21192) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
