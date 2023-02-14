@@ -1,12 +1,11 @@
-import { getConfig, PackageJSONConfig, ProjectConfig } from '@expo/config';
+import { getConfig } from '@expo/config';
 import * as PackageManager from '@expo/package-manager';
-import { NodePackageManager } from '@expo/package-manager';
+import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import semver from 'semver';
 
 import { getVersionsAsync } from '../api/getVersions';
 import { checkPackagesInternalAsync } from '../install/checkPackages';
-import { installAsync } from '../install/installAsync';
 import * as Log from '../log';
 import {
   hasRequiredAndroidFilesAsync,
@@ -22,8 +21,13 @@ import { maybeBailOnGitStatusAsync } from '../utils/git';
 import { attemptModification } from '../utils/modifyConfigAsync';
 
 const debug = require('debug')('expo:upgrade') as typeof console.log;
+const ALLOWED_TAGS = ['next', 'latest'];
 
 function formatSdkVersion(sdkVersionString: string) {
+  if (ALLOWED_TAGS.includes(sdkVersionString)) {
+    return sdkVersionString;
+  }
+
   // Convert a value like 2 or 2.0 to 2.0.0
   return semver.valid(semver.coerce(sdkVersionString, { loose: true }) || '');
 }
@@ -45,18 +49,17 @@ export async function upgradeAsync(
 
   let projectConfig = getConfig(projectRoot);
 
+  const initialExpoVersion = projectConfig.exp.sdkVersion!;
   const initialPackages: Record<string, string> = {
     ...projectConfig.pkg.dependencies,
     ...projectConfig.pkg.devDependencies,
   };
 
-  const initialExpoVersion = projectConfig.exp.sdkVersion!;
-
   if (
     // Allow downgrading for general testing
     !env.EXPO_DEBUG &&
     // Otherwise all downgrading is blocked
-    versionToInstall !== 'latest' &&
+    !ALLOWED_TAGS.includes(versionToInstall) &&
     semver.lt(versionToInstall, initialExpoVersion)
   ) {
     throw new CommandError(
@@ -85,7 +88,6 @@ export async function upgradeAsync(
 
   // Do this first to ensure we have the latest versions locally
   const versionData = await getVersionsAsync({ skipCache: true });
-
   const initialVersion = await getRemoteVersionsForSdkAsync({ sdkVersion: initialExpoVersion });
 
   const packageManager = PackageManager.createForProject(projectRoot, {
@@ -93,11 +95,7 @@ export async function upgradeAsync(
     ...options,
   });
 
-  // Do some evergreen upgrades
-  await performPackageModificationsAsync(projectRoot, projectConfig, packageManager);
-
   // Now perform versioned work...
-
   Log.log(`Upgrading Expo`);
 
   // Update Expo to the latest version.
@@ -116,6 +114,9 @@ export async function upgradeAsync(
     packageManager,
     packageManagerArguments: [],
   });
+
+  // Finalize the upgrade with changes from the new version
+  await finalizeUpgrade(projectRoot, options);
 
   Log.log();
 
@@ -181,60 +182,23 @@ export async function upgradeAsync(
   }
 }
 
-async function performPackageModificationsAsync(
+async function finalizeUpgrade(
   projectRoot: string,
-  projectConfig: ProjectConfig,
-  packageManager: NodePackageManager
+  options: Partial<Record<PackageManager.NodePackageManager['name'], boolean>>
 ) {
-  const modifications = getPackagesToModify(projectConfig.pkg);
+  const managerFlag = Object.entries(options)
+    .map(([name, enabled]) => (enabled ? `--${name}` : undefined))
+    .find((flag) => flag !== undefined);
 
-  if (modifications.remove.length) {
-    Log.log(`Removing packages: ${modifications.remove.join(', ')}`);
-    await packageManager.removeAsync(modifications.remove);
+  try {
+    await spawnAsync('npx', ['expo', 'upgrade', '--finalize', managerFlag ?? ''], {
+      stdio: 'inherit',
+      cwd: projectRoot,
+    });
+  } catch (error) {
+    debug('Failed to finalize upgrade', error);
+    Log.warn(
+      'Could not finalize the upgrade automatically, check the release notes for manual steps.'
+    );
   }
-
-  if (modifications.add.length) {
-    Log.log(`Adding packages: ${modifications.add.join(', ')}`);
-    await installAsync(modifications.add, { projectRoot });
-  }
-}
-
-export function getPackagesToModify(pkgJson: PackageJSONConfig): {
-  remove: string[];
-  add: string[];
-} {
-  // Do some evergreen upgrades
-
-  const pkgsToInstall: string[] = [];
-  const pkgsToRemove: string[] = [];
-
-  // Remove deprecated packages
-  ['react-native-unimodules'].forEach((pkg) => {
-    if (pkgJson.dependencies?.[pkg] || pkgJson.devDependencies?.[pkg]) {
-      pkgsToRemove.push(pkg);
-    }
-  });
-
-  if (pkgJson.dependencies?.['@react-native-community/async-storage']) {
-    //@react-native-async-storage/async-storage
-    pkgsToInstall.push('@react-native-async-storage/async-storage');
-    pkgsToRemove.push('@react-native-community/async-storage');
-  }
-
-  if (pkgJson.dependencies?.['expo-auth-session']) {
-    pkgsToInstall.push('expo-random');
-  }
-
-  // See: https://reactnative.dev/blog/2023/01/03/typescript-first#declarations-shipped-with-react-native
-  if (
-    pkgJson.dependencies?.['@types/react-native'] ||
-    pkgJson.devDependencies?.['@types/react-native']
-  ) {
-    pkgsToRemove.push('@types/react-native');
-  }
-
-  return {
-    remove: pkgsToRemove,
-    add: pkgsToInstall,
-  };
 }

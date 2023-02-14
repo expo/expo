@@ -12,6 +12,8 @@ export const expoUpgrade: Command = async (argv) => {
       '--npm': Boolean,
       '--pnpm': Boolean,
       '--yarn': Boolean,
+      // Internal option to finish the upgrade with new code
+      '--finalize': Boolean,
       // Other options are parsed manually.
       '--help': Boolean,
       // Aliases
@@ -34,6 +36,7 @@ export const expoUpgrade: Command = async (argv) => {
     );
   }
   const options = {
+    finalize: args['--finalize'],
     version: args['--sdk-version'],
     npm: args['--npm'],
     yarn: args['--yarn'],
@@ -46,6 +49,11 @@ export const expoUpgrade: Command = async (argv) => {
 
   const { upgradeAsync } = require('./upgradeAsync') as typeof import('./upgradeAsync');
   const { logCmdError } = require('../utils/errors') as typeof import('../utils/errors');
+
+  if (options.finalize) {
+    const { finalizeAsync } = require('./finalizeAsync') as typeof import('./finalizeAsync');
+    return (async () => finalizeAsync(getProjectRoot(args), options))().catch(logCmdError);
+  }
 
   return (async () => upgradeAsync(getProjectRoot(args), options))().catch(logCmdError);
 };

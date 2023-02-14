@@ -1,4 +1,4 @@
-import { getPackagesToModify } from '../upgradeAsync';
+import { getPackagesToModify } from '../finalizeAsync';
 
 describe(getPackagesToModify, () => {
   it(`should remove deprecated packages`, () => {
