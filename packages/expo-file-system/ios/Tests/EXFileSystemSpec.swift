@@ -9,7 +9,7 @@ class EXFileSystemSpec: ExpoSpec {
 
     describe("percentEncodeURIStringAfterScheme") {
       it("should handle encoded URIs") {
-        let encodedUriInput = "file:///var/mobile/%40username%2Fbranch"
+        let encodedUriInput = "file:///var/mobile/@username/branch"
         let encodedUriExpectedOutput = "file:///var/mobile/@username/branch"
         let encodedUri = fileSystem.percentEncodeURIString(afterScheme:encodedUriInput)
 
@@ -24,6 +24,23 @@ class EXFileSystemSpec: ExpoSpec {
 
         expect(utf8Uri?.absoluteString) == utf8UriExpectedOutput
         expect(utf8Uri?.scheme) == "file"
+      }
+
+      it("should handle URI with percent, numbers and UTF-8 characters") {
+        let input = "file:///document/directory/%40%2F中文"
+        let expectedOutput = "file:///document/directory/%40%2F%E4%B8%AD%E6%96%87"
+        let uri = fileSystem.percentEncodeURIString(afterScheme:input)
+
+        expect(uri?.absoluteString) == expectedOutput
+      }
+
+      it("should not decode percentages in URI") {
+        let input = "file:///document/hello%2Fworld.txt"
+        let unexpectedOutput = "file:///document/hello/world.txt"
+        let uri = fileSystem.percentEncodeURIString(afterScheme:input)
+
+        // Should not create a directory named "hello"
+        expect(uri?.absoluteString) != unexpectedOutput
       }
 
       it("should handle assets-library URIs") {
