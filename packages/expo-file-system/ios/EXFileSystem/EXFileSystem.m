@@ -179,7 +179,7 @@ EX_EXPORT_METHOD_AS(getInfoAsync,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  NSURL *uri = [self percentEncodeURIStringAfterScheme:uriString];
+  NSURL *uri = [self percentEncodeURIString:uriString];
   // no scheme provided in uri, handle as a local path and add 'file://' scheme
   if (!uri.scheme) {
     uri = [NSURL fileURLWithPath:uriString isDirectory:false];
@@ -208,7 +208,7 @@ EX_EXPORT_METHOD_AS(readAsStringAsync,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  NSURL *uri = [self percentEncodeURIStringAfterScheme:uriString];
+  NSURL *uri = [self percentEncodeURIString:uriString];
   // no scheme provided in uri, handle as a local path and add 'file://' scheme
   if (!uri.scheme) {
     uri = [NSURL fileURLWithPath:uriString isDirectory:false];
@@ -275,7 +275,7 @@ EX_EXPORT_METHOD_AS(writeAsStringAsync,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  NSURL *uri = [self percentEncodeURIStringAfterScheme:uriString];
+  NSURL *uri = [self percentEncodeURIString:uriString];
   if (!([self permissionsForURI:uri] & EXFileSystemPermissionWrite)) {
     reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"File '%@' isn't writable.", uri],
@@ -335,7 +335,7 @@ EX_EXPORT_METHOD_AS(deleteAsync,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  NSURL *uri = [self percentEncodeURIStringAfterScheme:uriString];
+  NSURL *uri = [self percentEncodeURIString:uriString];
   if (!([self permissionsForURI:[uri URLByAppendingPathComponent:@".."]] & EXFileSystemPermissionWrite)) {
     reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"Location '%@' isn't deletable.", uri],
@@ -472,7 +472,7 @@ EX_EXPORT_METHOD_AS(makeDirectoryAsync,
                     rejecter:(EXPromiseRejectBlock)reject)
 {
 
-  NSURL *uri = [self percentEncodeURIStringAfterScheme:uriString];
+  NSURL *uri = [self percentEncodeURIString:uriString];
  if (!([self permissionsForURI:uri] & EXFileSystemPermissionWrite)) {
     reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"Directory '%@' could not be created because the location isn't writable.", uri],
@@ -505,7 +505,7 @@ EX_EXPORT_METHOD_AS(readDirectoryAsync,
                     resolver:(EXPromiseResolveBlock)resolve
                     rejecter:(EXPromiseRejectBlock)reject)
 {
-  NSURL *uri = [self percentEncodeURIStringAfterScheme:uriString];
+  NSURL *uri = [self percentEncodeURIString:uriString];
   if (!([self permissionsForURI:uri] & EXFileSystemPermissionRead)) {
     reject(@"ERR_FILESYSTEM_NO_PERMISSIONS",
            [NSString stringWithFormat:@"Location '%@' isn't readable.", uri],
@@ -538,7 +538,7 @@ EX_EXPORT_METHOD_AS(downloadAsync,
                                 rejecter:(EXPromiseRejectBlock)reject)
 {
   NSURL *url = [NSURL URLWithString:urlString];
-  NSURL *localUri = [self percentEncodeURIStringAfterScheme:localUriString];
+  NSURL *localUri = [self percentEncodeURIString:localUriString];
   if (!([self checkIfFileDirExists:localUri.path])) {
     reject(@"ERR_FILESYSTEM_WRONG_DESTINATION",
            [NSString stringWithFormat:@"Directory for '%@' doesn't exist. Please make sure directory '%@' exists before calling downloadAsync.", localUriString, [localUri.path stringByDeletingLastPathComponent]],
@@ -635,7 +635,7 @@ EX_EXPORT_METHOD_AS(uploadTaskStartAsync,
                                                options:(NSDictionary *)options
                                               rejecter:(EXPromiseRejectBlock)reject
 {
-  NSURL *fileUri = [self percentEncodeURIStringAfterScheme:fileUriString];
+  NSURL *fileUri = [self percentEncodeURIString:fileUriString];
   NSString *httpMethod = options[@"httpMethod"];
   EXFileSystemUploadType type = [self _getUploadTypeFrom:options[@"uploadType"]];
   if (![fileUri.scheme isEqualToString:@"file"]) {
@@ -702,7 +702,7 @@ EX_EXPORT_METHOD_AS(downloadResumableStartAsync,
                                               rejecter:(EXPromiseRejectBlock)reject)
 {
   NSURL *url = [NSURL URLWithString:urlString];
-  NSURL *localUrl = [self percentEncodeURIStringAfterScheme:fileUri];
+  NSURL *localUrl = [self percentEncodeURIString:fileUri];
   if (!([self checkIfFileDirExists:localUrl.path])) {
     reject(@"ERR_FILESYSTEM_WRONG_DESTINATION",
            [NSString stringWithFormat:@"Directory for '%@' doesn't exist. Please make sure directory '%@' exists before calling downloadAsync.", fileUri, [localUrl.path stringByDeletingLastPathComponent]],
@@ -1012,20 +1012,13 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   return [self _checkIfFileExists:dir];
 }
 
-- (NSURL *)percentEncodeURIStringAfterScheme:(NSString *)uri
+- (NSURL *)percentEncodeURIString:(NSString *)uri
 {
-  NSRange fileSchemeRange = [uri rangeOfString:@"file://"];
-  if (fileSchemeRange.location == NSNotFound) {
-    return [NSURL URLWithString:uri];
-  }
-
-
   NSMutableCharacterSet *allowedCharacterSet = [NSMutableCharacterSet alphanumericCharacterSet];
   [allowedCharacterSet addCharactersInString:@"-._~:/?#[]@!$&'()*+,;="];
-  NSString *restOfString = [uri substringFromIndex:fileSchemeRange.location + fileSchemeRange.length];
-  NSString *encodedRestOfString = [restOfString stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacterSet];
+  NSString *encodedUriString = [uri stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacterSet];
 
-  return [NSURL URLWithString:[NSString stringWithFormat:@"file://%@", [encodedRestOfString stringByReplacingOccurrencesOfString:@"%25" withString:@"%"]]];
+  return [NSURL URLWithString: [encodedUriString stringByReplacingOccurrencesOfString:@"%25" withString:@"%"]];
 }
 
 #pragma mark - Class methods
