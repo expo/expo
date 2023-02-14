@@ -3546,6 +3546,11 @@
     "@types/connect" "*"
     "@types/node" "*"
 
+"@types/braces@*":
+  version "3.0.1"
+  resolved "https://registry.yarnpkg.com/@types/braces/-/braces-3.0.1.tgz#5a284d193cfc61abb2e5a50d36ebbc50d942a32b"
+  integrity sha512-+euflG6ygo4bn0JHtn4pYqcXwRtLvElQ7/nnjDu7iYG56H0+OhCd7d6Ug0IE3WcFpZozBKW2+80FUbv5QGk5AQ==
+
 "@types/cacache@^15.0.1":
   version "15.0.1"
   resolved "https://registry.yarnpkg.com/@types/cacache/-/cacache-15.0.1.tgz#3d1943cc80ade160c9ae98bd5c1ebcc538f9cd57"
@@ -3777,7 +3782,7 @@
     expect "^29.0.0"
     pretty-format "^29.0.0"
 
-"@types/js-yaml@^3.12.2":
+"@types/js-yaml@^3.12.2", "@types/js-yaml@^3.12.5":
   version "3.12.7"
   resolved "https://registry.yarnpkg.com/@types/js-yaml/-/js-yaml-3.12.7.tgz#330c5d97a3500e9c903210d6e49f02964af04a0e"
   integrity sha512-S6+8JAYTE1qdsc9HMVsfY7+SgSuUU/Tp6TYTmITW0PZxiyIMvol3Gy//y69Wkhs0ti4py5qgR3uZH6uz/DNzJQ==
@@ -3902,6 +3907,13 @@
     "@types/metro-core" "*"
     "@types/metro-source-map" "*"
     "@types/metro-transform-worker" "*"
+
+"@types/micromatch@^4.0.2":
+  version "4.0.2"
+  resolved "https://registry.yarnpkg.com/@types/micromatch/-/micromatch-4.0.2.tgz#ce29c8b166a73bf980a5727b1e4a4d099965151d"
+  integrity sha512-oqXqVb0ci19GtH0vOA/U2TmHTcRY9kuZl4mqUxe0QmJAlIW13kzhuK5pi1i9+ngav8FjpSb9FVS/GE00GLX1VA==
+  dependencies:
+    "@types/braces" "*"
 
 "@types/mime-types@^2.1.0":
   version "2.1.1"
