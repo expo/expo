@@ -70,7 +70,7 @@ jobs:
       - name: 📦 Get artifacts path
         run: mkdir -p artifact && echo "ARTIFACTS_DEST=$(pwd)/artifact" >> $GITHUB_ENV
       - name: 📦 Get commit message
-        run: echo "COMMIT_MESSAGE=$(git log -1 --pretty=%B | head -c1000)" >> $GITHUB_ENV
+        run: echo "COMMIT_MESSAGE=$(git log -1 --pretty=oneline | head -c1000)" >> $GITHUB_ENV
       - name: 📦 Set test project location
         run: echo "TEST_PROJECT_ROOT=$GITHUB_WORKSPACE/updates-e2e" >> $GITHUB_ENV
       - name: 📦 Setup test project
