@@ -271,12 +271,12 @@ const eas = [
       makeGroup('EAS Update', [
         makePage('eas-update/introduction.mdx'),
         makePage('eas-update/getting-started.mdx'),
-        makePage('eas-update/build-and-update.mdx'),
         makePage('eas-update/github-actions.mdx'),
         makePage('eas-update/developing-with-eas-update.mdx'),
         makePage('eas-update/how-eas-update-works.mdx'),
         makePage('eas-update/deployment-patterns.mdx'),
         makePage('eas-update/debug-updates.mdx'),
+        makePage('eas-update/eas-update-with-local-build.mdx'),
         makePage('eas-update/eas-update-and-eas-cli.mdx'),
         makePage('eas-update/optimize-assets.mdx'),
         makePage('eas-update/migrate-to-eas-update.mdx'),
