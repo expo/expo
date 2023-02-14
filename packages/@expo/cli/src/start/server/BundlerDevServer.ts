@@ -217,9 +217,7 @@ export abstract class BundlerDevServer {
   protected abstract getConfigModuleIds(): string[];
 
   protected watchConfig() {
-    if (this.notifier) {
-      this.notifier.stopObserving();
-    }
+    this.notifier?.stopObserving();
     this.notifier = new FileNotifier(this.projectRoot, this.getConfigModuleIds());
     this.notifier.startObserving();
   }
@@ -237,11 +235,7 @@ export abstract class BundlerDevServer {
   protected async startDevSessionAsync() {
     // This is used to make Expo Go open the project in either Expo Go, or the web browser.
     // Must come after ngrok (`startTunnelAsync`) setup.
-
-    if (this.devSession) {
-      this.devSession.stopNotifying();
-    }
-
+    this.devSession?.stopNotifying?.();
     this.devSession = new DevelopmentSession(
       this.projectRoot,
       // This URL will be used on external devices so the computer IP won't be relevant.
