@@ -6,7 +6,7 @@ apply plugin: 'maven-publish'
 apply plugin: "de.undercouch.download"
 
 group = 'host.exp.exponent'
-version = '12.3.1'
+version = '12.4.0'
 
 def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
 def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
@@ -103,7 +103,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 31
-    versionName "12.3.1"
+    versionName "12.4.0"
 
     externalNativeBuild {
       cmake {
