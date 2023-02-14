@@ -90,7 +90,6 @@ export async function upgradeAsync(
 
   const packageManager = PackageManager.createForProject(projectRoot, {
     log: Log.log,
-    silent: false,
     ...options,
   });
 
@@ -196,10 +195,7 @@ async function performPackageModificationsAsync(
 
   if (modifications.add.length) {
     Log.log(`Adding packages: ${modifications.add.join(', ')}`);
-    await installAsync(modifications.add, {
-      projectRoot,
-      silent: false,
-    });
+    await installAsync(modifications.add, { projectRoot });
   }
 }
 
