@@ -116,6 +116,12 @@ export interface PluginConfigTypeAndroidPackagingOptions {
      * Array of patterns for native libraries that should not be stripped of debug symbols.
      */
     doNotStrip?: string[];
+    /**
+     * fixes error when you bump minSdkVersion
+     */
+    jniLibs?: {
+        useLegacyPackaging?: boolean;
+    };
 }
 /**
  * @ignore

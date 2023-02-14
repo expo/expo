@@ -141,6 +141,13 @@ export interface PluginConfigTypeAndroidPackagingOptions {
    * Array of patterns for native libraries that should not be stripped of debug symbols.
    */
   doNotStrip?: string[];
+
+  /**
+   * fixes error when you bump minSdkVersion
+   */
+  jniLibs?: {
+    useLegacyPackaging?: boolean;
+  };
 }
 
 const schema: JSONSchemaType<PluginConfigType> = {
@@ -171,6 +178,13 @@ const schema: JSONSchemaType<PluginConfigType> = {
             exclude: { type: 'array', items: { type: 'string' }, nullable: true },
             merge: { type: 'array', items: { type: 'string' }, nullable: true },
             doNotStrip: { type: 'array', items: { type: 'string' }, nullable: true },
+            jniLibs: {
+              type: 'object',
+              properties: {
+                useLegacyPackaging: { type: 'boolean', nullable: true },
+              },
+              nullable: true,
+            },
           },
           nullable: true,
         },
