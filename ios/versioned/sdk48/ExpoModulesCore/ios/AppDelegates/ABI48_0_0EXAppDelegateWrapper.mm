@@ -42,7 +42,7 @@
   return _expoAppDelegate;
 }
 
-#if __has_include(<ABI48_0_0React-ABI48_0_0RCTAppDelegate/ABI48_0_0RCTAppDelegate.h>)
+#if __has_include(<ABI48_0_0React-ABI48_0_0RCTAppDelegate/ABI48_0_0RCTAppDelegate.h>) || __has_include(<ABI48_0_0React_RCTAppDelegate/ABI48_0_0RCTAppDelegate.h>)
 
 - (UIView *)findRootView:(UIApplication *)application
 {
