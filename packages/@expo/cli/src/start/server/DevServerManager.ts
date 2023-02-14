@@ -31,12 +31,14 @@ const BUNDLERS = {
 export class DevServerManager {
   private projectPrerequisites: ProjectPrerequisite[] = [];
 
+  private notifier: FileNotifier | null = null;
+
   constructor(
     public projectRoot: string,
     /** Keep track of the original CLI options for bundlers that are started interactively. */
     public options: BundlerStartOptions
   ) {
-    this.watchBabelConfig();
+    this.notifier = this.watchBabelConfig();
   }
 
   private watchBabelConfig() {
@@ -151,6 +153,7 @@ export class DevServerManager {
   /** Stop all servers including ADB. */
   async stopAsync(): Promise<void> {
     await Promise.allSettled([
+      this.notifier?.stopObserving(),
       // Stop all dev servers
       ...devServers.map((server) => server.stopAsync()),
       // Stop ADB
