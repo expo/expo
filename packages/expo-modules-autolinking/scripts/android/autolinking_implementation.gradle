@@ -108,6 +108,7 @@ class ExpoAutolinkingManager {
   static private String[] convertOptionsToCommandArgs(String command, Map options) {
     String[] args = [
       'node',
+      '--no-warnings',
       '--eval',
       'require(\'expo-modules-autolinking\')(process.argv.slice(1))',
       '--',
