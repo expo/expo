@@ -4,27 +4,32 @@ labels: ['needs review']
 body:
   - type: markdown
     attributes:
-      value: Thanks for taking the time to file a bug report! If you are convinced that you have found a bug in Expo tools, this is the right place. Please fill out this entire form.
+      value: Thanks for taking the time to file a bug report! If you are convinced that you have found a bug in Expo tools, this is the right place. Please fill out this entire form. The most important piece is a minimal reproducible example.
   - type: markdown
     attributes:
       value: If you have a question or you think your issue might be caused by your application code, you can get help from the community on the [forums](https://forums.expo.dev/) or on [Discord](https://chat.expo.dev).
+  - type: input
+    attributes:
+      label: Minimal reproducible example
+      description: |
+        This should include as little code as possible, and no extraneous dependencies. Do not share your entire project.
+        You should also test your issue against the latest SDK version to ensure that it hasn't already been resolved.
+        Sharing a link to a GitHub repository or [Snack](https://snack.expo.dev/) are best. Include any instructions to run the project in the README or the summary field below.
+        If a reproducible demo is not provided, your issue will be closed.
+        [Learn more about creating a minimal reproducible example](https://stackoverflow.com/help/mcve).
+    validations:
+      required: true
+  - type: markdown
+    attributes:
+      value: |
+        **Realize that it is up to you to debug your code and be as certain as possible that the bug is with Expo, not with your own app.**
+        [Here's an excellent guide to debugging you can follow](https://gist.github.com/brentvatne/5ac00cba0c70b7a06b89a56787d6bc4a).
   - type: textarea
     attributes:
       label: Summary
       description: |
-        Clearly describe what the expected behavior is and what instead is actually happening. Be concise and precise in your description.
+        Clearly describe what the expected behavior is and what instead is actually happening. Be concise and precise in your description. Include any affected platforms (iOS, Android, web).
         Ex: if you report that "X library/method isn't working", then you will need to [continue debugging on your own](https://expo.fyi/manual-debugging) to more precisely define your issue before proceeding.
-    validations:
-      required: true
-  - type: dropdown
-    attributes:
-      label: What platform(s) does this occur on?
-      multiple: true
-      options:
-        - Android
-        - iOS
-        - Web
-        - Not Applicable
     validations:
       required: true
   - type: textarea
@@ -33,21 +38,3 @@ body:
       description: Run the `npx expo-env-info` command and paste its output in the field below.
     validations:
       required: true
-  - type: textarea
-    attributes:
-      label: Minimal reproducible example
-      description: |
-        This should include as little code as possible, and no extraneous dependencies. Do not share your entire project.
-        Sharing a link to a [Snack](https://snack.expo.dev/) is often the best approach, but in some cases a GitHub repository is required.
-        If a reproducible demo is not provided, your issue will be closed. You must also test your issue against the latest SDK version to ensure that it hasn't already been resolved.
-        [Learn more about creating a minimal reproducible example](https://stackoverflow.com/help/mcve).
-    validations:
-      required: true
-  - type: markdown
-    attributes:
-      value: Please make sure contributors can run your Snack or repository, and you explain how to reproduce the issue once the example is running.
-  - type: markdown
-    attributes:
-      value: |
-        **Realize that it is up to you to debug your code and be as certain as possible that the bug is with Expo, not with your own app.**
-        [Here's an excellent guide to debugging you can follow](https://gist.github.com/brentvatne/5ac00cba0c70b7a06b89a56787d6bc4a).

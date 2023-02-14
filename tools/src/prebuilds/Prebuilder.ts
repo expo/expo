@@ -37,7 +37,6 @@ export const PACKAGES_TO_PREBUILD = [
   // 'expo-crypto',
   // 'expo-device',
   // 'expo-document-picker',
-  // 'expo-error-recovery',
   // 'expo-face-detector',
   'expo-file-system',
   // 'expo-firebase-analytics',
