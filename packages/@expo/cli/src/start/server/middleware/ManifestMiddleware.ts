@@ -15,7 +15,6 @@ import { resolveGoogleServicesFile, resolveManifestAssets } from './resolveAsset
 import { resolveAbsoluteEntryPoint } from './resolveEntryPoint';
 import { parsePlatformHeader, RuntimePlatform } from './resolvePlatform';
 import { ServerHeaders, ServerNext, ServerRequest, ServerResponse } from './server.types';
-import { env } from '../../../utils/env';
 
 const debug = require('debug')('expo:start:server:middleware:manifest') as typeof console.log;
 
