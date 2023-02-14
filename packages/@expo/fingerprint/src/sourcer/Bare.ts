@@ -1,6 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 import chalk from 'chalk';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 
 import type { HashSource, NormalizedOptions, Platform } from '../Fingerprint.types';
 import { getFileBasedHashSourceAsync } from './Utils';
@@ -41,9 +42,9 @@ export async function getPackageJsonScriptSourcesAsync(
 ) {
   let packageJson;
   try {
-    packageJson = require(`${projectRoot}/package.json`);
+    packageJson = require(resolveFrom(path.resolve(projectRoot), './package.json'));
   } catch (e: unknown) {
-    debug(`Unable to read package.json from ${projectRoot}/package.json: ` + e);
+    debug(`Unable to read package.json from ${path.resolve(projectRoot)}/package.json: ` + e);
     return [];
   }
   const results: HashSource[] = [];

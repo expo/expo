@@ -191,7 +191,8 @@ describe(`getExpoConfigSourcesAsync - config-plugins`, () => {
 
   afterEach(() => {
     vol.reset();
-    jest.resetAllMocks();
+    const mockResolveFrom = resolveFrom.silent as jest.MockedFunction<typeof resolveFrom.silent>;
+    mockResolveFrom.mockReset();
   });
 
   it('should contain external config-plugin dir', async () => {
