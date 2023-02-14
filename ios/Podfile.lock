@@ -2098,8 +2098,6 @@ PODS:
     - ExpoModulesCore
   - EXDocumentPicker (11.2.1):
     - ExpoModulesCore
-  - EXErrorRecovery (4.1.1):
-    - ExpoModulesCore
   - EXFaceDetector (12.1.1):
     - ExpoModulesCore
     - GoogleMLKit/FaceDetection (= 2.6.0)
@@ -3310,7 +3308,6 @@ DEPENDENCIES:
   - EXConstants (from `../packages/expo-constants/ios`)
   - EXContacts (from `../packages/expo-contacts/ios`)
   - EXDocumentPicker (from `../packages/expo-document-picker/ios`)
-  - EXErrorRecovery (from `../packages/expo-error-recovery/ios`)
   - EXFaceDetector (from `../packages/expo-face-detector/ios`)
   - EXFileSystem (from `../packages/expo-file-system/ios`)
   - EXFont (from `../packages/expo-font/ios`)
@@ -4177,8 +4174,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-contacts/ios"
   EXDocumentPicker:
     :path: "../packages/expo-document-picker/ios"
-  EXErrorRecovery:
-    :path: "../packages/expo-error-recovery/ios"
   EXFaceDetector:
     :path: "../packages/expo-face-detector/ios"
   EXFileSystem:
@@ -4721,7 +4716,7 @@ SPEC CHECKSUMS:
   AppAuth: 8fca6b5563a5baef2c04bee27538025e4ceb2add
   ASN1Decoder: 6110fdeacfdb41559b1481457a1645be716610aa
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
-  Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
+  Branch: 23b6b9351d5574377e7a764841cfb13a70c2799b
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: 950674e1098ebc09c4c2cf064a61e42e84d9d4c6
@@ -4735,7 +4730,6 @@ SPEC CHECKSUMS:
   EXConstants: f348da07e21b23d2b085e270d7b74f282df1a7d9
   EXContacts: 44ced67015dab45ca8ae1eb8950738d60de0af64
   EXDocumentPicker: 909609253c185cc6d802f408c7eaf7a4daca793b
-  EXErrorRecovery: ebb57ae947ff94667f1cbc12f403bb5a043d734d
   EXFaceDetector: 16c5311521334ba7818c28cde44997d6757c2dd0
   EXFileSystem: 844e86ca9b5375486ecc4ef06d3838d5597d895d
   EXFont: 6ea3800df746be7233208d80fe379b8ed74f4272
