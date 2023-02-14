@@ -13,11 +13,10 @@ import CoreGraphics
 
 extension URL: Convertible {
   public static func convert(from value: Any?) throws -> Self {
-    if let uri = value as? String, let url = URL(string: uri) {
-      // `URL(string:)` is an optional init but it doesn't imply it's a valid URL,
-      // so here we don't check for the correctness of the URL.
-      // If it has no scheme, we assume it was the file path.
-      return url.scheme != nil ? url : URL(fileURLWithPath: uri)
+    if let value = value as? String, let encodedValue = percentEncodeUrlString(value), let url = URL(string: encodedValue) {
+      // If it has no scheme, we assume it was the file path which needs to be recreated to be recognized as the file url.
+      // Notice that it uses the decoded value as the file path doesn't have to be percent-encoded.
+      return url.scheme != nil ? url : URL(fileURLWithPath: value)
     }
     throw Conversions.ConvertingException<URL>(value)
   }
