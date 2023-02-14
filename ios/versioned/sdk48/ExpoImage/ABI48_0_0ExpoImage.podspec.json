@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0ExpoImage",
-  "version": "1.0.0-beta.5",
+  "version": "1.0.0-rc.1",
   "summary": "A cross-platform, performant image component for React Native and Expo with Web support",
   "description": "A cross-platform, performant image component for React Native and Expo with Web support",
   "license": "MIT",
