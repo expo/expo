@@ -7,6 +7,7 @@ import android.graphics.Rect
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.os.Build
+import android.os.Handler
 import android.view.View
 import android.widget.FrameLayout
 import androidx.core.view.AccessibilityDelegateCompat
@@ -51,6 +52,8 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   private val firstView = ExpoImageView(activity)
   private val secondView = ExpoImageView(activity)
 
+  private val mainHandler = Handler(context.mainLooper)
+
   /**
    * @returns the view which is currently active or will be used when both views are empty
    */
@@ -92,6 +95,13 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     set(value) {
       field = value
       activeView.contentFit = value
+      transformationMatrixChanged = true
+    }
+
+  internal var placeholderContentFit: ContentFit = ContentFit.ScaleDown
+    set(value) {
+      field = value
+      activeView.placeholderContentFit = value
       transformationMatrixChanged = true
     }
 
@@ -226,74 +236,82 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
     target: ImageViewWrapperTarget,
     resource: Drawable,
     isPlaceholder: Boolean = false
-  ) {
-    val transitionDuration = (transition?.duration ?: 0).toLong()
+  ) =
+    // The "onResourceReady" function will be triggered when the new resource is available by the Glide.
+    // According to the Glide documentation (https://bumptech.github.io/glide/doc/debugging.html#you-cant-start-or-clear-loads-in-requestlistener-or-target-callbacks),
+    // it's not advisable to clear the Glide target within the stack frame.
+    // To avoid this, a new runnable is posted to the front of the main queue, which can then clean or create targets.
+    // This ensures that the "onResourceReady" frame of the Glide code will be discarded, and the internal state can be altered once again.
+    // Normally, using "postAtFrontOfQueue" can lead to issues such as message queue starvation, ordering problems, and other unexpected consequences.
+    // However, in this case, it is safe to use as long as nothing else is added to the queue.
+    // The intention is simply to wait for the Glide code to finish before the content of the underlying views is changed during the same rendering tick.
+    mainHandler.postAtFrontOfQueue {
+      val transitionDuration = (transition?.duration ?: 0).toLong()
 
-    // If provided resource is a placeholder, but the target doesn't have a source, we treat it as a normal image.
-    if (!isPlaceholder || !target.hasSource) {
-      val (newView, previousView) = if (firstView.drawable == null) {
-        firstView to secondView
-      } else {
-        secondView to firstView
-      }
+      // If provided resource is a placeholder, but the target doesn't have a source, we treat it as a normal image.
+      if (!isPlaceholder || !target.hasSource) {
+        val (newView, previousView) = if (firstView.drawable == null) {
+          firstView to secondView
+        } else {
+          secondView to firstView
+        }
 
-      val clearPreviousView = {
-        previousView
-          .recycleView()
-          ?.apply {
-            // When the placeholder is loaded, one target is displayed in both views.
-            // So we just have to move the reference to a new view instead of clearing the target.
-            if (this != target) {
-              clear(requestManager)
+        val clearPreviousView = {
+          previousView
+            .recycleView()
+            ?.apply {
+              // When the placeholder is loaded, one target is displayed in both views.
+              // So we just have to move the reference to a new view instead of clearing the target.
+              if (this != target) {
+                clear(requestManager)
+              }
+            }
+        }
+
+        configureView(newView, target, resource, isPlaceholder)
+        if (transitionDuration <= 0) {
+          clearPreviousView()
+          newView.alpha = 1f
+          newView.bringToFront()
+        } else {
+          newView.bringToFront()
+          previousView.alpha = 1f
+          newView.alpha = 0f
+          previousView.animate().apply {
+            duration = transitionDuration
+            alpha(0f)
+            withEndAction {
+              clearPreviousView()
             }
           }
-      }
-
-      configureView(newView, target, resource, isPlaceholder)
-      if (transitionDuration <= 0) {
-        clearPreviousView()
-        newView.alpha = 1f
-        newView.bringToFront()
-      } else {
-        newView.bringToFront()
-        previousView.alpha = 1f
-        newView.alpha = 0f
-
-        previousView.animate().apply {
-          duration = transitionDuration
-          alpha(0f)
-          withEndAction {
-            clearPreviousView()
+          newView.animate().apply {
+            duration = transitionDuration
+            alpha(1f)
           }
         }
-        newView.animate().apply {
-          duration = transitionDuration
-          alpha(1f)
+      } else {
+        // We don't want to show the placeholder if something is currently displayed.
+        // There is one exception - when we're displaying a different placeholder.
+        if ((firstView.drawable != null && !firstView.isPlaceholder) || secondView.drawable != null) {
+          return@postAtFrontOfQueue
         }
-      }
-    } else {
-      // We don't want to show the placeholder if something is currently displayed.
-      // There is one exception - when we're displaying a different placeholder.
-      if ((firstView.drawable != null && !firstView.isPlaceholder) || secondView.drawable != null) {
-        return
-      }
 
-      firstView
-        .recycleView()
-        ?.clear(requestManager)
+        firstView
+          .recycleView()
+          ?.clear(requestManager)
 
-      configureView(firstView, target, resource, isPlaceholder)
-      if (transitionDuration > 0) {
-        firstView.bringToFront()
-        firstView.alpha = 0f
-        secondView.isVisible = false
-        firstView.animate().apply {
-          duration = transitionDuration
-          alpha(1f)
+        configureView(firstView, target, resource, isPlaceholder)
+        if (transitionDuration > 0) {
+          firstView.bringToFront()
+          firstView.alpha = 0f
+          secondView.isVisible = false
+          firstView.animate().apply {
+            duration = transitionDuration
+            alpha(1f)
+          }
         }
       }
     }
-  }
 
   private fun configureView(
     view: ExpoImageView,
@@ -305,7 +323,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       it.setImageDrawable(resource)
 
       it.isPlaceholder = isPlaceholder
-      it.placeholderContentFit = target.placeholderContentFit
+      it.placeholderContentFit = target.placeholderContentFit ?: ContentFit.ScaleDown
       copyProps(it)
 
       it.isVisible = true
@@ -430,12 +448,12 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         .apply {
           if (placeholder != null) {
             thumbnail(requestManager.load(placeholder.glideData))
-            val placeholderContentFit = if (bestPlaceholder.isBlurhash()) {
+            val newPlaceholderContentFit = if (bestPlaceholder.isBlurhash()) {
               contentFit
             } else {
-              ContentFit.ScaleDown
+              placeholderContentFit
             }
-            newTarget.placeholderContentFit = placeholderContentFit
+            newTarget.placeholderContentFit = newPlaceholderContentFit
           }
         }
         .apply {
