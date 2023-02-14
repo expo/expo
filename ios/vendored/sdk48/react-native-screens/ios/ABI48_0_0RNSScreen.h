@@ -75,13 +75,6 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic) UIInterfaceOrientationMask screenOrientation;
 @property (nonatomic) BOOL statusBarHidden;
 @property (nonatomic) BOOL homeIndicatorHidden;
-
-// Props controlling UISheetPresentationController
-@property (nonatomic) ABI48_0_0RNSScreenDetentType sheetAllowedDetents;
-@property (nonatomic) ABI48_0_0RNSScreenDetentType sheetLargestUndimmedDetent;
-@property (nonatomic) BOOL sheetGrabberVisible;
-@property (nonatomic) CGFloat sheetCornerRadius;
-@property (nonatomic) BOOL sheetExpandsWhenScrolledToEdge;
 #endif // !TARGET_OS_TV
 
 #ifdef RN_FABRIC_ENABLED
