@@ -7,12 +7,12 @@ import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ApplicationVersionSignature
-import abi48_0_0.com.facebook.react.views.imagehelper.ResourceDrawableIdHelper
 import abi48_0_0.expo.modules.image.GlideBlurhashModel
 import abi48_0_0.expo.modules.image.GlideModel
 import abi48_0_0.expo.modules.image.GlideRawModel
 import abi48_0_0.expo.modules.image.GlideUriModel
 import abi48_0_0.expo.modules.image.GlideUrlModel
+import abi48_0_0.expo.modules.image.ResourceIdHelper
 import abi48_0_0.expo.modules.image.okhttp.GlideUrlWithCustomCacheKey
 import abi48_0_0.expo.modules.kotlin.records.Field
 import abi48_0_0.expo.modules.kotlin.records.Record
@@ -141,7 +141,7 @@ data class SourceMap(
   }
 
   private fun computeLocalUri(stringUri: String, context: Context): Uri? {
-    return ResourceDrawableIdHelper.getInstance().getResourceDrawableUri(context, stringUri)
+    return ResourceIdHelper.getResourceUri(context, stringUri)
   }
 
   internal val pixelCount: Double
