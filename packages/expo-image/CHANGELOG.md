@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed SVGs are not rendered in the release mode on Android.
+
 ### 💡 Others
 
 ## 1.0.0-rc.0 — 2023-02-09
