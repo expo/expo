@@ -82,9 +82,6 @@
   _hasStatusBarHiddenSet = NO;
   _hasOrientationSet = NO;
   _hasHomeIndicatorHiddenSet = NO;
-#if !TARGET_OS_TV
-  _sheetExpandsWhenScrolledToEdge = YES;
-#endif // !TARGET_OS_TV
 }
 
 - (UIViewController *)ABI48_0_0ReactViewController
@@ -517,60 +514,6 @@
   return self.stackPresentation != ABI48_0_0RNSScreenStackPresentationPush;
 }
 
-#if !TARGET_OS_TV
-/**
- * Updates settings for sheet presentation controller.
- * Note that this method should not be called inside `stackPresentation` setter, because on Paper we don't have
- * guarantee that values of all related props had been updated earlier.
- */
-- (void)updatePresentationStyle
-{
-#if defined(__IPHONE_OS_VERSION_MAX_ALLOWED) && defined(__IPHONE_15_0) && \
-    __IPHONE_OS_VERSION_MAX_ALLOWED >= __IPHONE_15_0
-  if (@available(iOS 15.0, *)) {
-    UISheetPresentationController *sheet = _controller.sheetPresentationController;
-    if (_stackPresentation == ABI48_0_0RNSScreenStackPresentationFormSheet && sheet != nil) {
-      sheet.prefersScrollingExpandsWhenScrolledToEdge = _sheetExpandsWhenScrolledToEdge;
-      sheet.prefersGrabberVisible = _sheetGrabberVisible;
-      sheet.preferredCornerRadius =
-          _sheetCornerRadius < 0 ? UISheetPresentationControllerAutomaticDimension : _sheetCornerRadius;
-
-      if (_sheetLargestUndimmedDetent == ABI48_0_0RNSScreenDetentTypeMedium) {
-        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
-      } else if (_sheetLargestUndimmedDetent == ABI48_0_0RNSScreenDetentTypeLarge) {
-        sheet.largestUndimmedDetentIdentifier = UISheetPresentationControllerDetentIdentifierLarge;
-      } else if (_sheetLargestUndimmedDetent == ABI48_0_0RNSScreenDetentTypeAll) {
-        sheet.largestUndimmedDetentIdentifier = nil;
-      } else {
-        ABI48_0_0RCTLogError(@"Unhandled value of sheetLargestUndimmedDetent passed");
-      }
-
-      if (_sheetAllowedDetents == ABI48_0_0RNSScreenDetentTypeMedium) {
-        sheet.detents = @[ UISheetPresentationControllerDetent.mediumDetent ];
-        if (sheet.selectedDetentIdentifier != UISheetPresentationControllerDetentIdentifierMedium) {
-          [sheet animateChanges:^{
-            sheet.selectedDetentIdentifier = UISheetPresentationControllerDetentIdentifierMedium;
-          }];
-        }
-      } else if (_sheetAllowedDetents == ABI48_0_0RNSScreenDetentTypeLarge) {
-        sheet.detents = @[ UISheetPresentationControllerDetent.largeDetent ];
-        if (sheet.selectedDetentIdentifier != UISheetPresentationControllerDetentIdentifierLarge) {
-          [sheet animateChanges:^{
-            sheet.selectedDetentIdentifier = UISheetPresentationControllerDetentIdentifierLarge;
-          }];
-        }
-      } else if (_sheetAllowedDetents == ABI48_0_0RNSScreenDetentTypeAll) {
-        sheet.detents =
-            @[ UISheetPresentationControllerDetent.mediumDetent, UISheetPresentationControllerDetent.largeDetent ];
-      } else {
-        ABI48_0_0RCTLogError(@"Unhandled value of sheetAllowedDetents passed");
-      }
-    }
-  }
-#endif // Check for max allowed iOS version
-}
-#endif // !TARGET_OS_TV
-
 #pragma mark - Fabric specific
 #ifdef RN_FABRIC_ENABLED
 
@@ -670,19 +613,6 @@
   if (newScreenProps.homeIndicatorHidden != oldScreenProps.homeIndicatorHidden) {
     [self setHomeIndicatorHidden:newScreenProps.homeIndicatorHidden];
   }
-
-  [self setSheetGrabberVisible:newScreenProps.sheetGrabberVisible];
-  [self setSheetCornerRadius:newScreenProps.sheetCornerRadius];
-  [self setSheetExpandsWhenScrolledToEdge:newScreenProps.sheetExpandsWhenScrolledToEdge];
-
-  if (newScreenProps.sheetAllowedDetents != oldScreenProps.sheetAllowedDetents) {
-    [self setSheetAllowedDetents:[ABI48_0_0RNSConvert ABI48_0_0RNSScreenDetentTypeFromAllowedDetents:newScreenProps.sheetAllowedDetents]];
-  }
-
-  if (newScreenProps.sheetLargestUndimmedDetent != oldScreenProps.sheetLargestUndimmedDetent) {
-    [self setSheetLargestUndimmedDetent:
-              [ABI48_0_0RNSConvert ABI48_0_0RNSScreenDetentTypeFromLargestUndimmedDetent:newScreenProps.sheetLargestUndimmedDetent]];
-  }
 #endif // !TARGET_OS_TV
 
   // Notice that we compare against _stackPresentation, not oldScreenProps.stackPresentation.
@@ -692,11 +622,6 @@
   if (newStackPresentation != _stackPresentation) {
     [self setStackPresentation:newStackPresentation];
   }
-
-#if !TARGET_OS_TV
-  // This must be called after setter for stackPresentation
-  [self updatePresentationStyle];
-#endif // !TARGET_OS_TV
 
   if (newScreenProps.stackAnimation != oldScreenProps.stackAnimation) {
     [self setStackAnimation:[ABI48_0_0RNSConvert ABI48_0_0RNSScreenStackAnimationFromCppEquivalent:newScreenProps.stackAnimation]];
@@ -735,14 +660,6 @@
 
 #pragma mark - Paper specific
 #else
-
-- (void)didSetProps:(NSArray<NSString *> *)changedProps
-{
-  [super didSetProps:changedProps];
-#if !TARGET_OS_TV
-  [self updatePresentationStyle];
-#endif // !TARGET_OS_TV
-}
 
 - (void)setPointerEvents:(ABI48_0_0RCTPointerEvents)pointerEvents
 {
@@ -1280,12 +1197,6 @@ ABI48_0_0RCT_EXPORT_VIEW_PROPERTY(statusBarAnimation, UIStatusBarAnimation)
 ABI48_0_0RCT_EXPORT_VIEW_PROPERTY(statusBarHidden, BOOL)
 ABI48_0_0RCT_EXPORT_VIEW_PROPERTY(statusBarStyle, ABI48_0_0RNSStatusBarStyle)
 ABI48_0_0RCT_EXPORT_VIEW_PROPERTY(homeIndicatorHidden, BOOL)
-
-ABI48_0_0RCT_EXPORT_VIEW_PROPERTY(sheetAllowedDetents, ABI48_0_0RNSScreenDetentType);
-ABI48_0_0RCT_EXPORT_VIEW_PROPERTY(sheetLargestUndimmedDetent, ABI48_0_0RNSScreenDetentType);
-ABI48_0_0RCT_EXPORT_VIEW_PROPERTY(sheetGrabberVisible, BOOL);
-ABI48_0_0RCT_EXPORT_VIEW_PROPERTY(sheetCornerRadius, CGFloat);
-ABI48_0_0RCT_EXPORT_VIEW_PROPERTY(sheetExpandsWhenScrolledToEdge, BOOL);
 #endif
 
 #if !TARGET_OS_TV
@@ -1396,16 +1307,6 @@ ABI48_0_0RCT_ENUM_CONVERTER(
       @"dark" : @(ABI48_0_0RNSStatusBarStyleDark),
     }),
     ABI48_0_0RNSStatusBarStyleAuto,
-    integerValue)
-
-ABI48_0_0RCT_ENUM_CONVERTER(
-    ABI48_0_0RNSScreenDetentType,
-    (@{
-      @"large" : @(ABI48_0_0RNSScreenDetentTypeLarge),
-      @"medium" : @(ABI48_0_0RNSScreenDetentTypeMedium),
-      @"all" : @(ABI48_0_0RNSScreenDetentTypeAll),
-    }),
-    ABI48_0_0RNSScreenDetentTypeAll,
     integerValue)
 
 + (UIInterfaceOrientationMask)UIInterfaceOrientationMask:(id)json
