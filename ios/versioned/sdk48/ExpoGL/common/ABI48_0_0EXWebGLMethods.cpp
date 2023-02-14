@@ -276,6 +276,13 @@ NATIVE_METHOD(pixelStorei) {
       ctx->unpackFLipY = ARG(1, GLboolean);
       break;
     }
+    case GL_UNPACK_ALIGNMENT: {
+      auto param = ARG(1, GLint);
+      ctx->addToNextBatch([=] {
+        glPixelStorei(GL_UNPACK_ALIGNMENT, param);
+      });
+      break;
+    }
     default:
       jsConsoleLog(runtime, { jsi::String::createFromUtf8(runtime, "ABI48_0_0EXGL: gl.pixelStorei() doesn't support this parameter yet!") });
   }

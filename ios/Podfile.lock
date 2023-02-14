@@ -1368,7 +1368,7 @@ PODS:
     - ABI48_0_0ExpoModulesCore
   - ABI48_0_0EXPermissions (14.1.0):
     - ABI48_0_0ExpoModulesCore
-  - ABI48_0_0Expo (48.0.0-beta.0):
+  - ABI48_0_0Expo (48.0.0-beta.2):
     - ABI48_0_0ExpoModulesCore
   - ABI48_0_0ExpoAppleAuthentication (6.0.0):
     - ABI48_0_0ExpoModulesCore
@@ -1386,12 +1386,12 @@ PODS:
     - ABI48_0_0ExpoModulesCore
   - ABI48_0_0ExpoDevice (5.2.0):
     - ABI48_0_0ExpoModulesCore
-  - ABI48_0_0ExpoGL (12.3.0):
+  - ABI48_0_0ExpoGL (12.3.1):
     - ABI48_0_0ExpoModulesCore
     - ABI48_0_0ReactCommon/turbomodule/core
   - ABI48_0_0ExpoHaptics (12.2.0):
     - ABI48_0_0ExpoModulesCore
-  - ABI48_0_0ExpoImage (1.0.0-beta.5):
+  - ABI48_0_0ExpoImage (1.0.0-rc.1):
     - ABI48_0_0ExpoModulesCore
     - SDWebImage (~> 5.15.0)
     - SDWebImageAVIFCoder (~> 0.9.4)
@@ -4620,7 +4620,7 @@ SPEC CHECKSUMS:
   ABI48_0_0EXMediaLibrary: fb41cf0d6324f88e7a4250427280ff7740184c44
   ABI48_0_0EXNotifications: b6bd5a0fc8f837e26ed4c1d478d0531a0b511984
   ABI48_0_0EXPermissions: 0661a116109e9d1f6e3c05ce9814d321403544aa
-  ABI48_0_0Expo: af6bbce3f479b3d2406b2280c1bb7eb0dc892cc0
+  ABI48_0_0Expo: a37071d7708b43d23b101504ebaf6e60921b2ab4
   ABI48_0_0ExpoAppleAuthentication: 856c9a2523e1e832e4136215315c53a11513f6b7
   ABI48_0_0ExpoBattery: d3f31f0a7ea9606bd2d301d795273f2b0c0bb86b
   ABI48_0_0ExpoBlur: b0e25519687e8a1ec263ae20554c31a67e55a558
@@ -4629,9 +4629,9 @@ SPEC CHECKSUMS:
   ABI48_0_0ExpoClipboard: 8156a76c301f080b8a841eb597a80f53ccbac991
   ABI48_0_0ExpoCrypto: b0af0d683a5d113369ed0c833e985b96c9f28c24
   ABI48_0_0ExpoDevice: 5ab3e25a1fefa734d252f0994e8f5c6f6bfe8ff5
-  ABI48_0_0ExpoGL: ca63af3bcfb4663825bea66fe49752552a0f8e59
+  ABI48_0_0ExpoGL: 1d562654a07516f92b9d690f7fb4f2eaccc44e6f
   ABI48_0_0ExpoHaptics: cfb7784b2d30c4d91daaa300eda573dbbc5c8c32
-  ABI48_0_0ExpoImage: b8cf6fd26775566f2d89c160962fc9872a1417ac
+  ABI48_0_0ExpoImage: a24c0a018988421015137c99ec2c71139a5f4d2d
   ABI48_0_0ExpoImageManipulator: 455044744565e5527e210e7f7173c44083cfcdd6
   ABI48_0_0ExpoImagePicker: b0735a3ee16e43b9f311eb7a891c50e7733205c2
   ABI48_0_0ExpoKeepAwake: 0aea82d749703325d67ab97b7b54806789648d5c
