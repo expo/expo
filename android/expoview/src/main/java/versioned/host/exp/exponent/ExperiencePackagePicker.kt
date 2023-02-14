@@ -20,7 +20,6 @@ import expo.modules.crypto.CryptoModule
 import expo.modules.device.DeviceModule
 import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
-import expo.modules.errorrecovery.ErrorRecoveryPackage
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemPackage
 import expo.modules.font.FontLoaderPackage
@@ -76,7 +75,6 @@ object ExperiencePackagePicker : ModulesProvider {
     CalendarPackage(),
     ConstantsPackage(),
     ContactsPackage(),
-    ErrorRecoveryPackage(),
     FaceDetectorPackage(),
     FileSystemPackage(),
     FontLoaderPackage(),
