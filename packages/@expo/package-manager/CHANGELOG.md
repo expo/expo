@@ -4,9 +4,17 @@
 
 ### 🛠 Breaking changes
 
-- Refactor the Node package manager API to support specific installation functionality and improve workspace usage. ([#18576](https://github.com/expo/expo/pull/18576) by [@byCedric](https://github.com/byCedric))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.0.59 — 2023-02-14
+
+### 🛠 Breaking changes
+
+- Refactor the Node package manager API to support specific installation functionality and improve workspace usage. ([#18576](https://github.com/expo/expo/pull/18576) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 
