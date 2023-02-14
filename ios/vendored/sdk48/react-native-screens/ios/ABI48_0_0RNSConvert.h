@@ -19,12 +19,6 @@
 + (ABI48_0_0RNSScreenSwipeDirection)ABI48_0_0RNSScreenSwipeDirectionFromCppEquivalent:
     (ABI48_0_0facebook::ABI48_0_0React::ABI48_0_0RNSScreenSwipeDirection)swipeDirection;
 
-+ (ABI48_0_0RNSScreenDetentType)ABI48_0_0RNSScreenDetentTypeFromAllowedDetents:
-    (ABI48_0_0facebook::ABI48_0_0React::ABI48_0_0RNSScreenSheetAllowedDetents)allowedDetents;
-
-+ (ABI48_0_0RNSScreenDetentType)ABI48_0_0RNSScreenDetentTypeFromLargestUndimmedDetent:
-    (ABI48_0_0facebook::ABI48_0_0React::ABI48_0_0RNSScreenSheetLargestUndimmedDetent)detent;
-
 + (NSDictionary *)gestureResponseDistanceDictFromCppStruct:
     (const ABI48_0_0facebook::ABI48_0_0React::ABI48_0_0RNSScreenGestureResponseDistanceStruct &)gestureResponseDistance;
 
