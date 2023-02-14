@@ -46,9 +46,6 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
     // Overriding expo-file-system FileSystemModule
     moduleRegistry.registerExportedModule(ScopedFileSystemModule(scopedContext))
 
-    // Overriding expo-error-recovery ErrorRecoveryModule
-    moduleRegistry.registerExportedModule(ScopedErrorRecoveryModule(scopedContext, manifest, experienceKey))
-
     // Overriding expo-permissions ScopedPermissionsService
     moduleRegistry.registerInternalModule(ScopedPermissionsService(scopedContext, experienceKey))
 
