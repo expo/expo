@@ -1015,18 +1015,18 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
 - (NSURL *)percentEncodeURIStringAfterScheme:(NSString *)uri
 {
   // Removing percent encoding to prevent double encoding
-  NSString *uriWitoutPercentEncoding = [uri stringByRemovingPercentEncoding];
-  if(uriWitoutPercentEncoding == nil){
-    uriWitoutPercentEncoding = uri;
+  NSString *uriWithoutPercentEncoding = [uri stringByRemovingPercentEncoding];
+  if(uriWithoutPercentEncoding == nil){
+    uriWithoutPercentEncoding = uri;
   }
 
-  NSRange fileSchemeRange = [uriWitoutPercentEncoding rangeOfString:@"file://"];
+  NSRange fileSchemeRange = [uriWithoutPercentEncoding rangeOfString:@"file://"];
   if (fileSchemeRange.location == NSNotFound) {
-    return [NSURL URLWithString:uriWitoutPercentEncoding];
+    return [NSURL URLWithString:uriWithoutPercentEncoding];
   }
 
   NSCharacterSet *allowedCharacters = [NSCharacterSet URLPathAllowedCharacterSet];
-  NSString *restOfString = [uriWitoutPercentEncoding substringFromIndex:fileSchemeRange.location + fileSchemeRange.length];
+  NSString *restOfString = [uriWithoutPercentEncoding substringFromIndex:fileSchemeRange.location + fileSchemeRange.length];
   NSString *encodedRestOfString = [restOfString stringByAddingPercentEncodingWithAllowedCharacters:allowedCharacters];
 
   return [NSURL URLWithString:[NSString stringWithFormat:@"file://%@", encodedRestOfString]];
