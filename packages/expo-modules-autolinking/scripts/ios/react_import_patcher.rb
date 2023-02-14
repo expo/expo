@@ -12,6 +12,7 @@ module Expo
     public def run!
       args = [
         'node',
+        '--no-warnings',
         '--eval',
         'require(\'expo-modules-autolinking\')(process.argv.slice(1))',
         'patch-react-imports',

@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Suppress node warnings about deprecated exports mapping in 3rd-party dependencies.
+
 ## 1.1.1 — 2023-02-09
 
 _This version does not introduce any user-facing changes._
