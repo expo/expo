@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
+- Add support for the `GL_UNPACK_ALIGNMENT` parameter in the `pixelStorei` method.
 
 ### 🐛 Bug fixes
 
