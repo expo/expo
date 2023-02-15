@@ -34,7 +34,7 @@ runs:
       id: build_start
       run: |
         if [[ -z "${COMMIT_MESSAGE}" ]]; then
-          COMMIT_MESSAGE=$(git log -1 --pretty=%B | head -c1000)
+          COMMIT_MESSAGE=$(git log -1 --pretty=oneline | head -c1000)
         fi
         MESSAGE="${MESSAGE:-$COMMIT_MESSAGE}"
         BUILD_ID=$(eas build -p $PLATFORM --profile $EAS_BUILD_PROFILE --message "$MESSAGE" --non-interactive --json --no-wait | jq -r ".[0].id")
