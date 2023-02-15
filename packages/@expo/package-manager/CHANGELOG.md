@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.0.60 — 2023-02-15
+
+_This version does not introduce any user-facing changes._
+
 ## 0.0.58 — 2023-02-03
 
 ### 💡 Others
