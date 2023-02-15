@@ -1,7 +1,7 @@
 name: Process a newly opened issue
 
 env:
-  TRUSTED_USERS: 'RodolfoGS awinograd hesyifei LinusU SimenB actuallymentor derekstavis wscotten wcandillon tevonsb MaRaSu devashishsethia'
+  TRUSTED_USERS: 'RodolfoGS awinograd hesyifei LinusU SimenB actuallymentor derekstavis wscotten wcandillon tevonsb MaRaSu devashishsethia bndkt'
 
 on:
   issues:
