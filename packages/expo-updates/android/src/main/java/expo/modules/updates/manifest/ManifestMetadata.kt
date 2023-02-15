@@ -46,16 +46,16 @@ object ManifestMetadata {
   }
 
   fun saveMetadata(
-    responseHeaderData: ResponseHeaderData,
+    updateManifest: UpdateManifest,
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration
   ) {
     val fieldsToSet = mutableMapOf<String, String>()
-    if (responseHeaderData.serverDefinedHeaders != null) {
-      fieldsToSet[MANIFEST_SERVER_DEFINED_HEADERS_KEY] = responseHeaderData.serverDefinedHeaders.toString()
+    if (updateManifest.serverDefinedHeaders != null) {
+      fieldsToSet[MANIFEST_SERVER_DEFINED_HEADERS_KEY] = updateManifest.serverDefinedHeaders.toString()
     }
-    if (responseHeaderData.manifestFilters != null) {
-      fieldsToSet[MANIFEST_FILTERS_KEY] = responseHeaderData.manifestFilters.toString()
+    if (updateManifest.manifestFilters != null) {
+      fieldsToSet[MANIFEST_FILTERS_KEY] = updateManifest.manifestFilters.toString()
     }
     if (fieldsToSet.isNotEmpty()) {
       database.jsonDataDao()!!.setMultipleFields(fieldsToSet, configuration.scopeKey!!)
