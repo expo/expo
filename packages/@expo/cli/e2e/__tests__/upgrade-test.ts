@@ -1,6 +1,6 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
-import execa, { ExecaError } from 'execa';
+import execa from 'execa';
 import fs from 'fs/promises';
 import klawSync from 'klaw-sync';
 import path from 'path';
@@ -10,8 +10,6 @@ import {
   projectRoot,
   getLoadedModulesAsync,
   bin,
-  setupTestProjectAsync,
-  installAsync,
   setupTestSDK45ProjectAsync,
 } from './utils';
 
@@ -69,6 +67,10 @@ it(
     const projectRoot = await setupTestSDK45ProjectAsync('basic-upgrade', 'with-outdated');
     // `npx expo install expo-sms`
     await execa('node', [bin, 'upgrade', '--sdk-version', '47'], { cwd: projectRoot });
+    // `npx expo upgrade --finalize`
+    // Run the finalize stage manually, we are using `npx expo` but in these tests we have to use `node ${bin}`.
+    // When this step fails, the upgrade still continues, but with a warning to double-check the release post.
+    await execa('node', [bin, 'upgrade', '--finalize'], { cwd: projectRoot });
 
     // List output files with sizes for snapshotting.
     // This is to make sure that any changes to the output are intentional.
