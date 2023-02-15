@@ -5,7 +5,7 @@ import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
-import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
+import expo.modules.updates.loader.FileDownloader.ManifestDownloadCallback
 import expo.modules.updates.UpdatesUtils
 import java.io.File
 import java.io.FileNotFoundException
@@ -47,21 +47,15 @@ class EmbeddedLoader internal constructor(
   ) : this(context, configuration, database, updatesDirectory, LoaderFiles()) {
   }
 
-  override fun loadRemoteUpdate(
+  override fun loadManifest(
     context: Context,
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration,
-    callback: RemoteUpdateDownloadCallback
+    callback: ManifestDownloadCallback
   ) {
     val updateManifest = loaderFiles.readEmbeddedManifest(this.context, this.configuration)
     if (updateManifest != null) {
-      callback.onSuccess(
-        UpdateResponse(
-          responseHeaderData = null,
-          manifestUpdateResponsePart = UpdateResponsePart.ManifestUpdateResponsePart(updateManifest),
-          directiveUpdateResponsePart = null
-        )
-      )
+      callback.onSuccess(updateManifest)
     } else {
       val message = "Embedded manifest is null"
       callback.onFailure(message, Exception(message))

@@ -62,7 +62,7 @@ class EmbeddedLoaderTest {
     every { mockLoaderFiles.copyAssetAndGetHash(any(), any(), any()) } answers { callOriginal() } // test for exception cases
 
     mockCallback = mockk(relaxUnitFun = true)
-    every { mockCallback.onUpdateResponseLoaded(any()) } returns Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
+    every { mockCallback.onUpdateManifestLoaded(any()) } returns true
   }
 
   @Test

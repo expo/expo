@@ -10,6 +10,7 @@ import org.json.JSONObject
 import org.junit.Assert
 import org.junit.Test
 import org.junit.runner.RunWith
+import java.util.*
 
 @RunWith(AndroidJUnit4ClassRunner::class)
 class UpdateManifestFactoryTest {
@@ -30,7 +31,7 @@ class UpdateManifestFactoryTest {
   fun testGetManifest_Legacy() {
     val actual = getManifest(
       JSONObject(legacyManifestJson),
-      ResponseHeaderData(),
+      ManifestHeaderData(),
       null,
       createConfig()
     )
@@ -42,7 +43,7 @@ class UpdateManifestFactoryTest {
   fun testGetManifest_New() {
     val actual = getManifest(
       JSONObject(newManifestJson),
-      ResponseHeaderData(protocolVersion = "0"),
+      ManifestHeaderData(protocolVersion = "0"),
       null,
       createConfig()
     )
@@ -54,7 +55,7 @@ class UpdateManifestFactoryTest {
   fun testGetManifest_UnsupportedProtocolVersion() {
     getManifest(
       JSONObject(newManifestJson),
-      ResponseHeaderData(protocolVersion = "100"),
+      ManifestHeaderData(protocolVersion = "1"),
       null,
       createConfig()
     )

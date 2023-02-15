@@ -7,8 +7,7 @@ import expo.modules.updates.launcher.DatabaseLauncher
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.loader.Loader
 import expo.modules.updates.loader.RemoteLoader
-import expo.modules.updates.loader.UpdateDirective
-import expo.modules.updates.loader.UpdateResponse
+import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.updates.selectionpolicy.LauncherSelectionPolicySingleUpdate
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.SelectionPolicy
@@ -74,14 +73,13 @@ class UpdatesDevLauncherController : UpdatesInterface {
         callback.onFailure(e)
       }
 
-      override fun onSuccess(loaderResult: Loader.LoaderResult) {
-        // the dev launcher doesn't handle roll back to embedded commands
+      override fun onSuccess(update: UpdateEntity?) {
         databaseHolder.releaseDatabase()
-        if (loaderResult.updateEntity == null) {
+        if (update == null) {
           callback.onSuccess(null)
           return
         }
-        launchUpdate(loaderResult.updateEntity, updatesConfiguration, context, callback)
+        launchUpdate(update, updatesConfiguration, context, callback)
       }
 
       override fun onAssetLoaded(
@@ -93,19 +91,8 @@ class UpdatesDevLauncherController : UpdatesInterface {
         callback.onProgress(successfulAssetCount, failedAssetCount, totalAssetCount)
       }
 
-      override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
-        val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
-        if (updateDirective != null) {
-          return Loader.OnUpdateResponseLoadedResult(
-            shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
-              is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
-              is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
-            }
-          )
-        }
-
-        val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
-        return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = callback.onManifestLoaded(updateManifest.manifest.getRawJson()))
+      override fun onUpdateManifestLoaded(updateManifest: UpdateManifest): Boolean {
+        return callback.onManifestLoaded(updateManifest.manifest.getRawJson())
       }
     })
   }
