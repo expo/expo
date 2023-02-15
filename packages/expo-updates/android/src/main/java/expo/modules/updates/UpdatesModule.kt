@@ -10,9 +10,13 @@ import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.Promise
 import expo.modules.core.interfaces.ExpoMethod
 import expo.modules.updates.db.entity.AssetEntity
+import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.Launcher.LauncherCallback
-import expo.modules.updates.loader.*
-import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
+import expo.modules.updates.loader.FileDownloader
+import expo.modules.updates.loader.FileDownloader.ManifestDownloadCallback
+import expo.modules.updates.loader.Loader
+import expo.modules.updates.loader.RemoteLoader
+import expo.modules.updates.manifest.UpdateManifest
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
@@ -21,7 +25,7 @@ import java.util.Date
 
 // these unused imports must stay because of versioning
 /* ktlint-disable no-unused-imports */
-
+import expo.modules.updates.UpdatesConfiguration
 /* ktlint-enable no-unused-imports */
 
 /**
@@ -146,36 +150,19 @@ class UpdatesModule(
         updatesServiceLocal.embeddedUpdate
       )
       databaseHolder.releaseDatabase()
-      updatesServiceLocal.fileDownloader.downloadRemoteUpdate(
+      updatesServiceLocal.fileDownloader.downloadManifest(
         updatesServiceLocal.configuration,
         extraHeaders,
         context,
-        object : RemoteUpdateDownloadCallback {
+        object : ManifestDownloadCallback {
           override fun onFailure(message: String, e: Exception) {
             promise.reject("ERR_UPDATES_CHECK", message, e)
             Log.e(TAG, message, e)
           }
 
-          override fun onSuccess(updateResponse: UpdateResponse) {
-            val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
-            val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
-
-            val updateInfo = Bundle()
-            if (updateDirective != null) {
-              if (updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
-                updateInfo.putBoolean("isRollBackToEmbedded", true)
-                promise.resolve(updateInfo)
-                return
-              }
-            }
-
-            if (updateManifest == null) {
-              updateInfo.putBoolean("isAvailable", false)
-              promise.resolve(updateInfo)
-              return
-            }
-
+          override fun onSuccess(updateManifest: UpdateManifest) {
             val launchedUpdate = updatesServiceLocal.launchedUpdate
+            val updateInfo = Bundle()
             if (launchedUpdate == null) {
               // this shouldn't ever happen, but if we don't have anything to compare
               // the new manifest to, let the user know an update is available
@@ -184,11 +171,10 @@ class UpdatesModule(
               promise.resolve(updateInfo)
               return
             }
-
             if (updatesServiceLocal.selectionPolicy.shouldLoadNewUpdate(
                 updateManifest.updateEntity,
                 launchedUpdate,
-                updateResponse.responseHeaderData?.manifestFilters
+                updateManifest.manifestFilters
               )
             ) {
               updateInfo.putBoolean("isAvailable", true)
@@ -245,47 +231,24 @@ class UpdatesModule(
               ) {
               }
 
-              override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
-                val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
-                if (updateDirective != null) {
-                  return Loader.OnUpdateResponseLoadedResult(
-                    shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
-                      is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
-                      is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
-                    }
-                  )
-                }
-
-                val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
-
-                return Loader.OnUpdateResponseLoadedResult(
-                  shouldDownloadManifestIfPresentInResponse = updatesServiceLocal.selectionPolicy.shouldLoadNewUpdate(
-                    updateManifest.updateEntity,
-                    updatesServiceLocal.launchedUpdate,
-                    updateResponse.responseHeaderData?.manifestFilters
-                  )
+              override fun onUpdateManifestLoaded(updateManifest: UpdateManifest): Boolean {
+                return updatesServiceLocal.selectionPolicy.shouldLoadNewUpdate(
+                  updateManifest.updateEntity,
+                  updatesServiceLocal.launchedUpdate,
+                  updateManifest.manifestFilters
                 )
               }
 
-              override fun onSuccess(loaderResult: Loader.LoaderResult) {
+              override fun onSuccess(update: UpdateEntity?) {
                 databaseHolder.releaseDatabase()
                 val updateInfo = Bundle()
-
-                if (loaderResult.updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
-                  updateInfo.putBoolean("isRollBackToEmbedded", true)
+                if (update == null) {
+                  updateInfo.putBoolean("isNew", false)
                 } else {
-                  if (loaderResult.updateEntity == null) {
-                    updateInfo.putBoolean("isNew", false)
-                  } else {
-                    updatesServiceLocal.resetSelectionPolicy()
-                    updateInfo.putBoolean("isNew", true)
-                    updateInfo.putString(
-                      "manifestString",
-                      loaderResult.updateEntity.manifest.toString()
-                    )
-                  }
+                  updatesServiceLocal.resetSelectionPolicy()
+                  updateInfo.putBoolean("isNew", true)
+                  updateInfo.putString("manifestString", update.manifest.toString())
                 }
-
                 promise.resolve(updateInfo)
               }
             }

@@ -9,14 +9,14 @@ import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
 import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
-import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
+import expo.modules.updates.loader.FileDownloader.ManifestDownloadCallback
 import expo.modules.updates.manifest.ManifestMetadata
 import expo.modules.updates.manifest.UpdateManifest
 import java.io.File
 import java.util.*
 
 /**
- * Abstract class responsible for loading an update, enumerating the assets required for
+ * Abstract class responsible for loading an update's manifest, enumerating the assets required for
  * it to launch, and loading them all onto disk and into SQLite.
  *
  * There are two sources from which an update can be loaded - a remote server given a URL, and the
@@ -29,7 +29,7 @@ abstract class Loader protected constructor(
   private val updatesDirectory: File?,
   private val loaderFiles: LoaderFiles
 ) {
-  private var updateResponse: UpdateResponse? = null
+  private var updateManifest: UpdateManifest? = null
   private var updateEntity: UpdateEntity? = null
   private var callback: LoaderCallback? = null
   private var assetTotal = 0
@@ -38,13 +38,9 @@ abstract class Loader protected constructor(
   private var existingAssetList = mutableListOf<AssetEntity>()
   private var finishedAssetList = mutableListOf<AssetEntity>()
 
-  data class LoaderResult(val updateEntity: UpdateEntity?, val updateDirective: UpdateDirective?)
-
-  data class OnUpdateResponseLoadedResult(val shouldDownloadManifestIfPresentInResponse: Boolean)
-
   interface LoaderCallback {
     fun onFailure(e: Exception)
-    fun onSuccess(loaderResult: LoaderResult)
+    fun onSuccess(update: UpdateEntity?)
 
     /**
      * Called when an asset has either been successfully downloaded or failed to download.
@@ -63,22 +59,22 @@ abstract class Loader protected constructor(
     )
 
     /**
-     * Called when a response has been downloaded. The calling class should determine whether or not
-     * the RemoteLoader should continue to download the manifest in the manifest part of the update response,
-     * based on (for example) whether or not it already has the update downloaded locally.
+     * Called when a manifest has been downloaded. The calling class should determine whether or not
+     * the RemoteLoader should continue to download the update described by this manifest, based on
+     * (for example) whether or not it already has the update downloaded locally.
      *
-     * @param updateResponse Response downloaded by Loader
-     * @return true if Loader should download the manifest described in the manifest part of the update response,
+     * @param updateManifest Manifest downloaded by Loader
+     * @return true if Loader should download the update described in the manifest,
      * false if not.
      */
-    fun onUpdateResponseLoaded(updateResponse: UpdateResponse): OnUpdateResponseLoadedResult
+    fun onUpdateManifestLoaded(updateManifest: UpdateManifest): Boolean
   }
 
-  protected abstract fun loadRemoteUpdate(
+  protected abstract fun loadManifest(
     context: Context,
     database: UpdatesDatabase,
     configuration: UpdatesConfiguration,
-    callback: RemoteUpdateDownloadCallback
+    callback: ManifestDownloadCallback
   )
 
   protected abstract fun loadAsset(
@@ -99,20 +95,16 @@ abstract class Loader protected constructor(
     }
     this.callback = callback
 
-    loadRemoteUpdate(
+    loadManifest(
       context, database, configuration,
-      object : RemoteUpdateDownloadCallback {
+      object : ManifestDownloadCallback {
         override fun onFailure(message: String, e: Exception) {
           finishWithError(message, e)
         }
 
-        override fun onSuccess(updateResponse: UpdateResponse) {
-          this@Loader.updateResponse = updateResponse
-          val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
-          val onUpdateResponseLoadedResult = this@Loader.callback!!.onUpdateResponseLoaded(updateResponse)
-          if (updateManifest !== null && onUpdateResponseLoadedResult.shouldDownloadManifestIfPresentInResponse) {
-            // if onUpdateResponseLoaded returns true that is a sign that the delegate wants the update manifest
-            // to be processed/downloaded, and therefore the updateManifest needs to exist
+        override fun onSuccess(updateManifest: UpdateManifest) {
+          this@Loader.updateManifest = updateManifest
+          if (this@Loader.callback!!.onUpdateManifestLoaded(updateManifest)) {
             processUpdateManifest(updateManifest)
           } else {
             updateEntity = null
@@ -124,7 +116,6 @@ abstract class Loader protected constructor(
   }
 
   private fun reset() {
-    updateResponse = null
     updateEntity = null
     callback = null
     assetTotal = 0
@@ -142,20 +133,8 @@ abstract class Loader protected constructor(
       )
       return
     }
-
-    // store the header data even if only a message was included in the response
-    updateResponse!!.responseHeaderData?.let {
-      ManifestMetadata.saveMetadata(it, database, configuration)
-    }
-
-    val updateDirective = updateResponse!!.directiveUpdateResponsePart?.updateDirective
-
-    callback!!.onSuccess(
-      LoaderResult(
-        updateEntity = this.updateEntity,
-        updateDirective = updateDirective
-      )
-    )
+    ManifestMetadata.saveMetadata(updateManifest!!, database, configuration)
+    callback!!.onSuccess(updateEntity)
     reset()
   }
 

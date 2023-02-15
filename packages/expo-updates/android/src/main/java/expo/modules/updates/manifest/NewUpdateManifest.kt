@@ -4,6 +4,10 @@ import android.net.Uri
 import android.util.Log
 import expo.modules.jsonutils.getNullable
 import expo.modules.jsonutils.require
+import expo.modules.structuredheaders.BooleanItem
+import expo.modules.structuredheaders.NumberItem
+import expo.modules.structuredheaders.Parser
+import expo.modules.structuredheaders.StringItem
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
 import expo.modules.updates.db.entity.AssetEntity
@@ -28,8 +32,22 @@ class NewUpdateManifest private constructor(
   private val mRuntimeVersion: String,
   private val mLaunchAsset: JSONObject,
   private val mAssets: JSONArray?,
-  private val mExtensions: JSONObject?
+  private val mExtensions: JSONObject?,
+  private val mServerDefinedHeaders: String?,
+  private val mManifestFilters: String?
 ) : UpdateManifest {
+  override val serverDefinedHeaders: JSONObject? by lazy {
+    if (mServerDefinedHeaders == null) {
+      null
+    } else headerDictionaryToJSONObject(mServerDefinedHeaders)
+  }
+
+  override val manifestFilters: JSONObject? by lazy {
+    if (mManifestFilters == null) {
+      null
+    } else headerDictionaryToJSONObject(mManifestFilters)
+  }
+
   override val updateEntity: UpdateEntity by lazy {
     UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
       manifest = this@NewUpdateManifest.manifest.getRawJson()
@@ -91,6 +109,7 @@ class NewUpdateManifest private constructor(
     @Throws(JSONException::class)
     fun fromNewManifest(
       manifest: NewManifest,
+      manifestHeaderData: ManifestHeaderData,
       extensions: JSONObject?,
       configuration: UpdatesConfiguration
     ): NewUpdateManifest {
@@ -112,8 +131,33 @@ class NewUpdateManifest private constructor(
         runtimeVersion,
         launchAsset,
         assets,
-        extensions
+        extensions,
+        manifestHeaderData.serverDefinedHeaders,
+        manifestHeaderData.manifestFilters
       )
+    }
+
+    internal fun headerDictionaryToJSONObject(headerDictionary: String?): JSONObject? {
+      val jsonObject = JSONObject()
+      val parser = Parser(headerDictionary)
+      try {
+        val filtersDictionary = parser.parseDictionary()
+        val map = filtersDictionary.get()
+        for (key in map.keys) {
+          val element = map[key]!!
+          // ignore any dictionary entries whose type is not string, number, or boolean
+          if (element is StringItem || element is BooleanItem || element is NumberItem<*>) {
+            jsonObject.put(key, element.get())
+          }
+        }
+      } catch (e: expo.modules.structuredheaders.ParseException) {
+        Log.e(TAG, "Failed to parse manifest header content", e)
+        return null
+      } catch (e: JSONException) {
+        Log.e(TAG, "Failed to parse manifest header content", e)
+        return null
+      }
+      return jsonObject
     }
   }
 }

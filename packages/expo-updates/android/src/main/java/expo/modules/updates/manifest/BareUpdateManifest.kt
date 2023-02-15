@@ -11,6 +11,7 @@ import expo.modules.updates.loader.EmbeddedLoader
 import expo.modules.manifests.core.BareManifest
 import org.json.JSONArray
 import org.json.JSONException
+import org.json.JSONObject
 import java.util.*
 
 /**
@@ -27,6 +28,10 @@ class BareUpdateManifest private constructor(
   private val mRuntimeVersion: String,
   private val mAssets: JSONArray?
 ) : UpdateManifest {
+  override val serverDefinedHeaders: JSONObject? = null
+
+  override val manifestFilters: JSONObject? = null
+
   override val updateEntity: UpdateEntity by lazy {
     UpdateEntity(mId, mCommitTime, mRuntimeVersion, mScopeKey).apply {
       status = UpdateStatus.EMBEDDED

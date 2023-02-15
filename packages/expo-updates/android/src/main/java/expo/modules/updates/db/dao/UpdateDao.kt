@@ -81,11 +81,6 @@ abstract class UpdateDao {
     _updateUpdate(update)
   }
 
-  fun setUpdateCommitTime(update: UpdateEntity, commitTime: Date) {
-    update.commitTime = commitTime
-    _updateUpdate(update)
-  }
-
   @Transaction
   open fun markUpdateFinished(update: UpdateEntity, hasSkippedEmbeddedAssets: Boolean) {
     var statusToMark = UpdateStatus.READY
