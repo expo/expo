@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Break up E2E tests for reliability. ([#21223](https://github.com/expo/expo/pull/21223) by [@douglowder](https://github.com/douglowder))
+
 ## 0.16.1 — 2023-02-09
 
 ### 💡 Others

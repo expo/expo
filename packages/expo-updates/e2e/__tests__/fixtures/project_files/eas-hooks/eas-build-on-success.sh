@@ -36,27 +36,23 @@ if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
   adb reverse tcp:4747 tcp:4747
 fi
 
-# Basic tests
-detox test --configuration $EAS_BUILD_PLATFORM.debug --headless 2>&1 | tee ./logs/detox-tests-basic.log
+# Execute tests
+detox test --configuration $EAS_BUILD_PLATFORM.debug --headless 2>&1 | tee ./logs/detox-tests.log
 
-# -- Remove old files and directories
-rm -rf .detoxrc.json .expo .git .gitignore App.js android app.json assets babel.config.js certs dependencies e2e eas-hooks eas.json index.js ios keys metro.config.js node_modules package.json updates
-
-# -- Unpack files from assets test app
-tar zxf ./updates-e2e-assets.tar.gz
-
-# -- NPM install, pod install, build
-yarn
-if [[ "$EAS_BUILD_PLATFORM" == "ios" ]]; then
-  npx pod-install
-fi
-detox build --configuration $EAS_BUILD_PLATFORM.release
-
-# -- Execute Detox assets tests
-detox test --configuration $EAS_BUILD_PLATFORM.release --headless 2>&1 | tee ./logs/detox-tests-assets.log
-
+export DETOX_EXIT_CODE=$?
 
 if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
   # Kill emulator
-  adb emu kill
+  adb emu kill &
 fi
+
+# Attempt to handle exit codes correctly (handle Android emulator occasional crashes gracefully)
+if [ $DETOX_EXIT_CODE -eq 0 ]
+then
+  echo "Tests were successful"
+  exit 0
+else
+  echo "Tests failed" >&2
+  exit 1
+fi
+
