@@ -275,6 +275,7 @@ const RENAMED_PAGES: Record<string, string> = {
   // Redirects for removed /archived pages
   '/archived/': '/archive/',
   '/versions/latest/expokit/eject/': '/archive/expokit/eject/',
+  '/expokit/eject/': '/archive/expokit/eject/',
 
   // Redirects for removed API docs based on Sentry
   '/versions/latest/sdk/facebook/': '/guides/authentication/',
