@@ -71,7 +71,7 @@ export type UpdateCheckResult = UpdateCheckResultSuccess | UpdateCheckResultFail
 /**
  * The successful result of fetching a new update.
  */
-type UpdateFetchResultSuccess = {
+export type UpdateFetchResultSuccess = {
   /**
    * Signifies that the fetched bundle is new (that is, a different version than what's currently
    * running).
@@ -86,7 +86,7 @@ type UpdateFetchResultSuccess = {
 /**
  * The failed result of fetching a new update.
  */
-type UpdateFetchResultFailure = {
+export type UpdateFetchResultFailure = {
   /**
    * Signifies that the fetched bundle is the same as version which is currently running.
    */
