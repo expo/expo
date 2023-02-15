@@ -11,6 +11,7 @@ import expo.modules.updates.db.entity.AssetEntity
 import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.db.enums.UpdateStatus
 import expo.modules.updates.loader.FileDownloader.AssetDownloadCallback
+import expo.modules.updates.loader.FileDownloader.ManifestDownloadCallback
 import expo.modules.updates.loader.Loader.LoaderCallback
 import expo.modules.updates.manifest.LegacyUpdateManifest
 import expo.modules.updates.manifest.UpdateManifest
@@ -25,7 +26,6 @@ import org.junit.Test
 import org.junit.runner.RunWith
 import java.io.File
 import java.io.IOException
-import java.util.*
 
 @RunWith(AndroidJUnit4ClassRunner::class)
 class RemoteLoaderTest {
@@ -63,15 +63,9 @@ class RemoteLoaderTest {
       configuration
     )
 
-    every { mockFileDownloader.downloadRemoteUpdate(any(), any(), any(), any()) } answers {
-      val callback = arg<FileDownloader.RemoteUpdateDownloadCallback>(3)
-      callback.onSuccess(
-        UpdateResponse(
-          responseHeaderData = null,
-          manifestUpdateResponsePart = UpdateResponsePart.ManifestUpdateResponsePart(manifest),
-          directiveUpdateResponsePart = null
-        )
-      )
+    every { mockFileDownloader.downloadManifest(any(), any(), any(), any()) } answers {
+      val callback = arg<ManifestDownloadCallback>(3)
+      callback.onSuccess(manifest)
     }
 
     every { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any()) } answers {
@@ -81,7 +75,7 @@ class RemoteLoaderTest {
     }
 
     mockCallback = mockk(relaxUnitFun = true)
-    every { mockCallback.onUpdateResponseLoaded(any()) } returns Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
+    every { mockCallback.onUpdateManifestLoaded(any()) } returns true
   }
 
   @Test
@@ -254,15 +248,9 @@ class RemoteLoaderTest {
       configuration
     )
 
-    every { mockFileDownloader.downloadRemoteUpdate(any(), any(), any(), any()) } answers {
-      val callback = arg<FileDownloader.RemoteUpdateDownloadCallback>(3)
-      callback.onSuccess(
-        UpdateResponse(
-          responseHeaderData = null,
-          manifestUpdateResponsePart = UpdateResponsePart.ManifestUpdateResponsePart(manifest),
-          directiveUpdateResponsePart = null
-        )
-      )
+    every { mockFileDownloader.downloadManifest(any(), any(), any(), any()) } answers {
+      val callback = arg<ManifestDownloadCallback>(3)
+      callback.onSuccess(manifest)
     }
 
     loader.start(mockCallback)
@@ -274,29 +262,5 @@ class RemoteLoaderTest {
     val updates = db.updateDao().loadAllUpdates()
     Assert.assertEquals(1, updates.size)
     Assert.assertEquals(UpdateStatus.DEVELOPMENT, updates[0].status)
-  }
-
-  @Test
-  fun testRemoteLoader_RollBackDirective() {
-    val updateDirective = UpdateDirective.RollBackToEmbeddedUpdateDirective(commitTime = Date(), signingInfo = null)
-    every { mockFileDownloader.downloadRemoteUpdate(any(), any(), any(), any()) } answers {
-      val callback = arg<FileDownloader.RemoteUpdateDownloadCallback>(3)
-      callback.onSuccess(
-        UpdateResponse(
-          responseHeaderData = null,
-          manifestUpdateResponsePart = null,
-          directiveUpdateResponsePart = UpdateResponsePart.DirectiveUpdateResponsePart(updateDirective)
-        )
-      )
-    }
-
-    loader.start(mockCallback)
-
-    verify { mockCallback.onSuccess(Loader.LoaderResult(null, updateDirective)) }
-    verify(exactly = 0) { mockCallback.onFailure(any()) }
-    verify(exactly = 0) { mockFileDownloader.downloadAsset(any(), any(), any(), any(), any()) }
-
-    val updates = db.updateDao().loadAllUpdates()
-    Assert.assertEquals(0, updates.size)
   }
 }
