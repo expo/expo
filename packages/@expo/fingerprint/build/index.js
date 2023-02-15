@@ -14,9 +14,6 @@ var __exportStar = (this && this.__exportStar) || function(m, exports) {
     for (var p in m) if (p !== "default" && !Object.prototype.hasOwnProperty.call(exports, p)) __createBinding(exports, m, p);
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.createProjectHashAsync = exports.createFingerprintAsync = void 0;
-var Fingerprint_1 = require("./Fingerprint");
-Object.defineProperty(exports, "createFingerprintAsync", { enumerable: true, get: function () { return Fingerprint_1.createFingerprintAsync; } });
-Object.defineProperty(exports, "createProjectHashAsync", { enumerable: true, get: function () { return Fingerprint_1.createProjectHashAsync; } });
+__exportStar(require("./Fingerprint"), exports);
 __exportStar(require("./Fingerprint.types"), exports);
 //# sourceMappingURL=index.js.map
