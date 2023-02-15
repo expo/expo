@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Improve multi-target iOS scheme resolution for `expo run:ios`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
