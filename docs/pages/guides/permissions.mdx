@@ -3,7 +3,7 @@ title: Permissions
 description: Learn about configuring and adding permissions in an Expo config file.
 ---
 
-import { ConfigReactNative, ConfigClassic } from '~/components/plugins/ConfigSection';
+import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 
 When developing a native app that requires access to potentially sensitive information on a user's device, such as their location or contacts, the app must request the user's permission first. For example, to access the user's media library, the app will need to run [`MediaLibrary.requestPermissionsAsync()`](/versions/latest/sdk/media-library#medialibraryrequestpermissionsasync).
 
@@ -46,18 +46,6 @@ Modify **AndroidManifest.xml** to exclude specific permissions: add the `tools:n
 > You have to define the `xmlns:tools` attribute on `<manifest>` before you can use the `tools:node` attribute on permissions.
 
 </ConfigReactNative>
-
-<ConfigClassic>
-
-By default, apps built with the Classic Build system will include **all** permissions required by any Expo SDK package (with exceptions only for background permissions). This is so that your standalone app will match its behavior in the [Expo Go][expo-go] app and simply "work out of the box" no matter what permissions you ask for, with minimal configuration required by the developer.
-
-There are some drawbacks to this. For example, let's say your To-do list app requests `CAMERA` permission upon installation. Your users may be wary of installing your app since nothing in the app seems to use the camera, so why would it need that permission?
-
-To solve this, add the `android.permissions` key in your **app.json** file and specify which permissions your app will use. Refer to this [list of all Android permissions and configuration](/versions/latest/config/app/#android) for more information.
-
-To use _only_ the minimum necessary permissions that React Native requires to run, set `"permissions" : []`. To use those in addition to `CAMERA` permission, for example, you'd set `"permissions" : ["CAMERA"]`.
-
-</ConfigClassic>
 
 ## iOS
 
