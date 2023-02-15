@@ -25,7 +25,10 @@
       "ios": {
         "simulator": true,
         "resourceClass": "m1-medium",
-        "buildConfiguration": "Debug"
+        "buildConfiguration": "Debug",
+        "cache": {
+          "cacheDefaultPaths": false
+        }
       },
       "distribution": "internal",
       "buildArtifactPaths": ["logs/*.log"]
