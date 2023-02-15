@@ -6,7 +6,7 @@ title: Configuring Updates
 
 Expo provides various settings to configure how your app receives updates. Updates allow you to publish a new version of your app JavaScript and assets without building a new version of your app and re-submitting to app stores. ([Read more about the limitations](/archive/publishing.mdx)).
 
-To create an update of your app, run `expo publish`. If you're using release channels, specify one with `--release-channel <channel-name>` option. **Please note**- if you wish to update the SDK version of your app, or make [any of these changes](/archive/publishing.mdx#some-native-configuration-cant-be-updated-by), you'll need to rebuild your app with `eas build` (or `expo build` if you are using the Classic Builds service) and upload the binary file to the appropriate app store ([see the docs here](/build/setup.mdx)).
+To create an update of your app, run `expo publish`. If you're using release channels, specify one with `--release-channel <channel-name>` option. **Please note**- if you wish to update the SDK version of your app, or make [any of these changes](/archive/publishing.mdx#some-native-configuration-cant-be-updated-by), you'll need to rebuild your app with `eas build` and upload the binary file to the appropriate app store ([see the docs here](/build/setup.mdx)).
 
 Updates are controlled by the `updates` settings in app.json, which handle the initial app load, and the Updates SDK module, which allows you to fetch updates asynchronously from your JS.
 
