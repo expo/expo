@@ -4,11 +4,15 @@
 
 ### 🛠 Breaking changes
 
+- [android] Add support for version 1 of the protocol. ([#20275](https://github.com/expo/expo/pull/20275) by [@wschurman](https://github.com/wschurman))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Break up E2E tests for reliability. ([#21223](https://github.com/expo/expo/pull/21223) by [@douglowder](https://github.com/douglowder))
 
 ## 0.16.1 — 2023-02-09
 
