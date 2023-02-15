@@ -8,6 +8,8 @@ import { profile } from '../../../utils/profile';
 import { selectAsync } from '../../../utils/prompts';
 import { Options, ProjectInfo, XcodeConfiguration } from '../XcodeBuild.types';
 
+const debug = require('debug')('expo:run:ios:options:resolveNativeScheme') as typeof console.log;
+
 type NativeSchemeProps = {
   name: string;
   osType?: string;
@@ -66,7 +68,7 @@ export async function promptOrQueryNativeSchemeAsync(
 export function getDefaultNativeScheme(
   projectRoot: string,
   options: Pick<Options, 'configuration'>,
-  xcodeProject: ProjectInfo
+  xcodeProject: Pick<ProjectInfo, 'name'>
 ): NativeSchemeProps {
   // If the resolution failed then we should just use the first runnable scheme that
   // matches the provided configuration.
@@ -82,7 +84,7 @@ export function getDefaultNativeScheme(
     const scheme =
       resolvedSchemes.find(({ type }) => type === IOSConfig.Target.TargetType.APPLICATION) ??
       resolvedSchemes[0];
-    Log.debug(`Using default scheme: ${scheme.name}`);
+    debug(`Using default scheme: ${scheme.name}`);
     return scheme;
   }
 
