@@ -40,7 +40,7 @@ class FileDownloaderTest {
       "usesLegacyManifest" to true
     )
     val config = UpdatesConfiguration(null, configMap)
-    val actual = FileDownloader.createRequestForManifest(config, null, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(config, null, context)
     Assert.assertNull(actual.header("Cache-Control"))
   }
 
@@ -52,7 +52,7 @@ class FileDownloaderTest {
       "usesLegacyManifest" to false
     )
     val config = UpdatesConfiguration(null, configMap)
-    val actual = FileDownloader.createRequestForManifest(config, null, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(config, null, context)
     Assert.assertNull(actual.header("Cache-Control"))
   }
 
@@ -73,7 +73,7 @@ class FileDownloaderTest {
     }
 
     // manifest extraHeaders should have their values coerced to strings
-    val actual = FileDownloader.createRequestForManifest(config, extraHeaders, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(config, extraHeaders, context)
     Assert.assertEquals("test", actual.header("expo-string"))
     Assert.assertEquals("47.5", actual.header("expo-number"))
     Assert.assertEquals("true", actual.header("expo-boolean"))
@@ -97,7 +97,7 @@ class FileDownloaderTest {
     val extraHeaders = JSONObject()
     extraHeaders.put("expo-platform", "ios")
 
-    val actual = FileDownloader.createRequestForManifest(config, extraHeaders, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(config, extraHeaders, context)
     Assert.assertEquals("android", actual.header("expo-platform"))
     Assert.assertEquals("custom", actual.header("expo-updates-environment"))
   }
