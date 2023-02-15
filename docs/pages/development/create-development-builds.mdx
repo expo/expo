@@ -3,7 +3,6 @@ title: Create development builds
 description: Learn how to create development builds for a project.
 ---
 
-import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 import { BoxLink } from '~/ui/components/BoxLink';
@@ -28,7 +27,7 @@ To initialize a development build, you need to install the `expo-dev-client` lib
 
 We recommend EAS Build to manage your native projects. It allows a smooth experience, especially if you do not have experience with Xcode and Android studio builds or do not have them installed locally on your computer.
 
-EAS Build is created by running the `eas build` command. It also creates an [**eas.json**](https://docs.expo.dev/build/eas-json/) file at the root of your project directory with three build profiles automatically: `"development"`, `"preview"` and `"production"`. A minimal configuration is shown below:
+EAS Build is created by running the `eas build` command. It also creates an [**eas.json**](https://docs.expo.dev/build/eas-json/) file at the root of your project directory with three build profiles automatically: `development`, `preview` and `production`. A minimal configuration is shown below:
 
 ```json eas.json
 {
@@ -45,12 +44,12 @@ EAS Build is created by running the `eas build` command. It also creates an [**e
 }
 ```
 
-The `"development"` profile sets the following options:
+The `development` profile sets the following options:
 
 - [`developmentClient`](/build-reference/eas-json/#developmentclient) to `true` to create a Debug build. This allows the `expo-dev-client` library to choose the update to load in your app and provide tools to help you develop it. It also generates a build artifact that you can install on a device or emulator/simulator.
-- [`distribution`](/build-reference/eas-json/#distribution) to `"internal"` makes the build ready for [internal distribution](/build/internal-distribution/).
+- [`distribution`](/build-reference/eas-json/#distribution) to `internal` makes the build ready for [internal distribution](/build/internal-distribution/).
 
-> iOS builds where `developmentClient` is set to `true` on the build profile should always be distributed as `"internal"`. If you are distributing for TestFlight, you have to set the distribution to `"store"`.
+> iOS builds where `developmentClient` is set to `true` on the build profile should always be distributed as `internal`. If you are distributing for TestFlight, you have to set the distribution to `store`.
 
 ### On emulator/simulator
 
@@ -64,27 +63,21 @@ Each platform has specific instructions you'll have to follow:
 
 <Tab>
 
-To create and install the development build on an Android Emulator, you will need a **.apk**. To create it, run the following command:
+To create and install the development build on an Android Emulator, you will need an **.apk**. To create it, run the following command:
 
 <Terminal cmd={['$ eas build --profile development --platform android']} />
 
-After the build is complete, go to the build page in the [Expo dashboard](https://expo.dev/accounts/[account]/projects/[project]/builds) or the open link to it provided when `eas build` has finished running the process. Then, open the **Options** dropdown menu, and click the **Download build** button to download the **.apk**.
+After the build is complete, the CLI will prompt you to automatically download and install it on the Android Emulator. When prompted, press <kbd>Y</kbd> to directly install it on the emulator.
 
-<ImageSpotlight
-  alt="Open the options dropdown menu to install the apk file."
-  src="/static/images/dev-client/android-build.jpg"
-  style={{ maxWidth: 700 }}
-/>
-
-You can now install it on the Android Emulator by dragging **.apk** file into the emulator. When it's complete installing, navigate to the app launcher, find the app icon and open it.
+See [Build APKs for Android Emulators and devices](/build-reference/apk/#installing-your-build) for more information.
 
 </Tab>
 
 <Tab>
 
-To create and install a development build on an iOS Simulator, we recommend you to create a separate [build profile](/build/eas-json/#build-profiles) for the simulator and then set the `ios.simulator` option to `true` in the **eas.json**.
+To create and install a development build on an iOS Simulator, we recommend you create a separate [build profile](/build/eas-json/#build-profiles) for the simulator and then set the `ios.simulator` option to `true` in the **eas.json**.
 
-For example, the `"development-simulator"` profile below is only for creating a development build for iOS Simulator:
+For example, the `development-simulator` profile below is only for creating a development build for iOS Simulator:
 
 ```json eas.json
 {
@@ -104,20 +97,9 @@ Then, run the following command to create the development build on an iOS Simula
 
 <Terminal cmd={['$ eas build --profile development-simulator --platform ios']} />
 
-> Make sure to use that profile name as the argument for the `--profile` flag in the above command.
+After the build is complete, the CLI will prompt you to automatically download and install the it on the iOS Simulator. When prompted, press <kbd>Y</kbd> to directly install it on the simulator.
 
-After the build is complete, go to the build page in the [Expo dashboard](https://expo.dev/accounts/[account]/projects/[project]/builds) and click the **Download** button.
-
-<ImageSpotlight
-  alt="Click the download button to download the build for iOS Simulator."
-  src="/static/images/dev-client/ios-build.jpg"
-  style={{ maxWidth: 700 }}
-/>
-
-You can now install it on an iOS Simulator:
-
-- Open the **.tar.gz** file to extract it. You will now have a **.app** file, for example, **myapp.app**.
-- Drag the **.app** file into the iOS Simulator. When you see it appear on the simulator's home screen, tap on it to run it.
+See [Installing build on the simulator](/build-reference/simulators/#installing-build-on-the-simulator) for more information.
 
 </Tab>
 

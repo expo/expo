@@ -1,15 +1,18 @@
 ---
-title: Building for iOS Simulators
+title: Build for iOS Simulators
 description: Learn how to configure and install build for iOS simulators when using EAS Build.
 ---
 
-Running a build of your app in an iOS Simulator is particularly useful in managed apps to get the standalone (independent of Expo Go) version of the app running easily without needing to deploy to TestFlight or even have an Apple Developer account.
+import { Terminal } from '~/ui/components/Snippet';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+
+Running a build of your app on an iOS Simulator is useful. You can configure the build profile and install the build automatically on the simulator. This provides a standalone (independent of Expo Go) version of the app running without needing to deploy to TestFlight or even having an Apple Developer account.
 
 ## Configuring a profile to build for simulators
 
-To build your app for installation into an iOS Simulator, you can create a new profile in **eas.json** and set the `ios.simulator` value to `true`:
+To install a build of your app on an iOS Simulator, modify the build profile in [**eas.json**](/build/eas-json/) and set the `ios.simulator` value to `true`:
 
-```json
+```json eas.json
 {
   "build": {
     "preview": {
@@ -22,15 +25,35 @@ To build your app for installation into an iOS Simulator, you can create a new p
 }
 ```
 
-Now, to run your build run `eas build -p ios --profile preview`. Remember that you can name the profile whatever you like; we named the profile `"preview"`, however, you could call it "simulator", `"local"`,`"simulator"`, or whatever makes the most sense for you.
+Now, execute the command as shown below to run the build:
 
-## Installing your build on the simulator
+<Terminal cmd={['$ eas build -p ios --profile preview']} />
 
-> If you haven't installed or run the iOS Simulator before, follow the [iOS Simulator guide](/workflow/ios-simulator.mdx) before proceeding.
+Remember that a profile can be named whatever you like. In the above example, it is called `preview`. However, you can call it `local`, `simulator`, or whatever makes the most sense.
 
-- Once your build is completed, download the build from the build details page or the link provided when `eas build` is done. This will be a `.tar.gz` file.
-- Extract the file by opening it. You will now have a file like `myapp.app`.
-- Open up your simulator.
-- Drag `myapp.app` into the simulator.
-- The app will be installed in a few seconds. When you see it appear on the simulator home screen, tap it to run it.
-- You can share this build, it will run in any iOS Simulator.
+## Installing build on the simulator
+
+> If you haven't installed or run the iOS Simulator before, follow the [iOS Simulator guide](/workflow/ios-simulator) before proceeding.
+
+Once your build is completed, the CLI will prompt you to automatically download and install it on the iOS Simulator. When prompted, press <kbd>Y</kbd> to directly install it on the simulator.
+
+In case you have multiple builds, you can also run the `eas build:run` command at any time to download a specific build and automatically install it on the iOS Simulator:
+
+<Terminal cmd={['$ eas build:run -p ios']} />
+
+The command also shows a list of available builds of your project. You can select the build to install on the simulator from this list. Each build in the list has a build ID, the time elapsed since the build creation, the build number, the version number, and the git commit information. The list also displays invalid builds if a project has any.
+
+For example, the image below lists two previous builds of a project:
+
+<ImageSpotlight
+  alt="Running eas build:run command shows a list of available builds in a project."
+  src="/static/images/eas-build/eas-build-run-on-ios.png"
+/>
+
+When the build's installation is complete, it will appear on the home screen. If it's a development build, open a terminal window and start the development server using `npx expo start --dev-client`.
+
+### Running the latest build
+
+Pass the `--latest` flag to the `eas build:run` command to download and install the latest build on the iOS Simulator:
+
+<Terminal cmd={['$ eas build:run -p ios --latest']} />
