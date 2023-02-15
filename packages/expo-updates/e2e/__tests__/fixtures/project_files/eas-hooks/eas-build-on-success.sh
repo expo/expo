@@ -39,7 +39,20 @@ fi
 # Execute tests
 detox test --configuration $EAS_BUILD_PLATFORM.debug --headless 2>&1 | tee ./logs/detox-tests.log
 
+export DETOX_EXIT_CODE=$?
+
 if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
   # Kill emulator
-  adb emu kill
+  adb emu kill &
 fi
+
+# Attempt to handle exit codes correctly (handle Android emulator occasional crashes gracefully)
+if [ $DETOX_EXIT_CODE -eq 0 ]
+then
+  echo "Tests were successful"
+  exit 0
+else
+  echo "Tests failed" >&2
+  exit 1
+fi
+
