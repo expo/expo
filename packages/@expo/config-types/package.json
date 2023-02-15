@@ -10,7 +10,7 @@
     "generate": "ts-node ./scripts/generate.ts",
     "prepare": "yarn run clean && yarn build",
     "clean": "rimraf build ./tsconfig.tsbuildinfo",
-    "lint": "eslint .",
+    "lint": "eslint . && npx prettier --write src/ExpoConfig.ts",
     "test": "jest"
   },
   "repository": {
