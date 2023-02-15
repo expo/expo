@@ -3,7 +3,6 @@ title: Already used React Native
 description: If you are familiar with React Native, this guide will help you understand the key differences between Expo and React Native.
 ---
 
-import { ConfigClassic } from '~/components/plugins/ConfigSection';
 import { Terminal } from '~/ui/components/Snippet';
 
 This guide is intended to give developers who have already used React Native a quick outline of some of the key concepts, resources, and differences they will encounter when using Expo.
@@ -44,17 +43,9 @@ Apps are served from Expo CLI through a tunnel service by default (we currently 
 
 - See [Why not Expo?](/introduction/why-not-expo) for more information.
 
-## Deploying to the App / Play Store
+## Deploying to the Play/App Store
 
 When you're ready, you can run `eas build --auto-submit` using EAS CLI to both build your app and automatically upload the binary for distribution on the Google Play Store and Apple App Store.
-
-<ConfigClassic>
-
-If you are using the classic build system, you can run `expo build:ios` or `expo build:android` and Expo will build your app and output a link to the binary required for you to submit. Then you can use something like [Transporter](https://apps.apple.com/app/transporter/id1450874784) for iOS, or directly upload an APK for Android.
-
-If you prefer to build your app on your own machine, you can [follow these steps](https://github.com/expo/expo#standalone-apps).
-
-</ConfigClassic>
 
 ## Helpful Tools & Resources
 
