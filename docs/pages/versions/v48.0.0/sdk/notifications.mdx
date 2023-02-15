@@ -373,7 +373,7 @@ and wasn't killed by the user, however, this is ultimately decided by the OS, so
 
 Custom notification sounds are only supported when using [EAS Build](/build/introduction).
 
-To add custom push notification sounds to your app, add the `expo-notifications` plugin to your **app.json** file:
+To add custom push notification sounds to your app, add the `expo-notifications` plugin to your **app.json** file and then under the `sounds` key, provide an array of local paths to sound files that can be used as custom notification sounds. These local paths are local to your project.
 
 ```json app.json
 {
