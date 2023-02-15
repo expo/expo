@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0ExpoLocalAuthentication",
-  "version": "13.2.0",
+  "version": "13.2.1",
   "summary": "Provides an API for FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.",
   "description": "Provides an API for FaceID and TouchID (iOS) or the Fingerprint API (Android) to authenticate the user with a face or fingerprint scan.",
   "license": "MIT",

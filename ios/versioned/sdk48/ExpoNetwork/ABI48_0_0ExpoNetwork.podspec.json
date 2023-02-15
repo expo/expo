@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0ExpoNetwork",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "summary": "Provides useful information about the device's network such as its IP address, MAC address, and airplane mode status",
   "description": "Provides useful information about the device's network such as its IP address, MAC address, and airplane mode status",
   "license": "MIT",
