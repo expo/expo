@@ -1,4 +1,4 @@
-name: Updates e2e assets EAS (Android)
+name: Updates e2e EAS
 
 on:
   workflow_dispatch: {}
@@ -12,6 +12,7 @@ on:
       - packages/expo-updates-interface/**
       - packages/expo-updates/**
       - packages/expo/android/**
+      - packages/expo/ios/**
       - templates/expo-template-bare-minimum/**
   push:
     branches: [main, 'sdk-*']
@@ -24,6 +25,7 @@ on:
       - packages/expo-updates-interface/**
       - packages/expo-updates/**
       - packages/expo/android/**
+      - packages/expo/ios/**
       - templates/expo-template-bare-minimum/**
 
 concurrency:
@@ -32,6 +34,10 @@ concurrency:
 
 jobs:
   build:
+    strategy:
+      matrix:
+        platform: [ios, android]
+        test_type: [basic, assets]
     runs-on: ubuntu-20.04
     timeout-minutes: 120
     env:
@@ -73,21 +79,21 @@ jobs:
         run: echo "COMMIT_MESSAGE=$(git log -1 --pretty=oneline | head -c1000)" >> $GITHUB_ENV
       - name: 📦 Set test project location
         run: echo "TEST_PROJECT_ROOT=$GITHUB_WORKSPACE/updates-e2e" >> $GITHUB_ENV
-      - name: 📦 Setup test project
-        run: node packages/expo-updates/e2e/__tests__/setup/create-eas-project-assets.js
-      - name: 🚀 Build with EAS for Android
+      - name: 📦 Setup test project for updates E2E ${{ matrix.test_type }} tests
+        run: node packages/expo-updates/e2e/__tests__/setup/create-eas-project-${{ matrix.test_type }}.js
+      - name: 🚀 Build with EAS for ${{ matrix.platform }}
         uses: ./.github/actions/eas-build
-        id: build_android
+        id: build_eas
         with:
-          platform: 'android'
+          platform: ${{ matrix.platform }}
           profile: 'updates_testing'
           projectRoot: './updates-e2e'
           expoToken: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
           noWait: ${{ github.event.schedule }}
           message: ${{ github.event.pull_request.title }}
-      - name: On Android workflow canceled
-        if: ${{ cancelled() && steps.build_android.outputs.build_id }}
-        run: eas build:cancel ${{ steps.build_android.outputs.build_id }}
+      - name: On ${{ matrix.platform }} workflow canceled
+        if: ${{ cancelled() && steps.build_eas.outputs.build_id }}
+        run: eas build:cancel ${{ steps.build_eas.outputs.build_id }}
         working-directory: './updates-e2e'
         env:
           EXPO_TOKEN: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
