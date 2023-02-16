@@ -74,7 +74,6 @@ Pod::Spec.new do |s|
     ss.dependency         "ABI48_0_0ExpoDevice"
     ss.dependency         "ABI48_0_0EXDocumentPicker"
     ss.dependency         "ABI48_0_0EASClient"
-    ss.dependency         "ABI48_0_0EXErrorRecovery"
     ss.dependency         "ABI48_0_0EXFaceDetector"
     ss.dependency         "ABI48_0_0EXFileSystem"
     ss.dependency         "ABI48_0_0EXFont"

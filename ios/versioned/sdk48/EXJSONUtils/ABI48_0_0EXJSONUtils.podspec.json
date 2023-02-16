@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0EXJSONUtils",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "summary": "Utilities for reading NSDictionaries (iOS) and JSONObjects (Android).",
   "description": "Utilities for reading NSDictionaries (iOS) and JSONObjects (Android).",
   "license": "MIT",

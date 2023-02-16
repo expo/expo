@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0ExpoBattery",
-  "version": "7.1.0",
+  "version": "7.1.1",
   "summary": "Provides battery information for the physical device, as well as corresponding event listeners.",
   "description": "Provides battery information for the physical device, as well as corresponding event listeners.",
   "license": "MIT",

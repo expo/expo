@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0EXConstants",
-  "version": "14.2.0",
+  "version": "14.2.1",
   "summary": "Provides system information that remains constant throughout the lifetime of your app.",
   "description": "Provides system information that remains constant throughout the lifetime of your app.",
   "license": "MIT",

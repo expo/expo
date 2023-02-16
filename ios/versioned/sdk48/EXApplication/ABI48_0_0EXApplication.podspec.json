@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0EXApplication",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "summary": "A universal module that gets native application information such as its ID, app name, and build version at runtime",
   "description": "A universal module that gets native application information such as its ID, app name, and build version at runtime",
   "license": "MIT",

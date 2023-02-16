@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0EXSecureStore",
-  "version": "12.1.0",
+  "version": "12.1.1",
   "summary": "Provides a way to encrypt and securely store key–value pairs locally on the device.",
   "description": "Provides a way to encrypt and securely store key–value pairs locally on the device.",
   "license": "MIT",

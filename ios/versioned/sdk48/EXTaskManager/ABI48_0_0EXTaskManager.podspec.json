@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0EXTaskManager",
-  "version": "11.1.0",
+  "version": "11.1.1",
   "summary": "Expo module that provides support for tasks that can run in the background.",
   "description": "Expo module that provides support for tasks that can run in the background.",
   "license": "MIT",

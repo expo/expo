@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0ExpoKeepAwake",
-  "version": "12.0.0",
+  "version": "12.0.1",
   "summary": "Provides a React component that prevents the screen sleeping when rendered. It also exposes static methods to control the behavior imperatively.",
   "description": "Provides a React component that prevents the screen sleeping when rendered. It also exposes static methods to control the behavior imperatively.",
   "license": "MIT",

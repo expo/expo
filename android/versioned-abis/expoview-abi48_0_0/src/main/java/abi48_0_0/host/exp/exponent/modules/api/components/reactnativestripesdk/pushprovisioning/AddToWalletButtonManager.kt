@@ -1,14 +1,14 @@
 package abi48_0_0.host.exp.exponent.modules.api.components.reactnativestripesdk.pushprovisioning
 
+import android.content.Context
 import com.bumptech.glide.Glide
 import abi48_0_0.com.facebook.react.bridge.ReadableMap
 import abi48_0_0.com.facebook.react.common.MapBuilder
 import abi48_0_0.com.facebook.react.uimanager.SimpleViewManager
 import abi48_0_0.com.facebook.react.uimanager.ThemedReactContext
 import abi48_0_0.com.facebook.react.uimanager.annotations.ReactProp
-import abi48_0_0.com.facebook.react.bridge.ReactApplicationContext
 
-class AddToWalletButtonManager(applicationContext: ReactApplicationContext) : SimpleViewManager<AddToWalletButtonView?>() {
+class AddToWalletButtonManager(applicationContext: Context) : SimpleViewManager<AddToWalletButtonView?>() {
   private val requestManager = Glide.with(applicationContext)
   override fun getName() = "AddToWalletButton"
 

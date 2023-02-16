@@ -188,7 +188,7 @@ dependencies {
 
   // WHEN_VERSIONING_REMOVE_FROM_HERE
 
-  api 'org.webkit:android-jsc:r250230' // needs to be before react-native
+  api 'org.webkit:android-jsc:r250231' // needs to be before react-native
 
   api project(':ReactAndroid')
 

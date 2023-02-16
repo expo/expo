@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0EXPermissions",
-  "version": "14.1.0",
+  "version": "14.1.1",
   "summary": "Allows you prompt for various permissions to access device sensors, personal data, etc.",
   "description": "Allows you prompt for various permissions to access device sensors, personal data, etc.",
   "license": "MIT",
