@@ -35,7 +35,7 @@ export class GLView extends React.Component {
      */
     static async destroyContextAsync(exgl) {
         const exglCtxId = getContextId(exgl);
-        unregisterGl(exglCtxId);
+        unregisterGLContext(exglCtxId);
         return ExponentGLObjectManager.destroyContextAsync(exglCtxId);
     }
     /**
@@ -79,7 +79,7 @@ export class GLView extends React.Component {
     };
     componentWillUnmount() {
         if (this.exglCtxId) {
-            unregisterGl(this.exglCtxId);
+            unregisterGLContext(this.exglCtxId);
         }
     }
     // @docsMissing
@@ -123,7 +123,7 @@ export class GLView extends React.Component {
     }
 }
 GLView.NativeView = NativeView;
-function unregisterGl(exglCtxId) {
+function unregisterGLContext(exglCtxId) {
     if (global.__EXGLContexts) {
         delete global.__EXGLContexts[String(exglCtxId)];
     }

@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix gl context leak. ([#21247](https://github.com/expo/expo/pull/21247) by [@wkozyra95](https://github.com/wkozyra95))
+- Fixed leaking GL context. ([#21247](https://github.com/expo/expo/pull/21247) by [@wkozyra95](https://github.com/wkozyra95))
 
 ### 💡 Others
 

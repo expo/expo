@@ -62,7 +62,7 @@ export class GLView extends React.Component<GLViewProps> {
    */
   static async destroyContextAsync(exgl?: ExpoWebGLRenderingContext | number): Promise<boolean> {
     const exglCtxId = getContextId(exgl);
-    unregisterGl(exglCtxId);
+    unregisterGLContext(exglCtxId);
     return ExponentGLObjectManager.destroyContextAsync(exglCtxId);
   }
 
@@ -131,7 +131,7 @@ export class GLView extends React.Component<GLViewProps> {
 
   componentWillUnmount(): void {
     if (this.exglCtxId) {
-      unregisterGl(this.exglCtxId);
+      unregisterGLContext(this.exglCtxId);
     }
   }
 
@@ -187,7 +187,7 @@ export class GLView extends React.Component<GLViewProps> {
 
 GLView.NativeView = NativeView;
 
-function unregisterGl(exglCtxId: number) {
+function unregisterGLContext(exglCtxId: number) {
   if (global.__EXGLContexts) {
     delete global.__EXGLContexts[String(exglCtxId)];
   }
