@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0ExpoHaptics",
-  "version": "12.2.0",
+  "version": "12.2.1",
   "summary": "Provides access to the system's haptics engine on iOS and vibration effects on Android.",
   "description": "Provides access to the system's haptics engine on iOS and vibration effects on Android.",
   "license": "MIT",

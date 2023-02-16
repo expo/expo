@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0EXBackgroundFetch",
-  "version": "11.1.0",
+  "version": "11.1.1",
   "summary": "Expo universal module for BackgroundFetch API",
   "description": "Expo universal module for BackgroundFetch API",
   "license": "MIT",

@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0EXStructuredHeaders",
-  "version": "3.1.0",
+  "version": "3.1.1",
   "summary": "Expo module implementation of a parser based on https://httpwg.org/specs/rfc8941.html",
   "description": "Expo module implementation of a parser based on https://httpwg.org/specs/rfc8941.html",
   "license": "MIT",

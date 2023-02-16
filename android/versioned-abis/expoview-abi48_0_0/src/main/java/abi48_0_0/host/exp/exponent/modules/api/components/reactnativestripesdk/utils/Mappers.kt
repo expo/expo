@@ -17,14 +17,12 @@ internal fun createResult(key: String, value: WritableMap): WritableMap {
 internal fun createCanAddCardResult(canAddCard: Boolean, status: String? = null, token: WritableMap? = null): WritableNativeMap {
   val result = WritableNativeMap()
   val details = WritableNativeMap()
+  result.putBoolean("canAddCard", canAddCard)
   if (status != null) {
-    result.putBoolean("canAddCard", false)
     details.putString("status", status)
-  } else {
-    result.putBoolean("canAddCard", canAddCard)
-    if (token != null) {
-      details.putMap("token", token)
-    }
+  }
+  if (token != null) {
+    details.putMap("token", token)
   }
   result.putMap("details", details)
   return result

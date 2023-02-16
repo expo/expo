@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0EXScreenOrientation",
-  "version": "5.1.0",
+  "version": "5.1.1",
   "summary": "Expo universal module for managing device's screen orientation",
   "description": "Expo universal module for managing device's screen orientation",
   "license": "MIT",

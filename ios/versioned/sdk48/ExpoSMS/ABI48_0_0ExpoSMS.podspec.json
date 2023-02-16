@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0ExpoSMS",
-  "version": "11.2.0",
+  "version": "11.2.1",
   "summary": "Provides access to the system's UI/app for sending SMS messages.",
   "description": "Provides access to the system's UI/app for sending SMS messages.",
   "license": "MIT",

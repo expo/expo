@@ -2,7 +2,7 @@ package abi48_0_0.host.exp.exponent.modules.api.components.reactnativestripesdk
 
 import android.app.Activity
 import android.content.Intent
-import androidx.appcompat.app.AppCompatActivity
+import androidx.fragment.app.FragmentActivity
 import abi48_0_0.com.facebook.react.bridge.Promise
 import abi48_0_0.com.facebook.react.bridge.ReadableMap
 import abi48_0_0.com.facebook.react.bridge.WritableNativeMap
@@ -25,7 +25,7 @@ class GooglePayRequestHelper {
   companion object {
     internal const val LOAD_PAYMENT_DATA_REQUEST_CODE = 414243
 
-    internal fun createPaymentRequest(activity: AppCompatActivity, factory: GooglePayJsonFactory, googlePayParams: ReadableMap): Task<PaymentData> {
+    internal fun createPaymentRequest(activity: FragmentActivity, factory: GooglePayJsonFactory, googlePayParams: ReadableMap): Task<PaymentData> {
       val transactionInfo = buildTransactionInfo(googlePayParams)
       val merchantInfo = GooglePayJsonFactory.MerchantInfo(googlePayParams.getString("merchantName").orEmpty())
       val billingAddressParameters = buildBillingAddressParameters(googlePayParams.getMap("billingAddressConfig"))
@@ -90,7 +90,7 @@ class GooglePayRequestHelper {
       )
     }
 
-    internal fun createPaymentMethod(request: Task<PaymentData>, activity: AppCompatActivity) {
+    internal fun createPaymentMethod(request: Task<PaymentData>, activity: FragmentActivity) {
       AutoResolveHelper.resolveTask(
         request,
         activity,
