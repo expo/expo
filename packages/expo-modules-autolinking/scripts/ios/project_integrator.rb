@@ -1,8 +1,8 @@
 require 'fileutils'
+require 'colored2'
 
 module Expo
   module ProjectIntegrator
-    require 'colored2'
     include Pod
 
     CONFIGURATION_FLAG_PREFIX = 'EXPO_CONFIGURATION_'
@@ -208,7 +208,7 @@ module Expo
 
       set -eo pipefail
 
-      function node() {
+      function with_node() {
         # Start with a default
         NODE_BINARY=$(command -v node)
         export NODE_BINARY
@@ -247,7 +247,7 @@ module Expo
         fi
       }
 
-      node --eval "require(\'expo-modules-autolinking\')(process.argv.slice(1))" generate-package-list #{args} --target "#{modules_provider_path}"
+      with_node --no-warnings --eval "require(\'expo-modules-autolinking\')(process.argv.slice(1))" generate-package-list #{args} --target "#{modules_provider_path}"
       SUPPORT_SCRIPT
     end
 
