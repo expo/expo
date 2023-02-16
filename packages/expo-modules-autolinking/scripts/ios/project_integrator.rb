@@ -157,6 +157,18 @@ module Expo
         phase.is_a?(Xcodeproj::Project::PBXSourcesBuildPhase)
       }
 
+      if xcode_build_script_index.nil?
+        # This is almost impossible to get here as the script was just created with `new_shell_script_build_phase`
+        # that puts the script at the end of the phases, but let's log it just in case.
+        puts "[Expo] ".blue << "Unable to find the configuring build script in the Xcode project".red
+      end
+
+      if compile_sources_index.nil?
+        # In this case the project will probably not compile but that's not our fault
+        # and it doesn't block us from updating our build script.
+        puts "[Expo] ".blue << "Unable to find the compilation build phase in the Xcode project".red
+      end
+
       # Insert our script before the "Compile Sources" phase when necessary
       unless compile_sources_index.nil? || xcode_build_script_index < compile_sources_index
         build_phases.insert(
