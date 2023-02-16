@@ -25,7 +25,31 @@ interface IPOptions {
   ApplicationsType?: 'Any';
   PackageType?: 'Developer';
   CFBundleIdentifier?: string;
-  ReturnAttributes?: ('CFBundleIdentifier' | 'CFBundleExecutable' | 'Container' | 'Path')[];
+
+  ReturnAttributes?: (
+    | 'CFBundleIdentifier'
+    | 'ApplicationDSID'
+    | 'ApplicationType'
+    | 'CFBundleExecutable'
+    | 'CFBundleDisplayName'
+    | 'CFBundleIconFile'
+    | 'CFBundleName'
+    | 'CFBundleShortVersionString'
+    | 'CFBundleSupportedPlatforms'
+    | 'CFBundleURLTypes'
+    | 'CodeInfoIdentifier'
+    | 'Container'
+    | 'Entitlements'
+    | 'HasSettingsBundle'
+    | 'IsUpgradeable'
+    | 'MinimumOSVersion'
+    | 'Path'
+    | 'SignerIdentity'
+    | 'UIDeviceFamily'
+    | 'UIFileSharingEnabled'
+    | 'UIStatusBarHidden'
+    | 'UISupportedInterfaceOrientations'
+  )[];
   BundleIDs?: string[];
   [key: string]: undefined | string | string[];
 }
