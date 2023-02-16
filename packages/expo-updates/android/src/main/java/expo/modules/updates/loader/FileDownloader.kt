@@ -217,6 +217,14 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       return
     }
 
+    // in v0 compatibility mode require a manifest
+    if (configuration.enableExpoUpdatesProtocolV0CompatibilityMode && manifestPartBodyAndHeaders == null) {
+      val message = "Multipart response missing manifest part. Manifest is required in version 0 of the expo-updates protocol. This may be due to the update being a rollback or other directive."
+      logger.error(message, UpdatesErrorCode.UpdateFailedToLoad)
+      callback.onFailure(message, IOException(message))
+      return
+    }
+
     val responseHeaders = response.headers
     val responseHeaderData = ResponseHeaderData(
       protocolVersion = responseHeaders["expo-protocol-version"],
@@ -235,14 +243,19 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
       )
     }
 
-    val directiveResponseInfo = directivePartBodyAndHeaders?.let {
-      ResponsePartInfo(
-        responseHeaderData = responseHeaderData,
-        responsePartHeaderData = ResponsePartHeaderData(
-          signature = directivePartBodyAndHeaders.second["expo-signature"]
-        ),
-        body = directivePartBodyAndHeaders.first
-      )
+    // in v0 compatibility mode ignore directives
+    val directiveResponseInfo = if (configuration.enableExpoUpdatesProtocolV0CompatibilityMode) {
+      null
+    } else {
+      directivePartBodyAndHeaders?.let {
+        ResponsePartInfo(
+          responseHeaderData = responseHeaderData,
+          responsePartHeaderData = ResponsePartHeaderData(
+            signature = directivePartBodyAndHeaders.second["expo-signature"]
+          ),
+          body = directivePartBodyAndHeaders.first
+        )
+      }
     }
 
     var parseManifestResponse: UpdateResponsePart.ManifestUpdateResponsePart? = null
