@@ -478,5 +478,21 @@ export async function test({ describe, expect, it, ...t }) {
 
       await FS.downloadAsync(remoteUrl, localFileUri);
     }, 30000);
+
+    it('create UTF-8 folder and get info', async () => {
+      const folderName = '中文';
+      const folderUri = FS.documentDirectory + folderName;
+
+      const dirInfo = await FS.getInfoAsync(folderUri);
+      if (dirInfo.exists) {
+        await FS.deleteAsync(folderUri);
+      }
+
+      await FS.makeDirectoryAsync(folderUri);
+      const newDirInfo = await FS.getInfoAsync(folderUri);
+
+      expect(newDirInfo.exists).toBeTruthy();
+      expect(newDirInfo.isDirectory).toBeTruthy();
+    }, 30000);
   });
 }
