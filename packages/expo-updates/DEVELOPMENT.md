@@ -49,36 +49,21 @@ Sometimes you may want to enable expo-updates in a debug build -- for example, i
 
 To do this, first follow the directions above to [Ignore Embedded Update](#ignore-embedded-update).
 
-In Xcode's Bundle React Native code and images Build Phase, add the line `export FORCE_BUNDLING=true` to the top, and in android/app/build.gradle, add `bundleInDebug: true` to `project.ext.react`.
+Then set this environment variable to enable expo-updates in debug builds:
 
-Then, in AppDelegate.m, find both instances of `#ifdef DEBUG` and delete or comment out the following lines:
-```objective-c
-// #ifdef DEBUG
-//   ...                 <- delete or comment out these lines
-// #else
-  ... other stuff
-// #endif                <- and this one
+```bash
+export EX_UPDATES_NATIVE_DEBUG=1
 ```
 
-Similarly, in MainApplication.java, find the instances of `BuildConfig.DEBUG` and delete or comment out all paths where `BuildConfig.DEBUG` evaluates to `true`, like so:
-```java
-public boolean getUseDeveloperSupport() {
-//   return BuildConfig.DEBUG;
-  return false;
-}
+For iOS, there are two additional steps:
 
-// if (BuildConfig.DEBUG) {
-//   return something;          <- delete or comment out these lines
-// } else {
-  return somethingElse;
-// }                            <- and this one
+- You must modify the project file to force bundling of the application JS into the app for both debug and release builds, by replacing the string "SKIP_BUNDLING" with "FORCE_BUNDLING":
 
-...
-
-// if (!BuildConfig.DEBUG) {              <- and this one
-  UpdatesController.initialize(this);
-// }                                      <- and this one
+```bash
+sed -i '' 's/SKIP_BUNDLING/FORCE_BUNDLING/g;' ios/<project name>.xcodeproj/project.pbxproj
 ```
+
+- You must reinstall Cocoapods (`npx pod-install` from the top-level project directory).
 
 Now you can make a debug build of your app which behaves as if it were a release build (but without an embedded update).
 
