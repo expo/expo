@@ -68,6 +68,7 @@ class UpdatesModule(
         constants["isUsingEmbeddedAssets"] = updatesServiceLocal.isUsingEmbeddedAssets
         constants["runtimeVersion"] = updatesServiceLocal.configuration.runtimeVersion ?: ""
         constants["channel"] = updatesServiceLocal.configuration.requestHeaders["expo-channel-name"] ?: ""
+        constants["nativeDebug"] = BuildConfig.EX_UPDATES_NATIVE_DEBUG
 
         val launchedUpdate = updatesServiceLocal.launchedUpdate
         if (launchedUpdate != null) {
