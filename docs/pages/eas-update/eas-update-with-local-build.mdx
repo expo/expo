@@ -55,7 +55,6 @@ To configure your project, run the following commands in the order they are spec
     '',
     '# Initialize your project with EAS Update',
     '$ eas update:configure',
-    '',
   ]}
   cmdCopy="npx expo install expo-updates && eas init && eas update:configure"
 />
@@ -130,14 +129,13 @@ Run the following commands to get the app running on Android or iOS.
 
 <Terminal
   cmd={[
-    '# iOS: Build and run the app on a local iOS Simulator.',
-    '$ npx expo run:ios --configuration Release',
-    '',
     '# Android: Build and run the app on a local Android Emulator',
     '$ npx expo run:android --variant release',
     '',
+    '# iOS: Build and run the app on a local iOS Simulator.',
+    '$ npx expo run:ios --configuration Release',
   ]}
-  cmdCopy="npx expo run:ios --configuration Release && npx expo run:android --variant release"
+  cmdCopy="npx expo run:android --variant release && npx expo run:ios --configuration Release"
 />
 
 We build the release version of the app, not the debug version. By default, a debug build expects to connect to a local React Native packager to load the application bundle and will not connect to the EAS update service.
@@ -183,14 +181,13 @@ Then build and run the app again:
 
 <Terminal
   cmd={[
-    '# iOS: Build and run the app on a local iOS Simulator.',
-    '$ npx expo run:ios --configuration Release',
-    '',
     '# Android: Build and run the app on a local Android Emulator',
     '$ npx expo run:android --variant release',
     '',
+    '# iOS: Build and run the app on a local iOS Simulator.',
+    '$ npx expo run:ios --configuration Release',
   ]}
-  cmdCopy="npx expo run:ios --configuration Release && npx expo run:android --variant release"
+  cmdCopy="npx expo run:android --variant release && npx expo run:ios --configuration Release"
 />
 
 The app should appear as in the screenshot below.
@@ -209,7 +206,7 @@ Now we're ready to publish an update that will include our changes.
 
 After optionally making additional changes to **App.js**, publish an update with the following command:
 
-<Terminal cmd={['$ eas update', '']} cmdCopy="eas update" />
+<Terminal cmd={['$ eas update']} />
 
 Running the command will prompt the following:
 
