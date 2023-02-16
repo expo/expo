@@ -7,6 +7,7 @@ exports.getRncliAutolinkingSourcesAsync = exports.getGitIgnoreSourcesAsync = exp
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const chalk_1 = __importDefault(require("chalk"));
 const path_1 = __importDefault(require("path"));
+const resolve_from_1 = __importDefault(require("resolve-from"));
 const Utils_1 = require("./Utils");
 const debug = require('debug')('expo:fingerprint:sourcer:Bare');
 async function getBareAndroidSourcesAsync(projectRoot, options) {
@@ -34,10 +35,10 @@ exports.getBareIosSourcesAsync = getBareIosSourcesAsync;
 async function getPackageJsonScriptSourcesAsync(projectRoot, options) {
     let packageJson;
     try {
-        packageJson = require(`${projectRoot}/package.json`);
+        packageJson = require((0, resolve_from_1.default)(path_1.default.resolve(projectRoot), './package.json'));
     }
     catch (e) {
-        debug(`Unable to read package.json from ${projectRoot}/package.json: ` + e);
+        debug(`Unable to read package.json from ${path_1.default.resolve(projectRoot)}/package.json: ` + e);
         return [];
     }
     const results = [];

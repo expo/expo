@@ -6,6 +6,7 @@ import { normalizeOptions } from '../Options';
 
 jest.mock('fs');
 jest.mock('fs/promises');
+jest.mock('resolve-from');
 
 describe(diffFingerprintChangesAsync, () => {
   afterEach(() => {
