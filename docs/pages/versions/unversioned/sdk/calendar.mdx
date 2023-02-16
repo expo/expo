@@ -7,11 +7,15 @@ packageName: 'expo-calendar'
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { SnackInline} from '~/ui/components/Snippet';
-import { ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
+import { SnackInline } from '~/ui/components/Snippet';
+import {
+  ConfigReactNative,
+  ConfigPluginExample,
+  ConfigPluginProperties,
+} from '~/components/plugins/ConfigSection';
 import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 
-Provides an API for interacting with the device's system calendars, events, reminders, and associated records.
+`expo-calendar` provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 
 <PlatformsSection android emulator ios simulator />
 
@@ -32,7 +36,7 @@ You can configure `expo-calendar` using its built-in [config plugin](/guides/con
       [
         "expo-calendar",
         {
-          "calendarPermission": "The app needs to access your calendar.",
+          "calendarPermission": "The app needs to access your calendar."
         }
       ]
     ]
@@ -47,36 +51,23 @@ You can configure `expo-calendar` using its built-in [config plugin](/guides/con
     {
       name: 'calendarPermission',
       platform: 'ios',
-      description: 'A string to set the NSCalendarsUsageDescription permission message.',
+      description: 'A string to set the [`NSCalendarsUsageDescription`](#ios) permission message.',
       default: '"Allow $(PRODUCT_NAME) to access your calendar"',
     },
     {
       name: 'remindersPermission',
       platform: 'ios',
-      description: 'A string to set the NSRemindersUsageDescription permission message.',
+      description: 'A string to set the [`NSRemindersUsageDescription`](#ios) permission message.',
       default: '"Allow $(PRODUCT_NAME) to access your reminders"',
     },
   ]}
 />
 
-## Permissions
+<ConfigReactNative>
 
-### Android
+Learn how to configure the native projects in the [installation instructions in the `expo-calendar` repository](https://github.com/expo/expo/tree/main/packages/expo-calendar#installation-in-bare-react-native-projects).
 
-You must add the following permissions to your **app.json** inside the [`expo.android.permissions`](/versions/latest/config/app/#permissions) array.
-
-<AndroidPermissions permissions={['READ_CALENDAR', 'WRITE_CALENDAR']} />
-
-### iOS
-
-You can add the following permissions to your **app.json** inside the [`expo.ios.infoPlist`](/versions/latest/config/app/#infoplist) object.
-
-<IOSPermissions
-  permissions={[
-    'NSCalendarsUsageDescription',
-    'NSRemindersUsageDescription',
-  ]}
-/>
+</ConfigReactNative>
 
 ## Usage
 
@@ -151,3 +142,17 @@ import * as Calendar from 'expo-calendar';
 ```
 
 <APISection packageName="expo-calendar" apiName="Calendar" />
+
+## Permissions
+
+### Android
+
+You must add the following permissions to your **app.json** inside the [`expo.android.permissions`](/versions/latest/config/app/#permissions) array.
+
+<AndroidPermissions permissions={['READ_CALENDAR', 'WRITE_CALENDAR']} />
+
+### iOS
+
+The following usage description keys are used by this library:
+
+<IOSPermissions permissions={['NSCalendarsUsageDescription', 'NSRemindersUsageDescription']} />
