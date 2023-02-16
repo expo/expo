@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- Removed `StyleSheet.flatten`. Improves compatibility with build time React Native Web styling libraries. ([#21236](https://github.com/expo/expo/pull/21236)) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway)
 
 ## 13.1.0 — 2022-12-30
 
