@@ -7,7 +7,7 @@
 //   - This can be debugged with `EXPO_DEBUG=1` and `DEBUG=expo:*`
 // 5. `EXPO_SDK_VERSION=43.0.0 expo run:android`
 export default ({ config }) => {
-  config.version = '43.0.0';
+  config.version = '48.0.0';
   // app.json defines the sdkVersion as UNVERSIONED, we can override it here dynamically if we need to,
   // for example with an environment variable.
   if (process.env.EXPO_SDK_VERSION) {
