@@ -85,42 +85,41 @@ object TapAndPayProxy {
     }
   }
 
-  private fun mapFromTokenInfo(token: Any?): WritableMap? {
-    if (token == null) {
-      return null
-    }
+  private fun mapFromTokenInfo(token: Any?): WritableMap {
     val result = WritableNativeMap()
-    try {
-      val tokenInfoClass = Class.forName("com.google.android.gms.tapandpay.issuer.TokenInfo")
-      result.putString(
-        "id",
-        tokenInfoClass.getMethod("getIssuerTokenId").invoke(token) as String
-      )
-      result.putString(
-        "cardLastFour",
-        tokenInfoClass.getMethod("getFpanLastFour").invoke(token) as String
-      )
-      result.putString(
-        "issuer",
-        tokenInfoClass.getMethod("getIssuerName").invoke(token) as String
-      )
-      result.putString(
-        "status",
-        mapFromTokenState(tokenInfoClass.getMethod("getTokenState").invoke(token) as Int)
-      )
-      result.putInt(
-        "network",
-        tokenInfoClass.getMethod("getNetwork").invoke(token) as Int
-      )
-      result.putInt(
-        "serviceProvider",
-        tokenInfoClass.getMethod("getTokenServiceProvider").invoke(token) as Int
-      )
-    } catch (e: Exception) {
-      Log.e(
-        TAG,
-        "There was a problem finding the class com.google.android.gms.tapandpay.issuer.TokenInfo. Make sure you've included Google's TapAndPay dependency."
-      )
+    token?.let {
+      try {
+        val tokenInfoClass = Class.forName("com.google.android.gms.tapandpay.issuer.TokenInfo")
+        result.putString(
+          "id",
+          tokenInfoClass.getMethod("getIssuerTokenId").invoke(it) as String
+        )
+        result.putString(
+          "cardLastFour",
+          tokenInfoClass.getMethod("getFpanLastFour").invoke(it) as String
+        )
+        result.putString(
+          "issuer",
+          tokenInfoClass.getMethod("getIssuerName").invoke(it) as String
+        )
+        result.putString(
+          "status",
+          mapFromTokenState(tokenInfoClass.getMethod("getTokenState").invoke(it) as Int)
+        )
+        result.putInt(
+          "network",
+          tokenInfoClass.getMethod("getNetwork").invoke(it) as Int
+        )
+        result.putInt(
+          "serviceProvider",
+          tokenInfoClass.getMethod("getTokenServiceProvider").invoke(it) as Int
+        )
+      } catch (e: Exception) {
+        Log.e(
+          TAG,
+          "There was a problem finding the class com.google.android.gms.tapandpay.issuer.TokenInfo. Make sure you've included Google's TapAndPay dependency."
+        )
+      }
     }
     return result
   }

@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0EXSensors",
-  "version": "12.1.0",
+  "version": "12.1.1",
   "summary": "Provides access to a hardware device's accelerometer, gyroscope, magnetometer, and pedometer.",
   "description": "Provides access to a hardware device's accelerometer, gyroscope, magnetometer, and pedometer.",
   "license": "MIT",
