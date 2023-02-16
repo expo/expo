@@ -2,6 +2,7 @@ import Debug from 'debug';
 import fs from 'fs';
 import path from 'path';
 
+import { Log } from '../../../log';
 import { XcodeDeveloperDiskImagePrerequisite } from '../../../start/doctor/apple/XcodeDeveloperDiskImagePrerequisite';
 import { delayAsync } from '../../../utils/delay';
 import { CommandError } from '../../../utils/errors';
@@ -113,25 +114,33 @@ export async function runOnDevice({
       onProgress
     );
 
-    const { [bundleId]: appInfo } = await installer.lookupApp([bundleId]);
-    // launch fails with EBusy or ENotFound if you try to launch immediately after install
-    await delayAsync(200);
-    const debugServerClient = await launchApp(clientManager, { appInfo, detach: !waitForApp });
-    if (waitForApp) {
-      installExitHooks(async () => {
-        // causes continue() to return
-        debugServerClient.halt();
-        // give continue() time to return response
-        await delayAsync(64);
-      });
+    const {
+      // TODO(EvanBacon): This can be undefined when querying App Clips.
+      [bundleId]: appInfo,
+    } = await installer.lookupApp([bundleId]);
 
-      debug(`Waiting for app to close...\n`);
-      const result = await debugServerClient.continue();
-      // TODO: I have no idea what this packet means yet (successful close?)
-      // if not a close (ie, most likely due to halt from onBeforeExit), then kill the app
-      if (result !== 'W00') {
-        await debugServerClient.kill();
+    if (appInfo) {
+      // launch fails with EBusy or ENotFound if you try to launch immediately after install
+      await delayAsync(200);
+      const debugServerClient = await launchApp(clientManager, { appInfo, detach: !waitForApp });
+      if (waitForApp) {
+        installExitHooks(async () => {
+          // causes continue() to return
+          debugServerClient.halt();
+          // give continue() time to return response
+          await delayAsync(64);
+        });
+
+        debug(`Waiting for app to close...\n`);
+        const result = await debugServerClient.continue();
+        // TODO: I have no idea what this packet means yet (successful close?)
+        // if not a close (ie, most likely due to halt from onBeforeExit), then kill the app
+        if (result !== 'W00') {
+          await debugServerClient.kill();
+        }
       }
+    } else {
+      Log.warn(`App "${bundleId}" installed but couldn't be launched. Open on device manually.`);
     }
   } finally {
     clientManager.end();
