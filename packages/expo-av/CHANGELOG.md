@@ -9,11 +9,11 @@
 ### 🐛 Bug fixes
 
 - Fixed `HTMLMediaElement.play` and `HTMLMediaElement.pause` calls on the Web aren't properly awaited. ([#20439](https://github.com/expo/expo/pull/20439)) by [@zhigang1992](https://github.com/zhigang1992)
+- Removed `StyleSheet.flatten`. Fixed compatibility with build-time React Native Web styling libraries. ([#21236](https://github.com/expo/expo/pull/21236)) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway)
 
 ### 💡 Others
 
 - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
-- Removed `StyleSheet.flatten`. Improves compatibility with build-time React Native Web styling libraries. ([#21236](https://github.com/expo/expo/pull/21236)) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway)
 
 ## 13.1.0 — 2022-12-30
 
