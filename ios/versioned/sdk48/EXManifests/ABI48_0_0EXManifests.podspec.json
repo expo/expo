@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0EXManifests",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "summary": "Code to parse and use Expo and Expo Updates manifests.",
   "description": "Code to parse and use Expo and Expo Updates manifests.",
   "license": "MIT",

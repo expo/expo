@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0EASClient",
-  "version": "0.5.0",
+  "version": "0.5.1",
   "summary": "Stable client identifier for EAS services",
   "description": "Stable client identifier for EAS services",
   "license": "MIT",

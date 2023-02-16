@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0EXFaceDetector",
-  "version": "12.1.0",
+  "version": "12.1.1",
   "summary": "Lets you use the power of Google Mobile Vision (https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.",
   "description": "Lets you use the power of Google Mobile Vision (https://developers.google.com/vision/face-detection-concepts) framework to detect faces on images.",
   "license": "MIT",
