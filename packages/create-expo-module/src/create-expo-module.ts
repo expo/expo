@@ -75,21 +75,6 @@ async function main(target: string | undefined, options: CommandOptions) {
     step.succeed('Created the module from template files');
   });
 
-  await newStep('Creating an empty Git repository', async (step) => {
-    try {
-      const result = await createGitRepositoryAsync(targetDir);
-      if (result) {
-        step.succeed('Created an empty Git repository');
-      } else if (result === null) {
-        step.succeed('Skipped creating an empty Git repository, already within a Git repository');
-      } else if (result === false) {
-        step.warn('Could not create an empty Git repository, see debug logs with EXPO_DEBUG=true');
-      }
-    } catch (e: any) {
-      step.fail(e.toString());
-    }
-  });
-
   await newStep('Installing module dependencies', async (step) => {
     await installDependencies(packageManager, targetDir);
     step.succeed('Installed module dependencies');
@@ -118,6 +103,21 @@ async function main(target: string | undefined, options: CommandOptions) {
     // Create "example" folder
     await createExampleApp(data, targetDir, packageManager);
   }
+
+  await newStep('Creating an empty Git repository', async (step) => {
+    try {
+      const result = await createGitRepositoryAsync(targetDir);
+      if (result) {
+        step.succeed('Created an empty Git repository');
+      } else if (result === null) {
+        step.succeed('Skipped creating an empty Git repository, already within a Git repository');
+      } else if (result === false) {
+        step.warn('Could not create an empty Git repository, see debug logs with EXPO_DEBUG=true');
+      }
+    } catch (e: any) {
+      step.fail(e.toString());
+    }
+  });
 
   console.log();
   console.log('✅ Successfully created Expo module');
