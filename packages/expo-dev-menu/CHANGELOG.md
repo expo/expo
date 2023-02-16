@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `'jsc/JSCRuntime.h' file not found` when using JSC on iOS.
+
 ### 💡 Others
 
 ## 2.1.1 — 2023-02-09
