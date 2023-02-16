@@ -8,7 +8,11 @@
 
 ### 🐛 Bug fixes
 
+- Fix gl context leak. ([#21247](https://github.com/expo/expo/pull/21247) by [@wkozyra95](https://github.com/wkozyra95))
+
 ### 💡 Others
+
+- Remove legacy code for old Expo Go. ([#21247](https://github.com/expo/expo/pull/21247) by [@wkozyra95](https://github.com/wkozyra95))
 
 ## 12.4.0 — 2023-02-14
 
