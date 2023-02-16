@@ -75,7 +75,7 @@ Inside the `preview` and `production` build profiles in **eas.json**, add a `cha
 }
 ```
 
-The `channel` allows you to point updates at a build. For example, if we set up a GitHub Action to publish changes on merge, it will make it so that we can merge code into the "production" Git branch. Then, each commit will trigger a GitHub Action that will publish an update which will be available to builds with the channel "production".
+The `channel` allows you to point updates at builds of that profile. For example, if we set up a GitHub Action to publish changes on merge, it will make it so that we can merge code into the "production" Git branch. Then, each commit will trigger a GitHub Action that will publish an update which will be available to builds with the channel "production".
 
 > **Optional**: If your project is a bare React Native project, see [Updating bare app](/bare/updating-your-app) for any additional configuration.
 
@@ -84,7 +84,7 @@ The `channel` allows you to point updates at a build. For example, if we set up 
 <Step label="4">
 ## Create a build for the project
 
-You need to create a build for Android and iOS. We recommend creating a build with the `preview` build profile first. See [Creating your first build](https://docs.expo.dev/build/setup/) on how to get started and set up [Internal distribution](https://docs.expo.dev/build/internal-distribution/#setting-up-internal-distribution) for your device or simulator.
+You need to create a build for Android or iOS. We recommend creating a build with the `preview` build profile first. See [Creating your first build](https://docs.expo.dev/build/setup/) on how to get started and set up [Internal distribution](https://docs.expo.dev/build/internal-distribution/#setting-up-internal-distribution) for your device or simulator.
 
 Once you have a build running on your device or a simulator, you are ready to send an update.
 
