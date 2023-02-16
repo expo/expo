@@ -1,0 +1,21 @@
+{
+  "name": "ABI48_0_0Expo",
+  "version": "48.0.1",
+  "summary": "The Expo SDK",
+  "description": "The Expo SDK",
+  "license": "MIT",
+  "authors": "Expo",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
+  "platforms": {
+    "ios": "13.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "static_framework": true,
+  "header_dir": "ABI48_0_0Expo",
+  "dependencies": {
+    "ABI48_0_0ExpoModulesCore": []
+  },
+  "source_files": "ios/**/*.{h,m,swift}"
+}

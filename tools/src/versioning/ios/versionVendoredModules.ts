@@ -127,6 +127,12 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         },
       },
       {
+        // namespace ABI48_0_0React = ABI48_0_0facebook::react -> namespace ABI48_0_0React = ABI48_0_0facebook::ABI48_0_0React
+        // using namespace ABI48_0_0facebook::react -> using namespace ABI48_0_0facebook::ABI48_0_0React
+        find: /namespace ([\w\s=]+facebook)::react/g,
+        replaceWith: `namespace $1::${prefix}React`,
+      },
+      {
         // Objective-C only, see the comment in the rule below.
         paths: '*.{h,m,mm}',
         find: /r(eactTag|eactSubviews|eactSuperview|eactViewController|eactSetFrame|eactAddControllerToClosestParent|eactZIndex|eactLayoutDirection)/gi,

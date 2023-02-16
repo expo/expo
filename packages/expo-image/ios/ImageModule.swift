@@ -37,6 +37,10 @@ public final class ImageModule: Module {
         view.contentFit = contentFit ?? .cover
       }
 
+      Prop("placeholderContentFit") { (view, placeholderContentFit: ContentFit?) in
+        view.placeholderContentFit = placeholderContentFit ?? .scaleDown
+      }
+
       Prop("contentPosition") { (view, contentPosition: ContentPosition?) in
         view.contentPosition = contentPosition ?? .center
       }
@@ -63,6 +67,10 @@ public final class ImageModule: Module {
 
       Prop("cachePolicy") { (view, cachePolicy: ImageCachePolicy?) in
         view.cachePolicy = cachePolicy ?? .disk
+      }
+
+      Prop("enableLiveTextInteraction") { (view, enableLiveTextInteraction: Bool?) in
+        view.enableLiveTextInteraction = enableLiveTextInteraction ?? false
       }
 
       Prop("accessible") { (view, accessible: Bool?) in

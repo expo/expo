@@ -1,9 +1,12 @@
 package expo.modules.imagepicker
 
 import android.Manifest
+import android.Manifest.permission.READ_MEDIA_IMAGES
+import android.Manifest.permission.READ_MEDIA_VIDEO
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import android.os.OperationCanceledException
 import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.imagepicker.contracts.CameraContract
@@ -109,7 +112,7 @@ class ImagePickerModule : Module() {
   private lateinit var cropImageLauncher: AppContextActivityResultLauncher<CropImageContractOptions, ImagePickerContractResult>
 
   private val cacheDirectory: File
-    get() = appContext.cacheDirectory ?: throw ModuleNotFoundException("expo.modules.interfaces.filesystem.AppDirectories")
+    get() = appContext.cacheDirectory
 
   /**
    * Stores result for an operation that has been interrupted by the activity destruction.
@@ -171,10 +174,16 @@ class ImagePickerModule : Module() {
   // region Utils
 
   private fun getMediaLibraryPermissions(writeOnly: Boolean): Array<String> =
-    if (writeOnly) {
-      arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      listOfNotNull(
+        READ_MEDIA_IMAGES.takeIf { !writeOnly },
+        READ_MEDIA_VIDEO.takeIf { !writeOnly }
+      ).toTypedArray()
     } else {
-      arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
+      listOfNotNull(
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE.takeIf { !writeOnly }
+      ).toTypedArray()
     }
 
   private fun ensureTargetActivityIsAvailable(options: ImagePickerOptions) {
@@ -189,7 +198,13 @@ class ImagePickerModule : Module() {
 
     permissions.askForPermissions(
       { permissionsResponse ->
-        if (
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+          if (permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED) {
+            continuation.resume(Unit)
+          } else {
+            continuation.resumeWithException(UserRejectedPermissionsException())
+          }
+        } else if (
           permissionsResponse[Manifest.permission.WRITE_EXTERNAL_STORAGE]?.status == PermissionsStatus.GRANTED &&
           permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED
         ) {
@@ -198,7 +213,8 @@ class ImagePickerModule : Module() {
           continuation.resumeWithException(UserRejectedPermissionsException())
         }
       },
-      Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA
+      Manifest.permission.WRITE_EXTERNAL_STORAGE.takeIf { Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU },
+      Manifest.permission.CAMERA
     )
   }
 

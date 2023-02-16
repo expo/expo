@@ -24,9 +24,21 @@ export type DocumentPickerOptions = {
 };
 
 // @needsAudit @docsMissing
+/**
+ * First object represents the result when the document pick has been cancelled.
+ * The second one represents the successful document pick result.
+ */
 export type DocumentResult =
-  | { type: 'cancel' }
   | {
+      /**
+       * Field indicating that the document pick has been cancelled.
+       */
+      type: 'cancel';
+    }
+  | {
+      /**
+       * Field indicating that the document pick has been successful.
+       */
       type: 'success';
       /**
        * Document original name.
@@ -48,6 +60,14 @@ export type DocumentResult =
        * Timestamp of last document modification.
        */
       lastModified?: number;
+      /**
+       * `File` object for the parity with web File API.
+       * @platform web
+       */
       file?: File;
+      /**
+       * `FileList` object for the parity with web File API.
+       * @platform web
+       */
       output?: FileList | null;
     };

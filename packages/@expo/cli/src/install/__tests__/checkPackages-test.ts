@@ -6,14 +6,14 @@ import {
 } from '../../start/doctor/dependencies/validateDependenciesVersions';
 import { confirmAsync } from '../../utils/prompts';
 import { checkPackagesAsync } from '../checkPackages';
-import { installPackagesAsync } from '../installAsync';
+import { fixPackagesAsync } from '../installAsync';
 
 jest.mock('../../log');
 
 jest.mock('../../utils/prompts');
 
 jest.mock('../installAsync', () => ({
-  installPackagesAsync: jest.fn(),
+  fixPackagesAsync: jest.fn(),
 }));
 
 jest.mock('../../start/doctor/dependencies/validateDependenciesVersions', () => ({
@@ -39,6 +39,7 @@ describe(checkPackagesAsync, () => {
     asMock(getVersionedDependenciesAsync).mockResolvedValueOnce([
       {
         packageName: 'react-native',
+        packageType: 'dependencies',
         expectedVersionOrRange: '^1.0.0',
         actualVersion: '0.69.0',
       },
@@ -85,18 +86,22 @@ describe(checkPackagesAsync, () => {
   });
 
   it(`fixes invalid packages`, async () => {
-    asMock(getVersionedDependenciesAsync).mockResolvedValueOnce([
+    const issues: Awaited<ReturnType<typeof getVersionedDependenciesAsync>> = [
       {
         packageName: 'react-native',
+        packageType: 'dependencies',
         expectedVersionOrRange: '^1.0.0',
         actualVersion: '0.69.0',
       },
       {
         packageName: 'expo',
+        packageType: 'dependencies',
         expectedVersionOrRange: '^1.0.0',
         actualVersion: '0.69.0',
       },
-    ]);
+    ];
+
+    asMock(getVersionedDependenciesAsync).mockResolvedValueOnce(issues);
 
     await checkPackagesAsync('/', {
       packages: ['react-native', 'expo'],
@@ -106,10 +111,10 @@ describe(checkPackagesAsync, () => {
       packageManagerArguments: [],
     });
 
-    expect(installPackagesAsync).toBeCalledWith('/', {
+    expect(fixPackagesAsync).toBeCalledWith('/', {
       packageManager: {},
       packageManagerArguments: [],
-      packages: ['react-native', 'expo'],
+      packages: issues,
       sdkVersion: '45.0.0',
     });
     expect(logIncorrectDependencies).toBeCalledTimes(1);

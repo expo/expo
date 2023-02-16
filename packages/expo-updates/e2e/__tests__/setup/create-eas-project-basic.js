@@ -1,8 +1,6 @@
-const spawnAsync = require('@expo/spawn-async');
-const fs = require('fs/promises');
 const path = require('path');
 
-const { initAsync, setupBasicAppAsync, setupAssetsAppAsync } = require('./project');
+const { initAsync, setupBasicAppAsync } = require('./project');
 
 const repoRoot = process.env.EXPO_REPO_ROOT;
 const workingDir = path.resolve(repoRoot, '..');
@@ -22,12 +20,7 @@ const runtimeVersion = '1.0.0';
  */
 
 (async function () {
-  if (
-    !process.env.ARTIFACTS_DEST ||
-    !process.env.EXPO_REPO_ROOT ||
-    !process.env.UPDATES_HOST ||
-    !process.env.UPDATES_PORT
-  ) {
+  if (!process.env.EXPO_REPO_ROOT || !process.env.UPDATES_HOST || !process.env.UPDATES_PORT) {
     throw new Error(
       'Missing one or more environment variables; see instructions in e2e/__tests__/setup/index.js'
     );
@@ -37,22 +30,5 @@ const runtimeVersion = '1.0.0';
 
   await initAsync(projectRoot, { repoRoot, runtimeVersion, localCliBin });
 
-  await setupBasicAppAsync(projectRoot);
-
-  // Build assets project as a subdirectory in the project
-  const assetsProjectRoot = path.join(process.env.TEST_PROJECT_ROOT, 'updates-e2e');
-
-  await initAsync(assetsProjectRoot, { repoRoot, runtimeVersion, localCliBin });
-
-  await setupAssetsAppAsync(assetsProjectRoot, localCliBin);
-
-  // Remove node_modules
-  await fs.rm(path.join(assetsProjectRoot, 'node_modules'), { force: true, recursive: true });
-
-  // Pack up the assets app as a tarball and remove the directory
-  await spawnAsync('tar', ['zcf', path.join(projectRoot, 'updates-e2e-assets.tar.gz'), '.'], {
-    cwd: assetsProjectRoot,
-    stdio: 'inherit',
-  });
-  await fs.rm(assetsProjectRoot, { force: true, recursive: true });
+  await setupBasicAppAsync(projectRoot, localCliBin);
 })();

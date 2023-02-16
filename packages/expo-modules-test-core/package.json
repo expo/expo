@@ -1,6 +1,6 @@
 {
   "name": "expo-modules-test-core",
-  "version": "0.10.0",
+  "version": "0.11.1",
   "main": "./app.plugin.js",
   "description": "Module providing native testing utilities for testing Expo modules",
   "keywords": [

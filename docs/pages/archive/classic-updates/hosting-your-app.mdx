@@ -2,7 +2,6 @@
 title: Hosting Updates on Your Servers
 ---
 
-import { ConfigClassic } from '~/components/plugins/ConfigSection';
 import { Terminal } from '~/ui/components/Snippet';
 
 > This doc was archived in August 2022 and will not receive any further updates. Please use EAS Update instead. [Learn more](/eas-update/introduction)
@@ -86,18 +85,6 @@ Here's an example of **firebase.json** configuration, with a [deploy target](htt
 ## Building the standalone app
 
 To configure your standalone binary to pull updates from your server, you’ll need to define the URL where you will host your **index.json** file. When using EAS Build, just set the [`updates.url` property in app.json](/versions/latest/config/app/#url) to point to that url.
-
-<ConfigClassic>
-
-With the classic build system, you need to pass the URL to your hosted `index.json` file to the `expo build` command.
-
-For iOS builds, run the following commands from your terminal:
-`expo build:ios --public-url <path-to-ios-index.json>`, where the `public-url` option will be something like https://expo.github.io/self-hosting-example/ios-index.json
-
-For Android builds, run the following commands from your terminal:
-`expo build:android --public-url <path-to-android-index.json>`, where the `public-url` option will be something like https://expo.github.io/self-hosting-example/android-index.json
-
-</ConfigClassic>
 
 ## Loading QR Code/URL in Development
 

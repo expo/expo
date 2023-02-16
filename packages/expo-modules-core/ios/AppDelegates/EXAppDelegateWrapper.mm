@@ -42,7 +42,7 @@
   return _expoAppDelegate;
 }
 
-#if __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>)
+#if __has_include(<React-RCTAppDelegate/RCTAppDelegate.h>) || __has_include(<React_RCTAppDelegate/RCTAppDelegate.h>)
 
 - (UIView *)findRootView:(UIApplication *)application
 {

@@ -96,7 +96,11 @@ export class ClientManager {
       const tlsOptions: tls.ConnectionOptions = {
         rejectUnauthorized: false,
         secureContext: tls.createSecureContext({
-          secureProtocol: 'TLSv1_method',
+          // Avoid using `secureProtocol` fixing the socket to a single TLS version.
+          // Newer Node versions might not support older TLS versions.
+          // By using the default `minVersion` and `maxVersion` options,
+          // The socket will automatically use the appropriate TLS version.
+          // See: https://nodejs.org/api/tls.html#tlscreatesecurecontextoptions
           cert: this.pairRecord.RootCertificate,
           key: this.pairRecord.RootPrivateKey,
         }),

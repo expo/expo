@@ -1,18 +1,18 @@
-import type { ConfigPlugin } from 'expo/config-plugins';
+import { ConfigPlugin } from 'expo/config-plugins';
 
 import {
   withAndroidBuildProperties,
   withAndroidProguardRules,
   withAndroidPurgeProguardRulesOnce,
+  withAndroidFlipper,
 } from './android';
 import { withIosBuildProperties, withIosDeploymentTarget } from './ios';
 import { PluginConfigType, validateConfig } from './pluginConfig';
 
 /**
- * Config plugin to customize native Android or iOS build properties for managed apps
- *
- * @param config ExpoConfig
- * @param props Configuration for the config plugin
+ * Config plugin allowing customizing native Android and iOS build properties for managed apps.
+ * @param config Expo config for application.
+ * @param props Configuration for the build properties plugin.
  */
 export const withBuildProperties: ConfigPlugin<PluginConfigType> = (config, props) => {
   const pluginConfig = validateConfig(props || {});
@@ -28,6 +28,7 @@ export const withBuildProperties: ConfigPlugin<PluginConfigType> = (config, prop
   // plugins order matter: the later one would run first
   config = withAndroidPurgeProguardRulesOnce(config);
 
+  config = withAndroidFlipper(config, pluginConfig);
   config = withIosBuildProperties(config, pluginConfig);
   config = withIosDeploymentTarget(config, pluginConfig);
 

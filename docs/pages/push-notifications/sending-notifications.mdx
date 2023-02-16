@@ -30,7 +30,7 @@ The Expo team and community have taken care of creating back-ends for you in a f
 | [expo-server-sdk-python](https://github.com/expo/expo-server-sdk-python)                 | Python   | Community     |
 | [expo-server-sdk-ruby](https://github.com/expo/expo-server-sdk-ruby)                     | Ruby     | Community     |
 | [expo-server-sdk-rust](https://github.com/expo/expo-server-sdk-rust)                     | Rust     | Community     |
-| [ExpoNotificationsBundle](https://github.com/solvecrew/ExpoNotificationsBundle)          | Symfony  | SolveCrew     |
+| [expo-notifier](https://github.com/symfony/expo-notifier)                                | Symfony  | Symfony       |
 | [exponent-server-sdk-php](https://github.com/Alymosul/exponent-server-sdk-php)           | PHP      | Community     |
 | [expo-server-sdk-php](https://github.com/ctwillie/expo-server-sdk-php)                   | PHP      | Community     |
 | [exponent-server-sdk-golang](https://github.com/oliveroneill/exponent-server-sdk-golang) | Golang   | Community     |
@@ -301,7 +301,7 @@ Each message must be a JSON object with the given fields (only the `to` field is
   ],
   // only populated if there was an error with the entire request
   "errors": [{
-    "code": number,
+    "code": string,
     "message": string
   }]
 }

@@ -241,7 +241,14 @@ export default function createAnimatedComponent(
 
     _attachNativeEvents() {
       const node = this._getEventViewRef();
-      const viewTag = findNodeHandle(options?.setNativeProps ? this : node);
+      let viewTag = findNodeHandle(options?.setNativeProps ? this : node);
+      const componentName = Component.displayName || Component.name;
+
+      if (componentName?.endsWith('FlashList') && this._component) {
+        // @ts-ignore it's FlashList specific: https://github.com/Shopify/flash-list/blob/218f314e63806b4fe926741ef73f8b9cd6ebc7eb/src/FlashList.tsx#L815
+        viewTag = findNodeHandle(this._component.getScrollableNode());
+      }
+
       for (const key in this.props) {
         const prop = this.props[key];
         if (prop instanceof AnimatedEvent) {
@@ -534,12 +541,11 @@ export default function createAnimatedComponent(
         // TODO update config
         const tag = findNodeHandle(ref);
         if (
+          !shouldBeUseWeb() &&
           (this.props.layout || this.props.entering || this.props.exiting) &&
           tag != null
         ) {
-          if (!shouldBeUseWeb()) {
-            enableLayoutAnimations(true, false);
-          }
+          enableLayoutAnimations(true, false);
           let layout = this.props.layout ? this.props.layout : DefaultLayout;
           let entering = this.props.entering
             ? this.props.entering

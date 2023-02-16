@@ -3,7 +3,6 @@
 #pragma once
 
 #include <fbjni/fbjni.h>
-#include "boost/functional/hash.hpp"
 
 #include <memory>
 #include <unordered_map>
@@ -11,11 +10,26 @@
 namespace jni = facebook::jni;
 
 namespace expo {
-using MethodHashMap = std::unordered_map<
-  std::pair<std::string, std::string>,
-  jmethodID,
-  boost::hash<std::pair<std::string, std::string>>
->;
+
+template <typename T>
+inline void hash_combine(std::size_t& seed, const T& v)
+{
+  std::hash<T> hasher;
+  // Reference from: https://github.com/boostorg/container_hash/blob/boost-1.76.0/include/boost/container_hash/hash.hpp
+  seed ^= hasher(v) + 0x9e3779b9 + (seed << 6) + (seed >> 2);
+}
+
+struct pairhash {
+  template <typename A, typename B>
+  std::size_t operator()(const std::pair<A, B>& v) const {
+    std::size_t seed = 0;
+    hash_combine(seed, v.first);
+    hash_combine(seed, v.second);
+    return seed;
+  }
+};
+
+using MethodHashMap = std::unordered_map<std::pair<std::string, std::string>, jmethodID, pairhash>;
 
 /**
  * Singleton registry used to store references to often used Java classes.

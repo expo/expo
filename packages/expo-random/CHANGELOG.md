@@ -10,6 +10,14 @@
 
 ### 💡 Others
 
+## 13.1.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 13.1.0 — 2023-02-03
+
+### 💡 Others
+
 - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
 
 ### ⚠️ Notices

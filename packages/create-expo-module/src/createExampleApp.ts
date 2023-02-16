@@ -1,6 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
 import getenv from 'getenv';
+import os from 'os';
 import path from 'path';
 
 import { installDependencies } from './packageManager';
@@ -77,8 +78,12 @@ export async function createExampleApp(
 
   await newStep('Installing dependencies in the example app', async (step) => {
     await installDependencies(packageManager, appTargetPath);
-    await podInstall(appTargetPath);
-    step.succeed('Installed dependencies in the example app');
+    if (os.platform() === 'darwin') {
+      await podInstall(appTargetPath);
+      step.succeed('Installed dependencies in the example app');
+    } else {
+      step.succeed('Installed dependencies in the example app (skipped installing CocoaPods)');
+    }
   });
 }
 

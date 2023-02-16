@@ -4,8 +4,8 @@
     "description": "",
     "slug": "home",
     "privacy": "unlisted",
-    "sdkVersion": "47.0.0",
-    "version": "47.0.0",
+    "sdkVersion": "48.0.0",
+    "version": "48.0.0",
     "orientation": "portrait",
     "platforms": [
       "ios",
@@ -38,6 +38,7 @@
     "kernel": {
       "iosManifestPath": "../ios/Exponent/Supporting/kernel-manifest.json",
       "androidManifestPath": "../android/app/src/main/assets/kernel-manifest.json"
-    }
+    },
+    "jsEngine": "hermes"
   }
 }

@@ -447,7 +447,7 @@ function makeWorklet(t, fun, state) {
   const workletHash = hash(funString);
 
   let location = state.file.opts.filename;
-  if (state.opts.relativeSourceLocation) {
+  if (state.opts && state.opts.relativeSourceLocation) {
     const path = require('path');
     location = path.relative(state.cwd, location);
   }
@@ -705,10 +705,14 @@ function isGestureObject(t, node) {
 }
 
 function processWorklets(t, path, state) {
+  const callee =
+    path.node.callee.type === 'SequenceExpression'
+      ? path.node.callee.expressions[path.node.callee.expressions.length - 1]
+      : path.node.callee;
+
   const name =
-    path.node.callee.type === 'MemberExpression'
-      ? path.node.callee.property.name
-      : path.node.callee.name;
+    callee.type === 'MemberExpression' ? callee.property.name : callee.name;
+
   if (
     objectHooks.has(name) &&
     path.get('arguments.0').type === 'ObjectExpression'

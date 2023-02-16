@@ -1,7 +1,7 @@
 {
   "name": "expo-apple-authentication",
-  "version": "5.0.1",
-  "description": "A unimodule that provides SignIn With Apple",
+  "version": "6.0.1",
+  "description": "A package that provides 'Sign in with Apple' capability for Expo and React Native apps.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "sideEffects": false,
@@ -18,7 +18,8 @@
     "react-native",
     "expo",
     "expo-apple-authentiocation",
-    "apple-authentication"
+    "apple-authentication",
+    "sign-in-with-apple"
   ],
   "repository": {
     "type": "git",

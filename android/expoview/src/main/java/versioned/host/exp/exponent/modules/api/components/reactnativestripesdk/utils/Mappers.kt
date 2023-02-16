@@ -17,14 +17,12 @@ internal fun createResult(key: String, value: WritableMap): WritableMap {
 internal fun createCanAddCardResult(canAddCard: Boolean, status: String? = null, token: WritableMap? = null): WritableNativeMap {
   val result = WritableNativeMap()
   val details = WritableNativeMap()
+  result.putBoolean("canAddCard", canAddCard)
   if (status != null) {
-    result.putBoolean("canAddCard", false)
     details.putString("status", status)
-  } else {
-    result.putBoolean("canAddCard", canAddCard)
-    if (token != null) {
-      details.putMap("token", token)
-    }
+  }
+  if (token != null) {
+    details.putMap("token", token)
   }
   result.putMap("details", details)
   return result
@@ -326,75 +324,69 @@ internal fun mapFromToken(token: Token): WritableMap {
 
 internal fun mapFromPaymentMethod(paymentMethod: PaymentMethod): WritableMap {
   val pm: WritableMap = WritableNativeMap()
-  val card: WritableMap = WritableNativeMap()
-  val sepaDebit: WritableMap = WritableNativeMap()
-  val bacsDebit: WritableMap = WritableNativeMap()
-  val auBECSDebit: WritableMap = WritableNativeMap()
-  val sofort: WritableMap = WritableNativeMap()
-  val ideal: WritableMap = WritableNativeMap()
-  val fpx: WritableMap = WritableNativeMap()
-  val upi: WritableMap = WritableNativeMap()
-  val usBankAccount: WritableMap = WritableNativeMap()
-
-  card.putString("brand", mapCardBrand(paymentMethod.card?.brand))
-  card.putString("country", paymentMethod.card?.country)
-  paymentMethod.card?.expiryYear?.let {
-    card.putInt("expYear", it)
-  }
-  paymentMethod.card?.expiryMonth?.let {
-    card.putInt("expMonth", it)
-  }
-  card.putString("funding", paymentMethod.card?.funding)
-  card.putString("last4", paymentMethod.card?.last4)
-  card.putString("fingerprint", paymentMethod.card?.fingerprint)
-
-  sepaDebit.putString("bankCode", paymentMethod.sepaDebit?.bankCode)
-  sepaDebit.putString("country", paymentMethod.sepaDebit?.country)
-  sepaDebit.putString("fingerprint", paymentMethod.sepaDebit?.fingerprint)
-  sepaDebit.putString("last4", paymentMethod.sepaDebit?.branchCode)
-
-  bacsDebit.putString("fingerprint", paymentMethod.bacsDebit?.fingerprint)
-  bacsDebit.putString("last4", paymentMethod.bacsDebit?.last4)
-  bacsDebit.putString("sortCode", paymentMethod.bacsDebit?.sortCode)
-
-  auBECSDebit.putString("bsbNumber", paymentMethod.bacsDebit?.sortCode)
-  auBECSDebit.putString("fingerprint", paymentMethod.bacsDebit?.fingerprint)
-  auBECSDebit.putString("last4", paymentMethod.bacsDebit?.last4)
-
-  sofort.putString("country", paymentMethod.sofort?.country)
-
-  ideal.putString("bankName", paymentMethod.ideal?.bank)
-  ideal.putString("bankIdentifierCode", paymentMethod.ideal?.bankIdentifierCode)
-
-  fpx.putString("accountHolderType", paymentMethod.fpx?.accountHolderType)
-  fpx.putString("bank", paymentMethod.fpx?.bank)
-
-  upi.putString("vpa", paymentMethod.upi?.vpa)
-
-  usBankAccount.putString("routingNumber", paymentMethod.usBankAccount?.routingNumber)
-  usBankAccount.putString("accountType", mapFromUSBankAccountType(paymentMethod.usBankAccount?.accountType))
-  usBankAccount.putString("accountHolderType", mapFromUSBankAccountHolderType(paymentMethod.usBankAccount?.accountHolderType))
-  usBankAccount.putString("last4", paymentMethod.usBankAccount?.last4)
-  usBankAccount.putString("bankName", paymentMethod.usBankAccount?.bankName)
-  usBankAccount.putString("linkedAccount", paymentMethod.usBankAccount?.linkedAccount)
-  usBankAccount.putString("fingerprint", paymentMethod.usBankAccount?.fingerprint)
-  usBankAccount.putString("preferredNetworks", paymentMethod.usBankAccount?.networks?.preferred)
-  usBankAccount.putArray("supportedNetworks", paymentMethod.usBankAccount?.networks?.supported as? ReadableArray)
 
   pm.putString("id", paymentMethod.id)
   pm.putString("paymentMethodType", mapPaymentMethodType(paymentMethod.type))
   pm.putBoolean("livemode", paymentMethod.liveMode)
   pm.putString("customerId", paymentMethod.customerId)
   pm.putMap("billingDetails", mapFromBillingDetails(paymentMethod.billingDetails))
-  pm.putMap("Card", card)
-  pm.putMap("SepaDebit", sepaDebit)
-  pm.putMap("BacsDebit", bacsDebit)
-  pm.putMap("AuBecsDebit", auBECSDebit)
-  pm.putMap("Sofort", sofort)
-  pm.putMap("Ideal", ideal)
-  pm.putMap("Fpx", fpx)
-  pm.putMap("Upi", upi)
-  pm.putMap("USBankAccount", usBankAccount)
+  pm.putMap("Card", WritableNativeMap().also {
+    it.putString("brand", mapCardBrand(paymentMethod.card?.brand))
+    it.putString("country", paymentMethod.card?.country)
+    paymentMethod.card?.expiryYear?.let { year ->
+      it.putInt("expYear", year)
+    }
+    paymentMethod.card?.expiryMonth?.let { month ->
+      it.putInt("expMonth", month)
+    }
+    it.putString("funding", paymentMethod.card?.funding)
+    it.putString("last4", paymentMethod.card?.last4)
+    it.putString("fingerprint", paymentMethod.card?.fingerprint)
+    it.putString("preferredNetwork", paymentMethod.card?.networks?.preferred)
+    it.putArray("availableNetworks", paymentMethod.card?.networks?.available?.toList() as? ReadableArray)
+  })
+  pm.putMap("SepaDebit", WritableNativeMap().also {
+    it.putString("bankCode", paymentMethod.sepaDebit?.bankCode)
+    it.putString("country", paymentMethod.sepaDebit?.country)
+    it.putString("fingerprint", paymentMethod.sepaDebit?.fingerprint)
+    it.putString("last4", paymentMethod.sepaDebit?.branchCode)
+  })
+  pm.putMap("BacsDebit", WritableNativeMap().also {
+    it.putString("fingerprint", paymentMethod.bacsDebit?.fingerprint)
+    it.putString("last4", paymentMethod.bacsDebit?.last4)
+    it.putString("sortCode", paymentMethod.bacsDebit?.sortCode)
+  })
+  pm.putMap("AuBecsDebit",
+    WritableNativeMap().also {
+      it.putString("bsbNumber", paymentMethod.bacsDebit?.sortCode)
+      it.putString("fingerprint", paymentMethod.bacsDebit?.fingerprint)
+      it.putString("last4", paymentMethod.bacsDebit?.last4)
+    })
+  pm.putMap("Sofort", WritableNativeMap().also {
+    it.putString("country", paymentMethod.sofort?.country)
+  })
+  pm.putMap("Ideal", WritableNativeMap().also {
+    it.putString("bankName", paymentMethod.ideal?.bank)
+    it.putString("bankIdentifierCode", paymentMethod.ideal?.bankIdentifierCode)
+  })
+  pm.putMap("Fpx", WritableNativeMap().also {
+    it.putString("accountHolderType", paymentMethod.fpx?.accountHolderType)
+    it.putString("bank", paymentMethod.fpx?.bank)
+  })
+  pm.putMap("Upi", WritableNativeMap().also {
+    it.putString("vpa", paymentMethod.upi?.vpa)
+  })
+  pm.putMap("USBankAccount", WritableNativeMap().also {
+    it.putString("routingNumber", paymentMethod.usBankAccount?.routingNumber)
+    it.putString("accountType", mapFromUSBankAccountType(paymentMethod.usBankAccount?.accountType))
+    it.putString("accountHolderType", mapFromUSBankAccountHolderType(paymentMethod.usBankAccount?.accountHolderType))
+    it.putString("last4", paymentMethod.usBankAccount?.last4)
+    it.putString("bankName", paymentMethod.usBankAccount?.bankName)
+    it.putString("linkedAccount", paymentMethod.usBankAccount?.linkedAccount)
+    it.putString("fingerprint", paymentMethod.usBankAccount?.fingerprint)
+    it.putString("preferredNetworks", paymentMethod.usBankAccount?.networks?.preferred)
+    it.putArray("supportedNetworks", paymentMethod.usBankAccount?.networks?.supported as? ReadableArray)
+  })
 
   return pm
 }
@@ -405,6 +397,11 @@ internal fun mapFromPaymentIntentResult(paymentIntent: PaymentIntent): WritableM
   map.putString("clientSecret", paymentIntent.clientSecret)
   map.putBoolean("livemode", paymentIntent.isLiveMode)
   map.putString("paymentMethodId", paymentIntent.paymentMethodId)
+  map.putMap("paymentMethod", paymentIntent.paymentMethod?.let {
+    mapFromPaymentMethod(it)
+  } ?: run {
+    null
+  })
   map.putString("receiptEmail", paymentIntent.receiptEmail)
   map.putString("currency", paymentIntent.currency)
   map.putString("status", mapIntentStatus(paymentIntent.status))
@@ -485,7 +482,7 @@ internal fun mapNextAction(type: NextActionType?, data: NextActionData?): Writab
     NextActionType.AlipayRedirect -> { // TODO: Can't access, private
       return null
     }
-    NextActionType.BlikAuthorize, NextActionType.UseStripeSdk, null -> {
+    NextActionType.CashAppRedirect, NextActionType.BlikAuthorize, NextActionType.UseStripeSdk, NextActionType.UpiAwaitNotification,  null -> {
       return null
     }
   }
@@ -784,6 +781,11 @@ internal fun mapFromSetupIntentResult(setupIntent: SetupIntent): WritableMap {
   map.putBoolean("livemode", setupIntent.isLiveMode)
   map.putString("clientSecret", setupIntent.clientSecret)
   map.putString("paymentMethodId", setupIntent.paymentMethodId)
+  map.putMap("paymentMethod", setupIntent.paymentMethod?.let {
+    mapFromPaymentMethod(it)
+  } ?: run {
+    null
+  })
   map.putString("usage", mapSetupIntentUsage(setupIntent.usage))
   map.putString("created", convertToUnixTimestamp(setupIntent.created))
   map.putMap("nextAction", mapNextAction(setupIntent.nextActionType, setupIntent.nextActionData))

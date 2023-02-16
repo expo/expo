@@ -5,6 +5,8 @@ import org.gradle.util.GradleVersion
 
 def expoUpdatesDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-updates/package.json')));"].execute([], projectDir).text.trim()
 
+def ex_updates_native_debug = System.getenv("EX_UPDATES_NATIVE_DEBUG") == "1"
+
 // From a library project role to reference app project settings such as `targetName.toLowerCase().contains("release")`,
 // we extract the `appProject` from all projects here.
 // things like `config`, `buildDir`, and `applicationVariants`, we will reference from appProject.
@@ -60,7 +62,7 @@ def setupClosure = {
         commandLine(*nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", projectRoot, assetsDir, entryFile)
       }
 
-      enabled config."bundleIn${targetName}" || targetName.toLowerCase().contains("release")
+      enabled config."bundleIn${targetName}" || targetName.toLowerCase().contains("release") || ex_updates_native_debug
     }
 
     def currentAssetsCopyTask = tasks.create(

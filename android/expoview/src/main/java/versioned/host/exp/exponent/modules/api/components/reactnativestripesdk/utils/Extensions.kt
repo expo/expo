@@ -3,9 +3,10 @@ package versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.
 import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import com.facebook.react.bridge.ReactApplicationContext
+import com.facebook.react.bridge.ReadableMap
 
 fun View.showSoftKeyboard() {
   post {
@@ -24,9 +25,13 @@ fun View.hideSoftKeyboard() {
 }
 
 fun Fragment.removeFragment(context: ReactApplicationContext) {
-  (context.currentActivity as? AppCompatActivity)?.supportFragmentManager?.let {
+  (context.currentActivity as? FragmentActivity)?.supportFragmentManager?.let {
     if (it.findFragmentByTag(this.tag) != null) {
       it.beginTransaction().remove(this).commitAllowingStateLoss()
     }
   }
+}
+
+fun ReadableMap.getBooleanOr(key: String, default: Boolean): Boolean {
+  return if (this.hasKey(key)) this.getBoolean(key) else default
 }

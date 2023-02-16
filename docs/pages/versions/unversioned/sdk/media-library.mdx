@@ -5,7 +5,6 @@ packageName: 'expo-media-library'
 ---
 
 import {
-  ConfigClassic,
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
@@ -28,12 +27,6 @@ import PlatformsSection from '~/components/plugins/PlatformsSection';
 ## Configuration in app.json/app.config.js
 
 You can configure `expo-media-library` using its built-in [config plugin](/guides/config-plugins) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
-
-<ConfigClassic>
-
-You can configure [the permissions for this library](#permissions) using [`ios.infoPlist`](../config/app.mdx#infoplist) and [`android.permissions`](../config/app.mdx#permissions).
-
-</ConfigClassic>
 
 <ConfigReactNative>
 
@@ -68,14 +61,14 @@ Learn how to configure the native projects in the [installation instructions in 
       name: 'photosPermission',
       platform: 'ios',
       description:
-        'Sets the iOS `NSPhotoLibraryUsageDescription` permission message in Info.plist.',
+        'Sets the iOS `NSPhotoLibraryUsageDescription` permission message in **Info.plist**.',
       default: '"Allow $(PRODUCT_NAME) to access your photos."',
     },
     {
       name: 'savePhotosPermission',
       platform: 'ios',
       description:
-        'Sets the iOS `NSPhotoLibraryAddUsageDescription` permission message in Info.plist.',
+        'Sets the iOS `NSPhotoLibraryAddUsageDescription` permission message in **Info.plist**.',
       default: '"Allow $(PRODUCT_NAME) to save photos."',
     },
     {

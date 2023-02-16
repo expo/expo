@@ -16,10 +16,22 @@
   "dependencies": {
     "ABI46_0_0React-Core": [],
     "Stripe": [
-      "~> 22.8.1"
+      "~> 23.3.0"
+    ],
+    "StripePaymentSheet": [
+      "~> 23.3.0"
+    ],
+    "StripePayments": [
+      "~> 23.3.0"
+    ],
+    "StripePaymentsUI": [
+      "~> 23.3.0"
+    ],
+    "StripeApplePay": [
+      "~> 23.3.0"
     ],
     "StripeFinancialConnections": [
-      "~> 22.8.1"
+      "~> 23.3.0"
     ]
   },
   "pod_target_xcconfig": {

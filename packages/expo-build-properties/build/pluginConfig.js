@@ -7,7 +7,7 @@ exports.validateConfig = void 0;
 const ajv_1 = __importDefault(require("ajv"));
 const semver_1 = __importDefault(require("semver"));
 /**
- * The minimal supported versions. These values should align to SDK
+ * The minimal supported versions. These values should align to SDK.
  * @ignore
  */
 const EXPO_SDK_MINIMAL_SUPPORTED_VERSIONS = {
@@ -35,6 +35,10 @@ const schema = {
                 kotlinVersion: { type: 'string', nullable: true },
                 enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
                 extraProguardRules: { type: 'string', nullable: true },
+                flipper: {
+                    type: 'string',
+                    nullable: true,
+                },
                 packagingOptions: {
                     type: 'object',
                     properties: {
@@ -54,17 +58,21 @@ const schema = {
                 newArchEnabled: { type: 'boolean', nullable: true },
                 deploymentTarget: { type: 'string', pattern: '\\d+\\.\\d+', nullable: true },
                 useFrameworks: { type: 'string', enum: ['static', 'dynamic'], nullable: true },
+                flipper: {
+                    type: ['boolean', 'string'],
+                    nullable: true,
+                },
             },
             nullable: true,
         },
     },
 };
+// note(Kudo): For the implementation, we check items one by one because Ajv does not well support custom error message.
 /**
- * Check versions to meet expo minimal supported versions.
+ * Checks if specified versions meets Expo minimal supported versions.
  * Will throw error message whenever there are invalid versions.
- * For the implementation, we check items one by one because ajv does not well support custom error message.
  *
- * @param config the validated config passed from ajv
+ * @param config The validated config passed from Ajv.
  * @ignore
  */
 function maybeThrowInvalidVersions(config) {
@@ -112,11 +120,16 @@ function maybeThrowInvalidVersions(config) {
  * @ignore
  */
 function validateConfig(config) {
-    const validate = new ajv_1.default().compile(schema);
+    const validate = new ajv_1.default({ allowUnionTypes: true }).compile(schema);
     if (!validate(config)) {
         throw new Error('Invalid expo-build-properties config: ' + JSON.stringify(validate.errors));
     }
     maybeThrowInvalidVersions(config);
+    // explicitly block using use_frameworks and Flipper in iOS
+    // https://github.com/facebook/flipper/issues/2414
+    if (config?.ios?.flipper !== undefined && config?.ios?.useFrameworks !== undefined) {
+        throw new Error('`ios.flipper` cannot be enabled when `ios.useFrameworks` is set.');
+    }
     return config;
 }
 exports.validateConfig = validateConfig;

@@ -10,6 +10,56 @@
 
 ### 💡 Others
 
+## 1.0.0-rc.1 — 2023-02-14
+
+### 🐛 Bug fixes
+
+- Fixed `You can't start or clear loads in RequestListener or Target callbacks` on Android. ([#21192](https://github.com/expo/expo/pull/21192) by [@lukmccall](https://github.com/lukmccall))
+- Fixed SVGs are not rendered in the release mode on Android. ([#21214](https://github.com/expo/expo/pull/21214) by [@lukmccall](https://github.com/lukmccall))
+- Stop sending `onProgress` event when the asset size is unknown which led to diving by zero and a crash. ([#21215](https://github.com/expo/expo/pull/21215) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.0.0-rc.0 — 2023-02-09
+
+### 🎉 New features
+
+- Added `placeholderContentFit` prop implementation on the web. ([#21106](https://github.com/expo/expo/pull/21106) by [@aleqsio](https://github.com/aleqsio))
+
+## 1.0.0-beta.6 — 2023-02-06
+
+### 🎉 New features
+
+- Added new prop `placeholderContentFit` to specify custom content fit on the placeholder. ([#21096](https://github.com/expo/expo/pull/21096) by [@magrinj](https://github.com/magrinj))
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed possible freezes by processing images concurrently off the main thread. ([#21086](https://github.com/expo/expo/pull/21086) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.0.0-beta.5 — 2023-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.0-beta.4 — 2023-01-31
+
+### 🐛 Bug fixes
+
+- Fixed a crash on Android where `isScreenReaderFocusable` crashes devices below api 28. ([#21012](https://github.com/expo/expo/pull/21012) by [@alanhughes](https://github.com/alanjhughes))
+
+## 1.0.0-beta.3 — 2023-01-30
+
+### 🐛 Bug fixes
+
+- Fixed a crash on iOS below 16.0 introduced by the Live Text interaction feature. ([#20987](https://github.com/expo/expo/pull/20987) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.0.0-beta.2 — 2023-01-25
+
+### 🎉 New features
+
+- Added support for Live text interaction. ([#20915](https://github.com/expo/expo/pull/20915) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway))
+
+### 🐛 Bug fixes
+
+- `ImageProps` now extends `ViewProps`. ([#20942](https://github.com/expo/expo/pull/20942) by [@appden](https://github.com/appden))
+
 ## 1.0.0-beta.1 — 2023-01-20
 
 ### 🐛 Bug fixes

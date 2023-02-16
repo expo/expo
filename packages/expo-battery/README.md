@@ -1,4 +1,11 @@
-# expo-battery
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/battery/">
+    <img
+      src="../../.github/resources/expo-battery.svg"
+      alt="expo-battery"
+      height="64" />
+  </a>
+</p>
 
 Provide battery information for the physical device.
 

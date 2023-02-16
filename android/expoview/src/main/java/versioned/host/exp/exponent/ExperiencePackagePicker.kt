@@ -20,11 +20,8 @@ import expo.modules.crypto.CryptoModule
 import expo.modules.device.DeviceModule
 import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
-import expo.modules.errorrecovery.ErrorRecoveryPackage
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemPackage
-import expo.modules.firebase.analytics.FirebaseAnalyticsPackage
-import expo.modules.firebase.core.FirebaseCorePackage
 import expo.modules.font.FontLoaderPackage
 import expo.modules.gl.GLPackage
 import expo.modules.gl.GLViewModule
@@ -78,11 +75,8 @@ object ExperiencePackagePicker : ModulesProvider {
     CalendarPackage(),
     ConstantsPackage(),
     ContactsPackage(),
-    ErrorRecoveryPackage(),
     FaceDetectorPackage(),
     FileSystemPackage(),
-    FirebaseCorePackage(),
-    FirebaseAnalyticsPackage(),
     FontLoaderPackage(),
     GLPackage(),
     ImageLoaderPackage(),
