@@ -579,8 +579,18 @@ async function setupAssetsAppAsync(projectRoot, localCliBin) {
   );
 }
 
+async function setupManualTestAppAsync(projectRoot) {
+  // Copy API test app to project
+  await fs.rm(path.join(projectRoot, 'App.js'));
+  await fs.copyFile(
+    path.resolve(dirName, '..', 'fixtures', 'App-apitest.js'),
+    path.join(projectRoot, 'App.js')
+  );
+}
+
 module.exports = {
   initAsync,
   setupBasicAppAsync,
   setupAssetsAppAsync,
+  setupManualTestAppAsync,
 };
