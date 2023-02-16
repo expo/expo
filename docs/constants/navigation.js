@@ -276,6 +276,7 @@ const eas = [
         makePage('eas-update/how-eas-update-works.mdx'),
         makePage('eas-update/deployment-patterns.mdx'),
         makePage('eas-update/debug-updates.mdx'),
+        makePage('eas-update/eas-update-with-local-build.mdx'),
         makePage('eas-update/eas-update-and-eas-cli.mdx'),
         makePage('eas-update/optimize-assets.mdx'),
         makePage('eas-update/migrate-to-eas-update.mdx'),
