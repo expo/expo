@@ -9,7 +9,6 @@ import {
   ConfigPluginExample,
   ConfigPluginProperties,
 } from '~/components/plugins/ConfigSection';
-
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
@@ -62,7 +61,7 @@ If you want to enable [iCloud storage features][icloud-entitlement], set the `ex
 
 Running [EAS Build](/build/introduction) locally will use [iOS capabilities signing](/build-reference/ios-capabilities) to enable the required capabilities before building.
 
-```json
+```json app.json
 {
   "expo": {
     "plugins": [
@@ -91,7 +90,7 @@ Running [EAS Build](/build/introduction) locally will use [iOS capabilities sign
   ]}
 />
 
-## Using with expo-file-system
+## Using with `expo-file-system`
 
 When using `expo-document-picker` with [`expo-file-system`](/versions/latest/sdk/filesystem/), it's not always possible for the file system to read the file immediately after the `expo-document-picker` picks it.
 
