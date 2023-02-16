@@ -1,6 +1,6 @@
 const path = require('path');
 
-const { initAsync } = require('./project');
+const { initAsync, setupManualTestAppAsync } = require('./project');
 
 const repoRoot = process.env.EXPO_REPO_ROOT;
 const workingDir = path.resolve(repoRoot, '..');
@@ -8,7 +8,7 @@ const workingDir = path.resolve(repoRoot, '..');
 /*
  * Change this to your own Expo account name
  */
-const EXPO_ACCOUNT_NAME = 'myusername';
+const EXPO_ACCOUNT_NAME = process.env.EXPO_ACCOUNT_NAME || 'myusername';
 
 /**
  * This generates a project at the location TEST_PROJECT_ROOT,
@@ -57,4 +57,6 @@ function transformAppJson(appJson, projectName, runtimeVersion) {
     configureE2E: false,
     transformAppJson,
   });
+
+  await setupManualTestAppAsync(projectRoot);
 })();

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Make Updates API work with native debug. ([#21253](https://github.com/expo/expo/pull/21253) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 - Break up E2E tests for reliability. ([#21223](https://github.com/expo/expo/pull/21223) by [@douglowder](https://github.com/douglowder))
