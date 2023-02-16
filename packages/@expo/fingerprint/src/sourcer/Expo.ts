@@ -1,7 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import chalk from 'chalk';
-import { getConfig, type ExpoConfig } from 'expo/config';
+import type { ExpoConfig, ProjectConfig } from 'expo/config';
 import findUp from 'find-up';
 import path from 'path';
 import resolveFrom from 'resolve-from';
@@ -15,8 +15,9 @@ export async function getExpoConfigSourcesAsync(
   projectRoot: string,
   options: NormalizedOptions
 ): Promise<HashSource[]> {
-  let config;
+  let config: ProjectConfig;
   try {
+    const { getConfig } = require(resolveFrom(path.resolve(projectRoot), 'expo/config'));
     config = await getConfig(projectRoot, { skipSDKVersionRequirement: true });
   } catch (e: unknown) {
     debug('Cannot get Expo config: ' + e);

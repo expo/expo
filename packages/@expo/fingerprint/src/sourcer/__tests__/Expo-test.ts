@@ -138,6 +138,18 @@ describe(getExpoConfigSourcesAsync, () => {
     vol.reset();
   });
 
+  it('should return empty array when expo package is not installed', async () => {
+    vol.fromJSON(require('./fixtures/BareReactNative70Project.json'));
+    const mockedResolveFrom = resolveFrom as jest.MockedFunction<typeof resolveFrom>;
+    mockedResolveFrom.mockImplementationOnce((fromDirectory: string, moduleId: string) => {
+      const actualResolver = jest.requireActual('resolve-from');
+      // To fake the case as no expo installed, trying to resolve as **nonexist/expo/config** module
+      return actualResolver(fromDirectory, 'nonexist/expo/config');
+    });
+    const sources = await getExpoConfigSourcesAsync('/app', normalizeOptions());
+    expect(sources.length).toBe(0);
+  });
+
   it('should contain app.json', async () => {
     vol.fromJSON(require('./fixtures/ExpoManaged47Project.json'));
     const sources = await getExpoConfigSourcesAsync('/app', normalizeOptions());
@@ -191,7 +203,8 @@ describe(`getExpoConfigSourcesAsync - config-plugins`, () => {
 
   afterEach(() => {
     vol.reset();
-    jest.resetAllMocks();
+    const mockResolveFrom = resolveFrom.silent as jest.MockedFunction<typeof resolveFrom.silent>;
+    mockResolveFrom.mockReset();
   });
 
   it('should contain external config-plugin dir', async () => {
