@@ -9,16 +9,6 @@ import { Step } from '~/ui/components/Step';
 
 In this step-by-step guide, you'll create a new Expo app, run it in your local development environment, publish an update, and show that the app downloads and runs the update when restarted. It also details some of the Expo config properties used in EAS Update and their functions.
 
-## Prerequisites
-
-EAS Update requires the following versions or greater:
-
-- EAS CLI >= 0.50.0
-- Expo SDK >= 45.0.0
-- expo-updates >= 0.13.0
-
-The example app shown here is based on SDK 48, which supports the new [`requestHeaders`](/versions/latest/config/app/#requestheaders) property in Expo config.
-
 <Step label="1">
 ## Install the latest EAS CLI
 
@@ -78,9 +68,7 @@ Inside the Expo config, make changes to use [`runtimeVersion`](/versions/latest/
   }
 ```
 
-The `channel` allows you to point updates at builds. For example, if we set up a GitHub Action to publish changes on merge, it will make it so that we can merge code into the "production" Git branch. Then, each commit will trigger a GitHub Action that will publish an update that will be available to builds with the channel "production".
-
-> In the [introductory guide](/pages/eas-update/getting-started), this property is set by EAS Build and is different for different EAS build profiles. Since this is a local build, it is necessary to set this request header explicitly in the Expo config.
+> In the [introductory guide](/pages/eas-update/getting-started), the channel name is set by EAS Build and is different for different EAS build profiles. Since this is a local build, it is necessary to set this request header explicitly in the Expo config.
 
 </Step>
 
@@ -118,7 +106,7 @@ After running the above, inspect **android/app/src/main/AndroidManifest.xml** an
 <!-- @hide ... your existing configuration --><!-- @end -->
 ```
 
-> If you do not see the above lines added to these files, it means that you are using SDK 47 or earlier, and you should add these lines manually to **AndroidManifest.xml** and **Expo.plist**.
+> If you do not see the above lines added to these files, it means that you are using SDK 47 or earlier, and you should add these lines manually to **AndroidManifest.xml** and **Expo.plist**. In SDK 48 and later, the [`requestHeaders`](/versions/latest/config/app/#requestheaders) property from the Expo config is used to automatically add these lines to the native files.
 
 </Step>
 
