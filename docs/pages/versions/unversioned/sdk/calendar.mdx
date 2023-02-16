@@ -8,6 +8,8 @@ import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline} from '~/ui/components/Snippet';
+import { ConfigPluginExample, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
 
 Provides an API for interacting with the device's system calendars, events, reminders, and associated records.
 
@@ -17,12 +19,64 @@ Provides an API for interacting with the device's system calendars, events, remi
 
 <APIInstallSection />
 
-## Configuration
+## Configuration in app.json/app.config.js
 
-You must add the following permissions to your **app.json**.
+You can configure `expo-calendar` using its built-in [config plugin](/guides/config-plugins) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
-- Android requires `READ_CALENDAR` & `WRITE_CALENDAR` inside the `expo.android.permissions` array.
-- iOS requires the `NSRemindersUsageDescription` key be added to `expo.ios.infoPlist` with a string value describing the reason for the permission request.
+<ConfigPluginExample>
+
+```json app.json
+{
+  "expo": {
+    "plugins": [
+      [
+        "expo-calendar",
+        {
+          "calendarPermission": "The app needs to access your calendar.",
+        }
+      ]
+    ]
+  }
+}
+```
+
+</ConfigPluginExample>
+
+<ConfigPluginProperties
+  properties={[
+    {
+      name: 'calendarPermission',
+      platform: 'ios',
+      description: 'A string to set the NSCalendarsUsageDescription permission message.',
+      default: '"Allow $(PRODUCT_NAME) to access your calendar"',
+    },
+    {
+      name: 'remindersPermission',
+      platform: 'ios',
+      description: 'A string to set the NSRemindersUsageDescription permission message.',
+      default: '"Allow $(PRODUCT_NAME) to access your reminders"',
+    },
+  ]}
+/>
+
+## Permissions
+
+### Android
+
+You must add the following permissions to your **app.json** inside the [`expo.android.permissions`](/versions/latest/config/app/#permissions) array.
+
+<AndroidPermissions permissions={['READ_CALENDAR', 'WRITE_CALENDAR']} />
+
+### iOS
+
+You can add the following permissions to your **app.json** inside the [`expo.ios.infoPlist`](versions/latest/config/app/#infoplist) object.
+
+<IOSPermissions
+  permissions={[
+    'NSCalendarsUsageDescription',
+    'NSRemindersUsageDescription',
+  ]}
+/>
 
 ## Usage
 
