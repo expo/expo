@@ -16,7 +16,7 @@
 
 - (EXFileSystemPermissionFlags)permissionsForURI:(NSURL *)uri;
 
-- (NSURL *)percentEncodeURIString:(NSString *)uri;
+- (NSURL *)percentEncodedURLFromURIString:(NSString *)uri;
 
 - (BOOL)ensureDirExistsWithPath:(NSString *)path;
 
