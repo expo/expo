@@ -4,11 +4,16 @@
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
 
+@class EXUpdatesUpdateResponse;
+
 NS_ASSUME_NONNULL_BEGIN
 
 typedef void (^EXUpdatesFileDownloaderSuccessBlock)(NSData *data, NSURLResponse *response);
 typedef void (^EXUpdatesFileDownloaderWithHashSuccessBlock)(NSData *data, NSURLResponse *response, NSString *base64URLEncodedSHA256Hash);
-typedef void (^EXUpdatesFileDownloaderManifestSuccessBlock)(EXUpdatesUpdate *update);
+
+typedef void (^EXUpdatesFileDownloaderRemoteUpdateDownloadSuccessBlock)(EXUpdatesUpdateResponse *updateResponse);
+typedef void (^EXUpdatesFileDownloaderRemoteUpdateDownloadErrorBlock)(NSError *error);
+
 typedef void (^EXUpdatesFileDownloaderErrorBlock)(NSError *error);
 
 @interface EXUpdatesFileDownloader : NSObject
@@ -29,11 +34,11 @@ typedef void (^EXUpdatesFileDownloaderErrorBlock)(NSError *error);
                successBlock:(EXUpdatesFileDownloaderWithHashSuccessBlock)successBlock
                  errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock;
 
-- (void)downloadManifestFromURL:(NSURL *)url
-                   withDatabase:(EXUpdatesDatabase *)database
-                   extraHeaders:(nullable NSDictionary *)extraHeaders
-                   successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
-                     errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock;
+- (void)downloadRemoteUpdateFromURL:(NSURL *)url
+                       withDatabase:(EXUpdatesDatabase *)database
+                       extraHeaders:(nullable NSDictionary *)extraHeaders
+                       successBlock:(EXUpdatesFileDownloaderRemoteUpdateDownloadSuccessBlock)successBlock
+                         errorBlock:(EXUpdatesFileDownloaderRemoteUpdateDownloadErrorBlock)errorBlock;
 
 + (dispatch_queue_t)assetFilesQueue;
 
@@ -54,8 +59,8 @@ typedef void (^EXUpdatesFileDownloaderErrorBlock)(NSError *error);
 - (void)parseManifestResponse:(NSHTTPURLResponse *)httpResponse
                      withData:(NSData *)data
                      database:(EXUpdatesDatabase *)database
-                 successBlock:(EXUpdatesFileDownloaderManifestSuccessBlock)successBlock
-                   errorBlock:(EXUpdatesFileDownloaderErrorBlock)errorBlock;
+                 successBlock:(EXUpdatesFileDownloaderRemoteUpdateDownloadSuccessBlock)successBlock
+                   errorBlock:(EXUpdatesFileDownloaderRemoteUpdateDownloadErrorBlock)errorBlock;
 
 @end
 

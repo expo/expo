@@ -4708,7 +4708,7 @@ SPEC CHECKSUMS:
   Analytics: 3106b5af9b799c934f98a68ab8ba199f1c603fdb
   AppAuth: 8fca6b5563a5baef2c04bee27538025e4ceb2add
   ASN1Decoder: 6110fdeacfdb41559b1481457a1645be716610aa
-  boost: 57d2868c099736d80fcd648bf211b4431e51a558
+  boost: a7c83b31436843459a1961bfd74b96033dc77234
   Branch: 23b6b9351d5574377e7a764841cfb13a70c2799b
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
@@ -4824,7 +4824,7 @@ SPEC CHECKSUMS:
   PromisesObjC: ab77feca74fa2823e7af4249b8326368e61014cb
   Protobuf: 120350fc38646e2dedc26f49ecba778184ea1de2
   Quick: 749aa754fd1e7d984f2000fe051e18a3a9809179
-  RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
+  RCT-Folly: 0080d0a6ebf2577475bda044aa59e2ca1f909cda
   RCTRequired: bec48f07daf7bcdc2655a0cde84e07d24d2a9e2a
   RCTTypeSafety: 171394eebacf71e1cfad79dbfae7ee8fc16ca80a
   React: d7433ccb6a8c36e4cbed59a73c0700fc83c3e98a

@@ -2,10 +2,10 @@
 
 #import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesConfig.h>
-#import <EXUpdates/EXUpdatesManifestHeaders.h>
 #import <EXManifests/EXManifestsManifest.h>
 
 @class EXUpdatesDatabase;
+@class EXUpdatesResponseHeaderData;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -75,8 +75,6 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
 @property (nonatomic, strong, readonly) NSArray<EXUpdatesAsset *> *assets;
 @property (nonatomic, assign, readonly) BOOL isDevelopmentMode;
 
-@property (nonatomic, strong, readonly, nullable) NSDictionary *serverDefinedHeaders;
-@property (nonatomic, strong, readonly, nullable) NSDictionary *manifestFilters;
 @property (nonatomic, strong, readonly, nullable) NSString *loggingId;
 
 @property (nonatomic, strong, readonly) EXManifestsManifest *manifest;
@@ -97,7 +95,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesUpdateStatus) {
                     database:(EXUpdatesDatabase *)database;
 
 + (instancetype)updateWithManifest:(NSDictionary *)manifest
-                   manifestHeaders:(EXUpdatesManifestHeaders *)manifestHeaders
+                responseHeaderData:(EXUpdatesResponseHeaderData *)responseHeaderData
                         extensions:(NSDictionary *)extensions
                             config:(EXUpdatesConfig *)config
                           database:(EXUpdatesDatabase *)database

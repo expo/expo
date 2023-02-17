@@ -8,6 +8,12 @@
 #import <EXManifests/EXManifestsBareManifest.h>
 #import <EXManifests/EXManifestsManifestFactory.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
@@ -63,21 +69,20 @@ NSString * const EXUpdatesUpdateErrorDomain = @"EXUpdatesUpdate";
 }
 
 + (instancetype)updateWithManifest:(NSDictionary *)manifest
-                   manifestHeaders:(EXUpdatesManifestHeaders *)manifestHeaders
+                responseHeaderData:(EXUpdatesResponseHeaderData *)responseHeaderData
                         extensions:(NSDictionary *)extensions
                             config:(EXUpdatesConfig *)config
                           database:(EXUpdatesDatabase *)database
                              error:(NSError ** _Nullable)error
 {
-  NSString *expoProtocolVersion = manifestHeaders.protocolVersion;
+  NSString* expoProtocolVersion = responseHeaderData.protocolVersion;
 
   if (expoProtocolVersion == nil) {
     return [EXUpdatesLegacyUpdate updateWithLegacyManifest:[[EXManifestsLegacyManifest alloc] initWithRawManifestJSON:manifest]
                                                     config:config
                                                   database:database];
-  } else if (expoProtocolVersion.integerValue == 0) {
+  } else if (expoProtocolVersion.integerValue == 0 || expoProtocolVersion.integerValue == 1) {
     return [EXUpdatesNewUpdate updateWithNewManifest:[[EXManifestsNewManifest alloc] initWithRawManifestJSON:manifest]
-                                     manifestHeaders:manifestHeaders
                                           extensions:extensions
                                               config:config
                                             database:database];

@@ -49,6 +49,7 @@ FOUNDATION_EXPORT NSString * const EXUpdatesConfigCheckOnLaunchValueNever;
 @property (nonatomic, readonly) NSNumber *launchWaitMs;
 @property (nonatomic, readonly) EXUpdatesCheckAutomaticallyConfig checkOnLaunch;
 @property (nonatomic, readonly, strong, nullable) EXUpdatesCodeSigningConfiguration *codeSigningConfiguration;
+@property (nonatomic, readonly) BOOL enableExpoUpdatesProtocolV0CompatibilityMode; // TODO(wschurman): fill in
 
 @property (nullable, nonatomic, readonly) NSString *sdkVersion;
 @property (nullable, nonatomic, readonly) NSString *runtimeVersion;
