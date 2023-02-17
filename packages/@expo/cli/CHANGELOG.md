@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Reduce install prompt. ([#21264](https://github.com/expo/expo/pull/21264) by [@EvanBacon](https://github.com/EvanBacon))
 - Improve multi-target iOS scheme resolution for `expo run:ios`. ([#21240](https://github.com/expo/expo/pull/21240) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
