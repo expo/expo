@@ -27,7 +27,7 @@ export function getMetroProperties(
     resolverEnablePackageExports: metroConfig.resolver?.unstable_enablePackageExports, // boolean
 
     serverImportBundleSupport: metroConfig.server?.experimentalImportBundleSupport, // boolean
-    serverServerRoot: metroConfig.server?.unstable_serverRoot, // string | null
+    serverServerRoot: Boolean(metroConfig.server?.unstable_serverRoot) || undefined, // string | null
 
     transformerCollectDependenciesPath: metroConfig.transformer?.unstable_collectDependenciesPath, // string
     transformerDependencyMapReservedName:
