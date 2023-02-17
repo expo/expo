@@ -1012,7 +1012,11 @@ EX_EXPORT_METHOD_AS(getTotalDiskCapacityAsync, getTotalDiskCapacityAsyncWithReso
   return [self _checkIfFileExists:dir];
 }
 
-- (NSURL *)percentEncodedURLFromURIString:(NSString *)uri
+/**
+  Given an URI string, returns a percent-encoded URL as an NSURL object.
+  Only encodes characters that are outside the set of allowed characters defined by RFC3986.
+*/
+- (nullable NSURL *)percentEncodedURLFromURIString:(nonnull NSString *)uri
 {
   NSMutableCharacterSet *allowedCharacterSet = [NSMutableCharacterSet alphanumericCharacterSet];
   [allowedCharacterSet addCharactersInString:@"-._~:/?#[]@!$&'()*+,;="];
