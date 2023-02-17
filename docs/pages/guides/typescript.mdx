@@ -103,7 +103,7 @@ The default alias is `@/`, but you can change this in your **tsconfig.json**:
 - `jsconfig.json` can be used instead of `tsconfig.json` if you are not using TypeScript.
 - Path aliases add additional resolution time when defined.
 - Aliases can be disabled by setting the environment variable `EXPO_METRO_NO_PATH_ALIASES=1`.
-- Path aliases are Metro-only and not supported by Expo's webpack config.
+- Path aliases are Metro-only (including Metro web) and not supported by `@expo/webpack-config`.
 
 ## Absolute Imports
 
@@ -129,7 +129,7 @@ import Button from 'src/components/Button';
 - Expo CLI must be restarted to update `compilerOptions.baseUrl` when you change the **tsconfig.json**.
 - `jsconfig.json` can be used instead of `tsconfig.json` if you are not using TypeScript.
 - Base URL support can be disabled by setting the environment variable `EXPO_METRO_NO_BASE_URL=1`.
-- Absolute imports are Metro-only and not supported by Expo's webpack config.
+- Absolute imports are Metro-only (including Metro web) and not supported by `@expo/webpack-config`.
 
 ## TypeScript for config files
 
