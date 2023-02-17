@@ -101,9 +101,9 @@ async function packExpoDependency(repoRoot, projectRoot, destPath, dependencyNam
 }
 
 async function copyCommonFixturesToProject(projectRoot, appJsFileName) {
-  // copy App.js from test fixtures
+  // copy App.tsx from test fixtures
   const appJsSourcePath = path.resolve(dirName, '..', 'fixtures', appJsFileName);
-  const appJsDestinationPath = path.resolve(projectRoot, 'App.js');
+  const appJsDestinationPath = path.resolve(projectRoot, 'App.tsx');
   let appJsFileContents = await fs.readFile(appJsSourcePath, 'utf-8');
   appJsFileContents = appJsFileContents
     .replace('UPDATES_HOST', process.env.UPDATES_HOST)
@@ -372,10 +372,14 @@ async function initAsync(
   const projectName = path.basename(projectRoot);
 
   // initialize project (do not do NPM install, we do that later)
-  await spawnAsync('yarn', ['create', 'expo-app', projectName, '--yes', '--no-install'], {
-    cwd: workingDir,
-    stdio: 'inherit',
-  });
+  await spawnAsync(
+    'yarn',
+    ['create', 'expo-app', projectName, '--yes', '--no-install', '--template', 'blank-typescript'],
+    {
+      cwd: workingDir,
+      stdio: 'inherit',
+    }
+  );
 
   let cleanupLocalUpdatesModule;
   if (configureE2E) {
@@ -485,7 +489,7 @@ async function createTestUpdateBundles(projectRoot, localCliBin, notifyStrings) 
   const testUpdateBundlesPath = path.join(projectRoot, 'test-update-bundles');
   await fs.rm(testUpdateBundlesPath, { recursive: true, force: true });
   await fs.mkdir(testUpdateBundlesPath);
-  const appJsPath = path.join(projectRoot, 'App.js');
+  const appJsPath = path.join(projectRoot, 'App.tsx');
   const originalAppJs = await fs.readFile(appJsPath, 'utf-8');
   const testUpdateJson = {};
   for (const notifyString of ['test', ...notifyStrings]) {
@@ -521,7 +525,7 @@ async function createTestUpdateBundles(projectRoot, localCliBin, notifyStrings) 
 }
 
 async function setupBasicAppAsync(projectRoot, localCliBin) {
-  await copyCommonFixturesToProject(projectRoot, 'App.js');
+  await copyCommonFixturesToProject(projectRoot, 'App.tsx');
 
   // export update for test server to host
   await createUpdateBundleAsync(projectRoot, localCliBin);
@@ -548,7 +552,7 @@ async function setupBasicAppAsync(projectRoot, localCliBin) {
 }
 
 async function setupAssetsAppAsync(projectRoot, localCliBin) {
-  await copyCommonFixturesToProject(projectRoot, 'App-assets.js');
+  await copyCommonFixturesToProject(projectRoot, 'App-assets.tsx');
 
   // copy png assets and install extra package
   await fs.copyFile(
@@ -581,10 +585,10 @@ async function setupAssetsAppAsync(projectRoot, localCliBin) {
 
 async function setupManualTestAppAsync(projectRoot) {
   // Copy API test app to project
-  await fs.rm(path.join(projectRoot, 'App.js'));
+  await fs.rm(path.join(projectRoot, 'App.tsx'));
   await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'App-apitest.js'),
-    path.join(projectRoot, 'App.js')
+    path.resolve(dirName, '..', 'fixtures', 'App-apitest.tsx'),
+    path.join(projectRoot, 'App.tsx')
   );
 }
 
