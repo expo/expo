@@ -32,7 +32,7 @@ class EXDevLauncherUtils {
       let methodB = class_getClassMethod(forClass, selectorB) {
       let impA = method_getImplementation(methodA)
       let backupSelectorA = NSSelectorFromString("_" + NSStringFromSelector(selectorA))
-      let metaClass = objc_getMetaClass(String(describing: forClass)) as! AnyClass
+      let metaClass = objc_getMetaClass(String(describing: forClass)) as? AnyClass
       class_addMethod(metaClass, backupSelectorA, impA, method_getTypeEncoding(methodA))
       method_setImplementation(methodA, method_getImplementation(methodB))
     }

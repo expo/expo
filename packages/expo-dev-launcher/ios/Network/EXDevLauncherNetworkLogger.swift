@@ -38,12 +38,15 @@ public class EXDevLauncherNetworkLogger: NSObject {
       "documentURL": "mobile",
       "initiator": ["type": "script"],
       "redirectHasExtraInfo": false,
-      "request": ["url": request.url?.absoluteString, "method": request.httpMethod,
-                  "headers": request.allHTTPHeaderFields],
+      "request": [
+        "url": request.url?.absoluteString,
+        "method": request.httpMethod,
+        "headers": request.allHTTPHeaderFields
+      ],
       "referrerPolicy": "no-referrer",
       "type": "Fetch",
       "timestamp": now,
-      "wallTime": now,
+      "wallTime": now
     ] as [String: Any]
     if let data = try? JSONSerialization.data(
       withJSONObject: ["method": "Network.requestWillBeSent", "params": params],
@@ -63,11 +66,15 @@ public class EXDevLauncherNetworkLogger: NSObject {
       "requestId": requestId,
       "loaderId": "",
       "hasExtraInfo": false,
-      "response": ["url": request.url?.absoluteString, "status": response.statusCode,
-                   "statusText": "", "headers": response.allHeaderFields],
+      "response": [
+        "url": request.url?.absoluteString,
+        "status": response.statusCode,
+        "statusText": "",
+        "headers": response.allHeaderFields
+      ],
       "referrerPolicy": "no-referrer",
       "type": "Fetch",
-      "timestamp": now,
+      "timestamp": now
     ] as [String: Any]
     if let data = try? JSONSerialization.data(
       withJSONObject: ["method": "Network.responseReceived", "params": params],
@@ -79,10 +86,13 @@ public class EXDevLauncherNetworkLogger: NSObject {
     params = [
       "requestId": requestId,
       "timestamp": now,
-      "encodedDataLength": response.expectedContentLength,
+      "encodedDataLength": response.expectedContentLength
     ] as [String: Any]
     if let data = try? JSONSerialization.data(
-      withJSONObject: ["method": "Network.loadingFinished", "params": params],
+      withJSONObject: [
+        "method": "Network.loadingFinished",
+        "params": params
+      ],
       options: []
     ), let message = String(data: data, encoding: .utf8) {
       inspectorPackagerConn?.sendWrappedEventToAllRemoteConnections(message)
@@ -120,8 +130,7 @@ extension RCTInspectorDevServerHelper {
    */
   @objc
   static func EXDevLauncher_connect(withBundleURL bundleURL: URL)
-    -> RCTInspectorPackagerConnection?
-  {
+    -> RCTInspectorPackagerConnection? {
     let inspectorPackagerConn = try? EXDevLauncherUtils.invokeOriginalClassMethod(
       selector: #selector(RCTInspectorDevServerHelper.connect(withBundleURL:)),
       forClass: RCTInspectorDevServerHelper.self,

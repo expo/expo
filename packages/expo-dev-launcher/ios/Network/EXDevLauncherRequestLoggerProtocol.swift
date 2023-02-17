@@ -9,12 +9,14 @@ class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
     delegate: self,
     delegateQueue: nil
   )
-  private var dataTask_: URLSessionDataTask!
+  private var dataTask_: URLSessionDataTask?
 
   // MARK: URLProtocol implementations
 
-  override public class func canInit(with request: URLRequest) -> Bool {
-    guard let scheme = request.url?.scheme else { return false }
+  override class func canInit(with request: URLRequest) -> Bool {
+    guard let scheme = request.url?.scheme else {
+      return false
+    }
     if !["http", "https"].contains(scheme) {
       return false
     }
@@ -25,13 +27,15 @@ class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
     return isNewRequest
   }
 
-  override public init(
+  override init(
     request: URLRequest,
     cachedResponse: CachedURLResponse?,
     client: URLProtocolClient?
   ) {
     super.init(request: request, cachedResponse: cachedResponse, client: client)
-    let mutableRequest = (request as NSURLRequest).mutableCopy() as! NSMutableURLRequest
+    // swiftlint:disable force_cast
+    let mutableRequest = request as! MutableURLRequest
+    // swiftlint:enable force_cast
     let requestId = UUID().uuidString
     URLProtocol.setProperty(
       requestId,
@@ -45,37 +49,36 @@ class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
     dataTask_ = urlSession.dataTask(with: mutableRequest as URLRequest)
   }
 
-  override public class func canonicalRequest(for request: URLRequest) -> URLRequest {
+  override class func canonicalRequest(for request: URLRequest) -> URLRequest {
     request
   }
 
-  override public func startLoading() {
-    dataTask_.resume()
+  override func startLoading() {
+    dataTask_?.resume()
   }
 
-  override public func stopLoading() {
-    dataTask_.cancel()
+  override func stopLoading() {
+    dataTask_?.cancel()
   }
 
   // MARK: URLSessionDataDelegate implementations
 
-  public func urlSession(_: URLSession, dataTask _: URLSessionDataTask, didReceive data: Data) {
+  func urlSession(_: URLSession, dataTask _: URLSessionDataTask, didReceive data: Data) {
     client?.urlProtocol(self, didLoad: data)
   }
 
-  public func urlSession(
+  func urlSession(
     _: URLSession,
     dataTask: URLSessionDataTask,
     didReceive response: URLResponse,
     completionHandler: @escaping (URLSession.ResponseDisposition) -> Void
   ) {
     if let resp = response as? HTTPURLResponse,
-       let currentRequest = dataTask.currentRequest,
-       let requestId = URLProtocol.property(
-         forKey: EXDevLauncherRequestLoggerProtocol.REQUEST_ID,
-         in: currentRequest
-       ) as? String
-    {
+      let currentRequest = dataTask.currentRequest,
+      let requestId = URLProtocol.property(
+        forKey: EXDevLauncherRequestLoggerProtocol.REQUEST_ID,
+        in: currentRequest
+      ) as? String {
       EXDevLauncherNetworkLogger.shared.emitNetworkResponse(
         request: request,
         requestId: requestId,
@@ -86,9 +89,7 @@ class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .allowed)
   }
 
-  public func urlSession(_: URLSession, task _: URLSessionTask,
-                         didCompleteWithError error: Error?)
-  {
+  func urlSession(_: URLSession, task _: URLSessionTask, didCompleteWithError error: Error?) {
     if let error = error {
       client?.urlProtocol(self, didFailWithError: error)
     } else {
@@ -96,7 +97,7 @@ class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
     }
   }
 
-  public func urlSession(
+  func urlSession(
     _: URLSession,
     task _: URLSessionTask,
     willPerformHTTPRedirection response: HTTPURLResponse,
@@ -104,10 +105,10 @@ class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
     completionHandler: @escaping (URLRequest?) -> Void
   ) {
     let redirectRequest: URLRequest
-    if URLProtocol
-      .property(forKey: EXDevLauncherRequestLoggerProtocol.REQUEST_ID, in: request) != nil
-    {
-      let mutableRequest = (request as NSURLRequest).mutableCopy() as! NSMutableURLRequest
+    if URLProtocol.property(forKey: EXDevLauncherRequestLoggerProtocol.REQUEST_ID, in: request) != nil {
+      // swiftlint:disable force_cast
+      let mutableRequest = request as! MutableURLRequest
+      // swiftlint:enable force_cast
       URLProtocol.removeProperty(
         forKey: EXDevLauncherRequestLoggerProtocol.REQUEST_ID,
         in: mutableRequest
