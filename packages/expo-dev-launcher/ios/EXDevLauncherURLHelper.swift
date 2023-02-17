@@ -65,11 +65,13 @@ public class EXDevLauncherURLHelper: NSObject {
 
   @objc
   public static func replaceEXPScheme(_ url: URL, to scheme: String) -> URL {
-    var components = URLComponents.init(url: url, resolvingAgainstBaseURL: false)!
-    if components.scheme == "exp" {
-      components.scheme = scheme
+    if var components = URLComponents(url: url, resolvingAgainstBaseURL: false) {
+      if components.scheme == "exp" {
+        components.scheme = scheme
+      }
+      return components.url!
     }
-    return components.url!
+    return url
   }
 
   @objc
