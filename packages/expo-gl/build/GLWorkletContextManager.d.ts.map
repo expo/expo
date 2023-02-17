@@ -1,0 +1,1 @@
+{"version":3,"file":"GLWorkletContextManager.d.ts","sourceRoot":"","sources":["../src/GLWorkletContextManager.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,yBAAyB,EAAE,MAAM,gBAAgB,CAAC;AAU3D,wBAAgB,2BAA2B,IAAI;IAC7C,UAAU,EAAE,CAAC,SAAS,EAAE,MAAM,KAAK,yBAAyB,GAAG,SAAS,CAAC;IACzE,UAAU,CAAC,EAAE,CAAC,SAAS,EAAE,MAAM,KAAK,IAAI,CAAC;CAC1C,CA0BA"}
