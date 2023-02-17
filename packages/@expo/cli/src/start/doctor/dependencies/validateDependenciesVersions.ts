@@ -66,7 +66,7 @@ export function logIncorrectDependencies(incorrectDeps: IncorrectDependency[]) {
 
   Log.warn(
     'Your project may not work correctly until you install the correct versions of the packages.\n' +
-      chalk`Install individual packages by running {bold npx expo install --fix}`
+      chalk`Fix with: {bold npx expo install --fix}`
   );
   return false;
 }

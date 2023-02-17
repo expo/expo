@@ -126,7 +126,7 @@ it(
       const error = e as ExecaError;
       expect(error.stderr).toMatch(/expo-auth-session@1\.0\.0 - expected version: ~3\.\d\.\d/);
       expect(error.stderr).toMatch(/expo-sms@1\.0\.0 - expected version: ~10\.\d\.\d/);
-      expect(error.stderr).toMatch(/npx expo install --install/);
+      expect(error.stderr).toMatch(/npx expo install --fix/);
     }
 
     await expect(
