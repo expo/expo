@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed dev client crash when server URL has no scheme. ([#21274](https://github.com/expo/expo/pull/21274) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 💡 Others
 
 ## 2.1.3 — 2023-02-25
