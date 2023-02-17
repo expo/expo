@@ -1,3 +1,5 @@
+import React
+
 /**
  This class intercepts all default `URLSession` requests and send CDP events to the connecting metro-inspector-proxy
  */
