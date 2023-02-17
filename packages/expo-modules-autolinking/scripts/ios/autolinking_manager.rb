@@ -155,6 +155,7 @@ module Expo
     private def node_command_args(command_name)
       eval_command_args = [
         'node',
+        '--no-warnings',
         '--eval',
         'require(\'expo-modules-autolinking\')(process.argv.slice(1))',
         command_name,
