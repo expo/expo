@@ -7,6 +7,7 @@
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesService.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
+#import <EXUpdates/EXUpdatesUtils.h>
 
 #if __has_include(<EXUpdates/EXUpdates-Swift.h>)
 #import <EXUpdates/EXUpdates-Swift.h>
@@ -81,7 +82,8 @@ EX_EXPORT_MODULE(ExpoUpdates);
     @"releaseChannel": releaseChannel,
     @"runtimeVersion": runtimeVersion,
     @"channel": channel,
-    @"commitTime": @(commitTime)
+    @"commitTime": @(commitTime),
+    @"nativeDebug": @([EXUpdatesUtils isNativeDebuggingEnabled])
   };
 }
 
