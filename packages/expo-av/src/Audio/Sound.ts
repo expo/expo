@@ -265,7 +265,6 @@ export class Sound implements Playback {
     command: AVPlaybackRemoteCommand;
   }) => {
     if (this._key === key) {
-      console.log({ key, command });
       switch (command) {
         case 'play':
           this._remoteCommandHandlers?.onPlay?.();
@@ -294,7 +293,6 @@ export class Sound implements Playback {
   // TODO: We can optimize by only using time observer on native if (this._onPlaybackStatusUpdate).
   _subscribeToNativeEvents() {
     if (this._loaded) {
-      console.log('subscribing to native events')
       this._subscriptions.push(
         this._eventEmitter.addListener(
           'didUpdatePlaybackStatus',

@@ -139,15 +139,10 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
 
 - (MPRemoteCommandHandlerStatus) _remoteCommandTriggerCallback:(MPRemoteCommandEvent *)event
 {
-  NSLog(@"remote command trigger callback: %@", event.command);
   // emit event to be handled in JS land to update the UI
-// TODO: this probably shouldn't send a string but an object see metadataupdatecallback example for reference
-// another perk of doing native code like this is possible exposure to multithreaded programming
     if (event.command == self.commandCenter.playCommand) {
-      NSLog(@"play command fired");
       self.remoteCommandTriggerCallback(@"play");
     } else if (event.command == self.commandCenter.pauseCommand) {
-      NSLog(@"pause command fired");
       self.remoteCommandTriggerCallback(@"pause");
     } else if (event.command == self.commandCenter.nextTrackCommand) {
       self.remoteCommandTriggerCallback(@"nextTrack");

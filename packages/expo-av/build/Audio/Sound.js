@@ -150,7 +150,6 @@ export class Sound {
     };
     _internalRemoteCommandCallback = ({ key, command, }) => {
         if (this._key === key) {
-            console.log({ key, command });
             switch (command) {
                 case 'play':
                     this._remoteCommandHandlers?.onPlay?.();
@@ -177,7 +176,6 @@ export class Sound {
     // TODO: We can optimize by only using time observer on native if (this._onPlaybackStatusUpdate).
     _subscribeToNativeEvents() {
         if (this._loaded) {
-            console.log('subscribing to native events');
             this._subscriptions.push(this._eventEmitter.addListener('didUpdatePlaybackStatus', this._internalStatusUpdateCallback), this._eventEmitter.addListener('didUpdateMetadata', this._internalMetadataUpdateCallback), this._eventEmitter.addListener('didTriggerRemoteCommand', this._internalRemoteCommandCallback));
             this._subscriptions.push(this._eventEmitter.addListener('ExponentAV.onError', this._internalErrorCallback));
         }
