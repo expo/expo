@@ -75,7 +75,7 @@ The typical flow for browser-based authentication in mobile apps is as follows:
 
 ## What `auth.expo.io` does for you
 
-- **You should not depend on the `useProxy` (redirects with `auth.expo.io`) in production!**
+- **You should not depend on `useProxy` (redirects with `auth.expo.io`) in production!**
 - The purpose of the `auth.expo.io` proxy is to make redirect URL allowlists easier to manage for development and working in teams when using Expo Go. The proxy is only used when `startAsync` is called, or when `useProxy: true` is passed to the `promptAsync()` method of an `AuthRequest`. In production, you should redirect to your app with its own registered scheme, rather than to the auth proxy URL.
 - When you open an authentication session with `AuthSession`, it first visits `https://auth.expo.io/@your-username/your-app-slug/start` and passes in the `authUrl` and `returnUrl` (the URL to redirect back to your application) in the query parameters. The Expo Auth service saves away the `returnUrl` (and if it is not a published URL or your registered custom theme, shows a warning page) and then sends the user off to the `authUrl`. When the authentication provider redirects back to `https://auth.expo.io/@your-username/your-app-slug` on success, the Expo Auth services redirects back to the `returnUrl` that was provided on initiating the authentication flow.
 
