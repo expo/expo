@@ -1,13 +1,13 @@
 import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 const RETRY_COUNT = 5;
 const HOSTNAME = 'UPDATES_HOST';
 const PORT = 'UPDATES_PORT';
 
-async function sendLog(obj) {
+async function sendLog(obj: { logEntries: Updates.UpdatesLogEntry[] }) {
   const logUrl = `http://${HOSTNAME}:${PORT}/log`;
   await fetch(logUrl, {
     method: 'POST',
@@ -24,26 +24,33 @@ async function readLogs() {
     await sendLog({
       logEntries,
     });
-  } catch (e) {
+  } catch (e: any) {
     console.warn(`Error in reading log entries: ${e.message}`);
   }
 }
 
 export default function App() {
-  useEffect(async () => {
-    for (let i = 0; i < RETRY_COUNT; i++) {
-      try {
-        const response = await fetch(`http://${HOSTNAME}:${PORT}/notify/test`);
-        if (response.status === 200) {
-          break;
+  useEffect(() => {
+    const fetchResponseAsync = async () => {
+      for (let i = 0; i < RETRY_COUNT; i++) {
+        try {
+          const response = await fetch(
+            `http://${HOSTNAME}:${PORT}/notify/test`,
+          );
+          if (response.status === 200) {
+            break;
+          }
+        } catch {
+          // do nothing; expected if the server isn't running yet
         }
-      } catch {
-        // do nothing; expected if the server isn't running yet
+        // wait 50 ms and then try again
+        await new Promise((resolve) => setTimeout(resolve, 50));
       }
-      // wait 50 ms and then try again
-      await new Promise((resolve) => setTimeout(resolve, 50));
-    }
-    await readLogs();
+      await readLogs();
+    };
+    fetchResponseAsync().catch((e) =>
+      console.warn(`Error in fetching response: ${e.message}`),
+    );
   }, []);
 
   return (

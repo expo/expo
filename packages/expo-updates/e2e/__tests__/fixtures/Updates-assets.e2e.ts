@@ -1,19 +1,12 @@
-const { device } = require('detox');
-const path = require('path');
-const { setTimeout } = require('timers/promises');
+import { device } from 'detox';
+import path from 'path';
+import { setTimeout } from 'timers/promises';
 
-const Server = require('./utils/server');
-const {
-  copyAssetToStaticFolder,
-  copyBundleToStaticFolder,
-  findAssets,
-  getUpdateManifestForBundleFilename,
-  serverHost,
-  serverPort,
-} = require('./utils/update');
+import Server from './utils/server';
+import Update from './utils/update';
 
 const projectRoot = process.env.PROJECT_ROOT || process.cwd();
-const platform = process.env.DETOX_CONFIGURATION.split('.')[0];
+const platform = (process.env.DETOX_CONFIGURATION || 'ios.release').split('.')[0];
 
 const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
 
@@ -41,7 +34,7 @@ describe('Asset deletion recovery', () => {
      * DatabaseLauncher should copy all the missing assets and run the update as normal.
      */
     jest.setTimeout(300000 * TIMEOUT_BIAS);
-    Server.start(serverPort);
+    Server.start(Update.serverPort);
 
     /**
      * Install the app and immediately send it a message to clear internal storage. Verify storage
@@ -122,7 +115,7 @@ describe('Asset deletion recovery', () => {
      * the missing assets and run the update as normal.
      */
     jest.setTimeout(300000 * TIMEOUT_BIAS);
-    Server.start(serverPort);
+    Server.start(Update.serverPort);
 
     /**
      * Install the app and immediately send it a message to clear internal storage. Verify storage
@@ -203,30 +196,30 @@ describe('Asset deletion recovery', () => {
      */
     const bundleFilename = 'bundle-assets.js';
     const newNotifyString = 'test-assets-1';
-    const bundleHash = await copyBundleToStaticFolder(
+    const bundleHash = await Update.copyBundleToStaticFolder(
       projectRoot,
       bundleFilename,
       newNotifyString,
       platform
     );
 
-    const bundledAssets = findAssets(projectRoot, platform);
+    const bundledAssets = Update.findAssets(projectRoot, platform);
     const assets = await Promise.all(
-      bundledAssets.map(async (asset) => {
+      bundledAssets.map(async (asset: { path: string; ext: string; }) => {
         const filename = path.basename(asset.path);
         const mimeType = asset.ext === 'ttf' ? 'font/ttf' : 'image/png';
         const key = filename.replace('asset_', '').replace(/\.[^/.]+$/, '');
-        const hash = await copyAssetToStaticFolder(asset.path, filename);
+        const hash = await Update.copyAssetToStaticFolder(asset.path, filename);
         return {
           hash,
           key,
           contentType: mimeType,
           fileExtension: asset.ext,
-          url: `http://${serverHost}:${serverPort}/static/${filename}`,
+          url: `http://${Update.serverHost}:${Update.serverPort}/static/${filename}`,
         };
       })
     );
-    const manifest = getUpdateManifestForBundleFilename(
+    const manifest = Update.getUpdateManifestForBundleFilename(
       new Date(),
       bundleHash,
       'test-assets-bundle',
@@ -237,7 +230,7 @@ describe('Asset deletion recovery', () => {
     /**
      * Install the app and launch it so that it downloads the new update we're hosting
      */
-    Server.start(serverPort);
+    Server.start(Update.serverPort);
     await Server.serveSignedManifest(manifest, projectRoot);
     await device.installApp();
     await device.launchApp({ newInstance: true });
