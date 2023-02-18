@@ -28,11 +28,13 @@ export default function App() {
     if (checkResult.isAvailable) {
       setUpdateMessage(
         `checkForUpdateAsync found a new update: manifest = \n${manifestToString(
-          checkResult.manifest
-        )}...`
+          checkResult.manifest,
+        )}...`,
       );
     } else {
-      setUpdateMessage(`Something went wrong, checkForUpdateAsync found no update.}`);
+      setUpdateMessage(
+        `Something went wrong, checkForUpdateAsync found no update.}`,
+      );
       return;
     }
     await delay(2000);
@@ -47,15 +49,19 @@ export default function App() {
    * Sample UpdateEvent listener that handles all three event types
    * @param {} event The event to handle
    */
-  const eventListener = (event) => {
+  const eventListener = (event: Updates.UpdateEvent) => {
     if (event.type === Updates.UpdateEventType.ERROR) {
       setUpdateMessage(`Error: ${event.message}`);
     } else if (event.type === Updates.UpdateEventType.NO_UPDATE_AVAILABLE) {
       setUpdateMessage('No new update available');
     } else if (event.type === Updates.UpdateEventType.UPDATE_AVAILABLE) {
-      setUpdateMessage(`New update available\n${manifestToString(event.manifest)}`);
+      setUpdateMessage(
+        `New update available\n${manifestToString(event.manifest)}`,
+      );
       downloadAndRunUpdateAsync().catch((error) => {
-        setUpdateMessage(`Error downloading and running update: ${error.message}`);
+        setUpdateMessage(
+          `Error downloading and running update: ${error.message}`,
+        );
       });
     }
   };
@@ -86,7 +92,7 @@ const styles = StyleSheet.create({
  * Hook for managing UpdateEvent listener subscription
  * @param {*} listener The UpdateEvent listener
  */
-const useUpdateEvents = (listener) => {
+const useUpdateEvents = (listener: (event: Updates.UpdateEvent) => void) => {
   React.useEffect(() => {
     const subscription = Updates.addListener(listener);
     return () => {
@@ -100,20 +106,22 @@ const useUpdateEvents = (listener) => {
  * @param {*} timeout Timeout in ms
  * @returns a Promise that resolves after the timeout has elapsed
  */
-const delay = (timeout) => {
+const delay = (timeout: number) => {
   return new Promise((resolve) => {
     setTimeout(resolve, timeout);
   });
 };
 
-const manifestToString = (manifest) => {
-  return JSON.stringify(
-    {
-      id: manifest.id,
-      createdAt: manifest.createdAt,
-      metadata: manifest.metadata,
-    },
-    null,
-    2
-  );
+const manifestToString = (manifest: Updates.Manifest | undefined) => {
+  return manifest
+    ? JSON.stringify(
+        {
+          id: manifest.id,
+          createdAt: manifest.createdAt,
+          metadata: manifest.metadata,
+        },
+        null,
+        2,
+      )
+    : 'null';
 };

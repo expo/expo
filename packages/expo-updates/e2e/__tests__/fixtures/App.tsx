@@ -1,6 +1,6 @@
 import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 const RETRY_COUNT = 5;

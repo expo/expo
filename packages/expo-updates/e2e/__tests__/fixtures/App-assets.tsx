@@ -2,8 +2,7 @@ import { Inter_900Black } from '@expo-google-fonts/inter';
 import { NativeModulesProxy } from 'expo-modules-core';
 import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
-import React from 'react';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 const RETRY_COUNT = 5;

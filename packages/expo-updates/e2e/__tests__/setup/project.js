@@ -115,7 +115,15 @@ async function copyCommonFixturesToProject(projectRoot, appJsFileName) {
   const projectFilesTarballPath = path.join(projectRoot, 'project_files.tgz');
   await spawnAsync(
     'tar',
-    ['zcf', projectFilesTarballPath, '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e'],
+    [
+      'zcf',
+      projectFilesTarballPath,
+      'tsconfig.json',
+      '.detoxrc.json',
+      'eas.json',
+      'eas-hooks',
+      'e2e',
+    ],
     {
       cwd: projectFilesSourcePath,
       stdio: 'inherit',
@@ -172,10 +180,16 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
   const extraDevDependencies = configureE2E
     ? {
         '@config-plugins/detox': '^3.0.0',
+        '@types/express': '^4.17.17',
+        '@types/jest': '^29.4.0',
+        '@types/react': '~18.0.14',
+        '@types/react-native': '~0.70.6',
         detox: '^19.12.1',
         express: '^4.18.2',
         jest: '^29.3.1',
         'jest-circus': '^29.3.1',
+        'ts-jest': '^29.0.5',
+        typescript: '^4.6.3',
       }
     : {};
 
@@ -546,8 +560,8 @@ async function setupBasicAppAsync(projectRoot, localCliBin) {
 
   // Copy Detox test file to e2e/tests directory
   await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'Updates-basic.e2e.js'),
-    path.join(projectRoot, 'e2e', 'tests', 'Updates-basic.e2e.js')
+    path.resolve(dirName, '..', 'fixtures', 'Updates-basic.e2e.ts'),
+    path.join(projectRoot, 'e2e', 'tests', 'Updates-basic.e2e.ts')
   );
 }
 
@@ -578,8 +592,8 @@ async function setupAssetsAppAsync(projectRoot, localCliBin) {
 
   // Copy Detox test file to e2e/tests directory
   await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'Updates-assets.e2e.js'),
-    path.join(projectRoot, 'e2e', 'tests', 'Updates-assets.e2e.js')
+    path.resolve(dirName, '..', 'fixtures', 'Updates-assets.e2e.ts'),
+    path.join(projectRoot, 'e2e', 'tests', 'Updates-assets.e2e.ts')
   );
 }
 
