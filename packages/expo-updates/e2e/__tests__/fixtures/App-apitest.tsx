@@ -28,13 +28,11 @@ export default function App() {
     if (checkResult.isAvailable) {
       setUpdateMessage(
         `checkForUpdateAsync found a new update: manifest = \n${manifestToString(
-          checkResult.manifest,
-        )}...`,
+          checkResult.manifest
+        )}...`
       );
     } else {
-      setUpdateMessage(
-        `Something went wrong, checkForUpdateAsync found no update.}`,
-      );
+      setUpdateMessage(`Something went wrong, checkForUpdateAsync found no update.}`);
       return;
     }
     await delay(2000);
@@ -55,13 +53,9 @@ export default function App() {
     } else if (event.type === Updates.UpdateEventType.NO_UPDATE_AVAILABLE) {
       setUpdateMessage('No new update available');
     } else if (event.type === Updates.UpdateEventType.UPDATE_AVAILABLE) {
-      setUpdateMessage(
-        `New update available\n${manifestToString(event.manifest)}`,
-      );
+      setUpdateMessage(`New update available\n${manifestToString(event.manifest)}`);
       downloadAndRunUpdateAsync().catch((error) => {
-        setUpdateMessage(
-          `Error downloading and running update: ${error.message}`,
-        );
+        setUpdateMessage(`Error downloading and running update: ${error.message}`);
       });
     }
   };
@@ -112,7 +106,7 @@ const delay = (timeout: number) => {
   });
 };
 
-const manifestToString = (manifest: Updates.Manifest | undefined) => {
+const manifestToString = (manifest?: Updates.Manifest) => {
   return manifest
     ? JSON.stringify(
         {
@@ -121,7 +115,7 @@ const manifestToString = (manifest: Updates.Manifest | undefined) => {
           metadata: manifest.metadata,
         },
         null,
-        2,
+        2
       )
     : 'null';
 };

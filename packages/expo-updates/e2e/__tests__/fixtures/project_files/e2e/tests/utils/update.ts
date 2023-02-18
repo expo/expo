@@ -73,7 +73,7 @@ async function copyAssetToStaticFolder(sourcePath: PathLike, filename: string) {
 /**
  * Common method used in all the tests to create valid update manifests
  */
-function getUpdateManifestForBundleFilename(date: { toISOString: () => any; }, hash: any, key: any, bundleFilename: any, assets: any) {
+function getUpdateManifestForBundleFilename(date: { toISOString: () => string; }, hash: string, key: string, bundleFilename: string, assets: any[]) {
   return {
     id: crypto.randomUUID(),
     createdAt: date.toISOString(),
