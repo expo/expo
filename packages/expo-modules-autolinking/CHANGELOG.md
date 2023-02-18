@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Generating `ExpoModulesProvider.swift` in the build phase script instead of only `pod install`. ([#21108](https://github.com/expo/expo/pull/21108) by [@tsapeta](https://github.com/tsapeta))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
