@@ -1,22 +1,23 @@
-const crypto = require('crypto');
-const { createReadStream } = require('fs');
-const fs = require('fs/promises');
-const path = require('path');
-const { pipeline } = require('stream/promises');
+import * as crypto from 'crypto';
+import { createReadStream } from 'fs';
+import type { PathLike } from 'fs';
+import * as fs from 'fs/promises';
+import * as path from 'path';
+import { pipeline } from 'stream/promises';
 
 const STATIC_FOLDER_PATH = path.resolve(__dirname, '..', '.static');
 const RUNTIME_VERSION = '1.0.0';
 const serverHost = process.env.UPDATES_HOST;
 const serverPort = parseInt(process.env.UPDATES_PORT || '', 10);
 
-const urlForBundleFilename = (bundleFilename) =>
+const urlForBundleFilename = (bundleFilename: any) =>
   `http://${serverHost}:${serverPort}/static/${bundleFilename}`;
 
 /**
  * Find the pregenerated bundle corresponding to the string that is expected
  * in the responses for a given E2E test
  */
-function findBundlePath(projectRoot, platform, notifyString) {
+function findBundlePath(projectRoot: string, platform: string | number, notifyString: string | number) {
   const testUpdateBundlesPath = path.join(projectRoot, 'test-update-bundles');
   const testUpdateBundlesJsonPath = path.join(testUpdateBundlesPath, 'test-updates.json');
   const testUpdateBundlesJson = require(testUpdateBundlesJsonPath);
@@ -27,11 +28,11 @@ function findBundlePath(projectRoot, platform, notifyString) {
 /**
  * Returns all the assets in the updates bundle, both paths and file types
  */
-function findAssets(projectRoot, platform) {
+function findAssets(projectRoot: string, platform: string | number) {
   const updatesPath = path.join(projectRoot, 'updates');
   const updatesJson = require(path.join(updatesPath, 'metadata.json'));
   const assets = updatesJson.fileMetadata[platform].assets;
-  return assets.map((asset) => {
+  return assets.map((asset: { path: string; ext: any; }) => {
     return {
       path: path.join(updatesPath, asset.path),
       ext: asset.ext,
@@ -39,7 +40,7 @@ function findAssets(projectRoot, platform) {
   });
 }
 
-async function shaHash(filePath) {
+async function shaHash(filePath: PathLike) {
   const hash = crypto.createHash('sha256');
   const stream = createReadStream(filePath);
   await pipeline(stream, hash);
@@ -50,7 +51,7 @@ async function shaHash(filePath) {
  * Copies a bundle to the location where the test server reads it,
  * and returns the SHA hash
  */
-async function copyBundleToStaticFolder(projectRoot, filename, notifyString, platform) {
+async function copyBundleToStaticFolder(projectRoot: any, filename: string, notifyString: any, platform: any) {
   await fs.mkdir(STATIC_FOLDER_PATH, { recursive: true });
   const bundleSrcPath = findBundlePath(projectRoot, platform, notifyString);
   const bundleDestPath = path.join(STATIC_FOLDER_PATH, filename);
@@ -62,7 +63,7 @@ async function copyBundleToStaticFolder(projectRoot, filename, notifyString, pla
  * Copies an asset to the location where the test server reads it,
  * and returns the SHA hash
  */
-async function copyAssetToStaticFolder(sourcePath, filename) {
+async function copyAssetToStaticFolder(sourcePath: PathLike, filename: string) {
   await fs.mkdir(STATIC_FOLDER_PATH, { recursive: true });
   const destinationPath = path.join(STATIC_FOLDER_PATH, filename);
   await fs.copyFile(sourcePath, destinationPath);
@@ -72,7 +73,7 @@ async function copyAssetToStaticFolder(sourcePath, filename) {
 /**
  * Common method used in all the tests to create valid update manifests
  */
-function getUpdateManifestForBundleFilename(date, hash, key, bundleFilename, assets) {
+function getUpdateManifestForBundleFilename(date: { toISOString: () => string; }, hash: string, key: string, bundleFilename: string, assets: any[]) {
   return {
     id: crypto.randomUUID(),
     createdAt: date.toISOString(),
@@ -89,7 +90,7 @@ function getUpdateManifestForBundleFilename(date, hash, key, bundleFilename, ass
   };
 }
 
-const Updates = {
+export default {
   copyBundleToStaticFolder,
   copyAssetToStaticFolder,
   findAssets,
@@ -97,5 +98,3 @@ const Updates = {
   serverHost,
   serverPort,
 };
-
-module.exports = Updates;

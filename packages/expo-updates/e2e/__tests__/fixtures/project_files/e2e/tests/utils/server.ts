@@ -1,23 +1,25 @@
-const crypto = require('crypto');
-const express = require('express');
-const fs = require('fs');
-const path = require('path');
-const { serializeDictionary } = require('structured-headers');
-const { setTimeout } = require('timers/promises');
+import * as crypto from 'crypto';
+import express from 'express';
+import * as fs from 'fs';
+import * as path from 'path';
+
+import { serializeDictionary } from 'structured-headers';
+import { setTimeout } from 'timers/promises';
 
 const app = express();
-let server;
 
-let messages = [];
-let logEntries = [];
-let responsesToServe = [];
+let server: { close: () => void; } | null;
 
-let updateRequest = null;
-let manifestToServe = null;
-let manifestHeadersToServe = null;
-let requestedStaticFiles = [];
+let messages: any[] = [];
+let logEntries: string | any[] = [];
+let responsesToServe: any[] = [];
 
-function start(port) {
+let updateRequest: null = null;
+let manifestToServe: null = null;
+let manifestHeadersToServe: { [x: string]: any; } | null = null;
+let requestedStaticFiles: string[] = [];
+
+function start(port: any) {
   if (!server) {
     server = app.listen(port);
   }
@@ -44,13 +46,13 @@ function consumeRequestedStaticFiles() {
 }
 
 app.use(express.json());
-app.use('/static', (req, res, next) => {
+app.use('/static', (req: { url: string; }, res: any, next: () => void) => {
   requestedStaticFiles.push(path.basename(req.url));
   next();
 });
 app.use('/static', express.static(path.resolve(__dirname, '..', '.static')));
 
-app.get('/notify/:string', (req, res) => {
+app.get('/notify/:string', (req: { params: { string: any; }; }, res: { set: (arg0: string, arg1: string) => void; json: (arg0: any) => void; send: (arg0: string) => void; }) => {
   messages.push(req.params.string);
   res.set('Cache-Control', 'no-store');
   if (responsesToServe[0]) {
@@ -60,7 +62,7 @@ app.get('/notify/:string', (req, res) => {
   }
 });
 
-app.post('/post', (req, res) => {
+app.post('/post', (req: { body: any; }, res: { set: (arg0: string, arg1: string) => void; json: (arg0: any) => void; send: (arg0: string) => void; }) => {
   messages.push(req.body);
   res.set('Cache-Control', 'no-store');
   if (responsesToServe[0]) {
@@ -70,13 +72,13 @@ app.post('/post', (req, res) => {
   }
 });
 
-app.post('/log', (req, res) => {
+app.post('/log', (req: { body: { logEntries: never[]; }; }, res: { set: (arg0: string, arg1: string) => void; send: (arg0: string) => void; }) => {
   logEntries = req.body.logEntries || [];
   res.set('Cache-Control', 'no-store');
   res.send('Received request');
 });
 
-async function waitForRequest(timeout, responseToServe) {
+async function waitForRequest(timeout: number, responseToServe: any = null) {
   const finishTime = new Date().getTime() + timeout;
 
   if (responseToServe) {
@@ -94,7 +96,7 @@ async function waitForRequest(timeout, responseToServe) {
   return messages.shift();
 }
 
-async function waitForLogEntries(timeout) {
+async function waitForLogEntries(timeout: number) {
   const finishTime = new Date().getTime() + timeout;
 
   while (!logEntries.length && server) {
@@ -111,12 +113,12 @@ async function waitForLogEntries(timeout) {
   return logEntries;
 }
 
-app.get('/update', (req, res) => {
+app.get('/update', (req: any, res: any) => {
   updateRequest = req;
   if (manifestToServe) {
     if (manifestHeadersToServe) {
       Object.keys(manifestHeadersToServe).forEach((headerName) => {
-        res.set(headerName, manifestHeadersToServe[headerName]);
+        res.set(headerName, manifestHeadersToServe ? manifestHeadersToServe[headerName] : '');
       });
     }
     res.json(manifestToServe);
@@ -125,7 +127,7 @@ app.get('/update', (req, res) => {
   }
 });
 
-async function waitForUpdateRequest(timeout) {
+async function waitForUpdateRequest(timeout: number): Promise<{ headers: any; }> {
   const finishTime = new Date().getTime() + timeout;
   while (!updateRequest && server) {
     const currentTime = new Date().getTime();
@@ -138,30 +140,30 @@ async function waitForUpdateRequest(timeout) {
     await setTimeout(50);
   }
 
-  const request = updateRequest;
+  const request: { headers: any } = updateRequest || { headers: {} };
   updateRequest = null;
   return request;
 }
 
-function serveManifest(manifest, headers = null) {
+function serveManifest(manifest: any, headers: any = null) {
   manifestToServe = manifest;
   manifestHeadersToServe = headers;
 }
 
-async function getPrivateKeyAsync(projectRoot) {
+async function getPrivateKeyAsync(projectRoot: string) {
   const codeSigningPrivateKeyPath = path.join(projectRoot, 'keys', 'private-key.pem');
   const pemBuffer = fs.readFileSync(path.resolve(codeSigningPrivateKeyPath));
   return pemBuffer.toString('utf8');
 }
 
-function signRSASHA256(data, privateKey) {
+function signRSASHA256(data: string, privateKey: crypto.KeyLike | crypto.SignKeyObjectInput | crypto.SignPrivateKeyInput) {
   const sign = crypto.createSign('RSA-SHA256');
   sign.update(data, 'utf8');
   sign.end();
   return sign.sign(privateKey, 'base64');
 }
 
-function convertToDictionaryItemsRepresentation(obj) {
+function convertToDictionaryItemsRepresentation(obj: { [s: string]: unknown; } | ArrayLike<unknown>): any {
   return new Map(
     Object.entries(obj).map(([k, v]) => {
       return [k, [v, new Map()]];
@@ -169,7 +171,7 @@ function convertToDictionaryItemsRepresentation(obj) {
   );
 }
 
-async function serveSignedManifest(manifest, projectRoot) {
+async function serveSignedManifest(manifest: any, projectRoot: any) {
   const privateKey = await getPrivateKeyAsync(projectRoot);
   const manifestString = JSON.stringify(manifest);
   const hashSignature = signRSASHA256(manifestString, privateKey);
@@ -192,4 +194,4 @@ const Server = {
   consumeRequestedStaticFiles,
 };
 
-module.exports = Server;
+export default Server;

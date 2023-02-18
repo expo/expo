@@ -47,7 +47,7 @@ export default function App() {
    * Sample UpdateEvent listener that handles all three event types
    * @param {} event The event to handle
    */
-  const eventListener = (event) => {
+  const eventListener = (event: Updates.UpdateEvent) => {
     if (event.type === Updates.UpdateEventType.ERROR) {
       setUpdateMessage(`Error: ${event.message}`);
     } else if (event.type === Updates.UpdateEventType.NO_UPDATE_AVAILABLE) {
@@ -86,7 +86,7 @@ const styles = StyleSheet.create({
  * Hook for managing UpdateEvent listener subscription
  * @param {*} listener The UpdateEvent listener
  */
-const useUpdateEvents = (listener) => {
+const useUpdateEvents = (listener: (event: Updates.UpdateEvent) => void) => {
   React.useEffect(() => {
     const subscription = Updates.addListener(listener);
     return () => {
@@ -100,20 +100,22 @@ const useUpdateEvents = (listener) => {
  * @param {*} timeout Timeout in ms
  * @returns a Promise that resolves after the timeout has elapsed
  */
-const delay = (timeout) => {
+const delay = (timeout: number) => {
   return new Promise((resolve) => {
     setTimeout(resolve, timeout);
   });
 };
 
-const manifestToString = (manifest) => {
-  return JSON.stringify(
-    {
-      id: manifest.id,
-      createdAt: manifest.createdAt,
-      metadata: manifest.metadata,
-    },
-    null,
-    2
-  );
+const manifestToString = (manifest?: Updates.Manifest) => {
+  return manifest
+    ? JSON.stringify(
+        {
+          id: manifest.id,
+          createdAt: manifest.createdAt,
+          metadata: manifest.metadata,
+        },
+        null,
+        2
+      )
+    : 'null';
 };

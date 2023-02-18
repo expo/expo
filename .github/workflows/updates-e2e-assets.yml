@@ -24,7 +24,7 @@ jobs:
       matrix:
         platform: [ios, android]
     runs-on: ubuntu-20.04
-    timeout-minutes: 120
+    timeout-minutes: 60
     env:
       UPDATES_PORT: 4747
     steps:
