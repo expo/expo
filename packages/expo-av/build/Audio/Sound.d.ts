@@ -77,6 +77,7 @@ export declare class Sound implements Playback {
     _coalesceStatusUpdatesInMillis: number;
     _onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null;
     _onMetadataUpdate: ((metadata: AVMetadata) => void) | null;
+    _remoteCommandHandlers: AVPlaybackRemoteCommandHandlers;
     _onAudioSampleReceived: AudioSampleCallback;
     /** @deprecated Use `Sound.createAsync()` instead */
     static create: (source: AVPlaybackSource, initialStatus?: AVPlaybackStatusToSet, onPlaybackStatusUpdate?: ((status: AVPlaybackStatus) => void) | null, downloadFirst?: boolean) => Promise<SoundObject>;
@@ -124,7 +125,7 @@ export declare class Sound implements Playback {
      *
      * @return A `Promise` that is rejected if creation failed, or fulfilled with the `SoundObject` if creation succeeded.
      */
-    static createAsync: (source: AVPlaybackSource, initialStatus?: AVPlaybackStatusToSet, onPlaybackStatusUpdate?: ((status: AVPlaybackStatus) => void) | null, downloadFirst?: boolean) => Promise<SoundObject>;
+    static createAsync: (source: AVPlaybackSource, initialStatus?: AVPlaybackStatusToSet, onPlaybackStatusUpdate?: ((status: AVPlaybackStatus) => void) | null, downloadFirst?: boolean, remoteCommandHandlers?: AVPlaybackRemoteCommandHandlers) => Promise<SoundObject>;
     _callOnPlaybackStatusUpdateForNewStatus(status: AVPlaybackStatus): void;
     _performOperationAndHandleStatusAsync(operation: () => Promise<AVPlaybackStatus>): Promise<AVPlaybackStatus>;
     private _updateAudioSampleReceivedCallback;
@@ -135,6 +136,10 @@ export declare class Sound implements Playback {
     _internalMetadataUpdateCallback: ({ key, metadata, }: {
         key: AudioInstance;
         metadata: AVMetadata;
+    }) => void;
+    _internalRemoteCommandCallback: ({ key, command, }: {
+        key: AudioInstance;
+        command: AVPlaybackRemoteCommand;
     }) => void;
     _internalErrorCallback: ({ key, error }: {
         key: AudioInstance;
@@ -157,6 +162,7 @@ export declare class Sound implements Playback {
      * @param onPlaybackStatusUpdate A function taking a single parameter `AVPlaybackStatus`.
      */
     setOnPlaybackStatusUpdate(onPlaybackStatusUpdate: ((status: AVPlaybackStatus) => void) | null): void;
+    setRemoteCommandHandlers(remoteCommandHandlers: AVPlaybackRemoteCommandHandlers): void;
     /**
      * Sets a function to be called whenever the metadata of the sound object changes, if one is set.
      * @param onMetadataUpdate A function taking a single object of type `AVMetadata` as a parameter.

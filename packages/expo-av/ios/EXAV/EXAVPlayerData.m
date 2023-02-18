@@ -116,12 +116,50 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
     _isMuted = NO;
     _isLooping = NO;
   
+    [self initNowPlayingInfoCenter];
+    [self _initRemoteCommandCenter];
+
     [self setStatus:parameters resolver:nil rejecter:nil];
   
     [self _loadNewPlayer];
+
   }
   
   return self;
+}
+
+- (void) _initRemoteCommandCenter
+{
+    self.commandCenter = [MPRemoteCommandCenter sharedCommandCenter];
+
+  [self.commandCenter.playCommand addTarget:self action:@selector(_remoteCommandTriggerCallback:) ];
+  [self.commandCenter.pauseCommand addTarget:self action:@selector(_remoteCommandTriggerCallback:)];
+  [self.commandCenter.nextTrackCommand addTarget:self action:@selector(_remoteCommandTriggerCallback:)];
+  [self.commandCenter.previousTrackCommand addTarget:self action:@selector(_remoteCommandTriggerCallback:)];
+}
+
+- (MPRemoteCommandHandlerStatus) _remoteCommandTriggerCallback:(MPRemoteCommandEvent *)event
+{
+  NSLog(@"remote command trigger callback: %@", event.command);
+  // emit event to be handled in JS land to update the UI
+// TODO: this probably shouldn't send a string but an object see metadataupdatecallback example for reference
+// another perk of doing native code like this is possible exposure to multithreaded programming
+    if (event.command == self.commandCenter.playCommand) {
+      NSLog(@"play command fired");
+      self.remoteCommandTriggerCallback(@"play");
+    } else if (event.command == self.commandCenter.pauseCommand) {
+      NSLog(@"pause command fired");
+      self.remoteCommandTriggerCallback(@"pause");
+    } else if (event.command == self.commandCenter.nextTrackCommand) {
+      self.remoteCommandTriggerCallback(@"nextTrack");
+    } else if (event.command == self.commandCenter.previousTrackCommand) {
+      self.remoteCommandTriggerCallback(@"previousTrack");
+    }
+  return MPRemoteCommandHandlerStatusSuccess;
+}
+
+- (void) initNowPlayingInfoCenter {
+    self.infoCenter = [MPNowPlayingInfoCenter defaultCenter];
 }
 
 - (void)_loadNewPlayer
@@ -388,6 +426,16 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
       resolve([EXAVPlayerData getUnloadedStatus]);
     }
   }
+
+  NSMutableDictionary<NSString *, id> *nowPlayingInfo = [NSMutableDictionary dictionary];
+
+  nowPlayingInfo[MPNowPlayingInfoPropertyElapsedPlaybackTime] = @(CMTimeGetSeconds(self.currentPosition));
+  nowPlayingInfo[MPMediaItemPropertyPlaybackDuration] = @(CMTimeGetSeconds(self.player.currentItem.duration));
+  nowPlayingInfo[MPNowPlayingInfoPropertyPlaybackRate] = @(_player.rate);
+  nowPlayingInfo[MPMediaItemPropertyTitle] = @"Audio";
+  nowPlayingInfo[MPNowPlayingInfoPropertyAssetURL] = [self.url absoluteString];
+
+  self.infoCenter.nowPlayingInfo = nowPlayingInfo;
 }
 
 #pragma mark - getStatus
@@ -696,6 +744,10 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
         
         if (self && self.player.status == AVPlayerStatusReadyToPlay) {
           self.currentPosition = time; // We keep track of _currentPosition to reset the AVPlayer in handleMediaServicesReset.
+          NSMutableDictionary *nowPlayingInfoDict = self.infoCenter.nowPlayingInfo.mutableCopy;
+          nowPlayingInfoDict[MPNowPlayingInfoPropertyElapsedPlaybackTime] = @(CMTimeGetSeconds(self.currentPosition));
+          self.infoCenter.nowPlayingInfo = nowPlayingInfoDict;
+
           [self _callStatusUpdateCallback];
         }
       });

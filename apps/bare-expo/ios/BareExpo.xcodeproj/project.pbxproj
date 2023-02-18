@@ -315,6 +315,11 @@
 				TargetAttributes = {
 					13B07F861A680F5B00A75B9A = {
 						LastSwiftMigration = 1250;
+						DevelopmentTeam = U4N2R6M7H7;
+						LastSwiftMigration = 1140;
+					};
+					B2C02649256BDB3E008FD925 = {
+						DevelopmentTeam = C8D8QTF339;
 					};
 				};
 			};
@@ -1018,6 +1023,8 @@
 					"$(inherited)",
 					"FB_SONARKIT_ENABLED=1",
 				);
+				DEAD_CODE_STRIPPING = NO;
+				DEVELOPMENT_TEAM = U4N2R6M7H7;
 				INFOPLIST_FILE = BareExpo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1041,6 +1048,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Payments;
 				PRODUCT_NAME = BareExpo;
 				SWIFT_OBJC_BRIDGING_HEADER = "BareExpo/BareExpo-Bridging-Header.h";
+				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Paymentsxc;
+				PRODUCT_NAME = "Bare Expo";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
@@ -1057,6 +1066,8 @@
 				CODE_SIGN_ENTITLEMENTS = BareExpo/BareExpo.entitlements;
 				CURRENT_PROJECT_VERSION = 1;
 				DEVELOPMENT_TEAM = C8D8QTF339;
+				DEAD_CODE_STRIPPING = YES;
+				DEVELOPMENT_TEAM = U4N2R6M7H7;
 				INFOPLIST_FILE = BareExpo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
@@ -1079,6 +1090,8 @@
 				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Payments;
 				PRODUCT_NAME = BareExpo;
 				SWIFT_OBJC_BRIDGING_HEADER = "BareExpo/BareExpo-Bridging-Header.h";
+				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Paymentsxc;
+				PRODUCT_NAME = "Bare Expo";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 				VERSIONING_SYSTEM = "apple-generic";

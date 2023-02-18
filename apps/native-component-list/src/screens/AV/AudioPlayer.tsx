@@ -85,6 +85,11 @@ export default class AudioPlayer extends React.Component<Props, State> {
       });
       soundObject.setOnPlaybackStatusUpdate(this._updateStateToStatus);
       soundObject.setOnMetadataUpdate(this._updateMetadata);
+      soundObject.setRemoteCommandHandlers({
+        onPause: this._pauseAsync,
+        onPlay: this._playAsync,
+      });
+
       const status = await soundObject.getStatusAsync();
       this._updateStateToStatus(status);
       this._sound = soundObject;
