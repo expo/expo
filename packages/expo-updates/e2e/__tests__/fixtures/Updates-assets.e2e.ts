@@ -6,7 +6,7 @@ import Server from './utils/server';
 import Update from './utils/update';
 
 const projectRoot = process.env.PROJECT_ROOT || process.cwd();
-const platform = (process.env.DETOX_CONFIGURATION || 'ios').split('.')[0];
+const platform = (process.env.DETOX_CONFIGURATION || 'ios.release').split('.')[0];
 
 const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
 
