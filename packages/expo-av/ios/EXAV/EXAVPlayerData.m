@@ -129,6 +129,7 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
 
 - (void) _initRemoteCommandCenter
 {
+  // added to trigger flaky ci test
     self.commandCenter = [MPRemoteCommandCenter sharedCommandCenter];
 
   [self.commandCenter.playCommand addTarget:self action:@selector(_remoteCommandTriggerCallback:) ];
