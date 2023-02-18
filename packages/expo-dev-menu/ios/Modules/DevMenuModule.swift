@@ -4,9 +4,9 @@
 open class DevMenuModule: NSObject {
   deinit {
     // cleanup registered callbacks when the bridge is deallocated to prevent these leaking into other (potentially unrelated) bridges
-      if (ExpoDevMenuReactDelegateHandler.enableAutoSetup == true) {
-          DevMenuManager.shared.registeredCallbacks = []
-      }
+    if ExpoDevMenuReactDelegateHandler.enableAutoSetup == true {
+        DevMenuManager.shared.registeredCallbacks = []
+    }
   }
   
   // MARK: JavaScript API
