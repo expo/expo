@@ -6,6 +6,12 @@
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <ExpoModulesCore/EXUtilities.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesAppLoader ()
@@ -59,8 +65,8 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
   _erroredAssets = [NSMutableArray new];
   _finishedAssets = [NSMutableArray new];
   _existingAssets = [NSMutableArray new];
-  _updateManifest = nil;
-  _manifestBlock = nil;
+  _updateResponseContainingManifest = nil;
+  _updateResponseBlock = nil;
   _assetBlock = nil;
   _successBlock = nil;
   _errorBlock = nil;
@@ -69,7 +75,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 # pragma mark - subclass methods
 
 - (void)loadUpdateFromUrl:(NSURL *)url
-               onManifest:(EXUpdatesAppLoaderManifestBlock)manifestBlock
+         onUpdateResponse:(EXUpdatesAppLoaderUpdateResponseBlock)updateResponseBlock
                     asset:(EXUpdatesAppLoaderAssetBlock)assetBlock
                   success:(EXUpdatesAppLoaderSuccessBlock)success
                     error:(EXUpdatesAppLoaderErrorBlock)error
@@ -84,12 +90,26 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 
 # pragma mark - loading and database logic
 
-- (void)startLoadingFromManifest:(EXUpdatesUpdate *)updateManifest
+- (void)startLoadingFromUpdateResponse:(EXUpdatesUpdateResponse *)updateResponse
 {
-  if (![self _shouldStartLoadingUpdate:updateManifest]) {
+  EXUpdatesUpdate *updateManifest = nil;
+  if (updateResponse.manifestUpdateResponsePart) {
+    updateManifest = updateResponse.manifestUpdateResponsePart.updateManifest;
+  }
+  
+  if (![self _shouldStartLoadingUpdateResponse:updateResponse]) {
     if (_successBlock) {
       dispatch_async(_completionQueue, ^{
         self->_successBlock(nil);
+      });
+    }
+    return;
+  }
+  
+  if (!updateManifest) {
+    if (_successBlock) {
+      dispatch_async(_completionQueue, ^{
+        self->_successBlock(updateResponse);
       });
     }
     return;
@@ -118,7 +138,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
       }
       dispatch_async(self->_completionQueue, ^{
         if (successBlock) {
-          successBlock(updateManifest);
+          successBlock(updateResponse);
         }
         [self _reset];
       });
@@ -148,7 +168,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
     if (existingUpdate && existingUpdate.status == EXUpdatesUpdateStatusReady) {
       if (self->_successBlock) {
         dispatch_async(self->_completionQueue, ^{
-          self->_successBlock(updateManifest);
+          self->_successBlock(updateResponse);
         });
       }
       return;
@@ -157,15 +177,15 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
     if (existingUpdate) {
       // we've already partially downloaded the update.
       // however, it's not ready, so we should try to download all the assets again.
-      self->_updateManifest = updateManifest;
+      self->_updateResponseContainingManifest = updateResponse;
     } else {
       if (existingUpdateError) {
         NSLog(@"Failed to select old update from DB: %@", existingUpdateError.localizedDescription);
       }
       // no update already exists with this ID, so we need to insert it and download everything.
-      self->_updateManifest = updateManifest;
+      self->_updateResponseContainingManifest = updateResponse;
       NSError *updateError;
-      [self->_database addUpdate:self->_updateManifest error:&updateError];
+      [self->_database addUpdate:self->_updateResponseContainingManifest.manifestUpdateResponsePart.updateManifest error:&updateError];
 
       if (updateError) {
         [self _finishWithError:updateError];
@@ -173,10 +193,10 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
       }
     }
 
-    if (self->_updateManifest.assets && self->_updateManifest.assets.count > 0) {
-      self->_assetsToLoad = [self->_updateManifest.assets mutableCopy];
+    if (self->_updateResponseContainingManifest.manifestUpdateResponsePart.updateManifest.assets && self->_updateResponseContainingManifest.manifestUpdateResponsePart.updateManifest.assets.count > 0) {
+      self->_assetsToLoad = [self->_updateResponseContainingManifest.manifestUpdateResponsePart.updateManifest.assets mutableCopy];
 
-      for (EXUpdatesAsset *asset in self->_updateManifest.assets) {
+      for (EXUpdatesAsset *asset in self->_updateResponseContainingManifest.manifestUpdateResponsePart.updateManifest.assets) {
         // before downloading, check to see if we already have this asset in the database
         NSError *matchingAssetError;
         EXUpdatesAsset *matchingDbEntry = [self->_database assetWithKey:asset.key error:&matchingAssetError];
@@ -259,9 +279,9 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 
 # pragma mark - internal
 
-- (BOOL)_shouldStartLoadingUpdate:(EXUpdatesUpdate *)updateManifest
+- (BOOL)_shouldStartLoadingUpdateResponse:(EXUpdatesUpdateResponse *)updateResponse
 {
-  return _manifestBlock(updateManifest);
+  return _updateResponseBlock(updateResponse);
 }
 
 /**
@@ -293,7 +313,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
     [self->_arrayLock lock];
     for (EXUpdatesAsset *existingAsset in self->_existingAssets) {
       NSError *error;
-      BOOL existingAssetFound = [self->_database addExistingAsset:existingAsset toUpdateWithId:self->_updateManifest.updateId error:&error];
+      BOOL existingAssetFound = [self->_database addExistingAsset:existingAsset toUpdateWithId:self->_updateResponseContainingManifest.manifestUpdateResponsePart.updateManifest.updateId error:&error];
       if (!existingAssetFound) {
         // the database and filesystem have gotten out of sync
         // do our best to create a new entry for this file even though it already existed on disk
@@ -308,7 +328,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
       }
     }
     NSError *assetError;
-    [self->_database addNewAssets:self->_finishedAssets toUpdateWithId:self->_updateManifest.updateId error:&assetError];
+    [self->_database addNewAssets:self->_finishedAssets toUpdateWithId:self->_updateResponseContainingManifest.manifestUpdateResponsePart.updateManifest.updateId error:&assetError];
     if (assetError) {
       [self->_arrayLock unlock];
       [self _finishWithError:assetError];
@@ -317,7 +337,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 
     if (![self->_erroredAssets count]) {
       NSError *updateReadyError;
-      [self->_database markUpdateFinished:self->_updateManifest error:&updateReadyError];
+      [self->_database markUpdateFinished:self->_updateResponseContainingManifest.manifestUpdateResponsePart.updateManifest error:&updateReadyError];
       if (updateReadyError) {
         [self->_arrayLock unlock];
         [self _finishWithError:updateReadyError];
@@ -346,7 +366,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
                                        code:1012
                                    userInfo:@{NSLocalizedDescriptionKey: @"Failed to load all assets"}]);
       } else if (successBlock) {
-        successBlock(self->_updateManifest);
+        successBlock(self->_updateResponseContainingManifest);
       }
       [self _reset];
     });

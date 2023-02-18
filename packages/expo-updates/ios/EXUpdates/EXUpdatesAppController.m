@@ -425,14 +425,31 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
   _remoteLoadStatus = EXUpdatesRemoteLoadStatusLoading;
   EXUpdatesAppLoader *remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_updatesDirectory launchedUpdate:self.launchedUpdate completionQueue:_controllerQueue];
-  [remoteAppLoader loadUpdateFromUrl:_config.updateUrl onManifest:^BOOL(EXUpdatesUpdate *update) {
-    return [self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self.launchedUpdate filters:update.manifestFilters];
-  } asset:^(EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
+  [remoteAppLoader loadUpdateFromUrl:_config.updateUrl
+                    onUpdateResponse:^BOOL(EXUpdatesUpdateResponse * _Nonnull updateResponse) {
+    if (updateResponse.directiveUpdateResponsePart) {
+      EXUpdatesUpdateDirective *updateDirective = updateResponse.directiveUpdateResponsePart.updateDirective;
+      if ([updateDirective isKindOfClass:[EXUpdatesNoUpdateAvailableUpdateDirective class]]) {
+        return NO;
+      } else if ([updateDirective isKindOfClass:[EXUpdatesRollBackToEmbeddedUpdateDirective class]]) {
+        return NO;
+      } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Unhandled update directive type" userInfo:nil];
+      }
+    }
+    
+    if (!updateResponse.manifestUpdateResponsePart) {
+      return NO;
+    }
+    
+    EXUpdatesUpdate *update = updateResponse.manifestUpdateResponsePart.updateManifest;
+    return [self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self.launchedUpdate filters:updateResponse.responseHeaderData.manifestFilters];
+  } asset:^(EXUpdatesAsset * _Nonnull asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
     // do nothing for now
-  } success:^(EXUpdatesUpdate * _Nullable update) {
-    self->_remoteLoadStatus = update ? EXUpdatesRemoteLoadStatusNewUpdateLoaded : EXUpdatesRemoteLoadStatusIdle;
+  } success:^(EXUpdatesUpdateResponse * _Nullable updateResponse) {
+    self->_remoteLoadStatus = updateResponse ? EXUpdatesRemoteLoadStatusNewUpdateLoaded : EXUpdatesRemoteLoadStatusIdle;
     [self->_errorRecovery notifyNewRemoteLoadStatus:self->_remoteLoadStatus];
-  } error:^(NSError *error) {
+  } error:^(NSError * _Nonnull error) {
     [self->_logger error:[NSString stringWithFormat:@"EXUpdatesAppController loadRemoteUpdate error: %@", error.localizedDescription]
               code:EXUpdatesErrorCodeUpdateFailedToLoad];
     self->_remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;

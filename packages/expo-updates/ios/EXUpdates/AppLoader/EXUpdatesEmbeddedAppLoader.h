@@ -16,10 +16,10 @@ extern NSString * const EXUpdatesBareEmbeddedBundleFileType;
 + (nullable EXUpdatesUpdate *)embeddedManifestWithConfig:(EXUpdatesConfig *)config
                                                 database:(nullable EXUpdatesDatabase *)database;
 
-- (void)loadUpdateFromEmbeddedManifestWithCallback:(EXUpdatesAppLoaderManifestBlock)manifestBlock
-                                           onAsset:(EXUpdatesAppLoaderAssetBlock)assetBlock
-                                           success:(EXUpdatesAppLoaderSuccessBlock)success
-                                             error:(EXUpdatesAppLoaderErrorBlock)error;
+- (void)loadUpdateResponseFromEmbeddedManifestWithCallback:(EXUpdatesAppLoaderUpdateResponseBlock)updateResponse
+                                                   onAsset:(EXUpdatesAppLoaderAssetBlock)assetBlock
+                                                   success:(EXUpdatesAppLoaderSuccessBlock)success
+                                                     error:(EXUpdatesAppLoaderErrorBlock)error;
 
 @end
 

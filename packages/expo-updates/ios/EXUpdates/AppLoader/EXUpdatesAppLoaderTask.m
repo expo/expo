@@ -155,8 +155,8 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
       }
 
       if (shouldCheckForUpdate) {
-        [self _loadRemoteUpdateWithCompletion:^(NSError * _Nullable error, EXUpdatesUpdate * _Nullable update) {
-          [self _handleRemoteUpdateLoaded:update error:error];
+        [self _loadRemoteUpdateWithCompletion:^(NSError * _Nullable error, EXUpdatesUpdateResponse * _Nullable updateResponse) {
+          [self _handleRemoteUpdateResponseLoaded:updateResponse error:error];
         }];
       } else {
         self->_isRunning = NO;
@@ -247,12 +247,12 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
           // launchedUpdate is nil because we don't yet have one, and it doesn't matter as we won't
           // be sending an HTTP request from EXUpdatesEmbeddedAppLoader
           self->_embeddedAppLoader = [[EXUpdatesEmbeddedAppLoader alloc] initWithConfig:self->_config database:self->_database directory:self->_directory launchedUpdate:nil completionQueue:self->_loaderTaskQueue];
-          [self->_embeddedAppLoader loadUpdateFromEmbeddedManifestWithCallback:^BOOL(EXUpdatesUpdate * _Nonnull update) {
+          [self->_embeddedAppLoader loadUpdateResponseFromEmbeddedManifestWithCallback:^BOOL(EXUpdatesUpdateResponse * _Nonnull updateResponse) {
             // we already checked using selection policy, so we don't need to check again
             return YES;
           } onAsset:^(EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
             // do nothing for now
-          } success:^(EXUpdatesUpdate * _Nullable update) {
+          } success:^(EXUpdatesUpdateResponse * _Nullable updateResponse) {
             completion();
           } error:^(NSError * _Nonnull error) {
             completion();
@@ -272,11 +272,32 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
   [launcher launchUpdateWithSelectionPolicy:_selectionPolicy completion:completion];
 }
 
-- (void)_loadRemoteUpdateWithCompletion:(void (^)(NSError * _Nullable error, EXUpdatesUpdate * _Nullable update))completion
+- (void)_loadRemoteUpdateWithCompletion:(void (^)(NSError * _Nullable error, EXUpdatesUpdateResponse * _Nullable updateResponse))completion
 {
   _remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_directory launchedUpdate:_candidateLauncher.launchedUpdate completionQueue:_loaderTaskQueue];
-  [_remoteAppLoader loadUpdateFromUrl:_config.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
-    if ([self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_candidateLauncher.launchedUpdate filters:update.manifestFilters]) {
+  [_remoteAppLoader loadUpdateFromUrl:_config.updateUrl
+                     onUpdateResponse:^BOOL(EXUpdatesUpdateResponse * _Nonnull updateResponse) {
+    if (updateResponse.directiveUpdateResponsePart) {
+      EXUpdatesUpdateDirective *updateDirective = updateResponse.directiveUpdateResponsePart.updateDirective;
+      if ([updateDirective isKindOfClass:[EXUpdatesNoUpdateAvailableUpdateDirective class]]) {
+        self->_isUpToDate = YES;
+        return NO;
+      } else if ([updateDirective isKindOfClass:[EXUpdatesRollBackToEmbeddedUpdateDirective class]]) {
+        self->_isUpToDate = NO;
+        return YES;
+      } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Unhandled update directive type" userInfo:nil];
+      }
+    }
+    
+    if (!updateResponse.manifestUpdateResponsePart) {
+      self->_isUpToDate = YES;
+      return NO;
+    }
+    
+    EXUpdatesUpdate *update = updateResponse.manifestUpdateResponsePart.updateManifest;
+    
+    if ([self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_candidateLauncher.launchedUpdate filters:updateResponse.responseHeaderData.manifestFilters]) {
       self->_isUpToDate = NO;
       if (self->_delegate) {
         dispatch_async(self->_delegateQueue, ^{
@@ -290,14 +311,14 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
     }
   } asset:^(EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
     // do nothing for now
-  } success:^(EXUpdatesUpdate * _Nullable update) {
-    completion(nil, update);
+  } success:^(EXUpdatesUpdateResponse * _Nullable updateResponse) {
+    completion(nil, updateResponse);
   } error:^(NSError *error) {
     completion(error, nil);
   }];
 }
 
-- (void)_handleRemoteUpdateLoaded:(nullable EXUpdatesUpdate *)update error:(nullable NSError *)error
+- (void)_handleRemoteUpdateResponseLoaded:(nullable EXUpdatesUpdateResponse *)updateResponse error:(nullable NSError *)error
 {
   // If the app has not yet been launched (because the timer is still running),
   // create a new launcher so that we can launch with the newly downloaded update.
@@ -305,8 +326,36 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 
   dispatch_async(_loaderTaskQueue, ^{
     [self _stopTimer];
+    
+    NSError *errorToThrow = error;
+    
+    EXUpdatesUpdate *updateBeingLaunched;
+    if (updateResponse.manifestUpdateResponsePart) {
+      updateBeingLaunched = updateResponse.manifestUpdateResponsePart.updateManifest;
+    }
+    
+    // If directive is to roll-back to the embedded update and there is an embedded update,
+    // we need to update embedded update in the DB with the newer commitTime from the message so that
+    // the selection policy will choose it. That way future updates can continue to be applied
+    // over this roll back, but older ones won't.
+    // The embedded update is guaranteed to be in the DB from the earlier [EXUpdatesEmbeddedAppLoader] call in this task.
+    NSError *rollBackCommitTimeUpdateError;
+    EXUpdatesDirectiveUpdateResponsePart *directiveUpdateResponsePart = updateResponse.directiveUpdateResponsePart;
+    if (directiveUpdateResponsePart) {
+      if ([directiveUpdateResponsePart.updateDirective isKindOfClass:[EXUpdatesRollBackToEmbeddedUpdateDirective class]]) {
+        EXUpdatesRollBackToEmbeddedUpdateDirective *rollBackDirective = (EXUpdatesRollBackToEmbeddedUpdateDirective *)directiveUpdateResponsePart.updateDirective;
+        EXUpdatesUpdate *update = [EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:self->_config database:self->_database];
+        [self->_database setUpdateCommitTime:rollBackDirective.commitTime onUpdate:update error:&rollBackCommitTimeUpdateError];
+        if (!rollBackCommitTimeUpdateError) {
+          updateBeingLaunched = update;
+        } else {
+          errorToThrow = rollBackCommitTimeUpdateError;
+          updateBeingLaunched = nil; // explicitly go with nil update path below
+        }
+      }
+    }
 
-    if (update) {
+    if (updateBeingLaunched) {
       if (!self->_hasLaunched) {
         EXUpdatesAppLauncherWithDatabase *newLauncher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:self->_config database:self->_database directory:self->_directory completionQueue:self->_loaderTaskQueue];
         [newLauncher launchUpdateWithSelectionPolicy:self->_selectionPolicy completion:^(NSError * _Nullable error, BOOL success) {
@@ -325,7 +374,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
           [self _runReaper];
         }];
       } else {
-        [self _didFinishBackgroundUpdateWithStatus:EXUpdatesBackgroundUpdateStatusUpdateAvailable manifest:update error:nil];
+        [self _didFinishBackgroundUpdateWithStatus:EXUpdatesBackgroundUpdateStatusUpdateAvailable manifest:updateBeingLaunched error:nil];
         self->_isRunning = NO;
         [self _runReaper];
       }

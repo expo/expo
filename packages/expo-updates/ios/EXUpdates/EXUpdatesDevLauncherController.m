@@ -12,6 +12,12 @@
 #import <EXUpdates/EXUpdatesUpdate.h>
 #import <React/RCTBridge.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const EXUpdatesDevLauncherControllerErrorDomain = @"EXUpdatesDevLauncherController";
@@ -96,16 +102,33 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
 
   EXUpdatesRemoteAppLoader *loader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:updatesConfiguration database:controller.database directory:controller.updatesDirectory launchedUpdate:nil completionQueue:controller.controllerQueue];
 
-  [loader loadUpdateFromUrl:updatesConfiguration.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
+  [loader loadUpdateFromUrl:updatesConfiguration.updateUrl
+           onUpdateResponse:^BOOL(EXUpdatesUpdateResponse * _Nonnull updateResponse) {
+    if (updateResponse.directiveUpdateResponsePart) {
+      EXUpdatesUpdateDirective *updateDirective = updateResponse.directiveUpdateResponsePart.updateDirective;
+      if ([updateDirective isKindOfClass:[EXUpdatesNoUpdateAvailableUpdateDirective class]]) {
+        return NO;
+      } else if ([updateDirective isKindOfClass:[EXUpdatesRollBackToEmbeddedUpdateDirective class]]) {
+        return NO;
+      } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Unhandled update directive type" userInfo:nil];
+      }
+    }
+    
+    if (!updateResponse.manifestUpdateResponsePart) {
+      return NO;
+    }
+    
+    EXUpdatesUpdate *update = updateResponse.manifestUpdateResponsePart.updateManifest;
     return manifestBlock(update.manifest.rawManifestJSON);
   } asset:^(EXUpdatesAsset * _Nonnull asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
     progressBlock(successfulAssetCount, failedAssetCount, totalAssetCount);
-  } success:^(EXUpdatesUpdate * _Nullable update) {
-    if (!update) {
+  } success:^(EXUpdatesUpdateResponse * _Nullable updateResponse) {
+    if (!updateResponse) {
       successBlock(nil);
       return;
     }
-    [self _launchUpdate:update withConfiguration:updatesConfiguration success:successBlock error:errorBlock];
+    [self _launchUpdate:updateResponse.manifestUpdateResponsePart.updateManifest withConfiguration:updatesConfiguration success:successBlock error:errorBlock];
   } error:^(NSError * _Nonnull error) {
     // reset controller's configuration to what it was before this request
     [controller setConfigurationInternal:self->_tempConfig];

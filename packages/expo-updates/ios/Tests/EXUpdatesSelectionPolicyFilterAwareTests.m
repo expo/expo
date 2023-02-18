@@ -9,6 +9,8 @@
 #import <EXUpdates/EXUpdatesSelectionPolicies.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
 
+#import "EXUpdates_Unit_Tests-Swift.h"
+
 @interface EXUpdatesSelectionPolicyFilterAwareTests : XCTestCase
 
 @property (nonatomic, strong) EXUpdatesUpdate *updateDefault1;
@@ -50,11 +52,6 @@
     EXUpdatesConfigScopeKeyKey: scopeKey
   }];
   EXUpdatesDatabase *database = [EXUpdatesDatabase new];
-  EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
-                                                                                   serverDefinedHeaders:nil
-                                                                                        manifestFilters:nil
-                                                                                      manifestSignature:nil
-                                                                                              signature:nil];
 
   _updateRollout0 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e71",
@@ -63,7 +60,7 @@
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"metadata": @{@"branchName": @"rollout"}
-  }] manifestHeaders:manifestHeaders extensions:@{} config:config database:database];
+  }] extensions:@{} config:config database:database];
 
   _updateDefault1 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e72",
@@ -72,7 +69,7 @@
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"metadata": @{@"branchName": @"default"}
-  }] manifestHeaders:manifestHeaders extensions:@{} config:config database:database];
+  }] extensions:@{} config:config database:database];
 
   _updateRollout1 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e73",
@@ -81,7 +78,7 @@
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"metadata": @{@"branchName": @"rollout"}
-  }] manifestHeaders:manifestHeaders extensions:@{} config:config database:database];
+  }] extensions:@{} config:config database:database];
 
   _updateDefault2 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e74",
@@ -90,7 +87,7 @@
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"metadata": @{@"branchName": @"default"}
-  }] manifestHeaders:manifestHeaders extensions:@{} config:config database:database];
+  }] extensions:@{} config:config database:database];
 
   _updateRollout2 = [EXUpdatesNewUpdate updateWithNewManifest:[[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e75",
@@ -99,7 +96,7 @@
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"metadata": @{@"branchName": @"rollout"}
-  }] manifestHeaders:manifestHeaders extensions:@{} config:config database:database];
+  }] extensions:@{} config:config database:database];
 
   _updateMultipleFilters = [EXUpdatesNewUpdate updateWithNewManifest:[[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e72",
@@ -108,7 +105,7 @@
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset],
     @"metadata": @{@"firstKey": @"value1", @"secondKey": @"value2"}
-  }] manifestHeaders:manifestHeaders extensions:@{} config:config database:database];
+  }] extensions:@{} config:config database:database];
 
   _updateNoMetadata = [EXUpdatesNewUpdate updateWithNewManifest:[[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"id": @"079cde35-8433-4c17-81c8-7117c1513e72",
@@ -116,7 +113,7 @@
     @"runtimeVersion": @"1.0",
     @"launchAsset": launchAsset,
     @"assets": @[imageAsset]
-  }] manifestHeaders:manifestHeaders extensions:@{} config:config database:database];
+  }] extensions:@{} config:config database:database];
 
   _selectionPolicy = [EXUpdatesSelectionPolicyFactory filterAwarePolicyWithRuntimeVersion:runtimeVersion];
   _manifestFilters = @{@"branchname": @"rollout"};

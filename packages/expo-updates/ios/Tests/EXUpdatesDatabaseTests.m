@@ -8,6 +8,8 @@
 #import <EXUpdates/EXUpdatesDatabase+Tests.h>
 #import <EXUpdates/EXUpdatesNewUpdate.h>
 
+#import "EXUpdates-Swift.h"
+
 @interface EXUpdatesDatabaseTests : XCTestCase
 
 @property (nonatomic, strong) EXUpdatesDatabase *db;
@@ -60,13 +62,7 @@
 - (void)testForeignKeys
 {
   __block NSError *expectedError;
-  EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
-                                                                                   serverDefinedHeaders:nil
-                                                                                        manifestFilters:nil
-                                                                                      manifestSignature:nil
-                                                                                              signature:nil];
   EXUpdatesUpdate *update = [EXUpdatesNewUpdate updateWithNewManifest:_manifest
-                                                      manifestHeaders:manifestHeaders
                                                            extensions:@{}
                                                                config:_config database:_db];
   dispatch_sync(_db.databaseQueue, ^{
@@ -87,35 +83,22 @@
 
 - (void)testSetMetadata_OverwriteAllFields
 {
-  EXUpdatesManifestHeaders *manifestHeaders1 = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
-                                                                                   serverDefinedHeaders:nil
-                                                                                        manifestFilters:@"branch-name=\"rollout-1\",test=\"value\""
-                                                                                      manifestSignature:nil
-                                                                                               signature:nil];
-  EXUpdatesUpdate *update1 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest
-                                                       manifestHeaders:manifestHeaders1
-                                                            extensions:@{}
-                                                                config:_config
-                                                              database:_db];
+  EXUpdatesResponseHeaderData *responseHeaderData1 = [[EXUpdatesResponseHeaderData alloc] initWithProtocolVersion:nil
+                                                                                          serverDefinedHeadersRaw:nil
+                                                                                               manifestFiltersRaw:@"branch-name=\"rollout-1\",test=\"value\"" manifestSignature:nil];
   __block NSError *error1;
   dispatch_sync(_db.databaseQueue, ^{
-    [_db setMetadataWithManifest:update1 error:&error1];
+    [_db setMetadataWithResponseHeaderData:responseHeaderData1 withScopeKey:@"test" error:&error1];
   });
   XCTAssertNil(error1);
 
-  EXUpdatesManifestHeaders *manifestHeaders2 = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
-                                                                                   serverDefinedHeaders:nil
-                                                                                        manifestFilters:@"branch-name=\"rollout-2\""
-                                                                                      manifestSignature:nil
-                                                                                               signature:nil];
-  EXUpdatesUpdate *update2 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest
-                                                       manifestHeaders:manifestHeaders2
-                                                            extensions:@{}
-                                                                config:_config
-                                                              database:_db];
+  EXUpdatesResponseHeaderData *responseHeaderData2 = [[EXUpdatesResponseHeaderData alloc] initWithProtocolVersion:nil
+                                                                                          serverDefinedHeadersRaw:nil
+                                                                                               manifestFiltersRaw:@"branch-name=\"rollout-2\""
+                                                                                                manifestSignature:nil];
   __block NSError *error2;
   dispatch_sync(_db.databaseQueue, ^{
-    [_db setMetadataWithManifest:update2 error:&error2];
+    [_db setMetadataWithResponseHeaderData:responseHeaderData2 withScopeKey:@"test" error:&error2];
   });
   XCTAssertNil(error2);
 
@@ -123,7 +106,7 @@
   __block NSDictionary *actual;
   __block NSError *readError;
   dispatch_sync(_db.databaseQueue, ^{
-    actual = [_db manifestFiltersWithScopeKey:update2.scopeKey error:&readError];
+    actual = [_db manifestFiltersWithScopeKey:@"test" error:&readError];
   });
   XCTAssertNil(readError);
   XCTAssertNotNil(actual);
@@ -132,35 +115,23 @@
 
 - (void)testSetMetadata_OverwriteEmpty
 {
-  EXUpdatesManifestHeaders *manifestHeaders1 = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
-                                                                                   serverDefinedHeaders:nil
-                                                                                        manifestFilters:@"branch-name=\"rollout-1\""
-                                                                                      manifestSignature:nil
-                                                                                               signature:nil];
-  EXUpdatesUpdate *update1 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest
-                                                       manifestHeaders:manifestHeaders1
-                                                            extensions:@{}
-                                                                config:_config
-                                                              database:_db];
+  EXUpdatesResponseHeaderData *responseHeaderData1 = [[EXUpdatesResponseHeaderData alloc] initWithProtocolVersion:nil
+                                                                                          serverDefinedHeadersRaw:nil
+                                                                                               manifestFiltersRaw:@"branch-name=\"rollout-1\""
+                                                                                                manifestSignature:nil];
   __block NSError *error1;
   dispatch_sync(_db.databaseQueue, ^{
-    [_db setMetadataWithManifest:update1 error:&error1];
+    [_db setMetadataWithResponseHeaderData:responseHeaderData1 withScopeKey:@"test" error:&error1];
   });
   XCTAssertNil(error1);
-
-  EXUpdatesManifestHeaders *manifestHeaders2 = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
-                                                                                   serverDefinedHeaders:nil
-                                                                                        manifestFilters:@""
-                                                                                      manifestSignature:nil
-                                                                                               signature:nil];
-  EXUpdatesUpdate *update2 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest
-                                                       manifestHeaders:manifestHeaders2
-                                                            extensions:@{}
-                                                                config:_config
-                                                              database:_db];
+  
+  EXUpdatesResponseHeaderData *responseHeaderData2 = [[EXUpdatesResponseHeaderData alloc] initWithProtocolVersion:nil
+                                                                                          serverDefinedHeadersRaw:nil
+                                                                                               manifestFiltersRaw:@""
+                                                                                                manifestSignature:nil];
   __block NSError *error2;
   dispatch_sync(_db.databaseQueue, ^{
-    [_db setMetadataWithManifest:update2 error:&error2];
+    [_db setMetadataWithResponseHeaderData:responseHeaderData2 withScopeKey:@"test" error:&error2];
   });
   XCTAssertNil(error2);
 
@@ -168,7 +139,7 @@
   __block NSDictionary *actual;
   __block NSError *readError;
   dispatch_sync(_db.databaseQueue, ^{
-    actual = [_db manifestFiltersWithScopeKey:update2.scopeKey error:&readError];
+    actual = [_db manifestFiltersWithScopeKey:@"test" error:&readError];
   });
   XCTAssertNil(readError);
   XCTAssertNotNil(actual);
@@ -177,35 +148,23 @@
 
 - (void)testSetMetadata_OverwriteNull
 {
-  EXUpdatesManifestHeaders *manifestHeaders1 = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
-                                                                                   serverDefinedHeaders:nil
-                                                                                        manifestFilters:@"branch-name=\"rollout-1\""
-                                                                                      manifestSignature:nil
-                                                                                               signature:nil];
-  EXUpdatesUpdate *update1 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest
-                                                       manifestHeaders:manifestHeaders1
-                                                            extensions:@{}
-                                                                config:_config
-                                                              database:_db];
+  EXUpdatesResponseHeaderData *responseHeaderData1 = [[EXUpdatesResponseHeaderData alloc] initWithProtocolVersion:nil
+                                                                                          serverDefinedHeadersRaw:nil
+                                                                                               manifestFiltersRaw:@"branch-name=\"rollout-1\""
+                                                                                                manifestSignature:nil];
   __block NSError *error1;
   dispatch_sync(_db.databaseQueue, ^{
-    [_db setMetadataWithManifest:update1 error:&error1];
+    [_db setMetadataWithResponseHeaderData:responseHeaderData1 withScopeKey:@"test" error:&error1];
   });
   XCTAssertNil(error1);
 
-  EXUpdatesManifestHeaders *manifestHeaders2 = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
-                                                                                   serverDefinedHeaders:nil
-                                                                                        manifestFilters:nil
-                                                                                      manifestSignature:nil
-                                                                                               signature:nil];
-  EXUpdatesUpdate *update2 = [EXUpdatesNewUpdate updateWithNewManifest:_manifest
-                                                       manifestHeaders:manifestHeaders2
-                                                            extensions:@{}
-                                                                config:_config
-                                                              database:_db];
+  EXUpdatesResponseHeaderData *responseHeaderData2 = [[EXUpdatesResponseHeaderData alloc] initWithProtocolVersion:nil
+                                                                                          serverDefinedHeadersRaw:nil
+                                                                                               manifestFiltersRaw:nil
+                                                                                                manifestSignature:nil];
   __block NSError *error2;
   dispatch_sync(_db.databaseQueue, ^{
-    [_db setMetadataWithManifest:update2 error:&error2];
+    [_db setMetadataWithResponseHeaderData:responseHeaderData2 withScopeKey:@"test" error:&error2];
   });
   XCTAssertNil(error2);
 
@@ -213,7 +172,7 @@
   __block NSDictionary *actual;
   __block NSError *readError;
   dispatch_sync(_db.databaseQueue, ^{
-    actual = [_db manifestFiltersWithScopeKey:update2.scopeKey error:&readError];
+    actual = [_db manifestFiltersWithScopeKey:@"test" error:&readError];
   });
   XCTAssertNil(readError);
   XCTAssertNotNil(actual);
@@ -244,18 +203,11 @@
   asset2.filename = @"same-filename.png";
   asset3.filename = @"same-filename.png";
 
-  EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
-                                                                                   serverDefinedHeaders:nil
-                                                                                        manifestFilters:nil
-                                                                                      manifestSignature:nil
-                                                                                              signature:nil];
   EXUpdatesUpdate *update1 = [EXUpdatesNewUpdate updateWithNewManifest:manifest1
-                                                       manifestHeaders:manifestHeaders
                                                             extensions:@{}
                                                                 config:_config
                                                               database:_db];
   EXUpdatesUpdate *update2 = [EXUpdatesNewUpdate updateWithNewManifest:manifest2
-                                                       manifestHeaders:manifestHeaders
                                                             extensions:@{}
                                                                 config:_config
                                                               database:_db];

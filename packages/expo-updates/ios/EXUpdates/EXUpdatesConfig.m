@@ -22,6 +22,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, readwrite, strong) NSNumber *launchWaitMs;
 @property (nonatomic, readwrite, assign) EXUpdatesCheckAutomaticallyConfig checkOnLaunch;
 @property (nonatomic, readwrite, strong, nullable) EXUpdatesCodeSigningConfiguration *codeSigningConfiguration;
+@property (nonatomic, readwrite, assign) BOOL enableExpoUpdatesProtocolV0CompatibilityMode;
 
 @property (nullable, nonatomic, readwrite, strong) NSString *sdkVersion;
 @property (nullable, nonatomic, readwrite, strong) NSString *runtimeVersion;
@@ -46,6 +47,7 @@ NSString * const EXUpdatesConfigCodeSigningCertificateKey = @"EXUpdatesCodeSigni
 NSString * const EXUpdatesConfigCodeSigningMetadataKey = @"EXUpdatesCodeSigningMetadata";
 NSString * const EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey = @"EXUpdatesCodeSigningIncludeManifestResponseCertificateChain";
 NSString * const EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey = @"EXUpdatesConfigCodeSigningAllowUnsignedManifests";
+NSString * const EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityMode = @"EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityMode";
 
 NSString * const EXUpdatesConfigReleaseChannelDefaultValue = @"default";
 
@@ -223,6 +225,11 @@ NSString * const EXUpdatesConfigCheckOnLaunchValueNever = @"NEVER";
   id codeSigningAllowUnsignedManifestsRaw = config[EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey];
   if (codeSigningAllowUnsignedManifestsRaw && [codeSigningAllowUnsignedManifestsRaw isKindOfClass:[NSNumber class]]) {
     codeSigningAllowUnsignedManifests = [(NSNumber *)codeSigningAllowUnsignedManifestsRaw boolValue];
+  }
+
+  id enableExpoUpdatesProtocolV0CompatibilityMode = config[EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityMode];
+  if (enableExpoUpdatesProtocolV0CompatibilityMode && [enableExpoUpdatesProtocolV0CompatibilityMode isKindOfClass:[NSNumber class]]) {
+    _enableExpoUpdatesProtocolV0CompatibilityMode = [(NSNumber *)enableExpoUpdatesProtocolV0CompatibilityMode boolValue];
   }
   
   if (codeSigningCertificate) {

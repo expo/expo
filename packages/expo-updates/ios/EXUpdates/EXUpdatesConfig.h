@@ -31,6 +31,7 @@ FOUNDATION_EXPORT NSString * const EXUpdatesConfigCodeSigningCertificateKey;
 FOUNDATION_EXPORT NSString * const EXUpdatesConfigCodeSigningMetadataKey;
 FOUNDATION_EXPORT NSString * const EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey;
 FOUNDATION_EXPORT NSString * const EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey;
+FOUNDATION_EXPORT NSString * const EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityMode;
 
 FOUNDATION_EXPORT NSString * const EXUpdatesConfigCheckOnLaunchValueAlways;
 FOUNDATION_EXPORT NSString * const EXUpdatesConfigCheckOnLaunchValueWifiOnly;
@@ -49,7 +50,9 @@ FOUNDATION_EXPORT NSString * const EXUpdatesConfigCheckOnLaunchValueNever;
 @property (nonatomic, readonly) NSNumber *launchWaitMs;
 @property (nonatomic, readonly) EXUpdatesCheckAutomaticallyConfig checkOnLaunch;
 @property (nonatomic, readonly, strong, nullable) EXUpdatesCodeSigningConfiguration *codeSigningConfiguration;
-@property (nonatomic, readonly) BOOL enableExpoUpdatesProtocolV0CompatibilityMode; // TODO(wschurman): fill in
+
+// used only in Expo Go to prevent loading rollbacks and other directives, which don't make much sense in the context of Expo Go
+@property (nonatomic, readonly) BOOL enableExpoUpdatesProtocolV0CompatibilityMode;
 
 @property (nullable, nonatomic, readonly) NSString *sdkVersion;
 @property (nullable, nonatomic, readonly) NSString *runtimeVersion;

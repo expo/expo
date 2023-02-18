@@ -8,7 +8,8 @@
 #import <EXUpdates/EXUpdatesLegacyUpdate.h>
 #import <EXUpdates/EXUpdatesNewUpdate.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
-#import <EXUpdates/EXUpdatesManifestHeaders.h>
+
+#import "EXUpdates-Swift.h"
 
 @interface EXUpdatesUpdateTests : XCTestCase
 
@@ -59,13 +60,12 @@
 - (void)testUpdateWithManifest_Legacy
 {
   NSError *error;
-  EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
-                                                                                   serverDefinedHeaders:nil
-                                                                                        manifestFilters:nil
-                                                                                      manifestSignature:nil
-                                                                                              signature:nil];
+  EXUpdatesResponseHeaderData *responseHeaderData = [[EXUpdatesResponseHeaderData alloc] initWithProtocolVersion:nil
+                                                                                         serverDefinedHeadersRaw:nil
+                                                                                              manifestFiltersRaw:nil
+                                                                                               manifestSignature:nil];
   EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_legacyManifest
-                                                manifestHeaders:manifestHeaders
+                                             responseHeaderData:responseHeaderData
                                                      extensions:@{}
                                                          config:_config
                                                        database:_database
@@ -76,13 +76,12 @@
 - (void)testUpdateWithManifest_New
 {
   NSError *error;
-  EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:@"0"
-                                                                                   serverDefinedHeaders:nil
-                                                                                        manifestFilters:nil
-                                                                                      manifestSignature:nil
-                                                                                              signature:nil];
+  EXUpdatesResponseHeaderData *responseHeaderData = [[EXUpdatesResponseHeaderData alloc] initWithProtocolVersion:@"0"
+                                                                                         serverDefinedHeadersRaw:nil
+                                                                                              manifestFiltersRaw:nil
+                                                                                               manifestSignature:nil];
   EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest
-                                                manifestHeaders:manifestHeaders
+                                             responseHeaderData:responseHeaderData
                                                      extensions:@{}
                                                          config:_config
                                                        database:_database
@@ -93,13 +92,12 @@
 - (void)testUpdateWithManifest_UnsupportedProtocolVersion
 {
   NSError *error;
-  EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:@"1"
-                                                                                   serverDefinedHeaders:nil
-                                                                                        manifestFilters:nil
-                                                                                      manifestSignature:nil
-                                                                                              signature:nil];
+  EXUpdatesResponseHeaderData *responseHeaderData = [[EXUpdatesResponseHeaderData alloc] initWithProtocolVersion:@"2"
+                                                                                         serverDefinedHeadersRaw:nil
+                                                                                              manifestFiltersRaw:nil
+                                                                                               manifestSignature:nil];
   EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithManifest:_easNewManifest
-                                                manifestHeaders:manifestHeaders
+                                             responseHeaderData:responseHeaderData
                                                      extensions:@{}
                                                          config:_config
                                                        database:_database

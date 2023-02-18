@@ -42,7 +42,8 @@
 - (NSData *)multipartDataFromManifest:(NSString *)manifest
                          withBoundary:(NSString *)boundary
                  andManifestSignature:(nullable NSString *)signature
-                  andCertificateChain:(nullable NSString *)certificateChain {
+                  andCertificateChain:(nullable NSString *)certificateChain
+                         andDirective:(nullable NSString *)directive {
   NSData *manifestData = [manifest dataUsingEncoding:NSUTF8StringEncoding];
   
   NSMutableData *body = [NSMutableData data];
@@ -62,6 +63,15 @@
     [body appendData:[[NSString stringWithFormat:@"Content-Disposition: inline; name=\"%@\"\r\n\r\n", @"certificate_chain"] dataUsingEncoding:NSUTF8StringEncoding]];
     
     [body appendData:[certificateChain dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+  }
+  
+  if (directive) {
+    [body appendData:[[NSString stringWithFormat:@"--%@\r\n", boundary] dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[@"Content-Type: application/x-pem-file\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
+    [body appendData:[[NSString stringWithFormat:@"Content-Disposition: inline; name=\"%@\"\r\n\r\n", @"directive"] dataUsingEncoding:NSUTF8StringEncoding]];
+    
+    [body appendData:[directive dataUsingEncoding:NSUTF8StringEncoding]];
     [body appendData:[@"\r\n" dataUsingEncoding:NSUTF8StringEncoding]];
   }
   
@@ -89,16 +99,19 @@
   NSData *bodyData = [_classicJSON dataUsingEncoding:NSUTF8StringEncoding];
   
   __block BOOL errorOccurred;
-  __block EXUpdatesUpdate *resultUpdateManifest;
+  __block EXUpdatesUpdateResponse *resultUpdateResponse;
   
-  [downloader parseManifestResponse:response withData:bodyData database:nil successBlock:^(EXUpdatesUpdate * _Nonnull update) {
-    resultUpdateManifest = update;
+  [downloader parseManifestResponse:response
+                           withData:bodyData
+                           database:nil
+                       successBlock:^(EXUpdatesUpdateResponse * _Nonnull updateResponse) {
+    resultUpdateResponse = updateResponse;
   } errorBlock:^(NSError * _Nonnull error) {
     errorOccurred = true;
   }];
   
   XCTAssertFalse(errorOccurred);
-  XCTAssertNotNil(resultUpdateManifest);
+  XCTAssertNotNil(resultUpdateResponse);
 }
 
 - (void)testManifestParsing_MultipartBody
@@ -118,19 +131,27 @@
     @"content-type": contentType
   }];
   
-  NSData *bodyData = [self multipartDataFromManifest:_classicJSON withBoundary:boundary andManifestSignature:nil andCertificateChain:nil];
+  NSData *bodyData = [self multipartDataFromManifest:_classicJSON
+                                        withBoundary:boundary
+                                andManifestSignature:nil
+                                 andCertificateChain:nil
+                                        andDirective:TestHelper.testDirectiveNoUpdateAvailable];
   
   __block BOOL errorOccurred;
-  __block EXUpdatesUpdate *resultUpdateManifest;
+  __block EXUpdatesUpdateResponse *resultUpdateResponse;
   
-  [downloader parseManifestResponse:response withData:bodyData database:nil successBlock:^(EXUpdatesUpdate * _Nonnull update) {
-    resultUpdateManifest = update;
+  [downloader parseManifestResponse:response
+                           withData:bodyData
+                           database:nil
+                       successBlock:^(EXUpdatesUpdateResponse * _Nonnull updateResponse) {
+    resultUpdateResponse = updateResponse;
   } errorBlock:^(NSError * _Nonnull error) {
     errorOccurred = true;
   }];
   
   XCTAssertFalse(errorOccurred);
-  XCTAssertNotNil(resultUpdateManifest);
+  XCTAssertNotNil(resultUpdateResponse);
+  XCTAssertNotNil(resultUpdateResponse.manifestUpdateResponsePart);
 }
 
 - (void)testManifestParsing_JSONBodySigned {
@@ -156,16 +177,19 @@
   NSData *bodyData = [_modernJSON dataUsingEncoding:NSUTF8StringEncoding];
   
   __block BOOL errorOccurred;
-  __block EXUpdatesUpdate *resultUpdateManifest;
+  __block EXUpdatesUpdateResponse *resultUpdateResponse;
   
-  [downloader parseManifestResponse:response withData:bodyData database:nil successBlock:^(EXUpdatesUpdate * _Nonnull update) {
-    resultUpdateManifest = update;
+  [downloader parseManifestResponse:response
+                           withData:bodyData
+                           database:nil
+                       successBlock:^(EXUpdatesUpdateResponse * _Nonnull updateResponse) {
+    resultUpdateResponse = updateResponse;
   } errorBlock:^(NSError * _Nonnull error) {
     errorOccurred = true;
   }];
   
   XCTAssertFalse(errorOccurred);
-  XCTAssertNotNil(resultUpdateManifest);
+  XCTAssertNotNil(resultUpdateResponse);
 }
 
 - (void)testManifestParsing_MultipartBodySigned
@@ -192,16 +216,19 @@
   NSData *bodyData = [self multipartDataFromManifest:_modernJSON withBoundary:boundary andManifestSignature:_modernJSONSignature andCertificateChain:nil];
   
   __block BOOL errorOccurred;
-  __block EXUpdatesUpdate *resultUpdateManifest;
+  __block EXUpdatesUpdateResponse *resultUpdateResponse;
   
-  [downloader parseManifestResponse:response withData:bodyData database:nil successBlock:^(EXUpdatesUpdate * _Nonnull update) {
-    resultUpdateManifest = update;
+  [downloader parseManifestResponse:response
+                           withData:bodyData
+                           database:nil
+                       successBlock:^(EXUpdatesUpdateResponse * _Nonnull updateResponse) {
+    resultUpdateResponse = updateResponse;
   } errorBlock:^(NSError * _Nonnull error) {
     errorOccurred = true;
   }];
   
   XCTAssertFalse(errorOccurred);
-  XCTAssertNotNil(resultUpdateManifest);
+  XCTAssertNotNil(resultUpdateResponse);
 }
 
 - (void)testManifestParsing_JSONBodyExpectsSigned_ReceivedUnsignedRequest {
@@ -226,16 +253,19 @@
   NSData *bodyData = [_modernJSON dataUsingEncoding:NSUTF8StringEncoding];
   
   __block NSError *errorOccurred;
-  __block EXUpdatesUpdate *resultUpdateManifest;
+  __block EXUpdatesUpdateResponse *resultUpdateResponse;
   
-  [downloader parseManifestResponse:response withData:bodyData database:nil successBlock:^(EXUpdatesUpdate * _Nonnull update) {
-    resultUpdateManifest = update;
+  [downloader parseManifestResponse:response
+                           withData:bodyData
+                           database:nil
+                       successBlock:^(EXUpdatesUpdateResponse * _Nonnull updateResponse) {
+    resultUpdateResponse = updateResponse;
   } errorBlock:^(NSError * _Nonnull error) {
     errorOccurred = error;
   }];
   
   XCTAssertTrue([errorOccurred.localizedDescription isEqualToString:@"Downloaded manifest signature is invalid: No expo-signature header specified"]);
-  XCTAssertNil(resultUpdateManifest);
+  XCTAssertNil(resultUpdateResponse);
 }
 
 - (void)testManifestParsing_JSONBodySigned_UnsignedRequest_ManifestSignatureOptional {
@@ -261,16 +291,19 @@
   NSData *bodyData = [_modernJSON dataUsingEncoding:NSUTF8StringEncoding];
   
   __block BOOL errorOccurred;
-  __block EXUpdatesUpdate *resultUpdateManifest;
+  __block EXUpdatesUpdateResponse *resultUpdateResponse;
   
-  [downloader parseManifestResponse:response withData:bodyData database:nil successBlock:^(EXUpdatesUpdate * _Nonnull update) {
-    resultUpdateManifest = update;
+  [downloader parseManifestResponse:response
+                           withData:bodyData
+                           database:nil
+                       successBlock:^(EXUpdatesUpdateResponse * _Nonnull updateResponse) {
+    resultUpdateResponse = updateResponse;
   } errorBlock:^(NSError * _Nonnull error) {
     errorOccurred = true;
   }];
   
   XCTAssertFalse(errorOccurred);
-  XCTAssertNotNil(resultUpdateManifest);
+  XCTAssertNotNil(resultUpdateResponse);
 }
 
 - (void)testManifestParsing_MultipartBodySignedCertificateParticularExperience {
@@ -299,16 +332,19 @@
   NSData *bodyData = [self multipartDataFromManifest:_modernJSON withBoundary:boundary andManifestSignature:_chainLeafSignature andCertificateChain:[NSString stringWithFormat:@"%@%@", _leafCertificate, _intermediateCertificate]];
   
   __block BOOL errorOccurred;
-  __block EXUpdatesUpdate *resultUpdateManifest;
+  __block EXUpdatesUpdateResponse *resultUpdateResponse;
   
-  [downloader parseManifestResponse:response withData:bodyData database:nil successBlock:^(EXUpdatesUpdate * _Nonnull update) {
-    resultUpdateManifest = update;
+  [downloader parseManifestResponse:response
+                           withData:bodyData
+                           database:nil
+                       successBlock:^(EXUpdatesUpdateResponse * _Nonnull updateResponse) {
+    resultUpdateResponse = updateResponse;
   } errorBlock:^(NSError * _Nonnull error) {
     errorOccurred = true;
   }];
   
   XCTAssertFalse(errorOccurred);
-  XCTAssertNotNil(resultUpdateManifest);
+  XCTAssertNotNil(resultUpdateResponse);
   // TODO(wschurman): add isVerified property
 //  XCTAssertTrue(resultUpdateManifest.manifest.isVerified);
 }
@@ -339,16 +375,19 @@
   NSData *bodyData = [self multipartDataFromManifest:_manifestBodyIncorrectProjectId withBoundary:boundary andManifestSignature:_validChainLeafSignatureIncorrectProjectId andCertificateChain:[NSString stringWithFormat:@"%@%@", _leafCertificate, _intermediateCertificate]];
   
   __block NSError *errorOccurred;
-  __block EXUpdatesUpdate *resultUpdateManifest;
+  __block EXUpdatesUpdateResponse *resultUpdateResponse;
   
-  [downloader parseManifestResponse:response withData:bodyData database:nil successBlock:^(EXUpdatesUpdate * _Nonnull update) {
-    resultUpdateManifest = update;
+  [downloader parseManifestResponse:response
+                           withData:bodyData
+                           database:nil
+                       successBlock:^(EXUpdatesUpdateResponse * _Nonnull updateResponse) {
+    resultUpdateResponse = updateResponse;
   } errorBlock:^(NSError * _Nonnull error) {
     errorOccurred = error;
   }];
   
   XCTAssertTrue([errorOccurred.localizedDescription isEqualToString:@"Invalid certificate for manifest project ID or scope key"]);
-  XCTAssertNil(resultUpdateManifest);
+  XCTAssertNil(resultUpdateResponse);
 }
 
 @end

@@ -55,6 +55,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesDatabaseHashType) {
 - (void)incrementSuccessfulLaunchCountForUpdate:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error;
 - (void)incrementFailedLaunchCountForUpdate:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error;
 - (void)setScopeKey:(NSString *)scopeKey onUpdate:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error;
+- (void)setUpdateCommitTime:(NSDate *)commitTime onUpdate:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error;
 - (void)markMissingAssets:(NSArray<EXUpdatesAsset *> *)assets error:(NSError ** _Nullable)error;
 
 - (void)deleteUpdates:(NSArray<EXUpdatesUpdate *> *)updates error:(NSError ** _Nullable)error;
@@ -80,7 +81,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesDatabaseHashType) {
 - (nullable NSDictionary *)staticBuildDataWithScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
 - (void)setServerDefinedHeaders:(NSDictionary *)serverDefinedHeaders withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
 - (void)setManifestFilters:(NSDictionary *)manifestFilters withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
-- (void)setMetadataWithManifest:(EXUpdatesUpdate *)updateManifest error:(NSError ** _Nullable)error;
+- (void)setMetadataWithResponseHeaderData:(EXUpdatesResponseHeaderData *)responseHeaderData withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
 - (void)setStaticBuildData:(NSDictionary *)staticBuildData withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error;
 
 @end

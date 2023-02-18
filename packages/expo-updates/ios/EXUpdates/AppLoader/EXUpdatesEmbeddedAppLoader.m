@@ -4,6 +4,12 @@
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 NSString * const EXUpdatesEmbeddedManifestName = @"app";
@@ -81,19 +87,21 @@ static NSString * const EXUpdatesEmbeddedAppLoaderErrorDomain = @"EXUpdatesEmbed
   return embeddedManifest;
 }
 
-- (void)loadUpdateFromEmbeddedManifestWithCallback:(EXUpdatesAppLoaderManifestBlock)manifestBlock
-                                           onAsset:(EXUpdatesAppLoaderAssetBlock)assetBlock
-                                           success:(EXUpdatesAppLoaderSuccessBlock)success
-                                             error:(EXUpdatesAppLoaderErrorBlock)error
+- (void)loadUpdateResponseFromEmbeddedManifestWithCallback:(EXUpdatesAppLoaderUpdateResponseBlock)updateResponseBlock
+                                                   onAsset:(EXUpdatesAppLoaderAssetBlock)assetBlock
+                                                   success:(EXUpdatesAppLoaderSuccessBlock)success
+                                                     error:(EXUpdatesAppLoaderErrorBlock)error
 {
   EXUpdatesUpdate *embeddedManifest = [[self class] embeddedManifestWithConfig:self.config
                                                                       database:self.database];
   if (embeddedManifest) {
-    self.manifestBlock = manifestBlock;
+    self.updateResponseBlock = updateResponseBlock;
     self.assetBlock = assetBlock;
     self.successBlock = success;
     self.errorBlock = error;
-    [self startLoadingFromManifest:embeddedManifest];
+    [self startLoadingFromUpdateResponse:[[EXUpdatesUpdateResponse alloc] initWithResponseHeaderData:nil
+                                                                          manifestUpdateResponsePart:[[EXUpdatesManifestUpdateResponsePart alloc] initWithUpdateManifest:embeddedManifest]
+                                                                         directiveUpdateResponsePart:nil]];
   } else {
     error([NSError errorWithDomain:EXUpdatesEmbeddedAppLoaderErrorDomain
                               code:1008
@@ -136,7 +144,7 @@ static NSString * const EXUpdatesEmbeddedAppLoaderErrorDomain = @"EXUpdatesEmbed
 }
 
 - (void)loadUpdateFromUrl:(NSURL *)url
-               onManifest:(EXUpdatesAppLoaderManifestBlock)manifestBlock
+         onUpdateResponse:(EXUpdatesAppLoaderUpdateResponseBlock)updateResponseBlock
                     asset:(EXUpdatesAppLoaderAssetBlock)assetBlock
                   success:(EXUpdatesAppLoaderSuccessBlock)success
                     error:(EXUpdatesAppLoaderErrorBlock)error

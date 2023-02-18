@@ -48,7 +48,7 @@ public final class EXUpdatesResponseHeaderData : NSObject {
     EXUpdatesResponseHeaderData.dictionaryWithStructuredHeader(self.manifestFiltersRaw)
   }()
   
-  private static func dictionaryWithStructuredHeader(_ headerString: String?) -> [String : Any]? {
+  public static func dictionaryWithStructuredHeader(_ headerString: String?) -> [String : Any]? {
     guard let headerString = headerString else { return nil }
     let parser = EXStructuredHeadersParser.init(rawInput: headerString,
                                                 fieldType: EXStructuredHeadersParserFieldType.dictionary,
@@ -68,7 +68,7 @@ public final class EXUpdatesResponseHeaderData : NSObject {
     
     // ignore any dictionary entries whose type is not string, number, or boolean
     // since this will be re-serialized to JSON
-    return parserOutputDictionary.filter { $0.value is String || $0.value is any Numeric || $0.value is Bool }
+    return parserOutputDictionary.filter { $0.value is String || $0.value is NSNumber || $0.value is Bool }
   }
 }
 

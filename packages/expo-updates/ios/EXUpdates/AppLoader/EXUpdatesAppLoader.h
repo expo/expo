@@ -5,14 +5,18 @@
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesUpdate.h>
 
+@class EXUpdatesUpdateResponse;
+
 NS_ASSUME_NONNULL_BEGIN
 
-typedef BOOL (^EXUpdatesAppLoaderManifestBlock)(EXUpdatesUpdate *update);
+typedef BOOL (^EXUpdatesAppLoaderUpdateResponseBlock)(EXUpdatesUpdateResponse *updateResponse);
 typedef void (^EXUpdatesAppLoaderAssetBlock) (EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount);
-typedef void (^EXUpdatesAppLoaderSuccessBlock)(EXUpdatesUpdate * _Nullable update);
+typedef void (^EXUpdatesAppLoaderSuccessBlock)(EXUpdatesUpdateResponse * _Nullable updateResponse);
 typedef void (^EXUpdatesAppLoaderErrorBlock)(NSError *error);
 
 @interface EXUpdatesAppLoader : NSObject
+
+@property (nonatomic, strong) EXUpdatesConfig *config;
 
 - (instancetype)initWithConfig:(EXUpdatesConfig *)config
                       database:(EXUpdatesDatabase *)database
@@ -23,8 +27,8 @@ typedef void (^EXUpdatesAppLoaderErrorBlock)(NSError *error);
 /**
  * Load an update from the given URL, which should respond with a valid manifest.
  *
- * The `onManifest` block is called as soon as the manifest has been downloaded.
- * The block should determine whether or not the update described by this manifest
+ * The `updateResponseBlock` block is called as soon as the update response has been downloaded.
+ * The block should determine whether or not the update described by this update response
  * should be downloaded, based on (for example) whether or not it already has the
  * update downloaded locally, and return the corresponding BOOL value.
  *
@@ -32,7 +36,7 @@ typedef void (^EXUpdatesAppLoaderErrorBlock)(NSError *error);
  * or failed to download.
  */
 - (void)loadUpdateFromUrl:(NSURL *)url
-               onManifest:(EXUpdatesAppLoaderManifestBlock)manifestBlock
+         onUpdateResponse:(EXUpdatesAppLoaderUpdateResponseBlock)updateResponseBlock
                     asset:(EXUpdatesAppLoaderAssetBlock)assetBlock
                   success:(EXUpdatesAppLoaderSuccessBlock)success
                     error:(EXUpdatesAppLoaderErrorBlock)error;

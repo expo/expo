@@ -47,7 +47,7 @@ public class EXUpdatesUpdateDirective : NSObject {
       guard let commitTime = RCTConvert.nsDate(commitTimeString) else {
         throw EXUpdatesRemoteUpdateError.DirectiveParsingError
       }
-      return EXUpatesRollBackToEmbeddedUpdateDirective(commitTime: commitTime, signingInfo: signingInfo)
+      return EXUpdatesRollBackToEmbeddedUpdateDirective(commitTime: commitTime, signingInfo: signingInfo)
     default:
       throw EXUpdatesRemoteUpdateError.InvalidDirectiveType
     }
@@ -58,12 +58,12 @@ public class EXUpdatesUpdateDirective : NSObject {
 public final class EXUpdatesNoUpdateAvailableUpdateDirective : EXUpdatesUpdateDirective {}
 
 @objcMembers
-public final class EXUpatesRollBackToEmbeddedUpdateDirective : EXUpdatesUpdateDirective {
+public final class EXUpdatesRollBackToEmbeddedUpdateDirective : EXUpdatesUpdateDirective {
   public let commitTime: Date
   
   public required init(commitTime: Date, signingInfo: EXUpdatesSigningInfo?) {
-    super.init(signingInfo: signingInfo)
     self.commitTime = commitTime
+    super.init(signingInfo: signingInfo)
   }
 }
 
@@ -90,9 +90,9 @@ public final class EXUpdatesManifestUpdateResponsePart : EXUpdatesUpdateResponse
 
 @objcMembers
 public final class EXUpdatesUpdateResponse : NSObject {
-  let responseHeaderData: EXUpdatesResponseHeaderData?
-  let manifestUpdateResponsePart: EXUpdatesManifestUpdateResponsePart?
-  let directiveUpdateResponsePart: EXUpdatesDirectiveUpdateResponsePart?
+  public let responseHeaderData: EXUpdatesResponseHeaderData?
+  public let manifestUpdateResponsePart: EXUpdatesManifestUpdateResponsePart?
+  public let directiveUpdateResponsePart: EXUpdatesDirectiveUpdateResponsePart?
   
   public required init(responseHeaderData: EXUpdatesResponseHeaderData?,
                        manifestUpdateResponsePart: EXUpdatesManifestUpdateResponsePart?,

@@ -131,23 +131,25 @@ EX_EXPORT_METHOD_AS(checkForUpdateAsync,
   });
 
   EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:_updatesService.config];
-  [fileDownloader downloadManifestFromURL:_updatesService.config.updateUrl
-                             withDatabase:_updatesService.database
-                             extraHeaders:extraHeaders
-                             successBlock:^(EXUpdatesUpdate *update) {
+  [fileDownloader downloadRemoteUpdateFromURL:_updatesService.config.updateUrl
+                                 withDatabase:_updatesService.database
+                                 extraHeaders:extraHeaders
+                                 successBlock:^(EXUpdatesUpdateResponse * _Nonnull updateResponse) {
     EXUpdatesUpdate *launchedUpdate = self->_updatesService.launchedUpdate;
     EXUpdatesSelectionPolicy *selectionPolicy = self->_updatesService.selectionPolicy;
-    if ([selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:launchedUpdate filters:update.manifestFilters]) {
+    EXUpdatesUpdate *updateManifest = updateResponse.manifestUpdateResponsePart.updateManifest;
+    if ([selectionPolicy shouldLoadNewUpdate:updateManifest withLaunchedUpdate:launchedUpdate filters:updateResponse.responseHeaderData.manifestFilters]) {
       resolve(@{
         @"isAvailable": @(YES),
-        @"manifest": update.manifest.rawManifestJSON
+        @"manifest": updateManifest.manifest.rawManifestJSON
       });
     } else {
       resolve(@{
         @"isAvailable": @(NO)
       });
     }
-  } errorBlock:^(NSError *error) {
+  }
+                                   errorBlock:^(NSError * _Nonnull error) {
     reject(@"ERR_UPDATES_CHECK", error.localizedDescription, error);
   }];
 }
@@ -198,21 +200,45 @@ EX_EXPORT_METHOD_AS(fetchUpdateAsync,
   }
 
   EXUpdatesRemoteAppLoader *remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_updatesService.config database:_updatesService.database directory:_updatesService.directory launchedUpdate:_updatesService.launchedUpdate completionQueue:self.methodQueue];
-  [remoteAppLoader loadUpdateFromUrl:_updatesService.config.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
-    return [self->_updatesService.selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_updatesService.launchedUpdate filters:update.manifestFilters];
+  [remoteAppLoader loadUpdateFromUrl:_updatesService.config.updateUrl
+                    onUpdateResponse:^BOOL(EXUpdatesUpdateResponse * _Nonnull updateResponse) {
+    if (updateResponse.directiveUpdateResponsePart) {
+      EXUpdatesUpdateDirective *updateDirective = updateResponse.directiveUpdateResponsePart.updateDirective;
+      if ([updateDirective isKindOfClass:[EXUpdatesNoUpdateAvailableUpdateDirective class]]) {
+        return NO;
+      } else if ([updateDirective isKindOfClass:[EXUpdatesRollBackToEmbeddedUpdateDirective class]]) {
+        return YES;
+      } else {
+        @throw [NSException exceptionWithName:NSInternalInconsistencyException reason:@"Unhandled update directive type" userInfo:nil];
+      }
+    }
+    
+    if (!updateResponse.manifestUpdateResponsePart) {
+      return NO;
+    }
+    
+    EXUpdatesUpdate *update = updateResponse.manifestUpdateResponsePart.updateManifest;
+    return [self->_updatesService.selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_updatesService.launchedUpdate filters:updateResponse.responseHeaderData.manifestFilters];
   } asset:^(EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
     // do nothing for now
-  } success:^(EXUpdatesUpdate * _Nullable update) {
-    if (update) {
-      [self->_updatesService resetSelectionPolicy];
+  } success:^(EXUpdatesUpdateResponse * _Nullable updateResponse) {
+    if (updateResponse.directiveUpdateResponsePart && [updateResponse.directiveUpdateResponsePart.updateDirective isKindOfClass:[EXUpdatesRollBackToEmbeddedUpdateDirective class]]) {
       resolve(@{
-        @"isNew": @(YES),
-        @"manifest": update.manifest.rawManifestJSON
+        @"isRollBackToEmbedded": @(YES),
       });
     } else {
-      resolve(@{
-        @"isNew": @(NO)
-      });
+      if (!updateResponse.manifestUpdateResponsePart) {
+        resolve(@{
+          @"isNew": @(NO)
+        });
+      } else {
+        EXUpdatesUpdate *update = updateResponse.manifestUpdateResponsePart.updateManifest;
+        [self->_updatesService resetSelectionPolicy];
+        resolve(@{
+          @"isNew": @(YES),
+          @"manifest": update.manifest.rawManifestJSON
+        });
+      }
     }
   } error:^(NSError * _Nonnull error) {
     reject(@"ERR_UPDATES_FETCH", @"Failed to download new update", error);

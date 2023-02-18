@@ -7,12 +7,18 @@
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <ExpoModulesCore/EXUtilities.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesRemoteAppLoader ()
 
 @property (nonatomic, strong) EXUpdatesFileDownloader *downloader;
-@property (nonatomic, strong) EXUpdatesUpdate *remoteUpdate;
+@property (nonatomic, strong) EXUpdatesUpdateResponse *remoteUpdateResponse;
 
 @property (nonatomic, strong) dispatch_queue_t completionQueue;
 
@@ -38,35 +44,37 @@ static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteA
 }
 
 - (void)loadUpdateFromUrl:(NSURL *)url
-               onManifest:(EXUpdatesAppLoaderManifestBlock)manifestBlock
+         onUpdateResponse:(EXUpdatesAppLoaderUpdateResponseBlock)updateResponseBlock
                     asset:(EXUpdatesAppLoaderAssetBlock)assetBlock
                   success:(EXUpdatesAppLoaderSuccessBlock)success
                     error:(EXUpdatesAppLoaderErrorBlock)error
 {
-  self.manifestBlock = manifestBlock;
+  self.updateResponseBlock = updateResponseBlock;
   self.assetBlock = assetBlock;
   self.errorBlock = error;
 
   EX_WEAKIFY(self)
-  self.successBlock = ^(EXUpdatesUpdate * _Nullable update) {
+  self.successBlock = ^(EXUpdatesUpdateResponse * _Nullable updateResponse) {
     EX_STRONGIFY(self)
     // even if update is nil (meaning we didn't load a new update),
     // we want to persist the header data from _remoteUpdate
-    if (self->_remoteUpdate) {
+    if (self->_remoteUpdateResponse) {
       dispatch_async(self.database.databaseQueue, ^{
         NSError *metadataError;
-        [self.database setMetadataWithManifest:self->_remoteUpdate error:&metadataError];
+        [self.database setMetadataWithResponseHeaderData:self->_remoteUpdateResponse.responseHeaderData
+                                            withScopeKey:self.config.scopeKey
+                                                   error:&metadataError];
         dispatch_async(self->_completionQueue, ^{
           if (metadataError) {
             NSLog(@"Error persisting header data to disk: %@", metadataError.localizedDescription);
             error(metadataError);
           } else {
-            success(update);
+            success(updateResponse);
           }
         });
       });
     } else {
-      success(update);
+      success(updateResponse);
     }
   };
 
@@ -76,10 +84,14 @@ static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteA
                                                                             config:self.config
                                                                     launchedUpdate:self.launchedUpdate
                                                                     embeddedUpdate:embeddedUpdate];
-    [self->_downloader downloadManifestFromURL:url withDatabase:self.database extraHeaders:extraHeaders successBlock:^(EXUpdatesUpdate *update) {
-      self->_remoteUpdate = update;
-      [self startLoadingFromManifest:update];
-    } errorBlock:^(NSError *error) {
+    [self->_downloader downloadRemoteUpdateFromURL:url
+                                      withDatabase:self.database
+                                      extraHeaders:extraHeaders
+                                      successBlock:^(EXUpdatesUpdateResponse * _Nonnull updateResponse) {
+      self->_remoteUpdateResponse = updateResponse;
+      [self startLoadingFromUpdateResponse:updateResponse];
+    }
+                                        errorBlock:^(NSError * _Nonnull error) {
       if (self.errorBlock) {
         self.errorBlock(error);
       }

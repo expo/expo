@@ -6,6 +6,12 @@
 
 #import <sqlite3.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesDatabase ()
@@ -247,6 +253,12 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
 {
   NSString * const updateSql = @"UPDATE updates SET scope_key = ?1 WHERE id = ?2;";
   [self _executeSql:updateSql withArgs:@[scopeKey, update.updateId] error:error];
+}
+
+- (void)setUpdateCommitTime:(NSDate *)commitTime onUpdate:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
+{
+  NSString * const updateSql = @"UPDATE updates SET commit_time = ?1 WHERE id = ?2;";
+  [self _executeSql:updateSql withArgs:@[commitTime, update.updateId] error:error];
 }
 
 - (void)markMissingAssets:(NSArray<EXUpdatesAsset *> *)assets error:(NSError ** _Nullable)error
@@ -553,23 +565,23 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
   [self _setJsonData:manifestFilters withKey:EXUpdatesDatabaseManifestFiltersKey scopeKey:scopeKey isInTransaction:NO error:error];
 }
 
-- (void)setMetadataWithManifest:(EXUpdatesUpdate *)updateManifest error:(NSError ** _Nullable)error
+- (void)setMetadataWithResponseHeaderData:(EXUpdatesResponseHeaderData *)responseHeaderData withScopeKey:(NSString *)scopeKey error:(NSError ** _Nullable)error
 {
   sqlite3_exec(_db, "BEGIN;", NULL, NULL, NULL);
-  if (updateManifest.serverDefinedHeaders) {
-    if (![self _setJsonData:updateManifest.serverDefinedHeaders
+  if (responseHeaderData.serverDefinedHeaders) {
+    if (![self _setJsonData:responseHeaderData.serverDefinedHeaders
                    withKey:EXUpdatesDatabaseServerDefinedHeadersKey
-                  scopeKey:updateManifest.scopeKey
+                  scopeKey:scopeKey
            isInTransaction:YES
                      error:error]) {
       sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
       return;
     }
   }
-  if (updateManifest.manifestFilters) {
-    if (![self _setJsonData:updateManifest.manifestFilters
+  if (responseHeaderData.manifestFilters) {
+    if (![self _setJsonData:responseHeaderData.manifestFilters
                    withKey:EXUpdatesDatabaseManifestFiltersKey
-                  scopeKey:updateManifest.scopeKey
+                  scopeKey:scopeKey
            isInTransaction:YES
                      error:error]) {
       sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
