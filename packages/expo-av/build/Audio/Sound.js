@@ -37,6 +37,7 @@ export class Sound {
     _coalesceStatusUpdatesInMillis = 100;
     _onPlaybackStatusUpdate = null;
     _onMetadataUpdate = null;
+    _remoteCommandHandlers = {};
     _onAudioSampleReceived = null;
     /** @deprecated Use `Sound.createAsync()` instead */
     static create = async (source, initialStatus = {}, onPlaybackStatusUpdate = null, downloadFirst = true) => {
@@ -87,9 +88,10 @@ export class Sound {
      *
      * @return A `Promise` that is rejected if creation failed, or fulfilled with the `SoundObject` if creation succeeded.
      */
-    static createAsync = async (source, initialStatus = {}, onPlaybackStatusUpdate = null, downloadFirst = true) => {
+    static createAsync = async (source, initialStatus = {}, onPlaybackStatusUpdate = null, downloadFirst = true, remoteCommandHandlers = {}) => {
         const sound = new Sound();
         sound.setOnPlaybackStatusUpdate(onPlaybackStatusUpdate);
+        sound.setRemoteCommandHandlers(remoteCommandHandlers);
         const status = await sound.loadAsync(source, initialStatus, downloadFirst);
         return { sound, status };
     };
@@ -146,6 +148,27 @@ export class Sound {
             this._onMetadataUpdate?.(metadata);
         }
     };
+    _internalRemoteCommandCallback = ({ key, command, }) => {
+        if (this._key === key) {
+            console.log({ key, command });
+            switch (command) {
+                case 'play':
+                    this._remoteCommandHandlers?.onPlay?.();
+                    break;
+                case 'pause':
+                    this._remoteCommandHandlers?.onPause?.();
+                    break;
+                case 'nextTrack':
+                    this._remoteCommandHandlers?.onNextTrack?.();
+                    break;
+                case 'previousTrack':
+                    this._remoteCommandHandlers?.onPreviousTrack?.();
+                    break;
+                default:
+                    break;
+            }
+        }
+    };
     _internalErrorCallback = ({ key, error }) => {
         if (this._key === key) {
             this._errorCallback(error);
@@ -154,7 +177,8 @@ export class Sound {
     // TODO: We can optimize by only using time observer on native if (this._onPlaybackStatusUpdate).
     _subscribeToNativeEvents() {
         if (this._loaded) {
-            this._subscriptions.push(this._eventEmitter.addListener('didUpdatePlaybackStatus', this._internalStatusUpdateCallback), this._eventEmitter.addListener('didUpdateMetadata', this._internalMetadataUpdateCallback));
+            console.log('subscribing to native events');
+            this._subscriptions.push(this._eventEmitter.addListener('didUpdatePlaybackStatus', this._internalStatusUpdateCallback), this._eventEmitter.addListener('didUpdateMetadata', this._internalMetadataUpdateCallback), this._eventEmitter.addListener('didTriggerRemoteCommand', this._internalRemoteCommandCallback));
             this._subscriptions.push(this._eventEmitter.addListener('ExponentAV.onError', this._internalErrorCallback));
         }
     }
@@ -194,6 +218,9 @@ export class Sound {
     setOnPlaybackStatusUpdate(onPlaybackStatusUpdate) {
         this._onPlaybackStatusUpdate = onPlaybackStatusUpdate;
         this.getStatusAsync();
+    }
+    setRemoteCommandHandlers(remoteCommandHandlers) {
+        this._remoteCommandHandlers = remoteCommandHandlers;
     }
     /**
      * Sets a function to be called whenever the metadata of the sound object changes, if one is set.

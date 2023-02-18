@@ -35,6 +35,7 @@ NSString *const EXDidUpdatePlaybackStatusEventName = @"didUpdatePlaybackStatus";
 
 NSString *const EXDidUpdateMetadataEventName = @"didUpdateMetadata";
 
+NSString *const EXDidTriggerRemoteCommandEventName = @"didTriggerRemoteCommand";
 @interface EXAV ()
 
 @property (nonatomic, weak) RCTBridge *bridge;
@@ -659,7 +660,7 @@ withEXVideoViewForTag:(nonnull NSNumber *)reactTag
 
 - (NSArray<NSString *> *)supportedEvents
 {
-  return @[EXDidUpdatePlaybackStatusEventName, EXDidUpdateMetadataEventName, @"ExponentAV.onError"];
+  return @[EXDidUpdatePlaybackStatusEventName, EXDidUpdateMetadataEventName, EXDidTriggerRemoteCommandEventName, @"ExponentAV.onError"];
 }
 
 #pragma mark - Audio API: Global settings
@@ -737,6 +738,14 @@ EX_EXPORT_METHOD_AS(loadForSound,
         NSDictionary<NSString *, id> *response = @{@"key": key, @"metadata": metadata};
         [self sendEventWithName:EXDidUpdateMetadataEventName body:response];
       }
+  };
+
+  data.remoteCommandTriggerCallback = ^(NSString *command) {
+    EX_ENSURE_STRONGIFY(self);
+    if (self.isBeingObserved) {
+      NSDictionary<NSString *, id> *response = @{@"key": key, @"command": command};
+      [self sendEventWithName:EXDidTriggerRemoteCommandEventName body:response];
+    }
   };
     
   _soundDictionary[key] = data;
