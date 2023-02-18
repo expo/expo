@@ -1,0 +1,25 @@
+-- Merging decision tree log ---
+manifest
+ADDED from /Users/olumayowadaniel/Documents/PROJECTS/OPEN_SOURCE/expo/packages/expo-error-recovery/android/src/main/AndroidManifest.xml:1:1-3:12
+INJECTED from /Users/olumayowadaniel/Documents/PROJECTS/OPEN_SOURCE/expo/packages/expo-error-recovery/android/src/main/AndroidManifest.xml:1:1-3:12
+INJECTED from /Users/olumayowadaniel/Documents/PROJECTS/OPEN_SOURCE/expo/packages/expo-error-recovery/android/src/main/AndroidManifest.xml:1:1-3:12
+	package
+		ADDED from /Users/olumayowadaniel/Documents/PROJECTS/OPEN_SOURCE/expo/packages/expo-error-recovery/android/src/main/AndroidManifest.xml:1:11-47
+		INJECTED from /Users/olumayowadaniel/Documents/PROJECTS/OPEN_SOURCE/expo/packages/expo-error-recovery/android/src/main/AndroidManifest.xml
+		INJECTED from /Users/olumayowadaniel/Documents/PROJECTS/OPEN_SOURCE/expo/packages/expo-error-recovery/android/src/main/AndroidManifest.xml
+	xmlns:android
+		ADDED from /Users/olumayowadaniel/Documents/PROJECTS/OPEN_SOURCE/expo/packages/expo-error-recovery/android/src/main/AndroidManifest.xml:1:1-3:12
+uses-sdk
+INJECTED from /Users/olumayowadaniel/Documents/PROJECTS/OPEN_SOURCE/expo/packages/expo-error-recovery/android/src/main/AndroidManifest.xml reason: use-sdk injection requested
+INJECTED from /Users/olumayowadaniel/Documents/PROJECTS/OPEN_SOURCE/expo/packages/expo-error-recovery/android/src/main/AndroidManifest.xml
+INJECTED from /Users/olumayowadaniel/Documents/PROJECTS/OPEN_SOURCE/expo/packages/expo-error-recovery/android/src/main/AndroidManifest.xml
+INJECTED from /Users/olumayowadaniel/Documents/PROJECTS/OPEN_SOURCE/expo/packages/expo-error-recovery/android/src/main/AndroidManifest.xml
+INJECTED from /Users/olumayowadaniel/Documents/PROJECTS/OPEN_SOURCE/expo/packages/expo-error-recovery/android/src/main/AndroidManifest.xml
+	android:targetSdkVersion
+		INJECTED from /Users/olumayowadaniel/Documents/PROJECTS/OPEN_SOURCE/expo/packages/expo-error-recovery/android/src/main/AndroidManifest.xml
+		ADDED from /Users/olumayowadaniel/Documents/PROJECTS/OPEN_SOURCE/expo/packages/expo-error-recovery/android/src/main/AndroidManifest.xml
+		INJECTED from /Users/olumayowadaniel/Documents/PROJECTS/OPEN_SOURCE/expo/packages/expo-error-recovery/android/src/main/AndroidManifest.xml
+	android:minSdkVersion
+		INJECTED from /Users/olumayowadaniel/Documents/PROJECTS/OPEN_SOURCE/expo/packages/expo-error-recovery/android/src/main/AndroidManifest.xml
+		ADDED from /Users/olumayowadaniel/Documents/PROJECTS/OPEN_SOURCE/expo/packages/expo-error-recovery/android/src/main/AndroidManifest.xml
+		INJECTED from /Users/olumayowadaniel/Documents/PROJECTS/OPEN_SOURCE/expo/packages/expo-error-recovery/android/src/main/AndroidManifest.xml

@@ -18,6 +18,7 @@
 
 - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions
 {
+[[UIApplication sharedApplication] beginReceivingRemoteControlEvents];
 #if DEBUG
   BOOL useDevClient = NO;
 

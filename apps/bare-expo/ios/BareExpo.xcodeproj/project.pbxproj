@@ -315,7 +315,7 @@
 						TestTargetID = B2C02649256BDB3E008FD925;
 					};
 					13B07F861A680F5B00A75B9A = {
-						DevelopmentTeam = C8D8QTF339;
+						DevelopmentTeam = U4N2R6M7H7;
 						LastSwiftMigration = 1140;
 					};
 					B2C02649256BDB3E008FD925 = {
@@ -916,7 +916,7 @@
 				CODE_SIGN_ENTITLEMENTS = "BareExpo/Bare Expo.entitlements";
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = NO;
-				DEVELOPMENT_TEAM = C8D8QTF339;
+				DEVELOPMENT_TEAM = U4N2R6M7H7;
 				INFOPLIST_FILE = BareExpo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -934,7 +934,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D COCOAPODS -Xcc -fmodule-map-file=\"${PODS_ROOT}/Headers/Public/yoga/Yoga.modulemap\" -DDEBUG -DFB_SONARKIT_ENABLED -DEX_DEV_LAUNCHER_ENABLED -DEX_DEV_MENU_ENABLED -D EXPO_CONFIGURATION_DEBUG";
-				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Payments;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Paymentsxc;
 				PRODUCT_NAME = "Bare Expo";
 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
 				SWIFT_VERSION = 5.0;
@@ -952,7 +952,7 @@
 				CODE_SIGN_ENTITLEMENTS = "BareExpo/Bare Expo.entitlements";
 				CURRENT_PROJECT_VERSION = 1;
 				DEAD_CODE_STRIPPING = YES;
-				DEVELOPMENT_TEAM = C8D8QTF339;
+				DEVELOPMENT_TEAM = U4N2R6M7H7;
 				INFOPLIST_FILE = BareExpo/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
 				LD_RUNPATH_SEARCH_PATHS = (
@@ -970,7 +970,7 @@
 					"-lc++",
 				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
-				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Payments;
+				PRODUCT_BUNDLE_IDENTIFIER = dev.expo.Paymentsxc;
 				PRODUCT_NAME = "Bare Expo";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";

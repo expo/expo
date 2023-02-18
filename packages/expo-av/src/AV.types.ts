@@ -79,6 +79,12 @@ export type AVMetadata = {
   title?: string;
 };
 
+export type AVPlaybackRemoteCommand = 'pause' | 'play' | 'nextTrack' | 'previousTrack';
+
+export type AVPlaybackRemoteCommandHandlers = {
+  [key in AVPlaybackRemoteCommand as `on${Capitalize<key>}`]?: () => void;
+}
+
 // @needsAudit
 /**
  * This is the structure returned from all playback API calls and describes the state of the `playbackObject` at that point in time.
