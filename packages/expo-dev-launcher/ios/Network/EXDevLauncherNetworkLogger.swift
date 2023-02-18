@@ -1,5 +1,7 @@
 import React
 
+#if DEBUG
+
 /**
  This class intercepts all default `URLSession` requests and send CDP events to the connecting metro-inspector-proxy
  */
@@ -159,3 +161,26 @@ extension RCTInspectorPackagerConnection {
     }
   }
 }
+
+#else
+
+@objc
+public class EXDevLauncherNetworkLogger: NSObject {
+  @objc
+  public static let shared = EXDevLauncherNetworkLogger()
+
+  override private init() {}
+
+  @objc
+  public func enable() {
+    // no-op when running on release build where RCTInspector classes not exported
+  }
+
+  func emitNetworkWillBeSent(request: URLRequest, requestId: String) {
+  }
+
+  func emitNetworkResponse(request: URLRequest, requestId: String, response: HTTPURLResponse) {
+  }
+}
+
+#endif
