@@ -2,7 +2,7 @@ import { Inter_900Black } from '@expo-google-fonts/inter';
 import { NativeModulesProxy } from 'expo-modules-core';
 import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
-import { useEffect } from 'react';
+import React, { useEffect } from 'react';
 import { StyleSheet, Text, View } from 'react-native';
 
 const RETRY_COUNT = 5;
@@ -12,7 +12,7 @@ const PORT = 'UPDATES_PORT';
 require('./test.png');
 Inter_900Black;
 
-async function sendLog(obj) {
+async function sendLog(obj: { logEntries: Updates.UpdatesLogEntry[] }) {
   const logUrl = `http://${HOSTNAME}:${PORT}/log`;
   await fetch(logUrl, {
     method: 'POST',
@@ -29,12 +29,15 @@ async function readLogs() {
     await sendLog({
       logEntries,
     });
-  } catch (e) {
+  } catch (e: any) {
     console.warn(`Error in reading log entries: ${e.message}`);
   }
 }
 
-async function fetchWithRetry(url, body) {
+async function fetchWithRetry(
+  url: RequestInfo,
+  body: string | undefined = undefined,
+) {
   for (let i = 0; i < RETRY_COUNT; i++) {
     try {
       const response = await fetch(url, {
@@ -61,7 +64,8 @@ async function fetchWithRetry(url, body) {
 
 async function readExpoInternal() {
   try {
-    const numFiles = await NativeModulesProxy.ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
+    const numFiles =
+      await NativeModulesProxy.ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
     await fetchWithRetry(
       `http://${HOSTNAME}:${PORT}/post`,
       JSON.stringify({
@@ -69,9 +73,9 @@ async function readExpoInternal() {
         success: true,
         updateId: Updates.updateId,
         numFiles,
-      })
+      }),
     );
-  } catch (e) {
+  } catch (e: any) {
     await fetchWithRetry(
       `http://${HOSTNAME}:${PORT}/post`,
       JSON.stringify({
@@ -79,7 +83,7 @@ async function readExpoInternal() {
         success: false,
         updateId: Updates.updateId,
         error: e.message,
-      })
+      }),
     );
   }
 }
@@ -99,9 +103,9 @@ async function clearExpoInternal() {
         updateId: Updates.updateId,
         numFilesBefore,
         numFilesAfter,
-      })
+      }),
     );
-  } catch (e) {
+  } catch (e: any) {
     await fetchWithRetry(
       `http://${HOSTNAME}:${PORT}/post`,
       JSON.stringify({
@@ -109,26 +113,33 @@ async function clearExpoInternal() {
         success: false,
         updateId: Updates.updateId,
         error: e.message,
-      })
+      }),
     );
   }
 }
 
 export default function App() {
-  useEffect(async () => {
-    const response = await fetchWithRetry(`http://${HOSTNAME}:${PORT}/notify/test`);
-    const responseObj = await response.json();
-    if (responseObj && responseObj.command) {
-      switch (responseObj.command) {
-        case 'readExpoInternal':
-          await readExpoInternal();
-          break;
-        case 'clearExpoInternal':
-          await clearExpoInternal();
-          break;
+  useEffect(() => {
+    const fetchResponseAsync = async () => {
+      const response = await fetchWithRetry(
+        `http://${HOSTNAME}:${PORT}/notify/test`,
+      );
+      const responseObj = (await response?.json()) || null;
+      if (responseObj && responseObj.command) {
+        switch (responseObj.command) {
+          case 'readExpoInternal':
+            await readExpoInternal();
+            break;
+          case 'clearExpoInternal':
+            await clearExpoInternal();
+            break;
+        }
       }
-    }
-    await readLogs();
+      await readLogs();
+    };
+    fetchResponseAsync().catch((e: any) => {
+      console.warn(`Error in fetching response: ${e.message}`);
+    });
   }, []);
 
   return (
