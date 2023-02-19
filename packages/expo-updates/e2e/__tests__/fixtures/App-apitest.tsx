@@ -4,10 +4,11 @@
 import { StatusBar } from 'expo-status-bar';
 import * as Updates from 'expo-updates';
 import React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Pressable, StyleSheet, Text, View } from 'react-native';
 
 export default function App() {
   const [updateMessage, setUpdateMessage] = React.useState('');
+  const [updateAvailable, setUpdateAvailable] = React.useState(false);
 
   // Displays a message showing whether or not the app is running
   // a downloaded update
@@ -16,13 +17,9 @@ export default function App() {
     : 'This app is running an update';
 
   /**
-   * Async function to fetch and load the most recent update from EAS.
-   * There is no need to call checkForUpdateAsync() since this is run
-   * only when the listener receives an UPDATE_AVAILABLE event; however,
-   * we call it here anyway for testing purposes.
+   * Async function to manually check for an available update from EAS.
    */
-  const downloadAndRunUpdateAsync = async () => {
-    await delay(2000);
+  const checkManuallyForUpdate = async () => {
     setUpdateMessage('Calling checkForUpdateAsync...');
     const checkResult = await Updates.checkForUpdateAsync();
     if (checkResult.isAvailable) {
@@ -32,10 +29,15 @@ export default function App() {
         )}...`
       );
     } else {
-      setUpdateMessage(`Something went wrong, checkForUpdateAsync found no update.}`);
-      return;
+      setUpdateMessage('No new update available');
     }
-    await delay(2000);
+    setUpdateAvailable(checkResult.isAvailable);
+  };
+
+  /**
+   * Async function to fetch and load the most recent update from EAS.
+   */
+  const downloadAndRunUpdate = async () => {
     setUpdateMessage('Downloading the new update...');
     await Updates.fetchUpdateAsync();
     setUpdateMessage('Downloaded update... launching it in 2 seconds.');
@@ -44,7 +46,9 @@ export default function App() {
   };
 
   /**
-   * Sample UpdateEvent listener that handles all three event types
+   * Sample UpdateEvent listener that handles all three event types.
+   * These events occur during app startup, when expo-updates native code
+   * automatically checks for available updates from EAS.
    * @param {} event The event to handle
    */
   const eventListener = (event: Updates.UpdateEvent) => {
@@ -54,18 +58,36 @@ export default function App() {
       setUpdateMessage('No new update available');
     } else if (event.type === Updates.UpdateEventType.UPDATE_AVAILABLE) {
       setUpdateMessage(`New update available\n${manifestToString(event.manifest)}`);
-      downloadAndRunUpdateAsync().catch((error) => {
-        setUpdateMessage(`Error downloading and running update: ${error.message}`);
-      });
+      setUpdateAvailable(true);
     }
   };
-  useUpdateEvents(eventListener);
+  Updates.useUpdateEvents(eventListener);
+
+  const handleCheckButtonPress = () => {
+    checkManuallyForUpdate().catch((error) => {
+      setUpdateMessage(`Error checking for updates: ${error.message}`);
+    });
+  };
+
+  const handleDownloadButtonPress = () => {
+    downloadAndRunUpdate().catch((error) => {
+      setUpdateMessage(`Error downloading and running update: ${error.message}`);
+    });
+  };
 
   return (
     <View style={styles.container}>
       <Text>Open up App.js to start working on your app!</Text>
       <Text>{runTypeMessage}</Text>
-      <Text>{updateMessage}</Text>
+      <Text style={styles.updateMessageText}>{updateMessage}</Text>
+      <Pressable style={styles.button} onPress={handleCheckButtonPress}>
+        <Text style={styles.buttonText}>Check manually for updates</Text>
+      </Pressable>
+      {updateAvailable ? (
+        <Pressable style={styles.button} onPress={handleDownloadButtonPress}>
+          <Text style={styles.buttonText}>Download and run update</Text>
+        </Pressable>
+      ) : null}
       <StatusBar style="auto" />
     </View>
   );
@@ -78,26 +100,36 @@ const styles = StyleSheet.create({
     alignItems: 'center',
     justifyContent: 'center',
   },
+  button: {
+    alignItems: 'center',
+    justifyContent: 'center',
+    margin: 10,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    borderRadius: 4,
+    elevation: 3,
+    backgroundColor: '#4630EB',
+  },
+  buttonText: {
+    color: 'white',
+  },
+  updateMessageText: {
+    margin: 10,
+    height: 200,
+    paddingVertical: 12,
+    paddingHorizontal: 32,
+    width: '90%',
+    borderColor: '#4630EB',
+    borderWidth: 1,
+    borderRadius: 4,
+  },
 });
 
 ///////////////////////////
 
 /**
- * Hook for managing UpdateEvent listener subscription
- * @param {*} listener The UpdateEvent listener
- */
-const useUpdateEvents = (listener: (event: Updates.UpdateEvent) => void) => {
-  React.useEffect(() => {
-    const subscription = Updates.addListener(listener);
-    return () => {
-      subscription.remove();
-    };
-  }, []);
-};
-
-/**
  * Promise wrapper for setTimeout()
- * @param {*} timeout Timeout in ms
+ * @param {delay} timeout Timeout in ms
  * @returns a Promise that resolves after the timeout has elapsed
  */
 const delay = (timeout: number) => {

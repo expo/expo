@@ -604,6 +604,12 @@ async function setupManualTestAppAsync(projectRoot) {
     path.resolve(dirName, '..', 'fixtures', 'App-apitest.tsx'),
     path.join(projectRoot, 'App.tsx')
   );
+  // Copy tsconfig.json to project
+  await fs.rm(path.join(projectRoot, 'tsconfig.json'));
+  await fs.copyFile(
+    path.resolve(dirName, '..', 'fixtures', 'project_files', 'tsconfig.json'),
+    path.join(projectRoot, 'tsconfig.json')
+  );
 }
 
 module.exports = {
