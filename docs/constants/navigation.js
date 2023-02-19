@@ -261,7 +261,6 @@ const eas = [
       makePage('submit/eas-json.mdx'),
       makePage('submit/android.mdx'),
       makePage('submit/ios.mdx'),
-      makePage('submit/classic-builds.mdx'),
     ],
     { expanded: true }
   ),
