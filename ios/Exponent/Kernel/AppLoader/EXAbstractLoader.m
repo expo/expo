@@ -13,9 +13,10 @@
 #import "EXKernelAppRegistry.h"
 #import "EXKernelLinkingManager.h"
 #import "EXManifestResource.h"
-#import <EXManifests/EXManifestsManifestFactory.h>
 
 #import <React/RCTUtils.h>
+
+@import EXManifests;
 
 NS_ASSUME_NONNULL_BEGIN
 

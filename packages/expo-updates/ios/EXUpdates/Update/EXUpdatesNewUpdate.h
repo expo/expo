@@ -2,7 +2,8 @@
 
 #import <EXUpdates/EXUpdatesUpdate.h>
 #import <EXUpdates/EXUpdatesManifestHeaders.h>
-#import <EXManifests/EXManifestsNewManifest.h>
+
+@import EXManifests;
 
 NS_ASSUME_NONNULL_BEGIN
 
