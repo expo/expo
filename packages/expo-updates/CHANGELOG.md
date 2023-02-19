@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- New `useUpdateEvents` hook. ([#21258](https://github.com/expo/expo/pull/21258) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 - Make Updates API work with native debug. ([#21253](https://github.com/expo/expo/pull/21253) by [@douglowder](https://github.com/douglowder))
