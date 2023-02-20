@@ -48,11 +48,11 @@ Since Flipper requires native code, you'll need to create a development build. T
 
 <Step label="3">
 
-## Add `expo-build-properties` config plugin
+## Add `expo-build-properties`
 
-The latest Expo SDK uses Flipper's bundled version from `react-native`. For Android, Flipper is enabled by default.
+The Expo SDK uses the bundled version of Flipper from `react-native`. For Android, Flipper is enabled by default.
 
-For iOS, you need to enable your project in Debug mode. Install [`expo-build-properties`](/versions/latest/sdk/build-properties):
+For iOS, you need to install [`expo-build-properties`](/versions/latest/sdk/build-properties) and enable Flipper in the plugin configuration:
 
 <Terminal cmd={['$ npx expo install expo-build-properties']} />
 
