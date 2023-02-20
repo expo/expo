@@ -41,6 +41,14 @@ public final class ImageView: ExpoView {
 
   var cachePolicy: ImageCachePolicy = .disk
 
+  var recyclingKey: String? {
+    didSet {
+      if recyclingKey != oldValue {
+        sdImageView.image = nil
+      }
+    }
+  }
+
   // MARK: - Events
 
   let onLoadStart = EventDispatcher()
