@@ -113,11 +113,11 @@ module.exports = {
         '': [],
         EASClient: [],
         ExpoAppleAuthentication: [
-          { name: 'requestAsync', argumentsCount: 1, key: 'requestAsync' },
           { name: 'getCredentialStateAsync', argumentsCount: 1, key: 'getCredentialStateAsync' },
           { name: 'isAvailableAsync', argumentsCount: 0, key: 'isAvailableAsync' },
-          { name: 'stopObserving', argumentsCount: 0, key: 'stopObserving' },
+          { name: 'requestAsync', argumentsCount: 1, key: 'requestAsync' },
           { name: 'startObserving', argumentsCount: 0, key: 'startObserving' },
+          { name: 'stopObserving', argumentsCount: 0, key: 'stopObserving' },
         ],
         ExpoApplication: [
           { name: 'getIosIdForVendorAsync', argumentsCount: 0, key: 0 },
@@ -140,9 +140,9 @@ module.exports = {
           { name: 'getBadgeCountAsync', argumentsCount: 0, key: 1 },
         ],
         ExpoBarCodeScanner: [
-          { name: 'scanFromURLAsync', argumentsCount: 2, key: 'scanFromURLAsync' },
-          { name: 'requestPermissionsAsync', argumentsCount: 0, key: 'requestPermissionsAsync' },
           { name: 'getPermissionsAsync', argumentsCount: 0, key: 'getPermissionsAsync' },
+          { name: 'requestPermissionsAsync', argumentsCount: 0, key: 'requestPermissionsAsync' },
+          { name: 'scanFromURLAsync', argumentsCount: 2, key: 'scanFromURLAsync' },
         ],
         ExpoBarometer: [
           { name: 'isAvailableAsync', argumentsCount: 0, key: 0 },
@@ -150,41 +150,41 @@ module.exports = {
         ],
         ExpoBattery: [
           { name: 'getBatteryLevelAsync', argumentsCount: 0, key: 'getBatteryLevelAsync' },
-          { name: 'stopObserving', argumentsCount: 0, key: 'stopObserving' },
+          { name: 'getBatteryStateAsync', argumentsCount: 0, key: 'getBatteryStateAsync' },
           {
             name: 'isLowPowerModeEnabledAsync',
             argumentsCount: 0,
             key: 'isLowPowerModeEnabledAsync',
           },
           { name: 'startObserving', argumentsCount: 0, key: 'startObserving' },
-          { name: 'getBatteryStateAsync', argumentsCount: 0, key: 'getBatteryStateAsync' },
+          { name: 'stopObserving', argumentsCount: 0, key: 'stopObserving' },
         ],
         ExpoBlurView: [{ name: 'setNativeProps', argumentsCount: 2, key: 'setNativeProps' }],
         ExpoBrightness: [
-          { name: 'setSystemBrightnessAsync', argumentsCount: 0, key: 'setSystemBrightnessAsync' },
-          { name: 'stopObserving', argumentsCount: 0, key: 'stopObserving' },
-          { name: 'useSystemBrightnessAsync', argumentsCount: 0, key: 'useSystemBrightnessAsync' },
-          { name: 'requestPermissionsAsync', argumentsCount: 0, key: 'requestPermissionsAsync' },
           { name: 'getBrightnessAsync', argumentsCount: 0, key: 'getBrightnessAsync' },
-          {
-            name: 'setSystemBrightnessModeAsync',
-            argumentsCount: 0,
-            key: 'setSystemBrightnessModeAsync',
-          },
+          { name: 'getPermissionsAsync', argumentsCount: 0, key: 'getPermissionsAsync' },
           { name: 'getSystemBrightnessAsync', argumentsCount: 0, key: 'getSystemBrightnessAsync' },
-          { name: 'setBrightnessAsync', argumentsCount: 1, key: 'setBrightnessAsync' },
-          { name: 'startObserving', argumentsCount: 0, key: 'startObserving' },
-          {
-            name: 'isUsingSystemBrightnessAsync',
-            argumentsCount: 0,
-            key: 'isUsingSystemBrightnessAsync',
-          },
           {
             name: 'getSystemBrightnessModeAsync',
             argumentsCount: 0,
             key: 'getSystemBrightnessModeAsync',
           },
-          { name: 'getPermissionsAsync', argumentsCount: 0, key: 'getPermissionsAsync' },
+          {
+            name: 'isUsingSystemBrightnessAsync',
+            argumentsCount: 0,
+            key: 'isUsingSystemBrightnessAsync',
+          },
+          { name: 'requestPermissionsAsync', argumentsCount: 0, key: 'requestPermissionsAsync' },
+          { name: 'setBrightnessAsync', argumentsCount: 1, key: 'setBrightnessAsync' },
+          { name: 'setSystemBrightnessAsync', argumentsCount: 0, key: 'setSystemBrightnessAsync' },
+          {
+            name: 'setSystemBrightnessModeAsync',
+            argumentsCount: 0,
+            key: 'setSystemBrightnessModeAsync',
+          },
+          { name: 'startObserving', argumentsCount: 0, key: 'startObserving' },
+          { name: 'stopObserving', argumentsCount: 0, key: 'stopObserving' },
+          { name: 'useSystemBrightnessAsync', argumentsCount: 0, key: 'useSystemBrightnessAsync' },
         ],
         ExpoCalendar: [
           { name: 'deleteCalendarAsync', argumentsCount: 1, key: 0 },
@@ -208,19 +208,19 @@ module.exports = {
           { name: 'getSourceByIdAsync', argumentsCount: 1, key: 18 },
         ],
         ExpoCellular: [
+          { name: 'allowsVoipAsync', argumentsCount: 0, key: 'allowsVoipAsync' },
+          { name: 'getCarrierNameAsync', argumentsCount: 0, key: 'getCarrierNameAsync' },
           {
             name: 'getCellularGenerationAsync',
             argumentsCount: 0,
             key: 'getCellularGenerationAsync',
           },
-          { name: 'getCarrierNameAsync', argumentsCount: 0, key: 'getCarrierNameAsync' },
+          { name: 'getIsoCountryCodeAsync', argumentsCount: 0, key: 'getIsoCountryCodeAsync' },
           {
             name: 'getMobileCountryCodeAsync',
             argumentsCount: 0,
             key: 'getMobileCountryCodeAsync',
           },
-          { name: 'getIsoCountryCodeAsync', argumentsCount: 0, key: 'getIsoCountryCodeAsync' },
-          { name: 'allowsVoipAsync', argumentsCount: 0, key: 'allowsVoipAsync' },
           {
             name: 'getMobileNetworkCodeAsync',
             argumentsCount: 0,
@@ -228,17 +228,17 @@ module.exports = {
           },
         ],
         ExpoClipboard: [
+          { name: 'getImageAsync', argumentsCount: 1, key: 'getImageAsync' },
+          { name: 'getStringAsync', argumentsCount: 1, key: 'getStringAsync' },
+          { name: 'getUrlAsync', argumentsCount: 0, key: 'getUrlAsync' },
           { name: 'hasImageAsync', argumentsCount: 0, key: 'hasImageAsync' },
+          { name: 'hasStringAsync', argumentsCount: 0, key: 'hasStringAsync' },
           { name: 'hasUrlAsync', argumentsCount: 0, key: 'hasUrlAsync' },
+          { name: 'setImageAsync', argumentsCount: 1, key: 'setImageAsync' },
+          { name: 'setStringAsync', argumentsCount: 2, key: 'setStringAsync' },
+          { name: 'setUrlAsync', argumentsCount: 1, key: 'setUrlAsync' },
           { name: 'startObserving', argumentsCount: 0, key: 'startObserving' },
           { name: 'stopObserving', argumentsCount: 0, key: 'stopObserving' },
-          { name: 'setUrlAsync', argumentsCount: 1, key: 'setUrlAsync' },
-          { name: 'setImageAsync', argumentsCount: 1, key: 'setImageAsync' },
-          { name: 'getImageAsync', argumentsCount: 1, key: 'getImageAsync' },
-          { name: 'getUrlAsync', argumentsCount: 0, key: 'getUrlAsync' },
-          { name: 'setStringAsync', argumentsCount: 2, key: 'setStringAsync' },
-          { name: 'getStringAsync', argumentsCount: 1, key: 'getStringAsync' },
-          { name: 'hasStringAsync', argumentsCount: 0, key: 'hasStringAsync' },
         ],
         ExpoContacts: [
           { name: 'getDefaultContainerIdentifierAsync', argumentsCount: 0, key: 0 },
@@ -261,17 +261,17 @@ module.exports = {
           { name: 'dismissFormAsync', argumentsCount: 0, key: 17 },
         ],
         ExpoCrypto: [
-          { name: 'randomUUID', argumentsCount: 0, key: 'randomUUID' },
-          { name: 'getRandomBase64String', argumentsCount: 1, key: 'getRandomBase64String' },
           { name: 'digest', argumentsCount: 3, key: 'digest' },
+          { name: 'digestString', argumentsCount: 3, key: 'digestString' },
+          { name: 'digestStringAsync', argumentsCount: 3, key: 'digestStringAsync' },
+          { name: 'getRandomBase64String', argumentsCount: 1, key: 'getRandomBase64String' },
           {
             name: 'getRandomBase64StringAsync',
             argumentsCount: 1,
             key: 'getRandomBase64StringAsync',
           },
-          { name: 'digestStringAsync', argumentsCount: 3, key: 'digestStringAsync' },
-          { name: 'digestString', argumentsCount: 3, key: 'digestString' },
           { name: 'getRandomValues', argumentsCount: 1, key: 'getRandomValues' },
+          { name: 'randomUUID', argumentsCount: 0, key: 'randomUUID' },
         ],
         ExpoDevice: [
           { name: 'getDeviceTypeAsync', argumentsCount: 0, key: 'getDeviceTypeAsync' },
@@ -286,8 +286,8 @@ module.exports = {
         ExpoFaceDetector: [{ name: 'detectFaces', argumentsCount: 1, key: 0 }],
         ExpoFontLoader: [{ name: 'loadAsync', argumentsCount: 2, key: 0 }],
         ExpoHaptics: [
-          { name: 'notificationAsync', argumentsCount: 1, key: 'notificationAsync' },
           { name: 'impactAsync', argumentsCount: 1, key: 'impactAsync' },
+          { name: 'notificationAsync', argumentsCount: 1, key: 'notificationAsync' },
           { name: 'selectionAsync', argumentsCount: 0, key: 'selectionAsync' },
         ],
         ExpoImage: [
@@ -305,19 +305,19 @@ module.exports = {
         ],
         ExpoLinearGradient: [],
         ExpoLocalAuthentication: [
+          { name: 'authenticateAsync', argumentsCount: 1, key: 'authenticateAsync' },
+          { name: 'getEnrolledLevelAsync', argumentsCount: 0, key: 'getEnrolledLevelAsync' },
           { name: 'hasHardwareAsync', argumentsCount: 0, key: 'hasHardwareAsync' },
           { name: 'isEnrolledAsync', argumentsCount: 0, key: 'isEnrolledAsync' },
-          { name: 'authenticateAsync', argumentsCount: 1, key: 'authenticateAsync' },
           {
             name: 'supportedAuthenticationTypesAsync',
             argumentsCount: 0,
             key: 'supportedAuthenticationTypesAsync',
           },
-          { name: 'getEnrolledLevelAsync', argumentsCount: 0, key: 'getEnrolledLevelAsync' },
         ],
         ExpoLocalization: [
-          { name: 'getLocales', argumentsCount: 0, key: 'getLocales' },
           { name: 'getCalendars', argumentsCount: 0, key: 'getCalendars' },
+          { name: 'getLocales', argumentsCount: 0, key: 'getLocales' },
           { name: 'getLocalizationAsync', argumentsCount: 0, key: 'getLocalizationAsync' },
         ],
         ExpoLocation: [
@@ -394,39 +394,39 @@ module.exports = {
           { name: 'startAudioRecording', argumentsCount: 0, key: 22 },
         ],
         ExponentCamera: [
-          {
-            name: 'requestMicrophonePermissionsAsync',
-            argumentsCount: 0,
-            key: 'requestMicrophonePermissionsAsync',
-          },
-          { name: 'getPermissionsAsync', argumentsCount: 0, key: 'getPermissionsAsync' },
-          { name: 'record', argumentsCount: 2, key: 'record' },
-          { name: 'pausePreview', argumentsCount: 1, key: 'pausePreview' },
-          { name: 'takePicture', argumentsCount: 2, key: 'takePicture' },
+          { name: 'getAvailablePictureSizes', argumentsCount: 2, key: 'getAvailablePictureSizes' },
           {
             name: 'getAvailableVideoCodecsAsync',
             argumentsCount: 0,
             key: 'getAvailableVideoCodecsAsync',
           },
           {
-            name: 'requestCameraPermissionsAsync',
-            argumentsCount: 0,
-            key: 'requestCameraPermissionsAsync',
-          },
-          {
             name: 'getCameraPermissionsAsync',
             argumentsCount: 0,
             key: 'getCameraPermissionsAsync',
           },
-          { name: 'getAvailablePictureSizes', argumentsCount: 2, key: 'getAvailablePictureSizes' },
-          { name: 'stopRecording', argumentsCount: 1, key: 'stopRecording' },
           {
             name: 'getMicrophonePermissionsAsync',
             argumentsCount: 0,
             key: 'getMicrophonePermissionsAsync',
           },
-          { name: 'resumePreview', argumentsCount: 1, key: 'resumePreview' },
+          { name: 'getPermissionsAsync', argumentsCount: 0, key: 'getPermissionsAsync' },
+          { name: 'pausePreview', argumentsCount: 1, key: 'pausePreview' },
+          { name: 'record', argumentsCount: 2, key: 'record' },
+          {
+            name: 'requestCameraPermissionsAsync',
+            argumentsCount: 0,
+            key: 'requestCameraPermissionsAsync',
+          },
+          {
+            name: 'requestMicrophonePermissionsAsync',
+            argumentsCount: 0,
+            key: 'requestMicrophonePermissionsAsync',
+          },
           { name: 'requestPermissionsAsync', argumentsCount: 0, key: 'requestPermissionsAsync' },
+          { name: 'resumePreview', argumentsCount: 1, key: 'resumePreview' },
+          { name: 'stopRecording', argumentsCount: 1, key: 'stopRecording' },
+          { name: 'takePicture', argumentsCount: 2, key: 'takePicture' },
         ],
         ExponentConstants: [
           { name: 'getWebViewUserAgentAsync', argumentsCount: 0, key: 'getWebViewUserAgentAsync' },
@@ -466,18 +466,18 @@ module.exports = {
           { name: 'setUpdateInterval', argumentsCount: 1, key: 1 },
         ],
         ExponentImagePicker: [
-          { name: 'launchCameraAsync', argumentsCount: 1, key: 'launchCameraAsync' },
-          {
-            name: 'getMediaLibraryPermissionsAsync',
-            argumentsCount: 1,
-            key: 'getMediaLibraryPermissionsAsync',
-          },
-          { name: 'launchImageLibraryAsync', argumentsCount: 1, key: 'launchImageLibraryAsync' },
           {
             name: 'getCameraPermissionsAsync',
             argumentsCount: 0,
             key: 'getCameraPermissionsAsync',
           },
+          {
+            name: 'getMediaLibraryPermissionsAsync',
+            argumentsCount: 1,
+            key: 'getMediaLibraryPermissionsAsync',
+          },
+          { name: 'launchCameraAsync', argumentsCount: 1, key: 'launchCameraAsync' },
+          { name: 'launchImageLibraryAsync', argumentsCount: 1, key: 'launchImageLibraryAsync' },
           {
             name: 'requestCameraPermissionsAsync',
             argumentsCount: 0,
@@ -522,8 +522,8 @@ module.exports = {
           { name: 'deleteAsync', argumentsCount: 1, key: 2 },
         ],
         ExpoNetwork: [
-          { name: 'getNetworkStateAsync', argumentsCount: 0, key: 'getNetworkStateAsync' },
           { name: 'getIpAddressAsync', argumentsCount: 0, key: 'getIpAddressAsync' },
+          { name: 'getNetworkStateAsync', argumentsCount: 0, key: 'getNetworkStateAsync' },
         ],
         ExpoNotificationCategoriesModule: [
           { name: 'deleteNotificationCategoryAsync', argumentsCount: 1, key: 0 },
@@ -562,12 +562,12 @@ module.exports = {
           { name: 'unregisterForNotificationsAsync', argumentsCount: 0, key: 1 },
         ],
         ExpoRandom: [
+          { name: 'getRandomBase64String', argumentsCount: 1, key: 'getRandomBase64String' },
           {
             name: 'getRandomBase64StringAsync',
             argumentsCount: 1,
             key: 'getRandomBase64StringAsync',
           },
-          { name: 'getRandomBase64String', argumentsCount: 1, key: 'getRandomBase64String' },
         ],
         ExpoScreenCapture: [
           { name: 'preventScreenCapture', argumentsCount: 0, key: 0 },
@@ -600,8 +600,8 @@ module.exports = {
           { name: 'requestReview', argumentsCount: 0, key: 'requestReview' },
         ],
         ExpoSystemUI: [
-          { name: 'setBackgroundColorAsync', argumentsCount: 1, key: 'setBackgroundColorAsync' },
           { name: 'getBackgroundColorAsync', argumentsCount: 0, key: 'getBackgroundColorAsync' },
+          { name: 'setBackgroundColorAsync', argumentsCount: 1, key: 'setBackgroundColorAsync' },
         ],
         ExpoTaskManager: [
           { name: 'isAvailableAsync', argumentsCount: 0, key: 0 },
@@ -626,18 +626,18 @@ module.exports = {
         ExpoVideoThumbnails: [{ name: 'getThumbnail', argumentsCount: 2, key: 'getThumbnail' }],
         ExpoVideoView: [{ name: 'setFullscreen', argumentsCount: 2, key: 'setFullscreen' }],
         ExpoWebBrowser: [
+          { name: 'coolDownAsync', argumentsCount: 0, key: 'coolDownAsync' },
+          { name: 'dismissAuthSession', argumentsCount: 0, key: 'dismissAuthSession' },
+          { name: 'dismissBrowser', argumentsCount: 0, key: 'dismissBrowser' },
           {
             name: 'getCustomTabsSupportingBrowsers',
             argumentsCount: 0,
             key: 'getCustomTabsSupportingBrowsers',
           },
-          { name: 'openBrowserAsync', argumentsCount: 2, key: 'openBrowserAsync' },
-          { name: 'dismissAuthSession', argumentsCount: 0, key: 'dismissAuthSession' },
-          { name: 'coolDownAsync', argumentsCount: 0, key: 'coolDownAsync' },
-          { name: 'openAuthSessionAsync', argumentsCount: 3, key: 'openAuthSessionAsync' },
-          { name: 'warmUpAsync', argumentsCount: 0, key: 'warmUpAsync' },
-          { name: 'dismissBrowser', argumentsCount: 0, key: 'dismissBrowser' },
           { name: 'mayInitWithUrlAsync', argumentsCount: 0, key: 'mayInitWithUrlAsync' },
+          { name: 'openAuthSessionAsync', argumentsCount: 3, key: 'openAuthSessionAsync' },
+          { name: 'openBrowserAsync', argumentsCount: 2, key: 'openBrowserAsync' },
+          { name: 'warmUpAsync', argumentsCount: 0, key: 'warmUpAsync' },
         ],
         NativeModulesProxy: [{ name: 'callMethod', argumentsCount: 3, key: 'callMethod' }],
         NotificationsServerRegistrationModule: [
