@@ -32,8 +32,8 @@ export const Logo = ({ subgroup }: Props) => (
     </LinkBase>
     {subgroup && (
       <>
-        <ChevronRightIcon css={chevronStyle} color={theme.icon.tertiary} title="" />
-        <span css={subtitleStyle}>{subgroup}</span>
+        <ChevronRightIcon css={[chevronStyle, hideOnMobile]} color={theme.icon.tertiary} title="" />
+        <span css={[subtitleStyle, hideOnMobile]}>{subgroup}</span>
       </>
     )}
   </div>
