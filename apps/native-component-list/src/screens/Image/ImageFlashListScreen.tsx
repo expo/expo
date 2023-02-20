@@ -13,7 +13,7 @@ function renderItem({ index }: ListRenderItemInfo<number>) {
     // The uri has an offset because the first images are almost the same, it doesn't look well.
     const uri = `https://picsum.photos/id/${10 + index + column}/${IMAGE_PIXEL_SIZE}`;
 
-    return <Image key={column} style={styles.image} source={{ uri }} />;
+    return <Image key={column} style={styles.image} source={{ uri }} recyclingKey={uri} />;
   }
 
   return <View style={styles.row}>{Array(COLUMNS_COUNT).fill(0).map(renderImage)}</View>;

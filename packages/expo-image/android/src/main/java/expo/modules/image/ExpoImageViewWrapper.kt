@@ -148,6 +148,12 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       activeView.contentDescription = accessibilityLabel
     }
 
+  var recyclingKey: String? = null
+    set(value) {
+      clearViewBeforeChangingSource = value != null && value != field
+      field = value
+    }
+
   internal var priority: Priority = Priority.NORMAL
   internal var cachePolicy: CachePolicy = CachePolicy.DISK
 
@@ -184,6 +190,11 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
    * Whether the transformation matrix should be reapplied
    */
   private var transformationMatrixChanged = false
+
+  /**
+   * Whether the view content should be cleared to blank when the source was changed.
+   */
+  private var clearViewBeforeChangingSource = false
 
   /**
    * Copies saved props to the provided view.
@@ -420,10 +431,25 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       shouldRerender = false
       loadedSource = null
       transformationMatrixChanged = false
+      clearViewBeforeChangingSource = false
       return
     }
 
     if (sourceToLoad != loadedSource || shouldRerender || (sourceToLoad == null && placeholder != null)) {
+      if (clearViewBeforeChangingSource) {
+        val activeView = if (firstView.drawable != null) {
+          firstView
+        } else {
+          secondView
+        }
+
+        activeView
+          .recycleView()
+          ?.apply {
+            clear(requestManager)
+          }
+      }
+
       shouldRerender = false
       loadedSource = sourceToLoad
       val options = bestSource?.createOptions(context)
@@ -478,6 +504,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       }
     }
     transformationMatrixChanged = false
+    clearViewBeforeChangingSource = false
   }
 
   init {
