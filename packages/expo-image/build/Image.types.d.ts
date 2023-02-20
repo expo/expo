@@ -146,6 +146,7 @@ export interface ImageProps extends ViewProps {
      * This is especially useful for any kinds of recycling views like [FlashList](https://github.com/shopify/flash-list)
      * to prevent showing the previous source before the new one fully loads.
      * @default null
+     * @platform android
      * @platform ios
      */
     recyclingKey?: string | null;
