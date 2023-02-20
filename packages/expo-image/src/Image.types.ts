@@ -160,6 +160,15 @@ export interface ImageProps extends ViewProps {
   responsivePolicy?: 'live' | 'initial';
 
   /**
+   * Changing this prop resets the image view content to blank or a placeholder before loading and rendering the final image.
+   * This is especially useful for any kinds of recycling views like [FlashList](https://github.com/shopify/flash-list)
+   * to prevent showing the previous source before the new one fully loads.
+   * @default null
+   * @platform ios
+   */
+  recyclingKey?: string | null;
+
+  /**
    * Called when the image starts to load.
    */
   onLoadStart?: () => void;
