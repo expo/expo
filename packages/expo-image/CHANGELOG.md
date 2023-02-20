@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- Added `recyclingKey` prop that allows reseting the image view content when the view is recycled. ([#21297](https://github.com/expo/expo/pull/21297) & [#21309](https://github.com/expo/expo/pull/21309) by [@tsapeta](https://github.com/tsapeta) & [@lukmccall](https://github.com/lukmccall))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.0.0-rc.2 — 2023-02-20
+
+### 🎉 New features
+
+- Added `recyclingKey` prop that allows reseting the image view content when the view is recycled. ([#21297](https://github.com/expo/expo/pull/21297) & [#21309](https://github.com/expo/expo/pull/21309) by [@tsapeta](https://github.com/tsapeta) & [@lukmccall](https://github.com/lukmccall))
 
 ## 1.0.0-rc.1 — 2023-02-14
 
