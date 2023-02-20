@@ -142,7 +142,6 @@ const hideOnMobileStyle = css`
 
 const mobileButtonStyle = css`
   padding: 0 ${spacing[3]}px;
-  margin-left: ${spacing[2]}px;
 
   &:hover {
     background-color: ${theme.background.element};
