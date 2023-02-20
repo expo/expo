@@ -315,6 +315,11 @@ module.exports = {
           { name: 'isActivated', argumentsCount: 0, key: 'isActivated' },
         ],
         ExpoLinearGradient: [],
+        ExpoImage: [
+          { name: 'clearDiskCache', argumentsCount: 0, key: 'clearDiskCache' },
+          { name: 'clearMemoryCache', argumentsCount: 0, key: 'clearMemoryCache' },
+          { name: 'prefetch', argumentsCount: 1, key: 'prefetch' },
+        ],
         ExpoLocalAuthentication: [
           {
             argumentsCount: 0,
@@ -822,6 +827,13 @@ module.exports = {
           addListener: { type: 'function' },
           removeListeners: { type: 'function' },
         },
+        ExpoImage: {
+          addListener: { type: 'function' },
+          removeListeners: { type: 'function' },
+          clearDiskCache: { type: 'function' },
+          clearMemoryCache: { type: 'function' },
+          prefetch: { type: 'function' },
+        },
         ExpoLocalAuthentication: {
           addListener: { type: 'function' },
           authenticateAsync: { type: 'function' },
@@ -1119,6 +1131,29 @@ module.exports = {
         ExpoBarCodeScanner: { propsNames: ['type', 'barCodeTypes'] },
         ExpoAppleAuthenticationButtonContinueWhite: { propsNames: ['cornerRadius'] },
         ExpoLinearGradient: { propsNames: ['colors', 'startPoint', 'endPoint', 'locations'] },
+        ExpoImage: { 
+          propsNames: [
+            "accessibilityLabel",
+            "accessible",
+            "blurRadius",
+            "cachePolicy",
+            "contentFit",
+            "contentPosition",
+            "enableLiveTextInteraction",
+            "focusable",
+            "onError",
+            "onLoad",
+            "onLoadEnd",
+            "onLoadStart",
+            "onProgress",
+            "placeholder",
+            "priority",
+            "responsivePolicy",
+            "source",
+            "tintColor",
+            "transition",
+          ] 
+        },
         ExpoAppleAuthenticationButtonContinueWhiteOutline: { propsNames: ['cornerRadius'] },
         ExpoAppleAuthenticationButtonContinueBlack: { propsNames: ['cornerRadius'] },
         ExpoAppleAuthenticationButtonSignUpWhiteOutline: { propsNames: ['cornerRadius'] },
