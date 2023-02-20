@@ -82,6 +82,7 @@ export type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'windowFeatur
   /**
    * Should the authentication request use the Expo proxy service `auth.expo.io`.
    * @default false
+   * @deprecated This option will be removed in a future release, check https://expo.fyi/auth-proxy-migration
    */
   useProxy?: boolean;
   /**
