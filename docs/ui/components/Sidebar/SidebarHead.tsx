@@ -2,10 +2,11 @@ import { css } from '@emotion/react';
 import { spacing, theme, PlanEnterpriseIcon, iconSize } from '@expo/styleguide';
 
 import { APIIcon, APIInactiveIcon } from './icons/API';
-import { DocumentationIcon, DocumentationInactiveIcon } from './icons/Documentation';
+import { GuidesIcon } from './icons/Guides';
 import { PreviewIcon, PreviewInactiveIcon } from './icons/Preview';
 
 import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags.cjs';
+import { Search } from '~/ui/components/Search';
 import { SidebarSingleEntry } from '~/ui/components/Sidebar/SidebarSingleEntry';
 import { customIconContainerStyle } from '~/ui/components/Sidebar/icons/styles';
 
@@ -16,10 +17,18 @@ type SidebarHeadProps = {
 export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
   return (
     <div css={sidebarHeadContainer}>
+      <Search />
       <SidebarSingleEntry
         href="/"
         title="Guides"
-        Icon={sidebarActiveGroup === 'general' ? DocumentationIcon : DocumentationInactiveIcon}
+        Icon={() => (
+          <div css={customIconContainerStyle}>
+            <GuidesIcon
+              color={sidebarActiveGroup === 'general' ? theme.text.link : theme.icon.default}
+              size={iconSize.sm}
+            />
+          </div>
+        )}
         isActive={sidebarActiveGroup === 'general'}
       />
       <SidebarSingleEntry

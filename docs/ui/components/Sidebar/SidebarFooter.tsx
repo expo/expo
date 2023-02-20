@@ -18,6 +18,7 @@ import { customIconContainerStyle } from '~/ui/components/Sidebar/icons/styles';
 
 export const SidebarFooter = () => {
   const { pathname } = useRouter();
+  const isArchive = getPageSection(pathname) === 'archive';
   return (
     <div css={sidebarFooterContainer}>
       <SidebarSingleEntry
@@ -25,10 +26,10 @@ export const SidebarFooter = () => {
         title="Archive"
         Icon={() => (
           <div css={[customIconContainerStyle, { width: iconSize.sm }]}>
-            <ArchiveIcon />
+            <ArchiveIcon color={isArchive ? theme.text.link : theme.icon.default} />
           </div>
         )}
-        isActive={getPageSection(pathname) === 'archive'}
+        isActive={isArchive}
       />
       <SidebarSingleEntry
         href="https://snack.expo.dev"
