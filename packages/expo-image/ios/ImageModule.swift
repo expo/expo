@@ -81,6 +81,10 @@ public final class ImageModule: Module {
         view.sdImageView.accessibilityLabel = label
       }
 
+      Prop("recyclingKey") { (view, key: String?) in
+        view.recyclingKey = key
+      }
+
       OnViewDidUpdateProps { view in
         view.reload()
       }
