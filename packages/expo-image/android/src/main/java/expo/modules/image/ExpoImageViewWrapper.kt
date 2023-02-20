@@ -150,7 +150,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
   var recyclingKey: String? = null
     set(value) {
-      clearViewBeforeChangingSource = value != field
+      clearViewBeforeChangingSource = value != null && value != field
       field = value
     }
 
@@ -446,8 +446,8 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         activeView
           .recycleView()
           ?.apply {
-          clear(requestManager)
-        }
+            clear(requestManager)
+          }
       }
 
       shouldRerender = false
