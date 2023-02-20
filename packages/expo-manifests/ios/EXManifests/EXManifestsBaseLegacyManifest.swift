@@ -32,7 +32,7 @@ public class EXManifestBaseLegacyManifest: EXManifestsManifest {
     return rawManifestJSON().optionalValue(forKey: "sdkVersion")
   }
 
-  public func assets() -> [Any]? {
-    return rawManifestJSON().optionalValue(forKey: "assets")
+  public func assets() -> [[String: Any]]? {
+    return self.rawManifestJSON().optionalValue(forKey: "assets")
   }
 }

@@ -4,7 +4,10 @@
 
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
+
+#import "EXUpdates-Swift.h"
+
+@import EXManifests;
 
 @interface EXUpdatesFileDownloaderTests : XCTestCase
 
@@ -87,25 +90,30 @@
 - (void)testGetExtraHeaders
 {
   NSString *launchedUpdateUUIDString = @"7c1d2bd0-f88b-454d-998c-7fa92a924dbf";
-  EXUpdatesUpdate *launchedUpdate = [EXUpdatesUpdate updateWithId:[[NSUUID alloc] initWithUUIDString:launchedUpdateUUIDString]
-                                                         scopeKey:@"test"
-                                                       commitTime:[NSDate date]
-                                                   runtimeVersion:@"1.0"
-                                                         manifest:nil
-                                                           status:0
-                                                             keep:YES
-                                                           config:nil
-                                                         database:nil];
+  EXUpdatesUpdate *launchedUpdate = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:@{}]
+                                                                       config:nil
+                                                                     database:nil
+                                                                     updateId:[[NSUUID alloc] initWithUUIDString:launchedUpdateUUIDString]
+                                                                     scopeKey:@"test"
+                                                                   commitTime:[NSDate date]
+                                                               runtimeVersion:@"1.0"
+                                                                         keep:YES
+                                                                       status:EXUpdatesUpdateStatusStatus0_Unused
+                                                            isDevelopmentMode:NO
+                                                           assetsFromManifest:@[]];
+
   NSString *embeddedUpdateUUIDString = @"9433b1ed-4006-46b8-8aa7-fdc7eeb203fd";
-  EXUpdatesUpdate *embeddedUpdate = [EXUpdatesUpdate updateWithId:[[NSUUID alloc] initWithUUIDString:embeddedUpdateUUIDString]
-                                                         scopeKey:@"test"
-                                                       commitTime:[NSDate date]
-                                                   runtimeVersion:@"1.0"
-                                                         manifest:nil
-                                                           status:0
-                                                             keep:YES
-                                                           config:nil
-                                                         database:nil];
+  EXUpdatesUpdate *embeddedUpdate = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:@{}]
+                                                                       config:nil
+                                                                     database:nil
+                                                                     updateId:[[NSUUID alloc] initWithUUIDString:embeddedUpdateUUIDString]
+                                                                     scopeKey:@"test"
+                                                                   commitTime:[NSDate date]
+                                                               runtimeVersion:@"1.0"
+                                                                         keep:YES
+                                                                       status:EXUpdatesUpdateStatusStatus0_Unused
+                                                            isDevelopmentMode:NO
+                                                           assetsFromManifest:@[]];
   NSDictionary *extraHeaders = [EXUpdatesFileDownloader extraHeadersWithDatabase:nil
                                                                           config:nil
                                                                   launchedUpdate:launchedUpdate

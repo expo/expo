@@ -2,9 +2,10 @@
 
 #import <XCTest/XCTest.h>
 
-#import <EXUpdates/EXUpdatesNewUpdate.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesBuildData+Tests.h>
+
+#import "EXUpdates-Swift.h"
 
 @import EXManifests;
 

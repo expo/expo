@@ -4,8 +4,10 @@
 
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
-#import <EXUpdates/EXUpdatesLegacyUpdate.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
+
+#import "EXUpdates-Swift.h"
+
+@import EXManifests;
 
 @interface EXUpdatesLegacyUpdateTests : XCTestCase
 

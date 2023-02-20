@@ -3,7 +3,8 @@
 #import <EXUpdates/EXUpdatesLauncherSelectionPolicy.h>
 #import <EXUpdates/EXUpdatesLoaderSelectionPolicy.h>
 #import <EXUpdates/EXUpdatesReaperSelectionPolicy.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
+
+@class EXUpdatesUpdate;
 
 NS_ASSUME_NONNULL_BEGIN
 
