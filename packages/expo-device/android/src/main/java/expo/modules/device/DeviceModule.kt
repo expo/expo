@@ -143,14 +143,12 @@ class DeviceModule : Module() {
       }
 
       val deviceTypeFromResourceConfiguration = getDeviceTypeFromResourceConfiguration(context)
-
       return if (deviceTypeFromResourceConfiguration != DeviceType.UNKNOWN) {
         deviceTypeFromResourceConfiguration
       } else {
         getDeviceTypeFromPhysicalSize(context)
       }
     }
-
 
     // Device type based on the smallest screen width quantifier
     // https://developer.android.com/guide/topics/resources/providing-resources#SmallestScreenWidthQualifier
