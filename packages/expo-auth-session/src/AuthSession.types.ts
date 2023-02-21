@@ -71,7 +71,7 @@ export type AuthSessionResult =
 
 // @needsAudit
 /**
- * Options passed to `makeRedirectUriAsync`.
+ * Options passed to `makeRedirectUri`.
  */
 export type AuthSessionRedirectUriOptions = {
   /**
