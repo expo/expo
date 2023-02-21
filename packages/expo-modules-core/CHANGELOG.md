@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed URI with encoded `#` getting cut off.
+- [iOS] Fixed URI with encoded `#` getting cut off. ([#21326](https://github.com/expo/expo/pull/21326) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
