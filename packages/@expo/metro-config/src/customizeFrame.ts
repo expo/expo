@@ -1,8 +1,8 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
-import { ConfigT as MetroConfig } from 'metro-config';
+import { SymbolicatorConfigT } from 'metro-config';
 import { URL } from 'url';
 
-type CustomizeFrameFunc = MetroConfig['symbolicator']['customizeFrame'];
+type CustomizeFrameFunc = SymbolicatorConfigT['customizeFrame'];
 
 // Import only the types here, the values will be imported from the project, at runtime.
 export const INTERNAL_CALLSITES_REGEX = new RegExp(
