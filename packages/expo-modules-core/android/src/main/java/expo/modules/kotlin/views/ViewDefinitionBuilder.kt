@@ -153,7 +153,7 @@ class ViewDefinitionBuilder<T : View>(@PublishedApi internal val viewType: KClas
       return@viewFactory try {
         primaryConstructor.call(context)
       } catch (e: Throwable) {
-        handleErrorInViewCreation(context, appContext, e)
+        handleFailureDuringViewCreation(context, appContext, e)
       }
     }
 
@@ -169,11 +169,11 @@ class ViewDefinitionBuilder<T : View>(@PublishedApi internal val viewType: KClas
     return@viewFactory try {
       primaryConstructor.call(context, appContext)
     } catch (e: Throwable) {
-      handleErrorInViewCreation(context, appContext, e)
+      handleFailureDuringViewCreation(context, appContext, e)
     }
   }
 
-  private fun handleErrorInViewCreation(context: Context, appContext: AppContext, e: Throwable): View {
+  private fun handleFailureDuringViewCreation(context: Context, appContext: AppContext, e: Throwable): View {
     Log.e("ExpoModulesCore", "Couldn't create view of type $viewType", e)
 
     appContext.errorManager?.reportExceptionToLogBox(
