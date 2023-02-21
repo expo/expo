@@ -1,10 +1,11 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
 #import <EXJSONUtils/NSDictionary+EXJSONUtils.h>
+#import <EXManifests/EXManifestsManifest.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXManifestsBaseManifest : NSObject
+@interface EXManifestsBaseManifest : NSObject<EXManifestsManifestBehavior>
 
 @property (nonatomic, readonly, strong) NSDictionary* rawManifestJSON;
 
