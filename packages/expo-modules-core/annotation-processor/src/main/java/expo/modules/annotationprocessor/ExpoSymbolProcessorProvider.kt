@@ -6,5 +6,5 @@ import com.google.devtools.ksp.processing.SymbolProcessorProvider
 
 class ExpoSymbolProcessorProvider : SymbolProcessorProvider {
   override fun create(environment: SymbolProcessorEnvironment): SymbolProcessor =
-    ExpoSymbolProcessor(environment.codeGenerator, environment.logger, environment.options)
+    ExpoSymbolProcessor(environment.codeGenerator, environment.logger)
 }
