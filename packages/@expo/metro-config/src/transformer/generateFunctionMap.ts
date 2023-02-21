@@ -1,11 +1,11 @@
 import type { generateFunctionMap as generateFunctionMapType } from 'metro-source-map';
 
-import { importMetroSourceMapFromProject } from '../importMetroFromProject';
+import { env } from '../env';
+
+type GenerateFunctionMapParams = Parameters<typeof generateFunctionMapType>;
 
 export function generateFunctionMap(
-  projectRoot: string,
-  ast: Parameters<typeof generateFunctionMapType>[0],
-  context: Parameters<typeof generateFunctionMapType>[1]
+  ...props: GenerateFunctionMapParams
 ): ReturnType<typeof generateFunctionMapType> | null {
   //  `x_facebook_sources` is a source map feature that we disable by default since it isn't documented
   // and doesn't appear to add much value to the DX, it also increases bundle time, and source map size.
@@ -25,8 +25,10 @@ export function generateFunctionMap(
   // - renderApplication renderApplication.js:54:5
   // - run AppRegistry.js:117:26
   //
-  if (process.env.EXPO_USE_FB_SOURCES) {
-    return importMetroSourceMapFromProject(projectRoot).generateFunctionMap(ast, context);
+  if (env.EXPO_USE_FB_SOURCES) {
+    return (require('metro-source-map') as typeof import('metro-source-map')).generateFunctionMap(
+      ...props
+    );
   }
   return null;
 }

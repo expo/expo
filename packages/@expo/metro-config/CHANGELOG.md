@@ -4,11 +4,19 @@
 
 ### 🛠 Breaking changes
 
+- Import Metro dependencies directly from where ever the `expo/metro-config` package is being initialized.
+- Drop `@unimodules` namespace from Exotic transformer.
+- `expo-asset` is no longer optional.
+
 ### 🎉 New features
+
+- Export `MetroConfig` type.
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+- Drop `testing` and `native` from `resolver.platforms`.
 
 ## 0.7.0 — 2023-02-14
 
