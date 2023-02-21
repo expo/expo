@@ -2149,7 +2149,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (12.2.1):
     - ExpoModulesCore
-  - ExpoImage (1.0.0-rc.1):
+  - ExpoImage (1.0.0-rc.2):
     - ExpoModulesCore
     - SDWebImage (~> 5.15.0)
     - SDWebImageAVIFCoder (~> 0.9.4)
@@ -4709,7 +4709,7 @@ SPEC CHECKSUMS:
   AppAuth: 8fca6b5563a5baef2c04bee27538025e4ceb2add
   ASN1Decoder: 6110fdeacfdb41559b1481457a1645be716610aa
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
-  Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
+  Branch: 23b6b9351d5574377e7a764841cfb13a70c2799b
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: 950674e1098ebc09c4c2cf064a61e42e84d9d4c6
@@ -4744,7 +4744,7 @@ SPEC CHECKSUMS:
   ExpoDevice: e0bebf68f978b3d353377ce42e73c20c0a070215
   ExpoGL: 8f8e40e494a462f33c1f513cf101bf7d6abe767e
   ExpoHaptics: 5156bc5160d8e04c170dd6e645a71154951a2ad9
-  ExpoImage: a8b564f046f96133db39d7749eec9d6110d11243
+  ExpoImage: 562c1b742f39943fb5387d5825a25127ab9c2a15
   ExpoImageManipulator: 85ab87e9641b9d83108f8d603e0418c12fc19e2d
   ExpoImagePicker: 270dea232b3a072d981dd564e2cafc63a864edb1
   ExpoKeepAwake: 69f5f627670d62318410392d03e0b5db0f85759a
