@@ -43,6 +43,17 @@ class ConvertiblesSpec: ExpoSpec {
         expect(url.absoluteString) == urlString
         expect(url.absoluteString.removingPercentEncoding) == "https://expo.dev/?param=🥓"
       }
+      
+      it("converts from url with encoded query containg the anchor") {
+        let query = "color=%230000ff"
+        let urlString = "https://expo.dev/?\(query)#anchor"
+        let url = try URL.convert(from: urlString)
+
+        expect(url.query) == query
+        expect(url.absoluteString) == urlString
+        expect(url.absoluteString.removingPercentEncoding) == "https://expo.dev/?color=#0000ff#anchor"
+        expect(url.fragment) == "anchor"
+      }
 
       it("converts from url containing percent character") {
         // The percent character alone requires percent-encoding to `%25`.
