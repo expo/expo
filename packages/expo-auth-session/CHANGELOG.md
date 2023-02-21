@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Deprecated `useProxy` option. ([#21313](https://github.com/expo/expo/pull/21313) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 4.0.1 — 2023-02-09
 
 _This version does not introduce any user-facing changes._
