@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Clarified documentation for manifest value in web builds. ([#21318](https://github.com/expo/expo/pull/21318) by [@bradjones1](https://github.com/bradjones1))
+
 ### 💡 Others
 
 ## 14.2.1 — 2023-02-09
