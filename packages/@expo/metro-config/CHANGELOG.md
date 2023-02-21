@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 0.7.1 — 2023-02-21
+
+_This version does not introduce any user-facing changes._
+
 ## 0.7.0 — 2023-02-14
 
 ### 🎉 New features

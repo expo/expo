@@ -1,6 +1,6 @@
 {
   "name": "@expo/fingerprint",
-  "version": "0.0.4",
+  "version": "0.0.6",
   "description": "A library to generate a fingerprint from a React Native project",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -59,7 +59,7 @@
     "typescript": "^4.3.5"
   },
   "peerDependencies": {
-    "expo": "48.0.2"
+    "expo": "48.0.3"
   },
   "peerDependenciesMeta": {
     "expo": {

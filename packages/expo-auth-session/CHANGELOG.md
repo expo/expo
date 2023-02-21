@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 4.0.2 — 2023-02-21
+
+### 💡 Others
+
 - Deprecated `useProxy` option. ([#21313](https://github.com/expo/expo/pull/21313) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Replaced referecences of `makeRedirectUriAsync` with `makeRedirectUri`. ([#21314](https://github.com/expo/expo/pull/21314) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 

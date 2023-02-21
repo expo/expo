@@ -2112,9 +2112,9 @@ PODS:
   - EXJSONUtils/Tests (0.5.1)
   - EXLocation (15.1.1):
     - ExpoModulesCore
-  - EXManifests (0.5.1):
+  - EXManifests (0.5.2):
     - EXJSONUtils
-  - EXManifests/Tests (0.5.1):
+  - EXManifests/Tests (0.5.2):
     - EXJSONUtils
   - EXMediaLibrary (15.2.1):
     - ExpoModulesCore
@@ -2123,7 +2123,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (14.1.1):
     - ExpoModulesCore
-  - Expo (48.0.2):
+  - Expo (48.0.3):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.0.1):
     - ExpoModulesCore
@@ -2225,7 +2225,7 @@ PODS:
   - EXTaskManager (11.1.1):
     - ExpoModulesCore
     - UMAppLoader
-  - EXUpdates (0.16.1):
+  - EXUpdates (0.16.2):
     - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
@@ -2233,7 +2233,7 @@ PODS:
     - EXStructuredHeaders
     - EXUpdatesInterface
     - React-Core
-  - EXUpdates/Tests (0.16.1):
+  - EXUpdates/Tests (0.16.2):
     - ASN1Decoder (~> 1.8)
     - EASClient
     - EXManifests
@@ -4709,7 +4709,7 @@ SPEC CHECKSUMS:
   AppAuth: 8fca6b5563a5baef2c04bee27538025e4ceb2add
   ASN1Decoder: 6110fdeacfdb41559b1481457a1645be716610aa
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
-  Branch: 23b6b9351d5574377e7a764841cfb13a70c2799b
+  Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: 950674e1098ebc09c4c2cf064a61e42e84d9d4c6
@@ -4729,11 +4729,11 @@ SPEC CHECKSUMS:
   EXImageLoader: fd053169a8ee932dd83bf1fe5487a50c26d27c2b
   EXJSONUtils: 48b1e764ac35160e6f54d21ab60d7d9501f3e473
   EXLocation: 74a0ba446f54fd585ea6cfcd19a25644bf22c30d
-  EXManifests: 8afcd1cb32f7a098771fbf4b2f19bb1fb937bb47
+  EXManifests: 500666d48e8dd7ca5a482c9e729e4a7a6c34081b
   EXMediaLibrary: 945e03614e6b90e70d15be886b9aebedc9d4fade
   EXNotifications: dd628737af60fc8cc62dccebacd326b0fbbc0dcb
   EXPermissions: 2291c6736a823b4c680d5bf8e12d3c1c5d11da35
-  Expo: 84b5b408d5c1acbca57c5cee4343b17106cf48a7
+  Expo: b0844c6fdcc00d9fd8aa834ef12cd013e3e8ee5f
   ExpoAppleAuthentication: 7bd5e4150d59e8df37aa80b425850ae88adf9e65
   ExpoBattery: 678d2b710a8fc398c30258c4dc22c12340ee5411
   ExpoBlur: fac3c6318fdf409dd5740afd3313b2bd52a35bac
@@ -4773,7 +4773,7 @@ SPEC CHECKSUMS:
   EXSQLite: 848167441b14cb6cdd6ae46c8d62289161a79550
   EXStructuredHeaders: b1a48d732562e2cc81f11771bcfd29534f5d9254
   EXTaskManager: f8257faa4c20acfc3f31e21ab82a62544d70db85
-  EXUpdates: d4e900d3fe75542631a89935fd66172098b86ac4
+  EXUpdates: fe2a310572673e257285ea142abb79279641850e
   EXUpdatesInterface: dd699d1930e28639dcbd70a402caea98e86364ca
   FBAEMKit: c7f82b5145d446bcbbcd50485c032689032fc6a2
   FBAudienceNetwork: e0fcc9091fced34910ed0b6da06f129db46ac9e6
