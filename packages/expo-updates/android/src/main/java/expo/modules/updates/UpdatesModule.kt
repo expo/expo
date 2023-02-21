@@ -10,13 +10,9 @@ import expo.modules.core.ModuleRegistryDelegate
 import expo.modules.core.Promise
 import expo.modules.core.interfaces.ExpoMethod
 import expo.modules.updates.db.entity.AssetEntity
-import expo.modules.updates.db.entity.UpdateEntity
 import expo.modules.updates.launcher.Launcher.LauncherCallback
-import expo.modules.updates.loader.FileDownloader
-import expo.modules.updates.loader.FileDownloader.ManifestDownloadCallback
-import expo.modules.updates.loader.Loader
-import expo.modules.updates.loader.RemoteLoader
-import expo.modules.updates.manifest.UpdateManifest
+import expo.modules.updates.loader.*
+import expo.modules.updates.loader.FileDownloader.RemoteUpdateDownloadCallback
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogEntry
 import expo.modules.updates.logging.UpdatesLogReader
@@ -151,19 +147,36 @@ class UpdatesModule(
         updatesServiceLocal.embeddedUpdate
       )
       databaseHolder.releaseDatabase()
-      updatesServiceLocal.fileDownloader.downloadManifest(
+      updatesServiceLocal.fileDownloader.downloadRemoteUpdate(
         updatesServiceLocal.configuration,
         extraHeaders,
         context,
-        object : ManifestDownloadCallback {
+        object : RemoteUpdateDownloadCallback {
           override fun onFailure(message: String, e: Exception) {
             promise.reject("ERR_UPDATES_CHECK", message, e)
             Log.e(TAG, message, e)
           }
 
-          override fun onSuccess(updateManifest: UpdateManifest) {
-            val launchedUpdate = updatesServiceLocal.launchedUpdate
+          override fun onSuccess(updateResponse: UpdateResponse) {
+            val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
+            val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+
             val updateInfo = Bundle()
+            if (updateDirective != null) {
+              if (updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
+                updateInfo.putBoolean("isRollBackToEmbedded", true)
+                promise.resolve(updateInfo)
+                return
+              }
+            }
+
+            if (updateManifest == null) {
+              updateInfo.putBoolean("isAvailable", false)
+              promise.resolve(updateInfo)
+              return
+            }
+
+            val launchedUpdate = updatesServiceLocal.launchedUpdate
             if (launchedUpdate == null) {
               // this shouldn't ever happen, but if we don't have anything to compare
               // the new manifest to, let the user know an update is available
@@ -172,10 +185,11 @@ class UpdatesModule(
               promise.resolve(updateInfo)
               return
             }
+
             if (updatesServiceLocal.selectionPolicy.shouldLoadNewUpdate(
                 updateManifest.updateEntity,
                 launchedUpdate,
-                updateManifest.manifestFilters
+                updateResponse.responseHeaderData?.manifestFilters
               )
             ) {
               updateInfo.putBoolean("isAvailable", true)
@@ -232,24 +246,47 @@ class UpdatesModule(
               ) {
               }
 
-              override fun onUpdateManifestLoaded(updateManifest: UpdateManifest): Boolean {
-                return updatesServiceLocal.selectionPolicy.shouldLoadNewUpdate(
-                  updateManifest.updateEntity,
-                  updatesServiceLocal.launchedUpdate,
-                  updateManifest.manifestFilters
+              override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
+                val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
+                if (updateDirective != null) {
+                  return Loader.OnUpdateResponseLoadedResult(
+                    shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
+                      is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
+                      is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
+                    }
+                  )
+                }
+
+                val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
+
+                return Loader.OnUpdateResponseLoadedResult(
+                  shouldDownloadManifestIfPresentInResponse = updatesServiceLocal.selectionPolicy.shouldLoadNewUpdate(
+                    updateManifest.updateEntity,
+                    updatesServiceLocal.launchedUpdate,
+                    updateResponse.responseHeaderData?.manifestFilters
+                  )
                 )
               }
 
-              override fun onSuccess(update: UpdateEntity?) {
+              override fun onSuccess(loaderResult: Loader.LoaderResult) {
                 databaseHolder.releaseDatabase()
                 val updateInfo = Bundle()
-                if (update == null) {
-                  updateInfo.putBoolean("isNew", false)
+
+                if (loaderResult.updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
+                  updateInfo.putBoolean("isRollBackToEmbedded", true)
                 } else {
-                  updatesServiceLocal.resetSelectionPolicy()
-                  updateInfo.putBoolean("isNew", true)
-                  updateInfo.putString("manifestString", update.manifest.toString())
+                  if (loaderResult.updateEntity == null) {
+                    updateInfo.putBoolean("isNew", false)
+                  } else {
+                    updatesServiceLocal.resetSelectionPolicy()
+                    updateInfo.putBoolean("isNew", true)
+                    updateInfo.putString(
+                      "manifestString",
+                      loaderResult.updateEntity.manifest.toString()
+                    )
+                  }
                 }
+
                 promise.resolve(updateInfo)
               }
             }

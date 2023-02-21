@@ -24,12 +24,9 @@ import expo.modules.updates.launcher.DatabaseLauncher
 import expo.modules.updates.launcher.Launcher
 import expo.modules.updates.launcher.Launcher.LauncherCallback
 import expo.modules.updates.launcher.NoDatabaseLauncher
-import expo.modules.updates.loader.FileDownloader
-import expo.modules.updates.loader.Loader
-import expo.modules.updates.loader.LoaderTask
+import expo.modules.updates.loader.*
 import expo.modules.updates.loader.LoaderTask.BackgroundUpdateStatus
 import expo.modules.updates.loader.LoaderTask.LoaderTaskCallback
-import expo.modules.updates.loader.RemoteLoader
 import expo.modules.updates.logging.UpdatesErrorCode
 import expo.modules.updates.logging.UpdatesLogReader
 import expo.modules.updates.logging.UpdatesLogger
@@ -276,7 +273,7 @@ class UpdatesController private constructor(
           return true
         }
 
-        override fun onRemoteUpdateManifestLoaded(updateManifest: UpdateManifest) {
+        override fun onRemoteUpdateManifestResponseManifestLoaded(updateManifest: UpdateManifest) {
           remoteLoadStatus = ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADING
         }
 
@@ -340,7 +337,7 @@ class UpdatesController private constructor(
     (this as java.lang.Object).notify()
   }
 
-  fun initializeErrorRecovery(context: Context) {
+  private fun initializeErrorRecovery(context: Context) {
     errorRecovery.initialize(object : ErrorRecoveryDelegate {
       override fun loadRemoteUpdate() {
         if (loaderTask?.isRunning == true) {
@@ -355,16 +352,31 @@ class UpdatesController private constructor(
             setRemoteLoadStatus(ErrorRecoveryDelegate.RemoteLoadStatus.IDLE)
             releaseDatabase()
           }
-          override fun onSuccess(update: UpdateEntity?) {
+
+          override fun onSuccess(loaderResult: Loader.LoaderResult) {
             setRemoteLoadStatus(
-              if (update != null) ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
+              if (loaderResult.updateEntity != null || loaderResult.updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) ErrorRecoveryDelegate.RemoteLoadStatus.NEW_UPDATE_LOADED
               else ErrorRecoveryDelegate.RemoteLoadStatus.IDLE
             )
             releaseDatabase()
           }
+
           override fun onAssetLoaded(asset: AssetEntity, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int) { }
-          override fun onUpdateManifestLoaded(updateManifest: UpdateManifest) =
-            selectionPolicy.shouldLoadNewUpdate(updateManifest.updateEntity, launchedUpdate, updateManifest.manifestFilters)
+
+          override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
+            val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
+            if (updateDirective != null) {
+              return Loader.OnUpdateResponseLoadedResult(
+                shouldDownloadManifestIfPresentInResponse = when (updateDirective) {
+                  is UpdateDirective.RollBackToEmbeddedUpdateDirective -> false
+                  is UpdateDirective.NoUpdateAvailableUpdateDirective -> false
+                }
+              )
+            }
+
+            val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest ?: return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
+            return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = selectionPolicy.shouldLoadNewUpdate(updateManifest.updateEntity, launchedUpdate, updateResponse.responseHeaderData?.manifestFilters))
+          }
         })
       }
 
