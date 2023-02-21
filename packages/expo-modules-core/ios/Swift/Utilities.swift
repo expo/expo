@@ -34,22 +34,22 @@ internal func toNSError(_ error: Error) -> NSError {
 internal func percentEncodeUrlString(_ url: String) -> String? {
   // URL contains '#' so it has a fragment part.
   // We know that because that is the only allowed use case of the undecoded '#' symbol inside of the URL.
-  if (url.contains("#")) {
+  if url.contains("#") {
     let urlParts = url.split(separator: "#")
-    
+
     // Encodes the url without the fragment part. It'll leave the fragment part untounched.
-    guard let parsed = percentEncodeUrlStringWithoutFragmnet(String(urlParts[0])) else {
+    guard let parsed = percentEncodeUrlStringWithoutFragment(String(urlParts[0])) else {
       return nil
     }
-    
+
     // Concatenate encoded path with fragment.
     return parsed + "#" + urlParts[1]
   }
-  
-  return percentEncodeUrlStringWithoutFragmnet(url)
+
+  return percentEncodeUrlStringWithoutFragment(url)
 }
 
-private func percentEncodeUrlStringWithoutFragmnet(_ url: String) -> String? {
+private func percentEncodeUrlStringWithoutFragment(_ url: String) -> String? {
   // The value may come unencoded or already encoded, so first we try to decode it.
   // `removingPercentEncoding` returns nil when the string contains an invalid percent-encoded sequence,
   // but that usually means the value came unencoded, so it falls back to the given string.
