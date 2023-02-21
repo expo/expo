@@ -21,9 +21,7 @@ const runtimeVersion = '1.0.0';
 
 (async function () {
   if (!process.env.EXPO_REPO_ROOT || !process.env.UPDATES_HOST || !process.env.UPDATES_PORT) {
-    throw new Error(
-      'Missing one or more environment variables; see instructions in e2e/__tests__/setup/index.js'
-    );
+    throw new Error('Missing one or more environment variables; see instructions in e2e/README.md');
   }
   const projectRoot = process.env.TEST_PROJECT_ROOT || path.join(workingDir, 'updates-e2e');
   const localCliBin = path.join(repoRoot, 'packages/@expo/cli/build/bin/cli');
