@@ -49,7 +49,7 @@ const buttonStyle = css({
   padding: `0 ${spacing[3]}px`,
   borderColor: theme.border.default,
   boxShadow: shadows.xs,
-  marginBottom: spacing[3],
+  marginBottom: spacing[2.5],
 
   '&:focus': {
     boxShadow: shadows.xs,

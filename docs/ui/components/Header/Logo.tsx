@@ -26,7 +26,7 @@ export const Logo = ({ subgroup }: Props) => (
     </LinkBase>
     <LinkBase css={linkStyle} href="/">
       <div css={iconContainer}>
-        <DocumentationIcon size={iconSize.sm} />
+        <DocumentationIcon size={iconSize.xs} />
       </div>
       <span css={subtitleStyle}>Docs</span>
     </LinkBase>

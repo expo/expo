@@ -6,7 +6,6 @@ import {
   ChangelogIcon,
   DiscordIcon,
   MessageIcon,
-  iconSize,
 } from '@expo/styleguide';
 import { useRouter } from 'next/router';
 
@@ -14,7 +13,6 @@ import { SidebarSingleEntry } from './SidebarSingleEntry';
 import { ArchiveIcon } from './icons/Archive';
 
 import { getPageSection } from '~/common/routes';
-import { customIconContainerStyle } from '~/ui/components/Sidebar/icons/styles';
 
 export const SidebarFooter = () => {
   const { pathname } = useRouter();
@@ -22,34 +20,35 @@ export const SidebarFooter = () => {
   return (
     <div css={sidebarFooterContainer}>
       <SidebarSingleEntry
+        secondary
         href="/archive"
         title="Archive"
-        Icon={() => (
-          <div css={[customIconContainerStyle, { width: iconSize.sm }]}>
-            <ArchiveIcon color={isArchive ? theme.text.link : theme.icon.default} />
-          </div>
-        )}
+        Icon={ArchiveIcon}
         isActive={isArchive}
       />
       <SidebarSingleEntry
+        secondary
         href="https://snack.expo.dev"
         title="Expo Snack"
         Icon={SnackLogo}
         isExternal
       />
       <SidebarSingleEntry
+        secondary
         href="https://chat.expo.dev"
         title="Discord"
         Icon={DiscordIcon}
         isExternal
       />
       <SidebarSingleEntry
+        secondary
         href="https://forums.expo.dev"
         title="Forums"
         Icon={MessageIcon}
         isExternal
       />
       <SidebarSingleEntry
+        secondary
         href="https://expo.dev/changelog"
         title="Changelog"
         Icon={ChangelogIcon}
