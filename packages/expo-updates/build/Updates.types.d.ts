@@ -26,6 +26,12 @@ export type ClassicManifest = typeof Constants.manifest;
  * @hidden
  */
 export type Manifest = ClassicManifest | typeof Constants.manifest2;
+type UpdateCheckResultRollBackToEmbedded = {
+    /**
+     * Signifies that a roll back update is available.
+     */
+    isRollBackToEmbedded: true;
+};
 /**
  * The successful result of checking for a new update.
  */
@@ -55,7 +61,7 @@ type UpdateCheckResultFailure = {
 /**
  * The result of checking for a new update.
  */
-export type UpdateCheckResult = UpdateCheckResultSuccess | UpdateCheckResultFailure;
+export type UpdateCheckResult = UpdateCheckResultRollBackToEmbedded | UpdateCheckResultSuccess | UpdateCheckResultFailure;
 /**
  * The successful result of fetching a new update.
  */
