@@ -57,9 +57,7 @@ function _generateCode() {
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 const debug = require('debug')('expo:config-plugins:ios:maps');
-
-// Match against `UMModuleRegistryAdapter` (unimodules), and React Native without unimodules (Expo Modules), and SDK +44 React AppDelegate subscriber.
-const MATCH_INIT = /(?:(self\.|_)(\w+)\s?=\s?\[\[UMModuleRegistryAdapter alloc\])|(?:RCTBridge\s?\*\s?(\w+)\s?=\s?\[\[RCTBridge alloc\])|(\[self\.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions\])/g;
+const MATCH_INIT = /-\s*\(BOOL\)\s*application:\s*\(UIApplication\s*\*\s*\)\s*\w+\s+didFinishLaunchingWithOptions:/g;
 exports.MATCH_INIT = MATCH_INIT;
 const withGoogleMapsKey = (0, _iosPlugins().createInfoPlistPlugin)(setGoogleMapsApiKey, 'withGoogleMapsKey');
 const withMaps = config => {
@@ -122,7 +120,7 @@ function addGoogleMapsAppDelegateInit(src, apiKey) {
     src,
     newSrc: newSrc.join('\n'),
     anchor: MATCH_INIT,
-    offset: 0,
+    offset: 2,
     comment: '//'
   });
 }

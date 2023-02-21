@@ -10,35 +10,13 @@ import {
   removeMapsCocoaPods,
   setGoogleMapsApiKey,
 } from '../Maps';
-import {
-  ExpoModulesAppDelegate,
-  ExpoReactAppDelegate,
-  UnimodulesAppDelegate,
-} from './fixtures/AppDelegate';
+import { DefaultAppDelegate } from './fixtures/AppDelegate';
 import { PodfileBasic } from './fixtures/Podfile';
 
 describe('MATCH_INIT', () => {
-  it(`matches unimodules projects`, () => {
-    expect(
-      `self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc] initWithModuleRegistryProvider:[[UMModuleRegistryProvider alloc] init]];`
-    ).toMatch(MATCH_INIT);
-    // wrapped
-    expect(`self.moduleRegistryAdapter = [[UMModuleRegistryAdapter alloc]`).toMatch(MATCH_INIT);
-    // short hand
-    expect(`_moduleRegistryAdapter=[[UMModuleRegistryAdapter alloc]`).toMatch(MATCH_INIT);
-    // any name
-    expect(`_mo=[[UMModuleRegistryAdapter alloc]`).toMatch(MATCH_INIT);
-  });
-  it(`matches RN projects`, () => {
-    expect(
-      `RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];`
-    ).toMatch(MATCH_INIT);
-    // wrapped
-    expect(`RCTBridge*bri=[[RCTBridge alloc]`).toMatch(MATCH_INIT);
-  });
   it(`matches React AppDelegate`, () => {
     expect(
-      `RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];`
+      `- (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(NSDictionary *)launchOptions`
     ).toMatch(MATCH_INIT);
   });
 });
@@ -153,28 +131,8 @@ describe(addGoogleMapsAppDelegateInit, () => {
     // did remove the generated content
     expect(modded3.didClear).toBe(true);
   });
-  it(`adds maps import to Unimodules AppDelegate`, () => {
-    const results = addGoogleMapsAppDelegateInit(UnimodulesAppDelegate, 'mykey');
-    // matches a static snapshot
-    expect(results.contents).toMatchSnapshot();
-    expect(results.contents).toMatch(/97501819d6911e5f50d66c63d369b0cec62853c2/);
-    // did add new content
-    expect(results.didMerge).toBe(true);
-    // didn't remove old content
-    expect(results.didClear).toBe(false);
-  });
-  it(`adds maps import to Expo Modules AppDelegate`, () => {
-    const results = addGoogleMapsAppDelegateInit(ExpoModulesAppDelegate, 'mykey');
-    // matches a static snapshot
-    expect(results.contents).toMatchSnapshot();
-    expect(results.contents).toMatch(/97501819d6911e5f50d66c63d369b0cec62853c2/);
-    // did add new content
-    expect(results.didMerge).toBe(true);
-    // didn't remove old content
-    expect(results.didClear).toBe(false);
-  });
-  it(`adds maps import to Expo Modules SDK 44 AppDelegate`, () => {
-    const results = addGoogleMapsAppDelegateInit(ExpoReactAppDelegate, 'mykey');
+  it(`adds maps import to AppDelegate`, () => {
+    const results = addGoogleMapsAppDelegateInit(DefaultAppDelegate, 'mykey');
     // matches a static snapshot
     expect(results.contents).toMatchSnapshot();
     expect(results.contents).toMatch(/97501819d6911e5f50d66c63d369b0cec62853c2/);
