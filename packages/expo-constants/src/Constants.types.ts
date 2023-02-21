@@ -79,6 +79,10 @@ export interface AndroidManifest {
   [key: string]: any;
 }
 
+/**
+ * The manifest for web builds is up to each app to specify via the
+ * `APP_MANIFEST` environment variable. No default manifest values are set.
+ */
 export interface WebManifest {
   [key: string]: any;
 }
