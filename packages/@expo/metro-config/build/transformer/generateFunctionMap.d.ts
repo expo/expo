@@ -1,2 +1,4 @@
 import type { generateFunctionMap as generateFunctionMapType } from 'metro-source-map';
-export declare function generateFunctionMap(projectRoot: string, ast: Parameters<typeof generateFunctionMapType>[0], context: Parameters<typeof generateFunctionMapType>[1]): ReturnType<typeof generateFunctionMapType> | null;
+type GenerateFunctionMapParams = Parameters<typeof generateFunctionMapType>;
+export declare function generateFunctionMap(...props: GenerateFunctionMapParams): ReturnType<typeof generateFunctionMapType> | null;
+export {};
