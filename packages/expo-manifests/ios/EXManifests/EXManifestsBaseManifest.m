@@ -312,7 +312,7 @@
 
 - (int)sdkMajorVersion
 {
-  NSString *sdkVersion = [self.expoClientConfigRootObject nullableStringForKey:@"sdkVersion"];
+  NSString *sdkVersion = [self sdkVersion];
   NSArray<NSString *> *components = [sdkVersion componentsSeparatedByString:@"."];
   if (components.count == 3) {
     return [components[0] intValue];
