@@ -6,7 +6,6 @@
 
 - [android] Add support for version 1 of the protocol. ([#20275](https://github.com/expo/expo/pull/20275) by [@wschurman](https://github.com/wschurman))
 
-
 ### 🎉 New features
 
 - New `useUpdateEvents` hook. ([#21258](https://github.com/expo/expo/pull/21258) by [@douglowder](https://github.com/douglowder))
@@ -20,6 +19,7 @@
 
 - Break up E2E tests for reliability. ([#21223](https://github.com/expo/expo/pull/21223) by [@douglowder](https://github.com/douglowder))
 - Convert E2E tests to TypeScript. ([#21278](https://github.com/expo/expo/pull/21278) by [@douglowder](https://github.com/douglowder))
+- Improved README and other chagnes for E2E tests. ([#21331](https://github.com/expo/expo/pull/21331) by [@douglowder](https://github.com/douglowder))
 
 ## 0.16.1 — 2023-02-09
 

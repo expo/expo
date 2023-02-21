@@ -555,9 +555,6 @@ async function setupBasicAppAsync(projectRoot, localCliBin) {
   // move exported update to "updates" directory for EAS testing
   await fs.rename(path.join(projectRoot, 'dist'), path.join(projectRoot, 'updates'));
 
-  // remove yarn.lock so yarn will work on EAS
-  await fs.rm(path.join(projectRoot, 'yarn.lock'));
-
   // Copy Detox test file to e2e/tests directory
   await fs.copyFile(
     path.resolve(dirName, '..', 'fixtures', 'Updates-basic.e2e.ts'),
@@ -586,9 +583,6 @@ async function setupAssetsAppAsync(projectRoot, localCliBin) {
 
   // move exported update to "updates" directory for EAS testing
   await fs.rename(path.join(projectRoot, 'dist'), path.join(projectRoot, 'updates'));
-
-  // remove yarn.lock so yarn will work on EAS
-  await fs.rm(path.join(projectRoot, 'yarn.lock'));
 
   // Copy Detox test file to e2e/tests directory
   await fs.copyFile(

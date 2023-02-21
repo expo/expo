@@ -85,7 +85,7 @@ jobs:
       - name: 📦 Set test project location
         run: echo "TEST_PROJECT_ROOT=$GITHUB_WORKSPACE/updates-e2e" >> $GITHUB_ENV
       - name: 📦 Setup test project for updates E2E basic tests
-        run: node packages/expo-updates/e2e/__tests__/setup/create-eas-project-basic.js
+        run: node packages/expo-updates/e2e/setup/create-eas-project-basic.js
       - name: 🚀 Build with EAS for ${{ matrix.platform }}
         uses: ./.github/actions/eas-build
         id: build_eas
@@ -95,7 +95,7 @@ jobs:
           projectRoot: './updates-e2e'
           expoToken: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
           noWait: ${{ github.event.schedule }}
-          message: ${{ github.event.pull_request.title }}
+          message: 'Basic tests: ${{ github.event.pull_request.title }}'
       - name: On ${{ matrix.platform }} workflow canceled
         if: ${{ cancelled() && steps.build_eas.outputs.build_id }}
         run: eas build:cancel ${{ steps.build_eas.outputs.build_id }}
