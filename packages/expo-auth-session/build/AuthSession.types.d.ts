@@ -63,7 +63,7 @@ export type AuthSessionResult = {
     url: string;
 };
 /**
- * Options passed to `makeRedirectUriAsync`.
+ * Options passed to `makeRedirectUri`.
  */
 export type AuthSessionRedirectUriOptions = {
     /**
