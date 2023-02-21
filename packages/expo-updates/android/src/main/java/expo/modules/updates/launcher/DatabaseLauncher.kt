@@ -132,7 +132,7 @@ class DatabaseLauncher(
     // current binary. We might have an older update from a previous binary still listed as
     // "EMBEDDED" in the database so we need to do this check.
     val embeddedUpdateManifest = EmbeddedManifest.get(context, configuration)
-    val filteredLaunchableUpdates = ArrayList<UpdateEntity>()
+    val filteredLaunchableUpdates = mutableListOf<UpdateEntity>()
     for (update in launchableUpdates) {
       if (update.status == UpdateStatus.EMBEDDED) {
         if (embeddedUpdateManifest != null && embeddedUpdateManifest.updateEntity!!.id != update.id) {

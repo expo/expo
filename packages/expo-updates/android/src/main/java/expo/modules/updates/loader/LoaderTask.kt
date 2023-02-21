@@ -63,7 +63,7 @@ class LoaderTask(
      * LoaderTask proceed as usual.
      */
     fun onCachedUpdateLoaded(update: UpdateEntity): Boolean
-    fun onRemoteUpdateManifestLoaded(updateManifest: UpdateManifest)
+    fun onRemoteUpdateManifestResponseManifestLoaded(updateManifest: UpdateManifest)
     fun onSuccess(launcher: Launcher, isUpToDate: Boolean)
     fun onBackgroundUpdateFinished(
       status: BackgroundUpdateStatus,
@@ -258,30 +258,29 @@ class LoaderTask(
       val launchableUpdate = launcher.getLaunchableUpdate(database, context)
       val manifestFilters = ManifestMetadata.getManifestFilters(database, configuration)
       if (selectionPolicy.shouldLoadNewUpdate(embeddedUpdate, launchableUpdate, manifestFilters)) {
-        EmbeddedLoader(context, configuration, database, directory).start(object :
-            LoaderCallback {
-            override fun onFailure(e: Exception) {
-              Log.e(TAG, "Unexpected error copying embedded update", e)
-              launcher.launch(database, context, launcherCallback)
-            }
+        EmbeddedLoader(context, configuration, database, directory).start(object : LoaderCallback {
+          override fun onFailure(e: Exception) {
+            Log.e(TAG, "Unexpected error copying embedded update", e)
+            launcher.launch(database, context, launcherCallback)
+          }
 
-            override fun onSuccess(update: UpdateEntity?) {
-              launcher.launch(database, context, launcherCallback)
-            }
+          override fun onSuccess(loaderResult: Loader.LoaderResult) {
+            launcher.launch(database, context, launcherCallback)
+          }
 
-            override fun onAssetLoaded(
-              asset: AssetEntity,
-              successfulAssetCount: Int,
-              failedAssetCount: Int,
-              totalAssetCount: Int
-            ) {
-              // do nothing
-            }
+          override fun onAssetLoaded(
+            asset: AssetEntity,
+            successfulAssetCount: Int,
+            failedAssetCount: Int,
+            totalAssetCount: Int
+          ) {
+            // do nothing
+          }
 
-            override fun onUpdateManifestLoaded(updateManifest: UpdateManifest): Boolean {
-              return true
-            }
-          })
+          override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
+            return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
+          }
+        })
       } else {
         launcher.launch(database, context, launcherCallback)
       }
@@ -310,25 +309,59 @@ class LoaderTask(
           ) {
           }
 
-          override fun onUpdateManifestLoaded(updateManifest: UpdateManifest): Boolean {
+          override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
+            val updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective
+            if (updateDirective != null) {
+              return when (updateDirective) {
+                is UpdateDirective.RollBackToEmbeddedUpdateDirective -> {
+                  isUpToDate = false
+                  Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
+                }
+                is UpdateDirective.NoUpdateAvailableUpdateDirective -> {
+                  isUpToDate = true
+                  Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
+                }
+              }
+            }
+
+            val updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+            if (updateManifest == null) {
+              isUpToDate = true
+              return Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
+            }
+
             return if (selectionPolicy.shouldLoadNewUpdate(
                 updateManifest.updateEntity,
                 candidateLauncher?.launchedUpdate,
-                updateManifest.manifestFilters
+                updateResponse.responseHeaderData?.manifestFilters
               )
             ) {
               isUpToDate = false
-              callback.onRemoteUpdateManifestLoaded(updateManifest)
-              true
+              callback.onRemoteUpdateManifestResponseManifestLoaded(updateManifest)
+              Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = true)
             } else {
               isUpToDate = true
-              false
+              Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
             }
           }
 
-          override fun onSuccess(update: UpdateEntity?) {
-            // a new update has loaded successfully; we need to launch it with a new Launcher and
-            // replace the old Launcher so that the callback fires with the new one
+          override fun onSuccess(loaderResult: Loader.LoaderResult) {
+            var updateEntity = loaderResult.updateEntity
+            val updateDirective = loaderResult.updateDirective
+
+            // If directive is to roll-back to the embedded update and there is an embedded update,
+            // we need to update embedded update in the DB with the newer commitTime from the message so that
+            // the selection policy will choose it. That way future updates can continue to be applied
+            // over this roll back, but older ones won't.
+            // The embedded update is guaranteed to be in the DB from the earlier [EmbeddedLoader] call in this task.
+            if (updateDirective != null && updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective && configuration.hasEmbeddedUpdate) {
+              val embeddedUpdate = EmbeddedManifest.get(context, configuration)!!.updateEntity
+              database.updateDao().setUpdateCommitTime(embeddedUpdate!!, updateDirective.commitTime)
+              updateEntity = embeddedUpdate
+            }
+
+            // a new update (or null update because onUpdateResponseLoaded returned false or it was just a message) has loaded successfully;
+            // we need to launch it with a new Launcher and replace the old Launcher so that the callback fires with the new one
             val newLauncher = DatabaseLauncher(configuration, directory, fileDownloader, selectionPolicy)
             newLauncher.launch(
               database, context,
@@ -350,7 +383,7 @@ class LoaderTask(
                   }
                   remoteUpdateCallback.onSuccess()
                   if (hasLaunchedSynchronized) {
-                    if (update == null) {
+                    if (updateEntity == null) {
                       callback.onBackgroundUpdateFinished(
                         BackgroundUpdateStatus.NO_UPDATE_AVAILABLE,
                         null,
@@ -359,7 +392,7 @@ class LoaderTask(
                     } else {
                       callback.onBackgroundUpdateFinished(
                         BackgroundUpdateStatus.UPDATE_AVAILABLE,
-                        update,
+                        updateEntity,
                         null
                       )
                     }

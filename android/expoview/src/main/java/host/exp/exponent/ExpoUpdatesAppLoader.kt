@@ -163,6 +163,8 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       )
       configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN] = true
       configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS] = true
+      // in Expo Go, ignore directives in manifest responses and require a manifest. the current directives (no update available, roll back) don't have any practical use outside of standalone apps
+      configMap[UpdatesConfiguration.UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE] = true
     }
 
     val configuration = UpdatesConfiguration(null, configMap)
@@ -249,7 +251,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
           return true
         }
 
-        override fun onRemoteUpdateManifestLoaded(updateManifest: UpdateManifest) {
+        override fun onRemoteUpdateManifestResponseManifestLoaded(updateManifest: UpdateManifest) {
           // expo-cli does not always respect our SDK version headers and respond with a compatible update or an error
           // so we need to check the compatibility here
           val sdkVersion = updateManifest.manifest.getSDKVersion()
