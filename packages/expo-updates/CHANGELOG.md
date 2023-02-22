@@ -6,8 +6,6 @@
 
 ### 🎉 New features
 
-- New `useUpdateEvents` hook. ([#21258](https://github.com/expo/expo/pull/21258) by [@douglowder](https://github.com/douglowder))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others

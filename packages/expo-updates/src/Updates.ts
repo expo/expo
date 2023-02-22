@@ -277,8 +277,7 @@ function _emitEvent(params): void {
 
 /**
  * Adds a callback to be invoked when updates-related events occur (such as upon the initial app
- * load) due to auto-update settings chosen at build-time. See also the
- * [`useUpdateEvents`](#useupdateeventslistener) React hook.
+ * load) due to auto-update settings chosen at build-time.
  *
  * @param listener A function that will be invoked with an [`UpdateEvent`](#updateevent) instance
  * and should not return any value.
