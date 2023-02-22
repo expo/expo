@@ -9,6 +9,12 @@ export function readAllFiles(): {
   'ios/HelloWorld.xcodeproj/project.pbxproj': string;
   'ios/HelloWorld/Info.plist': string;
   'ios/HelloWorld/Supporting/Expo.plist': string;
+  'android/app/src/main/AndroidManifest.xml': string;
+  'android/app/src/main/java/com/helloworld/MainActivity.java': string;
+  'android/app/src/main/java/com/helloworld/MainApplication.java': string;
+  'android/app/build.gradle': string;
+  'android/build.gradle': string;
+  'android/settings.gradle': string;
 } & Record<string, string> {
   const files: Record<string, string | Buffer> = {
     // This file is generated and therefore not available in the template.
