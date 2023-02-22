@@ -7,7 +7,6 @@
 import assert from 'assert';
 import chalk from 'chalk';
 import fs from 'fs';
-import fetch from 'node-fetch';
 import path from 'path';
 import prettyBytes from 'pretty-bytes';
 import { inspect } from 'util';
@@ -66,6 +65,9 @@ async function exportFromServerAsync(
   { outputDir, scripts }: Options
 ) {
   const devServerUrl = devServerManager.getDefaultDevServer().getDevServerUrl();
+  const devServer = devServerManager.getDefaultDevServer();
+
+  assert(devServer instanceof MetroBundlerDevServer);
 
   const manifest = await getExpoRoutesAsync(devServerManager);
 
@@ -89,12 +91,19 @@ async function exportFromServerAsync(
       if (files.has(outputPath)) {
         return;
       }
+
       // Prevent duplicate requests while running in parallel.
       files.set(outputPath, '');
+      assert(devServer instanceof MetroBundlerDevServer);
 
-      let screen: string;
       try {
-        screen = await fetch(`${devServerUrl}/${pathname}`).then((res) => res.text());
+        const data = await devServer.getStaticPageAsync(pathname, { mode: 'production' });
+
+        if (data.fetchData) {
+          console.log('ssr:', pathname);
+        } else {
+          files.set(outputPath, appendScriptsToHtml(data.renderAsync(), scripts));
+        }
       } catch (e: any) {
         // TODO: Format Metro error message better...
         Log.error('Failed to statically render route:', pathname);
@@ -102,8 +111,6 @@ async function exportFromServerAsync(
         Log.exception(e);
         throw e;
       }
-
-      files.set(outputPath, appendScriptsToHtml(screen, scripts));
     }
 
     return Object.entries(screens).map(async ([name, segment]) => {

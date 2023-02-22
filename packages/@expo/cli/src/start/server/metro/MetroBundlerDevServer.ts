@@ -13,7 +13,7 @@ import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
-import { getStaticRenderFunctions } from '../getStaticRenderFunctions';
+import { getStaticRenderFunctions, getStaticPageContentsAsync } from '../getStaticRenderFunctions';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
@@ -57,6 +57,24 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     assert(url, 'Dev server must be started');
     const { getManifest } = await getStaticRenderFunctions(this.projectRoot, url);
     return getManifest({ fetchData: true });
+  }
+
+  async getStaticPageAsync(
+    pathname: string,
+    {
+      mode,
+    }: {
+      mode: 'development' | 'production';
+    }
+  ) {
+    const location = new URL(pathname, 'https://example.dev');
+
+    const load = await getStaticPageContentsAsync(this.projectRoot, this.getDevServerUrl()!, {
+      minify: mode === 'production',
+      dev: mode !== 'production',
+    });
+
+    return await load(location);
   }
 
   protected async startImplementationAsync(
@@ -135,7 +153,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           const location = new URL(req.url, devServerUrl);
 
           try {
-            const { getStaticContent } = await getStaticRenderFunctions(
+            const { getStaticContentAsync } = await getStaticRenderFunctions(
               this.projectRoot,
               devServerUrl,
               {
@@ -144,7 +162,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               }
             );
 
-            let content = getStaticContent(location);
+            let content = await getStaticContentAsync(location);
 
             //TODO: Not this -- disable injection some other way
             if (options.mode !== 'production') {

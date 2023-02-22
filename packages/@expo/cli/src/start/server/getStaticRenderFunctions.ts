@@ -31,18 +31,18 @@ const getRenderModuleId = (projectRoot: string): string => {
   return path.relative(projectRoot, moduleId).replace(/\.js$/, '');
 };
 
-export async function getStaticRenderFunctions(
+type StaticRenderOptions = {
+  // Ensure the style format is `css-xxxx` (prod) instead of `css-view-xxxx` (dev)
+  dev?: boolean;
+  minify?: boolean;
+};
+
+/** @returns the js file contents required to generate the static generation function. */
+export async function getStaticRenderFunctionsContentAsync(
   projectRoot: string,
   devServerUrl: string,
-  {
-    dev = false,
-    minify = false,
-  }: {
-    // Ensure the style format is `css-xxxx` (prod) instead of `css-view-xxxx` (dev)
-    dev?: boolean;
-    minify?: boolean;
-  } = {}
-): Promise<any> {
+  { dev = false, minify = false }: StaticRenderOptions = {}
+): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
   const moduleId = getRenderModuleId(root);
   debug('Loading render functions from:', moduleId, root);
@@ -72,5 +72,45 @@ export async function getStaticRenderFunctions(
 
   const content = await res.text();
 
-  return profile(requireString, 'eval-metro-bundle')(wrapBundle(content));
+  return wrapBundle(content);
+}
+
+export async function getStaticRenderFunctions(
+  projectRoot: string,
+  devServerUrl: string,
+  options: StaticRenderOptions = {}
+): Promise<any> {
+  const scriptContents = await getStaticRenderFunctionsContentAsync(
+    projectRoot,
+    devServerUrl,
+    options
+  );
+  return profile(requireString, 'eval-metro-bundle')(scriptContents);
+}
+
+export async function getStaticPageContentsAsync(
+  projectRoot: string,
+  devServerUrl: string,
+  options: StaticRenderOptions = {}
+) {
+  const scriptContents = await getStaticRenderFunctionsContentAsync(
+    projectRoot,
+    devServerUrl,
+    options
+  );
+
+  const { getStaticContentAsync, getDataLoader } = profile(
+    requireString,
+    'eval-metro-bundle'
+  )(scriptContents);
+
+  return function loadPageAsync(url: URL) {
+    const fetchData = getDataLoader(url);
+
+    return {
+      fetchData,
+      scriptContents,
+      renderAsync: () => getStaticContentAsync(url),
+    };
+  };
 }
