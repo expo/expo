@@ -360,8 +360,7 @@ From here, you can choose to generate basic project files like:
 - `EXPO_IMAGE_UTILS_NO_SHARP` (**boolean**) disable the usage of global Sharp CLI installation in favor of the slower Jimp package for image manipulation. This is used in places like `npx expo prebuild` for generating app icons.
 - `EXPO_TUNNEL_SUBDOMAIN` (**boolean**) **Experimental** disable using `exp.direct` as the hostname for `--tunnel` connections. This enables **https://** forwarding which can be used to test universal links on iOS. This may cause unexpected issues with `expo-linking` and Expo Go. Select the exact subdomain to use by passing a `string` value that is not one of: `true`, `false`, `1`, `0`.
 - `EXPO_METRO_NO_MAIN_FIELD_OVERRIDE` (**boolean**) force Expo CLI to use the [`resolver.resolverMainFields`](https://facebook.github.io/metro/docs/configuration/#resolvermainfields) from the project's **metro.config.js** for all platforms. By default, Expo CLI will use `['browser', 'module', 'main']`, which is the default for webpack, for the web and the user-defined main fields for other platforms.
-- `EXPO_METRO_NO_PATH_ALIASES` (**boolean**) prevent Metro from using the `compilerOptions.paths` feature from `tsconfig.json` (or `jsconfig.json`) to enable import aliases.
-- `EXPO_METRO_NO_BASE_URL` (**boolean**) prevent Metro from using the `compilerOptions.baseUrl` feature from `tsconfig.json` (or `jsconfig.json`) to enable absolute imports.
+- `EXPO_USE_PATH_ALIASES` (**boolean**) **Experimental:** Allow Metro to use the `compilerOptions.paths` and `compilerOptions.baseUrl` features from `tsconfig.json` (or `jsconfig.json`) to enable import aliases and absolute imports.
 
 ## Telemetry
 

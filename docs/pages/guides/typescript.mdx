@@ -78,6 +78,8 @@ When you create new source files in your project you should use the **.ts** exte
 
 ## Path Aliases
 
+> Experimental feature in SDK 48. Enable with the environment variable `EXPO_USE_PATH_ALIASES=1`.
+
 Expo CLI supports [path aliases](https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping) in your project's **tsconfig.json** automatically. This allows you to import modules using a custom alias instead of a relative path.
 
 For example, if you have a file at `src/components/Button.tsx` you can import it using the alias `@/components/Button`:
@@ -102,10 +104,11 @@ The default alias is `@/`, but you can change this in your **tsconfig.json**:
 - Expo CLI must be restarted to update path aliases when you change the **tsconfig.json**.
 - `jsconfig.json` can be used instead of `tsconfig.json` if you are not using TypeScript.
 - Path aliases add additional resolution time when defined.
-- Aliases can be disabled by setting the environment variable `EXPO_METRO_NO_PATH_ALIASES=1`.
 - Path aliases are Metro-only (including Metro web) and not supported by `@expo/webpack-config`.
 
 ## Absolute Imports
+
+> Experimental feature in SDK 48. Enable with the environment variable `EXPO_USE_PATH_ALIASES=1`.
 
 Absolute imports from the project root directory are enabled automatically when the project contains a **tsconfig.json** or **jsconfig.json** file.
 
@@ -130,7 +133,6 @@ The base directory can be modified in the **tsconfig.json** (or **jsconfig.json*
 - Node modules take precedence over absolute imports, so you cannot overwrite a node module import with an absolute import.
 - Expo CLI must be restarted to update [`compilerOptions.baseUrl`][baseurl] when you change the **tsconfig.json**.
 - `jsconfig.json` can be used instead of `tsconfig.json` if you are not using TypeScript.
-- Base URL support can be disabled by setting the environment variable `EXPO_METRO_NO_BASE_URL=1`.
 - Absolute imports are Metro-only (including Metro web) and not supported by `@expo/webpack-config`.
 
 [baseurl]: https://www.typescriptlang.org/docs/handbook/module-resolution.html#base-url

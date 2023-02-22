@@ -59,7 +59,7 @@ function normalizeSlashes(p: string) {
  * - Redirect `react-native-web/dist/modules/AssetRegistry/index.js` to `@react-native/assets/registry.js` on web.
  * - Add support for `tsconfig.json`/`jsconfig.json` aliases via `compilerOptions.paths`.
  */
-export function withWebResolvers(
+export function withExtendedResolver(
   config: ConfigT,
   projectRoot: string,
   tsconfig: TsConfigPaths | null
@@ -73,9 +73,6 @@ export function withWebResolvers(
     // NOTE(EvanBacon): This is the newer import but it doesn't work in the expo/expo monorepo.
     // path.resolve(resolveFrom(projectRoot, '@react-native/assets/registry.js'))
   );
-
-  // Create a resolver which dynamically disables support for
-  // `*.native.*` extensions on web.
 
   const { resolve } = importMetroResolverFromProject(projectRoot);
 
@@ -99,14 +96,14 @@ export function withWebResolvers(
   };
 
   let tsConfigResolve =
-    tsconfig?.paths && !env.EXPO_METRO_NO_PATH_ALIASES
+    tsconfig?.paths && env.EXPO_USE_PATH_ALIASES
       ? resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
           paths: tsconfig.paths ?? {},
           baseUrl: tsconfig.baseUrl,
         })
       : null;
 
-  if (!env.EXPO_METRO_NO_PATH_ALIASES && !env.CI) {
+  if (env.EXPO_USE_PATH_ALIASES && !env.CI) {
     // TODO: We should track all the files that used imports and invalidate them
     // currently the user will need to save all the files that use imports to
     // use the new aliases.
@@ -158,7 +155,7 @@ export function withWebResolvers(
         };
       }
 
-      if (tsconfig?.baseUrl) {
+      if (tsconfig?.baseUrl && env.EXPO_USE_PATH_ALIASES) {
         context = {
           ...context,
           nodeModulesPaths: [
@@ -265,7 +262,7 @@ export async function withMetroMultiPlatformAsync(
 
   if (platformBundlers.web === 'metro') {
     await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
-  } else if (!env.EXPO_METRO_NO_PATH_ALIASES && !env.EXPO_METRO_NO_BASE_URL) {
+  } else if (!env.EXPO_USE_PATH_ALIASES) {
     // Bail out early for performance enhancements if no special features are enabled.
     return config;
   }
@@ -292,7 +289,9 @@ function withMetroMultiPlatform(
   // @ts-expect-error: typed as `readonly`.
   config.resolver.platforms = expoConfigPlatforms;
 
-  config = withWebPolyfills(config);
+  if (expoConfigPlatforms.includes('web')) {
+    config = withWebPolyfills(config);
+  }
 
-  return withWebResolvers(config, projectRoot, jsconfig);
+  return withExtendedResolver(config, projectRoot, jsconfig);
 }

@@ -137,14 +137,9 @@ class Env {
     return process.env.HTTP_PROXY || process.env.http_proxy || '';
   }
 
-  /** Prevent Metro from using the `compilerOptions.paths` feature from `tsconfig.json` (or `jsconfig.json`) to enable import aliases. */
-  get EXPO_METRO_NO_PATH_ALIASES(): boolean {
-    return boolish('EXPO_METRO_NO_PATH_ALIASES', false);
-  }
-
-  /** Prevent Metro from using the `compilerOptions.baseUrl` feature from `tsconfig.json` (or `jsconfig.json`) to enable absolute imports. */
-  get EXPO_METRO_NO_BASE_URL(): boolean {
-    return boolish('EXPO_METRO_NO_BASE_URL', false);
+  /** **Experimental:** Prevent Metro from using the `compilerOptions.paths` feature from `tsconfig.json` (or `jsconfig.json`) to enable import aliases. */
+  get EXPO_USE_PATH_ALIASES(): boolean {
+    return boolish('EXPO_USE_PATH_ALIASES', false);
   }
 }
 
