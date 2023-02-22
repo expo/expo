@@ -83,22 +83,19 @@ it(
 
     const assetsManifest = await JsonFile.readAsync(path.resolve(outputDir, 'asset-manifest.json'));
     expect(assetsManifest.entrypoints).toEqual([
-      expect.stringMatching(/static\/js\/runtime~app\.[a-z\d]+\.js/),
-      expect.stringMatching(/static\/js\/\d\.[a-z\d]+\.chunk\.js/),
-      expect.stringMatching(/static\/js\/app\.[a-z\d]+\.chunk\.js/),
+      expect.stringMatching(/static\/js\/\d+\.[a-z\d]+\.js/),
+      expect.stringMatching(/static\/js\/main\.[a-z\d]+\.js/),
     ]);
 
     const knownFiles = [
-      ['app.js', expect.stringMatching(/static\/js\/app\.[a-z\d]+\.chunk\.js/)],
-      ['app.js.map', expect.stringMatching(/static\/js\/app\.[a-z\d]+\.chunk\.js\.map/)],
+      ['main.js', expect.stringMatching(/static\/js\/main\.[a-z\d]+\.js/)],
       ['index.html', '/index.html'],
       ['manifest.json', '/manifest.json'],
       ['serve.json', '/serve.json'],
-      ['runtime~app.js', expect.stringMatching(/static\/js\/runtime~app\.[a-z\d]+\.js/)],
-      ['runtime~app.js.map', expect.stringMatching(/static\/js\/runtime~app\.[a-z\d]+\.js\.map/)],
     ];
 
     assert(assetsManifest.files);
+    console.log(assetsManifest.files);
     for (const [key, value] of knownFiles) {
       const files = assetsManifest.files as Record<string, string>;
       expect(files[key]).toEqual(value);
@@ -106,8 +103,8 @@ it(
     }
 
     for (const [key, value] of Object.entries(assetsManifest?.files ?? {})) {
-      expect(key).toMatch(/static\/js\/\d\.[a-z\d]+\.chunk\.js(\.LICENSE\.txt|\.map)?/);
-      expect(value).toMatch(/static\/js\/\d\.[a-z\d]+\.chunk\.js(\.LICENSE\.txt|\.map)?/);
+      expect(key).toMatch(/(static\/js\/)?(\d+|main)\.[a-z\d]+\.js(\.LICENSE\.txt|\.map)?/);
+      expect(value).toMatch(/(static\/js\/)?(\d+|main)\.[a-z\d]+\.js(\.LICENSE\.txt|\.map)?/);
     }
 
     expect(await JsonFile.readAsync(path.resolve(outputDir, 'manifest.json'))).toEqual({
@@ -149,13 +146,11 @@ it(
       'index.html',
       'manifest.json',
       'serve.json',
-      expect.stringMatching(/static\/js\/\d\.[a-z\d]+\.chunk\.js/),
-      expect.stringMatching(/static\/js\/\d\.[a-z\d]+\.chunk\.js\.LICENSE\.txt/),
-      expect.stringMatching(/static\/js\/\d\.[a-z\d]+\.chunk\.js\.map/),
-      expect.stringMatching(/static\/js\/app\.[a-z\d]+\.chunk\.js/),
-      expect.stringMatching(/static\/js\/app\.[a-z\d]+\.chunk\.js\.map/),
-      expect.stringMatching(/static\/js\/runtime~app\.[a-z\d]+\.js/),
-      expect.stringMatching(/static\/js\/runtime~app\.[a-z\d]+\.js\.map/),
+      expect.stringMatching(/static\/js\/\d+\.[a-z\d]+\.js/),
+      expect.stringMatching(/static\/js\/\d+\.[a-z\d]+\.js\.LICENSE\.txt/),
+      expect.stringMatching(/static\/js\/\d+\.[a-z\d]+\.js\.map/),
+      expect.stringMatching(/static\/js\/main\.[a-z\d]+\.js/),
+      expect.stringMatching(/static\/js\/main\.[a-z\d]+\.js\.map/),
     ]);
   },
   // Could take 45s depending on how fast npm installs
