@@ -150,7 +150,7 @@ it(
     expect(results.mainModuleName).toBe('node_modules/expo/AppEntry');
 
     // Manifest
-    expect(results.sdkVersion).toBe('45.0.0');
+    expect(results.sdkVersion).toBe('47.0.0');
     expect(results.slug).toBe('basic-start');
     expect(results.name).toBe('basic-start');
 
