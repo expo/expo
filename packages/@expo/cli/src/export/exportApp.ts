@@ -6,6 +6,7 @@ import { importCliSaveAssetsFromProject } from '../start/server/metro/resolveFro
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
+import { setNodeEnv } from '../utils/nodeEnv';
 import { createBundlesAsync } from './createBundles';
 import { exportAssetsAsync } from './exportAssets';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
@@ -42,10 +43,7 @@ export async function exportAppAsync(
     dumpSourcemap,
   }: Pick<Options, 'dumpAssetmap' | 'dumpSourcemap' | 'dev' | 'clear' | 'outputDir' | 'platforms'>
 ): Promise<void> {
-  // Set the environment to production or development
-  // lots of tools use this to determine if they should run in a dev mode.
-  process.env.NODE_ENV = dev ? 'development' : 'production';
-  process.env.BABEL_ENV = dev ? 'development' : 'production';
+  setNodeEnv(dev ? 'development' : 'production');
 
   const exp = await getPublicExpoManifestAsync(projectRoot);
 

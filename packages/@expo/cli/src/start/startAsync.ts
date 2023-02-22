@@ -6,6 +6,7 @@ import getDevClientProperties from '../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../utils/analytics/rudderstackClient';
 import { installExitHooks } from '../utils/exit';
 import { isInteractive } from '../utils/interactive';
+import { setNodeEnv } from '../utils/nodeEnv';
 import { profile } from '../utils/profile';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
 import { TypeScriptProjectPrerequisite } from './doctor/typescript/TypeScriptProjectPrerequisite';
@@ -69,10 +70,7 @@ export async function startAsync(
 ) {
   Log.log(chalk.gray(`Starting project at ${projectRoot}`));
 
-  // Set the environment to production or development
-  // lots of tools use this to determine if they should run in a dev mode.
-  process.env.NODE_ENV = options.dev ? 'development' : 'production';
-  process.env.BABEL_ENV = options.dev ? 'development' : 'production';
+  setNodeEnv(options.dev ? 'development' : 'production');
 
   const { exp, pkg } = profile(getConfig)(projectRoot);
 
