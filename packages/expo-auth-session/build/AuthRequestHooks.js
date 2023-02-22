@@ -101,7 +101,6 @@ export function useAuthRequestResult(request, discovery, customOptions = {}) {
  * - `response` - This is `null` until `promptAsync` has been invoked. Once fulfilled it will return information about the authorization.
  * - `promptAsync` - When invoked, a web browser will open up and prompt the user for authentication.
  *   Accepts an [`AuthRequestPromptOptions`](#authrequestpromptoptions) object with options about how the prompt will execute.
- *   You can use this to enable the Expo proxy service `auth.expo.io`.
  *
  * @example
  * ```ts
