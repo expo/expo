@@ -81,12 +81,6 @@ This package can be used by running any of the following commands:
 
 Config [modifiers](#config-mods) that apply unstable changes to a native project during [prebuild](#prebuild). Use of these modifiers is unpredictable and prone to breaking changes between major version bumps in [Expo SDK](#expo-sdk).
 
-### detach
-
-> **warning** Deprecated technology
-
-The term "detach" was previously used in Expo to mean [ejecting](#eject) your app to use [ExpoKit](#expokit).
-
 ### Dev Clients
 
 A [native runtime](#native-runtime) that has been built in development mode. These builds often include the `expo-dev-client` [native module](#native-module) for improved debugging.
@@ -117,15 +111,6 @@ A command line tool for uploading and downloading Apple App Store metadata as JS
 
 1. The cloud hosting service [EAS Update](/eas-update/introduction/) that is used for OTA Updates.
 2. The CLI command `eas update` from [EAS CLI](#eas-cli) that is used to publish static files to the cloud hosting service.
-
-### eject
-
-> **warning** Deprecated technology
-
-The term "eject" was popularized by [create-react-app](https://github.com/facebook/create-react-app), and it is used in Expo to describe leaving the cozy comfort of the standard Expo development environment, where you do not have to deal with build configuration or native code. When you "eject" from Expo, you have two choices:
-
-- _Eject to bare workflow_, where you jump between [workflows](/introduction/managed-vs-bare) and move into the bare workflow, where you can continue to use Expo APIs but have access and full control over your native Android and iOS projects.
-- _Eject to ExpoKit_, where you get the native projects along with [ExpoKit](#expokit). This option is deprecated and support for ExpoKit was removed after SDK 38.
 
 ### Emulator
 
@@ -190,14 +175,6 @@ A collection of [npm](#npm) packages containing [native modules](#native-module)
 ### Expo Start
 
 Refers to the command `npx expo start` from [Expo CLI](#expo-cli). This command is used to start a local [development server](#development-server) that a [client](#expo-client) connects to in order to interact with the [Metro bundler](#metro-bundler).
-
-### ExpoKit
-
-> **warning** Deprecated technology
-
-ExpoKit is an Objective-C and Java library that allows you to use the [Expo SDK](#expo-sdk) and platform and your existing Expo project as part of a larger standard native project — one that you would normally create using Xcode, Android Studio, or `react-native init`. For more information, see [Ejecting to ExpoKit](/archive/expokit/eject/).
-
-**Support for ExpoKit ended after SDK 38. Expo modules can implement support for custom native configuration, and projects that need even more custom native code can [expose their Android Studio and Xcode projects with `npx expo prebuild`](/workflow/customizing/).**
 
 ### Fabric
 
