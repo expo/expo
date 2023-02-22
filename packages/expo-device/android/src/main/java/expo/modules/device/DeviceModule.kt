@@ -155,10 +155,9 @@ class DeviceModule : Module() {
     private fun getDeviceTypeFromResourceConfiguration(context: Context): DeviceType {
       val smallestScreenWidthDp = context.resources.configuration.smallestScreenWidthDp
 
-      if (smallestScreenWidthDp == Configuration.SMALLEST_SCREEN_WIDTH_DP_UNDEFINED) {
-        return DeviceType.UNKNOWN
-      }
-      return if (smallestScreenWidthDp >= 600) {
+      return if (smallestScreenWidthDp == Configuration.SMALLEST_SCREEN_WIDTH_DP_UNDEFINED) {
+        DeviceType.UNKNOWN
+      } else if (smallestScreenWidthDp >= 600) {
         DeviceType.TABLET 
       } else {
         DeviceType.PHONE
