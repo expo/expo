@@ -222,8 +222,7 @@ module Expo
 
       function with_node() {
         # Start with a default
-        NODE_BINARY=$(command -v node)
-        export NODE_BINARY
+        export NODE_BINARY=$(command -v node)
 
         # Override the default with the global environment
         ENV_PATH="$PODS_ROOT/../.xcode.env"
