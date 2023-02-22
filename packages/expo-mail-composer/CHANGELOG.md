@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Migrated Android codebase to use the new modules API. ([#21200](https://github.com/expo/expo/pull/21200) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 12.1.1 — 2023-02-09
 
 _This version does not introduce any user-facing changes._
@@ -35,7 +37,6 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Native module on iOS is now written in Swift using the new API and JSI. ([#17488](https://github.com/expo/expo/pull/17488) by [@tsapeta](https://github.com/tsapeta))
-- Migrated Android codebase to use the new modules API. ([#21200](https://github.com/expo/expo/pull/21200) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 11.2.0 — 2022-04-18
 
