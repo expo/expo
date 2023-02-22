@@ -190,6 +190,31 @@ export async function getIssueAsync(issue_number: number) {
 }
 
 /**
+ * Returns a list of all open issues. Limited to 10 items.
+ */
+export async function listAllOpenIssuesAsync({
+  limit,
+  offset,
+  labels,
+}: {
+  limit?: number;
+  offset?: number;
+  labels?: string;
+} = {}) {
+  const per_page = limit ?? 10;
+  const page = offset ? offset * per_page : 0;
+  const { data } = await octokit.issues.listForRepo({
+    owner,
+    repo,
+    per_page,
+    labels,
+    page,
+    state: 'open',
+  });
+  return data;
+}
+
+/**
  * Creates an issue comment with given body.
  */
 export async function createCommentAsync(issue_number: number, body: string) {
