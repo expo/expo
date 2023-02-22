@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Upgrade e2e tests to SDK 47.
+
 ## 0.6.1 — 2023-02-15
 
 _This version does not introduce any user-facing changes._
