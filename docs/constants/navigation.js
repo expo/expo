@@ -347,6 +347,7 @@ const archive = [
     makePage('archive/adhoc-builds.mdx'),
     makePage('archive/expo-cli.mdx'),
     makePage('archive/notification-channels.mdx'),
+    makePage('archive/glossary.mdx'),
   ]),
 ];
 
