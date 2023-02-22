@@ -147,7 +147,7 @@ describe('Android Updates config', () => {
         '/app'
       );
 
-      const contents = await fs.promises.readFile('/app/android/app/build.gradle', 'utf-8');
+      const contents = rnFixture['android/app/build.gradle'];
       const newContents = Updates.ensureBuildGradleContainsConfigurationScript('/app', contents);
       expect(newContents).toMatchSnapshot();
     });
