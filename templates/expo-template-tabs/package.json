@@ -1,7 +1,7 @@
 {
   "name": "expo-template-tabs",
   "description": "The Tab Navigation project template includes several example screens.",
-  "version": "48.0.6",
+  "version": "48.0.7",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
