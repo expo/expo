@@ -135,8 +135,7 @@ exports[`addGoogleMapsAppDelegateInit adds maps import to AppDelegate 1`] = `
 `;
 
 exports[`addGoogleMapsAppDelegateInit adds maps import to AppDelegate 2`] = `
-"
-#import "AppDelegate.h"
+"#import "AppDelegate.h"
 
 #import <React/RCTBundleURLProvider.h>
 #import <React/RCTLinkingManager.h>
@@ -168,6 +167,11 @@ exports[`addGoogleMapsAppDelegateInit adds maps import to AppDelegate 2`] = `
 #endif
 }
 
+/// This method controls whether the \`concurrentRoot\`feature of React18 is turned on or off.
+///
+/// @see: https://reactjs.org/blog/2022/03/29/react-v18.html
+/// @note: This requires to be rendering on Fabric (i.e. on the New Architecture).
+/// @return: \`true\` if the \`concurrentRoot\` feature is enabled. Otherwise, it returns \`false\`.
 - (BOOL)concurrentRootEnabled
 {
   return true;
@@ -207,33 +211,97 @@ exports[`addGoogleMapsAppDelegateInit adds maps import to AppDelegate 2`] = `
 `;
 
 exports[`addMapsCocoaPods adds maps pods to Podfile 1`] = `
-"
-require_relative '../node_modules/react-native/scripts/react_native_pods'
-require_relative '../node_modules/react-native-unimodules/cocoapods.rb'
-require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+"require File.join(File.dirname(\`node --print "require.resolve('expo/package.json')"\`), "scripts/autolinking")
+require File.join(File.dirname(\`node --print "require.resolve('react-native/package.json')"\`), "scripts/react_native_pods")
+require File.join(File.dirname(\`node --print "require.resolve('@react-native-community/cli-platform-ios/package.json')"\`), "native_modules")
 
-platform :ios, '11.0'
+require 'json'
+podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
 
-target 'myapp' do
-  use_unimodules!
+ENV['RCT_NEW_ARCH_ENABLED'] = podfile_properties['newArchEnabled'] == 'true' ? '1' : '0'
+
+platform :ios, podfile_properties['ios.deploymentTarget'] || '13.0'
+install! 'cocoapods',
+  :deterministic_uuids => false
+
+prepare_react_native_project!
+
+# If you are using a \`react-native-flipper\` your iOS build will fail when \`NO_FLIPPER=1\` is set.
+# because \`react-native-flipper\` depends on (FlipperKit,...), which will be excluded. To fix this,
+# you can also exclude \`react-native-flipper\` in \`react-native.config.js\`
+#
+# \`\`\`js
+# module.exports = {
+#   dependencies: {
+#     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
+#   }
+# }
+# \`\`\`
+flipper_config = FlipperConfiguration.disabled
+if ENV['NO_FLIPPER'] == "1" || ENV['CI'] then
+  # Explicitly disabled through environment variables
+  flipper_config = FlipperConfiguration.disabled
+elsif podfile_properties.key?('ios.flipper') then
+  # Configure Flipper in Podfile.properties.json
+  if podfile_properties['ios.flipper'] == 'true' then
+    flipper_config = FlipperConfiguration.enabled(["Debug", "Release"])
+  elsif podfile_properties['ios.flipper'] != 'false' then
+    flipper_config = FlipperConfiguration.enabled(["Debug", "Release"], { 'Flipper' => podfile_properties['ios.flipper'] })
+  end
+end
+
+target 'HelloWorld' do
+  use_expo_modules!
 # @generated begin react-native-maps - expo prebuild (DO NOT MODIFY) sync-e9cc66c360abe50bc66d89fffb3c55b034d7d369
   pod 'react-native-google-maps', path: File.dirname(\`node --print "require.resolve('react-native-maps/package.json')"\`)
 # @generated end react-native-maps
   config = use_native_modules!
 
-  use_react_native!(:path => config["reactNativePath"])
+  use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
+  use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
 
-  # Uncomment the code below to enable Flipper.
-  #
-  # You should not install Flipper in CI environments when creating release
-  # builds, this will lead to significantly slower build times.
-  #
-  # Note that if you have use_frameworks! enabled, Flipper will not work.
-  #
-  #  use_flipper!
-  #  post_install do |installer|
-  #    flipper_post_install(installer)
-  #  end
+  # Flags change depending on the env values.
+  flags = get_default_flags()
+
+  use_react_native!(
+    :path => config[:reactNativePath],
+    :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
+    :fabric_enabled => flags[:fabric_enabled],
+    # An absolute path to your application root.
+    :app_path => "#{Pod::Config.instance.installation_root}/..",
+    # Note that if you have use_frameworks! enabled, Flipper will not work if enabled
+    :flipper_configuration => flipper_config
+  )
+
+  post_install do |installer|
+    react_native_post_install(
+      installer,
+      config[:reactNativePath],
+      # Set \`mac_catalyst_enabled\` to \`true\` in order to apply patches
+      # necessary for Mac Catalyst builds
+      :mac_catalyst_enabled => false
+    )
+    __apply_Xcode_12_5_M1_post_install_workaround(installer)
+
+    # This is necessary for Xcode 14, because it signs resource bundles by default
+    # when building for devices.
+    installer.target_installation_results.pod_target_installation_results
+      .each do |pod_name, target_installation_result|
+      target_installation_result.resource_bundle_targets.each do |resource_bundle_target|
+        resource_bundle_target.build_configurations.each do |config|
+          config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
+        end
+      end
+    end
+  end
+
+  post_integrate do |installer|
+    begin
+      expo_patch_react_imports!(installer)
+    rescue => e
+      Pod::UI.warn e
+    end
+  end
 end
 "
 `;
