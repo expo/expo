@@ -132,6 +132,7 @@ const general = [
     makePage('guides/typescript.mdx'),
     makePage('guides/using-flipper.mdx'),
     makePage('guides/using-analytics.mdx'),
+    makePage('guides/facebook-authentication.mdx'),
     makePage('guides/google-authentication.mdx'),
   ]),
   makeSection('Assorted guides', [
