@@ -53,28 +53,6 @@ describe('Footer', () => {
       'https://github.com/software-mansion/react-native-gesture-handler/issues'
     );
   });
-
-  test('displays source code link', () => {
-    const router = { pathname: '/sdk/' };
-    render(
-      withTestRouter(
-        <Footer
-          title="test-title"
-          sourceCodeUrl="https://github.com/expo/expo/tree/main/packages/expo-av"
-        />,
-        router
-      )
-    );
-
-    screen.getByText('View source code for test-title');
-  });
-
-  test('displays npm registry link', () => {
-    const router = { pathname: '/sdk/' };
-    render(withTestRouter(<Footer title="test-title" packageName="expo-av" />, router));
-
-    screen.getByText('View package in npm Registry');
-  });
 });
 
 describe('githubUrl', () => {

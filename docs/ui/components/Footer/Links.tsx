@@ -1,7 +1,5 @@
 import { css } from '@emotion/react';
 import {
-  BuildIcon,
-  CodeIcon,
   EditIcon,
   GithubIcon,
   iconSize,
@@ -51,41 +49,13 @@ export const ForumsLink = ({ isAPIPage, title }: { isAPIPage: boolean; title: st
     </LI>
   );
 
-export const SourceCodeLink = ({
-  title,
-  sourceCodeUrl,
-}: {
-  title: string;
-  sourceCodeUrl: string;
-}) => (
-  <LI>
-    <A css={linkStyle} openInNewTab href={sourceCodeUrl}>
-      <span css={iconStyle}>
-        <CodeIcon size={iconSize.sm} />
-      </span>
-      View source code for {title}
-    </A>
-  </LI>
-);
-
-export const GitHubLink = ({ pathname }: { pathname: string }) => (
+export const EditPageLink = ({ pathname }: { pathname: string }) => (
   <LI>
     <A css={linkStyle} openInNewTab href={githubUrl(pathname)}>
       <span css={iconStyle}>
         <EditIcon size={iconSize.sm} />
       </span>
       Edit this page
-    </A>
-  </LI>
-);
-
-export const NpmLink = ({ packageName }: { packageName: string }) => (
-  <LI>
-    <A css={linkStyle} openInNewTab href={`https://www.npmjs.com/package/${packageName}`}>
-      <span css={iconStyle}>
-        <BuildIcon size={iconSize.sm} />
-      </span>
-      View package in npm Registry
     </A>
   </LI>
 );
