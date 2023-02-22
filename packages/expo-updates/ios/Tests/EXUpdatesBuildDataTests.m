@@ -54,31 +54,31 @@ static NSString * const scopeKey = @"test";
 
 
   _configChannelTestDictionary = @{
-    EXUpdatesConfigScopeKeyKey: scopeKey,
-    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
-    EXUpdatesConfigRequestHeadersKey: @{@"expo-channel-name":@"test"}
+    EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey,
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    EXUpdatesConfig.EXUpdatesConfigRequestHeadersKey: @{@"expo-channel-name":@"test"}
   };
-  _configChannelTest = [EXUpdatesConfig configWithDictionary:_configChannelTestDictionary];
+  _configChannelTest = [EXUpdatesConfig configFromDictionary:_configChannelTestDictionary];
   _configChannelTestTwoDictionary = @{
-    EXUpdatesConfigScopeKeyKey: scopeKey,
-    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
-    EXUpdatesConfigRequestHeadersKey: @{@"expo-channel-name":@"testTwo"}
+    EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey,
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    EXUpdatesConfig.EXUpdatesConfigRequestHeadersKey: @{@"expo-channel-name":@"testTwo"}
   };
-  _configChannelTestTwo = [EXUpdatesConfig configWithDictionary:_configChannelTestTwoDictionary
+  _configChannelTestTwo = [EXUpdatesConfig configFromDictionary:_configChannelTestTwoDictionary
   ];
 
   _configReleaseChannelTestDictionary = @{
-    EXUpdatesConfigScopeKeyKey: scopeKey,
-    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
-    EXUpdatesConfigReleaseChannelKey: @"test",
+    EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey,
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    EXUpdatesConfig.EXUpdatesConfigReleaseChannelKey: @"test",
   };
-  _configReleaseChannelTest = [EXUpdatesConfig configWithDictionary:_configReleaseChannelTestDictionary];
+  _configReleaseChannelTest = [EXUpdatesConfig configFromDictionary:_configReleaseChannelTestDictionary];
   _configReleaseChannelTestTwoDictionary = @{
-    EXUpdatesConfigScopeKeyKey: scopeKey,
-    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
-    EXUpdatesConfigReleaseChannelKey: @"testTwo",
+    EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey,
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    EXUpdatesConfig.EXUpdatesConfigReleaseChannelKey: @"testTwo",
   };
-  _configReleaseChannelTestTwo = [EXUpdatesConfig configWithDictionary:_configReleaseChannelTestTwoDictionary
+  _configReleaseChannelTestTwo = [EXUpdatesConfig configFromDictionary:_configReleaseChannelTestTwoDictionary
   ];
 
   EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil

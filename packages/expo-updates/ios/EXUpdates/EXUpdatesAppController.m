@@ -91,7 +91,15 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 - (instancetype)init
 {
   if (self = [super init]) {
-    _config = [EXUpdatesConfig configWithExpoPlist];
+    NSError *error;
+    _config = [EXUpdatesConfig configWithExpoPlistWithMergingOtherDictionary:nil
+                                                                       error:&error];
+    if (error) {
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                     reason:@"Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
+                                   userInfo:@{}];
+    }
+    
     _database = [[EXUpdatesDatabase alloc] init];
     _defaultSelectionPolicy = [EXUpdatesSelectionPolicyFactory filterAwarePolicyWithRuntimeVersion:[EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
     _errorRecovery = [EXUpdatesErrorRecovery new];
@@ -113,7 +121,15 @@ static NSString * const EXUpdatesErrorEventName = @"error";
                                    reason:@"EXUpdatesAppController:setConfiguration should not be called after start"
                                  userInfo:@{}];
   }
-  [_config loadConfigFromDictionary:configuration];
+  
+  NSError *error;
+  _config = [EXUpdatesConfig configWithExpoPlistWithMergingOtherDictionary:configuration error:&error];
+  if (error) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"Cannot load configuration from Expo.plist or merged dictionary. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
+                                 userInfo:@{}];
+  }
+  
   [self resetSelectionPolicyToDefault];
 }
 
