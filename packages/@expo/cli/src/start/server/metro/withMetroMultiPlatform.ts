@@ -4,15 +4,18 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import chalk from 'chalk';
 import fs from 'fs';
 import { ConfigT } from 'metro-config';
 import { Resolution, ResolutionContext } from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
+import { Log } from '../../../log';
 import { FileNotifier } from '../../../utils/FileNotifier';
 import { env } from '../../../utils/env';
 import { installExitHooks } from '../../../utils/exit';
+import { learnMore } from '../../../utils/link';
 import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/loadTsConfigPaths';
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
@@ -62,7 +65,8 @@ function normalizeSlashes(p: string) {
 export function withExtendedResolver(
   config: ConfigT,
   projectRoot: string,
-  tsconfig: TsConfigPaths | null
+  tsconfig: TsConfigPaths | null,
+  platforms: string[]
 ) {
   // Get the `transformer.assetRegistryPath`
   // this needs to be unified since you can't dynamically
@@ -74,19 +78,24 @@ export function withExtendedResolver(
     // path.resolve(resolveFrom(projectRoot, '@react-native/assets/registry.js'))
   );
 
+  const isWebEnabled = platforms.includes('web');
+
   const { resolve } = importMetroResolverFromProject(projectRoot);
 
-  const extraNodeModules: { [key: string]: Record<string, string> } = {
-    web: {
-      'react-native': path.resolve(require.resolve('react-native-web/package.json'), '..'),
-    },
-  };
+  const extraNodeModules: { [key: string]: Record<string, string> } = {};
 
   const aliases: { [key: string]: Record<string, string> } = {
     web: {
       'react-native': 'react-native-web',
     },
   };
+
+  if (isWebEnabled) {
+    // Allow `react-native-web` to be optional when web is not enabled but path aliases is.
+    extraNodeModules['web'] = {
+      'react-native': path.resolve(require.resolve('react-native-web/package.json'), '..'),
+    };
+  }
 
   const preferredMainFields: { [key: string]: string[] } = {
     // Defaults from Expo Webpack. Most packages using `react-native` don't support web
@@ -267,7 +276,15 @@ export async function withMetroMultiPlatformAsync(
     return config;
   }
 
-  const tsconfig = await loadTsConfigPathsAsync(projectRoot);
+  let tsconfig: null | TsConfigPaths = null;
+
+  if (env.EXPO_USE_PATH_ALIASES) {
+    Log.warn(
+      chalk.yellow`Experimental path aliases feature is enabled. ` +
+        learnMore('https://docs.expo.dev/guides/typescript/#path-aliases')
+    );
+    tsconfig = await loadTsConfigPathsAsync(projectRoot);
+  }
 
   return withMetroMultiPlatform(projectRoot, config, platformBundlers, tsconfig);
 }
@@ -293,5 +310,5 @@ function withMetroMultiPlatform(
     config = withWebPolyfills(config);
   }
 
-  return withExtendedResolver(config, projectRoot, jsconfig);
+  return withExtendedResolver(config, projectRoot, jsconfig, expoConfigPlatforms);
 }
