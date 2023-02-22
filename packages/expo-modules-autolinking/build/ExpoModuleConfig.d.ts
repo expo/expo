@@ -1,4 +1,4 @@
-import { RawExpoModuleConfig, SupportedPlatform } from './types';
+import { AndroidGradlePluginDescriptor, RawExpoModuleConfig, SupportedPlatform } from './types';
 /**
  * A class that wraps the raw config (`expo-module.json` or `unimodule.json`).
  */
@@ -41,6 +41,11 @@ export declare class ExpoModuleConfig {
      * Returns build.gradle file paths defined by the module author.
      */
     androidGradlePaths(): string[];
+    /**
+     * Returns gradle plugins descriptors defined by the module author.
+     * Currently only whitelisted `GRADLE_PLUGIN_WHITELISTS` modules could link gradle plugins automatically.
+     */
+    androidGradlePlugins(): AndroidGradlePluginDescriptor[];
     /**
      * Returns serializable raw config.
      */

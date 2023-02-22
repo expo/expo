@@ -73,6 +73,13 @@ class ExpoModuleConfig {
         return arrayize(this.rawConfig.android?.gradlePath ?? []);
     }
     /**
+     * Returns gradle plugins descriptors defined by the module author.
+     * Currently only whitelisted `GRADLE_PLUGIN_WHITELISTS` modules could link gradle plugins automatically.
+     */
+    androidGradlePlugins() {
+        return arrayize(this.rawConfig.android?.gradlePlugins ?? []);
+    }
+    /**
      * Returns serializable raw config.
      */
     toJSON() {

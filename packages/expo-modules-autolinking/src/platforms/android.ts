@@ -4,6 +4,9 @@ import path from 'path';
 
 import { ModuleDescriptorAndroid, PackageRevision } from '../types';
 
+// Only modules in this whitelist could apply gradle plugins automatically
+const GRADLE_PLUGIN_WHITELISTS = ['expo-dev-launcher'];
+
 /**
  * Generates Java file that contains all autolinked packages.
  */
@@ -58,9 +61,18 @@ export async function resolveModuleAsync(
     };
   });
 
+  const plugins = (revision.config?.androidGradlePlugins() ?? []).map(
+    ({ id, group, sourceDir }) => ({
+      id,
+      group,
+      sourceDir: path.join(revision.path, sourceDir),
+    })
+  );
+
   return {
     packageName,
     projects,
+    ...(plugins.length > 0 && GRADLE_PLUGIN_WHITELISTS.includes(packageName) ? { plugins } : {}),
     modules: revision.config?.androidModules() ?? [],
   };
 }

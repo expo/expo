@@ -16,6 +16,24 @@ class ExpoModuleGradleProject {
   }
 }
 
+// Object representing a gradle plugin
+class ExpoModuleGradlePlugin {
+  // ID of the gradle plugin
+  String id
+
+  // Artifact group
+  String group
+
+  // Path to the plugin folder
+  String sourceDir
+
+  ExpoModuleGradlePlugin(Object data) {
+    this.id = data.id
+    this.group = data.group
+    this.sourceDir = data.sourceDir
+  }
+}
+
 // Object representing a module.
 class ExpoModule {
   // Name of the JavaScript package
@@ -27,10 +45,14 @@ class ExpoModule {
   // Gradle projects
   ExpoModuleGradleProject[] projects
 
+  // Gradle plugins
+  ExpoModuleGradlePlugin[] plugins
+
   ExpoModule(Object data) {
     this.name = data.packageName
     this.version = data.packageVersion
     this.projects = data.projects.collect { new ExpoModuleGradleProject(it) }
+    this.plugins = data.plugins.collect { new ExpoModuleGradlePlugin(it) }
   }
 }
 
@@ -141,9 +163,9 @@ class Colors {
   static final String RESET = "\u001B[0m"
 }
 
-// We can't cast a manager that is created in `settings.gradle` to the `ExpoAutolinkingManager` 
-// because if someone is using `buildSrc`, the `ExpoAutolinkingManager` class 
-// will be loaded by two different class loader - `settings.gradle` will use a diffrent loader. 
+// We can't cast a manager that is created in `settings.gradle` to the `ExpoAutolinkingManager`
+// because if someone is using `buildSrc`, the `ExpoAutolinkingManager` class
+// will be loaded by two different class loader - `settings.gradle` will use a diffrent loader.
 // In the JVM, classes are equal only if were loaded by the same loader.
 // There is nothing that we can do in that case, but to make our code safer, we check if the class name is the same.
 def validateExpoAutolinkingManager(manager) {
@@ -165,6 +187,33 @@ if (rootProject instanceof ProjectDescriptor) {
       for (moduleProject in module.projects) {
         include(":${moduleProject.name}")
         project(":${moduleProject.name}").projectDir = new File(moduleProject.sourceDir)
+      }
+      for (modulePlugin in module.plugins) {
+        includeBuild(new File(modulePlugin.sourceDir))
+      }
+    }
+
+    // Add plugin classpath to the root project
+    gradle.beforeProject { project ->
+      if (project === project.rootProject) {
+        for (module in modules) {
+          for (modulePlugin in module.plugins) {
+            project.buildscript.dependencies.add('classpath', "${modulePlugin.group}:${modulePlugin.id}")
+          }
+        }
+      }
+    }
+
+    // Apply plugins for all app projects
+    gradle.afterProject { project ->
+      if (!project.plugins.hasPlugin('com.android.application')) {
+        return
+      }
+      for (module in modules) {
+        for (modulePlugin in module.plugins) {
+          println "Applying gradle plugin '${Colors.GREEN}${modulePlugin.id}${Colors.RESET}' (${module.name}@${module.version})"
+          project.plugins.apply(modulePlugin.id)
+        }
       }
     }
 
@@ -251,7 +300,7 @@ if (rootProject instanceof ProjectDescriptor) {
     ExpoAutolinkingManager.generatePackageList(project, options)
   }
 
-  ext.ensureDependeciesWereEvaluated = { Project project -> 
+  ext.ensureDependeciesWereEvaluated = { Project project ->
     if (!gradle.ext.has('expoAutolinkingManager')) {
       return
     }
@@ -269,7 +318,7 @@ if (rootProject instanceof ProjectDescriptor) {
         if (moduleProject.name == project.name) {
           continue
         }
-      
+
         project.evaluationDependsOn(":${moduleProject.name}")
       }
     }
