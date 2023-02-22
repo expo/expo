@@ -8,8 +8,6 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed `PhaseScriptExecution failed with a nonzero exit code` caused by the failure of the `command -v node`.
-
 ### 💡 Others
 
 ## 1.2.3 - 2023-02-21
