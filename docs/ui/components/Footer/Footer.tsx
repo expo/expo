@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import { breakpoints, spacing, theme } from '@expo/styleguide';
 import { useRouter } from 'next/router';
 
-import { ForumsLink, GitHubLink, IssuesLink, NpmLink, SourceCodeLink } from './Links';
+import { ForumsLink, EditPageLink, IssuesLink } from './Links';
 
 import { NewsletterSignUp } from '~/ui/components/Footer/NewsletterSignUp';
 import { PageVote } from '~/ui/components/Footer/PageVote';
@@ -28,11 +28,7 @@ export const Footer = ({ title, sourceCodeUrl, packageName }: Props) => {
         {isAPIPage && (
           <IssuesLink title={title} repositoryUrl={isExpoPackage ? undefined : sourceCodeUrl} />
         )}
-        {isAPIPage && sourceCodeUrl && (
-          <SourceCodeLink title={title} sourceCodeUrl={sourceCodeUrl} />
-        )}
-        {packageName && <NpmLink packageName={packageName} />}
-        <GitHubLink pathname={pathname} />
+        <EditPageLink pathname={pathname} />
       </UL>
       <PageVote />
       {!NEWSLETTER_DISABLED && <NewsletterSignUp />}
