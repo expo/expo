@@ -165,14 +165,6 @@ export function getRedirectUrl(path?: string): string {
  * // Expo Go: exp://localhost:19000
  * // Web dev: https://localhost:19006
  * // Web prod: https://yourwebsite.com
- *
- * const redirectUri3 = makeRedirectUri({
- *   useProxy: true,
- * });
- * // Development Build: https://auth.expo.io/@username/slug
- * // Expo Go: https://auth.expo.io/@username/slug
- * // Web dev: https://localhost:19006
- * // Web prod: https://yourwebsite.com
  * ```
  */
 export function makeRedirectUri({

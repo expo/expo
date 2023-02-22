@@ -23,7 +23,7 @@ type AuthDiscoveryDocument = Pick<DiscoveryDocument, 'authorizationEndpoint'>;
 
 // @needsAudit @docsMissing
 /**
- * Used to manage an authorization request according to the OAuth spec: [Section 4.1.1][https://tools.ietf.org/html/rfc6749#section-4.1.1].
+ * Used to manage an authorization request according to the OAuth spec: [Section 4.1.1](https://tools.ietf.org/html/rfc6749#section-4.1.1).
  * You can use this class directly for more info around the authorization.
  *
  * **Common use-cases:**
