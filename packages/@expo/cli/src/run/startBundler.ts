@@ -18,6 +18,11 @@ export async function startBundlerAsync(
     scheme?: string;
   }
 ): Promise<DevServerManager> {
+  // Apply the following side-effects for other tools to determine
+  // the current environment.
+  process.env.NODE_ENV = 'development';
+  process.env.BABEL_ENV = 'development';
+
   const options = {
     port,
     headless,

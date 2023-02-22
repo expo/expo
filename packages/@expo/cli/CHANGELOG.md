@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Set `NODE_ENV` and `BABEL_ENV` environment variables to `development` or `production` in `start`, `export`, and run commands based on the input mode.
+
 ### 🎉 New features
 
 - Reduce install prompt. ([#21264](https://github.com/expo/expo/pull/21264) by [@EvanBacon](https://github.com/EvanBacon))
