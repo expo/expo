@@ -1,0 +1,1 @@
+export { PageTitle } from './PageTitle';

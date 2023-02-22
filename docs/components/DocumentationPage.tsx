@@ -14,9 +14,10 @@ import Head from '~/components/Head';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
+import { PageTitle } from '~/ui/components/PageTitle';
 import { Separator } from '~/ui/components/Separator';
 import { Sidebar } from '~/ui/components/Sidebar';
-import { H1, P } from '~/ui/components/Text';
+import { P } from '~/ui/components/Text';
 
 const STYLES_DOCUMENT = css`
   background: ${theme.background.default};
@@ -34,6 +35,7 @@ type Props = React.PropsWithChildren<{
   sourceCodeUrl?: string;
   tocVisible: boolean;
   packageName?: string;
+  iconUrl?: string;
   /** If the page should not show up in the Algolia Docsearch results */
   hideFromSearch?: boolean;
 }>;
@@ -129,8 +131,19 @@ export default function DocumentationPage(props: Props) {
         )}
       </Head>
       <div css={STYLES_DOCUMENT}>
-        {props.title && <H1>{props.title}</H1>}
-        {props.description && <P theme="secondary">{props.description}</P>}
+        {props.title && (
+          <PageTitle
+            title={props.title}
+            sourceCodeUrl={props.sourceCodeUrl}
+            packageName={props.packageName}
+            iconUrl={props.iconUrl}
+          />
+        )}
+        {props.description && (
+          <P theme="secondary" data-text="true">
+            {props.description}
+          </P>
+        )}
         {props.title && <Separator />}
         {props.children}
         {props.title && (
