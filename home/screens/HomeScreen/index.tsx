@@ -1,7 +1,7 @@
 import { StackScreenProps } from '@react-navigation/stack';
 import { useCurrentTheme, useExpoTheme } from 'expo-dev-client-components';
 import * as React from 'react';
-import { SafeAreaView } from 'react-native-safe-area-context';
+import { SafeAreaView } from 'react-native';
 
 import { HomeScreenDataQuery } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
@@ -51,7 +51,7 @@ export function HomeScreen(props: NavigationProps) {
   const { homeScreenData } = useInitialData();
 
   return (
-    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background.default }} edges={['top']}>
+    <SafeAreaView style={{ flex: 1, backgroundColor: theme.background.default }}>
       <HomeScreenView
         theme={themeType}
         {...props}
