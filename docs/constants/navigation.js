@@ -343,25 +343,11 @@ const archive = [
       expanded: true,
     }
   ),
-  makeSection(
-    'Deprecated',
-    [
-      makeGroup('ExpoKit', [
-        makePage('archive/expokit/overview.mdx'),
-        makePage('archive/expokit/eject.mdx'),
-        makePage('archive/expokit/expokit.mdx'),
-        makePage('archive/expokit/advanced-expokit-topics.mdx'),
-        makePage('archive/expokit/universal-modules-and-expokit.mdx'),
-      ]),
-    ],
-    {
-      expanded: true,
-    }
-  ),
   makeGroup('Miscellaneous', [
     makePage('archive/adhoc-builds.mdx'),
     makePage('archive/expo-cli.mdx'),
     makePage('archive/notification-channels.mdx'),
+    makePage('archive/glossary.mdx'),
   ]),
 ];
 
