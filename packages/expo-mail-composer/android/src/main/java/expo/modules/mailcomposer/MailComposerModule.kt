@@ -1,93 +1,75 @@
 package expo.modules.mailcomposer
 
-import android.app.Activity
-import android.content.Context
 import android.content.Intent
 import android.content.pm.LabeledIntent
 import android.net.Uri
 import android.os.Bundle
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.ModuleRegistryDelegate
-import expo.modules.core.Promise
-import expo.modules.core.arguments.ReadableArguments
-import expo.modules.core.interfaces.ActivityProvider
-import expo.modules.core.interfaces.ExpoMethod
-import expo.modules.core.interfaces.ActivityEventListener
-import expo.modules.core.interfaces.services.UIManager
+import expo.modules.kotlin.Promise
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 
-class MailComposerModule(
-  context: Context,
-  private val moduleRegistryDelegate: ModuleRegistryDelegate = ModuleRegistryDelegate()
-) : ExportedModule(context), ActivityEventListener {
+class MailComposerModule : Module() {
+  private val context
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
+  private val currentActivity
+    get() = appContext.currentActivity ?: throw Exceptions.MissingActivity()
   private var composerOpened = false
-  private val uiManager: UIManager by moduleRegistry()
   private var pendingPromise: Promise? = null
-  override fun getName() = "ExpoMailComposer"
-  private val activityProvider: ActivityProvider by moduleRegistry()
 
-  private inline fun <reified T> moduleRegistry() = moduleRegistryDelegate.getFromModuleRegistry<T>()
+  override fun definition() = ModuleDefinition {
+    Name("ExpoMailComposer")
 
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    moduleRegistryDelegate.onCreate(moduleRegistry)
-    uiManager.registerActivityEventListener(this)
-  }
-
-  override fun onDestroy() {
-    uiManager.unregisterActivityEventListener(this)
-  }
-
-  @ExpoMethod
-  fun isAvailableAsync(promise: Promise) {
-    promise.resolve(true)
-  }
-
-  @ExpoMethod
-  fun composeAsync(options: ReadableArguments, promise: Promise) {
-    val intent = Intent(Intent.ACTION_SENDTO).apply { data = Uri.parse("mailto:") }
-    val application = activityProvider.currentActivity.application
-    val resolveInfo = context.packageManager.queryIntentActivities(intent, 0)
-    val mailIntents = resolveInfo.map { info ->
-      val isHtml = options.containsKey("isHtml") && options.getBoolean("isHtml")
-      val mailIntentBuilder = MailIntentBuilder(options)
-        .setComponentName(info.activityInfo.packageName, info.activityInfo.name)
-        .putExtraIfKeyExists("recipients", Intent.EXTRA_EMAIL)
-        .putExtraIfKeyExists("ccRecipients", Intent.EXTRA_CC)
-        .putExtraIfKeyExists("bccRecipients", Intent.EXTRA_BCC)
-        .putExtraIfKeyExists("subject", Intent.EXTRA_SUBJECT)
-        .putExtraIfKeyExists("body", Intent.EXTRA_TEXT, isHtml)
-        .putParcelableArrayListExtraIfKeyExists(
-          "attachments",
-          Intent.EXTRA_STREAM,
-          application
-        )
-      LabeledIntent(
-        mailIntentBuilder.build(),
-        info.activityInfo.packageName,
-        info.loadLabel(context.packageManager),
-        info.icon
-      )
-    }.toMutableList()
-    val chooser = Intent.createChooser(
-      mailIntents.removeAt(mailIntents.size - 1),
-      null
-    ).apply {
-      putExtra(Intent.EXTRA_INITIAL_INTENTS, mailIntents.toTypedArray())
-      addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+    AsyncFunction("isAvailableAsync") {
+      return@AsyncFunction true
     }
-    pendingPromise = promise
-    activityProvider.currentActivity.startActivityForResult(chooser, REQUEST_CODE)
-    composerOpened = true
-  }
 
-  override fun onNewIntent(intent: Intent) = Unit
+    AsyncFunction("composeAsync") { options: MailComposerOptions, promise: Promise ->
+      val intent = Intent(Intent.ACTION_SENDTO).apply { data = Uri.parse("mailto:") }
+      val application = currentActivity.application
+      val resolveInfo = context.packageManager.queryIntentActivities(intent, 0)
 
-  override fun onActivityResult(activity: Activity, requestCode: Int, resultCode: Int, data: Intent?) {
-    if (requestCode == REQUEST_CODE && pendingPromise != null) {
-      val promise = pendingPromise ?: return
-      if (composerOpened) {
-        composerOpened = false
-        promise.resolve(Bundle().apply { putString("status", "sent") })
+      val mailIntents = resolveInfo.map { info ->
+        val mailIntentBuilder = MailIntentBuilder(options)
+          .setComponentName(info.activityInfo.packageName, info.activityInfo.name)
+          .putRecipients(Intent.EXTRA_EMAIL)
+          .putCcRecipients(Intent.EXTRA_CC)
+          .putBccRecipients(Intent.EXTRA_BCC)
+          .putSubject(Intent.EXTRA_SUBJECT)
+          .putBody(Intent.EXTRA_TEXT, options.isHtml ?: false)
+          .putAttachments(
+            Intent.EXTRA_STREAM,
+            application
+          )
+
+        LabeledIntent(
+          mailIntentBuilder.build(),
+          info.activityInfo.packageName,
+          info.loadLabel(context.packageManager),
+          info.icon
+        )
+      }.toMutableList()
+
+      val chooser = Intent.createChooser(
+        mailIntents.removeAt(mailIntents.size - 1),
+        null
+      ).apply {
+        putExtra(Intent.EXTRA_INITIAL_INTENTS, mailIntents.toTypedArray())
+        addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION)
+      }
+
+      pendingPromise = promise
+      currentActivity.startActivityForResult(chooser, REQUEST_CODE)
+      composerOpened = true
+    }
+
+    OnActivityResult { _, payload ->
+      if (payload.requestCode == REQUEST_CODE && pendingPromise != null) {
+        val promise = pendingPromise ?: return@OnActivityResult
+        if (composerOpened) {
+          composerOpened = false
+          promise.resolve(Bundle().apply { putString("status", "sent") })
+        }
       }
     }
   }
