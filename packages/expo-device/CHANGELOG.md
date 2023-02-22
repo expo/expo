@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Device.getDeviceTypeAsync() returning TABLET on some devices. ([#21325](https://github.com/expo/expo/pull/21325) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 ## 5.2.1 — 2023-02-09
