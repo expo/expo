@@ -71,7 +71,7 @@ const containerStyle = css({
   transition: 'color 150ms, opacity 150ms',
   textDecoration: 'none',
   borderRadius: borderRadius.md,
-  fontWeight: 600,
+  fontWeight: 500,
   gap: spacing[2.5],
 
   '&:hover': {
