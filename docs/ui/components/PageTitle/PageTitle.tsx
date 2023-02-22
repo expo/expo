@@ -1,6 +1,5 @@
 import { css } from '@emotion/react';
 import { breakpoints, BuildIcon, GithubIcon, spacing, theme } from '@expo/styleguide';
-import Image from 'next/image';
 
 import { A, CALLOUT, H1 } from '~/ui/components/Text';
 
@@ -13,9 +12,7 @@ type Props = {
 
 export const PageTitle = ({ title, packageName, iconUrl, sourceCodeUrl }: Props) => (
   <H1>
-    {iconUrl && (
-      <Image src={iconUrl} css={titleIconStyle} alt={`Expo ${title} icon`} width={48} height={48} />
-    )}
+    {iconUrl && <img src={iconUrl} css={titleIconStyle} alt={`Expo ${title} icon`} />}
     {packageName && packageName.startsWith('expo-') && 'Expo '}
     {title}
     {packageName && (
@@ -50,7 +47,8 @@ const titleIconStyle = css({
   marginRight: spacing[3.5],
   position: 'relative',
   top: -5,
-  maxWidth: 48,
+  width: 48,
+  height: 48,
 
   [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
     width: 42,
