@@ -3,8 +3,9 @@ import { vol } from 'memfs';
 import * as path from 'path';
 
 import rnFixture from '../../__tests__/fixtures/react-native-project';
+import { getDirFromFS } from '../../__tests__/getDirFromFS';
 import { getIcons, ICON_CONTENTS, setIconsAsync } from '../withIosIcons';
-import { getDirFromFS } from './utils/getDirFromFS';
+
 const fsReal = jest.requireActual('fs') as typeof fs;
 
 jest.mock('fs');

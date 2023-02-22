@@ -1,6 +1,6 @@
-const fs = jest.requireActual('fs') as typeof import('fs');
 import path from 'path';
 
+const fs = jest.requireActual('fs') as typeof import('fs');
 const template = path.join(__dirname, '../../../../../../../templates/expo-template-bare-minimum/');
 
 export function readAllFiles(): {

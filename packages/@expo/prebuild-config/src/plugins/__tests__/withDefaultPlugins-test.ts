@@ -18,7 +18,6 @@ import {
   withIosExpoPlugins,
   withVersionedExpoSDKPlugins,
 } from '../withDefaultPlugins';
-import { PodfileBasic } from './fixtures/Podfile';
 import rnFixture from './fixtures/react-native-project';
 import { getDirFromFS } from './getDirFromFS';
 
@@ -225,7 +224,6 @@ describe('built-in plugins', () => {
         './node_modules/react-native-maps/package.json': JSON.stringify({}),
         // App files
         ...rnFixture,
-        'ios/Podfile': PodfileBasic,
         'config/GoogleService-Info.plist': googleServiceInfoFixture,
         'config/google-services.json': '{}',
         './icons/foreground.png': icon,
