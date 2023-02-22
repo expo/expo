@@ -56,7 +56,7 @@ public class EXDevLauncherNetworkLogger: NSObject {
       withJSONObject: ["method": "Network.requestWillBeSent", "params": params],
       options: []
     ), let message = String(data: data, encoding: .utf8) {
-      inspectorPackagerConn?.sendWrappedEventToAllRemoteConnections(message)
+      inspectorPackagerConn?.sendWrappedEventToAllPages(message)
     }
   }
 
@@ -84,7 +84,7 @@ public class EXDevLauncherNetworkLogger: NSObject {
       withJSONObject: ["method": "Network.responseReceived", "params": params],
       options: []
     ), let message = String(data: data, encoding: .utf8) {
-      inspectorPackagerConn?.sendWrappedEventToAllRemoteConnections(message)
+      inspectorPackagerConn?.sendWrappedEventToAllPages(message)
     }
 
     params = [
@@ -99,7 +99,7 @@ public class EXDevLauncherNetworkLogger: NSObject {
       ],
       options: []
     ), let message = String(data: data, encoding: .utf8) {
-      inspectorPackagerConn?.sendWrappedEventToAllRemoteConnections(message)
+      inspectorPackagerConn?.sendWrappedEventToAllPages(message)
     }
   }
 }
@@ -150,14 +150,9 @@ extension RCTInspectorPackagerConnection {
   /**
    Sends message from native to inspector proxy
    */
-  func sendWrappedEventToAllRemoteConnections(_ event: String) {
-    guard let inspectorConnections =
-      value(forKey: "_inspectorConnections") as? [String: RCTInspectorLocalConnection]
-    else {
-      return
-    }
-    for pageId in inspectorConnections.keys {
-      perform(NSSelectorFromString("sendWrappedEvent:message:"), with: pageId, with: event)
+  func sendWrappedEventToAllPages(_ event: String) {
+    for page in RCTInspector.pages() {
+      perform(NSSelectorFromString("sendWrappedEvent:message:"), with: String(page.id), with: event)
     }
   }
 }
