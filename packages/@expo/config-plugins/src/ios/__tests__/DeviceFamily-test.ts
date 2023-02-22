@@ -3,6 +3,7 @@ import * as fs from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
 
+import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import * as WarningAggregator from '../../utils/warnings';
 import {
   formatDeviceFamilies,
@@ -90,10 +91,8 @@ describe(setDeviceFamily, () => {
   beforeAll(async () => {
     vol.fromJSON(
       {
-        'ios/testproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ),
+        'ios/testproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
         'ios/testproject/AppDelegate.m': '',
       },
       projectRoot
