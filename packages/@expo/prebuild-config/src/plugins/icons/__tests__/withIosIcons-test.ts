@@ -76,9 +76,9 @@ describe('e2e: iOS icons', () => {
   it('writes all the image files expected', async () => {
     await setIconsAsync(
       {
-        slug: 'ReactNativeProject',
+        slug: 'HelloWorld',
         version: '1',
-        name: 'ReactNativeProject',
+        name: 'HelloWorld',
         platforms: ['ios', 'android'],
         // must use full path for mock fs
         icon: '/app/assets/icon.png',
@@ -88,7 +88,7 @@ describe('e2e: iOS icons', () => {
 
     const after = getDirFromFS(vol.toJSON(), projectRoot);
     const icons = Object.keys(after).filter((value) =>
-      value.startsWith('ios/ReactNativeProject/Images.xcassets/AppIcon.appiconset/App-Icon')
+      value.startsWith('ios/HelloWorld/Images.xcassets/AppIcon.appiconset/App-Icon')
     );
 
     expect(icons.length).toBe(14);
@@ -98,7 +98,7 @@ describe('e2e: iOS icons', () => {
 
     // Test the Contents.json file
     const contents = JSON.parse(
-      after['ios/ReactNativeProject/Images.xcassets/AppIcon.appiconset/Contents.json']
+      after['ios/HelloWorld/Images.xcassets/AppIcon.appiconset/Contents.json']
     );
     expect(contents.images).toMatchSnapshot();
 

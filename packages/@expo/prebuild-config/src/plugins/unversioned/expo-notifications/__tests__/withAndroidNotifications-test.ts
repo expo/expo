@@ -7,7 +7,8 @@ import * as path from 'path';
 
 import { SAMPLE_COLORS_XML } from '../../../__tests__/fixtures/androidIcons';
 import rnFixture from '../../../__tests__/fixtures/react-native-project';
-import { getDirFromFS } from '../../../icons/__tests__/utils/getDirFromFS';
+import { getDirFromFS } from '../../../__tests__/getDirFromFS';
+
 import {
   getNotificationColor,
   getNotificationIcon,
@@ -144,9 +145,7 @@ describe('Applies proper Android Notification configuration to AndroidManifest.x
   });
 
   it('removes existing config if null is provided', async () => {
-    let androidManifestJson = await AndroidConfig.Manifest.readAndroidManifestAsync(
-      './AndroidManifest.xml'
-    );
+    let androidManifestJson = await getFixtureManifestAsync();
 
     androidManifestJson = setNotificationConfig(notificationConfig, androidManifestJson);
     // Now let's get rid of the configuration:

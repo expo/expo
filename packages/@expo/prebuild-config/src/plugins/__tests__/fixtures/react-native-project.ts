@@ -61,6 +61,7 @@ export function readAllFiles(): {
   };
 
   function readFile(file: string) {
+    if (file.endsWith('.DS_Store')) return;
     const p = path.join(template, file);
     if (fs.statSync(p).isDirectory()) {
       fs.readdirSync(p).forEach((f) => {
