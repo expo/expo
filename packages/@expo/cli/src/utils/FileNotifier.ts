@@ -10,7 +10,16 @@ const debug = require('debug')('expo:utils:fileNotifier') as typeof console.log;
 
 /** Observes and reports file changes. */
 export class FileNotifier {
+  static instances: FileNotifier[] = [];
+
+  static stopAll() {
+    for (const instance of FileNotifier.instances) {
+      instance.stopObserving();
+    }
+  }
+
   private unsubscribe: (() => void) | null = null;
+
   constructor(
     /** Project root to resolve the module IDs relative to. */
     private projectRoot: string,
@@ -20,7 +29,9 @@ export class FileNotifier {
       /** An additional warning message to add to the notice. */
       additionalWarning?: string;
     } = {}
-  ) {}
+  ) {
+    FileNotifier.instances.push(this);
+  }
 
   /** Get the file in the project. */
   private resolveFilePath(): string | null {
