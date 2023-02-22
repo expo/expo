@@ -158,7 +158,11 @@ class DeviceModule : Module() {
       if (smallestScreenWidthDp == Configuration.SMALLEST_SCREEN_WIDTH_DP_UNDEFINED) {
         return DeviceType.UNKNOWN
       }
-      return if (smallestScreenWidthDp >= 600) DeviceType.TABLET else DeviceType.PHONE
+      return if (smallestScreenWidthDp >= 600) {
+        DeviceType.TABLET 
+      } else {
+        DeviceType.PHONE
+      }
     }
 
     private fun getDeviceTypeFromPhysicalSize(context: Context): DeviceType {
