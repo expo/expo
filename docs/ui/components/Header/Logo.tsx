@@ -4,26 +4,46 @@ import {
   theme,
   spacing,
   typography,
-  ChevronRightIcon,
   Logo as LogoIcon,
   WordMarkLogo,
+  borderRadius,
+  iconSize,
+  ChevronRightIcon,
 } from '@expo/styleguide';
-import React from 'react';
 
+import { DocumentationIcon } from '~/ui/components/Sidebar/icons/Documentation';
 import { LinkBase } from '~/ui/components/Text';
 
-export const Logo = () => (
-  <>
+type Props = {
+  subgroup?: string;
+};
+
+export const Logo = ({ subgroup }: Props) => (
+  <div css={logoWrapperStyle}>
     <LinkBase css={linkStyle} href="https://expo.dev">
       <WordMarkLogo color={theme.text.default} css={[logoStyle, hideOnMobile]} title="Expo" />
       <LogoIcon color={theme.text.default} css={[logoStyle, showOnMobile]} title="Expo" />
     </LinkBase>
-    <ChevronRightIcon css={chevronStyle} color={theme.icon.secondary} title="" />
     <LinkBase css={linkStyle} href="/">
+      <div css={iconContainer}>
+        <DocumentationIcon size={iconSize.sm} />
+      </div>
       <span css={subtitleStyle}>Docs</span>
     </LinkBase>
-  </>
+    {subgroup && (
+      <>
+        <ChevronRightIcon css={[chevronStyle, hideOnMobile]} color={theme.icon.tertiary} title="" />
+        <span css={[subtitleStyle, hideOnMobile]}>{subgroup}</span>
+      </>
+    )}
+  </div>
 );
+
+const logoWrapperStyle = css({
+  display: 'flex',
+  gap: spacing[4],
+  alignItems: 'center',
+});
 
 const linkStyle = css`
   display: flex;
@@ -31,6 +51,7 @@ const linkStyle = css`
   align-items: center;
   text-decoration: none;
   user-select: none;
+  gap: ${spacing[2]}px;
 `;
 
 const logoStyle = css`
@@ -39,7 +60,7 @@ const logoStyle = css`
 `;
 
 const chevronStyle = css`
-  margin: 0 ${spacing[2]}px;
+  margin: 0 ${-spacing[2]}px;
 
   @media screen and (max-width: ${breakpoints.medium}px) {
     margin-left: ${spacing[0.5]}px;
@@ -64,5 +85,16 @@ const showOnMobile = css`
 
 const subtitleStyle = css`
   color: ${theme.text.default};
+  font-weight: 500;
   ${typography.fontSizes[18]}
 `;
+
+const iconContainer = css({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: theme.palette.blue4,
+  borderRadius: borderRadius.sm,
+  height: 24,
+  width: 24,
+});
