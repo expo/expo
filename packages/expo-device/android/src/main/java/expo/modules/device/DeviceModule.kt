@@ -158,7 +158,7 @@ class DeviceModule : Module() {
       return if (smallestScreenWidthDp == Configuration.SMALLEST_SCREEN_WIDTH_DP_UNDEFINED) {
         DeviceType.UNKNOWN
       } else if (smallestScreenWidthDp >= 600) {
-        DeviceType.TABLET 
+        DeviceType.TABLET
       } else {
         DeviceType.PHONE
       }
