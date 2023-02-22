@@ -3,14 +3,14 @@ import { ArrowUpRightIcon, ChevronRightIcon, IconProps, iconSize, theme } from '
 import { externalLinkStyles, footerArrowStyle } from './styles';
 
 export const FootnoteArrowIcon = () => (
-  <ChevronRightIcon size={iconSize.micro} color={theme.icon.secondary} css={footerArrowStyle} />
+  <ChevronRightIcon size={iconSize['2xs']} color={theme.icon.secondary} css={footerArrowStyle} />
 );
 
 export const ExternalLinkIcon = () => (
   <ArrowUpRightIcon color={theme.icon.secondary} css={externalLinkStyles} />
 );
 
-export const GuideIcon = ({ size = iconSize.regular, color = theme.icon.secondary }: IconProps) => (
+export const GuideIcon = ({ size = iconSize.md, color = theme.icon.secondary }: IconProps) => (
   <svg width={size} height={size} viewBox="0 0 16 16" fill="none">
     <path
       d="M2.66675 12.9999C2.66675 12.5579 2.84234 12.134 3.1549 11.8214C3.46746 11.5088 3.89139 11.3333 4.33341 11.3333H13.3334"
@@ -29,7 +29,7 @@ export const GuideIcon = ({ size = iconSize.regular, color = theme.icon.secondar
   </svg>
 );
 
-export const ReactIcon = ({ size = iconSize.regular, color = theme.icon.secondary }: IconProps) => (
+export const ReactIcon = ({ size = iconSize.md, color = theme.icon.secondary }: IconProps) => (
   <svg viewBox="-11.5 -10.23174 23 20.46348" width={size} height={size}>
     <circle cx="0" cy="0" r="2.05" fill={color} />
     <g stroke={color} strokeWidth="1" fill="none">

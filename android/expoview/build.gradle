@@ -5,8 +5,6 @@ apply plugin: 'de.undercouch.download'
 apply plugin: 'kotlin-kapt'
 apply from: new File(rootDir, "versioning_linking.gradle")
 
-def hasHermesEngineDeps = false
-
 def reactProperties = new Properties()
 file("${project(':ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
 
@@ -94,7 +92,7 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 31)
+    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 1
     versionName "1.0"
 
@@ -139,6 +137,21 @@ android {
 // WHEN_VERSIONING_REMOVE_FROM_HERE
 import org.apache.tools.ant.taskdefs.condition.Os
 
+class DownloadVersionedAarsPlugin implements Plugin<Project> {
+  @Override
+  void apply(org.gradle.api.Project target) {
+    target.exec {
+      workingDir '../../bin'
+
+      if (Os.isFamily(Os.FAMILY_WINDOWS)) {
+        commandLine 'cmd.exe', '/c', 'expotools android-download-versioned-aars'
+      } else {
+        commandLine './expotools', 'android-download-versioned-aars'
+      }
+    }
+  }
+}
+
 class GenerateDynamicMacrosPlugin implements Plugin<Project> {
   @Override
   void apply(org.gradle.api.Project target) {
@@ -158,6 +171,7 @@ class GenerateDynamicMacrosPlugin implements Plugin<Project> {
   }
 }
 
+apply plugin: DownloadVersionedAarsPlugin
 apply plugin: GenerateDynamicMacrosPlugin
 
 // WHEN_VERSIONING_REMOVE_TO_HERE
@@ -170,22 +184,12 @@ dependencies {
 
   testImplementation 'junit:junit:4.12'
 
-
-  api("com.facebook.fbjni:fbjni-java-only:0.2.2")
-
   // WHEN_VERSIONING_REPLACE_WITH_DEPENDENCIES
 
   // WHEN_VERSIONING_REMOVE_FROM_HERE
 
-  api 'org.webkit:android-jsc:r250230' // needs to be before react-native
+  api 'org.webkit:android-jsc:r250231' // needs to be before react-native
 
-  /* UNCOMMENT WHEN DISTRIBUTING
-  api 'com.facebook.react:react-native:45.0.0'
-  compileOnly project(':expo')
-  compileOnly project(':expo-random')
-  END UNCOMMENT WHEN DISTRIBUTING */
-
-  // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
   api project(':ReactAndroid')
 
   if (!buildHermesSource) {
@@ -196,7 +200,6 @@ dependencies {
       exclude(group:'com.facebook.fbjni', module: 'fbjni')
     }
   }
-  hasHermesEngineDeps = true
 
   // Expo modules
   api project(':expo')
@@ -205,20 +208,17 @@ dependencies {
   api project(':expo-random')
 
   // Versioned react native
-  // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
   // THIS COMMENT IS USED BY android-build-aar.sh DO NOT MODIFY
+  // BEGIN_SDK_48
+  versionedApi 'host.exp:reactandroid-abi48_0_0:1.0.0'
+  // END_SDK_48
   // BEGIN_SDK_47
   versionedApi 'host.exp:reactandroid-abi47_0_0:1.0.0'
   // END_SDK_47
   // BEGIN_SDK_46
   versionedApi 'host.exp:reactandroid-abi46_0_0:1.0.0'
   // END_SDK_46
-  // BEGIN_SDK_45
-  versionedApi 'host.exp:reactandroid-abi45_0_0:1.0.0'
-  // END_SDK_45
-  // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
   // WHEN_VERSIONING_REMOVE_TO_HERE
-  // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // React native dependencies
   api("androidx.appcompat:appcompat-resources:${reactProperties.getProperty('ANDROIDX_APPCOMPAT_VERSION')}")
@@ -226,7 +226,7 @@ dependencies {
   api("androidx.autofill:autofill:${reactProperties.getProperty('ANDROIDX_AUTOFILL_VERSION')}")
   api("androidx.swiperefreshlayout:swiperefreshlayout:${reactProperties.getProperty('SWIPEREFRESH_LAYOUT_VERSION')}")
 
-  api("com.facebook.fbjni:fbjni-java-only:${reactProperties.getProperty('FBJNI_VERSION')}")
+  api("com.facebook.fbjni:fbjni:${reactProperties.getProperty('FBJNI_VERSION')}")
   api("com.facebook.fresco:fresco:${reactProperties.getProperty('FRESCO_VERSION')}")
   api("com.facebook.fresco:imagepipeline-okhttp3:${reactProperties.getProperty('FRESCO_VERSION')}")
   api("com.facebook.fresco:ui-common:${reactProperties.getProperty('FRESCO_VERSION')}")
@@ -286,7 +286,7 @@ dependencies {
     }
   }
 
-  api 'com.google.firebase:firebase-core:17.2.3'
+  api 'com.google.firebase:firebase-core:21.1.0'
   api 'com.google.firebase:firebase-messaging:22.0.0'
   api 'com.google.maps.android:android-maps-utils:0.5'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
@@ -309,6 +309,14 @@ dependencies {
   implementation "com.google.android.play:review:2.0.1"
   implementation "com.google.android.play:review-ktx:2.0.0"
 
+  // expo-image
+  def GLIDE_VERSION = "4.13.2"
+  implementation "com.github.zjupure:webpdecoder:2.1.${GLIDE_VERSION}"
+  api "com.github.bumptech.glide:glide:${GLIDE_VERSION}"
+  kapt "com.github.bumptech.glide:compiler:${GLIDE_VERSION}"
+  implementation "com.github.bumptech.glide:avif-integration:${GLIDE_VERSION}"
+  implementation "jp.wasabeef:glide-transformations:4.3.0"
+
   //dbflow
   kapt "com.github.Raizlabs.DBFlow:dbflow-processor:${safeExtGet('dbFlowVersion', '4.2.4')}"
   implementation "com.github.Raizlabs.DBFlow:dbflow-core:${safeExtGet('dbFlowVersion', '4.2.4')}"
@@ -320,8 +328,8 @@ dependencies {
   api 'com.github.troZee:ViewPager2:v1.0.6'
 
   // stripe-react-native
-  implementation('com.stripe:stripe-android:20.12.+')
-  implementation('com.stripe:financial-connections:20.12.+')
+  implementation('com.stripe:stripe-android:20.19.+')
+  implementation('com.stripe:financial-connections:20.19.+')
   compileOnly 'com.stripe:stripe-android-issuing-push-provisioning:1.1.0'
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"

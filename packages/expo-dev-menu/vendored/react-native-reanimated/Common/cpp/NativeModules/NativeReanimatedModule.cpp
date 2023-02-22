@@ -2,6 +2,9 @@
 #include <functional>
 #include <memory>
 #include <thread>
+#include <unordered_map>
+#include <utility>
+
 #include "DevMenuEventHandlerRegistry.h"
 #include "DevMenuFeaturesConfig.h"
 #include "DevMenuFrozenObject.h"

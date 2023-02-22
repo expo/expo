@@ -23,6 +23,15 @@ export interface CodegenConfigLibrary {
   jsSrcsDir: string;
 }
 
+export enum DependencyKind {
+  Normal = 'dependencies',
+  Dev = 'devDependencies',
+  Peer = 'peerDependencies',
+  Optional = 'optionalDependencies',
+}
+
+export const DefaultDependencyKind = [DependencyKind.Normal, DependencyKind.Dev];
+
 /**
  * An object representing `package.json` structure.
  */
@@ -34,6 +43,10 @@ export type PackageJson = {
   codegenConfig?: {
     libraries: CodegenConfigLibrary[];
   };
+  dependencies?: Record<string, string>;
+  devDependencies?: Record<string, string>;
+  peerDependencies?: Record<string, string>;
+  optionalDependencies?: Record<string, string>;
   [key: string]: unknown;
 };
 
@@ -42,7 +55,7 @@ export type PackageJson = {
  */
 export type PackageDependency = {
   name: string;
-  group: string;
+  kind: DependencyKind;
   versionRange: string;
 };
 
@@ -203,7 +216,7 @@ export class Package {
       // for that package, something is wrong.
       if (this.packageName === 'expo-in-app-purchases' && match === -1) {
         throw new Error(
-          "'isIncludedInExpoClientOnPlatform' is not behaving correctly, please check expoview/build.gradle format"
+          "'isIncludedInExpoClientOnPlatform' is not behaving correctly, please check android/settings.gradle format"
         );
       }
       return match === -1;
@@ -229,23 +242,17 @@ export class Package {
     return await Npm.getPackageViewAsync(this.packageName, this.packageVersion);
   }
 
-  getDependencies(includeDev: boolean = false): PackageDependency[] {
-    const depsGroups = ['dependencies', 'peerDependencies', 'optionalDependencies'];
-
-    if (includeDev) {
-      depsGroups.push('devDependencies');
-    }
-
-    const dependencies = depsGroups.map((group) => {
-      const deps = this.packageJson[group] as Record<string, string>;
+  getDependencies(kinds: DependencyKind[] = [DependencyKind.Normal]): PackageDependency[] {
+    const dependencies = kinds.map((kind) => {
+      const deps = this.packageJson[kind];
 
       return !deps
         ? []
         : Object.entries(deps).map(([name, versionRange]) => {
             return {
               name,
-              group,
-              versionRange: versionRange as string,
+              kind,
+              versionRange,
             };
           });
     });

@@ -11,6 +11,7 @@ import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
 import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
+import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
@@ -62,6 +63,10 @@ class ExpoImageModule : Module() {
         view.contentFit = contentFit ?: ContentFit.Cover
       }
 
+      Prop("placeholderContentFit") { view: ExpoImageViewWrapper, placeholderContentFit: ContentFit? ->
+        view.placeholderContentFit = placeholderContentFit ?: ContentFit.ScaleDown
+      }
+
       Prop("contentPosition") { view: ExpoImageViewWrapper, contentPosition: ContentPosition? ->
         view.contentPosition = contentPosition ?: ContentPosition.center
       }
@@ -70,8 +75,8 @@ class ExpoImageModule : Module() {
         view.blurRadius = blurRadius?.takeIf { it > 0 }
       }
 
-      Prop("fadeDuration") { view: ExpoImageViewWrapper, fadeDuration: Int? ->
-        view.fadeDuration = fadeDuration?.takeIf { it > 0 }
+      Prop("transition") { view: ExpoImageViewWrapper, transition: ImageTransition? ->
+        view.transition = transition
       }
 
       PropGroup(
@@ -133,8 +138,16 @@ class ExpoImageModule : Module() {
         view.placeholders = placeholder ?: emptyList()
       }
 
-      Prop("accessible") { view: ExpoImageViewWrapper, accessible: Boolean ->
-        view.accessible = accessible
+      Prop("accessible") { view: ExpoImageViewWrapper, accessible: Boolean? ->
+        view.accessible = accessible ?: false
+      }
+
+      Prop("accessibilityLabel") { view: ExpoImageViewWrapper, accessibilityLabel: String? ->
+        view.accessibilityLabel = accessibilityLabel
+      }
+
+      Prop("focusable") { view: ExpoImageViewWrapper, isFocusable: Boolean? ->
+        view.isFocusableProp = isFocusable ?: false
       }
 
       Prop("priority") { view: ExpoImageViewWrapper, priority: Priority? ->
@@ -143,6 +156,10 @@ class ExpoImageModule : Module() {
 
       Prop("cachePolicy") { view: ExpoImageViewWrapper, cachePolicy: CachePolicy? ->
         view.cachePolicy = cachePolicy ?: CachePolicy.DISK
+      }
+
+      Prop("recyclingKey") { view: ExpoImageViewWrapper, recyclingKey: String? ->
+        view.recyclingKey = recyclingKey
       }
 
       OnViewDidUpdateProps { view: ExpoImageViewWrapper ->

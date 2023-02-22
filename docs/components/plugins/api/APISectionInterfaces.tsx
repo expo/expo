@@ -12,7 +12,6 @@ import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatf
 import {
   CommentTextBlock,
   getTagData,
-  mdComponents,
   parseCommentContent,
   renderFlags,
   renderParamRow,
@@ -25,6 +24,7 @@ import {
   STYLES_APIBOX_NESTED,
   STYLES_ELEMENT_SPACING,
   H3Code,
+  getCommentContent,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
 import { H2, H4, BOLD, P, CODE } from '~/ui/components/Text';
@@ -40,7 +40,9 @@ const renderInterfaceComment = (
 ) => {
   if (signatures && signatures.length) {
     const { type, parameters, comment: signatureComment } = signatures[0];
-    const initValue = defaultValue || getTagData('default', signatureComment)?.text;
+    const defaultTag = getTagData('default', signatureComment);
+    const initValue =
+      defaultValue || (defaultTag ? getCommentContent(defaultTag.content) : undefined);
     return (
       <>
         {parameters?.length ? parameters.map(param => renderParamRow(param)) : null}
@@ -51,8 +53,8 @@ const renderInterfaceComment = (
             <br />
             <APISectionDeprecationNote comment={comment} />
             <CommentTextBlock
+              inlineHeaders
               comment={signatureComment}
-              components={mdComponents}
               afterContent={renderDefaultValue(initValue)}
             />
           </>
@@ -60,13 +62,14 @@ const renderInterfaceComment = (
       </>
     );
   } else {
-    const initValue = defaultValue || getTagData('default', comment)?.text;
+    const defaultTag = getTagData('default', comment);
+    const initValue =
+      defaultValue || (defaultTag ? getCommentContent(defaultTag.content) : undefined);
     return (
       <>
         <APISectionDeprecationNote comment={comment} />
         <CommentTextBlock
           comment={comment}
-          components={mdComponents}
           afterContent={renderDefaultValue(initValue)}
           emptyCommentFallback="-"
         />
@@ -83,7 +86,10 @@ const renderInterfacePropertyRow = ({
   signatures,
   defaultValue,
 }: PropData): JSX.Element => {
-  const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
+  const defaultTag = getTagData('default', comment);
+  const initValue = parseCommentContent(
+    defaultValue || (defaultTag ? getCommentContent(defaultTag.content) : '')
+  );
   return (
     <Row key={name}>
       <Cell fitContent>

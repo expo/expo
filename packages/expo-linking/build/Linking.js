@@ -225,18 +225,6 @@ export function parse(url) {
 export function addEventListener(type, handler) {
     return NativeLinking.addEventListener(type, handler);
 }
-/**
- * Remove a handler by passing the `url` event type and the handler.
- * @param type The only valid type is `'url'`.
- * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
- * [`EventType`](#eventype).
- * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#removeeventlistener).
- *
- * @deprecated Call `remove()` on the return value of `addEventListener()` instead.
- */
-export function removeEventListener(type, handler) {
-    NativeLinking.removeEventListener(type, handler);
-}
 // @needsAudit
 /**
  * Helper method which wraps React Native's `Linking.getInitialURL()` in `Linking.parse()`.

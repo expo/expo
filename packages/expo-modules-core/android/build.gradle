@@ -6,7 +6,7 @@ apply plugin: 'maven-publish'
 apply plugin: "de.undercouch.download"
 
 group = 'host.exp.exponent'
-version = '1.1.0'
+version = '1.2.2'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -25,7 +25,7 @@ buildscript {
     if (ext.has("kotlinVersion")) {
       ext.kotlinVersion()
     } else {
-      ext.safeExtGet("kotlinVersion", "1.6.10")
+      ext.safeExtGet("kotlinVersion", "1.8.10")
     }
   }
 
@@ -150,24 +150,13 @@ afterEvaluate {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
-  if (REACT_NATIVE_BUILD_FROM_SOURCE) {
-    if (rootProject.hasProperty("ndkPath")) {
-      ndkPath rootProject.ext.ndkPath
-    }
-    if (rootProject.hasProperty("ndkVersion")) {
-      ndkVersion rootProject.ext.ndkVersion
-    }
-  } else {
-    // This ndkVersion should align to prebuilt react-native building ndkVersion.
-    // Because the unwind library is different before NDK r23 and after,
-    // if we build this library with newer NDK, C++ exceptions are incompatible between these libraries.
-    // For example, C++ exceptions throwing from hermes are not catchable from this library.
-    // Ref: https://android.googlesource.com/platform/ndk/+/master/docs/BuildSystemMaintainers.md#unwinding
-    //
-    // TODO: Revisit this version when upgrade react-native 0.71 (Expo SDK 48)
-    ndkVersion = "21.4.7075529"
+  if (rootProject.hasProperty("ndkPath")) {
+    ndkPath rootProject.ext.ndkPath
+  }
+  if (rootProject.hasProperty("ndkVersion")) {
+    ndkVersion rootProject.ext.ndkVersion
   }
 
   compileOptions {
@@ -181,10 +170,10 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 31)
+    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "1.1.0"
+    versionName "1.2.2"
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
     testInstrumentationRunner "expo.modules.TestRunner"
@@ -300,7 +289,7 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
 
-  compileOnly 'com.facebook.fbjni:fbjni:0.2.2'
+  compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
 
   testImplementation 'androidx.test:core:1.4.0'
   testImplementation 'junit:junit:4.13.1'
@@ -404,10 +393,27 @@ def prepareBoost = tasks.register('prepareBoost', Copy) {
   }
 }
 
+void nativeBuildDependsOn(project, dependsOnTask, buildTypesIncludes) {
+  def buildTasks = project.tasks.findAll { task ->
+    def taskName = task.name
+    if (taskName.contains("Clean")) { return false }
+    if (taskName.contains("externalNative") || taskName.contains("CMake") || taskName.contains("generateJsonModel")) {
+      if (buildTypesIncludes == null) { return true }
+      for (buildType in buildTypesIncludes) {
+        if (taskName.contains(buildType)) { return true }
+      }
+    }
+    return false
+  }
+  buildTasks.forEach { task -> task.dependsOn(dependsOnTask) }
+}
+
 afterEvaluate {
-  preBuild.dependsOn(prepareBoost)
+  if (REACT_NATIVE_TARGET_VERSION < 71) {
+    nativeBuildDependsOn(project, prepareBoost, null)
+  }
   if (USE_HERMES) {
-    preBuild.dependsOn(prepareHermes)
+    nativeBuildDependsOn(project, prepareHermes, null)
     if (hasHermesProject && !prebuiltHermesCacheHit) {
       prepareHermes.dependsOn(":ReactAndroid:hermes-engine:assembleDebug")
     }

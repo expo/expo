@@ -13,7 +13,7 @@ export const globalExtras = css`
   }
 
   ::selection {
-    background-color: ${theme.highlight.accent};
+    background-color: ${theme.palette.blue5};
     color: ${theme.text.default};
   }
 
@@ -28,17 +28,17 @@ export const globalExtras = css`
   }
 
   ::-webkit-scrollbar-thumb {
-    background: ${theme.background.tertiary};
+    background: ${theme.background.element};
     border-radius: 10px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: ${theme.background.quaternary};
+    background: ${theme.background.hover};
   }
 
   html[data-expo-theme='light'] div[class*='SnippetContent'] {
     ::-webkit-scrollbar-thumb {
-      background: ${darkTheme.background.quaternary};
+      background: ${darkTheme.background.hover};
     }
 
     ::-webkit-scrollbar-thumb:hover {
@@ -48,7 +48,7 @@ export const globalExtras = css`
 
   a {
     -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    color: ${theme.link.default};
+    color: ${theme.text.link};
   }
 
   img {
@@ -108,7 +108,7 @@ export const globalExtras = css`
 
   .diff-gutter-col {
     width: ${spacing[10]}px;
-    background-color: ${theme.background.tertiary};
+    background-color: ${theme.background.element};
   }
 
   .diff-gutter {
@@ -127,22 +127,22 @@ export const globalExtras = css`
   }
 
   .diff-code-insert {
-    background-color: ${theme.palette.green['000']};
+    background-color: ${theme.palette.green2};
     color: ${theme.text.success};
   }
 
   .diff-gutter-insert {
-    background-color: ${theme.palette.green['100']};
+    background-color: ${theme.palette.green4};
     color: ${theme.text.success};
   }
 
   .diff-code-delete {
-    background-color: ${theme.palette.red['000']};
-    color: ${theme.text.error};
+    background-color: ${theme.palette.red2};
+    color: ${theme.text.danger};
   }
 
   .diff-gutter-delete {
-    background-color: ${theme.palette.red['100']};
-    color: ${theme.text.error};
+    background-color: ${theme.palette.red4};
+    color: ${theme.text.danger};
   }
 `;

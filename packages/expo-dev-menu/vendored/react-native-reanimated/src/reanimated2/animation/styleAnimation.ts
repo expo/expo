@@ -46,7 +46,7 @@ export function setPath<T>(
   for (let i = 0; i < keys.length - 1; i++) {
     // creates entry if there isn't one
     currObj = currObj as { [key: string]: NestedObjectValues<T> };
-    if (!currObj[keys[i]]) {
+    if (!(keys[i] in currObj)) {
       // if next key is a number create an array
       if (typeof keys[i + 1] === 'number') {
         currObj[keys[i]] = [];
@@ -177,6 +177,13 @@ export function withStyleAnimation(
           let prevVal = resolvePath(value, currentEntry.path);
           if (prevAnimation && !prevVal) {
             prevVal = prevAnimation.current;
+          }
+          if (prevVal === undefined) {
+            console.warn(
+              `Initial values for animation are missing for property ${currentEntry.path.join(
+                '.'
+              )}`
+            );
           }
           setPath(animation.current, currentEntry.path, prevVal);
           let currentAnimation: AnimationObject;

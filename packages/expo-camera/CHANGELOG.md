@@ -10,6 +10,21 @@
 
 ### 💡 Others
 
+## 13.2.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.0 — 2023-02-03
+
+### 🐛 Bug fixes
+
+- Fix path where simulator saves photos ([#20872](https://github.com/expo/expo/pull/20872) by [@pettomartino](https://github.com/pettomartino))
+- Fixed `Cannot set prop 'barCodeScannerSettings' on view 'class expo.modules.camera.ExpoCameraView'` on Android. ([#21033](https://github.com/expo/expo/pull/21033) by [@lukmccall](https://github.com/lukmccall))
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
 ## 13.1.0 - 2022-11-23
 
 ### 🐛 Bug fixes

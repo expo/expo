@@ -163,7 +163,12 @@
                                          ]];
   }
   if (!result) {
-    result = @"jsc";
+    int sdkMajorVersion = [self sdkMajorVersion];
+    if (sdkMajorVersion > 0 && sdkMajorVersion < 48) {
+      result = @"jsc";
+    } else {
+      result = @"hermes";
+    }
   }
   return result;
 }
@@ -303,6 +308,16 @@
     json = value;
   }
   return nil;
+}
+
+- (int)sdkMajorVersion
+{
+  NSString *sdkVersion = [self sdkVersion];
+  NSArray<NSString *> *components = [sdkVersion componentsSeparatedByString:@"."];
+  if (components.count == 3) {
+    return [components[0] intValue];
+  }
+  return 0;
 }
 
 @end

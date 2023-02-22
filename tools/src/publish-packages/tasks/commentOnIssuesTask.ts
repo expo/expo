@@ -85,8 +85,8 @@ async function generatePayloadForCommentatorAsync(
   // An object whose key is the pull request number and value is an array of issues it closes.
   const closedIssuesRegistry: Record<number, number[]> = {};
 
-  for (const { pkg, state } of parcels) {
-    const versionChanges = state.changelogChanges?.versions[UNPUBLISHED_VERSION_NAME];
+  for (const { pkg, state, changelogChanges } of parcels) {
+    const versionChanges = changelogChanges.versions[UNPUBLISHED_VERSION_NAME];
 
     if (!versionChanges) {
       continue;

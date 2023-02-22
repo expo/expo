@@ -1,9 +1,9 @@
 const { resolveEntryPoint } = require('@expo/config/paths');
 const { loadAsync } = require('@expo/metro-config');
+const crypto = require('crypto');
 const fs = require('fs');
 const Server = require('metro/src/Server');
 const path = require('path');
-const { v4: uuidv4 } = require('uuid');
 
 const filterPlatformAssetScales = require('./filterPlatformAssetScales');
 
@@ -63,7 +63,7 @@ function getRelativeEntryPoint(projectRoot, platform) {
   }
 
   const manifest = {
-    id: uuidv4(),
+    id: crypto.randomUUID(),
     commitTime: new Date().getTime(),
     assets: [],
   };

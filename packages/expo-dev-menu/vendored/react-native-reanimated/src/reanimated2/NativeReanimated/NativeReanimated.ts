@@ -6,6 +6,7 @@ import {
   AnimatedKeyboardInfo,
 } from '../commonTypes';
 import { Descriptor } from '../hook/commonTypes';
+import { checkVersion } from '../platform-specific/checkVersion';
 
 export class NativeReanimated {
   native: boolean;
@@ -18,6 +19,9 @@ export class NativeReanimated {
     }
     this.InnerNativeModule = global.__reanimatedModuleProxy;
     this.native = native;
+    if (native) {
+      checkVersion();
+    }
   }
 
   installCoreFunctions(valueSetter: <T>(value: T) => void): void {

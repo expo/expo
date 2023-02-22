@@ -18,6 +18,9 @@ struct ImageSource: Record {
   @Field
   var headers: [String: String]?
 
+  @Field
+  var cacheKey: String?
+
   var pixelCount: Double {
     return width * height * scale * scale
   }

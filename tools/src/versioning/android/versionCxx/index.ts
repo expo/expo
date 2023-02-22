@@ -40,7 +40,7 @@ export async function versionCxxExpoModulesAsync(version: string) {
     const { packageName } = pkg;
     const abiName = `abi${version.replace(/\./g, '_')}`;
     const versionedAbiRoot = path.join(ANDROID_DIR, 'versioned-abis', `expoview-${abiName}`);
-    const packageFiles = await glob('**/*.{h,cpp,txt}', {
+    const packageFiles = await glob('**/*.{h,cpp,txt,gradle}', {
       cwd: path.join(PACKAGES_DIR, packageName),
       ignore: ['android/{build,.cxx}/**/*', 'ios/**/*'],
       absolute: true,
@@ -95,7 +95,7 @@ function baseTransforms(abiName: string): FileTransform[] {
     },
     {
       paths: 'CMakeLists.txt',
-      find: /(\sjsi|reactnativejni|hermes|jscexecutor|folly_json|folly_runtime|react_nativemodule_core)\b/g,
+      find: /(\s(ReactAndroid::)?jsi|reactnativejni|hermes|jscexecutor|folly_json|folly_runtime|react_nativemodule_core)\b/g,
       replaceWith: `$1_${abiName}`,
     },
     {
@@ -107,6 +107,11 @@ function baseTransforms(abiName: string): FileTransform[] {
       paths: '**/*.{h,cpp}',
       find: /([\b\s(;"]L?)(com\/facebook\/react\/)/g,
       replaceWith: `$1${abiName}/$2`,
+    },
+    {
+      paths: 'build.gradle',
+      find: /(implementation|compileOnly)[ \(]['"]com.facebook.react:react-(native|android)(:\+)?['"]\)?/g,
+      replaceWith: `compileOnly 'host.exp:reactandroid-${abiName}:1.0.0'`,
     },
   ];
 }

@@ -22,7 +22,7 @@ const parameters: FunctionParameter[] = [
   {
     name: 'Effect',
     type: 'enum',
-    platforms: ['ios'],
+    platforms: ['ios', 'web'],
     values: [
       { name: 'cross-dissolve (default)', value: 'cross-dissolve' },
       { name: 'flip-from-left', value: 'flip-from-left' },
@@ -37,7 +37,7 @@ const parameters: FunctionParameter[] = [
   {
     name: 'Timing',
     type: 'enum',
-    platforms: ['ios'],
+    platforms: ['ios', 'web'],
     values: [
       { name: 'ease-in-out (default)', value: 'ease-in-out' },
       { name: 'ease-in', value: 'ease-in' },

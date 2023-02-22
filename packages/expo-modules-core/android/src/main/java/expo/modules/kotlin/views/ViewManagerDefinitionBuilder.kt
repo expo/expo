@@ -122,10 +122,10 @@ class ViewManagerDefinitionBuilder {
   /**
    * Creates the group view definition that scopes group view-related definitions.
    */
-  inline fun GroupView(body: ViewGroupDefinitionBuilder.() -> Unit) {
+  inline fun GroupView(body: ViewGroupDefinitionLegacyBuilder.() -> Unit) {
     require(viewGroupDefinition == null) { "The viewManager definition may have exported only one groupView definition." }
 
-    val groupViewDefinitionBuilder = ViewGroupDefinitionBuilder()
+    val groupViewDefinitionBuilder = ViewGroupDefinitionLegacyBuilder()
     body.invoke(groupViewDefinitionBuilder)
     viewGroupDefinition = groupViewDefinitionBuilder.build()
   }

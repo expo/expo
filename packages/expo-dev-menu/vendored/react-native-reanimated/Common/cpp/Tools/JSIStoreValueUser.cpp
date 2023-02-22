@@ -1,6 +1,6 @@
 #include "DevMenuJSIStoreValueUser.h"
 #include "DevMenuRuntimeManager.h"
-#ifdef ONANDROID
+#ifdef ANDROID
 #include <AndroidScheduler.h>
 #endif
 
@@ -32,7 +32,7 @@ StoreUser::~StoreUser() {
   std::shared_ptr<Scheduler> strongScheduler = scheduler.lock();
   if (strongScheduler != nullptr) {
     std::shared_ptr<StaticStoreUser> sud = storeUserData;
-#ifdef ONANDROID
+#ifdef ANDROID
     jni::ThreadScope::WithClassLoader([&] {
       strongScheduler->scheduleOnUI([id, sud]() {
         const std::lock_guard<std::recursive_mutex> lock(sud->storeMutex);

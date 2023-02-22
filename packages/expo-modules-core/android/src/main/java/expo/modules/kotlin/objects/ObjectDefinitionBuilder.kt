@@ -14,6 +14,7 @@
 
 package expo.modules.kotlin.objects
 
+import com.facebook.react.bridge.Arguments
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.events.EventsDefinition
 import expo.modules.kotlin.functions.AsyncFunction
@@ -21,6 +22,9 @@ import expo.modules.kotlin.functions.AsyncFunctionBuilder
 import expo.modules.kotlin.functions.AsyncFunctionComponent
 import expo.modules.kotlin.functions.AsyncFunctionWithPromiseComponent
 import expo.modules.kotlin.functions.SyncFunctionComponent
+import expo.modules.kotlin.jni.JavaScriptModuleObject
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinitionBuilder
 import expo.modules.kotlin.types.toAnyType
 import kotlin.reflect.typeOf
 
@@ -349,4 +353,30 @@ open class ObjectDefinitionBuilder {
       properties[name] = it
     }
   }
+}
+
+inline fun ModuleDefinitionBuilder.Object(block: ObjectDefinitionBuilder.() -> Unit): JavaScriptModuleObject {
+  return module!!.Object(block)
+}
+
+inline fun Module.Object(block: ObjectDefinitionBuilder.() -> Unit): JavaScriptModuleObject {
+  val objectData = ObjectDefinitionBuilder().also(block).buildObject()
+  return JavaScriptModuleObject("[Anonymous Object]")
+    .apply {
+      val constants = objectData.constantsProvider()
+      val convertedConstants = Arguments.makeNativeMap(constants)
+      exportConstants(convertedConstants)
+
+      objectData
+        .functions
+        .forEach { function ->
+          function.attachToJSObject(appContext, this)
+        }
+
+      objectData
+        .properties
+        .forEach { (_, prop) ->
+          prop.attachToJSObject(this)
+        }
+    }
 }

@@ -160,3 +160,12 @@ export type AnimatedKeyboardInfo = {
   height: SharedValue<number>;
   state: SharedValue<KeyboardState>;
 };
+
+export interface MeasuredDimensions {
+  x: number;
+  y: number;
+  width: number;
+  height: number;
+  pageX: number;
+  pageY: number;
+}

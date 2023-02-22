@@ -2,6 +2,7 @@
 import { ExpoConfig, getConfig, PackageJSONConfig } from '@expo/config';
 import JsonFile from '@expo/json-file';
 import { SpawnOptions, SpawnResult } from '@expo/spawn-async';
+import assert from 'assert';
 import execa from 'execa';
 import fs from 'fs';
 import os from 'os';
@@ -17,11 +18,11 @@ export function getTemporaryPath() {
   return path.join(os.tmpdir(), Math.random().toString(36).substring(2));
 }
 
-export function execute(...args) {
+export function execute(...args: string[]) {
   return execa('node', [bin, ...args], { cwd: projectRoot });
 }
 
-export function getRoot(...args) {
+export function getRoot(...args: string[]) {
   return path.join(projectRoot, ...args);
 }
 
@@ -35,8 +36,8 @@ export async function abortingSpawnAsync(
   ) as typeof import('@expo/spawn-async').default;
 
   const promise = spawnAsync(cmd, args, options);
-  promise.child.stdout.pipe(process.stdout);
-  promise.child.stderr.pipe(process.stderr);
+  promise.child.stdout?.pipe(process.stdout);
+  promise.child.stderr?.pipe(process.stderr);
 
   // TODO: Not sure how to do this yet...
   // const unsub = addJestInterruptedListener(() => {
@@ -44,10 +45,12 @@ export async function abortingSpawnAsync(
   // });
   try {
     return await promise;
-  } catch (error) {
+  } catch (e) {
+    const error = e as Error;
     if (isSpawnResult(error)) {
-      if (error.stdout) error.message += `\n------\nSTDOUT:\n${error.stdout}`;
-      if (error.stderr) error.message += `\n------\nSTDERR:\n${error.stderr}`;
+      const spawnError = error as SpawnResult;
+      if (spawnError.stdout) error.message += `\n------\nSTDOUT:\n${spawnError.stdout}`;
+      if (spawnError.stderr) error.message += `\n------\nSTDERR:\n${spawnError.stderr}`;
     }
     throw error;
   } finally {
@@ -156,6 +159,7 @@ export async function createFromFixtureAsync(
           ...config,
         },
       };
+      assert(staticConfigPath);
       await JsonFile.writeAsync(staticConfigPath, modifiedConfig as any);
     }
 
@@ -183,7 +187,7 @@ export async function setupTestProjectAsync(name: string, fixtureName: string): 
 
   // Many of the factors in this test are based on the expected SDK version that we're testing against.
   const { exp } = getConfig(projectRoot, { skipPlugins: true });
-  expect(exp.sdkVersion).toBe('45.0.0');
+  expect(exp.sdkVersion).toBe('47.0.0');
   return projectRoot;
 }
 
@@ -199,5 +203,5 @@ export async function getLoadedModulesAsync(statement: string): Promise<string[]
     { cwd: __dirname }
   );
   const loadedModules = JSON.parse(results.stdout.trim());
-  return loadedModules.map((value) => path.relative(repoRoot, value)).sort();
+  return loadedModules.map((value: string) => path.relative(repoRoot, value)).sort();
 }

@@ -38,6 +38,13 @@ function _Config() {
   };
   return data;
 }
+function _Errors() {
+  const data = require("../Errors");
+  _Errors = function () {
+    return data;
+  };
+  return data;
+}
 function _extensions() {
   const data = require("./extensions");
   _extensions = function () {
@@ -75,33 +82,27 @@ function getEntryPoint(projectRoot, entryFiles, platforms, projectConfig) {
 
 // Used to resolve the main entry file for a project.
 function getEntryPointWithExtensions(projectRoot, entryFiles, extensions, projectConfig) {
+  if (!projectConfig) {
+    // drop all logging abilities
+    const original = process.stdout.write;
+    process.stdout.write = () => true;
+    try {
+      projectConfig = (0, _Config().getConfig)(projectRoot, {
+        skipSDKVersionRequirement: true
+      });
+    } finally {
+      process.stdout.write = original;
+    }
+  }
   const {
     exp,
     pkg
-  } = projectConfig !== null && projectConfig !== void 0 ? projectConfig : (0, _Config().getConfig)(projectRoot, {
-    skipSDKVersionRequirement: true
-  });
-
-  // This will first look in the `app.json`s `expo.entryPoint` field for a potential main file.
-  // We check the Expo config first in case you want your project to start differently with Expo then in a standalone environment.
-  if (exp && exp.entryPoint && typeof exp.entryPoint === 'string') {
-    // If the field exists then we want to test it against every one of the supplied extensions
-    // to ensure the bundler resolves the same way.
-    let entry = getFileWithExtensions(projectRoot, exp.entryPoint, extensions);
-    if (!entry) {
-      // Allow for paths like: `{ "main": "expo/AppEntry" }`
-      entry = resolveFromSilentWithExtensions(projectRoot, exp.entryPoint, extensions);
-
-      // If it doesn't resolve then just return the entryPoint as-is. This makes
-      // it possible for people who have an unconventional setup (eg: multiple
-      // apps in monorepo with metro at root) to customize entry point without
-      // us imposing our assumptions.
-      if (!entry) {
-        return exp.entryPoint;
-      }
-    }
-    return entry;
-  } else if (pkg) {
+  } = projectConfig;
+  if (typeof (exp === null || exp === void 0 ? void 0 : exp.entryPoint) === 'string') {
+    // We want to stop reading the app.json for determining the entry file in SDK +49
+    throw new (_Errors().ConfigError)('expo.entryPoint has been removed in favor of the main field in the package.json.', 'DEPRECATED');
+  }
+  if (pkg) {
     // If the config doesn't define a custom entry then we want to look at the `package.json`s `main` field, and try again.
     const {
       main
@@ -132,7 +133,7 @@ function getEntryPointWithExtensions(projectRoot, entryFiles, extensions, projec
     // TODO(Bacon): We may want to do a check against `./App` and `expo` in the `package.json` `dependencies` as we can more accurately ensure that the project is expo-min without needing the modules installed.
     return (0, _resolveFrom().default)(projectRoot, 'expo/AppEntry');
   } catch {
-    throw new Error(`The project entry file could not be resolved. Please either define it in the \`package.json\` (main), \`app.json\` (expo.entryPoint), create an \`index.js\`, or install the \`expo\` package.`);
+    throw new Error(`The project entry file could not be resolved. Please define it in the \`main\` field of the \`package.json\`, create an \`index.js\`, or install the \`expo\` package.`);
   }
 }
 

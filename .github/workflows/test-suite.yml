@@ -35,7 +35,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '14.17'
+          node-version: 16
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
@@ -44,11 +44,11 @@ jobs:
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🔧 Install Expo CLI
-        run: yarn global add expo-cli
       - name: 🧪 Run Web tests
         run: yarn test:web
         working-directory: apps/bare-expo
+        env:
+          EXPO_NO_TYPESCRIPT_SETUP: 1
       - name: 🔔 Notify on Slack
         uses: 8398a7/action-slack@v3
         if: failure() && (github.event.ref == 'refs/heads/main' || startsWith(github.event.ref, 'refs/heads/sdk-'))
@@ -149,7 +149,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '14.17'
+          node-version: 16
       - name: 🔨 Use JDK 11
         uses: actions/setup-java@v3
         with:

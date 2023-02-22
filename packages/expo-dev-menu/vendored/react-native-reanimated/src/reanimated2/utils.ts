@@ -7,15 +7,22 @@ export interface ComponentCoords {
   y: number;
 }
 
+/**
+ * Given an absolute position and a component ref, returns the relative
+ * position in the component's local coordinate space.
+ */
 export function getRelativeCoords(
   parentRef: RefObjectFunction<Component>,
-  x: number,
-  y: number
-): ComponentCoords {
+  absoluteX: number,
+  absoluteY: number
+): ComponentCoords | null {
   'worklet';
   const parentCoords = measure(parentRef);
+  if (parentCoords === null) {
+    return null;
+  }
   return {
-    x: x - parentCoords.x,
-    y: y - parentCoords.y,
+    x: absoluteX - parentCoords.x,
+    y: absoluteY - parentCoords.y,
   };
 }

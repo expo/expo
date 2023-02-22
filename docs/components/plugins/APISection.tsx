@@ -8,7 +8,11 @@ import APISectionMethods from '~/components/plugins/api/APISectionMethods';
 import APISectionNamespaces from '~/components/plugins/api/APISectionNamespaces';
 import APISectionProps from '~/components/plugins/api/APISectionProps';
 import APISectionTypes from '~/components/plugins/api/APISectionTypes';
-import { getComponentName, TypeDocKind } from '~/components/plugins/api/APISectionUtils';
+import {
+  getCommentContent,
+  getComponentName,
+  TypeDocKind,
+} from '~/components/plugins/api/APISectionUtils';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 import { P } from '~/ui/components/Text';
@@ -21,6 +25,7 @@ type Props = {
   forceVersion?: string;
   strictTypes?: boolean;
   testRequire?: any;
+  headersMapping?: Record<string, string>;
 };
 
 const filterDataByKind = (
@@ -52,6 +57,7 @@ const isComponent = ({ type, extendedTypes, signatures }: GeneratedData) => {
   } else if (signatures && signatures.length) {
     if (
       signatures[0].type.name === 'Element' ||
+      (signatures[0].type.types && signatures[0].type.types.map(t => t.name).includes('Element')) ||
       (signatures[0].parameters && signatures[0].parameters[0].name === 'props')
     ) {
       return true;
@@ -64,12 +70,34 @@ const isConstant = ({ name, type }: GeneratedData) =>
   !['default', 'Constants', 'EventEmitter'].includes(name) &&
   !(type?.name && ['React.FC', 'ForwardRefExoticComponent'].includes(type?.name));
 
+const hasCategoryHeader = ({ signatures }: GeneratedData): boolean =>
+  (signatures &&
+    signatures[0].comment?.blockTags &&
+    signatures[0].comment.blockTags.length > 0 &&
+    signatures[0].comment.blockTags.filter(tag => tag?.tag === '@header').length > 0) ??
+  false;
+
+const groupByHeader = (entries: GeneratedData[]) => {
+  return entries.reduce((group: Record<string, GeneratedData[]>, entry) => {
+    const signature = entry.signatures[0];
+    const header = getCommentContent(
+      signature.comment?.blockTags?.filter(tag => tag.tag === '@header')[0].content ?? []
+    );
+    if (header) {
+      group[header] = group[header] ?? [];
+      group[header].push(entry);
+    }
+    return group;
+  }, {});
+};
+
 const renderAPI = (
   packageName: string,
   version: string = 'unversioned',
   apiName?: string,
   strictTypes: boolean = false,
-  testRequire: any = undefined
+  testRequire: any = undefined,
+  headersMapping: Record<string, string> = {}
 ): JSX.Element => {
   try {
     const { children: data } = testRequire
@@ -79,9 +107,24 @@ const renderAPI = (
     const methods = filterDataByKind(
       data,
       TypeDocKind.Function,
-      entry => !isListener(entry) && !isHook(entry) && !isComponent(entry)
+      entry =>
+        !isListener(entry) && !isHook(entry) && !isComponent(entry) && !hasCategoryHeader(entry)
     );
-    const eventSubscriptions = filterDataByKind(data, TypeDocKind.Function, isListener);
+    const eventSubscriptions = filterDataByKind(
+      data,
+      TypeDocKind.Function,
+      entry => isListener(entry) && !hasCategoryHeader(entry)
+    );
+
+    const categorizedMethods = groupByHeader(
+      filterDataByKind(
+        data,
+        TypeDocKind.Function,
+        entry => !isComponent(entry) && hasCategoryHeader(entry)
+      )
+    );
+    const hasCategorizedMethods = Object.keys(categorizedMethods).length > 0;
+    const hasHeadersMapping = Object.keys(headersMapping).length;
 
     const types = filterDataByKind(
       data,
@@ -99,8 +142,12 @@ const renderAPI = (
 
     const props = filterDataByKind(
       data,
-      TypeDocKind.TypeAlias,
-      entry => isProp(entry) && !!(entry.type.types || entry.type.declaration?.children)
+      [TypeDocKind.TypeAlias, TypeDocKind.Interface],
+      entry =>
+        isProp(entry) &&
+        (entry.kind === TypeDocKind.TypeAlias
+          ? !!(entry.type.types || entry.type.declaration?.children)
+          : true)
     );
     const defaultProps = filterDataByKind(
       data
@@ -112,7 +159,11 @@ const renderAPI = (
     )[0];
 
     const enums = filterDataByKind(data, TypeDocKind.Enum, entry => entry.name !== 'default');
-    const interfaces = filterDataByKind(data, TypeDocKind.Interface);
+    const interfaces = filterDataByKind(
+      data,
+      TypeDocKind.Interface,
+      entry => !entry.name.includes('Props')
+    );
     const constants = filterDataByKind(data, TypeDocKind.Variable, entry => isConstant(entry));
 
     const components = filterDataByKind(
@@ -123,8 +174,10 @@ const renderAPI = (
     const componentsPropNames = components.map(
       ({ name, children }) => `${getComponentName(name, children)}Props`
     );
-    const componentsProps = filterDataByKind(props, TypeDocKind.TypeAlias, entry =>
-      componentsPropNames.includes(entry.name)
+    const componentsProps = filterDataByKind(
+      props,
+      [TypeDocKind.TypeAlias, TypeDocKind.Interface],
+      entry => componentsPropNames.includes(entry.name)
     );
 
     const namespaces = filterDataByKind(data, TypeDocKind.Namespace);
@@ -170,11 +223,23 @@ const renderAPI = (
     const hooks = filterDataByKind(
       [...data, ...componentsChildren].filter(Boolean),
       [TypeDocKind.Function, TypeDocKind.Property],
-      isHook
+      entry => isHook(entry) && !hasCategoryHeader(entry)
     );
 
     return (
       <>
+        {hasCategorizedMethods &&
+          (hasHeadersMapping
+            ? Object.entries(headersMapping).map(([key, header], index) => (
+                <APISectionMethods
+                  data={categorizedMethods[key]}
+                  header={header}
+                  key={`${header}-${index}`}
+                />
+              ))
+            : Object.entries(categorizedMethods).map(([key, data], index) => (
+                <APISectionMethods data={data} header={key} key={`${key}-${index}`} />
+              )))}
         <APISectionComponents data={components} componentsProps={componentsProps} />
         <APISectionMethods data={staticMethods} header="Static Methods" />
         <APISectionMethods data={componentMethods} header="Component Methods" />
@@ -207,12 +272,13 @@ const APISection = ({
   forceVersion,
   strictTypes = false,
   testRequire = undefined,
+  headersMapping = {},
 }: Props) => {
   const { version } = usePageApiVersion();
   const resolvedVersion =
     forceVersion ||
     (version === 'unversioned' ? version : version === 'latest' ? LATEST_VERSION : version);
-  return renderAPI(packageName, resolvedVersion, apiName, strictTypes, testRequire);
+  return renderAPI(packageName, resolvedVersion, apiName, strictTypes, testRequire, headersMapping);
 };
 
 export default APISection;

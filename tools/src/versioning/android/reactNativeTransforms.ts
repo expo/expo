@@ -43,8 +43,13 @@ export function reactNativeTransforms(
       },
       {
         paths: './ReactAndroid/build.gradle',
-        find: /(\bpreBuild\.dependsOn\("generateCodegenArtifactsFromSchema"\))/,
+        find: /(\b(preBuild\.)?dependsOn\("generateCodegenArtifactsFromSchema"\))/g,
         replaceWith: '// $1',
+      },
+      {
+        paths: './ReactAndroid/build.gradle',
+        find: 'new File(buildDir, "generated/source/codegen/jni/").absolutePath',
+        replaceWith: '"../codegen/jni/"',
       },
       {
         paths: './ReactAndroid/build.gradle',
@@ -57,6 +62,22 @@ export function reactNativeTransforms(
               JniLibNames.map((lib: string) => ({
                 find: new RegExp(`"${escapeRegExp(lib)}"`, 'g'),
                 replaceWith: `"${lib}_${abiVersion}"`,
+              }))
+            ),
+            p3,
+          ].join(''),
+      },
+      {
+        paths: './ReactAndroid/build.gradle',
+        find: /(    prefab\s*\{)([\s\S]*?)(^    \}\s)/gm,
+        replaceWith: (_, p1, p2, p3) =>
+          [
+            p1,
+            transformString(
+              p2,
+              JniLibNames.map((lib: string) => ({
+                find: new RegExp(`\\b${escapeRegExp(lib)}\\s+?\\{`, 'g'),
+                replaceWith: `${lib}_${abiVersion} {`,
               }))
             ),
             p3,
@@ -95,6 +116,11 @@ export function reactNativeTransforms(
         replaceWith: '-DHERMES_ENABLE_DEBUGGER=True',
       },
       {
+        paths: './ReactAndroid/hermes-engine/build.gradle',
+        find: /\b((configureBuildForHermes|prepareHeadersForPrefab)\.dependsOn\(unzipHermes\))/g,
+        replaceWith: '// $1',
+      },
+      {
         paths: './ReactCommon/hermes/executor/CMakeLists.txt',
         find: /\bdebug (hermes-inspector_)/g,
         replaceWith: '$1',
@@ -105,12 +131,16 @@ export function reactNativeTransforms(
         replaceWith: 'if(true)$1',
       },
       {
-        paths: [
-          './ReactAndroid/src/main/java/com/facebook/hermes/reactexecutor/CMakeLists.txt', // remove this when we drop sdk 45 for sdk 48
-          './ReactAndroid/src/main/jni/react/hermes/reactexecutor/CMakeLists.txt',
-        ],
+        paths: './ReactAndroid/src/main/jni/react/hermes/reactexecutor/CMakeLists.txt',
         find: '$<$<CONFIG:Debug>:-DHERMES_ENABLE_DEBUGGER=1>',
         replaceWith: '-DHERMES_ENABLE_DEBUGGER=1',
+      },
+      {
+        // workaround build dependency issue to explicitly link hermes_executor_common to hermes_executor
+        // originally, it's hermes_inspector -> hermes_executor_common -> hermes_executor
+        paths: './ReactAndroid/src/main/jni/react/hermes/reactexecutor/CMakeLists.txt',
+        find: /^(\s+hermes_executor_common.*)$/m,
+        replaceWith: `$1\n        hermes_inspector_${abiVersion}`,
       },
     ],
   };

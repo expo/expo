@@ -1,4 +1,11 @@
-# expo-mail-composer
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/mail-composer/">
+    <img
+      src="../../.github/resources/expo-mail-composer.svg"
+      alt="expo-mail-composer"
+      height="64" />
+  </a>
+</p>
 
 Provides an API to compose mails using OS specific UI
 

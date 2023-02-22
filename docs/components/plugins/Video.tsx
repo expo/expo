@@ -86,7 +86,7 @@ const videoWrapperStyle = css({
 const playerStyle = css({
   outline: 'none',
   backgroundColor: '#000',
-  borderRadius: borderRadius.medium,
+  borderRadius: borderRadius.md,
 });
 
 const dimmerStyle = css({

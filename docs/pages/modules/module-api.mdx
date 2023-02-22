@@ -194,6 +194,71 @@ Events("onCameraReady", "onPictureSaved", "onBarCodeScanned")
 See [Sending events](#sending-events) to learn how to send events from the native code to JavaScript/TypeScript.
 
 </APIBox>
+<APIBox header="Property">
+
+Defines a new property directly on the JavaScript object that represents a native module. It is the same as calling [`Object.defineProperty`](https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Object/defineProperty) on the module object.
+
+To declare a read-only property, you can use a shorthanded syntax that requires two arguments:
+
+- **name**: `String` — Name of the property that you'll use from JavaScript.
+- **getter**: `() -> PropertyType` — The closure to run when the getter for a property was called.
+
+<CodeBlocksTable>
+
+```swift
+Property("foo") {
+  return "bar"
+}
+```
+
+```kotlin
+Property("foo") {
+  return@Property "bar"
+}
+```
+
+</CodeBlocksTable>
+
+In the case of the mutable property, both the getter and the setter closure are needed (using the syntax below is also possible to declare a property with only a setter):
+
+- **name**: `String` — Name of the property that you'll use from JavaScript.
+- **getter**: `() -> ProperyType` — The closure to run when the getter for a property was called.
+- **setter**: `(newValue: PropertyType) -> void` — The closure to run when the setter for a property was called.
+
+<CodeBlocksTable>
+
+```swift
+Property("foo")
+  .get { return "bar" }
+  .set { (newValue: String) in
+    // do something with new value
+  }
+```
+
+```kotlin
+Property("foo")
+  .get { return@get "bar" }
+  .set { newValue: String ->
+    // do something with new value
+  }
+```
+
+</CodeBlocksTable>
+
+```js JavaScript
+import { requireNativeModule } from 'expo-modules-core';
+
+// Assume that we have named the module "MyModule"
+const MyModule = requireNativeModule('MyModule');
+
+// Obtain the property value
+MyModule.foo;
+
+// Set a new value
+MyModule.foo = 'foobar';
+```
+
+</APIBox>
 <APIBox header="ViewManager">
 
 > **warning** **Deprecated**: To better integrate with [React Native's new architecture (Fabric)](https://reactnative.dev/architecture/fabric-renderer) and its recycling mechanism, as of SDK 47 the `ViewManager` component is deprecated in favor of [`View`](#view) with a view class passed as the first argument. This component will be removed in SDK 48.
@@ -230,7 +295,7 @@ ViewManager {
 </APIBox>
 <APIBox header="View">
 
-Enables the module to be used as a native view. Definition components that are accepted as part of the view definition: [`Prop`](#prop), [`Events`](#events).
+Enables the module to be used as a native view. Definition components that are accepted as part of the view definition: [`Prop`](#prop), [`Events`](#events), [`GroupView`](#groupview).
 
 #### Arguments
 
@@ -354,6 +419,115 @@ Defines the activity lifecycle listener that is called when the activity owning 
 
 </APIBox>
 
+<APIBox header="GroupView" platforms={["android"]}>
+
+Enables the view to be used as a view group. Definition components that are accepted as part of the group view definition: [`AddChildView`](#addchildview), [`GetChildCount`](#getchildcount), [`GetChildViewAt`](#getchildviewat), [`RemoveChildView`](#removechildview), [`RemoveChildViewAt`](#removechildviewat).
+
+#### Arguments
+
+- **viewType** — The class of the native view. Note that the provided class must inherit from the Android `ViewGroup`.
+- **definition**: `() -> ViewGroupDefinition` — A builder of the view group definition.
+
+This property can only be used within a [`View`](#view) closure.
+
+```kotlin Kotlin
+GroupView<ViewGroup> {
+  AddChildView { parent, child, index -> ... }
+}
+```
+
+</APIBox>
+
+<APIBox header="AddChildView" platforms={["android"]}>
+
+Defines action that adds a child view to the view group.
+
+#### Arguments
+
+- **action**: `(parent: ParentType, child: ChildType, index: Int) -> ()` — An action that adds a child view to the view group.
+
+This property can only be used within a [`GroupView`](#groupview) closure.
+
+```kotlin Kotlin
+AddChildView { parent, child: View, index ->
+  parent.addView(child, index)
+}
+```
+
+</APIBox>
+
+<APIBox header="GetChildCount" platforms={["android"]}>
+
+Defines action the retrieves the number of child views in the view group.
+
+#### Arguments
+
+- **action**: `(parent: ParentType) -> Int` — A function that returns numer of child views.
+
+This property can only be used within a [`GroupView`](#groupview) closure.
+
+```kotlin Kotlin
+GetChildCount { parent ->
+  return@GetChildCount parent.childCount
+}
+```
+
+</APIBox>
+
+<APIBox header="GetChildViewAt" platforms={["android"]}>
+
+Defines action that retrieves a child view at a specific index from the view group.
+
+#### Arguments
+
+- **action**: `(parent: ParentType, index: Int) -> ChildType` — A function that retrieves a child view at a specific index from the view group.
+
+This property can only be used within a [`GroupView`](#groupview) closure.
+
+```kotlin Kotlin
+GetChildViewAt { parent, index ->
+  parent.getChildAt(index)
+}
+```
+
+</APIBox>
+
+<APIBox header="RemoveChildView" platforms={["android"]}>
+
+Defines action that removes a specific child view from the view group.
+
+#### Arguments
+
+- **action**: `(parent: ParentType, child: ChildType) -> ()` — A function that remove a specific child view from the view group.
+
+This property can only be used within a [`GroupView`](#groupview) closure.
+
+```kotlin Kotlin
+RemoveChildView { parent, child: View ->
+  parent.removeView(child)
+}
+```
+
+</APIBox>
+
+<APIBox header="RemoveChildViewAt" platforms={["android"]}>
+
+Defines action that removes a child view at a specific index from the view group.
+
+#### Arguments
+
+- **action**: `(parent: ParentType, child: ChildType) -> ()` — A function that removes a child view at a specific index from the view group.
+
+This property can only be used within a [`GroupView`](#groupview) closure.
+
+```kotlin Kotlin
+RemoveChildViewAt { parent, index ->
+  parent.removeViewAt(child)
+}
+```
+
+</APIBox>
+
 ## Argument Types
 
 Fundamentally, only primitive and serializable data can be passed back and forth between the runtimes. However, usually native modules need to receive custom data structures — more sophisticated than just the dictionary/map where the values are of unknown (`Any`) type and so each value has to be validated and casted on its own. The Expo Modules API provides protocols to make it more convenient to work with data objects, to provide automatic validation, and finally, to ensure native type-safety on each object member.
@@ -365,7 +539,7 @@ All functions and view prop setters accept all common primitive types in Swift a
 | Language | Supported primitive types                                                                                                      |
 | -------- | ------------------------------------------------------------------------------------------------------------------------------ |
 | Swift    | `Bool`, `Int`, `Int8`, `Int16`, `Int32`, `Int64`, `UInt`, `UInt8`, `UInt16`, `UInt32`, `UInt64`, `Float32`, `Double`, `String` |
-| Kotlin   | `Boolean`, `Int`, `UInt`, `Float`, `Double`, `String`, `Pair`                                                                  |
+| Kotlin   | `Boolean`, `Int`, `Long`, `UInt`, `Float`, `Double`, `String`, `Pair`                                                          |
 
 </APIBox>
 <APIBox header="Convertibles">
@@ -818,7 +992,7 @@ To use it, in the view definition, you need to provide the event names that the 
 ```swift
 class CameraViewModule: Module {
   public func definition() -> ModuleDefinition {
-    View(CamerView.self) {
+    View(CameraView.self) {
       Events(
         "onCameraReady"
       )

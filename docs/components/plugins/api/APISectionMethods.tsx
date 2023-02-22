@@ -6,6 +6,7 @@ import { APIDataType } from '~/components/plugins/api/APIDataType';
 import {
   AccessorDefinitionData,
   MethodDefinitionData,
+  MethodParamData,
   MethodSignatureData,
   PropData,
   TypeSignaturesData,
@@ -26,6 +27,8 @@ import {
   TypeDocKind,
   H3Code,
   H4Code,
+  getTagData,
+  getCommentContent,
 } from '~/components/plugins/api/APISectionUtils';
 import { H2, H4, LI, UL, CODE } from '~/ui/components/Text';
 
@@ -45,55 +48,63 @@ export type RenderMethodOptions = {
 export const renderMethod = (
   method: MethodDefinitionData | AccessorDefinitionData | PropData,
   { apiName, exposeInSidebar = true }: RenderMethodOptions = {}
-): JSX.Element[] => {
+) => {
   const signatures =
     (method as MethodDefinitionData).signatures ||
-    (method as PropData)?.type?.declaration?.signatures ||
-    (method as AccessorDefinitionData)?.getSignature ||
+    (method as PropData)?.type?.declaration?.signatures || [
+      (method as AccessorDefinitionData)?.getSignature,
+    ] ||
     [];
   const HeaderComponent = exposeInSidebar ? H3Code : H4Code;
   return signatures.map(
-    ({ name, parameters, comment, type }: MethodSignatureData | TypeSignaturesData) => (
-      <div
-        key={`method-signature-${method.name || name}-${parameters?.length || 0}`}
-        css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
-        <APISectionDeprecationNote comment={comment} />
-        <APISectionPlatformTags comment={comment} prefix="Only for:" />
-        <HeaderComponent tags={getTagNamesList(comment)}>
-          <CODE css={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
-            {getMethodName(method as MethodDefinitionData, apiName, name, parameters)}
-          </CODE>
-        </HeaderComponent>
-        {parameters && parameters.length > 0 && (
-          <>
-            {renderParams(parameters)}
-            <br />
-          </>
-        )}
-        <CommentTextBlock comment={comment} includePlatforms={false} />
-        {resolveTypeName(type) !== 'undefined' && (
-          <>
-            <div css={STYLES_NESTED_SECTION_HEADER}>
-              <H4>Returns</H4>
-            </div>
-            <UL css={STYLES_NO_BULLET_LIST}>
-              <LI>
-                <UndoIcon
-                  color={theme.icon.secondary}
-                  size={iconSize.small}
-                  css={returnIconStyles}
-                />
-                <APIDataType typeDefinition={type} />
-              </LI>
-            </UL>
+    ({ name, parameters, comment, type }: MethodSignatureData | TypeSignaturesData) => {
+      const returnComment = getTagData('returns', comment);
+      return (
+        <div
+          key={`method-signature-${method.name || name}-${parameters?.length || 0}`}
+          css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
+          <APISectionDeprecationNote comment={comment} />
+          <APISectionPlatformTags comment={comment} prefix="Only for:" />
+          <HeaderComponent tags={getTagNamesList(comment)}>
+            <CODE css={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
+              {getMethodName(method as MethodDefinitionData, apiName, name, parameters)}
+            </CODE>
+          </HeaderComponent>
+          {parameters && parameters.length > 0 && (
             <>
+              {renderParams(parameters)}
               <br />
-              <ReactMarkdown components={mdComponents}>{comment?.returns ?? ''}</ReactMarkdown>
             </>
-          </>
-        )}
-      </div>
-    )
+          )}
+          <CommentTextBlock comment={comment} includePlatforms={false} />
+          {resolveTypeName(type) !== 'undefined' && (
+            <>
+              <div css={STYLES_NESTED_SECTION_HEADER}>
+                <H4>Returns</H4>
+              </div>
+              <UL css={STYLES_NO_BULLET_LIST}>
+                <LI>
+                  <UndoIcon
+                    color={theme.icon.secondary}
+                    size={iconSize.sm}
+                    css={returnIconStyles}
+                  />
+                  <APIDataType typeDefinition={type} />
+                </LI>
+              </UL>
+              <>
+                <br />
+                {returnComment ? (
+                  <ReactMarkdown components={mdComponents}>
+                    {getCommentContent(returnComment.content)}
+                  </ReactMarkdown>
+                ) : undefined}
+              </>
+            </>
+          )}
+        </div>
+      );
+    }
   );
 };
 
@@ -105,7 +116,7 @@ const APISectionMethods = ({
 }: APISectionMethodsProps) =>
   data?.length ? (
     <>
-      <H2 key="methods-header">{header}</H2>
+      <H2 key={`${header}-header`}>{header}</H2>
       {data.map((method: MethodDefinitionData | PropData) =>
         renderMethod(method, { apiName, header, exposeInSidebar })
       )}
@@ -143,14 +154,17 @@ export const APIMethod = ({
     typeName: string;
     isReference?: boolean;
   }[];
-}): JSX.Element[] => {
-  const parsedParameters = parameters.map(param => ({
-    name: param.name,
-    type: { name: param.typeName, type: param.isReference ? 'reference' : 'literal' },
-    comment: {
-      text: param.comment,
-    },
-  }));
+}) => {
+  const parsedParameters = parameters.map(
+    param =>
+      ({
+        name: param.name,
+        type: { name: param.typeName, type: param.isReference ? 'reference' : 'literal' },
+        comment: {
+          summary: [{ kind: 'text', text: param.comment }],
+        },
+      } as MethodParamData)
+  );
   return renderMethod(
     {
       name,
@@ -159,10 +173,10 @@ export const APIMethod = ({
           name,
           parameters: parsedParameters,
           comment: {
-            text: comment,
-            tags: platforms.map(text => ({
+            summary: [{ kind: 'text', text: comment }],
+            blockTags: platforms.map(text => ({
               tag: 'platform',
-              text,
+              content: [{ kind: 'text', text }],
             })),
           },
           type: { name: returnTypeName, type: isReturnTypeReference ? 'reference' : 'literal' },

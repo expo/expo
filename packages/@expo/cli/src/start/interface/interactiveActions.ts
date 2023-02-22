@@ -73,8 +73,13 @@ export class DevServerManagerActions {
       );
       return;
     }
-    for (const app of apps) {
-      openJsInspector(app);
+    try {
+      for (const app of apps) {
+        await openJsInspector(app);
+      }
+    } catch (error: any) {
+      Log.error('Failed to open JavaScript inspector. This is often an issue with Google Chrome.');
+      Log.exception(error);
     }
   }
 

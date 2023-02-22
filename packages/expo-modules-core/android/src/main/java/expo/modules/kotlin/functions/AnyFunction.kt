@@ -23,6 +23,20 @@ abstract class AnyFunction(
   internal val argsCount get() = desiredArgsTypes.size
 
   /**
+   * A minimum number of arguments the functions needs which equals to `argumentsCount` reduced by the number of trailing optional arguments.
+   */
+  internal val requiredArgumentsCount = run {
+    val nonNullableArgIndex = desiredArgsTypes
+      .reversed()
+      .indexOfFirst { !it.kType.isMarkedNullable }
+    if (nonNullableArgIndex < 0) {
+      return@run desiredArgsTypes.size
+    }
+
+    return@run desiredArgsTypes.size - nonNullableArgIndex
+  }
+
+  /**
    * Tries to convert arguments from RN representation to expected types.
    *
    * @return An array of converted arguments
@@ -30,23 +44,22 @@ abstract class AnyFunction(
    */
   @Throws(CodedException::class)
   protected fun convertArgs(args: ReadableArray): Array<out Any?> {
-    if (desiredArgsTypes.size != args.size()) {
-      throw InvalidArgsNumberException(args.size(), desiredArgsTypes.size)
+    if (requiredArgumentsCount > args.size() || args.size() > desiredArgsTypes.size) {
+      throw InvalidArgsNumberException(args.size(), desiredArgsTypes.size, requiredArgumentsCount)
     }
 
     val finalArgs = Array<Any?>(desiredArgsTypes.size) { null }
     val argIterator = args.iterator()
-    desiredArgsTypes
-      .withIndex()
-      .forEach { (index, desiredType) ->
-        argIterator.next().recycle {
-          exceptionDecorator({ cause ->
-            ArgumentCastException(desiredType.kType, index, type, cause)
-          }) {
-            finalArgs[index] = desiredType.convert(this)
-          }
+    for (index in 0 until args.size()) {
+      val desiredType = desiredArgsTypes[index]
+      argIterator.next().recycle {
+        exceptionDecorator({ cause ->
+          ArgumentCastException(desiredType.kType, index, type, cause)
+        }) {
+          finalArgs[index] = desiredType.convert(this)
         }
       }
+    }
     return finalArgs
   }
 
@@ -58,30 +71,28 @@ abstract class AnyFunction(
    */
   @Throws(CodedException::class)
   protected fun convertArgs(args: Array<Any?>): Array<out Any?> {
-    if (desiredArgsTypes.size != args.size) {
-      throw InvalidArgsNumberException(args.size, desiredArgsTypes.size)
+    if (requiredArgumentsCount > args.size || args.size > desiredArgsTypes.size) {
+      throw InvalidArgsNumberException(args.size, desiredArgsTypes.size, requiredArgumentsCount)
     }
 
     val finalArgs = Array<Any?>(desiredArgsTypes.size) { null }
     val argIterator = args.iterator()
-    desiredArgsTypes
-      .withIndex()
-      .forEach { (index, desiredType) ->
-        val element = argIterator.next()
-
-        exceptionDecorator({ cause ->
-          ArgumentCastException(desiredType.kType, index, ReadableType.String, cause)
-        }) {
-          finalArgs[index] = desiredType.convert(element)
-        }
+    for (index in args.indices) {
+      val element = argIterator.next()
+      val desiredType = desiredArgsTypes[index]
+      exceptionDecorator({ cause ->
+        ArgumentCastException(desiredType.kType, index, ReadableType.String, cause)
+      }) {
+        finalArgs[index] = desiredType.convert(element)
       }
+    }
     return finalArgs
   }
 
   /**
    * Attaches current function to the provided js object.
    */
-  internal abstract fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject)
+  abstract fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject)
 
   fun getCppRequiredTypes(): List<ExpectedType> {
     return desiredArgsTypes.map { it.getCppRequiredTypes() }

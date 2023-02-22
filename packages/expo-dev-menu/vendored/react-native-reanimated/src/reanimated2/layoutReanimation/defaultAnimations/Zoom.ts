@@ -7,10 +7,7 @@ import {
   IEntryAnimationBuilder,
   IExitAnimationBuilder,
 } from '../animationBuilder/commonTypes';
-import { Dimensions } from 'react-native';
 import { ComplexAnimationBuilder } from '../animationBuilder';
-
-const { width, height } = Dimensions.get('window');
 
 export class ZoomIn
   extends ComplexAnimationBuilder
@@ -93,7 +90,7 @@ export class ZoomInLeft
     const callback = this.callbackV;
     const initialValues = this.initialValues;
 
-    return () => {
+    return (values) => {
       'worklet';
       return {
         animations: {
@@ -103,7 +100,7 @@ export class ZoomInLeft
           ],
         },
         initialValues: {
-          transform: [{ translateX: -width }, { scale: 0 }],
+          transform: [{ translateX: -values.windowWidth }, { scale: 0 }],
           ...initialValues,
         },
         callback: callback,
@@ -127,7 +124,7 @@ export class ZoomInRight
     const callback = this.callbackV;
     const initialValues = this.initialValues;
 
-    return () => {
+    return (values) => {
       'worklet';
       return {
         animations: {
@@ -137,7 +134,7 @@ export class ZoomInRight
           ],
         },
         initialValues: {
-          transform: [{ translateX: width }, { scale: 0 }],
+          transform: [{ translateX: values.windowWidth }, { scale: 0 }],
           ...initialValues,
         },
         callback: callback,
@@ -161,7 +158,7 @@ export class ZoomInUp
     const callback = this.callbackV;
     const initialValues = this.initialValues;
 
-    return () => {
+    return (values) => {
       'worklet';
       return {
         animations: {
@@ -171,7 +168,7 @@ export class ZoomInUp
           ],
         },
         initialValues: {
-          transform: [{ translateY: -height }, { scale: 0 }],
+          transform: [{ translateY: -values.windowHeight }, { scale: 0 }],
           ...initialValues,
         },
         callback: callback,
@@ -195,7 +192,7 @@ export class ZoomInDown
     const callback = this.callbackV;
     const initialValues = this.initialValues;
 
-    return () => {
+    return (values) => {
       'worklet';
       return {
         animations: {
@@ -205,7 +202,7 @@ export class ZoomInDown
           ],
         },
         initialValues: {
-          transform: [{ translateY: height }, { scale: 0 }],
+          transform: [{ translateY: values.windowHeight }, { scale: 0 }],
           ...initialValues,
         },
         callback: callback,
@@ -363,12 +360,17 @@ export class ZoomOutLeft
     const callback = this.callbackV;
     const initialValues = this.initialValues;
 
-    return () => {
+    return (values) => {
       'worklet';
       return {
         animations: {
           transform: [
-            { translateX: delayFunction(delay, animation(-width, config)) },
+            {
+              translateX: delayFunction(
+                delay,
+                animation(-values.windowWidth, config)
+              ),
+            },
             { scale: delayFunction(delay, animation(0, config)) },
           ],
         },
@@ -397,12 +399,17 @@ export class ZoomOutRight
     const callback = this.callbackV;
     const initialValues = this.initialValues;
 
-    return () => {
+    return (values) => {
       'worklet';
       return {
         animations: {
           transform: [
-            { translateX: delayFunction(delay, animation(width, config)) },
+            {
+              translateX: delayFunction(
+                delay,
+                animation(values.windowWidth, config)
+              ),
+            },
             { scale: delayFunction(delay, animation(0, config)) },
           ],
         },
@@ -431,12 +438,17 @@ export class ZoomOutUp
     const callback = this.callbackV;
     const initialValues = this.initialValues;
 
-    return () => {
+    return (values) => {
       'worklet';
       return {
         animations: {
           transform: [
-            { translateY: delayFunction(delay, animation(-height, config)) },
+            {
+              translateY: delayFunction(
+                delay,
+                animation(-values.windowHeight, config)
+              ),
+            },
             { scale: delayFunction(delay, animation(0, config)) },
           ],
         },
@@ -465,12 +477,17 @@ export class ZoomOutDown
     const callback = this.callbackV;
     const initialValues = this.initialValues;
 
-    return () => {
+    return (values) => {
       'worklet';
       return {
         animations: {
           transform: [
-            { translateY: delayFunction(delay, animation(height, config)) },
+            {
+              translateY: delayFunction(
+                delay,
+                animation(values.windowHeight, config)
+              ),
+            },
             { scale: delayFunction(delay, animation(0, config)) },
           ],
         },

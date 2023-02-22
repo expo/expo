@@ -135,7 +135,7 @@ async function renamePackageOnDisk(config, projectRoot) {
   if (newPackageName === null) {
     return;
   }
-  for (const type of ['main', 'debug']) {
+  for (const type of ['debug', 'main', 'release']) {
     await renameJniOnDiskForType({
       projectRoot,
       type,
@@ -269,8 +269,8 @@ function setPackageInBuildGradle(config, buildGradle) {
   if (packageName === null) {
     return buildGradle;
   }
-  const pattern = new RegExp(`applicationId ['"].*['"]`);
-  return buildGradle.replace(pattern, `applicationId '${packageName}'`);
+  const pattern = new RegExp(`(applicationId|namespace) ['"].*['"]`, 'g');
+  return buildGradle.replace(pattern, `$1 '${packageName}'`);
 }
 function setPackageInAndroidManifest(config, androidManifest) {
   const packageName = getPackage(config);

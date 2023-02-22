@@ -1,4 +1,11 @@
-# expo-notifications
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/notifications/">
+    <img
+      src="../../.github/resources/expo-notifications.svg"
+      alt="expo-notifications"
+      height="64" />
+  </a>
+</p>
 
 Provides an API to fetch push notification tokens and to present, schedule, receive and respond to notifications.
 

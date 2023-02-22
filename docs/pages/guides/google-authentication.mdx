@@ -1,0 +1,319 @@
+---
+title: Authentication with Google and AuthSession API
+sidebar_title: Using Google authentication
+description: A guide on setting up and using Google authentication with AuthSession API in your Expo app.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { CODE } from '~/ui/components/Text';
+import { Step } from '~/ui/components/Step';
+
+AuthSession API allows [browser-based authentication](/versions/latest/sdk/auth-session/#how-web-browser-based-authentication-flows-work) (using OAuth or OpenID Connect) to your project for Android, iOS, and the web. This guide provides steps on configuring and using the API with Google and a [development build](/development/create-development-builds/).
+
+## Install libraries
+
+To use AuthSession API, you'll need to install the following packages in your project:
+
+<Terminal cmd={['$ npx expo install expo-auth-session expo-random expo-web-browser']} />
+
+## Get credentials
+
+You'll need to provide a Google OAuth client ID to use Google as a login provider. To create a client ID, go to your Google Cloud project's [Credentials](https://console.developers.google.com/apis/credentials) page. If you don't have an existing project, create a [new project](https://console.cloud.google.com/projectcreate).
+
+There are three types of client IDs you can provide to the AuthSession API depending on the type of platform or development phase you are building your project for:
+
+- `androidClientId` for Android production apps.
+- `iosClientId` for iOS production apps.
+- `webClientId` for web apps used in the browser.
+
+<Step label="1">
+
+### Setup consent screen
+
+On the Credentials page, click the **Create credentials** button, select **OAuth client ID** and then click **Configure Consent screen**. You will be prompted to select properties such as **User Type** and other app-related information on this page. Continue the process and when you are done, proceed with the next step.
+
+</Step>
+
+<Step label="2">
+
+### Create client IDs
+
+<Tabs>
+
+<Tab label="Android">
+
+For Android, install the [`expo-application`](/versions/latest/sdk/application/) in your project. It is a peer dependency for `expo-auth-session`. Open the terminal window and run the following command:
+
+<Terminal cmd={['$ npx expo install expo-application']} />
+
+Create a [`androidClientId`](/versions/latest/sdk/auth-session/#googleauthrequestconfig--properties) by following the steps below from the Google Cloud console:
+
+- In the Google Cloud console, go to **Credentials** > **Create OAuth client** page.
+- For **Application type**, select **Android** from the dropdown menu.
+- For **Name**, enter the name such as **Android Client ID** to identify different client IDs in case you have more than one for multiple platforms.
+- Under **Package name**, enter the package name of your app. This is the same package name you have set up in the Expo config file under [`android.package`](/versions/latest/config/app/#package) field, for example, `com.example.myapp`.
+- Under **SHA-1 certificate fingerprint**, you'll need to add the signing certificate value. To get this value:
+  - In the terminal window, run `eas credentials -p android`, then select the build profile. For example, if you are generating the credential for development, select the build profile for it.
+  - Select **Keystore: Manage everything needed to build your project** > **Set up a new keystore** > select the default value for **Assign a name to your build credentials** > press <kbd>Y</kbd> to **Generate a new Android Keystore**.
+  - This will generate a new keystore and print the SHA-1 certificate fingerprint. Copy the value of **SHA1 Fingerprint** and paste it into the Google Cloud console.
+- Click **Save**.
+
+> Whenever you change values in the Expo config file, you'll need to rebuild the native app.
+
+</Tab>
+
+<Tab label="iOS">
+
+Create a [`iosClientId`](/versions/latest/sdk/auth-session/#googleauthrequestconfig--properties) by following the steps below from the Google Cloud console:
+
+- In the Google Cloud console, go to **Credentials** > **Create OAuth client** page.
+- For **Application type**, select **iOS** from the dropdown menu.
+- For **Name**, enter the name such as **iOS Client ID** to identify different client IDs in case you have more than one for multiple platforms.
+- Under **Bundle ID**, enter the bundle ID of your app. This is the same bundler identifier you have set up in the Expo config file under [`ios.bundleIdentifier`](/versions/latest/config/app/#bundleidentifier) field, for example, `com.example.myapp`.
+- Click **Save**.
+
+> Whenever you change values in the Expo config file, you'll need to rebuild the native app.
+
+</Tab>
+
+</Tabs>
+
+</Step>
+
+## Using AuthSession API
+
+<Step label="1">
+
+### Add a scheme
+
+For a development build and when setting up production apps, define [`scheme`](/versions/latest/config/app/#scheme) in the Expo config file. It is required for the authentication flow to complete the process and redirect the user back to the app. It handles the process of deep linking back to the app.
+
+```json app.json
+{
+  "expo": {
+    "scheme": "yourscheme"
+  }
+}
+```
+
+If you do not provide a value for the `scheme`, the authentication flow will complete, however, the user will not be redirected back to the app. They will have to manually exit the authentication popup which will result in the rejection of the process.
+
+</Step>
+
+<Step label="2">
+
+### Add import statements
+
+Add the following import statements to your project code. The `WebBrowser` API and the `Google` provider from the `expo-auth-session` are essential to handle the authentication process.
+
+```jsx App.js
+import * as WebBrowser from 'expo-web-browser';
+import * as Google from 'expo-auth-session/providers/google';
+```
+
+</Step>
+
+<Step label="3">
+
+### Add a method to dismiss the web popup
+
+Expo's [WebBrowser API](https://docs.expo.dev/versions/latest/sdk/webbrowser/) provides `maybeCompleteAuthSession()` method to dismiss the popup when the authentication sessions is completed successfully. It uses the redirect URL added in the provider's authorized list of URLs.
+
+Invoke this method to the app screen you want to redirect back to by adding the following code snippet:
+
+```js App.js
+WebBrowser.maybeCompleteAuthSession();
+```
+
+If this method is not invoked, the popup will not dismiss itself.
+
+</Step>
+
+<Step label="4">
+
+### Pass the client ID to the provider
+
+[`Google.useAuthRequest()`](/versions/latest/sdk/auth-session/#useauthrequest) hook provides `request` and `response` objects. It allows for async setup, which means that a mobile web browser won't block the request. It also accepts an object of client IDs that are generated in the Google Cloud console.
+
+Define this hook inside the React component by adding the code snippet below:
+
+```js App.js
+const [request, response, promptAsync] = Google.useAuthRequest({
+  androidClientId: 'GOOGLE_GUID.apps.googleusercontent.com',
+  iosClientId: 'GOOGLE_GUID.apps.googleusercontent.com',
+});
+```
+
+In the above code snippet, replace the `GOOGLE_GUID` with the client ID generated in the Google Cloud console for your app. Also, you include the client IDs for the platforms you want to support.
+
+</Step>
+
+<Step label="5">
+
+### Send the auth request
+
+`useAuthRequest()` hook also provides `promptAsync()` that prompts the user to authenticate by opening a web browser. It is invoked when the user clicks the login button. The button must be disabled until the request is loaded asynchronously. This is done by passing the `request` object from the `useAuthRequest` hook to the `disabled` prop of the button component.
+
+An example button component is shown below:
+
+```jsx App.js
+<Button
+  title="Sign in with Google"
+  disabled={!request}
+  onPress={() => {
+    promptAsync();
+  }}
+/>
+```
+
+</Step>
+
+## Minimal working example
+
+In the code snippet below, you can see a minimal working example of the AuthSession API with Google provider. It stores the access token retrieved from the successful authentication request to fetch the user's public information and display it on the app screen.
+
+{/* prettier-ignore */}
+```jsx App.js
+import { useEffect, useState } from "react";
+import { StyleSheet, Text, View, Button } from "react-native";
+import * as WebBrowser from "expo-web-browser";
+import * as Google from "expo-auth-session/providers/google";
+
+/* @info This automatically dismisses the modal when an auth session is completed. If it is not provided, the popup window will remain open. */
+WebBrowser.maybeCompleteAuthSession();
+/* @end */
+
+export default function App() {
+  /* @info Define separate state variables to store access token and user information on the authorization.*/
+  const [token, setToken] = useState("");
+  const [userInfo, setUserInfo] = useState(null);
+  /* @end */
+
+  /* @info The useAuthRequest hook provides instances and methods to invoke an auth session. It also accepts an object of client IDs for supported platforms.*/
+  const [request, response, promptAsync] = Google.useAuthRequest({
+    androidClientId: "GOOGLE_GUID.apps.googleusercontent.com",
+    iosClientId: "GOOGLE_GUID.apps.googleusercontent.com",
+
+  });
+  /* @end */
+
+  useEffect(() => {
+    if (response?.type === "success") {
+      setToken(response.authentication.accessToken);
+      getUserInfo();
+    }
+  }, [response, token]);
+
+  const getUserInfo = async () => {
+    try {
+      const response = await fetch(
+        /* @info The Google API endpoint to fetch user information. */
+        "https://www.googleapis.com/userinfo/v2/me",
+        /* @end */
+        {
+          headers: { Authorization: `Bearer ${token}` },
+        }
+      );
+
+      const user = await response.json();
+      setUserInfo(user);
+    } catch (error) {
+      // Add your own error handler here
+    }
+  };
+
+  return (
+    <View style={styles.container}>
+      {userInfo === null ? (
+        <Button
+          title="Sign in with Google"
+          /* @info The button is disabled until the request is loaded asynchronously.*/
+          disabled={!request}
+          /* @end */
+          onPress={() => {
+            /* @info Prompt the user to authenticate in a user interaction or web browsers will block it.*/
+            promptAsync();
+            /* @end */
+          }}
+        />
+      ) : (
+        <Text style={styles.text}>{userInfo.name}</Text>
+      )}
+    </View>
+  );
+}
+
+const styles = StyleSheet.create({
+  container: {
+    flex: 1,
+    backgroundColor: "#fff",
+    alignItems: "center",
+    justifyContent: "center",
+  },
+  text: {
+    fontSize: 20,
+    fontWeight: "bold",
+  },
+});
+```
+
+## Testing your app
+
+**For a development build**, see [Use development builds](/development/use-development-builds/#start-the-development-server) for further instructions on how to start the development server or run [`npx expo run:android` or `npx expo run:ios`](/workflow/expo-cli/#compiling) command to test the native project locally.
+
+## Expo web
+
+For a web app, you need to create a [`webClientId`](/versions/latest/sdk/auth-session/#googleauthrequestconfig--properties). Follow the steps below from the Google Cloud console to generate it:
+
+- In the Google Cloud console, go to **Credentials** > **Create OAuth client** page.
+- For **Name**, enter the name such as **Web client ID** to identify different client IDs in case you have more than one for multiple platforms.
+- For **Authorized JavaScript origins**, add the URI: `https://localhost:19006` and `https://yourwebsite.com`.
+- For **Authorized redirect URIs**, add the URI: `https://localhost:19006` and `https://yourwebsite.com`.
+
+After creating the client ID, you can use it in the `webClientId` property of the `Google.useAuthRequest` hook.
+
+### Testing web app
+
+For testing the web app, start your project with the following command:
+
+<Terminal cmd={['$ npx expo start --web --https']} />
+
+## Troubleshooting
+
+<Collapsible summary={<>On iOS, getting <CODE>Error 401: invalid_client The OAuth client was not found</CODE></>}>
+
+Make sure that you have added the correct `iosClientId` in the `Google.useAuthRequest` hook and follow the pattern: `GOOGLE_GUID.apps.googleusercontent.com` where `GOOGLE_GUID` is the unique ID generated.
+
+</Collapsible>
+
+<Collapsible summary="URI scheme in bare workflow">
+
+For a development build or projects using EAS, the URI scheme is automatically added.
+
+For bare workflow, your project needs to conform to the URI scheme matching your `android.package` for Android and `ios.bundleIdentifier` for iOS. You can do that by running the following command for each platform:
+
+<Tabs>
+
+<Tab label="Android">
+
+<Terminal cmd={['$ npx uri-scheme add your-android.package --android']} />
+
+</Tab>
+
+<Tab label="iOS">
+
+<Terminal cmd={['$ npx uri-scheme add your-ios.bundleIdentifier --ios']} />
+
+</Tab>
+
+</Tabs>
+
+</Collapsible>
+
+## Learn more
+
+- [AuthSession API reference](/versions/latest/sdk/auth-session/)
+- [How browser-based authentication works?](/versions/latest/sdk/auth-session/#how-web-browser-based-authentication-flows-work)
+- [Google authentication provider reference](/versions/latest/sdk/auth-session/#google)

@@ -3,12 +3,9 @@
 exports[`renders B 1`] = `
 <Text
   style={
-    Array [
-      Object {
-        "fontWeight": "bold",
-      },
-      undefined,
-    ]
+    {
+      "fontWeight": "bold",
+    }
   }
 >
   demo
@@ -18,13 +15,10 @@ exports[`renders B 1`] = `
 exports[`renders BR 1`] = `
 <Text
   style={
-    Array [
-      Object {
-        "height": 16,
-        "width": 0,
-      },
-      undefined,
-    ]
+    {
+      "height": 16,
+      "width": 0,
+    }
   }
 />
 `;
@@ -32,12 +26,9 @@ exports[`renders BR 1`] = `
 exports[`renders BlockQuote 1`] = `
 <View
   style={
-    Array [
-      Object {
-        "marginVertical": 32,
-      },
-      undefined,
-    ]
+    {
+      "marginVertical": 32,
+    }
   }
 />
 `;
@@ -45,13 +36,10 @@ exports[`renders BlockQuote 1`] = `
 exports[`renders Code 1`] = `
 <Text
   style={
-    Array [
-      Object {
-        "fontFamily": "monospace",
-        "fontWeight": "500",
-      },
-      undefined,
-    ]
+    {
+      "fontFamily": "monospace",
+      "fontWeight": "500",
+    }
   }
 />
 `;
@@ -59,13 +47,10 @@ exports[`renders Code 1`] = `
 exports[`renders Del 1`] = `
 <Text
   style={
-    Array [
-      Object {
-        "textDecorationLine": "line-through",
-        "textDecorationStyle": "solid",
-      },
-      undefined,
-    ]
+    {
+      "textDecorationLine": "line-through",
+      "textDecorationStyle": "solid",
+    }
   }
 >
   demo
@@ -75,12 +60,9 @@ exports[`renders Del 1`] = `
 exports[`renders EM 1`] = `
 <Text
   style={
-    Array [
-      Object {
-        "fontStyle": "italic",
-      },
-      undefined,
-    ]
+    {
+      "fontStyle": "italic",
+    }
   }
 >
   demo
@@ -90,12 +72,9 @@ exports[`renders EM 1`] = `
 exports[`renders I 1`] = `
 <Text
   style={
-    Array [
-      Object {
-        "fontStyle": "italic",
-      },
-      undefined,
-    ]
+    {
+      "fontStyle": "italic",
+    }
   }
 >
   demo
@@ -105,13 +84,10 @@ exports[`renders I 1`] = `
 exports[`renders Mark 1`] = `
 <Text
   style={
-    Array [
-      Object {
-        "backgroundColor": "yellow",
-        "color": "black",
-      },
-      undefined,
-    ]
+    {
+      "backgroundColor": "yellow",
+      "color": "black",
+    }
   }
 />
 `;
@@ -119,12 +95,9 @@ exports[`renders Mark 1`] = `
 exports[`renders P 1`] = `
 <Text
   style={
-    Array [
-      Object {
-        "marginVertical": 32,
-      },
-      undefined,
-    ]
+    {
+      "marginVertical": 32,
+    }
   }
 >
   demo
@@ -134,16 +107,11 @@ exports[`renders P 1`] = `
 exports[`renders Pre 1`] = `
 <Text
   style={
-    Array [
-      Object {
-        "fontFamily": "monospace",
-        "fontWeight": "500",
-      },
-      Object {
-        "marginVertical": 32,
-      },
-      undefined,
-    ]
+    {
+      "fontFamily": "monospace",
+      "fontWeight": "500",
+      "marginVertical": 32,
+    }
   }
 >
   
@@ -157,12 +125,9 @@ exports[`renders Pre 1`] = `
 exports[`renders Q 1`] = `
 <Text
   style={
-    Array [
-      Object {
-        "fontStyle": "italic",
-      },
-      undefined,
-    ]
+    {
+      "fontStyle": "italic",
+    }
   }
 >
   "
@@ -174,15 +139,18 @@ exports[`renders Q 1`] = `
 exports[`renders S 1`] = `
 <Text
   style={
-    Array [
-      Object {
-        "textDecorationLine": "line-through",
-        "textDecorationStyle": "solid",
-      },
-      undefined,
-    ]
+    {
+      "textDecorationLine": "line-through",
+      "textDecorationStyle": "solid",
+    }
   }
 >
+  demo
+</Text>
+`;
+
+exports[`renders Span 1`] = `
+<Text>
   demo
 </Text>
 `;
@@ -190,12 +158,9 @@ exports[`renders S 1`] = `
 exports[`renders Strong 1`] = `
 <Text
   style={
-    Array [
-      Object {
-        "fontWeight": "bold",
-      },
-      undefined,
-    ]
+    {
+      "fontWeight": "bold",
+    }
   }
 >
   demo

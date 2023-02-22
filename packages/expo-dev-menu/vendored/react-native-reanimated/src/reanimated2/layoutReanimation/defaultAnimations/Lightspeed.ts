@@ -1,12 +1,9 @@
-import { Dimensions } from 'react-native';
 import { withSequence, withTiming } from '../../animation';
 import { ComplexAnimationBuilder } from '../animationBuilder';
 import {
   EntryExitAnimationFunction,
   IEntryExitAnimationBuilder,
 } from '../animationBuilder/commonTypes';
-
-const { width } = Dimensions.get('window');
 
 export class LightSpeedInRight
   extends ComplexAnimationBuilder
@@ -24,7 +21,7 @@ export class LightSpeedInRight
     const callback = this.callbackV;
     const initialValues = this.initialValues;
 
-    return () => {
+    return (values) => {
       'worklet';
       return {
         animations: {
@@ -50,7 +47,7 @@ export class LightSpeedInRight
         },
         initialValues: {
           opacity: 0,
-          transform: [{ translateX: width }, { skewX: '-45deg' }],
+          transform: [{ translateX: values.windowWidth }, { skewX: '-45deg' }],
           ...initialValues,
         },
         callback: callback,
@@ -75,7 +72,7 @@ export class LightSpeedInLeft
     const callback = this.callbackV;
     const initialValues = this.initialValues;
 
-    return () => {
+    return (values) => {
       'worklet';
       return {
         animations: {
@@ -101,7 +98,7 @@ export class LightSpeedInLeft
         },
         initialValues: {
           opacity: 0,
-          transform: [{ translateX: -width }, { skewX: '45deg' }],
+          transform: [{ translateX: -values.windowWidth }, { skewX: '45deg' }],
           ...initialValues,
         },
         callback: callback,
@@ -125,14 +122,17 @@ export class LightSpeedOutRight
     const callback = this.callbackV;
     const initialValues = this.initialValues;
 
-    return () => {
+    return (values) => {
       'worklet';
       return {
         animations: {
           opacity: delayFunction(delay, animation(0, config)),
           transform: [
             {
-              translateX: delayFunction(delay, animation(width, config)),
+              translateX: delayFunction(
+                delay,
+                animation(values.windowWidth, config)
+              ),
             },
             {
               skewX: delayFunction(delay, animation('-45deg', config)),
@@ -165,14 +165,17 @@ export class LightSpeedOutLeft
     const callback = this.callbackV;
     const initialValues = this.initialValues;
 
-    return () => {
+    return (values) => {
       'worklet';
       return {
         animations: {
           opacity: delayFunction(delay, animation(0, config)),
           transform: [
             {
-              translateX: delayFunction(delay, animation(-width, config)),
+              translateX: delayFunction(
+                delay,
+                animation(-values.windowWidth, config)
+              ),
             },
             {
               skewX: delayFunction(delay, animation('45deg', config)),

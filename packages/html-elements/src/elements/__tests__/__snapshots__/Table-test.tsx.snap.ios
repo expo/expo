@@ -3,13 +3,10 @@
 exports[`renders Caption 1`] = `
 <Text
   style={
-    Array [
-      Object {
-        "fontSize": 32,
-        "textAlign": "center",
-      },
-      undefined,
-    ]
+    {
+      "fontSize": 32,
+      "textAlign": "center",
+    }
   }
 >
   Caption
@@ -21,13 +18,10 @@ exports[`renders TBody 1`] = `<View />`;
 exports[`renders TD 1`] = `
 <Text
   style={
-    Array [
-      Object {
-        "flex": 1,
-        "fontSize": 32,
-      },
-      undefined,
-    ]
+    {
+      "flex": 1,
+      "fontSize": 32,
+    }
   }
 >
   Column
@@ -39,15 +33,12 @@ exports[`renders TFoot 1`] = `<View />`;
 exports[`renders TH 1`] = `
 <Text
   style={
-    Array [
-      Object {
-        "flex": 1,
-        "fontSize": 32,
-        "fontWeight": "bold",
-        "textAlign": "center",
-      },
-      undefined,
-    ]
+    {
+      "flex": 1,
+      "fontSize": 32,
+      "fontWeight": "bold",
+      "textAlign": "center",
+    }
   }
 >
   Header
@@ -59,12 +50,9 @@ exports[`renders THead 1`] = `<View />`;
 exports[`renders TR 1`] = `
 <View
   style={
-    Array [
-      Object {
-        "flexDirection": "row",
-      },
-      undefined,
-    ]
+    {
+      "flexDirection": "row",
+    }
   }
 />
 `;

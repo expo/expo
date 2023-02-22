@@ -4,7 +4,7 @@ exports[`renders a complex gradient 1`] = `
 <View>
   <ViewManagerAdapter_ExpoLinearGradient
     borderRadii={
-      Array [
+      [
         0,
         0,
         0,
@@ -16,27 +16,27 @@ exports[`renders a complex gradient 1`] = `
       ]
     }
     proxiedProperties={
-      Object {
-        "colors": Array [
+      {
+        "colors": [
           -65536,
           -16776961,
         ],
-        "endPoint": Array [
+        "endPoint": [
           1,
           1,
         ],
-        "locations": Array [
+        "locations": [
           0.5,
           1,
         ],
-        "startPoint": Array [
+        "startPoint": [
           0,
           0,
         ],
       }
     }
     style={
-      Object {
+      {
         "bottom": 0,
         "left": 0,
         "position": "absolute",

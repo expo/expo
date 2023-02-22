@@ -1,3 +1,5 @@
+import { Platform } from 'expo-modules-core';
+
 import { optionalRequire } from '../../navigation/routeBuilder';
 import ComponentListScreen, { ListElement } from '../ComponentListScreen';
 
@@ -74,7 +76,31 @@ export const ImageScreens = [
       return optionalRequire(() => require('./ImageBlurhashScreen'));
     },
   },
+  {
+    name: 'Custom cache key',
+    route: 'image/cache-key',
+    getComponent() {
+      return optionalRequire(() => require('./ImageCacheKeyScreen'));
+    },
+  },
+  {
+    name: 'List of GIFs',
+    route: 'image/gifs',
+    getComponent() {
+      return optionalRequire(() => require('./ImageGifsScreen'));
+    },
+  },
 ];
+
+if (Platform.OS === 'ios') {
+  ImageScreens.push({
+    name: 'Live Text Interaction',
+    route: 'image/live-text-interaction',
+    getComponent() {
+      return optionalRequire(() => require('./ImageLiveTextInteractionScreen'));
+    },
+  });
+}
 
 export default function ImageScreen() {
   const apis: ListElement[] = ImageScreens.map((screen) => {

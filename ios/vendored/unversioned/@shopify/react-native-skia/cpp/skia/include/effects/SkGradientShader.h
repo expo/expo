@@ -8,11 +8,10 @@
 #ifndef SkGradientShader_DEFINED
 #define SkGradientShader_DEFINED
 
+#include "include/core/SkColorSpace.h"
 #include "include/core/SkRefCnt.h"
 #include "include/core/SkShader.h"
 #include "include/core/SkTileMode.h"
-
-class SkColorSpace;
 
 /** \class SkGradientShader
 
@@ -60,6 +59,16 @@ public:
         kInterpolateColorsInPremul_Flag = 1 << 0,
     };
 
+    struct Interpolation {
+        enum class InPremul : bool { kNo = false, kYes = true };
+
+        InPremul fInPremul = InPremul::kNo;
+
+        static Interpolation FromFlags(uint32_t flags) {
+            return {flags & kInterpolateColorsInPremul_Flag ? InPremul::kYes : InPremul::kNo};
+        }
+    };
+
     /** Returns a shader that generates a linear gradient between the two specified points.
         <p />
         @param  pts     The start and end points for the gradient.
@@ -77,12 +86,7 @@ public:
     static sk_sp<SkShader> MakeLinear(const SkPoint pts[2],
                                       const SkColor colors[], const SkScalar pos[], int count,
                                       SkTileMode mode,
-                                      uint32_t flags, const SkMatrix* localMatrix);
-    static sk_sp<SkShader> MakeLinear(const SkPoint pts[2],
-                                      const SkColor colors[], const SkScalar pos[], int count,
-                                      SkTileMode mode) {
-        return MakeLinear(pts, colors, pos, count, mode, 0, nullptr);
-    }
+                                      uint32_t flags = 0, const SkMatrix* localMatrix = nullptr);
 
     /** Returns a shader that generates a linear gradient between the two specified points.
         <p />
@@ -101,10 +105,15 @@ public:
     static sk_sp<SkShader> MakeLinear(const SkPoint pts[2],
                                       const SkColor4f colors[], sk_sp<SkColorSpace> colorSpace,
                                       const SkScalar pos[], int count, SkTileMode mode,
-                                      uint32_t flags, const SkMatrix* localMatrix);
+                                      const Interpolation& interpolation,
+                                      const SkMatrix* localMatrix);
     static sk_sp<SkShader> MakeLinear(const SkPoint pts[2],
                                       const SkColor4f colors[], sk_sp<SkColorSpace> colorSpace,
-                                      const SkScalar pos[], int count, SkTileMode mode);
+                                      const SkScalar pos[], int count, SkTileMode mode,
+                                      uint32_t flags = 0, const SkMatrix* localMatrix = nullptr) {
+        return MakeLinear(pts, colors, std::move(colorSpace), pos, count, mode,
+                          Interpolation::FromFlags(flags), localMatrix);
+    }
 
     /** Returns a shader that generates a radial gradient given the center and radius.
         <p />
@@ -122,12 +131,7 @@ public:
     static sk_sp<SkShader> MakeRadial(const SkPoint& center, SkScalar radius,
                                       const SkColor colors[], const SkScalar pos[], int count,
                                       SkTileMode mode,
-                                      uint32_t flags, const SkMatrix* localMatrix);
-    static sk_sp<SkShader> MakeRadial(const SkPoint& center, SkScalar radius,
-                                      const SkColor colors[], const SkScalar pos[], int count,
-                                      SkTileMode mode) {
-        return MakeRadial(center, radius, colors, pos, count, mode, 0, nullptr);
-    }
+                                      uint32_t flags = 0, const SkMatrix* localMatrix = nullptr);
 
     /** Returns a shader that generates a radial gradient given the center and radius.
         <p />
@@ -145,28 +149,14 @@ public:
     static sk_sp<SkShader> MakeRadial(const SkPoint& center, SkScalar radius,
                                       const SkColor4f colors[], sk_sp<SkColorSpace> colorSpace,
                                       const SkScalar pos[], int count, SkTileMode mode,
-                                      uint32_t flags, const SkMatrix* localMatrix);
+                                      const Interpolation& interpolation,
+                                      const SkMatrix* localMatrix);
     static sk_sp<SkShader> MakeRadial(const SkPoint& center, SkScalar radius,
                                       const SkColor4f colors[], sk_sp<SkColorSpace> colorSpace,
-                                      const SkScalar pos[], int count, SkTileMode mode);
-
-    /**
-     *  Returns a shader that generates a conical gradient given two circles, or
-     *  returns NULL if the inputs are invalid. The gradient interprets the
-     *  two circles according to the following HTML spec.
-     *  http://dev.w3.org/html5/2dcontext/#dom-context-2d-createradialgradient
-     */
-    static sk_sp<SkShader> MakeTwoPointConical(const SkPoint& start, SkScalar startRadius,
-                                               const SkPoint& end, SkScalar endRadius,
-                                               const SkColor colors[], const SkScalar pos[],
-                                               int count, SkTileMode mode,
-                                               uint32_t flags, const SkMatrix* localMatrix);
-    static sk_sp<SkShader> MakeTwoPointConical(const SkPoint& start, SkScalar startRadius,
-                                               const SkPoint& end, SkScalar endRadius,
-                                               const SkColor colors[], const SkScalar pos[],
-                                               int count, SkTileMode mode) {
-        return MakeTwoPointConical(start, startRadius, end, endRadius, colors, pos, count, mode,
-                                   0, nullptr);
+                                      const SkScalar pos[], int count, SkTileMode mode,
+                                      uint32_t flags = 0, const SkMatrix* localMatrix = nullptr) {
+        return MakeRadial(center, radius, colors, std::move(colorSpace), pos, count, mode,
+                          Interpolation::FromFlags(flags), localMatrix);
     }
 
     /**
@@ -177,17 +167,45 @@ public:
      */
     static sk_sp<SkShader> MakeTwoPointConical(const SkPoint& start, SkScalar startRadius,
                                                const SkPoint& end, SkScalar endRadius,
-                                               const SkColor4f colors[],
-                                               sk_sp<SkColorSpace> colorSpace, const SkScalar pos[],
+                                               const SkColor colors[], const SkScalar pos[],
                                                int count, SkTileMode mode,
-                                               uint32_t flags, const SkMatrix* localMatrix);
+                                               uint32_t flags = 0,
+                                               const SkMatrix* localMatrix = nullptr);
+
+    /**
+     *  Returns a shader that generates a conical gradient given two circles, or
+     *  returns NULL if the inputs are invalid. The gradient interprets the
+     *  two circles according to the following HTML spec.
+     *  http://dev.w3.org/html5/2dcontext/#dom-context-2d-createradialgradient
+     */
     static sk_sp<SkShader> MakeTwoPointConical(const SkPoint& start, SkScalar startRadius,
                                                const SkPoint& end, SkScalar endRadius,
                                                const SkColor4f colors[],
                                                sk_sp<SkColorSpace> colorSpace, const SkScalar pos[],
-                                               int count, SkTileMode mode);
+                                               int count, SkTileMode mode,
+                                               const Interpolation& interpolation,
+                                               const SkMatrix* localMatrix);
+    static sk_sp<SkShader> MakeTwoPointConical(const SkPoint& start, SkScalar startRadius,
+                                               const SkPoint& end, SkScalar endRadius,
+                                               const SkColor4f colors[],
+                                               sk_sp<SkColorSpace> colorSpace, const SkScalar pos[],
+                                               int count, SkTileMode mode,
+                                               uint32_t flags = 0,
+                                               const SkMatrix* localMatrix = nullptr) {
+        return MakeTwoPointConical(start, startRadius, end, endRadius, colors,
+                                   std::move(colorSpace), pos, count, mode,
+                                   Interpolation::FromFlags(flags), localMatrix);
+    }
 
     /** Returns a shader that generates a sweep gradient given a center.
+
+        The shader accepts negative angles and angles larger than 360, draws
+        between 0 and 360 degrees, similar to the CSS conic-gradient
+        semantics. 0 degrees means horizontal positive x axis. The start angle
+        must be less than the end angle, otherwise a null pointer is
+        returned. If color stops do not contain 0 and 1 but are within this
+        range, the respective outer color stop is repeated for 0 and 1. Color
+        stops less than 0 are clamped to 0, and greater than 1 are clamped to 1.
         <p />
         @param  cx         The X coordinate of the center of the sweep
         @param  cx         The Y coordinate of the center of the sweep
@@ -210,16 +228,20 @@ public:
                                      uint32_t flags, const SkMatrix* localMatrix);
     static sk_sp<SkShader> MakeSweep(SkScalar cx, SkScalar cy,
                                      const SkColor colors[], const SkScalar pos[], int count,
-                                     uint32_t flags, const SkMatrix* localMatrix) {
+                                     uint32_t flags = 0, const SkMatrix* localMatrix = nullptr) {
         return MakeSweep(cx, cy, colors, pos, count, SkTileMode::kClamp, 0, 360, flags,
                          localMatrix);
     }
-    static sk_sp<SkShader> MakeSweep(SkScalar cx, SkScalar cy,
-                                     const SkColor colors[], const SkScalar pos[], int count) {
-        return MakeSweep(cx, cy, colors, pos, count, 0, nullptr);
-    }
 
     /** Returns a shader that generates a sweep gradient given a center.
+
+        The shader accepts negative angles and angles larger than 360, draws
+        between 0 and 360 degrees, similar to the CSS conic-gradient
+        semantics. 0 degrees means horizontal positive x axis. The start angle
+        must be less than the end angle, otherwise a null pointer is
+        returned. If color stops do not contain 0 and 1 but are within this
+        range, the respective outer color stop is repeated for 0 and 1. Color
+        stops less than 0 are clamped to 0, and greater than 1 are clamped to 1.
         <p />
         @param  cx         The X coordinate of the center of the sweep
         @param  cx         The Y coordinate of the center of the sweep
@@ -240,16 +262,24 @@ public:
                                      const SkScalar pos[], int count,
                                      SkTileMode mode,
                                      SkScalar startAngle, SkScalar endAngle,
-                                     uint32_t flags, const SkMatrix* localMatrix);
+                                     const Interpolation& interpolation,
+                                     const SkMatrix* localMatrix);
     static sk_sp<SkShader> MakeSweep(SkScalar cx, SkScalar cy,
                                      const SkColor4f colors[], sk_sp<SkColorSpace> colorSpace,
                                      const SkScalar pos[], int count,
-                                     uint32_t flags, const SkMatrix* localMatrix);
+                                     SkTileMode mode,
+                                     SkScalar startAngle, SkScalar endAngle,
+                                     uint32_t flags, const SkMatrix* localMatrix) {
+        return MakeSweep(cx, cy, colors, std::move(colorSpace), pos, count, mode, startAngle,
+                         endAngle, Interpolation::FromFlags(flags), localMatrix);
+    }
     static sk_sp<SkShader> MakeSweep(SkScalar cx, SkScalar cy,
                                      const SkColor4f colors[], sk_sp<SkColorSpace> colorSpace,
-                                     const SkScalar pos[], int count);
-
-    static void RegisterFlattenables();
+                                     const SkScalar pos[], int count,
+                                     uint32_t flags = 0, const SkMatrix* localMatrix = nullptr) {
+        return MakeSweep(cx, cy, colors, std::move(colorSpace), pos, count, SkTileMode::kClamp,
+                         0, 360, flags, localMatrix);
+    }
 };
 
 #endif

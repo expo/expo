@@ -49,6 +49,14 @@ export default [
     ],
   },
   {
+    name: 'resourceClass',
+    enum: ['default', 'medium'],
+    description: [
+      'The resource class that will be used to run this build.',
+      'To see mapping for `default` and `medium` resource classes for each platform, see [Android-specific resource class field](eas-json/#resourceclass-1) and [iOS-specific resource class field](eas-json/#resourceclass-2) documentation.',
+    ],
+  },
+  {
     name: 'prebuildCommand',
     type: 'string',
     description: [

@@ -10,28 +10,38 @@
 
 #include "include/core/SkRefCnt.h"
 
-class SkTextureDataBlock;
+#include <memory>
+#include <vector>
 
 namespace skgpu::graphite {
 
 class CommandBuffer;
-template<typename StorageT, typename BaseT> class PipelineDataCache;
-using TextureDataCache = PipelineDataCache<std::unique_ptr<SkTextureDataBlock>, SkTextureDataBlock>;
+class RecordingPriv;
+class Resource;
+class ResourceProvider;
+class TaskGraph;
 
 class Recording final {
 public:
     ~Recording();
 
-protected:
+    RecordingPriv priv();
+
 private:
-    friend class Context; // for access fCommandBuffer
     friend class Recorder; // for ctor
-    Recording(sk_sp<CommandBuffer>, std::unique_ptr<TextureDataCache>);
+    friend class RecordingPriv;
 
-    sk_sp<CommandBuffer> fCommandBuffer;
+    Recording(std::unique_ptr<TaskGraph>);
 
-    // The TextureDataCache holds all the Textures and Samplers used in this Recording.
-    std::unique_ptr<TextureDataCache> fTextureDataCache;
+    bool addCommands(CommandBuffer*, ResourceProvider*);
+    void addResourceRef(sk_sp<Resource>);
+
+    std::unique_ptr<TaskGraph> fGraph;
+    // We don't always take refs to all resources used by specific Tasks (e.g. a common buffer used
+    // for uploads). Instead we'll just hold onto one ref for those Resources outside the Tasks.
+    // Those refs are stored in the array here and will eventually be passed onto a CommandBuffer
+    // when the Recording adds its commands.
+    std::vector<sk_sp<Resource>> fExtraResourceRefs;
 };
 
 } // namespace skgpu::graphite

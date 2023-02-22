@@ -41,12 +41,12 @@ export const ThemeSelector = () => {
         <option value="dark">Dark</option>
       </select>
       <div css={selectIconStyle}>
-        {themeName === 'auto' && <ThemeAutoIcon size={iconSize.small} />}
-        {themeName === 'dark' && <ThemeDarkIcon size={iconSize.small} />}
-        {themeName === 'light' && <ThemeLightIcon size={iconSize.small} />}
+        {themeName === 'auto' && <ThemeAutoIcon size={iconSize.sm} />}
+        {themeName === 'dark' && <ThemeDarkIcon size={iconSize.sm} />}
+        {themeName === 'light' && <ThemeLightIcon size={iconSize.sm} />}
       </div>
       <div css={themeIconStyle}>
-        <ChevronDownIcon size={iconSize.small} />
+        <ChevronDownIcon size={iconSize.sm} />
       </div>
     </div>
   );
@@ -69,8 +69,8 @@ const selectStyle = css`
   width: 100%;
   margin: 0;
   border: 1px solid ${theme.border.default};
-  box-shadow: ${shadows.input};
-  border-radius: ${borderRadius.medium}px;
+  box-shadow: ${shadows.xs};
+  border-radius: ${borderRadius.md}px;
   -moz-appearance: none;
   -webkit-appearance: none;
   appearance: none;

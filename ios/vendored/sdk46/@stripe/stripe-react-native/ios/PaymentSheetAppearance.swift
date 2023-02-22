@@ -5,6 +5,7 @@
 //  Created by Charles Cruzan on 5/11/22.
 //
 import Stripe
+import StripePaymentSheet
 
 extension StripeSdk {
     func buildPaymentSheetAppearance(userParams: NSDictionary) throws -> PaymentSheet.Appearance {
@@ -30,8 +31,8 @@ extension StripeSdk {
         return appearance
     }
     
-    private func buildFont(params: NSDictionary) throws -> Stripe.PaymentSheet.Appearance.Font {
-        var font = Stripe.PaymentSheet.Appearance.Font()
+    private func buildFont(params: NSDictionary) throws -> PaymentSheet.Appearance.Font {
+        var font = PaymentSheet.Appearance.Font()
         if let fontName = params[PaymentSheetAppearanceKeys.FAMILY] as? String {
             guard let customFont = UIFont(name: fontName, size: UIFont.systemFontSize) else {
                 throw PaymentSheetAppearanceError.missingFont(fontName)
@@ -42,8 +43,8 @@ extension StripeSdk {
         return font
     }
     
-    private func buildColors(params: NSDictionary) throws -> Stripe.PaymentSheet.Appearance.Colors {
-        var colors = Stripe.PaymentSheet.Appearance.Colors()
+    private func buildColors(params: NSDictionary) throws -> PaymentSheet.Appearance.Colors {
+        var colors = PaymentSheet.Appearance.Colors()
         
         if (params.object(forKey: PaymentSheetAppearanceKeys.LIGHT) != nil && params.object(forKey: PaymentSheetAppearanceKeys.DARK) == nil ||
             params.object(forKey: PaymentSheetAppearanceKeys.DARK) != nil && params.object(forKey: PaymentSheetAppearanceKeys.LIGHT) == nil) {

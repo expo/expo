@@ -4,16 +4,43 @@
 
 ### 🛠 Breaking changes
 
+- [android] Add support for version 1 of the protocol. ([#20275](https://github.com/expo/expo/pull/20275) by [@wschurman](https://github.com/wschurman))
+
 ### 🎉 New features
+
+- New `useUpdateEvents` hook. ([#21258](https://github.com/expo/expo/pull/21258) by [@douglowder](https://github.com/douglowder))
+- [android] [expo-updates][android] Add rollback to embedded update directive. ([#21007](https://github.com/expo/expo/pull/21007) by [@wschurman](https://github.com/wschurman))
+
+### 🐛 Bug fixes
+
+- Make Updates API work with native debug. ([#21253](https://github.com/expo/expo/pull/21253) by [@douglowder](https://github.com/douglowder))
+
+### 💡 Others
+
+- Break up E2E tests for reliability. ([#21223](https://github.com/expo/expo/pull/21223) by [@douglowder](https://github.com/douglowder))
+- Convert E2E tests to TypeScript. ([#21278](https://github.com/expo/expo/pull/21278) by [@douglowder](https://github.com/douglowder))
+- Improved README and other chagnes for E2E tests. ([#21331](https://github.com/expo/expo/pull/21331) by [@douglowder](https://github.com/douglowder))
+
+## 0.16.1 — 2023-02-09
+
+### 💡 Others
+
+- Convert E2E tests to Hermes. ([#21065](https://github.com/expo/expo/pull/21065) by [@douglowder](https://github.com/douglowder))
+
+## 0.16.0 — 2023-02-03
 
 ### 🐛 Bug fixes
 
 - [Android] Fix runtime version parsing. ([#19821](https://github.com/expo/expo/pull/19821) by [@douglowder](https://github.com/douglowder))
+- Added support for React Native 0.71.x. ([#20799](https://github.com/expo/expo/pull/20799) [#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
+- Bump `@expo/metro-config`. ([#20720](https://github.com/expo/expo/pull/20720) by [@EvanBacon](https://github.com/EvanBacon))
 - Improvements to setup for Updates E2E tests. ([#20120](https://github.com/expo/expo/pull/20120) by [@douglowder](https://github.com/douglowder))
 - Convert updates E2E workflow to use EAS. ([#20399](https://github.com/expo/expo/pull/20399) by [@douglowder](https://github.com/douglowder))
+- Avoid dependency on `uuid`. ([#20475](https://github.com/expo/expo/pull/20475) by [@LinusU](https://github.com/LinusU))
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
 
 ## 0.15.5 - 2022-11-14
 

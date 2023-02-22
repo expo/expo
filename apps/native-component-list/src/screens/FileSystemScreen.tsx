@@ -6,6 +6,8 @@ import type {
   DownloadProgressData,
   DownloadResumable,
   FileSystemNetworkTaskProgressCallback,
+  UploadProgressData,
+  UploadTask,
 } from 'expo-file-system';
 import React from 'react';
 import { Alert, ScrollView, Text, Platform } from 'react-native';
@@ -18,6 +20,7 @@ const { StorageAccessFramework } = FileSystem;
 
 interface State {
   downloadProgress: number;
+  uploadProgress: number;
   permittedURI: string | null;
   createdFileURI: string | null;
 }
@@ -29,11 +32,13 @@ export default class FileSystemScreen extends React.Component<object, State> {
 
   readonly state: State = {
     downloadProgress: 0,
+    uploadProgress: 0,
     permittedURI: null,
     createdFileURI: null,
   };
 
   download?: DownloadResumable;
+  upload?: UploadTask;
 
   _download = async () => {
     const url = 'http://ipv4.download.thinkbroadband.com/256KB.zip';
@@ -151,6 +156,30 @@ export default class FileSystemScreen extends React.Component<object, State> {
         alert('Initiate a download first!');
         return;
       }
+    } catch (e) {
+      console.log(e);
+    }
+  };
+
+  _upload = async () => {
+    try {
+      const fileUri = FileSystem.documentDirectory + '5MB.zip';
+      const downloadUrl = 'https://xcal1.vodafone.co.uk/5MB.zip';
+      await FileSystem.downloadAsync(downloadUrl, fileUri);
+
+      const callback: FileSystemNetworkTaskProgressCallback<UploadProgressData> = (
+        uploadProgress
+      ) => {
+        // intentionally use deprecated property to test warning
+        const progress = uploadProgress.totalByteSent / uploadProgress.totalBytesExpectedToSend;
+        this.setState({
+          uploadProgress: progress,
+        });
+      };
+      const uploadUrl = 'http://httpbin.org/post';
+      this.upload = FileSystem.createUploadTask(uploadUrl, fileUri, {}, callback);
+
+      await this.upload.uploadAsync();
     } catch (e) {
       console.log(e);
     }
@@ -296,6 +325,12 @@ export default class FileSystemScreen extends React.Component<object, State> {
         <ListButton onPress={this._pause} title="Pause Download" />
         <ListButton onPress={this._resume} title="Resume Download" />
         <ListButton onPress={this._cancel} title="Cancel Download" />
+        <ListButton onPress={this._upload} title="Download & Upload file (5MB)" />
+        {this.state.uploadProgress ? (
+          <Text style={{ paddingVertical: 15 }}>
+            Upload progress: {this.state.uploadProgress * 100}%
+          </Text>
+        ) : null}
         <ListButton onPress={this._getInfo} title="Get Info" />
         <ListButton onPress={this._readAsset} title="Read Asset" />
         <ListButton onPress={this._getInfoAsset} title="Get Info Asset" />

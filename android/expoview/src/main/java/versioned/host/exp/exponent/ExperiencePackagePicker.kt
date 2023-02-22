@@ -20,17 +20,15 @@ import expo.modules.crypto.CryptoModule
 import expo.modules.device.DeviceModule
 import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
-import expo.modules.errorrecovery.ErrorRecoveryPackage
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemPackage
-import expo.modules.firebase.analytics.FirebaseAnalyticsPackage
-import expo.modules.firebase.core.FirebaseCorePackage
 import expo.modules.font.FontLoaderPackage
 import expo.modules.gl.GLPackage
+import expo.modules.gl.GLViewModule
 import expo.modules.haptics.HapticsModule
 import expo.modules.image.ExpoImageModule
 import expo.modules.imageloader.ImageLoaderPackage
-import expo.modules.imagemanipulator.ImageManipulatorPackage
+import expo.modules.imagemanipulator.ImageManipulatorModule
 import expo.modules.imagepicker.ImagePickerModule
 import expo.modules.intentlauncher.IntentLauncherModule
 import expo.modules.keepawake.KeepAwakePackage
@@ -77,15 +75,11 @@ object ExperiencePackagePicker : ModulesProvider {
     CalendarPackage(),
     ConstantsPackage(),
     ContactsPackage(),
-    ErrorRecoveryPackage(),
     FaceDetectorPackage(),
     FileSystemPackage(),
-    FirebaseCorePackage(),
-    FirebaseAnalyticsPackage(),
     FontLoaderPackage(),
     GLPackage(),
     ImageLoaderPackage(),
-    ImageManipulatorPackage(),
     KeepAwakePackage(),
     LocalAuthenticationPackage(),
     LocationPackage(),
@@ -131,8 +125,10 @@ object ExperiencePackagePicker : ModulesProvider {
     DeviceModule::class.java,
     DocumentPickerModule::class.java,
     EASClientModule::class.java,
+    GLViewModule::class.java,
     HapticsModule::class.java,
     ImagePickerModule::class.java,
+    ImageManipulatorModule::class.java,
     ExpoImageModule::class.java,
     IntentLauncherModule::class.java,
     LinearGradientModule::class.java,

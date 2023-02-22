@@ -21,7 +21,7 @@ const isDev = process.env.NODE_ENV === 'development';
 
 const ItemIcon = ({ url }: { url: string }) => {
   if (url.includes('/versions/')) {
-    return <DocsLogo width={iconSize.regular} color={theme.icon.secondary} />;
+    return <DocsLogo width={iconSize.md} color={theme.icon.secondary} />;
   } else if (isEASPath(url)) {
     return <PlanEnterpriseIcon color={theme.icon.secondary} />;
   }

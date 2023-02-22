@@ -14,7 +14,6 @@
 #include "include/sksl/SkSLPosition.h"
 
 #include <memory>
-#include <utility>
 
 namespace SkSL {
 
@@ -28,16 +27,8 @@ public:
     template<class... Statements>
     DSLBlock(Statements... statements) {
         fStatements.reserve_back(sizeof...(statements));
-        // in C++17, we could just do:
-        // (fStatements.push_back(DSLStatement(statements.release()).release()), ...);
-        int unused[] =
-            {0,
-            (static_cast<void>(fStatements.push_back(DSLStatement(statements.release()).release())),
-             0)...};
-        static_cast<void>(unused);
+        ((void)fStatements.push_back(DSLStatement(statements.release()).release()), ...);
     }
-
-    DSLBlock(DSLBlock&& other) = default;
 
     DSLBlock(SkSL::StatementArray statements, std::shared_ptr<SymbolTable> symbols = nullptr,
             Position pos = {});
@@ -45,12 +36,10 @@ public:
     DSLBlock(SkTArray<DSLStatement> statements, std::shared_ptr<SymbolTable> symbols = nullptr,
             Position pos = {});
 
-    ~DSLBlock();
+    DSLBlock(DSLBlock&& other) = default;
+    DSLBlock& operator=(DSLBlock&& other) = default;
 
-    DSLBlock& operator=(DSLBlock&& other) {
-        fStatements = std::move(other.fStatements);
-        return *this;
-    }
+    ~DSLBlock() = default;
 
     void append(DSLStatement stmt);
 
@@ -60,9 +49,6 @@ private:
     SkSL::StatementArray fStatements;
     std::shared_ptr<SkSL::SymbolTable> fSymbols;
     Position fPosition;
-
-    friend class DSLStatement;
-    friend class DSLFunction;
 };
 
 } // namespace dsl

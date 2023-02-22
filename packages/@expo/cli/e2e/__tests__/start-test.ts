@@ -23,8 +23,8 @@ afterAll(() => {
 it('loads expected modules by default', async () => {
   const modules = await getLoadedModulesAsync(`require('../../build/src/start').expoStart`);
   expect(modules).toStrictEqual([
-    '../node_modules/ansi-styles/index.js',
     '../node_modules/arg/index.js',
+    '../node_modules/chalk/node_modules/ansi-styles/index.js',
     '../node_modules/chalk/source/index.js',
     '../node_modules/chalk/source/util.js',
     '../node_modules/has-flag/index.js',
@@ -72,7 +72,7 @@ it('runs `npx expo start --help`', async () => {
         
         --dev-client                           Experimental: Starts the bundler for use with the expo-development-client
         --force-manifest-type <manifest-type>  Override auto detection of manifest type
-        --private-key-path <path>              Path to private key for code signing. Default: \\"private-key.pem\\" in the same directory as the certificate specified by the expo-updates configuration in app.json.
+        --private-key-path <path>              Path to private key for code signing. Default: "private-key.pem" in the same directory as the certificate specified by the expo-updates configuration in app.json.
         -h, --help                             Usage info
     "
   `);
@@ -115,7 +115,7 @@ it(
         );
       });
 
-      promise.stdout.on('data', (data) => {
+      promise.stdout?.on('data', (data) => {
         const stdout = data.toString();
         console.log('output:', stdout);
         if (stdout.includes('Logs for your project')) {
@@ -150,7 +150,7 @@ it(
     expect(results.mainModuleName).toBe('node_modules/expo/AppEntry');
 
     // Manifest
-    expect(results.sdkVersion).toBe('45.0.0');
+    expect(results.sdkVersion).toBe('47.0.0');
     expect(results.slug).toBe('basic-start');
     expect(results.name).toBe('basic-start');
 
@@ -164,9 +164,7 @@ it(
     console.log('Finished');
 
     // Kill process.
-    promise.kill('SIGTERM', {
-      forceKillAfterTimeout: 2000,
-    });
+    promise.kill('SIGTERM');
 
     await promise;
   },

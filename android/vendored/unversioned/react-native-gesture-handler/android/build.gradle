@@ -27,25 +27,33 @@ def isNewArchitectureEnabled() {
     return project.hasProperty("newArchEnabled") && project.newArchEnabled == "true"
 }
 
-static def findNodeModulePath(baseDir, packageName) {
-    def basePath = baseDir.toPath().normalize()
-    // Node's module resolution algorithm searches up to the root directory,
-    // after which the base path will be null
-    while (basePath) {
-        def candidatePath = Paths.get(basePath.toString(), "node_modules", packageName)
-        if (candidatePath.toFile().exists()) {
-            return candidatePath.toString()
-        }
-        basePath = basePath.getParent()
-    }
-    return null
+def safeExtGet(prop, fallback) {
+    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
 
-def findNodeModulePath(packageName) {
-    // Don't start in the project dir, as its path ends with node_modules/react-native-gesture-handler/android
-    // we want to go two levels up, so we end up in the first_node modules and eventually
-    // search upwards if the package is not found there
-    return findNodeModulePath(projectDir.toPath().parent.parent.toFile(), packageName)
+def resolveReactNativeDirectory() {
+    def reactNativeLocation = safeExtGet("REACT_NATIVE_NODE_MODULES_DIR", null)
+    if (reactNativeLocation != null) {
+        return file(reactNativeLocation)
+    }
+
+    // monorepo workaround
+    // react-native can be hoisted or in project's own node_modules
+    def reactNativeFromProjectNodeModules = file("${rootProject.projectDir}/../node_modules/react-native")
+    if (reactNativeFromProjectNodeModules.exists()) {
+        return reactNativeFromProjectNodeModules
+    }
+
+    def reactNativeFromNodeModulesWithReanimated = file("${projectDir}/../../react-native")
+    if (reactNativeFromNodeModulesWithReanimated.exists()) {
+        return reactNativeFromNodeModulesWithReanimated
+    }
+
+    throw new Exception(
+        "[react-native-gesture-handler] Unable to resolve react-native location in " +
+            "node_modules. You should add project extension property (in app/build.gradle) " +
+            "`REACT_NATIVE_NODE_MODULES_DIR` with path to react-native."
+    )
 }
 
 if (isNewArchitectureEnabled()) {
@@ -56,10 +64,6 @@ apply plugin: 'kotlin-android'
 
 if (project == rootProject) {
     apply from: "spotless.gradle"
-}
-
-def safeExtGet(prop, fallback) {
-    rootProject.ext.has(prop) ? rootProject.ext.get(prop) : fallback
 }
 
 // Check whether Reanimated 2.3 or higher is installed alongside Gesture Handler
@@ -95,6 +99,7 @@ def noMultipleInstancesAssertion() {
     Set<File> files = fileTree(rootDir.parent) {
         include "node_modules/**/react-native-gesture-handler/package.json"
         exclude "**/.yarn/**"
+        exclude "**/.pnpm/**"
     }.files
 
     if (files.size() > 1) {
@@ -104,7 +109,13 @@ def noMultipleInstancesAssertion() {
     }
 }
 
-def REACT_NATIVE_DIR = findNodeModulePath("react-native")
+def REACT_NATIVE_DIR = resolveReactNativeDirectory()
+
+def reactProperties = new Properties()
+file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
+
+def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
+def REACT_NATIVE_MINOR_VERSION = REACT_NATIVE_VERSION.startsWith("0.0.0-") ? 1000 : REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
 
 def assertionTask = task assertNoMultipleInstances {
     onlyIf { shouldAssertNoMultipleInstances() }
@@ -133,17 +144,25 @@ android {
         ndkVersion rootProject.ext.ndkVersion
     }
 
+    if (REACT_NATIVE_MINOR_VERSION >= 71) {
+        buildFeatures {
+            prefab true
+        }
+    }
+
     defaultConfig {
         minSdkVersion safeExtGet('minSdkVersion', 16)
         targetSdkVersion safeExtGet('targetSdkVersion', 28)
         versionCode 1
         versionName "1.0"
         buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled().toString()
+        buildConfigField "int", "REACT_NATIVE_MINOR_VERSION", REACT_NATIVE_MINOR_VERSION.toString()
+
         if (isNewArchitectureEnabled()) {
             var appProject = rootProject.allprojects.find {it.plugins.hasPlugin('com.android.application')}
             externalNativeBuild {
                 cmake {
-                    cppFlags "-O2 -frtti -fexceptions -Wall -Wno-unused-variable -fstack-protector-all"
+                    cppFlags "-O2", "-frtti", "-fexceptions", "-Wall", "-Werror", "-std=c++17"
                     arguments "-DAPP_BUILD_DIR=${appProject.buildDir}",
                         "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
                         "-DANDROID_STL=c++_shared"
@@ -200,10 +219,10 @@ def kotlin_version = safeExtGet('kotlinVersion', project.properties['RNGH_kotlin
 
 dependencies {
     //noinspection GradleDynamicVersion
-    if (isNewArchitectureEnabled()) {
-        implementation project(':ReactAndroid')
+    if (REACT_NATIVE_MINOR_VERSION >= 71) {
+        implementation "com.facebook.react:react-android" // version substituted by RNGP
     } else {
-        implementation 'com.facebook.react:react-native:+'
+        implementation 'com.facebook.react:react-native:+' // from node_modules
     }
 
     if (shouldUseCommonInterfaceFromReanimated()) {
@@ -216,21 +235,4 @@ dependencies {
     implementation 'androidx.appcompat:appcompat:1.2.0'
     implementation "androidx.core:core-ktx:1.6.0"
     implementation "org.jetbrains.kotlin:kotlin-stdlib:$kotlin_version"
-}
-
-if (isNewArchitectureEnabled()) {
-    // Resolves "LOCAL_SRC_FILES points to a missing file, Check that libfb.so exists or that its path is correct".
-    tasks.whenTaskAdded { task ->
-        if (task.name.contains("configureCMakeDebug")) {
-            rootProject.getTasksByName("packageReactNdkDebugLibs", true).forEach {
-                task.dependsOn(it)
-            }
-        }
-        // We want to add a dependency for both configureCMakeRelease and configureCMakeRelWithDebInfo
-        if (task.name.contains("configureCMakeRel")) {
-            rootProject.getTasksByName("packageReactNdkReleaseLibs", true).forEach {
-                task.dependsOn(it)
-            }
-        }
-    }
 }

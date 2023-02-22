@@ -33,22 +33,22 @@ describe(createFingerprintFromSourcesAsync, () => {
 
     expect(await createFingerprintFromSourcesAsync(sources, '/app', normalizeOptions()))
       .toMatchInlineSnapshot(`
-      Object {
+      {
         "hash": "ec7d81780f735d5e289b27cdcc04a6c99d2621dc",
-        "sources": Array [
-          Object {
+        "sources": [
+          {
             "contents": "HelloWorld",
             "hash": "db8ac1c259eb89d4a131b253bacfca5f319d54f2",
             "id": "foo",
-            "reasons": Array [
+            "reasons": [
               "foo",
             ],
             "type": "contents",
           },
-          Object {
+          {
             "filePath": "app.json",
             "hash": "bf21a9e8fbc5a3846fb05b4fa0859e0917b2202f",
-            "reasons": Array [
+            "reasons": [
               "expoConfig",
             ],
             "type": "file",

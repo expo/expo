@@ -4,15 +4,26 @@
 
 ### 🛠 Breaking changes
 
-- Remove deprecated and legacy contact fields constants. ([#20269](https://github.com/expo/expo/pull/20269) by [@Simek](https://github.com/Simek))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
+## 12.0.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.0 — 2023-02-03
+
+### 🛠 Breaking changes
+
+- Remove deprecated and legacy contact fields constants. ([#20269](https://github.com/expo/expo/pull/20269) by [@Simek](https://github.com/Simek))
+
+### 💡 Others
+
 - Simplify exported types. ([#20269](https://github.com/expo/expo/pull/20269) by [@Simek](https://github.com/Simek))
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
 
 ## 11.0.1 — 2022-10-28
 

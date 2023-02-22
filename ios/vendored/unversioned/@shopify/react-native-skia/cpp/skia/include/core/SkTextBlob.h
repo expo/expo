@@ -20,6 +20,10 @@ struct SkRSXform;
 struct SkSerialProcs;
 struct SkDeserialProcs;
 
+namespace sktext {
+class GlyphRunList;
+}
+
 /** \class SkTextBlob
     SkTextBlob combines multiple text runs into an immutable container. Each text
     run consists of glyphs, SkPaint, and position. Only parts of SkPaint related to
@@ -250,8 +254,7 @@ private:
         fCacheID.store(cacheID);
     }
 
-    friend class SkGlyphRunList;
-    friend class GrTextBlobCache;
+    friend class sktext::GlyphRunList;
     friend class SkTextBlobBuilder;
     friend class SkTextBlobPriv;
     friend class SkTextBlobRunIterator;

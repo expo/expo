@@ -151,6 +151,15 @@ public:
     static OpenTypeSVGDecoderFactory GetOpenTypeSVGDecoderFactory();
 
     /**
+     *  Temporarily (until variable COLRv1 is released) pass a feature switch function for whether
+     *  variable COLRv1 is enabled. Needed for initializing FreeType with a property setting so that
+     *  variable COLRv1 can be enabled in Chrome Canaries during development.
+     */
+    using VariableColrV1EnabledFunc = bool (*)();
+    static VariableColrV1EnabledFunc SetVariableColrV1EnabledFunc(VariableColrV1EnabledFunc);
+    static bool GetVariableColrV1Enabled();
+
+    /**
      *  Call early in main() to allow Skia to use a JIT to accelerate CPU-bound operations.
      */
     static void AllowJIT();

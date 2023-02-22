@@ -5,7 +5,6 @@ packageName: 'expo-tracking-transparency'
 ---
 
 import {
-  ConfigClassic,
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
@@ -29,12 +28,6 @@ For more information on Apple's new App Tracking Transparency framework, please 
 ## Configuration in app.json/app.config.js
 
 You can configure `expo-tracking-transparency` using its built-in [config plugin](/guides/config-plugins) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
-
-<ConfigClassic>
-
-You can configure [the permissions for this library](#permissions) using [`ios.infoPlist`](../config/app.mdx#infoplist) and [`android.permissions`](../config/app.mdx#permissions).
-
-</ConfigClassic>
 
 <ConfigReactNative>
 
@@ -67,7 +60,7 @@ Learn how to configure the native projects in the [installation instructions in 
       name: 'userTrackingPermission',
       platform: 'ios',
       description:
-        'Sets the iOS `NSUserTrackingUsageDescription` permission message in Info.plist.',
+        'Sets the iOS `NSUserTrackingUsageDescription` permission message in **Info.plist**.',
       default:
         '"Allow this app to collect app-related data that can be used for tracking you or your device."',
     },

@@ -47,6 +47,7 @@ using GrGLColorMaskFn = GrGLvoid GR_GL_FUNCTION_TYPE(GrGLboolean red, GrGLboolea
 using GrGLCompileShaderFn = GrGLvoid GR_GL_FUNCTION_TYPE(GrGLuint shader);
 using GrGLCompressedTexImage2DFn = GrGLvoid GR_GL_FUNCTION_TYPE(GrGLenum target, GrGLint level, GrGLenum internalformat, GrGLsizei width, GrGLsizei height, GrGLint border, GrGLsizei imageSize, const GrGLvoid* data);
 using GrGLCompressedTexSubImage2DFn = GrGLvoid GR_GL_FUNCTION_TYPE(GrGLenum target, GrGLint level, GrGLint xoffset, GrGLint yoffset, GrGLsizei width, GrGLsizei height, GrGLenum format, GrGLsizei imageSize, const GrGLvoid* data);
+using GrGLCopyBufferSubDataFn = GrGLvoid GR_GL_FUNCTION_TYPE(GrGLenum readTargt, GrGLenum writeTarget, GrGLintptr readOffset, GrGLintptr writeOffset, GrGLsizeiptr size);
 using GrGLCopyTexSubImage2DFn = GrGLvoid GR_GL_FUNCTION_TYPE(GrGLenum target, GrGLint level, GrGLint xoffset, GrGLint yoffset, GrGLint x, GrGLint y, GrGLsizei width, GrGLsizei height);
 using GrGLCreateProgramFn = GrGLuint GR_GL_FUNCTION_TYPE();
 using GrGLCreateShaderFn = GrGLuint GR_GL_FUNCTION_TYPE(GrGLenum type);

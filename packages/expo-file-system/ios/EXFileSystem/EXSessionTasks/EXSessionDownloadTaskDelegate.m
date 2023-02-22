@@ -1,7 +1,7 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXFileSystem/EXSessionDownloadTaskDelegate.h>
-#import <EXFileSystem/NSData+EXFileSystem.h>
+#import <CommonCrypto/CommonDigest.h>
 
 @interface EXSessionDownloadTaskDelegate ()
 
@@ -56,9 +56,23 @@
   result[@"uri"] = _localUrl.absoluteString;
   if (_shouldCalculateMd5) {
     NSData *data = [NSData dataWithContentsOfURL:_localUrl];
-    result[@"md5"] = [data md5String];
+    result[@"md5"] = EXNullIfNil([EXSessionDownloadTaskDelegate md5StringFromData:data]);
   }
   return result;
+}
+
++ (nullable NSString *)md5StringFromData:(nullable NSData *)data
+{
+  if (!data) {
+    return nil;
+  }
+  unsigned char digest[CC_MD5_DIGEST_LENGTH];
+  CC_MD5(data.bytes, (CC_LONG)data.length, digest);
+  NSMutableString *md5 = [NSMutableString stringWithCapacity:2 * CC_MD5_DIGEST_LENGTH];
+  for (unsigned int i = 0; i < CC_MD5_DIGEST_LENGTH; ++i) {
+    [md5 appendFormat:@"%02x", digest[i]];
+  }
+  return md5;
 }
 
 @end

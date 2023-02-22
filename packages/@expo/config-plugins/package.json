@@ -1,6 +1,6 @@
 {
   "name": "@expo/config-plugins",
-  "version": "5.0.4",
+  "version": "6.0.0",
   "description": "A library for Expo config plugins",
   "main": "build/index.js",
   "scripts": {
@@ -32,9 +32,9 @@
     "paths"
   ],
   "dependencies": {
-    "@expo/config-types": "^47.0.0",
-    "@expo/json-file": "8.2.36",
-    "@expo/plist": "0.0.18",
+    "@expo/config-types": "^48.0.0",
+    "@expo/json-file": "~8.2.37",
+    "@expo/plist": "^0.0.20",
     "@expo/sdk-runtime-versions": "^1.0.0",
     "@react-native/normalize-color": "^2.0.0",
     "chalk": "^4.1.2",

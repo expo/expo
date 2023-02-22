@@ -8,53 +8,38 @@
 #ifndef skgpu_graphite_Context_DEFINED
 #define skgpu_graphite_Context_DEFINED
 
-#include <vector>
-#include "include/core/SkBlendMode.h"
 #include "include/core/SkRefCnt.h"
 #include "include/core/SkShader.h"
-#include "include/core/SkTileMode.h"
-#include "include/private/SkNoncopyable.h"
-
+#include "include/gpu/graphite/ContextOptions.h"
 #include "include/gpu/graphite/GraphiteTypes.h"
+#include "include/gpu/graphite/Recorder.h"
+#include "include/private/SingleOwner.h"
+
+#include <memory>
+
+class SkRuntimeEffect;
+
+namespace skgpu { struct VulkanBackendContext; }
 
 namespace skgpu::graphite {
 
 class BackendTexture;
-class CommandBuffer;
+class Context;
 class ContextPriv;
+struct DawnBackendContext;
 class GlobalCache;
-class Gpu;
 struct MtlBackendContext;
-class Recorder;
+class QueueManager;
 class Recording;
-class TextureInfo;
+class ResourceProvider;
+class SharedContext;
 
-struct ShaderCombo {
-    enum class ShaderType {
-        kNone, // does not modify color buffer, e.g. depth and/or stencil only
-        kSolidColor,
-        kLinearGradient,
-        kRadialGradient,
-        kSweepGradient,
-        kConicalGradient
-    };
+#ifdef SK_ENABLE_PRECOMPILE
+class BlenderID;
+class CombinationBuilder;
+#endif
 
-    ShaderCombo() {}
-    ShaderCombo(std::vector<ShaderType> types,
-                std::vector<SkTileMode> tileModes)
-            : fTypes(std::move(types))
-            , fTileModes(std::move(tileModes)) {
-    }
-    std::vector<ShaderType> fTypes;
-    std::vector<SkTileMode> fTileModes;
-};
-
-struct PaintCombo {
-    std::vector<ShaderCombo> fShaders;
-    std::vector<SkBlendMode> fBlendModes;
-};
-
-class Context final {
+class SK_API Context final {
 public:
     Context(const Context&) = delete;
     Context(Context&&) = delete;
@@ -63,13 +48,20 @@ public:
 
     ~Context();
 
+#ifdef SK_DAWN
+    static std::unique_ptr<Context> MakeDawn(const DawnBackendContext&, const ContextOptions&);
+#endif
 #ifdef SK_METAL
-    static std::unique_ptr<Context> MakeMetal(const skgpu::graphite::MtlBackendContext&);
+    static std::unique_ptr<Context> MakeMetal(const MtlBackendContext&, const ContextOptions&);
 #endif
 
-    BackendApi backend() const { return fBackend; }
+#ifdef SK_VULKAN
+    static std::unique_ptr<Context> MakeVulkan(const VulkanBackendContext&, const ContextOptions&);
+#endif
 
-    std::unique_ptr<Recorder> makeRecorder();
+    BackendApi backend() const;
+
+    std::unique_ptr<Recorder> makeRecorder(const RecorderOptions& = {});
 
     void insertRecording(const InsertRecordingInfo&);
     void submit(SyncToCpu = SyncToCpu::kNo);
@@ -79,23 +71,19 @@ public:
      */
     void checkAsyncWorkCompletion();
 
-    void preCompile(const PaintCombo&);
+#ifdef SK_ENABLE_PRECOMPILE
+    // TODO: add "ShaderID addUserDefinedShader(sk_sp<SkRuntimeEffect>)" here
+    // TODO: add "ColorFilterID addUserDefinedColorFilter(sk_sp<SkRuntimeEffect>)" here
+    BlenderID addUserDefinedBlender(sk_sp<SkRuntimeEffect>);
 
-    /**
-     * Creates a new backend gpu texture matching the dimensinos and TextureInfo. If an invalid
-     * TextureInfo or a TextureInfo Skia can't support is passed in, this will return an invalid
-     * BackendTexture. Thus the client should check isValid on the returned BackendTexture to know
-     * if it succeeded or not.
-     *
-     * If this does return a valid BackendTexture, the caller is required to use
-     * Context::deleteBackendTexture to delete that texture.
-     */
-    BackendTexture createBackendTexture(SkISize dimensions, const TextureInfo&);
+    void precompile(CombinationBuilder*);
+#endif
 
     /**
      * Called to delete the passed in BackendTexture. This should only be called if the
-     * BackendTexture was created by calling Context::createBackendTexture. If the BackendTexture is
-     * not valid or does not match the BackendApi of the Context then nothing happens.
+     * BackendTexture was created by calling Recorder::createBackendTexture on a Recorder created
+     * from this Context. If the BackendTexture is not valid or does not match the BackendApi of the
+     * Context then nothing happens.
      *
      * Otherwise this will delete/release the backend object that is wrapped in the BackendTexture.
      * The BackendTexture will be reset to an invalid state and should not be used again.
@@ -107,16 +95,20 @@ public:
     const ContextPriv priv() const;  // NOLINT(readability-const-return-type)
 
 protected:
-    Context(sk_sp<Gpu>, BackendApi);
+    Context(sk_sp<SharedContext>, std::unique_ptr<QueueManager>);
 
 private:
     friend class ContextPriv;
 
-    sk_sp<CommandBuffer> fCurrentCommandBuffer;
+    SingleOwner* singleOwner() const { return &fSingleOwner; }
 
-    sk_sp<Gpu> fGpu;
-    sk_sp<GlobalCache> fGlobalCache;
-    BackendApi fBackend;
+    sk_sp<SharedContext> fSharedContext;
+    std::unique_ptr<ResourceProvider> fResourceProvider;
+    std::unique_ptr<QueueManager> fQueueManager;
+
+    // In debug builds we guard against improper thread handling. This guard is passed to the
+    // ResourceCache for the Context.
+    mutable SingleOwner fSingleOwner;
 };
 
 } // namespace skgpu::graphite

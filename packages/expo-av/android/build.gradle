@@ -6,7 +6,7 @@ apply plugin: 'maven-publish'
 apply plugin: "de.undercouch.download"
 
 group = 'host.exp.exponent'
-version = '13.1.0'
+version = '13.2.1'
 
 def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
 def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
@@ -43,7 +43,7 @@ buildscript {
     if (ext.has("kotlinVersion")) {
       ext.kotlinVersion()
     } else {
-      ext.safeExtGet("kotlinVersion", "1.6.10")
+      ext.safeExtGet("kotlinVersion", "1.8.10")
     }
   }
 
@@ -81,7 +81,7 @@ afterEvaluate {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
   if (rootProject.hasProperty("ndkPath")) {
     ndkPath rootProject.ext.ndkPath
@@ -101,9 +101,9 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 31)
+    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 24
-    versionName "13.1.0"
+    versionName "13.2.1"
 
     externalNativeBuild {
       cmake {
@@ -163,7 +163,7 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
 
-  compileOnly 'com.facebook.fbjni:fbjni:0.2.2'
+  compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
 
   api 'com.google.android.exoplayer:exoplayer:2.18.1'
   api 'com.google.android.exoplayer:extension-okhttp:2.18.1'

@@ -1,7 +1,7 @@
 import { iconSize } from '@expo/styleguide';
 import { IconProps } from '@expo/styleguide/dist/types';
 
-export const PreviewIcon = ({ size = iconSize.regular, className }: IconProps) => {
+export const PreviewIcon = ({ size = iconSize.md, className }: IconProps) => {
   return (
     <svg
       width={size}
@@ -61,7 +61,7 @@ export const PreviewIcon = ({ size = iconSize.regular, className }: IconProps) =
   );
 };
 
-export const PreviewInactiveIcon = ({ size = iconSize.regular, className }: IconProps) => {
+export const PreviewInactiveIcon = ({ size = iconSize.md, className }: IconProps) => {
   return (
     <svg
       width={size}

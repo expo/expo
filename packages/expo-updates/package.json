@@ -1,6 +1,6 @@
 {
   "name": "expo-updates",
-  "version": "0.15.4",
+  "version": "0.16.1",
   "description": "Fetches and manages remotely-hosted assets and updates to your app's JS bundle.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -40,20 +40,19 @@
   },
   "dependencies": {
     "@expo/code-signing-certificates": "0.0.5",
-    "@expo/config": "~7.0.2",
-    "@expo/config-plugins": "~5.0.3",
-    "@expo/metro-config": "~0.5.0",
+    "@expo/config": "~8.0.0",
+    "@expo/config-plugins": "~6.0.0",
+    "@expo/metro-config": "~0.7.0",
     "arg": "4.1.0",
-    "expo-eas-client": "~0.4.0",
-    "expo-manifests": "~0.4.0",
-    "expo-structured-headers": "~3.0.0",
-    "expo-updates-interface": "~0.8.0",
+    "expo-eas-client": "~0.5.0",
+    "expo-manifests": "~0.5.0",
+    "expo-structured-headers": "~3.1.0",
+    "expo-updates-interface": "~0.9.0",
     "fbemitter": "^3.0.0",
-    "resolve-from": "^5.0.0",
-    "uuid": "^3.4.0"
+    "resolve-from": "^5.0.0"
   },
   "devDependencies": {
-    "@types/jest": "^27.4.0",
+    "@types/jest": "^29.2.1",
     "@types/node": "^17.0.15",
     "@types/node-forge": "^1.0.0",
     "expo-module-scripts": "^3.0.0",

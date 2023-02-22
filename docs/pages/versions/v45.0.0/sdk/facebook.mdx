@@ -5,7 +5,6 @@ packageName: 'expo-facebook'
 ---
 
 import {
-  ConfigClassic,
   ConfigReactNative,
   ConfigPluginExample,
   ConfigPluginProperties,
@@ -72,12 +71,6 @@ Add your app's Bundle ID as a _Bundle ID_ in the app settings page pictured belo
   - `facebookAdvertiserIDCollectionEnabled`, defaults to Facebook's default policy (Only applies to standalone apps)
 
 You can also configure `expo-facebook` using its built-in [config plugin](/guides/config-plugins.mdx) if you use config plugins in your project ([EAS Build](/build/introduction.mdx) or `expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
-
-<ConfigClassic>
-
-You can configure [the permissions for this library](#permissions) using [`ios.infoPlist`](../config/app.mdx#infoplist) and [`android.permissions`](../config/app.mdx#permissions).
-
-</ConfigClassic>
 
 <ConfigReactNative>
 

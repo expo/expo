@@ -11,7 +11,10 @@
 #include "include/core/SkRefCnt.h"
 #include "include/gpu/vk/GrVkTypes.h"
 
-class GrBackendSurfaceMutableStateImpl;
+namespace skgpu {
+class MutableTextureStateRef;
+}
+
 
 // This struct is to used to store the the actual information about the vulkan backend image on the
 // GrBackendTexture and GrBackendRenderTarget. When a client calls getVkImageInfo on a
@@ -30,7 +33,7 @@ struct GrVkBackendSurfaceInfo {
     // attempt to unref the old fLayout on this object.
     void assign(const GrVkBackendSurfaceInfo&, bool isValid);
 
-    GrVkImageInfo snapImageInfo(const GrBackendSurfaceMutableStateImpl*) const;
+    GrVkImageInfo snapImageInfo(const skgpu::MutableTextureStateRef*) const;
 
     bool isProtected() const { return fImageInfo.fProtected == GrProtected::kYes; }
 #if GR_TEST_UTILS
@@ -39,43 +42,6 @@ struct GrVkBackendSurfaceInfo {
 
 private:
     GrVkImageInfo    fImageInfo;
-};
-
-class GrVkSharedImageInfo {
-public:
-    GrVkSharedImageInfo(VkImageLayout layout, uint32_t queueFamilyIndex)
-            : fLayout(layout)
-            , fQueueFamilyIndex(queueFamilyIndex) {}
-
-    GrVkSharedImageInfo& operator=(const GrVkSharedImageInfo& that) {
-        fLayout = that.getImageLayout();
-        fQueueFamilyIndex = that.getQueueFamilyIndex();
-        return *this;
-    }
-
-     void setImageLayout(VkImageLayout layout) {
-        // Defaulting to use std::memory_order_seq_cst
-        fLayout.store(layout);
-    }
-
-    VkImageLayout getImageLayout() const {
-        // Defaulting to use std::memory_order_seq_cst
-        return fLayout.load();
-    }
-
-    void setQueueFamilyIndex(uint32_t queueFamilyIndex) {
-        // Defaulting to use std::memory_order_seq_cst
-        fQueueFamilyIndex.store(queueFamilyIndex);
-    }
-
-    uint32_t getQueueFamilyIndex() const {
-        // Defaulting to use std::memory_order_seq_cst
-        return fQueueFamilyIndex.load();
-    }
-
-private:
-    std::atomic<VkImageLayout> fLayout;
-    std::atomic<uint32_t> fQueueFamilyIndex;
 };
 
 struct GrVkImageSpec {

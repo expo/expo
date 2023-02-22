@@ -15,6 +15,7 @@
 #include "include/sksl/DSLExpression.h"
 #include "include/sksl/DSLStatement.h"
 #include "include/sksl/DSLVar.h"
+#include "include/sksl/SkSLPosition.h"
 
 #include <memory>
 #include <string>
@@ -25,8 +26,6 @@ namespace SkSL {
 
 class Compiler;
 class ErrorReporter;
-class Position;
-struct ForLoopPositions;
 struct Program;
 struct ProgramSettings;
 
@@ -58,7 +57,7 @@ void End();
 /**
  * Returns all global elements (functions and global variables) as a self-contained Program. The
  * optional source string is retained as the program's source. DSL programs do not normally have
- * sources, but when a DSL program is produced from parsed program text (as in DSLParser), it may be
+ * sources, but when a DSL program is produced from parsed program text (as in Parser), it may be
  * important to retain it so that any std::string_views derived from it remain valid.
  */
 std::unique_ptr<SkSL::Program> ReleaseProgram(std::unique_ptr<std::string> source = nullptr);
@@ -171,37 +170,31 @@ DSLStatement StaticIf(DSLExpression test, DSLStatement ifTrue,
                       Position pos = {});
 
 // Internal use only
-DSLPossibleStatement PossibleStaticSwitch(DSLExpression value, SkTArray<DSLCase> cases);
-
-DSLStatement StaticSwitch(DSLExpression value, SkTArray<DSLCase> cases,
-                          Position pos = {});
+DSLStatement StaticSwitch(DSLExpression value, SkTArray<DSLCase> cases, Position pos = {});
 
 /**
  * @switch (value) { cases }
  */
 template<class... Cases>
-DSLPossibleStatement StaticSwitch(DSLExpression value, Cases... cases) {
+DSLStatement StaticSwitch(DSLExpression value, Cases... cases) {
     SkTArray<DSLCase> caseArray;
     caseArray.reserve_back(sizeof...(cases));
     (caseArray.push_back(std::move(cases)), ...);
-    return PossibleStaticSwitch(std::move(value), std::move(caseArray));
+    return StaticSwitch(std::move(value), std::move(caseArray), Position{});
 }
 
 // Internal use only
-DSLPossibleStatement PossibleSwitch(DSLExpression value, SkTArray<DSLCase> cases);
-
-DSLStatement Switch(DSLExpression value, SkTArray<DSLCase> cases,
-                    Position pos = {});
+DSLStatement Switch(DSLExpression value, SkTArray<DSLCase> cases, Position pos = {});
 
 /**
  * switch (value) { cases }
  */
 template<class... Cases>
-DSLPossibleStatement Switch(DSLExpression value, Cases... cases) {
+DSLStatement Switch(DSLExpression value, Cases... cases) {
     SkTArray<DSLCase> caseArray;
     caseArray.reserve_back(sizeof...(cases));
     (caseArray.push_back(std::move(cases)), ...);
-    return PossibleSwitch(std::move(value), std::move(caseArray));
+    return Switch(std::move(value), std::move(caseArray), Position{});
 }
 
 /**

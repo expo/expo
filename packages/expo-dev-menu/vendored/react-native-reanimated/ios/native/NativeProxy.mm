@@ -22,10 +22,12 @@
 #import <reacthermes/HermesExecutorFactory.h>
 #elif __has_include(<hermes/hermes.h>)
 #import <hermes/hermes.h>
-#elif __has_include(<React-jsc/JSCRuntime.h>)
-#import <React-jsc/JSCRuntime.h>
 #else
-#import <jsi/JSCRuntime.h>
+#if RNVERSION >= 71
+#include <jsc/JSCRuntime.h>
+#else
+#include <jsi/JSCRuntime.h>
+#endif // RNVersion
 #endif
 
 namespace devmenureanimated {
@@ -203,8 +205,10 @@ std::shared_ptr<NativeReanimatedModule> createDevMenuReanimatedModule(
     }
   };
 
-  auto requestRender = [reanimatedModule, &module](std::function<void(double)> onRender, jsi::Runtime &rt) {
-    [reanimatedModule.nodesManager postOnAnimation:^(CADisplayLink *displayLink) {
+  auto nodesManager = reanimatedModule.nodesManager;
+
+  auto requestRender = [nodesManager, &module](std::function<void(double)> onRender, jsi::Runtime &rt) {
+    [nodesManager postOnAnimation:^(CADisplayLink *displayLink) {
       double frameTimestamp = calculateTimestampWithSlowAnimations(displayLink.targetTimestamp) * 1000;
       jsi::Object global = rt.global();
       jsi::String frameTimestampName = jsi::String::createFromAscii(rt, "_frameTimestamp");

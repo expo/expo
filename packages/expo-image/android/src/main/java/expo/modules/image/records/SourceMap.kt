@@ -7,13 +7,13 @@ import com.bumptech.glide.load.model.Headers
 import com.bumptech.glide.load.model.LazyHeaders
 import com.bumptech.glide.request.RequestOptions
 import com.bumptech.glide.signature.ApplicationVersionSignature
-import com.facebook.react.views.imagehelper.ResourceDrawableIdHelper
 import expo.modules.image.GlideBlurhashModel
-import expo.modules.image.GlideRawModel
 import expo.modules.image.GlideModel
-import expo.modules.image.GlideOptions
+import expo.modules.image.GlideRawModel
 import expo.modules.image.GlideUriModel
 import expo.modules.image.GlideUrlModel
+import expo.modules.image.ResourceIdHelper
+import expo.modules.image.okhttp.GlideUrlWithCustomCacheKey
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
 
@@ -22,7 +22,8 @@ data class SourceMap(
   @Field val width: Int = 0,
   @Field val height: Int = 0,
   @Field val scale: Double = 1.0,
-  @Field val headers: Map<String, String>? = null
+  @Field val headers: Map<String, String>? = null,
+  @Field val cacheKey: String? = null
 ) : Record {
   private var parsedUri: Uri? = null
 
@@ -75,7 +76,12 @@ data class SourceMap(
       return GlideRawModel(parsedUri!!.toString())
     }
 
-    return GlideUrlModel(GlideUrl(uri, getCustomHeaders()))
+    val glideUrl = if (cacheKey == null) {
+      GlideUrl(uri, getCustomHeaders())
+    } else {
+      GlideUrlWithCustomCacheKey(uri, getCustomHeaders(), cacheKey)
+    }
+    return GlideUrlModel(glideUrl)
   }
 
   internal fun createOptions(context: Context): RequestOptions {
@@ -98,7 +104,7 @@ data class SourceMap(
           // sure the cache does not return the wrong image, we should clear the cache when the
           // application version changes.
           apply(
-            GlideOptions.signatureOf(ApplicationVersionSignature.obtain(context))
+            RequestOptions.signatureOf(ApplicationVersionSignature.obtain(context))
           )
         }
       }
@@ -135,7 +141,7 @@ data class SourceMap(
   }
 
   private fun computeLocalUri(stringUri: String, context: Context): Uri? {
-    return ResourceDrawableIdHelper.getInstance().getResourceDrawableUri(context, stringUri)
+    return ResourceIdHelper.getResourceUri(context, stringUri)
   }
 
   internal val pixelCount: Double

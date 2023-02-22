@@ -30,6 +30,10 @@ class JavaScriptValue @DoNotStrip private constructor(@DoNotStrip private val mH
   external fun getArray(): Array<JavaScriptValue>
   external fun getTypedArray(): JavaScriptTypedArray
 
+  fun getInt() = getDouble().toInt()
+  fun getLong() = getDouble().toLong()
+  fun getFloat() = getDouble().toFloat()
+
   @Throws(Throwable::class)
   protected fun finalize() {
     mHybridData.resetNative()

@@ -6,12 +6,20 @@
 
 ### 🎉 New features
 
-- Migrated to Expo Modules API and Swift. ([#20600](https://github.com/expo/expo/pull/20600) by [@tsapeta](https://github.com/tsapeta))
-- Added support for Fabric. ([#20600](https://github.com/expo/expo/pull/20600) by [@tsapeta](https://github.com/tsapeta))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 6.0.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 6.0.0 — 2023-02-03
+
+### 🎉 New features
+
+- Migrated to Expo Modules API and Swift. ([#20600](https://github.com/expo/expo/pull/20600) by [@tsapeta](https://github.com/tsapeta))
+- Added support for Fabric. ([#20600](https://github.com/expo/expo/pull/20600) by [@tsapeta](https://github.com/tsapeta))
 
 ## 5.0.1 — 2022-10-28
 

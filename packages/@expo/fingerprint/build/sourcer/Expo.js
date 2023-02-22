@@ -7,7 +7,6 @@ exports.getExpoAutolinkingIosSourcesAsync = exports.getExpoAutolinkingAndroidSou
 const spawn_async_1 = __importDefault(require("@expo/spawn-async"));
 const assert_1 = __importDefault(require("assert"));
 const chalk_1 = __importDefault(require("chalk"));
-const config_1 = require("expo/config");
 const find_up_1 = __importDefault(require("find-up"));
 const path_1 = __importDefault(require("path"));
 const resolve_from_1 = __importDefault(require("resolve-from"));
@@ -16,7 +15,8 @@ const debug = require('debug')('expo:fingerprint:sourcer:Expo');
 async function getExpoConfigSourcesAsync(projectRoot, options) {
     let config;
     try {
-        config = await (0, config_1.getConfig)(projectRoot, { skipSDKVersionRequirement: true });
+        const { getConfig } = require((0, resolve_from_1.default)(path_1.default.resolve(projectRoot), 'expo/config'));
+        config = await getConfig(projectRoot, { skipSDKVersionRequirement: true });
     }
     catch (e) {
         debug('Cannot get Expo config: ' + e);

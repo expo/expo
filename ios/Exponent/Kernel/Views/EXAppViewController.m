@@ -31,14 +31,14 @@
 #endif
 
 #import <React/RCTAppearance.h>
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI48_0_0React/ABI48_0_0RCTAppearance.h>)
+#import <ABI48_0_0React/ABI48_0_0RCTAppearance.h>
+#endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI47_0_0React/ABI47_0_0RCTAppearance.h>)
 #import <ABI47_0_0React/ABI47_0_0RCTAppearance.h>
 #endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI46_0_0React/ABI46_0_0RCTAppearance.h>)
 #import <ABI46_0_0React/ABI46_0_0RCTAppearance.h>
-#endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI45_0_0React/ABI45_0_0RCTAppearance.h>)
-#import <ABI45_0_0React/ABI45_0_0RCTAppearance.h>
 #endif
 
 #if defined(EX_DETACHED)
@@ -272,7 +272,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (bool)_readSupportsRTLFromManifest:(EXManifestsManifest *)manifest
 {
-  return [[[[manifest rawManifestJSON] valueForKey:@"extra"] valueForKey: @"supportsRTL"] boolValue];
+  return [[[[manifest expoClientConfigRootObject] valueForKey:@"extra"] valueForKey: @"supportsRTL"] boolValue];
 }
 
 - (void)appStateDidBecomeActive
@@ -645,14 +645,14 @@ NS_ASSUME_NONNULL_BEGIN
     appearancePreference = nil;
   }
   RCTOverrideAppearancePreference(appearancePreference);
+#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI48_0_0React/ABI48_0_0RCTAppearance.h>)
+  ABI48_0_0RCTOverrideAppearancePreference(appearancePreference);
+#endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI47_0_0React/ABI47_0_0RCTAppearance.h>)
   ABI47_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
 #if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI46_0_0React/ABI46_0_0RCTAppearance.h>)
   ABI46_0_0RCTOverrideAppearancePreference(appearancePreference);
-#endif
-#if defined(INCLUDES_VERSIONED_CODE) && __has_include(<ABI45_0_0React/ABI45_0_0RCTAppearance.h>)
-  ABI45_0_0RCTOverrideAppearancePreference(appearancePreference);
 #endif
 
 }

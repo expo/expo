@@ -1,6 +1,6 @@
 {
   "name": "expo-module-scripts",
-  "version": "3.0.5",
+  "version": "3.0.7",
   "description": "A private package for various tasks for Expo module packages like compiling and testing",
   "main": "index.js",
   "bin": {
@@ -30,15 +30,15 @@
     "@expo/npm-proofread": "^1.0.1",
     "@testing-library/react-hooks": "^7.0.1",
     "@tsconfig/node14": "^1.0.3",
-    "@types/jest": "^26.0.24",
-    "babel-preset-expo": "~9.2.0",
+    "@types/jest": "^29.2.1",
+    "babel-preset-expo": "~9.3.0",
     "commander": "^2.19.0",
     "eslint-config-universe": "^11.1.1",
     "find-yarn-workspace-root": "^2.0.0",
     "glob": "^7.1.7",
-    "jest-expo": "~47.0.0",
-    "jest-watch-typeahead": "0.6.4",
-    "ts-jest": "~26.3.0",
+    "jest-expo": "~48.0.0",
+    "jest-watch-typeahead": "2.2.1",
+    "ts-jest": "~29.0.4",
     "typescript": "^4.9.4"
   }
 }

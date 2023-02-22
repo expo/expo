@@ -3,8 +3,6 @@ title: Runtime Versions
 description: Learn how to set the runtime version for an app.
 ---
 
-> **warning** Custom runtime versions are not supported on the classic build system (`expo build`); these apps will always use the SDK version as the basis for determining runtime compatibility.
-
 Every update targets one compatible runtime. Each time you build a binary for your app it includes the native code present at the time of the build and only that code, and this unique combination and configuration of the build is what is represented by the runtime version.
 
 By default, the runtime version is determined by the Expo SDK version, but this will not adequately describe the different runtime versions of your app if you build more than once per SDK release. In this case, you will need to specify a `runtimeVersion` to ensure your updates are delivered only to compatible builds. This `runtimeVersion` should be updated whenever you update your project's native modules and change the JS–native interface.

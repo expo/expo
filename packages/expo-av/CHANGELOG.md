@@ -8,9 +8,24 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 13.2.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 13.2.0 — 2023-02-03
+
+### 🐛 Bug fixes
+
 - Fixed `HTMLMediaElement.play` and `HTMLMediaElement.pause` calls on the Web aren't properly awaited. ([#20439](https://github.com/expo/expo/pull/20439)) by [@zhigang1992](https://github.com/zhigang1992)
+- Added support for React Native 0.71.x. ([#20799](https://github.com/expo/expo/pull/20799) [#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo))
+- Fixed JSI audio sampling buffer issues when using `SimpleExoPlayer` implementation on Android. ([#21055](https://github.com/expo/expo/pull/21055) by [@kudo](https://github.com/kudo))
+- Fixed compatibility with build-time React Native Web styling libraries. Removed `StyleSheet.flatten`. ([#21236](https://github.com/expo/expo/pull/21236)) by [@intergalacticspacehighway](https://github.com/intergalacticspacehighway)
 
 ### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
 
 ## 13.1.0 — 2022-12-30
 

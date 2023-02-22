@@ -89,6 +89,11 @@ class Env {
     return string('EXPO_EDITOR', '');
   }
 
+  /** Enable auto server root detection for Metro. This will change the server root to the workspace root. */
+  get EXPO_USE_METRO_WORKSPACE_ROOT(): boolean {
+    return boolish('EXPO_USE_METRO_WORKSPACE_ROOT', false);
+  }
+
   /**
    * Overwrite the dev server URL, disregarding the `--port`, `--host`, `--tunnel`, `--lan`, `--localhost` arguments.
    * This is useful for browser editors that require custom proxy URLs.

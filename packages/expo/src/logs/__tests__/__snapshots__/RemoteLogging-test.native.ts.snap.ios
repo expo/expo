@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`sends logs to the server 1`] = `
-Object {
+{
   "Accept": "application/json",
   "Connection": "keep-alive",
   "Content-Type": "application/json",
@@ -13,4 +13,4 @@ Object {
 }
 `;
 
-exports[`sends logs to the server 2`] = `"[{\\"count\\":0,\\"level\\":\\"info\\",\\"body\\":[\\"\\\\\\"hello!\\\\\\"\\"],\\"includesStack\\":false}]"`;
+exports[`sends logs to the server 2`] = `"[{"count":0,"level":"info","body":["\\"hello!\\""],"includesStack":false}]"`;

@@ -10,6 +10,7 @@ import { APIDataType } from './APIDataType';
 import { HeadingType } from '~/common/headingManager';
 import { Code as PrismCodeBlock } from '~/components/base/code';
 import {
+  CommentContentData,
   CommentData,
   MethodDefinitionData,
   MethodParamData,
@@ -17,6 +18,7 @@ import {
   PropData,
   TypeDefinitionData,
   TypePropertyDataFlags,
+  TypeSignaturesData,
 } from '~/components/plugins/api/APIDataTypes';
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import { Callout } from '~/ui/components/Callout';
@@ -94,13 +96,8 @@ export const mdComponents: MDComponents = {
   td: ({ children }) => <Cell>{children}</Cell>,
 };
 
-export const mdInlineComponents: MDComponents = {
+export const mdComponentsNoValidation: MDComponents = {
   ...mdComponents,
-  p: ({ children }) => (children ? <span>{children}</span> : null),
-};
-
-export const mdInlineComponentsNoValidation: MDComponents = {
-  ...mdInlineComponents,
   a: ({ href, children }) => <A href={href}>{children}</A>,
 };
 
@@ -122,6 +119,7 @@ const nonLinkableTypes = [
   'React.FC',
   'ForwardRefExoticComponent',
   'StyleProp',
+  'HTMLInputElement',
   // Cross-package permissions management
   'RequestPermissionMethod',
   'GetPermissionMethod',
@@ -157,15 +155,19 @@ const hardcodedTypeLinks: Record<string, string> = {
     'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
   File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
   FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
+  Manifest: '/versions/latest/sdk/constants/#manifest',
+  MediaTrackSettings: 'https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
   Pick: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys',
   Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
-  View: '/versions/latest/react-native/view',
-  ViewProps: '/versions/latest/react-native/view#props',
-  ViewStyle: '/versions/latest/react-native/view-style-props',
+  SyntheticEvent:
+    'https://beta.reactjs.org/reference/react-dom/components/common#react-event-object',
+  View: 'https://reactnative.dev/docs/view',
+  ViewProps: 'https://reactnative.dev/docs/view#props',
+  ViewStyle: 'https://reactnative.dev/docs/view-style-props',
   WebGL2RenderingContext: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGL2RenderingContext',
   WebGLFramebuffer: 'https://developer.mozilla.org/en-US/docs/Web/API/WebGLFramebuffer',
 };
@@ -372,7 +374,10 @@ export const renderParamRow = ({
   flags,
   defaultValue,
 }: MethodParamData): JSX.Element => {
-  const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
+  const defaultData = getTagData('default', comment);
+  const initValue = parseCommentContent(
+    defaultValue || (defaultData ? getCommentContent(defaultData.content) : '')
+  );
   return (
     <Row key={`param-${name}`}>
       <Cell>
@@ -422,7 +427,7 @@ export const renderDefaultValue = (defaultValue?: string) =>
 
 export const renderTypeOrSignatureType = (
   type?: TypeDefinitionData,
-  signatures?: MethodSignatureData[],
+  signatures?: MethodSignatureData[] | TypeSignaturesData[],
   allowBlock: boolean = false
 ) => {
   if (signatures && signatures.length) {
@@ -437,8 +442,7 @@ export const renderTypeOrSignatureType = (
             </span>
           ))
         )}
-        ) =&gt;{' '}
-        {type ? <CODE key={`signature-type-${type.name}`}>{resolveTypeName(type)}</CODE> : 'void'}
+        ) =&gt; {signatures[0].type ? resolveTypeName(signatures[0].type) : 'void'}
       </CODE>
     );
   } else if (type) {
@@ -475,10 +479,10 @@ export const renderIndexSignature = (kind: TypeDocKind) =>
 export type CommentTextBlockProps = {
   comment?: CommentData;
   components?: MDComponents;
-  withDash?: boolean;
   beforeContent?: JSX.Element;
   afterContent?: JSX.Element;
   includePlatforms?: boolean;
+  inlineHeaders?: boolean;
   emptyCommentFallback?: string;
 };
 
@@ -487,18 +491,20 @@ export const parseCommentContent = (content?: string): string =>
 
 export const getCommentOrSignatureComment = (
   comment?: CommentData,
-  signatures?: MethodSignatureData[]
+  signatures?: MethodSignatureData[] | TypeSignaturesData[]
 ) => comment || (signatures && signatures[0]?.comment);
 
 export const getTagData = (tagName: string, comment?: CommentData) =>
   getAllTagData(tagName, comment)?.[0];
 
 export const getAllTagData = (tagName: string, comment?: CommentData) =>
-  comment?.tags?.filter(tag => tag.tag === tagName);
+  comment?.blockTags?.filter(tag => tag.tag.substring(1) === tagName);
 
 export const getTagNamesList = (comment?: CommentData) =>
   comment && [
-    ...(getAllTagData('platform', comment)?.map(platformData => platformData.text) || []),
+    ...(getAllTagData('platform', comment)?.map(platformData =>
+      getCommentContent(platformData.content)
+    ) || []),
     ...(getTagData('deprecated', comment) ? ['deprecated'] : []),
     ...(getTagData('experimental', comment) ? ['experimental'] : []),
   ];
@@ -529,38 +535,38 @@ const getParamTags = (shortText?: string) => {
   return Array.from(shortText.matchAll(PARAM_TAGS_REGEX), match => match[0]);
 };
 
+export const getCommentContent = (content: CommentContentData[]) => {
+  return content
+    .map(entry => entry.text)
+    .join('')
+    .trim();
+};
+
 export const CommentTextBlock = ({
   comment,
-  components = mdComponents,
-  withDash,
   beforeContent,
   afterContent,
   includePlatforms = true,
+  inlineHeaders = false,
   emptyCommentFallback,
 }: CommentTextBlockProps) => {
-  const paramTags = getParamTags(comment?.shortText?.trim());
+  const content = comment && comment.summary ? getCommentContent(comment.summary) : undefined;
 
-  const shortText = comment?.shortText?.trim().length ? (
-    <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
-      {parseCommentContent(
-        paramTags ? comment.shortText.replaceAll(PARAM_TAGS_REGEX, '') : comment.shortText
-      )}
-    </ReactMarkdown>
-  ) : null;
-  const text = comment?.text?.trim().length ? (
-    <ReactMarkdown components={components} remarkPlugins={[remarkGfm]}>
-      {parseCommentContent(comment.text)}
-    </ReactMarkdown>
-  ) : null;
-
-  if (emptyCommentFallback && (!comment || (!shortText && !text))) {
+  if (emptyCommentFallback && (!comment || !content || !content.length)) {
     return <>{emptyCommentFallback}</>;
   }
+
+  const paramTags = content ? getParamTags(content) : undefined;
+  const parsedContent = (
+    <ReactMarkdown components={mdComponents} remarkPlugins={[remarkGfm]}>
+      {parseCommentContent(paramTags ? content?.replaceAll(PARAM_TAGS_REGEX, '') : content)}
+    </ReactMarkdown>
+  );
 
   const examples = getAllTagData('example', comment);
   const exampleText = examples?.map((example, index) => (
     <Fragment key={'example-' + index}>
-      {components !== mdComponents ? (
+      {inlineHeaders ? (
         <div css={STYLES_EXAMPLE_IN_TABLE}>
           <BOLD>Example</BOLD>
         </div>
@@ -569,15 +575,16 @@ export const CommentTextBlock = ({
           <RawH4>Example</RawH4>
         </div>
       )}
-      <ReactMarkdown components={components}>{example.text}</ReactMarkdown>
+      <ReactMarkdown components={mdComponents}>{getCommentContent(example.content)}</ReactMarkdown>
     </Fragment>
   ));
 
   const see = getTagData('see', comment);
   const seeText = see && (
     <Callout>
-      <BOLD>See: </BOLD>
-      <ReactMarkdown components={mdInlineComponents}>{see.text}</ReactMarkdown>
+      <ReactMarkdown components={mdComponents}>
+        {`**See:** ` + getCommentContent(see.content)}
+      </ReactMarkdown>
     </Callout>
   );
 
@@ -585,7 +592,7 @@ export const CommentTextBlock = ({
 
   return (
     <>
-      {!withDash && includePlatforms && hasPlatforms && (
+      {includePlatforms && hasPlatforms && (
         <APISectionPlatformTags comment={comment} prefix="Only for:" />
       )}
       {paramTags && (
@@ -597,10 +604,7 @@ export const CommentTextBlock = ({
         </>
       )}
       {beforeContent}
-      {withDash && (shortText || text) && ' - '}
-      {withDash && includePlatforms && <APISectionPlatformTags comment={comment} />}
-      {shortText}
-      {text}
+      {parsedContent}
       {afterContent}
       {seeText}
       {exampleText}
@@ -629,12 +633,12 @@ export const getComponentName = (name?: string, children: PropData[] = []) => {
 };
 
 export const STYLES_APIBOX = css({
-  borderRadius: borderRadius.medium,
+  borderRadius: borderRadius.md,
   borderWidth: 1,
   borderStyle: 'solid',
   borderColor: theme.border.default,
   padding: spacing[5],
-  boxShadow: shadows.micro,
+  boxShadow: shadows.xs,
   marginBottom: spacing[6],
   overflowX: 'hidden',
 
@@ -642,7 +646,7 @@ export const STYLES_APIBOX = css({
     marginBottom: spacing[2],
   },
 
-  'h3, h4': {
+  'h2, h3, h4': {
     marginTop: 0,
   },
 
@@ -661,7 +665,7 @@ export const STYLES_APIBOX = css({
   },
 
   [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
-    padding: `0 ${spacing[4]}px`,
+    paddingInline: spacing[4],
   },
 });
 
@@ -691,8 +695,8 @@ export const STYLES_NESTED_SECTION_HEADER = css({
   borderTop: `1px solid ${theme.border.default}`,
   borderBottom: `1px solid ${theme.border.default}`,
   margin: `${spacing[4]}px -${spacing[5]}px ${spacing[4]}px`,
-  padding: `${spacing[2]}px ${spacing[5]}px`,
-  backgroundColor: theme.background.secondary,
+  padding: `${spacing[2.5]}px ${spacing[5]}px`,
+  backgroundColor: theme.background.subtle,
 
   h4: {
     ...typography.fontSizes[16],

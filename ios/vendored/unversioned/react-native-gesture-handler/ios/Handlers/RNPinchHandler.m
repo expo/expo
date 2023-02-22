@@ -13,7 +13,7 @@
 #if !TARGET_OS_TV
 @interface RNBetterPinchRecognizer : UIPinchGestureRecognizer
 
-- (id)initWithGestureHandler:(RNGestureHandler*)gestureHandler;
+- (id)initWithGestureHandler:(RNGestureHandler *)gestureHandler;
 
 @end
 
@@ -74,22 +74,21 @@
 
 - (instancetype)initWithTag:(NSNumber *)tag
 {
-    if ((self = [super initWithTag:tag])) {
+  if ((self = [super initWithTag:tag])) {
 #if !TARGET_OS_TV
-        _recognizer = [[RNBetterPinchRecognizer alloc] initWithGestureHandler:self];
+    _recognizer = [[RNBetterPinchRecognizer alloc] initWithGestureHandler:self];
 #endif
-    }
-    return self;
+  }
+  return self;
 }
 
 #if !TARGET_OS_TV
 - (RNGestureHandlerEventExtraData *)eventExtraData:(UIPinchGestureRecognizer *)recognizer
 {
-    return [RNGestureHandlerEventExtraData
-            forPinch:recognizer.scale
-            withFocalPoint:[recognizer locationInView:recognizer.view]
-            withVelocity:recognizer.velocity
-            withNumberOfTouches:recognizer.numberOfTouches];
+  return [RNGestureHandlerEventExtraData forPinch:recognizer.scale
+                                   withFocalPoint:[recognizer locationInView:recognizer.view]
+                                     withVelocity:recognizer.velocity
+                              withNumberOfTouches:recognizer.numberOfTouches];
 }
 #endif
 

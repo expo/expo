@@ -11,35 +11,54 @@ exports[`APISectionUtils.CommentTextBlock component basic comment 1`] = `
 </div>
 `;
 
-exports[`APISectionUtils.CommentTextBlock component basic inline comment 1`] = `
-<div>
-   - 
-  <span>
-    This is the basic comment.
-  </span>
-</div>
-`;
-
 exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
 <div>
+  <strong
+    class="css-bvflvn-TextComponent"
+  >
+    Only for:
+     
+  </strong>
+  <div
+    class="css-1r58h1i-PlatformTag"
+  >
+    <svg
+      color="var(--green12)"
+      fill="none"
+      height="12"
+      role="img"
+      size="12"
+      viewBox="0 0 20 20"
+      width="12"
+    >
+      <title>
+        Android-icon
+      </title>
+      <path
+        d="M14.219 12.325a.766.766 0 010-1.532.765.765 0 010 1.532zm-8.438 0a.766.766 0 010-1.532.765.765 0 010 1.532zm8.712-4.613l1.525-2.651a.317.317 0 10-.55-.318l-1.544 2.684A9.393 9.393 0 0010 6.585a9.393 9.393 0 00-3.924.842L4.531 4.742a.317.317 0 10-.55.319l1.526 2.65c-2.62 1.43-4.412 4.091-4.674 7.235h18.334c-.263-3.144-2.055-5.805-4.674-7.234z"
+        fill="var(--green12)"
+      />
+    </svg>
+    <span
+      class="css-6g4m4t-PlatformTag"
+    >
+      Android
+    </span>
+  </div>
+  <br />
   <p
     class="css-1oym3r-TextComponent"
     data-text="true"
   >
-    <strong
-      class="css-bvflvn-TextComponent"
-    >
-      Android only.
-    </strong>
-     Gets the referrer URL of the installed app with the 
+    Gets the referrer URL of the installed app with the 
     <a
-      class="css-dqmbnf-A"
+      class="css-1na8e0o-A"
       href="https://developer.android.com/google/play/installreferrer"
       rel="noopener noreferrer"
       target="_blank"
     >
       <code
-        class="css-vixx70-TextComponent"
+        class="css-zmv3vl-TextComponent"
         data-text="true"
       >
         Install Referrer API
@@ -49,7 +68,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
 from the Google Play Store. In practice, the referrer URL may not be a complete, absolute URL.
   </p>
   <div
-    class="css-1cc2eo9"
+    class="css-10kkd4f"
   >
     <h4
       class="css-1gu5rqd-TextComponent"
@@ -60,11 +79,11 @@ from the Google Play Store. In practice, the referrer URL may not be a complete,
   </div>
   <pre>
     <pre
-      class="css-p0nog9"
+      class="css-1tmj8fm"
       data-text="true"
     >
       <code
-        class="css-cosiu9"
+        class="css-1r5zesl"
       >
         <span
           class="token keyword"
@@ -122,7 +141,7 @@ exports[`APISectionUtils.CommentTextBlock component no comment 1`] = `<div />`;
 exports[`APISectionUtils.resolveTypeName Promise 1`] = `
 <div>
   <a
-    class="css-dqmbnf-A"
+    class="css-1na8e0o-A"
     href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
     rel="noopener noreferrer"
     target="_blank"
@@ -140,7 +159,7 @@ exports[`APISectionUtils.resolveTypeName Promise 1`] = `
 exports[`APISectionUtils.resolveTypeName Promise with custom type 1`] = `
 <div>
   <a
-    class="css-dqmbnf-A"
+    class="css-1na8e0o-A"
     href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
     rel="noopener noreferrer"
     target="_blank"
@@ -150,7 +169,7 @@ exports[`APISectionUtils.resolveTypeName Promise with custom type 1`] = `
   &lt;
   <span>
     <a
-      class="css-dqmbnf-A"
+      class="css-1na8e0o-A"
       href="#appleauthenticationcredential"
     >
       AppleAuthenticationCredential
@@ -209,7 +228,7 @@ exports[`APISectionUtils.resolveTypeName alternative generic object notation 1`]
 exports[`APISectionUtils.resolveTypeName custom type 1`] = `
 <div>
   <a
-    class="css-dqmbnf-A"
+    class="css-1na8e0o-A"
     href="#speechsynthesisevent"
   >
     SpeechSynthesisEvent
@@ -220,7 +239,7 @@ exports[`APISectionUtils.resolveTypeName custom type 1`] = `
 exports[`APISectionUtils.resolveTypeName custom type array 1`] = `
 <div>
   <a
-    class="css-dqmbnf-A"
+    class="css-1na8e0o-A"
     href="#appleauthenticationscope"
   >
     AppleAuthenticationScope
@@ -238,7 +257,7 @@ exports[`APISectionUtils.resolveTypeName custom type non-linkable array 1`] = `
 exports[`APISectionUtils.resolveTypeName custom type with single pick 1`] = `
 <div>
   <a
-    class="css-dqmbnf-A"
+    class="css-1na8e0o-A"
     href="https://www.typescriptlang.org/docs/handbook/utility-types.html#picktype-keys"
     rel="noopener noreferrer"
     target="_blank"
@@ -248,7 +267,7 @@ exports[`APISectionUtils.resolveTypeName custom type with single pick 1`] = `
   &lt;
   <span>
     <a
-      class="css-dqmbnf-A"
+      class="css-1na8e0o-A"
       href="#fontresource"
     >
       FontResource
@@ -272,7 +291,7 @@ exports[`APISectionUtils.resolveTypeName function 1`] = `
   </span>
   <span>
     <a
-      class="css-dqmbnf-A"
+      class="css-1na8e0o-A"
       href="#speecheventcallback"
     >
       SpeechEventCallback
@@ -288,7 +307,7 @@ exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
     error
     : 
     <a
-      class="css-dqmbnf-A"
+      class="css-1na8e0o-A"
       href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error"
       rel="noopener noreferrer"
       target="_blank"
@@ -305,7 +324,7 @@ exports[`APISectionUtils.resolveTypeName function with arguments 1`] = `
   </span>
   <span>
     <a
-      class="css-dqmbnf-A"
+      class="css-1na8e0o-A"
       href="#speecheventcallback"
     >
       SpeechEventCallback
@@ -321,7 +340,7 @@ exports[`APISectionUtils.resolveTypeName function with non-linkable custom type 
     error
     : 
     <a
-      class="css-dqmbnf-A"
+      class="css-1na8e0o-A"
       href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Error"
       rel="noopener noreferrer"
       target="_blank"
@@ -345,7 +364,7 @@ exports[`APISectionUtils.resolveTypeName generic type 1`] = `
 exports[`APISectionUtils.resolveTypeName generic type 2`] = `
 <div>
   <a
-    class="css-dqmbnf-A"
+    class="css-1na8e0o-A"
     href="#pagedinfo"
   >
     PagedInfo
@@ -353,7 +372,7 @@ exports[`APISectionUtils.resolveTypeName generic type 2`] = `
   &lt;
   <span>
     <a
-      class="css-dqmbnf-A"
+      class="css-1na8e0o-A"
       href="#asset"
     >
       Asset
@@ -366,7 +385,7 @@ exports[`APISectionUtils.resolveTypeName generic type 2`] = `
 exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
 <div>
   <a
-    class="css-dqmbnf-A"
+    class="css-1na8e0o-A"
     href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
     rel="noopener noreferrer"
     target="_blank"
@@ -376,7 +395,7 @@ exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
   &lt;
   <span>
     <a
-      class="css-dqmbnf-A"
+      class="css-1na8e0o-A"
       href="#pagedinfo"
     >
       PagedInfo
@@ -384,7 +403,7 @@ exports[`APISectionUtils.resolveTypeName generic type in Promise 1`] = `
     &lt;
     <span>
       <a
-        class="css-dqmbnf-A"
+        class="css-1na8e0o-A"
         href="#asset"
       >
         Asset
@@ -425,7 +444,7 @@ exports[`APISectionUtils.resolveTypeName props with multiple omits 1`] = `
   &lt;
   <span>
     <a
-      class="css-dqmbnf-A"
+      class="css-1na8e0o-A"
       href="https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys"
       rel="noopener noreferrer"
       target="_blank"
@@ -435,8 +454,10 @@ exports[`APISectionUtils.resolveTypeName props with multiple omits 1`] = `
     &lt;
     <span>
       <a
-        class="css-dqmbnf-A"
-        href="/versions/latest/react-native/view-style-props"
+        class="css-1na8e0o-A"
+        href="https://reactnative.dev/docs/view-style-props"
+        rel="noopener noreferrer"
+        target="_blank"
       >
         ViewStyle
       </a>
@@ -473,7 +494,7 @@ exports[`APISectionUtils.resolveTypeName tuple type 1`] = `
   [
   <span>
     <a
-      class="css-dqmbnf-A"
+      class="css-1na8e0o-A"
       href="#sortbykey"
     >
       SortByKey
@@ -491,7 +512,7 @@ exports[`APISectionUtils.resolveTypeName union 1`] = `
 <div>
   <span>
     <a
-      class="css-dqmbnf-A"
+      class="css-1na8e0o-A"
       href="#speecheventcallback"
     >
       SpeechEventCallback
@@ -509,7 +530,7 @@ exports[`APISectionUtils.resolveTypeName union of array values 1`] = `
   (
   <span>
     <a
-      class="css-dqmbnf-A"
+      class="css-1na8e0o-A"
       href="#resultseterror"
     >
       ResultSetError
@@ -518,7 +539,7 @@ exports[`APISectionUtils.resolveTypeName union of array values 1`] = `
   </span>
   <span>
     <a
-      class="css-dqmbnf-A"
+      class="css-1na8e0o-A"
       href="#resultset"
     >
       ResultSet
@@ -545,7 +566,7 @@ exports[`APISectionUtils.resolveTypeName union with custom type and array 1`] = 
 <div>
   <span>
     <a
-      class="css-dqmbnf-A"
+      class="css-1na8e0o-A"
       href="#assetref"
     >
       AssetRef
@@ -555,7 +576,7 @@ exports[`APISectionUtils.resolveTypeName union with custom type and array 1`] = 
   </span>
   <span>
     <a
-      class="css-dqmbnf-A"
+      class="css-1na8e0o-A"
       href="#assetref"
     >
       AssetRef

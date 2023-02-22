@@ -154,7 +154,8 @@ public:
      *  @param yChannelSelector RGBA channel that encodes the y displacement per pixel.
      *  @param scale            Scale applied to displacement extracted from image.
      *  @param displacement     The filter defining the displacement image, or null to use source.
-     *  @param color            The filter providing the color pixels to be displaced.
+     *  @param color            The filter providing the color pixels to be displaced. If null,
+     *                          it will use the source.
      *  @param cropRect         Optional rectangle that crops the color input and output.
      */
     static sk_sp<SkImageFilter> DisplacementMap(SkColorChannel xChannelSelector,
@@ -344,13 +345,13 @@ public:
      *                         fill the result image
      *  @param childShaderName The name of the child shader defined in the builder that will be
      *                         bound to the input param (or the source image if the input param
-     *                         is null).  If null the builder can have exactly one child shader,
+     *                         is null).  If empty, the builder can have exactly one child shader,
      *                         which automatically binds the input param.
      *  @param input           The image filter that will be provided as input to the runtime
      *                         shader. If null the implicit source image is used instead
      */
     static sk_sp<SkImageFilter> RuntimeShader(const SkRuntimeShaderBuilder& builder,
-                                              const char* childShaderName,
+                                              std::string_view childShaderName,
                                               sk_sp<SkImageFilter> input);
 
     /**
@@ -369,7 +370,7 @@ public:
      *  @param inputCount       How many entries are present in 'childShaderNames' and 'inputs'.
      */
     static sk_sp<SkImageFilter> RuntimeShader(const SkRuntimeShaderBuilder& builder,
-                                              const char* childShaderNames[],
+                                              std::string_view childShaderNames[],
                                               const sk_sp<SkImageFilter> inputs[],
                                               int inputCount);
 #endif  // SK_ENABLE_SKSL

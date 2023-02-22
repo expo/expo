@@ -15,6 +15,7 @@
 /packages/expo-battery                          @tsapeta
 /packages/expo-blur                             @tsapeta
 /packages/expo-brightness                       @tsapeta
+/packages/expo-build-properties                 @kudo @gabrieldonadel
 /packages/expo-calendar                         @lukmccall
 /packages/expo-camera                           @lukmccall
 /packages/expo-cellular                         @ide @tsapeta
@@ -29,7 +30,6 @@
 /packages/expo-dev-menu-interface               @lukmccall @douglowder
 /packages/expo-device                           @ide @tsapeta
 /packages/expo-document-picker                  @barthap
-/packages/expo-error-recovery                   @lukmccall
 /packages/expo-face-detector                    @kudo
 /packages/expo-file-system                      @brentvatne @kudo @ide @tsapeta
 /packages/expo-firebase-core                    @brentvatne

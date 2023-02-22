@@ -1,5 +1,5 @@
 import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
-import { ViewProps } from 'react-native';
+import type { ViewProps } from 'react-native';
 export declare enum CameraType {
     front = "front",
     back = "back"
@@ -90,33 +90,53 @@ export declare enum VideoQuality {
     '480p' = "480p",
     '4:3' = "4:3"
 }
-export type ImageParameters = {
-    imageType: ImageType;
-    quality: number | null;
-};
+/**
+ * @hidden We do not expose related web methods in docs.
+ * @platform web
+ */
 export type ImageSize = {
     width: number;
     height: number;
 };
-export type WebCameraSettings = Partial<{
-    autoFocus: string;
-    flashMode: string;
-    whiteBalance: string;
-    exposureCompensation: number;
-    colorTemperature: number;
-    iso: number;
-    brightness: number;
-    contrast: number;
-    saturation: number;
-    sharpness: number;
-    focusDistance: number;
-    zoom: number;
-}>;
+/**
+ * @hidden We do not expose related web methods in docs.
+ * @platform web
+ */
+export type WebCameraSettings = {
+    autoFocus?: string;
+    flashMode?: string;
+    whiteBalance?: string;
+    exposureCompensation?: number;
+    colorTemperature?: number;
+    iso?: number;
+    brightness?: number;
+    contrast?: number;
+    saturation?: number;
+    sharpness?: number;
+    focusDistance?: number;
+    zoom?: number;
+};
 export type CameraCapturedPicture = {
+    /**
+     * Captured image width.
+     */
     width: number;
+    /**
+     * Captured image height.
+     */
     height: number;
+    /**
+     * On web, the value of `uri` is the same as `base64` because file system URLs are not supported in the browser.
+     */
     uri: string;
+    /**
+     * A Base64 representation of the image.
+     */
     base64?: string;
+    /**
+     * On Android and iOS this object may include various fields based on the device and operating system.
+     * On web, it is a partial representation of the [`MediaTrackSettings`](https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings) dictionary.
+     */
     exif?: Partial<MediaTrackSettings> | any;
 };
 export type CameraPictureOptions = {
@@ -219,13 +239,22 @@ export type CameraRecordingOptions = {
      */
     codec?: VideoCodec;
 };
+/**
+ * @hidden
+ */
 export type PictureSavedListener = (event: {
     nativeEvent: {
         data: CameraCapturedPicture;
         id: number;
     };
 }) => void;
+/**
+ * @hidden
+ */
 export type CameraReadyListener = () => void;
+/**
+ * @hidden
+ */
 export type MountErrorListener = (event: {
     nativeEvent: CameraMountError;
 }) => void;
@@ -284,34 +313,16 @@ export type BarCodeScanningResult = {
      */
     bounds: BarCodeBounds;
 };
-export type Face = {
-    faceID: number;
-    bounds: {
-        origin: Point;
-        size: {
-            height: number;
-            width: number;
-        };
-    };
-    rollAngle: number;
-    yawAngle: number;
-    smilingProbability: number;
-    leftEarPosition: Point;
-    rightEarPosition: Point;
-    leftEyePosition: Point;
-    leftEyeOpenProbability: number;
-    rightEyePosition: Point;
-    rightEyeOpenProbability: number;
-    leftCheekPosition: Point;
-    rightCheekPosition: Point;
-    mouthPosition: Point;
-    leftMouthPosition: Point;
-    rightMouthPosition: Point;
-    noseBasePosition: Point;
-};
 export type FaceDetectionResult = {
-    faces: Face[];
+    /**
+     * Array of objects representing results of face detection.
+     * See [`FaceFeature`](facedetector/#facefeature) in FaceDetector documentation for more details.
+     */
+    faces: object[];
 };
+/**
+ * @hidden
+ */
 export type ConstantsType = {
     Type: CameraType;
     FlashMode: FlashMode;
@@ -417,7 +428,8 @@ export type CameraProps = ViewProps & {
      */
     faceDetectorSettings?: object;
     /**
-     * Callback invoked with results of face detection on the preview. See [FaceDetector documentation](facedetector/#detectionresult) for details.
+     * Callback invoked with results of face detection on the preview.
+     * See [`DetectionResult`](facedetector/#detectionresult) in FaceDetector documentation for more details.
      * @param faces
      */
     onFacesDetected?: (faces: FaceDetectionResult) => void;
@@ -427,6 +439,9 @@ export type CameraProps = ViewProps & {
      */
     poster?: string;
 };
+/**
+ * @hidden
+ */
 export type CameraNativeProps = {
     pointerEvents?: any;
     style?: any;

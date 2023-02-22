@@ -76,7 +76,10 @@ Save all of your changes. In Xcode, update the iOS Deployment Target under `Targ
 
 ### Verifying installation
 
-You can verify that installation was successful by logging a value from [expo-constants](/versions/latest/sdk/constants/). Run `expo install expo-constants`, then run `expo run:[android|ios]` and modify your app JavaScript code to add the following:
+You can verify that the installation was successful by logging a value from [`expo-constants`](/versions/latest/sdk/constants).
+
+- Run `expo install expo-constants`
+- Then, run `expo run:[android|ios]` and modify your app JavaScript code to add the following:
 
 ```js
 import Constants from 'expo-constants';
@@ -85,18 +88,18 @@ console.log(Constants.systemFonts);
 
 ### Using Expo SDK packages
 
-Once the `expo` package is installed and configured in your project, you can use `expo install` to add any other Expo module from the SDK. Learn more in ["Using Libraries"](/workflow/using-libraries).
+Once the `expo` package is installed and configured in your project, you can use `expo install` to add any other Expo module from the SDK. See [Using Libraries](/workflow/using-libraries) for more information.
 
 ### Expo modules included in the `expo` package
 
 The following Expo modules are brought in as dependencies of the `expo` package:
 
-- [expo-application](/versions/latest/sdk/application.mdx) - Generates the installation id in remote logging in development. This module is optional and can be safely removed if you do not use `expo-dev-client`.
-- [expo-asset](/versions/latest/sdk/asset.mdx) - A JavaScript-only package that builds around `expo-file-system` and provides a common foundation for assets across all Expo modules.
-- [expo-constants](/versions/latest/sdk/constants.mdx) - Provides access to the manifest.
-- [expo-file-system](/versions/latest/sdk/filesystem.mdx) - Interact with the device file system. Used by `expo-asset` and many other Expo modules. Commonly used directly by developers in application code.
-- [expo-font](/versions/latest/sdk/font.mdx) - Load fonts at runtime. This module is optional and can be safely removed, however; it is recommended if you use `expo-dev-client` for development and it is required by `@expo/vector-icons`.
-- [expo-keep-awake](/versions/latest/sdk/keep-awake.mdx) - Prevents your device from going to sleep while developing your app. This module is optional and can be safely removed.
+- [`expo-application`](/versions/latest/sdk/application) - Generates the installation id in remote logging in development. This module is optional and can be safely removed if you do not use `expo-dev-client`.
+- [`expo-asset`](/versions/latest/sdk/asset) - A JavaScript-only package that builds around `expo-file-system` and provides a common foundation for assets across all Expo modules.
+- [`expo-constants`](/versions/latest/sdk/constants) - Provides access to the manifest.
+- [`expo-file-system`](/versions/latest/sdk/filesystem) - Interact with the device file system. Used by `expo-asset` and many other Expo modules. Commonly used directly by developers in application code.
+- [`expo-font`](/versions/latest/sdk/font) - Load fonts at runtime. This module is optional and can be safely removed, however; it is recommended if you use `expo-dev-client` for development and it is required by `@expo/vector-icons`.
+- [`expo-keep-awake`](/versions/latest/sdk/keep-awake) - Prevents your device from going to sleep while developing your app. This module is optional and can be safely removed.
 
 To exclude any of these modules, refer to the following guide on [excluding modules from autolinking](#excluding-specific-modules-from-autolinking).
 
@@ -104,7 +107,7 @@ To exclude any of these modules, refer to the following guide on [excluding modu
 
 If you need to exclude Expo modules that you are not using but they got installed by other dependencies, you can use the `expo.autolinking` field in **package.json**:
 
-```json
+```json package.json
 {
   "name": "...",
   "dependencies": {},
@@ -118,7 +121,7 @@ If you need to exclude Expo modules that you are not using but they got installe
 
 You can also exclude a specific platform by using `exclude` under the platform key:
 
-```json
+```json package.json
 {
   "name": "...",
   "dependencies": {},

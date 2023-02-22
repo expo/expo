@@ -164,7 +164,7 @@ module.exports = {
     'import/ignore': [
       // react-native's main module is Flow, not JavaScript, and raises parse errors. Additionally,
       // several other react-native-related packages still publish Flow code as their main source.
-      '/node_modules/@?react-native',
+      'node_modules[\\\\/]+@?react-native',
     ],
     'import/resolver': {
       node: { extensions: jsExtensions },

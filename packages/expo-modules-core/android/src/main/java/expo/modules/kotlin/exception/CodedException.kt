@@ -85,8 +85,14 @@ internal class MissingTypeConverter(
   message = "Cannot find type converter for '$forType'.",
 )
 
-internal class InvalidArgsNumberException(received: Int, expected: Int) :
-  CodedException(message = "Received $received arguments, but $expected was expected.")
+internal class InvalidArgsNumberException(received: Int, expected: Int, required: Int = expected) :
+  CodedException(
+    message = if (required < expected) {
+      "Received $received arguments, but $expected was expected and at least $required is required"
+    } else {
+      "Received $received arguments, but $expected was expected"
+    }
+  )
 
 internal class MethodNotFoundException :
   CodedException(message = "Method does not exist.")

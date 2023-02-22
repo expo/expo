@@ -32,6 +32,17 @@ export default [
     ],
   },
   {
+    name: 'resourceClass',
+    enum: ['default', 'medium', 'm1-medium', 'intel-medium'],
+    description: [
+      'The iOS-specific resource class that will be used to run this build. [Learn more](../../build-reference/infrastructure#ios-build-server-configurations)',
+      '- `default` maps to `intel-medium`',
+      '- `medium` maps to `intel-medium`',
+      '',
+      'This can change over time. To ensure you stay on the same configuration even when we change our defaults, use the specific resource class name.',
+    ],
+  },
+  {
     name: 'bundler',
     type: 'string',
     description: [ 'Version of [bundler](https://bundler.io/).' ],

@@ -10,6 +10,18 @@
 
 ### 💡 Others
 
+## 4.0.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.0 — 2023-02-03
+
+### 🛠 Breaking changes
+
+- Removed the deprecated `Linking.removeEventListener`. ([#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
 - Fix link in README that was incorrectly pointing to to expo-asset. ([#20616](https://github.com/expo/expo/pull/20616) by [@stereoplegic](https://github.com/stereoplegic))
 
 ## 3.2.3 — 2022-10-25

@@ -28,7 +28,10 @@ function getBlurStyle({ intensity, tint }): Record<string, string> {
   };
 
   if (isBlurSupported()) {
-    style.backdropFilter = `saturate(180%) blur(${intensity * 0.2}px)`;
+    const blur = `saturate(180%) blur(${intensity * 0.2}px)`;
+    style.backdropFilter = blur;
+    // Safari support
+    style.WebkitBackdropFilter = blur;
   }
 
   return style;

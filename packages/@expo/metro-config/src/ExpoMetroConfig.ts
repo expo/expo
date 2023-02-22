@@ -9,11 +9,12 @@ import path from 'path';
 import resolveFrom from 'resolve-from';
 import { URL } from 'url';
 
-import { getModulesPaths } from './getModulesPaths';
+import { getModulesPaths, getWorkspaceRoot } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { importMetroConfigFromProject } from './importMetroFromProject';
 
 export const EXPO_DEBUG = boolish('EXPO_DEBUG', false);
+const EXPO_USE_METRO_WORKSPACE_ROOT = boolish('EXPO_USE_METRO_WORKSPACE_ROOT', false);
 const EXPO_USE_EXOTIC = boolish('EXPO_USE_EXOTIC', false);
 
 // Import only the types here, the values will be imported from the project, at runtime.
@@ -50,6 +51,8 @@ export const INTERNAL_CALLSITES_REGEX = new RegExp(
     '/InternalBytecode/InternalBytecode\\.js$',
     // Block native code invocations
     `\\[native code\\]`,
+    // Hide react-dom (web)
+    'node_modules/react-dom/.+\\.js$',
   ].join('|')
 );
 
@@ -177,9 +180,12 @@ export function getDefaultConfig(
     resolver: {
       resolverMainFields,
       platforms: ['ios', 'android', 'native', 'testing'],
-      assetExts: metroDefaultValues.resolver.assetExts.filter(
-        (assetExt) => !sourceExts.includes(assetExt)
-      ),
+      assetExts: metroDefaultValues.resolver.assetExts
+        .concat(
+          // Add default support for `expo-image` file types.
+          ['heic', 'avif']
+        )
+        .filter((assetExt) => !sourceExts.includes(assetExt)),
       sourceExts,
       nodeModulesPaths,
     },
@@ -192,6 +198,12 @@ export function getDefaultConfig(
     },
     server: {
       port: Number(process.env.RCT_METRO_PORT) || 8081,
+      // NOTE(EvanBacon): Moves the server root down to the monorepo root.
+      // This enables proper monorepo support for web.
+      // @ts-expect-error: not on type
+      unstable_serverRoot: EXPO_USE_METRO_WORKSPACE_ROOT
+        ? getWorkspaceRoot(projectRoot) ?? projectRoot
+        : projectRoot,
     },
     symbolicator: {
       customizeFrame: (frame) => {

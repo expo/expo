@@ -103,7 +103,7 @@ export async function reloadAsync() {
     if (!ExpoUpdates.reload) {
         throw new UnavailabilityError('Updates', 'reloadAsync');
     }
-    if (__DEV__ && !isUsingExpoDevelopmentClient) {
+    if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingExpoDevelopmentClient)) {
         throw new CodedError('ERR_UPDATES_DISABLED', `You cannot use the Updates module in development mode in a production app. ${manualUpdatesInstructions}`);
     }
     await ExpoUpdates.reload();
@@ -127,7 +127,7 @@ export async function checkForUpdateAsync() {
     if (!ExpoUpdates.checkForUpdateAsync) {
         throw new UnavailabilityError('Updates', 'checkForUpdateAsync');
     }
-    if (__DEV__ || isUsingDeveloperTool) {
+    if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingDeveloperTool)) {
         throw new CodedError('ERR_UPDATES_DISABLED', `You cannot check for updates in development mode. ${manualUpdatesInstructions}`);
     }
     const result = await ExpoUpdates.checkForUpdateAsync();
@@ -183,7 +183,7 @@ export async function fetchUpdateAsync() {
     if (!ExpoUpdates.fetchUpdateAsync) {
         throw new UnavailabilityError('Updates', 'fetchUpdateAsync');
     }
-    if (__DEV__ || isUsingDeveloperTool) {
+    if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingDeveloperTool)) {
         throw new CodedError('ERR_UPDATES_DISABLED', `You cannot fetch updates in development mode. ${manualUpdatesInstructions}`);
     }
     const result = await ExpoUpdates.fetchUpdateAsync();
@@ -223,7 +223,8 @@ function _emitEvent(params) {
 }
 /**
  * Adds a callback to be invoked when updates-related events occur (such as upon the initial app
- * load) due to auto-update settings chosen at build-time.
+ * load) due to auto-update settings chosen at build-time. See also the
+ * [`useUpdateEvents`](#useupdateeventslistener) React hook.
  *
  * @param listener A function that will be invoked with an [`UpdateEvent`](#updateevent) instance
  * and should not return any value.

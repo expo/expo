@@ -156,6 +156,11 @@ export default {
       return '';
     }
 
+    if (process.env.CI) {
+      console.log('Skip fetching local manifest on CI.');
+      return '';
+    }
+
     const pathToHome = 'home';
     const url = await UrlUtils.constructManifestUrlAsync(path.join(EXPO_DIR, pathToHome));
 

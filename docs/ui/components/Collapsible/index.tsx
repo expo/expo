@@ -28,7 +28,7 @@ export function Collapsible({ summary, open, testID, children }: CollapsibleProp
     <details css={detailsStyle} open={open} data-testid={testID}>
       <summary css={summaryStyle}>
         <div css={markerWrapperStyle}>
-          <TriangleDownIcon css={markerStyle} size={iconSize.small} />
+          <TriangleDownIcon css={markerStyle} size={iconSize.sm} />
         </div>
         <DEMI>{summary}</DEMI>
       </summary>
@@ -41,12 +41,12 @@ const detailsStyle = css({
   overflow: 'hidden',
   background: theme.background.default,
   border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.medium,
+  borderRadius: borderRadius.md,
   padding: 0,
   marginBottom: spacing[3],
 
   '&[open]': {
-    boxShadow: shadows.micro,
+    boxShadow: shadows.xs,
   },
 
   'h4 + &, p + &, li > &': {
@@ -60,7 +60,7 @@ const summaryStyle = css({
   alignItems: 'center',
   userSelect: 'none',
   listStyle: 'none',
-  backgroundColor: theme.background.secondary,
+  backgroundColor: theme.background.subtle,
   padding: spacing[1.5],
   paddingRight: spacing[3],
   margin: 0,
@@ -80,7 +80,7 @@ const summaryStyle = css({
   },
 
   code: {
-    backgroundColor: theme.background.tertiary,
+    backgroundColor: theme.background.element,
     display: 'inline',
     fontSize: '90%',
   },

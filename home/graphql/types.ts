@@ -105,6 +105,8 @@ export type Account = {
   createdAt: Scalars['DateTime'];
   /** Environment secrets for an account */
   environmentSecrets: Array<EnvironmentSecret>;
+  /** GitHub App installations for an account */
+  githubAppInstallations: Array<GitHubAppInstallation>;
   /** Android credentials for account */
   googleServiceAccountKeys: Array<GoogleServiceAccountKey>;
   id: Scalars['ID'];
@@ -119,6 +121,8 @@ export type Account = {
   requiresAccessTokenForPushSecurity: Scalars['Boolean'];
   /** Snacks associated with this account */
   snacks: Array<Snack>;
+  /** SSO configuration for this account */
+  ssoConfiguration?: Maybe<AccountSsoConfiguration>;
   /** Subscription info visible to members that have VIEWER role */
   subscription?: Maybe<SubscriptionDetails>;
   /** @deprecated No longer needed */
@@ -163,6 +167,8 @@ export type AccountAppleAppIdentifiersArgs = {
  */
 export type AccountAppleDevicesArgs = {
   identifier?: InputMaybe<Scalars['String']>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -181,6 +187,8 @@ export type AccountAppleProvisioningProfilesArgs = {
  */
 export type AccountAppleTeamsArgs = {
   appleTeamIdentifier?: InputMaybe<Scalars['String']>;
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -276,8 +284,8 @@ export type AccountMutation = {
   grantActorPermissions: Account;
   /** Rename this account and the primary user's username if this account is a personal account */
   rename: Account;
-  /** Requests a refund for the specified charge. Returns true if auto-refund was possible, otherwise requests a manual refund from support and returns false. */
-  requestRefund: Scalars['Boolean'];
+  /** Requests a refund for the specified charge by requesting a manual refund from support */
+  requestRefund?: Maybe<Scalars['Boolean']>;
   /** Revoke specified Permissions for Actor. Actor must already have at least one permission on the account. */
   revokeActorPermissions: Account;
   /**
@@ -289,8 +297,6 @@ export type AccountMutation = {
   setPaymentSource: Account;
   /** Require authorization to send push notifications for experiences owned by this account */
   setPushSecurityEnabled: Account;
-  /** Add a subscription */
-  subscribeToProduct: Account;
 };
 
 
@@ -364,13 +370,6 @@ export type AccountMutationSetPushSecurityEnabledArgs = {
   pushSecurityEnabled: Scalars['Boolean'];
 };
 
-
-export type AccountMutationSubscribeToProductArgs = {
-  accountName: Scalars['ID'];
-  paymentSource: Scalars['ID'];
-  productId: Scalars['ID'];
-};
-
 export type AccountQuery = {
   __typename?: 'AccountQuery';
   /** Query an Account by ID */
@@ -386,6 +385,90 @@ export type AccountQueryByIdArgs = {
 
 
 export type AccountQueryByNameArgs = {
+  accountName: Scalars['String'];
+};
+
+/** Auth configuration data for an SSO account. */
+export type AccountSsoConfiguration = {
+  __typename?: 'AccountSSOConfiguration';
+  authEndpoint?: Maybe<Scalars['String']>;
+  authProtocol: AuthProtocolType;
+  authProviderIdentifier: Scalars['String'];
+  clientIdentifier: Scalars['String'];
+  clientSecret: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  id: Scalars['ID'];
+  issuer?: Maybe<Scalars['String']>;
+  jwksEndpoint?: Maybe<Scalars['String']>;
+  revokeEndpoint?: Maybe<Scalars['String']>;
+  tokenEndpoint?: Maybe<Scalars['String']>;
+  updatedAt: Scalars['DateTime'];
+  userInfoEndpoint?: Maybe<Scalars['String']>;
+};
+
+export type AccountSsoConfigurationData = {
+  authEndpoint?: InputMaybe<Scalars['String']>;
+  authProtocol: AuthProtocolType;
+  authProviderIdentifier: Scalars['String'];
+  clientIdentifier: Scalars['String'];
+  clientSecret: Scalars['String'];
+  issuer?: InputMaybe<Scalars['String']>;
+  jwksEndpoint?: InputMaybe<Scalars['String']>;
+  revokeEndpoint?: InputMaybe<Scalars['String']>;
+  tokenEndpoint?: InputMaybe<Scalars['String']>;
+  userInfoEndpoint?: InputMaybe<Scalars['String']>;
+};
+
+export type AccountSsoConfigurationMutation = {
+  __typename?: 'AccountSSOConfigurationMutation';
+  /** Create an AccountSSOConfiguration for an Account */
+  createAccountSSOConfiguration: AccountSsoConfiguration;
+  /** Delete an AccountSSOConfiguration */
+  deleteAccountSSOConfiguration: DeleteAccountSsoConfigurationResult;
+  /** Update an AccountSSOConfiguration */
+  updateAccountSSOConfiguration: AccountSsoConfiguration;
+};
+
+
+export type AccountSsoConfigurationMutationCreateAccountSsoConfigurationArgs = {
+  accountId: Scalars['ID'];
+  accountSSOConfigurationData: AccountSsoConfigurationData;
+};
+
+
+export type AccountSsoConfigurationMutationDeleteAccountSsoConfigurationArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type AccountSsoConfigurationMutationUpdateAccountSsoConfigurationArgs = {
+  accountSSOConfigurationData: AccountSsoConfigurationData;
+  id: Scalars['ID'];
+};
+
+/** Public auth configuration data for an SSO account. */
+export type AccountSsoConfigurationPublicData = {
+  __typename?: 'AccountSSOConfigurationPublicData';
+  authEndpoint?: Maybe<Scalars['String']>;
+  authProtocol: AuthProtocolType;
+  authProviderIdentifier: Scalars['String'];
+  clientIdentifier: Scalars['String'];
+  id: Scalars['ID'];
+  issuer?: Maybe<Scalars['String']>;
+  jwksEndpoint?: Maybe<Scalars['String']>;
+  revokeEndpoint?: Maybe<Scalars['String']>;
+  tokenEndpoint?: Maybe<Scalars['String']>;
+  userInfoEndpoint?: Maybe<Scalars['String']>;
+};
+
+export type AccountSsoConfigurationPublicDataQuery = {
+  __typename?: 'AccountSSOConfigurationPublicDataQuery';
+  /** Get AccountSSOConfiguration public data by account name */
+  publicDataByAccountName: AccountSsoConfigurationPublicData;
+};
+
+
+export type AccountSsoConfigurationPublicDataQueryPublicDataByAccountNameArgs = {
   accountName: Scalars['String'];
 };
 
@@ -423,6 +506,7 @@ export type AccountUsageMetricsByBillingPeriodArgs = {
 
 
 export type AccountUsageMetricsMetricsForServiceMetricArgs = {
+  filterParams?: InputMaybe<Scalars['JSONObject']>;
   granularity: UsageMetricsGranularity;
   serviceMetric: EasServiceMetric;
   timespan: UsageMetricsTimespan;
@@ -690,7 +774,10 @@ export type AndroidJobBuildCredentialsInput = {
 };
 
 export type AndroidJobInput = {
+  applicationArchivePath?: InputMaybe<Scalars['String']>;
+  /** @deprecated */
   artifactPath?: InputMaybe<Scalars['String']>;
+  buildArtifactPaths?: InputMaybe<Array<Scalars['String']>>;
   buildType?: InputMaybe<AndroidBuildType>;
   builderEnvironment?: InputMaybe<AndroidBuilderEnvironmentInput>;
   cache?: InputMaybe<BuildCacheInput>;
@@ -704,6 +791,7 @@ export type AndroidJobInput = {
   type: BuildWorkflow;
   updates?: InputMaybe<BuildUpdatesInput>;
   username?: InputMaybe<Scalars['String']>;
+  version?: InputMaybe<AndroidJobVersionInput>;
 };
 
 export type AndroidJobKeystoreInput = {
@@ -713,9 +801,30 @@ export type AndroidJobKeystoreInput = {
   keystorePassword: Scalars['String'];
 };
 
+export type AndroidJobOverridesInput = {
+  applicationArchivePath?: InputMaybe<Scalars['String']>;
+  /** @deprecated */
+  artifactPath?: InputMaybe<Scalars['String']>;
+  buildArtifactPaths?: InputMaybe<Array<Scalars['String']>>;
+  buildType?: InputMaybe<AndroidBuildType>;
+  builderEnvironment?: InputMaybe<AndroidBuilderEnvironmentInput>;
+  cache?: InputMaybe<BuildCacheInput>;
+  developmentClient?: InputMaybe<Scalars['Boolean']>;
+  experimental?: InputMaybe<Scalars['JSONObject']>;
+  gradleCommand?: InputMaybe<Scalars['String']>;
+  releaseChannel?: InputMaybe<Scalars['String']>;
+  secrets?: InputMaybe<AndroidJobSecretsInput>;
+  updates?: InputMaybe<BuildUpdatesInput>;
+  username?: InputMaybe<Scalars['String']>;
+  version?: InputMaybe<AndroidJobVersionInput>;
+};
+
 export type AndroidJobSecretsInput = {
   buildCredentials?: InputMaybe<AndroidJobBuildCredentialsInput>;
-  environmentSecrets?: InputMaybe<Scalars['JSONObject']>;
+};
+
+export type AndroidJobVersionInput = {
+  versionCode: Scalars['String'];
 };
 
 export type AndroidKeystore = {
@@ -798,6 +907,7 @@ export type App = Project & {
   androidAppCredentials: Array<AndroidAppCredentials>;
   /** ios.appStoreUrl field from most recent classic update manifest */
   appStoreUrl?: Maybe<Scalars['String']>;
+  assetLimitPerUpdateGroup: Scalars['Int'];
   buildJobs: Array<BuildJob>;
   /**
    * Coalesced Build (EAS) or BuildJob (Classic) items for this app.
@@ -809,12 +919,15 @@ export type App = Project & {
   /** Classic update release channel names that have at least one build */
   buildsReleaseChannels: Array<Scalars['String']>;
   deployment?: Maybe<Deployment>;
+  deploymentNew?: Maybe<DeploymentNew>;
   /** Deployments associated with this app */
   deployments: Array<Deployment>;
   description: Scalars['String'];
   /** Environment secrets for an app */
   environmentSecrets: Array<EnvironmentSecret>;
   fullName: Scalars['String'];
+  githubRepository?: Maybe<GitHubRepository>;
+  githubRepositorySettings?: Maybe<GitHubRepositorySettings>;
   /** githubUrl field from most recent classic update manifest */
   githubUrl?: Maybe<Scalars['String']>;
   /** Info about the icon specified in the most recent classic update manifest */
@@ -830,6 +943,7 @@ export type App = Project & {
   isLikedByMe: Scalars['Boolean'];
   /** @deprecated No longer supported */
   lastPublishedTime: Scalars['DateTime'];
+  latestAppVersionByPlatformAndApplicationIdentifier?: Maybe<AppVersion>;
   latestReleaseForReleaseChannel?: Maybe<AppRelease>;
   /** ID of latest classic update release */
   latestReleaseId: Scalars['ID'];
@@ -870,6 +984,8 @@ export type App = Project & {
   updateChannelByName?: Maybe<UpdateChannel>;
   /** EAS channels owned by an app */
   updateChannels: Array<UpdateChannel>;
+  /** EAS updates owned by an app grouped by update group */
+  updateGroups: Array<Array<Update>>;
   /** Time of last classic update publish */
   updated: Scalars['DateTime'];
   /** EAS updates owned by an app */
@@ -886,6 +1002,7 @@ export type App = Project & {
 /** Represents an Exponent App (or Experience in legacy terms) */
 export type AppActivityTimelineProjectActivitiesArgs = {
   createdBefore?: InputMaybe<Scalars['DateTime']>;
+  filterChannels?: InputMaybe<Array<Scalars['String']>>;
   filterPlatforms?: InputMaybe<Array<AppPlatform>>;
   filterReleaseChannels?: InputMaybe<Array<Scalars['String']>>;
   filterTypes?: InputMaybe<Array<ActivityTimelineProjectActivityType>>;
@@ -933,6 +1050,13 @@ export type AppDeploymentArgs = {
 
 
 /** Represents an Exponent App (or Experience in legacy terms) */
+export type AppDeploymentNewArgs = {
+  channel: Scalars['String'];
+  runtimeVersion: Scalars['String'];
+};
+
+
+/** Represents an Exponent App (or Experience in legacy terms) */
 export type AppDeploymentsArgs = {
   limit: Scalars['Int'];
   mostRecentlyUpdatedAt?: InputMaybe<Scalars['DateTime']>;
@@ -949,6 +1073,13 @@ export type AppEnvironmentSecretsArgs = {
 /** Represents an Exponent App (or Experience in legacy terms) */
 export type AppIosAppCredentialsArgs = {
   filter?: InputMaybe<IosAppCredentialsFilter>;
+};
+
+
+/** Represents an Exponent App (or Experience in legacy terms) */
+export type AppLatestAppVersionByPlatformAndApplicationIdentifierArgs = {
+  applicationIdentifier: Scalars['String'];
+  platform: AppPlatform;
 };
 
 
@@ -995,6 +1126,14 @@ export type AppUpdateChannelByNameArgs = {
 
 /** Represents an Exponent App (or Experience in legacy terms) */
 export type AppUpdateChannelsArgs = {
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
+};
+
+
+/** Represents an Exponent App (or Experience in legacy terms) */
+export type AppUpdateGroupsArgs = {
+  filter?: InputMaybe<UpdatesFilter>;
   limit: Scalars['Int'];
   offset: Scalars['Int'];
 };
@@ -1193,6 +1332,52 @@ export enum AppStoreConnectUserRole {
   Technical = 'TECHNICAL',
   Unknown = 'UNKNOWN'
 }
+
+/** Represents Play Store/App Store version of an application */
+export type AppVersion = {
+  __typename?: 'AppVersion';
+  /**
+   * Store identifier for an application
+   *  - Android - applicationId
+   *  - iOS - bundle identifier
+   */
+  applicationIdentifier: Scalars['String'];
+  /**
+   * Value that identifies build in a store (it's visible to developers, but not to end users)
+   * - Android - versionCode in build.gradle ("android.versionCode" field in app.json)
+   * - iOS - CFBundleVersion in Info.plist ("ios.buildNumber" field in app.json)
+   */
+  buildVersion: Scalars['String'];
+  id: Scalars['ID'];
+  platform: AppPlatform;
+  runtimeVersion?: Maybe<Scalars['String']>;
+  /**
+   * User-facing version in a store
+   * - Android - versionName in build.gradle ("version" field in app.json)
+   * - iOS - CFBundleShortVersionString in Info.plist ("version" field in app.json)
+   */
+  storeVersion: Scalars['String'];
+};
+
+export type AppVersionInput = {
+  appId: Scalars['ID'];
+  applicationIdentifier: Scalars['String'];
+  buildVersion: Scalars['String'];
+  platform: AppPlatform;
+  runtimeVersion?: InputMaybe<Scalars['String']>;
+  storeVersion: Scalars['String'];
+};
+
+export type AppVersionMutation = {
+  __typename?: 'AppVersionMutation';
+  /** Create an app version */
+  createAppVersion: AppVersion;
+};
+
+
+export type AppVersionMutationCreateAppVersionArgs = {
+  appVersionInput: AppVersionInput;
+};
 
 export type AppleAppIdentifier = {
   __typename?: 'AppleAppIdentifier';
@@ -1410,7 +1595,7 @@ export type ApplePushKey = {
 };
 
 export type ApplePushKeyInput = {
-  appleTeamId?: InputMaybe<Scalars['ID']>;
+  appleTeamId: Scalars['ID'];
   keyIdentifier: Scalars['String'];
   keyP8: Scalars['String'];
 };
@@ -1450,6 +1635,12 @@ export type AppleTeam = {
 
 export type AppleTeamAppleAppIdentifiersArgs = {
   bundleIdentifier?: InputMaybe<Scalars['String']>;
+};
+
+
+export type AppleTeamAppleDevicesArgs = {
+  limit?: InputMaybe<Scalars['Int']>;
+  offset?: InputMaybe<Scalars['Int']>;
 };
 
 
@@ -1535,11 +1726,16 @@ export type AssetQueryMetadataArgs = {
   storageKeys: Array<Scalars['String']>;
 };
 
+export enum AuthProtocolType {
+  Oidc = 'OIDC'
+}
+
 export type Billing = {
   __typename?: 'Billing';
   /** History of invoices */
   charges?: Maybe<Array<Maybe<Charge>>>;
   id: Scalars['ID'];
+  /** @deprecated No longer used */
   payment?: Maybe<PaymentDetails>;
   subscription?: Maybe<SubscriptionDetails>;
 };
@@ -1556,6 +1752,8 @@ export type Build = ActivityTimelineProjectActivity & BuildOrBuildJob & {
   __typename?: 'Build';
   activityTimestamp: Scalars['DateTime'];
   actor?: Maybe<Actor>;
+  /** The actual resource class of the builder assigned to the build job */
+  actualResourceClass?: Maybe<BuildResourceClass>;
   appBuildVersion?: Maybe<Scalars['String']>;
   appVersion?: Maybe<Scalars['String']>;
   artifacts?: Maybe<BuildArtifacts>;
@@ -1563,6 +1761,7 @@ export type Build = ActivityTimelineProjectActivity & BuildOrBuildJob & {
   canRetry: Scalars['Boolean'];
   cancelingActor?: Maybe<Actor>;
   channel?: Maybe<Scalars['String']>;
+  childBuild?: Maybe<Build>;
   completedAt?: Maybe<Scalars['DateTime']>;
   createdAt: Scalars['DateTime'];
   distribution?: Maybe<DistributionType>;
@@ -1571,6 +1770,7 @@ export type Build = ActivityTimelineProjectActivity & BuildOrBuildJob & {
   estimatedWaitTimeLeftSeconds?: Maybe<Scalars['Int']>;
   expirationDate?: Maybe<Scalars['DateTime']>;
   gitCommitHash?: Maybe<Scalars['String']>;
+  gitCommitMessage?: Maybe<Scalars['String']>;
   id: Scalars['ID'];
   /** Queue position is 1-indexed */
   initialQueuePosition?: Maybe<Scalars['Int']>;
@@ -1580,6 +1780,10 @@ export type Build = ActivityTimelineProjectActivity & BuildOrBuildJob & {
   iosEnterpriseProvisioning?: Maybe<BuildIosEnterpriseProvisioning>;
   isGitWorkingTreeDirty?: Maybe<Scalars['Boolean']>;
   logFiles: Array<Scalars['String']>;
+  maxBuildTimeSeconds: Scalars['Int'];
+  /** Retry time starts after completedAt */
+  maxRetryTimeMinutes: Scalars['Int'];
+  message?: Maybe<Scalars['String']>;
   metrics?: Maybe<BuildMetrics>;
   parentBuild?: Maybe<Build>;
   platform: AppPlatform;
@@ -1590,6 +1794,9 @@ export type Build = ActivityTimelineProjectActivity & BuildOrBuildJob & {
   queuePosition?: Maybe<Scalars['Int']>;
   reactNativeVersion?: Maybe<Scalars['String']>;
   releaseChannel?: Maybe<Scalars['String']>;
+  /** The builder resource class requested by the developer */
+  resourceClass: BuildResourceClass;
+  runFromCI?: Maybe<Scalars['Boolean']>;
   runtimeVersion?: Maybe<Scalars['String']>;
   sdkVersion?: Maybe<Scalars['String']>;
   status: BuildStatus;
@@ -1606,6 +1813,8 @@ export type BuildArtifact = {
 
 export type BuildArtifacts = {
   __typename?: 'BuildArtifacts';
+  applicationArchiveUrl?: Maybe<Scalars['String']>;
+  buildArtifactsUrl?: Maybe<Scalars['String']>;
   buildUrl?: Maybe<Scalars['String']>;
   xcodeBuildLogsUrl?: Maybe<Scalars['String']>;
 };
@@ -1734,10 +1943,14 @@ export type BuildMetadataInput = {
   credentialsSource?: InputMaybe<BuildCredentialsSource>;
   distribution?: InputMaybe<DistributionType>;
   gitCommitHash?: InputMaybe<Scalars['String']>;
+  gitCommitMessage?: InputMaybe<Scalars['String']>;
   iosEnterpriseProvisioning?: InputMaybe<BuildIosEnterpriseProvisioning>;
   isGitWorkingTreeDirty?: InputMaybe<Scalars['Boolean']>;
+  message?: InputMaybe<Scalars['String']>;
   reactNativeVersion?: InputMaybe<Scalars['String']>;
   releaseChannel?: InputMaybe<Scalars['String']>;
+  runFromCI?: InputMaybe<Scalars['Boolean']>;
+  runWithNoWaitFlag?: InputMaybe<Scalars['Boolean']>;
   runtimeVersion?: InputMaybe<Scalars['String']>;
   sdkVersion?: InputMaybe<Scalars['String']>;
   trackingContext?: InputMaybe<Scalars['JSONObject']>;
@@ -1767,8 +1980,15 @@ export type BuildMutation = {
   createIosBuild: CreateBuildResult;
   /** Delete an EAS Build build */
   deleteBuild: Build;
-  /** Retry an EAS Build build */
+  /** Retry an Android EAS Build */
+  retryAndroidBuild: Build;
+  /**
+   * Retry an EAS Build build
+   * @deprecated Use retryAndroidBuild and retryIosBuild instead
+   */
   retryBuild: Build;
+  /** Retry an iOS EAS Build */
+  retryIosBuild: Build;
 };
 
 
@@ -1779,6 +1999,7 @@ export type BuildMutationCancelBuildArgs = {
 
 export type BuildMutationCreateAndroidBuildArgs = {
   appId: Scalars['ID'];
+  buildParams?: InputMaybe<BuildParamsInput>;
   job: AndroidJobInput;
   metadata?: InputMaybe<BuildMetadataInput>;
 };
@@ -1786,6 +2007,7 @@ export type BuildMutationCreateAndroidBuildArgs = {
 
 export type BuildMutationCreateIosBuildArgs = {
   appId: Scalars['ID'];
+  buildParams?: InputMaybe<BuildParamsInput>;
   job: IosJobInput;
   metadata?: InputMaybe<BuildMetadataInput>;
 };
@@ -1796,17 +2018,45 @@ export type BuildMutationDeleteBuildArgs = {
 };
 
 
+export type BuildMutationRetryAndroidBuildArgs = {
+  buildId: Scalars['ID'];
+  jobOverrides?: InputMaybe<AndroidJobOverridesInput>;
+};
+
+
 export type BuildMutationRetryBuildArgs = {
   buildId: Scalars['ID'];
+};
+
+
+export type BuildMutationRetryIosBuildArgs = {
+  buildId: Scalars['ID'];
+  jobOverrides?: InputMaybe<IosJobOverridesInput>;
 };
 
 export type BuildOrBuildJob = {
   id: Scalars['ID'];
 };
 
+export type BuildOrBuildJobQuery = {
+  __typename?: 'BuildOrBuildJobQuery';
+  /** Look up EAS Build or Classic Build Job by ID */
+  byId: EasBuildOrClassicBuildJob;
+};
+
+
+export type BuildOrBuildJobQueryByIdArgs = {
+  buildOrBuildJobId: Scalars['ID'];
+};
+
+export type BuildParamsInput = {
+  resourceClass: BuildResourceClass;
+};
+
 export enum BuildPriority {
   High = 'HIGH',
-  Normal = 'NORMAL'
+  Normal = 'NORMAL',
+  NormalPlus = 'NORMAL_PLUS'
 }
 
 /** Publicly visible data for a Build. */
@@ -1870,6 +2120,16 @@ export type BuildQueryAllForAppArgs = {
 export type BuildQueryByIdArgs = {
   buildId: Scalars['ID'];
 };
+
+export enum BuildResourceClass {
+  AndroidDefault = 'ANDROID_DEFAULT',
+  AndroidLarge = 'ANDROID_LARGE',
+  IosDefault = 'IOS_DEFAULT',
+  IosLarge = 'IOS_LARGE',
+  /** @experimental This resource class is not yet ready to be used in production. For testing purposes only. */
+  IosM1Large = 'IOS_M1_LARGE',
+  Legacy = 'LEGACY'
+}
 
 export enum BuildStatus {
   Canceled = 'CANCELED',
@@ -1970,6 +2230,7 @@ export type CreateAccessTokenResponse = {
 
 export type CreateAndroidSubmissionInput = {
   appId: Scalars['ID'];
+  archiveSource?: InputMaybe<SubmissionArchiveSourceInput>;
   archiveUrl?: InputMaybe<Scalars['String']>;
   config: AndroidSubmissionConfigInput;
   submittedBuildId?: InputMaybe<Scalars['ID']>;
@@ -1983,14 +2244,40 @@ export type CreateBuildResult = {
 
 export type CreateEnvironmentSecretInput = {
   name: Scalars['String'];
+  type?: InputMaybe<EnvironmentSecretType>;
   value: Scalars['String'];
+};
+
+export type CreateGitHubAppInstallationInput = {
+  accountId: Scalars['ID'];
+  installationIdentifier: Scalars['Int'];
+};
+
+export type CreateGitHubRepositoryInput = {
+  appId: Scalars['ID'];
+  githubAppInstallationId: Scalars['ID'];
+  githubRepositoryIdentifier: Scalars['Int'];
+  nodeIdentifier: Scalars['String'];
+};
+
+export type CreateGitHubRepositorySettingsInput = {
+  appId: Scalars['ID'];
+  /** The base directory is the directory to change to before starting a build. This string should be a properly formatted Unix path starting with '/', './', or the name of the directory relative to the root of the repository. Valid examples include: '/apps/expo-app', './apps/expo-app', and 'apps/expo-app'. This is intended for monorepos or apps that live in a subdirectory of a repository. */
+  baseDirectory: Scalars['String'];
 };
 
 export type CreateIosSubmissionInput = {
   appId: Scalars['ID'];
+  archiveSource?: InputMaybe<SubmissionArchiveSourceInput>;
   archiveUrl?: InputMaybe<Scalars['String']>;
   config: IosSubmissionConfigInput;
   submittedBuildId?: InputMaybe<Scalars['ID']>;
+};
+
+export type CreateServerlessFunctionUploadUrlResult = {
+  __typename?: 'CreateServerlessFunctionUploadUrlResult';
+  formDataFields: Scalars['JSONObject'];
+  url: Scalars['String'];
 };
 
 export type CreateSubmissionResult = {
@@ -2006,6 +2293,11 @@ export type DeleteAccessTokenResult = {
 
 export type DeleteAccountResult = {
   __typename?: 'DeleteAccountResult';
+  id: Scalars['ID'];
+};
+
+export type DeleteAccountSsoConfigurationResult = {
+  __typename?: 'DeleteAccountSSOConfigurationResult';
   id: Scalars['ID'];
 };
 
@@ -2039,6 +2331,16 @@ export type DeleteGoogleServiceAccountKeyResult = {
   id: Scalars['ID'];
 };
 
+export type DeleteIosAppBuildCredentialsResult = {
+  __typename?: 'DeleteIosAppBuildCredentialsResult';
+  id: Scalars['ID'];
+};
+
+export type DeleteIosAppCredentialsResult = {
+  __typename?: 'DeleteIosAppCredentialsResult';
+  id: Scalars['ID'];
+};
+
 export type DeleteRobotResult = {
   __typename?: 'DeleteRobotResult';
   id: Scalars['ID'];
@@ -2064,6 +2366,11 @@ export type DeleteWebhookResult = {
   id: Scalars['ID'];
 };
 
+export type DeployServerlessFunctionResult = {
+  __typename?: 'DeployServerlessFunctionResult';
+  url: Scalars['String'];
+};
+
 /** Represents a Deployment - a set of Builds with the same Runtime Version and Channel */
 export type Deployment = {
   __typename?: 'Deployment';
@@ -2077,6 +2384,36 @@ export type Deployment = {
   mostRecentlyUpdatedAt: Scalars['DateTime'];
   recentBuilds: Array<Build>;
   runtimeVersion: Scalars['String'];
+};
+
+export type DeploymentBuildEdge = {
+  __typename?: 'DeploymentBuildEdge';
+  cursor: Scalars['String'];
+  node: Build;
+};
+
+export type DeploymentBuildsConnection = {
+  __typename?: 'DeploymentBuildsConnection';
+  edges: Array<DeploymentBuildEdge>;
+  pageInfo: PageInfo;
+};
+
+/** Represents a Deployment - a set of Builds with the same Runtime Version and Channel */
+export type DeploymentNew = {
+  __typename?: 'DeploymentNew';
+  builds: DeploymentBuildsConnection;
+  channel: UpdateChannel;
+  id: Scalars['ID'];
+  runtime: Runtime;
+};
+
+
+/** Represents a Deployment - a set of Builds with the same Runtime Version and Channel */
+export type DeploymentNewBuildsArgs = {
+  after?: InputMaybe<Scalars['String']>;
+  before?: InputMaybe<Scalars['String']>;
+  first?: InputMaybe<Scalars['Int']>;
+  last?: InputMaybe<Scalars['Int']>;
 };
 
 export type DeploymentOptions = {
@@ -2101,10 +2438,14 @@ export enum EasBuildDeprecationInfoType {
   UserFacing = 'USER_FACING'
 }
 
+export type EasBuildOrClassicBuildJob = Build | BuildJob;
+
 export enum EasServiceMetric {
   AssetsRequests = 'ASSETS_REQUESTS',
   BandwidthUsage = 'BANDWIDTH_USAGE',
+  Builds = 'BUILDS',
   ManifestRequests = 'MANIFEST_REQUESTS',
+  UniqueUpdaters = 'UNIQUE_UPDATERS',
   UniqueUsers = 'UNIQUE_USERS'
 }
 
@@ -2130,6 +2471,7 @@ export type EnvironmentSecret = {
   createdAt: Scalars['DateTime'];
   id: Scalars['ID'];
   name: Scalars['String'];
+  type: EnvironmentSecretType;
   updatedAt: Scalars['DateTime'];
 };
 
@@ -2159,6 +2501,11 @@ export type EnvironmentSecretMutationCreateEnvironmentSecretForAppArgs = {
 export type EnvironmentSecretMutationDeleteEnvironmentSecretArgs = {
   id: Scalars['String'];
 };
+
+export enum EnvironmentSecretType {
+  FileBase64 = 'FILE_BASE64',
+  String = 'STRING'
+}
 
 export type ExperimentationQuery = {
   __typename?: 'ExperimentationQuery';
@@ -2197,9 +2544,192 @@ export enum Feature {
   Teams = 'TEAMS'
 }
 
+export type FutureSubscription = {
+  __typename?: 'FutureSubscription';
+  createdAt: Scalars['DateTime'];
+  id: Scalars['ID'];
+  meteredBillingStatus: MeteredBillingStatus;
+  planId: Scalars['String'];
+  startDate: Scalars['DateTime'];
+};
+
 export type GetSignedAssetUploadSpecificationsResult = {
   __typename?: 'GetSignedAssetUploadSpecificationsResult';
   specifications: Array<Scalars['String']>;
+};
+
+export enum GitHubAppEnvironment {
+  Development = 'DEVELOPMENT',
+  Production = 'PRODUCTION',
+  Staging = 'STAGING'
+}
+
+export type GitHubAppInstallation = {
+  __typename?: 'GitHubAppInstallation';
+  accessibleRepositories: GitHubRepositoryPaginationResult;
+  account: Account;
+  actor?: Maybe<Actor>;
+  id: Scalars['ID'];
+  installationIdentifier: Scalars['Int'];
+  metadata: GitHubAppInstallationMetadata;
+};
+
+
+export type GitHubAppInstallationAccessibleRepositoriesArgs = {
+  page?: InputMaybe<Scalars['Int']>;
+  perPage?: InputMaybe<Scalars['Int']>;
+};
+
+export type GitHubAppInstallationAccessibleRepository = {
+  __typename?: 'GitHubAppInstallationAccessibleRepository';
+  defaultBranch?: Maybe<Scalars['String']>;
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['Int'];
+  name: Scalars['String'];
+  nodeId: Scalars['String'];
+  owner: GitHubRepositoryOwner;
+  private: Scalars['Boolean'];
+  url: Scalars['String'];
+};
+
+export type GitHubAppInstallationMetadata = {
+  __typename?: 'GitHubAppInstallationMetadata';
+  githubAccountAvatarUrl?: Maybe<Scalars['String']>;
+  githubAccountName?: Maybe<Scalars['String']>;
+  installationStatus: GitHubAppInstallationStatus;
+};
+
+export type GitHubAppInstallationMutation = {
+  __typename?: 'GitHubAppInstallationMutation';
+  /** Create a GitHub App installation for an Account */
+  createGitHubAppInstallationForAccount: GitHubAppInstallation;
+  /** Delete a GitHub App installation by ID */
+  deleteGitHubAppInstallation: GitHubAppInstallation;
+};
+
+
+export type GitHubAppInstallationMutationCreateGitHubAppInstallationForAccountArgs = {
+  githubAppInstallationData: CreateGitHubAppInstallationInput;
+};
+
+
+export type GitHubAppInstallationMutationDeleteGitHubAppInstallationArgs = {
+  githubAppInstallationId: Scalars['ID'];
+};
+
+export enum GitHubAppInstallationStatus {
+  Active = 'ACTIVE',
+  NotInstalled = 'NOT_INSTALLED',
+  Suspended = 'SUSPENDED'
+}
+
+export type GitHubAppQuery = {
+  __typename?: 'GitHubAppQuery';
+  appIdentifier: Scalars['String'];
+  clientIdentifier: Scalars['String'];
+  environment: GitHubAppEnvironment;
+  installation: GitHubAppInstallation;
+  name: Scalars['String'];
+  searchRepositories: GitHubRepositoryPaginationResult;
+};
+
+
+export type GitHubAppQueryInstallationArgs = {
+  id: Scalars['ID'];
+};
+
+
+export type GitHubAppQuerySearchRepositoriesArgs = {
+  githubAppInstallationId: Scalars['ID'];
+  query: Scalars['String'];
+};
+
+export type GitHubRepository = {
+  __typename?: 'GitHubRepository';
+  app: App;
+  githubAppInstallation: GitHubAppInstallation;
+  githubRepositoryIdentifier: Scalars['Int'];
+  id: Scalars['ID'];
+  metadata?: Maybe<GitHubRepositoryMetadata>;
+  nodeIdentifier: Scalars['String'];
+};
+
+export type GitHubRepositoryMetadata = {
+  __typename?: 'GitHubRepositoryMetadata';
+  defaultBranch?: Maybe<Scalars['String']>;
+  githubRepoDescription?: Maybe<Scalars['String']>;
+  githubRepoName: Scalars['String'];
+  githubRepoOwnerName: Scalars['String'];
+  githubRepoUrl: Scalars['String'];
+  lastPushed: Scalars['DateTime'];
+  lastUpdated: Scalars['DateTime'];
+  openGraphImageUrl?: Maybe<Scalars['String']>;
+  private: Scalars['Boolean'];
+};
+
+export type GitHubRepositoryMutation = {
+  __typename?: 'GitHubRepositoryMutation';
+  /** Create a GitHub repository for an App */
+  createGitHubRepository: GitHubRepository;
+  /** Delete a GitHub repository by ID */
+  deleteGitHubRepository: GitHubRepository;
+};
+
+
+export type GitHubRepositoryMutationCreateGitHubRepositoryArgs = {
+  githubRepositoryData: CreateGitHubRepositoryInput;
+};
+
+
+export type GitHubRepositoryMutationDeleteGitHubRepositoryArgs = {
+  githubRepositoryId: Scalars['ID'];
+};
+
+export type GitHubRepositoryOwner = {
+  __typename?: 'GitHubRepositoryOwner';
+  avatarUrl: Scalars['String'];
+  id: Scalars['Int'];
+  login: Scalars['String'];
+  url: Scalars['String'];
+};
+
+export type GitHubRepositoryPaginationResult = {
+  __typename?: 'GitHubRepositoryPaginationResult';
+  repositories: Array<GitHubAppInstallationAccessibleRepository>;
+  totalCount: Scalars['Int'];
+};
+
+export type GitHubRepositorySettings = {
+  __typename?: 'GitHubRepositorySettings';
+  app: App;
+  baseDirectory: Scalars['String'];
+  id: Scalars['ID'];
+};
+
+export type GitHubRepositorySettingsMutation = {
+  __typename?: 'GitHubRepositorySettingsMutation';
+  /** Create GitHub repository settings for an App */
+  createGitHubRepositorySettings: GitHubRepositorySettings;
+  /** Delete GitHub repository settings by ID */
+  deleteGitHubRepositorySettings: GitHubRepositorySettings;
+  /** Update GitHub repository settings */
+  updateGitHubRepositorySettings: GitHubRepositorySettings;
+};
+
+
+export type GitHubRepositorySettingsMutationCreateGitHubRepositorySettingsArgs = {
+  githubRepositorySettingsData: CreateGitHubRepositorySettingsInput;
+};
+
+
+export type GitHubRepositorySettingsMutationDeleteGitHubRepositorySettingsArgs = {
+  githubRepositorySettingsId: Scalars['ID'];
+};
+
+
+export type GitHubRepositorySettingsMutationUpdateGitHubRepositorySettingsArgs = {
+  githubRepositorySettingsData: UpdateGitHubRepositorySettingsInput;
+  githubRepositorySettingsId: Scalars['ID'];
 };
 
 export type GoogleServiceAccountKey = {
@@ -2334,6 +2864,8 @@ export type IosAppBuildCredentialsMutation = {
   __typename?: 'IosAppBuildCredentialsMutation';
   /** Create a set of build credentials for an iOS app */
   createIosAppBuildCredentials: IosAppBuildCredentials;
+  /** Disassociate the build credentials from an iOS app */
+  deleteIosAppBuildCredentials: DeleteIosAppBuildCredentialsResult;
   /** Set the distribution certificate to be used for an iOS app */
   setDistributionCertificate: IosAppBuildCredentials;
   /** Set the provisioning profile to be used for an iOS app */
@@ -2344,6 +2876,11 @@ export type IosAppBuildCredentialsMutation = {
 export type IosAppBuildCredentialsMutationCreateIosAppBuildCredentialsArgs = {
   iosAppBuildCredentialsInput: IosAppBuildCredentialsInput;
   iosAppCredentialsId: Scalars['ID'];
+};
+
+
+export type IosAppBuildCredentialsMutationDeleteIosAppBuildCredentialsArgs = {
+  id: Scalars['ID'];
 };
 
 
@@ -2395,6 +2932,8 @@ export type IosAppCredentialsMutation = {
   __typename?: 'IosAppCredentialsMutation';
   /** Create a set of credentials for an iOS app */
   createIosAppCredentials: IosAppCredentials;
+  /** Delete a set of credentials for an iOS app */
+  deleteIosAppCredentials: DeleteIosAppCredentialsResult;
   /** Set the App Store Connect Api Key to be used for submitting an iOS app */
   setAppStoreConnectApiKeyForSubmissions: IosAppCredentials;
   /** Set the push key to be used in an iOS app */
@@ -2409,6 +2948,11 @@ export type IosAppCredentialsMutationCreateIosAppCredentialsArgs = {
 };
 
 
+export type IosAppCredentialsMutationDeleteIosAppCredentialsArgs = {
+  id: Scalars['ID'];
+};
+
+
 export type IosAppCredentialsMutationSetAppStoreConnectApiKeyForSubmissionsArgs = {
   ascApiKeyId: Scalars['ID'];
   id: Scalars['ID'];
@@ -2418,6 +2962,16 @@ export type IosAppCredentialsMutationSetAppStoreConnectApiKeyForSubmissionsArgs 
 export type IosAppCredentialsMutationSetPushKeyArgs = {
   id: Scalars['ID'];
   pushKeyId: Scalars['ID'];
+};
+
+export type IosAppCredentialsQuery = {
+  __typename?: 'IosAppCredentialsQuery';
+  byId: IosAppCredentials;
+};
+
+
+export type IosAppCredentialsQueryByIdArgs = {
+  iosAppCredentialsId: Scalars['ID'];
 };
 
 /** @deprecated Use developmentClient option instead. */
@@ -2450,7 +3004,10 @@ export type IosJobDistributionCertificateInput = {
 };
 
 export type IosJobInput = {
+  applicationArchivePath?: InputMaybe<Scalars['String']>;
+  /** @deprecated */
   artifactPath?: InputMaybe<Scalars['String']>;
+  buildArtifactPaths?: InputMaybe<Array<Scalars['String']>>;
   buildConfiguration?: InputMaybe<Scalars['String']>;
   /** @deprecated */
   buildType?: InputMaybe<IosBuildType>;
@@ -2469,17 +3026,44 @@ export type IosJobInput = {
   type: BuildWorkflow;
   updates?: InputMaybe<BuildUpdatesInput>;
   username?: InputMaybe<Scalars['String']>;
+  version?: InputMaybe<IosJobVersionInput>;
+};
+
+export type IosJobOverridesInput = {
+  applicationArchivePath?: InputMaybe<Scalars['String']>;
+  /** @deprecated */
+  artifactPath?: InputMaybe<Scalars['String']>;
+  buildArtifactPaths?: InputMaybe<Array<Scalars['String']>>;
+  buildConfiguration?: InputMaybe<Scalars['String']>;
+  /** @deprecated */
+  buildType?: InputMaybe<IosBuildType>;
+  builderEnvironment?: InputMaybe<IosBuilderEnvironmentInput>;
+  cache?: InputMaybe<BuildCacheInput>;
+  developmentClient?: InputMaybe<Scalars['Boolean']>;
+  /** @deprecated */
+  distribution?: InputMaybe<DistributionType>;
+  experimental?: InputMaybe<Scalars['JSONObject']>;
+  releaseChannel?: InputMaybe<Scalars['String']>;
+  scheme?: InputMaybe<Scalars['String']>;
+  secrets?: InputMaybe<IosJobSecretsInput>;
+  simulator?: InputMaybe<Scalars['Boolean']>;
+  updates?: InputMaybe<BuildUpdatesInput>;
+  username?: InputMaybe<Scalars['String']>;
+  version?: InputMaybe<IosJobVersionInput>;
 };
 
 export type IosJobSecretsInput = {
   buildCredentials?: InputMaybe<Array<InputMaybe<IosJobTargetCredentialsInput>>>;
-  environmentSecrets?: InputMaybe<Scalars['JSONObject']>;
 };
 
 export type IosJobTargetCredentialsInput = {
   distributionCertificate: IosJobDistributionCertificateInput;
   provisioningProfileBase64: Scalars['String'];
   targetName: Scalars['String'];
+};
+
+export type IosJobVersionInput = {
+  buildNumber: Scalars['String'];
 };
 
 /** @deprecated Use developmentClient option instead. */
@@ -2663,6 +3247,11 @@ export type MeMutationUpdateProfileArgs = {
   userData: UserDataInput;
 };
 
+export type MeteredBillingStatus = {
+  __typename?: 'MeteredBillingStatus';
+  EAS_UPDATE: Scalars['Boolean'];
+};
+
 export type Offer = {
   __typename?: 'Offer';
   features?: Maybe<Array<Maybe<Feature>>>;
@@ -2694,6 +3283,14 @@ export enum Order {
   Asc = 'ASC',
   Desc = 'DESC'
 }
+
+export type PageInfo = {
+  __typename?: 'PageInfo';
+  endCursor?: Maybe<Scalars['String']>;
+  hasNextPage: Scalars['Boolean'];
+  hasPreviousPage: Scalars['Boolean'];
+  startCursor?: Maybe<Scalars['String']>;
+};
 
 export type PartialManifest = {
   assets: Array<InputMaybe<PartialManifestAsset>>;
@@ -2743,6 +3340,7 @@ export type ProjectArchiveSourceInput = {
 };
 
 export enum ProjectArchiveSourceType {
+  Gcs = 'GCS',
   S3 = 'S3',
   Url = 'URL'
 }
@@ -2785,12 +3383,16 @@ export type ProjectQueryByUsernameAndSlugArgs = {
 
 export type PublicArtifacts = {
   __typename?: 'PublicArtifacts';
+  applicationArchiveUrl?: Maybe<Scalars['String']>;
   buildUrl?: Maybe<Scalars['String']>;
 };
 
 export type PublishUpdateGroupInput = {
   awaitingCodeSigningInfo?: InputMaybe<Scalars['Boolean']>;
   branchId: Scalars['String'];
+  excludedAssets?: InputMaybe<Array<PartialManifestAsset>>;
+  gitCommitHash?: InputMaybe<Scalars['String']>;
+  isGitWorkingTreeDirty?: InputMaybe<Scalars['Boolean']>;
   message?: InputMaybe<Scalars['String']>;
   runtimeVersion: Scalars['String'];
   updateInfoGroup: UpdateInfoGroup;
@@ -2879,6 +3481,8 @@ export type RootMutation = {
   accessToken: AccessTokenMutation;
   /** Mutations that modify an Account */
   account: AccountMutation;
+  /** Mutations that create, update, and delete an AccountSSOConfiguration */
+  accountSSOConfiguration: AccountSsoConfigurationMutation;
   /** Mutations that modify the build credentials for an Android app */
   androidAppBuildCredentials: AndroidAppBuildCredentialsMutation;
   /** Mutations that modify the credentials for an Android app */
@@ -2891,6 +3495,8 @@ export type RootMutation = {
   app?: Maybe<AppMutation>;
   /** Mutations that modify an App Store Connect Api Key */
   appStoreConnectApiKey: AppStoreConnectApiKeyMutation;
+  /** Mutations that modify an AppVersion */
+  appVersion: AppVersionMutation;
   /** Mutations that modify an Identifier for an iOS App */
   appleAppIdentifier: AppleAppIdentifierMutation;
   /** Mutations that modify an Apple Device */
@@ -2914,6 +3520,12 @@ export type RootMutation = {
   emailSubscription: EmailSubscriptionMutation;
   /** Mutations that create and delete EnvironmentSecrets */
   environmentSecret: EnvironmentSecretMutation;
+  /** Mutations for GitHub App installations */
+  githubAppInstallation: GitHubAppInstallationMutation;
+  /** Mutations for GitHub repositories */
+  githubRepository: GitHubRepositoryMutation;
+  /** Mutations for GitHub repository settings */
+  githubRepositorySettings: GitHubRepositorySettingsMutation;
   /** Mutations that modify a Google Service Account Key */
   googleServiceAccountKey: GoogleServiceAccountKeyMutation;
   /** Mutations that modify the build credentials for an iOS app */
@@ -2925,6 +3537,7 @@ export type RootMutation = {
   me: MeMutation;
   /** Mutations that create, update, and delete Robots */
   robot: RobotMutation;
+  serverlessFunction: ServerlessFunctionMutation;
   /** Mutations that modify an EAS Submit submission */
   submission: SubmissionMutation;
   update: UpdateMutation;
@@ -2966,6 +3579,8 @@ export type RootQuery = {
   _doNotUse?: Maybe<Scalars['String']>;
   /** Top-level query object for querying Accounts. */
   account: AccountQuery;
+  /** Top-level query object for querying AccountSSOConfigurationPublicData */
+  accountSSOConfigurationPublicData: AccountSsoConfigurationPublicDataQuery;
   /** Top-level query object for querying Actors. */
   actor: ActorQuery;
   /**
@@ -2985,14 +3600,19 @@ export type RootQuery = {
   appleTeam: AppleTeamQuery;
   asset: AssetQuery;
   buildJobs: BuildJobQuery;
+  buildOrBuildJob: BuildOrBuildJobQuery;
   /** Top-level query object for querying BuildPublicData publicly. */
   buildPublicData: BuildPublicDataQuery;
   builds: BuildQuery;
   clientBuilds: ClientBuildQuery;
   /** Top-level query object for querying Experimentation configuration. */
   experimentation: ExperimentationQuery;
+  /** Top-level query object for querying GitHub App information and resources it has access to. */
+  githubApp: GitHubAppQuery;
   /** Top-level query object for querying Stripe Invoices. */
   invoice: InvoiceQuery;
+  /** Top-level query object for querying IosAppCredentials. */
+  iosAppCredentials: IosAppCredentialsQuery;
   /**
    * If authenticated as a typical end user, this is the appropriate top-level
    * query object
@@ -3005,6 +3625,8 @@ export type RootQuery = {
   meActor?: Maybe<Actor>;
   project: ProjectQuery;
   snack: SnackQuery;
+  /** Top-level query object for querying Expo status page services. */
+  statuspageService: StatuspageServiceQuery;
   submissions: SubmissionQuery;
   /** fetch all updates in a group */
   updatesByGroup: Array<Update>;
@@ -3053,6 +3675,14 @@ export type RootQueryUserByUsernameArgs = {
   username: Scalars['String'];
 };
 
+export type Runtime = {
+  __typename?: 'Runtime';
+  app: App;
+  firstBuildCreatedAt: Scalars['DateTime'];
+  id: Scalars['ID'];
+  version: Scalars['String'];
+};
+
 export type SecondFactorBooleanResult = {
   __typename?: 'SecondFactorBooleanResult';
   success: Scalars['Boolean'];
@@ -3088,6 +3718,28 @@ export enum SecondFactorMethod {
 export type SecondFactorRegenerateBackupCodesResult = {
   __typename?: 'SecondFactorRegenerateBackupCodesResult';
   plaintextBackupCodes: Array<Scalars['String']>;
+};
+
+export type ServerlessFunctionIdentifierInput = {
+  gitCommitSHA1: Scalars['String'];
+};
+
+export type ServerlessFunctionMutation = {
+  __typename?: 'ServerlessFunctionMutation';
+  createDeployment: DeployServerlessFunctionResult;
+  createUploadPresignedUrl: CreateServerlessFunctionUploadUrlResult;
+};
+
+
+export type ServerlessFunctionMutationCreateDeploymentArgs = {
+  appId: Scalars['ID'];
+  serverlessFunctionIdentifierInput: ServerlessFunctionIdentifierInput;
+};
+
+
+export type ServerlessFunctionMutationCreateUploadPresignedUrlArgs = {
+  appId: Scalars['ID'];
+  serverlessFunctionIdentifierInput: ServerlessFunctionIdentifierInput;
 };
 
 export type Snack = Project & {
@@ -3149,6 +3801,110 @@ export enum StandardOffer {
   YearlySub = 'YEARLY_SUB'
 }
 
+/** Incident for a given component from Expo status page API. */
+export type StatuspageIncident = {
+  __typename?: 'StatuspageIncident';
+  createdAt: Scalars['DateTime'];
+  id: Scalars['ID'];
+  /** Impact of an incident from Expo status page. */
+  impact: StatuspageIncidentImpact;
+  name: Scalars['String'];
+  resolvedAt?: Maybe<Scalars['DateTime']>;
+  /** Shortlink to the incident from Expo status page. */
+  shortlink: Scalars['String'];
+  /** Current status of an incident from Expo status page. */
+  status: StatuspageIncidentStatus;
+  updatedAt: Scalars['DateTime'];
+  /** List of all updates for an incident from Expo status page. */
+  updates: Array<StatuspageIncidentUpdate>;
+};
+
+/** Possible Incident impact values from Expo status page API. */
+export enum StatuspageIncidentImpact {
+  Critical = 'CRITICAL',
+  Maintenance = 'MAINTENANCE',
+  Major = 'MAJOR',
+  Minor = 'MINOR',
+  None = 'NONE'
+}
+
+/** Possible Incident statuses from Expo status page API. */
+export enum StatuspageIncidentStatus {
+  Completed = 'COMPLETED',
+  Identified = 'IDENTIFIED',
+  Investigating = 'INVESTIGATING',
+  InProgress = 'IN_PROGRESS',
+  Monitoring = 'MONITORING',
+  Resolved = 'RESOLVED',
+  Scheduled = 'SCHEDULED',
+  Verifying = 'VERIFYING'
+}
+
+/** Update for an Incident from Expo status page API. */
+export type StatuspageIncidentUpdate = {
+  __typename?: 'StatuspageIncidentUpdate';
+  /** Text of an update from Expo status page. */
+  body: Scalars['String'];
+  createdAt: Scalars['DateTime'];
+  id: Scalars['ID'];
+  /** Status set at the moment of update. */
+  status: StatuspageIncidentStatus;
+};
+
+/** Service monitored by Expo status page. */
+export type StatuspageService = {
+  __typename?: 'StatuspageService';
+  /** Description of a service from Expo status page. */
+  description?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  /**
+   * List of last inicdents for a service from Expo status page (we always query for 50 latest incidents for all services)
+   * sorted by createdAt field in descending order.
+   */
+  incidents: Array<StatuspageIncident>;
+  /** Name of a service monitored by Expo status page. */
+  name: StatuspageServiceName;
+  /** Current status of a service from Expo status page. */
+  status: StatuspageServiceStatus;
+};
+
+/** Name of a service monitored by Expo status page. */
+export enum StatuspageServiceName {
+  EasBuild = 'EAS_BUILD',
+  EasSubmit = 'EAS_SUBMIT',
+  EasUpdate = 'EAS_UPDATE'
+}
+
+export type StatuspageServiceQuery = {
+  __typename?: 'StatuspageServiceQuery';
+  /** Query services from Expo status page by names. */
+  byServiceNames: Array<StatuspageService>;
+};
+
+
+export type StatuspageServiceQueryByServiceNamesArgs = {
+  serviceNames: Array<StatuspageServiceName>;
+};
+
+/** Possible statuses for a service. */
+export enum StatuspageServiceStatus {
+  DegradedPerformance = 'DEGRADED_PERFORMANCE',
+  MajorOutage = 'MAJOR_OUTAGE',
+  Operational = 'OPERATIONAL',
+  PartialOutage = 'PARTIAL_OUTAGE',
+  UnderMaintenance = 'UNDER_MAINTENANCE'
+}
+
+export type StripeCoupon = {
+  __typename?: 'StripeCoupon';
+  amountOff?: Maybe<Scalars['String']>;
+  appliesTo?: Maybe<Scalars['String']>;
+  id: Scalars['ID'];
+  name: Scalars['String'];
+  percentOff?: Maybe<Scalars['Float']>;
+  valid: Scalars['Boolean'];
+};
+
 /** Represents an EAS Submission */
 export type Submission = ActivityTimelineProjectActivity & {
   __typename?: 'Submission';
@@ -3159,12 +3915,16 @@ export type Submission = ActivityTimelineProjectActivity & {
   archiveUrl?: Maybe<Scalars['String']>;
   canRetry: Scalars['Boolean'];
   cancelingActor?: Maybe<Actor>;
+  childSubmission?: Maybe<Submission>;
+  completedAt?: Maybe<Scalars['DateTime']>;
   createdAt: Scalars['DateTime'];
   error?: Maybe<SubmissionError>;
   id: Scalars['ID'];
   initiatingActor?: Maybe<Actor>;
   iosConfig?: Maybe<IosSubmissionConfig>;
   logsUrl?: Maybe<Scalars['String']>;
+  /** Retry time starts after completedAt */
+  maxRetryTimeMinutes: Scalars['Int'];
   parentSubmission?: Maybe<Submission>;
   platform: AppPlatform;
   status: SubmissionStatus;
@@ -3189,6 +3949,20 @@ export enum SubmissionAndroidTrack {
   Beta = 'BETA',
   Internal = 'INTERNAL',
   Production = 'PRODUCTION'
+}
+
+export type SubmissionArchiveSourceInput = {
+  /** Required if the archive source type is GCS_BUILD_APPLICATION_ARCHIVE or GCS_SUBMIT_ARCHIVE */
+  bucketKey?: InputMaybe<Scalars['String']>;
+  type: SubmissionArchiveSourceType;
+  /** Required if the archive source type is URL */
+  url?: InputMaybe<Scalars['String']>;
+};
+
+export enum SubmissionArchiveSourceType {
+  GcsBuildApplicationArchive = 'GCS_BUILD_APPLICATION_ARCHIVE',
+  GcsSubmitArchive = 'GCS_SUBMIT_ARCHIVE',
+  Url = 'URL'
 }
 
 export type SubmissionError = {
@@ -3259,9 +4033,12 @@ export type SubscriptionDetails = {
   addons: Array<AddonDetails>;
   cancelledAt?: Maybe<Scalars['DateTime']>;
   concurrencies?: Maybe<Concurrencies>;
+  coupon?: Maybe<StripeCoupon>;
   endedAt?: Maybe<Scalars['DateTime']>;
+  futureSubscription?: Maybe<FutureSubscription>;
   id: Scalars['ID'];
   isDowngrading?: Maybe<Scalars['Boolean']>;
+  meteredBillingStatus: MeteredBillingStatus;
   name?: Maybe<Scalars['String']>;
   nextInvoice?: Maybe<Scalars['DateTime']>;
   planId?: Maybe<Scalars['String']>;
@@ -3280,8 +4057,10 @@ export type Update = ActivityTimelineProjectActivity & {
   branchId: Scalars['ID'];
   codeSigningInfo?: Maybe<CodeSigningInfo>;
   createdAt: Scalars['DateTime'];
+  gitCommitHash?: Maybe<Scalars['String']>;
   group: Scalars['String'];
   id: Scalars['ID'];
+  isGitWorkingTreeDirty: Scalars['Boolean'];
   manifestFragment: Scalars['String'];
   manifestPermalink: Scalars['String'];
   message?: Maybe<Scalars['String']>;
@@ -3296,8 +4075,16 @@ export type UpdateBranch = {
   createdAt: Scalars['DateTime'];
   id: Scalars['ID'];
   name: Scalars['String'];
+  updateGroups: Array<Array<Update>>;
   updatedAt: Scalars['DateTime'];
   updates: Array<Update>;
+};
+
+
+export type UpdateBranchUpdateGroupsArgs = {
+  filter?: InputMaybe<UpdatesFilter>;
+  limit: Scalars['Int'];
+  offset: Scalars['Int'];
 };
 
 
@@ -3398,6 +4185,10 @@ export type UpdateChannelMutationEditUpdateChannelArgs = {
   channelId: Scalars['ID'];
 };
 
+export type UpdateGitHubRepositorySettingsInput = {
+  baseDirectory: Scalars['String'];
+};
+
 export type UpdateInfoGroup = {
   android?: InputMaybe<PartialManifest>;
   ios?: InputMaybe<PartialManifest>;
@@ -3440,8 +4231,10 @@ export type UploadSessionCreateUploadSessionArgs = {
 };
 
 export enum UploadSessionType {
+  EasBuildGcsProjectSources = 'EAS_BUILD_GCS_PROJECT_SOURCES',
   EasBuildProjectSources = 'EAS_BUILD_PROJECT_SOURCES',
-  EasSubmitAppArchive = 'EAS_SUBMIT_APP_ARCHIVE'
+  EasSubmitAppArchive = 'EAS_SUBMIT_APP_ARCHIVE',
+  EasSubmitGcsAppArchive = 'EAS_SUBMIT_GCS_APP_ARCHIVE'
 }
 
 export type UsageMetricTotal = {
@@ -3456,7 +4249,9 @@ export type UsageMetricTotal = {
 
 export enum UsageMetricType {
   Bandwidth = 'BANDWIDTH',
+  Build = 'BUILD',
   Request = 'REQUEST',
+  Update = 'UPDATE',
   User = 'USER'
 }
 
@@ -3804,7 +4599,7 @@ export type DeleteApplePushKeyResult = {
   id: Scalars['ID'];
 };
 
-export type CommonAppDataFragment = { __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string };
+export type CommonAppDataFragment = { __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string }> }> };
 
 export type CommonSnackDataFragment = { __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean };
 
@@ -3817,7 +4612,7 @@ export type Home_AccountDataQueryVariables = Exact<{
 }>;
 
 
-export type Home_AccountDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } } };
+export type Home_AccountDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string }> }> }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } } };
 
 export type BranchDetailsQueryVariables = Exact<{
   name: Scalars['String'];
@@ -3851,7 +4646,7 @@ export type Home_ProfileData2QueryVariables = Exact<{
 }>;
 
 
-export type Home_ProfileData2Query = { __typename?: 'RootQuery', me?: { __typename?: 'User', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, appCount: number, accounts: Array<{ __typename?: 'Account', id: string, name: string }>, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } | null };
+export type Home_ProfileData2Query = { __typename?: 'RootQuery', me?: { __typename?: 'User', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, appCount: number, accounts: Array<{ __typename?: 'Account', id: string, name: string }>, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string }> }> }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } | null };
 
 export type Home_MyAppsQueryVariables = Exact<{
   limit: Scalars['Int'];
@@ -3859,7 +4654,7 @@ export type Home_MyAppsQueryVariables = Exact<{
 }>;
 
 
-export type Home_MyAppsQuery = { __typename?: 'RootQuery', me?: { __typename?: 'User', id: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string }> } | null };
+export type Home_MyAppsQuery = { __typename?: 'RootQuery', me?: { __typename?: 'User', id: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string }> }> }> } | null };
 
 export type Home_ProfileSnacksQueryVariables = Exact<{
   limit: Scalars['Int'];
@@ -3885,7 +4680,7 @@ export type Home_AccountAppsQueryVariables = Exact<{
 }>;
 
 
-export type Home_AccountAppsQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string }> } } };
+export type Home_AccountAppsQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, appCount: number, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string }> }> }> } } };
 
 export type Home_AccountSnacksQueryVariables = Exact<{
   accountName: Scalars['String'];
@@ -3900,13 +4695,6 @@ export type Home_ViewerUsernameQueryVariables = Exact<{ [key: string]: never; }>
 
 
 export type Home_ViewerUsernameQuery = { __typename?: 'RootQuery', me?: { __typename?: 'User', id: string, username: string } | null };
-
-export type HomeScreenDataQueryVariables = Exact<{
-  accountName: Scalars['String'];
-}>;
-
-
-export type HomeScreenDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, isCurrent: boolean, appCount: number, owner?: { __typename?: 'User', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, accounts: Array<{ __typename?: 'Account', id: string, name: string, owner?: { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | null }> } | null, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } } };
 
 export type DeleteAccountPermissionsQueryVariables = Exact<{ [key: string]: never; }>;
 
@@ -3929,6 +4717,13 @@ export type SendSmsotpToSecondFactorDeviceMutation = { __typename?: 'RootMutatio
 
 export type UserPermissionDataFragment = { __typename?: 'UserPermission', permissions: Array<Permission>, role?: Role | null, user?: { __typename?: 'User', id: string, fullName?: string | null, profilePhoto: string, username: string, email?: string | null } | null };
 
+export type HomeScreenDataQueryVariables = Exact<{
+  accountName: Scalars['String'];
+}>;
+
+
+export type HomeScreenDataQuery = { __typename?: 'RootQuery', account: { __typename?: 'AccountQuery', byName: { __typename?: 'Account', id: string, name: string, isCurrent: boolean, appCount: number, owner?: { __typename?: 'User', id: string, username: string, firstName?: string | null, lastName?: string | null, profilePhoto: string, accounts: Array<{ __typename?: 'Account', id: string, name: string, owner?: { __typename?: 'User', id: string, username: string, profilePhoto: string, firstName?: string | null, fullName?: string | null, lastName?: string | null } | null }> } | null, apps: Array<{ __typename?: 'App', id: string, fullName: string, name: string, iconUrl?: string | null, packageName: string, username: string, description: string, sdkVersion: string, privacy: string, updateBranches: Array<{ __typename?: 'UpdateBranch', id: string, name: string, updates: Array<{ __typename?: 'Update', id: string }> }> }>, snacks: Array<{ __typename?: 'Snack', id: string, name: string, description: string, fullName: string, slug: string, isDraft: boolean }> } } };
+
 export const CommonAppDataFragmentDoc = gql`
     fragment CommonAppData on App {
   id
@@ -3940,6 +4735,13 @@ export const CommonAppDataFragmentDoc = gql`
   description
   sdkVersion
   privacy
+  updateBranches(limit: 100, offset: 0) {
+    id
+    name
+    updates(limit: 1, offset: 0) {
+      id
+    }
+  }
 }
     `;
 export const CommonSnackDataFragmentDoc = gql`
@@ -4572,60 +5374,6 @@ export type Home_ViewerUsernameQueryResult = Apollo.QueryResult<Home_ViewerUsern
 export function refetchHome_ViewerUsernameQuery(variables?: Home_ViewerUsernameQueryVariables) {
       return { query: Home_ViewerUsernameDocument, variables: variables }
     }
-export const HomeScreenDataDocument = gql`
-    query HomeScreenData($accountName: String!) {
-  account {
-    byName(accountName: $accountName) {
-      id
-      name
-      isCurrent
-      owner {
-        ...CurrentUserData
-      }
-      apps(limit: 5, offset: 0, includeUnpublished: true) {
-        ...CommonAppData
-      }
-      snacks(limit: 5, offset: 0) {
-        ...CommonSnackData
-      }
-      appCount
-    }
-  }
-}
-    ${CurrentUserDataFragmentDoc}
-${CommonAppDataFragmentDoc}
-${CommonSnackDataFragmentDoc}`;
-
-/**
- * __useHomeScreenDataQuery__
- *
- * To run a query within a React component, call `useHomeScreenDataQuery` and pass it any options that fit your needs.
- * When your component renders, `useHomeScreenDataQuery` returns an object from Apollo Client that contains loading, error, and data properties
- * you can use to render your UI.
- *
- * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
- *
- * @example
- * const { data, loading, error } = useHomeScreenDataQuery({
- *   variables: {
- *      accountName: // value for 'accountName'
- *   },
- * });
- */
-export function useHomeScreenDataQuery(baseOptions: Apollo.QueryHookOptions<HomeScreenDataQuery, HomeScreenDataQueryVariables>) {
-        const options = {...defaultOptions, ...baseOptions}
-        return Apollo.useQuery<HomeScreenDataQuery, HomeScreenDataQueryVariables>(HomeScreenDataDocument, options);
-      }
-export function useHomeScreenDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<HomeScreenDataQuery, HomeScreenDataQueryVariables>) {
-          const options = {...defaultOptions, ...baseOptions}
-          return Apollo.useLazyQuery<HomeScreenDataQuery, HomeScreenDataQueryVariables>(HomeScreenDataDocument, options);
-        }
-export type HomeScreenDataQueryHookResult = ReturnType<typeof useHomeScreenDataQuery>;
-export type HomeScreenDataLazyQueryHookResult = ReturnType<typeof useHomeScreenDataLazyQuery>;
-export type HomeScreenDataQueryResult = Apollo.QueryResult<HomeScreenDataQuery, HomeScreenDataQueryVariables>;
-export function refetchHomeScreenDataQuery(variables: HomeScreenDataQueryVariables) {
-      return { query: HomeScreenDataDocument, variables: variables }
-    }
 export const DeleteAccountPermissionsDocument = gql`
     query DeleteAccountPermissions {
   me {
@@ -4755,3 +5503,57 @@ export function useSendSmsotpToSecondFactorDeviceMutation(baseOptions?: Apollo.M
 export type SendSmsotpToSecondFactorDeviceMutationHookResult = ReturnType<typeof useSendSmsotpToSecondFactorDeviceMutation>;
 export type SendSmsotpToSecondFactorDeviceMutationMutationResult = Apollo.MutationResult<SendSmsotpToSecondFactorDeviceMutation>;
 export type SendSmsotpToSecondFactorDeviceMutationMutationOptions = Apollo.BaseMutationOptions<SendSmsotpToSecondFactorDeviceMutation, SendSmsotpToSecondFactorDeviceMutationVariables>;
+export const HomeScreenDataDocument = gql`
+    query HomeScreenData($accountName: String!) {
+  account {
+    byName(accountName: $accountName) {
+      id
+      name
+      isCurrent
+      owner {
+        ...CurrentUserData
+      }
+      apps(limit: 5, offset: 0, includeUnpublished: true) {
+        ...CommonAppData
+      }
+      snacks(limit: 5, offset: 0) {
+        ...CommonSnackData
+      }
+      appCount
+    }
+  }
+}
+    ${CurrentUserDataFragmentDoc}
+${CommonAppDataFragmentDoc}
+${CommonSnackDataFragmentDoc}`;
+
+/**
+ * __useHomeScreenDataQuery__
+ *
+ * To run a query within a React component, call `useHomeScreenDataQuery` and pass it any options that fit your needs.
+ * When your component renders, `useHomeScreenDataQuery` returns an object from Apollo Client that contains loading, error, and data properties
+ * you can use to render your UI.
+ *
+ * @param baseOptions options that will be passed into the query, supported options are listed on: https://www.apollographql.com/docs/react/api/react-hooks/#options;
+ *
+ * @example
+ * const { data, loading, error } = useHomeScreenDataQuery({
+ *   variables: {
+ *      accountName: // value for 'accountName'
+ *   },
+ * });
+ */
+export function useHomeScreenDataQuery(baseOptions: Apollo.QueryHookOptions<HomeScreenDataQuery, HomeScreenDataQueryVariables>) {
+        const options = {...defaultOptions, ...baseOptions}
+        return Apollo.useQuery<HomeScreenDataQuery, HomeScreenDataQueryVariables>(HomeScreenDataDocument, options);
+      }
+export function useHomeScreenDataLazyQuery(baseOptions?: Apollo.LazyQueryHookOptions<HomeScreenDataQuery, HomeScreenDataQueryVariables>) {
+          const options = {...defaultOptions, ...baseOptions}
+          return Apollo.useLazyQuery<HomeScreenDataQuery, HomeScreenDataQueryVariables>(HomeScreenDataDocument, options);
+        }
+export type HomeScreenDataQueryHookResult = ReturnType<typeof useHomeScreenDataQuery>;
+export type HomeScreenDataLazyQueryHookResult = ReturnType<typeof useHomeScreenDataLazyQuery>;
+export type HomeScreenDataQueryResult = Apollo.QueryResult<HomeScreenDataQuery, HomeScreenDataQueryVariables>;
+export function refetchHomeScreenDataQuery(variables: HomeScreenDataQueryVariables) {
+      return { query: HomeScreenDataDocument, variables: variables }
+    }
