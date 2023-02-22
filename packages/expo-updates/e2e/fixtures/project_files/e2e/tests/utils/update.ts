@@ -17,7 +17,11 @@ const urlForBundleFilename = (bundleFilename: any) =>
  * Find the pregenerated bundle corresponding to the string that is expected
  * in the responses for a given E2E test
  */
-function findBundlePath(projectRoot: string, platform: string | number, notifyString: string | number) {
+function findBundlePath(
+  projectRoot: string,
+  platform: string | number,
+  notifyString: string | number
+) {
   const testUpdateBundlesPath = path.join(projectRoot, 'test-update-bundles');
   const testUpdateBundlesJsonPath = path.join(testUpdateBundlesPath, 'test-updates.json');
   const testUpdateBundlesJson = require(testUpdateBundlesJsonPath);
@@ -32,7 +36,7 @@ function findAssets(projectRoot: string, platform: string | number) {
   const updatesPath = path.join(projectRoot, 'updates');
   const updatesJson = require(path.join(updatesPath, 'metadata.json'));
   const assets = updatesJson.fileMetadata[platform].assets;
-  return assets.map((asset: { path: string; ext: any; }) => {
+  return assets.map((asset: { path: string; ext: any }) => {
     return {
       path: path.join(updatesPath, asset.path),
       ext: asset.ext,
@@ -51,7 +55,12 @@ async function shaHash(filePath: PathLike) {
  * Copies a bundle to the location where the test server reads it,
  * and returns the SHA hash
  */
-async function copyBundleToStaticFolder(projectRoot: any, filename: string, notifyString: any, platform: any) {
+async function copyBundleToStaticFolder(
+  projectRoot: any,
+  filename: string,
+  notifyString: any,
+  platform: any
+) {
   await fs.mkdir(STATIC_FOLDER_PATH, { recursive: true });
   const bundleSrcPath = findBundlePath(projectRoot, platform, notifyString);
   const bundleDestPath = path.join(STATIC_FOLDER_PATH, filename);
@@ -73,7 +82,13 @@ async function copyAssetToStaticFolder(sourcePath: PathLike, filename: string) {
 /**
  * Common method used in all the tests to create valid update manifests
  */
-function getUpdateManifestForBundleFilename(date: { toISOString: () => string; }, hash: string, key: string, bundleFilename: string, assets: any[]) {
+function getUpdateManifestForBundleFilename(
+  date: { toISOString: () => string },
+  hash: string,
+  key: string,
+  bundleFilename: string,
+  assets: any[]
+) {
   return {
     id: crypto.randomUUID(),
     createdAt: date.toISOString(),
@@ -90,11 +105,24 @@ function getUpdateManifestForBundleFilename(date: { toISOString: () => string; }
   };
 }
 
+/**
+ * Common method used in all the tests to create valid rollback directives
+ */
+function getRollbackDirective(date: Date) {
+  return {
+    type: 'rollBackToEmbedded',
+    parameters: {
+      commitTime: date.toISOString(),
+    },
+  };
+}
+
 export default {
   copyBundleToStaticFolder,
   copyAssetToStaticFolder,
   findAssets,
   getUpdateManifestForBundleFilename,
+  getRollbackDirective,
   serverHost,
   serverPort,
 };
