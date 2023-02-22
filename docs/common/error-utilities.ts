@@ -142,7 +142,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/genymotion/': '/workflow/android-studio-emulator/',
   '/workflow/upgrading-expo/': '/workflow/upgrading-expo-sdk-walkthrough/',
   '/workflow/create-react-native-app/': '/workflow/glossary-of-terms/#create-react-native-app',
-  '/expokit/': '/archive/glossary/',
+  '/expokit/': '/archive/glossary/#expokit/',
 
   // Development builds redirects
   '/development/build/': '/development/create-development-builds/',
@@ -157,7 +157,7 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Lots of old links pointing to guides when they have moved elsewhere
   '/guides/configuration/': '/workflow/configuration/',
-  '/guides/expokit/': '/archive/glossary/',
+  '/guides/expokit/': '/archive/glossary/#expokit/',
   '/guides/publishing/': '/archive/classic-updates/publishing/',
   '/workflow/publishing/': '/archive/classic-updates/publishing/',
   '/guides/linking/': '/workflow/linking/',
@@ -272,8 +272,8 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Redirects for removed /archived pages
   '/archived/': '/archive/',
-  '/versions/latest/expokit/eject/': '/archive/glossary/',
-  '/expokit/eject/': '/archive/glossary/',
+  '/versions/latest/expokit/eject/': '/archive/glossary/#eject',
+  '/expokit/eject/': '/archive/glossary/#eject',
 
   // Redirects for removed API docs based on Sentry
   '/versions/latest/sdk/facebook/': '/guides/authentication/',
