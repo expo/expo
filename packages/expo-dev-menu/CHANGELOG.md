@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed reload crash when expo-dev-menu is turned off. ([#21279](https://github.com/expo/expo/pull/21279) by [@jayshah123](https://github.com/jayshah123))
+
 ### 💡 Others
 
 ## 2.1.2 — 2023-02-17

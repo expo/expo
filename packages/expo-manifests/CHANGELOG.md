@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed default `expo.jsEngine` value when SDK is lower than 48. ([#21266](https://github.com/expo/expo/pull/21266) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 0.5.1 — 2023-02-09

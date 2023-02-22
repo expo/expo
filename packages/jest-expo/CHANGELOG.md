@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 48.0.1 - 2023-02-21
+
+### 🎉 New features
+
+- Updated mocks for Expo SDK 48. ([#21308](https://github.com/expo/expo/pull/21308) by [@aleqsio](https://github.com/aleqsio))
+
 ## 48.0.0 — 2023-02-03
 
 ### 🛠 Breaking changes

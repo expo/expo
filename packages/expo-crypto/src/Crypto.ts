@@ -174,7 +174,7 @@ export function getRandomValues<T extends IntBasedTypedArray | UintBasedTypedArr
  * console.log('Your UUID: ' + UUID);
  * ```
  */
-export function randomUUID() {
+export function randomUUID(): string {
   return ExpoCrypto.randomUUID();
 }
 

@@ -2103,6 +2103,9 @@ PODS:
     - MLKitVision (= 3.0.0)
   - EXFileSystem (15.2.2):
     - ExpoModulesCore
+  - EXFileSystem/Tests (15.2.2):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - EXFont (11.1.1):
     - ExpoModulesCore
   - EXImageLoader (4.1.1):
@@ -2149,7 +2152,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (12.2.1):
     - ExpoModulesCore
-  - ExpoImage (1.0.0-rc.1):
+  - ExpoImage (1.0.0):
     - ExpoModulesCore
     - SDWebImage (~> 5.15.0)
     - SDWebImageAVIFCoder (~> 0.9.4)
@@ -3306,6 +3309,7 @@ DEPENDENCIES:
   - EXDocumentPicker (from `../packages/expo-document-picker/ios`)
   - EXFaceDetector (from `../packages/expo-face-detector/ios`)
   - EXFileSystem (from `../packages/expo-file-system/ios`)
+  - EXFileSystem/Tests (from `../packages/expo-file-system/ios`)
   - EXFont (from `../packages/expo-font/ios`)
   - EXImageLoader (from `../packages/expo-image-loader/ios`)
   - EXJSONUtils (from `../packages/expo-json-utils/ios`)
@@ -4724,7 +4728,7 @@ SPEC CHECKSUMS:
   EXContacts: 44ced67015dab45ca8ae1eb8950738d60de0af64
   EXDocumentPicker: 909609253c185cc6d802f408c7eaf7a4daca793b
   EXFaceDetector: 16c5311521334ba7818c28cde44997d6757c2dd0
-  EXFileSystem: 844e86ca9b5375486ecc4ef06d3838d5597d895d
+  EXFileSystem: a736b6854370a36e4daee79b1f2b5bbc9df18bf4
   EXFont: 6ea3800df746be7233208d80fe379b8ed74f4272
   EXImageLoader: fd053169a8ee932dd83bf1fe5487a50c26d27c2b
   EXJSONUtils: 48b1e764ac35160e6f54d21ab60d7d9501f3e473
@@ -4744,7 +4748,7 @@ SPEC CHECKSUMS:
   ExpoDevice: e0bebf68f978b3d353377ce42e73c20c0a070215
   ExpoGL: 8f8e40e494a462f33c1f513cf101bf7d6abe767e
   ExpoHaptics: 5156bc5160d8e04c170dd6e645a71154951a2ad9
-  ExpoImage: a8b564f046f96133db39d7749eec9d6110d11243
+  ExpoImage: b6a65c4aa891cdf00bfba0da46df14b27ae09cc7
   ExpoImageManipulator: 85ab87e9641b9d83108f8d603e0418c12fc19e2d
   ExpoImagePicker: 270dea232b3a072d981dd564e2cafc63a864edb1
   ExpoKeepAwake: 69f5f627670d62318410392d03e0b5db0f85759a

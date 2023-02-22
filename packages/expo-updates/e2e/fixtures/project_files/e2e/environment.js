@@ -31,7 +31,7 @@ class CustomDetoxEnvironment extends DetoxCircusEnvironment {
     }
 
     await super.handleTestEvent(event, state);
-}
+  }
 }
 
 module.exports = CustomDetoxEnvironment;

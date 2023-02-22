@@ -1,18 +1,13 @@
-const { device } = require('detox');
-const path = require('path');
-const { setTimeout } = require('timers/promises');
+import { device } from 'detox';
+import path from 'path';
+import { setTimeout } from 'timers/promises';
 
-const Server = require('./utils/server');
-const {
-  copyAssetToStaticFolder,
-  copyBundleToStaticFolder,
-  getUpdateManifestForBundleFilename,
-  serverHost,
-  serverPort,
-} = require('./utils/update');
+import Server from './utils/server';
+
+import Update from './utils/update';
 
 const projectRoot = process.env.PROJECT_ROOT || process.cwd();
-const platform = process.env.DETOX_CONFIGURATION.split('.')[0];
+const platform = (process.env.DETOX_CONFIGURATION || 'ios.release').split('.')[0];
 
 const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
 
@@ -24,7 +19,7 @@ describe('', () => {
 
   it('starts app, stops, and starts again', async () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
-    Server.start(serverPort);
+    Server.start(Update.serverPort);
     await device.installApp();
     await device.launchApp({
       newInstance: true,
@@ -47,14 +42,14 @@ describe('', () => {
 
   it('initial request includes correct update-id headers', async () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
-    Server.start(serverPort);
+    Server.start(Update.serverPort);
     await device.installApp();
     await device.launchApp({
       newInstance: true,
     });
     await setTimeout(3000);
     const request = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
-    expect(request.headers['expo-embedded-update-id']).toBeDefined();
+    expect(request.headers['expo-embedded-update-id'] || null).toBeDefined();
     expect(request.headers['expo-current-update-id']).toBeDefined();
     // before any updates, the current update ID and embedded update ID should be the same
     expect(request.headers['expo-current-update-id']).toEqual(
@@ -66,13 +61,13 @@ describe('', () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle1.js';
     const newNotifyString = 'test-update-1';
-    const hash = await copyBundleToStaticFolder(
+    const hash = await Update.copyBundleToStaticFolder(
       projectRoot,
       bundleFilename,
       newNotifyString,
       platform
     );
-    const manifest = getUpdateManifestForBundleFilename(
+    const manifest = Update.getUpdateManifestForBundleFilename(
       new Date(),
       hash,
       'test-update-1-key',
@@ -80,7 +75,7 @@ describe('', () => {
       []
     );
 
-    Server.start(serverPort);
+    Server.start(Update.serverPort);
     await Server.serveSignedManifest(manifest, projectRoot);
     await device.installApp();
     await device.launchApp({
@@ -113,9 +108,9 @@ describe('', () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle-invalid-hash.js';
     const newNotifyString = 'test-update-invalid-hash';
-    await copyBundleToStaticFolder(projectRoot, bundleFilename, newNotifyString, platform);
+    await Update.copyBundleToStaticFolder(projectRoot, bundleFilename, newNotifyString, platform);
     const hash = 'invalid-hash';
-    const manifest = getUpdateManifestForBundleFilename(
+    const manifest = Update.getUpdateManifestForBundleFilename(
       new Date(),
       hash,
       'test-update-1-key',
@@ -123,7 +118,7 @@ describe('', () => {
       []
     );
 
-    Server.start(serverPort);
+    Server.start(Update.serverPort);
     await Server.serveSignedManifest(manifest, projectRoot);
     await device.installApp();
     await device.launchApp({
@@ -149,7 +144,7 @@ describe('', () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle2.js';
     const newNotifyString = 'test-update-2';
-    const hash = await copyBundleToStaticFolder(
+    const hash = await Update.copyBundleToStaticFolder(
       projectRoot,
       bundleFilename,
       newNotifyString,
@@ -162,7 +157,7 @@ describe('', () => {
         'patrick-untersee-XJjsuuDwWas-unsplash.jpg',
       ].map(async (sourceFilename, index) => {
         const destinationFilename = `asset${index}.jpg`;
-        const hash = await copyAssetToStaticFolder(
+        const hash = await Update.copyAssetToStaticFolder(
           path.join(__dirname, 'assets', sourceFilename),
           destinationFilename
         );
@@ -172,11 +167,11 @@ describe('', () => {
           key: `asset${index}`,
           contentType: 'image/jpg',
           fileExtension: '.jpg',
-          url: `http://${serverHost}:${serverPort}/static/${destinationFilename}`,
+          url: `http://${Update.serverHost}:${Update.serverPort}/static/${destinationFilename}`,
         };
       })
     );
-    const manifest = getUpdateManifestForBundleFilename(
+    const manifest = Update.getUpdateManifestForBundleFilename(
       new Date(),
       hash,
       'test-update-2-key',
@@ -184,7 +179,7 @@ describe('', () => {
       assets
     );
 
-    Server.start(serverPort);
+    Server.start(Update.serverPort);
     await Server.serveSignedManifest(manifest, projectRoot);
     await device.installApp();
     await device.launchApp({
@@ -233,7 +228,7 @@ describe('', () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle2.js';
     const newNotifyString = 'test-update-2';
-    const hash = await copyBundleToStaticFolder(
+    const hash = await Update.copyBundleToStaticFolder(
       projectRoot,
       bundleFilename,
       newNotifyString,
@@ -245,8 +240,8 @@ describe('', () => {
         'niklas-liniger-zuPiCN7xekM-unsplash.jpg',
         'patrick-untersee-XJjsuuDwWas-unsplash.jpg',
       ].map(async (sourceFilename, index) => {
-        const destinationFilename = `asset${index}.jpg`;
-        const hash = await copyAssetToStaticFolder(
+        const destinationFilename: string = `asset${index}.jpg`;
+        const hash = await Update.copyAssetToStaticFolder(
           path.join(__dirname, 'assets', sourceFilename),
           destinationFilename
         );
@@ -255,11 +250,11 @@ describe('', () => {
           key: `asset${index}`,
           contentType: 'image/jpg',
           fileExtension: '.jpg',
-          url: `http://${serverHost}:${serverPort}/static/${destinationFilename}`,
+          url: `http://${Update.serverHost}:${Update.serverPort}/static/${destinationFilename}`,
         };
       })
     );
-    const manifest = getUpdateManifestForBundleFilename(
+    const manifest = Update.getUpdateManifestForBundleFilename(
       new Date(),
       hash,
       'test-update-2-key',
@@ -267,7 +262,7 @@ describe('', () => {
       assets
     );
 
-    Server.start(serverPort);
+    Server.start(Update.serverPort);
     await Server.serveSignedManifest(manifest, projectRoot);
     await device.installApp();
     await device.launchApp({
@@ -291,13 +286,13 @@ describe('', () => {
   it('does not download any assets for an older update', async () => {
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle-old.js';
-    const hash = await copyBundleToStaticFolder(
+    const hash = await Update.copyBundleToStaticFolder(
       projectRoot,
       bundleFilename,
       'test-update-older',
       platform
     );
-    const manifest = getUpdateManifestForBundleFilename(
+    const manifest = Update.getUpdateManifestForBundleFilename(
       new Date(Date.now() - 1000 * 60 * 60 * 24),
       hash,
       'test-update-old-key',
@@ -305,7 +300,7 @@ describe('', () => {
       []
     );
 
-    Server.start(serverPort);
+    Server.start(Update.serverPort);
     await Server.serveSignedManifest(manifest, projectRoot);
     await device.installApp();
     await device.launchApp({

@@ -132,6 +132,7 @@ const general = [
     makePage('guides/typescript.mdx'),
     makePage('guides/using-flipper.mdx'),
     makePage('guides/using-analytics.mdx'),
+    makePage('guides/google-authentication.mdx'),
   ]),
   makeSection('Assorted guides', [
     makePage('guides/routing-and-navigation.mdx'),
@@ -261,7 +262,6 @@ const eas = [
       makePage('submit/eas-json.mdx'),
       makePage('submit/android.mdx'),
       makePage('submit/ios.mdx'),
-      makePage('submit/classic-builds.mdx'),
     ],
     { expanded: true }
   ),

@@ -101,9 +101,9 @@ async function packExpoDependency(repoRoot, projectRoot, destPath, dependencyNam
 }
 
 async function copyCommonFixturesToProject(projectRoot, appJsFileName) {
-  // copy App.js from test fixtures
+  // copy App.tsx from test fixtures
   const appJsSourcePath = path.resolve(dirName, '..', 'fixtures', appJsFileName);
-  const appJsDestinationPath = path.resolve(projectRoot, 'App.js');
+  const appJsDestinationPath = path.resolve(projectRoot, 'App.tsx');
   let appJsFileContents = await fs.readFile(appJsSourcePath, 'utf-8');
   appJsFileContents = appJsFileContents
     .replace('UPDATES_HOST', process.env.UPDATES_HOST)
@@ -115,7 +115,15 @@ async function copyCommonFixturesToProject(projectRoot, appJsFileName) {
   const projectFilesTarballPath = path.join(projectRoot, 'project_files.tgz');
   await spawnAsync(
     'tar',
-    ['zcf', projectFilesTarballPath, '.detoxrc.json', 'eas.json', 'eas-hooks', 'e2e'],
+    [
+      'zcf',
+      projectFilesTarballPath,
+      'tsconfig.json',
+      '.detoxrc.json',
+      'eas.json',
+      'eas-hooks',
+      'e2e',
+    ],
     {
       cwd: projectFilesSourcePath,
       stdio: 'inherit',
@@ -172,10 +180,16 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
   const extraDevDependencies = configureE2E
     ? {
         '@config-plugins/detox': '^3.0.0',
+        '@types/express': '^4.17.17',
+        '@types/jest': '^29.4.0',
+        '@types/react': '~18.0.14',
+        '@types/react-native': '~0.70.6',
         detox: '^19.12.1',
         express: '^4.18.2',
         jest: '^29.3.1',
         'jest-circus': '^29.3.1',
+        'ts-jest': '^29.0.5',
+        typescript: '^4.6.3',
       }
     : {};
 
@@ -372,10 +386,14 @@ async function initAsync(
   const projectName = path.basename(projectRoot);
 
   // initialize project (do not do NPM install, we do that later)
-  await spawnAsync('yarn', ['create', 'expo-app', projectName, '--yes', '--no-install'], {
-    cwd: workingDir,
-    stdio: 'inherit',
-  });
+  await spawnAsync(
+    'yarn',
+    ['create', 'expo-app', projectName, '--yes', '--no-install', '--template', 'blank-typescript'],
+    {
+      cwd: workingDir,
+      stdio: 'inherit',
+    }
+  );
 
   let cleanupLocalUpdatesModule;
   if (configureE2E) {
@@ -485,7 +503,7 @@ async function createTestUpdateBundles(projectRoot, localCliBin, notifyStrings) 
   const testUpdateBundlesPath = path.join(projectRoot, 'test-update-bundles');
   await fs.rm(testUpdateBundlesPath, { recursive: true, force: true });
   await fs.mkdir(testUpdateBundlesPath);
-  const appJsPath = path.join(projectRoot, 'App.js');
+  const appJsPath = path.join(projectRoot, 'App.tsx');
   const originalAppJs = await fs.readFile(appJsPath, 'utf-8');
   const testUpdateJson = {};
   for (const notifyString of ['test', ...notifyStrings]) {
@@ -521,7 +539,7 @@ async function createTestUpdateBundles(projectRoot, localCliBin, notifyStrings) 
 }
 
 async function setupBasicAppAsync(projectRoot, localCliBin) {
-  await copyCommonFixturesToProject(projectRoot, 'App.js');
+  await copyCommonFixturesToProject(projectRoot, 'App.tsx');
 
   // export update for test server to host
   await createUpdateBundleAsync(projectRoot, localCliBin);
@@ -537,18 +555,15 @@ async function setupBasicAppAsync(projectRoot, localCliBin) {
   // move exported update to "updates" directory for EAS testing
   await fs.rename(path.join(projectRoot, 'dist'), path.join(projectRoot, 'updates'));
 
-  // remove yarn.lock so yarn will work on EAS
-  await fs.rm(path.join(projectRoot, 'yarn.lock'));
-
   // Copy Detox test file to e2e/tests directory
   await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'Updates-basic.e2e.js'),
-    path.join(projectRoot, 'e2e', 'tests', 'Updates-basic.e2e.js')
+    path.resolve(dirName, '..', 'fixtures', 'Updates-basic.e2e.ts'),
+    path.join(projectRoot, 'e2e', 'tests', 'Updates-basic.e2e.ts')
   );
 }
 
 async function setupAssetsAppAsync(projectRoot, localCliBin) {
-  await copyCommonFixturesToProject(projectRoot, 'App-assets.js');
+  await copyCommonFixturesToProject(projectRoot, 'App-assets.tsx');
 
   // copy png assets and install extra package
   await fs.copyFile(
@@ -569,22 +584,25 @@ async function setupAssetsAppAsync(projectRoot, localCliBin) {
   // move exported update to "updates" directory for EAS testing
   await fs.rename(path.join(projectRoot, 'dist'), path.join(projectRoot, 'updates'));
 
-  // remove yarn.lock so yarn will work on EAS
-  await fs.rm(path.join(projectRoot, 'yarn.lock'));
-
   // Copy Detox test file to e2e/tests directory
   await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'Updates-assets.e2e.js'),
-    path.join(projectRoot, 'e2e', 'tests', 'Updates-assets.e2e.js')
+    path.resolve(dirName, '..', 'fixtures', 'Updates-assets.e2e.ts'),
+    path.join(projectRoot, 'e2e', 'tests', 'Updates-assets.e2e.ts')
   );
 }
 
 async function setupManualTestAppAsync(projectRoot) {
   // Copy API test app to project
-  await fs.rm(path.join(projectRoot, 'App.js'));
+  await fs.rm(path.join(projectRoot, 'App.tsx'));
   await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'App-apitest.js'),
-    path.join(projectRoot, 'App.js')
+    path.resolve(dirName, '..', 'fixtures', 'App-apitest.tsx'),
+    path.join(projectRoot, 'App.tsx')
+  );
+  // Copy tsconfig.json to project
+  await fs.rm(path.join(projectRoot, 'tsconfig.json'));
+  await fs.copyFile(
+    path.resolve(dirName, '..', 'fixtures', 'project_files', 'tsconfig.json'),
+    path.join(projectRoot, 'tsconfig.json')
   );
 }
 
