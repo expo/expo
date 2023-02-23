@@ -1113,7 +1113,12 @@ EX_EXPORT_METHOD_AS(getAssetsAsync,
   NSArray *parts = [config componentsSeparatedByString:@" "];
   NSString *key = [EXMediaLibrary _convertSortByKey:parts[0]];
 
-  BOOL ascending = [parts[1] isEqualToString: @"ASC"];
+  BOOL ascending = NO;
+  if ([parts count] > 1) {
+    if ([parts[1] isEqualToString: @"ASC"]) {
+      ascending = YES;
+    }
+  }
 
   if (key) {
     return [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
