@@ -353,9 +353,6 @@ export async function test(t) {
             sortBy: [[MediaLibrary.SortBy.height, true]],
           });
 
-          console.log(JSON.stringify(ascendingAssets, null, 2));
-          console.log(JSON.stringify(assets, null, 2));
-
           // Set the first and last items in the new list
           const ascFirst = ascendingAssets[0].height;
           const ascLast = ascendingAssets[assets.length - 1].height;
