@@ -11,7 +11,7 @@ export declare const BlockQuote: React.ComponentType<BlockQuoteProps>;
 export declare const BR: React.ComponentType<TextProps>;
 export declare const Mark: React.ComponentType<TextProps>;
 export declare const Code: React.ComponentType<TextProps>;
-type PreProps = TextProps | ViewProps;
+declare type PreProps = TextProps | ViewProps;
 export declare const Pre: React.ComponentType<PreProps>;
 export declare const Time: React.ComponentType<TimeProps>;
 export declare const Strong: React.ComponentType<TextProps>;

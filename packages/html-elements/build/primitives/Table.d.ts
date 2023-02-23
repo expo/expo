@@ -1,7 +1,7 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
 import Text from './Text';
-type NativeTextProps = ComponentProps<typeof Text> & ClassAttributes<typeof Text>;
-export type TableTextProps = NativeTextProps & {
+declare type NativeTextProps = ComponentProps<typeof Text> & ClassAttributes<typeof Text>;
+export declare type TableTextProps = NativeTextProps & {
     /** @platform web */
     colSpan?: number | string;
     /** @platform web */
