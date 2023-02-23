@@ -88,7 +88,7 @@
     "@types/fbemitter": "^2.0.32",
     "@types/invariant": "^2.2.33",
     "@types/react": "~18.0.14",
-    "@types/react-native": "~0.69.1",
+    "@types/react-native": "~0.70.6",
     "@types/react-test-renderer": "^18.0.0",
     "@types/uuid": "^3.4.7",
     "expo-module-scripts": "^3.0.4",
