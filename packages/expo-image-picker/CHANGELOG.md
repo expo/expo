@@ -7,7 +7,7 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
-
+- Fix images unexpectedly being converted to `.png` when opening `.bmp` files and selecting any quality in `ImagePickerOptions`.
 ### 💡 Others
 
 ## 14.1.1 — 2023-02-09
