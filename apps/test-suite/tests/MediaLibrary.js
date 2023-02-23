@@ -341,7 +341,7 @@ export async function test(t) {
         t.it('supports sorting in ascending order', async () => {
           const assetsToCheck = 7;
 
-          // Get some assets with the biggest largest height.
+          // Get some assets with the largest height.
           const { assets } = await MediaLibrary.getAssetsAsync({
             first: assetsToCheck,
             sortBy: [[MediaLibrary.SortBy.height, false]],
