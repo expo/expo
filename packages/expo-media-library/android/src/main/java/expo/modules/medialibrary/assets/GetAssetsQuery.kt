@@ -104,6 +104,8 @@ fun convertOrderDescriptors(orderDescriptor: List<String>): String {
   val results = ArrayList<String>(20)
   for (item in orderDescriptor) {
     val parts = item.split(" ")
+    require(parts.size == 2) { "Array sortBy in assetsOptions has invalid layout." }
+
     val key = parseSortByKey(parts[0])
     val order = parts[1]
     results.add("$key $order")
