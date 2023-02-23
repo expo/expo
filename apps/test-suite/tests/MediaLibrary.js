@@ -339,11 +339,8 @@ export async function test(t) {
         });
 
         t.it('supports sorting in ascending order', async () => {
-          const assetsToCheck = 7;
-
           // Get some assets with the largest height.
           const { assets } = await MediaLibrary.getAssetsAsync({
-            first: assetsToCheck,
             sortBy: [[MediaLibrary.SortBy.height, false]],
           });
 
@@ -353,9 +350,11 @@ export async function test(t) {
 
           // Repeat assets request but reverse the order.
           const { assets: ascendingAssets } = await MediaLibrary.getAssetsAsync({
-            first: assetsToCheck,
             sortBy: [[MediaLibrary.SortBy.height, true]],
           });
+
+          console.log(JSON.stringify(ascendingAssets, null, 2));
+          console.log(JSON.stringify(assets, null, 2));
 
           // Set the first and last items in the new list
           const ascFirst = ascendingAssets[0].height;

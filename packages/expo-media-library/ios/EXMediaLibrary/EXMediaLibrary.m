@@ -1110,21 +1110,13 @@ EX_EXPORT_METHOD_AS(getAssetsAsync,
 
 + (NSSortDescriptor *)_sortDescriptorFrom:(id)config
 {
-  if ([config isKindOfClass:[NSString class]]) {
-    NSString *key = [EXMediaLibrary _convertSortByKey:config];
-    
-    if (key) {
-      return [NSSortDescriptor sortDescriptorWithKey:key ascending:NO];
-    }
-  }
-  if ([config isKindOfClass:[NSArray class]]) {
-    NSArray *sortArray = (NSArray *)config;
-    NSString *key = [EXMediaLibrary _convertSortByKey:sortArray[0]];
-    BOOL ascending = [(NSNumber *)sortArray[1] boolValue];
-    
-    if (key) {
-      return [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
-    }
+  NSArray *parts = [config componentsSeparatedByString:@" "];
+  NSString *key = [EXMediaLibrary _convertSortByKey:parts[0]];
+
+  BOOL ascending = [parts[1] isEqualToString: @"ASC"];
+
+  if (key) {
+    return [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
   }
   return nil;
 }
