@@ -1,7 +1,8 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesUpdate.h>
-#import <EXManifests/EXManifestsLegacyManifest.h>
+
+@import EXManifests;
 
 NS_ASSUME_NONNULL_BEGIN
 

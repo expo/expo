@@ -4,7 +4,8 @@
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesUpdate+Private.h>
 #import <EXUpdates/EXUpdatesUtils.h>
-#import <EXManifests/EXManifestsBareManifest.h>
+
+@import EXManifests;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -26,7 +27,7 @@ NS_ASSUME_NONNULL_BEGIN
                                                                 database:database];
 
   NSString *updateId = manifest.rawId;
-  NSNumber *commitTime = manifest.commitTimeNumber;
+  NSNumber *commitTime = [NSNumber numberWithInteger:manifest.commitTimeNumber];
   NSArray *assets = manifest.assets;
 
   NSAssert(updateId != nil, @"update ID should not be null");

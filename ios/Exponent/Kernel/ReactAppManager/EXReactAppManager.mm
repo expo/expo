@@ -18,6 +18,7 @@
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <EXConstants/EXConstantsService.h>
 #import <EXSplashScreen/EXSplashScreenService.h>
+#import <EXManifests/EXManifests-Swift.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTCxxBridgeDelegate.h>

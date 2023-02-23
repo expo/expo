@@ -3,6 +3,7 @@
 #import "EXManagedAppSplashScreenConfigurationBuilder.h"
 #import "EXUtil.h"
 
+@import EXManifests;
 
 static const NSString *kManifestIosKey = @"ios";
 static const NSString *kManifestSplashKey = @"splash";

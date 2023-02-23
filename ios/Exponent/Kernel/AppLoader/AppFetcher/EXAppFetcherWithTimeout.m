@@ -6,6 +6,8 @@
 #import "EXAbstractLoader.h"
 #import "EXUtil.h"
 
+@import EXManifests;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXAppFetcherWithTimeout ()

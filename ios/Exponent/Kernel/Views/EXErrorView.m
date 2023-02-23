@@ -7,6 +7,8 @@
 #import "EXKernelAppRecord.h"
 #import "EXUtil.h"
 
+@import EXManifests;
+
 @interface EXErrorView ()
 
 @property (nonatomic, strong) IBOutlet UILabel *lblError;

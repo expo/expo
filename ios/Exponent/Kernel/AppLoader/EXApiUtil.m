@@ -7,6 +7,8 @@
 
 #import "EXCachedResource.h"
 
+@import EXManifests;
+
 NS_ASSUME_NONNULL_BEGIN
 
 static NSString* kPublicKeyTag = @"exp.host.publickey";

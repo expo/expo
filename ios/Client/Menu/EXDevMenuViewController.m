@@ -10,6 +10,8 @@
 #import "EXKernelAppRegistry.h"
 #import "EXUtil.h"
 
+@import EXManifests;
+
 @interface EXDevMenuViewController ()
 
 @property (nonatomic, strong) RCTRootView *reactRootView;

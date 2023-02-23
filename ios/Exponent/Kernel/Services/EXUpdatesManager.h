@@ -2,7 +2,8 @@
 
 #import "EXKernelAppRecord.h"
 #import "EXUpdatesBinding.h"
-#import <EXManifests/EXManifestsManifest.h>
+
+@class EXManifestsManifest;
 
 NS_ASSUME_NONNULL_BEGIN
 

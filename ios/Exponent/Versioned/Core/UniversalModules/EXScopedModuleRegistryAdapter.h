@@ -2,7 +2,8 @@
 
 #import <ExpoModulesCore/EXModuleRegistryAdapter.h>
 #import <ExpoModulesCore/EXModuleRegistry.h>
-#import <EXManifests/EXManifestsManifest.h>
+
+@class EXManifestsManifest;
 
 @interface EXScopedModuleRegistryAdapter : EXModuleRegistryAdapter
 
