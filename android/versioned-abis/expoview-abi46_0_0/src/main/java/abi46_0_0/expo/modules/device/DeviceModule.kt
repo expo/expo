@@ -62,7 +62,12 @@ class DeviceModule(private val mContext: Context) : ExportedModule(mContext) {
     "osInternalBuildId" to Build.ID,
     "osBuildFingerprint" to Build.FINGERPRINT,
     "platformApiLevel" to Build.VERSION.SDK_INT,
-    "deviceName" to Settings.Secure.getString(mContext.contentResolver, "bluetooth_name")
+    "deviceName" to run {
+      if (Build.VERSION.SDK_INT <= 31)
+        Settings.Secure.getString(mContext.contentResolver, "bluetooth_name")
+      else
+        Settings.Global.getString(mContext.contentResolver, Settings.Global.DEVICE_NAME)
+    },
   )
 
   private val deviceYearClass: Int
