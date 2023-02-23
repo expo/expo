@@ -138,6 +138,7 @@ const executeCommand = async (
     excludePrivate: true,
     excludeProtected: true,
     skipErrorChecking: true,
+    excludeExternals: true,
     pretty: !MINIFY_JSON,
   });
 
@@ -161,7 +162,8 @@ const executeCommand = async (
       const minifiedJson = recursiveOmitBy(
         output,
         ({ key, node }) =>
-          ['id', 'groups', 'target'].includes(key) || (key === 'flags' && !Object.keys(node).length)
+          ['id', 'groups', 'target', 'kindString', 'originalName'].includes(key) ||
+          (key === 'flags' && !Object.keys(node).length)
       );
       await fs.writeFile(jsonOutputPath, JSON.stringify(minifiedJson, null, 0));
     } else {
