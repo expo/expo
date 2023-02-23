@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Removed the deprecated `Linking.removeEventListener`. ([#21371](https://github.com/expo/expo/pull/21371) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
