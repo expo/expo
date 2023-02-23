@@ -2,22 +2,20 @@
 
 import UIKit
 
-extension UIView {
-  func firstSubView<T: UIView>(ofType type: T.Type) -> T? {
-    var resultView: T?
-    for view in subviews {
-      if let view = view as? T {
-        resultView = view
-        break
-      }
-
-      if let foundView = view.firstSubView(ofType: T.self) {
-        resultView = foundView
-        break
-      }
+private func firstSubview<T: UIView>(_ rootView: UIView, ofType type: T.Type) -> T? {
+  var resultView: T?
+  for view in rootView.subviews {
+    if let view = view as? T {
+      resultView = view
+      break
     }
-    return resultView
+
+    if let foundView = firstSubview(view, ofType: T.self) {
+      resultView = foundView
+      break
+    }
   }
+  return resultView
 }
 
 class DevMenuWindow: UIWindow, OverlayContainerViewControllerDelegate {
@@ -62,7 +60,7 @@ class DevMenuWindow: UIWindow, OverlayContainerViewControllerDelegate {
   // when the menu is first opened. As a result, we schedule a task that periodically verifies the availability of the scroll view.
   // TODO(@lukmccall): find a better way how to detect if the scroll view is available.
   private func setDrivingScrollView() {
-    let scrollView = devMenuViewController.view.firstSubView(ofType: UIScrollView.self)
+    let scrollView = firstSubview(devMenuViewController.view, ofType: UIScrollView.self)
     if scrollView == nil {
       DispatchQueue.main.async {
         self.setDrivingScrollView()
