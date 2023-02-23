@@ -215,8 +215,6 @@ export type ImagePickerAsset = {
   /**
    * Preferred filename to use when saving this item. This might be `null` when the name is unavailable
    * or user gave limited permission to access the media library.
-   * > `fileName` will be the same as the original filename, except when opening `.bmp` files with `allowsEditing` set to `true`.
-   *  In this case the image will be converted to `.png` and the `fileName` will be updated accordingly.
    * @platform ios
    */
   fileName?: string | null;

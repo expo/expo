@@ -85,10 +85,10 @@ internal struct MediaHandler {
       // as calling this already requires media library permission, we can access it here
       // if user gave limited permissions, in the worst case this will be null
       let asset = mediaInfo[.phAsset] as? PHAsset
-      var fileName = asset?.value(forKey: "filename") as? NSString
+      var fileName = asset?.value(forKey: "filename") as? String
       // Extension will change to png when editing BMP files, reflect that change in fileName
-      if (fileName != nil && !fileName!.lowercased.contains(fileExtension.lowercased())){
-        fileName = fileName!.deletingPathExtension + fileExtension as NSString;
+      if let unwrappedName = fileName {
+        fileName = replaceFileExtension(fileName: unwrappedName, targetExtension: fileExtension.lowercased())
       }
       let fileSize = getFileSize(from: targetUrl)
 
@@ -102,7 +102,7 @@ internal struct MediaHandler {
                                   uri: targetUrl.absoluteString,
                                   width: image.size.width,
                                   height: image.size.height,
-                                  fileName: fileName as String?,
+                                  fileName: fileName,
                                   fileSize: fileSize,
                                   base64: base64,
                                   exif: exif)
@@ -254,6 +254,21 @@ internal struct MediaHandler {
   }
 
   // MARK: - utils
+
+  private func replaceFileExtension(fileName: String?, targetExtension: String) -> String? {
+    guard let fileName = fileName else { return nil }
+    if !fileName.lowercased().hasSuffix(targetExtension.lowercased()){
+      return deleteFileExtension(fileName: fileName) + targetExtension;
+    }
+    return fileName
+  }
+
+  private func deleteFileExtension(fileName: String) -> String {
+    var components = fileName.components(separatedBy: ".")
+    guard components.count > 1 else { return fileName }
+    components.removeLast()
+    return components.joined(separator: ".")
+  }
 
   private func generateUrl(withFileExtension: String) throws -> URL {
     guard let fileSystem = self.fileSystem else {
