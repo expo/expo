@@ -5,8 +5,6 @@ import expo.modules.medialibrary.AssetsOptions
 import expo.modules.medialibrary.MediaType
 import expo.modules.medialibrary.SortBy
 import io.mockk.clearAllMocks
-import io.mockk.every
-import io.mockk.mockkStatic
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Test
@@ -36,7 +34,7 @@ internal class GetAssetsQueryTests {
       createdAfter = 2345.0,
       album = "sampleAlbumId",
       mediaType = listOf(MediaType.PHOTO.apiName),
-      sortBy = listOf(SortBy.DEFAULT.keyName)
+      sortBy = listOf("${SortBy.DEFAULT.keyName} ASC")
     )
 
     val expectedSelection = "${MediaStore.Images.Media.BUCKET_ID} = $album" +
@@ -134,43 +132,10 @@ internal class GetAssetsQueryTests {
   }
 
   class ConvertOrderDescriptorTests {
-    @Test
-    fun `convertOrderDescriptors works with string keys`() {
-      // arrange
-      mockkStatic(::parseSortByKey)
-      every { parseSortByKey(any()) } returnsArgument 0
-
-      val keys = listOf("key1", "key2")
-
-      // act
-      val result = convertOrderDescriptors(keys)
-
-      // assert
-      assertEquals("key1 DESC,key2 DESC", result)
-    }
-
-    @Test
-    fun `convertOrderDescriptors works with array keys`() {
-      // arrange
-      mockkStatic(::parseSortByKey)
-      every { parseSortByKey(any()) } returnsArgument 0
-
-      val keys = listOf(
-        arrayListOf<Any>("key1", true),
-        arrayListOf<Any>("key2", false)
-      )
-
-      // act
-      val result = convertOrderDescriptors(keys)
-
-      // assert
-      assertEquals("key1 ASC,key2 DESC", result)
-    }
-
     @Test(expected = IllegalArgumentException::class)
     fun `convertOrderDescriptors throws when provided invalid types`() {
       // arrange
-      val items = listOf<Any>(1, true, 3.14)
+      val items = listOf("date", "time")
 
       // act
       convertOrderDescriptors(items)
@@ -182,8 +147,8 @@ internal class GetAssetsQueryTests {
     fun `convertOrderDescriptors throws when provided invalid layout`() {
       // arrange
       val keys = listOf(
-        arrayListOf<Any>("only1item"),
-        arrayListOf<Any>(3, "items", "here")
+        "only1item",
+        "with three items"
       )
 
       // act
