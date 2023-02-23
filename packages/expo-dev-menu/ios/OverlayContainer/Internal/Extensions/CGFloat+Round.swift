@@ -1,9 +1,9 @@
-//
+//  Copyright (c) 2018, Applidium. All rights reserved
 //  CGFloat+Round.swift
 //  FluxTire
 //
 //  Created by Gaétan Zanella on 17/10/2018.
-//
+//  
 
 import Foundation
 import CoreGraphics

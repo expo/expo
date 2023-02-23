@@ -1,4 +1,4 @@
-//
+//  Copyright (c) 2018, Applidium. All rights reserved
 //  PassThroughView.swift
 //  OverlayContainer
 //

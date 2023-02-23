@@ -1,9 +1,8 @@
-//
+//  Copyright (c) 2018, Applidium. All rights reserved
 //  OverlayContainerPresentationDimmingView.swift
 //  OverlayContainer
 //
 //  Created by Gaétan Zanella on 08/04/2020.
-//  Copyright © 2020 Gaétan Zanella. All rights reserved.
 //
 
 import UIKit
