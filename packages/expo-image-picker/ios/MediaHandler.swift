@@ -256,16 +256,20 @@ internal struct MediaHandler {
   // MARK: - utils
 
   private func replaceFileExtension(fileName: String?, targetExtension: String) -> String? {
-    guard let fileName = fileName else { return nil }
-    if !fileName.lowercased().hasSuffix(targetExtension.lowercased()){
-      return deleteFileExtension(fileName: fileName) + targetExtension;
+    guard let fileName = fileName else {
+      return nil
+    }
+    if !fileName.lowercased().hasSuffix(targetExtension.lowercased()) {
+      return deleteFileExtension(fileName: fileName) + targetExtension
     }
     return fileName
   }
 
   private func deleteFileExtension(fileName: String) -> String {
     var components = fileName.components(separatedBy: ".")
-    guard components.count > 1 else { return fileName }
+    guard components.count > 1 else {
+      return fileName
+    }
     components.removeLast()
     return components.joined(separator: ".")
   }
