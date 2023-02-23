@@ -5,8 +5,6 @@ import expo.modules.medialibrary.AssetsOptions
 import expo.modules.medialibrary.MediaType
 import expo.modules.medialibrary.SortBy
 import io.mockk.clearAllMocks
-import io.mockk.every
-import io.mockk.mockkStatic
 import org.junit.After
 import org.junit.Assert.assertEquals
 import org.junit.Test
