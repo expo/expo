@@ -1,4 +1,4 @@
-package host.exp.exponent.modules
+package host.exp.exponent
 
 import android.content.Context
 import android.util.Log
