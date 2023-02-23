@@ -38,7 +38,7 @@ import abi48_0_0.expo.modules.lineargradient.LinearGradientModule
 import abi48_0_0.expo.modules.localauthentication.LocalAuthenticationPackage
 import abi48_0_0.expo.modules.localization.LocalizationModule
 import abi48_0_0.expo.modules.location.LocationPackage
-import abi48_0_0.expo.modules.mailcomposer.MailComposerModule
+import abi48_0_0.expo.modules.mailcomposer.MailComposerPackage
 import expo.modules.manifests.core.Manifest
 import abi48_0_0.expo.modules.medialibrary.MediaLibraryModule
 import abi48_0_0.expo.modules.navigationbar.NavigationBarPackage
@@ -83,6 +83,7 @@ object ExperiencePackagePicker : ModulesProvider {
     KeepAwakePackage(),
     LocalAuthenticationPackage(),
     LocationPackage(),
+    MailComposerPackage(),
     NavigationBarPackage(),
     NotificationsPackage(),
     PermissionsPackage(),
@@ -132,7 +133,6 @@ object ExperiencePackagePicker : ModulesProvider {
     IntentLauncherModule::class.java,
     LinearGradientModule::class.java,
     LocalizationModule::class.java,
-    MailComposerModule::class.java,
     MediaLibraryModule::class.java,
     NetworkModule::class.java,
     RandomModule::class.java,
