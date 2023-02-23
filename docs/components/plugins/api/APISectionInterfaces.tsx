@@ -19,15 +19,15 @@ import {
   resolveTypeName,
   renderDefaultValue,
   STYLES_APIBOX,
-  STYLES_NESTED_SECTION_HEADER,
   getTagNamesList,
   STYLES_APIBOX_NESTED,
   STYLES_ELEMENT_SPACING,
   H3Code,
   getCommentContent,
+  BoxSectionHeader,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
-import { H2, H4, BOLD, P, CODE } from '~/ui/components/Text';
+import { H2, BOLD, P, CODE, DEMI } from '~/ui/components/Text';
 
 export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
@@ -46,7 +46,7 @@ const renderInterfaceComment = (
     return (
       <>
         {parameters?.length ? parameters.map(param => renderParamRow(param)) : null}
-        <BOLD>Returns: </BOLD>
+        <DEMI>Returns</DEMI>
         <CODE>{resolveTypeName(type)}</CODE>
         {signatureComment && (
           <>
@@ -126,7 +126,7 @@ const renderInterface = ({
       </H3Code>
       {extendedTypes?.length ? (
         <P css={STYLES_ELEMENT_SPACING}>
-          <BOLD>Extends: </BOLD>
+          <DEMI>Extends: </DEMI>
           {extendedTypes.map(extendedType => (
             <CODE key={`extend-${extendedType.name}`}>{resolveTypeName(extendedType)}</CODE>
           ))}
@@ -135,17 +135,13 @@ const renderInterface = ({
       <CommentTextBlock comment={comment} includePlatforms={false} />
       {interfaceMethods.length ? (
         <>
-          <div css={STYLES_NESTED_SECTION_HEADER}>
-            <H4>{name} Methods</H4>
-          </div>
+          <BoxSectionHeader text={`${name} Methods`} />
           {interfaceMethods.map(method => renderMethod(method, { exposeInSidebar: false }))}
         </>
       ) : undefined}
       {interfaceFields.length ? (
         <>
-          <div css={STYLES_NESTED_SECTION_HEADER}>
-            <H4>{name} Properties</H4>
-          </div>
+          <BoxSectionHeader text={`${name} Properties`} />
           <Table>
             <ParamsTableHeadRow />
             <tbody>{interfaceFields.map(renderInterfacePropertyRow)}</tbody>

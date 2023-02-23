@@ -9,17 +9,16 @@ import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDe
 import { renderMethod } from '~/components/plugins/api/APISectionMethods';
 import {
   CommentTextBlock,
-  getAPISectionHeader,
   getTagData,
   getTagNamesList,
   mdComponents,
   STYLES_APIBOX,
-  STYLES_NESTED_SECTION_HEADER,
   TypeDocKind,
   H3Code,
   getCommentContent,
+  BoxSectionHeader,
 } from '~/components/plugins/api/APISectionUtils';
-import { H2, H4, CODE } from '~/ui/components/Text';
+import { H2, CODE } from '~/ui/components/Text';
 
 export type APISectionNamespacesProps = {
   data: GeneratedData[];
@@ -34,7 +33,6 @@ const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
 
 const renderNamespace = (namespace: ClassDefinitionData, exposeInSidebar: boolean): JSX.Element => {
   const { name, comment, children } = namespace;
-  const Header = getAPISectionHeader(exposeInSidebar);
 
   const methods = children
     ?.filter(child => isMethod(child))
@@ -50,9 +48,7 @@ const renderNamespace = (namespace: ClassDefinitionData, exposeInSidebar: boolea
       <CommentTextBlock comment={comment} />
       {returnComment && (
         <>
-          <div css={STYLES_NESTED_SECTION_HEADER}>
-            <H4>Returns</H4>
-          </div>
+          <BoxSectionHeader text="Returns" />
           <ReactMarkdown components={mdComponents}>
             {getCommentContent(returnComment.content)}
           </ReactMarkdown>
@@ -60,9 +56,7 @@ const renderNamespace = (namespace: ClassDefinitionData, exposeInSidebar: boolea
       )}
       {methods?.length ? (
         <>
-          <div css={STYLES_NESTED_SECTION_HEADER}>
-            <Header>{name} Methods</Header>
-          </div>
+          <BoxSectionHeader text={`${name} Methods`} exposeInSidebar={exposeInSidebar} />
           {methods.map(method => renderMethod(method, { exposeInSidebar }))}
         </>
       ) : undefined}

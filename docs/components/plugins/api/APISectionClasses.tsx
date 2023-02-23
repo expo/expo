@@ -11,7 +11,6 @@ import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatf
 import { renderProp } from '~/components/plugins/api/APISectionProps';
 import {
   CommentTextBlock,
-  getAPISectionHeader,
   H3Code,
   getTagData,
   getTagNamesList,
@@ -19,11 +18,11 @@ import {
   resolveTypeName,
   STYLES_APIBOX,
   STYLES_APIBOX_NESTED,
-  STYLES_NESTED_SECTION_HEADER,
   TypeDocKind,
   getCommentContent,
+  BoxSectionHeader,
 } from '~/components/plugins/api/APISectionUtils';
-import { H2, H4, BOLD, P, CODE } from '~/ui/components/Text';
+import { H2, BOLD, P, CODE } from '~/ui/components/Text';
 
 export type APISectionClassesProps = {
   data: GeneratedData[];
@@ -66,7 +65,6 @@ const remapClass = (clx: ClassDefinitionData) => {
 
 const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.Element => {
   const { name, comment, type, extendedTypes, children, implementedTypes, isSensor } = clx;
-  const Header = getAPISectionHeader(exposeInSidebar);
 
   const properties = children?.filter(isProp);
   const methods = children
@@ -108,9 +106,7 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
       <CommentTextBlock comment={comment} includePlatforms={false} />
       {returnComment && (
         <>
-          <div css={STYLES_NESTED_SECTION_HEADER}>
-            <H4>Returns</H4>
-          </div>
+          <BoxSectionHeader text="Returns" exposeInSidebar={exposeInSidebar} />
           <ReactMarkdown components={mdComponents}>
             {getCommentContent(returnComment.content)}
           </ReactMarkdown>
@@ -118,9 +114,7 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
       )}
       {properties?.length ? (
         <>
-          <div css={STYLES_NESTED_SECTION_HEADER}>
-            <Header>{name} Properties</Header>
-          </div>
+          <BoxSectionHeader text={`${name} Properties`} exposeInSidebar={exposeInSidebar} />
           <div>
             {properties.map(property =>
               renderProp(property, property?.defaultValue, exposeInSidebar)
@@ -130,9 +124,7 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
       ) : null}
       {methods?.length && (
         <>
-          <div css={STYLES_NESTED_SECTION_HEADER}>
-            <Header>{name} Methods</Header>
-          </div>
+          <BoxSectionHeader text={`${name} Methods`} exposeInSidebar={exposeInSidebar} />
           {methods.map(method => renderMethod(method, { exposeInSidebar }))}
         </>
       )}
