@@ -106,7 +106,7 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
       <CommentTextBlock comment={comment} includePlatforms={false} />
       {returnComment && (
         <>
-          <BoxSectionHeader text="Returns" exposeInSidebar={exposeInSidebar} />
+          <BoxSectionHeader text="Returns" />
           <ReactMarkdown components={mdComponents}>
             {getCommentContent(returnComment.content)}
           </ReactMarkdown>
