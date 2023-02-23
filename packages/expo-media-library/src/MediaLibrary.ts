@@ -370,6 +370,13 @@ function checkSortByKey(sortBy: any): void {
   }
 }
 
+function sortByOptionToString(sortBy: any) {
+  if (Array.isArray(sortBy)) {
+    return `${sortBy[0]} ${sortBy[1] ? 'ASC' : 'DESC'}`;
+  }
+  return `${sortBy} DESC`;
+}
+
 function dateToNumber(value?: Date | number): number | undefined {
   return value instanceof Date ? value.getTime() : value;
 }
@@ -759,6 +766,7 @@ export async function getAssetsAsync(assetsOptions: AssetsOptions = {}): Promise
 
   options.sortBy.forEach(checkSortBy);
   options.mediaType.forEach(checkMediaType);
+  options.sortBy = options.sortBy.map(sortByOptionToString);
 
   return await MediaLibrary.getAssetsAsync(options);
 }
