@@ -57,7 +57,7 @@ internal class GetAssets(
     } catch (e: IOException) {
       promise.reject(ERROR_UNABLE_TO_LOAD, "Could not read file", e)
     } catch (e: IllegalArgumentException) {
-      promise.reject(ERROR_UNABLE_TO_LOAD, "Invalid MediaType", e)
+      promise.reject(ERROR_UNABLE_TO_LOAD, e.message ?: "Invalid MediaType", e)
     } catch (e: UnsupportedOperationException) {
       e.printStackTrace()
       promise.reject(ERROR_NO_PERMISSIONS, e.message, e)

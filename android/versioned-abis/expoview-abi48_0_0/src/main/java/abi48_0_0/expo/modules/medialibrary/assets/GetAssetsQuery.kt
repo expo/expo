@@ -100,22 +100,15 @@ fun parseSortByKey(key: String): String =
  * @throws IllegalArgumentException when conversion fails
  */
 @Throws(IllegalArgumentException::class)
-fun convertOrderDescriptors(orderDescriptor: List<*>): String {
+fun convertOrderDescriptors(orderDescriptor: List<String>): String {
   val results = ArrayList<String>(20)
   for (item in orderDescriptor) {
-    when (item) {
-      is String -> {
-        val key = parseSortByKey(item)
-        results.add("$key DESC")
-      }
-      is List<*> -> {
-        require(item.size == 2) { "Array sortBy in assetsOptions has invalid layout." }
-        val key = parseSortByKey(item[0] as String)
-        val order = item[1] as Boolean
-        results.add(key + if (order) " ASC" else " DESC")
-      }
-      else -> throw IllegalArgumentException("Array sortBy in assetsOptions contains invalid items.")
-    }
+    val parts = item.split(" ")
+    require(parts.size == 2) { "Array sortBy in assetsOptions has invalid layout." }
+
+    val key = parseSortByKey(parts[0])
+    val order = parts[1]
+    results.add("$key $order")
   }
   return results.joinToString(separator = ",")
 }
