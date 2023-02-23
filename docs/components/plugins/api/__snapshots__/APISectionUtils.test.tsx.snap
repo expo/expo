@@ -3,7 +3,7 @@
 exports[`APISectionUtils.CommentTextBlock component basic comment 1`] = `
 <div>
   <p
-    class="css-1oym3r-TextComponent"
+    class="css-hnkmoy-TextComponent"
     data-text="true"
   >
     This is the basic comment.
@@ -47,7 +47,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
   </div>
   <br />
   <p
-    class="css-1oym3r-TextComponent"
+    class="css-hnkmoy-TextComponent"
     data-text="true"
   >
     Gets the referrer URL of the installed app with the 
@@ -58,7 +58,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
       target="_blank"
     >
       <code
-        class="css-zmv3vl-TextComponent"
+        class="css-23wgco-TextComponent"
         data-text="true"
       >
         Install Referrer API
@@ -67,16 +67,12 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
     
 from the Google Play Store. In practice, the referrer URL may not be a complete, absolute URL.
   </p>
-  <div
-    class="css-10kkd4f"
+  <p
+    class="css-1eksndl-BoxSectionHeader"
+    data-text="true"
   >
-    <h4
-      class="css-1gu5rqd-TextComponent"
-      data-heading="true"
-    >
-      Example
-    </h4>
-  </div>
+    Example
+  </p>
   <pre>
     <pre
       class="css-1tmj8fm"

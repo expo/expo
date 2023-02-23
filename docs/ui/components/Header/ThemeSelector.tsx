@@ -64,7 +64,7 @@ const selectStyle = css`
   align-items: center;
   justify-content: center;
   height: 36px;
-  color: transparent;
+  color: ${theme.text.default};
   line-height: 1.3;
   padding: 0;
   width: 50px;
@@ -77,6 +77,7 @@ const selectStyle = css`
   appearance: none;
   background-color: ${theme.background.default};
   cursor: pointer;
+  text-indent: -9999px;
 
   @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     width: auto;

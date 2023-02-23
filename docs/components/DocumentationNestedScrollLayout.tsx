@@ -121,12 +121,12 @@ const STYLES_SCROLL_CONTAINER = css`
 
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: ${theme.background.element};
+    background: ${theme.palette.gray5};
   }
 
   /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
-    background: ${theme.background.hover};
+    background: ${theme.palette.gray6};
   }
 
   @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {

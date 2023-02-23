@@ -28,21 +28,21 @@ export const globalExtras = css`
   }
 
   ::-webkit-scrollbar-thumb {
-    background: ${theme.background.element};
+    background: ${theme.palette.gray5};
     border-radius: 10px;
   }
 
   ::-webkit-scrollbar-thumb:hover {
-    background: ${theme.background.hover};
+    background: ${theme.palette.gray6};
   }
 
-  html[data-expo-theme='light'] div[class*='SnippetContent'] {
+  div[class*='Terminal'] > div {
     ::-webkit-scrollbar-thumb {
-      background: ${darkTheme.background.hover};
+      background: ${darkTheme.icon.quaternary};
     }
 
     ::-webkit-scrollbar-thumb:hover {
-      background: ${darkTheme.icon.secondary};
+      background: ${darkTheme.icon.tertiary};
     }
   }
 

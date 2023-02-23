@@ -149,7 +149,7 @@ export const commandMenuStyles = css`
     padding: ${spacing[8]}px 0;
   }
 
-  html[data-expo-theme='dark'] {
+  html.dark-theme {
     [cmdk-item] mark {
       background: ${theme.palette.blue5};
 
