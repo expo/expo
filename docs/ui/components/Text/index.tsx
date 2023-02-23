@@ -116,6 +116,7 @@ const codeStyle = css({
   borderColor: theme.border.secondary,
   borderRadius: borderRadius.sm,
   verticalAlign: 'initial',
+  wordBreak: 'unset',
 });
 
 export const kbdStyle = css({
@@ -175,6 +176,12 @@ const h5Style = {
   ...codeInHeaderStyle,
 };
 
+const paragraphStyle = {
+  strong: {
+    wordBreak: 'break-word',
+  },
+};
+
 export const H1 = createTextComponent(TextElement.H1, css(h1Style));
 export const RawH2 = createTextComponent(TextElement.H2, css(h2Style));
 export const H2 = createPermalinkedComponent(RawH2, { baseNestingLevel: 2 });
@@ -185,7 +192,7 @@ export const H4 = createPermalinkedComponent(RawH4, { baseNestingLevel: 4 });
 export const RawH5 = createTextComponent(TextElement.H5, css(h5Style));
 export const H5 = createPermalinkedComponent(RawH5, { baseNestingLevel: 5 });
 
-export const P = createTextComponent(TextElement.P);
+export const P = createTextComponent(TextElement.P, css(paragraphStyle as CSSObject));
 export const CODE = createTextComponent(
   TextElement.CODE,
   css([typography.utility.inlineCode, codeStyle])

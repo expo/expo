@@ -56,7 +56,7 @@ const buttonThemes: Record<ButtonTheme, Theme> = {
     color: styleguideTheme.button.quaternary.text,
   },
   ghost: {
-    backgroundColor: styleguideTheme.button.secondary.background,
+    backgroundColor: 'transparent',
     color: styleguideTheme.button.secondary.text,
     border: `1px solid ${styleguideTheme.button.secondary.border}`,
   },

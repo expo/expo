@@ -22,15 +22,15 @@ import {
   resolveTypeName,
   STYLES_APIBOX,
   STYLES_APIBOX_NESTED,
-  STYLES_NESTED_SECTION_HEADER,
   STYLES_NOT_EXPOSED_HEADER,
   TypeDocKind,
   H3Code,
   H4Code,
   getTagData,
   getCommentContent,
+  BoxSectionHeader,
 } from '~/components/plugins/api/APISectionUtils';
-import { H2, H4, LI, UL, CODE } from '~/ui/components/Text';
+import { H2, LI, UL, CODE } from '~/ui/components/Text';
 
 export type APISectionMethodsProps = {
   data: (MethodDefinitionData | PropData)[];
@@ -79,9 +79,7 @@ export const renderMethod = (
           <CommentTextBlock comment={comment} includePlatforms={false} />
           {resolveTypeName(type) !== 'undefined' && (
             <>
-              <div css={STYLES_NESTED_SECTION_HEADER}>
-                <H4>Returns</H4>
-              </div>
+              <BoxSectionHeader text="Returns" />
               <UL css={STYLES_NO_BULLET_LIST}>
                 <LI>
                   <UndoIcon
