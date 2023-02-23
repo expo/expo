@@ -186,6 +186,7 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
         '@types/react-native': '~0.70.6',
         detox: '^19.12.1',
         express: '^4.18.2',
+        'form-data': '^4.0.0',
         jest: '^29.3.1',
         'jest-circus': '^29.3.1',
         'ts-jest': '^29.0.5',
