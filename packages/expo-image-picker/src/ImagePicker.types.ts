@@ -215,7 +215,8 @@ export type ImagePickerAsset = {
   /**
    * Preferred filename to use when saving this item. This might be `null` when the name is unavailable
    * or user gave limited permission to access the media library.
-   *
+   * > `fileName` will be the same as the original filename, except when opening `.bmp` files with `allowsEditing` set to `true`.
+   *  In this case the image will be converted to `.png` and the `fileName` will be updated accordingly.
    * @platform ios
    */
   fileName?: string | null;
@@ -317,8 +318,9 @@ export type ImagePickerOptions = {
    * Whether to show a UI to edit the image after it is picked. On Android the user can crop and
    * rotate the image and on iOS simply crop it.
    *
-   * > Cropping multiple images is not supported - this option is mutually exclusive with `allowsMultipleSelection`.
-   * > On iOS, this option is ignored if `allowsMultipleSelection` is enabled.
+   * > - Cropping multiple images is not supported - this option is mutually exclusive with `allowsMultipleSelection`.
+   * > - On iOS, this option is ignored if `allowsMultipleSelection` is enabled.
+   * > - On iOS cropping a `.bmp` image will convert it to `.png`.
    *
    * @default false
    * @platform ios

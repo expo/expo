@@ -85,7 +85,11 @@ internal struct MediaHandler {
       // as calling this already requires media library permission, we can access it here
       // if user gave limited permissions, in the worst case this will be null
       let asset = mediaInfo[.phAsset] as? PHAsset
-      let fileName = asset?.value(forKey: "filename") as? String
+      var fileName = asset?.value(forKey: "filename") as? NSString
+      // Extension will change to png when editing BMP files, reflect that change in fileName
+      if (fileName != nil && !fileName!.lowercased.contains(fileExtension.lowercased())){
+        fileName = fileName!.deletingPathExtension + fileExtension as NSString;
+      }
       let fileSize = getFileSize(from: targetUrl)
 
       let base64 = try ImageUtils.optionallyReadBase64From(imageData: imageData,
@@ -98,7 +102,7 @@ internal struct MediaHandler {
                                   uri: targetUrl.absoluteString,
                                   width: image.size.width,
                                   height: image.size.height,
-                                  fileName: fileName,
+                                  fileName: fileName as String?,
                                   fileSize: fileSize,
                                   base64: base64,
                                   exif: exif)
@@ -338,7 +342,7 @@ private struct ImageUtils {
       return (data, ".png")
 
     case .some(let s) where s.contains("ext=BMP"):
-      if options.allowsEditing || options.quality != nil {
+      if options.allowsEditing {
         // switch to png if editing
         let data = image.pngData()
         return (data, ".png")
@@ -375,6 +379,13 @@ private struct ImageUtils {
     let preferredFormat = itemProvider.registeredTypeIdentifiers.first
 
     switch preferredFormat {
+    case UTType.bmp.identifier:
+      if options.allowsEditing {
+        // switch to png if editing
+        let data = image.pngData()
+        return (data, ".png")
+      }
+      return (rawData, ".bmp")
     case UTType.png.identifier:
       let data = image.pngData()
       return (data, ".png")
