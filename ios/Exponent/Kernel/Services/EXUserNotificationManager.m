@@ -6,6 +6,8 @@
 #import "EXEnvironment.h"
 #import "EXAbstractLoader.h"
 
+@import EXManifests;
+
 static NSString * const scopedIdentifierSeparator = @":";
 
 @interface EXUserNotificationManager ()

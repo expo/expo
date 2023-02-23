@@ -2,10 +2,10 @@
 
 #import <Foundation/Foundation.h>
 #import "EXResourceLoader.h"
-#import <EXManifests/EXManifestsManifest.h>
 
 @class EXAbstractLoader;
 @class EXAppFetcher;
+@class EXManifestsManifest;
 
 NS_ASSUME_NONNULL_BEGIN
 

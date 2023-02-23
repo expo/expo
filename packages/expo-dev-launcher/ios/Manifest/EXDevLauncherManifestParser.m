@@ -10,7 +10,7 @@
 #import <EXDevLauncher-Swift.h>
 #endif
 
-#import <EXManifests/EXManifestsManifestFactory.h>
+@import EXManifests;
 
 typedef void (^CompletionHandler)(NSData *data, NSURLResponse *response);
 

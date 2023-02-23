@@ -2116,9 +2116,10 @@ PODS:
   - EXLocation (15.1.1):
     - ExpoModulesCore
   - EXManifests (0.5.1):
-    - EXJSONUtils
+    - ExpoModulesCore
   - EXManifests/Tests (0.5.1):
-    - EXJSONUtils
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - EXMediaLibrary (15.2.1):
     - ExpoModulesCore
     - React-Core
@@ -2231,6 +2232,7 @@ PODS:
   - EXUpdates (0.16.1):
     - ASN1Decoder (~> 1.8)
     - EASClient
+    - EXJSONUtils
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
@@ -2239,6 +2241,7 @@ PODS:
   - EXUpdates/Tests (0.16.1):
     - ASN1Decoder (~> 1.8)
     - EASClient
+    - EXJSONUtils
     - EXManifests
     - ExpoModulesCore
     - ExpoModulesTestCore
@@ -4731,9 +4734,9 @@ SPEC CHECKSUMS:
   EXFileSystem: a736b6854370a36e4daee79b1f2b5bbc9df18bf4
   EXFont: 6ea3800df746be7233208d80fe379b8ed74f4272
   EXImageLoader: fd053169a8ee932dd83bf1fe5487a50c26d27c2b
-  EXJSONUtils: 48b1e764ac35160e6f54d21ab60d7d9501f3e473
+  EXJSONUtils: de3ed1d52896922dab84c7c475b9165a2e786a56
   EXLocation: 74a0ba446f54fd585ea6cfcd19a25644bf22c30d
-  EXManifests: 8afcd1cb32f7a098771fbf4b2f19bb1fb937bb47
+  EXManifests: 959d55f89999c7240f3c4bb558a4f20865ee6036
   EXMediaLibrary: 945e03614e6b90e70d15be886b9aebedc9d4fade
   EXNotifications: dd628737af60fc8cc62dccebacd326b0fbbc0dcb
   EXPermissions: 2291c6736a823b4c680d5bf8e12d3c1c5d11da35
@@ -4777,7 +4780,7 @@ SPEC CHECKSUMS:
   EXSQLite: 848167441b14cb6cdd6ae46c8d62289161a79550
   EXStructuredHeaders: b1a48d732562e2cc81f11771bcfd29534f5d9254
   EXTaskManager: f8257faa4c20acfc3f31e21ab82a62544d70db85
-  EXUpdates: d4e900d3fe75542631a89935fd66172098b86ac4
+  EXUpdates: 7e64623b498c635df1c90e9ba4046835cd9e1306
   EXUpdatesInterface: dd699d1930e28639dcbd70a402caea98e86364ca
   FBAEMKit: c7f82b5145d446bcbbcd50485c032689032fc6a2
   FBAudienceNetwork: e0fcc9091fced34910ed0b6da06f129db46ac9e6

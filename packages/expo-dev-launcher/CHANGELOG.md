@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
+
 ## 2.1.2 — 2023-02-17
 
 _This version does not introduce any user-facing changes._

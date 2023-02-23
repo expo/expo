@@ -272,7 +272,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (bool)_readSupportsRTLFromManifest:(EXManifestsManifest *)manifest
 {
-  return [[[[manifest expoClientConfigRootObject] valueForKey:@"extra"] valueForKey: @"supportsRTL"] boolValue];
+  return manifest.supportsRTL;
 }
 
 - (void)appStateDidBecomeActive

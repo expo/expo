@@ -2,10 +2,11 @@
 
 #import <XCTest/XCTest.h>
 
-#import <EXManifests/EXManifestsNewManifest.h>
 #import <EXUpdates/EXUpdatesNewUpdate.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesBuildData+Tests.h>
+
+@import EXManifests;
 
 @interface EXUpdatesBuildDataTests : XCTestCase
 
@@ -35,22 +36,22 @@ static NSString * const scopeKey = @"test";
     [NSFileManager.defaultManager createDirectoryAtPath:_testDatabaseDir.path withIntermediateDirectories:YES attributes:nil error:&error];
     XCTAssertNil(error);
   }
-  
+
   _db = [[EXUpdatesDatabase alloc] init];
   dispatch_sync(_db.databaseQueue, ^{
     NSError *dbOpenError;
     [_db openDatabaseInDirectory:_testDatabaseDir withError:&dbOpenError];
     XCTAssertNil(dbOpenError);
   });
-  
+
   _manifest = [[EXManifestsNewManifest alloc] initWithRawManifestJSON:@{
     @"runtimeVersion": @"1",
     @"id": @"0eef8214-4833-4089-9dff-b4138a14f196",
     @"createdAt": @"2020-11-11T00:17:54.797Z",
     @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
   }];
-  
-  
+
+
   _configChannelTestDictionary = @{
     EXUpdatesConfigScopeKeyKey: scopeKey,
     EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
@@ -64,7 +65,7 @@ static NSString * const scopeKey = @"test";
   };
   _configChannelTestTwo = [EXUpdatesConfig configWithDictionary:_configChannelTestTwoDictionary
   ];
-  
+
   _configReleaseChannelTestDictionary = @{
     EXUpdatesConfigScopeKeyKey: scopeKey,
     EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
@@ -78,13 +79,13 @@ static NSString * const scopeKey = @"test";
   };
   _configReleaseChannelTestTwo = [EXUpdatesConfig configWithDictionary:_configReleaseChannelTestTwoDictionary
   ];
-  
+
   EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil
                                                                                    serverDefinedHeaders:nil
                                                                                         manifestFilters:nil
                                                                                       manifestSignature:nil
                                                                                               signature:nil];
-  
+
   // start every test with an update
   dispatch_sync(_db.databaseQueue, ^{
     EXUpdatesUpdate *update = [EXUpdatesNewUpdate updateWithNewManifest:_manifest
@@ -120,10 +121,10 @@ static NSString * const scopeKey = @"test";
       XCTFail(@"%@", queryError.localizedDescription);
       return;
     }
-    
+
     XCTAssertGreaterThan(allUpdates.count, 0);
   });
-  
+
   dispatch_async(_db.databaseQueue, ^{
     [EXUpdatesBuildData clearAllUpdatesAndSetStaticBuildData:self->_db config:self->_configChannelTest];
   });
@@ -135,7 +136,7 @@ static NSString * const scopeKey = @"test";
       XCTFail(@"%@", queryError.localizedDescription);
       return;
     }
-    
+
     XCTAssertEqual(allUpdatesAfter.count, 0);
   });
 }
@@ -151,17 +152,17 @@ static NSString * const scopeKey = @"test";
     XCTAssertEqual(allUpdates.count, 1);
     XCTAssertNil(error);
   });
-  
+
   [EXUpdatesBuildData ensureBuildDataIsConsistentAsync:self->_db config:self->_configChannelTest];
 
 
-  
+
   dispatch_sync(_db.databaseQueue, ^{
       NSError *error;
       NSDictionary *newStaticBuildData = [_db staticBuildDataWithScopeKey:scopeKey error:&error];
       XCTAssertNotNil(newStaticBuildData);
       XCTAssertNil(error);
-    
+
       NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:_configChannelTest error:&error];
       XCTAssertEqual(allUpdates.count, 1);
       XCTAssertNil(error);
@@ -177,7 +178,7 @@ static NSString * const scopeKey = @"test";
     NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:_configChannelTest error:&error];
     XCTAssertEqual(allUpdates.count, 1);
     XCTAssertNil(error);
-  
+
     [_db setStaticBuildData:[EXUpdatesBuildData getBuildDataFromConfig:_configChannelTest] withScopeKey:_configChannelTest.scopeKey error:nil];
 
   });
@@ -196,14 +197,14 @@ static NSString * const scopeKey = @"test";
     XCTAssertNil(error);
   });
 }
- 
+
 - (void)test_ensureBuildDataIsConsistent_buildDataIsConsistent_releaseChannel {
   dispatch_sync(_db.databaseQueue, ^{
     NSError *error;
     NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:_configReleaseChannelTest error:&error];
     XCTAssertEqual(allUpdates.count, 1);
     XCTAssertNil(error);
-  
+
     [_db setStaticBuildData:[EXUpdatesBuildData getBuildDataFromConfig:_configReleaseChannelTest] withScopeKey:_configReleaseChannelTest.scopeKey error:nil];
 
   });
@@ -230,12 +231,12 @@ static NSString * const scopeKey = @"test";
     NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:_configChannelTest error:&error];
     XCTAssertEqual(allUpdates.count, 1);
     XCTAssertNil(error);
-    
+
     [_db setStaticBuildData:[EXUpdatesBuildData getBuildDataFromConfig:_configChannelTest] withScopeKey:_configChannelTest.scopeKey error:nil];
   });
-  
+
   [EXUpdatesBuildData ensureBuildDataIsConsistentAsync:self->_db config:self->_configChannelTestTwo];
-  
+
   dispatch_sync(_db.databaseQueue, ^{
     NSError *error;
     NSDictionary *staticBuildData = [_db staticBuildDataWithScopeKey:scopeKey error:&error];
@@ -253,12 +254,12 @@ static NSString * const scopeKey = @"test";
     NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:_configReleaseChannelTest error:&error];
     XCTAssertEqual(allUpdates.count, 1);
     XCTAssertNil(error);
-    
+
     [_db setStaticBuildData:[EXUpdatesBuildData getBuildDataFromConfig:_configReleaseChannelTest] withScopeKey:_configReleaseChannelTest.scopeKey error:nil];
   });
-  
+
   [EXUpdatesBuildData ensureBuildDataIsConsistentAsync:self->_db config:self->_configReleaseChannelTestTwo];
-  
+
   dispatch_sync(_db.databaseQueue, ^{
     NSError *error;
     NSDictionary *staticBuildData = [_db staticBuildDataWithScopeKey:scopeKey error:&error];

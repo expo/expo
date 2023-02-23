@@ -8,7 +8,8 @@
 #import "EXKernelLinkingManager.h"
 #import "EXKernelUtil.h"
 #import "EXVersions.h"
-#import <EXManifests/EXManifestsManifestFactory.h>
+
+@import EXManifests;
 
 #import <React/RCTConvert.h>
 #import <EXUpdates/EXUpdatesUpdate.h>

@@ -5,10 +5,10 @@
 #import "EXAppFetcherDevelopmentMode.h"
 #import "EXAppFetcherWithTimeout.h"
 #import "EXCachedResource.h"
-#import <EXManifests/EXManifestsManifest.h>
 
 @class EXKernelAppRecord;
 @class EXAbstractLoader;
+@class EXManifestsManifest;
 
 NS_ASSUME_NONNULL_BEGIN
 
