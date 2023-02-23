@@ -77,6 +77,7 @@ export function createTextComponent(Element: TextElement, textStyle?: Serialized
 const baseTextStyle = css({
   ...typography.body.paragraph,
   color: theme.text.default,
+  wordBreak: 'break-word',
 });
 
 const link = css({
