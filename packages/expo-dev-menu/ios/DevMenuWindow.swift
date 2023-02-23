@@ -41,6 +41,7 @@ class DevMenuWindow: UIWindow, OverlayContainerViewControllerDelegate {
     self.isHidden = true
   }
 
+  @available(*, unavailable)
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
@@ -80,29 +81,33 @@ class DevMenuWindow: UIWindow, OverlayContainerViewControllerDelegate {
   }
 
   enum OverlayNotch: Int, CaseIterable {
-      case hidden, open, fullscreen
+    case hidden, open, fullscreen
   }
 
   func numberOfNotches(in containerViewController: OverlayContainerViewController) -> Int {
-      return OverlayNotch.allCases.count
+    return OverlayNotch.allCases.count
   }
 
-  func overlayContainerViewController(_ containerViewController: OverlayContainerViewController,
-                                      heightForNotchAt index: Int,
-                                      availableSpace: CGFloat) -> CGFloat {
+  func overlayContainerViewController(
+    _ containerViewController: OverlayContainerViewController,
+    heightForNotchAt index: Int,
+    availableSpace: CGFloat
+  ) -> CGFloat {
     switch OverlayNotch.allCases[index] {
-      case .fullscreen:
-        return availableSpace - 45
-      case .open:
-        return availableSpace * 0.6
-      case .hidden:
-        return 0
+    case .fullscreen:
+      return availableSpace - 45
+    case .open:
+      return availableSpace * 0.6
+    case .hidden:
+      return 0
     }
   }
 
-  func overlayContainerViewController(_ containerViewController: OverlayContainerViewController,
-                                      didMoveOverlay overlayViewController: UIViewController,
-                                      toNotchAt index: Int) {
+  func overlayContainerViewController(
+    _ containerViewController: OverlayContainerViewController,
+    didMoveOverlay overlayViewController: UIViewController,
+    toNotchAt index: Int
+  ) {
     if index == OverlayNotch.hidden.rawValue {
       manager.hideMenu()
     }
