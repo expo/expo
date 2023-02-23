@@ -22,27 +22,27 @@ extension UIView {
 
 class DevMenuWindow: UIWindow, OverlayContainerViewControllerDelegate {
   private let manager: DevMenuManager
-  
+
   private let bottomSheetController: OverlayContainerViewController
   private let devMenuViewController: DevMenuViewController
-  
+
   init(manager: DevMenuManager) {
     self.manager = manager
     bottomSheetController = OverlayContainerViewController(style: .flexibleHeight)
     devMenuViewController = DevMenuViewController(manager: manager)
-    
+
     super.init(frame: UIScreen.main.bounds)
-    
+
     bottomSheetController.delegate = self
     bottomSheetController.viewControllers = [devMenuViewController]
-    
+
     self.rootViewController = bottomSheetController
     self.backgroundColor = UIColor(white: 0, alpha: 0.4)
     self.bounds = UIScreen.main.bounds
     self.windowLevel = .statusBar
     self.isHidden = true
   }
-  
+
   required init?(coder: NSCoder) {
     fatalError("init(coder:) has not been implemented")
   }
@@ -53,10 +53,10 @@ class DevMenuWindow: UIWindow, OverlayContainerViewControllerDelegate {
 
     devMenuViewController.updateProps()
     bottomSheetController.moveOverlay(toNotchAt: OverlayNotch.open.rawValue, animated: true)
-    
+
     setDrivingScrollView()
   }
-  
+
   // In order to create a smooth interplay between a mobile bottom sheet and scrolling through its contents,
   // the 'drivingScrollView' property must be established. However, it may not be immediately accessible
   // when the menu is first opened. As a result, we schedule a task that periodically verifies the availability of the scroll view.
@@ -71,16 +71,16 @@ class DevMenuWindow: UIWindow, OverlayContainerViewControllerDelegate {
       bottomSheetController.drivingScrollView = scrollView
     }
   }
-  
+
   override func hitTest(_ point: CGPoint, with event: UIEvent?) -> UIView? {
     let view = super.hitTest(point, with: event)
     if view == self {
       bottomSheetController.moveOverlay(toNotchAt: OverlayNotch.hidden.rawValue, animated: true)
     }
-            
+
     return view == self ? nil : view
   }
-  
+
   enum OverlayNotch: Int, CaseIterable {
       case hidden, open, fullscreen
   }
@@ -101,7 +101,7 @@ class DevMenuWindow: UIWindow, OverlayContainerViewControllerDelegate {
         return 0
     }
   }
-  
+
   func overlayContainerViewController(_ containerViewController: OverlayContainerViewController,
                                       didMoveOverlay overlayViewController: UIViewController,
                                       toNotchAt index: Int) {

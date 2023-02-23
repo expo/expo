@@ -33,7 +33,7 @@ class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
   public func sendCloseEvent() {
     bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.CloseEventName])
   }
-  
+
   public func sendOpenEvent() {
     bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.OpenEventName])
   }
