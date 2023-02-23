@@ -12,7 +12,11 @@ import { Options, ResolvedOptions, resolveOptionsAsync } from './resolveOptions'
 const debug = require('debug')('expo:run:android');
 
 export async function runAndroidAsync(projectRoot: string, { install, ...options }: Options) {
-  await ensureNativeProjectAsync(projectRoot, { platform: 'android', install });
+  await ensureNativeProjectAsync(projectRoot, {
+    platform: 'android',
+    install,
+    template: options?.template,
+  });
 
   const props = await resolveOptionsAsync(projectRoot, options);
 

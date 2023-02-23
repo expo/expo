@@ -17,6 +17,8 @@ export type Options = {
   install?: boolean;
   /** Should use derived data for builds. */
   buildCache?: boolean;
+  /** The template to be used for native projects */
+  template?: string;
 };
 
 export type ProjectInfo = {

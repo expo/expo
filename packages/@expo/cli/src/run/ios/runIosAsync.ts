@@ -17,7 +17,14 @@ export async function runIosAsync(projectRoot: string, options: Options) {
 
   const install = !!options.install;
 
-  if ((await ensureNativeProjectAsync(projectRoot, { platform: 'ios', install })) && install) {
+  if (
+    (await ensureNativeProjectAsync(projectRoot, {
+      platform: 'ios',
+      install,
+      template: options?.template,
+    })) &&
+    install
+  ) {
     await maybePromptToSyncPodsAsync(projectRoot);
   }
 

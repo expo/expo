@@ -1,6 +1,7 @@
 # Changelog
 
 ## Unpublished
+- Add --template argument to run command ([#18970](https://github.com/expo/expo/pull/18970) by [@abdullahceylan](https://github.com/abdullahceylan))
 
 ### 🛠 Breaking changes
 

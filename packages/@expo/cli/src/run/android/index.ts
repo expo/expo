@@ -16,6 +16,7 @@ export const expoRunAndroid: Command = async (argv) => {
     '--no-install': Boolean,
     '--no-bundler': Boolean,
     '--variant': String,
+    '--template': String,
 
     '--port': Number,
     // Aliases
@@ -47,6 +48,8 @@ export const expoRunAndroid: Command = async (argv) => {
     --variant <name>       Build variant. {dim Default: debug}
     -d, --device [device]  Device name to run the app on
     -p, --port <port>      Port to start the dev server on. {dim Default: 8081}
+    --template <path|URL>  Base template for the native project if it doesnt exists. {dim Default: bare-minimum}
+
     -h, --help             Output usage information
 `,
       0
@@ -68,6 +71,7 @@ export const expoRunAndroid: Command = async (argv) => {
     bundler: !args['--no-bundler'],
     port: args['--port'],
     variant: args['--variant'],
+    template: args['--template'],
 
     // Custom parsed args
     device: parsed.args['--device'],
