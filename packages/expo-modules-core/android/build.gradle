@@ -274,7 +274,7 @@ dependencies {
   api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
   api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0"
   api "androidx.core:core-ktx:1.6.0"
-  api project(':expo-modules-core$annotation')
+  api project(':expo-modules-core$android-annotation')
 
   /**
    * ReactActivity (the base activity for every React Native application) is subclassing AndroidX classes.

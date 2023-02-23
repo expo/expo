@@ -41,6 +41,11 @@ java {
 }
 
 dependencies {
+  implementation project(':expo-modules-core$android-annotation')
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
-}
 
+  implementation "com.google.devtools.ksp:symbol-processing-api:${kspVersion()}"
+
+  implementation 'com.squareup:kotlinpoet:1.12.0'
+  implementation 'com.squareup:kotlinpoet-ksp:1.12.0'
+}
