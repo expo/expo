@@ -339,7 +339,7 @@ class Kernel : KernelInterface() {
 
   val reactRootView: ReactRootView
     get() {
-      val reactRootView: ReactRootView = ReactUnthemedRootView(context)
+      val reactRootView: ReactRootView = ReactUnthemedRootView(activityContext)
       reactRootView.startReactApplication(
         reactInstanceManager,
         KernelConstants.HOME_MODULE_NAME,
