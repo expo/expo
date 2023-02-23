@@ -3,8 +3,9 @@
 
 #import <UIKit/UIKit.h>
 
-#import <EXManifests/EXManifestsManifest.h>
 #import <EXUpdatesInterface/EXUpdatesExternalInterface.h>
+
+@import EXManifests;
 
 NS_ASSUME_NONNULL_BEGIN
 

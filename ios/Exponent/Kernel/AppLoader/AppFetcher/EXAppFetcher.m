@@ -11,6 +11,8 @@
 
 #import <React/RCTUtils.h>
 
+@import EXManifests;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXAppFetcher

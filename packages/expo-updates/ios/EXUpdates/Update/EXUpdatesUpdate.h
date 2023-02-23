@@ -3,7 +3,8 @@
 #import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesManifestHeaders.h>
-#import <EXManifests/EXManifestsManifest.h>
+
+@import EXManifests;
 
 @class EXUpdatesDatabase;
 

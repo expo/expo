@@ -31,11 +31,10 @@
 #import <EXUpdates/EXUpdatesReaperSelectionPolicyDevelopmentClient.h>
 #import <EXUpdates/EXUpdatesSelectionPolicy.h>
 #import <EXUpdates/EXUpdatesUtils.h>
-#import <EXManifests/EXManifestsManifestFactory.h>
-#import <EXManifests/EXManifestsLegacyManifest.h>
-#import <EXManifests/EXManifestsNewManifest.h>
 #import <React/RCTUtils.h>
 #import <sys/utsname.h>
+
+@import EXManifests;
 
 NS_ASSUME_NONNULL_BEGIN
 

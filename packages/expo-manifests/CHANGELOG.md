@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Convert iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
+
 ## 0.5.1 — 2023-02-09
 
 _This version does not introduce any user-facing changes._
