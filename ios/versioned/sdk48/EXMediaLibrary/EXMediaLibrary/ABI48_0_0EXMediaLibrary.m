@@ -1110,21 +1110,18 @@ ABI48_0_0EX_EXPORT_METHOD_AS(getAssetsAsync,
 
 + (NSSortDescriptor *)_sortDescriptorFrom:(id)config
 {
-  if ([config isKindOfClass:[NSString class]]) {
-    NSString *key = [ABI48_0_0EXMediaLibrary _convertSortByKey:config];
-    
-    if (key) {
-      return [NSSortDescriptor sortDescriptorWithKey:key ascending:NO];
+  NSArray *parts = [config componentsSeparatedByString:@" "];
+  NSString *key = [ABI48_0_0EXMediaLibrary _convertSortByKey:parts[0]];
+
+  BOOL ascending = NO;
+  if ([parts count] > 1) {
+    if ([parts[1] isEqualToString: @"ASC"]) {
+      ascending = YES;
     }
   }
-  if ([config isKindOfClass:[NSArray class]]) {
-    NSArray *sortArray = (NSArray *)config;
-    NSString *key = [ABI48_0_0EXMediaLibrary _convertSortByKey:sortArray[0]];
-    BOOL ascending = [(NSNumber *)sortArray[1] boolValue];
-    
-    if (key) {
-      return [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
-    }
+
+  if (key) {
+    return [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
   }
   return nil;
 }
