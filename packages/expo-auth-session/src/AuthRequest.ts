@@ -163,6 +163,9 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     let startUrl: string = url!;
     let returnUrl: string = this.redirectUri;
     if (options.useProxy) {
+      console.warn(
+        'The useProxy option is deprecated and will be removed in a future release, for more information check https://expo.fyi/auth-proxy-migration.'
+      );
       returnUrl = sessionUrlProvider.getDefaultReturnUrl(proxyOptions?.path, proxyOptions);
       startUrl = sessionUrlProvider.getStartUrl(url, returnUrl, options.projectNameForProxy);
     }
