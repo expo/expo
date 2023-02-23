@@ -99,10 +99,11 @@ internal class BarCodeScannerViewFinder(
 
   @Synchronized
   private fun startCamera() {
-    if (!isStarting) {
+    if (!isStarting && !isStopping) {
       isStarting = true
       try {
-        ExpoBarCodeScanner.instance.acquireCameraInstance(cameraType)?.run {
+        camera = ExpoBarCodeScanner.instance.acquireCameraInstance(cameraType)
+        camera?.run {
           val temporaryParameters = parameters
           // set autofocus
           val focusModes = temporaryParameters.supportedFocusModes
