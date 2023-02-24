@@ -14,6 +14,8 @@
 
 @import EXManifests;
 
+#define NULL_TO_NIL(obj) ({ __typeof__ (obj) __obj = (obj); __obj == [NSNull null] ? nil : obj; })
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesDatabase ()
@@ -666,9 +668,9 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
   asset.url = url;
   asset.extraRequestHeaders = extraRequestHeaders;
   asset.downloadTime = [EXUpdatesDatabaseUtils dateFromUnixTimeMilliseconds:(NSNumber *)row[@"download_time"]];
-  asset.filename = row[@"relative_path"];
-  asset.contentHash = row[@"hash"];
-  asset.expectedHash = row[@"expected_hash"];
+  asset.filename = NULL_TO_NIL(row[@"relative_path"]);
+  asset.contentHash = NULL_TO_NIL(row[@"hash"]);
+  asset.expectedHash = NULL_TO_NIL(row[@"expected_hash"]);
   asset.metadata = metadata;
   asset.isLaunchAsset = (launchAssetId && [launchAssetId isKindOfClass:[NSNumber class]])
     ? [(NSNumber *)launchAssetId isEqualToNumber:(NSNumber *)row[@"id"]]

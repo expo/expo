@@ -2,8 +2,9 @@
 
 #import <React/RCTBridge.h>
 
-#import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesConfig.h>
+
+@class EXUpdatesAsset;
 
 NS_ASSUME_NONNULL_BEGIN
 
