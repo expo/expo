@@ -1,9 +1,10 @@
-import { getConfig } from '@expo/config';
+import { ExpoConfig, getConfig } from '@expo/config';
 import { MetroDevServerOptions } from '@expo/dev-server';
 import chalk from 'chalk';
 import http from 'http';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
+import type { LoadOptions } from '@expo/metro-config';
 
 import { Log } from '../../../log';
 import { getMetroProperties } from '../../../utils/analytics/getMetroProperties';
@@ -21,19 +22,14 @@ type MessageSocket = {
   broadcast: (method: string, params?: Record<string, any> | undefined) => void;
 };
 
-/** The most generic possible setup for Metro bundler. */
-export async function instantiateMetroAsync(
+export async function loadMetroConfigAsync(
   projectRoot: string,
-  options: Omit<MetroDevServerOptions, 'logger'>
-): Promise<{
-  server: http.Server;
-  middleware: any;
-  messageSocket: MessageSocket;
-}> {
+  options: LoadOptions,
+  {
+    exp = getConfig(projectRoot, { skipSDKVersionRequirement: true, skipPlugins: true }).exp,
+  }: { exp?: ExpoConfig } = {}
+) {
   let reportEvent: ((event: any) => void) | undefined;
-
-  const Metro = importMetroFromProject(projectRoot);
-  const ExpoMetroConfig = importExpoMetroConfigFromProject(projectRoot);
 
   const terminal = new Terminal(process.stdout);
   const terminalReporter = new MetroTerminalReporter(projectRoot, terminal);
@@ -47,7 +43,33 @@ export async function instantiateMetroAsync(
     },
   };
 
-  let metroConfig = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
+  const ExpoMetroConfig = importExpoMetroConfigFromProject(projectRoot);
+
+  let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
+
+  const bundlerPlatforms = getPlatformBundlers(exp);
+
+  config = await withMetroMultiPlatformAsync(projectRoot, config, bundlerPlatforms);
+
+  logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));
+
+  return {
+    config,
+    setEventReporter: (logger: (event: any) => void) => (reportEvent = logger),
+    reporter: terminalReporter,
+  };
+}
+
+/** The most generic possible setup for Metro bundler. */
+export async function instantiateMetroAsync(
+  projectRoot: string,
+  options: Omit<MetroDevServerOptions, 'logger'>
+): Promise<{
+  server: http.Server;
+  middleware: any;
+  messageSocket: MessageSocket;
+}> {
+  const Metro = importMetroFromProject(projectRoot);
 
   // TODO: When we bring expo/metro-config into the expo/expo repo, then we can upstream this.
   const { exp } = getConfig(projectRoot, {
@@ -55,27 +77,17 @@ export async function instantiateMetroAsync(
     skipPlugins: true,
   });
 
-  const platformBundlers = getPlatformBundlers(exp);
-  metroConfig = await withMetroMultiPlatformAsync(projectRoot, metroConfig, platformBundlers);
+  const { config, setEventReporter } = await loadMetroConfigAsync(projectRoot, options, { exp });
 
-  logEventAsync('metro config', getMetroProperties(projectRoot, exp, metroConfig));
+  const { middleware, websocketEndpoints, eventsSocketEndpoint, messageSocketEndpoint } =
+    createDevServerMiddleware(projectRoot, {
+      port: config.server.port,
+      watchFolders: config.watchFolders,
+    });
 
-  const {
-    middleware,
-    attachToServer,
-
-    // New
-    websocketEndpoints,
-    eventsSocketEndpoint,
-    messageSocketEndpoint,
-  } = createDevServerMiddleware(projectRoot, {
-    port: metroConfig.server.port,
-    watchFolders: metroConfig.watchFolders,
-  });
-
-  const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
+  const customEnhanceMiddleware = config.server.enhanceMiddleware;
   // @ts-ignore can't mutate readonly config
-  metroConfig.server.enhanceMiddleware = (metroMiddleware: any, server: Metro.Server) => {
+  config.server.enhanceMiddleware = (metroMiddleware: any, server: Metro.Server) => {
     if (customEnhanceMiddleware) {
       metroMiddleware = customEnhanceMiddleware(metroMiddleware, server);
     }
@@ -84,33 +96,20 @@ export async function instantiateMetroAsync(
 
   middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
 
-  const server = await Metro.runServer(metroConfig, {
+  const server = await Metro.runServer(config, {
     hmrEnabled: true,
     websocketEndpoints,
     // @ts-expect-error Property was added in 0.73.4, remove this statement when updating Metro
     watch: isWatchEnabled(),
   });
 
-  if (attachToServer) {
-    // Expo SDK 44 and lower
-    const { messageSocket, eventsSocket } = attachToServer(server);
-    reportEvent = eventsSocket.reportEvent;
+  setEventReporter(eventsSocketEndpoint.reportEvent);
 
-    return {
-      server,
-      middleware,
-      messageSocket,
-    };
-  } else {
-    // RN +68 -- Expo SDK +45
-    reportEvent = eventsSocketEndpoint.reportEvent;
-
-    return {
-      server,
-      middleware,
-      messageSocket: messageSocketEndpoint,
-    };
-  }
+  return {
+    server,
+    middleware,
+    messageSocket: messageSocketEndpoint,
+  };
 }
 
 /**
