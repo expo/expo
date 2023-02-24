@@ -4,11 +4,11 @@
 
 ### 🛠 Breaking changes
 
-- Removed the deprecated `Linking.removeEventListener`. ([#21371](https://github.com/expo/expo/pull/21371) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- Fixed crash when calling `Linking.removeEventListener` and added warning about `Linking.removeEventListener` being removed from react-native. ([#21371](https://github.com/expo/expo/pull/21371) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
