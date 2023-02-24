@@ -3,7 +3,7 @@
 import React
 
 @objc
-class DevMenuAppInstance: DevMenuBaseAppInstance, RCTBridgeDelegate {
+class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
   static private var CloseEventName = "closeDevMenu"
   static private var OpenEventName = "openDevMenu"
 
@@ -33,7 +33,7 @@ class DevMenuAppInstance: DevMenuBaseAppInstance, RCTBridgeDelegate {
   public func sendCloseEvent() {
     bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.CloseEventName])
   }
-  
+
   public func sendOpenEvent() {
     bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.OpenEventName])
   }
@@ -51,7 +51,7 @@ class DevMenuAppInstance: DevMenuBaseAppInstance, RCTBridgeDelegate {
 
   func extraModules(for bridge: RCTBridge!) -> [RCTBridgeModule]! {
     var modules: [RCTBridgeModule] = [DevMenuInternalModule(manager: manager)]
-    modules.append(contentsOf: DevMenuVendoredModulesUtils.vendoredModules(bridge, addReanimated2: true))
+    modules.append(contentsOf: DevMenuVendoredModulesUtils.vendoredModules(bridge))
     modules.append(DevMenuLoadingView.init())
     modules.append(DevMenuRCTDevSettings.init())
     return modules
