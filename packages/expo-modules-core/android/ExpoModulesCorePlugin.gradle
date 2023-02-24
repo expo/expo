@@ -18,8 +18,8 @@ class KotlinExpoModulesCorePlugin implements Plugin<Project> {
 
         project.rootProject.ext.has("kspVersion")
           ? project.rootProject.ext.get("kspVersion")
-          : kspVersionsMap.containsKey(project.ext.kotlinVersion)
-          ? kspVersionsMap.get(project.ext.kotlinVersion)
+          : kspVersionsMap.containsKey(project.ext.kotlinVersion())
+          ? kspVersionsMap.get(project.ext.kotlinVersion())
           : "1.8.10-1.0.9"
       }
     }
