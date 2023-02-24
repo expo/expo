@@ -63,9 +63,8 @@ async function validateAllOpenIssuesAsync() {
     labels: 'needs validation',
   });
   let page = 0;
-  while (issues.length >= GITHUB_API_PAGE_SIZE) {
+  while (issues.length > 0) {
     for (const issue of issues) {
-      console.log(issue.title);
       await validateIssueAsync(issue.number);
     }
     issues = await listAllOpenIssuesAsync({
