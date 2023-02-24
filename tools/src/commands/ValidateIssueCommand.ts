@@ -22,7 +22,7 @@ export default (program: Command) => {
 };
 
 async function action(options: ActionOptions) {
-  if (options.issue !== '*' || !isNaN(Number(options.issue))) {
+  if (options.issue !== '*' && isNaN(Number(options.issue))) {
     throw new Error('Flag `--issue` must be provided with a number value or *.');
   }
   if (!process.env.GITHUB_TOKEN) {
