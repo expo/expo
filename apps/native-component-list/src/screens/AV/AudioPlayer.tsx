@@ -2,8 +2,9 @@ import { diff } from 'deep-object-diff';
 import { Asset } from 'expo-asset';
 import { Audio, AVMetadata, AVPlaybackStatus } from 'expo-av';
 import React from 'react';
-import { StyleProp, ViewStyle } from 'react-native';
+import { StyleProp, View, ViewStyle } from 'react-native';
 
+import { AndroidImplementationSelector } from './AndroidImplementationSelector';
 import { JsiAudioBar } from './JsiAudioBar';
 import Player from './Player';
 
@@ -24,6 +25,7 @@ interface Props {
 }
 
 interface State {
+  androidImplementation: string;
   isLoaded: boolean;
   isLooping: boolean;
   isPlaying: boolean;
@@ -32,6 +34,7 @@ interface State {
   durationMillis: number;
   rate: number;
   volume: number;
+  audioPan: number;
   isMuted: boolean;
   shouldCorrectPitch: boolean;
   metadata: AVMetadata;
@@ -39,6 +42,7 @@ interface State {
 
 export default class AudioPlayer extends React.Component<Props, State> {
   readonly state: State = {
+    androidImplementation: 'SimpleExoPlayer',
     isMuted: false,
     isLoaded: false,
     isLooping: false,
@@ -47,6 +51,7 @@ export default class AudioPlayer extends React.Component<Props, State> {
     durationMillis: 0,
     rate: 1,
     volume: 1,
+    audioPan: 0,
     shouldCorrectPitch: false,
     metadata: {},
   };
@@ -71,10 +76,13 @@ export default class AudioPlayer extends React.Component<Props, State> {
     }
   }
 
-  _loadSoundAsync = async (source: PlaybackSource) => {
+  _loadSoundAsync = async (source: PlaybackSource, androidImplementation?: string) => {
     const soundObject = new Audio.Sound();
     try {
-      await soundObject.loadAsync(source, { progressUpdateIntervalMillis: 150 });
+      await soundObject.loadAsync(source, {
+        progressUpdateIntervalMillis: 150,
+        androidImplementation,
+      });
       soundObject.setOnPlaybackStatusUpdate(this._updateStateToStatus);
       soundObject.setOnMetadataUpdate(this._updateMetadata);
       const status = await soundObject.getStatusAsync();
@@ -96,30 +104,31 @@ export default class AudioPlayer extends React.Component<Props, State> {
   };
 
   _playAsync = async () => {
-    this._sound!.playAsync();
+    this._sound?.playAsync();
   };
 
   _pauseAsync = async () => {
     this._clearJsiAudioSampleCallback();
-    this._sound!.pauseAsync();
+    this._sound?.pauseAsync();
   };
 
-  _replayAsync = async () => this._sound!.replayAsync();
+  _replayAsync = async () => this._sound?.replayAsync();
 
-  _setPositionAsync = async (position: number) => this._sound!.setPositionAsync(position);
+  _setPositionAsync = async (position: number) => this._sound?.setPositionAsync(position);
 
-  _setIsLoopingAsync = async (isLooping: boolean) => this._sound!.setIsLoopingAsync(isLooping);
+  _setIsLoopingAsync = async (isLooping: boolean) => this._sound?.setIsLoopingAsync(isLooping);
 
-  _setIsMutedAsync = async (isMuted: boolean) => this._sound!.setIsMutedAsync(isMuted);
+  _setIsMutedAsync = async (isMuted: boolean) => this._sound?.setIsMutedAsync(isMuted);
 
-  _setVolumeAsync = async (volume: number) => this._sound!.setVolumeAsync(volume);
+  _setVolumeAsync = async (volume: number, audioPan?: number) =>
+    this._sound?.setVolumeAsync(volume, audioPan);
 
   _setRateAsync = async (
     rate: number,
     shouldCorrectPitch: boolean,
     pitchCorrectionQuality = Audio.PitchCorrectionQuality.Low
   ) => {
-    await this._sound!.setRateAsync(rate, shouldCorrectPitch, pitchCorrectionQuality);
+    await this._sound?.setRateAsync(rate, shouldCorrectPitch, pitchCorrectionQuality);
   };
 
   _clearJsiAudioSampleCallback = () => {
@@ -130,21 +139,46 @@ export default class AudioPlayer extends React.Component<Props, State> {
     } catch {}
   };
 
+  _isMediaPlayerImplementation = () => this.state.androidImplementation === 'MediaPlayer';
+
+  _toggleAndroidImplementation = async () => {
+    if (this.state.isPlaying) {
+      await this._pauseAsync();
+    }
+    if (this.state.isLoaded) {
+      await this._sound?.unloadAsync();
+    }
+    await this._loadSoundAsync(
+      this.props.source,
+      this._isMediaPlayerImplementation() ? 'SimpleExoPlayer' : 'MediaPlayer'
+    );
+  };
+
   render() {
     return (
-      <Player
-        {...this.state}
-        style={this.props.style}
-        playAsync={this._playAsync}
-        pauseAsync={this._pauseAsync}
-        replayAsync={this._replayAsync}
-        setPositionAsync={this._setPositionAsync}
-        setIsLoopingAsync={this._setIsLoopingAsync}
-        setRateAsync={this._setRateAsync}
-        setIsMutedAsync={this._setIsMutedAsync}
-        setVolume={this._setVolumeAsync}
-        extraIndicator={<JsiAudioBar isPlaying={this.state.isPlaying} sound={this._sound!} />}
-      />
+      <View>
+        <AndroidImplementationSelector
+          onToggle={this._toggleAndroidImplementation}
+          title={`Current player: ${
+            this._isMediaPlayerImplementation() ? 'MediaPlayer' : 'SimpleExoPlayer'
+          }`}
+          toggled={this._isMediaPlayerImplementation()}
+        />
+
+        <Player
+          {...this.state}
+          style={this.props.style}
+          playAsync={this._playAsync}
+          pauseAsync={this._pauseAsync}
+          replayAsync={this._replayAsync}
+          setPositionAsync={this._setPositionAsync}
+          setIsLoopingAsync={this._setIsLoopingAsync}
+          setRateAsync={this._setRateAsync}
+          setIsMutedAsync={this._setIsMutedAsync}
+          setVolume={this._setVolumeAsync}
+          extraIndicator={<JsiAudioBar isPlaying={this.state.isPlaying} sound={this._sound} />}
+        />
+      </View>
     );
   }
 }

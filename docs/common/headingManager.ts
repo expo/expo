@@ -40,6 +40,8 @@ export type AdditionalProps = {
   sidebarTitle?: string;
   sidebarDepth?: number;
   sidebarType?: HeadingType;
+  tags?: string[];
+  style?: React.CSSProperties;
 };
 
 type Metadata = Partial<PageMetadata> & { headings: (RemarkHeading & { _processed?: boolean })[] };
@@ -53,6 +55,7 @@ export type Heading = {
   level: number;
   type: HeadingType;
   ref: React.RefObject<any>;
+  tags?: string[];
   metadata?: ElementType<Metadata['headings']>;
 };
 
@@ -109,7 +112,7 @@ export class HeadingManager {
     // changing this needs also change in `headingsMdPlugin.js` to make metadata loading correctly
     title = Array.isArray(title) ? title.map(Utilities.toString).join(' ') : title;
 
-    const { hideInSidebar, sidebarTitle, sidebarDepth, sidebarType } = additionalProps ?? {};
+    const { hideInSidebar, sidebarTitle, sidebarDepth, sidebarType, tags } = additionalProps ?? {};
     const levelOverride = sidebarDepth != null ? BASE_HEADING_LEVEL + sidebarDepth : undefined;
 
     const slug = id ?? Utilities.generateSlug(this.slugger, title);
@@ -123,6 +126,7 @@ export class HeadingManager {
       slug,
       level,
       type,
+      tags,
       ref: React.createRef(),
       metadata: meta,
     };

@@ -1,13 +1,14 @@
 package expo.modules.kotlin.views
 
 import android.content.Context
-import android.util.Log
 import android.view.View
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.MapBuilder
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.ModuleHolder
-import expo.modules.kotlin.callbacks.ViewCallbackDelegate
+import expo.modules.kotlin.events.normalizeEventName
+import expo.modules.kotlin.logger
+import expo.modules.kotlin.viewevent.ViewEventDelegate
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.jvm.isAccessible
 
@@ -23,7 +24,7 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
 
   fun createView(context: Context): View {
     return definition
-      .createView(context)
+      .createView(context, moduleHolder.module.appContext)
       .also {
         configureView(it)
       }
@@ -31,6 +32,7 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
 
   fun setProxiedProperties(view: View, proxiedProperties: ReadableMap) {
     definition.setProps(proxiedProperties, view)
+    definition.onViewDidUpdateProps?.invoke(view)
   }
 
   fun onDestroy(view: View) =
@@ -43,7 +45,7 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
       ?.names
       ?.forEach {
         builder.put(
-          it, MapBuilder.of<String, Any>("registrationName", it)
+          normalizeEventName(it), MapBuilder.of<String, Any>("registrationName", it)
         )
       }
     return builder.build()
@@ -55,23 +57,22 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
     val kClass = view.javaClass.kotlin
     val propertiesMap = kClass
       .declaredMemberProperties
-      .map { it.name to it }
-      .toMap()
+      .associateBy { it.name }
 
     callbacks.forEach {
       val property = propertiesMap[it].ifNull {
-        Log.w("ExpoModuleCore", "Property `$it` does not exist in ${kClass.simpleName}.")
+        logger.warn("⚠️ Property `$it` does not exist in ${kClass.simpleName}")
         return@forEach
       }
       property.isAccessible = true
 
       val delegate = property.getDelegate(view).ifNull {
-        Log.w("ExpoModulesCore", "Property delegate for `$it` in ${kClass.simpleName} does not exist.")
+        logger.warn("⚠️ Property delegate for `$it` in ${kClass.simpleName} does not exist")
         return@forEach
       }
 
-      val viewDelegate = (delegate as? ViewCallbackDelegate<*>).ifNull {
-        Log.w("ExpoModulesCore", "Property delegate for `$it` cannot be cased to `ViewCallbackDelegate`.")
+      val viewDelegate = (delegate as? ViewEventDelegate<*>).ifNull {
+        logger.warn("⚠️ Property delegate for `$it` cannot be cased to `ViewCallbackDelegate`")
         return@forEach
       }
 

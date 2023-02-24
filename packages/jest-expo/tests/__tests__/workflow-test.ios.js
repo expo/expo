@@ -1,3 +1,3 @@
 it(`resolves a workflow extension`, () => {
-  expect(require('../workflow').default).toContain('workflow.ios.expo');
+  expect(require('../workflow').default).toContain('workflow.ios');
 });

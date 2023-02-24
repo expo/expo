@@ -1,6 +1,6 @@
 {
   "name": "expo-navigation-bar",
-  "version": "1.3.0",
+  "version": "2.1.1",
   "description": "Interact with the system navigation bar",
   "main": "build/NavigationBar.js",
   "types": "build/NavigationBar.d.ts",
@@ -33,13 +33,12 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/navigation-bar",
   "dependencies": {
-    "@expo/config-plugins": "~5.0.0",
     "@react-native/normalize-color": "^2.0.0",
     "debug": "^4.3.2"
   },
   "devDependencies": {
     "@types/debug": "^4.1.7",
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
     "expo": "*"

@@ -1,10 +1,17 @@
-# expo-modules-autolinking
+<p>
+  <a href="https://docs.expo.dev/modules/autolinking/">
+    <img
+      src="../../.github/resources/expo-modules-autolinking.svg"
+      alt="expo-modules-autolinking"
+      height="64" />
+  </a>
+</p>
 
 Scripts that autolink Expo modules.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/module-autolinking.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/module-autolinking.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/module-autolinking/)
 
 # Installation in managed Expo projects

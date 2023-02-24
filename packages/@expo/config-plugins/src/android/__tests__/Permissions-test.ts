@@ -54,7 +54,7 @@ describe(withInternalBlockedPermissions, () => {
           },
           {
             $: {
-              'android:name': 'OTHER',
+              'android:name': 'android.permission.OTHER',
               'tools:node': 'remove',
             },
           },
@@ -77,6 +77,84 @@ describe(withInternalBlockedPermissions, () => {
     // Doesn't even add the mod
     expect((config as any).mods).not.toBeDefined();
   });
+
+  it(`adds blocked permission when using short notation`, async () => {
+    const config = withInternalBlockedPermissions({
+      slug: '',
+      name: '',
+      android: {
+        permissions: ['android.permission.ACCESS_FINE_LOCATION'],
+        blockedPermissions: ['ACCESS_FINE_LOCATION'],
+      },
+    });
+
+    const { modResults } = await (config as any).mods.android.manifest({
+      modRequest: {},
+      modResults: await getMockAndroidManifest(),
+    });
+
+    expect(modResults).toEqual({
+      manifest: {
+        $: {
+          'xmlns:android': expect.any(String),
+          package: expect.any(String),
+          // Added tools
+          'xmlns:tools': 'http://schemas.android.com/tools',
+        },
+        'uses-permission': [
+          expect.anything(),
+          // Added two blocked permissions
+          {
+            $: {
+              'android:name': 'android.permission.ACCESS_FINE_LOCATION',
+              'tools:node': 'remove',
+            },
+          },
+        ],
+        queries: expect.anything(),
+        application: expect.anything(),
+      },
+    });
+  });
+
+  it(`adds blocked permission when using long notation`, async () => {
+    const config = withInternalBlockedPermissions({
+      slug: '',
+      name: '',
+      android: {
+        permissions: ['ACCESS_FINE_LOCATION'],
+        blockedPermissions: ['android.permission.ACCESS_FINE_LOCATION'],
+      },
+    });
+
+    const { modResults } = await (config as any).mods.android.manifest({
+      modRequest: {},
+      modResults: await getMockAndroidManifest(),
+    });
+
+    expect(modResults).toEqual({
+      manifest: {
+        $: {
+          'xmlns:android': expect.any(String),
+          package: expect.any(String),
+          // Added tools
+          'xmlns:tools': 'http://schemas.android.com/tools',
+        },
+        'uses-permission': [
+          expect.anything(),
+          // Added two blocked permissions
+          {
+            $: {
+              'android:name': 'android.permission.ACCESS_FINE_LOCATION',
+              'tools:node': 'remove',
+            },
+          },
+        ],
+        queries: expect.anything(),
+        application: expect.anything(),
+      },
+    });
+  });
 });
 
 describe(addBlockedPermissions, () => {
@@ -90,22 +168,22 @@ describe(addBlockedPermissions, () => {
             },
             'uses-permission': [
               {
-                $: { 'android:name': 'foobar' },
+                $: { 'android:name': 'dev.expo.foobar' },
               },
               {
-                $: { 'android:name': 'foobar-2' },
+                $: { 'android:name': 'dev.expo.foobar-2' },
               },
             ],
           },
         },
-        ['foobar']
+        ['dev.expo.foobar']
       ).manifest['uses-permission']
     ).toStrictEqual([
       {
-        $: { 'android:name': 'foobar-2' },
+        $: { 'android:name': 'dev.expo.foobar-2' },
       },
       {
-        $: { 'android:name': 'foobar', 'tools:node': 'remove' },
+        $: { 'android:name': 'dev.expo.foobar', 'tools:node': 'remove' },
       },
     ]);
   });
@@ -121,11 +199,11 @@ describe(addBlockedPermissions, () => {
             'uses-permission': [],
           },
         },
-        ['foobar']
+        ['dev.expo.foobar']
       ).manifest['uses-permission']
     ).toStrictEqual([
       {
-        $: { 'android:name': 'foobar', 'tools:node': 'remove' },
+        $: { 'android:name': 'dev.expo.foobar', 'tools:node': 'remove' },
       },
     ]);
   });

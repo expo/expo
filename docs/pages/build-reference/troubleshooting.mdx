@@ -1,0 +1,157 @@
+---
+title: Troubleshooting build errors and crashes
+description: A reference for troubleshooting build errors and crashes when using EAS Build.
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+
+> This document is under active development; the topic it covers is expansive and finding the right way to explain how to troubleshoot issues will take some trial and error. Your suggestions for improvements are welcome as pull requests.
+
+When something goes wrong, it probably will go wrong in one of two following ways:
+
+1. Your build will fail.
+2. The build will succeed but encounter a runtime error, for example, it crashes or hangs when you run it.
+
+All standard advice around [narrowing down the source of an error](https://expo.fyi/manual-debugging) applies here; this document provides information that may be useful on top of your typical troubleshooting processes and techniques. Troubleshooting is an art, and you might need to think creatively.
+
+## Find the related error logs
+
+Before you go further, you need to be sure that you have located the error message and read it. How you do this will be different depending on whether you're investigating a build failure or runtime error.
+
+### Runtime errors
+
+Refer to the [debugging guide](/workflow/debugging#production-errors) to learn how to locate logs when your release builds are crashing at runtime.
+
+### Build errors
+
+Go to your build details page (find it on the [build dashboard](https://expo.dev/accounts/[account]/projects/[project]/builds) if you don't have it open already) and expand any failed build phases by clicking on them. Often, the earliest phase with errors will contain the most useful information and any subsequent failed phase will have cascaded from the first.
+
+Regardless of the phase, **it's common to see log entries prefixed with `[stderr]`, but keep in mind that this doesn't necessarily mean those logs point to errors**; it's common for CLI tools to use [stderr](<https://en.wikipedia.org/wiki/Standard_streams#Standard_error_(stderr)>) to output warnings and other diagnostics.
+
+For example, you might see something like this on your Android builds:
+
+<Terminal
+  cmd={[
+    `[stderr] Note: /build/workingdir/build/app/node_modules/@react-native-async-storage/async-storage/android/src/main/java/com/reactnativecommunity/asyncstorage/AsyncStorageModule.java uses or overrides a deprecated API.`,
+    `[stderr] Note: Recompile with -Xlint:deprecation for details.`,
+  ]}
+/>
+
+While you may or may not be interested in following up on that warning, it is not the cause of your failed build. So how do you know which logs are truly responsible? If you are building a bare project, you will already be good at this. If you are building a [managed project](/introduction/managed-vs-bare), it may be tricky because you don't directly interact with the native code, only write JavaScript.
+
+A good path forward is to **determine if the build failed due to a native or JavaScript error**. When your build fails due to a JavaScript build error, you will usually see something like this:
+
+<Terminal
+  cmd={[
+    `❌ Metro encountered an error:`,
+    `Unable to resolve module ./src/Routes from /Users/expo/workingdir/build/App.js`,
+  ]}
+/>
+
+This particular error means that the app is importing **./src/Routes** and it is not found. The cause could be that the filename case is different in Git than the developer's filesystem (for example, **routes.js** in Git instead of **Routes.js**), or maybe the project has a build step and it wasn't set up to run on EAS Build. In this case, it turns out that in this case **./src/Routes** was intended to import **./src/Routes/index.js**, but that path was accidentally excluded in the developer's **.gitignore**.
+
+It's important to note that with iOS builds the build details page only displays an abridged version of the logs because the full output from `xcodebuild` can be in the order of 10MB. Sometimes it's necessary to open the full Xcode logs to find the information that you need; for example, if the JavaScript build failed but you don't see any useful information on the build details page. To open the full Xcode logs, scroll to the bottom of the build details page when the build has been completed and either click to view or download them.
+
+{/* TODO: native and js build phases should be separate in eas build logs, this is too much work for people to figure out */}
+
+If you are working on a managed app and the build error is a native error rather than a JavaScript error, this is likely due to a [config plugin](/guides/config-plugins) or a dependency in your project. Keep an eye out in the logs for any new packages that you've added since your previous successful build. Run `expo doctor` to determine that the versions of Expo SDK dependencies in your project are compatible with your Expo SDK version.
+
+Armed with your error logs, you can often start to fix your build, or you can search the [forums](https://forums.expo.dev) and GitHub issues for related packages to dig deeper. Some common sources of problems are listed below.
+
+<Collapsible summary="Are you using a monorepo?">
+
+Monorepos are incredibly useful but they do introduce their own set of problems. A monorepo that you have set up to work with `expo build` will not necessarily work with `eas build`.
+
+With EAS Build, it's necessary to upload the entire monorepo to the build worker, set it up, and run the build; but, on `expo build` you only had to be able to build the JavaScript bundle locally and upload that to the worker.
+
+EAS Build is more like a typical CI service in that we need the source code, rather than a compiled JavaScript bundle and manifest. EAS Build has first-class support for Yarn workspaces, and [your success may vary when using other monorepo tools](/build-reference/limitations).
+
+For more information, see [Working with monorepos](/guides/monorepos).
+
+</Collapsible>
+
+<Collapsible summary="Out-of-memory (OOM) errors">
+
+If your build fails with "Gradle build daemon disappeared unexpectedly (it may have been killed or may have crashed)" in your Gradle logs, this may be because the Node process responsible for bundling your app JavaScript was killed.
+
+This can often be a sign that your app bundle is extremely large, which will make your overall app binary larger and lead to slow boot up times, especially on low-end Android devices. Sometimes the error can occur when large text files are treated as source code, for example, if you have a JavaScript file that contains a string of 1MB+ of HTML to load into a webview, or a similarly sized JSON file.
+
+To determine how large your bundle is and to see a breakdown of where the size comes from, use [react-native-bundle-visualizer](https://github.com/IjzerenHein/react-native-bundle-visualizer).
+
+It's not yet possible to increase memory limits on your build workers, [only one worker configuration is currently available](/build-reference/limitations).
+
+</Collapsible>
+
+## Verify that your JavaScript bundles locally
+
+When a build fails with `Task :app:bundleReleaseJsAndAssets FAILED` (Android) or `Metro encountered an error` (iOS), it means Metro bundler was unable to bundle the app's JavaScript code while trying to embed it in your app's binary. This error message is usually followed by a syntax error or other details about why bundling failed. Unfortunately, a standard React Native project is configured to perform this step late in the Gradle/Xcode build step, meaning it can take a while to see this error.
+
+You can build the production bundle locally by running `npx expo export` to bypass all of the other build steps so you can see this error much more quickly. Run this command repeatedly, resolving any syntax errors or other issues uncovered until the bundle builds successfully. Then try your EAS build again.
+
+## Verify that your project builds and runs locally
+
+If the logs weren't enough to immediately help you understand and fix the root cause, it's time to try to reproduce the issue locally. If your project builds and runs locally in release mode then it will also build on EAS Build, provided that the following are all true:
+
+- Relevant [Build tool versions](/build/eas-json#configuring-your-build-tools) (for example, Xcode, Node.js, npm, Yarn) are the same in both environments.
+- Relevant [environment variables](/build-reference/variables) are the same in both environments.
+- The [archive](https://expo.fyi/eas-build-archive) that is uploaded to EAS Build includes the same relevant source files.
+
+You can verify that your project builds on your local machine with the `expo run` commands with variant/configuration flags set to release to most faithfully reproduce what executes on EAS Build. For more information, see [Android build process](/build-reference/android-builds) and [iOS build process](/build-reference/ios-builds).
+
+<Terminal
+  cmd={[
+    '# Locally compile and run the Android app in release mode',
+    '$ npx expo run:android --variant release',
+    '',
+    '# Locally compile and run the iOS app in release mode',
+    '$ npx expo run:ios --configuration Release',
+  ]}
+/>
+
+> In managed projects, these commands will run `npx expo prebuild` to generate native projects &mdash; you likely want to [clean up the changes](https://expo.fyi/prebuild-cleanup) once you are done troubleshooting.
+
+<Collapsible summary="Don't have Xcode and Android Studio set up on your machine?">
+
+**If you do not have native toolchains installed locally**, for example, because you do not have an Apple computer and therefore cannot build an iOS app on your machine, it can be trickier to get to the bottom of build errors. The feedback loop of making small changes locally and then seeing the result on EAS Build is slower than doing the same steps locally because the EAS Build worker must set up its environment, download your project, and install dependencies before starting the build.
+
+If you are willing and able to set up the appropriate native tools, then refer to the [React Native environment setup guide](https://reactnative.dev/docs/environment-setup).
+
+</Collapsible>
+
+If your native toolchains are installed correctly and you are unable to build and run your project in release mode on your local machine, it will not build on EAS Build. Fix the issues locally, then try again on EAS Build. The other advice in this doc may be useful to help you resolve the issue locally, but often this requires some knowledge of native tooling or judicious application of Google, Stack Overflow, and GitHub Issues.
+
+### What if my project builds locally but not on EAS Build?
+
+If you find yourself in this situation, it's time to narrow down what configuration exists on your machine that hasn't been set up for your project on EAS Build yet.
+
+There are two ways to approach this, which are quite similar:
+
+- Do a fresh `git clone` of your project to a new directory and get it running. Pay attention to each of the steps that are needed and verify that they are also configured for EAS Build.
+- Run a local build with `eas build --local`. This command will locally run a process that is as close as it can be to the remote, hosted EAS Build service. [Learn how to set this up and use it for debugging](/build-reference/local-builds.mdx#using-local-builds-for-debugging).
+
+### Why does my app work in Expo Go and `expo build:[android|ios]` but not with EAS Build?
+
+The classic build service (`expo build`) works completely differently from EAS Build, and there is no guarantee that your app will work out of the box on EAS Build if it works on the classic build service. You can learn more about [migrating from `expo build` in the guide](/build-reference/migrating), and get a better understanding of how these two services are fundamentally different in [this two-part blog post](https://blog.expo.dev/expo-managed-workflow-in-2021-5b887bbf7dbb).
+
+### Why does my production app not match my development app?
+
+You can test how the JS part of your app will run in production by starting it with [`npx expo start --no-dev`](/workflow/development-mode/#production-mode). This tells the bundler to minify JavaScript before serving it, most notably stripping code protected by the `__DEV__` boolean. This will remove most of the logging, HMR, Fast Refresh functionality, and make debugging a bit harder, but you can iterate on the production bundle faster this way.
+
+## Still having trouble?
+
+This guide is far from being comprehensive, and depending on your level of experience you might still be struggling to get your app working.
+
+If you have followed the advice here, you're now in a good position to describe your issue to other developers and get some help.
+
+### How to ask a good question
+
+Join us on [Discord](https://chat.expo.dev) or the [forums](https://forums.expo.dev) to ask for help from the community and the Expo team. The Expo team does our best to respond to high quality and well articulated questions and issues, but responses are not guaranteed unless you are signed up for a [support plan](https://expo.dev/eas/enterprise-support).
+
+When you ask for troubleshooting help, be sure to share the following information:
+
+- **A link to your build page**. This can only be accessed by your team or Expo employees. If you'd like to share it more publicly, take a screenshot. If you'd like to share it more privately, send an email to secure@expo.dev and mention that in your help request on chat or forums. If you are performing this build locally with `eas build --local`, you may omit this, but please indicate this fact.
+- **Error logs**. Anything that you suspect may be related to your build or runtime error. If you can't provide this, please explain why not.
+- **Minimal reproducible example or a link to your repository**. The quickest way to get a solution to your problem is to ensure that other developers can reproduce it. If you have ever worked on a team, you know this from experience. In many cases, if you can't provide a reproducible example then it may not be possible to help you, and at best the back-and-forth process of asking and answering questions will be an inefficient use of time. Learn more about how to create a reproducible example in the [manual debugging guide](https://expo.fyi/manual-debugging) and Stack Overflow's [Minimal Viable Reproducible Example](https://stackoverflow.com/help/minimal-reproducible-example) guide.
+
+Try to be clear, precise, and helpful. General guidance provided by Stack Overflow's [How to ask a good question](https://stackoverflow.com/help/how-to-ask) guide applies.

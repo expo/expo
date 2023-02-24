@@ -157,7 +157,7 @@ export function DevMenuView({ uuid, task }: Props) {
   }
 
   return (
-    <View bg="secondary" flex="1" roundedTop="large" overflow="hidden">
+    <View bg="secondary" flex="1" roundedTop="large" overflow="hidden" style={{ direction: 'ltr' }}>
       {!isOnboardingFinished && <DevMenuOnboarding onClose={onOnboardingFinished} />}
       <DevMenuTaskInfo task={task} />
       <Divider />

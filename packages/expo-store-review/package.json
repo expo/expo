@@ -1,6 +1,6 @@
 {
   "name": "expo-store-review",
-  "version": "5.3.0",
+  "version": "6.2.1",
   "description": "ExpoStoreReview standalone module",
   "main": "build/StoreReview.js",
   "types": "build/StoreReview.d.ts",
@@ -31,7 +31,7 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/storereview/",
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
     "expo": "*"

@@ -32,7 +32,7 @@ export declare type AppleAuthenticationButtonProps = ViewProps & {
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest)
  * for more details.
  */
-export declare type AppleAuthenticationSignInOptions = {
+export type AppleAuthenticationSignInOptions = {
     /**
      * Array of user information scopes to which your app is requesting access. Note that the user can
      * choose to deny your app access to any scope at the time of logging in. You will still need to
@@ -62,7 +62,7 @@ export declare type AppleAuthenticationSignInOptions = {
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest)
  * for more details.
  */
-export declare type AppleAuthenticationRefreshOptions = {
+export type AppleAuthenticationRefreshOptions = {
     user: string;
     /**
      * Array of user information scopes to which your app is requesting access. Note that the user can
@@ -88,7 +88,7 @@ export declare type AppleAuthenticationRefreshOptions = {
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest)
  * for more details.
  */
-export declare type AppleAuthenticationSignOutOptions = {
+export type AppleAuthenticationSignOutOptions = {
     user: string;
     /**
      * An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -107,7 +107,7 @@ export declare type AppleAuthenticationSignOutOptions = {
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidcredential)
  * for more details.
  */
-export declare type AppleAuthenticationCredential = {
+export type AppleAuthenticationCredential = {
     /**
      * An identifier associated with the authenticated user. You can use this to check if the user is
      * still authenticated later. This is stable and can be shared across apps released under the same
@@ -153,7 +153,7 @@ export declare type AppleAuthenticationCredential = {
  * An object representing the tokenized portions of the user's full name. Any of all of the fields
  * may be `null`. Only applicable fields that the user has allowed your app to access will be nonnull.
  */
-export declare type AppleAuthenticationFullName = {
+export type AppleAuthenticationFullName = {
     namePrefix: string | null;
     givenName: string | null;
     middleName: string | null;

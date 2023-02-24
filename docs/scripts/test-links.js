@@ -1,4 +1,4 @@
-const puppeteer = require('puppeteer');
+import puppeteer from 'puppeteer';
 
 const url = process.argv[2];
 
@@ -14,16 +14,12 @@ const externalLinks = [
   '/versions/latest/distribution/building-standalone-apps/#switch-to-push-notification-key-on-ios', // https://github.com/expo/expo-cli/blob/main/packages/expo-cli/src/commands/build/ios/credentials/constants.js
   '/versions/latest/distribution/building-standalone-apps/#2-configure-appjson', // https://github.com/expo/expo-cli/blob/main/packages/expo-cli/src/commands/build/AndroidBuilder.js
   '/versions/latest/distribution/building-standalone-apps/#if-you-choose-to-build-for-android', // https://github.com/expo/expo-cli/blob/main/packages/expo-cli/src/commands/build/AndroidBuilder.js
-  '/versions/latest/distribution/uploading-apps/', // https://github.com/expo/expo-cli/blob/main/packages/expo-cli/src/commands/upload/BaseUploader.js
-  '/versions/latest/workflow/linking/', // https://github.com/expo/expo-cli/blob/main/packages/xdl/src/detach/Detach.js
+  '/versions/latest/workflow/linking/', // https://github.com/expo/expo-cli/blob/main/packages/xdl/src/detach/Detach.ts
   '/versions/latest/workflow/configuration/#ios', // https://github.com/expo/expo-cli/blob/main/packages/xdl/src/detach/Detach.js
   '/versions/latest/guides/splash-screens/#differences-between-environments---android', // https://github.com/expo/expo-cli/blob/main/packages/xdl/src/Android.js
   '/versions/latest/sdk/overview/', // https://github.com/expo/expo-cli/blob/main/packages/xdl/src/project/Convert.js
   '/versions/latest/distribution/building-standalone-apps/#2-configure-appjson', // https://github.com/expo/expo-cli/blob/main/packages/expo-cli/src/commands/build/ios/IOSBuilder.js
-  '/versions/latest/guides/configuring-updates/', // https://github.com/expo/expo-cli/blob/main/packages/expo-cli/src/commands/build/BaseBuilder.js
-  '/versions/latest/expokit/eject/', // https://github.com/expo/expo-cli/blob/main/packages/expo-cli/src/commands/eject/Eject.js
   '/versions/latest/introduction/faq/#can-i-use-nodejs-packages-with-expo', // https://github.com/expo/expo-cli/blob/main/packages/xdl/src/logs/PackagerLogsStream.js
-  '/versions/latest/guides/offline-support/', // https://github.com/expo/expo-cli/tree/main/packages/xdl/caches
 ];
 
 (async () => {

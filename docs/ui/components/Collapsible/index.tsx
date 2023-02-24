@@ -5,12 +5,11 @@ import {
   shadows,
   spacing,
   theme,
-  typography,
   TriangleDownIcon,
 } from '@expo/styleguide';
-import React, { PropsWithChildren, ReactNode } from 'react';
+import type { PropsWithChildren, ReactNode } from 'react';
 
-import { HEADLINE } from '~/ui/components/Text';
+import { DEMI } from '~/ui/components/Text';
 
 type CollapsibleProps = PropsWithChildren<{
   /**
@@ -29,28 +28,12 @@ export function Collapsible({ summary, open, testID, children }: CollapsibleProp
     <details css={detailsStyle} open={open} data-testid={testID}>
       <summary css={summaryStyle}>
         <div css={markerWrapperStyle}>
-          <TriangleDownIcon css={markerStyle} size={iconSize.small} />
+          <TriangleDownIcon css={markerStyle} size={iconSize.sm} />
         </div>
-        <HEADLINE tag="span">{summary}</HEADLINE>
+        <DEMI>{summary}</DEMI>
       </summary>
       <div css={contentStyle}>{children}</div>
     </details>
-  );
-}
-
-export function ExpoKitCollapsible({ children }: CollapsibleProps) {
-  return (
-    <div css={configDetailsStyle}>
-      <Collapsible summary="ExpoKit">{children}</Collapsible>
-    </div>
-  );
-}
-
-export function BareWorkflowCollapsible({ children }: CollapsibleProps) {
-  return (
-    <div css={configDetailsStyle}>
-      <Collapsible summary="Bare Workflow">{children}</Collapsible>
-    </div>
   );
 }
 
@@ -58,15 +41,15 @@ const detailsStyle = css({
   overflow: 'hidden',
   background: theme.background.default,
   border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.medium,
+  borderRadius: borderRadius.md,
   padding: 0,
   marginBottom: spacing[3],
 
   '&[open]': {
-    boxShadow: shadows.micro,
+    boxShadow: shadows.xs,
   },
 
-  'h4 + &, li > &': {
+  'h4 + &, p + &, li > &': {
     marginTop: spacing[3],
   },
 });
@@ -77,7 +60,7 @@ const summaryStyle = css({
   alignItems: 'center',
   userSelect: 'none',
   listStyle: 'none',
-  backgroundColor: theme.background.secondary,
+  backgroundColor: theme.background.subtle,
   padding: spacing[1.5],
   paddingRight: spacing[3],
   margin: 0,
@@ -89,6 +72,17 @@ const summaryStyle = css({
 
   '::-webkit-details-marker': {
     display: 'none',
+  },
+
+  h4: {
+    marginTop: 0,
+    marginBottom: 0,
+  },
+
+  code: {
+    backgroundColor: theme.background.element,
+    display: 'inline',
+    fontSize: '90%',
   },
 });
 
@@ -106,7 +100,7 @@ const markerStyle = css({
   'details[open] &': { transform: 'rotate(0)' },
 });
 
-const contentStyle = css(typography.body.paragraph, {
+const contentStyle = css({
   padding: `${spacing[4]}px ${spacing[5]}px 0`,
 
   p: {
@@ -115,13 +109,5 @@ const contentStyle = css(typography.body.paragraph, {
 
   'pre > pre': {
     marginTop: 0,
-  },
-});
-
-const configDetailsStyle = css({
-  marginTop: spacing[3],
-
-  '& details[open]': {
-    paddingBottom: spacing[4],
   },
 });

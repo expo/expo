@@ -1,0 +1,71 @@
+---
+title: Create your first app
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { A } from '~/ui/components/Text';
+
+In this chapter, let's learn how to create a new Expo project and how to get it running.
+
+## Prerequisites
+
+We'll need the following tools to get started:
+
+- Install [Expo Go](https://expo.dev/client) on a physical device.
+- Prepare for development by [installing the required tools](/get-started/installation/#requirements).
+
+This tutorial also assumes that you have a basic knowledge of JavaScript and React. If you have never written React code, go through [the official React tutorial](https://reactjs.org/tutorial/tutorial.html).
+
+## Step 1: Initialize a new Expo app
+
+We will use <A href="/workflow/glossary-of-terms/#create-expo-app" openInNewTab>`create-expo-app`</A> to initialize a new Expo app. It is a command line tool that allows to create a new React Native project with the `expo` package installed.
+
+It will create a new project directory and install all the necessary dependencies to get the project up and running locally. Run the following command in your terminal:
+
+<Terminal
+  cmd={[
+    '# Create a project named StickerSmash',
+    '$ npx create-expo-app StickerSmash',
+    '',
+    '# Navigate to the project directory',
+    '$ cd StickerSmash',
+  ]}
+  cmdCopy="npx create-expo-app StickerSmash && cd StickerSmash"
+/>
+
+This command will create a new directory for the project with the name: **StickerSmash**.
+
+Let's also <a href="/static/images/tutorial/sticker-smash-assets.zip" download>download the assets</a> that we will need throughout this tutorial. After downloading the archive, unzip it and replace the existing **assets** directory with it in the project directory. This will override the default assets when the new project is initialized.
+
+Now, let's open the project directory in our favorite code editor or IDE. Throughout this tutorial, we will use VS Code for our examples.
+
+## Step 2: Install dependencies
+
+To run the project on the web, we need to install the following dependencies that will help to run the project on the web:
+
+<Terminal cmd={['$ npx expo install react-dom react-native-web @expo/webpack-config']} />
+
+## Step 3: Run the app on mobile and web
+
+In the project directory, run the following command to start a <A href="/guides/how-expo-works/#expo-development-server" openInNewTab>development server</A> from the terminal:
+
+<Terminal cmd={['$ npx expo start']} />
+
+Once the development server is running, the easiest way to launch the app is on a physical device with Expo Go. For more information, see <A href="/get-started/create-a-new-app/#opening-the-app-on-your-phonetablet" openInNewTab>Open app on a device</A>.
+
+To see the web app in action, press <kbd>w</kbd> in the terminal. It will open the web app in the default web browser.
+
+Once it is running on all platforms, the project should look like this:
+
+<ImageSpotlight
+  alt="App running on an all platforms"
+  src="/static/images/tutorial/01-app-running-on-all-platforms.jpg"
+  style={{ maxWidth: 720 }}
+/>
+
+The text displayed on the app's screen above can be found in the **App.js** file which is at the root of the project's directory. It is the entry point of the project and is executed when the development server starts.
+
+## Next steps
+
+We have created a new Expo project and are ready to develop our StickerSmash app. In the next chapter, we'll learn [how to build the app's first screen](/tutorial/build-a-screen).

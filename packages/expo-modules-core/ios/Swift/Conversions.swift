@@ -148,6 +148,22 @@ internal final class Conversions {
     return String(number) + (number == 1 ? singular : (plural ?? singular + "s"))
   }
 
+  /**
+   Converts the function result to the type compatible with JavaScript.
+   */
+  static func convertFunctionResult<ValueType>(_ value: ValueType?, runtime: JavaScriptRuntime? = nil) -> Any {
+    if let value = value as? Record {
+      return value.toDictionary()
+    }
+    if let value = value as? [Record] {
+      return value.map { $0.toDictionary() }
+    }
+    if let runtime = runtime, let value = value as? JavaScriptObjectBuilder {
+      return value.build(inRuntime: runtime)
+    }
+    return value as Any
+  }
+
   // MARK: - Exceptions
 
   /**
@@ -163,7 +179,9 @@ internal final class Conversions {
    An exception that can be thrown by convertible types, when given value cannot be converted.
    */
   internal class ConvertingException<TargetType>: GenericException<Any?> {
-    var code: String = "ERR_CONVERTING_FAILED"
+    override var code: String {
+      "ERR_CONVERTING_FAILED"
+    }
     override var reason: String {
       "Cannot convert '\(String(describing: param))' to \(TargetType.self)"
     }
@@ -173,7 +191,9 @@ internal final class Conversions {
    An exception that is thrown when given value cannot be cast.
    */
   internal class CastingException<TargetType>: GenericException<Any> {
-    var code: String = "ERR_CASTING_FAILED"
+    override var code: String {
+      "ERR_CASTING_FAILED"
+    }
     override var reason: String {
       "Cannot cast '\(String(describing: param))' to \(TargetType.self)"
     }
@@ -184,7 +204,9 @@ internal final class Conversions {
    when the values in given dictionary cannot be cast to specific type.
    */
   internal class CastingValuesException<ValueType>: GenericException<[String]> {
-    var code: String = "ERR_CASTING_VALUES_FAILED"
+    override var code: String {
+      "ERR_CASTING_VALUES_FAILED"
+    }
     override var reason: String {
       "Cannot cast keys \(formatKeys(param)) to \(ValueType.self)"
     }

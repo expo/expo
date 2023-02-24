@@ -472,6 +472,10 @@ abstract class ReactNativeActivity :
     if (devSettings != null) {
       devSettings.setField("exponentActivityId", activityId)
       if (devSettings.call("isRemoteJSDebugEnabled") as Boolean) {
+        if (manifest?.jsEngine == "hermes") {
+          // Disable remote debugging when running on Hermes
+          devSettings.call("setRemoteJSDebugEnabled", false)
+        }
         waitForReactAndFinishLoading()
       }
     }
@@ -613,6 +617,9 @@ abstract class ReactNativeActivity :
 
   val devSupportManager: RNObject?
     get() = reactInstanceManager.takeIf { it.isNotNull }?.callRecursive("getDevSupportManager")
+
+  val jsExecutorName: String?
+    get() = reactInstanceManager.takeIf { it.isNotNull }?.callRecursive("getJsExecutorName")?.get() as? String
 
   // deprecated in favor of Expo.Linking.makeUrl
   // TODO: remove this

@@ -1,4 +1,4 @@
-import { PermissionResponse as UMPermissionResponse } from 'expo-modules-core';
+import { PermissionResponse } from 'expo-modules-core';
 /**
  * Enum with available location accuracies.
  */
@@ -91,7 +91,7 @@ export declare enum LocationGeofencingRegionState {
 /**
  * Type representing options argument in `getCurrentPositionAsync`.
  */
-export declare type LocationOptions = {
+export type LocationOptions = {
     /**
      * Location manager accuracy. Pass one of `LocationAccuracy` enum values.
      * For low-accuracies the implementation can avoid geolocation providers
@@ -120,7 +120,7 @@ export declare type LocationOptions = {
 /**
  * Type representing options object that can be passed to `getLastKnownPositionAsync`.
  */
-export declare type LocationLastKnownOptions = {
+export type LocationLastKnownOptions = {
     /**
      * A number of milliseconds after which the last known location starts to be invalid and thus
      * `null` is returned.
@@ -135,7 +135,7 @@ export declare type LocationLastKnownOptions = {
 /**
  * Type representing background location task options.
  */
-export declare type LocationTaskOptions = LocationOptions & {
+export type LocationTaskOptions = LocationOptions & {
     /**
      * A boolean indicating whether the status bar changes its appearance when
      * location services are used in the background.
@@ -175,7 +175,7 @@ export declare type LocationTaskOptions = LocationOptions & {
     pausesUpdatesAutomatically?: boolean;
     foregroundService?: LocationTaskServiceOptions;
 };
-export declare type LocationTaskServiceOptions = {
+export type LocationTaskServiceOptions = {
     /**
      * Title of the foreground service notification.
      */
@@ -196,7 +196,7 @@ export declare type LocationTaskServiceOptions = {
 /**
  * Type representing geofencing region object.
  */
-export declare type LocationRegion = {
+export type LocationRegion = {
     /**
      * The identifier of the region object. Defaults to auto-generated UUID hash.
      */
@@ -232,7 +232,7 @@ export declare type LocationRegion = {
 /**
  * Type representing the location object.
  */
-export declare type LocationObject = {
+export type LocationObject = {
     /**
      * The coordinates of the position.
      */
@@ -250,7 +250,7 @@ export declare type LocationObject = {
 /**
  * Type representing the location GPS related data.
  */
-export declare type LocationObjectCoords = {
+export type LocationObjectCoords = {
     /**
      * The latitude in degrees.
      */
@@ -285,11 +285,11 @@ export declare type LocationObjectCoords = {
 /**
  * Represents `watchPositionAsync` callback.
  */
-export declare type LocationCallback = (location: LocationObject) => any;
+export type LocationCallback = (location: LocationObject) => any;
 /**
  * Represents the object containing details about location provider.
  */
-export declare type LocationProviderStatus = {
+export type LocationProviderStatus = {
     /**
      * Whether location services are enabled. See [Location.hasServicesEnabledAsync](#locationhasservicesenabledasync)
      * for a more convenient solution to get this value.
@@ -318,7 +318,7 @@ export declare type LocationProviderStatus = {
 /**
  * Type of the object containing heading details and provided by `watchHeadingAsync` callback.
  */
-export declare type LocationHeadingObject = {
+export type LocationHeadingObject = {
     /**
      * Measure of true north in degrees (needs location permissions, will return `-1` if not given).
      */
@@ -338,11 +338,11 @@ export declare type LocationHeadingObject = {
 /**
  * Represents `watchHeadingAsync` callback.
  */
-export declare type LocationHeadingCallback = (location: LocationHeadingObject) => any;
+export type LocationHeadingCallback = (location: LocationHeadingObject) => any;
 /**
  * An object of options for forward and reverse geocoding.
  */
-export declare type LocationGeocodingOptions = {
+export type LocationGeocodingOptions = {
     /**
      * Whether to force using Google Maps API instead of the native implementation.
      * Used by default only on Web platform. Requires providing an API key by `setGoogleApiKey`.
@@ -352,7 +352,7 @@ export declare type LocationGeocodingOptions = {
 /**
  * Type representing a result of `geocodeAsync`.
  */
-export declare type LocationGeocodedLocation = {
+export type LocationGeocodedLocation = {
     /**
      * The latitude in degrees.
      */
@@ -373,7 +373,7 @@ export declare type LocationGeocodedLocation = {
 /**
  * Type representing a result of `reverseGeocodeAsync`.
  */
-export declare type LocationGeocodedAddress = {
+export type LocationGeocodedAddress = {
     /**
      * City name of the address.
      */
@@ -423,20 +423,20 @@ export declare type LocationGeocodedAddress = {
 /**
  * Represents subscription object returned by methods watching for new locations or headings.
  */
-export declare type LocationSubscription = {
+export type LocationSubscription = {
     /**
      * Call this function with no arguments to remove this subscription. The callback will no longer
      * be called for location updates.
      */
     remove: () => void;
 };
-export declare type PermissionDetailsLocationIOS = {
+export type PermissionDetailsLocationIOS = {
     /**
      * The scope of granted permission. Indicates when it's possible to use location.
      */
     scope: 'whenInUse' | 'always' | 'none';
 };
-export declare type PermissionDetailsLocationAndroid = {
+export type PermissionDetailsLocationAndroid = {
     /**
      * @deprecated Use `accuracy` field instead.
      */
@@ -447,11 +447,12 @@ export declare type PermissionDetailsLocationAndroid = {
     accuracy: 'fine' | 'coarse' | 'none';
 };
 /**
- * `LocationPermissionResponse` extends [PermissionResponse](permissions.md#permissionresponse)
+ * `LocationPermissionResponse` extends [PermissionResponse](#permissionresponse)
  * type exported by `expo-modules-core` and contains additional platform-specific fields.
  */
-export interface LocationPermissionResponse extends UMPermissionResponse {
+export type LocationPermissionResponse = PermissionResponse & {
     ios?: PermissionDetailsLocationIOS;
     android?: PermissionDetailsLocationAndroid;
-}
+};
+export type { PermissionResponse };
 //# sourceMappingURL=Location.types.d.ts.map

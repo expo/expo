@@ -1,10 +1,17 @@
-# expo-secure-store
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/securestore/">
+    <img
+      src="../../.github/resources/expo-secure-store.svg"
+      alt="expo-secure-store"
+      height="64" />
+  </a>
+</p>
 
 Provides a way to encrypt and securely store key–value pairs locally on the device.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/securestore.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/securestore.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/securestore/)
 
 # Installation in managed Expo projects

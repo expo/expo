@@ -6,71 +6,53 @@ Object.defineProperty(exports, "__esModule", {
 exports.STORYBOARD_FILE_PATH = void 0;
 exports.getTemplateAsync = getTemplateAsync;
 exports.withIosSplashScreenStoryboardBaseMod = exports.withIosSplashScreenStoryboard = void 0;
-
 function _configPlugins() {
   const data = require("@expo/config-plugins");
-
   _configPlugins = function () {
     return data;
   };
-
   return data;
 }
-
 function fs() {
   const data = _interopRequireWildcard(require("fs"));
-
   fs = function () {
     return data;
   };
-
   return data;
 }
-
 function path() {
   const data = _interopRequireWildcard(require("path"));
-
   path = function () {
     return data;
   };
-
   return data;
 }
-
 function _xml2js() {
   const data = require("xml2js");
-
   _xml2js = function () {
     return data;
   };
-
   return data;
 }
-
 function _InterfaceBuilder() {
   const data = require("./InterfaceBuilder");
-
   _InterfaceBuilder = function () {
     return data;
   };
-
   return data;
 }
-
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-
 const STORYBOARD_FILE_PATH = './SplashScreen.storyboard';
 exports.STORYBOARD_FILE_PATH = STORYBOARD_FILE_PATH;
 const STORYBOARD_MOD_NAME = 'splashScreenStoryboard';
+
 /**
  * Provides the SplashScreen `.storyboard` xml data for modification.
  *
  * @param config
  * @param action
  */
-
 const withIosSplashScreenStoryboard = (config, action) => {
   return (0, _configPlugins().withMod)(config, {
     platform: 'ios',
@@ -78,11 +60,9 @@ const withIosSplashScreenStoryboard = (config, action) => {
     action
   });
 };
+
 /** Append a custom rule to supply SplashScreen `.storyboard` xml data to mods on `mods.ios.splashScreenStoryboard` */
-
-
 exports.withIosSplashScreenStoryboard = withIosSplashScreenStoryboard;
-
 const withIosSplashScreenStoryboardBaseMod = config => {
   return _configPlugins().BaseMods.withGeneratedBaseMods(config, {
     platform: 'ios',
@@ -92,17 +72,18 @@ const withIosSplashScreenStoryboardBaseMod = config => {
       // Append a custom rule to supply .storyboard xml data to mods on `mods.ios.splashScreenStoryboard`
       [STORYBOARD_MOD_NAME]: _configPlugins().BaseMods.provider({
         isIntrospective: true,
-
         async getFilePath({
           modRequest
         }) {
           //: [root]/myapp/ios/MyApp/SplashScreen.storyboard
-          return path().join( //: myapp/ios
-          modRequest.platformProjectRoot, // ./MyApp
-          modRequest.projectName, // ./SplashScreen.storyboard
+          return path().join(
+          //: myapp/ios
+          modRequest.platformProjectRoot,
+          // ./MyApp
+          modRequest.projectName,
+          // ./SplashScreen.storyboard
           STORYBOARD_FILE_PATH);
         },
-
         async read(filePath) {
           try {
             const contents = await fs().promises.readFile(filePath, 'utf8');
@@ -112,7 +93,6 @@ const withIosSplashScreenStoryboardBaseMod = config => {
             return getTemplateAsync();
           }
         },
-
         async write(filePath, {
           modResults,
           modRequest: {
@@ -122,19 +102,15 @@ const withIosSplashScreenStoryboardBaseMod = config => {
           if (introspect) {
             return;
           }
-
           await fs().promises.writeFile(filePath, (0, _InterfaceBuilder().toString)(modResults));
         }
-
       })
     }
   });
 };
+
 /** Get a template splash screen storyboard file. */
-
-
 exports.withIosSplashScreenStoryboardBaseMod = withIosSplashScreenStoryboardBaseMod;
-
 async function getTemplateAsync() {
   const contents = `<?xml version="1.0" encoding="UTF-8"?>
     <document

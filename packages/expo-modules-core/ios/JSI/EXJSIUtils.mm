@@ -64,8 +64,7 @@ void callPromiseSetupWithBlock(jsi::Runtime &runtime, std::shared_ptr<CallInvoke
       return;
     }
 
-    NSDictionary *jsError = RCTJSErrorFromCodeMessageAndNSError(code, message, error);
-    strongRejectWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, jsError]() {
+    strongRejectWrapper->jsInvoker().invokeAsync([weakResolveWrapper, weakRejectWrapper, code, message]() {
       auto strongResolveWrapper2 = weakResolveWrapper.lock();
       auto strongRejectWrapper2 = weakRejectWrapper.lock();
       if (!strongResolveWrapper2 || !strongRejectWrapper2) {
@@ -73,8 +72,9 @@ void callPromiseSetupWithBlock(jsi::Runtime &runtime, std::shared_ptr<CallInvoke
       }
 
       jsi::Runtime &rt = strongRejectWrapper2->runtime();
-      jsi::Value arg = convertNSDictionaryToJSIObject(rt, jsError);
-      strongRejectWrapper2->callback().call(rt, arg);
+      jsi::Value jsError = makeCodedError(rt, code, message);
+
+      strongRejectWrapper2->callback().call(rt, jsError);
 
       strongResolveWrapper2->destroy();
       strongRejectWrapper2->destroy();
@@ -168,6 +168,23 @@ void setDeallocator(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> object, 
   jsi::Object jsObject = jsi::Object::createFromHostObject(runtime, hostObjectPtr);
 
   object->setProperty(runtime, "__expo_object_deallocator__", jsi::Value(runtime, jsObject));
+}
+
+#pragma mark - Errors
+
+jsi::Value makeCodedError(jsi::Runtime &runtime, NSString *code, NSString *message) {
+  jsi::String jsCode = convertNSStringToJSIString(runtime, code);
+  jsi::String jsMessage = convertNSStringToJSIString(runtime, message);
+
+  return runtime
+    .global()
+    .getProperty(runtime, "ExpoModulesCore_CodedError")
+    .asObject(runtime)
+    .asFunction(runtime)
+    .callAsConstructor(runtime, {
+      jsi::Value(runtime, jsCode),
+      jsi::Value(runtime, jsMessage)
+    });
 }
 
 } // namespace expo

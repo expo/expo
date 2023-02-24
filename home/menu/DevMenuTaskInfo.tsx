@@ -51,10 +51,14 @@ export function DevMenuTaskInfo({ task }: Props) {
       </Row>
       <Divider />
       <View bg="default" padding="medium">
-        <Text size="small" type="InterRegular">
-          {devServerName ? `Connected to ${devServerName}` : `Running from URL`}
-        </Text>
-        <Spacer.Vertical size="tiny" />
+        {devServerName ? (
+          <>
+            <Text size="small" type="InterRegular">
+              Connected to {devServerName}
+            </Text>
+            <Spacer.Vertical size="tiny" />
+          </>
+        ) : null}
         <Row align="center">
           {devServerName ? (
             <DevIndicator style={styles.taskDevServerIndicator} isActive isNetworkAvailable />

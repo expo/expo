@@ -1,8 +1,9 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesConfig.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
+
+@class EXUpdatesUpdate;
+@class EXUpdatesAsset;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -10,6 +11,30 @@ typedef NS_ENUM(NSInteger, EXUpdatesDatabaseHashType) {
   EXUpdatesDatabaseHashTypeSha1 = 0
 };
 
+/**
+ * SQLite database that keeps track of updates currently loaded/loading to disk, including the
+ * update manifest and metadata, status, and the individual assets (including bundles/bytecode) that
+ * comprise the update. (Assets themselves are stored on the device's file system, and a relative
+ * path is kept in SQLite.)
+ *
+ * SQLite allows a many-to-many relationship between updates and assets, which means we can keep
+ * only one copy of each asset on disk at a time while also being able to clear unused assets with
+ * relative ease (see EXUpdatesReaper).
+ *
+ * Occasionally it's necessary to add migrations when the data structures for updates or assets must
+ * change. Extra care must be taken here, since these migrations will happen on users' devices for
+ * apps we do not control. See
+ * https://github.com/expo/expo/blob/main/packages/expo-updates/guides/migrations.md for step by
+ * step instructions.
+ *
+ * EXUpdatesDatabase provides a serial queue on which all database operations must be run (methods
+ * in this class will assert). This is primarily for control over what high-level operations
+ * involving the database can occur simultaneously - e.g. we don't want to be trying to download a
+ * new update at the same time EXUpdatesReaper is running.
+ *
+ * The `scopeKey` field in various methods here is only relevant in environments such as Expo Go in
+ * which updates from multiple scopes can be launched.
+ */
 @interface EXUpdatesDatabase : NSObject
 
 @property (nonatomic, strong) dispatch_queue_t databaseQueue;
@@ -43,8 +68,11 @@ typedef NS_ENUM(NSInteger, EXUpdatesDatabaseHashType) {
  * Updates returned from this method should not be used to launch.
  */
 - (nullable NSArray<EXUpdatesUpdate *> *)allUpdatesWithConfig:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
-- (nullable NSArray<EXUpdatesUpdate *> *)allUpdatesWithStatus:(EXUpdatesUpdateStatus)status config:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
-- (nullable NSArray<NSUUID *> *)allUpdateIdsWithStatus:(EXUpdatesUpdateStatus)status error:(NSError ** _Nullable)error;
+
+// these use long status temporarily during transition since importing enums is tough
+- (nullable NSArray<EXUpdatesUpdate *> *)allUpdatesWithStatus:(long)status config:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
+- (nullable NSArray<NSUUID *> *)allUpdateIdsWithStatus:(long)status error:(NSError ** _Nullable)error;
+
 - (nullable NSArray<EXUpdatesUpdate *> *)launchableUpdatesWithConfig:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
 - (nullable EXUpdatesUpdate *)updateWithId:(NSUUID *)updateId config:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
 - (nullable NSArray<EXUpdatesAsset *> *)allAssetsWithError:(NSError ** _Nullable)error;

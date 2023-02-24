@@ -7,7 +7,7 @@ import com.facebook.react.bridge.DynamicFromObject
 import com.facebook.react.bridge.ReadableMap
 import expo.modules.kotlin.exception.CollectionElementCastException
 import expo.modules.kotlin.exception.exceptionDecorator
-import expo.modules.kotlin.jni.CppType
+import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.recycle
 import kotlin.reflect.KType
 import kotlin.reflect.typeOf
@@ -34,11 +34,22 @@ class MapTypeConverter(
   }
 
   override fun convertFromAny(value: Any): Map<*, *> {
-    if (value is ReadableMap) {
-      return convertFromReadableMap(value)
+    return if (valueConverter.isTrivial()) {
+      value as Map<*, *>
+    } else {
+      (value as Map<*, *>).mapValues { (_, v) ->
+        exceptionDecorator({ cause ->
+          CollectionElementCastException(
+            mapType,
+            mapType.arguments[1].type!!,
+            v!!::class,
+            cause
+          )
+        }) {
+          valueConverter.convert(v)
+        }
+      }
     }
-
-    return value as Map<*, *>
   }
 
   private fun convertFromReadableMap(jsMap: ReadableMap): Map<*, *> {
@@ -57,5 +68,9 @@ class MapTypeConverter(
     return result
   }
 
-  override fun getCppRequiredTypes(): List<CppType> = listOf(CppType.READABLE_MAP)
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType.forMap(
+    valueConverter.getCppRequiredTypes()
+  )
+
+  override fun isTrivial() = valueConverter.isTrivial()
 }

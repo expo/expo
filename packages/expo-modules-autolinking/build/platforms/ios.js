@@ -9,8 +9,7 @@ const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
 const indent = '  ';
 async function findPodspecFiles(revision) {
-    var _a;
-    const configPodspecPaths = (_a = revision.config) === null || _a === void 0 ? void 0 : _a.iosPodspecPaths();
+    const configPodspecPaths = revision.config?.iosPodspecPaths();
     if (configPodspecPaths && configPodspecPaths.length) {
         return configPodspecPaths;
     }
@@ -32,7 +31,6 @@ exports.getSwiftModuleNames = getSwiftModuleNames;
  * Resolves module search result with additional details required for iOS platform.
  */
 async function resolveModuleAsync(packageName, revision, options) {
-    var _a, _b, _c, _d, _e, _f, _g, _h, _j;
     const podspecFiles = await findPodspecFiles(revision);
     if (!podspecFiles.length) {
         return null;
@@ -41,16 +39,16 @@ async function resolveModuleAsync(packageName, revision, options) {
         podName: path_1.default.basename(podspecFile, path_1.default.extname(podspecFile)),
         podspecDir: path_1.default.dirname(path_1.default.join(revision.path, podspecFile)),
     }));
-    const swiftModuleNames = getSwiftModuleNames(pods, (_a = revision.config) === null || _a === void 0 ? void 0 : _a.iosSwiftModuleNames());
+    const swiftModuleNames = getSwiftModuleNames(pods, revision.config?.iosSwiftModuleNames());
     return {
         packageName,
         pods,
         swiftModuleNames,
         flags: options.flags,
-        modules: (_c = (_b = revision.config) === null || _b === void 0 ? void 0 : _b.iosModules()) !== null && _c !== void 0 ? _c : [],
-        appDelegateSubscribers: (_e = (_d = revision.config) === null || _d === void 0 ? void 0 : _d.iosAppDelegateSubscribers()) !== null && _e !== void 0 ? _e : [],
-        reactDelegateHandlers: (_g = (_f = revision.config) === null || _f === void 0 ? void 0 : _f.iosReactDelegateHandlers()) !== null && _g !== void 0 ? _g : [],
-        debugOnly: (_j = (_h = revision.config) === null || _h === void 0 ? void 0 : _h.iosDebugOnly()) !== null && _j !== void 0 ? _j : false,
+        modules: revision.config?.iosModules() ?? [],
+        appDelegateSubscribers: revision.config?.iosAppDelegateSubscribers() ?? [],
+        reactDelegateHandlers: revision.config?.iosReactDelegateHandlers() ?? [],
+        debugOnly: revision.config?.iosDebugOnly() ?? false,
     };
 }
 exports.resolveModuleAsync = resolveModuleAsync;

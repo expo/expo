@@ -1,6 +1,6 @@
 import { getExpoHomeDirectory, getUserStatePath } from '@expo/config/build/getUserState';
 import JsonFile from '@expo/json-file';
-import { v4 as uuidv4 } from 'uuid';
+import crypto from 'crypto';
 
 type SessionData = {
   sessionSecret: string;
@@ -65,7 +65,7 @@ async function getAnonymousIdentifierAsync(): Promise<string> {
   let id = await settings.getAsync('uuid', null);
 
   if (!id) {
-    id = uuidv4();
+    id = crypto.randomUUID();
     await settings.setAsync('uuid', id);
   }
 

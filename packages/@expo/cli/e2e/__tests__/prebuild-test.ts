@@ -2,6 +2,7 @@
 import JsonFile from '@expo/json-file';
 import execa from 'execa';
 import fs from 'fs/promises';
+import { sync as globSync } from 'glob';
 import klawSync from 'klaw-sync';
 import path from 'path';
 
@@ -17,6 +18,28 @@ import {
 const originalForceColor = process.env.FORCE_COLOR;
 const originalCI = process.env.CI;
 
+const templateFolder = path.join(__dirname, '../../../../../templates/expo-template-bare-minimum/');
+
+function getTemplatePath() {
+  const results = globSync(`*.tgz`, {
+    absolute: true,
+    cwd: templateFolder,
+  });
+
+  return results[0];
+}
+
+async function ensureTemplatePathAsync() {
+  let templatePath = getTemplatePath();
+  if (templatePath) return templatePath;
+  await execa('npm', ['pack'], { cwd: templateFolder });
+
+  templatePath = getTemplatePath();
+  if (templatePath) return templatePath;
+
+  throw new Error('Could not find template tarball');
+}
+
 beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '0';
@@ -31,8 +54,8 @@ afterAll(() => {
 it('loads expected modules by default', async () => {
   const modules = await getLoadedModulesAsync(`require('../../build/src/prebuild').expoPrebuild`);
   expect(modules).toStrictEqual([
-    '../node_modules/ansi-styles/index.js',
     '../node_modules/arg/index.js',
+    '../node_modules/chalk/node_modules/ansi-styles/index.js',
     '../node_modules/chalk/source/index.js',
     '../node_modules/chalk/source/util.js',
     '../node_modules/has-flag/index.js',
@@ -87,7 +110,13 @@ it(
   async () => {
     const projectRoot = await setupTestProjectAsync('basic-prebuild', 'with-blank');
     // `npx expo prebuild --no-install`
-    await execa('node', [bin, 'prebuild', '--no-install'], { cwd: projectRoot });
+
+    const templateFolder = await ensureTemplatePathAsync();
+    console.log('Using local template:', templateFolder);
+
+    await execa('node', [bin, 'prebuild', '--no-install', '--template', templateFolder], {
+      cwd: projectRoot,
+    });
 
     // List output files with sizes for snapshotting.
     // This is to make sure that any changes to the output are intentional.
@@ -107,14 +136,12 @@ it(
     expect(pkg.main).not.toBeDefined();
 
     // Added new packages
-    expect(Object.keys(pkg.dependencies).sort()).toStrictEqual([
+    expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
       'expo',
       'expo-splash-screen',
       'expo-status-bar',
       'react',
-      'react-dom',
       'react-native',
-      'react-native-web',
     ]);
 
     // Updated scripts
@@ -126,12 +153,10 @@ it(
 
     // If this changes then everything else probably changed as well.
     expect(files).toMatchInlineSnapshot(`
-      Array [
+      [
         "App.js",
         "android/.gitignore",
-        "android/app/BUCK",
         "android/app/build.gradle",
-        "android/app/build_defs.bzl",
         "android/app/debug.keystore",
         "android/app/proguard-rules.pro",
         "android/app/src/debug/AndroidManifest.xml",
@@ -139,17 +164,6 @@ it(
         "android/app/src/main/AndroidManifest.xml",
         "android/app/src/main/java/com/example/minimal/MainActivity.java",
         "android/app/src/main/java/com/example/minimal/MainApplication.java",
-        "android/app/src/main/java/com/example/minimal/newarchitecture/MainApplicationReactNativeHost.java",
-        "android/app/src/main/java/com/example/minimal/newarchitecture/components/MainComponentsRegistry.java",
-        "android/app/src/main/java/com/example/minimal/newarchitecture/modules/MainApplicationTurboModuleManagerDelegate.java",
-        "android/app/src/main/jni/Android.mk",
-        "android/app/src/main/jni/MainApplicationModuleProvider.cpp",
-        "android/app/src/main/jni/MainApplicationModuleProvider.h",
-        "android/app/src/main/jni/MainApplicationTurboModuleManagerDelegate.cpp",
-        "android/app/src/main/jni/MainApplicationTurboModuleManagerDelegate.h",
-        "android/app/src/main/jni/MainComponentsRegistry.cpp",
-        "android/app/src/main/jni/MainComponentsRegistry.h",
-        "android/app/src/main/jni/OnLoad.cpp",
         "android/app/src/main/res/drawable/rn_edit_text_material.xml",
         "android/app/src/main/res/drawable/splashscreen.xml",
         "android/app/src/main/res/mipmap-hdpi/ic_launcher.png",
@@ -166,6 +180,7 @@ it(
         "android/app/src/main/res/values/strings.xml",
         "android/app/src/main/res/values/styles.xml",
         "android/app/src/main/res/values-night/colors.xml",
+        "android/app/src/release/java/com/example/minimal/ReactNativeFlipper.java",
         "android/build.gradle",
         "android/gradle/wrapper/gradle-wrapper.jar",
         "android/gradle/wrapper/gradle-wrapper.properties",
@@ -176,6 +191,7 @@ it(
         "app.json",
         "index.js",
         "ios/.gitignore",
+        "ios/.xcode.env",
         "ios/Podfile",
         "ios/Podfile.properties.json",
         "ios/basicprebuild/AppDelegate.h",

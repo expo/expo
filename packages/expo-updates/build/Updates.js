@@ -39,6 +39,11 @@ export const localAssets = ExpoUpdates.localAssets ?? {};
  * can use this constant to provide special behavior for this rare case.
  */
 export const isEmergencyLaunch = ExpoUpdates.isEmergencyLaunch || false;
+/**
+ * This will be true if the currently running update is the one embedded in the build,
+ * and not one downloaded from the updates server.
+ */
+export const isEmbeddedLaunch = ExpoUpdates.isEmbeddedLaunch || false;
 // @docsMissing
 /**
  * @hidden
@@ -46,7 +51,7 @@ export const isEmergencyLaunch = ExpoUpdates.isEmergencyLaunch || false;
 export const isUsingEmbeddedAssets = ExpoUpdates.isUsingEmbeddedAssets || false;
 /**
  * If `expo-updates` is enabled, this is the
- * [manifest](/guides/how-expo-works#expo-development-server) object for the update that's currently
+ * [manifest](/workflow/expo-go#manifest) object for the update that's currently
  * running.
  *
  * In development mode, or any other environment in which `expo-updates` is disabled, this object is
@@ -98,7 +103,7 @@ export async function reloadAsync() {
     if (!ExpoUpdates.reload) {
         throw new UnavailabilityError('Updates', 'reloadAsync');
     }
-    if (__DEV__ && !isUsingExpoDevelopmentClient) {
+    if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingExpoDevelopmentClient)) {
         throw new CodedError('ERR_UPDATES_DISABLED', `You cannot use the Updates module in development mode in a production app. ${manualUpdatesInstructions}`);
     }
     await ExpoUpdates.reload();
@@ -122,7 +127,7 @@ export async function checkForUpdateAsync() {
     if (!ExpoUpdates.checkForUpdateAsync) {
         throw new UnavailabilityError('Updates', 'checkForUpdateAsync');
     }
-    if (__DEV__ || isUsingDeveloperTool) {
+    if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingDeveloperTool)) {
         throw new CodedError('ERR_UPDATES_DISABLED', `You cannot check for updates in development mode. ${manualUpdatesInstructions}`);
     }
     const result = await ExpoUpdates.checkForUpdateAsync();
@@ -131,6 +136,38 @@ export async function checkForUpdateAsync() {
         delete result.manifestString;
     }
     return result;
+}
+/**
+ * Retrieves the most recent expo-updates log entries.
+ *
+ * @param maxAge Sets the max age of retrieved log entries in milliseconds. Default to 3600000 ms (1 hour).
+ *
+ * @return A promise that fulfills with an array of [`UpdatesLogEntry`](#updateslogentry) objects;
+ *
+ * The promise rejects if there is an unexpected error in retrieving the logs.
+ */
+export async function readLogEntriesAsync(maxAge = 3600000) {
+    if (!ExpoUpdates.readLogEntriesAsync) {
+        throw new UnavailabilityError('Updates', 'readLogEntriesAsync');
+    }
+    return await ExpoUpdates.readLogEntriesAsync(maxAge);
+}
+/**
+ * Clears existing expo-updates log entries.
+ *
+ * > For now, this operation does nothing on the client.  Once log persistence has been
+ * > implemented, this operation will actually remove existing logs.
+ *
+ * @return A promise that fulfills if the clear operation was successful.
+ *
+ * The promise rejects if there is an unexpected error in clearing the logs.
+ *
+ */
+export async function clearLogEntriesAsync() {
+    if (!ExpoUpdates.clearLogEntriesAsync) {
+        throw new UnavailabilityError('Updates', 'clearLogEntriesAsync');
+    }
+    await ExpoUpdates.clearLogEntriesAsync();
 }
 /**
  * Downloads the most recently deployed update to your project from server to the device's local
@@ -146,7 +183,7 @@ export async function fetchUpdateAsync() {
     if (!ExpoUpdates.fetchUpdateAsync) {
         throw new UnavailabilityError('Updates', 'fetchUpdateAsync');
     }
-    if (__DEV__ || isUsingDeveloperTool) {
+    if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingDeveloperTool)) {
         throw new CodedError('ERR_UPDATES_DISABLED', `You cannot fetch updates in development mode. ${manualUpdatesInstructions}`);
     }
     const result = await ExpoUpdates.fetchUpdateAsync();
@@ -186,7 +223,8 @@ function _emitEvent(params) {
 }
 /**
  * Adds a callback to be invoked when updates-related events occur (such as upon the initial app
- * load) due to auto-update settings chosen at build-time.
+ * load) due to auto-update settings chosen at build-time. See also the
+ * [`useUpdateEvents`](#useupdateeventslistener) React hook.
  *
  * @param listener A function that will be invoked with an [`UpdateEvent`](#updateevent) instance
  * and should not return any value.

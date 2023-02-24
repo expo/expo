@@ -15,7 +15,7 @@ class ContainerView: RCTView {
 
     override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {
         super.traitCollectionDidChange(previousTraitCollection)
-        if #available(iOS 13.0, *) {
+        if #available(iOS 13.0, tvOS 13.0, *) {
             if (self.traitCollection.hasDifferentColorAppearance(comparedTo: previousTraitCollection)) {
                 applyProperties()
                 print("dark mode changed")

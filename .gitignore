@@ -63,7 +63,8 @@ xcuserdata
 /android/versioned-react-native/codegen
 /android/versioned-react-native/sdks
 ReactAndroid-temp.aar
-/android/ReactAndroid/prebuiltHermes
+/android/prebuiltHermes
+/android/versioned-abis/**/*.aar
 
 # Tools
 jarjar-rules.txt
@@ -132,6 +133,9 @@ shellAppWorkspaces
 .env.production.local
 apps/bare-expo/deploy-url.txt
 
+# Temporary files created by Metro to check the health of the file watcher
+.metro-health-check*
+
 # Expo Doc merging
 docs/pages/versions/*/react-native/ADDED_*.md
 docs/pages/versions/*/react-native/REMOVED_*.md
@@ -149,3 +153,4 @@ docs/pages/versions/*/react-native/*.diff
 /ios/Pods
 /ios/build
 **/ios/.xcode.env.local
+/ios/versioned-react-native/*/ReactNative/sdks/hermes-engine/destroot

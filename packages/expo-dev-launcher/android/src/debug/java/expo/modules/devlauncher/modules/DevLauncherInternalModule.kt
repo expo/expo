@@ -10,6 +10,7 @@ import android.net.Uri
 import android.os.Build
 import com.facebook.react.bridge.*
 import com.facebook.react.modules.core.DeviceEventManagerModule.RCTDeviceEventEmitter
+import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.DevLauncherController.Companion.wasInitialized
 import expo.modules.devlauncher.helpers.DevLauncherInstallationIDHelper
@@ -52,11 +53,10 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
   override fun hasConstants(): Boolean = true
 
   override fun getConstants(): Map<String, Any> {
-    val isRunningOnGenymotion = Build.FINGERPRINT.contains("vbox")
-    val isRunningOnStockEmulator = Build.FINGERPRINT.contains("generic")
+    val isRunningOnEmulator = EmulatorUtilities.isRunningOnEmulator()
     return mapOf(
       "installationID" to installationIDHelper.getOrCreateInstallationID(reactApplicationContext),
-      "isDevice" to (!isRunningOnGenymotion && !isRunningOnStockEmulator),
+      "isDevice" to !isRunningOnEmulator,
       "updatesConfig" to getUpdatesConfig(),
     )
   }

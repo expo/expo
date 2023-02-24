@@ -5,6 +5,7 @@ import {
   MultipartPart,
 } from '@expo/multipart-body-parser';
 import { vol } from 'memfs';
+import nullthrows from 'nullthrows';
 
 import { asMock } from '../../../../__tests__/asMock';
 import { getProjectAsync } from '../../../../api/getProject';
@@ -104,16 +105,21 @@ beforeEach(() => {
 describe('getParsedHeaders', () => {
   const middleware = new ExpoGoManifestHandlerMiddleware('/', {} as any);
 
-  // The classic manifest middleware did not assert.
-  it('asserts platform is missing', () => {
-    expect(() =>
+  it('defaults to "none" with no platform header', () => {
+    expect(
       middleware.getParsedHeaders(
         asReq({
           url: 'http://localhost:3000',
           headers: {},
         })
       )
-    ).toThrowError(/Must specify "expo-platform" header or "platform" query parameter/);
+    ).toEqual({
+      acceptSignature: false,
+      expectSignature: null,
+      explicitlyPrefersMultipartMixed: false,
+      hostname: null,
+      platform: 'none',
+    });
   });
 
   it('returns default values from headers', () => {
@@ -212,7 +218,7 @@ describe('_getManifestResponseAsync', () => {
       )
     );
 
-    const { body } = await getMultipartPartAsync('manifest', results);
+    const { body } = nullthrows(await getMultipartPartAsync('manifest', results));
     expect(JSON.parse(body)).toEqual({
       id: expect.any(String),
       createdAt: expect.any(String),
@@ -256,7 +262,7 @@ describe('_getManifestResponseAsync', () => {
     expect(results.version).toBe('45.0.0');
     expect(results.headers.get('expo-manifest-signature')).toEqual(expect.any(String));
 
-    const { body } = await getMultipartPartAsync('manifest', results);
+    const { body } = nullthrows(await getMultipartPartAsync('manifest', results));
     expect(JSON.parse(body)).toEqual({
       id: expect.any(String),
       createdAt: expect.any(String),
@@ -321,8 +327,8 @@ describe('_getManifestResponseAsync', () => {
     });
     expect(results.version).toBe('45.0.0');
 
-    const { body, headers } = await getMultipartPartAsync('manifest', results);
-    expect(headers.get('expo-signature')).toContain('keyid="expo-go"');
+    const { body, headers } = nullthrows(await getMultipartPartAsync('manifest', results));
+    expect(headers.get('expo-signature')).toContain('keyid="testkeyid"');
 
     expect(JSON.parse(body)).toEqual({
       id: expect.any(String),
@@ -361,9 +367,8 @@ describe('_getManifestResponseAsync', () => {
     });
     expect(results.version).toBe('45.0.0');
 
-    const { body: manifestPartBody, headers: manifestPartHeaders } = await getMultipartPartAsync(
-      'manifest',
-      results
+    const { body: manifestPartBody, headers: manifestPartHeaders } = nullthrows(
+      await getMultipartPartAsync('manifest', results)
     );
     expect(manifestPartHeaders.get('expo-signature')).toContain('keyid="expo-go"');
 
@@ -388,9 +393,8 @@ describe('_getManifestResponseAsync', () => {
       },
     });
 
-    const { body: certificateChainPartBody } = await getMultipartPartAsync(
-      'certificate_chain',
-      results
+    const { body: certificateChainPartBody } = nullthrows(
+      await getMultipartPartAsync('certificate_chain', results)
     );
     expect(certificateChainPartBody).toMatchSnapshot();
   });

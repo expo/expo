@@ -4,29 +4,21 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.withPlugins = void 0;
-
 function _assert() {
   const data = _interopRequireDefault(require("assert"));
-
   _assert = function () {
     return data;
   };
-
   return data;
 }
-
 function _withStaticPlugin() {
   const data = require("./withStaticPlugin");
-
   _withStaticPlugin = function () {
     return data;
   };
-
   return data;
 }
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 /**
  * Resolves a list of plugins.
  *
@@ -39,6 +31,5 @@ const withPlugins = (config, plugins) => {
     plugin
   }), config);
 };
-
 exports.withPlugins = withPlugins;
 //# sourceMappingURL=withPlugins.js.map

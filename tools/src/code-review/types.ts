@@ -6,8 +6,24 @@ import { PullRequest } from '../GitHub';
  * https://docs.github.com/en/rest/reference/pulls#create-a-review-for-a-pull-request
  */
 export type ReviewComment = {
+  /**
+   * The relative path to the file that necessitates a comment.
+   */
   path: string;
-  position: number;
+  /**
+   * The position in the diff where you want to add a review comment.
+   * Note this value is not the same as the line number in the file.
+   * @deprecated Use `line` instead.
+   */
+  position?: number;
+  /**
+   * The line of the blob in the pull request diff that the comment applies to.
+   * For a multi-line comment, the last line of the range that your comment applies to.
+   */
+  line?: number;
+  /**
+   * The text of the review comment.
+   */
   body: string;
 };
 

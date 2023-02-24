@@ -28,6 +28,10 @@ type SignManifestProps = {
 
 interface ClassicManifestRequestInfo extends ManifestRequestInfo {}
 
+const debug = require('debug')(
+  'expo:start:server:middleware:ClassicManifestMiddleware'
+) as typeof console.log;
+
 export class ClassicManifestMiddleware extends ManifestMiddleware<ClassicManifestRequestInfo> {
   public getParsedHeaders(req: ServerRequest): ClassicManifestRequestInfo {
     const platform = parsePlatformHeader(req) || 'ios';
@@ -62,7 +66,7 @@ export class ClassicManifestMiddleware extends ManifestMiddleware<ClassicManifes
     const hostInfo = await createHostInfoAsync();
 
     const headers = new Map<string, any>();
-    headers.set('Exponent-Server', hostInfo);
+    headers.set('Exponent-Server', JSON.stringify(hostInfo));
 
     // Create the final string
     const body = await this._fetchComputedManifestStringAsync({
@@ -111,7 +115,8 @@ export class ClassicManifestMiddleware extends ManifestMiddleware<ClassicManifes
     try {
       return await this._getManifestStringAsync(props);
     } catch (error: any) {
-      if (error.code === 'UNAUTHORIZED_ERROR' && props.manifest.owner) {
+      debug(`Error getting manifest:`, error);
+      if (error.code === 'UNAUTHORIZED' && props.manifest.owner) {
         // Don't have permissions for siging, warn and enable offline mode.
         this.addSigningDisabledWarning(
           `This project belongs to ${chalk.bold(

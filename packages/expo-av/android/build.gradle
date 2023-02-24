@@ -3,16 +3,24 @@ import java.nio.file.Paths
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
+apply plugin: "de.undercouch.download"
 
 group = 'host.exp.exponent'
-version = '12.0.2'
+version = '13.2.1'
 
-def REACT_NATIVE_DIR = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
-def RN_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
-def RN_SO_DIR = RN_BUILD_FROM_SOURCE
-    ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
-    : "${buildDir}/react-native-0*/jni"
-def RN_AAR_DIR = "${REACT_NATIVE_DIR}/android"
+def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
+def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
+  ? findProject(":ReactAndroid").getProjectDir().parent
+  : new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
+def RN_SO_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
+  ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
+  : "${buildDir}/react/jni"
+
+def reactProperties = new Properties()
+file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
+def REACT_NATIVE_VERSION = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")
+def REACT_NATIVE_TARGET_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
+
 def reactNativeArchitectures() {
     def value = project.getProperties().get("reactNativeArchitectures")
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
@@ -35,7 +43,7 @@ buildscript {
     if (ext.has("kotlinVersion")) {
       ext.kotlinVersion()
     } else {
-      ext.safeExtGet("kotlinVersion", "1.6.10")
+      ext.safeExtGet("kotlinVersion", "1.8.10")
     }
   }
 
@@ -45,6 +53,7 @@ buildscript {
 
   dependencies {
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
+    classpath("de.undercouch:gradle-download-task:5.3.0")
   }
 }
 
@@ -72,7 +81,14 @@ afterEvaluate {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion safeExtGet("compileSdkVersion", 33)
+
+  if (rootProject.hasProperty("ndkPath")) {
+    ndkPath rootProject.ext.ndkPath
+  }
+  if (rootProject.hasProperty("ndkVersion")) {
+    ndkVersion rootProject.ext.ndkVersion
+  }
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_11
@@ -85,9 +101,9 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 31)
+    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 24
-    versionName "12.0.2"
+    versionName "13.2.1"
 
     externalNativeBuild {
       cmake {
@@ -102,7 +118,11 @@ android {
 
   externalNativeBuild {
     cmake {
-      path "CMakeLists.txt"
+      if (REACT_NATIVE_TARGET_VERSION >= 71) {
+        path "CMakeLists.txt"
+      } else {
+        path "legacy/CMakeLists.txt"
+      }
     }
   }
 
@@ -113,7 +133,7 @@ android {
   packagingOptions {
     // Gradle will add cmake target dependencies into packaging.
     // Theses files are intermediated linking files to build reanimated and should not be in final package.
-    excludes = [
+    excludes += [
         "**/libc++_shared.so",
         "**/libreactnativejni.so",
         "**/libglog.so",
@@ -123,10 +143,6 @@ android {
         "**/libhermes.so",
         "**/libjsi.so",
     ]
-  }
-  configurations {
-    extractHeaders
-    extractJNI
   }
 
   lintOptions {
@@ -147,12 +163,10 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
 
-  compileOnly 'com.facebook.fbjni:fbjni:0.2.2'
-  extractHeaders 'com.facebook.fbjni:fbjni:0.2.2:headers'
-  extractJNI 'com.facebook.fbjni:fbjni:0.2.2'
+  compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
 
-  api 'com.google.android.exoplayer:exoplayer:2.13.3'
-  api 'com.google.android.exoplayer:extension-okhttp:2.13.3'
+  api 'com.google.android.exoplayer:exoplayer:2.18.1'
+  api 'com.google.android.exoplayer:extension-okhttp:2.18.1'
 
   api "com.squareup.okhttp3:okhttp:3.14.9"
   api "com.squareup.okhttp3:okhttp-urlconnection:3.14.9"
@@ -163,82 +177,6 @@ dependencies {
   testImplementation 'io.mockk:mockk:1.12.3'
 }
 
-def extractReactNativeAAR = { buildType ->
-  def suffix = buildType == 'Debug' ? '-debug' : '-release'
-  def rnAARs = fileTree(RN_AAR_DIR).matching { include "**/react-native/**/*${suffix}.aar" }
-  if (rnAARs.isEmpty()) {
-    rnAARs = fileTree(RN_AAR_DIR).matching { include "**/react-native/**/*.aar" }
-  }
-  if (rnAARs.any()) {
-    // node_modules/react-native has a .aar, extract headers
-    if (rnAARs.size() > 1) {
-      logger.error("More than one React Native AAR file has been found:")
-      rnAARs.each {println(it) }
-      throw new GradleException("Multiple React Native AARs found:\n${rnAARs.join("\n")}" +
-          "\nRemove the old ones and try again")
-    }
-  }
-  def rnAAR = rnAARs.singleFile
-  def file = rnAAR.absoluteFile
-  def packageName = file.name.tokenize('-')[0]
-  copy {
-    from zipTree(file)
-    into "$buildDir/$file.name"
-    include "jni/**/*"
-  }
-}
-
-task extractReactNativeAARRelease {
-  doLast {
-    extractReactNativeAAR('Release')
-  }
-}
-
-task extractReactNativeAARDebug {
-  doLast {
-    extractReactNativeAAR('Debug')
-  }
-}
-
-task extractAARHeaders {
-  doLast {
-    configurations.extractHeaders.files.each {
-      def file = it.absoluteFile
-      copy {
-        from zipTree(file)
-        into "$buildDir/$file.name"
-        include "**/*.h"
-      }
-    }
-  }
-}
-
-task extractJNIFiles {
-  doLast {
-    configurations.extractJNI.files.each {
-      def file = it.absoluteFile
-      copy {
-        from zipTree(file)
-        into "$buildDir/$file.name"
-        include "jni/**/*"
-      }
-    }
-  }
-}
-
-tasks.whenTaskAdded { task ->
-  if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake'))) {
-    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
-    task.dependsOn(extractAARHeaders)
-    task.dependsOn(extractJNIFiles)
-    if (RN_BUILD_FROM_SOURCE) {
-      task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
-    } else {
-      task.dependsOn("extractReactNativeAAR${buildType}")
-    }
-  } else if (task.name.startsWith('generateJsonModel') && RN_BUILD_FROM_SOURCE) {
-    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
-    task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
-  }
-
+if (REACT_NATIVE_TARGET_VERSION < 71) {
+  applyLegacyReactNativeLibsExtractionPlugin()
 }

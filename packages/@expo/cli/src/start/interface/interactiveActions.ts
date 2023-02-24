@@ -19,11 +19,21 @@ export class DevServerManagerActions {
   ) {
     // If native dev server is running, print its URL.
     if (this.devServerManager.getNativeDevServerPort()) {
+      const devServer = this.devServerManager.getDefaultDevServer();
       try {
-        const url = this.devServerManager.getDefaultDevServer().getNativeRuntimeUrl()!;
+        const nativeRuntimeUrl = devServer.getNativeRuntimeUrl()!;
+        const interstitialPageUrl = devServer.getRedirectUrl();
 
-        printQRCode(url);
-        Log.log(printItem(chalk`Metro waiting on {underline ${url}}`));
+        printQRCode(interstitialPageUrl ?? nativeRuntimeUrl);
+
+        if (interstitialPageUrl) {
+          Log.log(
+            printItem(
+              chalk`Choose an app to open your project at {underline ${interstitialPageUrl}}`
+            )
+          );
+        }
+        Log.log(printItem(chalk`Metro waiting on {underline ${nativeRuntimeUrl}}`));
         // TODO: if development build, change this message!
         Log.log(printItem('Scan the QR code above with Expo Go (Android) or the Camera app (iOS)'));
       } catch (error) {
@@ -31,7 +41,7 @@ export class DevServerManagerActions {
         if (error.code !== 'NO_DEV_CLIENT_SCHEME') {
           throw error;
         } else {
-          const serverUrl = this.devServerManager.getDefaultDevServer().getDevServerUrl();
+          const serverUrl = devServer.getDevServerUrl();
           Log.log(printItem(chalk`Metro waiting on {underline ${serverUrl}}`));
           Log.log(printItem(`Linking is disabled because the client scheme cannot be resolved.`));
         }
@@ -52,20 +62,24 @@ export class DevServerManagerActions {
 
   async openJsInspectorAsync() {
     Log.log('Opening JavaScript inspector in the browser...');
-    const port = this.devServerManager.getNativeDevServerPort();
-    assert(port, 'Metro dev server is not running');
-    const metroServerOrigin = `http://localhost:${port}`;
+    const metroServerOrigin = this.devServerManager.getDefaultDevServer().getJsInspectorBaseUrl();
+    assert(metroServerOrigin, 'Metro dev server is not running');
     const apps = await queryAllInspectorAppsAsync(metroServerOrigin);
     if (!apps.length) {
       Log.warn(
-        `No compatible apps connected. This feature is only available for apps using the Hermes runtime. ${learnMore(
+        `No compatible apps connected. JavaScript Debugging can only be used with the Hermes engine. ${learnMore(
           'https://docs.expo.dev/guides/using-hermes/'
         )}`
       );
       return;
     }
-    for (const app of apps) {
-      openJsInspector(app);
+    try {
+      for (const app of apps) {
+        await openJsInspector(app);
+      }
+    } catch (error: any) {
+      Log.error('Failed to open JavaScript inspector. This is often an issue with Google Chrome.');
+      Log.exception(error);
     }
   }
 

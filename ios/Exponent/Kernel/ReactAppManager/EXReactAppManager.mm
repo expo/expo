@@ -4,7 +4,7 @@
 #import "EXErrorRecoveryManager.h"
 #import "EXUserNotificationManager.h"
 #import "EXKernel.h"
-#import "EXAppLoader.h"
+#import "EXAbstractLoader.h"
 #import "EXKernelLinkingManager.h"
 #import "EXKernelServiceRegistry.h"
 #import "EXKernelUtil.h"
@@ -18,6 +18,7 @@
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <EXConstants/EXConstantsService.h>
 #import <EXSplashScreen/EXSplashScreenService.h>
+#import <EXManifests/EXManifests-Swift.h>
 
 #import <React/RCTBridge.h>
 #import <React/RCTCxxBridgeDelegate.h>
@@ -520,7 +521,6 @@
 
 - (void)setupWebSocketControls
 {
-#if DEBUG || RCT_DEV
   if ([self enablesDeveloperTools]) {
     if ([_versionManager respondsToSelector:@selector(addWebSocketNotificationHandler:queue:forMethod:)]) {
       __weak __typeof(self) weakSelf = self;
@@ -568,7 +568,6 @@
                                              forMethod:@"devMenu"];
     }
   }
-#endif
 }
 
 - (NSDictionary<NSString *, NSString *> *)devMenuItems

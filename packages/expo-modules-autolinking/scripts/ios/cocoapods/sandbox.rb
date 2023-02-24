@@ -34,9 +34,10 @@ module Pod
 
         patched_spec = Specification.from_json(spec_json.to_json)
 
-      # Patch `ReactCommon.podspec` to define module
-      elsif name == 'ReactCommon'
+      # Patch podspecs to define module
+      elsif ['ReactCommon', 'React-RCTAppDelegate', 'React-hermes', 'React-jsc'].include? name
         spec_json = JSON.parse(podspec.to_pretty_json)
+        spec_json['pod_target_xcconfig'] ||= {}
         spec_json['pod_target_xcconfig']['DEFINES_MODULE'] = 'YES'
         patched_spec = Specification.from_json(spec_json.to_json)
       end

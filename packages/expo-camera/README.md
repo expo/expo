@@ -1,10 +1,17 @@
-# expo-camera
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/camera/">
+    <img
+      src="../../.github/resources/expo-camera.svg"
+      alt="expo-camera"
+      height="64" />
+  </a>
+</p>
 
 A React component that renders a preview for the device's either front or back camera. Camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With expo-camera, one can also take photos and record videos that are saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing on the preview.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/camera.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/camera.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/camera/)
 
 # Installation in managed Expo projects

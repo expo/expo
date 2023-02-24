@@ -81,7 +81,11 @@ const Error = () => {
 
     // We are confident now that we can render a not found error
     setNotFound(true);
-    Sentry.captureMessage(`Page not found (404)`);
+    Sentry.captureMessage(`Page not found (404)`, {
+      extra: {
+        '404': pathname,
+      },
+    });
   }, []);
 
   useEffect(() => {
@@ -112,7 +116,7 @@ export default Error;
 
 const styles = {
   layout: css({
-    backgroundColor: theme.background.secondary,
+    backgroundColor: theme.background.subtle,
   }),
   container: css({
     display: 'flex',

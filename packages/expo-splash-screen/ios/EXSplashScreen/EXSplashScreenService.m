@@ -114,7 +114,7 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 
 - (void)onAppContentDidAppear:(UIViewController *)viewController
 {
-  if (![self.splashScreenControllers objectForKey:viewController]) {
+  if ([self isAppActive] && ![self.splashScreenControllers objectForKey:viewController]) {
     EXLogWarn(@"No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.");
   }
   BOOL needsHide = [[self.splashScreenControllers objectForKey:viewController] needsHideOnAppContentDidAppear];
@@ -128,7 +128,7 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 
 - (void)onAppContentWillReload:(UIViewController *)viewController
 {
-  if (![self.splashScreenControllers objectForKey:viewController]) {
+  if ([self isAppActive] && ![self.splashScreenControllers objectForKey:viewController]) {
     EXLogWarn(@"No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.");
   }
   BOOL needsShow = [[self.splashScreenControllers objectForKey:viewController] needsShowOnAppContentWillReload];
@@ -140,6 +140,10 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
               successCallback:^{}
               failureCallback:^(NSString *message){}];
   }
+}
+
+- (BOOL)isAppActive {
+    return UIApplication.sharedApplication.applicationState == UIApplicationStateActive;
 }
 
 # pragma mark - UIApplicationDelegate
@@ -188,7 +192,10 @@ EX_REGISTER_SINGLETON_MODULE(SplashScreen);
 {
   if (object == UIApplication.sharedApplication.keyWindow && [keyPath isEqualToString:kRootViewController]) {
     UIViewController *newRootViewController = change[@"new"];
-    if (newRootViewController != nil) {
+    // For unknown reasons, this function may be sometimes called twice with the same changes.
+    // What leads to warnings like this one: `'SplashScreen.show' has already been called for given view controller`.
+    // To prevent this weird behaviour, we check if the value was really changed.
+    if (newRootViewController != nil && newRootViewController != self.observingRootViewController) {
       [self removeRootViewControllerListener];
       [self showSplashScreenFor:newRootViewController options:EXSplashScreenDefault];
       [self addRootViewControllerListener];

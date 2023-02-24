@@ -1,4 +1,4 @@
-export declare type NetworkState = {
+export type NetworkState = {
     /**
      * A [`NetworkStateType`](#networkstatetype) enum value that represents the current network
      * connection type.

@@ -243,10 +243,6 @@ export default class Camera extends React.Component<CameraProps> {
    *
    * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem.md#filesystemcopyasyncoptions)
    * > to make a permanent copy of the image.
-   *
-   * > On web, the `uri` is a base64 representation of the image because file system URLs are not supported in the browser.
-   * > The `exif` data returned on web is a partial representation of the [`MediaTrackSettings`](https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings),
-   * > if available.
    */
   async takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture> {
     const pictureOptions = ensurePictureOptions(options);
@@ -384,6 +380,7 @@ export default class Camera extends React.Component<CameraProps> {
     const onBarCodeScanned = this.props.onBarCodeScanned
       ? this._onObjectDetected(this.props.onBarCodeScanned)
       : undefined;
+
     const onFacesDetected = this._onObjectDetected(this.props.onFacesDetected);
 
     return (

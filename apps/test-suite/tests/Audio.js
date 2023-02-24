@@ -323,6 +323,7 @@ export function test(t) {
           isLooping: true,
           isMuted: false,
           volume: 0.5,
+          audioPan: -0.5,
           rate: 1.5,
         };
         await soundObject.loadAsync(mainTestingSource, options);
@@ -337,6 +338,7 @@ export function test(t) {
           isLooping: true,
           isMuted: false,
           volume: 0.5,
+          audioPan: 0.5,
           rate: 1.5,
         };
         await soundObject.loadAsync(mainTestingSource, options);
@@ -506,20 +508,31 @@ export function test(t) {
         await retryForStatus(soundObject, { volume: 0.5 });
       });
 
-      const testVolumeFailure = (valueDescription, value) =>
-        t.it(`rejects if volume value is ${valueDescription}`, async () => {
-          let hasBeenRejected = false;
-          try {
-            await soundObject.setVolumeAsync(value);
-          } catch (error) {
-            hasBeenRejected = true;
-            error && t.expect(error.message).toMatch(/value .+ between/);
-          }
-          t.expect(hasBeenRejected).toBe(true);
-        });
+      t.it('sets the audio panning', async () => {
+        await soundObject.setVolumeAsync(0.5, 1);
+        await retryForStatus(soundObject, { volume: 0.5, audioPan: 1 });
+      });
 
-      testVolumeFailure('too big', 2);
-      testVolumeFailure('negative', -0.5);
+      const testVolumeFailure = (valueDescription, values) =>
+        t.it(
+          `rejects if volume ${values.audioPan ? 'panning' : 'value'} is ${valueDescription}`,
+          async () => {
+            let hasBeenRejected = false;
+            try {
+              await soundObject.setVolumeAsync(values.volume, values.audioPan);
+            } catch (error) {
+              hasBeenRejected = true;
+              error && t.expect(error.message).toMatch(/value .+ between/);
+            }
+            t.expect(hasBeenRejected).toBe(true);
+          }
+        );
+
+      testVolumeFailure('too big', { volume: 2 });
+      testVolumeFailure('negative', { volume: -0.5 });
+
+      testVolumeFailure('too small', { volume: 1, audioPan: -1.1 });
+      testVolumeFailure('too big', { volume: 1, audioPan: 1.1 });
     });
 
     t.describe('Audio.setIsMutedAsync', () => {

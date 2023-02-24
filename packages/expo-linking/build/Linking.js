@@ -29,7 +29,7 @@ function getHostUri() {
 function isExpoHosted() {
     const hostUri = getHostUri();
     return !!(hostUri &&
-        (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test)(:.*)?(\/.*)?$/.test(hostUri) ||
+        (/^(.*\.)?(expo\.io|exp\.host|exp\.direct|expo\.test|expo\.dev)(:.*)?(\/.*)?$/.test(hostUri) ||
             Constants.manifest?.developer ||
             Constants.manifest2?.extra?.expoGo?.developer));
 }
@@ -225,18 +225,6 @@ export function parse(url) {
 export function addEventListener(type, handler) {
     return NativeLinking.addEventListener(type, handler);
 }
-/**
- * Remove a handler by passing the `url` event type and the handler.
- * @param type The only valid type is `'url'`.
- * @param handler An [`URLListener`](#urllistener) function that takes an `event` object of the type
- * [`EventType`](#eventype).
- * @see [React Native Docs Linking page](https://reactnative.dev/docs/linking#removeeventlistener).
- *
- * @deprecated Call `remove()` on the return value of `addEventListener()` instead.
- */
-export function removeEventListener(type, handler) {
-    NativeLinking.removeEventListener(type, handler);
-}
 // @needsAudit
 /**
  * Helper method which wraps React Native's `Linking.getInitialURL()` in `Linking.parse()`.
@@ -313,7 +301,7 @@ export async function openURL(url) {
  * `false` if not.
  *
  * The `Promise` will reject on Android if it was impossible to check if the URL can be opened, and
- * on iOS if you didn't [add the specific scheme in the `LSApplicationQueriesSchemes` key inside **Info.plist**](/guides/linking#opening-links-to-other-apps).
+ * on iOS if you didn't [add the specific scheme in the `LSApplicationQueriesSchemes` key inside **Info.plist**](/guides/linking#linking-from-your-app).
  */
 export async function canOpenURL(url) {
     validateURL(url);

@@ -15,7 +15,7 @@ class JSIInteropModuleRegistryTest {
       AsyncFunction("asyncFunction") {}
     }
   ) {
-    val value = evaluateScript("ExpoModules.TestModule")
+    val value = evaluateScript("expo.modules.TestModule")
     Truth.assertThat(value.isObject()).isTrue()
 
     val testModule = value.getObject()
@@ -29,11 +29,11 @@ class JSIInteropModuleRegistryTest {
     Truth.assertThat(asyncFunction.isFunction()).isTrue()
 
     Truth.assertThat(
-      evaluateScript("typeof ExpoModules.TestModule.syncFunction").getString()
+      evaluateScript("typeof expo.modules.TestModule.syncFunction").getString()
     ).isEqualTo("function")
 
     Truth.assertThat(
-      evaluateScript("typeof ExpoModules.TestModule.asyncFunction").getString()
+      evaluateScript("typeof expo.modules.TestModule.asyncFunction").getString()
     ).isEqualTo("function")
   }
 
@@ -46,11 +46,11 @@ class JSIInteropModuleRegistryTest {
     }
   ) {
 
-    val f1Value = evaluateScript("ExpoModules.TestModule.f1()")
-    val f2Value = evaluateScript("ExpoModules.TestModule.f2(\"expo\")")
+    val f1Value = evaluateScript("expo.modules.TestModule.f1()")
+    val f2Value = evaluateScript("expo.modules.TestModule.f2(\"expo\")")
 
     Truth.assertThat(f1Value.isNumber()).isTrue()
-    val unboxedF1Value = f1Value.getDouble().toInt()
+    val unboxedF1Value = f1Value.getInt()
     Truth.assertThat(unboxedF1Value).isEqualTo(20)
 
     Truth.assertThat(f2Value.isString()).isTrue()
@@ -67,9 +67,9 @@ class JSIInteropModuleRegistryTest {
       }
     }
   ) { methodQueue ->
-    val promiseResult = waitForAsyncFunction(methodQueue, "ExpoModules.TestModule.f()")
+    val promiseResult = waitForAsyncFunction(methodQueue, "expo.modules.TestModule.f()")
     Truth.assertThat(promiseResult.isNumber()).isTrue()
-    Truth.assertThat(global().getProperty("promiseResult").getDouble().toInt()).isEqualTo(20)
+    Truth.assertThat(global().getProperty("promiseResult").getInt()).isEqualTo(20)
   }
 
   @Test
@@ -84,12 +84,12 @@ class JSIInteropModuleRegistryTest {
     }
   ) {
 
-    val c1Value = evaluateScript("ExpoModules.TestModule.c1")
-    val c2Value = evaluateScript("ExpoModules.TestModule.c2")
-    val i1Value = evaluateScript("ExpoModules.TestModule.c3.i1")
+    val c1Value = evaluateScript("expo.modules.TestModule.c1")
+    val c2Value = evaluateScript("expo.modules.TestModule.c2")
+    val i1Value = evaluateScript("expo.modules.TestModule.c3.i1")
 
     Truth.assertThat(c1Value.isNumber()).isTrue()
-    val unboxedC1Value = c1Value.getDouble().toInt()
+    val unboxedC1Value = c1Value.getInt()
     Truth.assertThat(unboxedC1Value).isEqualTo(123)
 
     Truth.assertThat(c2Value.isString()).isTrue()
@@ -97,7 +97,7 @@ class JSIInteropModuleRegistryTest {
     Truth.assertThat(unboxedC2Value).isEqualTo("string")
 
     Truth.assertThat(i1Value.isNumber()).isTrue()
-    val unboxedI1Value = i1Value.getDouble().toInt()
+    val unboxedI1Value = i1Value.getInt()
     Truth.assertThat(unboxedI1Value).isEqualTo(123)
   }
 }

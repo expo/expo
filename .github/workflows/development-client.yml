@@ -39,11 +39,9 @@ jobs:
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🔧 Install Expo CLI
-        run: yarn global add expo-cli
       - name: Init new expo app
         working-directory: ../
-        run: expo-cli init development-client-android-test --name development-client-android-test --yes
+        run: yarn create expo-app ./development-client-android-test --yes
       - name: Make Yarn resolve expo-dev-client dependencies locally
         working-directory: ../development-client-android-test
         run: |
@@ -66,9 +64,9 @@ jobs:
       - name: Setup app.config.json
         working-directory: ../development-client-android-test
         run: echo "{\"name\":\"development-client-android-test\",\"plugins\":[\"expo-dev-client\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json
-      - name: Eject
+      - name: Prebuild Android
         working-directory: ../development-client-android-test
-        run: expo-cli eject
+        run: yarn expo prebuild --platform android
       - name: Bump `build tools`
         working-directory: ../development-client-android-test
         run: sed -i -e 's/buildToolsVersion\ =\ \"29\..\..\"/buildToolsVersion\ = \"30\.0\.3\"/' ./android/build.gradle
@@ -82,7 +80,7 @@ jobs:
         run: ./gradlew assembleDebug
 
   ios:
-    runs-on: macos-11
+    runs-on: macos-12
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
@@ -96,11 +94,9 @@ jobs:
       - name: 🧶 Yarn install
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: 🔧 Install Expo CLI
-        run: yarn global add expo-cli
       - name: Init new expo app
         working-directory: ../
-        run: expo-cli init development-client-ios-test --name development-client-ios-test --yes
+        run: yarn create expo-app ./development-client-ios-test --yes
       - name: Make Yarn resolve expo-dev-client dependencies locally
         working-directory: ../development-client-ios-test
         run: |
@@ -123,9 +119,9 @@ jobs:
       - name: Setup app.config.json
         working-directory: ../development-client-ios-test
         run: echo "{\"name\":\"development-client-ios-test\",\"plugins\":[\"expo-dev-client\"],\"android\":{\"package\":\"com.devclient.test\"},\"ios\":{\"bundleIdentifier\":\"com.devclient.test\"}}" > app.config.json
-      - name: Eject
+      - name: Prebuild iOS
         working-directory: ../development-client-ios-test
-        run: expo-cli eject
+        run: yarn expo prebuild --platform ios
       - name: 🏗️ Build debug version
         working-directory: ../development-client-ios-test
         run: xcodebuild -workspace ios/developmentclientiostest.xcworkspace -scheme developmentclientiostest -configuration debug -sdk iphonesimulator -arch x86_64

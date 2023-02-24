@@ -108,6 +108,25 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
           t.expect(picture.exif).toBeDefined();
         });
 
+        t.it('adds additional EXIF only if requested', async () => {
+          await mountAndWaitFor(<Camera ref={refSetter} style={style} />);
+          const additionalExif = {
+            GPSLatitude: 30.82123,
+            GPSLongitude: 150.25582,
+            GPSAltitude: 80.808,
+          };
+          let picture = await instance.takePictureAsync({ exif: false, additionalExif });
+          t.expect(picture).toBeDefined();
+          t.expect(picture.exif).not.toBeDefined();
+
+          picture = await instance.takePictureAsync({ exif: true, additionalExif });
+          t.expect(picture).toBeDefined();
+          t.expect(picture.exif).toBeDefined();
+          t.expect(picture.exif.GPSLatitude).toBe(additionalExif.GPSLatitude);
+          t.expect(picture.exif.GPSLongitude).toBe(additionalExif.GPSLongitude);
+          t.expect(picture.exif.GPSAltitude).toBe(additionalExif.GPSAltitude);
+        });
+
         t.it(
           `returns Base64 only if requested, and not contains newline and
           special characters (\n or \r)`,

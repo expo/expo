@@ -1,4 +1,3 @@
-import { createSymbolicateMiddleware } from '@expo/dev-server/build/webpack/symbolicateMiddleware';
 import chalk from 'chalk';
 import type { Application } from 'express';
 import fs from 'fs';
@@ -12,6 +11,7 @@ import * as Log from '../../../log';
 import { env } from '../../../utils/env';
 import { CommandError } from '../../../utils/errors';
 import { getIpAddress } from '../../../utils/ip';
+import { setNodeEnv } from '../../../utils/nodeEnv';
 import { choosePortAsync } from '../../../utils/port';
 import { createProgressBar } from '../../../utils/progress';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
@@ -25,8 +25,6 @@ import {
 import { ensureEnvironmentSupportsTLSAsync } from './tls';
 
 const debug = require('debug')('expo:start:server:webpack:devServer') as typeof console.log;
-
-type AnyCompiler = webpack.Compiler | webpack.MultiCompiler;
 
 export type WebpackConfiguration = webpack.Configuration & {
   devServer?: {
@@ -116,11 +114,9 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
   private async createNativeDevServerMiddleware({
     port,
-    compiler,
     options,
   }: {
     port: number;
-    compiler: AnyCompiler;
     options: BundlerStartOptions;
   }) {
     if (!this.isTargetingNative()) {
@@ -138,14 +134,8 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
     const middleware = await this.getManifestMiddlewareAsync(options);
 
-    nativeMiddleware.middleware.use(middleware).use(
-      '/symbolicate',
-      createSymbolicateMiddleware({
-        projectRoot: this.projectRoot,
-        compiler,
-        logger: nativeMiddleware.logger,
-      })
-    );
+    nativeMiddleware.middleware.use(middleware);
+
     return nativeMiddleware;
   }
 
@@ -262,7 +252,6 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       // Create the middleware required for interacting with a native runtime (Expo Go, or a development build).
       nativeMiddleware = await this.createNativeDevServerMiddleware({
         port,
-        compiler,
         options,
       });
       // Inject the native manifest middleware.
@@ -357,7 +346,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       mode: options.mode,
       https: options.https,
     };
-    setMode(env.mode ?? 'development');
+    setNodeEnv(env.mode ?? 'development');
     // Check if the project has a webpack.config.js in the root.
     const projectWebpackConfig = this.getProjectConfigFilePath();
     let config: WebpackConfiguration;
@@ -395,11 +384,6 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
       Log.error(`Could not clear ${mode} web cache directory: ${error.message}`);
     }
   }
-}
-
-function setMode(mode: 'development' | 'production' | 'test' | 'none'): void {
-  process.env.BABEL_ENV = mode;
-  process.env.NODE_ENV = mode;
 }
 
 export function getProjectWebpackConfigFilePath(projectRoot: string) {

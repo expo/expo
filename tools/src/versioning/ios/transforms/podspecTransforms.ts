@@ -11,12 +11,13 @@ export function podspecTransforms(versionName: string): TransformPipeline {
       },
       {
         // Prefixes dependencies listed in the podspecs
-        replace: /(\.dependency\s+["'])(Yoga|React\-|ReactCommon|RCT|FB)(?!-Folly)([^"']*["'])/g,
+        replace:
+          /(\.dependency\s+["'])(Yoga|React\-|ReactCommon|RCT|FB|hermes-engine)(?!-Folly)([^"']*["'])/g,
         with: `$1${versionName}$2$3`,
       },
       {
-        // Removes source conditional
-        replace: /source\s*\=\s*\{[.\S\s]+?end/g,
+        // Removes source conditional, but not the `source = {}` in hermes-engine.podspec
+        replace: /source\s*\=\s*\{ [.\S\s]+?end/g,
         with: '',
       },
       {
@@ -39,13 +40,6 @@ export function podspecTransforms(versionName: string): TransformPipeline {
         with: `"${versionName}AccessibilityResources"`,
       },
       {
-        // Hide Hermes headers from public headers because clang modoules does not support c++
-        // Learn more: `packages/expo-modules-autolinking/scripts/ios/cocoapods/sandbox.rb`
-        paths: 'React-Core.podspec',
-        replace: /(s.subspec\s+"Hermes".*$)/gm,
-        with: '$1\n    ss.private_header_files = "ReactCommon/hermes/executor/*.h", "ReactCommon/hermes/inspector/*.h", "ReactCommon/hermes/inspector/chrome/*.h", "ReactCommon/hermes/inspector/detail/*.h"',
-      },
-      {
         // DEFINES_MODULE for swift integration
         // Learn more: `packages/expo-modules-autolinking/scripts/ios/cocoapods/sandbox.rb`
         paths: 'ReactCommon.podspec',
@@ -53,19 +47,19 @@ export function podspecTransforms(versionName: string): TransformPipeline {
         with: '$1 "DEFINES_MODULE" => "YES",',
       },
       {
+        // DEFINES_MODULE for swift integration
+        // Learn more: `packages/expo-modules-autolinking/scripts/ios/cocoapods/sandbox.rb`
+        paths: 'React-RCTAppDelegate.podspec',
+        replace: /("CLANG_CXX_LANGUAGE_STANDARD" => "c\+\+17")/g,
+        with: '$1, "DEFINES_MODULE" => "YES",',
+      },
+      {
         // Fixes HEADER_SEARCH_PATHS
         paths: ['React-Core.podspec', 'ReactCommon.podspec'],
-        replace: /(Headers\/Private\/|_BUILD_DIR\)\/)(React-)(Core|bridging)/g,
-        with: `$1${versionName}$2$3`,
+        replace:
+          /(Headers\/Private\/|Headers\/Public\/|_BUILD_DIR\)\/)(React-Core|React-bridging|React-hermes|hermes-engine)/g,
+        with: `$1${versionName}$2`,
       },
-
-      // React-bridging
-      {
-        paths: 'React-bridging.podspec',
-        replace: /\bheader_mappings_dir\s*=\s*"."/,
-        with: 'header_mappings_dir    = "react/bridging"',
-      },
-
       // React-cxxreact
       {
         // Fixes excluding SampleCxxModule.* files
@@ -73,7 +67,17 @@ export function podspecTransforms(versionName: string): TransformPipeline {
         replace: /\.exclude_files(\s*=\s*["'])(SampleCxxModule\.\*)(["'])/g,
         with: `.exclude_files$1${versionName}$2$3`,
       },
-
+      {
+        // using jsc to expose jsi.h
+        paths: 'React-jsi.podspec',
+        replace: /^(\s+Pod::Spec.new do \|s\|.*)$/gm,
+        with: '\n# using jsc to expose jsi.h\njs_engine = :jsc$1',
+      },
+      {
+        paths: 'React-jsc.podspec',
+        replace: /\b(JSCRuntime\.)/g,
+        with: `${versionName}$1`,
+      },
       // Yoga
       {
         // Unprefixes inner directory for source_files
@@ -88,6 +92,31 @@ export function podspecTransforms(versionName: string): TransformPipeline {
         paths: 'FBReactNativeSpec.podspec',
         replace: /\n  use_react_native_codegen!\((.|\n)+?\n  }\)\n/gm,
         with: '',
+      },
+
+      // hermes
+      {
+        paths: 'hermes-engine.podspec',
+        replace: /\b(hermes\.xcframework)/g,
+        with: `${versionName}$1`,
+      },
+      {
+        paths: 'hermes-engine.podspec',
+        replace: /  source\[:http\]\s*=\s*"http[^"]+"/,
+        with: `\
+  if File.exist?(File.join(__dir__, "destroot"))
+    source[:path] = '.'
+  else
+    source[:http] = 'https://github.com/expo/react-native/releases/download/sdk-${versionName
+      .replace('ABI', '')
+      .replace(/_/g, '.')}/${versionName}hermes.tar.gz'
+  end`,
+      },
+      {
+        // Revert the previous podspec source transform
+        paths: 'hermes-engine.podspec',
+        replace: /(\.source\s*)= \{ :path => "." \}\n/g,
+        with: '$1= source\n',
       },
     ],
   };

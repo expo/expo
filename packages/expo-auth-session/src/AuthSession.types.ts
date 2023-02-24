@@ -20,7 +20,7 @@ export type AuthSessionOptions = {
    */
   showInRecents?: boolean;
   /**
-   * Project name to use for the \`auth.expo.io\` proxy.
+   * Project name to use for the `auth.expo.io` proxy.
    */
   projectNameForProxy?: string;
 };
@@ -71,7 +71,7 @@ export type AuthSessionResult =
 
 // @needsAudit
 /**
- * Options passed to `makeRedirectUriAsync`.
+ * Options passed to `makeRedirectUri`.
  */
 export type AuthSessionRedirectUriOptions = {
   /**
@@ -100,10 +100,11 @@ export type AuthSessionRedirectUriOptions = {
    * This is useful for testing managed native apps that require a custom URI scheme.
    *
    * @default false
+   * @deprecated This option will be removed in a future release, for more information check [the migration guide](https://expo.fyi/auth-proxy-migration).
    */
   useProxy?: boolean;
   /**
-   * Project name to use for the \`auth.expo.io\` proxy when `useProxy` is true.
+   * Project name to use for the `auth.expo.io` proxy when `useProxy` is `true`.
    */
   projectNameForProxy?: string;
   /**

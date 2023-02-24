@@ -170,11 +170,11 @@ final class DynamicTypeSpec: ExpoSpec {
     // MARK: - DynamicEnumType
 
     describe("DynamicEnumType") {
-      enum StringTestEnum: String, EnumArgument {
+      enum StringTestEnum: String, Enumerable {
         case hello
         case expo
       }
-      enum IntTestEnum: Int, EnumArgument {
+      enum IntTestEnum: Int, Enumerable {
         case negative = -1
         case positive = 1
       }

@@ -78,6 +78,11 @@ export type CopyFileOptions = {
    * An object with transform rules for file paths and contents.
    */
   transforms: FileTransforms;
+
+  /**
+   * Whether to keep original file mode (the mode for `chmod`), e.g. 755.
+   */
+  keepFileMode?: boolean;
 };
 
 /**

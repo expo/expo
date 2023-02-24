@@ -3,9 +3,4 @@ export enum TableLayout {
   Fixed = 'fixed',
 }
 
-export enum TextAlign {
-  Left = 'left',
-  Center = 'center',
-  Right = 'right',
-  Justify = 'justify',
-}
+export type TextAlign = 'left' | 'right' | 'center' | 'justify';

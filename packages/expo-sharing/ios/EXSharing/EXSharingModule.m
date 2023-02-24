@@ -48,11 +48,10 @@ EX_EXPORT_METHOD_AS(shareAsync,
   _documentInteractionController.delegate = self;
   _documentInteractionController.UTI = params[@"UTI"];
 
-  UIViewController *viewController = [[_moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)] currentViewController];
-
   EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     EX_ENSURE_STRONGIFY(self);
+    UIViewController *viewController = [[self.moduleRegistry getModuleImplementingProtocol:@protocol(EXUtilitiesInterface)] currentViewController];
     UIView *rootView = [viewController view];
     if ([self.documentInteractionController presentOpenInMenuFromRect:CGRectZero inView:rootView animated:YES]) {
       self.pendingResolver = resolve;
@@ -68,7 +67,19 @@ EX_EXPORT_METHOD_AS(shareAsync,
   _pendingResolver(nil);
   _pendingResolver = nil;
 
-  _documentInteractionController = nil;
+  // This delegate method is called whenever:
+  // a) the share sheet is canceled
+  // b) an app is chosen, it's dialog opened, and the share is confirmed/ sent
+  // c) an app is chosen, it's dialog opened, and that dialog is canceled
+  // In case c), the share sheet remains open, even though the promise was resolved
+  // Future attempts to share without closing the sheet will fail to attach the file, so we need to close it
+  // No other delegate methods fire only when the share sheet is dismissed, unfortunately
+  EX_WEAKIFY(self);
+  dispatch_async(dispatch_get_main_queue(), ^{
+    EX_ENSURE_STRONGIFY(self);
+    [self.documentInteractionController dismissMenuAnimated:true];
+    self.documentInteractionController = nil;
+  });
 }
 
 @end

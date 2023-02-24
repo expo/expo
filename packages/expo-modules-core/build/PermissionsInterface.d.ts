@@ -13,11 +13,11 @@ export declare enum PermissionStatus {
     DENIED = "denied"
 }
 /**
- * Permission expiration time. Currently, all permissions are granted permamently.
+ * Permission expiration time. Currently, all permissions are granted permanently.
  */
-export declare type PermissionExpiration = 'never' | number;
+export type PermissionExpiration = 'never' | number;
 /**
- * An object obtained by `getPermissionsAsync` and `requestPermissionsAsync` functions.
+ * An object obtained by permissions get and request functions.
  */
 export interface PermissionResponse {
     /**

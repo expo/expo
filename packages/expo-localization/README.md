@@ -1,10 +1,17 @@
-# expo-localization
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/localization/">
+    <img
+      src="../../.github/resources/expo-localization.svg"
+      alt="expo-localization"
+      height="64" />
+  </a>
+</p>
 
 Provides an interface for native user localization information.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/localization.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/localization.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/localization/)
 
 # Installation in managed Expo projects

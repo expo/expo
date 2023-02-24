@@ -1,12 +1,12 @@
 import openBrowserAsync from 'better-opn';
 
-import { env } from '../utils/env';
 import { CommandError } from '../utils/errors';
+import { isInteractive } from '../utils/interactive';
 import { learnMore } from '../utils/link';
 import { ora } from '../utils/ora';
 
 export async function registerAsync() {
-  if (env.CI) {
+  if (!isInteractive()) {
     throw new CommandError(
       'NON_INTERACTIVE',
       `Cannot register an account in CI. Use the EXPO_TOKEN environment variable to authenticate in CI (${learnMore(

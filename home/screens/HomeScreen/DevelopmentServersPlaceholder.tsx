@@ -1,10 +1,11 @@
 import { spacing } from '@expo/styleguide-native';
-import { useNavigation } from '@react-navigation/native';
+import { NavigationProp, useNavigation } from '@react-navigation/native';
 import FeatureFlags from 'FeatureFlags';
 import { Text, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
 
+import { HomeStackRoutes } from '../../navigation/Navigation.types';
 import { DevelopmentServersOpenQR } from './DevelopmentServersOpenQR';
 import { DevelopmentServersOpenURL } from './DevelopmentServersOpenURL';
 
@@ -13,7 +14,7 @@ type Props = {
 };
 
 export function DevelopmentServersPlaceholder({ isAuthenticated }: Props) {
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<HomeStackRoutes>>();
 
   return isAuthenticated ? (
     <View bg="default" rounded="large" border="default" overflow="hidden">
@@ -28,7 +29,7 @@ export function DevelopmentServersPlaceholder({ isAuthenticated }: Props) {
           bg="secondary"
           style={{ marginBottom: spacing[2] }}>
           <Text size="small" type="mono">
-            expo start
+            npx expo start
           </Text>
         </View>
         <Text size="small" type="InterRegular">

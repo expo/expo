@@ -79,14 +79,14 @@
 
 # pragma mark - EXAppLoaderDelegate
 
-- (void)appLoader:(EXAppLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest
+- (void)appLoader:(EXAbstractLoader *)appLoader didLoadOptimisticManifest:(NSDictionary *)manifest
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     [self rebuildBridge];
   });
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data
+- (void)appLoader:(EXAbstractLoader *)appLoader didFinishLoadingManifest:(NSDictionary *)manifest bundle:(NSData *)data
 {
   dispatch_async(dispatch_get_main_queue(), ^{
     [self rebuildBridge];
@@ -96,7 +96,7 @@
   });
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didFailWithError:(NSError *)error
+- (void)appLoader:(EXAbstractLoader *)appLoader didFailWithError:(NSError *)error
 {
   if (_appManager.status == kEXReactAppManagerStatusBridgeLoading) {
     [_appManager appLoaderFailedWithError:error];
@@ -104,7 +104,7 @@
   [self maybeExecuteCallbackWithSuccess:NO error:error];
 }
 
-- (void)appLoader:(EXAppLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress {}
-- (void)appLoader:(EXAppLoader *)appLoader didResolveUpdatedBundleWithManifest:(NSDictionary *)manifest isFromCache:(BOOL)isFromCache error:(NSError *)error {}
+- (void)appLoader:(EXAbstractLoader *)appLoader didLoadBundleWithProgress:(EXLoadingProgress *)progress {}
+- (void)appLoader:(EXAbstractLoader *)appLoader didResolveUpdatedBundleWithManifest:(NSDictionary *)manifest isFromCache:(BOOL)isFromCache error:(NSError *)error {}
 
 @end

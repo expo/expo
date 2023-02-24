@@ -1,7 +1,7 @@
 {
   "name": "expo-apple-authentication",
-  "version": "4.3.0",
-  "description": "A unimodule that provides SignIn With Apple",
+  "version": "6.0.1",
+  "description": "A package that provides 'Sign in with Apple' capability for Expo and React Native apps.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "sideEffects": false,
@@ -18,7 +18,8 @@
     "react-native",
     "expo",
     "expo-apple-authentiocation",
-    "apple-authentication"
+    "apple-authentication",
+    "sign-in-with-apple"
   ],
   "repository": {
     "type": "git",
@@ -31,11 +32,8 @@
   "author": "650 Industries, Inc.",
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/apple-authentication/",
-  "dependencies": {
-    "@expo/config-plugins": "~5.0.0"
-  },
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
     "expo": "*"

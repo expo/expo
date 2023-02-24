@@ -14,8 +14,8 @@
   },
   "static_framework": true,
   "dependencies": {
-    "EXGL_CPP": [],
-    "ABI46_0_0ExpoModulesCore": []
+    "ABI46_0_0ExpoModulesCore": [],
+    "ABI46_0_0EXGL_CPP": []
   },
   "source_files": "EXGL/**/*.{h,m,mm}"
 }

@@ -47,31 +47,15 @@ def nodeModules = Paths.get(projectDir.getPath(), '../../../../../..', 'react-na
 logger.warn("react-native-skia: node_modules/ found at: ${nodeModules}")
 
 def sourceBuild = false
-def defaultDir = null
-def androidSourcesDir = null
-def androidSourcesName = 'React Native sources'
-def reactNativeArchitectures() {
-    def value = project.getProperties().get("reactNativeArchitectures")
-    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
-}
-
-def buildType = "debug"
-tasks.all({ task ->
-    if (task.name == "buildCMakeRelease") {
-        buildType = "release"
-    }
-})
+def defaultDir
 
 if (rootProject.ext.has('reactNativeAndroidRoot')) {
   defaultDir = rootProject.ext.get('reactNativeAndroidRoot')
-  androidSourcesDir = defaultDir.parentFile.toString()
 } else if (findProject(':ReactAndroid') != null) {
     sourceBuild = true
     defaultDir = project(':ReactAndroid').projectDir
-    androidSourcesDir = defaultDir.parentFile.toString()
 } else {
-  defaultDir = file("$nodeModules/react-native/android")
-  androidSourcesDir = defaultDir.parentFile.toString()
+  defaultDir = file("$nodeModules/react-native")
 }
 
 if (!defaultDir.exists()) {
@@ -81,18 +65,33 @@ if (!defaultDir.exists()) {
 }
 
 def prebuiltDir = sourceBuild
-    ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
+    ? "$nodeModules/react-native/ReactAndroid/src/main/jni/prebuilt/lib"
     : "$buildDir/react-native-0*/jni"
 
 
+def buildType = "debug"
+if (gradle.startParameter.taskRequests.args[0].toString().contains("Release")) {
+    buildType = "release"
+} else if (gradle.startParameter.taskRequests.args[0].toString().contains("Debug")) {
+    buildType = "debug"
+}
+
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
+
 def reactProperties = new Properties()
 file("$nodeModules/react-native/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
-def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME").split("\\.")[1].toInteger()
+def FULL_RN_VERSION =  (System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME"))
+def REACT_NATIVE_VERSION = FULL_RN_VERSION.split("\\.")[1].toInteger()
 
-logger.warn("react-native-skia: React Native version: ${REACT_NATIVE_VERSION}")
-logger.warn("react-native-skia: Is Source build: ${sourceBuild}")
-logger.warn("react-native-skia: Prebuilt dir: ${prebuiltDir}")
-logger.warn("react-native-skia: Build type: ${buildType}")
+logger.warn("react-native-skia: RN Version: ${REACT_NATIVE_VERSION} / ${FULL_RN_VERSION}")
+logger.warn("react-native-skia: isSourceBuild: ${sourceBuild}")
+logger.warn("react-native-skia: PrebuiltDir: ${prebuiltDir}")
+logger.warn("react-native-skia: buildType: ${buildType}")
+logger.warn("react-native-skia: buildDir: ${buildDir}")
+logger.warn("react-native-skia: node_modules: ${nodeModules}")
 
 buildscript {
     // The Android Gradle plugin is only required when opening the android folder stand-alone.
@@ -128,6 +127,7 @@ android {
                           "-DREACT_NATIVE_VERSION=${REACT_NATIVE_VERSION}",
                           "-DNODE_MODULES_DIR=${nodeModules}",
                           "-DPREBUILT_DIR=${prebuiltDir}"
+
             }
         }
     }
@@ -137,9 +137,12 @@ android {
 
     externalNativeBuild {
         cmake {
-            path file('CMakeLists.txt')
-            version '3.10.2'
+            path file('CMakeLists.txt')            
         }
+    }
+
+    buildFeatures {
+        prefab true
     }
 
     packagingOptions {
@@ -152,8 +155,6 @@ android {
         ]
     }
 
-
-
     // Create new configurations that can be referred to in dependencies.
     // The Android Gradle Plugin 3.* does not allow hooking into existing
     // configurations like `implementation`.
@@ -164,39 +165,49 @@ android {
 }
 
 repositories {
-    // ref: https://www.baeldung.com/maven-local-repository
-    jcenter()
-    mavenLocal()
     maven {
         // All of React Native (JS, Obj-C sources, Android binaries) is installed from npm
-        url "$rootDir/../node_modules/react-native/android"
+        url("$rootDir/../node_modules/react-native/android")
     }
     maven {
         // Android JSC is installed from npm
-        url "$rootDir/../node_modules/jsc-android/dist"
+        url("$rootDir/../node_modules/jsc-android/dist")
+    }
+    mavenCentral {
+        // We don't want to fetch react-native from Maven Central as there are
+        // older versions over there.
+        content {
+            excludeGroup "com.facebook.react"
+        }
     }
     google()
+    maven { url 'https://www.jitpack.io' }
 }
 
 dependencies {
     //noinspection GradleDynamicVersion
     implementation 'com.facebook.react:react-native:+'  // From node_modules
 
-    //noinspection GradleDynamicVersion
-    extractHeaders("com.facebook.fbjni:fbjni:0.2.2:headers")
-    //noinspection GradleDynamicVersion
-    extractJNI("com.facebook.fbjni:fbjni:0.2.2")
+    if (REACT_NATIVE_VERSION < 71) {
+        logger.warn("react-native-skia: Extracting files from AAR (pre RN 0.71)")
+        //noinspection GradleDynamicVersion
+        extractHeaders("com.facebook.fbjni:fbjni:0.2.2:headers")
+        //noinspection GradleDynamicVersion
+        extractJNI("com.facebook.fbjni:fbjni:0.2.2")
+    }
 
-    if(REACT_NATIVE_VERSION < 69) {
-        def rnAAR = fileTree("${nodeModules}/react-native/android").matching({ it.include "**/**/*.aar" }).singleFile
-        extractJNI(files(rnAAR))
-    } else {
-        // React Native >= 0.69
+    if (!sourceBuild) {
         def rnAarMatcher = "**/react-native/**/*${buildType}.aar"
-        def rnAAR = fileTree("${nodeModules}/react-native/android").matching({ it.include rnAarMatcher })
-        if (rnAAR.any()) {
-            extractJNI(files(rnAAR))
+        if (REACT_NATIVE_VERSION < 69) {
+            logger.warn("react-native-skia: aar state pre 69. match **/**/*.aar")
+            rnAarMatcher = "**/**/*.aar"
+        } else if (REACT_NATIVE_VERSION >= 71) {
+            logger.warn("react-native-skia: aar state post 70, do nothing")
+            return
         }
+        def rnAAR = fileTree("${nodeModules}/react-native/android").matching({ it.include rnAarMatcher }).singleFile
+        logger.warn("react-native-skia: Extracting JNI files (pre RN 0.71) ${rnAAR}")
+        extractJNI(files(rnAAR))
     }
 }
 
@@ -260,17 +271,5 @@ def nativeBuildDependsOn(dependsOnTask, variant) {
 
 afterEvaluate {
   nativeBuildDependsOn(extractAARHeaders, null)
-  nativeBuildDependsOn(extractJNIFiles, null)
-}
-
-tasks.whenTaskAdded { task ->
-  if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake'))) {
-    if (sourceBuild) {
-      def currentBuildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
-      task.dependsOn(":ReactAndroid:copy${currentBuildType}JniLibsProjectOnly")
-    }
-  } else if (task.name.startsWith('generateJsonModel') && sourceBuild) {
-    def currentBuildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
-    task.dependsOn(":ReactAndroid:copy${currentBuildType}JniLibsProjectOnly")
-  }
+  nativeBuildDependsOn(extractJNIFiles, null)  
 }

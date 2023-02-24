@@ -1,11 +1,11 @@
 #ifdef RN_FABRIC_ENABLED
 #import <React/RCTConversions.h>
+#import <React/RCTFabricComponentsPlugins.h>
 #import <React/UIView+React.h>
 #import <react/renderer/components/rnscreens/ComponentDescriptors.h>
 #import <react/renderer/components/rnscreens/EventEmitters.h>
 #import <react/renderer/components/rnscreens/Props.h>
 #import <react/renderer/components/rnscreens/RCTComponentViewHelpers.h>
-#import "RCTFabricComponentsPlugins.h"
 #else
 #import <React/RCTBridge.h>
 #import <React/RCTImageLoader.h>
@@ -118,7 +118,7 @@
   }
 
   // we want updates sent to the VC below modal too since it is also visible
-  BOOL isPresentingVC = vc.presentedViewController == nextVC;
+  BOOL isPresentingVC = nextVC != nil && vc.presentedViewController == nextVC;
 
   BOOL isInFullScreenModal = nav == nil && _screenView.stackPresentation == RNSScreenStackPresentationFullScreenModal;
   // if nav is nil, it means we can be in a fullScreen modal, so there is no nextVC, but we still want to update
@@ -459,9 +459,24 @@
     return;
   }
 
-  navitem.title = config.title;
 #if !TARGET_OS_TV
-  if (config.backTitle != nil || config.backTitleFontFamily || config.backTitleFontSize ||
+  // Fix for github.com/react-navigation/react-navigation/issues/11015
+  // It allows to hide back button title and use back button menu as normal.
+  // Back button display mode and back button menu are available since iOS 14.
+  if (@available(iOS 14.0, *)) {
+    // Make sure to set display mode to default.
+    // This line resets back button display mode - especially needed on the Fabric architecture.
+    navitem.backButtonDisplayMode = UINavigationItemBackButtonDisplayModeDefault;
+
+    NSString *trimmedBackTitle =
+        [config.backTitle stringByTrimmingCharactersInSet:[NSCharacterSet whitespaceCharacterSet]];
+
+    // When an whitespace only back title is passed set back button mode to minimal.
+    if (config.backTitle != nil && [trimmedBackTitle length] == 0) {
+      navitem.backButtonDisplayMode = UINavigationItemBackButtonDisplayModeMinimal;
+    }
+  } else if (
+      config.backTitle != nil || config.backTitleFontFamily || config.backTitleFontSize ||
       config.disableBackButtonMenu) {
     RNSUIBarButtonItem *backBarButtonItem = [[RNSUIBarButtonItem alloc] initWithTitle:config.backTitle ?: prevItem.title
                                                                                 style:UIBarButtonItemStylePlain
@@ -580,12 +595,16 @@
       }
       case RNSScreenStackHeaderSubviewTypeBackButton: {
 #ifdef RN_FABRIC_ENABLED
-        RCTLogWarn(@"Back button subivew is not yet Fabric compatible in react-native-screens");
+        RCTLogWarn(@"Back button subview is not yet Fabric compatible in react-native-screens");
 #endif
         break;
       }
     }
   }
+
+  // This assignment should be done after `navitem.titleView = ...` assignment (iOS 16.0 bug).
+  // See: https://github.com/software-mansion/react-native-screens/issues/1570 (comments)
+  navitem.title = config.title;
 
   if (animated && vc.transitionCoordinator != nil &&
       vc.transitionCoordinator.presentationStyle == UIModalPresentationNone && !wasHidden) {

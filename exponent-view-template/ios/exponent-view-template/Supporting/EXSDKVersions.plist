@@ -4,9 +4,9 @@
 <dict>
 	<key>sdkVersions</key>
 	<array>
-		<string>44.0.0</string>
-		<string>45.0.0</string>
 		<string>46.0.0</string>
+		<string>47.0.0</string>
+		<string>48.0.0</string>
 	</array>
 </dict>
 </plist>

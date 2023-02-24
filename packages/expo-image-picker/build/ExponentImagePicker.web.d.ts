@@ -1,17 +1,17 @@
 import { PermissionResponse } from 'expo-modules-core';
-import { ImagePickerMultipleResult, ImagePickerResult, MediaTypeOptions } from './ImagePicker.types';
+import { ImagePickerResult, MediaTypeOptions } from './ImagePicker.types';
 declare const _default: {
     readonly name: string;
     launchImageLibraryAsync({ mediaTypes, allowsMultipleSelection, base64, }: {
         mediaTypes?: MediaTypeOptions | undefined;
         allowsMultipleSelection?: boolean | undefined;
         base64?: boolean | undefined;
-    }): Promise<ImagePickerResult | ImagePickerMultipleResult>;
+    }): Promise<ImagePickerResult>;
     launchCameraAsync({ mediaTypes, allowsMultipleSelection, base64, }: {
         mediaTypes?: MediaTypeOptions | undefined;
         allowsMultipleSelection?: boolean | undefined;
         base64?: boolean | undefined;
-    }): Promise<ImagePickerResult | ImagePickerMultipleResult>;
+    }): Promise<ImagePickerResult>;
     getCameraPermissionsAsync(): Promise<PermissionResponse>;
     requestCameraPermissionsAsync(): Promise<PermissionResponse>;
     getMediaLibraryPermissionsAsync(_writeOnly: boolean): Promise<PermissionResponse>;

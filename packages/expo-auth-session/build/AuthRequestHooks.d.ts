@@ -16,7 +16,7 @@ import { DiscoveryDocument, IssuerOrDiscovery } from './Discovery';
  */
 export declare function useAutoDiscovery(issuerOrDiscovery: IssuerOrDiscovery): DiscoveryDocument | null;
 export declare function useLoadedAuthRequest(config: AuthRequestConfig, discovery: DiscoveryDocument | null, AuthRequestInstance: typeof AuthRequest): AuthRequest | null;
-declare type PromptMethod = (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>;
+type PromptMethod = (options?: AuthRequestPromptOptions) => Promise<AuthSessionResult>;
 export declare function useAuthRequestResult(request: AuthRequest | null, discovery: DiscoveryDocument | null, customOptions?: AuthRequestPromptOptions): [AuthSessionResult | null, PromptMethod];
 /**
  * Load an authorization request for a code. When the prompt method completes then the response will be fulfilled.
@@ -37,7 +37,6 @@ export declare function useAuthRequestResult(request: AuthRequest | null, discov
  * - `response` - This is `null` until `promptAsync` has been invoked. Once fulfilled it will return information about the authorization.
  * - `promptAsync` - When invoked, a web browser will open up and prompt the user for authentication.
  *   Accepts an [`AuthRequestPromptOptions`](#authrequestpromptoptions) object with options about how the prompt will execute.
- *   You can use this to enable the Expo proxy service `auth.expo.io`.
  *
  * @example
  * ```ts

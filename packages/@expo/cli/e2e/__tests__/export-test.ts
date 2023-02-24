@@ -14,18 +14,20 @@ beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
+  process.env.EXPO_USE_PATH_ALIASES = '1';
 });
 
 afterAll(() => {
   process.env.FORCE_COLOR = originalForceColor;
   process.env.CI = originalCI;
+  delete process.env.EXPO_USE_PATH_ALIASES;
 });
 
 it('loads expected modules by default', async () => {
   const modules = await getLoadedModulesAsync(`require('../../build/src/export').expoExport`);
   expect(modules).toStrictEqual([
-    '../node_modules/ansi-styles/index.js',
     '../node_modules/arg/index.js',
+    '../node_modules/chalk/node_modules/ansi-styles/index.js',
     '../node_modules/chalk/source/index.js',
     '../node_modules/chalk/source/util.js',
     '../node_modules/has-flag/index.js',
@@ -48,15 +50,15 @@ it('runs `npx expo export --help`', async () => {
         $ npx expo export <dir>
 
       Options
-        <dir>                   Directory of the Expo project. Default: Current working directory
-        --platform <platform>   Options: android, ios, web, all. Default: all
-        --dev                   Configure static files for developing locally using a non-https server
-        --output-dir <dir>      The directory to export the static files to. Default: dist
-        --max-workers <number>  Maximum number of tasks to allow the bundler to spawn
-        --dump-assetmap         Dump the asset map for further processing
-        --dump-sourcemap        Dump the source map for debugging the JS bundle
-        -c, --clear             Clear the bundler cache
-        -h, --help              Usage info
+        <dir>                      Directory of the Expo project. Default: Current working directory
+        --dev                      Configure static files for developing locally using a non-https server
+        --output-dir <dir>         The directory to export the static files to. Default: dist
+        --max-workers <number>     Maximum number of tasks to allow the bundler to spawn
+        --dump-assetmap            Dump the asset map for further processing
+        --dump-sourcemap           Dump the source map for debugging the JS bundle
+        -p, --platform <platform>  Options: android, ios, web, all. Default: all
+        -c, --clear                Clear the bundler cache
+        -h, --help                 Usage info
     "
   `);
 });

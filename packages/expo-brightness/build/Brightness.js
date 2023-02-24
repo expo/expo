@@ -95,6 +95,13 @@ export async function setSystemBrightnessAsync(brightnessValue) {
     }
     return await ExpoBrightness.setSystemBrightnessAsync(clampedBrightnessValue);
 }
+/**
+ * @deprecated Use [`restoreSystemBrightnessAsync`](#brightnessrestoresystembrightnessasync) method instead.
+ * @platform android
+ */
+export async function useSystemBrightnessAsync() {
+    return restoreSystemBrightnessAsync();
+}
 // @needsAudit
 /**
  * Resets the brightness setting of the current activity to use the system-wide
@@ -102,12 +109,11 @@ export async function setSystemBrightnessAsync(brightnessValue) {
  * @return A `Promise` that fulfils when the setting has been successfully changed.
  * @platform android
  */
-export async function useSystemBrightnessAsync() {
+export async function restoreSystemBrightnessAsync() {
     if (Platform.OS !== 'android') {
         return;
     }
-    // eslint-disable-next-line react-hooks/rules-of-hooks
-    return await ExpoBrightness.useSystemBrightnessAsync();
+    return await ExpoBrightness.restoreSystemBrightnessAsync();
 }
 // @needsAudit
 /**
@@ -173,7 +179,7 @@ export async function requestPermissionsAsync() {
  *
  * @example
  * ```ts
- * const [status, requestPermission] = Brightness.usePermissions();
+ * const [permissionResponse, requestPermission] = Brightness.usePermissions();
  * ```
  */
 export const usePermissions = createPermissionHook({

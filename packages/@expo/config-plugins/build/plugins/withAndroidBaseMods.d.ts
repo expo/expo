@@ -17,7 +17,7 @@ declare const defaultProviders: {
     mainActivity: import("./createBaseMod").BaseModProviderMethods<Paths.ApplicationProjectFile, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
     mainApplication: import("./createBaseMod").BaseModProviderMethods<Paths.ApplicationProjectFile, Partial<Pick<import("./withMod").BaseModOptions, "skipEmptyMod" | "saveToInternal">>>;
 };
-declare type AndroidDefaultProviders = typeof defaultProviders;
+type AndroidDefaultProviders = typeof defaultProviders;
 export declare function withAndroidBaseMods(config: ExportedConfig, { providers, ...props }?: ForwardedBaseModOptions & {
     providers?: Partial<AndroidDefaultProviders>;
 }): ExportedConfig;

@@ -562,6 +562,7 @@ class StripeSdkModule(reactContext: ReactApplicationContext) : ReactContextBaseJ
     val fragment = CollectBankAccountLauncherFragment(
       reactApplicationContext,
       publishableKey,
+      stripeAccountId,
       clientSecret,
       isPaymentIntent,
       collectParams,

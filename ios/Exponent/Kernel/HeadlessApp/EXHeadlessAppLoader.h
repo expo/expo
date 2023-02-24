@@ -1,7 +1,7 @@
 // Copyright 2018-present 650 Industries. All rights reserved.
 
 #import "EXReactAppManager.h"
-#import "EXAppLoader.h"
+#import "EXAbstractLoader.h"
 
 #import <Foundation/Foundation.h>
 #import <UMAppLoader/UMAppLoaderInterface.h>

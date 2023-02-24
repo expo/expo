@@ -4,6 +4,9 @@
 
 #include "JavaScriptRuntime.h"
 #include "JavaScriptObject.h"
+#include "JavaScriptTypedArray.h"
+#include "TypedArray.h"
+#include "Exceptions.h"
 
 namespace expo {
 void JavaScriptValue::registerNatives() {
@@ -17,12 +20,14 @@ void JavaScriptValue::registerNatives() {
                    makeNativeMethod("isSymbol", JavaScriptValue::isSymbol),
                    makeNativeMethod("isFunction", JavaScriptValue::isFunction),
                    makeNativeMethod("isArray", JavaScriptValue::isArray),
+                   makeNativeMethod("isTypedArray", JavaScriptValue::isTypedArray),
                    makeNativeMethod("isObject", JavaScriptValue::isObject),
                    makeNativeMethod("getBool", JavaScriptValue::getBool),
                    makeNativeMethod("getDouble", JavaScriptValue::getDouble),
                    makeNativeMethod("getString", JavaScriptValue::jniGetString),
                    makeNativeMethod("getObject", JavaScriptValue::getObject),
                    makeNativeMethod("getArray", JavaScriptValue::getArray),
+                   makeNativeMethod("getTypedArray", JavaScriptValue::getTypedArray),
                  });
 }
 
@@ -30,7 +35,14 @@ JavaScriptValue::JavaScriptValue(
   std::weak_ptr<JavaScriptRuntime> runtime,
   std::shared_ptr<jsi::Value> jsValue
 ) : runtimeHolder(std::move(runtime)), jsValue(std::move(jsValue)) {
-  assert(runtimeHolder.lock() != nullptr);
+  runtimeHolder.ensureRuntimeIsValid();
+}
+
+JavaScriptValue::JavaScriptValue(
+  WeakRuntimeHolder runtime,
+  std::shared_ptr<jsi::Value> jsValue
+) : runtimeHolder(std::move(runtime)), jsValue(std::move(jsValue)) {
+  runtimeHolder.ensureRuntimeIsValid();
 }
 
 std::shared_ptr<jsi::Value> JavaScriptValue::get() {
@@ -66,8 +78,9 @@ std::string JavaScriptValue::kind() {
     return "object";
   }
 
-  // TODO(@lukmccall): maybe throw exception?
-  return "unknown";
+  throwNewJavaException(
+    UnexpectedException::create("Unknown type").get()
+  );
 }
 
 bool JavaScriptValue::isNull() {
@@ -96,9 +109,8 @@ bool JavaScriptValue::isSymbol() {
 
 bool JavaScriptValue::isFunction() {
   if (jsValue->isObject()) {
-    auto runtime = runtimeHolder.lock();
-    assert(runtime != nullptr);
-    return jsValue->asObject(*runtime->get()).isFunction(*runtime->get());
+    auto &jsRuntime = runtimeHolder.getJSRuntime();
+    return jsValue->asObject(jsRuntime).isFunction(jsRuntime);
   }
 
   return false;
@@ -106,9 +118,8 @@ bool JavaScriptValue::isFunction() {
 
 bool JavaScriptValue::isArray() {
   if (jsValue->isObject()) {
-    auto runtime = runtimeHolder.lock();
-    assert(runtime != nullptr);
-    return jsValue->asObject(*runtime->get()).isArray(*runtime->get());
+    auto &jsRuntime = runtimeHolder.getJSRuntime();
+    return jsValue->asObject(jsRuntime).isArray(jsRuntime);
   }
 
   return false;
@@ -116,6 +127,14 @@ bool JavaScriptValue::isArray() {
 
 bool JavaScriptValue::isObject() {
   return jsValue->isObject();
+}
+
+bool JavaScriptValue::isTypedArray() {
+  if (jsValue->isObject()) {
+    jsi::Runtime &jsRuntime = runtimeHolder.getJSRuntime();
+    return expo::isTypedArray(jsRuntime, jsValue->getObject(jsRuntime));
+  }
+  return false;
 }
 
 bool JavaScriptValue::getBool() {
@@ -127,32 +146,29 @@ double JavaScriptValue::getDouble() {
 }
 
 std::string JavaScriptValue::getString() {
-  auto runtime = runtimeHolder.lock();
-  assert(runtime != nullptr);
-  return jsValue->getString(*runtime->get()).utf8(*runtime->get());
+  auto &jsRuntime = runtimeHolder.getJSRuntime();
+  return jsValue->getString(jsRuntime).utf8(jsRuntime);
 }
 
 jni::local_ref<JavaScriptObject::javaobject> JavaScriptValue::getObject() {
-  auto runtime = runtimeHolder.lock();
-  assert(runtime != nullptr);
-  auto jsObject = std::make_shared<jsi::Object>(jsValue->getObject(*runtime->get()));
+  auto &jsRuntime = runtimeHolder.getJSRuntime();
+  auto jsObject = std::make_shared<jsi::Object>(jsValue->getObject(jsRuntime));
   return JavaScriptObject::newObjectCxxArgs(runtimeHolder, jsObject);
 }
 
 jni::local_ref<jni::JArrayClass<JavaScriptValue::javaobject>> JavaScriptValue::getArray() {
-  auto runtime = runtimeHolder.lock();
-  assert(runtime != nullptr);
+  auto &jsRuntime = runtimeHolder.getJSRuntime();
 
   auto jsArray = jsValue
-    ->getObject(*runtime->get())
-    .asArray(*runtime->get());
-  size_t size = jsArray.size(*runtime->get());
+    ->getObject(jsRuntime)
+    .asArray(jsRuntime);
+  size_t size = jsArray.size(jsRuntime);
 
   auto result = jni::JArrayClass<JavaScriptValue::javaobject>::newArray(size);
   for (size_t i = 0; i < size; i++) {
     auto element = JavaScriptValue::newObjectCxxArgs(
       runtimeHolder,
-      std::make_shared<jsi::Value>(jsArray.getValueAtIndex(*runtime->get(), i))
+      std::make_shared<jsi::Value>(jsArray.getValueAtIndex(jsRuntime, i))
     );
 
     result->setElement(i, element.release());
@@ -168,5 +184,11 @@ jni::local_ref<jstring> JavaScriptValue::jniKind() {
 jni::local_ref<jstring> JavaScriptValue::jniGetString() {
   auto result = getString();
   return jni::make_jstring(result);
+}
+
+jni::local_ref<JavaScriptTypedArray::javaobject> JavaScriptValue::getTypedArray() {
+  auto &jsRuntime = runtimeHolder.getJSRuntime();
+  auto jsObject = std::make_shared<jsi::Object>(jsValue->getObject(jsRuntime));
+  return JavaScriptTypedArray::newObjectCxxArgs(runtimeHolder, jsObject);
 }
 } // namespace expo

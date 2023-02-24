@@ -1,16 +1,30 @@
+const { resolveEntryPoint } = require('@expo/config/paths');
 const { loadAsync } = require('@expo/metro-config');
+const crypto = require('crypto');
 const fs = require('fs');
 const Server = require('metro/src/Server');
 const path = require('path');
-const { v4: uuidv4 } = require('uuid');
 
 const filterPlatformAssetScales = require('./filterPlatformAssetScales');
+
+/** Resolve the relative entry file using Expo's resolution method. */
+function getRelativeEntryPoint(projectRoot, platform) {
+  const entry = resolveEntryPoint(projectRoot, { platform });
+  if (entry) {
+    return path.relative(projectRoot, entry);
+  }
+  return entry;
+}
 
 (async function () {
   const platform = process.argv[2];
   const possibleProjectRoot = process.argv[3];
   const destinationDir = process.argv[4];
-  const entryFile = process.argv[5] || process.env.ENTRY_FILE || 'index.js';
+  const entryFile =
+    process.argv[5] ||
+    process.env.ENTRY_FILE ||
+    getRelativeEntryPoint(possibleProjectRoot, platform) ||
+    'index.js';
 
   // Remove projectRoot validation when we no longer support React Native <= 62
   let projectRoot;
@@ -19,7 +33,9 @@ const filterPlatformAssetScales = require('./filterPlatformAssetScales');
   } else if (fs.existsSync(path.join(possibleProjectRoot, '..', entryFile))) {
     projectRoot = path.resolve(possibleProjectRoot, '..');
   } else {
-    throw new Error('Error loading application entrypoint. If your entrypoint is not index.js, please set ENTRY_FILE environment variable with your app entrypoint.')
+    throw new Error(
+      'Error loading application entry point. If your entry point is not index.js, please set ENTRY_FILE environment variable with your app entry point.'
+    );
   }
 
   process.chdir(projectRoot);
@@ -47,7 +63,7 @@ const filterPlatformAssetScales = require('./filterPlatformAssetScales');
   }
 
   const manifest = {
-    id: uuidv4(),
+    id: crypto.randomUUID(),
     commitTime: new Date().getTime(),
     assets: [],
   };

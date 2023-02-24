@@ -4,6 +4,7 @@
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
+#include <react/bridging/LongLivedObject.h>
 #include <react/jni/ReadableNativeArray.h>
 #include <jni/JCallback.h>
 
@@ -11,6 +12,7 @@
 
 #include "MethodMetadata.h"
 #include "JNIFunctionBody.h"
+#include "types/ExpectedType.h"
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
@@ -59,7 +61,7 @@ public:
   void registerSyncFunction(
     jni::alias_ref<jstring> name,
     jint args,
-    jni::alias_ref<jni::JArrayInt> desiredTypes,
+    jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIFunctionBody::javaobject> body
   );
 
@@ -70,7 +72,7 @@ public:
   void registerAsyncFunction(
     jni::alias_ref<jstring> name,
     jint args,
-    jni::alias_ref<jni::JArrayInt> desiredTypes,
+    jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
   );
 
@@ -83,7 +85,7 @@ public:
    */
   void registerProperty(
     jni::alias_ref<jstring> name,
-    jint desiredType,
+    jni::alias_ref<ExpectedType> expectedArgType,
     jni::alias_ref<JNIFunctionBody::javaobject> getter,
     jni::alias_ref<JNIFunctionBody::javaobject> setter
   );
@@ -103,23 +105,31 @@ public:
   public:
     HostObject(JavaScriptModuleObject *);
 
+    ~HostObject() override;
+
     jsi::Value get(jsi::Runtime &, const jsi::PropNameID &name) override;
 
     void set(jsi::Runtime &, const jsi::PropNameID &name, const jsi::Value &value) override;
 
     std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime &rt) override;
 
+    jni::global_ref<jobject> jObjectRef;
   private:
     JavaScriptModuleObject *jsModule;
   };
+
+private:
+  explicit JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis);
 
 private:
   friend HybridBase;
   /**
    * A reference to the `JavaScriptModuleObject::HostObject`.
    * Simple we cached that value to return the same object each time.
+   * It's a weak reference because the JS runtime holds the actual object. 
+   * Doing that allows the runtime to deallocate jsi::Object if it's not needed anymore.
    */
-  std::shared_ptr<jsi::Object> jsiObject = nullptr;
+  std::weak_ptr<jsi::Object> jsiObject;
   jni::global_ref<JavaScriptModuleObject::javaobject> javaPart_;
 
   /**
@@ -138,7 +148,9 @@ private:
    */
   std::map<std::string, std::pair<MethodMetadata, MethodMetadata>> properties;
 
-  explicit JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis)
-    : javaPart_(jni::make_global(jThis)) {}
+  /**
+   * The `LongLivedObjectCollection` to hold `LongLivedObject` (callbacks or promises) for this module.
+   */
+  std::shared_ptr<react::LongLivedObjectCollection> longLivedObjectCollection_;
 };
 } // namespace expo

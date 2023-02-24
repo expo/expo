@@ -1,6 +1,6 @@
 {
   "name": "react-native-pager-view",
-  "version": "5.4.24",
+  "version": "6.1.2",
   "summary": "React Native wrapper for Android and iOS ViewPager",
   "homepage": "https://github.com/callstack/react-native-pager-view#readme",
   "license": "MIT",
@@ -10,9 +10,9 @@
   },
   "source": {
     "git": "https://github.com/callstack/react-native-pager-view.git",
-    "tag": "5.4.24"
+    "tag": "6.1.2"
   },
-  "source_files": "ios/**/*.{h,m,mm,swift}",
+  "source_files": "ios/**/*.{h,m,mm}",
   "dependencies": {
     "React-Core": []
   }

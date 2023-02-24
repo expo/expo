@@ -27,8 +27,6 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
-        with:
-          submodules: true
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
@@ -55,8 +53,6 @@ jobs:
       - name: 🏗️ Build Docs website for deploy
         run: yarn export
         timeout-minutes: 20
-        env:
-          USE_ESBUILD: 1
       # TODO(cedric): If we have time, we should make sure all links are valid and connected to a proper header
       # - name: lint links
       #   run: yarn lint-links --quiet

@@ -2,17 +2,28 @@
 
 #import <EXUpdates/EXUpdatesSelectionPolicies.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
+@import EXManifests;
+
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * Utility methods used by multiple [SelectionPolicy] subclasses.
+ */
 @implementation EXUpdatesSelectionPolicies
 
 + (BOOL)doesUpdate:(EXUpdatesUpdate *)update matchFilters:(nullable NSDictionary *)filters
 {
-  if (!filters || !update.manifestJSON) {
+  if (!filters || !update.manifest.rawManifestJSON) {
     return YES;
   }
   
-  NSDictionary *metadata = update.manifestJSON[@"metadata"];
+  NSDictionary *metadata = update.manifest.rawManifestJSON[@"metadata"];
   if (!metadata || ![metadata isKindOfClass:[NSDictionary class]]) {
     return YES;
   }

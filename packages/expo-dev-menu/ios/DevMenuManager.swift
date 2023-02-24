@@ -56,8 +56,6 @@ open class DevMenuManager: NSObject {
   lazy var extensionSettings: DevMenuExtensionSettingsProtocol = DevMenuExtensionDefaultSettings(manager: self)
   var canLaunchDevMenuOnStart = true
 
-  public var expoApiClient: DevMenuExpoApiClientProtocol = DevMenuExpoApiClient()
-  
   /**
    Shared singleton instance.
    */
@@ -81,14 +79,14 @@ open class DevMenuManager: NSObject {
   @available(*, deprecated, message: "Manual setup of DevMenuManager in AppDelegate is deprecated in favor of automatic setup with Expo Modules")
   @objc
   public static func configure(withBridge bridge: AnyObject) { }
-  
+
   @objc
   public var currentBridge: RCTBridge? {
     didSet {
       guard self.canLaunchDevMenuOnStart && (DevMenuPreferences.showsAtLaunch || self.shouldShowOnboarding()), let bridge = currentBridge else {
         return
       }
-      
+
       if bridge.isLoading {
         NotificationCenter.default.addObserver(self, selector: #selector(DevMenuManager.autoLaunch), name: DevMenuViewController.ContentDidAppearNotification, object: nil)
       } else {
@@ -97,16 +95,13 @@ open class DevMenuManager: NSObject {
     }
   }
   @objc
-  public var currentManifest: EXManifestsManifestBehavior?
-  
+  public var currentManifest: EXManifestsManifest?
+
   @objc
   public var currentManifestURL: URL?
-  
-  
-  @objc
-  public func setSession(_ session: String) {
-    self.expoApiClient.setSessionSecret(session)
-  }
+
+
+
 
   @objc
   public func autoLaunch(_ shouldRemoveObserver: Bool = true) {
@@ -305,7 +300,7 @@ open class DevMenuManager: NSObject {
     if isVisible == visible {
       return false
     }
-    
+
     return true
   }
 
@@ -391,17 +386,17 @@ open class DevMenuManager: NSObject {
     }
     return true
   }
-  
+
   @objc
   public func getAppInfo() -> [AnyHashable: Any] {
     return EXDevMenuAppInfo.getAppInfo()
   }
-  
+
   @objc
   public func getDevSettings() -> [AnyHashable: Any] {
     return EXDevMenuDevSettings.getDevSettings()
   }
-  
+
   private static var fontsWereLoaded = false
 
   @objc
@@ -422,7 +417,7 @@ open class DevMenuManager: NSObject {
       "Inter-ExtraLight",
       "Inter-Thin"
     ]
-    
+
     for font in fonts {
       let path = DevMenuUtils.resourcesBundle()?.path(forResource: font, ofType: "otf")
       let data = FileManager.default.contents(atPath: path!)
@@ -432,7 +427,7 @@ open class DevMenuManager: NSObject {
       CTFontManagerRegisterGraphicsFont(font!, &error)
     }
   }
-  
+
   // captures any callbacks that are registered via the `registerDevMenuItems` module method
   // it is set and unset by the public facing `DevMenuModule`
   // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty array

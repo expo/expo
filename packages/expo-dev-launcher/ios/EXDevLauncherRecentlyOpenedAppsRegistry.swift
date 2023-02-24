@@ -19,47 +19,46 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
   }
 
   @objc
-  public func appWasOpened(_ url: String, queryParams: [String: String], manifest: EXManifestsManifestBehavior?) {
-    
+  public func appWasOpened(_ url: String, queryParams: [String: String], manifest: EXManifestsManifest?) {
     var appEntry: [String: Any] = [:]
-    
+
     // reloading the same url - update the old entry w/ any new fields instead of creating a new one
     if let previousMatchingEntry = appRegistry[url] {
       appEntry = previousMatchingEntry as! [String : Any]
     }
-    
+
     let timestamp = getCurrentTimestamp()
-        
+
     var isEASUpdate = false
-    
+
     if let host = URL(string:url)?.host {
       isEASUpdate = host == "u.expo.dev" || host == "staging-u.expo.dev"
     }
-    
+
     appEntry["isEASUpdate"] = isEASUpdate
-    
-    if (isEASUpdate) {      
+
+    if isEASUpdate {
       if let updateMessage = queryParams["updateMessage"] {
         appEntry["updateMessage"] = updateMessage
       }
     }
-    
+
     if let manifest = manifest {
       appEntry["name"] = manifest.name()
-      
+
       // TODO - expose metadata object in expo-manifests
       let json = manifest.rawManifestJSON()
-      
+
       if (isEASUpdate) {
         if let metadata: [String: Any] = json["metadata"] as? [String : Any], let branchName = metadata["branchName"] {
           appEntry["branchName"] = branchName;
         }
       }
     }
-    
+
     appEntry["timestamp"] = timestamp
     appEntry["url"] = url
-    
+
     var registry = appRegistry
     registry[url] = appEntry
     appRegistry = registry
@@ -70,7 +69,7 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
     guard let registry = appRegistry as? [String: [String: Any]] else {
       return []
     }
-    
+
     var apps: [[String: Any]] = []
 
     appRegistry = registry.filter { (url: String, appEntry: [String: Any]) in
@@ -81,7 +80,7 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
       apps.append(appEntry)
       return true
     }
-    
+
     return apps
   }
 

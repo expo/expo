@@ -31,11 +31,11 @@
 #import <EXUpdates/EXUpdatesReaperSelectionPolicyDevelopmentClient.h>
 #import <EXUpdates/EXUpdatesSelectionPolicy.h>
 #import <EXUpdates/EXUpdatesUtils.h>
-#import <EXManifests/EXManifestsManifestFactory.h>
-#import <EXManifests/EXManifestsLegacyManifest.h>
-#import <EXManifests/EXManifestsNewManifest.h>
 #import <React/RCTUtils.h>
 #import <sys/utsname.h>
+
+@import EXManifests;
+@import EXUpdates;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -71,6 +71,19 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+/**
+ * Entry point to expo-updates in Expo Go and legacy standalone builds. Fulfills many of the
+ * purposes of EXUpdatesAppController along with serving as an interface to the rest of the ExpoKit
+ * kernel.
+ *
+ * Dynamically generates a configuration object with the correct scope key, and then, like
+ * EXUpdatesAppController, delegates to an instance of EXUpdatesAppLoaderTask to start the process
+ * of loading and launching an update, and responds appropriately depending on the callbacks that
+ * are invoked.
+ *
+ * Multiple instances of EXAppLoaderExpoUpdates can exist at a time; instances are retained by
+ * EXKernelAppRegistry (through EXKernelAppRecord).
+ */
 @implementation EXAppLoaderExpoUpdates
 
 @synthesize manifestUrl = _manifestUrl;
@@ -350,7 +363,7 @@ NS_ASSUME_NONNULL_BEGIN
     NSURLComponents *manifestUrlComponents = [NSURLComponents componentsWithURL:httpManifestUrl resolvingAgainstBaseURL:YES];
     releaseChannel = [EXKernelLinkingManager releaseChannelWithUrlComponents:manifestUrlComponents];
   }
-  
+
   NSMutableDictionary *updatesConfig = [[NSMutableDictionary alloc] initWithDictionary:@{
     EXUpdatesConfigUpdateUrlKey: httpManifestUrl.absoluteString,
     EXUpdatesConfigSDKVersionKey: [self _sdkVersions],
@@ -363,18 +376,18 @@ NS_ASSUME_NONNULL_BEGIN
     EXUpdatesConfigExpectsSignedManifestKey: @YES,
     EXUpdatesConfigRequestHeadersKey: [self _requestHeaders]
   }];
-  
+
   if (!EXEnvironment.sharedEnvironment.isDetached) {
     // in Expo Go, embed the Expo Root Certificate and get the Expo Go intermediate certificate and development certificates
     // from the multipart manifest response part
-    
+
     NSString *expoRootCertPath = [[NSBundle mainBundle] pathForResource:@"expo-root" ofType:@"pem"];
     if (!expoRootCertPath) {
       @throw [NSException exceptionWithName:NSInternalInconsistencyException
                                      reason:@"No expo-root certificate found in bundle"
                                    userInfo:@{}];
     }
-    
+
     NSError *error;
     NSString *expoRootCert = [NSString stringWithContentsOfFile:expoRootCertPath encoding:NSUTF8StringEncoding error:&error];
     if (error) {
@@ -385,7 +398,7 @@ NS_ASSUME_NONNULL_BEGIN
                                      reason:@"Error reading expo-root certificate from bundle"
                                    userInfo:@{ @"underlyingError": error.localizedDescription }];
     }
-    
+
     updatesConfig[EXUpdatesConfigCodeSigningCertificateKey] = expoRootCert;
     updatesConfig[EXUpdatesConfigCodeSigningMetadataKey] = @{
       @"keyid": @"expo-root",
@@ -413,7 +426,7 @@ NS_ASSUME_NONNULL_BEGIN
   }
   [sdkVersionRuntimeVersions addObject:@"exposdk:UNVERSIONED"];
   [sdkVersions addObjectsFromArray:sdkVersionRuntimeVersions];
-  
+
 
   _selectionPolicy = [[EXUpdatesSelectionPolicy alloc]
                       initWithLauncherSelectionPolicy:[[EXUpdatesLauncherSelectionPolicyFilterAware alloc] initWithRuntimeVersions:sdkVersions]
@@ -516,7 +529,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   @try {
     NSMutableDictionary *mutableManifest = [manifest.rawManifestJSON mutableCopy];
-    
+
     // If legacy manifest is not yet verified, served by a third party, not standalone, and not an anonymous experience
     // then scope it locally by using the manifest URL as a scopeKey (id) and consider it verified.
     if (!mutableManifest[@"isVerified"] &&
@@ -533,7 +546,7 @@ NS_ASSUME_NONNULL_BEGIN
       mutableManifest[@"id"] = [NSString stringWithFormat:@"%@%@%@%@", securityPrefix, _httpManifestUrl.host, _httpManifestUrl.path ?: @"", slugSuffix];
       mutableManifest[@"isVerified"] = @(YES);
     }
-    
+
     // set verified to false by default
     if (!mutableManifest[@"isVerified"]) {
       mutableManifest[@"isVerified"] = @(NO);
@@ -544,7 +557,7 @@ NS_ASSUME_NONNULL_BEGIN
     if (![mutableManifest[@"isVerified"] boolValue] && (EXEnvironment.sharedEnvironment.isManifestVerificationBypassed || [EXAppLoaderExpoUpdates _isAnonymousExperience:manifest])) {
       mutableManifest[@"isVerified"] = @(YES);
     }
-    
+
     // when the manifest is not verified at this point, make the scope key a salted and hashed version of the claimed scope key
     if (![mutableManifest[@"isVerified"] boolValue]) {
       NSString *currentScopeKeyAndSaltToHash = [NSString stringWithFormat:@"unverified-%@", manifest.scopeKey];

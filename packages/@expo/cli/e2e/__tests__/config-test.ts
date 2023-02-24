@@ -1,4 +1,5 @@
 /* eslint-env jest */
+import { ExecaError } from 'execa';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -16,8 +17,8 @@ afterAll(() => {
 it('loads expected modules by default', async () => {
   const modules = await getLoadedModulesAsync(`require('../../build/src/config').expoConfig`);
   expect(modules).toStrictEqual([
-    '../node_modules/ansi-styles/index.js',
     '../node_modules/arg/index.js',
+    '../node_modules/chalk/node_modules/ansi-styles/index.js',
     '../node_modules/chalk/source/index.js',
     '../node_modules/chalk/source/util.js',
     '../node_modules/has-flag/index.js',
@@ -74,6 +75,7 @@ it('throws on invalid project root', async () => {
   try {
     await execute('config', 'very---invalid', '--json');
   } catch (e) {
-    expect(e.stderr).toMatch(/Invalid project root: \//);
+    const error = e as ExecaError;
+    expect(error.stderr).toMatch(/Invalid project root: \//);
   }
 });

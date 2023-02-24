@@ -1,9 +1,17 @@
 import { css } from '@emotion/react';
 import { spacing, theme } from '@expo/styleguide';
 import GithubSlugger from 'github-slugger';
-import Link from 'next/link';
-import React, { Children, FC, createContext, isValidElement, ReactNode, useContext } from 'react';
+import {
+  Children,
+  FC,
+  createContext,
+  isValidElement,
+  ReactNode,
+  useContext,
+  PropsWithChildren,
+} from 'react';
 
+import { A } from '.';
 import { TextComponentProps } from './types';
 
 import { durations } from '~/ui/foundations/durations';
@@ -17,15 +25,15 @@ export const AnchorContext = createContext<GithubSlugger | null>(null);
  *   - children of the component
  *   - anchor hover icon
  */
-export function withAnchor(Component: FC<React.PropsWithChildren<TextComponentProps>>) {
+export function withAnchor(Component: FC<PropsWithChildren<TextComponentProps>>) {
   function AnchorComponent({ id, children, ...rest }: TextComponentProps) {
     const slug = useSlug(id, children);
     return (
       <Component css={headingStyle} data-id={slug} {...rest}>
         <span css={anchorStyle} id={slug} />
-        <Link href={`#${slug}`} passHref>
-          <a css={linkStyle}>{children}</a>
-        </Link>
+        <A href={`#${slug}`} css={linkStyle}>
+          {children}
+        </A>
       </Component>
     );
   }

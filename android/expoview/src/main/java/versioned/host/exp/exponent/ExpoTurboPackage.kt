@@ -14,26 +14,21 @@ import com.facebook.react.module.annotations.ReactModuleList
 import com.facebook.react.module.model.ReactModuleInfo
 import com.facebook.react.module.model.ReactModuleInfoProvider
 import com.facebook.react.modules.intent.IntentModule
-import com.facebook.react.modules.storage.AsyncStorageModule
 import com.facebook.react.turbomodule.core.interfaces.TurboModule
 import com.facebook.react.uimanager.ReanimatedUIManager
 import com.facebook.react.uimanager.UIManagerModule
 import com.facebook.react.uimanager.ViewManager
 import com.facebook.systrace.Systrace
+import com.swmansion.reanimated.ReanimatedModule
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.experience.ReactNativeActivity
 import host.exp.exponent.kernel.KernelConstants
 import host.exp.expoview.Exponent
-import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedModule
-import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule
 import versioned.host.exp.exponent.modules.internal.ExponentIntentModule
-import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule
 
 /** Package defining basic modules and view managers.  */
 @ReactModuleList(
   nativeModules = [
-    // TODO(Bacon): Do we need to support unsigned storage module here?
-    ExponentAsyncStorageModule::class,
     ExponentIntentModule::class,
     ReanimatedModule::class,
     ReanimatedUIManager::class,
@@ -57,11 +52,6 @@ class ExpoTurboPackage(
   override fun getModule(name: String, context: ReactApplicationContext): NativeModule? {
     val isVerified = manifest.isVerified()
     return when (name) {
-      AsyncStorageModule.NAME -> if (isVerified) {
-        ExponentAsyncStorageModule(context, manifest)
-      } else {
-        ExponentUnsignedAsyncStorageModule(context)
-      }
       IntentModule.NAME -> ExponentIntentModule(
         context,
         experienceProperties
@@ -80,8 +70,6 @@ class ExpoTurboPackage(
     } catch (e: ClassNotFoundException) {
       // In OSS case, the annotation processor does not run. We fall back on creating this by hand
       val moduleList: Array<Class<out NativeModule?>> = arrayOf(
-        // TODO(Bacon): Do we need to support unsigned storage module here?
-        ExponentAsyncStorageModule::class.java,
         ExponentIntentModule::class.java,
         ReanimatedModule::class.java,
         ReanimatedUIManager::class.java,

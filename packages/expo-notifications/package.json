@@ -1,6 +1,6 @@
 {
   "name": "expo-notifications",
-  "version": "0.16.1",
+  "version": "0.18.1",
   "description": "Notifications module",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -37,21 +37,20 @@
     "preset": "expo-module-scripts/ios"
   },
   "dependencies": {
-    "@expo/config-plugins": "~5.0.0",
     "@expo/image-utils": "^0.3.18",
     "@ide/backoff": "^1.0.0",
     "abort-controller": "^3.0.0",
     "assert": "^2.0.0",
     "badgin": "^1.1.5",
-    "expo-application": "~4.2.0",
-    "expo-constants": "~13.2.0",
+    "expo-application": "~5.1.0",
+    "expo-constants": "~14.2.0",
     "fs-extra": "^9.1.0",
     "uuid": "^3.4.0"
   },
   "devDependencies": {
     "@types/node-fetch": "^2.5.7",
     "@types/uuid": "^3.4.7",
-    "expo-module-scripts": "^2.0.0",
+    "expo-module-scripts": "^3.0.0",
     "memfs": "^3.2.0",
     "node-fetch": "^2.6.7"
   },

@@ -1,9 +1,30 @@
+import java.nio.file.Paths
+
 apply plugin: 'com.android.library'
 apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
+apply plugin: "de.undercouch.download"
 
 group = 'host.exp.exponent'
-version = '11.4.0'
+version = '12.4.0'
+
+def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
+def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
+  ? findProject(":ReactAndroid").getProjectDir().parent
+  : new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
+def RN_SO_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
+  ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
+  : "${buildDir}/react/jni"
+
+def reactProperties = new Properties()
+file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
+def REACT_NATIVE_VERSION = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")
+def REACT_NATIVE_TARGET_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
+
+def reactNativeArchitectures() {
+    def value = project.getProperties().get("reactNativeArchitectures")
+    return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
+}
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -22,7 +43,7 @@ buildscript {
     if (ext.has("kotlinVersion")) {
       ext.kotlinVersion()
     } else {
-      ext.safeExtGet("kotlinVersion", "1.6.10")
+      ext.safeExtGet("kotlinVersion", "1.8.10")
     }
   }
 
@@ -32,6 +53,7 @@ buildscript {
 
   dependencies {
     classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
+    classpath("de.undercouch:gradle-download-task:5.3.0")
   }
 }
 
@@ -59,7 +81,14 @@ afterEvaluate {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion safeExtGet("compileSdkVersion", 33)
+
+  if (rootProject.hasProperty("ndkPath")) {
+    ndkPath rootProject.ext.ndkPath
+  }
+  if (rootProject.hasProperty("ndkVersion")) {
+    ndkVersion rootProject.ext.ndkVersion
+  }
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_11
@@ -72,13 +101,45 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 31)
+    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 31
-    versionName "11.4.0"
+    versionName "12.4.0"
+
+    externalNativeBuild {
+      cmake {
+        abiFilters (*reactNativeArchitectures())
+        arguments "-DANDROID_STL=c++_shared",
+          "-DREACT_NATIVE_DIR=${REACT_NATIVE_DIR}",
+          "-DRN_SO_DIR=${RN_SO_DIR}"
+      }
+    }
   }
 
-  sourceSets.main {
-    jni.srcDirs = []
+  externalNativeBuild {
+    cmake {
+      if (REACT_NATIVE_TARGET_VERSION >= 71) {
+        path "CMakeLists.txt"
+      } else {
+        path "legacy/CMakeLists.txt"
+      }
+    }
+  }
+
+  buildFeatures {
+    prefab true
+  }
+
+  packagingOptions {
+    // Gradle will add cmake target dependencies into packaging.
+    excludes += [
+        "**/libc++_shared.so",
+        "**/libjsi.so",
+    ]
+  }
+
+  configurations {
+    extractHeaders
+    extractJNI
   }
 
   lintOptions {
@@ -86,9 +147,27 @@ android {
   }
 }
 
+repositories {
+  mavenCentral()
+}
+
 dependencies {
-  implementation project(':expo-gl-cpp')
+  compileOnly 'com.facebook.soloader:soloader:0.8.2'
   implementation project(':expo-modules-core')
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
+
+  // Remove this when we drop SDK 47
+  if (REACT_NATIVE_TARGET_VERSION >= 71) {
+    compileOnly 'com.facebook.react:react-android'
+  }
+}
+
+// Remove this when we drop SDK 47
+if (REACT_NATIVE_TARGET_VERSION < 71) {
+  project.ext.extraLegacyReactNativeLibs = [
+    'prepareDoubleConversion',
+    'prepareFolly',
+  ]
+  applyLegacyReactNativeLibsExtractionPlugin()
 }

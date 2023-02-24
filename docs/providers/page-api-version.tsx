@@ -1,5 +1,8 @@
-import { NextRouter } from 'next/router';
-import React, { createContext, PropsWithChildren, useCallback, useContext } from 'react';
+import { useRouter } from 'next/router';
+import { createContext, PropsWithChildren, useCallback, useContext } from 'react';
+
+import { isReferencePath } from '~/common/routes';
+import navigation from '~/public/static/constants/navigation.json';
 
 export const PageApiVersionContext = createContext({
   /** The version selected in the URL, or the default version */
@@ -13,29 +16,27 @@ export const PageApiVersionContext = createContext({
 } as PageApiVersionContextType);
 
 export type PageApiVersionContextType = {
-  version: string;
+  version: keyof typeof navigation.reference;
   hasVersion: boolean;
   setVersion: (newVersion: string) => void;
 };
 
-type Props = PropsWithChildren<{
-  /** The router containing the current URL info of the page, possibly containing the API version */
-  router: NextRouter;
-}>;
+type Props = PropsWithChildren<object>;
 
-export function PageApiVersionProvider(props: Props) {
-  const version = getVersionFromPath(props.router.pathname);
+export function PageApiVersionProvider({ children }: Props) {
+  const router = useRouter();
+  const version = getVersionFromPath(router.pathname);
   const hasVersion = version !== null;
 
-  // note: if the page doesn't exists, the error page will handle it
+  // note(Cedric): if the page doesn't exists, the error page will handle it
   const setVersion = useCallback((newVersion: string) => {
-    props.router.push(replaceVersionInPath(props.router.pathname, newVersion));
+    router.push(replaceVersionInPath(router.pathname, newVersion));
   }, []);
 
   return (
     <PageApiVersionContext.Provider
       value={{ setVersion, hasVersion, version: version || 'latest' }}>
-      {props.children}
+      {children}
     </PageApiVersionContext.Provider>
   );
 }
@@ -45,19 +46,13 @@ export function usePageApiVersion() {
 }
 
 /**
- * Determine if there is a version within the pathname of the URL.
- * Versioned pages always starts with /versions/<version>.
- */
-export function isVersionedPath(path: string) {
-  return path.startsWith('/versions/');
-}
-
-/**
  * Find the version within the pathname of the URL.
- * This only accepts pathnames, without hashes or query strings.
+ * This only accepts pathname without hashes or query strings.
  */
-export function getVersionFromPath(path: string) {
-  return !isVersionedPath(path) ? null : path.split('/', 3).pop()!;
+export function getVersionFromPath(path: string): PageApiVersionContextType['version'] | null {
+  return isReferencePath(path)
+    ? (path.split('/', 3).pop()! as PageApiVersionContextType['version'])
+    : null;
 }
 
 /**

@@ -1,27 +1,47 @@
 {
   "name": "stripe-react-native",
-  "version": "0.13.1",
+  "version": "0.23.3",
   "summary": "Stripe SDK for React Native",
   "homepage": "https://github.com/stripe/stripe-react-native/#readme",
   "license": "MIT",
   "authors": "Stripe",
   "platforms": {
-    "ios": "12.0"
+    "ios": "13.0"
   },
   "source": {
     "git": "https://github.com/stripe/stripe-react-native.git",
-    "tag": "0.13.1"
+    "tag": "0.23.3"
   },
   "source_files": "ios/**/*.{h,m,mm,swift}",
+  "exclude_files": "ios/Tests/",
   "dependencies": {
     "React-Core": [],
     "Stripe": [
-      "~> 22.4.0"
+      "~> 23.3.0"
+    ],
+    "StripePaymentSheet": [
+      "~> 23.3.0"
+    ],
+    "StripePayments": [
+      "~> 23.3.0"
+    ],
+    "StripePaymentsUI": [
+      "~> 23.3.0"
+    ],
+    "StripeApplePay": [
+      "~> 23.3.0"
     ],
     "StripeFinancialConnections": [
-      "~> 22.4.0"
+      "~> 23.3.0"
     ]
   },
+  "testspecs": [
+    {
+      "name": "Tests",
+      "test_type": "unit",
+      "source_files": "ios/Tests/**/*.{m,swift}"
+    }
+  ],
   "pod_target_xcconfig": {
     "HEADER_SEARCH_PATHS": "\"${PODS_ROOT}/Stripe/Stripe3DS2\" \"${PODS_ROOT}/Headers/Public/Stripe\""
   }

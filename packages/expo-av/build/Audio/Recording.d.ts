@@ -18,7 +18,7 @@ export declare function requestPermissionsAsync(): Promise<PermissionResponse>;
  *
  * @example
  * ```ts
- * const [status, requestPermission] = Audio.usePermissions();
+ * const [permissionResponse, requestPermission] = Audio.usePermissions();
  * ```
  */
 export declare const usePermissions: (options?: PermissionHookOptions<object> | undefined) => [PermissionResponse | null, () => Promise<PermissionResponse>, () => Promise<PermissionResponse>];
@@ -57,7 +57,7 @@ export declare class Recording {
     _progressUpdateTimeoutVariable: number | null;
     _progressUpdateIntervalMillis: number;
     _options: RecordingOptions | null;
-    _cleanupForUnloadedRecorder: (finalStatus?: RecordingStatus | undefined) => Promise<RecordingStatus>;
+    _cleanupForUnloadedRecorder: (finalStatus?: RecordingStatus) => Promise<RecordingStatus>;
     _pollingLoop: () => Promise<void>;
     _disablePolling(): void;
     _enablePollingIfNecessaryAndPossible(): void;

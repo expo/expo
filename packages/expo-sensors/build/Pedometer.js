@@ -31,7 +31,6 @@ export async function getStepCountAsync(start, end) {
     invariant(start <= end, 'Pedometer: The start date must precede the end date.');
     return await ExponentPedometer.getStepCountAsync(start.getTime(), end.getTime());
 }
-// @needsAudit
 /**
  * Returns whether the pedometer is enabled on the device.
  * @return Returns a promise that fulfills with a `boolean`, indicating whether the pedometer is
@@ -40,7 +39,9 @@ export async function getStepCountAsync(start, end) {
 export async function isAvailableAsync() {
     return await ExponentPedometer.isAvailableAsync();
 }
-// @docsMissing
+/**
+ * Checks user's permissions for accessing pedometer.
+ */
 export async function getPermissionsAsync() {
     if (!ExponentPedometer.getPermissionsAsync) {
         return defaultPermissionsResponse;
@@ -49,7 +50,9 @@ export async function getPermissionsAsync() {
         return await ExponentPedometer.getPermissionsAsync();
     }
 }
-// @docsMissing
+/**
+ * Asks the user to grant permissions for accessing pedometer.
+ */
 export async function requestPermissionsAsync() {
     if (!ExponentPedometer.requestPermissionsAsync) {
         return defaultPermissionsResponse;

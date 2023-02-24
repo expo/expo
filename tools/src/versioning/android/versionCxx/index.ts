@@ -4,8 +4,14 @@ import glob from 'glob-promise';
 import path from 'path';
 
 import { ANDROID_DIR, PACKAGES_DIR, EXPOTOOLS_DIR } from '../../../Constants';
+import Git from '../../../Git';
 import { getListOfPackagesAsync, Package } from '../../../Packages';
-import { transformFileAsync, transformString } from '../../../Transforms';
+import {
+  transformFileAsync,
+  transformString,
+  transformFilesAsync,
+  FileTransform,
+} from '../../../Transforms';
 import { applyPatchAsync } from '../../../Utils';
 
 const CXX_EXPO_MODULE_PATCHES_DIR = path.join(
@@ -34,12 +40,24 @@ export async function versionCxxExpoModulesAsync(version: string) {
     const { packageName } = pkg;
     const abiName = `abi${version.replace(/\./g, '_')}`;
     const versionedAbiRoot = path.join(ANDROID_DIR, 'versioned-abis', `expoview-${abiName}`);
+    const packageFiles = await glob('**/*.{h,cpp,txt,gradle}', {
+      cwd: path.join(PACKAGES_DIR, packageName),
+      ignore: ['android/{build,.cxx}/**/*', 'ios/**/*'],
+      absolute: true,
+    });
 
+    await transformPackageAsync(packageFiles, abiName);
     const patchContent = await getTransformPatchContentAsync(packageName, abiName);
+    if (patchContent) {
+      await applyPatchForPackageAsync(packageName, patchContent);
+    }
 
-    await applyPatchForPackageAsync(packageName, patchContent);
     await buildSoLibsAsync(packageName);
-    await revertPatchForPackageAsync(packageName, patchContent);
+
+    if (patchContent) {
+      await revertPatchForPackageAsync(packageName, patchContent);
+    }
+    await revertTransformPackageAsync(packageFiles);
 
     await copyPrebuiltSoLibsAsync(packageName, versionedAbiRoot);
     await versionJavaLoadersAsync(packageName, versionedAbiRoot, abiName);
@@ -56,8 +74,46 @@ function isVersionableCxxExpoModule(pkg: Package) {
     pkg.isSupportedOnPlatform('android') &&
     pkg.isIncludedInExpoClientOnPlatform('android') &&
     pkg.isVersionableOnPlatform('android') &&
-    fs.existsSync(path.join(CXX_EXPO_MODULE_PATCHES_DIR, `${pkg.packageName}.patch`))
+    fs.existsSync(path.join(PACKAGES_DIR, pkg.packageName, 'android', 'CMakeLists.txt'))
   );
+}
+
+function transformPackageAsync(packageFiles: string[], abiName: string) {
+  return transformFilesAsync(packageFiles, baseTransforms(abiName));
+}
+
+function revertTransformPackageAsync(packageFiles: string[]) {
+  return Git.discardFilesAsync(packageFiles);
+}
+
+function baseTransforms(abiName: string): FileTransform[] {
+  return [
+    {
+      paths: 'CMakeLists.txt',
+      find: /\b(set\s*\(PACKAGE_NAME ['"].+)(['"]\))/g,
+      replaceWith: `$1_${abiName}$2`,
+    },
+    {
+      paths: 'CMakeLists.txt',
+      find: /(\s(ReactAndroid::)?jsi|reactnativejni|hermes|jscexecutor|folly_json|folly_runtime|react_nativemodule_core)\b/g,
+      replaceWith: `$1_${abiName}`,
+    },
+    {
+      paths: '**/*.{h,cpp}',
+      find: /([\b\s(;"]L?)(expo\/modules\/)/g,
+      replaceWith: `$1${abiName}/$2`,
+    },
+    {
+      paths: '**/*.{h,cpp}',
+      find: /([\b\s(;"]L?)(com\/facebook\/react\/)/g,
+      replaceWith: `$1${abiName}/$2`,
+    },
+    {
+      paths: 'build.gradle',
+      find: /(implementation|compileOnly)[ \(]['"]com.facebook.react:react-(native|android)(:\+)?['"]\)?/g,
+      replaceWith: `compileOnly 'host.exp:reactandroid-${abiName}:1.0.0'`,
+    },
+  ];
 }
 
 /**
@@ -112,7 +168,11 @@ async function copyPrebuiltSoLibsAsync(packageName: string, versionedAbiRoot: st
   const jniLibsRoot = path.join(versionedAbiRoot, 'src', 'main', 'jniLibs');
   const libs = await glob('**/libexpo*.so', { cwd: libRoot });
   await Promise.all(
-    libs.map((lib) => fs.copyFile(path.join(libRoot, lib), path.join(jniLibsRoot, lib)))
+    libs.map(async (lib) => {
+      const destPath = path.join(jniLibsRoot, lib);
+      await fs.ensureDir(path.dirname(destPath));
+      await fs.copyFile(path.join(libRoot, lib), destPath);
+    })
   );
 }
 
@@ -135,7 +195,8 @@ async function versionJavaLoadersAsync(
         await transformFileAsync(file, [
           {
             find: /\b((System|SoLoader)\.loadLibrary\("expo[^"]*)("\);?)/g,
-            replaceWith: `$1_${abiName}$3`,
+            replaceWith: (s: string, g1, _, g3) =>
+              !s.includes(abiName) ? `${g1}_${abiName}${g3}` : s,
           },
         ]);
       }
@@ -146,8 +207,14 @@ async function versionJavaLoadersAsync(
 /**
  * Read the patch content and do `abiName` transformation
  */
-async function getTransformPatchContentAsync(packageName: string, abiName: string) {
+async function getTransformPatchContentAsync(
+  packageName: string,
+  abiName: string
+): Promise<string | null> {
   const patchFile = path.join(CXX_EXPO_MODULE_PATCHES_DIR, `${packageName}.patch`);
+  if (!fs.existsSync(patchFile)) {
+    return null;
+  }
   let content = await fs.readFile(patchFile, 'utf8');
   content = await transformString(content, [
     {

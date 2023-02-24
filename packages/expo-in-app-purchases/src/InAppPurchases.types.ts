@@ -294,10 +294,13 @@ export type IAPPurchaseHistoryOptions = {
 export interface IAPPurchaseItemOptions {
   /**
    * The `purchaseToken` of the purchase that the user is upgrading or downgrading from.
+   * This is mandatory for replacing an old subscription such as when a user
+   * upgrades from a monthly subscription to a yearly one that provides the same content. You can
+   * get the purchase token from [`getPurchaseHistoryAsync`](#inapppurchasesgetpurchasehistoryasyncoptions).
    */
   oldPurchaseToken?: string;
   /**
-   * Account identifiers, both need to be provided to work with Google Play
+   * Account identifiers, both need to be provided to work with Google Play Store.
    */
   accountIdentifiers?: {
     /**

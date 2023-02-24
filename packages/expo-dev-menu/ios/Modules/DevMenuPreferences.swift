@@ -84,8 +84,10 @@ public class DevMenuPreferences: NSObject, RCTBridgeModule {
 
   /**
    Returns `true` only if the user finished onboarding, `false` otherwise.
+   This is now public because expo-dev-launcher needs access
+   in order to disable the onboarding popup for certain bundle URLs
    */
-  static var isOnboardingFinished: Bool {
+  public static var isOnboardingFinished: Bool {
     get {
       return DevMenuTestInterceptorManager.interceptor?.isOnboardingFinishedKey ?? boolForKey(isOnboardingFinishedKey)
     }

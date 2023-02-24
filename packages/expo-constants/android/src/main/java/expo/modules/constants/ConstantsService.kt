@@ -5,6 +5,7 @@ import org.apache.commons.io.IOUtils
 import com.facebook.device.yearclass.YearClass
 
 import expo.modules.core.interfaces.InternalModule
+import expo.modules.core.utilities.EmulatorUtilities
 import expo.modules.interfaces.constants.ConstantsInterface
 
 import android.os.Build
@@ -76,7 +77,7 @@ open class ConstantsService(private val context: Context) : InternalModule, Cons
 
   override fun getDeviceYearClass() = YearClass.get(context)
 
-  override fun getIsDevice() = !isRunningOnGenymotion && !isRunningOnStockEmulator
+  override fun getIsDevice() = !EmulatorUtilities.isRunningOnEmulator()
 
   override fun getStatusBarHeight() = statusBarHeightInternal
 
@@ -121,11 +122,8 @@ open class ConstantsService(private val context: Context) : InternalModule, Cons
       return dp.toInt()
     }
 
-    private val isRunningOnGenymotion: Boolean
-      get() = Build.FINGERPRINT.contains("vbox")
-
-    private val isRunningOnStockEmulator: Boolean
-      get() = Build.FINGERPRINT.contains("generic")
+    private val isRunningOnEmulator: Boolean
+      get() = EmulatorUtilities.isRunningOnEmulator()
 
     private fun getLongVersionCode(info: PackageInfo) =
       if (Build.VERSION.SDK_INT >= 28) info.longVersionCode

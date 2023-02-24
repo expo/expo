@@ -1,22 +1,49 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`renders a complex gradient 1`] = `
-Object {
-  "colors": Array [
-    -65536,
-    -16776961,
-  ],
-  "endPoint": Array [
-    1,
-    1,
-  ],
-  "locations": Array [
-    0.5,
-    1,
-  ],
-  "startPoint": Array [
-    0,
-    0,
-  ],
-}
+<View>
+  <ViewManagerAdapter_ExpoLinearGradient
+    borderRadii={
+      [
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+        0,
+      ]
+    }
+    proxiedProperties={
+      {
+        "colors": [
+          -65536,
+          -16776961,
+        ],
+        "endPoint": [
+          1,
+          1,
+        ],
+        "locations": [
+          0.5,
+          1,
+        ],
+        "startPoint": [
+          0,
+          0,
+        ],
+      }
+    }
+    style={
+      {
+        "bottom": 0,
+        "left": 0,
+        "position": "absolute",
+        "right": 0,
+        "top": 0,
+      }
+    }
+  />
+</View>
 `;

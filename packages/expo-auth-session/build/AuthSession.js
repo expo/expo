@@ -113,7 +113,7 @@ export function getRedirectUrl(path) {
  *   scheme: 'my-scheme',
  *   path: 'redirect'
  * });
- * // Custom app: my-scheme://redirect
+ * // Development Build: my-scheme://redirect
  * // Expo Go: exp://127.0.0.1:19000/--/redirect
  * // Web dev: https://localhost:19006/redirect
  * // Web prod: https://yourwebsite.com/redirect
@@ -123,16 +123,8 @@ export function getRedirectUrl(path) {
  *   preferLocalhost: true,
  *   isTripleSlashed: true,
  * });
- * // Custom app: scheme2:///
+ * // Development Build: scheme2:///
  * // Expo Go: exp://localhost:19000
- * // Web dev: https://localhost:19006
- * // Web prod: https://yourwebsite.com
- *
- * const redirectUri3 = makeRedirectUri({
- *   useProxy: true,
- * });
- * // Custom app: https://auth.expo.io/@username/slug
- * // Expo Go: https://auth.expo.io/@username/slug
  * // Web dev: https://localhost:19006
  * // Web prod: https://yourwebsite.com
  * ```

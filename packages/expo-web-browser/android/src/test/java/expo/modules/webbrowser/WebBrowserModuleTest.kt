@@ -112,7 +112,7 @@ internal class WebBrowserModuleTest {
     module.openBrowserAsync(
       "http://expo.io",
       OpenBrowserOptions(
-        toolbarColor = "#000000",
+        toolbarColor = 0,
         browserPackage = "com.browser.package",
         enableBarCollapsing = true,
         enableDefaultShareMenuItem = true,
@@ -138,7 +138,7 @@ internal class WebBrowserModuleTest {
     module.openBrowserAsync(
       "http://expo.io",
       OpenBrowserOptions(
-        toolbarColor = "#000000",
+        toolbarColor = 0,
         browserPackage = "com.browser.package",
         enableBarCollapsing = true,
         enableDefaultShareMenuItem = true,
@@ -167,7 +167,7 @@ internal class WebBrowserModuleTest {
     module.openBrowserAsync(
       "http://expo.io",
       OpenBrowserOptions(
-        toolbarColor = "#000000",
+        toolbarColor = 0,
         browserPackage = "com.browser.package",
         enableBarCollapsing = false,
         enableDefaultShareMenuItem = false,
@@ -195,7 +195,7 @@ internal class WebBrowserModuleTest {
     module.openBrowserAsync(
       "http://expo.io",
       OpenBrowserOptions(
-        toolbarColor = "#000000",
+        toolbarColor = 0,
         browserPackage = "com.browser.package",
         shouldCreateTask = false
       )

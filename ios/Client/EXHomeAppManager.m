@@ -3,7 +3,7 @@
 #import "EXHomeAppManager.h"
 #import "EXKernel.h"
 #import "EXAppFetcher.h"
-#import "EXAppLoader.h"
+#import "EXAbstractLoader.h"
 #import "EXKernelLinkingManager.h"
 #import "EXHomeModule.h"
 #import "EXKernelUtil.h"
@@ -15,13 +15,14 @@
 #import "EXVersions.h"
 
 #import <EXConstants/EXConstantsService.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
-#import <EXManifests/EXManifestsManifestFactory.h>
 
 #import <React/RCTUtils.h>
 #import <React/RCTBridge.h>
 
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
+
+@import EXManifests;
+@import EXUpdates;
 
 NSString * const kEXHomeLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
 NSString *kEXHomeBundleResourceName = @"kernel.ios";

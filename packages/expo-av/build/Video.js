@@ -115,16 +115,13 @@ class Video extends React.Component {
         return this._performOperationAndHandleStatusAsync((tag) => ExponentAV.unloadForVideo(tag));
     };
     componentWillUnmount() {
-        try {
-            // Auto unload video to perform necessary cleanup safely
-            this.unloadAsync();
-        }
-        catch {
-            // Ignored. Sometimes the unloadAsync code is executed when video is already unloaded.
+        // Auto unload video to perform necessary cleanup safely
+        this.unloadAsync().catch(() => {
+            // Ignored rejection. Sometimes the unloadAsync code is executed when video is already unloaded.
             // In such cases, it throws:
             // "[Unhandled promise rejection: Error: Invalid view returned from registry,
             //  expecting EXVideo, got: (null)]"
-        }
+        });
     }
     /**
      * Set status API, only available while `isLoaded = true`.
@@ -207,7 +204,10 @@ class Video extends React.Component {
             this.props.onFullscreenUpdate(event.nativeEvent);
         }
     };
-    _renderPoster = () => this.props.usePoster && this.state.showPoster ? (React.createElement(Image, { style: [_STYLES.poster, this.props.posterStyle], source: this.props.posterSource })) : null;
+    _renderPoster = () => {
+        const PosterComponent = this.props.PosterComponent ?? Image;
+        return this.props.usePoster && this.state.showPoster ? (React.createElement(PosterComponent, { style: [_STYLES.poster, this.props.posterStyle], source: this.props.posterSource })) : null;
+    };
     render() {
         const source = getNativeSourceFromSource(this.props.source) || undefined;
         let nativeResizeMode = ExpoVideoManagerConstants.ScaleNone;
@@ -249,7 +249,8 @@ class Video extends React.Component {
                 'posterStyle',
                 ...Object.keys(status),
             ]),
-            style: StyleSheet.flatten([_STYLES.base, this.props.style]),
+            style: [_STYLES.base, this.props.style],
+            videoStyle: [_STYLES.video, this.props.videoStyle],
             source,
             resizeMode: nativeResizeMode,
             status,
@@ -261,7 +262,7 @@ class Video extends React.Component {
             onFullscreenUpdate: this._nativeOnFullscreenUpdate,
         };
         return (React.createElement(View, { style: nativeProps.style, pointerEvents: "box-none" },
-            React.createElement(ExponentVideo, { ref: this._nativeRef, ...nativeProps, style: _STYLES.video }),
+            React.createElement(ExponentVideo, { ref: this._nativeRef, ...nativeProps, style: nativeProps.videoStyle }),
             this._renderPoster()));
     }
 }

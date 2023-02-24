@@ -9,6 +9,8 @@ const octokit = new Octokit({
   auth: process.env.GITHUB_TOKEN,
 });
 
+const cachedPullRequests = new Map<number, PullRequest>();
+
 // Predefine some params used across almost all requests.
 const owner = 'expo';
 const repo = 'expo';
@@ -24,12 +26,22 @@ export async function getAuthenticatedUserAsync() {
 /**
  * Requests for the pull request object.
  */
-export async function getPullRequestAsync(pull_number: number): Promise<PullRequest> {
+export async function getPullRequestAsync(
+  pull_number: number,
+  cached: boolean = false
+): Promise<PullRequest> {
+  if (cached) {
+    const cachedPullRequest = cachedPullRequests.get(pull_number);
+    if (cachedPullRequest) {
+      return cachedPullRequest;
+    }
+  }
   const { data } = await octokit.pulls.get({
     owner,
     repo,
     pull_number,
   });
+  cachedPullRequests.set(pull_number, data);
   return data;
 }
 
@@ -173,6 +185,31 @@ export async function getIssueAsync(issue_number: number) {
     owner,
     repo,
     issue_number,
+  });
+  return data;
+}
+
+/**
+ * Returns a list of all open issues. Limited to 10 items.
+ */
+export async function listAllOpenIssuesAsync({
+  limit,
+  offset,
+  labels,
+}: {
+  limit?: number;
+  offset?: number;
+  labels?: string;
+} = {}) {
+  const per_page = limit ?? 10;
+  const page = offset ? offset * per_page : 0;
+  const { data } = await octokit.issues.listForRepo({
+    owner,
+    repo,
+    per_page,
+    labels,
+    page,
+    state: 'open',
   });
   return data;
 }

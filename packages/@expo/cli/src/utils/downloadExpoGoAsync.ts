@@ -1,9 +1,13 @@
 import { getExpoHomeDirectory } from '@expo/config/build/getUserState';
 import path from 'path';
+import ProgressBar from 'progress';
+import { gt } from 'semver';
 
 import { getVersionsAsync, SDKVersion } from '../api/getVersions';
+import { Log } from '../log';
 import { downloadAppAsync } from './downloadAppAsync';
 import { CommandError } from './errors';
+import { ora } from './ora';
 import { profile } from './profile';
 import { createProgressBar } from './progress';
 
@@ -31,6 +35,37 @@ const platformSettings: Record<
   },
 };
 
+/**
+ * @internal exposed for testing.
+ * @returns the matching `SDKVersion` object from the Expo API.
+ */
+export async function getExpoGoVersionEntryAsync(sdkVersion: string): Promise<SDKVersion> {
+  const { sdkVersions: versions } = await getVersionsAsync();
+  let version: SDKVersion;
+
+  if (sdkVersion.toUpperCase() === 'UNVERSIONED') {
+    // find the latest version
+    const latestVersionKey = Object.keys(versions).reduce((a, b) => {
+      if (gt(b, a)) {
+        return b;
+      }
+      return a;
+    }, '0.0.0');
+
+    Log.warn(
+      `Downloading the latest Expo Go client (${latestVersionKey}). This will not fully conform to UNVERSIONED.`
+    );
+    version = versions[latestVersionKey];
+  } else {
+    version = versions[sdkVersion];
+  }
+
+  if (!version) {
+    throw new CommandError(`Unable to find a version of Expo Go for SDK ${sdkVersion}`);
+  }
+  return version;
+}
+
 /** Download the Expo Go app from the Expo servers (if only it was this easy for every app). */
 export async function downloadExpoGoAsync(
   platform: keyof typeof platformSettings,
@@ -44,30 +79,26 @@ export async function downloadExpoGoAsync(
 ): Promise<string> {
   const { getFilePath, versionsKey, shouldExtractResults } = platformSettings[platform];
 
-  const bar = createProgressBar('Downloading the Expo Go app [:bar] :percent :etas', {
-    width: 64,
-    total: 100,
-    clear: true,
-    complete: '=',
-    incomplete: ' ',
-  });
+  const spinner = ora({ text: 'Fetching Expo Go', color: 'white' }).start();
 
-  if (!url) {
-    if (!sdkVersion) {
-      throw new CommandError(
-        `Unable to determine which Expo Go version to install (platform: ${platform})`
-      );
-    }
-    const { sdkVersions: versions } = await getVersionsAsync();
+  let bar: ProgressBar | null = null;
 
-    const version = versions[sdkVersion];
-    if (!version) {
-      throw new CommandError(
-        `Unable to find a version of Expo Go for SDK ${sdkVersion} (platform: ${platform})`
-      );
+  try {
+    if (!url) {
+      if (!sdkVersion) {
+        throw new CommandError(
+          `Unable to determine which Expo Go version to install (platform: ${platform})`
+        );
+      }
+
+      const version = await getExpoGoVersionEntryAsync(sdkVersion);
+
+      debug(`Installing Expo Go version for SDK ${sdkVersion} at URL: ${version[versionsKey]}`);
+      url = version[versionsKey] as string;
     }
-    debug(`Installing Expo Go version for SDK ${sdkVersion} at URL: ${version[versionsKey]}`);
-    url = version[versionsKey] as string;
+  } catch (error) {
+    spinner.fail();
+    throw error;
   }
 
   const filename = path.parse(url).name;
@@ -84,14 +115,28 @@ export async function downloadExpoGoAsync(
       cacheDirectory: 'expo-go',
       outputPath,
       extract: shouldExtractResults,
-      onProgress({ progress }) {
-        if (bar) {
-          bar.tick(1, progress);
+      onProgress({ progress, total }) {
+        if (progress && total) {
+          if (!bar) {
+            if (spinner.isSpinning) {
+              spinner.stop();
+            }
+            bar = createProgressBar('Downloading the Expo Go app [:bar] :percent :etas', {
+              width: 64,
+              total: 100,
+              // clear: true,
+              complete: '=',
+              incomplete: ' ',
+            });
+          }
+          bar!.update(progress, total);
         }
       },
     });
     return outputPath;
   } finally {
+    spinner.stop();
+    // @ts-expect-error
     bar?.terminate();
   }
 }

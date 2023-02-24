@@ -129,7 +129,7 @@ class BrightnessModule(
   }
 
   @ExpoMethod
-  fun useSystemBrightnessAsync(promise: Promise) {
+  fun restoreSystemBrightnessAsync(promise: Promise) {
     val activity = currentActivity
     activity.runOnUiThread {
       try {

@@ -6,7 +6,7 @@ import {
   generateCSR,
   convertPrivateKeyPEMToPrivateKey,
   validateSelfSignedCertificate,
-  signStringRSASHA256AndVerify,
+  signBufferRSASHA256AndVerify,
 } from '@expo/code-signing-certificates';
 import { ExpoConfig } from '@expo/config';
 import { getExpoHomeDirectory } from '@expo/config/build/getUserState';
@@ -23,6 +23,7 @@ import * as Log from '../log';
 import { CommandError } from './errors';
 
 export type CodeSigningInfo = {
+  keyId: string;
   privateKey: string;
   certificateForPrivateKey: string;
   /**
@@ -257,6 +258,7 @@ async function getProjectCodeSigningCertificateAsync(
     });
 
   return {
+    keyId: keyid,
     privateKey: privateKeyPEM,
     certificateForPrivateKey: certificatePEM,
     certificateChainForResponse: [],
@@ -330,6 +332,7 @@ function validateStoredDevelopmentExpoRootCertificateCodeSigningInfo(
   // TODO(wschurman): maybe do more validation
 
   return {
+    keyId: 'expo-go',
     certificateChainForResponse: certificatePEMs,
     certificateForPrivateKey: certificatePEMs[0],
     privateKey: privateKeyPEM,
@@ -355,6 +358,7 @@ async function fetchAndCacheNewDevelopmentCodeSigningInfoAsync(
   });
 
   return {
+    keyId: 'expo-go',
     certificateChainForResponse: [developmentSigningCertificate, expoGoIntermediateCertificate],
     certificateForPrivateKey: developmentSigningCertificate,
     privateKey: keyPairPEM.privateKeyPEM,
@@ -369,5 +373,9 @@ export function signManifestString(
 ): string {
   const privateKey = convertPrivateKeyPEMToPrivateKey(codeSigningInfo.privateKey);
   const certificate = convertCertificatePEMToCertificate(codeSigningInfo.certificateForPrivateKey);
-  return signStringRSASHA256AndVerify(privateKey, certificate, stringifiedManifest);
+  return signBufferRSASHA256AndVerify(
+    privateKey,
+    certificate,
+    Buffer.from(stringifiedManifest, 'utf8')
+  );
 }

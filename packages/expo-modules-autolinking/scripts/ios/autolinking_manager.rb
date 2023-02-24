@@ -26,6 +26,8 @@ module Expo
       end
 
       global_flags = @options.fetch(:flags, {})
+      tests_only = @options.fetch(:testsOnly, false)
+      include_tests = @options.fetch(:includeTests, false)
 
       project_directory = Pod::Config.instance.project_root
 
@@ -41,21 +43,29 @@ module Expo
 
             podspec_dir_path = Pathname.new(pod.podspec_dir).relative_path_from(project_directory).to_path
 
+            # Ensure that the dependencies of packages with Swift code use modular headers, otherwise
+            # `pod install` may fail if there is no `use_modular_headers!` declaration or
+            # `:modular_headers => true` is not used for this particular dependency.
+            # The latter require adding transitive dependencies to user's Podfile that we'd rather like to avoid.
+            if package.has_swift_modules_to_link?
+              podspec = get_podspec_for_pod(pod)
+              use_modular_headers_for_dependencies(podspec.all_dependencies)
+            end
+
             pod_options = {
               :path => podspec_dir_path,
               :configuration => package.debugOnly ? ['Debug'] : [] # An empty array means all configurations
             }.merge(global_flags, package.flags)
 
-            if links_for_testing?
-              podspec_file_path = File.join(podspec_dir_path, pod.pod_name + ".podspec")
-              podspec = Pod::Specification.from_file(podspec_file_path)
+            if tests_only || include_tests
+              podspec = podspec || get_podspec_for_pod(pod)
               test_specs_names = podspec.test_specs.map { |test_spec|
                 test_spec.name.delete_prefix(podspec.name + "/")
               }
 
               # Jump to the next package when it doesn't have any test specs (except interfaces, they're required)
               # TODO: Can remove interface check once we move all the interfaces into the core.
-              next if test_specs_names.empty? && !pod.pod_name.end_with?('Interface')
+              next if tests_only && test_specs_names.empty? && !pod.pod_name.end_with?('Interface')
 
               pod_options[:testspecs] = test_specs_names
             end
@@ -93,13 +103,14 @@ module Expo
       @options.fetch(:providerName, Constants::MODULES_PROVIDER_FILE_NAME)
     end
 
-    public def links_for_testing?
-      @options.fetch(:testsOnly, false)
+    # Absolute path to `Pods/Target Support Files/<pods target name>/<modules provider file>` within the project path
+    public def modules_provider_path(target)
+      File.join(target.support_files_dir, modules_provider_name)
     end
 
     # For now there is no need to generate the modules provider for testing.
     public def should_generate_modules_provider?
-      return !links_for_testing?
+      return !@options.fetch(:testsOnly, false)
     end
 
     # privates
@@ -120,19 +131,11 @@ module Expo
       end
     end
 
-    private def node_command_args(command_name)
+    public def base_command_args
       search_paths = @options.fetch(:searchPaths, @options.fetch(:modules_paths, nil))
       ignore_paths = @options.fetch(:ignorePaths, nil)
       exclude = @options.fetch(:exclude, [])
-
-      args = [
-        'node',
-        '--eval',
-        'require(\'expo-modules-autolinking\')(process.argv.slice(1))',
-        command_name,
-        '--platform',
-        'ios'
-      ]
+      args = []
 
       if !search_paths.nil? && !search_paths.empty?
         args.concat(search_paths)
@@ -149,15 +152,49 @@ module Expo
       args
     end
 
+    private def node_command_args(command_name)
+      eval_command_args = [
+        'node',
+        '--no-warnings',
+        '--eval',
+        'require(\'expo-modules-autolinking\')(process.argv.slice(1))',
+        command_name,
+        '--platform',
+        'ios'
+      ]
+      return eval_command_args.concat(base_command_args())
+    end
+
     private def resolve_command_args
       node_command_args('resolve').concat(['--json'])
     end
 
-    private def generate_package_list_command_args(target_path)
+    public def generate_package_list_command_args(target_path)
       node_command_args('generate-package-list').concat([
         '--target',
         target_path
       ])
+    end
+
+    private def get_podspec_for_pod(pod)
+      podspec_file_path = File.join(pod.podspec_dir, pod.pod_name + ".podspec")
+      return Pod::Specification.from_file(podspec_file_path)
+    end
+
+    private def use_modular_headers_for_dependencies(dependencies)
+      dependencies.each { |dependency|
+        # The dependency name might be a subspec like `ReactCommon/turbomodule/core`,
+        # but the modular headers need to be enabled for the entire `ReactCommon` spec anyway,
+        # so we're stripping the subspec path from the dependency name.
+        root_spec_name = dependency.name.partition('/').first
+
+        unless @target_definition.build_pod_as_module?(root_spec_name)
+          UI.info "[Expo] ".blue << "Enabling modular headers for pod #{root_spec_name.green}"
+
+          # This is an equivalent to setting `:modular_headers => true` for the specific dependency.
+          @target_definition.set_use_modular_headers_for_pod(root_spec_name, true)
+        end
+      }
     end
 
   end # class AutolinkingManager

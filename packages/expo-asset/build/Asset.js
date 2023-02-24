@@ -1,10 +1,10 @@
 import { Platform } from 'expo-modules-core';
-import { getAssetByID } from './AssetRegistry';
 import { selectAssetSource } from './AssetSources';
 import * as AssetUris from './AssetUris';
 import * as ImageAssets from './ImageAssets';
 import { getLocalAssetUri } from './LocalAssets';
 import { downloadAsync, IS_ENV_WITH_UPDATES_ENABLED } from './PlatformUtils';
+import { getAssetByID } from './ReactNativeCompatibleAssetsRegistry';
 import resolveAssetSource from './resolveAssetSource';
 // @needsAudit
 /**

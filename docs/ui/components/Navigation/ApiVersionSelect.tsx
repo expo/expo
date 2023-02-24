@@ -1,10 +1,11 @@
 import { css } from '@emotion/react';
 import { borderRadius, iconSize, shadows, spacing, theme, ChevronDownIcon } from '@expo/styleguide';
-import React from 'react';
 
-import { VERSIONS, LATEST_VERSION, BETA_VERSION } from '~/constants/versions';
 import { usePageApiVersion } from '~/providers/page-api-version';
-import { LABEL } from '~/ui/components/Text';
+import versions from '~/public/static/constants/versions.json';
+import { A, LABEL } from '~/ui/components/Text';
+
+const { VERSIONS, LATEST_VERSION, BETA_VERSION } = versions;
 
 // TODO(cedric): move this to a generic select input, so we can reuse it in the color scheme selector
 
@@ -19,7 +20,7 @@ export function ApiVersionSelect() {
     <div css={containerStyle}>
       <label css={labelStyle} htmlFor="api-version-select">
         <LABEL css={labelTextStyle}>{versionToText(version)}</LABEL>
-        <ChevronDownIcon css={labelIconStyle} size={iconSize.small} />
+        <ChevronDownIcon css={labelIconStyle} size={iconSize.sm} />
       </label>
       <select
         id="api-version-select"
@@ -34,7 +35,7 @@ export function ApiVersionSelect() {
       </select>
       {/* Changing versions is a JS only mechanism. To help crawlers find other versions, we add hidden links. */}
       {VERSIONS.map(version => (
-        <a css={crawlerLinkStyle} key={version} href={`/versions/${version}`} />
+        <A css={crawlerLinkStyle} key={version} href={`/versions/${version}`} />
       ))}
     </div>
   );
@@ -45,8 +46,8 @@ function versionToText(version: string): string {
     return 'Unversioned';
   } else if (version === 'latest') {
     return `${versionToText(LATEST_VERSION)} (latest)`;
-  } else if (version === BETA_VERSION) {
-    return `${versionToText(BETA_VERSION)} (beta)`;
+  } else if (BETA_VERSION && version === BETA_VERSION.toString()) {
+    return `${versionToText(BETA_VERSION.toString())} (beta)`;
   }
   return `SDK ${version.substring(1, 3)}`;
 }
@@ -55,8 +56,8 @@ const containerStyle = css({
   position: 'relative',
   background: theme.background.default,
   border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.medium,
-  boxShadow: shadows.input,
+  borderRadius: borderRadius.md,
+  boxShadow: shadows.xs,
   margin: spacing[4],
   padding: `${spacing[2]}px ${spacing[3]}px`,
 });

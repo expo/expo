@@ -7,7 +7,7 @@ import expo.modules.core.interfaces.InternalModule
 
 class FileSystemPackage : BasePackage() {
   override fun createInternalModules(context: Context): List<InternalModule> =
-    listOf<InternalModule>(FilePermissionModule())
+    listOf(FilePermissionModule(), AppDirectoriesModule(context))
 
   override fun createExportedModules(context: Context): List<ExportedModule> =
     listOf<ExportedModule>(FileSystemModule(context))

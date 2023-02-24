@@ -7,8 +7,14 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ViewManager
+import com.reactnativecommunity.slider.ReactSliderPackage
+import com.horcrux.svg.SvgPackage
+import com.reactnativepagerview.PagerViewPackage
 import com.shopify.reactnative.flash_list.ReactNativeFlashListPackage
 import com.shopify.reactnative.skia.RNSkiaPackage
+import com.swmansion.rnscreens.RNScreensPackage
+import com.swmansion.gesturehandler.RNGestureHandlerPackage
+import com.swmansion.gesturehandler.react.RNGestureHandlerModule
 import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
@@ -26,8 +32,6 @@ import org.json.JSONException
 import versioned.host.exp.exponent.modules.api.*
 import versioned.host.exp.exponent.modules.api.cognito.RNAWSCognitoModule
 import versioned.host.exp.exponent.modules.api.components.datetimepicker.RNDateTimePickerPackage
-import versioned.host.exp.exponent.modules.api.components.gesturehandler.react.RNGestureHandlerModule
-import versioned.host.exp.exponent.modules.api.components.gesturehandler.RNGestureHandlerPackage
 import versioned.host.exp.exponent.modules.api.components.lottie.LottiePackage
 import versioned.host.exp.exponent.modules.api.components.maps.MapsPackage
 import versioned.host.exp.exponent.modules.api.components.maskedview.RNCMaskedViewPackage
@@ -35,17 +39,15 @@ import versioned.host.exp.exponent.modules.api.components.picker.RNCPickerPackag
 import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.StripeSdkPackage
 import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementModule
 import versioned.host.exp.exponent.modules.api.components.sharedelement.RNSharedElementPackage
-import versioned.host.exp.exponent.modules.api.components.slider.ReactSliderPackage
-import versioned.host.exp.exponent.modules.api.components.svg.SvgPackage
-import versioned.host.exp.exponent.modules.api.components.pagerview.PagerViewPackage
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewModule
 import versioned.host.exp.exponent.modules.api.components.webview.RNCWebViewPackage
 import versioned.host.exp.exponent.modules.api.netinfo.NetInfoModule
 import versioned.host.exp.exponent.modules.api.notifications.NotificationsModule
 import versioned.host.exp.exponent.modules.api.safeareacontext.SafeAreaContextPackage
-import versioned.host.exp.exponent.modules.api.screens.RNScreensPackage
 import versioned.host.exp.exponent.modules.api.viewshot.RNViewShotModule
 import versioned.host.exp.exponent.modules.internal.DevMenuModule
+import versioned.host.exp.exponent.modules.internal.ExponentAsyncStorageModule
+import versioned.host.exp.exponent.modules.internal.ExponentUnsignedAsyncStorageModule
 import versioned.host.exp.exponent.modules.test.ExponentTestNativeModule
 import versioned.host.exp.exponent.modules.universal.ExpoModuleRegistryAdapter
 import versioned.host.exp.exponent.modules.universal.ScopedModuleRegistryAdapter
@@ -108,6 +110,7 @@ class ExponentPackage : ReactPackage {
       ShakeModule(reactContext),
       KeyboardModule(reactContext)
     )
+    nativeModules.add(if (isVerified) ExponentAsyncStorageModule(reactContext, manifest) else ExponentUnsignedAsyncStorageModule(reactContext))
 
     if (isKernel) {
       // WHEN_VERSIONING_REMOVE_FROM_HERE

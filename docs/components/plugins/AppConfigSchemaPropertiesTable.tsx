@@ -1,8 +1,13 @@
-import MDX from '@mdx-js/runtime';
-import * as React from 'react';
+import { css } from '@emotion/react';
+import { borderRadius, breakpoints, spacing, theme, typography } from '@expo/styleguide';
+import ReactMarkdown from 'react-markdown';
 
-import * as components from '~/common/translate-markdown';
-import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
+import { HeadingType } from '~/common/headingManager';
+import { APIBox } from '~/components/plugins/APIBox';
+import { mdComponents } from '~/components/plugins/api/APISectionUtils';
+import { Callout } from '~/ui/components/Callout';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { P, CALLOUT, CODE, createPermalinkedComponent, BOLD } from '~/ui/components/Text';
 
 type PropertyMeta = {
   regexHuman?: string;
@@ -33,85 +38,97 @@ export type Property = {
 type FormattedProperty = {
   name: string;
   description: string;
-  nestingLevel: number;
+  type?: string;
+  example?: string;
+  expoKit?: string;
+  bareWorkflow?: string;
+  subproperties: FormattedProperty[];
+  parent?: string;
 };
 
 type AppConfigSchemaProps = {
   schema: Record<string, Property>;
 };
 
+const Anchor = createPermalinkedComponent(P, {
+  baseNestingLevel: 3,
+  sidebarType: HeadingType.InlineCode,
+});
+
+const PropertyName = ({ name, nestingLevel }: { name: string; nestingLevel: number }) => (
+  <Anchor level={nestingLevel} data-testid={name} data-heading="true" css={propertyNameStyle}>
+    <CODE css={typography.fontSizes[16]}>{name}</CODE>
+  </Anchor>
+);
+
+const propertyNameStyle = css({ marginBottom: spacing[4] });
+
 export function formatSchema(rawSchema: [string, Property][]) {
   const formattedSchema: FormattedProperty[] = [];
 
   rawSchema.map(property => {
-    appendProperty(formattedSchema, property, 0);
+    appendProperty(formattedSchema, property);
   });
 
   return formattedSchema;
 }
 
-//appends a property and recursivley appends sub-properties
-function appendProperty(
-  formattedSchema: FormattedProperty[],
-  property: [string, Property],
-  _nestingLevel: number
-) {
-  let nestingLevel = _nestingLevel;
-  const propertyKey = property[0];
+function appendProperty(formattedSchema: FormattedProperty[], property: [string, Property]) {
   const propertyValue = property[1];
 
   if (propertyValue.meta && (propertyValue.meta.deprecated || propertyValue.meta.hidden)) {
     return;
   }
 
-  formattedSchema.push({
-    name: nestingLevel
-      ? `<subpropertyAnchor level={${nestingLevel}}><inlineCode>${propertyKey}</inlineCode></subpropertyAnchor>`
-      : `<propertyAnchor level={0}><inlineCode>${propertyKey}</inlineCode></propertyAnchor>`,
-    description: createDescription(property),
-    nestingLevel,
-  });
+  formattedSchema.push(formatProperty(property));
+}
 
-  nestingLevel++;
+function formatProperty(property: [string, Property], parent?: string): FormattedProperty {
+  const propertyKey = property[0];
+  const propertyValue = property[1];
+
+  const subproperties: FormattedProperty[] = [];
 
   if (propertyValue.properties) {
     Object.entries(propertyValue.properties).forEach(subproperty => {
-      appendProperty(formattedSchema, subproperty, nestingLevel);
+      subproperties.push(
+        formatProperty(subproperty, parent ? `${parent}.${propertyKey}` : propertyKey)
+      );
     });
-  } //Note: sub-properties are sometimes nested within "items"
+  } // note: sub-properties are sometimes nested within "items"
   else if (propertyValue.items && propertyValue.items.properties) {
     Object.entries(propertyValue.items.properties).forEach(subproperty => {
-      appendProperty(formattedSchema, subproperty, nestingLevel);
+      subproperties.push(
+        formatProperty(subproperty, parent ? `${parent}.${propertyKey}` : propertyKey)
+      );
     });
   }
+
+  return {
+    name: propertyKey,
+    description: createDescription(property),
+    type: _getType(propertyValue),
+    example: propertyValue.exampleString?.replaceAll('\n', ''),
+    expoKit: propertyValue?.meta?.expoKit,
+    bareWorkflow: propertyValue?.meta?.bareWorkflow,
+    subproperties,
+    parent,
+  };
 }
 
-export function _getType(propertyValue: Property) {
-  if (propertyValue.enum) {
-    return 'enum';
-  } else {
-    return propertyValue.type?.toString().replace(',', ' || ');
-  }
+export function _getType({ enum: enm, type }: Partial<Property>) {
+  return enm ? 'enum' : type?.toString().replace(',', ' || ');
 }
 
 export function createDescription(propertyEntry: [string, Property]) {
-  const propertyValue = propertyEntry[1];
+  const { description, meta } = propertyEntry[1];
 
-  let propertyDescription = `**(${_getType(propertyValue)})**`;
-  if (propertyValue.description) {
-    propertyDescription += ` - ` + propertyValue.description;
+  let propertyDescription = ``;
+  if (description) {
+    propertyDescription += description;
   }
-  if (propertyValue.meta && propertyValue.meta.regexHuman) {
-    propertyDescription += `\n\n` + propertyValue.meta.regexHuman;
-  }
-  if (propertyValue.meta && propertyValue.meta.expoKit) {
-    propertyDescription += `<expokitDetails>${propertyValue.meta.expoKit}</expokitDetails>`;
-  }
-  if (propertyValue.meta && propertyValue.meta.bareWorkflow) {
-    propertyDescription += `<bareworkflowDetails>${propertyValue.meta.bareWorkflow}</bareworkflowDetails>`;
-  }
-  if (propertyValue.exampleString) {
-    propertyDescription += `\n\n>` + propertyValue.exampleString;
+  if (meta && meta.regexHuman) {
+    propertyDescription += `\n\n` + meta.regexHuman;
   }
 
   return propertyDescription;
@@ -122,36 +139,104 @@ const AppConfigSchemaPropertiesTable = ({ schema }: AppConfigSchemaProps) => {
   const formattedSchema = formatSchema(rawSchema);
 
   return (
-    <Table>
-      <TableHead>
-        <Row>
-          <HeaderCell>Property</HeaderCell>
-          <HeaderCell>Description</HeaderCell>
-        </Row>
-      </TableHead>
-      <tbody>
-        {formattedSchema.map(({ name, description, nestingLevel }, index) => (
-          <Row key={index}>
-            <Cell fitContent>
-              <div
-                data-testid={name}
-                style={{
-                  marginLeft: `${nestingLevel * 32}px`,
-                  display: nestingLevel ? 'list-item' : 'block',
-                  listStyleType: nestingLevel % 2 ? 'default' : 'circle',
-                  overflowX: 'visible',
-                }}>
-                <MDX components={components}>{name}</MDX>
-              </div>
-            </Cell>
-            <Cell>
-              <MDX components={components}>{description}</MDX>
-            </Cell>
-          </Row>
-        ))}
-      </tbody>
-    </Table>
+    <>
+      {formattedSchema.map((formattedProperty, index) => (
+        <AppConfigProperty
+          {...formattedProperty}
+          key={`${formattedProperty.name}-${index}`}
+          nestingLevel={0}
+        />
+      ))}
+    </>
   );
 };
+
+const AppConfigProperty = ({
+  name,
+  description,
+  example,
+  expoKit,
+  bareWorkflow,
+  type,
+  nestingLevel,
+  subproperties,
+  parent,
+}: FormattedProperty & { nestingLevel: number }) => (
+  <APIBox css={boxStyle}>
+    <PropertyName name={name} nestingLevel={nestingLevel} />
+    <CALLOUT theme="secondary" data-text="true" css={typeRow}>
+      Type: <CODE>{type || 'undefined'}</CODE>
+      {nestingLevel > 0 && (
+        <>
+          &emsp;&bull;&emsp;Path:{' '}
+          <code css={secondaryCodeLineStyle}>
+            {parent}.{name}
+          </code>
+        </>
+      )}
+    </CALLOUT>
+    <ReactMarkdown components={mdComponents}>{description}</ReactMarkdown>
+    {expoKit && (
+      <Collapsible summary="ExpoKit">
+        <ReactMarkdown components={mdComponents}>{expoKit}</ReactMarkdown>
+      </Collapsible>
+    )}
+    {bareWorkflow && (
+      <Collapsible summary="Bare Workflow">
+        <ReactMarkdown components={mdComponents}>{bareWorkflow}</ReactMarkdown>
+      </Collapsible>
+    )}
+    {example && (
+      <Callout>
+        <BOLD>Example</BOLD>
+        <ReactMarkdown components={mdComponents}>{example}</ReactMarkdown>
+      </Callout>
+    )}
+    <div>
+      {subproperties.length > 0 &&
+        subproperties.map((formattedProperty, index) => (
+          <AppConfigProperty
+            {...formattedProperty}
+            key={`${name}-${index}`}
+            nestingLevel={nestingLevel + 1}
+          />
+        ))}
+    </div>
+  </APIBox>
+);
+
+const boxStyle = css({
+  boxShadow: 'none',
+  marginBottom: 0,
+  borderRadius: 0,
+  borderBottomWidth: 0,
+  paddingBottom: 0,
+
+  '&:first-of-type': {
+    borderTopLeftRadius: borderRadius.md,
+    borderTopRightRadius: borderRadius.md,
+  },
+
+  '&:last-of-type': {
+    borderBottomLeftRadius: borderRadius.md,
+    borderBottomRightRadius: borderRadius.md,
+    marginBottom: spacing[4],
+    borderBottomWidth: 1,
+  },
+
+  [`@media screen and (max-width: ${breakpoints.medium + 124}px)`]: {
+    paddingTop: spacing[4],
+  },
+});
+
+const secondaryCodeLineStyle = css({
+  color: theme.text.secondary,
+  padding: `0 ${spacing[1]}px`,
+  wordBreak: 'break-word',
+});
+
+const typeRow = css({
+  margin: `${spacing[3]}px 0`,
+});
 
 export default AppConfigSchemaPropertiesTable;

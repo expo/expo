@@ -69,7 +69,7 @@ export type SecureStoreOptions = {
   /**
    * Option responsible for enabling the usage of the user authentication methods available on the device while
    * accessing data stored in SecureStore.
-   * - iOS: Equivalent to `kSecAccessControlUserPresence`
+   * - iOS: Equivalent to `kSecAccessControlBiometryCurrentSet`
    * - Android: Equivalent to `setUserAuthenticationRequired(true)` (requires API 23).
    * Complete functionality is unlocked only with a freshly generated key - this would not work in tandem with the `keychainService`
    * value used for the others non-authenticated operations.
@@ -81,7 +81,7 @@ export type SecureStoreOptions = {
   authenticationPrompt?: string;
   /**
    * Specifies when the stored entry is accessible, using iOS's `kSecAttrAccessible` property.
-   * @see Apple's documentation on [keychain item accessibility](https://developer.apple.com/library/content/documentation/Security/Conceptual/keychainServConcepts/02concepts/concepts.html#//apple_ref/doc/uid/TP30000897-CH204-SW18).
+   * @see Apple's documentation on [keychain item accessibility](https://developer.apple.com/library/content/documentation/Security/Conceptual/keychainServConcepts/02concepts/concepts.html).
    * @default SecureStore.WHEN_UNLOCKED
    * @platform ios
    */

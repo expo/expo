@@ -1,6 +1,6 @@
 import { AuthError } from './Errors';
 import { TokenResponse } from './TokenRequest';
-export declare type AuthSessionOptions = {
+export type AuthSessionOptions = {
     /**
      * The URL that points to the sign in page that you would like to open the user to.
      */
@@ -18,7 +18,7 @@ export declare type AuthSessionOptions = {
      */
     showInRecents?: boolean;
     /**
-     * Project name to use for the \`auth.expo.io\` proxy.
+     * Project name to use for the `auth.expo.io` proxy.
      */
     projectNameForProxy?: string;
 };
@@ -31,7 +31,7 @@ export declare type AuthSessionOptions = {
  * - If you call `AuthSession.startAsync()` more than once before the first call has returned, the result is `{ type: 'locked' }`,
  *   because only one `AuthSession` can be in progress at any time.
  */
-export declare type AuthSessionResult = {
+export type AuthSessionResult = {
     /**
      * How the auth completed.
      */
@@ -63,9 +63,9 @@ export declare type AuthSessionResult = {
     url: string;
 };
 /**
- * Options passed to `makeRedirectUriAsync`.
+ * Options passed to `makeRedirectUri`.
  */
-export declare type AuthSessionRedirectUriOptions = {
+export type AuthSessionRedirectUriOptions = {
     /**
      * Optional path to append to a URI. This will not be added to `native`.
      */
@@ -92,10 +92,11 @@ export declare type AuthSessionRedirectUriOptions = {
      * This is useful for testing managed native apps that require a custom URI scheme.
      *
      * @default false
+     * @deprecated This option will be removed in a future release, for more information check [the migration guide](https://expo.fyi/auth-proxy-migration).
      */
     useProxy?: boolean;
     /**
-     * Project name to use for the \`auth.expo.io\` proxy when `useProxy` is true.
+     * Project name to use for the `auth.expo.io` proxy when `useProxy` is `true`.
      */
     projectNameForProxy?: string;
     /**

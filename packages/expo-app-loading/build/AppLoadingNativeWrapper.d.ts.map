@@ -1,1 +1,0 @@
-{"version":3,"file":"AppLoadingNativeWrapper.d.ts","sourceRoot":"","sources":["../src/AppLoadingNativeWrapper.tsx"],"names":[],"mappings":"AACA,OAAO,KAAK,MAAM,OAAO,CAAC;AAE1B,aAAK,KAAK,GAAG;IACX,cAAc,CAAC,EAAE,OAAO,CAAC;CAC1B,CAAC;AAEF,MAAM,CAAC,OAAO,OAAO,UAAW,SAAQ,KAAK,CAAC,SAAS,CAAC,KAAK,CAAC;IAC5D,MAAM,CAAC,YAAY;;MAEjB;gBAEU,KAAK,EAAE,KAAK;IAKxB,oBAAoB;IAapB,MAAM;CAGP"}

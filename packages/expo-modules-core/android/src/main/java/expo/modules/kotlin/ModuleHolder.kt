@@ -11,10 +11,10 @@ import expo.modules.kotlin.exception.MethodNotFoundException
 import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.jni.JavaScriptModuleObject
 import expo.modules.kotlin.modules.Module
-import expo.modules.kotlin.modules.ProcessedModuleDefinition
+import kotlinx.coroutines.launch
 
 class ModuleHolder(val module: Module) {
-  val definition = ProcessedModuleDefinition(module.definition(), this)
+  val definition = module.definition()
 
   val name get() = definition.name
 
@@ -22,7 +22,7 @@ class ModuleHolder(val module: Module) {
    * Cached instance of HybridObject used by CPP to interact with underlying [expo.modules.kotlin.modules.Module] object.
    */
   val jsObject by lazy {
-    JavaScriptModuleObject()
+    JavaScriptModuleObject(name)
       .apply {
         val constants = definition.constantsProvider()
         val convertedConstants = Arguments.makeNativeMap(constants)
@@ -51,7 +51,7 @@ class ModuleHolder(val module: Module) {
     val method = definition.asyncFunctions[methodName]
       ?: throw MethodNotFoundException()
 
-    method.call(args, promise)
+    method.call(this, args, promise)
   }
 
   /**
@@ -80,6 +80,14 @@ class ModuleHolder(val module: Module) {
   fun <Sender, Payload> post(eventName: EventName, sender: Sender, payload: Payload) {
     val listener = definition.eventListeners[eventName] ?: return
     (listener as? EventListenerWithSenderAndPayload<Sender, Payload>)?.call(sender, payload)
+  }
+
+  fun registerContracts() {
+    definition.registerContracts?.let {
+      module.appContext.mainQueue.launch {
+        it.invoke(module.appContext)
+      }
+    }
   }
 
   fun cleanUp() {

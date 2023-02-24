@@ -2,7 +2,7 @@
 
 #import <Foundation/Foundation.h>
 #import <ExpoModulesCore/EXInternalModule.h>
-#import <ExpoModulesCore/EXBarCodeScannerProviderInterface.h>
+#import <ExpoModulesCore/EXBarcodeScannerProviderInterface.h>
 
 @interface EXBarCodeScannerProvider : NSObject <EXInternalModule, EXBarCodeScannerProviderInterface>
 

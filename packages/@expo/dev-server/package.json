@@ -1,6 +1,6 @@
 {
   "name": "@expo/dev-server",
-  "version": "0.1.117",
+  "version": "0.2.2",
   "description": "Development servers for starting React Native projects",
   "main": "build/MetroDevServer.js",
   "scripts": {
@@ -31,12 +31,15 @@
   ],
   "dependencies": {
     "@expo/bunyan": "4.0.0",
-    "@expo/metro-config": "~0.3.18",
+    "@expo/metro-config": "~0.7.0",
     "@expo/osascript": "2.0.33",
-    "body-parser": "1.19.0",
+    "@expo/spawn-async": "^1.5.0",
+    "body-parser": "^1.20.1",
     "chalk": "^4.0.0",
     "connect": "^3.7.0",
     "fs-extra": "9.0.0",
+    "is-docker": "^2.0.0",
+    "is-wsl": "^2.1.1",
     "node-fetch": "^2.6.0",
     "open": "^8.3.0",
     "resolve-from": "^5.0.0",

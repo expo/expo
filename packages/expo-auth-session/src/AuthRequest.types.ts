@@ -82,10 +82,11 @@ export type AuthRequestPromptOptions = Omit<WebBrowserOpenOptions, 'windowFeatur
   /**
    * Should the authentication request use the Expo proxy service `auth.expo.io`.
    * @default false
+   * @deprecated This option will be removed in a future release, for more information check [the migration guide](https://expo.fyi/auth-proxy-migration).
    */
   useProxy?: boolean;
   /**
-   * Project name to use for the \`auth.expo.io\` proxy when `useProxy` is true.
+   * Project name to use for the `auth.expo.io` proxy when `useProxy` is `true`.
    */
   projectNameForProxy?: string;
   /**
@@ -124,7 +125,7 @@ export interface AuthRequestConfig {
   clientId: string;
   /**
    * After completing an interaction with a resource owner the
-   * server will redirect to this URI. Learn more about [linking in Expo](https://docs.expo.dev/versions/latest/workflow/linking/).
+   * server will redirect to this URI. Learn more about [linking in Expo](/guides/linking/).
    *
    * [Section 3.1.2](https://tools.ietf.org/html/rfc6749#section-3.1.2)
    */

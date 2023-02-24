@@ -1,4 +1,4 @@
-import { ConfigPlugin, createRunOncePlugin, withPlugins } from '@expo/config-plugins';
+import { ConfigPlugin, createRunOncePlugin, withPlugins } from 'expo/config-plugins';
 
 import { withAndroidRootViewBackgroundColor } from './withAndroidRootViewBackgroundColor';
 import { withAndroidUserInterfaceStyle } from './withAndroidUserInterfaceStyle';

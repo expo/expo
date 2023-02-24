@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "46.0.1",
+  "version": "48.0.1",
   "description": "The Expo SDK",
   "main": "build/Expo.js",
   "module": "build/Expo.js",
@@ -24,6 +24,10 @@
     "bundledNativeModules.json",
     "expo-module.config.json",
     "metro-config.js",
+    "config.js",
+    "config.d.ts",
+    "config-plugins.js",
+    "config-plugins.d.ts",
     "react-native.config.js",
     "requiresExtraSetup.json",
     "tsconfig.base.json"
@@ -54,19 +58,21 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
-    "@babel/runtime": "^7.14.0",
-    "@expo/cli": "0.2.6",
+    "@babel/runtime": "^7.20.0",
+    "@expo/cli": "0.6.1",
     "@expo/vector-icons": "^13.0.0",
-    "babel-preset-expo": "~9.2.0",
+    "@expo/config-plugins": "6.0.0",
+    "@expo/config": "8.0.1",
+    "babel-preset-expo": "~9.3.0",
     "cross-spawn": "^6.0.5",
-    "expo-application": "~4.2.2",
-    "expo-asset": "~8.6.1",
-    "expo-constants": "~13.2.3",
-    "expo-file-system": "~14.1.0",
-    "expo-font": "~10.2.0",
-    "expo-keep-awake": "~10.2.0",
-    "expo-modules-autolinking": "0.10.1",
-    "expo-modules-core": "0.11.3",
+    "expo-application": "~5.1.1",
+    "expo-asset": "~8.9.0",
+    "expo-constants": "~14.2.1",
+    "expo-file-system": "~15.2.2",
+    "expo-font": "~11.1.1",
+    "expo-keep-awake": "~12.0.1",
+    "expo-modules-autolinking": "1.1.2",
+    "expo-modules-core": "1.2.2",
     "fbemitter": "^3.0.0",
     "getenv": "^1.0.0",
     "invariant": "^2.2.4",
@@ -75,19 +81,15 @@
     "pretty-format": "^26.5.2",
     "uuid": "^3.4.0"
   },
-  "optionalDependencies": {
-    "expo-error-recovery": "~3.2.0"
-  },
   "devDependencies": {
     "@types/fbemitter": "^2.0.32",
     "@types/invariant": "^2.2.33",
     "@types/react": "~18.0.14",
-    "@types/react-native": "~0.69.1",
     "@types/react-test-renderer": "^18.0.0",
     "@types/uuid": "^3.4.7",
-    "expo-module-scripts": "^2.0.0",
-    "react": "18.0.0",
-    "react-dom": "18.0.0",
-    "react-native": "0.69.3"
+    "expo-module-scripts": "^3.0.7",
+    "react": "18.2.0",
+    "react-dom": "18.2.0",
+    "react-native": "0.71.3"
   }
 }

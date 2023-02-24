@@ -7,6 +7,12 @@
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoaderTask";
@@ -23,6 +29,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 @property (nonatomic, strong) id<EXUpdatesAppLauncher> finalizedLauncher;
 @property (nonatomic, strong) EXUpdatesEmbeddedAppLoader *embeddedAppLoader;
 @property (nonatomic, strong) EXUpdatesRemoteAppLoader *remoteAppLoader;
+@property (nonatomic, strong) EXUpdatesLogger *logger;
 
 @property (nonatomic, strong) NSTimer *timer;
 @property (nonatomic, assign) BOOL isRunning;
@@ -35,6 +42,25 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 
 @end
 
+/**
+ * Controlling class that handles the complex logic that needs to happen each time the app is cold
+ * booted. From a high level, this class does the following:
+ *
+ * - Immediately starts an instance of EXUpdatesEmbeddedAppLoader to load the embedded update into
+ *   SQLite. This does nothing if SQLite already has the embedded update or a newer one, but we have
+ *   to do this on each cold boot, as we have no way of knowing if a new build was just installed
+ *   (which could have a new embedded update).
+ * - If the app is configured for automatic update downloads (most apps), starts a timer based on
+ *   the `launchWaitMs` value in EXUpdatesConfig.
+ * - Again if the app is configured for automatic update downloads, starts an instance of
+ *   EXUpdatesRemoteAppLoader to check for and download a new update if there is one.
+ * - Once the download succeeds, fails, or the timer runs out (whichever happens first), creates an
+ *   instance of EXUpdatesAppLauncherWithDatabase and signals that the app is ready to be launched
+ *   with the newest update available locally at that time (which may not be the newest update if
+ *   the download is still in progress).
+ * - If the download succeeds or fails after this point, fires a callback which causes an event to
+ *   be sent to JS.
+ */
 @implementation EXUpdatesAppLoaderTask
 
 - (instancetype)initWithConfig:(EXUpdatesConfig *)config
@@ -52,6 +78,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
     _isUpToDate = NO;
     _delegateQueue = delegateQueue;
     _loaderTaskQueue = dispatch_queue_create("expo.loader.LoaderTaskQueue", DISPATCH_QUEUE_SERIAL);
+    _logger = [EXUpdatesLogger new];
   }
   return self;
 }
@@ -59,30 +86,36 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 - (void)start
 {
   if (!_config.isEnabled) {
+    NSString *errorMessage = @"EXUpdatesAppLoaderTask was passed a configuration object with updates disabled. You should load updates from an embedded source rather than calling EXUpdatesAppLoaderTask, or enable updates in the configuration.";
+    [self->_logger error:errorMessage code:EXUpdatesErrorCodeUpdateFailedToLoad];
     dispatch_async(_delegateQueue, ^{
       [self->_delegate appLoaderTask:self
                   didFinishWithError:[NSError errorWithDomain:EXUpdatesAppLoaderTaskErrorDomain code:1030 userInfo:@{
-                    NSLocalizedDescriptionKey: @"EXUpdatesAppLoaderTask was passed a configuration object with updates disabled. You should load updates from an embedded source rather than calling EXUpdatesAppLoaderTask, or enable updates in the configuration."
+                    NSLocalizedDescriptionKey: errorMessage
                   }]];
     });
     return;
   }
 
   if (!_config.updateUrl) {
+    NSString *errorMessage = @"EXUpdatesAppLoaderTask was passed a configuration object with a null URL. You must pass a nonnull URL in order to use EXUpdatesAppLoaderTask to load updates.";
+    [self->_logger error:errorMessage code:EXUpdatesErrorCodeUpdateFailedToLoad];
     dispatch_async(_delegateQueue, ^{
       [self->_delegate appLoaderTask:self
                   didFinishWithError:[NSError errorWithDomain:EXUpdatesAppLoaderTaskErrorDomain code:1030 userInfo:@{
-                    NSLocalizedDescriptionKey: @"EXUpdatesAppLoaderTask was passed a configuration object with a null URL. You must pass a nonnull URL in order to use EXUpdatesAppLoaderTask to load updates."
+                    NSLocalizedDescriptionKey:errorMessage
                   }]];
     });
     return;
   }
 
   if (!_directory) {
+    NSString *errorMessage = @"EXUpdatesAppLoaderTask directory must be nonnull.";
+    [self->_logger error:errorMessage code:EXUpdatesErrorCodeUpdateFailedToLoad];
     dispatch_async(_delegateQueue, ^{
       [self->_delegate appLoaderTask:self
                   didFinishWithError:[NSError errorWithDomain:EXUpdatesAppLoaderTaskErrorDomain code:1030 userInfo:@{
-                    NSLocalizedDescriptionKey: @"EXUpdatesAppLoaderTask directory must be nonnull."
+                    NSLocalizedDescriptionKey: errorMessage
                   }]];
     });
     return;
@@ -106,7 +139,8 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
         if (!shouldCheckForUpdate) {
           [self _finishWithError:error];
         }
-        NSLog(@"Failed to launch embedded or launchable update: %@", error.localizedDescription);
+        [self->_logger error:[NSString stringWithFormat:@"Failed to launch embedded or launchable update: %@", error.localizedDescription]
+                        code:EXUpdatesErrorCodeUpdateFailedToLoad];
       } else {
         if (self->_delegate &&
             ![self->_delegate appLoaderTask:self didLoadCachedUpdate:self->_candidateLauncher.launchedUpdate]) {
@@ -145,7 +179,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 
   if (_delegate) {
     dispatch_async(_delegateQueue, ^{
-      if (self->_isReadyToLaunch && (self->_finalizedLauncher.launchAssetUrl || self->_finalizedLauncher.launchedUpdate.status == EXUpdatesUpdateStatusDevelopment)) {
+      if (self->_isReadyToLaunch && (self->_finalizedLauncher.launchAssetUrl || self->_finalizedLauncher.launchedUpdate.status == EXUpdatesUpdateStatusStatusDevelopment)) {
         [self->_delegate appLoaderTask:self didFinishWithLauncher:self->_finalizedLauncher isUpToDate:self->_isUpToDate];
       } else {
         [self->_delegate appLoaderTask:self didFinishWithError:error ?: [NSError errorWithDomain:EXUpdatesAppLoaderTaskErrorDomain code:1031 userInfo:@{

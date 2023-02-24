@@ -42,13 +42,15 @@ void JavaScriptModuleObject::registerNatives() {
 }
 
 std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &runtime) {
-  if (jsiObject == nullptr) {
-    auto hostObject = std::make_shared<JavaScriptModuleObject::HostObject>(this);
-    jsiObject = std::make_shared<jsi::Object>(
-      jsi::Object::createFromHostObject(runtime, hostObject));
+  if (auto object = jsiObject.lock()) {
+    return object;
   }
 
-  return jsiObject;
+  auto hostObject = std::make_shared<JavaScriptModuleObject::HostObject>(this);
+  auto object = std::make_shared<jsi::Object>(
+    jsi::Object::createFromHostObject(runtime, hostObject));
+  jsiObject = object;
+  return object;
 }
 
 void JavaScriptModuleObject::exportConstants(
@@ -65,18 +67,18 @@ void JavaScriptModuleObject::exportConstants(
 void JavaScriptModuleObject::registerSyncFunction(
   jni::alias_ref<jstring> name,
   jint args,
-  jni::alias_ref<jni::JArrayInt> desiredTypes,
+  jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
   std::string cName = name->toStdString();
-  std::unique_ptr<int[]> types = desiredTypes->getRegion(0, args);
 
   methodsMetadata.try_emplace(
     cName,
+    longLivedObjectCollection_,
     cName,
     args,
     false,
-    std::move(types),
+    jni::make_local(expectedArgTypes),
     jni::make_global(body)
   );
 }
@@ -84,41 +86,43 @@ void JavaScriptModuleObject::registerSyncFunction(
 void JavaScriptModuleObject::registerAsyncFunction(
   jni::alias_ref<jstring> name,
   jint args,
-  jni::alias_ref<jni::JArrayInt> desiredTypes,
+  jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
 ) {
-  auto cName = name->toStdString();
-  std::unique_ptr<int[]> types = desiredTypes->getRegion(0, args);
+  std::string cName = name->toStdString();
 
   methodsMetadata.try_emplace(
     cName,
+    longLivedObjectCollection_,
     cName,
     args,
     true,
-    std::move(types),
+    jni::make_local(expectedArgTypes),
     jni::make_global(body)
   );
 }
 
 void JavaScriptModuleObject::registerProperty(
   jni::alias_ref<jstring> name,
-  jint desiredType,
+  jni::alias_ref<ExpectedType> expectedArgType,
   jni::alias_ref<JNIFunctionBody::javaobject> getter,
   jni::alias_ref<JNIFunctionBody::javaobject> setter
 ) {
   auto cName = name->toStdString();
-  std::unique_ptr<int[]> types = std::make_unique<int[]>(1);
-  types[0] = desiredType;
 
   auto getterMetadata = MethodMetadata(
+    longLivedObjectCollection_,
     cName,
     0,
     false,
-    std::make_unique<int[]>(0),
+    std::vector<std::unique_ptr<AnyType>>(),
     jni::make_global(getter)
   );
 
+  auto types = std::vector<std::unique_ptr<AnyType>>();
+  types.push_back(std::make_unique<AnyType>(jni::make_local(expectedArgType)));
   auto setterMetadata = MethodMetadata(
+    longLivedObjectCollection_,
     cName,
     1,
     false,
@@ -136,6 +140,18 @@ void JavaScriptModuleObject::registerProperty(
 
 JavaScriptModuleObject::HostObject::HostObject(
   JavaScriptModuleObject *jsModule) : jsModule(jsModule) {}
+
+/**
+ * Clears all the JSI references held by the `JavaScriptModuleObject`.
+ */
+JavaScriptModuleObject::HostObject::~HostObject() {
+  jObjectRef.reset();
+  jsModule->jsiObject.reset();
+  jsModule->methodsMetadata.clear();
+  jsModule->constants.clear();
+  jsModule->properties.clear();
+  jsModule->longLivedObjectCollection_->clear();
+}
 
 jsi::Value JavaScriptModuleObject::HostObject::get(jsi::Runtime &runtime,
                                                    const jsi::PropNameID &name) {
@@ -215,5 +231,10 @@ std::vector<jsi::PropNameID> JavaScriptModuleObject::HostObject::getPropertyName
   );
 
   return result;
+}
+
+JavaScriptModuleObject::JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis)
+  : javaPart_(jni::make_global(jThis)) {
+  longLivedObjectCollection_ = std::make_shared<react::LongLivedObjectCollection>();
 }
 } // namespace expo

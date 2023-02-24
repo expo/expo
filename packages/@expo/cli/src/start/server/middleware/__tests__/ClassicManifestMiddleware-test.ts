@@ -1,9 +1,9 @@
 import { asMock } from '../../../../__tests__/asMock';
+import { ApiV2Error } from '../../../../api/rest/client';
 import { APISettings } from '../../../../api/settings';
 import { signClassicExpoGoManifestAsync } from '../../../../api/signManifest';
 import { getUserAsync } from '../../../../api/user/user';
 import * as Log from '../../../../log';
-import { CommandError } from '../../../../utils/errors';
 import { ClassicManifestMiddleware } from '../ClassicManifestMiddleware';
 import { ServerRequest } from '../server.types';
 
@@ -34,6 +34,9 @@ jest.mock('@expo/config', () => ({
 }));
 jest.mock('../resolveEntryPoint', () => ({
   resolveEntryPoint: jest.fn(() => './index.js'),
+  resolveAbsoluteEntryPoint: jest.fn((projectRoot: string) =>
+    require('path').join(projectRoot, './index.js')
+  ),
 }));
 
 const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
@@ -97,7 +100,7 @@ describe('_fetchComputedManifestStringAsync', () => {
     middleware._getManifestStringAsync = jest
       .fn()
       .mockImplementationOnce(() => {
-        throw new CommandError('UNAUTHORIZED_ERROR');
+        throw new ApiV2Error({ message: '...', code: 'UNAUTHORIZED' });
       })
       .mockImplementationOnce(async () => 'signed-manifest-lol');
 
@@ -125,7 +128,7 @@ describe('_fetchComputedManifestStringAsync', () => {
     middleware._getManifestStringAsync = jest
       .fn()
       .mockImplementationOnce(() => {
-        throw new CommandError('ENOTFOUND');
+        throw new ApiV2Error({ message: '...', code: 'ENOTFOUND' });
       })
       .mockImplementationOnce(async () => 'signed-manifest-lol');
 
@@ -172,7 +175,7 @@ describe('_fetchComputedManifestStringAsync', () => {
     const middleware = new ClassicManifestMiddleware('/', {} as any);
 
     middleware._getManifestStringAsync = jest.fn(() => {
-      throw new CommandError('ENOTFOUND');
+      throw new ApiV2Error({ message: '...', code: 'ENOTFOUND' });
     });
 
     const invokeMethod = async (owner = 'bacon') => {
@@ -197,7 +200,7 @@ describe('_fetchComputedManifestStringAsync', () => {
     expect(Log.warn).toBeCalledTimes(1);
 
     middleware._getManifestStringAsync = jest.fn(() => {
-      throw new CommandError('UNAUTHORIZED_ERROR');
+      throw new ApiV2Error({ message: '...', code: 'UNAUTHORIZED' });
     });
 
     // Call again but with a different error.
@@ -213,6 +216,30 @@ describe('_fetchComputedManifestStringAsync', () => {
     // Should log a new error...
     expect(Log.warn).toBeCalledTimes(3);
     expect(Log.warn).toHaveBeenNthCalledWith(3, expect.stringMatching(/@other-bacon/));
+  });
+});
+
+describe('_getManifestResponseAsync', () => {
+  // Regression
+  it('returns Exponent-Server header as json string', async () => {
+    const middleware = new ClassicManifestMiddleware('/', {
+      constructUrl: (options) => options?.hostname || 'localhost',
+    });
+
+    middleware._getManifestStringAsync = jest.fn(async () => {
+      return 'signed-manifest-lol';
+    });
+
+    const response = await middleware._getManifestResponseAsync({
+      acceptSignature: true,
+      hostname: 'localhost',
+      platform: 'android',
+    });
+
+    const header = response.headers.get('Exponent-Server');
+
+    expect(typeof header).toBe('string');
+    expect(() => JSON.parse(header as string)).not.toThrow();
   });
 });
 

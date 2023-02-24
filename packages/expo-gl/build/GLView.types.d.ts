@@ -1,11 +1,11 @@
 import { Component, ComponentClass } from 'react';
 import { ViewProps } from 'react-native';
-export declare type SurfaceCreateEvent = {
+export type SurfaceCreateEvent = {
     nativeEvent: {
         exglCtxId: number;
     };
 };
-export declare type SnapshotOptions = {
+export type SnapshotOptions = {
     /**
      * Whether to flip the snapshot vertically.
      * @default false
@@ -40,7 +40,7 @@ export declare type SnapshotOptions = {
      */
     compress?: number;
 };
-export declare type GLSnapshot = {
+export type GLSnapshot = {
     /**
      * URI to the snapshot.
      */
@@ -64,8 +64,8 @@ export interface ExpoWebGLRenderingContext extends WebGL2RenderingContext {
     flushEXP(): void;
     __expoSetLogging(option: GLLoggingOption): void;
 }
-export declare type ComponentOrHandle = null | number | Component<any, any> | ComponentClass<any>;
-export declare type GLViewProps = {
+export type ComponentOrHandle = null | number | Component<any, any> | ComponentClass<any>;
+export type GLViewProps = {
     /**
      * A function that will be called when the OpenGL ES context is created.
      * The function is passed a single argument `gl` that extends a [WebGLRenderingContext](https://www.khronos.org/registry/webgl/specs/latest/1.0/#5.14) interface.

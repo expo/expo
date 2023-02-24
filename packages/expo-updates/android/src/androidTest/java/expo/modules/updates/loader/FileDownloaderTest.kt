@@ -40,7 +40,7 @@ class FileDownloaderTest {
       "usesLegacyManifest" to true
     )
     val config = UpdatesConfiguration(null, configMap)
-    val actual = FileDownloader.createRequestForManifest(config, null, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(config, null, context)
     Assert.assertNull(actual.header("Cache-Control"))
   }
 
@@ -52,7 +52,7 @@ class FileDownloaderTest {
       "usesLegacyManifest" to false
     )
     val config = UpdatesConfiguration(null, configMap)
-    val actual = FileDownloader.createRequestForManifest(config, null, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(config, null, context)
     Assert.assertNull(actual.header("Cache-Control"))
   }
 
@@ -69,12 +69,15 @@ class FileDownloaderTest {
       put("expo-string", "test")
       put("expo-number", 47.5)
       put("expo-boolean", true)
+      put("expo-null", JSONObject.NULL)
     }
 
-    val actual = FileDownloader.createRequestForManifest(config, extraHeaders, context)
+    // manifest extraHeaders should have their values coerced to strings
+    val actual = FileDownloader.createRequestForRemoteUpdate(config, extraHeaders, context)
     Assert.assertEquals("test", actual.header("expo-string"))
     Assert.assertEquals("47.5", actual.header("expo-number"))
     Assert.assertEquals("true", actual.header("expo-boolean"))
+    Assert.assertEquals("null", actual.header(("expo-null")))
   }
 
   @Test
@@ -94,7 +97,7 @@ class FileDownloaderTest {
     val extraHeaders = JSONObject()
     extraHeaders.put("expo-platform", "ios")
 
-    val actual = FileDownloader.createRequestForManifest(config, extraHeaders, context)
+    val actual = FileDownloader.createRequestForRemoteUpdate(config, extraHeaders, context)
     Assert.assertEquals("android", actual.header("expo-platform"))
     Assert.assertEquals("custom", actual.header("expo-updates-environment"))
   }
@@ -121,6 +124,36 @@ class FileDownloaderTest {
     val actual = FileDownloader.createRequestForAsset(assetEntity, config, context)
     Assert.assertEquals("android", actual.header("expo-platform"))
     Assert.assertEquals("custom", actual.header("expo-updates-environment"))
+  }
+
+  @Test
+  @Throws(JSONException::class)
+  fun testAssetExtraHeaders_ObjectTypes() {
+    val configMap = mapOf<String, Any>(
+      "updateUrl" to Uri.parse("https://u.expo.dev/00000000-0000-0000-0000-000000000000"),
+      "runtimeVersion" to "1.0",
+    )
+
+    val config = UpdatesConfiguration(null, configMap)
+
+    val extraHeaders = JSONObject().apply {
+      put("expo-string", "test")
+      put("expo-number", 47.5)
+      put("expo-boolean", true)
+      put("expo-null", JSONObject.NULL)
+    }
+
+    val assetEntity = AssetEntity("test", "jpg").apply {
+      url = Uri.parse("https://example.com")
+      extraRequestHeaders = extraHeaders
+    }
+
+    // assetRequestHeaders should have their values coerced to strings
+    val actual = FileDownloader.createRequestForAsset(assetEntity, config, context)
+    Assert.assertEquals("test", actual.header("expo-string"))
+    Assert.assertEquals("47.5", actual.header("expo-number"))
+    Assert.assertEquals("true", actual.header("expo-boolean"))
+    Assert.assertEquals("null", actual.header("expo-null"))
   }
 
   @Test
@@ -187,7 +220,7 @@ class FileDownloaderTest {
     var error: Exception? = null
     var didSucceed = false
 
-    FileDownloader(client).downloadAsset(
+    FileDownloader(context, client).downloadAsset(
       assetEntity, File(context.cacheDir, "test"), config, context,
       object : FileDownloader.AssetDownloadCallback {
         override fun onFailure(e: Exception, assetEntity: AssetEntity) {
@@ -235,7 +268,7 @@ class FileDownloaderTest {
     var error: Exception? = null
     var didSucceed = false
 
-    FileDownloader(client).downloadAsset(
+    FileDownloader(context, client).downloadAsset(
       assetEntity, File(context.cacheDir, "test"), config, context,
       object : FileDownloader.AssetDownloadCallback {
         override fun onFailure(e: Exception, assetEntity: AssetEntity) {

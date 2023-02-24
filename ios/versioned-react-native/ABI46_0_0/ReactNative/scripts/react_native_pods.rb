@@ -383,7 +383,7 @@ def get_react_codegen_spec(options={})
   end
 
   folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
-  folly_version = '2021.06.28.00-v2'
+  folly_version = '2021.07.22.00'
   boost_version = '1.76.0'
   boost_compiler_flags = '-Wno-documentation'
 
@@ -489,7 +489,7 @@ def get_react_codegen_script_phases(options={})
     'input_files' => input_files,
     'show_env_vars_in_log': true,
     'output_files': ["${DERIVED_FILE_DIR}/react-codegen.log"],
-    'script': get_script_phases_with_codegen_discovery(
+    'script': get_script_phases_with_codegen_discovery_ABI46_0_0(
       react_native_path: react_native_path,
       relative_app_root: relative_app_root,
       relative_config_file_dir: relative_config_file_dir,
@@ -655,7 +655,7 @@ def use_react_native_codegen_ABI46_0_0!(spec, options={})
     :input_files => input_files + env_files, # This also needs to be relative to Xcode
     :output_files => ["${DERIVED_FILE_DIR}/codegen-#{library_name}.log"].concat(generated_files.map { |filename| "${PODS_TARGET_SRCROOT}/#{filename}"} ),
     # The final generated files will be created when this script is invoked at Xcode build time.
-    :script => get_script_phases_no_codegen_discovery(
+    :script => get_script_phases_no_codegen_discovery_ABI46_0_0(
       react_native_path: react_native_path,
       codegen_output_dir: $ABI46_0_0CODEGEN_OUTPUT_DIR,
       codegen_module_dir: $CODEGEN_MODULE_DIR,

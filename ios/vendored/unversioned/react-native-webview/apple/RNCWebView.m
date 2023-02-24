@@ -64,7 +64,7 @@ NSString *const CUSTOM_SELECTOR = @"_CUSTOM_SELECTOR_";
 @end
 #endif // TARGET_OS_OSX
 
-@interface RNCWebView () <WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler,
+@interface RNCWebView () <WKUIDelegate, WKNavigationDelegate, WKScriptMessageHandler, WKHTTPCookieStoreObserver,
 #if !TARGET_OS_OSX
 UIScrollViewDelegate,
 #endif // !TARGET_OS_OSX
@@ -234,6 +234,9 @@ RCTAutoInsetsProtocol>
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
+  if (@available(iOS 11.0, *)) {
+    [self.webView.configuration.websiteDataStore.httpCookieStore removeObserver:self];
+  }
 }
 
 - (void)tappedMenuItem:(NSString *)eventType
@@ -314,6 +317,23 @@ RCTAutoInsetsProtocol>
   }
   return nil;
 }
+
+/**
+ * Enables file input on macos, see https://developer.apple.com/documentation/webkit/wkuidelegate/1641952-webview
+ */
+#if TARGET_OS_OSX
+- (void)webView:(WKWebView *)webView runOpenPanelWithParameters:(WKOpenPanelParameters *)parameters initiatedByFrame:(WKFrameInfo *)frame completionHandler:(void (^)(NSArray<NSURL *> *URLs))completionHandler
+{
+  NSOpenPanel *openPanel = [NSOpenPanel openPanel];
+  openPanel.allowsMultipleSelection = parameters.allowsMultipleSelection;
+  [openPanel beginSheetModalForWindow:webView.window completionHandler:^(NSInteger result) {
+    if (result == NSModalResponseOK)
+      completionHandler(openPanel.URLs);
+    else
+      completionHandler(nil);
+  }];
+}
+#endif //Target_OS_OSX
 
 - (WKWebViewConfiguration *)setUpWkWebViewConfig
 {
@@ -1143,9 +1163,13 @@ RCTAutoInsetsProtocol>
   
   if (_onShouldStartLoadWithRequest) {
     NSMutableDictionary<NSString *, id> *event = [self baseEvent];
+    if (request.mainDocumentURL) {
+      [event addEntriesFromDictionary: @{
+        @"mainDocumentURL": (request.mainDocumentURL).absoluteString,
+      }];
+    }
     [event addEntriesFromDictionary: @{
       @"url": (request.URL).absoluteString,
-      @"mainDocumentURL": (request.mainDocumentURL).absoluteString,
       @"navigationType": navigationTypes[@(navigationType)],
       @"isTopFrame": @(isTopFrame)
     }];
@@ -1323,21 +1347,24 @@ RCTAutoInsetsProtocol>
 - (void)webView:(WKWebView *)webView
 didFinishNavigation:(WKNavigation *)navigation
 {
+  if (_ignoreSilentHardwareSwitch) {
+    [self forceIgnoreSilentHardwareSwitch:true];
+  }
+
+  if (_onLoadingFinish) {
+    _onLoadingFinish([self baseEvent]);
+  }
+}
+
+- (void)cookiesDidChangeInCookieStore:(WKHTTPCookieStore *)cookieStore
+{
   if(_sharedCookiesEnabled && @available(iOS 11.0, *)) {
     // Write all cookies from WKWebView back to sharedHTTPCookieStorage
-    [webView.configuration.websiteDataStore.httpCookieStore getAllCookies:^(NSArray* cookies) {
+    [cookieStore getAllCookies:^(NSArray* cookies) {
       for (NSHTTPCookie *cookie in cookies) {
         [[NSHTTPCookieStorage sharedHTTPCookieStorage] setCookie:cookie];
       }
     }];
-  }
-  
-  if (_ignoreSilentHardwareSwitch) {
-    [self forceIgnoreSilentHardwareSwitch:true];
-  }
-  
-  if (_onLoadingFinish) {
-    _onLoadingFinish([self baseEvent]);
   }
 }
 
@@ -1555,7 +1582,9 @@ didFinishNavigation:(WKNavigation *)navigation
       if(!_incognito && !_cacheEnabled) {
         wkWebViewConfig.websiteDataStore = [WKWebsiteDataStore nonPersistentDataStore];
       }
-      [self syncCookiesToWebView:nil];
+      [self syncCookiesToWebView:^{
+        [wkWebViewConfig.websiteDataStore.httpCookieStore addObserver:self];
+      }];
     } else {
       NSMutableString *script = [NSMutableString string];
       

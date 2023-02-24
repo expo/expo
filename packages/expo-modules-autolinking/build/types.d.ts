@@ -1,5 +1,5 @@
 import { ExpoModuleConfig } from './ExpoModuleConfig';
-export declare type SupportedPlatform = 'ios' | 'android' | 'web';
+export type SupportedPlatform = 'ios' | 'android' | 'web';
 export interface SearchOptions {
     searchPaths: string[];
     ignorePaths?: string[] | null;
@@ -21,13 +21,13 @@ export interface PatchReactImportsOptions {
     podsRoot: string;
     dryRun: boolean;
 }
-export declare type PackageRevision = {
+export type PackageRevision = {
     path: string;
     version: string;
     config?: ExpoModuleConfig;
     duplicates?: PackageRevision[];
 };
-export declare type SearchResults = {
+export type SearchResults = {
     [moduleName: string]: PackageRevision;
 };
 export interface ModuleAndroidProjectInfo {
@@ -53,7 +53,7 @@ export interface ModuleDescriptorIos {
     reactDelegateHandlers: string[];
     debugOnly: boolean;
 }
-export declare type ModuleDescriptor = ModuleDescriptorAndroid | ModuleDescriptorIos;
+export type ModuleDescriptor = ModuleDescriptorAndroid | ModuleDescriptorIos;
 /**
  * Represents a raw config from `expo-module.json`.
  */

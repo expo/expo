@@ -1,3 +1,5 @@
+apply plugin: 'kotlin-kapt'
+
 buildscript {
   // Simple helper that allows the root project to override versions declared by this library.
   ext.safeExtGet = { prop, fallback ->
@@ -17,7 +19,7 @@ apply plugin: 'com.android.application'
 apply plugin: 'kotlin-android'
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_11
@@ -31,11 +33,11 @@ android {
   defaultConfig {
     applicationId 'host.exp.exponent'
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 31)
+    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     // ADD VERSIONS HERE
     // BEGIN VERSIONS
-    versionCode 173
-    versionName '2.25.1'
+    versionCode 183
+    versionName '2.28.0'
     // END VERSIONS
 
     multiDexEnabled true
@@ -73,8 +75,7 @@ android {
       }
     }
   }
-  // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
-  // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
+
   flavorDimensions "versioning"
   productFlavors {
     versioned {
@@ -87,8 +88,6 @@ android {
       manifestPlaceholders = [appLabel: "@string/unversioned_app_name"]
     }
   }
-  // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
-  // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
   // `productFlavors` must be defined before this block
   defaultConfig {
@@ -106,12 +105,8 @@ android {
   packagingOptions {
     // libfbjni.so is prebuilt library shared between all ABIs
     pickFirst "lib/**/libfbjni.so"
-  }
-}
-
-configurations.all {
-  resolutionStrategy {
-    force 'org.webkit:android-jsc:r245459'
+    // AGP will give priority of libc++_shared coming from App modules.
+    pickFirst "**/libc++_shared.so"
   }
 }
 
@@ -123,23 +118,11 @@ dependencies {
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${safeExtGet('kotlinVersion', '1.6.10')}"
 
   // Our dependencies
-  implementation ('androidx.appcompat:appcompat:1.3.1') {
-    // Workaround for https://github.com/expo/expo/issues/17372
-    // Remove this version pinning when we drop sdk 44
-    version {
-      strictly '1.3.1'
-    }
-  }
+  implementation ('androidx.appcompat:appcompat:1.4.1')
 
   // Our dependencies from ExpoView
   // DON'T ADD ANYTHING HERE THAT ISN'T IN EXPOVIEW. ONLY COPY THINGS FROM EXPOVIEW TO HERE.
-  implementation ('androidx.appcompat:appcompat:1.3.1') {
-    // Workaround for https://github.com/expo/expo/issues/17372
-    // Remove this version pinning when we drop sdk 44
-    version {
-      strictly '1.3.1'
-    }
-  }
+  implementation ('androidx.appcompat:appcompat:1.4.1')
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   implementation 'com.jakewharton:butterknife:10.2.1'
   implementation 'de.greenrobot:eventbus:2.4.0'
@@ -157,7 +140,6 @@ dependencies {
   implementation 'me.leolin:ShortcutBadger:1.1.4@aar'
   implementation 'com.github.CanHub:Android-Image-Cropper:1.1.1'
   implementation 'commons-codec:commons-codec:1.10'
-  implementation 'com.segment.analytics.android:analytics:4.3.0'
   implementation 'com.google.zxing:core:3.3.3'
   implementation 'net.openid:appauth:0.4.1'
   implementation 'com.airbnb.android:lottie:3.4.0'
@@ -172,6 +154,10 @@ dependencies {
   // expo-file-system
   implementation 'com.squareup.okhttp3:okhttp:3.10.0'
   implementation 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'
+
+  // expo-image
+  def GLIDE_VERSION = "4.13.2"
+  kapt "com.github.bumptech.glide:compiler:${GLIDE_VERSION}"
 
   // Testing
   androidTestImplementation 'androidx.test.espresso:espresso-core:3.4.0'
@@ -192,14 +178,6 @@ dependencies {
   testImplementation 'junit:junit:4.12'
   testImplementation 'org.mockito:mockito-core:1.10.19'
 
-  /* UNCOMMENT WHEN DISTRIBUTING
-  implementation('host.exp.exponent:expoview:45.0.0@aar') {
-    transitive = true
-    exclude group: 'com.squareup.okhttp3', module: 'okhttp'
-    exclude group: 'com.squareup.okhttp3', module: 'okhttp-urlconnection'
-  }
-  END UNCOMMENT WHEN DISTRIBUTING */
-
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE
 
   // BEGIN_SDK_UNVERSIONED
@@ -208,42 +186,25 @@ dependencies {
   implementation 'com.google.guava:listenablefuture:9999.0-empty-to-avoid-conflict-with-guava'
   // END_SDK_UNVERSIONED
 
-  // WHEN_PREPARING_SHELL_REMOVE_FROM_HERE
-
   // ADD_NEW_SDKS_HERE
+
+
+  // BEGIN_SDK_48
+  versionedImplementation(project(':expoview-abi48_0_0'))
+  // END_SDK_48
+
+
+  // BEGIN_SDK_47
+  versionedImplementation(project(':expoview-abi47_0_0'))
+  // END_SDK_47
 
 
   // BEGIN_SDK_46
   versionedImplementation(project(':expoview-abi46_0_0'))
   // END_SDK_46
 
-
-  // BEGIN_SDK_45
-  versionedImplementation(project(':expoview-abi45_0_0'))
-  // END_SDK_45
-
-
-  // BEGIN_SDK_44
-  versionedImplementation(project(':expoview-abi44_0_0'))
-  // END_SDK_44
-
   // This is not needed in shell apps, the Amplitude module will include this dep if installed
   implementation 'com.amplitude:android-sdk:2.23.2'
-
-  // WHEN_PREPARING_SHELL_REMOVE_TO_HERE
-  // WHEN_DISTRIBUTING_REMOVE_TO_HERE
-
-  /* UNCOMMENT WHEN DISTRIBUTING
-  api 'org.webkit:android-jsc:r245459' // needs to be before react-native
-  api 'com.facebook.react:react-native:+'
-  END UNCOMMENT WHEN DISTRIBUTING */
-
-  // WHEN_DETACHING_REMOVE_FROM_HERE
-  /* UNCOMMENT WHEN DISTRIBUTING
-  implementation project(':expo')
-  implementation 'host.exp.exponent:expo-random:+'
-  END UNCOMMENT WHEN DISTRIBUTING */
-  // WHEN_DETACHING_REMOVE_TO_HERE
 }
 
 // This has to be down here for some reason

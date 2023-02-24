@@ -1,10 +1,20 @@
 import * as Log from '../../../log';
 import { installExitHooks } from '../../../utils/exit';
+import { assertSdkRoot } from './AndroidSdk';
 import { adbArgs, Device, getAttachedDevicesAsync, getServer, logUnauthorized } from './adb';
 
 const debug = require('debug')('expo:start:platforms:android:adbReverse') as typeof console.log;
 
 let removeExitHook: (() => void) | null = null;
+
+export function hasAdbReverseAsync(): boolean {
+  try {
+    return !!assertSdkRoot();
+  } catch (error: any) {
+    debug('Failed to resolve the Android SDK path, skipping ADB: %s', error.message);
+    return false;
+  }
+}
 
 export async function startAdbReverseAsync(ports: number[]): Promise<boolean> {
   // Install cleanup automatically...

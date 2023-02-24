@@ -2,7 +2,7 @@ package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableType
-import expo.modules.kotlin.jni.CppType
+import expo.modules.kotlin.jni.ExpectedType
 
 /**
  * Type converter that handles conversion from [Any] or [Dynamic] to [Any].
@@ -22,15 +22,7 @@ class AnyTypeConverter(isOptional: Boolean) : DynamicAwareTypeConverters<Any>(is
     }
   }
 
-  override fun convertFromAny(value: Any): Any {
-    return value
-  }
+  override fun convertFromAny(value: Any): Any = value
 
-  override fun getCppRequiredTypes(): List<CppType> = listOf(
-    CppType.READABLE_MAP,
-    CppType.READABLE_ARRAY,
-    CppType.STRING,
-    CppType.BOOLEAN,
-    CppType.DOUBLE
-  )
+  override fun getCppRequiredTypes(): ExpectedType = ExpectedType.forAny()
 }

@@ -6,11 +6,10 @@ const projectRoot = path.join(__dirname, '__fixtures__', 'hello-world');
 const consoleError = console.error;
 
 beforeEach(() => {
-  delete process.env.EXPO_TARGET;
   delete process.env.EXPO_USE_EXOTIC;
 });
 
-describe('getDefaultConfig', () => {
+describe(getDefaultConfig, () => {
   afterAll(() => {
     console.error = consoleError;
   });
@@ -42,30 +41,14 @@ describe('getDefaultConfig', () => {
     );
   });
 
-  it('loads default configuration for bare apps', () => {
-    expect(getDefaultConfig(projectRoot, { target: 'bare' }).resolver.sourceExts).toEqual(
+  it('loads default configuration for apps', () => {
+    expect(getDefaultConfig(projectRoot).resolver.sourceExts).toEqual(
       expect.not.arrayContaining(['expo.js'])
     );
   });
-
-  it('complains about an invalid target setting', () => {
-    process.env.EXPO_TARGET = 'bare';
-    // Only throws in v40-
-    expect(() =>
-      // @ts-ignore incorrect `target` value passed on purpose
-      getDefaultConfig(projectRoot, { target: 'blooper' })
-    ).not.toThrow();
-  });
-
-  it('logs an error if the environment variable is used', () => {
-    console.error = jest.fn();
-    process.env.EXPO_TARGET = 'bare';
-    getDefaultConfig(projectRoot, {});
-    expect(console.error).toBeCalled();
-  });
 });
 
-describe('loadAsync', () => {
+describe(loadAsync, () => {
   it('adds runtime options to the default configuration', async () => {
     const options = {
       maxWorkers: 10,

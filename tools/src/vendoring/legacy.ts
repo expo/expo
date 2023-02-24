@@ -87,30 +87,6 @@ const ReanimatedModifier: ModuleModifier = async function (
   const JNIOldPackagePrefix = firstStep.sourceAndroidPackage!.split('.').join('/');
   const JNINewPackagePrefix = firstStep.targetAndroidPackage!.split('.').join('/');
 
-  const replaceHermesByJSC = async () => {
-    const nativeProxyPath = path.join(
-      clonedProjectPath,
-      'android',
-      'src',
-      'main',
-      'cpp',
-      'NativeProxy.cpp'
-    );
-    const runtimeCreatingLineJSC = 'jsc::makeJSCRuntime();';
-    const jscImportingLine = '#include <jsi/JSCRuntime.h>';
-    const runtimeCreatingLineHermes = 'facebook::hermes::makeHermesRuntime();';
-    const hermesImportingLine = '#include <hermes/hermes.h>';
-
-    const content = await fs.readFile(nativeProxyPath, 'utf8');
-    let transformedContent = content.replace(runtimeCreatingLineHermes, runtimeCreatingLineJSC);
-    transformedContent = transformedContent.replace(
-      new RegExp(hermesImportingLine, 'g'),
-      jscImportingLine
-    );
-
-    await fs.writeFile(nativeProxyPath, transformedContent, 'utf8');
-  };
-
   const replaceJNIPackages = async () => {
     const cppPattern = path.join(androidMainPathReanimated, 'cpp', '**', '*.@(h|cpp)');
     const androidCpp = await glob(cppPattern);
@@ -195,7 +171,6 @@ const ReanimatedModifier: ModuleModifier = async function (
   };
 
   await applyRNVersionPatches();
-  await replaceHermesByJSC();
   await replaceJNIPackages();
   await copyCPP();
   await prepareIOSNativeFiles();
@@ -695,20 +670,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  'react-native-pager-view': {
-    repoUrl: 'https://github.com/callstack/react-native-pager-view',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/PagerView',
-        sourceAndroidPath: 'android/src/main/java/com/reactnativepagerview/',
-        targetAndroidPath: 'modules/api/components/pagerview',
-        sourceAndroidPackage: 'com.reactnativepagerview',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.pagerview',
-      },
-    ],
-  },
   'react-native-shared-element': {
     repoUrl: 'https://github.com/IjzerenHein/react-native-shared-element',
     installableInManagedApps: true,
@@ -745,21 +706,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
         targetAndroidPath: 'modules/api/components/picker',
         sourceAndroidPackage: 'com.reactnativecommunity.picker',
         targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.picker',
-      },
-    ],
-  },
-  '@react-native-community/slider': {
-    repoUrl: 'https://github.com/react-native-community/react-native-slider',
-    installableInManagedApps: true,
-    packageJsonPath: 'src',
-    steps: [
-      {
-        sourceIosPath: 'src/ios',
-        targetIosPath: 'Api/Components/Slider',
-        sourceAndroidPath: 'src/android/src/main/java/com/reactnativecommunity/slider',
-        targetAndroidPath: 'modules/api/components/slider',
-        sourceAndroidPackage: 'com.reactnativecommunity.slider',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.slider',
       },
     ],
   },

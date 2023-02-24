@@ -56,6 +56,7 @@ concurrency:
 jobs:
   build:
     runs-on: ubuntu-20.04
+    if: ${{ github.actor != 'dependabot[bot]' }}
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
@@ -94,15 +95,15 @@ jobs:
           DISPATCH_PROFILE="${{ github.event.inputs.buildType }}"
           IS_VERSIONED="${{ steps.flavor.outputs.versioned }}"
           if [[ ! -z "$DISPATCH_PROFILE" ]]; then
-            echo ::set-output name=profile::"$DISPATCH_PROFILE"
+            echo "profile=$DISPATCH_PROFILE" >> $GITHUB_OUTPUT
           elif [[ "${{ github.event.schedule }}" == "20 5 * * 1,3,5" ]]; then
-            echo ::set-output name=profile::"versioned-client"
+            echo "profile=versioned-client" >> $GITHUB_OUTPUT
           elif [[ "${{ github.event.schedule }}" == "20 5 * * 1" ]]; then
-            echo ::set-output name=profile::"versioned-client-add-sdk"
+            echo "profile=versioned-client-add-sdk" >> $GITHUB_OUTPUT
           elif [[ "$IS_VERSIONED" == "true" ]]; then
-            echo ::set-output name=profile::"versioned-client"
+            echo "profile=versioned-client" >> $GITHUB_OUTPUT
           else
-            echo ::set-output name=profile::"unversioned-client"
+            echo "profile=unversioned-client" >> $GITHUB_OUTPUT
           fi
       - name: Build
         uses: ./.github/actions/eas-build
@@ -112,8 +113,8 @@ jobs:
           profile: ${{ steps.profile.outputs.profile  }}
           projectRoot: './apps/eas-expo-go'
           expoToken: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
-          resourceClass: default
           noWait: ${{ github.event.schedule }}
+          message: ${{ github.event.pull_request.title }}
       - name: On workflow canceled
         if: ${{ cancelled() && steps.build.outputs.build_id }}
         run: eas build:cancel ${{ steps.build.outputs.build_id }}

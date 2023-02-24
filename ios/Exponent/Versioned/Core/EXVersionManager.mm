@@ -30,8 +30,8 @@
 #import <React/RCTLocalAssetImageLoader.h>
 #import <React/RCTGIFImageDecoder.h>
 #import <React/RCTImageLoader.h>
-#import <React/RCTAsyncLocalStorage.h>
 #import <React/RCTJSIExecutorRuntimeInstaller.h>
+#import <React/RCTInspectorDevServerHelper.h>
 
 #import <objc/message.h>
 
@@ -42,6 +42,7 @@
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <EXMediaLibrary/EXMediaLibraryImageLoader.h>
 #import <EXFileSystem/EXFileSystem.h>
+#import <EXManifests/EXManifests-Swift.h>
 #import "EXScopedModuleRegistry.h"
 #import "EXScopedModuleRegistryAdapter.h"
 #import "EXScopedModuleRegistryDelegate.h"
@@ -50,14 +51,17 @@
 #import <RNReanimated/REAEventDispatcher.h>
 #import <RNReanimated/REAUIManager.h>
 #import <RNReanimated/NativeProxy.h>
+#import <RNReanimated/ReanimatedVersion.h>
 
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/CoreModulesPlugins.h>
 #import <ReactCommon/RCTTurboModuleManager.h>
+#import <reacthermes/HermesExecutorFactory.h>
 #import <React/JSCExecutorFactory.h>
 #import <strings.h>
 
 // Import 3rd party modules that need to be scoped.
+#import <RNCAsyncStorage/RNCAsyncStorage.h>
 #import "RNCWebViewManager.h"
 
 RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(void);
@@ -133,16 +137,13 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
 
 - (void)bridgeWillStartLoading:(id)bridge
 {
-  // We need to check DEBUG flag here because in ejected projects RCT_DEV is set only for React and not for ExpoKit to which this file belongs to.
-  // It can be changed to just RCT_DEV once we deprecate ExpoKit and set that flag for the entire standalone project.
-#if DEBUG || RCT_DEV
   if ([self _isDevModeEnabledForBridge:bridge]) {
     // Set the bundle url for the packager connection manually
     NSURL *bundleURL = [bridge bundleURL];
     NSString *packagerServerHostPort = [NSString stringWithFormat:@"%@:%@", bundleURL.host, bundleURL.port];
     [[RCTPackagerConnection sharedPackagerConnection] reconnect:packagerServerHostPort];
+    [RCTInspectorDevServerHelper connectWithBundleURL:bundleURL];
   }
-#endif
 
   // Manually send a "start loading" notif, since the real one happened uselessly inside the RCTBatchedBridge constructor
   [[NSNotificationCenter defaultCenter]
@@ -179,7 +180,12 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     };
   }
 
-  if (devSettings.isRemoteDebuggingAvailable && isDevModeEnabled) {
+  if ([self _isBridgeInspectable:bridge] && isDevModeEnabled) {
+    items[@"dev-remote-debug"] = @{
+      @"label": @"Open JS Debugger",
+      @"isEnabled": @YES
+    };
+  } else if (devSettings.isRemoteDebuggingAvailable && isDevModeEnabled) {
     items[@"dev-remote-debug"] = @{
       @"label": (devSettings.isDebuggingRemotely) ? @"Stop Remote Debugging" : @"Debug Remote JS",
       @"isEnabled": @YES
@@ -230,7 +236,11 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     // the return type
     [(RCTBridgeHack *)bridge reload];
   } else if ([key isEqualToString:@"dev-remote-debug"]) {
-    devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
+    if ([self _isBridgeInspectable:bridge]) {
+      [self _openJsInspector:bridge];
+    } else {
+      devSettings.isDebuggingRemotely = !devSettings.isDebuggingRemotely;
+    }
   } else if ([key isEqualToString:@"dev-profiler"]) {
     devSettings.isProfilingEnabled = !devSettings.isProfilingEnabled;
   } else if ([key isEqualToString:@"dev-hmr"]) {
@@ -295,20 +305,34 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
   [devSettings toggleElementInspector];
 }
 
-#if DEBUG || RCT_DEV
 - (uint32_t)addWebSocketNotificationHandler:(void (^)(NSDictionary<NSString *, id> *))handler
                                     queue:(dispatch_queue_t)queue
                                 forMethod:(NSString *)method
 {
   return [[RCTPackagerConnection sharedPackagerConnection] addNotificationHandler:handler queue:queue forMethod:method];
 }
-#endif
 
 #pragma mark - internal
 
 - (BOOL)_isDevModeEnabledForBridge:(id)bridge
 {
   return ([RCTGetURLQueryParam([bridge bundleURL], @"dev") boolValue]);
+}
+
+- (BOOL)_isBridgeInspectable:(id)bridge
+{
+  return [[bridge batchedBridge] isInspectable];
+}
+
+- (void)_openJsInspector:(id)bridge
+{
+  NSInteger port = [[[bridge bundleURL] port] integerValue] ?: RCT_METRO_PORT;
+  NSString *host = [[bridge bundleURL] host] ?: @"localhost";
+  NSString *url =
+      [NSString stringWithFormat:@"http://%@:%lld/inspector?applicationId=%@", host, (long long)port, NSBundle.mainBundle.bundleIdentifier];
+  NSMutableURLRequest *request = [NSMutableURLRequest requestWithURL:[NSURL URLWithString:url]];
+  request.HTTPMethod = @"PUT";
+  [[[NSURLSession sharedSession] dataTaskWithRequest:request] resume];
 }
 
 - (id<RCTBridgeModule>)_moduleInstanceForBridge:(id)bridge named:(NSString *)name
@@ -395,7 +419,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     }
     [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevMenu"]]];
     [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"RedBox"]]];
-    [extraModules addObject:[self getModuleInstanceFromClass:RCTAsyncLocalStorageCls()]];
+    [extraModules addObject:[self getModuleInstanceFromClass:RNCAsyncStorage.class]];
   }
 
   return extraModules;
@@ -504,7 +528,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     } else {
       RCTLogWarn(@"No exceptions manager provided when building extra modules for bridge.");
     }
-  } else if (moduleClass == RCTAsyncLocalStorageCls()) {
+  } else if (moduleClass == RNCAsyncStorage.class) {
     NSString *documentDirectory;
     if (_params[@"fileSystemDirectories"]) {
       documentDirectory = _params[@"fileSystemDirectories"][@"documentDirectory"];
@@ -569,12 +593,19 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
         runtime,
         "_WORKLET_RUNTIME",
         workletRuntimeValue);
+    runtime.global().setProperty(
+        runtime,
+        "_REANIMATED_VERSION_CPP",
+        reanimated::getReanimatedVersionString(runtime));
 
     runtime.global().setProperty(
          runtime,
          jsi::PropNameID::forAscii(runtime, "__reanimatedModuleProxy"),
          jsi::Object::createFromHostObject(runtime, reanimatedModule));
   };
+  if ([self.manifest.jsEngine isEqualToString:@"hermes"]) {
+    return new facebook::react::HermesExecutorFactory(RCTJSIExecutorRuntimeInstaller(executor));
+  }
   return new facebook::react::JSCExecutorFactory(RCTJSIExecutorRuntimeInstaller(executor));
 }
 

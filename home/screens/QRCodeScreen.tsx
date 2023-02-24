@@ -19,7 +19,7 @@ type State = {
 
 const initialState: State = { isVisible: Platform.OS === 'ios', url: null };
 
-export default function BarCodeScreen(props: StackScreenProps<ModalStackRoutes, 'QRCode'> & State) {
+export default function BarCodeScreen(props: StackScreenProps<ModalStackRoutes, 'QRCode'>) {
   const [state, setState] = React.useReducer(
     (props: State, state: Partial<State>): State => ({ ...props, ...state }),
     initialState

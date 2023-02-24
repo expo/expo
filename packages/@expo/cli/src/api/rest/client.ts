@@ -11,9 +11,12 @@ import { wrapFetchWithCache } from './cache/wrapFetchWithCache';
 import { FetchLike } from './client.types';
 import { wrapFetchWithBaseUrl } from './wrapFetchWithBaseUrl';
 import { wrapFetchWithOffline } from './wrapFetchWithOffline';
+import { wrapFetchWithProgress } from './wrapFetchWithProgress';
+import { wrapFetchWithProxy } from './wrapFetchWithProxy';
 
 export class ApiV2Error extends Error {
   readonly name = 'ApiV2Error';
+  readonly code: string;
   readonly expoApiV2ErrorCode: string;
   readonly expoApiV2ErrorDetails?: JSONValue;
   readonly expoApiV2ErrorServerStack?: string;
@@ -27,6 +30,7 @@ export class ApiV2Error extends Error {
     metadata?: object;
   }) {
     super(response.message);
+    this.code = response.code;
     this.expoApiV2ErrorCode = response.code;
     this.expoApiV2ErrorDetails = response.details;
     this.expoApiV2ErrorServerStack = response.stack;
@@ -91,14 +95,16 @@ const fetchWithOffline = wrapFetchWithOffline(fetchInstance);
 
 const fetchWithBaseUrl = wrapFetchWithBaseUrl(fetchWithOffline, getExpoApiBaseUrl() + '/v2/');
 
-const fetchWithCredentials = wrapFetchWithCredentials(fetchWithBaseUrl);
+const fetchWithProxy = wrapFetchWithProxy(fetchWithBaseUrl);
+
+const fetchWithCredentials = wrapFetchWithProgress(wrapFetchWithCredentials(fetchWithProxy));
 
 /**
  * Create an instance of the fully qualified fetch command (auto authentication and api) but with caching in the '~/.expo' directory.
  * Caching is disabled automatically if the EXPO_NO_CACHE or EXPO_BETA environment variables are enabled.
  */
 export function createCachedFetch({
-  fetch,
+  fetch = fetchWithCredentials,
   cacheDirectory,
   ttl,
   skipCache,
@@ -110,11 +116,11 @@ export function createCachedFetch({
 }): FetchLike {
   // Disable all caching in EXPO_BETA.
   if (skipCache || env.EXPO_BETA || env.EXPO_NO_CACHE) {
-    return fetch ?? fetchWithCredentials;
+    return fetch;
   }
 
   return wrapFetchWithCache(
-    fetch ?? fetchWithCredentials,
+    fetch,
     new FileSystemCache({
       cacheDirectory: path.join(getExpoHomeDirectory(), cacheDirectory),
       ttl,
@@ -123,4 +129,4 @@ export function createCachedFetch({
 }
 
 /** Instance of fetch with automatic base URL pointing to the Expo API, user credential injection, and API error handling. Caching not included.  */
-export const fetchAsync = wrapFetchWithCredentials(fetchWithBaseUrl);
+export const fetchAsync = wrapFetchWithProgress(wrapFetchWithCredentials(fetchWithProxy));

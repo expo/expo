@@ -26,7 +26,7 @@ export async function requestPermissionsAsync() {
  *
  * @example
  * ```ts
- * const [status, requestPermission] = Audio.usePermissions();
+ * const [permissionResponse, requestPermission] = Audio.usePermissions();
  * ```
  */
 export const usePermissions = createPermissionHook({

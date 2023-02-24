@@ -14,12 +14,12 @@ export enum PermissionStatus {
 }
 
 /**
- * Permission expiration time. Currently, all permissions are granted permamently.
+ * Permission expiration time. Currently, all permissions are granted permanently.
  */
 export type PermissionExpiration = 'never' | number;
 
 /**
- * An object obtained by `getPermissionsAsync` and `requestPermissionsAsync` functions.
+ * An object obtained by permissions get and request functions.
  */
 export interface PermissionResponse {
   /**

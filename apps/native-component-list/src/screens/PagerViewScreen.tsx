@@ -1,5 +1,5 @@
 import React from 'react';
-import { Platform, StyleSheet, Text, View } from 'react-native';
+import { StyleSheet, Text, View } from 'react-native';
 import PagerView from 'react-native-pager-view';
 
 export default function PagerViewScreen() {
@@ -7,7 +7,6 @@ export default function PagerViewScreen() {
     <PagerView
       style={styles.container}
       initialPage={0}
-      transitionStyle={Platform.OS === 'ios' ? 'curl' : 'scroll'}
       onPageSelected={(_) => {
         console.log('New page!');
       }}>

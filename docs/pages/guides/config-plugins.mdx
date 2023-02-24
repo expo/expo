@@ -1,0 +1,1205 @@
+---
+title: Config Plugins
+description: Learn about config plugins, which are the Expo way of customizing the prebuild phase of a project.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import { YesIcon, NoIcon, WarningIcon } from '~/ui/components/DocIcons';
+import { Collapsible } from '~/ui/components/Collapsible';
+
+When adding a native module to your project, most of the setup can be done automatically by installing the module in your project,
+however, some modules require a more complex setup. For instance, say you installed `expo-camera` in your bare project,
+you now need to configure the native app to enable camera permissions — this is where config plugins come in.
+Config plugins are a system for extending the [Expo config](/workflow/configuration) and customizing the prebuild phase of managed builds.
+
+Internally Expo CLI uses config plugins to generate and configure all the native code for a managed project.
+Plugins do things like generate app icons, set the app name, and configure the **AndroidManifest.xml**, **Info.plist**, and so on.
+
+You can think of plugins like a bundler for native projects, and running `npx expo prebuild` as a way to bundle the projects by evaluating all the project plugins.
+Doing so will generate **android** and **ios** directories. These directories can be modified manually after being generated,
+but then they can no longer be safely regenerated without potentially overwriting manual modifications.
+
+## Quick facts
+
+- Plugins are functions that can change values on your Expo config.
+- Plugins are mostly meant to be used with [`npx expo prebuild`][cli-prebuild] or `eas build` commands.
+- We recommend you use plugins with **app.config.json** or **app.config.js** instead of **app.json** (no top-level `expo` object is required).
+- `mods` are async functions that modify native project files, such as source code or configuration (plist, xml) files.
+- Changes performed with `mods` will require rebuilding the affected native projects.
+- `mods` are removed from the public app manifest.
+- Everything in the Expo config must be able to be converted to JSON (with the exception of the `mods` field). So no async functions outside of `mods` in your config plugins!
+
+  > **Note**: The Expo Go app doesn't support custom native modules, and config plugins do not apply there.
+
+## Using a plugin in your app
+
+Expo config plugins mostly come from Node modules, you can install them just like other packages in your project.
+
+For instance, `expo-camera` has a plugin that adds camera permissions to the **Info.plist** and **AndroidManifest.xml**.
+
+Install it in your project:
+
+<Terminal cmd={['$ expo install expo-camera']} />
+
+In your app's Expo config (**app.json**, or **app.config.js**), add `expo-camera` to the list of plugins:
+
+```json app.json
+{
+  "name": "my app",
+  "plugins": ["expo-camera"]
+}
+```
+
+Some plugins can be customized by passing an array, where the second argument is the options:
+
+```json app.json
+{
+  "name": "my app",
+  "plugins": [
+    [
+      "expo-camera",
+      {
+        /* Values passed to the plugin */
+        "cameraPermission": "Allow $(PRODUCT_NAME) to access your camera",
+        "microphonePermission": "Allow $(PRODUCT_NAME) to access your microphone"
+      }
+    ]
+  ]
+}
+```
+
+If you run `npx expo prebuild`, the `mods` will be compiled, and the native files be changed!
+The changes won't take effect until you rebuild the native project, for example, with Xcode. If you're using config plugins in a managed app,
+they will be applied during the prebuild phase on `eas build`.
+
+For instance, if you add a plugin that adds permission messages to your app, the app will need to be rebuilt.
+
+And that's it! Now you're using Config plugins. No more having to interact with the native projects!
+
+> Check out all the different ways you can import `plugins`: [plugin module resolution](#plugin-module-resolution).
+
+## What are plugins
+
+Plugins are **synchronous** functions that accept an [`ExpoConfig`][config-docs] and return a modified [`ExpoConfig`][config-docs].
+
+- Plugins should be named using the following convention: `with<Plugin Functionality>`, for example, `withFacebook`.
+- Plugins should be synchronous and their return value should be serializable, except for any `mods` that are added.
+- Optionally, a second argument can be passed to the plugin to configure it.
+- `plugins` are always invoked when the config is read by the `expo/config` method `getConfig`.
+  However, the `mods` are only invoked during the "syncing" phase of `npx expo prebuild`.
+
+## Creating a plugin
+
+Here is an example of the most basic config plugin:
+
+```js
+const withNothing = config => config;
+```
+
+Say you wanted to create a plugin which added custom values to **Info.plist** in an iOS project:
+
+```js my-plugin.js
+const withMySDK = (config, { apiKey }) => {
+  // Ensure the objects exist
+  if (!config.ios) {
+    config.ios = {};
+  }
+  if (!config.ios.infoPlist) {
+    config.ios.infoPlist = {};
+  }
+
+  // Append the apiKey
+  config.ios.infoPlist['MY_CUSTOM_NATIVE_IOS_API_KEY'] = apiKey;
+
+  return config;
+};
+
+// 💡 Usage:
+
+/// Create a config
+const config = {
+  name: 'my app',
+};
+
+/// Use the plugin
+export default withMySDK(config, { apiKey: 'X-XXX-XXX' });
+```
+
+### Importing plugins
+
+You may want to create a plugin in a different file, here's how:
+
+- The root file can be any JS file or a file named **app.plugin.js** in the [root of a Node module](#root-app.plugin.js).
+- The file should export a function that satisfies the [`ConfigPlugin`][configplugin] type.
+- Plugins should be transpiled for Node environments ahead of time!
+  - They should support the versions of Node that [Expo supports](/get-started/installation/#requirements) (LTS).
+  - No `import/export` keywords, use `module.exports` in the shipped plugin file.
+  - Expo only transpiles the user's initial `app.config` file, anything more would require a bundler which would add too many "opinions" for a config file.
+
+Consider the following example that changes the config name:
+
+```
+╭── app.config.js ➡️ Expo Config
+╰── my-plugin.js ➡️ Our custom plugin file
+```
+
+```js my-plugin.js
+module.exports = function withPrefixedName(config, prefix) {
+  // Modify the config
+  config.name = prefix + '-' + config.name;
+  // Return the results
+  return config;
+};
+```
+
+```js app.config.js
+{
+  "name": "my-app",
+  "plugins": [["./my-plugin", "custom"]]
+}
+```
+
+It evaluates to the following JSON config:
+
+```json Evaluated config JSON
+{
+  "name": "custom-my-app",
+  "plugins": [["./my-plugin", "custom"]]
+}
+```
+
+### Chaining plugins
+
+Once you add a few plugins, your **app.config.js** code can become difficult to read and manipulate. To combat this, `expo/config-plugins` provides a `withPlugins` function which can be used to chain plugins together and execute them in order.
+
+```js app.config.js
+/// Create a config
+const config = {
+  name: 'my app',
+};
+
+// ❌ Hard to read
+withDelta(withFoo(withBar(config, 'input 1'), 'input 2'), 'input 3');
+
+// ✅ Easy to read
+import { withPlugins } from 'expo/config-plugins';
+
+withPlugins(config, [
+  [withBar, 'input 1'],
+  [withFoo, 'input 2'],
+  // When no input is required, you can just pass the method...
+  withDelta,
+]);
+```
+
+<Collapsible summary="Using SDK 46 or lower?">
+
+For SDK 46 and lower, import the `@expo/config-plugins` package directly. This is installed automatically by the `expo` package, but not re-exported as it is in SDK 47 and higher.
+
+```js
+const { withPlugins } = require('@expo/config-plugins');
+```
+
+</Collapsible>
+
+To support JSON configs, we also added the `plugins` array which just uses `withPlugins` under the hood.
+Here is the same config as above, but even simpler:
+
+```js app.config.js
+export default {
+  name: 'my app',
+  plugins: [
+    [withBar, 'input 1'],
+    [withFoo, 'input 2'],
+    [withDelta, 'input 3'],
+  ],
+};
+```
+
+## What are mods
+
+A modifier (mod for short) is an async function that accepts a config and a data object, then manipulates and returns both as an object.
+
+Mods are added to the `mods` object of the Expo config. The `mods` object is different from the rest of the Expo config because it doesn't get serialized
+after the initial reading, which means you can use it to perform actions _during_ code generation.
+If possible, you should attempt to use basic plugins instead of mods, as they're simpler to work with.
+
+- `mods` are omitted from the manifest and **cannot** be accessed via `Updates.manifest`. Mods exist for the sole purpose of modifying native project files during code generation!
+- `mods` can be used to read and write files safely during the `expo prebuild` command. This is how Expo CLI modifies the **Info.plist**, entitlements, xcproj, etc...
+- `mods` are platform-specific and should always be added to a platform-specific object:
+
+```js app.config.js
+module.exports = {
+  name: 'my-app',
+  mods: {
+    ios: {
+      /* iOS mods... */
+    },
+    android: {
+      /* Android mods... */
+    },
+  },
+};
+```
+
+## How mods work
+
+- The config is read using [`getPrebuildConfig`](https://github.com/expo/expo-cli/blob/43a6162edd646b550c1b7eae6039daf1aaec4fb0/packages/prebuild-config/src/getPrebuildConfig.ts#L12) from `@expo/prebuild-config`.
+- All of the core functionality supported by Expo is added via plugins in `withIosExpoPlugins`. This is stuff like name, version, icons, locales, etc.
+- The config is passed to the compiler `compileModsAsync`
+- The compiler adds base mods that are responsible for reading data (like **Info.plist**), executing a named mod (like `mods.ios.infoPlist`), then writing the results to the file system.
+- The compiler iterates over all the mods and asynchronously evaluates them, providing some base props like the `projectRoot`.
+  - After each mod, error handling asserts if the mod chain was corrupted by an invalid mod.
+
+{/* TODO: Move to a section about mod compiler */}
+
+### Default mods
+
+The following default mods are provided by the mod compiler for common file manipulation.
+
+> Dangerous modifications rely on regular expressions (regex) to modify application code, which may cause the build to break.
+> Regex mods are also difficult to version, and therefore should be used sparingly.
+> Always opt towards using application code to modify application code, that is, [Expo Modules][emc] native API.
+
+| Android mod                       |    Dangerous    | Description                                                                                               |
+|-----------------------------------|:---------------:|-----------------------------------------------------------------------------------------------------------|
+| `mods.android.manifest`           |        -        | Modify the **android/app/src/main/AndroidManifest.xml** as JSON (parsed with [`xml2js`][xml2js]).         |
+| `mods.android.strings`            |        -        | Modify the **android/app/src/main/res/values/strings.xml** as JSON (parsed with [`xml2js`][xml2js]).      |
+| `mods.android.colors`             |        -        | Modify the **android/app/src/main/res/values/colors.xml** as JSON (parsed with [`xml2js`][xml2js]).       |
+| `mods.android.colorsNight`        |        -        | Modify the **android/app/src/main/res/values-night/colors.xml** as JSON (parsed with [`xml2js`][xml2js]). |
+| `mods.android.styles`             |        -        | Modify the **android/app/src/main/res/values/styles.xml** as JSON (parsed with [`xml2js`][xml2js]).       |
+| `mods.android.gradleProperties`   |        -        | Modify the **android/gradle.properties** as a `Properties.PropertiesItem[]`.                              |
+| `mods.android.mainActivity`       | <WarningIcon /> | Modify the **android/app/src/main/&lt;package&gt;/MainActivity.java** as a string.                        |
+| `mods.android.mainApplication`    | <WarningIcon /> | Modify the **android/app/src/main/&lt;package&gt;/MainApplication.java** as a string.                     |
+| `mods.android.appBuildGradle`     | <WarningIcon /> | Modify the **android/app/build.gradle** as a string.                                                      |
+| `mods.android.projectBuildGradle` | <WarningIcon /> | Modify the **android/build.gradle** as a string.                                                          |
+| `mods.android.settingsGradle`     | <WarningIcon /> | Modify the **android/settings.gradle** as a string.                                                       |
+
+| iOS mod                      |    Dangerous    | Description                                                                                                                         |
+|------------------------------|:---------------:|-------------------------------------------------------------------------------------------------------------------------------------|
+| `mods.ios.infoPlist`         |        -        | Modify the **ios/&lt;name&gt;/Info.plist** as JSON (parsed with [`@expo/plist`][expo-plist]).                                       |
+| `mods.ios.entitlements`      |        -        | Modify the **ios/&lt;name&gt;/&lt;product-name&gt;.entitlements** as JSON (parsed with [`@expo/plist`][expo-plist]).                |
+| `mods.ios.expoPlist`         |        -        | Modify the **ios/&lt;ame&gt;/Expo.plist** as JSON (Expo updates config for iOS) (parsed with [`@expo/plist`][expo-plist]).          |
+| `mods.ios.xcodeproj`         |        -        | Modify the **ios/&lt;name&gt;.xcodeproj** as an `XcodeProject` object (parsed with [`xcode`](https://www.npmjs.com/package/xcode)). |
+| `mods.ios.podfileProperties` |        -        | Modify the **ios/Podfile.properties.json** as JSON.                                                                                 |
+| `mods.ios.appDelegate`       | <WarningIcon /> | Modify the **ios/&lt;name&gt;/AppDelegate.m** as a string.                                                                          |
+
+After the mods are resolved, the contents of each mod will be written to disk. Custom default mods can be added to support new native files.
+For example, you can create a mod to support the `GoogleServices-Info.plist`, and pass it to other mods.
+
+### Mod plugins
+
+Mods are responsible for a lot of tasks, so they can be pretty difficult to understand at first.
+If you're developing a feature that requires mods, it's best not to interact with them directly.
+
+Instead you should use the helper mods provided by `expo/config-plugins`:
+
+#### Android
+
+| Android mod                       | Mod plugin               |    Dangerous    |
+|-----------------------------------|--------------------------|:---------------:|
+| `mods.android.manifest`           | `withAndroidManifest`    |        -        |
+| `mods.android.strings`            | `withStringsXml`         |        -        |
+| `mods.android.colors`             | `withAndroidColors`      |        -        |
+| `mods.android.colorsNight`        | `withAndroidColorsNight` |        -        |
+| `mods.android.styles`             | `withAndroidStyles`      |        -        |
+| `mods.android.gradleProperties`   | `withGradleProperties`   |        -        |
+| `mods.android.mainActivity`       | `withMainActivity`       | <WarningIcon /> |
+| `mods.android.mainApplication`    | `withMainApplication`    | <WarningIcon /> |
+| `mods.android.appBuildGradle`     | `withAppBuildGradle`     | <WarningIcon /> |
+| `mods.android.projectBuildGradle` | `withProjectBuildGradle` | <WarningIcon /> |
+| `mods.android.settingsGradle`     | `withSettingsGradle`     | <WarningIcon /> |
+
+#### iOS
+
+| iOS mod                      | Mod plugin              |    Dangerous    |
+|------------------------------|-------------------------|:---------------:|
+| `mods.ios.infoPlist`         | `withInfoPlist`         |        -        |
+| `mods.ios.entitlements`      | `withEntitlementsPlist` |        -        |
+| `mods.ios.expoPlist`         | `withExpoPlist`         |        -        |
+| `mods.ios.xcodeproj`         | `withXcodeProject`      |        -        |
+| `mods.ios.podfileProperties` | `withPodfileProperties` |        -        |
+| `mods.ios.appDelegate`       | `withAppDelegate`       | <WarningIcon /> |
+
+A mod plugin gets passed a `config` object with additional properties `modResults` and `modRequest` added to it.
+
+- `modResults`: The object to modify and return. The type depends on the mod that's being used.
+- `modRequest`: Additional properties supplied by the mod compiler.
+  - `projectRoot: string`: Project root directory for the universal app.
+  - `platformProjectRoot: string`: Project root for the specific platform.
+  - `modName: string`: Name of the mod.
+  - `platform: ModPlatform`: Name of the platform used in the mods config.
+  - `projectName?: string`: (iOS only) The path component used for querying project files. ex. `projectRoot/ios/[projectName]/`
+
+## Creating a mod
+
+Say you wanted to write a mod to update the Xcode Project's "product name":
+
+```js my-config-plugin.js
+import { ConfigPlugin, withXcodeProject } from 'expo/config-plugins';
+
+const withCustomProductName: ConfigPlugin = (config, customName) => {
+  return withXcodeProject(config, async config => {
+    // config = { modResults, modRequest, ...expoConfig }
+
+    const xcodeProject = config.modResults;
+    xcodeProject.productName = customName;
+
+    return config;
+  });
+};
+
+// 💡 Usage:
+
+/// Create a config
+const config = {
+  name: 'my app',
+};
+
+/// Use the plugin
+export default withCustomProductName(config, 'new_name');
+```
+
+<Collapsible summary="Using SDK 46 or lower?">
+
+For SDK 46 and lower, import the `@expo/config-plugins` package directly. This is installed automatically by the `expo` package, but not re-exported as it is in SDK 47 and higher.
+
+```js
+const { ConfigPlugin, withXcodeProject } = require('@expo/config-plugins');
+```
+
+</Collapsible>
+
+### Experimental functionality
+
+Some parts of the mod system aren't fully fleshed out, these parts use `withDangerousMod` to read/write data without a base mod.
+These methods essentially act as their own base mod and cannot be extended.
+Icons, for example, currently use the dangerous mod to perform a single generation step with no ability to customize the results.
+
+```js my-config-plugin.js
+export const withIcons = config => {
+  return withDangerousMod(config, [
+    'ios',
+    async config => {
+      // No modifications are made to the config
+      await setIconsAsync(config, config.modRequest.projectRoot);
+      return config;
+    },
+  ]);
+};
+```
+
+Be careful using `withDangerousMod` as it is subject to change in the future.
+The order with which it gets executed is not reliable either.
+Currently, dangerous mods run first before all other modifiers, this is because we use dangerous mods internally for large file system refactoring like when the package name changes.
+
+## Plugin module resolution
+
+The strings passed to the `plugins` array can be resolved in a few different ways.
+
+> Any resolution pattern that isn't specified below is unexpected behavior, and subject to breaking changes.
+
+### Project file
+
+You can quickly create a plugin in your project and use it in your config.
+
+- <YesIcon /> `'./my-config-plugin'`
+
+- <NoIcon /> `'./my-config-plugin.js'`
+
+```
+╭── app.config.js ➡️ Expo Config
+╰── my-config-plugin.js ➡️ ✅ `module.exports = (config) => config`
+```
+
+### app.plugin.js
+
+Sometimes you want your package to export React components and also support a plugin. To do this, multiple entry points need to be used because the transpilation (Babel preset) may be different.
+If an **app.plugin.js** file is present in the root of a Node module's folder, it'll be used instead of the package's `main` file.
+
+- <YesIcon /> `'expo-splash-screen'`
+
+- <NoIcon /> `'expo-splash-screen/app.plugin.js'`
+
+```
+╭── app.config.js ➡️ Expo Config
+╰── node_modules/expo-splash-screen/ ➡️ Module installed from NPM (works with Yarn workspaces as well).
+    ├── package.json ➡️ The `main` file will be used if **app.plugin.js** doesn't exist.
+    ├── app.plugin.js ➡️ ✅ `module.exports = (config) => config` -- must export a function.
+    ╰── build/index.js ➡️ ❌ Ignored because **app.plugin.js** exists. This could be used with `expo-splash-screen/build/index.js`
+```
+
+### Node module default file
+
+A config plugin in a node module (without an **app.plugin.js**) will use the `main` file defined in the **package.json**.
+
+- <YesIcon /> `'expo-splash-screen'`
+
+- <NoIcon /> `'expo-splash-screen/build/index'`
+
+```
+╭── app.config.js ➡️ Expo Config
+╰── node_modules/expo-splash-screen/ ➡️ Module installed from NPM (works with Yarn workspaces as well).
+    ├── package.json ➡️ The `main` file points to **build/index.js**
+    ╰── build/index.js ➡️  ✅ Node resolves to this module.
+```
+
+### Project folder
+
+- <YesIcon /> `'./my-config-plugin'`
+
+- <NoIcon /> `'./my-config-plugin.js'`
+
+This is different to how Node modules work because **app.plugin.js** won't be resolved by default in a directory. You'll have to manually specify `./my-config-plugin/app.plugin.js` to use it, otherwise **index.js** in the directory will be used.
+
+```
+╭── app.config.js ➡️ Expo Config
+╰── my-config-plugin/ ➡️ Folder containing plugin code
+    ╰── index.js ➡️ ✅ By default, Node resolves a folder's index.js file as the main file.
+```
+
+### Module internals
+
+If a file inside a Node module is specified, then the module's root **app.plugin.js** resolution will be skipped. This is referred to as "reaching inside a package" and is considered **bad form**.
+We support this to make testing, and plugin authoring easier, but we don't expect library authors to expose their plugins like this as a public API.
+
+- <NoIcon /> `'expo-splash-screen/build/index.js'`
+
+- <NoIcon /> `'expo-splash-screen/build'`
+
+```
+╭── app.config.js ➡️ Expo Config
+╰── node_modules/expo-splash-screen/ ➡️ Module installed from npm (works with Yarn workspaces as well).
+    ├── package.json ➡️ The `main` file will be used if **app.plugin.js** doesn't exist.
+    ├── app.plugin.js ➡️ ❌ Ignored because the reference reaches into the package internals.
+    ╰── build/index.js ➡️ ✅ `module.exports = (config) => config`
+```
+
+### Raw functions
+
+You can also just pass in a config plugin.
+
+```js app.config.js
+const withCustom = (config, props) => config;
+
+const config = {
+  plugins: [
+    [
+      withCustom,
+      {
+        /* props */
+      },
+    ],
+    // Without props
+    withCustom,
+  ],
+};
+```
+
+One caveat to using functions instead of strings is that serialization will replace the function with the function's name. This keeps **manifests** (kinda like the **index.html** for your app) working as expected.
+
+Here is what the serialized config would look like:
+
+```json
+{
+  "plugins": [["withCustom", {}], "withCustom"]
+}
+```
+
+## Why app.plugin.js for plugins
+
+Config resolution searches for a **app.plugin.js** first when a Node module name is provided.
+This is because Node environments are often different to iOS, Android, or web JS environments and therefore require different transpilation presets (ex: `module.exports` instead of `import/export`).
+
+Because of this reasoning, the root of a Node module is searched instead of right next to the **index.js**.
+Imagine you had a TypeScript Node module where the transpiled main file was located at **build/index.js**,
+if Expo config plugin resolution searched for **build/app.plugin.js** you'd lose the ability to transpile the file differently.
+
+## Developing a Plugin
+
+> Use [modifier previews](https://github.com/expo/vscode-expo#expo-preview-modifier) to debug the results of your plugin live.
+
+To make plugin development easier, we've added plugin support to [`expo-module-scripts`](https://www.npmjs.com/package/expo-module-scripts).
+Refer to the [config plugins guide](https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin) for more info on using TypeScript, and Jest to build plugins.
+
+### Installing dependencies
+
+Use the following dependencies in a library that provides a config plugin:
+
+```json package.json
+{
+  "dependencies": {},
+  "devDependencies": {
+    "expo": "^47.0.0"
+  },
+  "peerDependencies": {
+    "expo": ">=47.0.0"
+  },
+  "peerDependenciesMeta": {
+    "expo": {
+      "optional": true
+    }
+  }
+}
+```
+
+- You may update the exact version of `expo` to build against a specific version.
+- For simple config plugins that depend on core, stable APIs, such as a plugin that only modifies **AndroidManifest.xml** or **Info.plist**, you can use a loose dependency such as in the example above.
+- You may also want to install [`expo-module-scripts`](https://github.com/expo/expo/blob/main/packages/expo-module-scripts/README.md) as a development dependency, but it's not required.
+
+### Importing the config plugins package
+
+The `expo/config-plugins` and `expo/config` packages are re-exported from the `expo` package.
+
+```js
+const { /* @hide ...*//* @end */ } = require('expo/config-plugins');
+const { /* @hide ...*//* @end */ } = require('expo/config');
+```
+
+Importing through the `expo` package ensures that you are using the version of the `expo/config-plugins` and `expo/config` packages that are depended on by the `expo` package.
+
+If you do not import the package through the `expo` re-export in this way, you may accidentally be importing an incompatible version
+(depending on the implementation details of module hoisting in the package manager used by the developer consuming the module) or be unable to import the module at all
+(if using "plug and play" features of a package manager such as Yarn Berry or pnpm).
+
+Config types are exported directly from `expo/config`, so there is no need to install or import from `expo/config-types`:
+
+```ts
+import { ExpoConfig, ConfigContext } from 'expo/config';
+```
+
+<Collapsible summary="Using SDK 46 or lower?">
+
+For SDK 46 and lower, import the `@expo/config-plugins` package directly. This is installed automatically by the `expo` package, but not re-exported as it is in SDK 47 and higher.
+
+```js
+const { /* @hide ...*//* @end */ } = require('@expo/config-plugins');
+```
+
+</Collapsible>
+
+### Best practices for mods
+
+- Avoid regex: [static modification](#static-modification) is key. If you want to modify a value in an Android gradle file, consider using `gradle.properties`. If you want to modify some code in the Podfile, consider writing to JSON and having the Podfile read the static values.
+- Avoid performing long-running tasks like making network requests or installing Node modules in mods.
+- Do not add interactive terminal prompts in mods.
+- Generate, move, and delete new files in dangerous mods only. Failing to do so will break [introspection](#introspection).
+- Utilize built-in config plugins like `withXcodeProject` to minimize the amount of times a file is read and parsed.
+- Stick with the XML parsing libraries that prebuild uses internally, this helps prevent changes where code is rearranged needlessly.
+
+### Tooling
+
+We highly recommend installing the [Expo Tools VS Code plugin](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo)
+as this will perform automatic validation on the plugins and surface error information along with other quality of life improvements for Config Plugin development.
+
+### Setting up a playground environment
+
+You can develop plugins easily using JS, but if you want to setup Jest tests and use TypeScript, you will want a monorepo.
+
+A monorepo will enable you to work on a node module and import it in your Expo config like you would if it were published to npm.
+Expo config plugins have full monorepo support built-in so all you need to do is setup a project.
+
+In your monorepo's `packages/` folder, create a module, and [bootstrap a config plugin](https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin) in it.
+
+### Manually running a plugin
+
+If you aren't comfortable with setting up a monorepo, you can try manually running a plugin:
+
+- Run `npm pack` in the package with the config plugin
+- In your test project, run `npm install path/to/react-native-my-package-1.0.0.tgz`, this will add the package to your **package.json** `dependencies` object.
+- Add the package to the `plugins` array in your **app.json**: `{ "plugins": ["react-native-my-package"] }`
+  - If you have [VS Code Expo Tools][vscode-expo] installed, autocomplete should work for the plugin.
+- If you need to update the package, change the `version` in the package's **package.json** and repeat the process.
+
+### Modifying the AndroidManifest.xml
+
+Packages should attempt to use the built-in **AndroidManifest.xml** [merging system](https://developer.android.com/studio/build/manage-manifests)
+before using a config plugin. This can be used for static, non-optional features like permissions.
+This will ensure features are merged during build-time and not prebuild-time, which minimizes the possibility of users forgetting to prebuild.
+The drawback is that users cannot use [introspection](#introspection) to preview the changes and debug any potential issues.
+
+Here is an example of a package's **AndroidManifest.xml**, which injects a required permission:
+
+```xml AndroidManifest.xml
+<!-- @info Include <code>xmlns:android="..."</code> to use <code>android:*</code> properties like <code>android:name</code> in your manifest. -->
+<manifest package="expo.modules.filesystem" xmlns:android="http://schemas.android.com/apk/res/android">
+  <!-- @end -->
+  <uses-permission android:name="android.permission.INTERNET"/>
+</manifest>
+```
+
+If you're building a plugin for your local project, or if your package needs more control, then you should implement a plugin.
+
+You can use built-in types and helpers to ease the process of working with complex objects.
+Here's an example of adding a `<meta-data android:name="..." android:value="..."/>` to the default `<application android:name=".MainApplication" />`.
+
+```ts my-config-plugin.ts
+import { AndroidConfig, ConfigPlugin, withAndroidManifest } from 'expo/config-plugins';
+import { ExpoConfig } from 'expo/config';
+
+// Use these imports in SDK 46 and lower
+// import { AndroidConfig, ConfigPlugin, withAndroidManifest } from '@expo/config-plugins';
+// import { ExpoConfig } from '@expo/config-types';
+
+// Using helpers keeps error messages unified and helps cut down on XML format changes.
+const { addMetaDataItemToMainApplication, getMainApplicationOrThrow } = AndroidConfig.Manifest;
+
+export const withMyCustomConfig: ConfigPlugin = config => {
+  return withAndroidManifest(config, async config => {
+    // Modifiers can be async, but try to keep them fast.
+    config.modResults = await setCustomConfigAsync(config, config.modResults);
+    return config;
+  });
+};
+
+// Splitting this function out of the mod makes it easier to test.
+async function setCustomConfigAsync(
+  config: Pick<ExpoConfig, 'android'>,
+  androidManifest: AndroidConfig.Manifest.AndroidManifest
+): Promise<AndroidConfig.Manifest.AndroidManifest> {
+  const appId = 'my-app-id';
+  // Get the <application /> tag and assert if it doesn't exist.
+  const mainApplication = getMainApplicationOrThrow(androidManifest);
+
+  addMetaDataItemToMainApplication(
+    mainApplication,
+    // value for `android:name`
+    'my-app-id-key',
+    // value for `android:value`
+    appId
+  );
+
+  return androidManifest;
+}
+```
+
+### Modifying the Info.plist
+
+Using the `withInfoPlist` is a bit safer than statically modifying the `expo.ios.infoPlist` object in the **app.json** because it reads the contents of the Info.plist and merges it with the `expo.ios.infoPlist`, this means you can attempt to keep your changes from being overwritten.
+
+Here's an example of adding a `GADApplicationIdentifier` to the **Info.plist**:
+
+```ts my-config-plugin.ts
+import { ConfigPlugin, withInfoPlist } from 'expo/config-plugins';
+
+// Use these imports in SDK 46 and lower
+// import { ConfigPlugin, InfoPlist, withInfoPlist } from '@expo/config-plugins';
+// import { ExpoConfig } from '@expo/config-types';
+
+// Pass `<string>` to specify that this plugin requires a string property.
+export const withCustomConfig: ConfigPlugin<string> = (config, id) => {
+  return withInfoPlist(config, config => {
+    config.modResults.GADApplicationIdentifier = id;
+    return config;
+  });
+};
+```
+
+### Modifying the iOS Podfile
+
+The iOS **Podfile** is the config file for CocoaPods, the dependency manager on iOS. It is similar to **package.json** for iOS.
+The **Podfile** is a ruby file (application code), which means you **cannot** safely modify it from Expo config plugins and should opt for another approach, such as [Expo Autolinking](modules/autolinking) hooks.
+
+Currently, we do have a configuration that interacts with the CocoaPods file though.
+
+Podfile configuration is often done with environment variables:
+
+- `process.env.EXPO_USE_SOURCE` when set to `1`, Expo modules will install source code instead of xcframeworks.
+- `process.env.CI` in some projects, when set to `0`, Flipper installation will be skipped.
+
+We do expose one mechanism for safely interacting with the Podfile, but it's very limited.
+The versioned [template Podfile](https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum/ios/Podfile) is hard coded to read
+from a static JSON file **Podfile.properties.json**, we expose a mod (`ios.podfileProperties`, `withPodfileProperties`) to safely read and write from this file.
+This is used by [expo-build-properties](/versions/latest/sdk/build-properties) and to configure the JavaScript engine.
+
+### Adding plugins to pluginHistory
+
+`_internal.pluginHistory` was created to prevent duplicate plugins from running while migrating from legacy UNVERSIONED plugins to versioned plugins.
+
+```ts my-config-plugin.ts
+import { ConfigPlugin, createRunOncePlugin } from 'expo/config-plugins';
+
+// Use this import in SDK 46 and lower
+// import { ConfigPlugin, createRunOncePlugin } from '@expo/config-plugins';
+
+// Keeping the name, and version in sync with it's package.
+const pkg = require('my-cool-plugin/package.json');
+
+const withMyCoolPlugin: ConfigPlugin = config => config;
+
+// A helper method that wraps `withRunOnce` and appends items to `pluginHistory`.
+export default createRunOncePlugin(
+  // The plugin to guard.
+  withMyCoolPlugin,
+  // An identifier used to track if the plugin has already been run.
+  pkg.name,
+  // Optional version property, if omitted, defaults to UNVERSIONED.
+  pkg.version
+);
+```
+
+### Plugin development best practices
+
+- **Instructions in your README**: If the plugin is tied to a React Native module, then you should document manual setup instructions for the package.
+  If anything goes wrong with the plugin, users should still be able to manually add the package to their project.
+  Doing this often helps you to find ways to reduce the setup, which can lead to a simpler plugin.
+  - Document the available properties for the plugin, and specify if the plugin works without props.
+  - If you can make your plugin work after running prebuild multiple times, that’s a big plus! It can improve the developer experience to be able to run `expo prebuild` without the `--clean` flag to sync changes.
+- **Naming conventions**: Use `withFeatureName` if cross-platform. If the plugin is platform specific, use a camel case naming with the platform right after “with”. For example, `withAndroidSplash`, `withIosSplash`.
+  There is no universally agreed upon casing for `iOS` in camel cased identifiers, we prefer this style and suggest using it for your config plugins too.
+- **Leverage built-in plugins**: Account for built-in plugins from the [prebuild config](https://github.com/expo/expo-cli/blob/master/packages/prebuild-config/src/plugins/withDefaultPlugins.ts).
+  Some features are included for historical reasons, like the ability to automatically copy and link [Google services files](https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/ios/Google.ts#L15) defined in the Expo config.
+  If there is overlap, then maybe recommend the user uses the built-in types to keep your plugin as simple as possible.
+- **Split up plugins by platform**: For example — `withIosSplash`, `withAndroidSplash`. This makes using the `--platform` flag in `expo prebuild` a bit easier to follow in `EXPO_DEBUG` mode.
+- **Unit test your plugin**: Write Jest tests for complex modifications. If your plugin requires access to the filesystem,
+  use a mock system (we strongly recommend [`memfs`][memfs]), you can see examples of this in the [`expo-notifications`](https://github.com/expo/expo/blob/fc3fb2e81ad3a62332fa1ba6956c1df1c3186464/packages/expo-notifications/plugin/src/__tests__/withNotificationsAndroid-test.ts#L34) plugin tests.
+  - Notice the root [\*\*/\_\_mocks\_\_/\*\*/*](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/__mocks__) folder and [**plugin/jest.config.js**](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/jest.config.js).
+- A TypeScript plugin is always better than a JavaScript plugin. Check out the [`expo-module-script` plugin][ems-plugin] tooling for more info.
+- Do not modify the `sdkVersion` via a config plugin, this can break commands like `expo install` and cause other unexpected issues.
+
+### Versioning
+
+By default, `expo prebuild` runs transformations on a [source template][source-template] associated with the Expo SDK version that a project is using.
+The SDK version is defined in the **app.json** or inferred from the installed version of `expo` that the project has.
+
+When Expo SDK upgrades to a new version of React Native for instance, the template may change significantly to account for changes in React Native or new releases of Android or iOS.
+
+If your plugin is mostly using [static modifications](#static-modification) then it will work well across versions.
+If it's using a regular expression to transform application code, then you'll definitely want to document which Expo SDK version your plugin is intended for.
+Expo releases a new version quarterly (every 3 months), and there is a [beta period](https://github.com/expo/expo/blob/main/guides/releasing/Release%20Workflow.md#stage-5---beta-release) where you can test if your plugin works with the new version before it's released.
+
+{/* TODO: versioned plugin wrapper */}
+
+### Plugin properties
+
+Properties are used to customize the way a plugin works during prebuild.
+
+Properties MUST always be static values (no functions, or promises). Consider the following types:
+
+```ts
+type StaticValue = boolean | number | string | null | StaticArray | StaticObject;
+
+type StaticArray = StaticValue[];
+
+interface StaticObject {
+  [key: string]: StaticValue | undefined;
+}
+```
+
+Static properties are required because the Expo config must be serializable to JSON for use as the app manifest.
+Static properties can also enable tooling that generates JSON schema type checking for autocomplete and IntelliSense.
+
+If possible, attempt to make your plugin work without props, this will help resolution tooling like [`expo install`](#expo-install) or [VS Code Expo Tools][vscode-expo] work better.
+Remember that every property you add increases complexity, making it harder to change in the future and increase the amount of features you'll need to test.
+Good default values are preferred over mandatory configuration when feasible.
+
+### Configuring Android App Startup
+
+You may find that your project requires configuration to be setup before the JS engine has started.
+For example, in `expo-splash-screen` on Android, we need to specify the resize mode in the **MainActivity.java**'s `onCreate` method.
+Instead of attempting to dangerously regex these changes into the `MainActivity` via a dangerous mod, we use a system of lifecycle hooks and static settings
+to safely ensure the feature works across all supported Android languages (Java, Kotlin), versions of Expo, and combination of config plugins.
+
+This system is made up of three components:
+
+- `ReactActivityLifecycleListeners`: An interface exposed by `expo-modules-core` to get a native callback when the project `ReactActivity`'s `onCreate` method is invoked.
+- `withStringsXml`: A mod exposed by `expo/config-plugins` which writes a property to the Android **strings.xml** file, the library can safely read the strings.xml value and do initial setup. The string XML values follow a designated format for consistency.
+- `SingletonModule` (optional): An interface exposed by `expo-modules-core` to create a shared interface between native modules and `ReactActivityLifecycleListeners`.
+
+Consider this example: We want to set a custom "value" string to a property on the Android `Activity`, directly after the `onCreate` method was invoked.
+We can do this safely by creating a node module `expo-custom`, implementing `expo-modules-core`, and Expo config plugins:
+
+First, we register the `ReactActivity` listener in our Android native module, this will only be invoked if the user has `expo-modules-core` support, setup in their project (default in projects bootstrapped with Expo CLI, Create React Native App, Ignite CLI, and Expo prebuilding).
+
+```kotlin expo-custom/android/src/main/java/expo/modules/custom/CustomPackage.kt
+package expo.modules.custom
+
+import android.content.Context
+import expo.modules.core.BasePackage
+import expo.modules.core.interfaces.ReactActivityLifecycleListener
+
+class CustomPackage : BasePackage() {
+  override fun createReactActivityLifecycleListeners(activityContext: Context): List<ReactActivityLifecycleListener> {
+    return listOf(CustomReactActivityLifecycleListener(activityContext))
+  }
+
+  // ...
+}
+```
+
+Next we implement the `ReactActivity` listener, this is passed the `Context` and is capable of reading from the project **strings.xml** file.
+
+```kotlin expo-custom/android/src/main/java/expo/modules/custom/CustomReactActivityLifecycleListener.kt
+package expo.modules.custom
+
+import android.app.Activity
+import android.content.Context
+import android.os.Bundle
+import android.util.Log
+import expo.modules.core.interfaces.ReactActivityLifecycleListener
+
+class CustomReactActivityLifecycleListener(activityContext: Context) : ReactActivityLifecycleListener {
+  override fun onCreate(activity: Activity, savedInstanceState: Bundle?) {
+    // Execute static tasks before the JS engine starts.
+    // These values are defined via config plugins.
+
+    var value = getValue(activity)
+    if (value != "") {
+      // Do something to the Activity that requires the static value...
+    }
+  }
+
+  // Naming is node module name (`expo-custom`) plus value name (`value`) using underscores as a delimiter
+  // i.e. `expo_custom_value`
+  // `@expo/vector-icons` + `iconName` -> `expo__vector_icons_icon_name`
+  private fun getValue(context: Context): String = context.getString(R.string.expo_custom_value).toLowerCase()
+}
+```
+
+We must define default **string.xml** values which the user will overwrite locally by using the same `name` property in their **strings.xml** file.
+
+```xml expo-custom/android/src/main/res/values/strings.xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="expo_custom_value" translatable="false"></string>
+</resources>
+```
+
+At this point, bare users can configure this value by creating a string in their local **strings.xml** file (assuming they also have `expo-modules-core` support setup):
+
+```xml ./android/app/src/main/res/values/strings.xml
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="expo_custom_value" translatable="false">I Love Expo</string>
+</resources>
+```
+
+For managed users, we can expose this functionality (safely!) via an Expo config plugin:
+
+```js expo-custom/app.plugin.js
+const { AndroidConfig, withStringsXml } = require('expo/config-plugins');
+
+function withCustom(config, value) {
+  return withStringsXml(config, config => {
+    config.modResults = setStrings(config.modResults, value);
+    return config;
+  });
+}
+
+function setStrings(strings, value) {
+  // Helper to add string.xml JSON items or overwrite existing items with the same name.
+  return AndroidConfig.Strings.setStringItem(
+    [
+      // XML represented as JSON
+      // <string name="expo_custom_value" translatable="false">value</string>
+      { $: { name: 'expo_custom_value', translatable: 'false' }, _: value },
+    ],
+    strings
+  );
+}
+```
+
+Managed Expo users can now interact with this API like so:
+
+```json app.json
+{
+  "expo": {
+    "plugins": [["expo-custom", "I Love Expo"]]
+  }
+}
+```
+
+By re-running `expo prebuild -p` (`eas build -p android`, or `expo run:ios`) the user can now see the changes, safely applied in their managed project!
+
+As you can see from the example, we rely heavily on application code (expo-modules-core) to interact with application code (the native project). This ensures that our config plugins are safe and reliable, hopefully for a very long time!
+
+## Debugging
+
+You can debug config plugins by running `EXPO_DEBUG=1 expo prebuild`. If `EXPO_DEBUG` is enabled, the plugin stack logs will be printed,
+these are useful for viewing which mods ran, and in what order they ran in.
+To view all static plugin resolution errors, enable `EXPO_CONFIG_PLUGIN_VERBOSE_ERRORS`, this should only be needed for plugin authors.
+By default, some automatic plugin errors are hidden because they're usually related to versioning issues and aren't very helpful (that is, legacy package doesn't have a config plugin yet).
+
+Running `expo prebuild --clean` with remove the generated native folders before compiling.
+
+You can also run `expo config --type prebuild` to print the results of the plugins with the mods unevaluated (no code is generated).
+
+Expo CLI commands can be profiled using `EXPO_PROFILE=1`.
+
+## Introspection
+
+Introspection is an advanced technique used to read the evaluated results of modifiers without generating any code in the project.
+This can be used to quickly debug the results of [static modifications](#static-modification) without needing to run prebuild.
+You can interact with introspection live, by using the [preview feature](https://github.com/expo/vscode-expo#expo-preview-modifier) of `vscode-expo`.
+
+You can try introspection by running `expo config --type introspect` in a project.
+
+Introspection only supports a subset of modifiers:
+
+- `android.manifest`
+- `android.gradleProperties`
+- `android.strings`
+- `android.colors`
+- `android.colorsNight`
+- `android.styles`
+- `ios.infoPlist`
+- `ios.entitlements`
+- `ios.expoPlist`
+- `ios.podfileProperties`
+
+> Introspection only works on safe modifiers (static files like JSON, XML, plist, properties), with the exception of `ios.xcodeproj` which often requires file system changes, making it non idempotent.
+
+Introspection works by creating custom base mods that work like the default base mods, except they don't write the `modResults` to disk at the end.
+Instead of persisting, they save the results to the Expo config under `_internal.modResults`, followed by the name of the mod
+such as the `ios.infoPlist` mod saves to `_internal.modResults.ios.infoPlist: {}`.
+
+As a real-world example, introspection is used by `eas-cli` to determine what the final iOS entitlements will be in a managed app,
+so it can sync them with the Apple Developer Portal before building. Introspection can also be used as a handy debugging and development tool.
+
+{/* TODO: Link to VS Code extension after preview feature lands */}
+
+## Legacy plugins
+
+In order to make `eas build` work the same as the classic `expo build` service, we added support for "legacy plugins" which are applied automatically to a project when they're installed in the project.
+
+For instance, say a project has `expo-camera` installed but doesn't have `plugins: ['expo-camera']` in their **app.json**.
+Expo CLI would automatically add `expo-camera` to the plugins to ensure that the required camera and microphone permissions are added to the project.
+The user can still customize the `expo-camera` plugin by adding it to the `plugins` array manually, and the manually defined plugins will take precedence over the automatic plugins.
+
+You can debug which plugins were added by running `expo config --type prebuild` and seeing the `_internal.pluginHistory` property.
+
+This will show an object with all plugins that were added using `withRunOnce` plugin from `expo/config-plugins`.
+
+Notice that `expo-location` uses `version: '11.0.0'`, and `react-native-maps` uses `version: 'UNVERSIONED'`. This means the following:
+
+- `expo-location` and `react-native-maps` are both installed in the project.
+- `expo-location` is using the plugin from the project's `node_modules/expo-location/app.plugin.js`
+- The version of `react-native-maps` installed in the project doesn't have a plugin, so it's falling back on the unversioned plugin that is shipped with `expo-cli` for legacy support.
+
+```json
+{
+  _internal: {
+    pluginHistory: {
+      'expo-location': {
+        name: 'expo-location',
+        version: '11.0.0',
+      },
+      'react-native-maps': {
+        name: 'react-native-maps',
+        version: 'UNVERSIONED',
+      },
+    },
+  },
+};
+```
+
+For the most _stable_ experience, you should try to have no `UNVERSIONED` plugins in your project. This is because the `UNVERSIONED` plugin may not support the native code in your project.
+For instance, say you have an `UNVERSIONED` Facebook plugin in your project, if the Facebook native code or plugin has a breaking change, that will break the way your project prebuilds and cause it to error on build.
+
+## Static Modification
+
+Plugins can transform application code with regular expressions, but these modifications are dangerous, if the template changes over time
+then the regex becomes hard to predict (similarly, if the user modifies a file manually or uses a custom template).
+Here are some examples of files you shouldn't modify manually, and alternatives.
+
+### Android Gradle Files
+
+Gradle files are written in either Groovy or Kotlin. They are used to manage dependencies, versioning, and other settings in the Android app.
+Instead of modifying them directly with the `withProjectBuildGradle`, `withAppBuildGradle`, or `withSettingsGradle` mods, utilize the static `gradle.properties` file.
+
+The `gradle.properties` is a static key/value pair that groovy files can read from. For example, say you wanted to control some toggle in Groovy:
+
+```properties gradle.properties
+# @info Safely modified using the <code>withGradleProperties()</code> mod. #
+expo.react.jsEngine=hermes
+# @end #
+```
+
+Then later in a Gradle file:
+
+```groovy app/build.gradle
+project.ext.react = [/* @info This code would be added to the template ahead of time, but it could be regexed in using <code>withAppBuildGradle()</code> */ enableHermes: findProperty('expo.react.jsEngine') ?: 'jsc' /* @end */]
+```
+
+- For keys in the `gradle.properties`, use camel case separated by `.`s, and usually starting with the `expo` prefix to denote that the property is managed by prebuild.
+- To access the property, use one of two global methods:
+  - `property`: Get a property, throw an error if the property is not defined.
+  - `findProperty`: Get a property without throwing an error if the property is missing. This can often be used with the `?:` operator to provide a default value.
+
+Generally, you should only interact with the Gradle file via Expo [Autolinking][autolinking], this provides a programmatic interface with the project files.
+
+### iOS App Delegate
+
+Some modules may need to add delegate methods to the project AppDelegate, this can be done dangerously via the `withAppDelegate` mod,
+or it can be done safely by adding support for unimodules AppDelegate proxy to the native module.
+The unimodules AppDelegate proxy can swizzle function calls to native modules in a safe and reliable way.
+If the language of the project AppDelegate changes from Objective-C to Swift, the swizzler will continue to work, whereas a regex would possibly fail.
+
+Here are some examples of the AppDelegate proxy in action:
+
+- `expo-app-auth` -- [**EXAppAuthAppDelegate.m**](https://github.com/expo/expo/blob/bd7bc03ee10d89487eac25351a455bd9db155b8c/packages/expo-app-auth/ios/EXAppAuth/EXAppAuthAppDelegate.m) (openURL)
+- `expo-branch` -- [**EXBranchManager.m**](https://github.com/expo/expo/blob/636b55ab767f502f29c922a34821434efff04034/packages/expo-branch/ios/EXBranch/EXBranchManager.m) (didFinishLaunchingWithOptions, continueUserActivity, openURL)
+- `expo-notifications` -- [**EXPushTokenManager.m**](https://github.com/expo/expo/blob/bd469e421856f348d539b1b57325890147935dbc/packages/expo-notifications/ios/EXNotifications/PushToken/EXPushTokenManager.m) (didRegisterForRemoteNotificationsWithDeviceToken, didFailToRegisterForRemoteNotificationsWithError)
+- `expo-facebook` -- [**EXFacebookAppDelegate.m**](https://github.com/expo/expo/blob/e0bb254c889734f2ec6c7b688167f013587ed201/packages/expo-facebook/ios/EXFacebook/EXFacebookAppDelegate.m) (openURL)
+- `expo-file-system` -- [**EXSessionHandler.m**](https://github.com/expo/expo/blob/e0bb254c889734f2ec6c7b688167f013587ed201/packages/expo-file-system/ios/EXFileSystem/EXSessionTasks/EXSessionHandler.m) (handleEventsForBackgroundURLSession)
+
+Currently, the only known way to add support for the AppDelegate proxy to a native module, without converting that module to a unimodule,
+is to create a wrapper package: [example](https://github.com/expo/expo/pull/5165).
+
+We plan to improve this in the future.
+
+### iOS CocoaPods Podfile
+
+The `ios/Podfile` can be customized dangerously with regex, or statically via JSON:
+
+```ruby Podfile
+require 'json'
+
+# @info Import a JSON file and parse it in Ruby #
+podfileConfig = JSON.parse(File.read(File.join(__dir__, 'podfile.config.json')))
+# @end #
+
+platform :ios, '11.0'
+
+target 'yolo27' do
+  use_unimodules!
+  config = use_native_modules!
+  use_react_native!(:path => config["reactNativePath"])
+
+  # podfileConfig['version']
+end
+```
+
+Generally, you should only interact with the Podfile via Expo [Autolinking][autolinking], this provides a programmatic interface with the project files.
+
+### Custom Base Modifiers
+
+The Expo CLI `expo prebuild` command uses [`@expo/prebuild-config`][prebuild-config] to get the default base modifiers. These defaults only manage a subset of common files, if you want to manage custom files you can do that locally by adding new base modifiers.
+
+For example, say you wanted to add support for managing the `ios/*/AppDelegate.h` file, you could do this by adding a `ios.appDelegateHeader` modifier.
+
+> This example uses `ts-node` for simple local TypeScript support, this isn't strictly necessary. [Learn more](/guides/typescript/#appconfigjs).
+
+```ts withAppDelegateHeaderBaseMod.ts
+import { ConfigPlugin, IOSConfig, Mod, withMod, BaseMods } from 'expo/config-plugins';
+import fs from 'fs';
+
+/**
+ * A plugin which adds new base modifiers to the prebuild config.
+ */
+export function withAppDelegateHeaderBaseMod(config) {
+  return BaseMods.withGeneratedBaseMods<'appDelegateHeader'>(config, {
+    platform: 'ios',
+    providers: {
+      // Append a custom rule to supply AppDelegate header data to mods on `mods.ios.appDelegateHeader`
+      appDelegateHeader: BaseMods.provider<IOSConfig.Paths.AppDelegateProjectFile>({
+        // Get the local filepath that should be passed to the `read` method.
+        getFilePath({ modRequest: { projectRoot } }) {
+          const filePath = IOSConfig.Paths.getAppDelegateFilePath(projectRoot);
+          // Replace the .m with a .h
+          if (filePath.endsWith('.m')) {
+            return filePath.substr(0, filePath.lastIndexOf('.')) + '.h';
+          }
+          // Possibly a Swift project...
+          throw new Error(`Could not locate a valid AppDelegate.h at root: "${projectRoot}"`);
+        },
+        // Read the input file from the filesystem.
+        async read(filePath) {
+          return IOSConfig.Paths.getFileInfo(filePath);
+        },
+        // Write the resulting output to the filesystem.
+        async write(filePath: string, { modResults: { contents } }) {
+          await fs.promises.writeFile(filePath, contents);
+        },
+      }),
+    },
+  });
+}
+
+/**
+ * (Utility) Provides the AppDelegate header file for modification.
+ */
+export const withAppDelegateHeader: ConfigPlugin<Mod<IOSConfig.Paths.AppDelegateProjectFile>> = (
+  config,
+  action
+) => {
+  return withMod(config, {
+    platform: 'ios',
+    mod: 'appDelegateHeader',
+    action,
+  });
+};
+
+// (Example) Log the contents of the modifier.
+export const withSimpleAppDelegateHeaderMod = config => {
+  return withAppDelegateHeader(config, config => {
+    console.log('modify header:', config.modResults);
+    return config;
+  });
+};
+```
+
+To use this new base mod, add it to the plugins array. The base mod **MUST** be added last after all other plugins that use the mod, this is because it must write the results to disk at the end of the process.
+
+```js app.config.js
+// Required for external files using TS
+require('ts-node/register');
+
+import {
+  withAppDelegateHeaderBaseMod,
+  withSimpleAppDelegateHeaderMod,
+} from './withAppDelegateHeaderBaseMod.ts';
+
+export default ({ config }) => {
+  if (!config.plugins) config.plugins = [];
+  config.plugins.push(
+    withSimpleAppDelegateHeaderMod,
+
+    // Base mods MUST be last
+    withAppDelegateHeaderBaseMod
+  );
+  return config;
+};
+```
+
+For more info, see [the PR that adds support](https://github.com/expo/expo-cli/pull/3852) for this feature.
+
+## expo install
+
+Node modules with config plugins can be added to the project's Expo config automatically by using the `expo install` command. [Related PR](https://github.com/expo/expo-cli/pull/3437).
+
+This makes setup a bit easier and helps prevent users from forgetting to add a plugin.
+
+This does come with a couple of caveats:
+
+1. Packages must export a plugin via **app.plugin.js**, this rule was added to prevent popular packages like `lodash` from being mistaken for a config plugin and breaking the prebuild.
+2. There is currently no mechanism for detecting if a config plugin has mandatory props. Because of this, `expo install` will only add the plugin,
+   and not attempt to add any extra props. For example, `expo-camera` has optional extra props, so `plugins: ['expo-camera']` is valid,
+   but if it had mandatory props then `expo-camera` would throw an error.
+3. Plugins can only be automatically added when the user's project uses a static Expo config (**app.json** and **app.config.json**).
+   If the user runs `expo install expo-camera` in a project with an **app.config.js**, they'll see a warning like:
+
+```
+Cannot automatically write to dynamic config at: app.config.js
+Please add the following to your Expo config
+
+{
+  "plugins": [
+    "expo-camera"
+  ]
+}
+```
+
+[config-docs]: /versions/latest/config/app/
+[prebuild-config]: https://github.com/expo/expo-cli/tree/main/packages/prebuild-config#readme
+[cli-prebuild]: /workflow/expo-cli/#expo-prebuild
+[configplugin]: https://github.com/expo/expo-cli/blob/3a0ef962a27525a0fe4b7e5567fb7b3fb18ec786/packages/config-plugins/src/Plugin.types.ts#L76
+[source-template]: https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum
+[expo-beta-docs]: https://github.com/expo/expo/tree/main/guides/releasing/Release%20Workflow.mdx#stage-5---beta-release
+[vscode-expo]: https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo
+[ems-plugin]: https://github.com/expo/expo/tree/main/packages/expo-module-scripts#-config-plugin
+[xml2js]: https://www.npmjs.com/package/xml2js
+[expo-plist]: https://www.npmjs.com/package/@expo/plist
+[memfs]: https://www.npmjs.com/package/memfs
+[emc]: https://github.com/expo/expo/tree/main/packages/expo-modules-core
+[autolinking]: /workflow/glossary-of-terms#autolinking

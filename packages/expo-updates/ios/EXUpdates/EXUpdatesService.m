@@ -5,8 +5,22 @@
 #import <EXUpdates/EXUpdatesService.h>
 #import <ExpoModulesCore/EXUtilities.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
+/**
+ * Internal module whose purpose is to connect EXUpdatesModule with the central updates entry point.
+ * In most apps, this is EXUpdatesAppController.
+ *
+ * In other cases, this module can be overridden at runtime to redirect EXUpdatesModule to a
+ * different entry point. This is the case in Expo Go, where this module is overridden by
+ * EXUpdatesBinding in order to get data from EXAppLoaderExpoUpdates.
+ */
 @implementation EXUpdatesService
 
 EX_REGISTER_MODULE();
@@ -60,6 +74,14 @@ EX_REGISTER_MODULE();
 - (BOOL)isUsingEmbeddedAssets
 {
   return EXUpdatesAppController.sharedInstance.isUsingEmbeddedAssets;
+}
+
+- (BOOL)isEmbeddedLaunch
+{
+  // True if the embedded update and its ID are not nil, and match
+  // the ID of the launched update
+  return [[self embeddedUpdate] updateId] != nil &&
+  [[[self embeddedUpdate] updateId] isEqual:[[self launchedUpdate] updateId]];
 }
 
 - (BOOL)isStarted

@@ -170,15 +170,13 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
   };
 
   componentWillUnmount() {
-    try {
-      // Auto unload video to perform necessary cleanup safely
-      this.unloadAsync();
-    } catch {
-      // Ignored. Sometimes the unloadAsync code is executed when video is already unloaded.
+    // Auto unload video to perform necessary cleanup safely
+    this.unloadAsync().catch(() => {
+      // Ignored rejection. Sometimes the unloadAsync code is executed when video is already unloaded.
       // In such cases, it throws:
       // "[Unhandled promise rejection: Error: Invalid view returned from registry,
       //  expecting EXVideo, got: (null)]"
-    }
+    });
   }
 
   /**
@@ -239,7 +237,7 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
     tolerances?: AVPlaybackTolerance
   ) => Promise<AVPlaybackStatus>;
   setRateAsync!: (rate: number, shouldCorrectPitch: boolean) => Promise<AVPlaybackStatus>;
-  setVolumeAsync!: (volume: number) => Promise<AVPlaybackStatus>;
+  setVolumeAsync!: (volume: number, audioPan?: number) => Promise<AVPlaybackStatus>;
   setIsMutedAsync!: (isMuted: boolean) => Promise<AVPlaybackStatus>;
   setIsLoopingAsync!: (isLooping: boolean) => Promise<AVPlaybackStatus>;
   setProgressUpdateIntervalAsync!: (
@@ -286,10 +284,16 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
     }
   };
 
-  _renderPoster = () =>
-    this.props.usePoster && this.state.showPoster ? (
-      <Image style={[_STYLES.poster, this.props.posterStyle]} source={this.props.posterSource!} />
+  _renderPoster = () => {
+    const PosterComponent = this.props.PosterComponent ?? Image;
+
+    return this.props.usePoster && this.state.showPoster ? (
+      <PosterComponent
+        style={[_STYLES.poster, this.props.posterStyle]}
+        source={this.props.posterSource!}
+      />
     ) : null;
+  };
 
   render() {
     const source = getNativeSourceFromSource(this.props.source) || undefined;
@@ -333,7 +337,8 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
         'posterStyle',
         ...Object.keys(status),
       ]),
-      style: StyleSheet.flatten([_STYLES.base, this.props.style]),
+      style: [_STYLES.base, this.props.style],
+      videoStyle: [_STYLES.video, this.props.videoStyle],
       source,
       resizeMode: nativeResizeMode,
       status,
@@ -347,7 +352,7 @@ class Video extends React.Component<VideoProps, VideoState> implements Playback 
 
     return (
       <View style={nativeProps.style} pointerEvents="box-none">
-        <ExponentVideo ref={this._nativeRef} {...nativeProps} style={_STYLES.video} />
+        <ExponentVideo ref={this._nativeRef} {...nativeProps} style={nativeProps.videoStyle} />
         {this._renderPoster()}
       </View>
     );

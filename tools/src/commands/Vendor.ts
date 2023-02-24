@@ -1,15 +1,23 @@
 import { Command } from '@expo/commander';
 import chalk from 'chalk';
+import fs from 'fs-extra';
 import inquirer from 'inquirer';
 import os from 'os';
 import path from 'path';
 
+import { Podspec, readPodspecAsync } from '../CocoaPods';
+import {
+  buildFrameworksForProjectAsync,
+  cleanTemporaryFilesAsync,
+  generateXcodeProjectSpecFromPodspecAsync,
+} from '../prebuilds/Prebuilder';
 import {
   Append,
   Clone,
   CopyFiles,
   Pipe,
   Platform,
+  PrefixHeaders,
   prefixPackage,
   RemoveDirectory,
   renameClass,
@@ -18,26 +26,45 @@ import {
   TransformFilesContent,
   TransformFilesName,
 } from '../vendoring/devmenu';
+import { GenerateJsonFromPodspec } from '../vendoring/devmenu/steps/GenerateJsonFromPodspec';
+import { MessageType, Print } from '../vendoring/devmenu/steps/Print';
 import { RemoveFiles } from '../vendoring/devmenu/steps/RemoveFiles';
+import { toRepoPath } from '../vendoring/devmenu/utils';
 
-const CONFIGURATIONS = {
+async function getRequierdIosVersion(): Promise<string> {
+  const devMenuPodspec = await readPodspecAsync(
+    toRepoPath('packages/expo-dev-menu/expo-dev-menu.podspec')
+  );
+
+  return devMenuPodspec['platforms']['ios'] as string;
+}
+
+type Config = {
+  transformations: Pipe;
+  prebuild?: PrebuildConfig;
+};
+
+type PrebuildConfig = {
+  podspecPath: string;
+  output: string;
+};
+
+const CONFIGURATIONS: { [name: string]: Config } = {
   '[dev-menu] reanimated': getReanimatedPipe(),
   '[dev-menu] gesture-handler': getGestureHandlerPipe(),
-  '[dev-menu] safe-area-context': getSafeAreaPipe(),
+  '[dev-menu] safe-area-context': getSafeAreaConfig(),
 };
 
 function getReanimatedPipe() {
-  console.warn(
-    'You have to adjust the installation steps of the react-native-reanimated to work well with the react-native-gesture-handler. For more information go to the https://github.com/expo/expo/pull/17878'
-  );
   const destination = 'packages/expo-dev-menu/vendored/react-native-reanimated';
 
   // prettier-ignore
-  return new Pipe().addSteps(
+  const transformations = new Pipe().addSteps(
     'all',
+      new Print(MessageType.WARNING, 'You have to adjust the installation steps of the react-native-reanimated to work well with the react-native-gesture-handler. For more information go to the https://github.com/expo/expo/pull/17878 and https://github.com/expo/expo/pull/18562' ),
       new Clone({
         url: 'git@github.com:software-mansion/react-native-reanimated.git',
-        tag: '2.9.1',
+        tag: '2.14.4',
       }),
       new RemoveDirectory({
         name: 'clean vendored folder',
@@ -57,6 +84,12 @@ function getReanimatedPipe() {
         filePattern: 'Common/**/ReanimatedHiddenHeaders.h',
         find: 'Common/cpp',
         replace: 'vendored/react-native-reanimated/Common/cpp',
+      }),
+      new PrefixHeaders({
+        prefix: "DevMenu",
+        subPath: 'Common',
+        filePattern: "**/*.@(h|cpp|m|mm)",
+        debug: true
       }),
       new CopyFiles({
         filePattern: ['src/**/*.*', '*.d.ts', 'plugin.js', 'Common/**/*.@(h|cpp)'],
@@ -184,18 +217,30 @@ function getReanimatedPipe() {
         find: 'RNGestureHandlerStateManager',
         replace: 'DevMenuRNGestureHandlerStateManager',
       }),
+      new TransformFilesContent({
+        filePattern: 'ios/**/RNGestureHandler.m',
+        find: 'UIGestureRecognizer (GestureHandler)',
+        replace: 'UIGestureRecognizer (DevMenuGestureHandler)'
+      }),
+      new TransformFilesContent({
+        filePattern: 'ios/**/RNGestureHandler.m',
+        find: 'gestureHandler',
+        replace: 'devmenugestureHandler'
+      }),
       new CopyFiles({
         filePattern: 'ios/**/*.@(m|h|mm)',
         to: destination,
       }),
   );
+
+  return { transformations };
 }
 
 function getGestureHandlerPipe() {
   const destination = 'packages/expo-dev-menu/vendored/react-native-gesture-handler';
 
   // prettier-ignore
-  return new Pipe().addSteps(
+  const transformations = new Pipe().addSteps(
     'all',
       new Clone({
         url: 'git@github.com:software-mansion/react-native-gesture-handler.git',
@@ -270,6 +315,16 @@ function getGestureHandlerPipe() {
         find: '@interface DevMenuRNGestureHandlerButtonManager([\\s\\S]*?)@end',
         replace: ''
       }),
+      new TransformFilesContent({
+        filePattern: 'ios/**/DevMenuRNGestureHandler',
+        find: 'UIGestureRecognizer (GestureHandler)',
+        replace: 'UIGestureRecognizer \(DevMenuGestureHandler\)'
+      }),
+      new TransformFilesContent({
+        filePattern: 'ios/**/DevMenuRNGestureHandler',
+        find: 'gestureHandler',
+        replace: 'devMenuGestureHandler'
+      }),
       new Append({
         filePattern: 'ios/**/DevMenuRNGestureHandlerModule.h',
         append: `@interface DevMenuRNGestureHandlerButtonManager : RCTViewManager
@@ -279,19 +334,33 @@ function getGestureHandlerPipe() {
       new CopyFiles({
         filePattern: 'ios/**/*.@(h|m)',
         to: destination,
+      }),
+      new GenerateJsonFromPodspec({
+        from: 'RNGestureHandler.podspec',
+        saveTo: `${destination}/RNGestureHandler.podspec.json`,
+        transform: async (podspec) => ({...podspec, name: 'DevMenuRNGestureHandler', platforms: {'ios': await getRequierdIosVersion()}})
       })
   );
+
+  return {
+    transformations,
+    prebuild: {
+      podspecPath: `${destination}/RNGestureHandler.podspec.json`,
+      output: destination,
+    },
+  };
 }
 
-function getSafeAreaPipe() {
+function getSafeAreaConfig() {
   const destination = 'packages/expo-dev-menu/vendored/react-native-safe-area-context';
+  const version = '3.3.2';
 
   // prettier-ignore
-  return new Pipe().addSteps(
+  const transformations = new Pipe().addSteps(
     'all',
       new Clone({
         url: 'git@github.com:th3rdwave/react-native-safe-area-context.git',
-        tag: 'v3.3.2',
+        tag: `v${version}`,
       }),
       new RemoveDirectory({
         name: 'clean vendored folder',
@@ -414,12 +483,24 @@ function getSafeAreaPipe() {
 @end
 `
       }),
-      
       new CopyFiles({
         filePattern: 'ios/**/*.@(m|h)',
         to: destination,
       }),
+      new GenerateJsonFromPodspec({
+        from: 'react-native-safe-area-context.podspec',
+        saveTo: `${destination}/react-native-safe-area-context.podspec.json`,
+        transform: async (podspec) => ({...podspec, name: 'dev-menu-react-native-safe-area-context', platforms: {'ios': await getRequierdIosVersion()}})
+      })
   );
+
+  return {
+    transformations,
+    prebuild: {
+      podspecPath: `${destination}/react-native-safe-area-context.podspec.json`,
+      output: destination,
+    },
+  };
 }
 
 async function askForConfigurations(): Promise<string[]> {
@@ -438,20 +519,38 @@ async function askForConfigurations(): Promise<string[]> {
 type ActionOptions = {
   platform: Platform;
   configuration: string[];
+  onlyPrebuild: boolean;
 };
 
-async function action({ configuration, platform }: ActionOptions) {
+async function action({ configuration, platform, onlyPrebuild }: ActionOptions) {
   if (!configuration.length) {
     configuration = await askForConfigurations();
   }
 
-  const pipes = configuration.map((name) => ({ name, pipe: CONFIGURATIONS[name] as Pipe }));
+  const configurations = configuration.map((name) => ({ name, config: CONFIGURATIONS[name] }));
   const tmpdir = os.tmpdir();
-  for (const { name, pipe } of pipes) {
+  for (const { name, config } of configurations) {
     console.log(`Run configuration: ${chalk.green(name)}`);
-    pipe.setWorkingDirectory(path.join(tmpdir, name));
-    await pipe.start(platform);
-    console.log();
+    const { transformations, prebuild } = config;
+    if (!onlyPrebuild) {
+      transformations.setWorkingDirectory(path.join(tmpdir, name));
+      await transformations.start(platform);
+      console.log();
+    }
+
+    if (prebuild) {
+      const { podspecPath, output } = prebuild;
+      console.log('🏗 Prebuilding ...');
+
+      const podspec = JSON.parse(await fs.readFile(toRepoPath(podspecPath), 'utf8')) as Podspec;
+      const xcodeProject = await generateXcodeProjectSpecFromPodspecAsync(
+        podspec,
+        toRepoPath(output)
+      );
+      await buildFrameworksForProjectAsync(xcodeProject);
+      await cleanTemporaryFilesAsync(xcodeProject);
+      console.log();
+    }
   }
 }
 
@@ -465,6 +564,7 @@ export default (program: Command) => {
       "A platform on which the vendored module will be updated. Valid options: 'all' | 'ios' | 'android'.",
       'all'
     )
+    .option('--only-prebuild', 'Run only prebuild script.')
     .option(
       '-c, --configuration [string]',
       'Vendor configuration which should be run. Can be passed multiple times.',

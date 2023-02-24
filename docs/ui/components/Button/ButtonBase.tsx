@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import { typography } from '@expo/styleguide';
 import React, { forwardRef, DOMAttributes } from 'react';
 
-type Props = DOMAttributes<HTMLButtonElement | HTMLAnchorElement> & {
+type Props = DOMAttributes<HTMLButtonElement> & {
   testID?: string;
 };
 
@@ -12,7 +12,7 @@ export const ButtonBase = forwardRef<HTMLButtonElement, Props>(function ButtonBa
 });
 
 const buttonBaseStyle = css({
-  ...typography.body.paragraph,
+  ...typography.fontSizes[16],
   display: 'flex',
   textAlign: 'left',
   background: 'none',

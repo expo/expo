@@ -2,8 +2,10 @@ import { NativeModules } from 'react-native';
 
 import { ProxyNativeModule } from './NativeModulesProxy.types';
 
-const ExpoNativeProxy = global.ExpoModules?.NativeModulesProxy;
 const LegacyNativeProxy = NativeModules.NativeUnimoduleProxy;
+// Fixes `cannot find name 'global'.` in tests
+// @ts-ignore
+const ExpoNativeProxy = global.expo?.modules?.NativeModulesProxy;
 
 const modulesConstantsKey = 'modulesConstants';
 const exportedMethodsKey = 'exportedMethods';
@@ -21,6 +23,13 @@ if (LegacyNativeProxy) {
     // copy methods
     NativeProxy[exportedMethodsKey][moduleName].forEach((methodInfo) => {
       NativeModulesProxy[moduleName][methodInfo.name] = (...args: unknown[]): Promise<any> => {
+        // Use the new proxy to call methods on legacy modules, if possible.
+        if (ExpoNativeProxy?.callMethod) {
+          return ExpoNativeProxy.callMethod(moduleName, methodInfo.name, args);
+        }
+
+        // Otherwise fall back to the legacy proxy.
+        // This is deprecated and might be removed in SDK47 or later.
         const { key, argumentsCount } = methodInfo;
         if (argumentsCount !== args.length) {
           return Promise.reject(
@@ -31,8 +40,6 @@ if (LegacyNativeProxy) {
             )
           );
         }
-
-        // We still want to call methods using the legacy proxy in SDK 46
         return LegacyNativeProxy.callMethod(moduleName, key, args);
       };
     });

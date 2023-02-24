@@ -1,46 +1,54 @@
 import { css } from '@emotion/react';
-import { theme, breakpoints, SearchIcon, HamburgerIcon, iconSize, spacing } from '@expo/styleguide';
-import React, { useState } from 'react';
+import { theme, breakpoints, HamburgerIcon, iconSize, spacing, GithubIcon } from '@expo/styleguide';
+import { ReactNode } from 'react';
 
 import { Logo } from './Logo';
-import { Search } from './Search';
 import { ThemeSelector } from './ThemeSelector';
 
 import { Button } from '~/ui/components/Button';
-import { BOLD } from '~/ui/components/Text';
+import { SidebarFooter, SidebarHead } from '~/ui/components/Sidebar';
+import { A, BOLD } from '~/ui/components/Text';
 
-export const Header = () => {
-  const [isMobileSearchVisible, setMobileSearchVisible] = useState(false);
-  const [isMobileMenuVisible, setMobileMenuVisible] = useState(false);
+type HeaderProps = {
+  sidebar: ReactNode;
+  sidebarActiveGroup: string;
+  isMobileMenuVisible: boolean;
+  setMobileMenuVisible: (isMobileMenuVisible: boolean) => void;
+};
+
+export const Header = ({
+  sidebar,
+  sidebarActiveGroup,
+  isMobileMenuVisible,
+  setMobileMenuVisible,
+}: HeaderProps) => {
+  const isArchive = sidebarActiveGroup === 'archive';
   return (
     <>
-      <nav css={containerStyle}>
+      <nav css={[containerStyle, isMobileMenuVisible]}>
         <div css={[columnStyle, leftColumnStyle]}>
-          <Logo />
+          <Logo subgroup={isArchive ? 'Archive' : undefined} />
         </div>
-        <Search version="latest" css={hideOnMobileStyle} />
-        <div css={[columnStyle, rightColumnStyle, hideOnMobileStyle]}>
-          <ThemeSelector />
-        </div>
-        <div css={[columnStyle, rightColumnStyle, showOnMobileStyle]}>
-          <Button
-            theme="transparent"
-            css={[mobileButtonStyle, isMobileSearchVisible && mobileButtonActiveStyle]}
-            onClick={() => {
-              setMobileMenuVisible(false);
-              setMobileSearchVisible(prevState => !prevState);
-            }}>
-            <SearchIcon size={iconSize.small} color={theme.icon.default} />
-          </Button>
-          <Button
-            theme="transparent"
-            css={[mobileButtonStyle, isMobileMenuVisible && mobileButtonActiveStyle]}
-            onClick={() => {
-              setMobileSearchVisible(false);
-              setMobileMenuVisible(prevState => !prevState);
-            }}>
-            <HamburgerIcon size={iconSize.small} color={theme.icon.default} />
-          </Button>
+        <div css={[columnStyle, rightColumnStyle]}>
+          <A isStyled css={headerLink} href="https://blog.expo.dev">
+            Blog
+          </A>
+          <A href="https://github.com/expo/expo" ariaLabel="GitHub">
+            <GithubIcon title="" />
+          </A>
+          <div css={hideOnMobileStyle}>
+            <ThemeSelector />
+          </div>
+          <div css={showOnMobileStyle}>
+            <Button
+              theme="transparent"
+              css={[mobileButtonStyle, isMobileMenuVisible && mobileButtonActiveStyle]}
+              onClick={() => {
+                setMobileMenuVisible(!isMobileMenuVisible);
+              }}>
+              <HamburgerIcon size={iconSize.sm} />
+            </Button>
+          </div>
         </div>
       </nav>
       {isMobileMenuVisible && (
@@ -53,10 +61,12 @@ export const Header = () => {
           </div>
         </nav>
       )}
-      {isMobileSearchVisible && (
-        <nav css={[containerStyle, showOnMobileStyle]}>
-          <Search mobile version="latest" css={mobileSearchInputStyle} />
-        </nav>
+      {isMobileMenuVisible && (
+        <div css={mobileSidebarStyle}>
+          <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
+          {sidebar}
+          <SidebarFooter />
+        </div>
       )}
     </>
   );
@@ -65,7 +75,7 @@ export const Header = () => {
 const containerStyle = css`
   display: flex;
   align-items: center;
-  justify-content: space-between;
+  justify-content: flex-end;
   position: relative;
   background-color: ${theme.background.default};
   z-index: 2;
@@ -74,30 +84,43 @@ const containerStyle = css`
   height: 60px;
   box-sizing: border-box;
   border-bottom: 1px solid ${theme.border.default};
+  gap: ${spacing[4]}px;
 `;
 
 const columnStyle = css`
   flex-shrink: 0;
   display: flex;
+  gap: ${spacing[8]}px;
+  align-items: center;
   background-color: transparent;
+
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
+    gap: ${spacing[4]}px;
+  }
+`;
+
+const headerLink = css`
+  color: ${theme.text.secondary};
+
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
+    margin-right: ${spacing[2]}px;
+  }
 `;
 
 const leftColumnStyle = css`
-  flex-basis: 256px;
-  width: 256px;
+  flex-grow: 1;
+  align-items: center;
 
-  @media screen and (max-width: ${breakpoints.medium}px) {
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     flex-basis: auto;
     width: auto;
   }
 `;
 
 const rightColumnStyle = css`
-  flex-basis: 288px;
-  width: 288px;
   justify-content: flex-end;
 
-  @media screen and (max-width: ${breakpoints.medium}px) {
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     flex-basis: auto;
     width: auto;
   }
@@ -106,31 +129,33 @@ const rightColumnStyle = css`
 const showOnMobileStyle = css`
   display: none;
 
-  @media screen and (max-width: ${breakpoints.medium}px) {
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     display: flex;
   }
 `;
 
 const hideOnMobileStyle = css`
-  @media screen and (max-width: ${breakpoints.medium}px) {
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     display: none;
   }
 `;
 
 const mobileButtonStyle = css`
   padding: 0 ${spacing[3]}px;
-  margin-left: ${spacing[2]}px;
 
   &:hover {
-    background-color: ${theme.background.tertiary};
+    background-color: ${theme.background.element};
     box-shadow: none;
   }
 `;
 
 const mobileButtonActiveStyle = css`
-  background-color: ${theme.background.secondary};
+  background-color: ${theme.background.subtle};
 `;
 
-const mobileSearchInputStyle = css`
-  margin: 0;
+const mobileSidebarStyle = css`
+  background-color: ${theme.background.subtle};
+  height: calc(100vh - (60px * 2));
+  overflow-y: auto;
+  overflow-x: hidden;
 `;

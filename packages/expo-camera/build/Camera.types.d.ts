@@ -1,5 +1,5 @@
 import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
-import { ViewProps } from 'react-native';
+import type { ViewProps } from 'react-native';
 export declare enum CameraType {
     front = "front",
     back = "back"
@@ -73,6 +73,10 @@ export declare enum VideoCodec {
     AppleProRes422 = "apcn",
     AppleProRes4444 = "ap4h"
 }
+/**
+ * This option specifies the stabilization mode to use when recording a video.
+ * @platform ios
+ */
 export declare enum VideoStabilization {
     off = "off",
     standard = "standard",
@@ -86,36 +90,56 @@ export declare enum VideoQuality {
     '480p' = "480p",
     '4:3' = "4:3"
 }
-export declare type ImageParameters = {
-    imageType: ImageType;
-    quality: number | null;
-};
-export declare type ImageSize = {
+/**
+ * @hidden We do not expose related web methods in docs.
+ * @platform web
+ */
+export type ImageSize = {
     width: number;
     height: number;
 };
-export declare type WebCameraSettings = Partial<{
-    autoFocus: string;
-    flashMode: string;
-    whiteBalance: string;
-    exposureCompensation: number;
-    colorTemperature: number;
-    iso: number;
-    brightness: number;
-    contrast: number;
-    saturation: number;
-    sharpness: number;
-    focusDistance: number;
-    zoom: number;
-}>;
-export declare type CameraCapturedPicture = {
+/**
+ * @hidden We do not expose related web methods in docs.
+ * @platform web
+ */
+export type WebCameraSettings = {
+    autoFocus?: string;
+    flashMode?: string;
+    whiteBalance?: string;
+    exposureCompensation?: number;
+    colorTemperature?: number;
+    iso?: number;
+    brightness?: number;
+    contrast?: number;
+    saturation?: number;
+    sharpness?: number;
+    focusDistance?: number;
+    zoom?: number;
+};
+export type CameraCapturedPicture = {
+    /**
+     * Captured image width.
+     */
     width: number;
+    /**
+     * Captured image height.
+     */
     height: number;
+    /**
+     * On web, the value of `uri` is the same as `base64` because file system URLs are not supported in the browser.
+     */
     uri: string;
+    /**
+     * A Base64 representation of the image.
+     */
     base64?: string;
+    /**
+     * On Android and iOS this object may include various fields based on the device and operating system.
+     * On web, it is a partial representation of the [`MediaTrackSettings`](https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings) dictionary.
+     */
     exif?: Partial<MediaTrackSettings> | any;
 };
-export declare type CameraPictureOptions = {
+export type CameraPictureOptions = {
     /**
      * Specify the quality of compression, from 0 to 1. 0 means compress for small size, 1 means compress for maximum quality.
      */
@@ -128,6 +152,14 @@ export declare type CameraPictureOptions = {
      * Whether to also include the EXIF data for the image.
      */
     exif?: boolean;
+    /**
+     * Additional EXIF data to be included for the image. Only useful when `exif` option is set to `true`.
+     * @platform android
+     * @platform ios
+     */
+    additionalExif?: {
+        [name: string]: any;
+    };
     /**
      * A callback invoked when picture is saved. If set, the promise of this method will resolve immediately with no data after picture is captured.
      * The data that it should contain will be passed to this callback. If displaying or processing a captured photo right after taking it
@@ -166,8 +198,12 @@ export declare type CameraPictureOptions = {
      * @hidden
      */
     fastMode?: boolean;
+    /**
+     * @hidden
+     */
+    maxDownsampling?: number;
 };
-export declare type CameraRecordingOptions = {
+export type CameraRecordingOptions = {
     /**
      * Maximum video duration in seconds.
      */
@@ -203,25 +239,58 @@ export declare type CameraRecordingOptions = {
      */
     codec?: VideoCodec;
 };
-export declare type PictureSavedListener = (event: {
+/**
+ * @hidden
+ */
+export type PictureSavedListener = (event: {
     nativeEvent: {
         data: CameraCapturedPicture;
         id: number;
     };
 }) => void;
-export declare type CameraReadyListener = () => void;
-export declare type MountErrorListener = (event: {
+/**
+ * @hidden
+ */
+export type CameraReadyListener = () => void;
+/**
+ * @hidden
+ */
+export type MountErrorListener = (event: {
     nativeEvent: CameraMountError;
 }) => void;
-export declare type CameraMountError = {
+export type CameraMountError = {
     message: string;
 };
-export declare type Point = {
+export type Point = {
     x: number;
     y: number;
 };
-export declare type BarCodePoint = Point;
-export declare type BarCodeScanningResult = {
+export type BarCodeSize = {
+    /**
+     * The height value.
+     */
+    height: number;
+    /**
+     * The width value.
+     */
+    width: number;
+};
+/**
+ * These coordinates are represented in the coordinate space of the camera source (e.g. when you
+ * are using the camera view, these values are adjusted to the dimensions of the view).
+ */
+export type BarCodePoint = Point;
+export type BarCodeBounds = {
+    /**
+     * The origin point of the bounding box.
+     */
+    origin: BarCodePoint;
+    /**
+     * The size of the bounding box.
+     */
+    size: BarCodeSize;
+};
+export type BarCodeScanningResult = {
     /**
      * The barcode type.
      */
@@ -232,38 +301,29 @@ export declare type BarCodeScanningResult = {
     data: string;
     /**
      * Corner points of the bounding box.
+     * `cornerPoints` is not always available and may be empty. On iOS, for `code39` and `pdf417`
+     * you don't get this value.
      */
-    cornerPoints?: BarCodePoint[];
+    cornerPoints: BarCodePoint[];
+    /**
+     * The [BarCodeBounds](#barcodebounds) object.
+     * `bounds` in some case will be representing an empty rectangle.
+     * Moreover, `bounds` doesn't have to bound the whole barcode.
+     * For some types, they will represent the area used by the scanner.
+     */
+    bounds: BarCodeBounds;
 };
-export declare type Face = {
-    faceID: number;
-    bounds: {
-        origin: Point;
-        size: {
-            height: number;
-            width: number;
-        };
-    };
-    rollAngle: number;
-    yawAngle: number;
-    smilingProbability: number;
-    leftEarPosition: Point;
-    rightEarPosition: Point;
-    leftEyePosition: Point;
-    leftEyeOpenProbability: number;
-    rightEyePosition: Point;
-    rightEyeOpenProbability: number;
-    leftCheekPosition: Point;
-    rightCheekPosition: Point;
-    mouthPosition: Point;
-    leftMouthPosition: Point;
-    rightMouthPosition: Point;
-    noseBasePosition: Point;
+export type FaceDetectionResult = {
+    /**
+     * Array of objects representing results of face detection.
+     * See [`FaceFeature`](facedetector/#facefeature) in FaceDetector documentation for more details.
+     */
+    faces: object[];
 };
-export declare type FaceDetectionResult = {
-    faces: Face[];
-};
-export declare type ConstantsType = {
+/**
+ * @hidden
+ */
+export type ConstantsType = {
     Type: CameraType;
     FlashMode: FlashMode;
     AutoFocus: AutoFocus;
@@ -272,7 +332,7 @@ export declare type ConstantsType = {
     VideoStabilization: VideoStabilization;
     VideoCodec: VideoCodec;
 };
-export declare type CameraProps = ViewProps & {
+export type CameraProps = ViewProps & {
     /**
      * Camera facing. Use one of `CameraType`. When `CameraType.front`, use the front-facing camera.
      * When `CameraType.back`, use the back-facing camera.
@@ -306,7 +366,7 @@ export declare type CameraProps = ViewProps & {
     /**
      * A string representing aspect ratio of the preview, eg. `4:3`, `16:9`, `1:1`. To check if a ratio is supported
      * by the device use [`getSupportedRatiosAsync`](#getsupportedratiosasync).
-     * @default 4:3.
+     * @default 4:3
      * @platform android
      */
     ratio?: string;
@@ -335,7 +395,7 @@ export declare type CameraProps = ViewProps & {
      * You can read more about each stabilization type in [Apple Documentation](https://developer.apple.com/documentation/avfoundation/avcapturevideostabilizationmode).
      * @platform ios
      */
-    videoStabilizationMode?: number;
+    videoStabilizationMode?: VideoStabilization;
     /**
      * Callback invoked when camera preview could not been started.
      * @param event Error object that contains a `message`.
@@ -368,7 +428,8 @@ export declare type CameraProps = ViewProps & {
      */
     faceDetectorSettings?: object;
     /**
-     * Callback invoked with results of face detection on the preview. See [FaceDetector documentation](facedetector/#detectionresult) for details.
+     * Callback invoked with results of face detection on the preview.
+     * See [`DetectionResult`](facedetector/#detectionresult) in FaceDetector documentation for more details.
      * @param faces
      */
     onFacesDetected?: (faces: FaceDetectionResult) => void;
@@ -378,7 +439,10 @@ export declare type CameraProps = ViewProps & {
      */
     poster?: string;
 };
-export declare type CameraNativeProps = {
+/**
+ * @hidden
+ */
+export type CameraNativeProps = {
     pointerEvents?: any;
     style?: any;
     ref?: Function;
@@ -409,7 +473,7 @@ export declare type CameraNativeProps = {
     useCamera2Api?: boolean;
     poster?: string;
 };
-export declare type BarCodeSettings = {
+export type BarCodeSettings = {
     barCodeTypes: string[];
     interval?: number;
 };

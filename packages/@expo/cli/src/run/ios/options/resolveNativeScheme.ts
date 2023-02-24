@@ -8,6 +8,8 @@ import { profile } from '../../../utils/profile';
 import { selectAsync } from '../../../utils/prompts';
 import { Options, ProjectInfo, XcodeConfiguration } from '../XcodeBuild.types';
 
+const debug = require('debug')('expo:run:ios:options:resolveNativeScheme') as typeof console.log;
+
 type NativeSchemeProps = {
   name: string;
   osType?: string;
@@ -66,21 +68,30 @@ export async function promptOrQueryNativeSchemeAsync(
 export function getDefaultNativeScheme(
   projectRoot: string,
   options: Pick<Options, 'configuration'>,
-  xcodeProject: ProjectInfo
+  xcodeProject: Pick<ProjectInfo, 'name'>
 ): NativeSchemeProps {
   // If the resolution failed then we should just use the first runnable scheme that
   // matches the provided configuration.
-  const resolvedScheme = profile(IOSConfig.BuildScheme.getRunnableSchemesFromXcodeproj)(
+  const resolvedSchemes = profile(IOSConfig.BuildScheme.getRunnableSchemesFromXcodeproj)(
     projectRoot,
     {
       configuration: options.configuration,
     }
-  )[0];
+  );
+
+  // If there are multiple schemes, then the default should be the application.
+  if (resolvedSchemes.length > 1) {
+    const scheme =
+      resolvedSchemes.find(({ type }) => type === IOSConfig.Target.TargetType.APPLICATION) ??
+      resolvedSchemes[0];
+    debug(`Using default scheme: ${scheme.name}`);
+    return scheme;
+  }
 
   // If we couldn't find the scheme, then we'll guess at it,
   // this is needed for cases where the native code hasn't been generated yet.
-  if (resolvedScheme) {
-    return resolvedScheme;
+  if (resolvedSchemes[0]) {
+    return resolvedSchemes[0];
   }
   return {
     name: path.basename(xcodeProject.name, path.extname(xcodeProject.name)),

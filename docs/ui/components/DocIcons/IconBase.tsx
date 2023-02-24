@@ -15,7 +15,7 @@ export const IconBase = ({ color, small, Icon }: DocIconProps) => {
     <Icon
       css={iconStyles}
       color={color ?? theme.icon.default}
-      size={small ? iconSize.small : iconSize.regular}
+      size={small ? iconSize.sm : iconSize.md}
     />
   );
 };

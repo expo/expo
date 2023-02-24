@@ -1,7 +1,7 @@
 import { EventEmitter } from 'expo-modules-core';
 import { Playback, AVPlaybackSource, AVMetadata, AVPlaybackStatus, AVPlaybackStatusToSet, AVPlaybackTolerance } from '../AV';
 import { PitchCorrectionQuality } from '../Audio';
-export declare type AudioChannel = {
+export type AudioChannel = {
     /**
      * All samples for this specific Audio Channel in PCM Buffer format (-1 to 1).
      */
@@ -12,7 +12,7 @@ export declare type AudioChannel = {
  * The sample contains all frames (PCM Buffer values) for each channel of the audio, so if the audio is _stereo_ (interleaved),
  * there will be two channels, one for left and one for right audio.
  */
-export declare type AudioSample = {
+export type AudioSample = {
     /**
      * An array representing the data from each channel in PCM Buffer format. Array elements are objects in the following format: `{ frames: number[] }`,
      * where each frame is a number in PCM Buffer format (`-1` to `1` range).
@@ -24,7 +24,7 @@ export declare type AudioSample = {
      */
     timestamp: number;
 };
-export declare type SoundObject = {
+export type SoundObject = {
     /**
      * The newly created and loaded `Sound` object.
      */
@@ -34,8 +34,8 @@ export declare type SoundObject = {
      */
     status: AVPlaybackStatus;
 };
-declare type AudioInstance = number | HTMLMediaElement | null;
-declare type AudioSampleCallback = ((sample: AudioSample) => void) | null;
+type AudioInstance = number | HTMLMediaElement | null;
+type AudioSampleCallback = ((sample: AudioSample) => void) | null;
 declare global {
     interface Global {
         __EXAV_setOnAudioSampleReceivedCallback: ((key: number, callback: AudioSampleCallback) => void) | undefined;
@@ -178,7 +178,7 @@ export declare class Sound implements Playback {
     stopAsync: () => Promise<AVPlaybackStatus>;
     setPositionAsync: (positionMillis: number, tolerances?: AVPlaybackTolerance) => Promise<AVPlaybackStatus>;
     setRateAsync: (rate: number, shouldCorrectPitch: boolean, pitchCorrectionQuality?: PitchCorrectionQuality) => Promise<AVPlaybackStatus>;
-    setVolumeAsync: (volume: number) => Promise<AVPlaybackStatus>;
+    setVolumeAsync: (volume: number, audioPan?: number) => Promise<AVPlaybackStatus>;
     setIsMutedAsync: (isMuted: boolean) => Promise<AVPlaybackStatus>;
     setIsLoopingAsync: (isLooping: boolean) => Promise<AVPlaybackStatus>;
     setProgressUpdateIntervalAsync: (progressUpdateIntervalMillis: number) => Promise<AVPlaybackStatus>;

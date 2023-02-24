@@ -187,15 +187,13 @@ export type ExpoClientConfig = ExpoConfig & {
 };
 
 /**
- * @hidden
- * A classic manifest https://docs.expo.dev/guides/how-expo-works/#expo-manifest
+ * Represents an intersection of all possible Config types.
  */
 export type AppManifest = ExpoClientConfig &
   ExpoGoConfig &
   EASConfig &
-  ClientScopingConfig & {
-    [key: string]: any;
-  };
+  ClientScopingConfig &
+  Record<string, any>;
 
 // @needsAudit @docsMissing
 export interface PlatformManifest {
@@ -274,17 +272,22 @@ export interface NativeConstants {
    */
   nativeBuildVersion: string | null;
   /**
-   * Classic manifest for Expo apps using classic updates.
+   * Classic manifest for Expo apps using classic updates and the updates embedded in builds.
    * Returns `null` in bare workflow and when `manifest2` is non-null.
+   * > Use `Constants.expoConfig` instead, which behaves more consistently across EAS Build
+   * and Update.
    */
   manifest: AppManifest | null;
   /**
-   * New manifest for Expo apps using modern Expo Updates.
-   * Returns `null` in bare workflow and when `manifest` is non-null.
+   * Manifest for Expo apps using modern Expo Updates from a remote source, such as apps that
+   * use EAS Update. Returns `null` in bare workflow and when `manifest` is non-null.
+   * > Use `Constants.expoConfig` instead, which behaves more consistently across EAS Build
+   * and Update.
    */
   manifest2: Manifest | null;
   /**
-   * The standard Expo config object defined in `app.config.js` files. For both classic and new manifests.
+   * The standard Expo config object defined in `app.json` and `app.config.js` files. For both
+   * classic and modern manifests, whether they are embedded or remote.
    */
   expoConfig: ExpoConfig | null;
   /**

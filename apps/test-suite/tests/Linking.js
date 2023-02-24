@@ -63,7 +63,7 @@ export function test(t) {
           await waitFor(8000);
           t.expect(handlerCalled).toBe(true);
           t.expect(subscription).toBeTruthy();
-          Linking.removeEventListener('url', handler);
+          subscription.remove();
         });
 
         // We can't run this test on iOS since iOS asks "whether to open this link in Expo"
@@ -74,11 +74,11 @@ export function test(t) {
             t.expect(url).toEqual(Linking.makeUrl('++message=Redirected automatically by timer'));
             handlerCalled = true;
           };
-          Linking.addEventListener('url', handler);
+          const subscription = Linking.addEventListener('url', handler);
           await Linking.openURL(`${redirectingBackendUrl}${Linking.makeUrl('++')}`);
           await waitFor(8000);
           t.expect(handlerCalled).toBe(true);
-          Linking.removeEventListener('url', handler);
+          subscription.remove();
         });
       }
 
@@ -89,11 +89,11 @@ export function test(t) {
           handlerCalled = true;
           if (Platform.OS === 'ios') WebBrowser.dismissBrowser();
         };
-        Linking.addEventListener('url', handler);
+        const subscription = Linking.addEventListener('url', handler);
         await WebBrowser.openBrowserAsync(`${redirectingBackendUrl}${Linking.makeUrl('++')}`);
         await waitFor(1000);
         t.expect(handlerCalled).toBe(true);
-        Linking.removeEventListener('url', handler);
+        subscription.remove();
       });
 
       t.it('listener gets called with a proper URL when opened with Linking.openURL', async () => {
@@ -101,11 +101,11 @@ export function test(t) {
         const handler = ({ url }) => {
           handlerCalled = true;
         };
-        Linking.addEventListener('url', handler);
+        const subscription = Linking.addEventListener('url', handler);
         await Linking.openURL(Linking.makeUrl('++'));
         await waitFor(500);
         t.expect(handlerCalled).toBe(true);
-        Linking.removeEventListener('url', handler);
+        subscription.remove();
       });
 
       t.it('listener parses out deep link information correctly', async () => {
@@ -118,11 +118,11 @@ export function test(t) {
           t.expect(queryParams.query).toEqual('param');
           handlerCalled = true;
         };
-        Linking.addEventListener('url', handler);
+        const subscription = Linking.addEventListener('url', handler);
         await Linking.openURL(Linking.makeUrl('++test/path?query=param'));
         await waitFor(500);
         t.expect(handlerCalled).toBe(true);
-        Linking.removeEventListener('url', handler);
+        subscription.remove();
       });
     });
   });

@@ -14,10 +14,8 @@ jest.mock('../../../../utils/prompts');
 const asMock = <T extends (...args: any[]) => any>(fn: T): jest.MockedFunction<T> =>
   fn as jest.MockedFunction<T>;
 
-jest.mock('../../../../utils/env', () => ({
-  env: {
-    CI: false,
-  },
+jest.mock('../../../../utils/interactive', () => ({
+  isInteractive: jest.fn(() => true),
 }));
 
 jest.mock('../settings', () => ({

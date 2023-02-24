@@ -15,8 +15,10 @@ import Metro from 'metro';
 import { Terminal } from 'metro-core';
 
 import { MetroTerminalReporter } from '../start/server/metro/MetroTerminalReporter';
-import { withMetroMultiPlatform } from '../start/server/metro/withMetroMultiPlatform';
+import { withMetroMultiPlatformAsync } from '../start/server/metro/withMetroMultiPlatform';
 import { getPlatformBundlers } from '../start/server/platformBundlers';
+import { getMetroProperties } from '../utils/analytics/getMetroProperties';
+import { logEventAsync } from '../utils/analytics/rudderstackClient';
 
 export type MetroDevServerOptions = LoadOptions & {
   logger: import('@expo/bunyan');
@@ -34,7 +36,7 @@ export type BundleAssetWithFileHashes = Metro.AssetData & {
 };
 export type BundleOutput = {
   code: string;
-  map: string;
+  map?: string;
   hermesBytecodeBundle?: Uint8Array;
   hermesSourcemap?: string;
   assets: readonly BundleAssetWithFileHashes[];
@@ -106,7 +108,12 @@ export async function bundleAsync(
 
   const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
-  config = withMetroMultiPlatform(projectRoot, config, getPlatformBundlers(exp));
+
+  const bundlerPlatforms = getPlatformBundlers(exp);
+
+  config = await withMetroMultiPlatformAsync(projectRoot, config, bundlerPlatforms);
+
+  logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));
 
   const metroServer = await metro.runMetro(config, {
     watch: false,
@@ -114,13 +121,14 @@ export async function bundleAsync(
 
   const buildAsync = async (bundle: BundleOptions): Promise<BundleOutput> => {
     const buildID = `bundle_${nextBuildID++}_${bundle.platform}`;
+    const isHermes = isEnableHermesManaged(expoConfig, bundle.platform);
     const bundleOptions: Metro.BundleOptions = {
       ...Server.DEFAULT_BUNDLE_OPTIONS,
       bundleType: 'bundle',
       platform: bundle.platform,
       entryFile: bundle.entryPoint,
       dev: bundle.dev ?? false,
-      minify: bundle.minify ?? !bundle.dev,
+      minify: !isHermes && (bundle.minify ?? !bundle.dev),
       inlineSourceMap: false,
       sourceMapUrl: bundle.sourceMapUrl,
       createModuleIdFactory: config.serializer.createModuleIdFactory,
@@ -181,8 +189,8 @@ export async function bundleAsync(
       const hermesBundleOutput = await buildHermesBundleAsync(
         projectRoot,
         bundleOutput.code,
-        bundleOutput.map,
-        bundle.minify
+        bundleOutput.map!,
+        bundle.minify ?? !bundle.dev
       );
       bundleOutput.hermesBytecodeBundle = hermesBundleOutput.hbc;
       bundleOutput.hermesSourcemap = hermesBundleOutput.sourcemap;

@@ -83,6 +83,7 @@ function getStatusFromMedia(media?: HTMLMediaElement): AVPlaybackStatus {
     // TODO: Bacon: This seems too complicated right now: https://webaudio.github.io/web-audio-api/#dom-biquadfilternode-frequency
     shouldCorrectPitch: false,
     volume: media.volume,
+    audioPan: 0,
     isMuted: media.muted,
     isLooping: media.loop,
     didJustFinish: media.ended,
@@ -91,10 +92,10 @@ function getStatusFromMedia(media?: HTMLMediaElement): AVPlaybackStatus {
   return status;
 }
 
-function setStatusForMedia(
+async function setStatusForMedia(
   media: HTMLMediaElement,
   status: AVPlaybackStatusToSet
-): AVPlaybackStatus {
+): Promise<AVPlaybackStatus> {
   if (status.positionMillis !== undefined) {
     media.currentTime = status.positionMillis / 1000;
   }
@@ -112,9 +113,9 @@ function setStatusForMedia(
   // }
   if (status.shouldPlay !== undefined) {
     if (status.shouldPlay) {
-      media.play();
+      await media.play();
     } else {
-      media.pause();
+      await media.pause();
     }
   }
   if (status.rate !== undefined) {
@@ -202,7 +203,7 @@ export default {
       });
     };
 
-    const status = setStatusForMedia(media, fullInitialStatus);
+    const status = await setStatusForMedia(media, fullInitialStatus);
 
     return [media, status];
   },

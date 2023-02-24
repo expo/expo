@@ -2,7 +2,6 @@ package versioned.host.exp.exponent.modules.api.components.maps;
 
 import android.content.Context;
 import android.graphics.Color;
-import android.os.Build;
 import android.util.DisplayMetrics;
 import android.view.WindowManager;
 
@@ -22,14 +21,10 @@ public class AirMapPolygonManager extends ViewGroupManager<AirMapPolygon> {
 
   public AirMapPolygonManager(ReactApplicationContext reactContext) {
     super();
-    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.JELLY_BEAN_MR1) {
-      metrics = new DisplayMetrics();
-      ((WindowManager) reactContext.getSystemService(Context.WINDOW_SERVICE))
-          .getDefaultDisplay()
-          .getRealMetrics(metrics);
-    } else {
-      metrics = reactContext.getResources().getDisplayMetrics();
-    }
+    metrics = new DisplayMetrics();
+    ((WindowManager) reactContext.getSystemService(Context.WINDOW_SERVICE))
+        .getDefaultDisplay()
+        .getRealMetrics(metrics);
   }
 
   @Override

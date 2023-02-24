@@ -23,14 +23,29 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
     return pkgHasChangelog && diff.every((fileDiff) => fileDiff.path !== pkg.changelogPath);
   });
 
-  if (pkgsWithoutChangelogChanges.length === 0) {
-    return null;
-  }
+  const globalChangelogHasChanges = diff.some(
+    (fileDiff) => path.relative(EXPO_DIR, fileDiff.path) === 'CHANGELOG.md'
+  );
 
   const changelogLinks = pkgsWithoutChangelogChanges
     .map((pkg) => `- ${relativeChangelogPath(pullRequest.head, pkg)}`)
     .join('\n');
 
+  if (globalChangelogHasChanges) {
+    return globalChangelogEntriesOutput(changelogLinks);
+  } else if (pkgsWithoutChangelogChanges.length > 0) {
+    return missingChangelogOutput(changelogLinks);
+  }
+
+  return null;
+}
+
+function relativeChangelogPath(head: ReviewInput['pullRequest']['head'], pkg: Package): string {
+  const relativePath = path.relative(EXPO_DIR, pkg.changelogPath);
+  return `[\`${relativePath}\`](${head.repo?.html_url}/blob/${head.ref}/${relativePath})`;
+}
+
+function missingChangelogOutput(changelogLinks: string): ReviewOutput {
   return {
     status: ReviewStatus.WARN,
     title: 'Missing changelog entries',
@@ -41,7 +56,16 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
   };
 }
 
-function relativeChangelogPath(head: ReviewInput['pullRequest']['head'], pkg: Package): string {
-  const relativePath = path.relative(EXPO_DIR, pkg.changelogPath);
-  return `[\`${relativePath}\`](${head.repo?.html_url}/blob/${head.ref}/${relativePath})`;
+function globalChangelogEntriesOutput(changelogLinks: string): ReviewOutput {
+  return {
+    status: ReviewStatus.ERROR,
+    title: 'Changelog entry in wrong CHANGELOG file',
+    body:
+      'Your changelog entries should be noted in package-specific changelogs. ' +
+      'Read [Updating Changelogs](https://github.com/expo/expo/blob/main/guides/contributing/Updating%20Changelogs.md) ' +
+      'guide and move changelog entries from the global **CHANGELOG.md** to ' +
+      (changelogLinks.length > 0
+        ? `the following changelogs: \n${changelogLinks}`
+        : 'appropriate package-specific changelogs.'),
+  };
 }

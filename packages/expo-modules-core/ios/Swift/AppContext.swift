@@ -28,7 +28,7 @@ public final class AppContext: NSObject {
   /**
    The legacy module registry with modules written in the old-fashioned way.
    */
-  internal weak var legacyModuleRegistry: EXModuleRegistry?
+  public weak var legacyModuleRegistry: EXModuleRegistry?
 
   internal weak var legacyModulesProxy: LegacyNativeModulesProxy?
 
@@ -77,6 +77,30 @@ public final class AppContext: NSObject {
     moduleRegistry.register(fromProvider: provider)
     return self
   }
+
+  // MARK: - UI
+
+  public func findView<ViewType>(withTag viewTag: Int, ofType type: ViewType.Type) -> ViewType? {
+    let view: UIView? = reactBridge?.uiManager.view(forReactTag: NSNumber(value: viewTag))
+
+    #if RN_FABRIC_ENABLED
+    if let view = view as? ExpoFabricViewObjC {
+      return view.contentView as? ViewType
+    }
+    #endif
+    return view as? ViewType
+  }
+
+  // MARK: - Running on specific queues
+
+  /**
+   Runs a code block on the JavaScript thread.
+   */
+  public func executeOnJavaScriptThread(runBlock: @escaping (() -> Void)) {
+    reactBridge?.dispatchBlock(runBlock, queue: RCTJSThread)
+  }
+
+  // MARK: - Legacy modules
 
   /**
    Returns a legacy module implementing given protocol/interface.
@@ -342,14 +366,10 @@ public final class AppContext: NSObject {
 
 // MARK: - Public exceptions
 
-public final class AppContextLostException: Exception {
-  override public var reason: String {
-    "The app context has been lost"
-  }
-}
+// Deprecated since v1.0.0
+@available(*, deprecated, renamed: "Exceptions.AppContextLost")
+public typealias AppContextLostException = Exceptions.AppContextLost
 
-public final class RuntimeLostException: Exception {
-  override public var reason: String {
-    "The JavaScript runtime has been lost"
-  }
-}
+// Deprecated since v1.0.0
+@available(*, deprecated, renamed: "Exceptions.RuntimeLost")
+public typealias RuntimeLostException = Exceptions.RuntimeLost

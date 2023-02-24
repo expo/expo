@@ -65,8 +65,9 @@ internal inline fun JSIInteropModuleRegistry.waitForAsyncFunction(
 
   if (global().hasProperty("promiseError")) {
     val jsError = global().getProperty("promiseError").getObject()
+    val code = jsError.getProperty("code").getString()
     val errorMessage = jsError.getProperty("message").getString()
-    throw PromiseException(errorMessage)
+    throw PromiseException(code, errorMessage)
   }
 
   Truth
@@ -75,4 +76,4 @@ internal inline fun JSIInteropModuleRegistry.waitForAsyncFunction(
   return global().getProperty("promiseResult")
 }
 
-class PromiseException(message: String) : CodedException(message)
+class PromiseException(code: String, message: String) : CodedException(code, message, null)

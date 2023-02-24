@@ -22,6 +22,11 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
         find: /\b(RCT)([^/]*)\+([^/]*\.)(h|m|mm|cpp)\b/,
         replaceWith: `${prefix}$1$2+$3$4`,
       },
+      {
+        // expo-gl
+        find: /\bEXWebGL([^/]*)\.def\b/,
+        replaceWith: `${prefix}EXWebGL$1.def`,
+      },
     ],
     content: [
       {
@@ -48,8 +53,8 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
       },
       {
         paths: swiftFilesPattern,
-        find: /r(eactTag)/gi,
-        replaceWith: (_, p1) => `${prefix.toLowerCase()}R${p1}`,
+        find: /(for)?[rR](eactTag)/gi,
+        replaceWith: (_, p1, p2) => `${p1 ?? ''}${p1 ? prefix : prefix.toLowerCase()}R${p2}`,
       },
       {
         // Prefixes name of the Expo modules provider.
@@ -63,8 +68,8 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
       {
         // Prefix `Expo*` frameworks in imports.
         paths: objcFilesPattern,
-        find: /#import <(Expo|EAS)(.*?)\//g,
-        replaceWith: `#import <${prefix}$1$2/`,
+        find: /#(import|include) <(Expo|EAS)(.*?)\//g,
+        replaceWith: `#$1 <${prefix}$2$3/`,
       },
       {
         paths: objcFilesPattern,
@@ -76,12 +81,6 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
         paths: objcFilesPattern,
         find: /#import "(Expo|EAS)(.+?)-Swift\.h"/g,
         replaceWith: `#import "${prefix}$1$2-Swift.h"`,
-      },
-      {
-        // Unprefix imports to unversionable (e.g. expo-gl-cpp) modules.
-        paths: [objcFilesPattern, 'EXGL'],
-        find: new RegExp(`#import <${prefix}(EXGL_CPP)\\b`),
-        replaceWith: '#import <$1',
       },
       {
         paths: objcFilesPattern,
@@ -122,6 +121,16 @@ export function expoModulesTransforms(prefix: string): FileTransforms {
         paths: objcFilesPattern,
         find: /\bnamespace react(\s+[^=])/g,
         replaceWith: `namespace ${prefix}React$1`,
+      },
+      {
+        paths: objcFilesPattern,
+        find: /\b((include|import|__has_include).*\/)(JSCRuntime\.h)/g,
+        replaceWith: `$1${prefix}$3`,
+      },
+      {
+        paths: 'EXGLImageUtils.cpp',
+        find: '#define STB_IMAGE_IMPLEMENTATION',
+        replaceWith: '',
       },
 
       // Prefix umbrella header imports

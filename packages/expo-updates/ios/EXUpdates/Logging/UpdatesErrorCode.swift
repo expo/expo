@@ -7,14 +7,16 @@ import Foundation
  */
 @objc(EXUpdatesErrorCode)
 public enum UpdatesErrorCode: Int {
-  case None = 0
-  case NoUpdatesAvailable = 1
-  case UpdateAssetsNotAvailable = 2
-  case UpdateServerUnreachable = 3
-  case UpdateHasInvalidSignature = 4
-  case UpdateFailedToLoad = 5
-  case AssetsFailedToLoad = 6
-  case JSRuntimeError = 7
+  case none = 0
+  case noUpdatesAvailable = 1
+  case updateAssetsNotAvailable = 2
+  case updateServerUnreachable = 3
+  case updateHasInvalidSignature = 4
+  case updateFailedToLoad = 5
+  case assetsFailedToLoad = 6
+  case jsRuntimeError = 7
+  case unknown = 8
+  case updateCodeSigningError = 9
 
   // Because this enum is exported to Objective-C,
   // the usual "\(UpdatesErrorCode.NoUpdatesAvailable)"
@@ -22,22 +24,26 @@ public enum UpdatesErrorCode: Int {
   // so we add this representation here
   public var asString: String {
     switch self {
-    case .None:
+    case .none:
       return "None"
-    case .NoUpdatesAvailable:
+    case .noUpdatesAvailable:
       return "NoUpdatesAvailable"
-    case .UpdateAssetsNotAvailable:
+    case .updateAssetsNotAvailable:
       return "UpdateAssetsNotAvailable"
-    case .UpdateServerUnreachable:
+    case .updateServerUnreachable:
       return "UpdateServerUnreachable"
-    case .UpdateHasInvalidSignature:
+    case .updateHasInvalidSignature:
       return "UpdateHasInvalidSignature"
-    case .UpdateFailedToLoad:
+    case .updateCodeSigningError:
+      return "UpdateCodeSigningError"
+    case .updateFailedToLoad:
       return "UpdateFailedToLoad"
-    case .AssetsFailedToLoad:
+    case .assetsFailedToLoad:
       return "AssetsFailedToLoad"
-    case .JSRuntimeError:
+    case .jsRuntimeError:
       return "JSRuntimeError"
+    case .unknown:
+      return "Unknown"
     }
   }
 }

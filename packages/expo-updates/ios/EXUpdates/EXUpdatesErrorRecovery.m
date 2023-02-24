@@ -6,6 +6,12 @@
 #import <React/RCTBridge.h>
 #import <React/RCTRootView.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 typedef NS_ENUM(NSInteger, EXUpdatesErrorRecoveryTask) {
@@ -34,8 +40,44 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
 @property (nonatomic, copy) RCTFatalHandler previousFatalErrorHandler;
 @property (nonatomic, copy) RCTFatalExceptionHandler previousFatalExceptionHandler;
 
+@property (nonatomic, strong) EXUpdatesLogger *logger;
+
 @end
 
+/**
+ * Entry point and main handler for the error recovery flow. Responsible for initializing the error
+ * recovery handler and handler thread, and for registering (and unregistering) listeners to
+ * lifecycle events so that the appropriate error recovery flows will be triggered.
+ *
+ * Also keeps track of and executes tasks in the error recovery pipeline, which allows us to
+ * predictably and serially respond to unpredictably ordered events.
+ *
+ * This error recovery flow is intended to be lightweight and is *not* a full safety net whose
+ * purpose is to avoid crashes at all costs. Rather, its primary purpose is to prevent bad updates
+ * from "bricking" an app by causing crashes before there is ever a chance to download a fix.
+ *
+ * When an error is caught, the pipeline is started and executes the following tasks serially:
+ * (a) check for a new update and start downloading if there is one
+ * (b) if there is a new update, reload and launch the new update
+ * (c) if not, or if another error occurs, fall back to an older working update (if one exists)
+ * (d) crash.
+ *
+ * Importantly, (b) and (c) will be taken out of the pipeline as soon as the first root view render
+ * occurs. If any update modifies persistent state in a non-backwards-compatible way, it isn't
+ * safe to automatically roll back; we use the first root view render as a rough proxy for this
+ * (assuming it's unlikely an app will make significant modifications to persisted state before its
+ * initial render).
+ *
+ * Also, the error listener will be unregistered 10 seconds after content has appeared; we assume
+ * that by this point, expo-updates has had enough time to download a new update if there is one,
+ * and so there is no more need to trigger the error recovery pipeline.
+ *
+ * This pipeline will not be triggered at all for errors caught more than 10 seconds after content
+ * has appeared; it is assumed that by this point, expo-updates will have had enough time to
+ * download a new update if there is one, and so there is no more need to intervene.
+ *
+ * This behavior is documented in more detail at https://docs.expo.dev/bare/error-recovery/.
+ */
 @implementation EXUpdatesErrorRecovery
 
 - (instancetype)init
@@ -64,6 +106,7 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
     _diskWriteQueue = diskWriteQueue;
     _remoteLoadTimeout = remoteLoadTimeout;
     _encounteredErrors = [NSMutableArray new];
+    _logger = [EXUpdatesLogger new];
   }
   return self;
 }
@@ -126,15 +169,18 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
   [_pipeline removeObjectAtIndex:0];
   switch ((EXUpdatesErrorRecoveryTask)nextTask.integerValue) {
     case EXUpdatesErrorRecoveryTaskWaitForRemoteUpdate:
+      [self->_logger info:@"EXUpdatesErrorRecovery: attempting to fetch a new update, waiting"];
       [self _waitForRemoteLoaderToFinish];
       break;
     // EXUpdatesErrorRecoveryTaskLaunchNew is called only after a new update is downloaded
     // and added to the cache, so it is equivalent to EXUpdatesErrorRecoveryTaskLaunchCached
     case EXUpdatesErrorRecoveryTaskLaunchNew:
     case EXUpdatesErrorRecoveryTaskLaunchCached:
+      [self->_logger info:@"EXUpdatesErrorRecovery: launching a new or cached update"];
       [self _tryRelaunchFromCache];
       break;
     case EXUpdatesErrorRecoveryTaskCrash:
+      [self->_logger error:@"EXUpdatesErrorRecovery: could not recover from error, crashing" code:EXUpdatesErrorCodeUpdateFailedToLoad];
       [self _crash];
       break;
     default:
@@ -322,6 +368,8 @@ static NSInteger const EXUpdatesErrorRecoveryRemoteLoadTimeoutMs = 5000;
       return;
     }
 
+    [self->_logger error:[NSString stringWithFormat:@"EXUpdatesErrorRecovery fatal exception: %@", serializedError]
+                    code:EXUpdatesErrorCodeJsRuntimeError];
     NSData *data = [serializedError dataUsingEncoding:NSUTF8StringEncoding];
     NSString *errorLogFilePath = [[self class] _errorLogFilePath];
     if ([NSFileManager.defaultManager fileExistsAtPath:errorLogFilePath]) {

@@ -20,6 +20,7 @@ import { AppHeader } from '../components/AppHeader';
 import { EASBranchRow, EASEmptyBranchRow } from '../components/EASUpdatesRows';
 import { EmptyBranchesMessage } from '../components/EmptyBranchesMessage';
 import { ListButton } from '../components/ListButton';
+import { ScreenContainer } from '../components/ScreenContainer';
 import { useThrottle } from '../hooks/useDebounce';
 import { useOnUpdatePress } from '../hooks/useOnUpdatePress';
 import { useUpdatesConfig } from '../providers/UpdatesConfigProvider';
@@ -72,7 +73,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
             <RefreshControl refreshing={throttledRefreshing} onRefresh={() => refetch()} />
           ) : null
         }>
-        <View flex="1">
+        <ScreenContainer>
           {compatibleExtensions.length === 0 && (
             <>
               <Spacer.Vertical size="medium" />
@@ -208,7 +209,7 @@ export function ExtensionsScreen({ navigation }: ExtensionsScreenProps) {
               <ActivityIndicator />
             </View>
           )}
-        </View>
+        </ScreenContainer>
       </ScrollView>
     </View>
   );
@@ -298,43 +299,41 @@ function EASUpdatesPreview({
 
   // some compatible branches, possible some empty branches
   return (
-    <View>
-      <View mx="medium">
-        <View py="small" px="small">
-          <Heading size="small" color="secondary">
-            EAS Updates
-          </Heading>
-        </View>
-        {branches?.slice(0, 2).map((branch, index, arr) => {
-          const isFirst = index === 0;
-          const isLast = index === arr.length - 1 && branchCount <= 1;
-          const isLoading = branch.updates[0]?.id === loadingUpdateId;
-
-          return (
-            <View key={branch.name}>
-              <EASBranchRow
-                branch={branch}
-                isFirst={isFirst}
-                isLast={isLast}
-                navigation={navigation}
-                isLoading={isLoading}
-                onUpdatePress={onUpdatePress}
-              />
-              <Divider />
-            </View>
-          );
-        })}
-
-        {branchCount > 1 && (
-          <ListButton onPress={onSeeAllBranchesPress} isLast>
-            <Row>
-              <Text size="medium">See all branches</Text>
-              <Spacer.Horizontal />
-              <ChevronRightIcon />
-            </Row>
-          </ListButton>
-        )}
+    <View mx="medium">
+      <View py="small" px="small">
+        <Heading size="small" color="secondary">
+          EAS Updates
+        </Heading>
       </View>
+      {branches?.slice(0, 2).map((branch, index, arr) => {
+        const isFirst = index === 0;
+        const isLast = index === arr.length - 1 && branchCount <= 1;
+        const isLoading = branch.updates[0]?.id === loadingUpdateId;
+
+        return (
+          <View key={branch.name}>
+            <EASBranchRow
+              branch={branch}
+              isFirst={isFirst}
+              isLast={isLast}
+              navigation={navigation}
+              isLoading={isLoading}
+              onUpdatePress={onUpdatePress}
+            />
+            <Divider />
+          </View>
+        );
+      })}
+
+      {branchCount > 1 && (
+        <ListButton onPress={onSeeAllBranchesPress} isLast>
+          <Row>
+            <Text size="medium">See all branches</Text>
+            <Spacer.Horizontal />
+            <ChevronRightIcon />
+          </Row>
+        </ListButton>
+      )}
     </View>
   );
 }

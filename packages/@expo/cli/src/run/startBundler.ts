@@ -4,7 +4,7 @@ import chalk from 'chalk';
 import * as Log from '../log';
 import { startInterfaceAsync } from '../start/interface/startInterface';
 import { DevServerManager } from '../start/server/DevServerManager';
-import { env } from '../utils/env';
+import { isInteractive } from '../utils/interactive';
 
 export async function startBundlerAsync(
   projectRoot: string,
@@ -39,7 +39,7 @@ export async function startBundlerAsync(
   ]);
 
   // Present the Terminal UI.
-  if (!headless && !env.CI) {
+  if (!headless && isInteractive()) {
     // Only read the config if we are going to use the results.
     const { exp } = getConfig(projectRoot, {
       // We don't need very many fields here, just use the lightest possible read.

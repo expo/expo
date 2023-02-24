@@ -4,7 +4,7 @@ Provides access to the phone's system contacts.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/contacts.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/contacts.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/contacts/)
 
 # Installation in managed Expo projects

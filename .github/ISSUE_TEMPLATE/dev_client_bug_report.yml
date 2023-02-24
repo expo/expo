@@ -1,26 +1,32 @@
 name: "\U0001F6E0 expo-dev-client Bug Report"
 description: 'Report a reproducible issue with a development build'
-labels: ['Development Builds', 'needs review']
+labels: ['Development Builds', 'needs validation']
 body:
   - type: markdown
     attributes:
       value: Thanks for taking the time to file a bug report! Please fill out this form as completely as possible so we have the information we need to help.
   - type: markdown
     attributes:
-      value: If you leave out sections there is a high likelihood your issue will be closed. If you have a question, not a bug report, please post it on our [forums](https://forums.expo.dev/) instead.
+      value: |
+        If you leave out sections there is a high likelihood your issue will be closed.
+        If you have a question or you think your issue might be caused by your application code, you can get help from the community on the [forums](https://forums.expo.dev/) or on [Discord](https://chat.expo.dev).
   - type: markdown
     attributes:
-      value: 'IMPORTANT: Before filling out this template further, ensure you have the latest version of the `expo-dev-client` package, `expo-cli`, and (if applicable) `eas-cli`. If not, try upgrading first and see if that fixes your issue.'
+      value: |
+        **IMPORTANT**: Before filling out this template further, ensure you have the latest version of the `expo-dev-client` package, `expo-cli`, and (if applicable) `eas-cli`. If not, try upgrading first and see if that fixes your issue.
   - type: textarea
     attributes:
       label: Summary
-      description: Describe the issue in 1 or 2 sentences
-      placeholder: Clearly describe what the expected behavior is vs. what is actually happening. This should be as short as possible, while still communicating all the necessary information. If your summary is just 'X library/method isn't working', then you need to continue debugging yourself and provide more information.
+      description: |
+        Clearly describe what the expected behavior is vs. what is actually happening. This should be as short as possible, while still communicating all the necessary information.
+        If your summary is just 'X library/method isn't working', then you need to continue debugging yourself and provide more information.
     validations:
       required: true
   - type: dropdown
     attributes:
-      label: Managed or bare workflow? If you have made manual changes inside of the `ios/` or `android/` directories in your project, the answer is bare!
+      label: Managed or bare workflow?
+      description: |
+        If you have made manual changes inside of the `ios/` or `android/` directories in your project, the answer is "bare"!
       options:
         - managed
         - bare
@@ -38,17 +44,20 @@ body:
   - type: textarea
     attributes:
       label: Package versions
-      description: 'List the package versions of `expo-dev-client`, `expo-updates`, and any other relevant libraries in your project.'
+      description: List the package versions of `expo-dev-client`, `expo-updates`, and any other relevant libraries in your project.
   - type: textarea
     attributes:
       label: Environment
-      placeholder: Run `npx expo-env-info` and paste the output here
+      description: Run the `npx expo-env-info` command and paste its output in the field below.
     validations:
       required: true
   - type: textarea
     attributes:
       label: Reproducible demo
-      description: 'This should include as little code as possible, do not simply link your entire project. If a reproducible demo is not provided, it is very likely your issue will be closed. If you link to a project that contains multiple non-Expo-core modules, it is unlikely to help us narrow down the cause of your issue more quickly. Read more guidance [here](https://stackoverflow.com/help/mcve).'
+      description: |
+        This should include as little code as possible, and no extraneous dependencies. Do not share your entire project. If a reproducible demo is not provided, your issue will be closed. 
+        If you link to a project that contains multiple non-Expo-core modules, it is unlikely to help us narrow down the cause of your issue more quickly. 
+        Learn more about creating a minimal reproducible example](https://stackoverflow.com/help/mcve).
     validations:
       required: true
   - type: markdown
@@ -57,7 +66,9 @@ body:
   - type: textarea
     attributes:
       label: Stacktrace (if a crash is involved)
-      description: 'If your issue involves a crash, please provide the native stacktrace if you are able.'
+      description: If your issue involves a crash, please provide the native stacktrace if you are able to.
   - type: markdown
     attributes:
-      value: "**Realize that it is up to you to debug your code and be as certain as possible that the bug is with Expo, not with your own app.** [Here's an excellent guide to debugging you can follow](https://gist.github.com/brentvatne/5ac00cba0c70b7a06b89a56787d6bc4a)."
+      value: |
+        **Realize that it is up to you to debug your code and be as certain as possible that the bug is with Expo, not with your own app.**
+        [Here's an excellent guide to debugging you can follow](https://gist.github.com/brentvatne/5ac00cba0c70b7a06b89a56787d6bc4a).

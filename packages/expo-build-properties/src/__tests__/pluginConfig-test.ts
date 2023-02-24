@@ -40,7 +40,15 @@ describe(validateConfig, () => {
     expect(() =>
       validateConfig({ ios: { deploymentTarget: '9.0' } })
     ).toThrowErrorMatchingInlineSnapshot(
-      `"\`ios.deploymentTarget\` needs to be at least version 12.0."`
+      `"\`ios.deploymentTarget\` needs to be at least version 13.0."`
+    );
+  });
+
+  it('should not allow ios.flipper and ios.useFrameworks at the same time', () => {
+    expect(() =>
+      validateConfig({ ios: { flipper: true, useFrameworks: 'static' } })
+    ).toThrowErrorMatchingInlineSnapshot(
+      `"\`ios.flipper\` cannot be enabled when \`ios.useFrameworks\` is set."`
     );
   });
 });

@@ -1,6 +1,6 @@
 {
   "name": "expo-localization",
-  "version": "13.1.0",
+  "version": "14.1.1",
   "description": "Provides an interface for native user localization information.",
   "main": "build/Localization.js",
   "types": "build/Localization.d.ts",
@@ -42,7 +42,7 @@
     "rtl-detect": "^1.0.2"
   },
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
     "expo": "*"

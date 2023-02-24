@@ -1,6 +1,6 @@
 {
   "name": "expo-branch",
-  "version": "5.3.0",
+  "version": "6.1.1",
   "description": "A unimodule wrapping react-native-branch, enabling its use in Expo managed workflow",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -32,11 +32,10 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/branch/",
   "dependencies": {
-    "@expo/config-plugins": "~5.0.0",
     "react-native-branch": "5.0.0"
   },
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
     "expo": "*"

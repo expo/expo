@@ -1,11 +1,14 @@
 package expo.modules.imagepicker
 
 import android.Manifest
+import android.Manifest.permission.READ_MEDIA_IMAGES
+import android.Manifest.permission.READ_MEDIA_VIDEO
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
-import expo.modules.core.errors.ModuleNotFoundException
+import android.os.Build
 import android.os.OperationCanceledException
+import expo.modules.core.errors.ModuleNotFoundException
 import expo.modules.imagepicker.contracts.CameraContract
 import expo.modules.imagepicker.contracts.CameraContractOptions
 import expo.modules.imagepicker.contracts.CropImageContract
@@ -21,9 +24,9 @@ import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.Dispatchers
-import kotlinx.coroutines.launch
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
+import java.io.File
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
 
@@ -58,7 +61,7 @@ class ImagePickerModule : Module() {
       ensureTargetActivityIsAvailable(options)
       ensureCameraPermissionsAreGranted()
 
-      val mediaFile = createOutputFile(context.cacheDir, options.mediaTypes.toFileExtension())
+      val mediaFile = createOutputFile(cacheDirectory, options.mediaTypes.toFileExtension())
       val uri = mediaFile.toContentUri(context)
       val contractOptions = options.toCameraContractOptions(uri)
 
@@ -80,20 +83,18 @@ class ImagePickerModule : Module() {
 
     // endregion
 
-    OnCreate {
-      coroutineScope.launch {
-        withContext(Dispatchers.Main) {
-          cameraLauncher = appContext.registerForActivityResult(
-            CameraContract(this@ImagePickerModule),
-          ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
-          imageLibraryLauncher = appContext.registerForActivityResult(
-            ImageLibraryContract(this@ImagePickerModule),
-          ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
-          cropImageLauncher = appContext.registerForActivityResult(
-            CropImageContract(this@ImagePickerModule),
-          ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
-        }
-      }
+    RegisterActivityContracts {
+      cameraLauncher = registerForActivityResult(
+        CameraContract(this@ImagePickerModule),
+      ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
+
+      imageLibraryLauncher = registerForActivityResult(
+        ImageLibraryContract(this@ImagePickerModule),
+      ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
+
+      cropImageLauncher = registerForActivityResult(
+        CropImageContract(this@ImagePickerModule),
+      ) { input, result -> handleResultUponActivityDestruction(result, input.options) }
     }
   }
 
@@ -109,6 +110,9 @@ class ImagePickerModule : Module() {
   private lateinit var cameraLauncher: AppContextActivityResultLauncher<CameraContractOptions, ImagePickerContractResult>
   private lateinit var imageLibraryLauncher: AppContextActivityResultLauncher<ImageLibraryContractOptions, ImagePickerContractResult>
   private lateinit var cropImageLauncher: AppContextActivityResultLauncher<CropImageContractOptions, ImagePickerContractResult>
+
+  private val cacheDirectory: File
+    get() = appContext.cacheDirectory
 
   /**
    * Stores result for an operation that has been interrupted by the activity destruction.
@@ -139,7 +143,7 @@ class ImagePickerModule : Module() {
       }
       mediaHandler.readExtras(result.data, options)
     } catch (cause: OperationCanceledException) {
-      ImagePickerCancelledResponse()
+      return ImagePickerResponse(canceled = true)
     }
   }
 
@@ -170,10 +174,16 @@ class ImagePickerModule : Module() {
   // region Utils
 
   private fun getMediaLibraryPermissions(writeOnly: Boolean): Array<String> =
-    if (writeOnly) {
-      arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE)
+    if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      listOfNotNull(
+        READ_MEDIA_IMAGES.takeIf { !writeOnly },
+        READ_MEDIA_VIDEO.takeIf { !writeOnly }
+      ).toTypedArray()
     } else {
-      arrayOf(Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.READ_EXTERNAL_STORAGE)
+      listOfNotNull(
+        Manifest.permission.WRITE_EXTERNAL_STORAGE,
+        Manifest.permission.READ_EXTERNAL_STORAGE.takeIf { !writeOnly }
+      ).toTypedArray()
     }
 
   private fun ensureTargetActivityIsAvailable(options: ImagePickerOptions) {
@@ -188,7 +198,13 @@ class ImagePickerModule : Module() {
 
     permissions.askForPermissions(
       { permissionsResponse ->
-        if (
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+          if (permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED) {
+            continuation.resume(Unit)
+          } else {
+            continuation.resumeWithException(UserRejectedPermissionsException())
+          }
+        } else if (
           permissionsResponse[Manifest.permission.WRITE_EXTERNAL_STORAGE]?.status == PermissionsStatus.GRANTED &&
           permissionsResponse[Manifest.permission.CAMERA]?.status == PermissionsStatus.GRANTED
         ) {
@@ -197,7 +213,8 @@ class ImagePickerModule : Module() {
           continuation.resumeWithException(UserRejectedPermissionsException())
         }
       },
-      Manifest.permission.WRITE_EXTERNAL_STORAGE, Manifest.permission.CAMERA
+      Manifest.permission.WRITE_EXTERNAL_STORAGE.takeIf { Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU },
+      Manifest.permission.CAMERA
     )
   }
 

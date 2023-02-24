@@ -1,7 +1,4 @@
 // @needsAudit
-/**
- *
- */
 export type DocumentPickerOptions = {
   /**
    * The [MIME type(s)](https://en.wikipedia.org/wiki/Media_type) of the documents that are available
@@ -11,7 +8,7 @@ export type DocumentPickerOptions = {
    */
   type?: string | string[];
   /**
-   * If `true`, the picked file is copied to [`FileSystem.CacheDirectory`](filesystem.md#filesystemcachedirectory),
+   * If `true`, the picked file is copied to [`FileSystem.CacheDirectory`](./filesystem#filesystemcachedirectory),
    * which allows other Expo APIs to read the file immediately. This may impact performance for
    * large files, so you should consider setting this to `false` if you expect users to pick
    * particularly large files and your app does not need immediate read access.
@@ -27,9 +24,21 @@ export type DocumentPickerOptions = {
 };
 
 // @needsAudit @docsMissing
+/**
+ * First object represents the result when the document pick has been cancelled.
+ * The second one represents the successful document pick result.
+ */
 export type DocumentResult =
-  | { type: 'cancel' }
   | {
+      /**
+       * Field indicating that the document pick has been cancelled.
+       */
+      type: 'cancel';
+    }
+  | {
+      /**
+       * Field indicating that the document pick has been successful.
+       */
       type: 'success';
       /**
        * Document original name.
@@ -47,7 +56,18 @@ export type DocumentResult =
        * Document MIME type.
        */
       mimeType?: string;
+      /**
+       * Timestamp of last document modification.
+       */
       lastModified?: number;
+      /**
+       * `File` object for the parity with web File API.
+       * @platform web
+       */
       file?: File;
+      /**
+       * `FileList` object for the parity with web File API.
+       * @platform web
+       */
       output?: FileList | null;
     };

@@ -1,4 +1,4 @@
-import { PermissionResponse as UMPermissionResponse } from 'expo-modules-core';
+import { PermissionResponse } from 'expo-modules-core';
 
 // @needsAudit
 /**
@@ -493,10 +493,12 @@ export type PermissionDetailsLocationAndroid = {
 
 // @needsAudit
 /**
- * `LocationPermissionResponse` extends [PermissionResponse](permissions.md#permissionresponse)
+ * `LocationPermissionResponse` extends [PermissionResponse](#permissionresponse)
  * type exported by `expo-modules-core` and contains additional platform-specific fields.
  */
-export interface LocationPermissionResponse extends UMPermissionResponse {
+export type LocationPermissionResponse = PermissionResponse & {
   ios?: PermissionDetailsLocationIOS;
   android?: PermissionDetailsLocationAndroid;
-}
+};
+
+export type { PermissionResponse };

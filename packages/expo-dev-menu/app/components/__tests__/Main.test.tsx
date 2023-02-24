@@ -78,7 +78,7 @@ describe('<Main />', () => {
     expect(toggleElementInspectorAsync).toHaveBeenCalledTimes(1);
 
     expect(toggleDebugRemoteJSAsync).toHaveBeenCalledTimes(0);
-    await act(async () => fireEvent.press(getByTestId('local-dev-tools')));
+    await act(async () => fireEvent.press(getByTestId('remote-js-debugger')));
     expect(toggleDebugRemoteJSAsync).toHaveBeenCalledTimes(1);
 
     expect(toggleFastRefreshAsync).toHaveBeenCalledTimes(0);

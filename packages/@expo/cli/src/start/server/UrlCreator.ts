@@ -27,11 +27,20 @@ export class UrlCreator {
   ) {}
 
   /**
+   * Return a URL for the "loading" interstitial page that is used to disambiguate which
+   * native runtime to open the dev server with.
+   *
+   * @param options options for creating the URL
+   * @param platform when opening the URL from the CLI to a connected device we can specify the platform as a query parameter, otherwise it will be inferred from the unsafe user agent sniffing.
+   *
    * @returns URL like `http://localhost:19000/_expo/loading?platform=ios`
+   * @returns URL like `http://localhost:19000/_expo/loading` when no platform is provided.
    */
-  public constructLoadingUrl(options: CreateURLOptions, platform: string): string {
+  public constructLoadingUrl(options: CreateURLOptions, platform: string | null): string {
     const url = new URL('_expo/loading', this.constructUrl({ scheme: 'http', ...options }));
-    url.search = new URLSearchParams({ platform }).toString();
+    if (platform) {
+      url.search = new URLSearchParams({ platform }).toString();
+    }
     const loadingUrl = url.toString();
     debug(`Loading URL: ${loadingUrl}`);
     return loadingUrl;
@@ -144,14 +153,15 @@ function getDefaultHostname(options: Pick<CreateURLOptions, 'hostname'>) {
 
 function joinUrlComponents({ protocol, hostname, port }: Partial<UrlComponents>): string {
   assert(hostname, 'hostname cannot be inferred.');
-  // Android HMR breaks without this port 80.
-  // This is because Android React Native WebSocket implementation is not spec compliant and fails without a port:
-  // `E unknown:ReactNative: java.lang.IllegalArgumentException: Invalid URL port: "-1"`
-  // Invoked first in `metro-runtime/src/modules/HMRClient.js`
-  const validPort = port || '80';
   const validProtocol = protocol ? `${protocol}://` : '';
 
-  return `${validProtocol}${hostname}:${validPort}`;
+  const url = `${validProtocol}${hostname}`;
+
+  if (port) {
+    return url + `:${port}`;
+  }
+
+  return url;
 }
 
 /** @deprecated */

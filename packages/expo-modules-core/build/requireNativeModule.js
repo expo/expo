@@ -9,7 +9,9 @@ import NativeModulesProxy from './NativeModulesProxy';
  * @throws Error when there is no native module with given name.
  */
 export function requireNativeModule(moduleName) {
-    const nativeModule = global.ExpoModules?.[moduleName] ?? NativeModulesProxy[moduleName];
+    const nativeModule = global.expo?.modules?.[moduleName] ??
+        global.ExpoModules?.[moduleName] ??
+        NativeModulesProxy[moduleName];
     if (!nativeModule) {
         throw new Error(`Cannot find native module '${moduleName}'`);
     }

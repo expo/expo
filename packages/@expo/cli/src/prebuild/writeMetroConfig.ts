@@ -42,7 +42,7 @@ export function writeMetroConfig(
     });
     // Log.log(`\u203A ${e.message}`);
     Log.log(
-      chalk`\u203A Ensure the project uses {bold @expo/metro-config}.\n  {dim ${learnMore(
+      chalk`\u203A Ensure the project uses {bold expo/metro-config}.\n  {dim ${learnMore(
         'https://docs.expo.dev/guides/customizing-metro'
       )}}`
     );

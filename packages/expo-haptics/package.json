@@ -1,6 +1,6 @@
 {
   "name": "expo-haptics",
-  "version": "11.3.0",
+  "version": "12.2.1",
   "description": "Provides access to the system's haptics engine on iOS and vibration effects on Android.",
   "main": "build/Haptics.js",
   "types": "build/Haptics.d.ts",
@@ -33,7 +33,7 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/haptics/",
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
     "expo": "*"

@@ -4,24 +4,44 @@ import { Command } from 'commander';
 import downloadTarball from 'download-tarball';
 import ejs from 'ejs';
 import fs from 'fs-extra';
+import { boolish } from 'getenv';
 import path from 'path';
 import prompts from 'prompts';
 
 import { createExampleApp } from './createExampleApp';
 import { installDependencies } from './packageManager';
-import getPrompts from './prompts';
-import { resolvePackageManager } from './resolvePackageManager';
+import { getSlugPrompt, getSubstitutionDataPrompts } from './prompts';
+import {
+  formatRunCommand,
+  PackageManagerName,
+  resolvePackageManager,
+} from './resolvePackageManager';
+import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './telemetry';
 import { CommandOptions, SubstitutionData } from './types';
 import { newStep } from './utils';
 
+const debug = require('debug')('create-expo-module:main') as typeof console.log;
 const packageJson = require('../package.json');
+
+// Opt in to using beta versions
+const EXPO_BETA = boolish('EXPO_BETA', false);
 
 // `yarn run` may change the current working dir, then we should use `INIT_CWD` env.
 const CWD = process.env.INIT_CWD || process.cwd();
 
 // Ignore some paths. Especially `package.json` as it is rendered
 // from `$package.json` file instead of the original one.
-const IGNORES_PATHS = ['.DS_Store', 'build', 'node_modules', 'package.json'];
+const IGNORES_PATHS = [
+  '.DS_Store',
+  'build',
+  'node_modules',
+  'package.json',
+  '.npmignore',
+  '.gitignore',
+];
+
+// Url to the documentation on Expo Modules
+const DOCS_URL = 'https://docs.expo.dev/modules';
 
 /**
  * The main function of the command.
@@ -30,14 +50,15 @@ const IGNORES_PATHS = ['.DS_Store', 'build', 'node_modules', 'package.json'];
  * @param command An object from `commander`.
  */
 async function main(target: string | undefined, options: CommandOptions) {
-  const targetDir = target ? path.join(CWD, target) : CWD;
+  const slug = await askForPackageSlugAsync(target);
+  const targetDir = path.join(CWD, target || slug);
 
   await fs.ensureDir(targetDir);
   await confirmTargetDirAsync(targetDir);
 
   options.target = targetDir;
 
-  const data = await askForSubstitutionDataAsync(targetDir);
+  const data = await askForSubstitutionDataAsync(slug);
 
   // Make one line break between prompts and progress logs
   console.log();
@@ -46,6 +67,8 @@ async function main(target: string | undefined, options: CommandOptions) {
   const packagePath = options.source
     ? path.join(CWD, options.source)
     : await downloadPackageAsync(targetDir);
+
+  logEventAsync(eventCreateExpoModule(packageManager, options));
 
   await newStep('Creating the module from template files', async (step) => {
     await createModuleFromTemplate(packagePath, targetDir, data);
@@ -81,8 +104,25 @@ async function main(target: string | undefined, options: CommandOptions) {
     await createExampleApp(data, targetDir, packageManager);
   }
 
+  await newStep('Creating an empty Git repository', async (step) => {
+    try {
+      const result = await createGitRepositoryAsync(targetDir);
+      if (result) {
+        step.succeed('Created an empty Git repository');
+      } else if (result === null) {
+        step.succeed('Skipped creating an empty Git repository, already within a Git repository');
+      } else if (result === false) {
+        step.warn('Could not create an empty Git repository, see debug logs with EXPO_DEBUG=true');
+      }
+    } catch (e: any) {
+      step.fail(e.toString());
+    }
+  });
+
   console.log();
   console.log('✅ Successfully created Expo module');
+
+  printFurtherInstructions(targetDir, packageManager, options.example);
 }
 
 /**
@@ -115,6 +155,7 @@ async function getFilesAsync(root: string, dir: string | null = null): Promise<s
  * Asks NPM registry for the url to the tarball.
  */
 async function getNpmTarballUrl(packageName: string, version: string = 'latest'): Promise<string> {
+  debug(`Using module template ${chalk.bold(packageName)}@${chalk.bold(version)}`);
   const { stdout } = await spawnAsync('npm', ['view', `${packageName}@${version}`, 'dist.tarball']);
   return stdout.trim();
 }
@@ -124,7 +165,10 @@ async function getNpmTarballUrl(packageName: string, version: string = 'latest')
  */
 async function downloadPackageAsync(targetDir: string): Promise<string> {
   return await newStep('Downloading module template from npm', async (step) => {
-    const tarballUrl = await getNpmTarballUrl('expo-module-template');
+    const tarballUrl = await getNpmTarballUrl(
+      'expo-module-template',
+      EXPO_BETA ? 'next' : 'latest'
+    );
 
     await downloadTarball({
       url: tarballUrl,
@@ -135,6 +179,13 @@ async function downloadPackageAsync(targetDir: string): Promise<string> {
 
     return path.join(targetDir, 'package');
   });
+}
+
+function handleSuffix(name: string, suffix: string): string {
+  if (name.endsWith(suffix)) {
+    return name;
+  }
+  return `${name}${suffix}`;
 }
 
 /**
@@ -152,7 +203,7 @@ async function createModuleFromTemplate(
     const renderedRelativePath = ejs.render(file.replace(/^\$/, ''), data, {
       openDelimiter: '{',
       closeDelimiter: '}',
-      escape: (value: string) => value.replace('.', path.sep),
+      escape: (value: string) => value.replace(/\./g, path.sep),
     });
     const fromPath = path.join(templatePath, file);
     const toPath = path.join(targetPath, renderedRelativePath);
@@ -163,12 +214,52 @@ async function createModuleFromTemplate(
   }
 }
 
+async function createGitRepositoryAsync(targetDir: string) {
+  // Check if we are inside a git repository already
+  try {
+    await spawnAsync('git', ['rev-parse', '--is-inside-work-tree'], {
+      stdio: 'ignore',
+      cwd: targetDir,
+    });
+    debug(chalk.dim('New project is already inside of a Git repo, skipping git init.'));
+    return null;
+  } catch (e: any) {
+    if (e.errno === 'ENOENT') {
+      debug(chalk.dim('Unable to initialize Git repo. `git` not in $PATH.'));
+      return false;
+    }
+  }
+
+  // Create a new git repository
+  await spawnAsync('git', ['init'], { stdio: 'ignore', cwd: targetDir });
+  await spawnAsync('git', ['add', '-A'], { stdio: 'ignore', cwd: targetDir });
+
+  const commitMsg = `Initial commit\n\nGenerated by ${packageJson.name} ${packageJson.version}.`;
+  await spawnAsync('git', ['commit', '-m', commitMsg], {
+    stdio: 'ignore',
+    cwd: targetDir,
+  });
+
+  debug(chalk.dim('Initialized a Git repository.'));
+  return true;
+}
+
+/**
+ * Asks the user for the package slug (npm package name).
+ */
+async function askForPackageSlugAsync(customTargetPath?: string): Promise<string> {
+  const { slug } = await prompts(getSlugPrompt(customTargetPath), {
+    onCancel: () => process.exit(0),
+  });
+  return slug;
+}
+
 /**
  * Asks the user for some data necessary to render the template.
  * Some values may already be provided by command options, the prompt is skipped in that case.
  */
-async function askForSubstitutionDataAsync(targetDir: string): Promise<SubstitutionData> {
-  const promptQueries = await getPrompts(targetDir);
+async function askForSubstitutionDataAsync(slug: string): Promise<SubstitutionData> {
+  const promptQueries = await getSubstitutionDataPrompts(slug);
 
   // Stop the process when the user cancels/exits the prompt.
   const onCancel = () => {
@@ -176,7 +267,6 @@ async function askForSubstitutionDataAsync(targetDir: string): Promise<Substitut
   };
 
   const {
-    slug,
     name,
     description,
     package: projectPackage,
@@ -193,6 +283,8 @@ async function askForSubstitutionDataAsync(targetDir: string): Promise<Substitut
       version: '0.1.0',
       description,
       package: projectPackage,
+      moduleName: handleSuffix(name, 'Module'),
+      viewName: handleSuffix(name, 'View'),
     },
     author: `${authorName} <${authorEmail}> (${authorUrl})`,
     license: 'MIT',
@@ -215,7 +307,7 @@ async function confirmTargetDirAsync(targetDir: string): Promise<void> {
       name: 'shouldContinue',
       message: `The target directory ${chalk.magenta(
         targetDir
-      )} is not empty.\nDo you want to continue anyway?`,
+      )} is not empty, do you want to continue anyway?`,
       initial: true,
     },
     {
@@ -227,13 +319,38 @@ async function confirmTargetDirAsync(targetDir: string): Promise<void> {
   }
 }
 
+/**
+ * Prints how the user can follow up once the script finishes creating the module.
+ */
+function printFurtherInstructions(
+  targetDir: string,
+  packageManager: PackageManagerName,
+  includesExample: boolean
+) {
+  if (includesExample) {
+    const commands = [
+      `cd ${path.relative(CWD, targetDir)}`,
+      formatRunCommand(packageManager, 'open:ios'),
+      formatRunCommand(packageManager, 'open:android'),
+    ];
+
+    console.log();
+    console.log(
+      'To start developing your module, navigate to the directory and open iOS and Android projects of the example app'
+    );
+    commands.forEach((command) => console.log(chalk.gray('>'), chalk.bold(command)));
+    console.log();
+  }
+  console.log(`Visit ${chalk.blue.bold(DOCS_URL)} for the documentation on Expo Modules APIs`);
+}
+
 const program = new Command();
 
 program
   .name(packageJson.name)
   .version(packageJson.version)
   .description(packageJson.description)
-  .arguments('[target_dir]')
+  .arguments('[path]')
   .option(
     '-s, --source <source_dir>',
     'Local path to the template. By default it downloads `expo-module-template` from NPM.'
@@ -243,4 +360,8 @@ program
   .option('--no-example', 'Whether to skip creating the example app.', false)
   .action(main);
 
-program.parse(process.argv);
+program
+  .hook('postAction', async () => {
+    await getTelemetryClient().flush?.();
+  })
+  .parse(process.argv);

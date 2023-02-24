@@ -1,6 +1,6 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXAppLoader+Updates.h"
+#import "EXAbstractLoader+Updates.h"
 #import "EXKernel.h"
 #import "EXKernelAppRecord.h"
 #import "EXReactAppManager.h"
@@ -11,6 +11,8 @@
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 
 #import <React/RCTBridge.h>
+
+@import EXManifests;
 
 NSString * const EXUpdatesEventName = @"Expo.nativeUpdatesEvent";
 NSString * const EXUpdatesErrorEventType = @"error";
@@ -50,7 +52,7 @@ ofDownloadWithManifest:(EXManifestsManifest * _Nullable)manifest
 
 # pragma mark - internal
 
-- (EXAppLoader *)_appLoaderWithScopeKey:(NSString *)scopeKey
+- (EXAbstractLoader *)_appLoaderWithScopeKey:(NSString *)scopeKey
 {
   EXKernelAppRecord *appRecord = [[EXKernel sharedInstance].appRegistry newestRecordWithScopeKey:scopeKey];
   return appRecord.appLoader;

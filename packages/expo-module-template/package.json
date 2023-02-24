@@ -1,6 +1,6 @@
 {
   "name": "expo-module-template",
-  "version": "10.7.1",
+  "version": "10.7.16",
   "description": "ExpoModuleTemplate standalone module",
   "main": "build/ModuleTemplate.js",
   "types": "build/ModuleTemplate.d.ts",

@@ -1,4 +1,4 @@
-import { printBundleSizes } from '../printBundleSizes';
+import { printBundleSizes, createFilesTable } from '../printBundleSizes';
 
 jest.mock('../../log');
 jest.mock('chalk', () => {
@@ -9,6 +9,29 @@ jest.mock('chalk', () => {
   def.dim = (str) => str;
 
   return def;
+});
+
+describe(createFilesTable, () => {
+  it(`handles single-line output`, () => {
+    expect(createFilesTable([['foo', 'bar']])).toMatchInlineSnapshot(`
+      "Bundle  Size
+      ─ foo    3 B"
+    `);
+  });
+  it(`handles multi-line output`, () => {
+    expect(
+      createFilesTable([
+        ['alpha', '1'],
+        ['beta', '2'],
+        ['charlie', '3'],
+      ])
+    ).toMatchInlineSnapshot(`
+      "Bundle     Size
+      ┌ alpha     1 B
+      ├ beta      1 B
+      └ charlie   1 B"
+    `);
+  });
 });
 
 describe(printBundleSizes, () => {

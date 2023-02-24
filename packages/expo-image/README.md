@@ -1,31 +1,53 @@
-# expo-image
+<p>
+  <a href="https://docs.expo.dev/versions/unversioned/sdk/image/">
+    <img
+      src="../../.github/resources/expo-image.svg"
+      alt="expo-image"
+      height="64" />
+  </a>
+</p>
 
-A cross-platform, performant image component for React Native and Expo with Web support
+A cross-platform, performant image component for React Native and Expo.
+
+## Main features
+
+- Designed for speed
+- Support for many image formats (including animated ones)
+- Disk and memory caching
+- Supports [blurhash](https://blurha.sh), a compact representation of a placeholder for an image
+- Transitioning between images when the source changes (no more flickering!)
+- Implements the CSS [`object-fit`](https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit) and [`object-position`](https://developer.mozilla.org/en-US/docs/Web/CSS/object-position) properties (see [`contentFit`](#contentfit) and [`contentPosition`](#contentposition) props)
+- Uses performant [`SDWebImage`](https://github.com/SDWebImage/SDWebImage) and [`Glide`](https://github.com/bumptech/glide) under the hood
+
+## Supported image formats
+
+| Format | Android | iOS | Web |
+|:---:|:---:|:---:|:---:|
+| WebP | ✅ | ✅ | ✅ [~96% adoption](https://caniuse.com/webp) |
+| PNG / APNG | ✅ | ✅ | ✅ / ✅ [~96% adoption](https://caniuse.com/apng) |
+| AVIF | ✅ | ✅ | ⏳ [~79% adoption](https://caniuse.com/avif) |
+| HEIC | ✅ | ✅ | ❌ [not adopted yet](https://caniuse.com/heif) |
+| JPEG | ✅ | ✅ | ✅ |
+| GIF | ✅ | ✅ | ✅ |
+| SVG | ✅ | ✅ | ✅ |
+| ICO | ✅ | ✅ | ✅ |
+| ICNS | ❌ | ✅ | ❌ |
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/image.md)
-- [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/image/)
+- [Documentation for the latest release](https://docs.expo.dev/versions/unversioned/sdk/image/)
 
-# Installation in managed Expo projects
+# Installation
 
-For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/image/). If you follow the link and there is no documentation available then this library is not yet usable within managed projects &mdash; it is likely to be included in an upcoming Expo SDK release.
+> Currently `expo-image` can be used only with Expo SDK47 in [development builds](/development/create-development-builds/) and bare React Native apps with [configured Expo modules](/bare/installing-expo-modules/).
+> It is not available in Expo Go and Snack yet.
 
-# Installation in bare React Native projects
-
-### Add the package to your npm dependencies
+Add the package to your dependencies with the following commands:
 
 ```
-npm install expo-image
+npx expo install expo-image
+npx pod-install
 ```
-
-### Configure for iOS
-
-Run `npx pod-install` after installing the npm package.
-
-### Configure for Android
-
-No additional setup necessary.
 
 # Contributing
 

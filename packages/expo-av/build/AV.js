@@ -39,6 +39,7 @@ export const _DEFAULT_INITIAL_PLAYBACK_STATUS = {
     rate: 1.0,
     shouldCorrectPitch: false,
     volume: 1.0,
+    audioPan: 0,
     isMuted: false,
     isLooping: false,
 };
@@ -107,6 +108,9 @@ export function assertStatusValuesInBounds(status) {
     }
     if (typeof status.volume === 'number' && (status.volume < 0 || status.volume > 1)) {
         throw new RangeError('Volume value must be between 0.0 and 1.0');
+    }
+    if (typeof status.audioPan === 'number' && (status.audioPan < -1 || status.audioPan > 1)) {
+        throw new RangeError('Pan value must be between -1.0 and 1.0');
     }
 }
 // @needsAudit
@@ -195,8 +199,8 @@ export const PlaybackMixin = {
             pitchCorrectionQuality,
         });
     },
-    async setVolumeAsync(volume) {
-        return this.setStatusAsync({ volume });
+    async setVolumeAsync(volume, audioPan) {
+        return this.setStatusAsync({ volume, audioPan });
     },
     async setIsMutedAsync(isMuted) {
         return this.setStatusAsync({ isMuted });

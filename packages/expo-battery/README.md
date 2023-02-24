@@ -1,10 +1,17 @@
-# expo-battery
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/battery/">
+    <img
+      src="../../.github/resources/expo-battery.svg"
+      alt="expo-battery"
+      height="64" />
+  </a>
+</p>
 
 Provide battery information for the physical device.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/battery.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/battery.mdx)
 
 # Installation in managed Expo projects
 

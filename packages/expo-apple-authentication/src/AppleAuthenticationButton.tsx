@@ -1,21 +1,7 @@
 import React from 'react';
 
-import {
-  AppleAuthenticationButtonProps,
-  AppleAuthenticationButtonStyle,
-  AppleAuthenticationButtonType,
-} from './AppleAuthentication.types';
-import {
-  ExpoAppleAuthenticationButtonSignInWhite,
-  ExpoAppleAuthenticationButtonSignInWhiteOutline,
-  ExpoAppleAuthenticationButtonSignInBlack,
-  ExpoAppleAuthenticationButtonContinueWhite,
-  ExpoAppleAuthenticationButtonContinueWhiteOutline,
-  ExpoAppleAuthenticationButtonContinueBlack,
-  ExpoAppleAuthenticationButtonSignUpWhite,
-  ExpoAppleAuthenticationButtonSignUpWhiteOutline,
-  ExpoAppleAuthenticationButtonSignUpBlack,
-} from './ExpoAppleAuthenticationButton';
+import { AppleAuthenticationButtonProps } from './AppleAuthentication.types';
+import ExpoAppleAuthenticationButton from './ExpoAppleAuthenticationButton';
 
 // @needsAudit
 /**
@@ -41,46 +27,15 @@ import {
  * Documentation](https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton)
  * for more details.
  */
-const AppleAuthenticationButton: React.FC<AppleAuthenticationButtonProps> = ({
+export default function AppleAuthenticationButton({
   onPress,
-  buttonStyle,
-  buttonType,
   ...restProps
-}) => {
-  if (!ExpoAppleAuthenticationButtonSignInWhite) {
+}: AppleAuthenticationButtonProps) {
+  if (!ExpoAppleAuthenticationButton) {
     if (__DEV__) {
       console.warn("'AppleAuthenticationButton' is not available.");
     }
     return null;
   }
-
-  const AppleAuthenticationButtonComponent = selectButtonComponent(buttonType, buttonStyle);
-
-  return <AppleAuthenticationButtonComponent onButtonPress={onPress} {...restProps} />;
-};
-
-const ButtonComponents: { [type: number]: { [style: number]: React.ElementType } } = {
-  [AppleAuthenticationButtonType.SIGN_IN]: {
-    [AppleAuthenticationButtonStyle.WHITE]: ExpoAppleAuthenticationButtonSignInWhite,
-    [AppleAuthenticationButtonStyle.WHITE_OUTLINE]: ExpoAppleAuthenticationButtonSignInWhiteOutline,
-    [AppleAuthenticationButtonStyle.BLACK]: ExpoAppleAuthenticationButtonSignInBlack,
-  },
-  [AppleAuthenticationButtonType.CONTINUE]: {
-    [AppleAuthenticationButtonStyle.WHITE]: ExpoAppleAuthenticationButtonContinueWhite,
-    [AppleAuthenticationButtonStyle.WHITE_OUTLINE]:
-      ExpoAppleAuthenticationButtonContinueWhiteOutline,
-    [AppleAuthenticationButtonStyle.BLACK]: ExpoAppleAuthenticationButtonContinueBlack,
-  },
-  [AppleAuthenticationButtonType.SIGN_UP]: {
-    [AppleAuthenticationButtonStyle.WHITE]: ExpoAppleAuthenticationButtonSignUpWhite,
-    [AppleAuthenticationButtonStyle.WHITE_OUTLINE]: ExpoAppleAuthenticationButtonSignUpWhiteOutline,
-    [AppleAuthenticationButtonStyle.BLACK]: ExpoAppleAuthenticationButtonSignUpBlack,
-  },
-};
-
-const selectButtonComponent = (
-  type: AppleAuthenticationButtonType,
-  style: AppleAuthenticationButtonStyle
-): React.ElementType => ButtonComponents[type][style];
-
-export default AppleAuthenticationButton;
+  return <ExpoAppleAuthenticationButton onButtonPress={onPress} {...restProps} />;
+}

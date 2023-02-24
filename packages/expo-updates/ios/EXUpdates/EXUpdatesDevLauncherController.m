@@ -9,8 +9,15 @@
 #import <EXUpdates/EXUpdatesReaperSelectionPolicyDevelopmentClient.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesSelectionPolicy.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
 #import <React/RCTBridge.h>
+
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
+@import EXManifests;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,6 +36,15 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
 
 @end
 
+/**
+ * Main entry point to expo-updates in development builds with expo-dev-client. Singleton that still
+ * makes use of EXUpdatesAppController for keeping track of updates state, but provides capabilities
+ * that are not usually exposed but that expo-dev-client needs (launching and downloading a specific
+ * update by URL, allowing dynamic configuration, introspecting the database).
+ *
+ * Implements the EXUpdatesExternalInterface from the expo-updates-interface package. This allows
+ * expo-dev-client to compile without needing expo-updates to be installed.
+ */
 @implementation EXUpdatesDevLauncherController
 
 @synthesize bridge = _bridge;
@@ -171,6 +187,10 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
 
   // ensure that we launch the update we want, even if it isn't the latest one
   EXUpdatesSelectionPolicy *currentSelectionPolicy = controller.selectionPolicy;
+  // Calling `setNextSelectionPolicy` allows the Updates module's `reloadAsync` method to reload
+  // with a different (newer) update if one is downloaded, e.g. using `fetchUpdateAsync`. If we set
+  // the default selection policy here instead, the update we are launching here would keep being
+  // launched by `reloadAsync` even if a newer one is downloaded.
   [controller setNextSelectionPolicy:[[EXUpdatesSelectionPolicy alloc]
                                       initWithLauncherSelectionPolicy:[[EXUpdatesLauncherSelectionPolicySingleUpdate alloc] initWithUpdateID:update.updateId]
                                       loaderSelectionPolicy:currentSelectionPolicy.loaderSelectionPolicy

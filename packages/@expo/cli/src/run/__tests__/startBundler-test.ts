@@ -10,10 +10,8 @@ jest.mock('../../start/server/DevServerManager', () => ({
   })),
 }));
 
-jest.mock('../../utils/env', () => ({
-  env: {
-    CI: false,
-  },
+jest.mock('../../utils/interactive', () => ({
+  isInteractive: jest.fn(() => true),
 }));
 
 jest.mock('@expo/config', () => ({

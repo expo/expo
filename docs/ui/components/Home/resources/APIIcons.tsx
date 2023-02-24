@@ -2,7 +2,7 @@ import { iconSize, theme } from '@expo/styleguide';
 import { IconProps } from '@expo/styleguide/dist/types';
 import React from 'react';
 
-export const APIMapsIcon = ({ size = iconSize.regular }: IconProps) => (
+export const APIMapsIcon = ({ size = iconSize.md }: IconProps) => (
   <svg
     width={size}
     height={size}
@@ -20,7 +20,7 @@ export const APIMapsIcon = ({ size = iconSize.regular }: IconProps) => (
   </svg>
 );
 
-export const APICameraIcon = ({ size = iconSize.regular }: IconProps) => (
+export const APICameraIcon = ({ size = iconSize.md }: IconProps) => (
   <svg
     width={size}
     height={size}
@@ -38,7 +38,7 @@ export const APICameraIcon = ({ size = iconSize.regular }: IconProps) => (
   </svg>
 );
 
-export const APINotificationsIcon = ({ size = iconSize.regular }: IconProps) => (
+export const APINotificationsIcon = ({ size = iconSize.md }: IconProps) => (
   <svg
     width={size}
     height={size}
@@ -56,7 +56,7 @@ export const APINotificationsIcon = ({ size = iconSize.regular }: IconProps) => 
   </svg>
 );
 
-export const APIListIcon = ({ size = iconSize.regular }: IconProps) => (
+export const APIListIcon = ({ size = iconSize.md }: IconProps) => (
   <svg
     width={size}
     height={size}

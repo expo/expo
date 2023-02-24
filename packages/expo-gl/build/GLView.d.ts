@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ComponentOrHandle, SurfaceCreateEvent, GLSnapshot, ExpoWebGLRenderingContext, SnapshotOptions, GLViewProps } from './GLView.types';
-export declare type WebGLObject = {
+export type WebGLObject = {
     id: number;
 };
 /**
@@ -40,6 +40,7 @@ export declare class GLView extends React.Component<GLViewProps> {
     render(): JSX.Element;
     _setNativeRef: (nativeRef: ComponentOrHandle) => void;
     _onSurfaceCreate: ({ nativeEvent: { exglCtxId } }: SurfaceCreateEvent) => void;
+    componentWillUnmount(): void;
     startARSessionAsync(): Promise<any>;
     createCameraTextureAsync(cameraRefOrHandle: ComponentOrHandle): Promise<WebGLTexture>;
     destroyObjectAsync(glObject: WebGLObject): Promise<boolean>;

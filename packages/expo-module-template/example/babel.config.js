@@ -10,7 +10,7 @@ module.exports = function (api) {
           extensions: ['.tsx', '.ts', '.js', '.json'],
           alias: {
             // For development, we want to alias the library to the source
-            '<%- project.slug %>': path.join(__dirname, '..', 'src', '<%- project.name %>.ts'),
+            '<%- project.slug %>': path.join(__dirname, '..', 'src', 'index.ts'),
           },
         },
       ],

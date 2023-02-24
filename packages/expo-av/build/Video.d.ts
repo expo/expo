@@ -68,7 +68,7 @@ declare class Video extends React.Component<VideoProps, VideoState> implements P
     stopAsync: () => Promise<AVPlaybackStatus>;
     setPositionAsync: (positionMillis: number, tolerances?: AVPlaybackTolerance) => Promise<AVPlaybackStatus>;
     setRateAsync: (rate: number, shouldCorrectPitch: boolean) => Promise<AVPlaybackStatus>;
-    setVolumeAsync: (volume: number) => Promise<AVPlaybackStatus>;
+    setVolumeAsync: (volume: number, audioPan?: number) => Promise<AVPlaybackStatus>;
     setIsMutedAsync: (isMuted: boolean) => Promise<AVPlaybackStatus>;
     setIsLoopingAsync: (isLooping: boolean) => Promise<AVPlaybackStatus>;
     setProgressUpdateIntervalAsync: (progressUpdateIntervalMillis: number) => Promise<AVPlaybackStatus>;

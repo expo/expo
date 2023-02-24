@@ -1,10 +1,17 @@
-# expo-media-library
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/media-library/">
+    <img
+      src="../../.github/resources/expo-media-library.svg"
+      alt="expo-media-library"
+      height="64" />
+  </a>
+</p>
 
 Provides access to user's media library.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/media-library.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/media-library.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/media-library/)
 
 # Installation in managed Expo projects

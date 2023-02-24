@@ -3,6 +3,7 @@ import chalk from 'chalk';
 
 import * as Log from '../log';
 import { env } from './env';
+import { isInteractive } from './interactive';
 import { confirmAsync } from './prompts';
 
 export async function maybeBailOnGitStatusAsync(): Promise<boolean> {
@@ -16,7 +17,7 @@ export async function maybeBailOnGitStatusAsync(): Promise<boolean> {
 
   // Give people a chance to bail out if git working tree is dirty
   if (!isGitStatusClean) {
-    if (env.CI) {
+    if (!isInteractive()) {
       Log.warn(
         `Git status is dirty but the command will continue because the terminal is not interactive.`
       );

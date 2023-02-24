@@ -1,6 +1,6 @@
 {
   "name": "expo-screen-capture",
-  "version": "4.3.0",
+  "version": "5.1.1",
   "description": "ExpoScreenCapture standalone module",
   "main": "build/ScreenCapture.js",
   "types": "build/ScreenCapture.d.ts",
@@ -34,7 +34,7 @@
   },
   "dependencies": {},
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
     "expo": "*"

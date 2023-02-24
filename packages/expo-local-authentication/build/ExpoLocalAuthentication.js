@@ -1,3 +1,3 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-export default NativeModulesProxy.ExpoLocalAuthentication;
+import { requireNativeModule } from 'expo-modules-core';
+export default requireNativeModule('ExpoLocalAuthentication');
 //# sourceMappingURL=ExpoLocalAuthentication.js.map

@@ -1,18 +1,17 @@
 import { css } from '@emotion/react';
-import { theme as styleguideTheme, borderRadius, typography } from '@expo/styleguide';
-import React, { ReactNode, MouseEvent } from 'react';
+import { theme as styleguideTheme, borderRadius, shadows } from '@expo/styleguide';
+import type { ReactNode, MouseEvent, PropsWithChildren } from 'react';
 
 import { ButtonBase } from './ButtonBase';
 import { hexToAccessibleHSLA, hexToRGBA } from './colors';
 
 import { LinkBase } from '~/ui/components/Text';
 
-type ButtonTheme = keyof typeof styleguideTheme.button;
+type ButtonTheme = 'primary' | 'secondary' | 'tertiary' | 'transparent' | 'ghost';
 type ButtonSize = 'mini' | 'small' | 'large';
 
-export type ButtonProps = {
-  onClick?: (event: MouseEvent) => void;
-  children?: ReactNode | string;
+export type ButtonProps = PropsWithChildren<{
+  onClick?: (event: MouseEvent<HTMLAnchorElement | HTMLButtonElement>) => void;
   disabled?: boolean;
   theme?: ButtonTheme;
   style?: any;
@@ -30,7 +29,7 @@ export type ButtonProps = {
   openInNewTab?: boolean;
   title?: string;
   rel?: string;
-};
+}>;
 
 type Theme = {
   backgroundColor: string;
@@ -42,24 +41,24 @@ type Theme = {
 const buttonThemes: Record<ButtonTheme, Theme> = {
   primary: {
     backgroundColor: styleguideTheme.button.primary.background,
-    color: styleguideTheme.button.primary.foreground,
+    color: styleguideTheme.button.primary.text,
   },
   secondary: {
     backgroundColor: styleguideTheme.button.secondary.background,
-    color: styleguideTheme.button.secondary.foreground,
+    color: styleguideTheme.button.secondary.text,
   },
   tertiary: {
-    backgroundColor: styleguideTheme.button.tertiary.background,
-    color: styleguideTheme.button.tertiary.foreground,
+    backgroundColor: styleguideTheme.button.primary.background,
+    color: styleguideTheme.button.primary.text,
   },
   transparent: {
-    backgroundColor: styleguideTheme.button.transparent.background,
-    color: styleguideTheme.button.transparent.foreground,
+    backgroundColor: styleguideTheme.button.quaternary.background,
+    color: styleguideTheme.button.quaternary.text,
   },
   ghost: {
-    backgroundColor: styleguideTheme.button.ghost.background,
-    color: styleguideTheme.button.ghost.foreground,
-    border: `1px solid ${styleguideTheme.button.ghost.border}`,
+    backgroundColor: 'transparent',
+    color: styleguideTheme.button.secondary.text,
+    border: `1px solid ${styleguideTheme.button.secondary.border}`,
   },
 };
 
@@ -145,7 +144,7 @@ export function Button(props: ButtonProps) {
             {icon}
           </div>
         )}
-        <div>{children}</div>
+        <>{children}</>
         {iconRight && (
           <div
             css={[
@@ -161,7 +160,7 @@ export function Button(props: ButtonProps) {
   );
 }
 
-function onNonInteractClick(event: MouseEvent) {
+function onNonInteractClick(event: MouseEvent<HTMLAnchorElement | HTMLButtonElement>) {
   event.preventDefault();
 }
 
@@ -177,11 +176,10 @@ function getButtonSize(size?: ButtonSize) {
 }
 
 const buttonStyle = css({
-  fontFamily: typography.fontStacks.medium,
   fontSize: 16,
   lineHeight: 1,
   height: 40,
-  borderRadius: borderRadius.medium,
+  borderRadius: borderRadius.md,
   border: 0,
   outline: 'none',
   padding: '0 16px',
@@ -197,6 +195,7 @@ const buttonStyle = css({
 const hasIconStyle = css({ paddingTop: 0, paddingBottom: 0, height: 40 });
 
 const childrenStyle = css({
+  fontWeight: 500,
   display: 'flex',
   alignItems: 'center',
 });
@@ -207,7 +206,7 @@ const buttonInteractionStyle = css({
   // transform prevents a 1px shift on hover on Safari
   transform: 'translate3d(0,0,0)',
   ':hover': {
-    boxShadow: '0 2px 8px rgba(0, 1, 0, 0.2)',
+    boxShadow: shadows.xs,
     opacity: 0.85,
   },
   ':active': {

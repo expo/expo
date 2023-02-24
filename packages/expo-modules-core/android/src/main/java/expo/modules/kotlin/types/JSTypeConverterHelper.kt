@@ -1,5 +1,6 @@
 package expo.modules.kotlin.types
 
+import android.net.Uri
 import android.os.Bundle
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
@@ -7,6 +8,9 @@ import com.facebook.react.bridge.WritableArray
 import com.facebook.react.bridge.WritableMap
 import expo.modules.kotlin.records.Field
 import expo.modules.kotlin.records.Record
+import java.io.File
+import java.net.URI
+import java.net.URL
 import kotlin.reflect.KProperty1
 import kotlin.reflect.full.declaredMemberProperties
 import kotlin.reflect.full.findAnnotation
@@ -102,6 +106,14 @@ fun DoubleArray.toJSValue(containerProvider: JSTypeConverter.ContainerProvider):
   }
 }
 
+fun BooleanArray.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): WritableArray {
+  return containerProvider.createArray().also {
+    for (value in this) {
+      it.pushBoolean(value)
+    }
+  }
+}
+
 fun Enum<*>.toJSValue(): Any? {
   val primaryConstructor = requireNotNull(this::class.primaryConstructor) {
     "Cannot convert enum without the primary constructor to js value"
@@ -111,6 +123,7 @@ fun Enum<*>.toJSValue(): Any? {
     return this.name
   } else if (primaryConstructor.parameters.size == 1) {
     val parameterName = primaryConstructor.parameters.first().name!!
+
     @Suppress("UNCHECKED_CAST")
     val parameterProperty = this::class.declaredMemberProperties
       .find { it.name == parameterName } as KProperty1<Enum<*>, *>
@@ -119,6 +132,31 @@ fun Enum<*>.toJSValue(): Any? {
   }
 
   throw IllegalStateException("Enum '$javaClass' cannot be used as return type (incompatible with JS)")
+}
+
+fun URL.toJSValue(): String {
+  return toString()
+}
+
+fun Uri.toJSValue(): String {
+  return toString()
+}
+
+fun URI.toJSValue(): String {
+  return toString()
+}
+
+fun File.toJSValue(): String {
+  return absolutePath
+}
+
+fun Pair<*, *>.toJSValue(containerProvider: JSTypeConverter.ContainerProvider): WritableArray {
+  return containerProvider.createArray().also {
+    val convertedFirst = JSTypeConverter.convertToJSValue(first, containerProvider)
+    val convertedSecond = JSTypeConverter.convertToJSValue(second, containerProvider)
+    it.putGeneric(convertedFirst)
+    it.putGeneric(convertedSecond)
+  }
 }
 
 internal fun WritableMap.putGeneric(key: String, value: Any?) {

@@ -1,10 +1,17 @@
-# expo-av
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/av/">
+    <img
+      src="../../.github/resources/expo-av.svg"
+      alt="expo-av"
+      height="64" />
+  </a>
+</p>
 
 Expo universal module for Audio and Video playback
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/av.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/av.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/av/)
 
 # Installation in managed Expo projects

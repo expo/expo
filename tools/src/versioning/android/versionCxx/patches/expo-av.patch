@@ -1,80 +1,15 @@
-diff --git a/packages/expo-av/android/CMakeLists.txt b/packages/expo-av/android/CMakeLists.txt
-index fe625b6347..bafd146556 100644
---- a/packages/expo-av/android/CMakeLists.txt
-+++ b/packages/expo-av/android/CMakeLists.txt
-@@ -3,7 +3,7 @@ cmake_minimum_required(VERSION 3.4.1)
- set (CMAKE_VERBOSE_MAKEFILE ON)
- set (CMAKE_CXX_STANDARD 14)
- 
--set (PACKAGE_NAME "expo-av")
-+set (PACKAGE_NAME "expo-av_{VERSIONED_ABI_NAME}")
- set (BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
- 
- # shared
-@@ -54,14 +54,14 @@ find_library(
- 
- find_library(
-         JSI_LIB
--        jsi
-+        jsi_{VERSIONED_ABI_NAME}
-         PATHS ${LIBRN_DIR}
-         NO_CMAKE_FIND_ROOT_PATH
- )
- 
- find_library(
-         REACT_NATIVE_JNI_LIB
--        reactnativejni
-+        reactnativejni_{VERSIONED_ABI_NAME}
-         PATHS ${LIBRN_DIR}
-         NO_CMAKE_FIND_ROOT_PATH
- )
 diff --git a/packages/expo-av/android/build.gradle b/packages/expo-av/android/build.gradle
-index fafe099214..cae6d92e3e 100644
+index f2c50906e3..396012ffee 100644
 --- a/packages/expo-av/android/build.gradle
 +++ b/packages/expo-av/android/build.gradle
-@@ -13,6 +13,10 @@ def RN_SO_DIR = RN_BUILD_FROM_SOURCE
-     ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
-     : "${buildDir}/react-native-0*/jni"
- def RN_AAR_DIR = "${REACT_NATIVE_DIR}/android"
+@@ -21,6 +21,10 @@ file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { react
+ def REACT_NATIVE_VERSION = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")
+ def REACT_NATIVE_TARGET_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
+
 +REACT_NATIVE_DIR = "${rootDir}/versioned-react-native"
-+RN_BUILD_FROM_SOURCE = false
++REACT_NATIVE_BUILD_FROM_SOURCE = false
 +RN_SO_DIR = "${buildDir}/reactandroid-{VERSIONED_ABI_NAME}-*/jni"
-+RN_AAR_DIR = "${rootDir}/versioned-abis/expoview-{VERSIONED_ABI_NAME}/maven"
++
  def reactNativeArchitectures() {
      def value = project.getProperties().get("reactNativeArchitectures")
      return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
-@@ -165,7 +169,7 @@ dependencies {
- 
- def extractReactNativeAAR = { buildType ->
-   def suffix = buildType == 'Debug' ? '-debug' : '-release'
--  def rnAARs = fileTree(RN_AAR_DIR).matching { include "**/react-native/**/*${suffix}.aar" }
-+  def rnAARs = fileTree(RN_AAR_DIR).matching { include "**/*.aar" }
-   if (rnAARs.isEmpty()) {
-     rnAARs = fileTree(RN_AAR_DIR).matching { include "**/react-native/**/*.aar" }
-   }
-diff --git a/packages/expo-av/android/src/main/cpp/JAVManager.h b/packages/expo-av/android/src/main/cpp/JAVManager.h
-index 6107c0ab93..f61328b2ca 100644
---- a/packages/expo-av/android/src/main/cpp/JAVManager.h
-+++ b/packages/expo-av/android/src/main/cpp/JAVManager.h
-@@ -20,7 +20,7 @@ namespace expo {
- 
-     class JAVManager : public jni::HybridClass<JAVManager> {
-     public:
--      static auto constexpr kJavaDescriptor = "Lexpo/modules/av/AVManager;";
-+      static auto constexpr kJavaDescriptor = "L{VERSIONED_ABI_NAME}/expo/modules/av/AVManager;";
-       static auto constexpr TAG = "JAVManager";
- 
-       static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);
-diff --git a/packages/expo-av/android/src/main/cpp/JPlayerData.h b/packages/expo-av/android/src/main/cpp/JPlayerData.h
-index e51a5bed4f..8a2d318775 100644
---- a/packages/expo-av/android/src/main/cpp/JPlayerData.h
-+++ b/packages/expo-av/android/src/main/cpp/JPlayerData.h
-@@ -16,7 +16,7 @@ namespace expo {
- 
-     class JPlayerData : public jni::HybridClass<JPlayerData> {
-     public:
--      static auto constexpr kJavaDescriptor = "Lexpo/modules/av/player/PlayerData;";
-+      static auto constexpr kJavaDescriptor = "L{VERSIONED_ABI_NAME}/expo/modules/av/player/PlayerData;";
-       static auto constexpr TAG = "JPlayerData";
- 
-       static jni::local_ref<jhybriddata> initHybrid(jni::alias_ref<jhybridobject> jThis);

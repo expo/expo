@@ -13,6 +13,7 @@ import {
   UpdateCheckResult,
   UpdateEvent,
   UpdateFetchResult,
+  UpdatesLogEntry,
 } from './Updates.types';
 
 export * from './Updates.types';
@@ -61,6 +62,12 @@ export const localAssets: LocalAssets = ExpoUpdates.localAssets ?? {};
  */
 export const isEmergencyLaunch: boolean = ExpoUpdates.isEmergencyLaunch || false;
 
+/**
+ * This will be true if the currently running update is the one embedded in the build,
+ * and not one downloaded from the updates server.
+ */
+export const isEmbeddedLaunch: boolean = ExpoUpdates.isEmbeddedLaunch || false;
+
 // @docsMissing
 /**
  * @hidden
@@ -69,7 +76,7 @@ export const isUsingEmbeddedAssets: boolean = ExpoUpdates.isUsingEmbeddedAssets 
 
 /**
  * If `expo-updates` is enabled, this is the
- * [manifest](/guides/how-expo-works#expo-development-server) object for the update that's currently
+ * [manifest](/workflow/expo-go#manifest) object for the update that's currently
  * running.
  *
  * In development mode, or any other environment in which `expo-updates` is disabled, this object is
@@ -125,7 +132,7 @@ export async function reloadAsync(): Promise<void> {
   if (!ExpoUpdates.reload) {
     throw new UnavailabilityError('Updates', 'reloadAsync');
   }
-  if (__DEV__ && !isUsingExpoDevelopmentClient) {
+  if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingExpoDevelopmentClient)) {
     throw new CodedError(
       'ERR_UPDATES_DISABLED',
       `You cannot use the Updates module in development mode in a production app. ${manualUpdatesInstructions}`
@@ -153,7 +160,7 @@ export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
   if (!ExpoUpdates.checkForUpdateAsync) {
     throw new UnavailabilityError('Updates', 'checkForUpdateAsync');
   }
-  if (__DEV__ || isUsingDeveloperTool) {
+  if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingDeveloperTool)) {
     throw new CodedError(
       'ERR_UPDATES_DISABLED',
       `You cannot check for updates in development mode. ${manualUpdatesInstructions}`
@@ -170,6 +177,40 @@ export async function checkForUpdateAsync(): Promise<UpdateCheckResult> {
 }
 
 /**
+ * Retrieves the most recent expo-updates log entries.
+ *
+ * @param maxAge Sets the max age of retrieved log entries in milliseconds. Default to 3600000 ms (1 hour).
+ *
+ * @return A promise that fulfills with an array of [`UpdatesLogEntry`](#updateslogentry) objects;
+ *
+ * The promise rejects if there is an unexpected error in retrieving the logs.
+ */
+export async function readLogEntriesAsync(maxAge: number = 3600000): Promise<UpdatesLogEntry[]> {
+  if (!ExpoUpdates.readLogEntriesAsync) {
+    throw new UnavailabilityError('Updates', 'readLogEntriesAsync');
+  }
+  return await ExpoUpdates.readLogEntriesAsync(maxAge);
+}
+
+/**
+ * Clears existing expo-updates log entries.
+ *
+ * > For now, this operation does nothing on the client.  Once log persistence has been
+ * > implemented, this operation will actually remove existing logs.
+ *
+ * @return A promise that fulfills if the clear operation was successful.
+ *
+ * The promise rejects if there is an unexpected error in clearing the logs.
+ *
+ */
+export async function clearLogEntriesAsync(): Promise<void> {
+  if (!ExpoUpdates.clearLogEntriesAsync) {
+    throw new UnavailabilityError('Updates', 'clearLogEntriesAsync');
+  }
+  await ExpoUpdates.clearLogEntriesAsync();
+}
+
+/**
  * Downloads the most recently deployed update to your project from server to the device's local
  * storage. This method cannot be used in development mode, and the returned promise will be
  * rejected if you try to do so.
@@ -183,7 +224,7 @@ export async function fetchUpdateAsync(): Promise<UpdateFetchResult> {
   if (!ExpoUpdates.fetchUpdateAsync) {
     throw new UnavailabilityError('Updates', 'fetchUpdateAsync');
   }
-  if (__DEV__ || isUsingDeveloperTool) {
+  if (!ExpoUpdates?.nativeDebug && (__DEV__ || isUsingDeveloperTool)) {
     throw new CodedError(
       'ERR_UPDATES_DISABLED',
       `You cannot fetch updates in development mode. ${manualUpdatesInstructions}`
@@ -236,7 +277,8 @@ function _emitEvent(params): void {
 
 /**
  * Adds a callback to be invoked when updates-related events occur (such as upon the initial app
- * load) due to auto-update settings chosen at build-time.
+ * load) due to auto-update settings chosen at build-time. See also the
+ * [`useUpdateEvents`](#useupdateeventslistener) React hook.
  *
  * @param listener A function that will be invoked with an [`UpdateEvent`](#updateevent) instance
  * and should not return any value.

@@ -1,6 +1,6 @@
 {
   "name": "expo-camera",
-  "version": "12.3.0",
+  "version": "13.2.1",
   "description": "A React component that renders a preview for the device's either front or back camera. Camera's parameters like zoom, auto focus, white balance and flash mode are adjustable. With expo-camera, one can also take photos and record videos that are saved to the app's cache. Morever, the component is also capable of detecting faces and bar codes appearing on the preview.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -34,12 +34,11 @@
     "preset": "expo-module-scripts"
   },
   "dependencies": {
-    "@expo/config-plugins": "~5.0.0",
     "@koale/useworker": "^4.0.2",
     "invariant": "^2.2.4"
   },
   "devDependencies": {
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
     "expo": "*"

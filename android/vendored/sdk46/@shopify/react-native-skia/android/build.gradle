@@ -86,7 +86,7 @@ def prebuiltDir = sourceBuild
 
 
 def reactProperties = new Properties()
-file("$nodeModules/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
+file("$defaultDir/gradle.properties").withInputStream { reactProperties.load(it) }
 def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME").split("\\.")[1].toInteger()
 
 logger.warn("react-native-skia: React Native version: ${REACT_NATIVE_VERSION}")
@@ -138,7 +138,6 @@ android {
     externalNativeBuild {
         cmake {
             path file('CMakeLists.txt')
-            version '3.10.2'
         }
     }
 
@@ -181,15 +180,15 @@ repositories {
 dependencies {
     //noinspection GradleDynamicVersion
     implementation 'host.exp:reactandroid-abi46_0_0:1.0.0'
-    compileOnly 'com.facebook.fbjni:fbjni:0.2.2'
+    compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
     compileOnly 'com.facebook.yoga:proguard-annotations:1.19.0'
     compileOnly 'androidx.annotation:annotation:+'
   // From node_modules
 
     //noinspection GradleDynamicVersion
-    extractHeaders("com.facebook.fbjni:fbjni:0.2.2:headers")
+    extractHeaders("com.facebook.fbjni:fbjni:0.3.0:headers")
     //noinspection GradleDynamicVersion
-    extractJNI("com.facebook.fbjni:fbjni:0.2.2")
+    extractJNI("com.facebook.fbjni:fbjni:0.3.0")
 
     if(REACT_NATIVE_VERSION < 69) {
         def rnAAR = fileTree("${rootDir}/versioned-abis").matching({ include "**/reactandroid-abi46_0_0/**/*.aar" }).singleFile

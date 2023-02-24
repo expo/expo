@@ -10,6 +10,28 @@
 
 ### 💡 Others
 
+## 3.1.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 3.1.0 — 2023-02-03
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 3.0.1 — 2022-11-02
+
+### 💡 Others
+
+- Removed deprecated Android `kotlin-android-extensions` plugin ([#19732](https://github.com/expo/expo/pull/19732) by [@josephyanks](https://github.com/josephyanks))
+
+## 3.0.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
 ## 2.2.1 — 2022-04-22
 
 ### 🐛 Bug fixes

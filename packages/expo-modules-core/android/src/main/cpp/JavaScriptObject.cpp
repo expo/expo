@@ -36,7 +36,14 @@ JavaScriptObject::JavaScriptObject(
   std::weak_ptr<JavaScriptRuntime> runtime,
   std::shared_ptr<jsi::Object> jsObject
 ) : runtimeHolder(std::move(runtime)), jsObject(std::move(jsObject)) {
-  assert(runtimeHolder.lock() != nullptr);
+  runtimeHolder.ensureRuntimeIsValid();
+}
+
+JavaScriptObject::JavaScriptObject(
+  WeakRuntimeHolder runtime,
+  std::shared_ptr<jsi::Object> jsObject
+) : runtimeHolder(std::move(runtime)), jsObject(std::move(jsObject)) {
+  runtimeHolder.ensureRuntimeIsValid();
 }
 
 std::shared_ptr<jsi::Object> JavaScriptObject::get() {
@@ -44,15 +51,13 @@ std::shared_ptr<jsi::Object> JavaScriptObject::get() {
 }
 
 bool JavaScriptObject::hasProperty(const std::string &name) {
-  auto runtime = runtimeHolder.lock();
-  assert(runtime != nullptr);
-  return jsObject->hasProperty(*runtime->get(), name.c_str());
+  auto &jsRuntime = runtimeHolder.getJSRuntime();
+  return jsObject->hasProperty(jsRuntime, name.c_str());
 }
 
 jsi::Value JavaScriptObject::getProperty(const std::string &name) {
-  auto runtime = runtimeHolder.lock();
-  assert(runtime != nullptr);
-  return jsObject->getProperty(*runtime->get(), name.c_str());
+  auto &jsRuntime = runtimeHolder.getJSRuntime();
+  return jsObject->getProperty(jsRuntime, name.c_str());
 }
 
 bool JavaScriptObject::jniHasProperty(jni::alias_ref<jstring> name) {
@@ -67,18 +72,17 @@ jni::local_ref<JavaScriptValue::javaobject> JavaScriptObject::jniGetProperty(
 }
 
 std::vector<std::string> JavaScriptObject::getPropertyNames() {
-  auto runtime = runtimeHolder.lock();
-  assert(runtime != nullptr);
+  auto &jsRuntime = runtimeHolder.getJSRuntime();
 
-  jsi::Array properties = jsObject->getPropertyNames(*runtime->get());
-  auto size = properties.size(*runtime->get());
+  jsi::Array properties = jsObject->getPropertyNames(jsRuntime);
+  auto size = properties.size(jsRuntime);
 
   std::vector<std::string> names(size);
   for (size_t i = 0; i < size; i++) {
     auto propertyName = properties
-      .getValueAtIndex(*runtime->get(), i)
-      .asString(*runtime->get())
-      .utf8(*runtime->get());
+      .getValueAtIndex(jsRuntime, i)
+      .asString(jsRuntime)
+      .utf8(jsRuntime);
     names[i] = propertyName;
   }
 
@@ -96,17 +100,15 @@ jni::local_ref<jni::JArrayClass<jstring>> JavaScriptObject::jniGetPropertyNames(
 }
 
 void JavaScriptObject::setProperty(const std::string &name, jsi::Value value) {
-  auto runtime = runtimeHolder.lock();
-  assert(runtime != nullptr);
-  jsObject->setProperty(*runtime->get(), name.c_str(), value);
+  auto &jsRuntime = runtimeHolder.getJSRuntime();
+  jsObject->setProperty(jsRuntime, name.c_str(), value);
 }
 
 void JavaScriptObject::unsetProperty(jni::alias_ref<jstring> name) {
-  auto runtime = runtimeHolder.lock();
-  assert(runtime != nullptr);
+  auto &jsRuntime = runtimeHolder.getJSRuntime();
   auto cName = name->toStdString();
   jsObject->setProperty(
-    *runtime->get(),
+    jsRuntime,
     cName.c_str(),
     jsi::Value::undefined()
   );

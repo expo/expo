@@ -6,6 +6,7 @@ import React from 'react';
 import { Platform, StyleProp, Text, View, ViewStyle } from 'react-native';
 
 import { Colors } from '../../constants';
+import { AndroidImplementationSelector } from './AndroidImplementationSelector';
 import Player from './Player';
 
 type VideoPlayerSource =
@@ -68,58 +69,83 @@ export default function VideoPlayer(props: {
   const changeSource = () => {
     setIndex((index) => (index + 1) % props.sources.length);
   };
+  const isMediaPlayerImplementation = () => status.androidImplementation === 'MediaPlayer';
 
-  return (
-    <Player
-      style={props.style}
-      errorMessage={errorMessage}
-      isLoaded={status.isLoaded}
-      isLooping={status.isLoaded ? status.isLooping : false}
-      rate={status.isLoaded ? status.rate : 1}
-      positionMillis={status.isLoaded ? status.positionMillis : 0}
-      durationMillis={status.isLoaded ? status.durationMillis || 0 : 0}
-      shouldCorrectPitch={status.isLoaded ? status.shouldCorrectPitch : false}
-      isPlaying={status.isLoaded ? status.isPlaying : false}
-      isMuted={status.isLoaded ? status.isMuted : false}
-      volume={status.isLoaded ? status.volume : 1}
-      playAsync={playAsync}
-      pauseAsync={pauseAsync}
-      replayAsync={replayAsync}
-      nextAsync={changeSource}
-      setPositionAsync={setPositionAsync}
-      setIsLoopingAsync={setIsLoopingAsync}
-      setIsMutedAsync={setIsMutedAsync}
-      setRateAsync={setRateAsync}
-      setVolume={(volume) => video.current?.setVolumeAsync(volume)}
-      extraButtons={[
-        () => <ResizeModeSegmentedControl key="resizeModeControl" onValueChange={setResizeMode} />,
-        {
-          iconName: 'options',
-          title: 'Native controls',
-          onPress: toggleNativeControls,
-          active: useNativeControls,
-        },
-        {
-          iconName: 'resize',
-          title: 'Open full screen',
-          onPress: openFullscreen,
-          active: false,
-        },
-      ]}
-      header={
-        <Video
-          useNativeControls={useNativeControls}
-          ref={video}
-          source={props.sources[sourceIndex]}
-          resizeMode={resizeMode}
-          onError={setError}
-          style={{ height: 300 }}
-          progressUpdateIntervalMillis={100}
-          onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
-          onFullscreenUpdate={handleFullScreenUpdate}
-        />
+  const toggleAndroidImplementation = async () => {
+    if (status.isLoaded) {
+      if (status.isPlaying) {
+        await video.current?.pauseAsync();
       }
-    />
+      await video.current?.unloadAsync();
+    }
+    await video.current?.loadAsync(props.sources[sourceIndex], {
+      androidImplementation: isMediaPlayerImplementation() ? 'SimpleExoPlayer' : 'MediaPlayer',
+    });
+  };
+  return (
+    <View>
+      <AndroidImplementationSelector
+        onToggle={toggleAndroidImplementation}
+        title={`Current player: ${
+          isMediaPlayerImplementation() ? 'MediaPlayer' : 'SimpleExoPlayer'
+        }`}
+        toggled={isMediaPlayerImplementation()}
+      />
+
+      <Player
+        style={props.style}
+        errorMessage={errorMessage}
+        isLoaded={status.isLoaded}
+        isLooping={status.isLoaded ? status.isLooping : false}
+        rate={status.isLoaded ? status.rate : 1}
+        positionMillis={status.isLoaded ? status.positionMillis : 0}
+        durationMillis={status.isLoaded ? status.durationMillis || 0 : 0}
+        shouldCorrectPitch={status.isLoaded ? status.shouldCorrectPitch : false}
+        isPlaying={status.isLoaded ? status.isPlaying : false}
+        isMuted={status.isLoaded ? status.isMuted : false}
+        volume={status.isLoaded ? status.volume : 1}
+        audioPan={status.isLoaded ? status.audioPan : 0}
+        playAsync={playAsync}
+        pauseAsync={pauseAsync}
+        replayAsync={replayAsync}
+        nextAsync={changeSource}
+        setPositionAsync={setPositionAsync}
+        setIsLoopingAsync={setIsLoopingAsync}
+        setIsMutedAsync={setIsMutedAsync}
+        setRateAsync={setRateAsync}
+        setVolume={(volume, audioPan) => video.current?.setVolumeAsync(volume, audioPan)}
+        extraButtons={[
+          () => (
+            <ResizeModeSegmentedControl key="resizeModeControl" onValueChange={setResizeMode} />
+          ),
+          {
+            iconName: 'options',
+            title: 'Native controls',
+            onPress: toggleNativeControls,
+            active: useNativeControls,
+          },
+          {
+            iconName: 'resize',
+            title: 'Open full screen',
+            onPress: openFullscreen,
+            active: false,
+          },
+        ]}
+        header={
+          <Video
+            useNativeControls={useNativeControls}
+            ref={video}
+            source={props.sources[sourceIndex]}
+            resizeMode={resizeMode}
+            onError={setError}
+            style={{ height: 300 }}
+            progressUpdateIntervalMillis={100}
+            onPlaybackStatusUpdate={handlePlaybackStatusUpdate}
+            onFullscreenUpdate={handleFullScreenUpdate}
+          />
+        }
+      />
+    </View>
   );
 }
 

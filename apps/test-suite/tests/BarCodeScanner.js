@@ -95,8 +95,8 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
               height: 210,
             },
           },
-          1,
-          1
+          2,
+          2
         );
         t.expect(result[0].cornerPoints).toBeDefined();
         t.expect(result[0].cornerPoints.length).toEqual(4);
@@ -168,8 +168,8 @@ export async function test(t, { setPortalChild, cleanupPortal }) {
                 height: 141,
               },
             },
-            1,
-            1
+            2,
+            2
           );
           t.expect(result[0].cornerPoints).toBeDefined();
           t.expect(result[0].cornerPoints.length).toEqual(4);

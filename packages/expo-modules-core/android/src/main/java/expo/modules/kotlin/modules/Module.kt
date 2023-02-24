@@ -24,6 +24,8 @@ abstract class Module : AppContextProvider {
   @Suppress("PropertyName")
   @PublishedApi
   internal lateinit var coroutineScopeDelegate: Lazy<CoroutineScope>
+
+  @Deprecated(message = "Use a scope from the AppContext", replaceWith = ReplaceWith("appContext.modulesQueue"))
   val coroutineScope get() = coroutineScopeDelegate.value
 
   fun sendEvent(name: String, body: Bundle? = Bundle.EMPTY) {

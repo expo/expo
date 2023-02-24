@@ -1,7 +1,7 @@
 import * as React from 'react';
-import { ImageProps, ViewProps } from 'react-native';
+import { ImageProps, ViewProps, StyleProp, ViewStyle } from 'react-native';
 import { AVPlaybackNativeSource, AVPlaybackSource, AVPlaybackStatus, AVPlaybackStatusToSet } from './AV';
-export declare type VideoNaturalSize = {
+export type VideoNaturalSize = {
     /**
      * A number describing the width in pixels of the video data.
      */
@@ -29,7 +29,7 @@ export declare enum ResizeMode {
      */
     STRETCH = "stretch"
 }
-export declare type VideoReadyForDisplayEvent = {
+export type VideoReadyForDisplayEvent = {
     /**
      * An object containing the basic data about video size.
      */
@@ -57,7 +57,7 @@ export declare enum VideoFullscreenUpdate {
      */
     PLAYER_DID_DISMISS = 3
 }
-export declare type VideoFullscreenUpdateEvent = {
+export type VideoFullscreenUpdateEvent = {
     /**
      * The kind of the fullscreen update.
      */
@@ -77,7 +77,7 @@ export declare type VideoFullscreenUpdateEvent = {
  * Finally, the rest of props are available to control the playback of the video, but we recommend that, for finer control, you use the methods
  * available on the `ref` described in the [AV documentation](./av).
  */
-export declare type VideoProps = {
+export type VideoProps = {
     /**
      * The source of the video data to display. If this prop is `null`, or left blank, the video component will display nothing.
      * Note that this can also be set on the `ref` via `loadAsync()`. See the [AV documentation](./av) for further information.
@@ -99,6 +99,10 @@ export declare type VideoProps = {
      * An optional property to pass custom styles to the poster image.
      */
     posterStyle?: ImageProps['style'];
+    /**
+     * An optional property to pass custom styles to the internal video component.
+     */
+    videoStyle?: StyleProp<ViewStyle>;
     /**
      * A function to be called regularly with the `AVPlaybackStatus` of the video. You will likely be using this a lot.
      * See the [AV documentation](av.md) for further information on `onPlaybackStatusUpdate`, and the interval at which it is called.
@@ -147,6 +151,13 @@ export declare type VideoProps = {
      */
     usePoster?: boolean;
     /**
+     * A react-native `Image` like component to display the poster image.
+     */
+    PosterComponent?: React.ComponentType<{
+        style: ImageProps['style'];
+        source: ImageProps['source'];
+    }>;
+    /**
      * A dictionary setting a new `AVPlaybackStatusToSet` on the video.
      * See the [AV documentation](./av#default-initial--avplaybackstatustoset) for more information on `AVPlaybackStatusToSet`.
      */
@@ -189,6 +200,11 @@ export declare type VideoProps = {
      */
     isMuted?: boolean;
     /**
+     * The desired audio panning value of the audio for this media. This value must be between `-1.0` (full left) and `1.0` (full right).
+     * See the [AV documentation](./av) for more information.
+     */
+    audioPan?: number;
+    /**
      * A boolean describing if the media should play once (`false`) or loop indefinitely (`true`).
      * See the [AV documentation](./av) for more information.
      */
@@ -217,7 +233,7 @@ export declare type VideoProps = {
 /**
  * @hidden
  */
-export declare type VideoNativeProps = {
+export type VideoNativeProps = {
     source?: AVPlaybackNativeSource | null;
     resizeMode?: unknown;
     status?: AVPlaybackStatusToSet;
@@ -240,12 +256,13 @@ export declare type VideoNativeProps = {
         nativeEvent: VideoFullscreenUpdateEvent;
     }) => void;
     useNativeControls?: boolean;
+    videoStyle?: StyleProp<ViewStyle>;
 } & ViewProps;
-export declare type VideoState = {
+export type VideoState = {
     showPoster: boolean;
 };
 /**
  * @hidden
  */
-export declare type ExponentVideoComponent = React.ComponentClass<VideoNativeProps>;
+export type ExponentVideoComponent = React.ComponentClass<VideoNativeProps>;
 //# sourceMappingURL=Video.types.d.ts.map

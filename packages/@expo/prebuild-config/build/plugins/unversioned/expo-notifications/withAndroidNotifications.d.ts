@@ -1,6 +1,6 @@
 import { AndroidConfig, ConfigPlugin } from '@expo/config-plugins';
 import { ExpoConfig } from '@expo/config-types';
-declare type AndroidManifest = AndroidConfig.Manifest.AndroidManifest;
+type AndroidManifest = AndroidConfig.Manifest.AndroidManifest;
 export declare const META_DATA_NOTIFICATION_ICON = "expo.modules.notifications.default_notification_icon";
 export declare const META_DATA_NOTIFICATION_ICON_COLOR = "expo.modules.notifications.default_notification_color";
 export declare const NOTIFICATION_ICON = "notification_icon";

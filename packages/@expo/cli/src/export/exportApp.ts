@@ -6,6 +6,7 @@ import { importCliSaveAssetsFromProject } from '../start/server/metro/resolveFro
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
+import { setNodeEnv } from '../utils/nodeEnv';
 import { createBundlesAsync } from './createBundles';
 import { exportAssetsAsync } from './exportAssets';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
@@ -42,6 +43,8 @@ export async function exportAppAsync(
     dumpSourcemap,
   }: Pick<Options, 'dumpAssetmap' | 'dumpSourcemap' | 'dev' | 'clear' | 'outputDir' | 'platforms'>
 ): Promise<void> {
+  setNodeEnv(dev ? 'development' : 'production');
+
   const exp = await getPublicExpoManifestAsync(projectRoot);
 
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
@@ -61,13 +64,29 @@ export async function exportAppAsync(
     {
       platforms,
       dev,
-      useDevServer: true,
       // TODO: Disable source map generation if we aren't outputting them.
     }
   );
 
   // Log bundle size info to the user
-  printBundleSizes(bundles);
+  printBundleSizes(
+    Object.fromEntries(
+      Object.entries(bundles).map(([key, value]) => {
+        if (!dumpSourcemap) {
+          return [
+            key,
+            {
+              ...value,
+              // Remove source maps from the bundles if they aren't going to be written.
+              map: undefined,
+            },
+          ];
+        }
+
+        return [key, value];
+      })
+    )
+  );
 
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
   const { hashes, fileNames } = await writeBundlesAsync({ bundles, outputDir: bundlesPath });
@@ -91,7 +110,8 @@ export async function exportAppAsync(
           // @ts-expect-error: tolerable type mismatches: unused `readonly` (common in Metro) and `undefined` instead of `null`.
           bundle.assets,
           platform,
-          outputPath
+          outputPath,
+          undefined
         );
       })
     );
@@ -128,7 +148,7 @@ export async function exportAppAsync(
   }
 
   // Generate a `metadata.json` and the export is complete.
-  await writeMetadataJsonAsync({ outputDir, bundles, fileNames });
+  await writeMetadataJsonAsync({ outputDir: outputPath, bundles, fileNames });
 }
 
 /**

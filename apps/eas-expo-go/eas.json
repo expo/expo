@@ -5,21 +5,33 @@
   },
   "build": {
     "base": {
+      "credentialsSource": "local",
       "android": {
         "image": "ubuntu-20.04-jdk-11-ndk-r21e",
         "cache": {
           "customPaths": [
-            "../../android/ReactAndroid/prebuiltHermes"
+            "../../android/prebuiltHermes"
           ]
         },
+        "resourceClass": "large",
         "env": {
           "EAS_BUILD_PLATFORM": "android",
-          "EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID": "host.exp.exponent"
+          "EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID": "host.exp.exponent",
+          "EXPO_ROOT_DIR": "/home/expo/workingdir/build"
         }
       },
       "ios": {
+        "cache": {
+          "key": "sdk48-0.71.3",
+          "cacheDefaultPaths": false,
+          "customPaths": [
+            "../../ios/Pods"
+          ]
+        },
+        "resourceClass": "m1-medium",
         "env": {
-          "EAS_BUILD_PLATFORM": "ios"
+          "EAS_BUILD_PLATFORM": "ios",
+          "EXPO_ROOT_DIR": "/Users/expo/workingdir/build"
         }
       }
     },
@@ -44,9 +56,11 @@
         "EAS_BUILD_PROFILE": "versioned-client-signed"
       },
       "android": {
+        "withoutCredentials": false,
         "gradleCommand": ":app:bundleVersionedRelease"
       },
       "ios": {
+        "credentialsSource": "remote",
         "simulator": false
       }
     },

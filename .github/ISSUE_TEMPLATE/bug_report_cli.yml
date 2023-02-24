@@ -1,18 +1,21 @@
 name: "\U0001F41B CLI Bug Report"
 description: 'Report a reproducible bug in the versioned Expo CLI (npx expo)'
-labels: ['needs review', 'CLI']
+labels: ['needs validation', 'CLI']
 body:
   - type: markdown
     attributes:
       value: Thanks for taking the time to file a bug report! Please fill out this form as completely as possible.
   - type: markdown
     attributes:
-      value: If you leave out sections there is a high likelihood your issue will be closed. If you have a question, not a bug report, please post it on our [forums](https://forums.expo.dev/) instead.
+      value: |
+        If you leave out sections there is a high likelihood your issue will be closed.
+        If you have a question or you think your issue might be caused by your application code, you can get help from the community on the [forums](https://forums.expo.dev/) or on [Discord](https://chat.expo.dev).
   - type: textarea
     attributes:
       label: Summary
-      description: Describe the issue in 1 or 2 sentences
-      placeholder: "Clearly describe what the expected behavior is vs. what is actually happening. This should be as short as possible, while still communicating all the necessary information. If your summary is simply, for example: 'My device cannot connect to Wi-Fi.', then you need to continue debugging yourself and provide more information."
+      description: |
+        Clearly describe what the expected behavior is vs. what is actually happening. This should be as short as possible, while still communicating all the necessary information.
+        If your summary is simply, for example: "My device cannot connect to Wi-Fi.", then you will need to [continue debugging on your own](https://expo.fyi/manual-debugging) to more precisely define your issue before proceeding.
     validations:
       required: true
   - type: dropdown
@@ -32,13 +35,16 @@ body:
   - type: textarea
     attributes:
       label: Environment
-      placeholder: Run `npx expo-env-info` and paste the output here
+      description: Run the `npx expo-env-info` command and paste its output in the field below.
     validations:
       required: true
   - type: textarea
     attributes:
-      label: Reproducible demo
-      description: 'This should include as little code as possible, do not link your entire project. If a reproducible demo is not provided, it is very likely your issue will be closed. Read [here more guidance](https://stackoverflow.com/help/mcve).'
+      label: Minimal reproducible example
+      description: |
+        This should include as little code as possible, and no extraneous dependencies. Do not share your entire project.
+        If a reproducible demo is not provided, your issue will be closed. You must also test your issue against the latest CLI version to ensure that it hasn't already been resolved.
+        [Learn more about creating a minimal reproducible example](https://stackoverflow.com/help/mcve).
     validations:
       required: true
   - type: markdown
@@ -46,4 +52,6 @@ body:
       value: Please make sure contributors can run your code and follow the steps your provided in order to reproduce the bug.
   - type: markdown
     attributes:
-      value: "**Realize that it is up to you to debug your code and be as certain as possible that the bug is with Expo, not with your own app.** [Here's an excellent guide to debugging you can follow](https://gist.github.com/brentvatne/5ac00cba0c70b7a06b89a56787d6bc4a)."
+      value: |
+        **Realize that it is up to you to debug your code and be as certain as possible that the bug is with Expo, not with your own app.**
+        [Here's an excellent guide to debugging you can follow](https://gist.github.com/brentvatne/5ac00cba0c70b7a06b89a56787d6bc4a).

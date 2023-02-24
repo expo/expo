@@ -1,8 +1,8 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`getCodeSigningInfoAsync expo-root keyid requested online normal case gets a development certificate 1`] = `
-Object {
-  "certificateChainForResponse": Array [
+{
+  "certificateChainForResponse": [
     "-----BEGIN CERTIFICATE-----
   MIIDyTCCArGgAwIBAgIJcLqJvCTwY8nXMA0GCSqGSIb3DQEBCwUAMHkxHDAaBgNV
   BAMTE0V4cG8gR28gQ2VydGlmaWNhdGUxCzAJBgNVBAYTAlVTMRMwEQYDVQQIEwpD
@@ -72,6 +72,7 @@ Object {
   Mna8PgGRUuyGaHJM47/f4/q5tMm7C03GgaTa2EHXQEzBLLoYRYhrmaLgmwviyiSG
   Cqi43mK/Fn7lD0Xwtg==
   -----END CERTIFICATE-----",
+  "keyId": "expo-go",
   "privateKey": "-----BEGIN RSA PRIVATE KEY-----
 MIIEowIBAAKCAQEAkQhFyqfo+lSGg1tPrUzRqlXDt2BnjAaQmENA7irD6TxKS83g
 IZAcYxwn2lWJZ85Omz/4uCjHdt6AjM2ZkFMCTShgVC5o/JOUIFtYw6idrUPhIzR0
@@ -104,8 +105,8 @@ CFDVAoGBAK/aVHnMZlPwWZoso9svdrW/lXwhjlbYPfBwmUZsS05J+KRFxjeb/oQm
 `;
 
 exports[`getCodeSigningInfoAsync non expo-root certificate keyid requested normal case gets the configured certificate 1`] = `
-Object {
-  "certificateChainForResponse": Array [],
+{
+  "certificateChainForResponse": [],
   "certificateForPrivateKey": "-----BEGIN CERTIFICATE-----
   MIICzTCCAbWgAwIBAgIJWEL03IR99LhMMA0GCSqGSIb3DQEBCwUAMA8xDTALBgNV
   BAMTBHRlc3QwIBcNMjIwNDEyMTcyODIzWhgPMjEyMjA0MTIxNzI4MjNaMA8xDTAL
@@ -124,6 +125,7 @@ Object {
   AJsADnJN0LEKDI4q0kDwl1v6U4cJ5Ru7VQv3xho03LPEA/fFKHK6OITDznspiXRs
   IA==
   -----END CERTIFICATE-----",
+  "keyId": "test",
   "privateKey": "-----BEGIN RSA PRIVATE KEY-----
   MIIEpAIBAAKCAQEAwUu28xC4lCjgfEDYdHtDore4+75O2SAncrwb/gAez2G4CJk7
   yUmdwiU35g2DreexDXfpHlf0Zw/W/LueYo66CQaEfEAElVbBGJoANXL/aMFGJCA8

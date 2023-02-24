@@ -2,8 +2,9 @@
 
 #import <React/RCTBridge.h>
 
-#import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesConfig.h>
+
+@class EXUpdatesAsset;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,6 +19,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (NSString *)getRuntimeVersionWithConfig:(EXUpdatesConfig *)config;
 + (NSURL *)urlForBundledAsset:(EXUpdatesAsset *)asset;
 + (NSString *)pathForBundledAsset:(EXUpdatesAsset *)asset;
++ (BOOL)isNativeDebuggingEnabled;
++ (void)purgeUpdatesLogsOlderThanOneDay;
 
 @end
 

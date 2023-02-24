@@ -7,6 +7,7 @@ export const packagesToKeep: string[] = [
   'expo.modules.clipboard.CLIPBOARD_FILE_PROVIDER_PATHS',
   'expo.modules.core.interfaces.Consumer',
   'expo.modules.core.interfaces.SingletonModule',
+  'expo.modules.image.ExpoImageAppGlideModule',
   'expo.modules.jsonutils',
   'expo.modules.manifests',
   'expo.modules.notifications.BuildConfig',

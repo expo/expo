@@ -1,5 +1,5 @@
-import { ConfigPlugin, InfoPlist } from '@expo/config-plugins';
-import { ExpoConfig } from '@expo/config-types';
+import { ExpoConfig } from 'expo/config';
+import { ConfigPlugin, InfoPlist } from 'expo/config-plugins';
 export declare const INITIAL_ORIENTATION_KEY = "EXDefaultScreenOrientationMask";
 declare const OrientationLock: {
     DEFAULT: string;
@@ -11,7 +11,7 @@ declare const OrientationLock: {
     LANDSCAPE_LEFT: string;
     LANDSCAPE_RIGHT: string;
 };
-declare type OrientationMasks = keyof typeof OrientationLock;
+type OrientationMasks = keyof typeof OrientationLock;
 interface ExpoConfigWithInitialOrientation extends ExpoConfig {
     initialOrientation?: OrientationMasks;
 }

@@ -1,19 +1,18 @@
 import { css } from '@emotion/react';
 import { theme, spacing as themeSpacing } from '@expo/styleguide';
-import React from 'react';
 
 type SeparatorProps = {
   spacing?: number;
 };
 
-export const Spacer = ({ spacing = themeSpacing[6] }: SeparatorProps) => (
+export const Separator = ({ spacing }: SeparatorProps) => (
   <hr
     css={css({
-      marginTop: spacing,
-      marginBottom: spacing,
+      marginTop: spacing ?? themeSpacing[4],
+      marginBottom: spacing ?? themeSpacing[6],
       backgroundColor: theme.border.default,
       border: 0,
-      height: 1,
+      height: '0.05rem',
     })}
   />
 );

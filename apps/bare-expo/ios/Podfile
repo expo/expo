@@ -3,7 +3,7 @@ install! 'cocoapods',
          :incremental_installation => true,
          :deterministic_uuids => false
 source 'https://cdn.cocoapods.org/'
-platform :ios, '12.4'
+platform :ios, '13.0'
 inhibit_all_warnings!
 
 # Import the auto-linking packages
@@ -13,6 +13,19 @@ require File.join(File.dirname(`node --print "require.resolve('expo/package.json
 
 require 'json'
 podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {}
+
+prepare_react_native_project!
+
+# If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
+# because `react-native-flipper` depends on (FlipperKit,...) that will be excluded
+#
+# To fix this you can also exclude `react-native-flipper` using a `react-native.config.js`
+# ```js
+# module.exports = {
+#   dependencies: {
+#     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
+# ```
+flipper_config = ENV['NO_FLIPPER'] == "1" || ENV['CI'] ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
 
 abstract_target 'BareExpoMain' do
   pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
@@ -24,35 +37,41 @@ abstract_target 'BareExpoMain' do
     ],
   )
 
+  use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
+  use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
+
   # Flags change depending on the env values.
   flags = get_default_flags()
 
   config = use_native_modules!
 
-  use_react_native!(
-    :path => config[:reactNativePath],
-    :hermes_enabled => flags[:hermes_enabled] || podfile_properties['expo.jsEngine'] == 'hermes',
-    :fabric_enabled => flags[:fabric_enabled],
-    # An absolute path to your application root.
-    :app_path => "#{Dir.pwd}/.."
-  )
-
   # Fix Google Sign-in and Flipper
   post_install do |installer|
     # `installer.pods_project` might be nil for `incremental_installation: true` and no new project generated
-    react_native_post_install(installer) if installer.pods_project
-    __apply_Xcode_12_5_M1_post_install_workaround(installer) if installer.pods_project
+    if installer.pods_project
+      react_native_post_install(
+        installer,
+        config[:reactNativePath],
+        # Set `mac_catalyst_enabled` to `true` in order to apply patches
+        # necessary for Mac Catalyst builds
+        :mac_catalyst_enabled => false
+      )
+      __apply_Xcode_12_5_M1_post_install_workaround(installer)
+    end
 
     installer.target_installation_results.pod_target_installation_results.each do |pod_name, target_installation_result|
       target_installation_result.native_target.build_configurations.each do |config|
         config.build_settings['EXCLUDED_ARCHS[sdk=iphonesimulator*]'] = 'arm64'
+      end
+    end
 
-        if (pod_name == 'Flipper') || (pod_name == 'Flipper-Folly') || (pod_name == 'Flipper-RSocket')
-          # Fix `Typedef redefinition with different types ('uint8_t' (aka 'unsigned char') vs 'enum clockid_t')`
-          # See https://github.com/react-native-community/upgrade-support/issues/91 and https://github.com/facebook/flipper/issues/834
-          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '9.0'
-        else
-          config.build_settings['IPHONEOS_DEPLOYMENT_TARGET'] = '12.0'
+    # This is necessary for Xcode 14, because it signs resource bundles by default
+    # when building for devices.
+    installer.target_installation_results.pod_target_installation_results
+      .each do |pod_name, target_installation_result|
+      target_installation_result.resource_bundle_targets.each do |resource_bundle_target|
+        resource_bundle_target.build_configurations.each do |config|
+          config.build_settings['CODE_SIGNING_ALLOWED'] = 'NO'
         end
       end
     end
@@ -67,21 +86,41 @@ abstract_target 'BareExpoMain' do
   end
 
   target 'BareExpo' do
-    # Enables Flipper.
-
-    # Uncomment to opt-in to using Flipper
-    #
-    # if !ENV['CI']
-    #   use_flipper!()
-    # end
+    use_react_native!(
+      :path => config[:reactNativePath],
+      :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
+      :fabric_enabled => flags[:fabric_enabled],
+      # An absolute path to your application root.
+      :app_path => "#{Pod::Config.instance.installation_root}/..",
+      #
+      # Uncomment to opt-in to using Flipper
+      # Note that if you have use_frameworks! enabled, Flipper will not work
+      # :flipper_configuration => flipper_config,
+    )
   end
 
   target 'BareExpoDetox' do
+    use_react_native!(
+      :path => config[:reactNativePath],
+      :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
+      :fabric_enabled => flags[:fabric_enabled],
+      # An absolute path to your application root.
+      :app_path => "#{Pod::Config.instance.installation_root}/..",
+      :flipper_configuration => FlipperConfiguration.disabled,
+    )
   end
 
   target 'BareExpoTests' do
-    inherit! :search_paths
+    use_react_native!(
+      :path => config[:reactNativePath],
+      :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
+      :fabric_enabled => flags[:fabric_enabled],
+      # An absolute path to your application root.
+      :app_path => "#{Pod::Config.instance.installation_root}/..",
+      :flipper_configuration => FlipperConfiguration.disabled,
+    )
 
+    pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios"
     pod 'Nimble', :podspec => './../../../ios/Nimble.podspec'
   end
 end

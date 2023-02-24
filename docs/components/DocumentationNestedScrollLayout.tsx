@@ -1,42 +1,11 @@
 // NOTE(jim):
 // GETTING NESTED SCROLL RIGHT IS DELICATE BUSINESS. THEREFORE THIS COMPONENT
 // IS THE ONLY PLACE WHERE SCROLL CODE SHOULD BE HANDLED. THANKS.
-import { Global, css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
+import { css } from '@emotion/react';
+import { breakpoints, theme } from '@expo/styleguide';
 import * as React from 'react';
 
-import * as Constants from '~/constants/theme';
-
-const STYLES_GLOBAL = css`
-  html {
-    background: ${theme.background.default};
-  }
-
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    html {
-      /* width */
-      ::-webkit-scrollbar {
-        width: 6px;
-      }
-
-      /* Track */
-      ::-webkit-scrollbar-track {
-        background: ${theme.background.default};
-      }
-
-      /* Handle */
-      ::-webkit-scrollbar-thumb {
-        background: ${theme.background.tertiary};
-        border-radius: 10px;
-      }
-
-      /* Handle on hover */
-      ::-webkit-scrollbar-thumb:hover {
-        background: ${theme.background.quaternary};
-      }
-    }
-  }
-`;
+import { SidebarHead, SidebarFooter } from '~/ui/components/Sidebar';
 
 const STYLES_CONTAINER = css`
   width: 100%;
@@ -56,7 +25,7 @@ const STYLES_CONTAINER = css`
     border-right: 0px;
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     display: block;
     height: auto;
   }
@@ -66,20 +35,11 @@ const STYLES_HEADER = css`
   flex-shrink: 0;
   width: 100%;
 
-  @media screen and (min-width: ${Constants.breakpoints.mobile}) {
-    border-bottom: 1px solid ${theme.border.default};
-  }
-
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     position: sticky;
     top: -57px;
     z-index: 3;
-  }
-`;
-
-const SHOW_SEARCH_AND_MENU = css`
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    top: 0px;
+    max-height: 100vh;
   }
 `;
 
@@ -92,24 +52,26 @@ const STYLES_CONTENT = css`
   height: 100%;
   min-height: 25%;
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     height: auto;
   }
 `;
 
 const STYLES_SIDEBAR = css`
+  display: flex;
+  flex-direction: column;
   flex-shrink: 0;
   max-width: 280px;
   height: 100%;
   overflow: hidden;
   transition: 200ms ease max-width;
-  background: ${theme.background.screen};
+  background: ${theme.background.default};
 
   @media screen and (max-width: 1200px) {
     max-width: 280px;
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     display: none;
   }
 `;
@@ -131,7 +93,7 @@ const STYLES_CENTER = css`
   overflow: hidden;
   display: flex;
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     height: auto;
     overflow: auto;
   }
@@ -142,7 +104,6 @@ const STYLES_CENTER = css`
 const STYLES_SCROLL_CONTAINER = css`
   height: 100%;
   width: 100%;
-  padding-bottom: 36px;
   overflow-y: scroll;
   overflow-x: hidden;
   -webkit-overflow-scrolling: touch;
@@ -160,16 +121,15 @@ const STYLES_SCROLL_CONTAINER = css`
 
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: ${theme.background.tertiary};
-    border-radius: 10px;
+    background: ${theme.palette.gray5};
   }
 
   /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
-    background: ${theme.background.quaternary};
+    background: ${theme.palette.gray6};
   }
 
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     overflow-y: auto;
   }
 `;
@@ -179,7 +139,12 @@ const STYLES_CENTER_WRAPPER = css`
   margin: auto;
 `;
 
+const STYLES_HIDDEN = css`
+  display: none;
+`;
+
 type ScrollContainerProps = React.PropsWithChildren<{
+  className?: string;
   scrollPosition?: number;
   scrollHandler?: () => void;
 }>;
@@ -203,7 +168,11 @@ class ScrollContainer extends React.Component<ScrollContainerProps> {
 
   render() {
     return (
-      <div css={STYLES_SCROLL_CONTAINER} ref={this.scrollRef} onScroll={this.props.scrollHandler}>
+      <div
+        css={STYLES_SCROLL_CONTAINER}
+        className={this.props.className}
+        ref={this.scrollRef}
+        onScroll={this.props.scrollHandler}>
         {this.props.children}
       </div>
     );
@@ -212,12 +181,12 @@ class ScrollContainer extends React.Component<ScrollContainerProps> {
 
 type Props = React.PropsWithChildren<{
   onContentScroll?: (scrollTop: number) => void;
-  isMenuActive: boolean;
+  isMobileMenuVisible: boolean;
   tocVisible: boolean;
-  isMobileSearchActive: boolean;
   header: React.ReactNode;
   sidebarScrollPosition: number;
   sidebar: React.ReactNode;
+  sidebarActiveGroup: string;
   sidebarRight: React.ReactElement;
 }>;
 
@@ -239,35 +208,37 @@ export default class DocumentationNestedScrollLayout extends React.Component<Pro
   };
 
   render() {
-    const { isMobileSearchActive, isMenuActive, sidebarScrollPosition } = this.props;
-
-    if (isMenuActive) {
-      window.scrollTo(0, 0);
-    }
+    const {
+      header,
+      sidebar,
+      sidebarActiveGroup,
+      sidebarRight,
+      sidebarScrollPosition,
+      isMobileMenuVisible,
+      tocVisible,
+      children,
+    } = this.props;
 
     return (
       <div css={STYLES_CONTAINER}>
-        <Global styles={STYLES_GLOBAL} />
-        <div css={[STYLES_HEADER, (isMobileSearchActive || isMenuActive) && SHOW_SEARCH_AND_MENU]}>
-          {this.props.header}
-        </div>
+        <div css={STYLES_HEADER}>{header}</div>
         <div css={STYLES_CONTENT}>
           <div css={[STYLES_SIDEBAR, STYLES_LEFT]}>
+            <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
             <ScrollContainer ref={this.sidebarRef} scrollPosition={sidebarScrollPosition}>
-              {this.props.sidebar}
+              {sidebar}
+              <SidebarFooter />
             </ScrollContainer>
           </div>
-
-          <div css={STYLES_CENTER}>
+          <div css={[STYLES_CENTER, isMobileMenuVisible && STYLES_HIDDEN]}>
             <ScrollContainer ref={this.contentRef} scrollHandler={this.scrollHandler}>
-              <div css={STYLES_CENTER_WRAPPER}>{this.props.children}</div>
+              <div css={STYLES_CENTER_WRAPPER}>{children}</div>
             </ScrollContainer>
           </div>
-
-          {this.props.tocVisible && (
+          {tocVisible && (
             <div css={[STYLES_SIDEBAR, STYLES_RIGHT]}>
               <ScrollContainer ref={this.sidebarRightRef}>
-                {React.cloneElement(this.props.sidebarRight, {
+                {React.cloneElement(sidebarRight, {
                   selfRef: this.sidebarRightRef,
                   contentRef: this.contentRef,
                 })}

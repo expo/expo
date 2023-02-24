@@ -1,39 +1,44 @@
 /packages/@expo/cli                             @EvanBacon @bycedric
+/packages/@expo/config                          @EvanBacon
+/packages/@expo/prebuild-config                 @EvanBacon
+/packages/@expo/config-plugins                  @EvanBacon @brentvatne
+/packages/@expo/config-types                    @EvanBacon @douglowder
+/packages/@expo/package-manager                 @EvanBacon @bycedric
 /packages/babel-preset-expo                     @brentvatne @ide @EvanBacon
 /packages/expo-app-loader-provider              @tsapeta
 /packages/expo-apple-authentication             @tsapeta
 /packages/expo-application                      @ide
-/packages/expo-asset                            @tsapeta @esamelson @wschurman
+/packages/expo-asset                            @tsapeta @wschurman
 /packages/expo-av                               @barthap @kudo
 /packages/expo-background-fetch                 @tsapeta @kudo
 /packages/expo-barcode-scanner                  @lukmccall
 /packages/expo-battery                          @tsapeta
 /packages/expo-blur                             @tsapeta
 /packages/expo-brightness                       @tsapeta
+/packages/expo-build-properties                 @kudo @gabrieldonadel
 /packages/expo-calendar                         @lukmccall
 /packages/expo-camera                           @lukmccall
 /packages/expo-cellular                         @ide @tsapeta
 /packages/expo-checkbox                         @bycedric
 /packages/expo-clipboard                        @tsapeta @barthap
-/packages/expo-constants                        @wschurman @esamelson @brentvatne
+/packages/expo-constants                        @wschurman @brentvatne
 /packages/expo-contacts                         @EvanBacon
 /packages/expo-crypto                           @EvanBacon
-/packages/expo-dev-client                       @lukmccall @esamelson @ajsmth
-/packages/expo-dev-launcher                     @lukmccall @esamelson @ajsmth
-/packages/expo-dev-menu                         @lukmccall @esamelson @ajsmth
-/packages/expo-dev-menu-interface               @lukmccall @esamelson @ajsmth
+/packages/expo-dev-client                       @lukmccall @douglowder
+/packages/expo-dev-launcher                     @lukmccall @douglowder
+/packages/expo-dev-menu                         @lukmccall @douglowder
+/packages/expo-dev-menu-interface               @lukmccall @douglowder
 /packages/expo-device                           @ide @tsapeta
 /packages/expo-document-picker                  @barthap
-/packages/expo-error-recovery                   @lukmccall @esamelson
 /packages/expo-face-detector                    @kudo
-/packages/expo-file-system                      @brentvatne @kudo @esamelson @ide @tsapeta
+/packages/expo-file-system                      @brentvatne @kudo @ide @tsapeta
 /packages/expo-firebase-core                    @brentvatne
 /packages/expo-firebase-analytics               @brentvatne
 /packages/expo-firebase-recaptcha               @brentvatne
 /packages/expo-font                             @tsapeta
-/packages/expo-gl-cpp                           @tsapeta @wkozyra95
 /packages/expo-gl                               @tsapeta @wkozyra95
 /packages/expo-haptics                          @barthap
+/packages/expo-image                            @lukmccall @tsapeta
 /packages/expo-image-manipulator                @barthap
 /packages/expo-image-picker                     @barthap @lukmccall
 /packages/expo-in-app-purchases                 @ide
@@ -47,8 +52,8 @@
 /packages/expo-media-library                    @tsapeta @lukmccall
 /packages/expo-module-scripts                   @ide
 /packages/expo-module-template                  @tsapeta @EvanBacon
-/packages/expo-modules-autolinking              @tsapeta @kudo
-/packages/expo-modules-core                     @tsapeta @kudo
+/packages/expo-modules-autolinking              @tsapeta @kudo @lukmccall
+/packages/expo-modules-core                     @tsapeta @kudo @lukmccall
 /packages/expo-navigation-bar                   @EvanBacon
 /packages/expo-network                          @ide
 /packages/expo-notifications                    @tsapeta
@@ -68,13 +73,13 @@
 /packages/expo-standard-web-crypto              @EvanBacon
 /packages/expo-status-bar                       @brentvatne
 /packages/expo-store-review                     @EvanBacon
-/packages/expo-stories                          @ajsmth
-/packages/expo-structured-headers               @esamelson
+/packages/expo-stories                          @bycedric @EvanBacon
+/packages/expo-structured-headers               @douglowder
 /packages/expo-system-ui                        @EvanBacon
 /packages/expo-task-manager                     @tsapeta @bycedric
 /packages/expo-tracking-transparency            @tsapeta
-/packages/expo-updates                          @esamelson @wschurman @douglowder
-/packages/expo-updates-interface                @esamelson @wschurman @douglowder
+/packages/expo-updates                          @wschurman @douglowder
+/packages/expo-updates-interface                @wschurman @douglowder
 /packages/expo-video-thumbnails                 @tsapeta
 /packages/expo-web-browser                      @tsapeta @barthap
 /packages/expo-yarn-workspaces                  @ide
@@ -83,6 +88,6 @@
 /packages/jest-expo-puppeteer                   @ide @EvanBacon
 /packages/jest-expo                             @brentvatne @EvanBacon
 /tools                                          @tsapeta
-/docs                                           @Simek @amandeepmittal
+/docs                                           @Simek @amandeepmittal @kbrandwijk
 /.github/workflows                              @tsapeta @brentvatne @kudo
 /.github/workflows/cli.yml                      @EvanBacon @bycedric

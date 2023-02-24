@@ -104,10 +104,6 @@ export default class Camera extends React.Component<CameraProps> {
      *
      * > On native platforms, the local image URI is temporary. Use [`FileSystem.copyAsync`](filesystem.md#filesystemcopyasyncoptions)
      * > to make a permanent copy of the image.
-     *
-     * > On web, the `uri` is a base64 representation of the image because file system URLs are not supported in the browser.
-     * > The `exif` data returned on web is a partial representation of the [`MediaTrackSettings`](https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings),
-     * > if available.
      */
     takePictureAsync(options?: CameraPictureOptions): Promise<CameraCapturedPicture>;
     /**
@@ -153,10 +149,10 @@ export default class Camera extends React.Component<CameraProps> {
             message: string;
         };
     }) => void;
-    _onObjectDetected: (callback?: Function | undefined) => ({ nativeEvent }: {
+    _onObjectDetected: (callback?: Function) => ({ nativeEvent }: {
         nativeEvent: any;
     }) => void;
-    _setReference: (ref?: React.Component<{}, {}, any> | undefined) => void;
+    _setReference: (ref?: React.Component) => void;
     render(): JSX.Element;
 }
 export declare const Constants: ConstantsType, getPermissionsAsync: typeof Camera.getPermissionsAsync, requestPermissionsAsync: typeof Camera.requestPermissionsAsync, getCameraPermissionsAsync: typeof Camera.getCameraPermissionsAsync, requestCameraPermissionsAsync: typeof Camera.requestCameraPermissionsAsync, getMicrophonePermissionsAsync: typeof Camera.getMicrophonePermissionsAsync, requestMicrophonePermissionsAsync: typeof Camera.requestMicrophonePermissionsAsync;

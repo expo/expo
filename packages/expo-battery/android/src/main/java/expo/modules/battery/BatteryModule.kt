@@ -12,11 +12,12 @@ import expo.modules.core.Promise
 import expo.modules.core.interfaces.ExpoMethod
 import expo.modules.core.interfaces.RegistryLifecycleListener
 import expo.modules.core.interfaces.services.EventEmitter
+import expo.modules.kotlin.types.Enumerable
 
 class BatteryModule(context: Context) : ExportedModule(context), RegistryLifecycleListener {
   private val NAME = "ExpoBattery"
 
-  enum class BatteryState(val value: Int) {
+  enum class BatteryState(val value: Int) : Enumerable {
     UNKNOWN(0), UNPLUGGED(1), CHARGING(2), FULL(3);
   }
 

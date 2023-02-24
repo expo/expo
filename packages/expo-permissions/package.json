@@ -1,6 +1,6 @@
 {
   "name": "expo-permissions",
-  "version": "13.2.0",
+  "version": "14.1.1",
   "description": "Allows you prompt for various permissions to access device sensors, personal data, etc.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -36,7 +36,7 @@
   "dependencies": {},
   "devDependencies": {
     "@testing-library/react-hooks": "^7.0.1",
-    "expo-module-scripts": "^2.0.0"
+    "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
     "expo": "*"

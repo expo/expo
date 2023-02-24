@@ -2,223 +2,261 @@
 
 #include <functional>
 #include <memory>
+#include <mutex>
 #include <string>
+#include <unordered_map>
 #include <vector>
 
 #include <JsiHostObject.h>
-#include <RNSkDrawView.h>
+#include <JsiValueWrapper.h>
 #include <RNSkPlatformContext.h>
 #include <RNSkValue.h>
+#include <RNSkView.h>
 #include <jsi/jsi.h>
 
 namespace RNSkia {
-using namespace facebook;
+namespace jsi = facebook::jsi;
 
-using CallbackInfo = struct CallbackInfo {
-  CallbackInfo() {
-    drawCallback = nullptr;
-    view = nullptr;
-  }
-  std::shared_ptr<jsi::Function> drawCallback;
-  std::shared_ptr<RNSkDrawView> view;
+using RNSkViewInfo = struct RNSkViewInfo {
+  RNSkViewInfo() { view = nullptr; }
+  std::shared_ptr<RNSkView> view;
+  std::unordered_map<std::string, RNJsi::JsiValueWrapper> props;
 };
 
-class RNSkJsiViewApi : public JsiHostObject {
+class RNSkJsiViewApi : public RNJsi::JsiHostObject,
+                       public std::enable_shared_from_this<RNSkJsiViewApi> {
 public:
-  JSI_HOST_FUNCTION(setDrawCallback) {
-    if (count != 2) {
+  /**
+   Sets a custom property on a view given a view id. The property name/value
+   will be stored in a map alongside the id of the view and propagated to the
+   view when needed.
+   */
+  JSI_HOST_FUNCTION(setJsiProperty) {
+    if (count != 3) {
       _platformContext->raiseError(
-          std::string("setDrawCallback: Expected 2 arguments, got " +
+          std::string("setJsiProperty: Expected 3 arguments, got " +
                       std::to_string(count) + "."));
       return jsi::Value::undefined();
     }
 
     if (!arguments[0].isNumber()) {
       _platformContext->raiseError(
-          "setDrawCallback: First argument must be a number");
+          "setJsiProperty: First argument must be a number");
       return jsi::Value::undefined();
     }
 
-    // We accept undefined to zero out the drawCallback
-    if (!arguments[1].isUndefined()) {
-      if (!arguments[1].isObject()) {
-        _platformContext->raiseError(
-            "setDrawCallback: Second argument must be a function");
-        return jsi::Value::undefined();
-      }
-      if (!arguments[1].asObject(runtime).isFunction(runtime)) {
-        _platformContext->raiseError(
-            "setDrawCallback: Second argument must be a function");
-        return jsi::Value::undefined();
-      }
+    if (!arguments[1].isString()) {
+      _platformContext->raiseError("setJsiProperty: Second argument must be "
+                                   "the name of the property to set.");
+
+      return jsi::Value::undefined();
     }
+    auto nativeId = arguments[0].asNumber();
+    auto info = getEnsuredViewInfo(nativeId);
 
-    // find skia draw view
-    int nativeId = arguments[0].asNumber();
+    std::lock_guard<std::mutex> lock(_mutex);
+    info->props.insert_or_assign(arguments[1].asString(runtime).utf8(runtime),
+                                 RNJsi::JsiValueWrapper(runtime, arguments[2]));
 
-    // and function to install as the draw drawCallback
-    auto info = getEnsuredCallbackInfo(nativeId);
-    if (arguments[1].isUndefined()) {
-      info->drawCallback = nullptr;
-    } else {
-      info->drawCallback = std::make_shared<jsi::Function>(
-          arguments[1].asObject(runtime).asFunction(runtime));
-    }
-
-    // Update view if set
-    if (info->view != nullptr && info->drawCallback != nullptr) {
+    // Now let's see if we have a view that we can update
+    if (info->view != nullptr) {
+      // Update view!
       info->view->setNativeId(nativeId);
-      info->view->setDrawCallback(info->drawCallback);
+      info->view->setJsiProperties(info->props);
+      info->props.clear();
     }
 
     return jsi::Value::undefined();
   }
 
-  JSI_HOST_FUNCTION(invalidateSkiaView) {
-    if (count != 1) {
+  /**
+   Calls a custom command / method on a view by the view id.
+   */
+  JSI_HOST_FUNCTION(callJsiMethod) {
+    if (count < 2) {
       _platformContext->raiseError(
-          std::string("invalidateSkiaView: Expected 2 arguments, got " +
+          std::string("callCustomCommand: Expected at least 2 arguments, got " +
                       std::to_string(count) + "."));
+
       return jsi::Value::undefined();
     }
 
     if (!arguments[0].isNumber()) {
       _platformContext->raiseError(
-          "invalidateSkiaView: First argument must be a number");
+          "callCustomCommand: First argument must be a number");
+
       return jsi::Value::undefined();
     }
 
-    // find skia draw view
+    if (!arguments[1].isString()) {
+      _platformContext->raiseError("callCustomCommand: Second argument must be "
+                                   "the name of the action to call.");
+
+      return jsi::Value::undefined();
+    }
+
+    auto nativeId = arguments[0].asNumber();
+    auto action = arguments[1].asString(runtime).utf8(runtime);
+
+    auto info = getEnsuredViewInfo(nativeId);
+
+    if (info->view == nullptr) {
+      throw jsi::JSError(
+          runtime, std::string("callCustomCommand: Could not call action " +
+                               action + " on view - view not ready.")
+                       .c_str());
+
+      return jsi::Value::undefined();
+    }
+
+    // Get arguments
+    size_t paramsCount = count - 2;
+    const jsi::Value *params = paramsCount > 0 ? &arguments[2] : nullptr;
+    return info->view->callJsiMethod(runtime, action, params, paramsCount);
+  }
+
+  JSI_HOST_FUNCTION(requestRedraw) {
+    if (count != 1) {
+      _platformContext->raiseError(
+          std::string("requestRedraw: Expected 1 arguments, got " +
+                      std::to_string(count) + "."));
+
+      return jsi::Value::undefined();
+    }
+
+    if (!arguments[0].isNumber()) {
+      _platformContext->raiseError(
+          "requestRedraw: First argument must be a number");
+
+      return jsi::Value::undefined();
+    }
+
+    // find Skia View
     int nativeId = arguments[0].asNumber();
 
-    auto info = getEnsuredCallbackInfo(nativeId);
+    auto info = getEnsuredViewInfo(nativeId);
     if (info->view != nullptr) {
       info->view->requestRedraw();
     }
     return jsi::Value::undefined();
   }
-  
+
   JSI_HOST_FUNCTION(makeImageSnapshot) {
-    
-    // find skia draw view
-    int nativeId = arguments[0].asNumber();
-    sk_sp<SkImage> image;
-    auto info = getEnsuredCallbackInfo(nativeId);
-    if (info->view != nullptr) {
-      if(count > 1 && !arguments[1].isUndefined() && !arguments[1].isNull()) {
-        auto rect = JsiSkRect::fromValue(runtime, arguments[1]);
-        image = info->view->makeImageSnapshot(rect);
-      } else {
-        image = info->view->makeImageSnapshot(nullptr);
-      }
-      if(image == nullptr) {
-        jsi::detail::throwJSError(runtime, "Could not create image from current surface.");
-        return jsi::Value::undefined();
-      }
-      return jsi::Object::createFromHostObject(runtime, std::make_shared<JsiSkImage>(_platformContext, image));
-    }
-    jsi::detail::throwJSError(runtime, "No Skia View currently available.");
-    return jsi::Value::undefined();
-  }
-  
-  JSI_HOST_FUNCTION(setDrawMode) {
-    if (count != 2) {
+    if (count < 1) {
       _platformContext->raiseError(
-          std::string("setDrawMode: Expected 2 arguments, got " +
+          std::string("makeImageSnapshot: Expected at least 1 argument, got " +
                       std::to_string(count) + "."));
       return jsi::Value::undefined();
     }
 
     if (!arguments[0].isNumber()) {
       _platformContext->raiseError(
-          "setDrawMode: First argument must be a number");
+          "makeImageSnapshot: First argument must be a number");
       return jsi::Value::undefined();
     }
 
-    // find skia draw view
+    // find Skia view
     int nativeId = arguments[0].asNumber();
-    auto info = getEnsuredCallbackInfo(nativeId);
+    sk_sp<SkImage> image;
+    auto info = getEnsuredViewInfo(nativeId);
     if (info->view != nullptr) {
-      auto nextMode = arguments[1].asString(runtime).utf8(runtime);
-      if(nextMode.compare("continuous") == 0) {
-        info->view->setDrawingMode(RNSkDrawingMode::Continuous);
+      if (count > 1 && !arguments[1].isUndefined() && !arguments[1].isNull()) {
+        auto rect = JsiSkRect::fromValue(runtime, arguments[1]);
+        image = info->view->makeImageSnapshot(rect);
       } else {
-        info->view->setDrawingMode(RNSkDrawingMode::Default);
+        image = info->view->makeImageSnapshot(nullptr);
       }
+      if (image == nullptr) {
+        throw jsi::JSError(runtime,
+                           "Could not create image from current surface.");
+        return jsi::Value::undefined();
+      }
+      return jsi::Object::createFromHostObject(
+          runtime, std::make_shared<JsiSkImage>(_platformContext, image));
     }
+    throw jsi::JSError(runtime, "No Skia View currently available.");
     return jsi::Value::undefined();
   }
-  
+
   JSI_HOST_FUNCTION(registerValuesInView) {
     // Check params
-    if(!arguments[1].isObject() || !arguments[1].asObject(runtime).isArray(runtime)) {
-      jsi::detail::throwJSError(runtime, "Expected array of Values as second parameter");
+    if (!arguments[1].isObject() ||
+        !arguments[1].asObject(runtime).isArray(runtime)) {
+      throw jsi::JSError(runtime,
+                         "Expected array of Values as second parameter");
       return jsi::Value::undefined();
     }
-    
+
     // Get identifier of native SkiaView
     int nativeId = arguments[0].asNumber();
-    
+
     // Get values that should be added as dependencies
     auto values = arguments[1].asObject(runtime).asArray(runtime);
     std::vector<std::function<void()>> unsubscribers;
     const std::size_t size = values.size(runtime);
     unsubscribers.reserve(size);
-    for(size_t i=0; i<size; ++i) {
-      auto value = values.getValueAtIndex(runtime, i).asObject(runtime).asHostObject<RNSkReadonlyValue>(runtime);
-      
-      if(value != nullptr) {
+    for (size_t i = 0; i < size; ++i) {
+      auto value = values.getValueAtIndex(runtime, i)
+                       .asObject(runtime)
+                       .asHostObject<RNSkReadonlyValue>(runtime);
+
+      if (value != nullptr) {
         // Add change listener
-        unsubscribers.push_back(value->addListener([this, nativeId](jsi::Runtime&){
-          requestRedrawView(nativeId);
-        }));
+        unsubscribers.push_back(value->addListener(
+            [weakSelf = weak_from_this(), nativeId](jsi::Runtime &) {
+              auto self = weakSelf.lock();
+              if (self) {
+                auto info = self->getEnsuredViewInfo(nativeId);
+                if (info->view != nullptr) {
+                  info->view->requestRedraw();
+                }
+              }
+            }));
       }
     }
-    
+
     // Return unsubscribe method that unsubscribes to all values
     // that we subscribed to.
-    return jsi::Function::createFromHostFunction(runtime,
-                                                 jsi::PropNameID::forUtf8(runtime, "unsubscribe"),
-                                                 0,
-                                                 JSI_HOST_FUNCTION_LAMBDA {
-      // decrease dependency count on the Skia View
-      for(auto &unsub : unsubscribers) {
-        unsub();
-      }
-      return jsi::Value::undefined();
-    });
+    return jsi::Function::createFromHostFunction(
+        runtime, jsi::PropNameID::forUtf8(runtime, "unsubscribe"), 0,
+        JSI_HOST_FUNCTION_LAMBDA {
+          // decrease dependency count on the Skia View
+          for (auto &unsub : unsubscribers) {
+            unsub();
+          }
+          return jsi::Value::undefined();
+        });
   }
-  
-  JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(RNSkJsiViewApi, setDrawCallback),
-                       JSI_EXPORT_FUNC(RNSkJsiViewApi, invalidateSkiaView),
-                       JSI_EXPORT_FUNC(RNSkJsiViewApi, makeImageSnapshot),
-                       JSI_EXPORT_FUNC(RNSkJsiViewApi, setDrawMode),
-                       JSI_EXPORT_FUNC(RNSkJsiViewApi, registerValuesInView))
+
+  JSI_EXPORT_FUNCTIONS(JSI_EXPORT_FUNC(RNSkJsiViewApi, setJsiProperty),
+                       JSI_EXPORT_FUNC(RNSkJsiViewApi, callJsiMethod),
+                       JSI_EXPORT_FUNC(RNSkJsiViewApi, registerValuesInView),
+                       JSI_EXPORT_FUNC(RNSkJsiViewApi, requestRedraw),
+                       JSI_EXPORT_FUNC(RNSkJsiViewApi, makeImageSnapshot))
 
   /**
    * Constructor
    * @param platformContext Platform context
    */
-  RNSkJsiViewApi(std::shared_ptr<RNSkPlatformContext> platformContext)
+  explicit RNSkJsiViewApi(std::shared_ptr<RNSkPlatformContext> platformContext)
       : JsiHostObject(), _platformContext(platformContext) {}
 
   /**
-   * Invalidates the api object
+   * Invalidates the Skia View Api object
    */
-  void invalidate() {
-    unregisterAll();
-  }
+  void invalidate() { unregisterAll(); }
 
   /**
    Call to remove all draw view infos
    */
   void unregisterAll() {
     // Unregister all views
-    auto tempList = _callbackInfos;
-    for (const auto& info : tempList) {
-      unregisterSkiaDrawView(info.first);
+    auto tempList = _viewInfos;
+    for (const auto &info : tempList) {
+      unregisterSkiaView(info.first);
     }
-    _callbackInfos.clear();
+    std::lock_guard<std::mutex> lock(_mutex);
+    _viewInfos.clear();
   }
 
   /**
@@ -226,51 +264,48 @@ public:
    * @param nativeId Id of view to register
    * @param view View to register
    */
-  void registerSkiaDrawView(size_t nativeId, std::shared_ptr<RNSkDrawView> view) {
-    auto info = getEnsuredCallbackInfo(nativeId);
+  void registerSkiaView(size_t nativeId, std::shared_ptr<RNSkView> view) {
+    auto info = getEnsuredViewInfo(nativeId);
+    std::lock_guard<std::mutex> lock(_mutex);
     info->view = view;
-    if (info->drawCallback != nullptr) {
-      info->view->setNativeId(nativeId);
-      info->view->setDrawCallback(info->drawCallback);
-    }
+    info->view->setNativeId(nativeId);
+    info->view->setJsiProperties(info->props);
+    info->props.clear();
   }
 
   /**
    * Unregisters a Skia draw view
    * @param nativeId View id
    */
-  void unregisterSkiaDrawView(size_t nativeId) {
-    if (_callbackInfos.count(nativeId) == 0) {
+  void unregisterSkiaView(size_t nativeId) {
+    if (_viewInfos.count(nativeId) == 0) {
       return;
     }
-    auto info = getEnsuredCallbackInfo(nativeId);
-    if (info->view != nullptr) {
-      info->view->setDrawCallback(nullptr);
-    }
+    auto info = getEnsuredViewInfo(nativeId);
+
+    std::lock_guard<std::mutex> lock(_mutex);
     info->view = nullptr;
-    info->drawCallback = nullptr;
-    _callbackInfos.erase(nativeId);
+    _viewInfos.erase(nativeId);
   }
-  
+
   /**
    Sets a skia draw view for the given id. This function can be used
    to mark that an underlying SkiaView is not available (it could be
    removed due to ex. a transition). The view can be set to a nullptr
-   or a valid view, effectively toggling the view's availability. If
-   a valid view is set, the setDrawCallback method is called on the
-   view (if a valid callback exists).
+   or a valid view, effectively toggling the view's availability.
    */
-  void setSkiaDrawView(size_t nativeId, std::shared_ptr<RNSkDrawView> view) {
-    if (_callbackInfos.find(nativeId) == _callbackInfos.end()) {
+  void setSkiaView(size_t nativeId, std::shared_ptr<RNSkView> view) {
+    if (_viewInfos.find(nativeId) == _viewInfos.end()) {
       return;
     }
-    auto info = getEnsuredCallbackInfo(nativeId);
-    if (view != nullptr && info->drawCallback != nullptr) {
+    auto info = getEnsuredViewInfo(nativeId);
+    std::lock_guard<std::mutex> lock(_mutex);
+    if (view != nullptr) {
       info->view = view;
       info->view->setNativeId(nativeId);
-      info->view->setDrawCallback(info->drawCallback);
-    } else if(view == nullptr && info->drawCallback != nullptr) {
-      info->view->setDrawCallback(nullptr);
+      info->view->setJsiProperties(info->props);
+      info->props.clear();
+    } else if (view == nullptr) {
       info->view = view;
     }
   }
@@ -281,28 +316,17 @@ private:
    * @param nativeId View id
    * @return The callback info object for the requested view
    */
-  CallbackInfo *getEnsuredCallbackInfo(size_t nativeId) {
-    if (_callbackInfos.count(nativeId) == 0) {
-      CallbackInfo info;
-      _callbackInfos.emplace(nativeId, info);
+  RNSkViewInfo *getEnsuredViewInfo(size_t nativeId) {
+    if (_viewInfos.count(nativeId) == 0) {
+      RNSkViewInfo info;
+      std::lock_guard<std::mutex> lock(_mutex);
+      _viewInfos.emplace(nativeId, info);
     }
-    return &_callbackInfos.at(nativeId);
+    return &_viewInfos.at(nativeId);
   }
-  
-  /**
-    Send a redraw request to the view
-   */
-  void requestRedrawView(size_t nativeId) {
-    auto info = getEnsuredCallbackInfo(nativeId);
-    if(info->view != nullptr) {
-      info->view->requestRedraw();
-    }
-  }
-  
-  // List of callbacks
-  std::unordered_map<size_t, CallbackInfo> _callbackInfos;
-  
-  // Platform context
+
+  std::unordered_map<size_t, RNSkViewInfo> _viewInfos;
   std::shared_ptr<RNSkPlatformContext> _platformContext;
+  std::mutex _mutex;
 };
 } // namespace RNSkia

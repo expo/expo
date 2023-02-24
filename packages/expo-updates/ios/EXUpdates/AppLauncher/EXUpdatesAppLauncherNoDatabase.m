@@ -1,9 +1,14 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesUtils.h>
+
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -17,13 +22,21 @@ static NSString * const EXUpdatesErrorLogFile = @"expo-error.log";
 
 @end
 
+/**
+ * Implementation of EXUpdatesAppLauncher which always uses the update embedded in the application
+ * package, avoiding SQLite and the expo-updates file store entirely.
+ *
+ * This is only used in rare cases when the database/file system is corrupt or otherwise
+ * inaccessible, but we still want to avoid crashing. The exported property `isEmergencyLaunch` on
+ * EXUpdatesModule should be `true` whenever this class is used.
+ */
 @implementation EXUpdatesAppLauncherNoDatabase
 
 - (void)launchUpdateWithConfig:(EXUpdatesConfig *)config
 {
   _launchedUpdate = [EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:config database:nil];
   if (_launchedUpdate) {
-    if (_launchedUpdate.status == EXUpdatesUpdateStatusEmbedded) {
+    if (_launchedUpdate.status == EXUpdatesUpdateStatusStatusEmbedded) {
       NSAssert(_assetFilesMap == nil, @"assetFilesMap should be null for embedded updates");
       _launchAssetUrl = [[NSBundle mainBundle] URLForResource:EXUpdatesBareEmbeddedBundleFilename withExtension:EXUpdatesBareEmbeddedBundleFileType];
     } else {

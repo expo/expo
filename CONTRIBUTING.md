@@ -28,34 +28,43 @@ Manual smoke tests are included in `apps/native-component-list`, this is a good 
 
 ## 📦 Download and Setup
 
-> 💽 The development environment for this repository does not support Windows. To contribute from Windows you must use WSL.
+> 💽 The development environment for this repository does not support Windows; WSL is required to contribute from Windows.
 
-1. [Fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device. (`git remote add upstream git@github.com:expo/expo.git` 😉). You can use `git clone --depth 1 --single-branch --branch main git@github.com:expo/expo.git`, discarding most of branches and history to clone it faster.
-2. Ensure [direnv](https://direnv.net/) is installed on your computer.
-3. Ensure [Node 14](https://nodejs.org/) is installed on your computer. (Check version with `node -v`)
-4. If you will be working with the iOS project, ensure **ruby 2.7** is installed on your machine. macOS comes with ruby 2.6, which will give you issues; if you use homebrew you can just run `brew install ruby@2.7`.
-5. Run the setup script with: `npm run setup:native` (if you just want to contribute to the docs, you can run `npm run setup:docs`). This command does the following for you:
+1. If you are an Expo team member, clone the repository. If you are an external contributor, [fork](https://help.github.com/articles/fork-a-repo/) this repository to your own GitHub account and then [clone](https://help.github.com/articles/cloning-a-repository/) it to your local device. (`git remote add upstream git@github.com:expo/expo.git` 😉). You can use `git clone --depth 1 --single-branch --branch main git@github.com:expo/expo.git`, discarding most of branches and history to clone it faster.
+2. Install [direnv](https://direnv.net/). On macOS: `brew install direnv`. Don't forget to install the [shell hook](https://direnv.net/docs/hook.html) to your shell profile.
+3. Install [git-lfs](https://git-lfs.github.com/). On macOS: `brew install git-lfs`.
+4. Install [Node 16 LTS](https://nodejs.org/).
 
-   <!-- TODO(Bacon): Split this into 2 scripts so people can contribute to docs without installing React Native -->
+### Set up documentation
 
-   - Downloads submodules (like `react-native`) with `git submodule update --init`
-   - Fetches files with [_git lfs_](https://git-lfs.github.com), which we use for big native libraries like Google Mobile Vision. Note: you must have `git lfs` already installed.
-   - Ensures Yarn is installed
-   - Ensures your computer is set up for React Native (will install the Android NDK if it's not present)
-   - Downloads the Node packages (`yarn install`)
+If you plan to contribute to the documentation, run `npm run setup:docs`.
 
-   Make sure that you're using Java 11 (e.g. Azul Zulu JDK 11.0.15+10). `ANDROID_SDK_ROOT` environmental variable should be set or configured via `local.properties` file in `android` folder of the native project you're working with.
+### Set up Android
 
-6. Navigate to the bare sandbox project `cd apps/bare-expo`
-7. Run the project on any platform (maybe start with web; it's the fastest! 😁)
+If you plan to contribute to Android, run `npm run setup:native`. This command does the following for you:
+
+- Downloads submodules (like `react-native`) with `git submodule update --init`
+- Ensures Yarn is installed
+- Ensures your computer is set up for React Native (will install the Android NDK if it's not present)
+- Downloads the Node packages (`yarn install`)
+
+Make sure that you're using Java 11 (e.g. Azul Zulu JDK 11.0.15+10). `ANDROID_SDK_ROOT` environmental variable should be set or configured via `local.properties` file in `android` folder of the native project you're working with.
+
+### Set up iOS
+
+If you will be working with the iOS project, ensure **ruby 2.7** is installed on your machine. macOS comes with ruby 2.6, which is not supported in this repository; if you use Homebrew you can just run `brew install ruby@2.7`. You will also need to have the latest stable version of Xcode installed, along with Xcode command line tools.
+
+### Verify native installation is successful
+
+1. Navigate to the bare sandbox project `cd apps/bare-expo`
+2. Run the project on any platform (maybe start with web; it's the fastest! 😁)
 
    - Web: `yarn web`
    - iOS: `yarn ios`
    - Android: `yarn android`
+   - If you are working on Linux, make sure to set the `TERMINAL` environment variable to your preferred terminal application. (e.g. `export TERMINAL="konsole"`)
 
-    If you are working on a Linux distribution, make sure to set the `TERMINAL` environment variable to your preferred terminal application. (e.g. `export TERMINAL="Konsole"`)
- 
-8. You are now running the `test-suite` app via the `bare-expo` project. The next section explains how you can begin to make changes to SDK packages.
+3. You are now running the `test-suite` app via the `bare-expo` project. The next section explains how you can begin to make changes to SDK packages.
 
 > If this didn't work for you as described, please [open an issue.](https://github.com/expo/expo/issues/new/choose)
 
@@ -121,14 +130,14 @@ Thanks again for helping to make sure that Expo is stable for everyone!
 
 ## 📚 Updating Documentation
 
-Our docs are made with [Next.js](https://github.com/zeit/next.js). They're located in the `docs/` directory. For more information look at the [`docs/readme.md`](/docs/README.md).
+Our docs are made with [Next.js](https://github.com/vercel/next.js). They're located in the **docs/** directory. For more information look at the [`docs/README.md`](/docs/README.md).
 
 **TL;DR:**
 
-1. Navigate to the `docs/` directory and run `yarn`.
-2. Start the project with `yarn dev` (make sure you don't have another server running on port `3000`).
-3. Navigate to the docs you want to edit: `cd docs/pages/versions/unversioned/`
-4. If you update an older version, ensure the relevant changes are copied into `unversioned/`
+1. Navigate to the **docs/** directory and run `yarn`.
+2. Start the project with `yarn dev` (make sure you don't have another server running on port `3002`).
+3. Navigate to the docs you want to edit: `cd docs/pages/`.
+4. If you update an older version, ensure the relevant changes are copied into `docs/pages/versions/unversioned/` for API docs.
 
 ## 📝 Writing a Commit Message
 

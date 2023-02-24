@@ -9,25 +9,13 @@
 #include <jsi/jsi.h>
 
 #include <JsiHostObject.h>
+#include <RNSkView.h>
 
 namespace RNSkia {
 
-using namespace facebook;
-using namespace RNJsi;
-using namespace std::chrono;
+namespace jsi = facebook::jsi;
 
-enum RNSkTouchType { Start, Active, End, Cancelled };
-
-using RNSkTouchPoint = struct {
-  double x;
-  double y;
-  double force;
-  RNSkTouchType type;
-  size_t id;
-  long timestamp;
-};
-
-class RNSkInfoObject : public JsiHostObject {
+class RNSkInfoObject : public RNJsi::JsiHostObject {
 public:
   JSI_PROPERTY_GET(width) { return _width; }
   JSI_PROPERTY_GET(height) { return _height; }
@@ -44,9 +32,10 @@ public:
         touchObj.setProperty(runtime, "x", t.x);
         touchObj.setProperty(runtime, "y", t.y);
         touchObj.setProperty(runtime, "force", t.force);
-        touchObj.setProperty(runtime, "type", (double)t.type);
-        touchObj.setProperty(runtime, "timestamp", (double)t.timestamp / 1000.0);
-        touchObj.setProperty(runtime, "id", (double)t.id);
+        touchObj.setProperty(runtime, "type", static_cast<double>(t.type));
+        touchObj.setProperty(runtime, "timestamp",
+                             static_cast<double>(t.timestamp / 1000.0));
+        touchObj.setProperty(runtime, "id", static_cast<double>(t.id));
         touches.setValueAtIndex(runtime, n, touchObj);
       }
       ops.setValueAtIndex(runtime, i, touches);
@@ -77,13 +66,14 @@ public:
 
   void endDrawOperation() { _touchesCache.clear(); }
 
-  void updateTouches(std::vector<RNSkTouchPoint>&& touches) {
+  void updateTouches(std::vector<RNSkTouchInfo> &touches) {
     std::lock_guard<std::mutex> lock(_mutex);
     // Add timestamp
-    auto ms = std::chrono::duration_cast<milliseconds>(
-        system_clock::now().time_since_epoch()).count();
-    
-    for(size_t i=0; i<touches.size(); i++) {
+    auto ms = std::chrono::duration_cast<std::chrono::milliseconds>(
+                  std::chrono::system_clock::now().time_since_epoch())
+                  .count();
+
+    for (size_t i = 0; i < touches.size(); i++) {
       touches.at(i).timestamp = ms;
     }
     _currentTouches.push_back(std::move(touches));
@@ -95,8 +85,8 @@ private:
   int _width;
   int _height;
   double _timestamp;
-  std::vector<std::vector<RNSkTouchPoint>> _currentTouches;
-  std::vector<std::vector<RNSkTouchPoint>> _touchesCache;
+  std::vector<std::vector<RNSkTouchInfo>> _currentTouches;
+  std::vector<std::vector<RNSkTouchInfo>> _touchesCache;
   std::mutex _mutex;
 };
 } // namespace RNSkia

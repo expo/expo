@@ -1,10 +1,10 @@
-export declare type RedirectEvent = {
+export type RedirectEvent = {
     url: string;
 };
-export declare type WebBrowserWindowFeatures = Record<string, number | boolean | string>;
-export declare type WebBrowserOpenOptions = {
+export type WebBrowserWindowFeatures = Record<string, number | boolean | string>;
+export type WebBrowserOpenOptions = {
     /**
-     * Color of the toolbar in either `#AARRGGBB` or `#RRGGBB` format.
+     * Color of the toolbar. Supports React Native [color formats](https://reactnative.dev/docs/colors).
      */
     toolbarColor?: string;
     /**
@@ -18,7 +18,7 @@ export declare type WebBrowserOpenOptions = {
      */
     enableBarCollapsing?: boolean;
     /**
-     * Color of the secondary toolbar in either `#AARRGGBB` or `#RRGGBB` format.
+     * Color of the secondary toolbar. Supports React Native [color formats](https://reactnative.dev/docs/colors).
      * @platform android
      */
     secondaryToolbarColor?: string;
@@ -47,7 +47,7 @@ export declare type WebBrowserOpenOptions = {
      */
     createTask?: boolean;
     /**
-     * Tint color for controls in SKSafariViewController in `#AARRGGBB` or `#RRGGBB` format.
+     * Tint color for controls in SKSafariViewController. Supports React Native [color formats](https://reactnative.dev/docs/colors).
      * @platform ios
      */
     controlsColor?: string;
@@ -83,7 +83,7 @@ export declare type WebBrowserOpenOptions = {
  * If there is no native AuthSession implementation available (which is the case on Android) the params inherited from
  * [`WebBrowserOpenOptions`](#webbrowseropenoptions) will be used in the browser polyfill. Otherwise, the browser parameters will be ignored.
  */
-export declare type AuthSessionOpenOptions = WebBrowserOpenOptions & {
+export type AuthSessionOpenOptions = WebBrowserOpenOptions & {
     /**
      * Determines whether the session should ask the browser for a private authentication session.
      * Set this to `true` to request that the browser doesn’t share cookies or other browsing data between the authentication session and the user’s normal browser session.
@@ -94,8 +94,8 @@ export declare type AuthSessionOpenOptions = WebBrowserOpenOptions & {
      */
     preferEphemeralSession?: boolean;
 };
-export declare type WebBrowserAuthSessionResult = WebBrowserRedirectResult | WebBrowserResult;
-export declare type WebBrowserCustomTabsResults = {
+export type WebBrowserAuthSessionResult = WebBrowserRedirectResult | WebBrowserResult;
+export type WebBrowserCustomTabsResults = {
     /**
      * Default package chosen by user, `null` if there is no such packages. Also `null` usually means,
      * that user will be prompted to choose from available packages.
@@ -178,32 +178,32 @@ export declare enum WebBrowserPresentationStyle {
      */
     AUTOMATIC = "automatic"
 }
-export declare type WebBrowserResult = {
+export type WebBrowserResult = {
     /**
      * Type of the result.
      */
     type: WebBrowserResultType;
 };
-export declare type WebBrowserRedirectResult = {
+export type WebBrowserRedirectResult = {
     /**
      * Type of the result.
      */
     type: 'success';
     url: string;
 };
-export declare type ServiceActionResult = {
+export type ServiceActionResult = {
     servicePackage?: string;
 };
-export declare type WebBrowserMayInitWithUrlResult = ServiceActionResult;
-export declare type WebBrowserWarmUpResult = ServiceActionResult;
-export declare type WebBrowserCoolDownResult = ServiceActionResult;
-export declare type WebBrowserCompleteAuthSessionOptions = {
+export type WebBrowserMayInitWithUrlResult = ServiceActionResult;
+export type WebBrowserWarmUpResult = ServiceActionResult;
+export type WebBrowserCoolDownResult = ServiceActionResult;
+export type WebBrowserCompleteAuthSessionOptions = {
     /**
      * Attempt to close the window without checking to see if the auth redirect matches the cached redirect URL.
      */
     skipRedirectCheck?: boolean;
 };
-export declare type WebBrowserCompleteAuthSessionResult = {
+export type WebBrowserCompleteAuthSessionResult = {
     /**
      * Type of the result.
      */

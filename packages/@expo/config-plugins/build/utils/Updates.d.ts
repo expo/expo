@@ -1,7 +1,8 @@
 import { Android, ExpoConfig, IOS } from '@expo/config-types';
-export declare type ExpoConfigUpdates = Pick<ExpoConfig, 'sdkVersion' | 'owner' | 'runtimeVersion' | 'updates' | 'slug'>;
+export type ExpoConfigUpdates = Pick<ExpoConfig, 'sdkVersion' | 'owner' | 'runtimeVersion' | 'updates' | 'slug'>;
 export declare function getExpoUpdatesPackageVersion(projectRoot: string): string | null;
 export declare function getUpdateUrl(config: Pick<ExpoConfigUpdates, 'owner' | 'slug' | 'updates'>, username: string | null): string | null;
+export declare function getAppVersion(config: Pick<ExpoConfig, 'version'>): string;
 export declare function getNativeVersion(config: Pick<ExpoConfig, 'version'> & {
     android?: Pick<Android, 'versionCode'>;
     ios?: Pick<IOS, 'buildNumber'>;
@@ -23,3 +24,5 @@ export declare function getUpdatesCheckOnLaunch(config: Pick<ExpoConfigUpdates, 
 export declare function getUpdatesCodeSigningCertificate(projectRoot: string, config: Pick<ExpoConfigUpdates, 'updates'>): string | undefined;
 export declare function getUpdatesCodeSigningMetadata(config: Pick<ExpoConfigUpdates, 'updates'>): NonNullable<ExpoConfigUpdates['updates']>['codeSigningMetadata'];
 export declare function getUpdatesCodeSigningMetadataStringified(config: Pick<ExpoConfigUpdates, 'updates'>): string | undefined;
+export declare function getUpdatesRequestHeaders(config: Pick<ExpoConfigUpdates, 'updates'>): NonNullable<ExpoConfigUpdates['updates']>['requestHeaders'];
+export declare function getUpdatesRequestHeadersStringified(config: Pick<ExpoConfigUpdates, 'updates'>): string | undefined;

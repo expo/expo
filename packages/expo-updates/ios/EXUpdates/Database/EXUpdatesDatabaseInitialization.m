@@ -59,6 +59,9 @@ CREATE INDEX \"index_updates_launch_asset_id\" ON \"updates\" (\"launch_asset_id
 CREATE INDEX \"index_json_data_scope_key\" ON \"json_data\" (\"scope_key\")\
 ";
 
+/**
+ * Utility class that handles database initialization and migration.
+ */
 @implementation EXUpdatesDatabaseInitialization
 
 + (BOOL)initializeDatabaseWithLatestSchemaInDirectory:(NSURL *)directory

@@ -15,7 +15,6 @@ import expo.interfaces.devmenu.items.KeyCommand
 import expo.modules.devmenu.DEV_MENU_TAG
 import expo.modules.devmenu.DevMenuManager
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
-import kotlinx.coroutines.runBlocking
 
 class DevMenuExtension(reactContext: ReactApplicationContext) :
   ReactContextBaseJavaModule(reactContext), DevMenuExtensionInterface {
@@ -82,8 +81,8 @@ class DevMenuExtension(reactContext: ReactApplicationContext) :
     }
 
     if (devSettings is DevInternalSettings) {
-      action("js-inspector", devDelegate::openJsInspector) {
-        label = { "Open JavaScript Inspector" }
+      action("js-inspector", devDelegate::openJSInspector) {
+        label = { "Open JavaScript debugger" }
         glyphName = { "language-javascript" }
         importance = DevMenuItemImportance.LOW.value
       }

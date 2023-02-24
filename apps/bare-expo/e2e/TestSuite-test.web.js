@@ -21,14 +21,12 @@ const TESTS = [
   'LinearGradient',
   'KeepAwake',
   'HTML',
-  'FirebaseCore',
-  'FirebaseAnalytics',
   // Overridding permissions doesn't work in headless mode
   // see https://github.com/puppeteer/puppeteer/issues/3279
   !config.launch.headless && 'expo-notifications',
   //   'Haptics',
   //   'SecureStore',
-].filter(t => t);
+].filter((t) => t);
 
 // This is how long we allocate for the actual tests to be run after the test screen has mounted.
 const MIN_TIME = 50000;
@@ -48,7 +46,7 @@ function matchID(id, ...props) {
 }
 
 describe('test-suite', () => {
-  TESTS.map(testName => {
+  TESTS.map((testName) => {
     it(
       `passes ${testName}`,
       async () => {

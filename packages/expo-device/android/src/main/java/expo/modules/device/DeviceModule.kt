@@ -1,11 +1,5 @@
 package expo.modules.device
 
-import expo.modules.core.ExportedModule
-import expo.modules.core.Promise
-import expo.modules.core.interfaces.ExpoMethod
-
-import com.facebook.device.yearclass.YearClass
-
 import android.app.ActivityManager
 import android.app.UiModeManager
 import android.content.Context
@@ -13,16 +7,18 @@ import android.content.res.Configuration
 import android.os.Build
 import android.os.SystemClock
 import android.provider.Settings
-import android.view.WindowManager
 import android.util.DisplayMetrics
-
+import android.view.WindowManager
+import com.facebook.device.yearclass.YearClass
+import expo.modules.core.utilities.EmulatorUtilities
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 import java.io.File
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-private const val NAME = "ExpoDevice"
-
-class DeviceModule(private val mContext: Context) : ExportedModule(mContext) {
+class DeviceModule : Module() {
   // Keep this enum in sync with JavaScript
   enum class DeviceType(val JSValue: Int) {
     UNKNOWN(0),
@@ -32,73 +28,57 @@ class DeviceModule(private val mContext: Context) : ExportedModule(mContext) {
     TV(4);
   }
 
-  override fun getName(): String {
-    return NAME
-  }
+  private val context: Context
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
-  override fun getConstants(): Map<String, Any> = mapOf(
-    "isDevice" to (!isRunningOnGenymotion && !isRunningOnStockEmulator),
-    "brand" to Build.BRAND,
-    "manufacturer" to Build.MANUFACTURER,
-    "modelName" to Build.MODEL,
-    "designName" to Build.DEVICE,
-    "productName" to Build.DEVICE,
-    "deviceYearClass" to deviceYearClass,
-    "totalMemory" to run {
-      val memoryInfo = ActivityManager.MemoryInfo()
-      (mContext.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).getMemoryInfo(memoryInfo)
-      memoryInfo.totalMem
-    },
-    "supportedCpuArchitectures" to run {
-      var supportedAbis = Build.SUPPORTED_ABIS
-      if (supportedAbis != null && supportedAbis.isEmpty()) {
-        supportedAbis = null
-      }
-      supportedAbis
-    },
-    "osName" to systemName,
-    "osVersion" to Build.VERSION.RELEASE,
-    "osBuildId" to Build.DISPLAY,
-    "osInternalBuildId" to Build.ID,
-    "osBuildFingerprint" to Build.FINGERPRINT,
-    "platformApiLevel" to Build.VERSION.SDK_INT,
-    "deviceName" to Settings.Secure.getString(mContext.contentResolver, "bluetooth_name")
-  )
+  override fun definition() = ModuleDefinition {
+    Name("ExpoDevice")
 
-  private val deviceYearClass: Int
-    get() = YearClass.get(mContext)
-
-  private val systemName: String
-    get() {
-      return if (Build.VERSION.SDK_INT < 23) {
-        "Android"
-      } else {
-        Build.VERSION.BASE_OS.takeIf { it.isNotEmpty() } ?: "Android"
-      }
+    Constants {
+      return@Constants mapOf(
+        "isDevice" to !isRunningOnEmulator,
+        "brand" to Build.BRAND,
+        "manufacturer" to Build.MANUFACTURER,
+        "modelName" to Build.MODEL,
+        "designName" to Build.DEVICE,
+        "productName" to Build.DEVICE,
+        "deviceYearClass" to deviceYearClass,
+        "totalMemory" to run {
+          val memoryInfo = ActivityManager.MemoryInfo()
+          (context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).getMemoryInfo(memoryInfo)
+          memoryInfo.totalMem
+        },
+        "supportedCpuArchitectures" to Build.SUPPORTED_ABIS?.takeIf { it.isNotEmpty() },
+        "osName" to systemName,
+        "osVersion" to Build.VERSION.RELEASE,
+        "osBuildId" to Build.DISPLAY,
+        "osInternalBuildId" to Build.ID,
+        "osBuildFingerprint" to Build.FINGERPRINT,
+        "platformApiLevel" to Build.VERSION.SDK_INT,
+        "deviceName" to if (Build.VERSION.SDK_INT <= 31)
+          Settings.Secure.getString(context.contentResolver, "bluetooth_name")
+        else
+          Settings.Global.getString(context.contentResolver, Settings.Global.DEVICE_NAME)
+      )
     }
 
-  @ExpoMethod
-  fun getDeviceTypeAsync(promise: Promise) {
-    promise.resolve(getDeviceType(mContext).JSValue)
-  }
+    AsyncFunction("getDeviceTypeAsync") {
+      return@AsyncFunction getDeviceType(context).JSValue
+    }
 
-  @ExpoMethod
-  fun getUptimeAsync(promise: Promise) {
-    promise.resolve(SystemClock.uptimeMillis().toDouble())
-  }
+    AsyncFunction("getUptimeAsync") {
+      return@AsyncFunction SystemClock.uptimeMillis().toDouble()
+    }
 
-  @ExpoMethod
-  fun getMaxMemoryAsync(promise: Promise) {
-    val maxMemory = Runtime.getRuntime().maxMemory()
-    promise.resolve(if (maxMemory != Long.MAX_VALUE) maxMemory.toDouble() else -1)
-  }
+    AsyncFunction("getMaxMemoryAsync") {
+      val maxMemory = Runtime.getRuntime().maxMemory()
+      return@AsyncFunction if (maxMemory != Long.MAX_VALUE) maxMemory.toDouble() else -1
+    }
 
-  @ExpoMethod
-  fun isRootedExperimentalAsync(promise: Promise) {
-    var isRooted = false
-    val isDevice = !isRunningOnGenymotion && !isRunningOnStockEmulator
+    AsyncFunction("isRootedExperimentalAsync") {
+      val isRooted: Boolean
+      val isDevice = !isRunningOnEmulator
 
-    try {
       val buildTags = Build.TAGS
       isRooted = if (isDevice && buildTags != null && buildTags.contains("test-keys")) {
         true
@@ -109,52 +89,47 @@ class DeviceModule(private val mContext: Context) : ExportedModule(mContext) {
           isDevice && File("/system/xbin/su").exists()
         }
       }
-    } catch (se: SecurityException) {
-      promise.reject(
-        "ERR_DEVICE_ROOT_DETECTION",
-        "Could not access the file system to determine if the device is rooted.",
-        se
-      )
-      return
+
+      return@AsyncFunction isRooted
     }
 
-    promise.resolve(isRooted)
-  }
-
-  @ExpoMethod
-  fun isSideLoadingEnabledAsync(promise: Promise) {
-    val enabled: Boolean = if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
-      Settings.Global.getInt(
-        mContext.applicationContext.contentResolver,
-        Settings.Global.INSTALL_NON_MARKET_APPS,
-        0
-      ) == 1
-    } else {
-      mContext.applicationContext.packageManager.canRequestPackageInstalls()
+    AsyncFunction("isSideLoadingEnabledAsync") {
+      return@AsyncFunction if (Build.VERSION.SDK_INT < Build.VERSION_CODES.O) {
+        Settings.Global.getInt(
+          context.applicationContext.contentResolver,
+          Settings.Global.INSTALL_NON_MARKET_APPS,
+          0
+        ) == 1
+      } else {
+        context.applicationContext.packageManager.canRequestPackageInstalls()
+      }
     }
 
-    promise.resolve(enabled)
+    AsyncFunction("getPlatformFeaturesAsync") {
+      val allFeatures = context.applicationContext.packageManager.systemAvailableFeatures
+      return@AsyncFunction allFeatures.filterNotNull().map { it.name }
+    }
+
+    AsyncFunction("hasPlatformFeatureAsync") { feature: String ->
+      return@AsyncFunction context.applicationContext.packageManager.hasSystemFeature(feature)
+    }
   }
 
-  @ExpoMethod
-  fun getPlatformFeaturesAsync(promise: Promise) {
-    val allFeatures = mContext.applicationContext.packageManager.systemAvailableFeatures
-    val featureList = allFeatures.filterNotNull().map { it.name }
-    promise.resolve(featureList)
-  }
+  private val deviceYearClass: Int
+    get() = YearClass.get(context)
 
-  @ExpoMethod
-  fun hasPlatformFeatureAsync(feature: String, promise: Promise) {
-    promise.resolve(mContext.applicationContext.packageManager.hasSystemFeature(feature))
-  }
+  private val systemName: String
+    get() {
+      return if (Build.VERSION.SDK_INT < 23) {
+        "Android"
+      } else {
+        Build.VERSION.BASE_OS.takeIf { it.isNotEmpty() } ?: "Android"
+      }
+    }
 
   companion object {
-    private val TAG = DeviceModule::class.java.simpleName
-
-    private val isRunningOnGenymotion: Boolean
-      get() = Build.FINGERPRINT.contains("vbox")
-    private val isRunningOnStockEmulator: Boolean
-      get() = Build.FINGERPRINT.contains("generic")
+    private val isRunningOnEmulator: Boolean
+      get() = EmulatorUtilities.isRunningOnEmulator()
 
     private fun getDeviceType(context: Context): DeviceType {
       // Detect TVs via UI mode (Android TVs) or system features (Fire TV).
@@ -167,18 +142,55 @@ class DeviceModule(private val mContext: Context) : ExportedModule(mContext) {
         return DeviceType.TV
       }
 
+      val deviceTypeFromResourceConfiguration = getDeviceTypeFromResourceConfiguration(context)
+      return if (deviceTypeFromResourceConfiguration != DeviceType.UNKNOWN) {
+        deviceTypeFromResourceConfiguration
+      } else {
+        getDeviceTypeFromPhysicalSize(context)
+      }
+    }
+
+    // Device type based on the smallest screen width quantifier
+    // https://developer.android.com/guide/topics/resources/providing-resources#SmallestScreenWidthQualifier
+    private fun getDeviceTypeFromResourceConfiguration(context: Context): DeviceType {
+      val smallestScreenWidthDp = context.resources.configuration.smallestScreenWidthDp
+
+      return if (smallestScreenWidthDp == Configuration.SMALLEST_SCREEN_WIDTH_DP_UNDEFINED) {
+        DeviceType.UNKNOWN
+      } else if (smallestScreenWidthDp >= 600) {
+        DeviceType.TABLET
+      } else {
+        DeviceType.PHONE
+      }
+    }
+
+    private fun getDeviceTypeFromPhysicalSize(context: Context): DeviceType {
       // Find the current window manager, if none is found we can't measure the device physical size.
-      val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager? ?: return DeviceType.UNKNOWN
+      val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager?
+        ?: return DeviceType.UNKNOWN
 
       // Get display metrics to see if we can differentiate phones and tablets.
-      val metrics = DisplayMetrics()
-      windowManager.defaultDisplay.getMetrics(metrics)
+      val widthInches: Double
+      val heightInches: Double
+
+      // windowManager.defaultDisplay was marked as deprecated in API level 30 (Android R) and above
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        val windowBounds = windowManager.currentWindowMetrics.bounds
+        val densityDpi = context.resources.configuration.densityDpi
+        widthInches = windowBounds.width() / densityDpi.toDouble()
+        heightInches = windowBounds.height() / densityDpi.toDouble()
+      } else {
+        val metrics = DisplayMetrics()
+        @Suppress("DEPRECATION")
+        windowManager.defaultDisplay.getRealMetrics(metrics)
+        widthInches = metrics.widthPixels / metrics.xdpi.toDouble()
+        heightInches = metrics.heightPixels / metrics.ydpi.toDouble()
+      }
 
       // Calculate physical size.
-      val widthInches = metrics.widthPixels / metrics.xdpi.toDouble()
-      val heightInches = metrics.heightPixels / metrics.ydpi.toDouble()
       val diagonalSizeInches = sqrt(widthInches.pow(2.0) + heightInches.pow(2.0))
-      return if (diagonalSizeInches >= 3.0 && diagonalSizeInches <= 6.9) {
+
+      return if (diagonalSizeInches in 3.0..6.9) {
         // Devices in a sane range for phones are considered to be phones.
         DeviceType.PHONE
       } else if (diagonalSizeInches > 6.9 && diagonalSizeInches <= 18.0) {

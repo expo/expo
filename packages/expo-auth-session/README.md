@@ -4,7 +4,7 @@
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/auth-session.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/auth-session.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/auth-session)
 
 # Installation in managed Expo projects

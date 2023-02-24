@@ -1,12 +1,13 @@
 // @needsAudit
 /**
- * __Web Only__. Sets the [font-display](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display)
+ * Sets the [font-display](https://developer.mozilla.org/en-US/docs/Web/CSS/@font-face/font-display)
  * for a given typeface. The default font value on web is `FontDisplay.AUTO`.
  * Even though setting the `fontDisplay` does nothing on native platforms, the default behavior
  * emulates `FontDisplay.SWAP` on flagship devices like iOS, Samsung, Pixel, etc. Default
  * functionality varies on One Plus devices. In the browser this value is set in the generated
  * `@font-face` CSS block and not as a style property meaning you cannot dynamically change this
  * value based on the element it's used in.
+ * @platform web
  */
 export var FontDisplay;
 (function (FontDisplay) {

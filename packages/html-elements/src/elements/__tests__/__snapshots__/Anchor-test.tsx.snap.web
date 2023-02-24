@@ -6,5 +6,6 @@ exports[`renders A 1`] = `
   dir="auto"
   href="#"
   role="link"
+  target="_parent"
 />
 `;

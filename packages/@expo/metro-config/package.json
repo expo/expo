@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-config",
-  "version": "0.3.21",
+  "version": "0.7.0",
   "description": "A Metro config for running React Native projects with the Metro bundler",
   "main": "build/ExpoMetroConfig.js",
   "scripts": {
@@ -18,10 +18,7 @@
   },
   "keywords": [
     "expo",
-    "expo-cli",
-    "react",
-    "metro",
-    "metro-config"
+    "metro"
   ],
   "license": "MIT",
   "bugs": {
@@ -33,8 +30,7 @@
     "transformer"
   ],
   "dependencies": {
-    "@expo/config": "7.0.0",
-    "@expo/json-file": "8.2.36",
+    "@expo/config": "~8.0.0",
     "chalk": "^4.1.0",
     "debug": "^4.3.2",
     "find-yarn-workspace-root": "~2.0.0",

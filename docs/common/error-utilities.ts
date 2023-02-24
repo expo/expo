@@ -1,4 +1,4 @@
-import { VERSIONS } from '~/constants/versions';
+import versions from '~/public/static/constants/versions.json';
 
 export function getRedirectPath(redirectPath: string): string {
   // index.html is no longer a thing in our docs
@@ -73,7 +73,7 @@ function getVersionFromPath(path: string) {
 }
 
 // Filter unversioned and latest out, so we end up with v34, etc.
-const supportedVersions = VERSIONS.filter(v => v.match(/^v/));
+const supportedVersions = versions.VERSIONS.filter(v => v.match(/^v/));
 
 // Return true if the version is still included in documentation
 function isVersionDocumented(path: string) {
@@ -137,28 +137,37 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/': '/workflow/exploring-managed-workflow/',
   '/versions/latest/sdk/': '/versions/latest/',
   '/versions/latest/sdk/overview/': '/versions/latest/',
-  '/guides/building-standalone-apps/': '/classic/building-standalone-apps/',
-  '/distribution/building-standalone-apps/': '/classic/building-standalone-apps/',
+  '/guides/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
+  '/distribution/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
   '/guides/genymotion/': '/workflow/android-studio-emulator/',
   '/workflow/upgrading-expo/': '/workflow/upgrading-expo-sdk-walkthrough/',
   '/workflow/create-react-native-app/': '/workflow/glossary-of-terms/#create-react-native-app',
-  '/expokit/': '/expokit/overview/',
-  '/guides/detach/': '/expokit/eject/',
-  '/expokit/detach/': '/expokit/eject/',
+  '/expokit/': '/archive/glossary/#expokit/',
+
+  // Development builds redirects
+  '/development/build/': '/development/create-development-builds/',
+  '/development/getting-started/': '/development/create-development-builds/',
+  '/development/troubleshooting/': '/development/introduction/',
+  '/development/upgrading/': '/development/introduction/',
+  '/development/extensions/': '/development/development-workflows/',
+  '/development/develop-your-project': '/development/use-development-builds',
 
   // Consolidate workflow page
   '/bare/customizing/': '/workflow/customizing/',
 
   // Lots of old links pointing to guides when they have moved elsewhere
   '/guides/configuration/': '/workflow/configuration/',
-  '/guides/expokit/': '/expokit/overview/',
-  '/guides/publishing/': '/workflow/publishing/',
+  '/guides/expokit/': '/archive/glossary/#expokit/',
+  '/guides/publishing/': '/archive/classic-updates/publishing/',
+  '/workflow/publishing/': '/archive/classic-updates/publishing/',
   '/guides/linking/': '/workflow/linking/',
   '/guides/up-and-running/': '/get-started/installation/',
   '/guides/debugging/': '/workflow/debugging/',
   '/guides/logging/': '/workflow/logging/',
   '/introduction/troubleshooting-proxies/': '/guides/troubleshooting-proxies/',
   '/introduction/running-in-the-browser/': '/guides/running-in-the-browser/',
+  '/guides/using-electron/':
+    'https://dev.to/evanbacon/making-desktop-apps-with-electron-react-native-and-expo-5e36',
 
   // Changes from redoing the getting started workflow, SDK35+
   '/workflow/up-and-running/': '/get-started/installation/',
@@ -168,8 +177,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/introduction/installation/': '/get-started/installation/',
   '/versions/latest/overview/': '/versions/latest/',
   '/versions/latest/introduction/installation/': '/get-started/installation/',
-  '/workflow/exploring-managed-workflow/': '/tutorial/planning/',
-  '/introduction/walkthrough/': '/tutorial/planning/',
+  '/workflow/exploring-managed-workflow/': '/tutorial/introduction/',
+  '/introduction/walkthrough/': '/tutorial/introduction/',
 
   // Move overview to index
   '/versions/v37.0.0/sdk/overview/': '/versions/v37.0.0/',
@@ -177,19 +186,19 @@ const RENAMED_PAGES: Record<string, string> = {
   // Errors and debugging is better suited for getting started than tutorial
   '/tutorial/errors/': '/get-started/errors/',
 
-  // Additional redirects based on Sentry (04/28/2020)
-  '/next-steps/installation/': '/get-started/installation/',
-  '/guides/release-channels/': '/distribution/release-channels/',
-
   // Redirects based on Next 9 upgrade (09/11/2020)
   '/api/': '/versions/latest/',
 
   // Redirect to expand Expo Accounts and permissions
   '/guides/account-permissions/': '/accounts/personal/',
 
-  // Redirects based on Sentry (11/26/2020)
+  // Redirects based on Sentry reports
+  '/next-steps/installation/': '/get-started/installation/',
+  '/guides/release-channels/': '/archive/classic-updates/release-channels/',
   '/guides/push-notifications/': '/push-notifications/overview/',
   '/guides/using-fcm/': '/push-notifications/using-fcm/',
+  '/push-notifications/': '/push-notifications/overview/',
+  '/distribution/hosting-your-app/': '/distribution/publishing-websites/',
 
   // Renaming a submit section
   '/submit/submit-ios': '/submit/ios/',
@@ -198,6 +207,7 @@ const RENAMED_PAGES: Record<string, string> = {
   // Fundamentals had too many things
   '/workflow/linking/': '/guides/linking/',
   '/workflow/how-expo-works/': '/guides/how-expo-works/',
+  '/guides/how-expo-works/': '/workflow/expo-go/',
 
   // Archive unused pages
   '/guides/notification-channels/': '/archived/notification-channels/',
@@ -218,9 +228,70 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v43.0.0/sdk/permissions/': '/guides/permissions/',
   '/versions/latest/sdk/permissions/': '/guides/permissions/',
 
-  // updates
-  '/guides/configuring-ota-updates/': '/guides/configuring-updates/',
-
   // Redirect Gatsby guide to index guides page
   '/guides/using-gatsby/': '/guides/',
+
+  // Classic updates moved to archive
+  '/guides/configuring-ota-updates/': '/archive/classic-updates/getting-started/',
+  '/guides/configuring-updates/': '/archive/classic-updates/getting-started/',
+  '/distribution/release-channels/': '/archive/classic-updates/release-channels/',
+  '/distribution/advanced-release-channels/': '/archive/classic-updates/advanced-release-channels/',
+  '/distribution/optimizing-updates/': '/archive/classic-updates/optimizing-updates/',
+  '/eas-update/custom-updates-server/': '/distribution/custom-updates-server/',
+  '/guides/offline-support/': '/archive/classic-updates/offline-support/',
+  '/guides/preloading-and-caching-assets/':
+    '/archive/classic-updates/preloading-and-caching-assets/',
+  '/eas-update/bare-react-native/': '/bare/updating-your-app/',
+  '/worfkflow/publishing/': '/archive/classic-updates/publishing/',
+  '/classic/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
+  '/classic/turtle-cli/': '/archive/classic-updates/turtle-cli/',
+  '/archive/classic-updates/getting-started/': '/eas-update/getting-started/',
+
+  // Redirect bare guides to unified workflow guides
+  '/bare/using-libraries/': '/workflow/using-libraries/',
+  '/bare/exploring-bare-workflow/': '/bare/hello-world/',
+  '/bare/existing-apps/': '/bare/installing-expo-modules/',
+  '/bare/installing-unimodules/': '/bare/installing-expo-modules/',
+  '/bare/using-web/': '/workflow/web/',
+  '/guides/running-in-the-browser/': '/workflow/web/',
+  '/bare/unimodules-full-list/': '/bare/hello-world/',
+
+  // Consolidate distribution
+  '/distribution/security/': '/app-signing/security/',
+  '/distribution/uploading-apps/': '/submit/introduction/',
+  '/versions/latest/distribution/uploading-apps/': '/submit/introduction/',
+
+  // Deleted or removed guides
+  '/guides/setup-native-firebase/': '/guides/using-firebase/',
+  '/guides/using-clojurescript/': '/',
+
+  // Redirects from old to new tutorial
+  '/tutorial/planning/': '/tutorial/introduction/',
+  '/tutorial/sharing/': '/tutorial/introduction/',
+  '/tutorial/text/': '/tutorial/introduction/',
+
+  // Redirects for removed /archived pages
+  '/archived/': '/archive/',
+  '/versions/latest/expokit/eject/': '/archive/glossary/#eject',
+  '/expokit/eject/': '/archive/glossary/#eject',
+
+  // Redirects for removed API docs based on Sentry
+  '/versions/latest/sdk/facebook/': '/guides/authentication/',
+  '/versions/latest/sdk/taskmanager/': '/versions/latest/sdk/task-manager/',
+  '/versions/latest/sdk/videothumbnails/': '/versions/latest/sdk/video-thumbnails/',
+  '/versions/latest/sdk/appearance/': '/versions/latest/react-native/appearance/',
+  '/versions/latest/sdk/app-loading/': '/versions/latest/sdk/splash-screen/',
+  '/versions/latest/sdk/app-auth/': '/guides/authentication/',
+  '/versions/latest/sdk/google-sign-in/': '/guides/authentication/',
+  '/versions/latest/sdk/branch/':
+    'https://github.com/expo/config-plugins/tree/main/packages/react-native-branch',
+  '/versions/latest/sdk/appstate/': '/versions/latest/react-native/appstate/',
+  '/versions/latest/sdk/google/': '/guides/authentication/',
+  '/versions/latest/sdk/firebase-core/': '/guides/using-firebase/',
+  '/versions/latest/sdk/firebase-analytics/': '/guides/using-firebase/',
+  '/versions/latest/sdk/firebase-recaptcha/': '/guides/using-firebase/',
+  '/versions/latest/sdk/amplitude/': '/guides/using-analytics/',
+  '/versions/latest/sdk/util/': '/versions/latest/',
+  // Push notifications
+  '/push-notifications/using-fcm/': '/push-notifications/push-notifications-setup',
 };

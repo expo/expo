@@ -33,6 +33,10 @@ open class DevMenuExtensions: NSObject, DevMenuExtensionProtocol {
     inspector.isEnabled = { devSettings.isElementInspectorShown }
 
     #if DEBUG
+    let jsInspector = DevMenuExtensions.jsInspectorAction(devDelegate.openJSInspector)
+    jsInspector.isAvailable = { bridge.batched.isInspectable }
+    jsInspector.isEnabled = { true }
+
     let remoteDebug = DevMenuExtensions.remoteDebugAction(devDelegate.toggleRemoteDebugging)
     remoteDebug.isAvailable = { devSettings.isRemoteDebuggingAvailable }
     remoteDebug.isEnabled = { devSettings.isDebuggingRemotely }
@@ -48,6 +52,7 @@ open class DevMenuExtensions: NSObject, DevMenuExtensionProtocol {
     container.addItem(reload)
     container.addItem(perfMonitor)
     container.addItem(inspector)
+    container.addItem(jsInspector)
     container.addItem(remoteDebug)
     container.addItem(fastRefresh)
 
@@ -84,6 +89,14 @@ open class DevMenuExtensions: NSObject, DevMenuExtensionProtocol {
     inspector.importance = DevMenuScreenItem.ImportanceHigh
     inspector.registerKeyCommand(input: "i", modifiers: .command)
     return inspector
+  }
+
+  private static func jsInspectorAction(_ action: @escaping () -> Void) -> DevMenuAction {
+    let jsInspectror = DevMenuAction(withId: "js-inspector", action: action)
+    jsInspectror.label = { "Open JS debugger" }
+    jsInspectror.glyphName = { "language-javascript" }
+    jsInspectror.importance = DevMenuScreenItem.ImportanceLow
+    return jsInspectror
   }
 
   private static func remoteDebugAction(_ action: @escaping () -> Void) -> DevMenuAction {

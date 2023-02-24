@@ -15,6 +15,10 @@ import expo.modules.core.interfaces.ReactNativeHostHandler
 import expo.modules.updates.UpdatesController
 /* ktlint-enable no-unused-imports */
 
+/**
+ * Defines the internal and exported modules for expo-updates, as well as the auto-setup behavior in
+ * applicable environments.
+ */
 class UpdatesPackage : Package {
   override fun createInternalModules(context: Context): List<InternalModule> {
     return listOf(UpdatesService(context) as InternalModule)
@@ -25,19 +29,20 @@ class UpdatesPackage : Package {
   }
 
   override fun createReactNativeHostHandlers(context: Context): List<ReactNativeHostHandler> {
+    val useNativeDebug = BuildConfig.EX_UPDATES_NATIVE_DEBUG
     val handler: ReactNativeHostHandler = object : ReactNativeHostHandler {
       private var mShouldAutoSetup: Boolean? = null
 
       override fun getJSBundleFile(useDeveloperSupport: Boolean): String? {
-        return if (shouldAutoSetup(context) && !useDeveloperSupport) UpdatesController.instance.launchAssetFile else null
+        return if (shouldAutoSetup(context) && (useNativeDebug || !useDeveloperSupport)) UpdatesController.instance.launchAssetFile else null
       }
 
       override fun getBundleAssetName(useDeveloperSupport: Boolean): String? {
-        return if (shouldAutoSetup(context) && !useDeveloperSupport) UpdatesController.instance.bundleAssetName else null
+        return if (shouldAutoSetup(context) && (useNativeDebug || !useDeveloperSupport)) UpdatesController.instance.bundleAssetName else null
       }
 
       override fun onWillCreateReactInstanceManager(useDeveloperSupport: Boolean) {
-        if (shouldAutoSetup(context) && !useDeveloperSupport) {
+        if (shouldAutoSetup(context) && (useNativeDebug || !useDeveloperSupport)) {
           UpdatesController.initialize(context)
         }
       }
@@ -45,7 +50,7 @@ class UpdatesPackage : Package {
       override fun onDidCreateReactInstanceManager(reactInstanceManager: ReactInstanceManager, useDeveloperSupport: Boolean) {
         // WHEN_VERSIONING_REMOVE_FROM_HERE
         // This code path breaks versioning and is not necessary for Expo Go.
-        if (shouldAutoSetup(context) && !useDeveloperSupport) {
+        if (shouldAutoSetup(context) && (useNativeDebug || !useDeveloperSupport)) {
           UpdatesController.instance.onDidCreateReactInstanceManager(reactInstanceManager)
         }
         // WHEN_VERSIONING_REMOVE_TO_HERE

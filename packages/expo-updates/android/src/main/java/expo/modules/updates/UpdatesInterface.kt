@@ -13,6 +13,10 @@ import java.io.File
 import expo.modules.updates.UpdatesConfiguration
 /* ktlint-enable no-unused-imports */
 
+/**
+ * Interface implemented by the [UpdatesService] internal module and used by [UpdatesModule] to
+ * search for the correct internal module in the registry.
+ */
 interface UpdatesInterface {
   val configuration: UpdatesConfiguration
   val selectionPolicy: SelectionPolicy
@@ -21,6 +25,7 @@ interface UpdatesInterface {
   val fileDownloader: FileDownloader
 
   val isEmergencyLaunch: Boolean
+  val isEmbeddedLaunch: Boolean
   val isUsingEmbeddedAssets: Boolean
   fun canRelaunch(): Boolean
   val embeddedUpdate: UpdateEntity?

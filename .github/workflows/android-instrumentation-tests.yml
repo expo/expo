@@ -34,8 +34,8 @@ concurrency:
 
 jobs:
   test:
-    runs-on: macos-11
-    timeout-minutes: 60
+    runs-on: macos-12
+    timeout-minutes: 120
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
@@ -46,7 +46,7 @@ jobs:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
         with:
-          node-version: '14.17'
+          node-version: 16
       - name: 👀 Check out repository
         uses: actions/checkout@v3
         with:
@@ -65,13 +65,14 @@ jobs:
           avd: 'true'
           avd-api: ${{ matrix.api-level }}
           hermes-engine-aar: 'true'
+          react-native-gradle-downloads: 'true'
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: 🧶 Install node modules in root dir
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 📱 Run instrumented unit tests
-        timeout-minutes: 45
+        timeout-minutes: 80
         uses: reactivecircus/android-emulator-runner@v2
         with:
           api-level: ${{ matrix.api-level }}
@@ -85,4 +86,4 @@ jobs:
         uses: actions/upload-artifact@v3
         with:
           name: test-results
-          path: packages/**/build/test-reports/**/*xml
+          path: packages/**/build/outputs/androidTest-results/**/*

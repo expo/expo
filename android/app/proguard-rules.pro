@@ -152,3 +152,6 @@
 
 ##### skia #####
 -keep class com.shopify.reactnative.skia.** { *; }
+
+##### svg #####
+-keep public class com.horcrux.svg.** { *; }

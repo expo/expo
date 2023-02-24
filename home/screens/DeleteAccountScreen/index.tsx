@@ -1,6 +1,6 @@
 import { useApolloClient } from '@apollo/client';
 import { InfoIcon } from '@expo/styleguide-native';
-import { useNavigation } from '@react-navigation/native';
+import { useNavigation, NavigationProp } from '@react-navigation/native';
 import { StackScreenProps } from '@react-navigation/stack';
 import { Row, Spacer, Text, useExpoTheme, View } from 'expo-dev-client-components';
 import React, { useState } from 'react';
@@ -10,7 +10,7 @@ import { KeyboardAwareScrollView } from 'react-native-keyboard-aware-scroll-view
 import { APIV2Client } from '../../api/APIV2Client';
 import { FormStates } from '../../constants/FormStates';
 import { Permission, useDeleteAccountPermissionsQuery } from '../../graphql/types';
-import { SettingsStackRoutes } from '../../navigation/Navigation.types';
+import { SettingsStackRoutes, HomeStackRoutes } from '../../navigation/Navigation.types';
 import { useDispatch } from '../../redux/Hooks';
 import SessionActions from '../../redux/SessionActions';
 import { useAccountName } from '../../utils/AccountNameContext';
@@ -27,7 +27,7 @@ export function DeleteAccountScreen({
 
   const { data, loading } = useDeleteAccountPermissionsQuery();
   const apolloClient = useApolloClient();
-  const navigation = useNavigation();
+  const navigation = useNavigation<NavigationProp<HomeStackRoutes>>();
   const apiV2Client = new APIV2Client();
   const [formState, setFormState] = useState(FormStates.IDLE);
   const [formError, setFormError] = useState('');

@@ -4,7 +4,7 @@ Provides access to a database that can be queried through a WebSQL-like API (htt
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/sqlite.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/sqlite.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/sqlite/)
 
 # Installation in managed Expo projects

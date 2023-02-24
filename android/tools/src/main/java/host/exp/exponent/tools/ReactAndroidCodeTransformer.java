@@ -45,10 +45,7 @@ import java.util.Map;
 
 public class ReactAndroidCodeTransformer {
 
-  private static final String REACT_COMMON_SOURCE_ROOT = "react-native-lab/react-native/ReactCommon";
-  private static final String REACT_COMMON_DEST_ROOT = "android/ReactCommon";
-  private static final String REACT_ANDROID_SOURCE_ROOT = "react-native-lab/react-native/ReactAndroid";
-  private static final String REACT_ANDROID_DEST_ROOT = "android/ReactAndroid";
+  private static final String REACT_ANDROID_DEST_ROOT = "react-native-lab/react-native/ReactAndroid";
   private static final String SOURCE_PATH = "src/main/java/com/facebook/react/";
 
   private static abstract class MethodVisitor {
@@ -215,8 +212,6 @@ public class ReactAndroidCodeTransformer {
         return n;
       }
     });
-    FILES_TO_MODIFY.put("modules/storage/AsyncStorageModule.java", null);
-    FILES_TO_MODIFY.put("modules/storage/ReactDatabaseSupplier.java", null);
     FILES_TO_MODIFY.put("modules/dialog/DialogModule.java", new MethodVisitor() {
 
       @Override
@@ -243,7 +238,7 @@ public class ReactAndroidCodeTransformer {
         return n;
       }
     });
-    FILES_TO_MODIFY.put("bridge/DefaultNativeModuleCallExceptionHandler.java", new MethodVisitor() {
+    FILES_TO_MODIFY.put("bridge/DefaultJSExceptionHandler.java", new MethodVisitor() {
 
       @Override
       public Node visit(String methodName, MethodDeclaration n) {
@@ -297,19 +292,6 @@ public class ReactAndroidCodeTransformer {
     } catch (Exception e) {
       throw new IllegalArgumentException("Invalid args passed in, expected one argument -- SDK version.");
     }
-
-    // Don't want to mess up our original copy of ReactCommon and ReactAndroid if something goes wrong.
-    File reactCommonDestRoot = new File(projectRoot + REACT_COMMON_DEST_ROOT);
-    File reactAndroidDestRoot = new File(projectRoot + REACT_ANDROID_DEST_ROOT);
-
-    // Always remove
-    FileUtils.deleteDirectory(reactCommonDestRoot);
-    reactCommonDestRoot = new File(projectRoot + REACT_COMMON_DEST_ROOT);
-    FileUtils.deleteDirectory(reactAndroidDestRoot);
-    reactAndroidDestRoot = new File(projectRoot + REACT_ANDROID_DEST_ROOT);
-
-    FileUtils.copyDirectory(new File(projectRoot + REACT_COMMON_SOURCE_ROOT), reactCommonDestRoot);
-    FileUtils.copyDirectory(new File(projectRoot + REACT_ANDROID_SOURCE_ROOT), reactAndroidDestRoot);
 
     // Update maven publish information
     replaceInFile(new File(projectRoot + REACT_ANDROID_DEST_ROOT + "/build.gradle"),
@@ -382,22 +364,11 @@ public class ReactAndroidCodeTransformer {
       // Remove all final modifiers
       n.getModifiers().remove(Modifier.FINAL);
 
-      String className = n.getName().toString();
-      switch (className) {
-        case "ReactDatabaseSupplier":
-          return ReactDatabaseSupplier(n);
-      }
-
       return n;
     }
 
     @Override
     public Node visit(final ConstructorDeclaration n, final Void arg) {
-      // We'll add this back in from ReactDatabaseSupplier.
-      if (n.toString().contains("ReactDatabaseSupplier(Context context)")) {
-        return null;
-      }
-
       String name = n.getName().toString();
       switch (name) {
         case "NetworkingModule":
@@ -422,10 +393,6 @@ public class ReactAndroidCodeTransformer {
       modifiers.remove(Modifier.PRIVATE);
       modifiers.remove(Modifier.PROTECTED);
       modifiers.add(Modifier.PUBLIC);
-
-      if (n.toString().contains("public static String DATABASE_NAME")) {
-        modifiers.remove(Modifier.STATIC);
-      }
 
       n.setModifiers(modifiers);
       return n;
@@ -559,61 +526,6 @@ public class ReactAndroidCodeTransformer {
         return statement;
       }
     });
-  }
-
-  private static Node ReactDatabaseSupplier(final ClassOrInterfaceDeclaration n) {
-    // ReactDatabaseSupplier(Context context)
-    {
-      ConstructorDeclaration c = new ConstructorDeclaration(EnumSet.of(Modifier.PUBLIC), "ReactDatabaseSupplier");
-
-      NodeList<Parameter> parameters = NodeList.nodeList(
-          new Parameter(JavaParser.parseClassOrInterfaceType("Context"), "context"));
-      c.setParameters(parameters);
-
-      BlockStmt block = new BlockStmt();
-      NodeList<Expression> superArgs = NodeList.nodeList(
-          JavaParser.parseExpression("context"),
-          JavaParser.parseExpression("\"RKStorage\""),
-          JavaParser.parseExpression("null"),
-          JavaParser.parseExpression("DATABASE_VERSION"));
-
-      MethodCallExpr call = new MethodCallExpr(null, "super", superArgs);
-      block.addStatement(call);
-      block.addStatement(JavaParser.parseStatement("mContext = context;"));
-      block.addStatement(JavaParser.parseStatement("DATABASE_NAME = \"RKStorage\";"));
-
-      c.setBody(block);
-
-      n.addMember(c);
-    }
-
-    // ReactDatabaseSupplier(Context context, String databaseName)
-    {
-      ConstructorDeclaration c = new ConstructorDeclaration(EnumSet.of(Modifier.PUBLIC), "ReactDatabaseSupplier");
-
-      NodeList<Parameter> parameters = NodeList.nodeList(
-          new Parameter(JavaParser.parseClassOrInterfaceType("Context"), "context"),
-          new Parameter(JavaParser.parseClassOrInterfaceType("String"), "databaseName"));
-      c.setParameters(parameters);
-
-      BlockStmt block = new BlockStmt();
-      NodeList<Expression> superArgs = NodeList.nodeList(
-          JavaParser.parseExpression("context"),
-          JavaParser.parseExpression("databaseName"),
-          JavaParser.parseExpression("null"),
-          JavaParser.parseExpression("DATABASE_VERSION"));
-
-      MethodCallExpr call = new MethodCallExpr(null, "super", superArgs);
-      block.addStatement(call);
-      block.addStatement(JavaParser.parseStatement("mContext = context;"));
-      block.addStatement(JavaParser.parseStatement("DATABASE_NAME = databaseName;"));
-
-      c.setBody(block);
-
-      n.addMember(c);
-    }
-
-    return n;
   }
 
   // Remove stetho. Otherwise a stetho interceptor gets added each time a new NetworkingModule

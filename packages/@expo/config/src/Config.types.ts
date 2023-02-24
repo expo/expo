@@ -140,7 +140,6 @@ export enum ProjectPrivacy {
   UNLISTED = 'unlisted',
 }
 
-export type ExpRc = { [key: string]: any };
 export type Platform = 'android' | 'ios' | 'web';
 export type ProjectTarget = 'managed' | 'bare';
 
@@ -149,6 +148,7 @@ export type ConfigErrorCode =
   | 'NOT_OBJECT'
   | 'NO_EXPO'
   | 'MODULE_NOT_FOUND'
+  | 'DEPRECATED'
   | 'INVALID_MODE'
   | 'INVALID_FORMAT'
   | 'INVALID_PLUGIN'

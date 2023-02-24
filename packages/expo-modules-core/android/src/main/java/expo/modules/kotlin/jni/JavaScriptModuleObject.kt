@@ -13,7 +13,7 @@ import expo.modules.core.interfaces.DoNotStrip
  */
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
-class JavaScriptModuleObject {
+class JavaScriptModuleObject(val name: String) {
   // Has to be called "mHybridData" - fbjni uses it via reflection
   @DoNotStrip
   private val mHybridData = initHybrid()
@@ -29,15 +29,15 @@ class JavaScriptModuleObject {
    * Register a promise-less function on the CPP module representation.
    * After calling this function, user can access the exported function in the JS code.
    */
-  external fun registerSyncFunction(name: String, args: Int, desiredTypes: IntArray, body: JNIFunctionBody)
+  external fun registerSyncFunction(name: String, args: Int, desiredTypes: Array<ExpectedType>, body: JNIFunctionBody)
 
   /**
    * Register a promise function on the CPP module representation.
    * After calling this function, user can access the exported function in the JS code.
    */
-  external fun registerAsyncFunction(name: String, args: Int, desiredTypes: IntArray, body: JNIAsyncFunctionBody)
+  external fun registerAsyncFunction(name: String, args: Int, desiredTypes: Array<ExpectedType>, body: JNIAsyncFunctionBody)
 
-  external fun registerProperty(name: String, desiredType: Int, getter: JNIFunctionBody?, setter: JNIFunctionBody?)
+  external fun registerProperty(name: String, desiredType: ExpectedType, getter: JNIFunctionBody?, setter: JNIFunctionBody?)
 
   @Throws(Throwable::class)
   protected fun finalize() {

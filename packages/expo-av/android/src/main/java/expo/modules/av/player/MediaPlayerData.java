@@ -331,7 +331,14 @@ class MediaPlayerData extends PlayerData implements
   public void updateVolumeMuteAndDuck() {
     if (mMediaPlayer != null) {
       final float value = mAVModule.getVolumeForDuckAndFocus(mIsMuted, mVolume);
-      mMediaPlayer.setVolume(value, value);
+      float leftValue = value;
+      float rightValue = value;
+      if (mPan > 0) {
+        leftValue *= (1.0f - mPan);
+      } else if (mPan < 0) {
+        rightValue *= (1.0f + mPan);
+      }
+      mMediaPlayer.setVolume(leftValue, rightValue);
     }
   }
 

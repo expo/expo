@@ -1,11 +1,11 @@
 import { JSONValue } from '@expo/json-file';
-export declare type URLScheme = {
+export type URLScheme = {
     CFBundleURLName?: string;
     CFBundleURLSchemes: string[];
 };
-export declare type InterfaceOrientation = 'UIInterfaceOrientationPortrait' | 'UIInterfaceOrientationPortraitUpsideDown' | 'UIInterfaceOrientationLandscapeLeft' | 'UIInterfaceOrientationLandscapeRight';
-export declare type InterfaceStyle = 'Light' | 'Dark' | 'Automatic';
-export declare type InfoPlist = Record<string, JSONValue | undefined> & {
+export type InterfaceOrientation = 'UIInterfaceOrientationPortrait' | 'UIInterfaceOrientationPortraitUpsideDown' | 'UIInterfaceOrientationLandscapeLeft' | 'UIInterfaceOrientationLandscapeRight';
+export type InterfaceStyle = 'Light' | 'Dark' | 'Automatic';
+export type InfoPlist = Record<string, JSONValue | undefined> & {
     UIStatusBarHidden?: boolean;
     UIStatusBarStyle?: string;
     UILaunchStoryboardName?: string | 'SplashScreen';
@@ -18,11 +18,6 @@ export declare type InfoPlist = Record<string, JSONValue | undefined> & {
     CFBundleDevelopmentRegion?: string;
     ITSAppUsesNonExemptEncryption?: boolean;
     LSApplicationQueriesSchemes?: string[];
-    FacebookAppID?: string;
-    FacebookDisplayName?: string;
-    FacebookAutoInitEnabled?: boolean;
-    FacebookAutoLogAppEventsEnabled?: boolean;
-    FacebookAdvertiserIDCollectionEnabled?: boolean;
     UIBackgroundModes?: string[];
     UISupportedInterfaceOrientations?: InterfaceOrientation[];
     GMSApiKey?: string;
@@ -36,13 +31,13 @@ export declare type InfoPlist = Record<string, JSONValue | undefined> & {
         live?: string;
     };
 };
-export declare type ExpoPlist = {
+export type ExpoPlist = {
     EXUpdatesCheckOnLaunch?: string;
     EXUpdatesEnabled?: boolean;
     EXUpdatesLaunchWaitMs?: number;
     EXUpdatesReleaseChannel?: string;
     EXUpdatesRuntimeVersion?: string;
-    EXUpdatesRequestHeaders: Record<string, string>;
+    EXUpdatesRequestHeaders?: Record<string, string>;
     EXUpdatesSDKVersion?: string;
     EXUpdatesURL?: string;
     EXUpdatesCodeSigningCertificate?: string;

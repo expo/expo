@@ -509,9 +509,9 @@
   _nativeProps = nativePropsSet;
 }
 
-- (BOOL)isNotNativeViewFullyMounted:(NSNumber *)viewTag
+- (BOOL)isNativeViewMounted:(NSNumber *)viewTag
 {
-  return _viewRegistry[viewTag].superview == nil;
+  return _viewRegistry[viewTag].superview != nil;
 }
 
 - (void)setValueForNodeID:(nonnull NSNumber *)nodeID value:(nonnull NSNumber *)newValue
@@ -529,7 +529,17 @@
            withName:(nonnull NSString *)viewName
 {
   ComponentUpdate *lastSnapshot = _componentUpdateBuffer[viewTag];
-  if ([self isNotNativeViewFullyMounted:viewTag] || lastSnapshot != nil) {
+  BOOL isNativeViewMounted = [self isNativeViewMounted:viewTag];
+
+  if (lastSnapshot != nil) {
+    NSMutableDictionary *lastProps = lastSnapshot.props;
+    for (NSString *key in props) {
+      [lastProps setValue:props[key] forKey:key];
+    }
+  }
+
+  // If the component isn't mounted, we will bail early with a scheduled update
+  if (!isNativeViewMounted) {
     if (lastSnapshot == nil) {
       ComponentUpdate *propsSnapshot = [ComponentUpdate new];
       propsSnapshot.props = [props mutableCopy];
@@ -537,13 +547,26 @@
       propsSnapshot.viewName = viewName;
       _componentUpdateBuffer[viewTag] = propsSnapshot;
       atomic_store(&_shouldFlushUpdateBuffer, true);
-    } else {
-      NSMutableDictionary *lastProps = lastSnapshot.props;
-      for (NSString *key in props) {
-        [lastProps setValue:props[key] forKey:key];
-      }
     }
+
     return;
+  }
+
+  // The component may have been mounted with a pending snapshot (due to a race condition),
+  // so we should attempt run the update. Otherwise, the next call to -maybeFlushUpdateBuffer
+  // will only arrive when a new component is mounted (which might be never!)
+  //
+  // If there are 0 remaining items in the buffer, we can skip the run in -maybeFlushUpdateBuffer.
+  if (lastSnapshot != nil && isNativeViewMounted) {
+    props = lastSnapshot.props;
+    viewTag = lastSnapshot.viewTag;
+    viewName = lastSnapshot.viewName;
+
+    [_componentUpdateBuffer removeObjectForKey:viewTag];
+
+    if (_componentUpdateBuffer.count == 0) {
+      atomic_store(&_shouldFlushUpdateBuffer, false);
+    }
   }
 
   // TODO: refactor PropsNode to also use this function

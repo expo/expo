@@ -4,7 +4,7 @@ Provides an API for iOS (AirPrint) and Android printing functionality.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/print.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/print.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/print/)
 
 # Installation in managed Expo projects

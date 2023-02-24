@@ -10,6 +10,54 @@
 
 ### 💡 Others
 
+## 0.18.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.0 — 2023-02-03
+
+### 🐛 Bug fixes
+
+- Fixed `No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.` warning being displayed on iOS when app is started in background. ([#20064](https://github.com/expo/expo/pull/20064) by [@grigorigoldman](https://github.com/grigorigoldman))
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 0.17.4 - 2022-11-08
+
+### 🐛 Bug fixes
+
+- Fixed Android `NullPointerException` in `FrameLayout.onMeasure()` when running on new architecture mode with expo-dev-client. ([#19931](https://github.com/expo/expo/pull/19931) by [@kudo](https://github.com/kudo))
+
+## 0.17.3 — 2022-10-30
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.2 — 2022-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.1 — 2022-10-28
+
+_This version does not introduce any user-facing changes._
+
+## 0.17.0 — 2022-10-25
+
+### 🛠 Breaking changes
+
+- Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+
+### 💡 Others
+
+- [plugin] Migrate import from @expo/config-plugins to expo/config-plugins and @expo/config-types to expo/config. ([#18855](https://github.com/expo/expo/pull/18855) by [@brentvatne](https://github.com/brentvatne))
+
+## 0.16.2 - 2022-08-22
+
+### 🐛 Bug fixes
+
+- Fixed `'SplashScreen.show' has already been called for given view controller.` warning being displayed when using `expo-dev-client` on iOS. ([#18682](https://github.com/expo/expo/pull/18682) by [@lukmccall](https://github.com/lukmccall))
+
 ## 0.16.1 — 2022-07-16
 
 ### 🐛 Bug fixes

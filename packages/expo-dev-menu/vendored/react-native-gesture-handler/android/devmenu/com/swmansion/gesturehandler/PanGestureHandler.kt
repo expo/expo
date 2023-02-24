@@ -54,7 +54,7 @@ class PanGestureHandler(context: Context?) : GestureHandler<PanGestureHandler>()
    * position of all the fingers will remain still while doing a rotation gesture.
    */
   init {
-    val vc = ViewConfiguration.get(context)
+    val vc = ViewConfiguration.get(context!!)
     val touchSlop = vc.scaledTouchSlop
     defaultMinDistSq = (touchSlop * touchSlop).toFloat()
     minDistSq = defaultMinDistSq

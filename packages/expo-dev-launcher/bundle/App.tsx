@@ -7,6 +7,7 @@ import {
   SettingsFilledIcon,
 } from 'expo-dev-client-components';
 import * as React from 'react';
+import { View } from 'react-native';
 
 import { LoadInitialData } from './components/LoadInitialData';
 import { Splash } from './components/Splash';
@@ -21,33 +22,36 @@ import { UserProfileScreen } from './screens/UserProfileScreen';
 const Tab = createBottomTabNavigator();
 const Stack = createStackNavigator();
 
-type LauncherAppProps = {
-  isSimulator?: boolean;
-};
+type LauncherAppProps = object;
 
 export function App(props: LauncherAppProps) {
   return (
     <LoadInitialData loader={<Splash />}>
-      <AppProviders>
-        <Stack.Navigator initialRouteName="Main" mode="modal">
-          <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
+      <View style={{ direction: 'ltr', flex: 1 }}>
+        <AppProviders>
+          <Stack.Navigator
+            initialRouteName="Main"
+            screenOptions={{ presentation: 'modal' }}
+            detachInactiveScreens={false}>
+            <Stack.Screen name="Main" component={Main} options={{ headerShown: false }} />
 
-          <Stack.Screen
-            name="User Profile"
-            component={UserProfileScreen}
-            options={{ headerShown: false }}
-          />
+            <Stack.Screen
+              name="User Profile"
+              component={UserProfileScreen}
+              options={{ headerShown: false }}
+            />
 
-          <Stack.Screen name="Crash Report" component={CrashReportScreen} />
-        </Stack.Navigator>
-      </AppProviders>
+            <Stack.Screen name="Crash Report" component={CrashReportScreen} />
+          </Stack.Navigator>
+        </AppProviders>
+      </View>
     </LoadInitialData>
   );
 }
 
 const Main = () => {
   return (
-    <Tab.Navigator screenOptions={{ tabBarHideOnKeyboard: true }}>
+    <Tab.Navigator screenOptions={{ tabBarHideOnKeyboard: true }} detachInactiveScreens={false}>
       <Tab.Screen
         name="Home"
         component={HomeScreen}

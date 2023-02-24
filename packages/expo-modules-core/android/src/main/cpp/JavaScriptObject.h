@@ -5,6 +5,7 @@
 #include "JSIObjectWrapper.h"
 #include "JSITypeConverter.h"
 #include "JavaScriptRuntime.h"
+#include "WeakRuntimeHolder.h"
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -16,8 +17,6 @@ namespace jsi = facebook::jsi;
 
 namespace expo {
 class JavaScriptValue;
-
-class JavaScriptRuntime;
 
 /**
  * Represents any JavaScript object. Its purpose is to exposes `jsi::Object` API back to Kotlin.
@@ -32,6 +31,11 @@ public:
 
   JavaScriptObject(
     std::weak_ptr<JavaScriptRuntime> runtime,
+    std::shared_ptr<jsi::Object> jsObject
+  );
+
+  JavaScriptObject(
+    WeakRuntimeHolder runtime,
     std::shared_ptr<jsi::Object> jsObject
   );
 
@@ -55,10 +59,14 @@ public:
 
   void setProperty(const std::string &name, jsi::Value value);
 
+  static jsi::Object preparePropertyDescriptor(jsi::Runtime &jsRuntime, int options);
+
+protected:
+  WeakRuntimeHolder runtimeHolder;
+  std::shared_ptr<jsi::Object> jsObject;
+
 private:
   friend HybridBase;
-  std::weak_ptr<JavaScriptRuntime> runtimeHolder;
-  std::shared_ptr<jsi::Object> jsObject;
 
   bool jniHasProperty(jni::alias_ref<jstring> name);
 
@@ -88,14 +96,13 @@ private:
     typename = std::enable_if_t<is_jsi_type_converter_defined<T>>
   >
   void setProperty(jni::alias_ref<jstring> name, T value) {
-    auto runtime = runtimeHolder.lock();
-    assert(runtime != nullptr);
-    auto cName = name->toStdString();
+    jsi::Runtime &jsRuntime = runtimeHolder.getJSRuntime();
 
+    auto cName = name->toStdString();
     jsObject->setProperty(
-      *runtime->get(),
+      jsRuntime,
       cName.c_str(),
-      jsi_type_converter<T>::convert(*runtime->get(), value)
+      jsi_type_converter<T>::convert(jsRuntime, value)
     );
   }
 
@@ -104,9 +111,7 @@ private:
     typename = std::enable_if_t<is_jsi_type_converter_defined<T>>
   >
   void defineProperty(jni::alias_ref<jstring> name, T value, int options) {
-    auto runtime = runtimeHolder.lock();
-    assert(runtime != nullptr);
-    jsi::Runtime &jsRuntime = *runtime->get();
+    jsi::Runtime &jsRuntime = runtimeHolder.getJSRuntime();
 
     auto cName = name->toStdString();
     jsi::Object global = jsRuntime.global();
@@ -125,7 +130,5 @@ private:
       std::move(descriptor)
     });
   }
-
-  static jsi::Object preparePropertyDescriptor(jsi::Runtime &jsRuntime, int options);
 };
 } // namespace expo

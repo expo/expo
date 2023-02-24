@@ -8,31 +8,22 @@ exports.createBaseMod = createBaseMod;
 exports.createPlatformBaseMod = createPlatformBaseMod;
 exports.provider = provider;
 exports.withGeneratedBaseMods = withGeneratedBaseMods;
-
 function _debug() {
   const data = _interopRequireDefault(require("debug"));
-
   _debug = function () {
     return data;
   };
-
   return data;
 }
-
 function _withMod() {
   const data = require("./withMod");
-
   _withMod = function () {
     return data;
   };
-
   return data;
 }
-
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-
 const debug = (0, _debug().default)('expo:config-plugins:base-mods');
-
 function createBaseMod({
   methodName,
   platform,
@@ -44,7 +35,6 @@ function createBaseMod({
 }) {
   const withUnknown = (config, _props) => {
     var _props$skipEmptyMod, _props$saveToInternal;
-
     const props = _props || {};
     return (0, _withMod().withBaseMod)(config, {
       platform,
@@ -53,7 +43,6 @@ function createBaseMod({
       saveToInternal: (_props$saveToInternal = props.saveToInternal) !== null && _props$saveToInternal !== void 0 ? _props$saveToInternal : false,
       isProvider: true,
       isIntrospective,
-
       async action({
         modRequest: {
           nextMod,
@@ -62,13 +51,15 @@ function createBaseMod({
         ...config
       }) {
         try {
-          let results = { ...config,
+          let results = {
+            ...config,
             modRequest
           };
           const filePath = await getFilePath(results, props);
           debug(`mods.${platform}.${modName}: file path: ${filePath || '[skipped]'}`);
           const modResults = await read(filePath, results, props);
-          results = await nextMod({ ...results,
+          results = await nextMod({
+            ...results,
             modResults,
             modRequest
           });
@@ -80,35 +71,29 @@ function createBaseMod({
           throw error;
         }
       }
-
     });
   };
-
   if (methodName) {
     Object.defineProperty(withUnknown, 'name', {
       value: methodName
     });
   }
-
   return withUnknown;
 }
-
 function assertModResults(results, platformName, modName) {
   // If the results came from a mod, they'd be in the form of [config, data].
   // Ensure the results are an array and omit the data since it should've been written by a data provider plugin.
-  const ensuredResults = results; // Sanity check to help locate non compliant mods.
+  const ensuredResults = results;
 
+  // Sanity check to help locate non compliant mods.
   if (!ensuredResults || typeof ensuredResults !== 'object' || !(ensuredResults !== null && ensuredResults !== void 0 && ensuredResults.mods)) {
     throw new Error(`Mod \`mods.${platformName}.${modName}\` evaluated to an object that is not a valid project config. Instead got: ${JSON.stringify(ensuredResults)}`);
   }
-
   return ensuredResults;
 }
-
 function upperFirst(name) {
   return name.charAt(0).toUpperCase() + name.slice(1);
 }
-
 function createPlatformBaseMod({
   modName,
   ...props
@@ -121,15 +106,13 @@ function createPlatformBaseMod({
     ...props
   });
 }
+
 /** A TS wrapper for creating provides */
-
-
 function provider(props) {
   return props;
 }
+
 /** Plugin to create and append base mods from file providers */
-
-
 function withGeneratedBaseMods(config, {
   platform,
   providers,

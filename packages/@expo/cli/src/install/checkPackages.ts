@@ -7,9 +7,9 @@ import {
   getVersionedDependenciesAsync,
   logIncorrectDependencies,
 } from '../start/doctor/dependencies/validateDependenciesVersions';
-import { env } from '../utils/env';
+import { isInteractive } from '../utils/interactive';
 import { confirmAsync } from '../utils/prompts';
-import { installPackagesAsync } from './installAsync';
+import { fixPackagesAsync } from './installAsync';
 import { Options } from './resolveOptions';
 
 const debug = require('debug')('expo:install:check') as typeof console.log;
@@ -29,10 +29,7 @@ export async function checkPackagesAsync(
      */
     packages: string[];
     /** Package manager to use when installing the versioned packages. */
-    packageManager:
-      | PackageManager.NpmPackageManager
-      | PackageManager.YarnPackageManager
-      | PackageManager.PnpmPackageManager;
+    packageManager: PackageManager.NodePackageManager;
 
     /** How the check should resolve */
     options: Pick<Options, 'fix'>;
@@ -62,16 +59,14 @@ export async function checkPackagesAsync(
     // If `--fix` then always fix.
     fix ||
     // Otherwise prompt to fix when not running in CI.
-    (!env.CI && (await confirmAsync({ message: 'Fix dependencies?' }).catch(() => false)));
+    (isInteractive() && (await confirmAsync({ message: 'Fix dependencies?' }).catch(() => false)));
 
   if (value) {
-    // Just pass in the names, the install function will resolve the versions again.
-    const fixedDependencies = dependencies.map((dependency) => dependency.packageName);
-    debug('Installing fixed dependencies:', fixedDependencies);
+    debug('Installing fixed dependencies:', dependencies);
     // Install the corrected dependencies.
-    return installPackagesAsync(projectRoot, {
+    return fixPackagesAsync(projectRoot, {
       packageManager,
-      packages: fixedDependencies,
+      packages: dependencies,
       packageManagerArguments,
       sdkVersion: exp.sdkVersion!,
     });

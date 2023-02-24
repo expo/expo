@@ -1,10 +1,17 @@
-# expo-brightness
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/brightness/">
+    <img
+      src="../../.github/resources/expo-brightness.svg"
+      alt="expo-brightness"
+      height="64" />
+  </a>
+</p>
 
 Provides an API to get and set screen brightness.
 
 # API documentation
 
-- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/brightness.md)
+- [Documentation for the main branch](https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/brightness.mdx)
 - [Documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/brightness/)
 
 # Installation in managed Expo projects

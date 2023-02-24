@@ -31,11 +31,11 @@ export declare enum PitchCorrectionQuality {
  * and [formats supported by Android's MediaPlayer](https://developer.android.com/guide/appendix/media-formats.html#formats-table).
  * Expo uses ExoPlayer implementation by default. To use `MediaPlayer`, add `androidImplementation: 'MediaPlayer'` to the initial status of the AV object.
  */
-export declare type AVPlaybackSource = number | AVPlaybackSourceObject | Asset;
+export type AVPlaybackSource = number | AVPlaybackSourceObject | Asset;
 /**
  * One of the possible forms of the `AVPlaybackSource`.
  */
-export declare type AVPlaybackSourceObject = {
+export type AVPlaybackSourceObject = {
     /**
      * A network URL pointing to a media file.
      */
@@ -53,7 +53,7 @@ export declare type AVPlaybackSourceObject = {
 /**
  * @hidden
  */
-export declare type AVPlaybackNativeSource = {
+export type AVPlaybackNativeSource = {
     uri: string;
     overridingExtension?: string | null;
     headers?: Record<string, string>;
@@ -61,7 +61,7 @@ export declare type AVPlaybackNativeSource = {
 /**
  * Object passed to the `onMetadataUpdate` function.
  */
-export declare type AVMetadata = {
+export type AVMetadata = {
     /**
      * A string with the title of the sound object.
      */
@@ -71,8 +71,8 @@ export declare type AVMetadata = {
  * This is the structure returned from all playback API calls and describes the state of the `playbackObject` at that point in time.
  * It can take a form of `AVPlaybackStatusSuccess` or `AVPlaybackStatusError` based on the `playbackObject` load status.
  */
-export declare type AVPlaybackStatus = AVPlaybackStatusError | AVPlaybackStatusSuccess;
-export declare type AVPlaybackStatusError = {
+export type AVPlaybackStatus = AVPlaybackStatusError | AVPlaybackStatusSuccess;
+export type AVPlaybackStatusError = {
     /**
      * A boolean set to `false`.
      */
@@ -93,7 +93,7 @@ export declare type AVPlaybackStatusError = {
      */
     error?: string;
 };
-export declare type AVPlaybackStatusSuccess = {
+export type AVPlaybackStatusSuccess = {
     /**
      * A boolean set to `true`.
      */
@@ -164,6 +164,10 @@ export declare type AVPlaybackStatusSuccess = {
      */
     isMuted: boolean;
     /**
+     * The current audio panning value of the audio for this media.
+     */
+    audioPan: number;
+    /**
      * A boolean describing if the media is currently looping.
      */
     isLooping: boolean;
@@ -177,7 +181,7 @@ export declare type AVPlaybackStatusSuccess = {
 /**
  * This is the structure passed to `setStatusAsync()` to modify the state of the `playbackObject`.
  */
-export declare type AVPlaybackStatusToSet = {
+export type AVPlaybackStatusToSet = {
     /**
      * Underlying implementation to use (when set to `MediaPlayer` it uses [Android's MediaPlayer](https://developer.android.com/reference/android/media/MediaPlayer.html),
      * uses [ExoPlayer](https://google.github.io/ExoPlayer/) otherwise). You may need to use this property if you're trying to play an item unsupported by ExoPlayer
@@ -223,6 +227,13 @@ export declare type AVPlaybackStatusToSet = {
      */
     isMuted?: boolean;
     /**
+     * The current audio panning value of the audio for this media.
+     * > Note that this only affect the audio of this `playbackObject` and do NOT affect the system volume.
+     * > Also note that this is only available when the video was loaded using `androidImplementation: 'MediaPlayer'`
+     * @platform android
+     */
+    audioPan?: number;
+    /**
      * A boolean describing if the media is currently looping.
      */
     isLooping?: boolean;
@@ -231,7 +242,7 @@ export declare type AVPlaybackStatusToSet = {
      */
     pitchCorrectionQuality?: PitchCorrectionQuality;
 };
-export declare type AVPlaybackTolerance = {
+export type AVPlaybackTolerance = {
     toleranceMillisBefore?: number;
     toleranceMillisAfter?: number;
 };

@@ -6,7 +6,6 @@ import android.content.Intent
 import android.net.Uri
 import android.os.Build
 import android.provider.Settings
-import android.util.Log
 import com.facebook.common.logging.FLog
 import com.facebook.hermes.reactexecutor.HermesExecutorFactory
 import com.facebook.react.ReactInstanceManager
@@ -22,27 +21,15 @@ import com.facebook.react.packagerconnection.NotificationOnlyHandler
 import com.facebook.react.packagerconnection.RequestHandler
 import com.facebook.react.shell.MainReactPackage
 import expo.modules.jsonutils.getNullable
-import host.exp.exponent.Constants
 import host.exp.exponent.RNObject
 import host.exp.exponent.experience.ExperienceActivity
 import host.exp.exponent.experience.ReactNativeActivity
-import host.exp.exponent.kernel.KernelProvider
 import host.exp.expoview.Exponent
 import host.exp.expoview.Exponent.InstanceManagerBuilderProperties
 import org.json.JSONObject
-import versioned.host.exp.exponent.modules.api.reanimated.ReanimatedJSIModulePackage
-import java.io.File
-import java.io.FileInputStream
-import java.io.FileNotFoundException
-import java.io.IOException
 import java.util.*
 
 object VersionedUtils {
-  // Update this value when hermes-engine getting updated.
-  // Currently there is no way to retrieve Hermes bytecode version from Java,
-  // as an alternative, we maintain the version by hand.
-  private const val HERMES_BYTECODE_VERSION = 85
-
   private fun toggleExpoDevMenu() {
     val currentActivity = Exponent.instance.currentActivity
     if (currentActivity is ExperienceActivity) {
@@ -205,22 +192,6 @@ object VersionedUtils {
     var builder = ReactInstanceManager.builder()
       .setApplication(instanceManagerBuilderProperties.application)
       .setJSIModulesPackage { reactApplicationContext: ReactApplicationContext, jsContext: JavaScriptContextHolder? ->
-        val devSupportManager = getDevSupportManager(reactApplicationContext)
-        if (devSupportManager == null) {
-          Log.e(
-            "Exponent",
-            "Couldn't get the `DevSupportManager`. JSI modules won't be initialized."
-          )
-          return@setJSIModulesPackage emptyList()
-        }
-        val devSettings = devSupportManager.callRecursive("getDevSettings")
-        val isRemoteJSDebugEnabled = devSettings != null && devSettings.call("isRemoteJSDebugEnabled") as Boolean
-        if (!isRemoteJSDebugEnabled) {
-          return@setJSIModulesPackage ReanimatedJSIModulePackage().getJSIModules(
-            reactApplicationContext,
-            jsContext
-          )
-        }
         emptyList()
       }
       .addPackage(MainReactPackage())
@@ -276,67 +247,10 @@ object VersionedUtils {
     val appName = instanceManagerBuilderProperties.manifest.getName() ?: ""
     val deviceName = AndroidInfoHelpers.getFriendlyDeviceName()
 
-    if (Constants.isStandaloneApp()) {
-      return JSCExecutorFactory(appName, deviceName)
-    }
-
-    val hermesBundlePair = parseHermesBundleHeader(instanceManagerBuilderProperties.jsBundlePath)
-    if (hermesBundlePair.first && hermesBundlePair.second != HERMES_BYTECODE_VERSION) {
-      val message = String.format(
-        Locale.US,
-        "Unable to load unsupported Hermes bundle.\n\tsupportedBytecodeVersion: %d\n\ttargetBytecodeVersion: %d",
-        HERMES_BYTECODE_VERSION, hermesBundlePair.second
-      )
-      KernelProvider.instance.handleError(RuntimeException(message))
-      return null
-    }
-    val jsEngineFromManifest = instanceManagerBuilderProperties.manifest.getAndroidJsEngine()
+    val jsEngineFromManifest = instanceManagerBuilderProperties.manifest.jsEngine
     return if (jsEngineFromManifest == "hermes") HermesExecutorFactory() else JSCExecutorFactory(
       appName,
       deviceName
     )
-  }
-
-  private fun parseHermesBundleHeader(jsBundlePath: String?): Pair<Boolean, Int> {
-    if (jsBundlePath == null || jsBundlePath.isEmpty()) {
-      return Pair(false, 0)
-    }
-
-    // https://github.com/facebook/hermes/blob/release-v0.5/include/hermes/BCGen/HBC/BytecodeFileFormat.h#L24-L25
-    val HERMES_MAGIC_HEADER = byteArrayOf(
-      0xc6.toByte(), 0x1f.toByte(), 0xbc.toByte(), 0x03.toByte(),
-      0xc1.toByte(), 0x03.toByte(), 0x19.toByte(), 0x1f.toByte()
-    )
-    val file = File(jsBundlePath)
-    try {
-      FileInputStream(file).use { inputStream ->
-        val bytes = ByteArray(12)
-        inputStream.read(bytes, 0, bytes.size)
-
-        // Magic header
-        for (i in HERMES_MAGIC_HEADER.indices) {
-          if (bytes[i] != HERMES_MAGIC_HEADER[i]) {
-            return Pair(false, 0)
-          }
-        }
-
-        // Bytecode version
-        val bundleBytecodeVersion: Int =
-          (bytes[11].toInt() shl 24) or (bytes[10].toInt() shl 16) or (bytes[9].toInt() shl 8) or bytes[8].toInt()
-        return Pair(true, bundleBytecodeVersion)
-      }
-    } catch (e: FileNotFoundException) {
-    } catch (e: IOException) {
-    }
-
-    return Pair(false, 0)
-  }
-
-  internal fun isHermesBundle(jsBundlePath: String?): Boolean {
-    return parseHermesBundleHeader(jsBundlePath).first
-  }
-
-  internal fun getHermesBundleBytecodeVersion(jsBundlePath: String?): Int {
-    return parseHermesBundleHeader(jsBundlePath).second
   }
 }

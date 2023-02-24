@@ -787,7 +787,7 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
     if (isMissingForegroundPermissions() || mGeofield == null) {
       return -1;
     }
-    return magNorth + mGeofield.getDeclination();
+    return (magNorth + mGeofield.getDeclination()) % 360;
   }
 
   private void stopHeadingWatch() {
@@ -841,8 +841,15 @@ public class LocationModule extends ExportedModule implements LifecycleEventList
   private Bundle handleForegroundLocationPermissions(Map<String, PermissionsResponse> result) {
     PermissionsResponse accessFineLocation = result.get(Manifest.permission.ACCESS_FINE_LOCATION);
     PermissionsResponse accessCoarseLocation = result.get(Manifest.permission.ACCESS_COARSE_LOCATION);
-    Objects.requireNonNull(accessFineLocation);
-    Objects.requireNonNull(accessCoarseLocation);
+    /**
+     * Missing permissions from OS callback should be considered as denied permissions
+     */
+    if(accessFineLocation == null) {
+      accessFineLocation = new PermissionsResponse(PermissionsStatus.DENIED, true);
+    }
+    if(accessCoarseLocation == null) {
+      accessCoarseLocation = new PermissionsResponse(PermissionsStatus.DENIED, true);
+    }
 
     PermissionsStatus status = PermissionsStatus.UNDETERMINED;
     String accuracy = "none";

@@ -1,6 +1,6 @@
 // Copyright 2016-present 650 Industries. All rights reserved.
 
-#import <EXGL_CPP/UEXGL.h>
+#import <ABI46_0_0EXGL_CPP/ABI46_0_0EXGL.h>
 #import <ABI46_0_0EXGL/ABI46_0_0EXGLContext.h>
 #import <ABI46_0_0ExpoModulesCore/ABI46_0_0EXModuleRegistry.h>
 
@@ -9,7 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @interface ABI46_0_0EXGLView : UIView <ABI46_0_0EXGLContextDelegate>
 
 - (instancetype)initWithModuleRegistry:(ABI46_0_0EXModuleRegistry *)moduleRegistry;
-- (UEXGLContextId)exglCtxId;
+- (ABI46_0_0EXGLContextId)exglCtxId;
 
 // AR
 - (void)setArSessionManager:(id)arSessionManager;

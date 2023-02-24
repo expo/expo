@@ -1,5 +1,7 @@
 import spawnAsync from '@expo/spawn-async';
 import fs from 'fs-extra';
+import getenv from 'getenv';
+import os from 'os';
 import path from 'path';
 
 import { installDependencies } from './packageManager';
@@ -7,8 +9,11 @@ import { PackageManagerName } from './resolvePackageManager';
 import { SubstitutionData } from './types';
 import { newStep } from './utils';
 
+const debug = require('debug')('create-expo-module:createExampleApp') as typeof console.log;
+
 // These dependencies will be removed from the example app (`expo init` adds them)
 const DEPENDENCIES_TO_REMOVE = ['expo-status-bar', 'expo-splash-screen'];
+const EXPO_BETA = getenv.boolish('EXPO_BETA', false);
 
 /**
  * Initializes a new Expo project as an example app.
@@ -33,12 +38,15 @@ export async function createExampleApp(
   }
 
   await newStep('Initializing the example app', async (step) => {
+    const templateVersion = EXPO_BETA ? 'next' : 'latest';
+    const template = `expo-template-blank-typescript@${templateVersion}`;
+    debug(`Using example template: ${template}`);
     await spawnAsync(
-      'expo',
-      ['init', exampleProjectSlug, '--template', 'expo-template-blank-typescript'],
+      packageManager,
+      ['create', 'expo-app', '--', exampleProjectSlug, '--template', template, '--yes'],
       {
         cwd: targetDir,
-        stdio: ['ignore', 'ignore', 'inherit'],
+        stdio: 'ignore',
       }
     );
     step.succeed('Initialized the example app');
@@ -51,6 +59,10 @@ export async function createExampleApp(
 
     // Cleanup the "example" dir
     await fs.rmdir(appTargetPath);
+
+    // Clean up the ".git" from example app
+    // note, this directory has contents, rmdir will throw
+    await fs.remove(path.join(appTmpPath, '.git'));
 
     // Move the temporary example app to "example" dir
     await fs.rename(appTmpPath, appTargetPath);
@@ -66,8 +78,12 @@ export async function createExampleApp(
 
   await newStep('Installing dependencies in the example app', async (step) => {
     await installDependencies(packageManager, appTargetPath);
-    await podInstall(appTargetPath);
-    step.succeed('Installed dependencies in the example app');
+    if (os.platform() === 'darwin') {
+      await podInstall(appTargetPath);
+      step.succeed('Installed dependencies in the example app');
+    } else {
+      step.succeed('Installed dependencies in the example app (skipped installing CocoaPods)');
+    }
   });
 }
 
@@ -136,11 +152,11 @@ async function modifyPackageJson(appPath: string): Promise<void> {
 }
 
 /**
- * Runs `expo prebuild` in the example app.
+ * Runs `npx expo prebuild` in the example app.
  */
 async function prebuildExampleApp(exampleAppPath: string): Promise<void> {
   await newStep('Prebuilding the example app', async (step) => {
-    await spawnAsync('expo', ['prebuild', '--no-install'], {
+    await spawnAsync('npx', ['expo', 'prebuild', '--no-install'], {
       cwd: exampleAppPath,
       stdio: ['ignore', 'ignore', 'pipe'],
     });

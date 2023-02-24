@@ -1,16 +1,17 @@
-const nextJest = require('next/jest');
+import nextJest from 'next/jest.js';
 
-/** @type {import('@jest/types').Config.InitialOptions} */
+/** @type {import('jest').Config} */
 const jestConfig = {
   displayName: 'docs',
   testEnvironment: 'jsdom',
   testMatch: ['**/*.test.(js|ts|tsx)'],
-  setupFilesAfterEnv: ['@testing-library/jest-dom/extend-expect', './jest.setup.js'],
+  setupFilesAfterEnv: ['@testing-library/jest-dom/extend-expect'],
   clearMocks: true,
-  coverageDirectory: '<rootDir>/coverage',
   moduleNameMapper: {
     '^~/(.*)$': '<rootDir>/$1',
   },
+  transform: {},
+  extensionsToTreatAsEsm: ['.ts', '.tsx'],
 };
 
-module.exports = nextJest({ dir: './' })(jestConfig);
+export default nextJest({ dir: './' })(jestConfig);

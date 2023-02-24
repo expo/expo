@@ -2,6 +2,7 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
+#import <ZXingObjC/ZXingObjCCore.h>
 #import <EXBarCodeScanner/EXBarCodeScannerUtils.h>
 
 @implementation EXBarCodeScannerUtils
@@ -77,14 +78,16 @@
     result[@"cornerPoints"] = cornerPointsResult;
     result[@"bounds"] = @{
       @"origin": @{
-          @"x": @(barCodeScannerResult.bounds.origin.x),
-          @"y": @(barCodeScannerResult.bounds.origin.y),
+        @"x": @(barCodeScannerResult.bounds.origin.x),
+        @"y": @(barCodeScannerResult.bounds.origin.y),
       },
       @"size": @{
-          @"width": @(barCodeScannerResult.bounds.size.width),
-          @"height": @(barCodeScannerResult.bounds.size.height),
+        @"width": @(barCodeScannerResult.bounds.size.width),
+        @"height": @(barCodeScannerResult.bounds.size.height),
       }
     };
+  } else {
+    [EXBarCodeScannerUtils addEmptyCornerPoints:result];
   }
 
   return result;
@@ -107,14 +110,16 @@
     result[@"cornerPoints"] = cornerPointsResult;
     result[@"bounds"] = @{
       @"origin": @{
-          @"x": @(barCodeScannerResult.bounds.origin.x),
-          @"y": @(barCodeScannerResult.bounds.origin.y),
+        @"x": @(barCodeScannerResult.bounds.origin.x),
+        @"y": @(barCodeScannerResult.bounds.origin.y),
       },
       @"size": @{
-          @"width": @(barCodeScannerResult.bounds.size.width),
-          @"height": @(barCodeScannerResult.bounds.size.height),
+        @"width": @(barCodeScannerResult.bounds.size.width),
+        @"height": @(barCodeScannerResult.bounds.size.height),
       }
     };
+  } else {
+    [EXBarCodeScannerUtils addEmptyCornerPoints:result];
   }
   return result;
 }
@@ -153,6 +158,21 @@
     default:
       return @"unknown";
   }
+}
+
++ (void)addEmptyCornerPoints:(NSMutableDictionary *)result
+{
+  result[@"cornerPoints"] = @[];
+  result[@"bounds"] = @{
+    @"origin": @{
+      @"x": @(0),
+      @"y": @(0),
+    },
+    @"size": @{
+      @"width": @(0),
+      @"height": @(0),
+    }
+  };
 }
 
 @end

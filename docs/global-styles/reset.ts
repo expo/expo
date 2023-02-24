@@ -1,7 +1,4 @@
 import { css } from '@emotion/react';
-import { theme, typography } from '@expo/styleguide';
-
-import * as Constants from '~/constants/theme';
 
 export const globalReset = css`
   html,
@@ -85,7 +82,6 @@ export const globalReset = css`
   mark,
   audio,
   video {
-    font-weight: 400;
     box-sizing: border-box;
     margin: 0;
     padding: 0;
@@ -105,32 +101,5 @@ export const globalReset = css`
   nav,
   section {
     display: block;
-  }
-
-  img {
-    max-width: 768px;
-    width: 100%;
-  }
-
-  a {
-    -webkit-tap-highlight-color: rgba(0, 0, 0, 0);
-    color: ${theme.link.default};
-  }
-
-  body {
-    font-family: ${typography.fontFaces.regular};
-    text-rendering: optimizeLegibility;
-    font-size: 16px;
-  }
-
-  @media screen and (max-width: ${Constants.breakpoints.mobile}) {
-    body {
-      font-size: 14px;
-    }
-  }
-
-  ::selection {
-    background-color: ${theme.highlight.accent};
-    color: ${theme.text.default};
   }
 `;

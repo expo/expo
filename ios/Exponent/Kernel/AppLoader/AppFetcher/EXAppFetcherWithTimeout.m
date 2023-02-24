@@ -3,8 +3,10 @@
 #import "EXAppFetcherCacheOnly.h"
 #import "EXAppFetcherDevelopmentMode.h"
 #import "EXAppFetcherWithTimeout.h"
-#import "EXAppLoader.h"
+#import "EXAbstractLoader.h"
 #import "EXUtil.h"
+
+@import EXManifests;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -18,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXAppFetcherWithTimeout
 
-- (instancetype)initWithAppLoader:(EXAppLoader *)appLoader timeout:(NSTimeInterval)timeout;
+- (instancetype)initWithAppLoader:(EXAbstractLoader *)appLoader timeout:(NSTimeInterval)timeout;
 {
   if (self = [super initWithAppLoader:appLoader]) {
     _timeout = timeout;

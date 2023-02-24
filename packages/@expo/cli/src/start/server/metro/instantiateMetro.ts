@@ -1,14 +1,20 @@
 import { getConfig } from '@expo/config';
 import { MetroDevServerOptions } from '@expo/dev-server';
+import chalk from 'chalk';
 import http from 'http';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
 
+import { Log } from '../../../log';
+import { getMetroProperties } from '../../../utils/analytics/getMetroProperties';
+import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metroDebuggerMiddleware';
+import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
+import { env } from '../../../utils/env';
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { importExpoMetroConfigFromProject, importMetroFromProject } from './resolveFromProject';
-import { withMetroMultiPlatform } from './withMetroMultiPlatform';
+import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 
 // From expo/dev-server but with ability to use custom logger.
 type MessageSocket = {
@@ -44,9 +50,15 @@ export async function instantiateMetroAsync(
   let metroConfig = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
 
   // TODO: When we bring expo/metro-config into the expo/expo repo, then we can upstream this.
-  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true, skipPlugins: true });
+  const { exp } = getConfig(projectRoot, {
+    skipSDKVersionRequirement: true,
+    skipPlugins: true,
+  });
+
   const platformBundlers = getPlatformBundlers(exp);
-  metroConfig = withMetroMultiPlatform(projectRoot, metroConfig, platformBundlers);
+  metroConfig = await withMetroMultiPlatformAsync(projectRoot, metroConfig, platformBundlers);
+
+  logEventAsync('metro config', getMetroProperties(projectRoot, exp, metroConfig));
 
   const {
     middleware,
@@ -70,9 +82,13 @@ export async function instantiateMetroAsync(
     return middleware.use(metroMiddleware);
   };
 
+  middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
+
   const server = await Metro.runServer(metroConfig, {
     hmrEnabled: true,
     websocketEndpoints,
+    // @ts-expect-error Property was added in 0.73.4, remove this statement when updating Metro
+    watch: isWatchEnabled(),
   });
 
   if (attachToServer) {
@@ -95,4 +111,18 @@ export async function instantiateMetroAsync(
       messageSocket: messageSocketEndpoint,
     };
   }
+}
+
+/**
+ * Simplify and communicate if Metro is running without watching file updates,.
+ * Exposed for testing.
+ */
+export function isWatchEnabled() {
+  if (env.CI) {
+    Log.log(
+      chalk`Metro is running in CI mode, reloads are disabled. Remove {bold CI=true} to enable watch mode.`
+    );
+  }
+
+  return !env.CI;
 }

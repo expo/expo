@@ -1,6 +1,6 @@
 {
   "name": "expo-structured-headers",
-  "version": "2.2.1",
+  "version": "3.1.1",
   "description": "Expo module implementation of a parser based on https://httpwg.org/specs/rfc8941.html",
   "main": "index.js",
   "keywords": [

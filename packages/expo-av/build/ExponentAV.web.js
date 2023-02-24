@@ -69,13 +69,14 @@ function getStatusFromMedia(media) {
         // TODO: Bacon: This seems too complicated right now: https://webaudio.github.io/web-audio-api/#dom-biquadfilternode-frequency
         shouldCorrectPitch: false,
         volume: media.volume,
+        audioPan: 0,
         isMuted: media.muted,
         isLooping: media.loop,
         didJustFinish: media.ended,
     };
     return status;
 }
-function setStatusForMedia(media, status) {
+async function setStatusForMedia(media, status) {
     if (status.positionMillis !== undefined) {
         media.currentTime = status.positionMillis / 1000;
     }
@@ -93,10 +94,10 @@ function setStatusForMedia(media, status) {
     // }
     if (status.shouldPlay !== undefined) {
         if (status.shouldPlay) {
-            media.play();
+            await media.play();
         }
         else {
-            media.pause();
+            await media.pause();
         }
     }
     if (status.rate !== undefined) {
@@ -113,7 +114,7 @@ function setStatusForMedia(media, status) {
     }
     return getStatusFromMedia(media);
 }
-let mediaRecorder = null;
+let mediaRecorder /*MediaRecorder*/ = null;
 let mediaRecorderUptimeOfLastStartResume = 0;
 let mediaRecorderDurationAlreadyRecorded = 0;
 let mediaRecorderIsRecording = false;
@@ -164,7 +165,7 @@ export default {
                 error: media.error.message,
             });
         };
-        const status = setStatusForMedia(media, fullInitialStatus);
+        const status = await setStatusForMedia(media, fullInitialStatus);
         return [media, status];
     },
     async unloadForSound(element) {

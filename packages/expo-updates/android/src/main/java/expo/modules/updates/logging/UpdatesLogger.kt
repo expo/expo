@@ -1,122 +1,145 @@
 package expo.modules.updates.logging
 
-import android.util.Log
+import android.content.Context
+import expo.modules.core.logging.LogType
+import expo.modules.core.logging.Logger
+import expo.modules.core.logging.LoggerOptions
+import java.lang.Exception
 import java.util.*
 
 /**
  * Class that implements logging for expo-updates with its own logcat tag
  */
-class UpdatesLogger {
+class UpdatesLogger(
+  context: Context
+) {
 
   fun trace(
     message: String,
-    code: UpdatesErrorCode
+    code: UpdatesErrorCode = UpdatesErrorCode.None
   ) {
     trace(message, code, null, null)
   }
 
   fun trace(
     message: String,
-    code: UpdatesErrorCode,
+    code: UpdatesErrorCode = UpdatesErrorCode.None,
     updateId: String?,
     assetId: String?
   ) {
-    log(message, code, UpdatesLogType.Trace, updateId, assetId)
+    logger.trace(logEntryString(message, code, LogType.Trace, updateId, assetId))
   }
 
   fun debug(
     message: String,
-    code: UpdatesErrorCode
+    code: UpdatesErrorCode = UpdatesErrorCode.None
   ) {
     debug(message, code, null, null)
   }
 
   fun debug(
     message: String,
-    code: UpdatesErrorCode,
+    code: UpdatesErrorCode = UpdatesErrorCode.None,
     updateId: String?,
     assetId: String?
   ) {
-    log(message, code, UpdatesLogType.Debug, updateId, assetId)
+    logger.debug(logEntryString(message, code, LogType.Debug, updateId, assetId))
   }
 
   fun info(
     message: String,
-    code: UpdatesErrorCode
+    code: UpdatesErrorCode = UpdatesErrorCode.None
   ) {
     info(message, code, null, null)
   }
 
   fun info(
     message: String,
-    code: UpdatesErrorCode,
+    code: UpdatesErrorCode = UpdatesErrorCode.None,
     updateId: String?,
     assetId: String?
   ) {
-    log(message, code, UpdatesLogType.Info, updateId, assetId)
+    logger.info(logEntryString(message, code, LogType.Info, updateId, assetId))
   }
 
   fun warn(
     message: String,
-    code: UpdatesErrorCode
+    code: UpdatesErrorCode = UpdatesErrorCode.None
   ) {
     warn(message, code, null, null)
   }
 
   fun warn(
     message: String,
-    code: UpdatesErrorCode,
+    code: UpdatesErrorCode = UpdatesErrorCode.None,
     updateId: String?,
     assetId: String?
   ) {
-    log(message, code, UpdatesLogType.Warn, updateId, assetId)
+    logger.warn(logEntryString(message, code, LogType.Warn, updateId, assetId))
   }
 
   fun error(
     message: String,
-    code: UpdatesErrorCode
+    code: UpdatesErrorCode = UpdatesErrorCode.None,
+    exception: Exception? = null
   ) {
-    error(message, code, null, null)
+    error(message, code, null, null, exception)
   }
 
   fun error(
     message: String,
-    code: UpdatesErrorCode,
+    code: UpdatesErrorCode = UpdatesErrorCode.None,
     updateId: String?,
-    assetId: String?
+    assetId: String?,
+    exception: Exception? = null
   ) {
-    log(message, code, UpdatesLogType.Error, updateId, assetId)
+    logger.error(logEntryString(message, code, LogType.Error, updateId, assetId, exception))
   }
 
   fun fatal(
     message: String,
-    code: UpdatesErrorCode
+    code: UpdatesErrorCode = UpdatesErrorCode.None,
+    exception: Exception? = null
   ) {
-    fatal(message, code, null, null)
+    fatal(message, code, null, null, exception)
   }
 
   fun fatal(
     message: String,
-    code: UpdatesErrorCode,
+    code: UpdatesErrorCode = UpdatesErrorCode.None,
     updateId: String?,
-    assetId: String?
+    assetId: String?,
+    exception: Exception? = null
   ) {
-    log(message, code, UpdatesLogType.Fatal, updateId, assetId)
+    logger.fatal(logEntryString(message, code, LogType.Fatal, updateId, assetId, exception))
   }
 
-  private fun log(
+  // Private methods and fields
+
+  private val logger = Logger(
+    EXPO_UPDATES_LOGGING_TAG,
+    context,
+    LoggerOptions.union(listOf(LoggerOptions.logToOS, LoggerOptions.logToFile))
+  )
+
+  private fun logEntryString(
     message: String,
     code: UpdatesErrorCode,
-    level: UpdatesLogType,
+    level: LogType,
     updateId: String?,
-    assetId: String?
-  ) {
-    val timestamp = Date().time / 1000
+    assetId: String?,
+    exception: Exception? = null
+  ): String {
+    val timestamp = Date().time
+
+    val throwable = exception as? Throwable ?: Throwable()
 
     val stacktrace = when (level) {
       // Limit stack to 20 frames
-      UpdatesLogType.Error -> Throwable().stackTrace.take(MAX_FRAMES_IN_STACKTRACE).map { f -> f.toString() }
-      UpdatesLogType.Fatal -> Throwable().stackTrace.take(MAX_FRAMES_IN_STACKTRACE).map { f -> f.toString() }
+      LogType.Error -> throwable.stackTrace.take(MAX_FRAMES_IN_STACKTRACE)
+        .map { f -> f.toString() }
+      LogType.Fatal -> throwable.stackTrace.take(MAX_FRAMES_IN_STACKTRACE)
+        .map { f -> f.toString() }
       else -> {
         null
       }
@@ -131,13 +154,8 @@ class UpdatesLogger {
       assetId,
       stacktrace
     )
-    when (UpdatesLogType.toOSLogType(level)) {
-      Log.DEBUG -> Log.d(EXPO_UPDATES_LOGGING_TAG, logEntry.asString())
-      Log.INFO -> Log.i(EXPO_UPDATES_LOGGING_TAG, logEntry.asString())
-      Log.WARN -> Log.w(EXPO_UPDATES_LOGGING_TAG, logEntry.asString())
-      Log.ERROR -> Log.e(EXPO_UPDATES_LOGGING_TAG, logEntry.asString())
-      Log.ASSERT -> Log.e(EXPO_UPDATES_LOGGING_TAG, logEntry.asString())
-    }
+
+    return logEntry.asString()
   }
 
   companion object {

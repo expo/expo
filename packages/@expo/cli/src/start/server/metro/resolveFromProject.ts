@@ -70,3 +70,8 @@ export function importCliBuildBundleWithConfigFromProject(
     '@react-native-community/cli-plugin-metro/build/commands/bundle/buildBundle'
   ).buildBundleWithConfig;
 }
+
+/** Resolve the installed Metro version from project */
+export function resolveMetroVersionFromProject(projectRoot: string): string {
+  return importFromProject(projectRoot, 'metro/package.json').version;
+}

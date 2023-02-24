@@ -1,7 +1,6 @@
 package expo.modules.updates.loader
 
 import android.content.Context
-import android.util.Log
 import expo.modules.jsonutils.require
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.UpdatesUtils
@@ -25,20 +24,27 @@ import expo.modules.jsonutils.getNullable
 import expo.modules.updates.codesigning.ValidationResult
 import expo.modules.updates.db.UpdatesDatabase
 import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.logging.UpdatesErrorCode
+import expo.modules.updates.logging.UpdatesLogger
 import expo.modules.updates.manifest.*
 import java.security.cert.CertificateException
 
-open class FileDownloader(private val client: OkHttpClient) {
-  constructor(context: Context) : this(OkHttpClient.Builder().cache(getCache(context)).build())
+/**
+ * Utility class that holds all the logic for downloading data and files, such as update manifests
+ * and assets, using an instance of [OkHttpClient].
+ */
+open class FileDownloader(context: Context, private val client: OkHttpClient) {
+  constructor(context: Context) : this(context, OkHttpClient.Builder().cache(getCache(context)).build())
+  private val logger = UpdatesLogger(context)
 
   interface FileDownloadCallback {
     fun onFailure(e: Exception)
     fun onSuccess(file: File, hash: ByteArray)
   }
 
-  interface ManifestDownloadCallback {
+  interface RemoteUpdateDownloadCallback {
     fun onFailure(message: String, e: Exception)
-    fun onSuccess(updateManifest: UpdateManifest)
+    fun onSuccess(updateResponse: UpdateResponse)
   }
 
   interface AssetDownloadCallback {
@@ -76,7 +82,7 @@ open class FileDownloader(private val client: OkHttpClient) {
               callback.onSuccess(destination, hash)
             }
           } catch (e: Exception) {
-            Log.e(TAG, "Failed to download file to destination $destination", e)
+            logger.error("Failed to download file to destination $destination: ${e.localizedMessage}", UpdatesErrorCode.AssetsFailedToLoad, e)
             callback.onFailure(e)
           }
         }
@@ -84,31 +90,61 @@ open class FileDownloader(private val client: OkHttpClient) {
     )
   }
 
-  internal fun parseManifestResponse(response: Response, configuration: UpdatesConfiguration, callback: ManifestDownloadCallback) {
+  internal fun parseRemoteUpdateResponse(response: Response, configuration: UpdatesConfiguration, callback: RemoteUpdateDownloadCallback) {
     val contentType = response.header("content-type") ?: ""
     val isMultipart = contentType.startsWith("multipart/", ignoreCase = true)
     if (isMultipart) {
       val boundaryParameter = ParameterParser().parse(contentType, ';')["boundary"]
       if (boundaryParameter == null) {
+        val message = "Missing boundary in multipart remote update content-type"
+        logger.error(message, UpdatesErrorCode.UpdateFailedToLoad)
         callback.onFailure(
-          "Missing boundary in multipart manifest content-type",
-          IOException("Missing boundary in multipart manifest content-type")
+          message,
+          IOException(message)
         )
         return
       }
 
-      parseMultipartManifestResponse(response, boundaryParameter, configuration, callback)
+      parseMultipartRemoteUpdateResponse(response, boundaryParameter, configuration, callback)
     } else {
       val responseHeaders = response.headers
-      val manifestHeaderData = ManifestHeaderData(
+
+      val responseHeaderData = ResponseHeaderData(
         protocolVersion = responseHeaders["expo-protocol-version"],
-        manifestFilters = responseHeaders["expo-manifest-filters"],
-        serverDefinedHeaders = responseHeaders["expo-server-defined-headers"],
-        manifestSignature = responseHeaders["expo-manifest-signature"],
-        signature = responseHeaders["expo-signature"]
+        manifestFiltersRaw = responseHeaders["expo-manifest-filters"],
+        serverDefinedHeadersRaw = responseHeaders["expo-server-defined-headers"],
+        manifestSignature = responseHeaders["expo-manifest-signature"]
       )
 
-      parseManifest(response.body!!.string(), manifestHeaderData, null, null, configuration, callback)
+      val manifestResponseInfo = ResponsePartInfo(
+        responseHeaderData = responseHeaderData,
+        responsePartHeaderData = ResponsePartHeaderData(
+          signature = responseHeaders["expo-signature"]
+        ),
+        body = response.body!!.string()
+      )
+
+      parseManifest(
+        manifestResponseInfo,
+        null,
+        null,
+        configuration,
+        object : ParseManifestCallback {
+          override fun onFailure(message: String, e: Exception) {
+            callback.onFailure(message, e)
+          }
+
+          override fun onSuccess(manifestUpdateResponsePart: UpdateResponsePart.ManifestUpdateResponsePart) {
+            callback.onSuccess(
+              UpdateResponse(
+                responseHeaderData = responseHeaderData,
+                manifestUpdateResponsePart = manifestUpdateResponsePart,
+                directiveUpdateResponsePart = null
+              )
+            )
+          }
+        }
+      )
     }
   }
 
@@ -127,10 +163,11 @@ open class FileDownloader(private val client: OkHttpClient) {
     return headers.toHeaders()
   }
 
-  private fun parseMultipartManifestResponse(response: Response, boundary: String, configuration: UpdatesConfiguration, callback: ManifestDownloadCallback) {
+  private fun parseMultipartRemoteUpdateResponse(response: Response, boundary: String, configuration: UpdatesConfiguration, callback: RemoteUpdateDownloadCallback) {
     var manifestPartBodyAndHeaders: Pair<String, Headers>? = null
     var extensionsBody: String? = null
     var certificateChainString: String? = null
+    var directivePartBodyAndHeaders: Pair<String, Headers>? = null
 
     val multipartStream = MultipartStream(response.body!!.byteStream(), boundary.toByteArray())
 
@@ -143,7 +180,7 @@ open class FileDownloader(private val client: OkHttpClient) {
         val output = ByteArrayOutputStream()
         multipartStream.readBodyData(output)
 
-        val contentDispositionValue = headers.get("content-disposition")
+        val contentDispositionValue = headers["content-disposition"]
         if (contentDispositionValue != null) {
           val contentDispositionParameterMap = ParameterParser().parse(contentDispositionValue, ';')
           val contentDispositionName = contentDispositionParameterMap["name"]
@@ -152,62 +189,224 @@ open class FileDownloader(private val client: OkHttpClient) {
               "manifest" -> manifestPartBodyAndHeaders = Pair(output.toString(), headers)
               "extensions" -> extensionsBody = output.toString()
               "certificate_chain" -> certificateChainString = output.toString()
+              "directive" -> directivePartBodyAndHeaders = Pair(output.toString(), headers)
             }
           }
         }
         nextPart = multipartStream.readBoundary()
       }
     } catch (e: Exception) {
+      val message = "Error while reading multipart remote update response"
+      logger.error(message, UpdatesErrorCode.UpdateFailedToLoad, e)
       callback.onFailure(
-        "Error while reading multipart manifest response",
+        message,
         e
       )
-      return
-    }
-
-    if (manifestPartBodyAndHeaders == null) {
-      callback.onFailure("Multipart manifest response missing manifest part", IOException("Malformed multipart manifest response"))
       return
     }
 
     val extensions = try {
       extensionsBody?.let { JSONObject(it) }
     } catch (e: Exception) {
+      val message = "Failed to parse multipart remote update extensions"
+      logger.error(message, UpdatesErrorCode.UpdateFailedToLoad)
       callback.onFailure(
-        "Failed to parse multipart manifest extensions",
+        message,
         e
       )
       return
     }
 
+    // in v0 compatibility mode require a manifest
+    if (configuration.enableExpoUpdatesProtocolV0CompatibilityMode && manifestPartBodyAndHeaders == null) {
+      val message = "Multipart response missing manifest part. Manifest is required in version 0 of the expo-updates protocol. This may be due to the update being a rollback or other directive."
+      logger.error(message, UpdatesErrorCode.UpdateFailedToLoad)
+      callback.onFailure(message, IOException(message))
+      return
+    }
+
     val responseHeaders = response.headers
-    val manifestHeaderData = ManifestHeaderData(
+    val responseHeaderData = ResponseHeaderData(
       protocolVersion = responseHeaders["expo-protocol-version"],
-      manifestFilters = responseHeaders["expo-manifest-filters"],
-      serverDefinedHeaders = responseHeaders["expo-server-defined-headers"],
+      manifestFiltersRaw = responseHeaders["expo-manifest-filters"],
+      serverDefinedHeadersRaw = responseHeaders["expo-server-defined-headers"],
       manifestSignature = responseHeaders["expo-manifest-signature"],
-      signature = manifestPartBodyAndHeaders.second["expo-signature"]
     )
 
-    parseManifest(manifestPartBodyAndHeaders.first, manifestHeaderData, extensions, certificateChainString, configuration, callback)
+    val manifestResponseInfo = manifestPartBodyAndHeaders?.let {
+      ResponsePartInfo(
+        responseHeaderData = responseHeaderData,
+        responsePartHeaderData = ResponsePartHeaderData(
+          signature = manifestPartBodyAndHeaders.second["expo-signature"]
+        ),
+        body = manifestPartBodyAndHeaders.first
+      )
+    }
+
+    // in v0 compatibility mode ignore directives
+    val directiveResponseInfo = if (configuration.enableExpoUpdatesProtocolV0CompatibilityMode) {
+      null
+    } else {
+      directivePartBodyAndHeaders?.let {
+        ResponsePartInfo(
+          responseHeaderData = responseHeaderData,
+          responsePartHeaderData = ResponsePartHeaderData(
+            signature = directivePartBodyAndHeaders.second["expo-signature"]
+          ),
+          body = directivePartBodyAndHeaders.first
+        )
+      }
+    }
+
+    var parseManifestResponse: UpdateResponsePart.ManifestUpdateResponsePart? = null
+    var parseDirectiveResponse: UpdateResponsePart.DirectiveUpdateResponsePart? = null
+    var didError = false
+
+    // need to parse the directive and manifest in parallel, to do so use this common callback.
+    // would be a great place to have better coroutine stuff
+    val maybeFinish = {
+      if (!didError) {
+        val isManifestDone = manifestResponseInfo == null || parseManifestResponse != null
+        val isDirectiveDone = directiveResponseInfo == null || parseDirectiveResponse != null
+
+        if (isManifestDone && isDirectiveDone) {
+          callback.onSuccess(
+            UpdateResponse(
+              responseHeaderData = responseHeaderData,
+              manifestUpdateResponsePart = parseManifestResponse,
+              directiveUpdateResponsePart = parseDirectiveResponse
+            )
+          )
+        }
+      }
+    }
+
+    if (directiveResponseInfo != null) {
+      parseDirective(
+        directiveResponseInfo,
+        certificateChainString,
+        configuration,
+        object : ParseDirectiveCallback {
+          override fun onFailure(message: String, e: Exception) {
+            if (!didError) {
+              didError = true
+              callback.onFailure(message, e)
+            }
+          }
+
+          override fun onSuccess(directiveUpdateResponsePart: UpdateResponsePart.DirectiveUpdateResponsePart) {
+            parseDirectiveResponse = directiveUpdateResponsePart
+            maybeFinish()
+          }
+        }
+      )
+    }
+
+    if (manifestResponseInfo != null) {
+      parseManifest(
+        manifestResponseInfo,
+        extensions,
+        certificateChainString,
+        configuration,
+        object : ParseManifestCallback {
+          override fun onFailure(message: String, e: Exception) {
+            if (!didError) {
+              didError = true
+              callback.onFailure(message, e)
+            }
+          }
+          override fun onSuccess(manifestUpdateResponsePart: UpdateResponsePart.ManifestUpdateResponsePart) {
+            parseManifestResponse = manifestUpdateResponsePart
+            maybeFinish()
+          }
+        }
+      )
+    }
+
+    // if both parts are empty, we still want to finish
+    if (manifestResponseInfo == null && directiveResponseInfo == null) {
+      maybeFinish()
+    }
+  }
+
+  interface ParseDirectiveCallback {
+    fun onFailure(message: String, e: Exception)
+    fun onSuccess(directiveUpdateResponsePart: UpdateResponsePart.DirectiveUpdateResponsePart)
+  }
+
+  private fun parseDirective(
+    directiveResponsePartInfo: ResponsePartInfo,
+    certificateChainFromManifestResponse: String?,
+    configuration: UpdatesConfiguration,
+    callback: ParseDirectiveCallback
+  ) {
+    try {
+      val body = directiveResponsePartInfo.body
+
+      // check code signing if code signing is configured
+      // 1. verify the code signing signature (throw if invalid)
+      // 2. then, if the code signing certificate is only valid for a particular project, verify that the directive
+      //    has the correct info for code signing. If the code signing certificate doesn't specify a particular
+      //    project, it is assumed to be valid for all projects
+      // 3. consider the directive verified if both of these pass
+      try {
+        configuration.codeSigningConfiguration?.let { codeSigningConfiguration ->
+          val signatureValidationResult = codeSigningConfiguration.validateSignature(
+            directiveResponsePartInfo.responsePartHeaderData.signature,
+            body.toByteArray(),
+            certificateChainFromManifestResponse,
+          )
+          if (signatureValidationResult.validationResult == ValidationResult.INVALID) {
+            throw IOException("Directive download was successful, but signature was incorrect")
+          }
+
+          if (signatureValidationResult.validationResult != ValidationResult.SKIPPED) {
+            val directiveForProjectInformation = UpdateDirective.fromJSONString(body)
+            signatureValidationResult.expoProjectInformation?.let { expoProjectInformation ->
+              if (expoProjectInformation.projectId != directiveForProjectInformation.signingInfo?.easProjectId ||
+                expoProjectInformation.scopeKey != directiveForProjectInformation.signingInfo.scopeKey
+              ) {
+                throw CertificateException("Invalid certificate for directive project ID or scope key")
+              }
+            }
+          }
+        }
+      } catch (e: Exception) {
+        callback.onFailure(e.message!!, e)
+        return
+      }
+
+      callback.onSuccess(UpdateResponsePart.DirectiveUpdateResponsePart(UpdateDirective.fromJSONString(body)))
+    } catch (e: Exception) {
+      val message = "Failed to parse directive data: ${e.localizedMessage}"
+      logger.error(message, UpdatesErrorCode.UpdateFailedToLoad, e)
+      callback.onFailure(
+        message,
+        e
+      )
+    }
+  }
+
+  interface ParseManifestCallback {
+    fun onFailure(message: String, e: Exception)
+    fun onSuccess(manifestUpdateResponsePart: UpdateResponsePart.ManifestUpdateResponsePart)
   }
 
   private fun parseManifest(
-    manifestBody: String,
-    manifestHeaderData: ManifestHeaderData,
+    manifestResponseInfo: ResponsePartInfo,
     extensions: JSONObject?,
     certificateChainFromManifestResponse: String?,
     configuration: UpdatesConfiguration,
-    callback: ManifestDownloadCallback
+    callback: ParseManifestCallback
   ) {
     try {
-      val updateResponseJson = extractUpdateResponseJson(manifestBody, configuration)
+      val updateResponseJson = extractUpdateResponseJson(manifestResponseInfo.body, configuration)
       val isSignatureInBody =
         updateResponseJson.has("manifestString") && updateResponseJson.has("signature")
       val signature = if (isSignatureInBody) {
         updateResponseJson.getNullable("signature")
       } else {
-        manifestHeaderData.manifestSignature
+        manifestResponseInfo.responseHeaderData.manifestSignature
       }
 
       /**
@@ -221,7 +420,7 @@ open class FileDownloader(private val client: OkHttpClient) {
       val manifestString = if (isSignatureInBody) {
         updateResponseJson.getString("manifestString")
       } else {
-        manifestBody
+        manifestResponseInfo.body
       }
       val preManifest = JSONObject(manifestString)
 
@@ -241,13 +440,26 @@ open class FileDownloader(private val client: OkHttpClient) {
             override fun onCompleted(isValid: Boolean) {
               if (isValid) {
                 try {
-                  checkCodeSigningAndCreateManifest(manifestBody, preManifest, manifestHeaderData, extensions, certificateChainFromManifestResponse, true, configuration, callback)
+                  checkCodeSigningAndCreateManifest(
+                    bodyString = manifestResponseInfo.body,
+                    preManifest = preManifest,
+                    responseHeaderData = manifestResponseInfo.responseHeaderData,
+                    responsePartHeaderData = manifestResponseInfo.responsePartHeaderData,
+                    extensions = extensions,
+                    certificateChainFromManifestResponse = certificateChainFromManifestResponse,
+                    isVerified = true,
+                    configuration = configuration,
+                    logger = logger,
+                    callback = callback
+                  )
                 } catch (e: Exception) {
                   callback.onFailure("Failed to parse manifest data", e)
                 }
               } else {
+                val message = "Manifest signature is invalid; aborting"
+                logger.error(message, UpdatesErrorCode.UpdateHasInvalidSignature)
                 callback.onFailure(
-                  "Manifest signature is invalid; aborting",
+                  message,
                   Exception("Manifest signature is invalid")
                 )
               }
@@ -255,29 +467,44 @@ open class FileDownloader(private val client: OkHttpClient) {
           }
         )
       } else {
-        checkCodeSigningAndCreateManifest(manifestBody, preManifest, manifestHeaderData, extensions, certificateChainFromManifestResponse, false, configuration, callback)
+        checkCodeSigningAndCreateManifest(
+          bodyString = manifestResponseInfo.body,
+          preManifest = preManifest,
+          responseHeaderData = manifestResponseInfo.responseHeaderData,
+          responsePartHeaderData = manifestResponseInfo.responsePartHeaderData,
+          extensions = extensions,
+          certificateChainFromManifestResponse = certificateChainFromManifestResponse,
+          isVerified = false,
+          configuration = configuration,
+          logger = logger,
+          callback = callback
+        )
       }
     } catch (e: Exception) {
+      val message = "Failed to parse manifest data: ${e.localizedMessage}"
+      logger.error(message, UpdatesErrorCode.UpdateFailedToLoad, e)
       callback.onFailure(
-        "Failed to parse manifest data",
+        message,
         e
       )
     }
   }
 
-  fun downloadManifest(
+  fun downloadRemoteUpdate(
     configuration: UpdatesConfiguration,
     extraHeaders: JSONObject?,
     context: Context,
-    callback: ManifestDownloadCallback
+    callback: RemoteUpdateDownloadCallback
   ) {
     try {
       downloadData(
-        createRequestForManifest(configuration, extraHeaders, context),
+        createRequestForRemoteUpdate(configuration, extraHeaders, context),
         object : Callback {
           override fun onFailure(call: Call, e: IOException) {
+            val message = "Failed to download remote update from URL: ${configuration.updateUrl}: ${e.localizedMessage}"
+            logger.error(message, UpdatesErrorCode.UpdateFailedToLoad, e)
             callback.onFailure(
-              "Failed to download manifest from URL: " + configuration.updateUrl,
+              message,
               e
             )
           }
@@ -285,22 +512,24 @@ open class FileDownloader(private val client: OkHttpClient) {
           @Throws(IOException::class)
           override fun onResponse(call: Call, response: Response) {
             if (!response.isSuccessful) {
+              val message = "Failed to download remote update from URL: ${configuration.updateUrl}"
+              logger.error(message, UpdatesErrorCode.UpdateFailedToLoad)
               callback.onFailure(
-                "Failed to download manifest from URL: " + configuration.updateUrl,
-                Exception(
-                  response.body!!.string()
-                )
+                message,
+                Exception(response.body!!.string())
               )
               return
             }
 
-            parseManifestResponse(response, configuration, callback)
+            parseRemoteUpdateResponse(response, configuration, callback)
           }
         }
       )
     } catch (e: Exception) {
+      val message = "Failed to download remote update from URL: ${configuration.updateUrl}: ${e.localizedMessage}"
+      logger.error(message, UpdatesErrorCode.UpdateFailedToLoad, e)
       callback.onFailure(
-        "Failed to download manifest from URL " + configuration.updateUrl.toString(),
+        message,
         e
       )
     }
@@ -314,7 +543,9 @@ open class FileDownloader(private val client: OkHttpClient) {
     callback: AssetDownloadCallback
   ) {
     if (asset.url == null) {
-      callback.onFailure(Exception("Could not download asset " + asset.key + " with no URL"), asset)
+      val message = "Could not download asset " + asset.key + " with no URL"
+      logger.error(message, UpdatesErrorCode.AssetsFailedToLoad)
+      callback.onFailure(Exception(message), asset)
       return
     }
     val filename = UpdatesUtils.createFilenameForAsset(asset)
@@ -342,6 +573,7 @@ open class FileDownloader(private val client: OkHttpClient) {
           }
         )
       } catch (e: Exception) {
+        logger.error("Failed to download asset ${asset.key}: ${e.localizedMessage}", UpdatesErrorCode.AssetsFailedToLoad, e)
         callback.onFailure(e, asset)
       }
     }
@@ -378,12 +610,14 @@ open class FileDownloader(private val client: OkHttpClient) {
     private fun checkCodeSigningAndCreateManifest(
       bodyString: String,
       preManifest: JSONObject,
-      manifestHeaderData: ManifestHeaderData,
+      responseHeaderData: ResponseHeaderData,
+      responsePartHeaderData: ResponsePartHeaderData,
       extensions: JSONObject?,
       certificateChainFromManifestResponse: String?,
       isVerified: Boolean,
       configuration: UpdatesConfiguration,
-      callback: ManifestDownloadCallback
+      logger: UpdatesLogger,
+      callback: ParseManifestCallback
     ) {
       if (configuration.expectsSignedManifest) {
         preManifest.put("isVerified", isVerified)
@@ -398,7 +632,7 @@ open class FileDownloader(private val client: OkHttpClient) {
       try {
         configuration.codeSigningConfiguration?.let { codeSigningConfiguration ->
           val signatureValidationResult = codeSigningConfiguration.validateSignature(
-            manifestHeaderData.signature,
+            responsePartHeaderData.signature,
             bodyString.toByteArray(),
             certificateChainFromManifestResponse,
           )
@@ -409,7 +643,7 @@ open class FileDownloader(private val client: OkHttpClient) {
           if (signatureValidationResult.validationResult != ValidationResult.SKIPPED) {
             val manifestForProjectInformation = ManifestFactory.getManifest(
               preManifest,
-              manifestHeaderData,
+              responseHeaderData,
               extensions,
               configuration
             ).manifest
@@ -421,21 +655,23 @@ open class FileDownloader(private val client: OkHttpClient) {
               }
             }
 
+            logger.info("Update code signature verified successfully")
             preManifest.put("isVerified", true)
           }
         }
       } catch (e: Exception) {
+        logger.error(e.message!!, UpdatesErrorCode.UpdateCodeSigningError)
         callback.onFailure(e.message!!, e)
         return
       }
 
-      val updateManifest = ManifestFactory.getManifest(preManifest, manifestHeaderData, extensions, configuration)
-      if (!SelectionPolicies.matchesFilters(updateManifest.updateEntity!!, updateManifest.manifestFilters)) {
+      val updateManifest = ManifestFactory.getManifest(preManifest, responseHeaderData, extensions, configuration)
+      if (!SelectionPolicies.matchesFilters(updateManifest.updateEntity!!, responseHeaderData.manifestFilters)) {
         val message =
           "Downloaded manifest is invalid; provides filters that do not match its content"
         callback.onFailure(message, Exception(message))
       } else {
-        callback.onSuccess(updateManifest)
+        callback.onSuccess(UpdateResponsePart.ManifestUpdateResponsePart(updateManifest))
       }
     }
 
@@ -458,7 +694,7 @@ open class FileDownloader(private val client: OkHttpClient) {
         for (i in 0 until manifestArray.length()) {
           val manifestCandidate = manifestArray.getJSONObject(i)
           val sdkVersion = manifestCandidate.getString("sdkVersion")
-          if (configuration.sdkVersion != null && configuration.sdkVersion!!.split(",").contains(sdkVersion)
+          if (configuration.sdkVersion != null && configuration.sdkVersion.split(",").contains(sdkVersion)
           ) {
             return manifestCandidate
           }
@@ -472,6 +708,17 @@ open class FileDownloader(private val client: OkHttpClient) {
       throw IOException("No compatible manifest found. SDK Versions supported: " + configuration.sdkVersion + " Provided manifestString: " + manifestString)
     }
 
+    private fun Request.Builder.addHeadersFromJSONObject(headers: JSONObject?): Request.Builder {
+      if (headers == null) {
+        return this
+      }
+
+      headers.keys().asSequence().forEach { key ->
+        header(key, headers.require<Any>(key).toString())
+      }
+      return this
+    }
+
     internal fun createRequestForAsset(
       assetEntity: AssetEntity,
       configuration: UpdatesConfiguration,
@@ -479,14 +726,9 @@ open class FileDownloader(private val client: OkHttpClient) {
     ): Request {
       return Request.Builder()
         .url(assetEntity.url!!.toString())
-        .apply {
-          assetEntity.extraRequestHeaders?.let { headers ->
-            headers.keys().asSequence().forEach { key ->
-              header(key, headers.require(key))
-            }
-          }
-        }
+        .addHeadersFromJSONObject(assetEntity.extraRequestHeaders)
         .header("Expo-Platform", "android")
+        .header("Expo-Protocol-Version", "1")
         .header("Expo-API-Version", "1")
         .header("Expo-Updates-Environment", "BARE")
         .header("EAS-Client-ID", EASClientID(context).uuid.toString())
@@ -498,25 +740,17 @@ open class FileDownloader(private val client: OkHttpClient) {
         .build()
     }
 
-    internal fun createRequestForManifest(
+    internal fun createRequestForRemoteUpdate(
       configuration: UpdatesConfiguration,
       extraHeaders: JSONObject?,
       context: Context
     ): Request {
       return Request.Builder()
         .url(configuration.updateUrl.toString())
-        .apply {
-          // apply extra headers before anything else, so they don't override preset headers
-          if (extraHeaders != null) {
-            val keySet = extraHeaders.keys()
-            while (keySet.hasNext()) {
-              val key = keySet.next()
-              header(key, extraHeaders.optString(key, ""))
-            }
-          }
-        }
+        .addHeadersFromJSONObject(extraHeaders)
         .header("Accept", "multipart/mixed,application/expo+json,application/json")
         .header("Expo-Platform", "android")
+        .header("Expo-Protocol-Version", "1")
         .header("Expo-API-Version", "1")
         .header("Expo-Updates-Environment", "BARE")
         .header("Expo-JSON-Error", "true")

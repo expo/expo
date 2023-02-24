@@ -77,7 +77,7 @@ export interface ManifestAsset {
 /**
  * A modern manifest.
  */
-export declare type Manifest = {
+export type Manifest = {
     id: string;
     createdAt: string;
     runtimeVersion: string;
@@ -86,7 +86,7 @@ export declare type Manifest = {
     metadata: object;
     extra?: ManifestExtra;
 };
-export declare type ManifestExtra = ClientScopingConfig & {
+export type ManifestExtra = ClientScopingConfig & {
     expoClient?: ExpoConfig & {
         /**
          * Only present during development using @expo/cli.
@@ -96,21 +96,21 @@ export declare type ManifestExtra = ClientScopingConfig & {
     expoGo?: ExpoGoConfig;
     eas?: EASConfig;
 };
-export declare type EASConfig = {
+export type EASConfig = {
     /**
      * The ID for this project if it's using EAS. UUID. This value will not change when a project is
      * transferred between accounts or renamed.
      */
     projectId?: string;
 };
-export declare type ClientScopingConfig = {
+export type ClientScopingConfig = {
     /**
      * An opaque unique string for scoping client-side data to this project. This value
      * will not change when a project is transferred between accounts or renamed.
      */
     scopeKey?: string;
 };
-export declare type ExpoGoConfig = {
+export type ExpoGoConfig = {
     mainModuleName?: string;
     debuggerHost?: string;
     logUrl?: string;
@@ -120,7 +120,7 @@ export declare type ExpoGoConfig = {
     };
     packagerOpts?: ExpoGoPackagerOpts;
 };
-export declare type ExpoGoPackagerOpts = {
+export type ExpoGoPackagerOpts = {
     hostType?: string;
     dev?: boolean;
     strict?: boolean;
@@ -130,7 +130,7 @@ export declare type ExpoGoPackagerOpts = {
     lanType?: string;
     [key: string]: any;
 };
-export declare type ExpoClientConfig = ExpoConfig & {
+export type ExpoClientConfig = ExpoConfig & {
     /**
      * Published apps only.
      */
@@ -160,12 +160,9 @@ export declare type ExpoClientConfig = ExpoConfig & {
     currentFullName?: string;
 };
 /**
- * @hidden
- * A classic manifest https://docs.expo.dev/guides/how-expo-works/#expo-manifest
+ * Represents an intersection of all possible Config types.
  */
-export declare type AppManifest = ExpoClientConfig & ExpoGoConfig & EASConfig & ClientScopingConfig & {
-    [key: string]: any;
-};
+export type AppManifest = ExpoClientConfig & ExpoGoConfig & EASConfig & ClientScopingConfig & Record<string, any>;
 export interface PlatformManifest {
     ios?: IOSManifest;
     android?: AndroidManifest;
@@ -239,17 +236,22 @@ export interface NativeConstants {
      */
     nativeBuildVersion: string | null;
     /**
-     * Classic manifest for Expo apps using classic updates.
+     * Classic manifest for Expo apps using classic updates and the updates embedded in builds.
      * Returns `null` in bare workflow and when `manifest2` is non-null.
+     * > Use `Constants.expoConfig` instead, which behaves more consistently across EAS Build
+     * and Update.
      */
     manifest: AppManifest | null;
     /**
-     * New manifest for Expo apps using modern Expo Updates.
-     * Returns `null` in bare workflow and when `manifest` is non-null.
+     * Manifest for Expo apps using modern Expo Updates from a remote source, such as apps that
+     * use EAS Update. Returns `null` in bare workflow and when `manifest` is non-null.
+     * > Use `Constants.expoConfig` instead, which behaves more consistently across EAS Build
+     * and Update.
      */
     manifest2: Manifest | null;
     /**
-     * The standard Expo config object defined in `app.config.js` files. For both classic and new manifests.
+     * The standard Expo config object defined in `app.json` and `app.config.js` files. For both
+     * classic and modern manifests, whether they are embedded or remote.
      */
     expoConfig: ExpoConfig | null;
     /**

@@ -1,5 +1,5 @@
 import { ClipboardIcon } from '@expo/styleguide';
-import React, { useState } from 'react';
+import { useState } from 'react';
 
 import { SnippetAction, SnippetActionProps } from '../SnippetAction';
 

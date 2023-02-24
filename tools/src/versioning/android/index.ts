@@ -13,7 +13,6 @@ import { searchFilesAsync } from '../../Utils';
 import { copyExpoviewAsync } from './copyExpoview';
 import { expoModulesTransforms } from './expoModulesTransforms';
 import { packagesToKeep } from './packagesConfig';
-import { deleteLinesBetweenTags } from './utils';
 import { versionCxxExpoModulesAsync } from './versionCxx';
 import { updateVersionedReactNativeAsync } from './versionReactNative';
 import { removeVersionedVendoredModulesAsync } from './versionVendoredModules';
@@ -160,7 +159,10 @@ async function findAndPrintVersionReferencesInSourceFilesAsync(version: string):
   );
   let matchesCount = 0;
 
-  const files = await glob('**/{src/**/*.@(java|kt|xml),build.gradle}', { cwd: ANDROID_DIR });
+  const files = await glob('**/{src/**/*.@(java|kt|xml),build.gradle}', {
+    cwd: ANDROID_DIR,
+    ignore: 'vendored/**/*',
+  });
 
   for (const file of files) {
     const filePath = path.join(ANDROID_DIR, file);
@@ -221,7 +223,7 @@ export async function removeVersionAsync(version: string) {
   await removeFromManifestAsync(sdkMajorVersion, templateManifestPath);
 
   // Remove vendored modules
-  await removeVersionedVendoredModulesAsync(Number(version));
+  await removeVersionedVendoredModulesAsync(version);
 
   // Remove SDK version from the list of supported SDKs
   await removeFromSdkVersionsAsync(version, sdkVersionsPath);
@@ -415,45 +417,6 @@ async function cleanUpAsync(version: string) {
   );
 }
 
-async function prepareReanimatedAsync(version: string): Promise<void> {
-  const abiVersion = version.replace(/\./g, '_');
-  const abiName = `abi${abiVersion}`;
-  const versionedExpoviewPath = versionedExpoviewAbiPath(abiName);
-  const buildGradlePath = path.join(versionedExpoviewPath, 'build.gradle');
-
-  const buildReanimatedSO = async () => {
-    await spawnAsync(`./gradlew :expoview-${abiName}:packageNdkLibs`, [], {
-      shell: true,
-      cwd: path.join(versionedExpoviewPath, '../../'),
-      stdio: 'inherit',
-    });
-  };
-
-  const removeLeftoverDirectories = async () => {
-    const mainPath = path.join(versionedExpoviewPath, 'src', 'main');
-    const toRemove = ['Common', 'JNI', 'cpp'];
-    for (const dir of toRemove) {
-      await fs.remove(path.join(mainPath, dir));
-    }
-  };
-
-  const removeLeftoversFromGradle = async () => {
-    const buildGradle = await fs.readFile(buildGradlePath, 'utf-8');
-    await fs.writeFile(
-      buildGradlePath,
-      deleteLinesBetweenTags(
-        /WHEN_PREPARING_REANIMATED_REMOVE_FROM_HERE/,
-        /WHEN_PREPARING_REANIMATED_REMOVE_TO_HERE/,
-        buildGradle
-      )
-    );
-  };
-
-  await buildReanimatedSO();
-  await removeLeftoverDirectories();
-  await removeLeftoversFromGradle();
-}
-
 async function exportReactNdks() {
   const versionedRN = path.join(versionedReactAndroidPath, '..');
   await spawnAsync(`./gradlew :ReactAndroid:packageReactNdkLibs`, [], {
@@ -482,51 +445,66 @@ async function exportReactNdksIfNeeded() {
 }
 
 export async function addVersionAsync(version: string) {
-  console.log(' 🛠   1/10: Updating android/versioned-react-native...');
-  await updateVersionedReactNativeAsync(
-    Directories.getReactNativeSubmoduleDir(),
-    ANDROID_DIR,
-    version
-  );
-  console.log(' ✅  1/10: Finished\n\n');
+  console.log(' 🛠   1/9: Updating android/versioned-react-native...');
+  await updateVersionedReactNativeAsync(ANDROID_DIR, version);
+  console.log(' ✅  1/9: Finished\n\n');
 
-  console.log(' 🛠  2/10: Building versioned ReactAndroid AAR...');
+  console.log(' 🛠  2/9: Building versioned ReactAndroid AAR...');
   await spawnAsync('./android-build-aar.sh', [version], {
     shell: true,
     cwd: SCRIPT_DIR,
     stdio: 'inherit',
   });
-  console.log(' ✅  2/10: Finished\n\n');
+  console.log(' ✅  2/9: Finished\n\n');
 
-  console.log(' 🛠   3/10: Creating versioned expoview package...');
+  console.log(' 🛠   3/9: Creating versioned expoview package...');
   await copyExpoviewAsync(version, ANDROID_DIR);
-  console.log(' ✅  3/10: Finished\n\n');
+  console.log(' ✅  3/9: Finished\n\n');
 
-  console.log(' 🛠   4/10: Exporting react ndks if needed...');
+  console.log(' 🛠   4/9: Exporting react ndks if needed...');
   await exportReactNdksIfNeeded();
-  console.log(' ✅  4/10: Finished\n\n');
+  console.log(' ✅  4/9: Finished\n\n');
 
-  console.log(' 🛠   5/10: prepare versioned Reanimated...');
-  await prepareReanimatedAsync(version);
-  console.log(' ✅  5/10: Finished\n\n');
-
-  console.log(' 🛠   6/10: Creating versioned expo-modules packages...');
+  console.log(' 🛠   5/9: Creating versioned expo-modules packages...');
   await copyExpoModulesAsync(version);
-  console.log(' ✅  6/10: Finished\n\n');
+  console.log(' ✅  5/9: Finished\n\n');
 
-  console.log(' 🛠   7/10: Versoning c++ libraries for expo-modules...');
+  console.log(' 🛠   6/9: Versoning c++ libraries for expo-modules...');
   await versionCxxExpoModulesAsync(version);
-  console.log(' ✅  7/10: Finished\n\n');
+  console.log(' ✅  6/9: Finished\n\n');
 
-  console.log(' 🛠   8/10: Adding extra versioned activites to AndroidManifest...');
+  console.log(' 🛠   7/9: Adding extra versioned activites to AndroidManifest...');
   await addVersionedActivitesToManifests(version);
-  console.log(' ✅  8/10: Finished\n\n');
+  console.log(' ✅  7/9: Finished\n\n');
 
-  console.log(' 🛠   9/10: Registering new version under sdkVersions config...');
+  console.log(' 🛠   8/9: Registering new version under sdkVersions config...');
   await registerNewVersionUnderSdkVersions(version);
-  console.log(' ✅  9/10: Finished\n\n');
+  console.log(' ✅  8/9: Finished\n\n');
 
-  console.log(' 🛠   10/10: Misc cleanup...');
+  console.log(' 🛠   9/9: Misc cleanup...');
   await cleanUpAsync(version);
-  console.log(' ✅  10/10: Finished');
+  console.log(' ✅  9/9: Finished');
+
+  const abiVersion = `abi${version.replace(/\./g, '_')}`;
+  const versionedAar = path.join(
+    versionedExpoviewAbiPath(abiVersion),
+    `maven/host/exp/reactandroid-${abiVersion}/1.0.0/reactandroid-${abiVersion}-1.0.0.aar`
+  );
+  console.log(
+    '\n' +
+      chalk.yellow(
+        '################################################################################################################'
+      ) +
+      `\nIf you want to commit the versioned code to git, please also upload the versioned aar at ${chalk.cyan(
+        versionedAar
+      )} to:\n` +
+      chalk.cyan(
+        `https://github.com/expo/react-native/releases/download/sdk-${version}/reactandroid-${abiVersion}-1.0.0.aar`
+      ) +
+      '\n' +
+      chalk.yellow(
+        '################################################################################################################'
+      ) +
+      '\n'
+  );
 }
