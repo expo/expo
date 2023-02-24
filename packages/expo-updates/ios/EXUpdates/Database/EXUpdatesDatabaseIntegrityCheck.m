@@ -1,6 +1,5 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesDatabaseIntegrityCheck.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 

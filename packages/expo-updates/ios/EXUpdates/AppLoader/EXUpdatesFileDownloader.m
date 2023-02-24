@@ -6,7 +6,6 @@
 #import <EXUpdates/EXUpdatesSelectionPolicies.h>
 #import <EXUpdates/EXUpdatesMultipartStreamReader.h>
 #import <EXUpdates/EXUpdatesParameterParser.h>
-#import <EXUpdates/EXUpdatesManifestHeaders.h>
 #import <EXUpdates/EXUpdatesAppController.h>
 
 @import EASClient;

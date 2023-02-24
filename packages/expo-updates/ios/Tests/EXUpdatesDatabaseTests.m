@@ -2,7 +2,6 @@
 
 #import <XCTest/XCTest.h>
 
-#import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase+Tests.h>
 
