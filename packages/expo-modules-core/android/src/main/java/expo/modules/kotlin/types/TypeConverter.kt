@@ -9,16 +9,35 @@ import expo.modules.kotlin.jni.ExpectedType
  * Basic type converter. It has to handle two different inputs - [Dynamic] and [Any].
  * The first one is used in the bridge implementation. The second one is used in the JSI.
  */
-abstract class TypeConverter<Type : Any>(
+abstract class TypeConverter<Type : Any> {
+  /**
+   * Tries to convert from [Any]? (can be also [Dynamic]) to the desired type.
+   */
+  abstract fun convert(value: Any?): Type?
+
+  /**
+   * Returns a list of [ExpectedType] types that can be converted to the desired type.
+   * Sometimes we have a choice between multiple representations of the same value.
+   * For instance js object can be pass as [Map] or [expo.modules.kotlin.jni.JavaScriptObject].
+   * This value tells us which one we should choose.
+   */
+  open fun getCppRequiredTypes(): ExpectedType = ExpectedType.forAny()
+
+  /**
+   * Checks if the current converter is a trivial one.
+   * In that context, a trivial converter indicates a converter that in JSI implementation does nothing.
+   * It should be true for most classes.
+   */
+  open fun isTrivial(): Boolean = true
+}
+
+abstract class NullAwareTypeConverter<Type : Any>(
   /**
    * Whether `null` can be assigned to the desired type.
    */
   private val isOptional: Boolean
-) {
-  /**
-   * Tries to convert from [Any]? (can be also [Dynamic]) to the desired type.
-   */
-  open fun convert(value: Any?): Type? {
+) : TypeConverter<Type>() {
+  override fun convert(value: Any?): Type? {
     if (value == null || value is Dynamic && value.isNull) {
       if (isOptional) {
         return null
@@ -33,21 +52,6 @@ abstract class TypeConverter<Type : Any>(
    * We know in that place that we're not dealing with `null`.
    */
   abstract fun convertNonOptional(value: Any): Type
-
-  /**
-   * Returns a list of [ExpectedType] types that can be converted to the desired type.
-   * Sometimes we have a choice between multiple representations of the same value.
-   * For instance js object can be pass as [Map] or [expo.modules.kotlin.jni.JavaScriptObject].
-   * This value tells us which one we should choose.
-   */
-  abstract fun getCppRequiredTypes(): ExpectedType
-
-  /**
-   * Checks if the current converter is a trivial one.
-   * In that context, a trivial converter indicates a converter that in JSI implementation does nothing.
-   * It should be true for most classes.
-   */
-  open fun isTrivial(): Boolean = true
 }
 
 /**
@@ -55,7 +59,7 @@ abstract class TypeConverter<Type : Any>(
  * Right it is used as a default base class for all converters, but this will change when we
  * stop using the bridge to pass data between JS and Kotlin.
  */
-abstract class DynamicAwareTypeConverters<T : Any>(isOptional: Boolean) : TypeConverter<T>(isOptional) {
+abstract class DynamicAwareTypeConverters<T : Any>(isOptional: Boolean) : NullAwareTypeConverter<T>(isOptional) {
   override fun convertNonOptional(value: Any): T =
     if (value is Dynamic) {
       convertFromDynamic(value)
@@ -75,6 +79,7 @@ inline fun <reified T : Any> createTrivialTypeConverter(
   return object : DynamicAwareTypeConverters<T>(isOptional) {
     override fun convertFromDynamic(value: Dynamic): T = dynamicFallback(value)
     override fun getCppRequiredTypes(): ExpectedType = cppRequireType
+
     @Suppress("UNCHECKED_CAST")
     override fun convertFromAny(value: Any): T = value as T
   }
