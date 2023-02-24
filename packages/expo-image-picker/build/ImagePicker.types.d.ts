@@ -294,8 +294,9 @@ export type ImagePickerOptions = {
      * Whether to show a UI to edit the image after it is picked. On Android the user can crop and
      * rotate the image and on iOS simply crop it.
      *
-     * > Cropping multiple images is not supported - this option is mutually exclusive with `allowsMultipleSelection`.
-     * > On iOS, this option is ignored if `allowsMultipleSelection` is enabled.
+     * > - Cropping multiple images is not supported - this option is mutually exclusive with `allowsMultipleSelection`.
+     * > - On iOS, this option is ignored if `allowsMultipleSelection` is enabled.
+     * > - On iOS cropping a `.bmp` image will convert it to `.png`.
      *
      * @default false
      * @platform ios
