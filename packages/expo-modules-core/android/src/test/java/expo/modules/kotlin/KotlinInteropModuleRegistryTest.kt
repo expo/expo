@@ -53,7 +53,6 @@ private class TestModule_2 : Module() {
       arg1
     }
     View(View::class) {
-
     }
   }
 }

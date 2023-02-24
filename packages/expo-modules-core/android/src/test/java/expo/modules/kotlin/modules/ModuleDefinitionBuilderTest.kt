@@ -3,7 +3,6 @@ package expo.modules.kotlin.modules
 import com.google.common.truth.Truth
 import expo.modules.core.Promise
 import expo.modules.kotlin.events.EventName
-import io.mockk.mockk
 import org.junit.Assert
 import org.junit.Test
 

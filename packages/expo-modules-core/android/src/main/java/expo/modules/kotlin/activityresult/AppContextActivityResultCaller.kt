@@ -4,7 +4,6 @@ import android.app.Activity
 import androidx.annotation.MainThread
 import expo.modules.kotlin.AppContext
 import java.io.Serializable
-import java.lang.ref.WeakReference
 
 /**
  * This interface is directly based on [androidx.activity.result.ActivityResultCaller], but due to incompatibility
