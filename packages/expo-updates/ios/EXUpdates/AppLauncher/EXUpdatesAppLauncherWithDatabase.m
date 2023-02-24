@@ -6,6 +6,12 @@
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesAppLauncherWithDatabase ()
@@ -93,7 +99,7 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
       EXUpdatesUpdate *embeddedManifest = [EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:config database:database];
       NSMutableArray<EXUpdatesUpdate *>*filteredLaunchableUpdates = [NSMutableArray new];
       for (EXUpdatesUpdate *update in launchableUpdates) {
-        if (update.status == EXUpdatesUpdateStatusEmbedded) {
+        if (update.status == EXUpdatesUpdateStatusStatusEmbedded) {
           if (embeddedManifest && ![update.updateId isEqual:embeddedManifest.updateId]) {
             continue;
           }
@@ -141,7 +147,7 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
   dispatch_async(database.databaseQueue,^{
     NSArray<NSUUID *> *readyUpdateIds;
     NSError *dbError = nil;
-    readyUpdateIds = [database allUpdateIdsWithStatus:EXUpdatesUpdateStatusReady error:&dbError];
+    readyUpdateIds = [database allUpdateIdsWithStatus:EXUpdatesUpdateStatusStatusReady error:&dbError];
     if (dbError != nil) {
       completionBlock(dbError, @[]);
     } else {
@@ -175,7 +181,7 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
 
 - (void)_ensureAllAssetsExist
 {
-  if (_launchedUpdate.status == EXUpdatesUpdateStatusEmbedded) {
+  if (_launchedUpdate.status == EXUpdatesUpdateStatusStatusEmbedded) {
     NSAssert(_assetFilesMap == nil, @"assetFilesMap should be null for embedded updates");
     _launchAssetUrl = [[NSBundle mainBundle] URLForResource:EXUpdatesBareEmbeddedBundleFilename withExtension:EXUpdatesBareEmbeddedBundleFileType];
 
@@ -184,7 +190,7 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
       self->_completion = nil;
     });
     return;
-  } else if (_launchedUpdate.status == EXUpdatesUpdateStatusDevelopment) {
+  } else if (_launchedUpdate.status == EXUpdatesUpdateStatusStatusDevelopment) {
     dispatch_async(self->_completionQueue, ^{
       self->_completion(nil, YES);
       self->_completion = nil;

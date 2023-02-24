@@ -9,10 +9,10 @@
 #import "EXKernelUtil.h"
 #import "EXVersions.h"
 
-@import EXManifests;
-
 #import <React/RCTConvert.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
+
+@import EXManifests;
+@import EXUpdates;
 
 NSString * const kEXPublicKeyUrl = @"https://exp.host/--/manifest-public-key";
 NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";

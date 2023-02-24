@@ -3,8 +3,9 @@
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesSelectionPolicy.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
 #import <ExpoModulesCore/EXInternalModule.h>
+
+@class EXUpdatesUpdate;
 
 NS_ASSUME_NONNULL_BEGIN
 
