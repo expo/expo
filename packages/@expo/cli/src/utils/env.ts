@@ -136,6 +136,11 @@ class Env {
   get HTTP_PROXY(): string {
     return process.env.HTTP_PROXY || process.env.http_proxy || '';
   }
+
+  /** **Experimental:** Prevent Metro from using the `compilerOptions.paths` feature from `tsconfig.json` (or `jsconfig.json`) to enable import aliases. */
+  get EXPO_USE_PATH_ALIASES(): boolean {
+    return boolish('EXPO_USE_PATH_ALIASES', false);
+  }
 }
 
 export const env = new Env();

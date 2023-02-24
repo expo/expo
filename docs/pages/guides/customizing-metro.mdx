@@ -246,3 +246,9 @@ When exporting with `npx expo export`, the contents of the **public** directory 
 You can overwrite the default **index.html** in Metro web by creating a **public/index.html** file in your project.
 
 In the future, this will work universally across platforms with EAS Update hosting. Currently, the feature is web-only based on the static host used for the native app, for example, the legacy Expo service updates do not support this feature.
+
+## TypeScript
+
+> Experimental feature in SDK 48. Enable with the environment variable `EXPO_USE_PATH_ALIASES=1`.
+
+Expo's Metro config has experimental support for the `compilerOptions.paths` and `compilerOptions.baseUrl` fields in the project's `tsconfig.json` (or `jsconfig.json`) file. This enables absolute imports and aliases in the project. Learn more in the [TypeScript guide](/guides/typescript).

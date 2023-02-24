@@ -76,6 +76,67 @@ The easiest way to get started is to initialize your new project using a TypeScr
 
 When you create new source files in your project you should use the **.ts** extension or the **.tsx** if the file includes React components.
 
+## Path Aliases
+
+> Experimental feature in SDK 48. Enable with the environment variable `EXPO_USE_PATH_ALIASES=1`.
+
+Expo CLI supports [path aliases](https://www.typescriptlang.org/docs/handbook/module-resolution.html#path-mapping) in your project's **tsconfig.json** automatically. This allows you to import modules using a custom alias instead of a relative path.
+
+For example, if you have a file at `src/components/Button.tsx` you can import it using the alias `@/components/Button`:
+
+```tsx
+import Button from '@/components/Button';
+```
+
+The default alias is `@/`, but you can change this in your **tsconfig.json**:
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@/*": ["src/*"]
+    }
+  }
+}
+```
+
+- Expo CLI must be restarted to update path aliases when you change the **tsconfig.json**.
+- `jsconfig.json` can be used instead of `tsconfig.json` if you are not using TypeScript.
+- Path aliases add additional resolution time when defined.
+- Path aliases are Metro-only (including Metro web) and not supported by `@expo/webpack-config`.
+
+## Absolute Imports
+
+> Experimental feature in SDK 48. Enable with the environment variable `EXPO_USE_PATH_ALIASES=1`.
+
+Absolute imports from the project root directory are enabled automatically when the project contains a **tsconfig.json** or **jsconfig.json** file.
+
+This enables imports like:
+
+```tsx
+import Button from 'src/components/Button';
+// Imports `<project root>/src/components/Button`
+```
+
+The base directory can be modified in the **tsconfig.json** (or **jsconfig.json**) using the [`baseUrl`][baseurl] option:
+
+```json
+{
+  "compilerOptions": {
+    "baseUrl": "src"
+  }
+}
+```
+
+- [`compilerOptions.baseUrl`][baseurl] is automatically set to `.` when the `tsconfig.json` or `jsconfig.json` files exist.
+- Node modules take precedence over absolute imports, so you cannot overwrite a node module import with an absolute import.
+- Expo CLI must be restarted to update [`compilerOptions.baseUrl`][baseurl] when you change the **tsconfig.json**.
+- `jsconfig.json` can be used instead of `tsconfig.json` if you are not using TypeScript.
+- Absolute imports are Metro-only (including Metro web) and not supported by `@expo/webpack-config`.
+
+[baseurl]: https://www.typescriptlang.org/docs/handbook/module-resolution.html#base-url
+
 ## TypeScript for config files
 
 You may find that you want to use TypeScript for the config files in your project, like the **webpack.config.js**, **metro.config.js**, or **app.config.js**. These will require a little extra setup. You can utilize the [`ts-node` require hook](https://github.com/TypeStrong/ts-node#programmatic) to _import_ TypeScript files into your JS config file, meaning any import can be TypeScript, but the root file will still need to be JavaScript.
