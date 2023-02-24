@@ -24,7 +24,7 @@
 
 @implementation DevMenuVendoredModulesUtils
 
-+ (NSArray<id<RCTBridgeModule>>*)vendoredModules:(RCTBridge *)bridge addReanimated2:(BOOL)addReanimated2
++ (NSArray<id<RCTBridgeModule>>*)vendoredModules:(RCTBridge *)bridge
 {
   NSMutableArray<id<RCTBridgeModule>> *modules = [NSMutableArray new];
 #if __has_include("DevMenuRNGestureHandlerModule.h")
