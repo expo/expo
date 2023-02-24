@@ -17,6 +17,7 @@ export type Command = (argv?: string[]) => void;
 
 const commands: { [command: string]: () => Promise<Command> } = {
   // Add a new command here
+  // NOTE(EvanBacon): Ensure every bundler-related command sets `NODE_ENV` as expected for the command.
   'run:ios': () => import('../src/run/ios').then((i) => i.expoRunIos),
   'run:android': () => import('../src/run/android').then((i) => i.expoRunAndroid),
   start: () => import('../src/start').then((i) => i.expoStart),

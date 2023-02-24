@@ -2,6 +2,7 @@ import path from 'path';
 
 import { Log } from '../../log';
 import { assembleAsync, installAsync } from '../../start/platforms/android/gradle';
+import { setNodeEnv } from '../../utils/nodeEnv';
 import { getSchemesForAndroidAsync } from '../../utils/scheme';
 import { ensureNativeProjectAsync } from '../ensureNativeProject';
 import { logProjectLogsLocation } from '../hints';
@@ -12,6 +13,9 @@ import { Options, ResolvedOptions, resolveOptionsAsync } from './resolveOptions'
 const debug = require('debug')('expo:run:android');
 
 export async function runAndroidAsync(projectRoot: string, { install, ...options }: Options) {
+  // TODO: Add support for setting as production.
+  setNodeEnv('development');
+
   await ensureNativeProjectAsync(projectRoot, { platform: 'android', install });
 
   const props = await resolveOptionsAsync(projectRoot, options);
