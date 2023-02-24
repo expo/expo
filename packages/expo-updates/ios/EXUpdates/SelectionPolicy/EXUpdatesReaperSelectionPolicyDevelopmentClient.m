@@ -2,6 +2,12 @@
 
 #import <EXUpdates/EXUpdatesReaperSelectionPolicyDevelopmentClient.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 static NSUInteger const EXUpdatesReaperSelectionPolicyDefaultMaxUpdates = 10;

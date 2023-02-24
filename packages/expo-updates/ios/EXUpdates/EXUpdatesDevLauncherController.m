@@ -9,8 +9,15 @@
 #import <EXUpdates/EXUpdatesReaperSelectionPolicyDevelopmentClient.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesSelectionPolicy.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
 #import <React/RCTBridge.h>
+
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
+@import EXManifests;
 
 NS_ASSUME_NONNULL_BEGIN
 

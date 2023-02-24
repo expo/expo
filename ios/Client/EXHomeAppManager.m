@@ -15,7 +15,6 @@
 #import "EXVersions.h"
 
 #import <EXConstants/EXConstantsService.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
 
 #import <React/RCTUtils.h>
 #import <React/RCTBridge.h>
@@ -23,6 +22,7 @@
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 
 @import EXManifests;
+@import EXUpdates;
 
 NSString * const kEXHomeLaunchUrlDefaultsKey = @"EXKernelLaunchUrlDefaultsKey";
 NSString *kEXHomeBundleResourceName = @"kernel.ios";

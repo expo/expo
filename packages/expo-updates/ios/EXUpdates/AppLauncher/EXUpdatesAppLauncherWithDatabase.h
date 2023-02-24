@@ -2,6 +2,7 @@
 
 #import <EXUpdates/EXUpdatesAppLauncher.h>
 #import <EXUpdates/EXUpdatesSelectionPolicy.h>
+#import <EXUpdates/EXUpdatesDatabase.h>
 
 NS_ASSUME_NONNULL_BEGIN
 

@@ -47,6 +47,7 @@
 #import "Expo_Go-Swift.h"
 #endif // defined(EX_DETACHED)
 
+@import EXManifests;
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 

@@ -4,10 +4,12 @@
 
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
-#import <EXUpdates/EXUpdatesNewUpdate.h>
 #import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
 #import <EXUpdates/EXUpdatesSelectionPolicies.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
+
+#import "EXUpdates-Swift.h"
+
+@import EXManifests;
 
 @interface EXUpdatesSelectionPolicyFilterAwareTests : XCTestCase
 

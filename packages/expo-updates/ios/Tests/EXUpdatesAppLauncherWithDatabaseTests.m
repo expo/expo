@@ -7,6 +7,10 @@
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesSelectionPolicy.h>
 
+#import "EXUpdates-Swift.h"
+
+@import EXManifests;
+
 @interface EXUpdatesAppLauncherWithDatabaseMock : EXUpdatesAppLauncherWithDatabase
 
 + (EXUpdatesUpdate *)testUpdate;
@@ -25,7 +29,17 @@
       NSString *scopeKey = @"dummyScope";
       EXUpdatesConfig *config = [EXUpdatesConfig new];
       EXUpdatesDatabase *database = [EXUpdatesDatabase new];
-      theUpdate = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667851] runtimeVersion:runtimeVersion manifest:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:database];
+      theUpdate = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:@{}]
+                                                     config:config
+                                                   database:database
+                                                   updateId:NSUUID.UUID
+                                                   scopeKey:scopeKey
+                                                 commitTime:[NSDate dateWithTimeIntervalSince1970:1608667851]
+                                             runtimeVersion:runtimeVersion
+                                                       keep:YES
+                                                     status:EXUpdatesUpdateStatusStatusReady
+                                          isDevelopmentMode:NO
+                                         assetsFromManifest:@[]];
     }
   });
   return theUpdate;

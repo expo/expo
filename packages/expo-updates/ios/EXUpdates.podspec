@@ -67,10 +67,11 @@ Pod::Spec.new do |s|
     test_spec.dependency 'OCMockito', '~> 6.0'
 
     test_spec.pod_target_xcconfig = {
-    'GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS' => 'YES',
-    'GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS' => 'YES',
-    'DEFINES_MODULE' => 'YES',
-    'SWIFT_COMPILATION_MODE' => 'wholemodule'
-  }
+      'USER_HEADER_SEARCH_PATHS' => '"${CONFIGURATION_TEMP_DIR}/EXUpdates.build/DerivedSources"',
+      'GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS' => 'YES',
+      'GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS' => 'YES',
+      'DEFINES_MODULE' => 'YES',
+      'SWIFT_COMPILATION_MODE' => 'wholemodule'
+    }
   end
 end

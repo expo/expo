@@ -19,6 +19,8 @@
 #import "EXUpdates-Swift.h"
 #endif
 
+@import EXManifests;
+
 NS_ASSUME_NONNULL_BEGIN
 
 static NSString * const EXUpdatesAppControllerErrorDomain = @"EXUpdatesAppController";

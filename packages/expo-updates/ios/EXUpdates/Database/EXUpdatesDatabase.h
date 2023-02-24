@@ -2,7 +2,8 @@
 
 #import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesConfig.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
+
+@class EXUpdatesUpdate;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -67,8 +68,11 @@ typedef NS_ENUM(NSInteger, EXUpdatesDatabaseHashType) {
  * Updates returned from this method should not be used to launch.
  */
 - (nullable NSArray<EXUpdatesUpdate *> *)allUpdatesWithConfig:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
-- (nullable NSArray<EXUpdatesUpdate *> *)allUpdatesWithStatus:(EXUpdatesUpdateStatus)status config:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
-- (nullable NSArray<NSUUID *> *)allUpdateIdsWithStatus:(EXUpdatesUpdateStatus)status error:(NSError ** _Nullable)error;
+
+// these use long status temporarily during transition since importing enums is tough
+- (nullable NSArray<EXUpdatesUpdate *> *)allUpdatesWithStatus:(long)status config:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
+- (nullable NSArray<NSUUID *> *)allUpdateIdsWithStatus:(long)status error:(NSError ** _Nullable)error;
+
 - (nullable NSArray<EXUpdatesUpdate *> *)launchableUpdatesWithConfig:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
 - (nullable EXUpdatesUpdate *)updateWithId:(NSUUID *)updateId config:(EXUpdatesConfig *)config error:(NSError ** _Nullable)error;
 - (nullable NSArray<EXUpdatesAsset *> *)allAssetsWithError:(NSError ** _Nullable)error;

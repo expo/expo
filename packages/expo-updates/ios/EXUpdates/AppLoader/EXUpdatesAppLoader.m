@@ -6,6 +6,12 @@
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <ExpoModulesCore/EXUtilities.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesAppLoader ()
@@ -145,7 +151,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
       NSLog(@"EXUpdatesAppLoader: Loaded an update with the same ID but a different scopeKey than one we already have on disk. This is a server error. Overwriting the scopeKey and loading the existing update.");
     }
 
-    if (existingUpdate && existingUpdate.status == EXUpdatesUpdateStatusReady) {
+    if (existingUpdate && existingUpdate.status == EXUpdatesUpdateStatusStatusReady) {
       if (self->_successBlock) {
         dispatch_async(self->_completionQueue, ^{
           self->_successBlock(updateManifest);
