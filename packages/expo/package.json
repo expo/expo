@@ -9,9 +9,7 @@
     "*.fx.js",
     "*.fx.web.js"
   ],
-  "bin": {
-    "expo": "bin/cli.js"
-  },
+  "bin": "bin/cli.js",
   "files": [
     "android",
     "bin",

@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- drop `EXPO_USE_LOCAL_CLI` in favor of using `expo` for the local CLI and `expo-cli` for the global CLI.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
