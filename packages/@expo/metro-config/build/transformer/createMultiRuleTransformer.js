@@ -185,7 +185,7 @@ function app(args) {
   const result = transformFromAstSync(sourceAst, src, babelConfig);
 
   // TODO: Disable by default
-  const functionMap = (0, _generateFunctionMap().generateFunctionMap)(options.projectRoot, sourceAst, {
+  const functionMap = (0, _generateFunctionMap().generateFunctionMap)(sourceAst, {
     filename
   });
   // The result from `transformFromAstSync` can be null (if the file is ignored)
@@ -247,7 +247,7 @@ const loaders = {
     const ast = parseAst(options.projectRoot, src);
 
     // TODO: Disable by default
-    const functionMap = (0, _generateFunctionMap().generateFunctionMap)(options.projectRoot, ast, {
+    const functionMap = (0, _generateFunctionMap().generateFunctionMap)(ast, {
       filename
     });
     return {
