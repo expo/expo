@@ -27,7 +27,7 @@ export const createExpoMatcher = ({ folders }: { folders?: string[] }) =>
   createModuleMatcher({
     folders,
     // We'll work to start reducing this.
-    moduleIds: ['expo', '@expo', '@unimodules', '@use-expo'],
+    moduleIds: ['expo', '@expo', '@use-expo'],
   });
 
 // TODO: Make this list as short as possible before releasing.

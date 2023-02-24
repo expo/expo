@@ -173,7 +173,7 @@ function app(args: BabelTransformerArgs) {
   const result = transformFromAstSync(sourceAst, src, babelConfig);
 
   // TODO: Disable by default
-  const functionMap = generateFunctionMap(options.projectRoot, sourceAst, { filename });
+  const functionMap = generateFunctionMap(sourceAst, { filename });
   // The result from `transformFromAstSync` can be null (if the file is ignored)
   if (!result) {
     return { ast: null, functionMap };
@@ -232,7 +232,7 @@ export const loaders: Record<string, (args: BabelTransformerArgs) => any> = {
     const ast = parseAst(options.projectRoot, src);
 
     // TODO: Disable by default
-    const functionMap = generateFunctionMap(options.projectRoot, ast, { filename });
+    const functionMap = generateFunctionMap(ast, { filename });
 
     return {
       code: src,

@@ -9,7 +9,7 @@ beforeEach(() => {
   delete process.env.EXPO_USE_EXOTIC;
 });
 
-describe('getDefaultConfig', () => {
+describe(getDefaultConfig, () => {
   afterAll(() => {
     console.error = consoleError;
   });
@@ -48,7 +48,7 @@ describe('getDefaultConfig', () => {
   });
 });
 
-describe('loadAsync', () => {
+describe(loadAsync, () => {
   it('adds runtime options to the default configuration', async () => {
     const options = {
       maxWorkers: 10,
