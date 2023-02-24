@@ -255,10 +255,7 @@ internal struct MediaHandler {
 
   // MARK: - utils
 
-  private func replaceFileExtension(fileName: String?, targetExtension: String) -> String? {
-    guard let fileName = fileName else {
-      return nil
-    }
+  private func replaceFileExtension(fileName: String, targetExtension: String) -> String {
     if !fileName.lowercased().hasSuffix(targetExtension.lowercased()) {
       return deleteFileExtension(fileName: fileName) + targetExtension
     }
