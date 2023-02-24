@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Android property name of BarCodeScannedEvent from boundingBox to bounds to match TypeScript definitions
+
 ### 💡 Others
 
 ## 12.3.1 — 2023-02-09
