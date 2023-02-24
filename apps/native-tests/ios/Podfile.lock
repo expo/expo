@@ -15,9 +15,10 @@ PODS:
   - EXJSONUtils (0.5.1)
   - EXJSONUtils/Tests (0.5.1)
   - EXManifests (0.5.1):
-    - EXJSONUtils
+    - ExpoModulesCore
   - EXManifests/Tests (0.5.1):
-    - EXJSONUtils
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - Expo (48.0.1):
     - ExpoModulesCore
   - expo-dev-launcher (2.1.2):
@@ -68,34 +69,6 @@ PODS:
     - expo-dev-menu/Vendored
     - ExpoModulesCore
     - React-Core
-  - expo-dev-menu/Reanimated (2.1.2):
-    - DoubleConversion
-    - FBLazyVector
-    - FBReactNativeSpec
-    - glog
-    - RCT-Folly
-    - RCTRequired
-    - RCTTypeSafety
-    - React-callinvoker
-    - React-Core
-    - React-Core/DevSupport
-    - React-Core/RCTWebSocket
-    - React-CoreModules
-    - React-cxxreact
-    - React-jsi
-    - React-jsiexecutor
-    - React-jsinspector
-    - React-RCTActionSheet
-    - React-RCTAnimation
-    - React-RCTBlob
-    - React-RCTImage
-    - React-RCTLinking
-    - React-RCTNetwork
-    - React-RCTSettings
-    - React-RCTText
-    - React-RCTVibration
-    - ReactCommon/turbomodule/core
-    - Yoga
   - expo-dev-menu/SafeAreaView (2.1.2)
   - expo-dev-menu/Tests (2.1.2):
     - ExpoModulesTestCore
@@ -107,7 +80,6 @@ PODS:
     - React-CoreModules
   - expo-dev-menu/Vendored (2.1.2):
     - expo-dev-menu/GestureHandler
-    - expo-dev-menu/Reanimated
     - expo-dev-menu/SafeAreaView
   - ExpoClipboard (4.1.1):
     - ExpoModulesCore
@@ -133,6 +105,7 @@ PODS:
   - EXUpdates (0.16.1):
     - ASN1Decoder (~> 1.8)
     - EASClient
+    - EXJSONUtils
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
@@ -141,6 +114,7 @@ PODS:
   - EXUpdates/Tests (0.16.1):
     - ASN1Decoder (~> 1.8)
     - EASClient
+    - EXJSONUtils
     - EXManifests
     - ExpoModulesCore
     - ExpoModulesTestCore
@@ -669,17 +643,17 @@ SPEC CHECKSUMS:
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: 950674e1098ebc09c4c2cf064a61e42e84d9d4c6
   EXFileSystem: a736b6854370a36e4daee79b1f2b5bbc9df18bf4
-  EXJSONUtils: 48b1e764ac35160e6f54d21ab60d7d9501f3e473
-  EXManifests: 8afcd1cb32f7a098771fbf4b2f19bb1fb937bb47
+  EXJSONUtils: de3ed1d52896922dab84c7c475b9165a2e786a56
+  EXManifests: 959d55f89999c7240f3c4bb558a4f20865ee6036
   Expo: 79deb55f33fab1b232232868a74713772943238d
   expo-dev-launcher: 0eaee0ae43104252e3994f6d7a4810c3aad62fc0
-  expo-dev-menu: 495fe8f89937ef2b7d5b15e521ea19b5d6d86c7c
+  expo-dev-menu: b1f53d0ec3d9f330b53a1c701ea3257aad5ce28a
   expo-dev-menu-interface: 6c82ae323c4b8724dead4763ce3ff24a2108bdb1
   ExpoClipboard: 8a36a8376ab93df9050c14577e9e0fcb805e9114
   ExpoModulesCore: 79392ab654019ea3aadeae308919c3d9dd97879c
   ExpoModulesTestCore: 01ed5a2ba39b8689c2cc3fd1112d7e051ecccd87
   EXStructuredHeaders: b1a48d732562e2cc81f11771bcfd29534f5d9254
-  EXUpdates: 2802c2c4df3f06c24a72439465605fb6bba8783b
+  EXUpdates: df8946a4ad8a56d5906bdfe772e9e0fa6fec8a0b
   EXUpdatesInterface: dd699d1930e28639dcbd70a402caea98e86364ca
   FBLazyVector: 60195509584153283780abdac5569feffb8f08cc
   FBReactNativeSpec: 9647dc97b27b3029de006e48a6cc264f0f88c4a4
