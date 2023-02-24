@@ -13,7 +13,6 @@ import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.shell.MainReactPackage
 import devmenu.com.swmansion.gesturehandler.react.RNGestureHandlerPackage
-import devmenu.com.swmansion.reanimated.ReanimatedPackage
 import devmenu.com.th3rdwave.safeareacontext.SafeAreaContextPackage
 import expo.modules.devmenu.react.DevMenuReactInternalSettings
 import expo.modules.devmenu.react.createNonDebuggableJavaScriptExecutorFactory
@@ -25,15 +24,12 @@ import java.io.InputStreamReader
  * Class that represents react host used by dev menu.
  */
 class DevMenuHost(application: Application) : ReactNativeHost(application) {
-  private lateinit var reaPackage: ReanimatedPackage
 
   override fun getPackages(): List<ReactPackage> {
-    reaPackage = ReanimatedPackage()
     val packages = mutableListOf(
       MainReactPackage(null),
       DevMenuPackage(),
       RNGestureHandlerPackage(),
-      reaPackage,
       SafeAreaContextPackage()
     )
 
@@ -62,7 +58,6 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
 
   override fun createReactInstanceManager(): ReactInstanceManager {
     val reactInstanceManager = super.createReactInstanceManager()
-    reaPackage.instanceManager = reactInstanceManager
 
     if (useDeveloperSupport) {
       // To use a different packager url, we need to replace internal RN objects.

@@ -44,7 +44,7 @@ PODS:
   - EXLocation (15.1.1):
     - ExpoModulesCore
   - EXManifests (0.5.1):
-    - EXJSONUtils
+    - ExpoModulesCore
   - EXMediaLibrary (15.2.1):
     - ExpoModulesCore
     - React-Core
@@ -93,34 +93,6 @@ PODS:
     - expo-dev-menu/Vendored
     - ExpoModulesCore
     - React-Core
-  - expo-dev-menu/Reanimated (2.1.2):
-    - DoubleConversion
-    - FBLazyVector
-    - FBReactNativeSpec
-    - glog
-    - RCT-Folly
-    - RCTRequired
-    - RCTTypeSafety
-    - React-callinvoker
-    - React-Core
-    - React-Core/DevSupport
-    - React-Core/RCTWebSocket
-    - React-CoreModules
-    - React-cxxreact
-    - React-jsi
-    - React-jsiexecutor
-    - React-jsinspector
-    - React-RCTActionSheet
-    - React-RCTAnimation
-    - React-RCTBlob
-    - React-RCTImage
-    - React-RCTLinking
-    - React-RCTNetwork
-    - React-RCTSettings
-    - React-RCTText
-    - React-RCTVibration
-    - ReactCommon/turbomodule/core
-    - Yoga
   - expo-dev-menu/SafeAreaView (2.1.2)
   - expo-dev-menu/Tests (2.1.2):
     - ExpoModulesTestCore
@@ -132,7 +104,6 @@ PODS:
     - React-CoreModules
   - expo-dev-menu/Vendored (2.1.2):
     - expo-dev-menu/GestureHandler
-    - expo-dev-menu/Reanimated
     - expo-dev-menu/SafeAreaView
   - ExpoAppleAuthentication (6.0.1):
     - ExpoModulesCore
@@ -1227,16 +1198,16 @@ SPEC CHECKSUMS:
   EXFont: 6ea3800df746be7233208d80fe379b8ed74f4272
   EXImageLoader: fd053169a8ee932dd83bf1fe5487a50c26d27c2b
   EXInAppPurchases: 1782de3b0a28737d713d032696486973e69f00e1
-  EXJSONUtils: 48b1e764ac35160e6f54d21ab60d7d9501f3e473
+  EXJSONUtils: de3ed1d52896922dab84c7c475b9165a2e786a56
   EXLocation: 74a0ba446f54fd585ea6cfcd19a25644bf22c30d
-  EXManifests: 8afcd1cb32f7a098771fbf4b2f19bb1fb937bb47
+  EXManifests: 959d55f89999c7240f3c4bb558a4f20865ee6036
   EXMediaLibrary: 945e03614e6b90e70d15be886b9aebedc9d4fade
   EXNotifications: dd628737af60fc8cc62dccebacd326b0fbbc0dcb
   EXPermissions: 2291c6736a823b4c680d5bf8e12d3c1c5d11da35
   Expo: 79deb55f33fab1b232232868a74713772943238d
   expo-dev-client: fb5994b219d6df2a39d73f45b40a4ad2f29d47c2
   expo-dev-launcher: 0eaee0ae43104252e3994f6d7a4810c3aad62fc0
-  expo-dev-menu: 495fe8f89937ef2b7d5b15e521ea19b5d6d86c7c
+  expo-dev-menu: b1f53d0ec3d9f330b53a1c701ea3257aad5ce28a
   expo-dev-menu-interface: 6c82ae323c4b8724dead4763ce3ff24a2108bdb1
   ExpoAppleAuthentication: 7bd5e4150d59e8df37aa80b425850ae88adf9e65
   ExpoBattery: 678d2b710a8fc398c30258c4dc22c12340ee5411

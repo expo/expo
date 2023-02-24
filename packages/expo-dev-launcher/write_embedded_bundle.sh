@@ -22,6 +22,3 @@ EXPO_BUNDLE_APP=1 npx react-native bundle \
     --bundle-output android/src/debug/assets/expo_dev_launcher_android.bundle \
     --assets-dest android/src/debug/res \
     --reset-cache
-
-
-

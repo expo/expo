@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface DevMenuVendoredModulesUtils : NSObject
 
-+ (NSArray<id<RCTBridgeModule>> *)vendoredModules:(RCTBridge *)bridge addReanimated2:(BOOL)addReanimated2;
++ (NSArray<id<RCTBridgeModule>> *)vendoredModules:(RCTBridge *)bridge;
 
 @end
 
