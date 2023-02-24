@@ -17,7 +17,7 @@
     "expo-asset": "~8.6.0",
     "expo-av": "~12.0.0",
     "expo-background-fetch": "~10.3.0",
-    "expo-barcode-scanner": "~11.4.0",
+    "expo-barcode-scanner": "~11.5.0",
     "expo-brightness": "~10.3.0",
     "expo-calendar": "~10.3.0",
     "expo-camera": "~12.5.0",

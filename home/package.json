@@ -33,7 +33,7 @@
     "es6-error": "^4.1.1",
     "expo": "~46.0.0-alpha.0",
     "expo-asset": "~8.6.0",
-    "expo-barcode-scanner": "~11.4.0",
+    "expo-barcode-scanner": "~11.5.0",
     "expo-blur": "~11.2.0",
     "expo-camera": "~12.5.0",
     "expo-constants": "~13.2.0",

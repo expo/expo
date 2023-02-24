@@ -67,7 +67,7 @@
     "expo-auth-session": "~3.7.0",
     "expo-av": "~12.0.0",
     "expo-background-fetch": "~10.3.0",
-    "expo-barcode-scanner": "~11.4.0",
+    "expo-barcode-scanner": "~11.5.0",
     "expo-battery": "~6.3.0",
     "expo-blur": "~11.2.0",
     "expo-brightness": "~10.3.0",
