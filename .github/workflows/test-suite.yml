@@ -45,7 +45,7 @@ jobs:
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
       - name: 🔧 Install Expo CLI
-        run: yarn global add expo-cli
+        run: yarn global add expo-cli@6.1.0
       - name: 🧪 Run Web tests
         run: yarn test:web
         working-directory: apps/bare-expo
