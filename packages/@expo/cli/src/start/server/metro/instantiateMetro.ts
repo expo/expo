@@ -1,10 +1,10 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import { MetroDevServerOptions } from '@expo/dev-server';
+import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import http from 'http';
 import Metro from 'metro';
 import { Terminal } from 'metro-core';
-import type { LoadOptions } from '@expo/metro-config';
 
 import { Log } from '../../../log';
 import { getMetroProperties } from '../../../utils/analytics/getMetroProperties';
