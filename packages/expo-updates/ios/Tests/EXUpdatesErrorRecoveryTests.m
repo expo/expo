@@ -7,6 +7,8 @@
 #import <OCHamcrest/OCHamcrest.h>
 #import <OCMockito/OCMockito.h>
 
+#import "EXUpdates-Swift.h"
+
 @interface EXUpdatesErrorRecoveryTests : XCTestCase
 
 @property (nonatomic, strong) EXUpdatesErrorRecovery *errorRecovery;

@@ -5,7 +5,10 @@
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesReaperSelectionPolicyDevelopmentClient.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
+
+#import "EXUpdates-Swift.h"
+
+@import EXManifests;
 
 @interface EXUpdatesReaperSelectionPolicyDevelopmentClientTests : XCTestCase
 
@@ -24,16 +27,65 @@
 {
   [super setUp];
   NSString *runtimeVersion = @"1.0";
-  EXUpdatesConfig *config = [EXUpdatesConfig new];
   EXUpdatesDatabase *database = [EXUpdatesDatabase new];
 
   // test updates with different scopes to ensure this policy ignores scopes
-  _update1 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:@"scope1" commitTime:[NSDate dateWithTimeIntervalSince1970:1608667851] runtimeVersion:runtimeVersion manifest:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:database];
-  _update2 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:@"scope2" commitTime:[NSDate dateWithTimeIntervalSince1970:1608667852] runtimeVersion:runtimeVersion manifest:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:database];
-  _update3 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:@"scope3" commitTime:[NSDate dateWithTimeIntervalSince1970:1608667853] runtimeVersion:runtimeVersion manifest:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:database];
-  _update4 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:@"scope4" commitTime:[NSDate dateWithTimeIntervalSince1970:1608667854] runtimeVersion:runtimeVersion manifest:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:database];
-  _update5 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:@"scope5" commitTime:[NSDate dateWithTimeIntervalSince1970:1608667855] runtimeVersion:runtimeVersion manifest:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:database];
-
+  _update1 = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:@{}]
+                                                config:[EXUpdatesConfig configWithDictionary:@{ EXUpdatesConfigScopeKeyKey: @"scope1" }]
+                                              database:database
+                                              updateId:NSUUID.UUID
+                                              scopeKey:@"scope1"
+                                            commitTime:[NSDate dateWithTimeIntervalSince1970:1608667851]
+                                        runtimeVersion:runtimeVersion
+                                                  keep:YES
+                                                status:EXUpdatesUpdateStatusStatusReady
+                                     isDevelopmentMode:NO
+                                    assetsFromManifest:@[]];
+  _update2 = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:@{}]
+                                                config:[EXUpdatesConfig configWithDictionary:@{ EXUpdatesConfigScopeKeyKey: @"scope2" }]
+                                              database:database
+                                              updateId:NSUUID.UUID
+                                              scopeKey:@"scope2"
+                                            commitTime:[NSDate dateWithTimeIntervalSince1970:1608667852]
+                                        runtimeVersion:runtimeVersion
+                                                  keep:YES
+                                                status:EXUpdatesUpdateStatusStatusReady
+                                     isDevelopmentMode:NO
+                                    assetsFromManifest:@[]];
+  _update3 = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:@{}]
+                                                config:[EXUpdatesConfig configWithDictionary:@{ EXUpdatesConfigScopeKeyKey: @"scope3" }]
+                                              database:database
+                                              updateId:NSUUID.UUID
+                                              scopeKey:@"scope3"
+                                            commitTime:[NSDate dateWithTimeIntervalSince1970:1608667853]
+                                        runtimeVersion:runtimeVersion
+                                                  keep:YES
+                                                status:EXUpdatesUpdateStatusStatusReady
+                                     isDevelopmentMode:NO
+                                    assetsFromManifest:@[]];
+  _update4 = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:@{}]
+                                                config:[EXUpdatesConfig configWithDictionary:@{ EXUpdatesConfigScopeKeyKey: @"scope4" }]
+                                              database:database
+                                              updateId:NSUUID.UUID
+                                              scopeKey:@"scope4"
+                                            commitTime:[NSDate dateWithTimeIntervalSince1970:1608667854]
+                                        runtimeVersion:runtimeVersion
+                                                  keep:YES
+                                                status:EXUpdatesUpdateStatusStatusReady
+                                     isDevelopmentMode:NO
+                                    assetsFromManifest:@[]];
+  _update5 = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:@{}]
+                                                config:[EXUpdatesConfig configWithDictionary:@{ EXUpdatesConfigScopeKeyKey: @"scope5" }]
+                                              database:database
+                                              updateId:NSUUID.UUID
+                                              scopeKey:@"scope5"
+                                            commitTime:[NSDate dateWithTimeIntervalSince1970:1608667855]
+                                        runtimeVersion:runtimeVersion
+                                                  keep:YES
+                                                status:EXUpdatesUpdateStatusStatusReady
+                                     isDevelopmentMode:NO
+                                    assetsFromManifest:@[]];
+  
   // for readability/writability, test with a policy that keeps only 3 updates;
   // the actual functionality is independent of the number
   _selectionPolicy = [[EXUpdatesReaperSelectionPolicyDevelopmentClient alloc] initWithMaxUpdatesToKeep:3];

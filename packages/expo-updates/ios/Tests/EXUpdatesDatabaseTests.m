@@ -5,7 +5,8 @@
 #import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase+Tests.h>
-#import <EXUpdates/EXUpdatesNewUpdate.h>
+
+#import "EXUpdates-Swift.h"
 
 @import EXManifests;
 

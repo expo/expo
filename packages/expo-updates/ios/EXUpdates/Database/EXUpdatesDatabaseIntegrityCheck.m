@@ -4,6 +4,12 @@
 #import <EXUpdates/EXUpdatesDatabaseIntegrityCheck.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 @implementation EXUpdatesDatabaseIntegrityCheck
@@ -38,7 +44,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
   }
 
-  NSArray<EXUpdatesUpdate *> *updatesWithEmbeddedStatus = [database allUpdatesWithStatus:EXUpdatesUpdateStatusEmbedded config:config error:&err];
+  NSArray<EXUpdatesUpdate *> *updatesWithEmbeddedStatus = [database allUpdatesWithStatus:EXUpdatesUpdateStatusStatusEmbedded config:config error:&err];
   if (err) {
     *error = err;
     return NO;

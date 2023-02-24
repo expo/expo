@@ -2,8 +2,9 @@
 
 #import <EXUpdates/EXUpdatesAppLauncher.h>
 #import <EXUpdates/EXUpdatesConfig.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
 #import <Foundation/Foundation.h>
+
+@class EXUpdatesUpdate;
 
 NS_ASSUME_NONNULL_BEGIN
 

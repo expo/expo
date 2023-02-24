@@ -12,7 +12,7 @@ import UIKit
  error handling at every callsite. When all the code is swift, we might be able to use these exceptions.
  */
 
-extension Dictionary where Key == String {
+public extension Dictionary where Key == String {
   func optionalValue<T>(forKey: String) -> T? {
     guard let value = self[forKey] else {
       return nil
@@ -56,7 +56,7 @@ extension Dictionary where Key == String {
   }
 }
 
-extension Optional {
+public extension Optional {
   func `let`<U>(_ transform: (_ it: Wrapped) throws -> U?) rethrows -> U? {
     if let x = self {
       return try transform(x)

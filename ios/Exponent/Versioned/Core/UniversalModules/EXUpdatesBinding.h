@@ -7,7 +7,8 @@
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesSelectionPolicy.h>
 #import <EXUpdates/EXUpdatesService.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
+
+@class EXUpdatesUpdate;
 
 NS_ASSUME_NONNULL_BEGIN
 

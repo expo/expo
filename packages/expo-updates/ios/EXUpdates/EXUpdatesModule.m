@@ -6,7 +6,6 @@
 #import <EXUpdates/EXUpdatesModule.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesService.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 
 #if __has_include(<EXUpdates/EXUpdates-Swift.h>)
@@ -14,6 +13,8 @@
 #else
 #import "EXUpdates-Swift.h"
 #endif
+
+@import EXManifests;
 
 @interface EXUpdatesModule ()
 
