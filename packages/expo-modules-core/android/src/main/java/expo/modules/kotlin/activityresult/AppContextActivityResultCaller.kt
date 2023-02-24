@@ -1,7 +1,10 @@
 package expo.modules.kotlin.activityresult
 
+import android.app.Activity
 import androidx.annotation.MainThread
+import expo.modules.kotlin.AppContext
 import java.io.Serializable
+import java.lang.ref.WeakReference
 
 /**
  * This interface is directly based on [androidx.activity.result.ActivityResultCaller], but due to incompatibility
@@ -22,4 +25,22 @@ interface AppContextActivityResultCaller {
     contract: AppContextActivityResultContract<I, O>,
     fallbackCallback: AppContextActivityResultFallbackCallback<I, O>,
   ): AppContextActivityResultLauncher<I, O>
+}
+
+internal class DefaultAppContextActivityResultCaller(
+  private val activityResultsManager: ActivityResultsManager
+) : AppContextActivityResultCaller {
+
+  /**
+   * For the time being [fallbackCallback] is not working.
+   * There are some problems with saving and restoring the state of [activityResultsManager]
+   * connected with [Activity]'s lifecycle and [AppContext] lifespan. So far, we've failed with identifying
+   * what parts of the application outlives the Activity destruction (especially [AppContext] and other [Bridge]-related parts).
+   */
+  override suspend fun <I : Serializable, O> registerForActivityResult(
+    contract: AppContextActivityResultContract<I, O>,
+    fallbackCallback: AppContextActivityResultFallbackCallback<I, O>
+  ): AppContextActivityResultLauncher<I, O> {
+    return activityResultsManager.registerForActivityResult(contract, fallbackCallback)
+  }
 }

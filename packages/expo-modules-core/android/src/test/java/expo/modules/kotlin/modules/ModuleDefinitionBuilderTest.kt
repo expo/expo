@@ -61,9 +61,7 @@ class ModuleDefinitionBuilderTest {
 
     val moduleDefinition = unboundModuleDefinition {
       Name(moduleName)
-      ViewManager {
-        View { mockk() }
-      }
+      View(android.view.View::class) { }
     }
 
     Truth.assertThat(moduleDefinition.name).isEqualTo(moduleName)
