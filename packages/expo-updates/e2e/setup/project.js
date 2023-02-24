@@ -100,7 +100,7 @@ async function packExpoDependency(repoRoot, projectRoot, destPath, dependencyNam
   };
 }
 
-async function copyCommonFixturesToProject(projectRoot, appJsFileName) {
+async function copyCommonFixturesToProject(projectRoot, appJsFileName, repoRoot) {
   // copy App.tsx from test fixtures
   const appJsSourcePath = path.resolve(dirName, '..', 'fixtures', appJsFileName);
   const appJsDestinationPath = path.resolve(projectRoot, 'App.tsx');
@@ -138,6 +138,9 @@ async function copyCommonFixturesToProject(projectRoot, appJsFileName) {
 
   // remove project files archive
   await fs.rm(projectFilesTarballPath);
+
+  // copy .prettierrc
+  await fs.copyFile(path.resolve(repoRoot, '.prettierrc'), path.join(projectRoot, '.prettierrc'));
 }
 
 /**
@@ -189,6 +192,7 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
         'form-data': '^4.0.0',
         jest: '^29.3.1',
         'jest-circus': '^29.3.1',
+        prettier: '^2.8.1',
         'ts-jest': '^29.0.5',
         typescript: '^4.6.3',
       }
@@ -509,7 +513,7 @@ async function createTestUpdateBundles(projectRoot, localCliBin, notifyStrings) 
   const testUpdateJson = {};
   for (const notifyString of ['test', ...notifyStrings]) {
     console.log(`Creating bundle for string '${notifyString}'...`);
-    const modifiedAppJs = originalAppJs.replace('/notify/test', `/notify/${notifyString}`);
+    const modifiedAppJs = originalAppJs.replace(/\/notify\/test/g, `/notify/${notifyString}`);
     await fs.rm(appJsPath);
     await fs.writeFile(appJsPath, modifiedAppJs, 'utf-8');
     await createUpdateBundleAsync(projectRoot, localCliBin);
@@ -539,8 +543,8 @@ async function createTestUpdateBundles(projectRoot, localCliBin, notifyStrings) 
   console.log('Done creating test bundles');
 }
 
-async function setupBasicAppAsync(projectRoot, localCliBin) {
-  await copyCommonFixturesToProject(projectRoot, 'App.tsx');
+async function setupBasicAppAsync(projectRoot, localCliBin, repoRoot) {
+  await copyCommonFixturesToProject(projectRoot, 'App.tsx', repoRoot);
 
   // export update for test server to host
   await createUpdateBundleAsync(projectRoot, localCliBin);
@@ -549,6 +553,7 @@ async function setupBasicAppAsync(projectRoot, localCliBin) {
   await createTestUpdateBundles(projectRoot, localCliBin, [
     'test-update-1',
     'test-update-2',
+    'test-update-3',
     'test-update-invalid-hash',
     'test-update-older',
   ]);
@@ -563,8 +568,8 @@ async function setupBasicAppAsync(projectRoot, localCliBin) {
   );
 }
 
-async function setupAssetsAppAsync(projectRoot, localCliBin) {
-  await copyCommonFixturesToProject(projectRoot, 'App-assets.tsx');
+async function setupAssetsAppAsync(projectRoot, localCliBin, repoRoot) {
+  await copyCommonFixturesToProject(projectRoot, 'App-assets.tsx', repoRoot);
 
   // copy png assets and install extra package
   await fs.copyFile(

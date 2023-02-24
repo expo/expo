@@ -25,8 +25,15 @@ function findBundlePath(
   const testUpdateBundlesPath = path.join(projectRoot, 'test-update-bundles');
   const testUpdateBundlesJsonPath = path.join(testUpdateBundlesPath, 'test-updates.json');
   const testUpdateBundlesJson = require(testUpdateBundlesJsonPath);
-  const bundleUrl = testUpdateBundlesJson[notifyString][platform];
-  return path.join(testUpdateBundlesPath, bundleUrl);
+  const bundleJson = testUpdateBundlesJson[notifyString];
+  if (bundleJson) {
+    const bundleUrl = testUpdateBundlesJson[notifyString][platform];
+    return path.join(testUpdateBundlesPath, bundleUrl);
+  } else {
+    throw new Error(
+      `There is no bundle for notifyString = ${notifyString}. Please add this to the strings used to generate test bundles in 'project.js' (setupBasicAppAsync() or setupAssetsAppAsync())'`
+    );
+  }
 }
 
 /**

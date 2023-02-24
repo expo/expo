@@ -34,10 +34,7 @@ async function readLogs() {
   }
 }
 
-async function fetchWithRetry(
-  url: RequestInfo,
-  body: string | undefined = undefined,
-) {
+async function fetchWithRetry(url: RequestInfo, body: string | undefined = undefined) {
   for (let i = 0; i < RETRY_COUNT; i++) {
     try {
       const response = await fetch(url, {
@@ -64,8 +61,7 @@ async function fetchWithRetry(
 
 async function readExpoInternal() {
   try {
-    const numFiles =
-      await NativeModulesProxy.ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
+    const numFiles = await NativeModulesProxy.ExpoUpdatesE2ETest.readInternalAssetsFolderAsync();
     await fetchWithRetry(
       `http://${HOSTNAME}:${PORT}/post`,
       JSON.stringify({
@@ -73,7 +69,7 @@ async function readExpoInternal() {
         success: true,
         updateId: Updates.updateId,
         numFiles,
-      }),
+      })
     );
   } catch (e: any) {
     await fetchWithRetry(
@@ -83,7 +79,7 @@ async function readExpoInternal() {
         success: false,
         updateId: Updates.updateId,
         error: e.message,
-      }),
+      })
     );
   }
 }
@@ -103,7 +99,7 @@ async function clearExpoInternal() {
         updateId: Updates.updateId,
         numFilesBefore,
         numFilesAfter,
-      }),
+      })
     );
   } catch (e: any) {
     await fetchWithRetry(
@@ -113,7 +109,7 @@ async function clearExpoInternal() {
         success: false,
         updateId: Updates.updateId,
         error: e.message,
-      }),
+      })
     );
   }
 }
@@ -121,9 +117,7 @@ async function clearExpoInternal() {
 export default function App() {
   useEffect(() => {
     const fetchResponseAsync = async () => {
-      const response = await fetchWithRetry(
-        `http://${HOSTNAME}:${PORT}/notify/test`,
-      );
+      const response = await fetchWithRetry(`http://${HOSTNAME}:${PORT}/notify/test`);
       const responseObj = (await response?.json()) || null;
       if (responseObj && responseObj.command) {
         switch (responseObj.command) {
@@ -145,6 +139,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <Text>Open up App.js to start working on your app!</Text>
+      <Text>Notify resource = /notify/test</Text>
       <StatusBar style="auto" />
     </View>
   );

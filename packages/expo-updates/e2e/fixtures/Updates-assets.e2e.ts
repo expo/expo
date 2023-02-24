@@ -189,10 +189,6 @@ describe('Asset deletion recovery', () => {
      * update runs, then clear assets from internal storage. When we relaunch the app,
      * DatabaseLauncher should re-download the missing assets and run the update as normal.
      */
-    if (platform === 'android') {
-      console.warn('Android is currently failing this test -- skipping');
-      return;
-    }
     jest.setTimeout(300000 * TIMEOUT_BIAS);
 
     /**
