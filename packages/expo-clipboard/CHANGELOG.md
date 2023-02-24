@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed crash in clipboard listener on Android SDK <26
+
 ### 💡 Others
 
 ## 4.1.1 — 2023-02-09
