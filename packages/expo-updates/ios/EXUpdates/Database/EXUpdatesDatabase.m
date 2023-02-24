@@ -102,7 +102,7 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
                           asset.url ? asset.url.absoluteString : [NSNull null],
                           asset.headers ?: [NSNull null],
                           asset.extraRequestHeaders ?: [NSNull null],
-                          asset.type,
+                          asset.type ?: [NSNull null],
                           asset.metadata ?: [NSNull null],
                           asset.downloadTime,
                           asset.filename,
@@ -182,12 +182,12 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
                       asset.key ?: [NSNull null],
                       asset.headers ?: [NSNull null],
                       asset.extraRequestHeaders ?: [NSNull null],
-                      asset.type,
+                      asset.type ?: [NSNull null],
                       asset.metadata ?: [NSNull null],
                       asset.downloadTime,
                       asset.filename,
                       asset.contentHash,
-                      asset.expectedHash,
+                      asset.expectedHash ?: [NSNull null],
                       asset.url ? asset.url.absoluteString : [NSNull null]
                       ]
               error:error];

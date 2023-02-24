@@ -28,5 +28,5 @@ const runtimeVersion = '1.0.0';
 
   await initAsync(projectRoot, { repoRoot, runtimeVersion, localCliBin });
 
-  await setupBasicAppAsync(projectRoot, localCliBin);
+  await setupBasicAppAsync(projectRoot, localCliBin, repoRoot);
 })();

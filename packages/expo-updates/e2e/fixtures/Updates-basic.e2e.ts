@@ -327,7 +327,7 @@ describe('', () => {
     }
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle1.js';
-    const newNotifyString = 'test-update-1';
+    const newNotifyString = 'test-update-3';
     const hash = await Update.copyBundleToStaticFolder(
       projectRoot,
       bundleFilename,
@@ -337,7 +337,7 @@ describe('', () => {
     const manifest = Update.getUpdateManifestForBundleFilename(
       new Date(),
       hash,
-      'test-update-1-key',
+      'test-update-3-key',
       bundleFilename,
       []
     );
@@ -371,19 +371,14 @@ describe('', () => {
     await device.terminateApp();
     await device.launchApp();
     const thirdRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
+    await Server.waitForRequest(10000 * TIMEOUT_BIAS);
 
-    // give the app time to load the rollback in the background
-    await setTimeout(2000 * TIMEOUT_BIAS);
-
-    // restart the app so it will launch the rollback
+    // Restart the app so it will launch the rollback
     await device.terminateApp();
     await device.launchApp();
     const fourthRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
     const rolledBackMessage = await Server.waitForRequest(10000 * TIMEOUT_BIAS);
-    //expect(rolledBackMessage).toBe('test');
-    console.warn(
-      `Rollback E2E not working until rolledBackMessage === 'test'. Actual value: '${rolledBackMessage}'`
-    );
+    expect(rolledBackMessage).toBe('test');
     expect(secondRequest.headers['expo-embedded-update-id']).toBeDefined();
     expect(secondRequest.headers['expo-embedded-update-id']).toEqual(
       firstRequest.headers['expo-embedded-update-id']

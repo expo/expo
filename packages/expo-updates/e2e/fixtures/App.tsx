@@ -34,9 +34,7 @@ export default function App() {
     const fetchResponseAsync = async () => {
       for (let i = 0; i < RETRY_COUNT; i++) {
         try {
-          const response = await fetch(
-            `http://${HOSTNAME}:${PORT}/notify/test`,
-          );
+          const response = await fetch(`http://${HOSTNAME}:${PORT}/notify/test`);
           if (response.status === 200) {
             break;
           }
@@ -48,14 +46,13 @@ export default function App() {
       }
       await readLogs();
     };
-    fetchResponseAsync().catch((e) =>
-      console.warn(`Error in fetching response: ${e.message}`),
-    );
+    fetchResponseAsync().catch((e) => console.warn(`Error in fetching response: ${e.message}`));
   }, []);
 
   return (
     <View style={styles.container}>
       <Text>Open up App.js to start working on your app!</Text>
+      <Text>Notify resource = /notify/test</Text>
       <StatusBar style="auto" />
     </View>
   );
