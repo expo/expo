@@ -58,6 +58,7 @@ Pod::Spec.new do |s|
     }
   end
 
+  s.exclude_files = 'Tests/'
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'Tests/*.{h,m,swift}'
     test_spec.resources = 'Tests/Support/**/*'
