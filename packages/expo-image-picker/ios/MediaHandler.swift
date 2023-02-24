@@ -85,7 +85,11 @@ internal struct MediaHandler {
       // as calling this already requires media library permission, we can access it here
       // if user gave limited permissions, in the worst case this will be null
       let asset = mediaInfo[.phAsset] as? PHAsset
-      let fileName = asset?.value(forKey: "filename") as? String
+      var fileName = asset?.value(forKey: "filename") as? String
+      // Extension will change to png when editing BMP files, reflect that change in fileName
+      if let unwrappedName = fileName {
+        fileName = replaceFileExtension(fileName: unwrappedName, targetExtension: fileExtension.lowercased())
+      }
       let fileSize = getFileSize(from: targetUrl)
 
       let base64 = try ImageUtils.optionallyReadBase64From(imageData: imageData,
@@ -251,6 +255,22 @@ internal struct MediaHandler {
 
   // MARK: - utils
 
+  private func replaceFileExtension(fileName: String, targetExtension: String) -> String {
+    if !fileName.lowercased().hasSuffix(targetExtension.lowercased()) {
+      return deleteFileExtension(fileName: fileName) + targetExtension
+    }
+    return fileName
+  }
+
+  private func deleteFileExtension(fileName: String) -> String {
+    var components = fileName.components(separatedBy: ".")
+    guard components.count > 1 else {
+      return fileName
+    }
+    components.removeLast()
+    return components.joined(separator: ".")
+  }
+
   private func generateUrl(withFileExtension: String) throws -> URL {
     guard let fileSystem = self.fileSystem else {
       throw FileSystemModuleNotFoundException()
@@ -338,7 +358,7 @@ private struct ImageUtils {
       return (data, ".png")
 
     case .some(let s) where s.contains("ext=BMP"):
-      if options.allowsEditing || options.quality != nil {
+      if options.allowsEditing {
         // switch to png if editing
         let data = image.pngData()
         return (data, ".png")
@@ -375,6 +395,13 @@ private struct ImageUtils {
     let preferredFormat = itemProvider.registeredTypeIdentifiers.first
 
     switch preferredFormat {
+    case UTType.bmp.identifier:
+      if options.allowsEditing {
+        // switch to png if editing
+        let data = image.pngData()
+        return (data, ".png")
+      }
+      return (rawData, ".bmp")
     case UTType.png.identifier:
       let data = image.pngData()
       return (data, ".png")
