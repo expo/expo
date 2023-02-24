@@ -7,7 +7,9 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
 - Fix images unexpectedly being converted to `.png` when opening `.bmp` files and selecting any quality in `ImagePickerOptions`. ([#21361](https://github.com/expo/expo/pull/21361) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 ## 14.1.1 — 2023-02-09
