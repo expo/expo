@@ -24,11 +24,7 @@
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesErrorRecovery.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
-#import <EXUpdates/EXUpdatesLauncherSelectionPolicyFilterAware.h>
-#import <EXUpdates/EXUpdatesLoaderSelectionPolicyFilterAware.h>
 #import <EXUpdates/EXUpdatesReaper.h>
-#import <EXUpdates/EXUpdatesReaperSelectionPolicyDevelopmentClient.h>
-#import <EXUpdates/EXUpdatesSelectionPolicy.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <React/RCTUtils.h>
 #import <sys/utsname.h>

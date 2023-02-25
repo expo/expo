@@ -4,7 +4,6 @@
 #import <EXUpdates/EXUpdatesAppLoaderTask.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
-#import <EXUpdates/EXUpdatesSelectionPolicy.h>
 #import <EXUpdates/EXUpdatesService.h>
 #import <React/RCTBridge.h>
 
@@ -12,6 +11,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class EXUpdatesConfig;
 @class EXUpdatesAppController;
+@class EXUpdatesSelectionPolicy;
 
 @protocol EXUpdatesAppControllerDelegate <NSObject>
 
