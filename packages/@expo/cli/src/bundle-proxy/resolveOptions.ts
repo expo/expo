@@ -42,13 +42,22 @@ export function resolveOptions(
 
   const minify = parsed.args['--minify'] ?? true;
   isBool(minify);
+
+  const entryFile = args['--entry-file'];
+  if (!entryFile) {
+    throw new CommandError(`Missing required argument: --entry-file`);
+  }
+  const bundleOutput = args['--bundle-output'];
+  if (!bundleOutput) {
+    throw new CommandError(`Missing required argument: --bundle-output`);
+  }
   return {
-    entryFile: args['--entry-file']!,
+    entryFile,
     platform: args['--platform'] ?? 'ios',
     transformer: args['--transformer'],
     // TODO: Support `--dev false`
     //   dev: false,
-    bundleOutput: args['--bundle-output']!,
+    bundleOutput,
     bundleEncoding: args['--bundle-encoding'] ?? 'utf8',
     maxWorkers: args['--max-workers'],
     sourcemapOutput: args['--sourcemap-output'],

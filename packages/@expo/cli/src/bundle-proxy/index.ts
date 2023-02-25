@@ -74,16 +74,15 @@ export const expoBundleProxy: Command = async (argv) => {
 
   const { resolveCustomBooleanArgsAsync } = await import('../utils/resolveArgs');
 
-  const parsed = await resolveCustomBooleanArgsAsync(argv ?? [], rawArgsMap, {
-    '--dev': Boolean,
-    '--minify': Boolean,
-    '--sourcemap-use-absolute-path': Boolean,
-    '--reset-cache': Boolean,
-    '--read-global-cache': Boolean,
-    '--generate-static-view-configs': Boolean,
-  }).catch(logCmdError);
-
-  return (() => {
+  return (async () => {
+    const parsed = await resolveCustomBooleanArgsAsync(argv ?? [], rawArgsMap, {
+      '--dev': Boolean,
+      '--minify': Boolean,
+      '--sourcemap-use-absolute-path': Boolean,
+      '--reset-cache': Boolean,
+      '--read-global-cache': Boolean,
+      '--generate-static-view-configs': Boolean,
+    });
     return bundleProxyAsync(path.resolve(parsed.projectRoot), resolveOptions(args, parsed));
   })().catch(logCmdError);
 };
