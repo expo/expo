@@ -31,8 +31,6 @@ public final class SecureStoreModule: Module {
     }
 
     AsyncFunction("setValueWithKeyAsync") { (value: String, key: String, options: SecureStoreOptions) -> Bool in
-      let validatedKey = validate(for: key)
-
       guard let key = validate(for: key) else {
         throw InvalidKeyException()
       }
