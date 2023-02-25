@@ -1,10 +1,8 @@
 import ExpoModulesCore
 import LocalAuthentication
 import Security
-import CommonCrypto
 
 public final class SecureStoreModule: Module {
-
   public func definition() -> ModuleDefinition {
     Name("ExpoSecureStore")
 
