@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Migrated iOS codebase to use the Expo modules API.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
