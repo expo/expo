@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `'jsc/JSCRuntime.h' file not found` when using JSC on iOS. ([#21246](https://github.com/expo/expo/pull/21246) by [@lukmccall](https://github.com/lukmccall))
-
 ### 💡 Others
+
+## 2.1.3 — 2023-02-25
+
+### 🐛 Bug fixes
+
+- Fixed `'jsc/JSCRuntime.h' file not found` when using JSC on iOS. ([#21246](https://github.com/expo/expo/pull/21246) by [@lukmccall](https://github.com/lukmccall))
 
 ## 2.1.2 — 2023-02-17
 
