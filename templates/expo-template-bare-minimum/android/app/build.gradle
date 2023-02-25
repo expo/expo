@@ -22,6 +22,11 @@ react {
     reactNativeDir = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsoluteFile()
     hermesCommand = new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).getParentFile().getAbsolutePath() + "/sdks/hermesc/%OS-BIN%/hermesc"
     debuggableVariants = expoDebuggableVariants
+    
+    // Use Expo CLI to bundle the app, this ensures the Metro config
+    // works correctly with Expo projects.
+    cliPath = new File(["node", "--print", "require.resolve('@expo/cli')"].execute(null, rootDir).text.trim()).getAbsolutePath()
+    bundleCommand = "bundle:proxy"
 
     /* Folders */
     //   The root of your project, i.e. where "package.json" lives. Default is '..'
