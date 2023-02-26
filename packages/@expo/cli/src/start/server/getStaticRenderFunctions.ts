@@ -17,7 +17,10 @@ const debug = require('debug')('expo:start:server:node-renderer') as typeof cons
 function wrapBundle(str: string) {
   // Skip the metro runtime so debugging is a bit easier.
   // Replace the __r() call with an export statement.
-  return str.replace(/^(__r\(.*\);)$/m, 'module.exports = $1');
+  return (
+    'const NODE_GLOBAL = this;const NODE_REQUIRE = require;\n' +
+    str.replace(/^(__r\(.*\);)$/m, 'module.exports = $1')
+  );
 }
 
 // TODO(EvanBacon): Group all the code together and version.
@@ -36,13 +39,14 @@ type StaticRenderOptions = {
   // Ensure the style format is `css-xxxx` (prod) instead of `css-view-xxxx` (dev)
   dev?: boolean;
   minify?: boolean;
+  platform?: string;
 };
 
 /** @returns the js file contents required to generate the static generation function. */
 export async function getStaticRenderFunctionsContentAsync(
   projectRoot: string,
   devServerUrl: string,
-  { dev = false, minify = false }: StaticRenderOptions = {}
+  { dev = false, minify = false, platform = 'web' }: StaticRenderOptions = {}
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
   const moduleId = getRenderModuleId(root);
@@ -59,7 +63,7 @@ export async function getStaticRenderFunctionsContentAsync(
   debug('Loading render functions from:', tempFile, moduleId, root);
 
   const res = await fetch(
-    `${devServerUrl}/${serverPath}?platform=web&dev=${dev}&minify=${minify}`
+    `${devServerUrl}/${serverPath}?platform=${platform}&dev=${dev}&minify=${minify}&resolver.expo_mode=node`
     // `${devServerUrl}/${moduleId}.bundle?platform=web&dev=${dev}&minify=${minify}`
   );
 
@@ -91,6 +95,7 @@ export async function getStaticRenderFunctions(
     devServerUrl,
     options
   );
+
   return profile(requireString, 'eval-metro-bundle')(scriptContents);
 }
 

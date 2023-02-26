@@ -84,6 +84,7 @@
     "progress": "2.0.3",
     "prompts": "^2.3.2",
     "qrcode-terminal": "0.11.0",
+    "react-server-dom-webpack": "^0.0.1",
     "require-from-string": "^2.0.2",
     "requireg": "^0.2.2",
     "resolve-from": "^5.0.0",

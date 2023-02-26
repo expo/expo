@@ -24,7 +24,6 @@ import {
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { instantiateMetroAsync } from './instantiateMetro';
-import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 
 /** Default port to use for apps running in Expo Go. */
 const EXPO_GO_METRO_PORT = 19000;
@@ -140,7 +139,82 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       const devServerUrl = `http://localhost:${options.port}`;
 
       if (env.EXPO_USE_STATIC) {
+        const sendResponse = async (
+          req: ServerRequest,
+          res: ServerResponse,
+          redirectToId: string | null
+        ) => {
+          const query = new URL(req.url!, devServerUrl).searchParams;
+
+          const loc = query.get('props');
+          const platform = query.get('platform') ?? 'web';
+
+          if (!loc) {
+            res.statusCode = 400;
+            res.setHeader('Content-Type', 'application/json');
+            res.end(
+              JSON.stringify({
+                error: 'No props provided to server component request.',
+              })
+            );
+            return;
+          }
+
+          const location = JSON.parse(loc);
+          if (redirectToId) {
+            location.selectedId = redirectToId;
+          }
+
+          res.setHeader('X-Location', JSON.stringify(location));
+
+          try {
+            const { renderToPipeableStream } = await getStaticRenderFunctions(
+              this.projectRoot,
+              devServerUrl,
+              {
+                platform,
+                minify: options.mode === 'production',
+                dev: options.mode !== 'production',
+              }
+            );
+
+            const pipe = await renderToPipeableStream(location, {});
+
+            pipe(res);
+          } catch (error: any) {
+            console.error(error);
+
+            res.statusCode = 500;
+            res.setHeader('Content-Type', 'application/json');
+            if (error.message.includes('__fbBatchedBridgeConfig is not set')) {
+              res.end(
+                JSON.stringify({
+                  error: 'The server component contains react-native code.',
+                })
+              );
+              return;
+            }
+
+            res.end(
+              JSON.stringify({
+                error: error.message,
+              })
+            );
+          }
+        };
+
+        // Server components
         middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+          if (!req?.url || !req.url.startsWith('/_expo/rsc')) {
+            return next();
+          }
+          return sendResponse(req, res, null);
+        });
+
+        middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+          // Temp disable SSG
+          return next();
+
           if (!req?.url) {
             return next();
           }
@@ -188,11 +262,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       }
 
       // This MUST run last since it's the fallback.
-      if (!env.EXPO_USE_STATIC) {
-        middleware.use(
-          new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
-        );
-      }
+      // if (!env.EXPO_USE_STATIC) {
+      middleware.use(
+        new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
+      );
+      // }
     }
     // Extend the close method to ensure that we clean up the local info.
     const originalClose = server.close.bind(server);

@@ -318,12 +318,11 @@ export abstract class ManifestMiddleware<
       if (!platform || platform === 'web') {
         // Skip the spa-styled index.html when static generation is enabled.
         if (env.EXPO_USE_STATIC) {
-          next();
-          return true;
-        } else {
-          await this.handleWebRequestAsync(req, res);
-          return true;
+          // next();
+          // return true;
         }
+        await this.handleWebRequestAsync(req, res);
+        return true;
       }
     }
     return false;

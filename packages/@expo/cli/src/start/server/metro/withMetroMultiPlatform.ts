@@ -78,6 +78,13 @@ export function withWebResolvers(config: ConfigT, projectRoot: string) {
       'react-native': 'react-native-web',
     },
   };
+  const modeAliases: { [key: string]: Record<string, string> } = {
+    node: {
+      'react-native-web': 'expo-router/src/react-native',
+      'react-native': 'expo-router/src/react-native',
+      'expo-router': 'expo-router/src/expo-router',
+    },
+  };
 
   const preferredMainFields: { [key: string]: string[] } = {
     // Defaults from Expo Webpack. Most packages using `react-native` don't support web
@@ -90,9 +97,26 @@ export function withWebResolvers(config: ConfigT, projectRoot: string) {
     // Add a resolver to alias the web asset resolver.
     (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
       const context = { ...immutableContext } as ResolutionContext & { mainFields: string[] };
-
+      // @ts-expect-error
+      const mode = context.customResolverOptions?.expo_mode;
+      // Send the mode to the babel transformer
+      const isServerComponent =
+        mode === 'node' && immutableContext.originModulePath.match(/\+server\.[tj]sx?$/);
+      // console.log('context', context);
       // Conditionally remap `react-native` to `react-native-web` on web in
       // a way that doesn't require Babel to resolve the alias.
+      if (isServerComponent) {
+        console.log('>>', mode, moduleName);
+      } else {
+        // console.log('>>', immutableContext.originModulePath);
+      }
+
+      if (isServerComponent && mode && mode in modeAliases && modeAliases[mode][moduleName]) {
+        console.log('aliasing', moduleName, 'to', modeAliases[mode][moduleName]);
+        moduleName = modeAliases[mode][moduleName];
+      } else if (!mode && moduleName === 'expo-router/src/react-native') {
+        moduleName = 'react-native';
+      }
       if (platform && platform in aliases && aliases[platform][moduleName]) {
         moduleName = aliases[platform][moduleName];
       }
