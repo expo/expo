@@ -6,12 +6,6 @@ internal class InvalidKeyException: Exception {
   }
 }
 
-internal class SetValueException: Exception {
-  override var reason: String {
-    "Invalid key"
-  }
-}
-
 internal class KeyChainException: GenericException<OSStatus> {
   override var reason: String {
     switch param {
