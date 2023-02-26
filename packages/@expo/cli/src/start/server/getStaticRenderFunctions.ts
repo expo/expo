@@ -6,6 +6,7 @@
  */
 import fetch from 'node-fetch';
 import path from 'path';
+import fs from 'fs';
 import requireString from 'require-from-string';
 import resolveFrom from 'resolve-from';
 
@@ -27,8 +28,8 @@ const getRenderModuleId = (projectRoot: string): string => {
       `A version of expo-router with Node.js support is not installed in the project.`
     );
   }
-  // remove extension:
-  return path.relative(projectRoot, moduleId).replace(/\.js$/, '');
+
+  return moduleId;
 };
 
 type StaticRenderOptions = {
@@ -45,15 +46,20 @@ export async function getStaticRenderFunctionsContentAsync(
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
   const moduleId = getRenderModuleId(root);
-  debug('Loading render functions from:', moduleId, root);
-  if (moduleId.startsWith('..')) {
-    throw new Error(
-      `expo-router/node/render.js is not in the project root. This is not supported.`
-    );
-  }
+
+  // Copy the file into the project to ensure it works in monorepos.
+  // This means the file cannot have any relative imports.
+  const tempDir = path.join(root, '.expo/static');
+  await fs.promises.mkdir(tempDir, { recursive: true });
+  const tempFile = path.join(tempDir, 'render.js');
+  await fs.promises.writeFile(tempFile, await fs.promises.readFile(moduleId, 'utf8'));
+
+  const serverPath = path.relative(projectRoot, tempFile).replace(/\.[jt]sx?$/, '.bundle');
+  console.log(serverPath);
+  debug('Loading render functions from:', tempFile, moduleId, root);
 
   const res = await fetch(
-    `${devServerUrl}/${moduleId}.bundle?platform=web&dev=${dev}&minify=${minify}`
+    `${devServerUrl}/${serverPath}?platform=web&dev=${dev}&minify=${minify}`
     // `${devServerUrl}/${moduleId}.bundle?platform=web&dev=${dev}&minify=${minify}`
   );
 
