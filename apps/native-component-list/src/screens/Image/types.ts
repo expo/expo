@@ -8,7 +8,7 @@ export type ImageProps = any; // TODO
 export type ImageTestEventHandler = (...args: any) => void;
 
 export type ImageTestPropsFnInput = {
-  range: (start: number, end: number) => number | Animated.AnimatedInterpolation | string;
+  range: (start: number, end: number) => number | Animated.AnimatedInterpolation<number> | string;
   event: (name: string) => ImageTestEventHandler;
 };
 

@@ -235,7 +235,7 @@ export function addEventListener(type, handler) {
  * @deprecated Call `remove()` on the return value of `addEventListener()` instead.
  */
 export function removeEventListener(type, handler) {
-    NativeLinking.removeEventListener(type, handler);
+    console.warn('The `removeEventListener()` method has been removed. Please call instead `remove()` on the return value of `addEventListener()`.');
 }
 // @needsAudit
 /**

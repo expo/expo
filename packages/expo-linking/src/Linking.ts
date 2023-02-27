@@ -274,7 +274,9 @@ export function addEventListener(type: 'url', handler: URLListener): EmitterSubs
  * @deprecated Call `remove()` on the return value of `addEventListener()` instead.
  */
 export function removeEventListener(type: 'url', handler: URLListener): void {
-  NativeLinking.removeEventListener(type, handler);
+  console.warn(
+    'The `removeEventListener()` method has been removed. Please call instead `remove()` on the return value of `addEventListener()`.'
+  );
 }
 
 // @needsAudit
