@@ -1,6 +1,6 @@
 {
   "name": "@expo/html-elements",
-  "version": "0.3.1",
+  "version": "0.3.2",
   "description": "Universal semantic HTML React components for iOS, Android, web, and desktop",
   "main": "build/Elements.js",
   "types": "build/Elements.d.ts",
@@ -38,15 +38,21 @@
     "projects": [
       {
         "preset": "jest-expo/ios",
-        "modulePathIgnorePatterns": ["<rootDir>/babel/"]
+        "modulePathIgnorePatterns": [
+          "<rootDir>/babel/"
+        ]
       },
       {
         "preset": "jest-expo/android",
-        "modulePathIgnorePatterns": ["<rootDir>/babel/"]
+        "modulePathIgnorePatterns": [
+          "<rootDir>/babel/"
+        ]
       },
       {
         "preset": "jest-expo/web",
-        "modulePathIgnorePatterns": ["<rootDir>/babel/"]
+        "modulePathIgnorePatterns": [
+          "<rootDir>/babel/"
+        ]
       }
     ]
   },
