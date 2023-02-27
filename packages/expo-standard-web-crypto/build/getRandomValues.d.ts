@@ -1,6 +1,6 @@
 type IntegerArray = Int8Array | Uint8Array | Int16Array | Uint16Array | Int32Array | Uint32Array | Uint8ClampedArray;
 /**
- * An implementation of Crypto.getRandomValues that uses expo-random's secure random generator if
+ * An implementation of Crypto.getRandomValues that uses expo-crypto's secure random generator if
  * available and falls back to Math.random (cryptographically insecure) when synchronous bridged
  * methods are unavailable.
  *

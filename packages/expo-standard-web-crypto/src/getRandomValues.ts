@@ -1,4 +1,4 @@
-import { getRandomBytes } from 'expo-random';
+import { getRandomBytes } from 'expo-crypto';
 
 const MAX_RANDOM_BYTES = 65536;
 
@@ -21,7 +21,7 @@ type IntegerArrayConstructor =
   | Uint8ClampedArrayConstructor;
 
 /**
- * An implementation of Crypto.getRandomValues that uses expo-random's secure random generator if
+ * An implementation of Crypto.getRandomValues that uses expo-crypto's secure random generator if
  * available and falls back to Math.random (cryptographically insecure) when synchronous bridged
  * methods are unavailable.
  *
