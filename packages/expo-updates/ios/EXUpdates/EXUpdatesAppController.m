@@ -368,7 +368,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
   __block NSError *dbError;
   dispatch_semaphore_t dbSemaphore = dispatch_semaphore_create(0);
   dispatch_async(_database.databaseQueue, ^{
-    [self->_database openDatabaseInDirectory:self->_updatesDirectory withError:&dbError];
+    [self->_database openDatabaseInDirectory:self->_updatesDirectory error:&dbError];
     dispatch_semaphore_signal(dbSemaphore);
   });
 

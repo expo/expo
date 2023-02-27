@@ -20,7 +20,7 @@ NS_ASSUME_NONNULL_BEGIN
                   error:(NSError ** _Nullable)error
 {
   NSError *err;
-  NSArray<EXUpdatesAsset *> *assets = [database allAssetsWithError:&err];
+  NSArray<EXUpdatesAsset *> *assets = [database allAssetsAndReturnError:&err];
   if (err) {
     *error = err;
     return NO;
