@@ -47,12 +47,6 @@ API_URL="http://localhost:3000" expo start
 
 The command above will set the `API_URL` to `"http://localhost:3000"`. Install the [`expo-constants`](/versions/latest/sdk/constants/#installation) library then use the `Constants.expoConfig.extra.API_URL` property to access it inside a project.
 
-<Collapsible summary="Using SDK 45 or below?">
-
-The `API_URL` is located at `Constants.manifest2?.extra?.expoClient?.extra?.eas?.API_URL` property.
-
-</Collapsible>
-
 ## Setting and getting environment variables when building
 
 To set the `API_URL` environment variable during a build, you can include an `"env"` property in an **eas.json** build profile as shown below:
@@ -74,12 +68,6 @@ To set the `API_URL` environment variable during a build, you can include an `"e
 
 When you run the command such as `eas build --profile production`, the `"env"` property in the `"production"` build profile will set the `API_URL` to `https://prod.example.com/` inside the build. Install the [`expo-constants`](/versions/latest/sdk/constants/#installation) library then use the `Constants.expoConfig.extra.API_URL` property to access it inside a project.
 
-<Collapsible summary="Using SDK 45 or below?">
-
-The `API_URL` is located at `Constants.manifest?.extra?.eas?.API_URL` property.
-
-</Collapsible>
-
 ## Setting and getting environment variables when publishing an update
 
 To set the `API_URL` environment variable when publishing an update, you can prepend the environment variables before running `eas update` as shown below:
@@ -91,12 +79,6 @@ API_URL="https://prod.example.com" eas update --branch production
 When EAS CLI creates the update, it will set the `API_URL` to `https://prod.example.com` inside the update's bundle. Install the [`expo-constants`](/versions/latest/sdk/constants/#installation) library then use the `Constants.expoConfig.extra.API_URL` property to access it inside a project.
 
 > You can also use the `expo-updates` library to access `API_URL`. It is under `Updates.manifest?.extra?.expoClient?.extra?.eas?.API_URL`. However, `Updates.manifest` is only present when an update is currently running. If the project is in development, `Updates.manifest` will be `undefined`. In addition, if a build is running without an update (for example, it was just downloaded or there are no updates yet), `Updates.manifest` will also be `undefined`.
-
-<Collapsible summary="Using SDK 45 or below?">
-
-The `API_URL` is located at `Constants.manifest2?.extra?.expoClient?.extra?.eas?.API_URL` property.
-
-</Collapsible>
 
 ## Creating an Env.ts file to get environment variables
 
@@ -119,18 +101,6 @@ export const Env = {
   API_URL: getApiUrl(),
 };
 ```
-
-<Collapsible summary="Using SDK 45 or below?">
-
-Use the following snippet to access the `API_URL`:
-
-```ts Env.ts
-const API_URL =
-  Constants.manifest2?.extra?.expoClient?.extra?.eas?.API_URL ??
-  Constants.manifest?.extra?.eas?.API_URL;
-```
-
-</Collapsible>
 
 ## Using a Babel plugin
 

@@ -30,42 +30,11 @@ Add the `expo-dev-client` library to your **package.json**:
 
 <Terminal cmd={['$ npx expo install expo-dev-client']} />
 
-<Tabs tabs={["SDK 45 and above", "SDK 44 and below"]}>
-
-<Tab >
-
 If your project has an **ios/** directory on disk, run the following command to fully install the native code for `expo-dev-client`:
 
 <Terminal cmd={['$ npx pod-install']} />
 
 If your project doesn't have an **ios/** directory, you can skip this step.
-
-</Tab >
-
-<Tab >
-
-### iOS
-
-Add the following lines to your **Podfile**:
-
-<DiffBlock source="/static/diffs/client/podfile.diff" />
-
-Run the following command to install native code for the `expo-dev-client` via CocoaPods.
-
-<Terminal cmd={['$ npx pod-install']} />
-
-Also, ensure that your project is configured to deploy on an iOS version _above 10_.
-To do that, open Xcode, go to General > Deployment Info and select an iOS version of at least 11.0.
-
-<img src="/static/images/client/check_ios_version.png" style={{ maxWidth: '100%' }} />
-
-### Android
-
-No additional changes are needed to install the package on Android.
-
-</Tab >
-
-</Tabs >
 
 ## 3. Basic configuration
 
@@ -74,32 +43,6 @@ Development builds use deep links to open projects from the QR code. If you have
 <Terminal cmd={['$ npx uri-scheme add <your scheme>']} />
 
 For more information, see [uri-scheme package](https://www.npmjs.com/package/uri-scheme).
-
-<Tabs tabs={["SDK 45 and above", "SDK 44 and below"]}>
-
-<Tab >
-
-No additional steps are needed to configure the package on SDK 45 and above.
-
-</Tab >
-
-<Tab >
-
-### iOS
-
-Add the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
-
-<DiffBlock source="/static/diffs/client/app-delegate-expo-modules.diff" />
-
-### Android
-
-Add the following changes to allow the `expo-dev-client` library to control project initialization in the **DEBUG** mode.
-
-<DiffBlock source="/static/diffs/client/main-activity-and-application-expo-modules.diff" />
-
-</Tab>
-
-</Tabs>
 
 ## 4. Optional configuration
 
@@ -127,10 +70,6 @@ For more information, see [Error handling](/development/use-development-builds/#
 
 Development builds can also open and preview published updates to your app.
 
-<Tabs tabs={["SDK 45 and above", "SDK 44 and below"]}>
-
-<Tab>
-
 To add this feature, install `expo-updates` in your project:
 
 <Terminal cmd={['$ npx expo install expo-updates']} />
@@ -138,24 +77,6 @@ To add this feature, install `expo-updates` in your project:
 After doing so, if your project has an **ios/** directory on disk, you will need to reinstall CocoaPods:
 
 <Terminal cmd={['$ npx pod-install']} />
-
-</Tab>
-
-<Tab>
-
-To add this feature, add `expo-updates@0.8.0` or newer to your app if it isn't already installed, and add a small additional integration in your **AppDelegate.m** and **MainApplication.java** files.
-
-1. [Install `expo-modules` in your project](/bare/installing-expo-modules).
-2. [Install `expo-updates` in your project](/bare/installing-updates).
-3. Add the following changes to complete the integration with `expo-updates`:
-
-<DiffBlock source="/static/diffs/client/app-delegate-updates.diff" />
-
-<DiffBlock source="/static/diffs/client/main-application-updates.diff" />
-
-</Tab>
-
-</Tabs>
 
 ## 5. Build and install
 
