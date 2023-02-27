@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed dev client crash when server URL has no scheme. ([#21274](https://github.com/expo/expo/pull/21274) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fixed dev client not showing logged user and initial data. ([#21425](https://github.com/expo/expo/pull/21425) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
