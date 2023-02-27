@@ -29,6 +29,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Fixed missing `code` and `message` in promise errors. ([#19555](https://github.com/expo/expo/pull/19555) by [@tsapeta](https://github.com/tsapeta))
+- Fixed `shareAsync` not resolving on Android. ([#21432](https://github.com/expo/expo/pull/21432) by [@alanhughes](https://github.com/alanjhughes))
 
 ### ⚠️ Notices
 
