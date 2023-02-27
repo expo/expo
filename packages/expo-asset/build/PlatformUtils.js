@@ -48,11 +48,11 @@ async function _downloadAsyncManagedEnv(uri, hash, type, name) {
     const fileInfo = await FileSystem.getInfoAsync(localUri, {
         md5: true,
     });
-    if (!fileInfo.exists || (hash !== null && fileInfo.md5 !== hash)) {
-        const { md5 } = await FileSystem.downloadAsync(uri, localUri, {
+    if (!fileInfo?.exists || (hash !== null && fileInfo.md5 !== hash)) {
+        const file = await FileSystem.downloadAsync(uri, localUri, {
             md5: true,
         });
-        if (hash !== null && md5 !== hash) {
+        if (hash !== null && file?.md5 !== hash) {
             throw new Error(`Downloaded file for asset '${name}.${type}' ` +
                 `Located at ${uri} ` +
                 `failed MD5 integrity check`);
