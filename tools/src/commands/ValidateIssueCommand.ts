@@ -87,7 +87,11 @@ async function validateIssueAsync(issueNumber: number) {
     if (labelName && labelName === 'needs validation') {
       // Remove the validation label since we've started validation
       console.log('found needs validation label, removing it.');
-      await removeIssueLabelAsync(issueNumber, 'needs validation');
+      try {
+        await removeIssueLabelAsync(issueNumber, 'needs validation');
+      } catch (e) {
+        console.log(e);
+      }
     } else if (labelName && SKIP_VALIDATION_LABELS.includes(labelName)) {
       console.log(`Issue is labeled with ${labelName}, skipping validation.`);
       return;
@@ -109,7 +113,11 @@ async function validateIssueAsync(issueNumber: number) {
     console.log(issue.labels);
     if (issue.labels?.includes('needs review')) {
       console.log('needs review label found, removing it.');
-      await removeIssueLabelAsync(issueNumber, 'needs review');
+      try {
+        await removeIssueLabelAsync(issueNumber, 'needs review');
+      } catch (e) {
+        console.log(e);
+      }
     }
     await addIssueLabelsAsync(issueNumber, ['incomplete issue: missing or invalid repro']);
     console.log('No reproducible example provided, marked for closing.');
