@@ -32,16 +32,23 @@ Pod::Spec.new do |s|
     'GCC_PREPROCESSOR_DEFINITIONS' => "EX_DEV_LAUNCHER_VERSION=#{s.version}"
   }
 
-  # Swift/Objective-C compatibility
-  s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
+  other_c_flags = '$(inherited)'
   dev_launcher_url = ENV['EX_DEV_LAUNCHER_URL'] || ""
   if dev_launcher_url != ""
     escaped_dev_launcher_url = Shellwords.escape(dev_launcher_url).gsub('/','\\/')
-    s.pod_target_xcconfig = {
-      'DEFINES_MODULE' => 'YES',
-      'OTHER_CFLAGS[config=Debug]' => "$(inherited) -DEX_DEV_LAUNCHER_URL=\"\\\"" + escaped_dev_launcher_url + "\\\"\""
-    }
+    other_c_flags += " -DEX_DEV_LAUNCHER_URL=\"\\\"" + escaped_dev_launcher_url + "\\\"\""
   end
+  other_swift_flags = "$(inherited)"
+  if ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] == '1'
+    other_swift_flags += ' -DEX_DEV_CLIENT_NETWORK_INSPECTOR'
+  end
+
+  # Swift/Objective-C compatibility
+  s.pod_target_xcconfig = {
+    'DEFINES_MODULE' => 'YES',
+    'OTHER_CFLAGS[config=Debug]' => other_c_flags,
+    'OTHER_SWIFT_FLAGS[config=Debug]' => other_swift_flags,
+  }
 
   s.user_target_xcconfig = {
     "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-launcher/Swift Compatibility Header\"",

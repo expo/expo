@@ -1,6 +1,6 @@
 import React
 
-#if DEBUG
+#if DEBUG && EX_DEV_CLIENT_NETWORK_INSPECTOR
 
 /**
  This class intercepts all default `URLSession` requests and send CDP events to the connecting metro-inspector-proxy
