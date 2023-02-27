@@ -340,7 +340,7 @@ Now, let's modify the **App.js** to:
 - Then, create an `isModalVisible` state variable with the `useState` hook. It has a default value of `false` to ensure that the modal is hidden until the user presses the button to open it.
 - Replace the comment in the `onAddSticker()` function to update the `isModalVisible` variable to `true` when the user presses the button. This will open the emoji picker.
 - Create a`onModalClose()` function to update the `isModalVisible` state variable.
-- Place the `<EmojiPicker>` component at the bottom of the `<App>` component, below the `<StatusBar>` component.
+- Place the `<EmojiPicker>` component at the bottom of the `<App>` component, above the `<StatusBar>` component.
 
 <SnackInline
 label="Create a modal"
