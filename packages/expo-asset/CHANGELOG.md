@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Fix nullable file and fileInfo ([#21410](https://github.com/expo/expo/pull/21410) by [@hyochan](https://github.com/hyochan))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
