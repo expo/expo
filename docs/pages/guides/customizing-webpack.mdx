@@ -14,14 +14,6 @@ To edit the config, install `@expo/webpack-config` as a dev dependency and creat
 
 <Terminal cmd={['$ npx expo customize webpack.config.js']} />
 
-<Collapsible summary="Using SDK 45 or below?">
-
-For SDK 45 or below, run the following command:
-
-<Terminal cmd={['$ npx expo customize:web']} />
-
-</Collapsible>
-
 You can now make changes to a config object based on the default config and return it for Expo CLI to use. Deleting the config will cause Expo to fall back to the default again.
 
 If you create a new webpack config or make any changes to it you'll need to restart your webpack dev server by running:
