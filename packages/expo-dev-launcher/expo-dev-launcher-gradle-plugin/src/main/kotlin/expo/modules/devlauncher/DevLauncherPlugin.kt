@@ -9,6 +9,9 @@ import com.android.build.api.instrumentation.InstrumentationScope
 import com.android.build.api.variant.AndroidComponentsExtension
 import org.gradle.api.Plugin
 import org.gradle.api.Project
+import org.gradle.api.provider.Property
+import org.gradle.api.tasks.Input
+import org.gradle.api.tasks.Optional
 import org.objectweb.asm.ClassVisitor
 import org.objectweb.asm.MethodVisitor
 import org.objectweb.asm.Opcodes
@@ -17,23 +20,38 @@ import org.slf4j.LoggerFactory
 abstract class DevLauncherPlugin : Plugin<Project> {
 
   override fun apply(project: Project) {
-    val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
-    androidComponents.onVariants(androidComponents.selector().withBuildType("debug")) { variant ->
-      variant.instrumentation.transformClassesWith(DevLauncherClassVisitorFactory::class.java, InstrumentationScope.ALL) {
+    val enableNetworkInspector = project.properties["EX_DEV_CLIENT_NETWORK_INSPECTOR"]?.toString()?.toBoolean()
+    if (enableNetworkInspector != null && enableNetworkInspector) {
+      val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
+      androidComponents.onVariants(androidComponents.selector().withBuildType("debug")) { variant ->
+        variant.instrumentation.transformClassesWith(DevLauncherClassVisitorFactory::class.java, InstrumentationScope.ALL) {
+        }
+        variant.instrumentation.setAsmFramesComputationMode(FramesComputationMode.COMPUTE_FRAMES_FOR_INSTRUMENTED_METHODS)
       }
-      variant.instrumentation.setAsmFramesComputationMode(FramesComputationMode.COMPUTE_FRAMES_FOR_INSTRUMENTED_METHODS)
     }
   }
 
-  abstract class DevLauncherClassVisitorFactory : AsmClassVisitorFactory<InstrumentationParameters.None> {
+  interface DevLauncherPluginParameters : InstrumentationParameters {
+    @get:Input
+    @get:Optional
+    val enabled: Property<Boolean>
+  }
+
+  abstract class DevLauncherClassVisitorFactory : AsmClassVisitorFactory<DevLauncherPluginParameters> {
     override fun createClassVisitor(
       classContext: ClassContext,
       nextClassVisitor: ClassVisitor
     ): ClassVisitor {
+      if (parameters.get().enabled.getOrElse(false)) {
+        return nextClassVisitor
+      }
       return OkHttpClassVisitor(classContext, instrumentationContext.apiVersion.get(), nextClassVisitor)
     }
 
     override fun isInstrumentable(classData: ClassData): Boolean {
+      if (parameters.get().enabled.getOrElse(false)) {
+        return false
+      }
       return classData.className in listOf("okhttp3.OkHttpClient\$Builder")
     }
   }
