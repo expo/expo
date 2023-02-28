@@ -110,6 +110,8 @@ export class ExpoInspectorProxy<D extends MetroDevice> {
           throw new Error(`Device with ID "${deviceId}" not found.`);
         }
 
+        debug('New debugger connected: device=%s, app=%s', device._name, device._app);
+
         device.handleDebuggerConnection(socket, pageId);
       } catch (error: unknown) {
         const message = error instanceof Error && error.toString();
