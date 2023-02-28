@@ -1,7 +1,6 @@
 import { ExpoConfig } from '@expo/config-types';
 import * as fs from 'fs';
 import { vol } from 'memfs';
-import * as path from 'path';
 
 import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import * as WarningAggregator from '../../utils/warnings';
@@ -13,8 +12,6 @@ import {
   setDeviceFamily,
 } from '../DeviceFamily';
 import { getPbxproj } from '../utils/Xcodeproj';
-
-const fsReal = jest.requireActual('fs') as typeof fs;
 
 jest.mock('fs');
 jest.mock('../../utils/warnings');

@@ -1,10 +1,9 @@
-import * as fs from 'fs';
 import { vol } from 'memfs';
 import * as path from 'path';
 
+import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import { createBuildSourceFile } from '../XcodeProjectFile';
 import { getPbxproj } from '../utils/Xcodeproj';
-import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 
 jest.mock('fs');
 
