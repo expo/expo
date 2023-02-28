@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `expo/scripts/launchPackager.command` script for launching Expo CLI when building iOS apps for development in Xcode.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
