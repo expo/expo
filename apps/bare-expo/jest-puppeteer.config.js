@@ -18,7 +18,7 @@ function getCommand() {
     // Note(cedric): we can only change the port when using Metro web bundler
     // As of writing, we use Webpack for web, which can't run on the same port as Metro.
     // It always tries to fall back to Webpack's default port, which is 19006.
-    return `npx expo start ${projectPath} --web --https`;
+    return `npx expo-internal start ${projectPath} --web --https`;
   }
 
   // Production mode
@@ -28,7 +28,7 @@ function getCommand() {
 
   return [
     // Optionally bundle the project
-    (isCI || !hasBuild) && `npx expo export:web`,
+    (isCI || !hasBuild) && `npx expo-internal export:web`,
     // Serve for puppeteer
     `npx serve ${buildFolder}`,
   ]
