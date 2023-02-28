@@ -72,9 +72,6 @@ class ModuleRegistry(
   override fun iterator(): Iterator<ModuleHolder> = registry.values.iterator()
 
   fun cleanUp() {
-    forEach {
-      it.cleanUp()
-    }
     registry.clear()
     logger.info("✅ ModuleRegistry was destroyed")
   }

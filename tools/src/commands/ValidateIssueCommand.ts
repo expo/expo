@@ -22,7 +22,7 @@ export default (program: Command) => {
 };
 
 async function action(options: ActionOptions) {
-  if (options.issue !== '*' || !isNaN(Number(options.issue))) {
+  if (options.issue !== '*' && isNaN(Number(options.issue))) {
     throw new Error('Flag `--issue` must be provided with a number value or *.');
   }
   if (!process.env.GITHUB_TOKEN) {
@@ -63,9 +63,8 @@ async function validateAllOpenIssuesAsync() {
     labels: 'needs validation',
   });
   let page = 0;
-  while (issues.length >= GITHUB_API_PAGE_SIZE) {
+  while (issues.length > 0) {
     for (const issue of issues) {
-      console.log(issue.title);
       await validateIssueAsync(issue.number);
     }
     issues = await listAllOpenIssuesAsync({
@@ -88,7 +87,11 @@ async function validateIssueAsync(issueNumber: number) {
     if (labelName && labelName === 'needs validation') {
       // Remove the validation label since we've started validation
       console.log('found needs validation label, removing it.');
-      await removeIssueLabelAsync(issueNumber, 'needs validation');
+      try {
+        await removeIssueLabelAsync(issueNumber, 'needs validation');
+      } catch (e) {
+        console.log(e);
+      }
     } else if (labelName && SKIP_VALIDATION_LABELS.includes(labelName)) {
       console.log(`Issue is labeled with ${labelName}, skipping validation.`);
       return;
@@ -110,7 +113,11 @@ async function validateIssueAsync(issueNumber: number) {
     console.log(issue.labels);
     if (issue.labels?.includes('needs review')) {
       console.log('needs review label found, removing it.');
-      await removeIssueLabelAsync(issueNumber, 'needs review');
+      try {
+        await removeIssueLabelAsync(issueNumber, 'needs review');
+      } catch (e) {
+        console.log(e);
+      }
     }
     await addIssueLabelsAsync(issueNumber, ['incomplete issue: missing or invalid repro']);
     console.log('No reproducible example provided, marked for closing.');
