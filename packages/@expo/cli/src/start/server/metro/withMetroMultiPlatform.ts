@@ -4,12 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { getAutolinkedPackagesAsync } from '@expo/prebuild-config/build/getAutolinkedPackages';
 import chalk from 'chalk';
 import fs from 'fs';
 import { ConfigT } from 'metro-config';
 import { Resolution, ResolutionContext } from 'metro-resolver';
 import path from 'path';
 import resolveFrom from 'resolve-from';
+import util from 'util';
+import wrapAnsi from 'wrap-ansi';
 
 import { Log } from '../../../log';
 import { FileNotifier } from '../../../utils/FileNotifier';
@@ -53,6 +56,102 @@ function withWebPolyfills(config: ConfigT): ConfigT {
 
 function normalizeSlashes(p: string) {
   return p.replace(/\\/g, '/');
+}
+
+const deps: Record<string, { packageJsonPath: string; name: string }[]> = {};
+
+export async function getExtraDependenciesAsync(projectRoot: string, platform: 'ios' | 'android') {
+  const platformDeps = deps[platform];
+  if (!platformDeps) {
+    return;
+  }
+  // TODO: A community version of this.
+  const autolinkedDeps = await getAutolinkedPackagesAsync(projectRoot, [platform]);
+
+  const depsWithoutDuplicates = platformDeps.filter((value, index, self) => {
+    // foo/bar/package.json -> bar
+    return self.map(({ name }) => name).indexOf(value.name) === index;
+  });
+  // console.log(
+  //   'all bundled deps',
+  //   depsWithoutDuplicates.map((v) => v.name)
+  // );
+  const depsThatAreNativeModules = depsWithoutDuplicates.filter(({ packageJsonPath }) => {
+    // foo/bar/package.json -> bar
+    const v = [
+      'unimodule.json',
+      'expo-module.config.json',
+      // TODO: This is a different list of autolinking
+      'react-native.config.js',
+      // TODO: RNGH wouldn't show up in this test
+    ].some((filename) => {
+      return fs.existsSync(path.join(path.dirname(packageJsonPath), filename));
+    });
+    return v;
+  });
+
+  const bundledNativeModules = [
+    ...depsThatAreNativeModules.map((v) => v.name),
+    // expo is a special-case
+    'expo',
+  ];
+
+  const extraAutolinkedDeps = autolinkedDeps.filter((dep) => !bundledNativeModules.includes(dep));
+  return extraAutolinkedDeps;
+}
+
+export async function printExtraDependenciesAsync(
+  projectRoot: string,
+  platforms: ('ios' | 'android')[]
+) {
+  if (!platforms.length) return;
+
+  const extraDependencies = await Promise.all(
+    platforms.map((platform) => getExtraDependenciesAsync(projectRoot, platform))
+  );
+
+  const json = platforms.reduce((acc, platform, index) => {
+    const extraDeps = extraDependencies[index];
+    if (extraDeps && extraDeps.length > 0) {
+      acc[platform] = extraDeps;
+    }
+    return acc;
+  }, {} as Record<string, string[]>);
+
+  if (Object.keys(json).length === 0) {
+    // No recommendations.
+    return;
+  }
+
+  const recommendedJson = {
+    expo: {
+      autolinking: json,
+    },
+  };
+
+  console.log();
+  console.log(
+    wrapForTerminal(
+      chalk`Some native modules are not {magenta {bold import}}'d in the production JavaScript bundles.\nIt {italic may} be safe to exclude them from the native apps to reduce download size and build time:`
+    )
+  );
+  console.log(learnMore('https://docs.expo.dev/modules/autolinking/#exclude'));
+  console.log();
+  console.log(chalk.cyan('package.json'));
+  console.log(
+    util.inspect(recommendedJson, {
+      colors: true,
+      compact: false,
+      showHidden: false,
+      depth: null,
+    })
+  );
+  console.log();
+}
+
+/**  Wrap long messages to fit smaller terminals. */
+function wrapForTerminal(message: string): string {
+  return wrapAnsi(message, process.stdout.columns || 80);
 }
 
 /**
@@ -192,6 +291,16 @@ export function withExtendedResolver(
             // we need to extend the `getPackageMainPath` directly to
             // use platform specific `mainFields`.
             getPackageMainPath(packageJsonPath) {
+              // foo/bar/package.json -> bar
+              const pkg = path.basename(path.dirname(packageJsonPath));
+
+              if (platform) {
+                deps[platform] ??= [];
+                deps[platform].push({
+                  packageJsonPath,
+                  name: pkg,
+                });
+              }
               // @ts-expect-error: mainFields is not on type
               const package_ = context.moduleCache.getPackage(packageJsonPath);
               return package_.getMain(mainFields);
