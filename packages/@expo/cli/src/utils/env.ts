@@ -141,6 +141,11 @@ class Env {
   get EXPO_USE_PATH_ALIASES(): boolean {
     return boolish('EXPO_USE_PATH_ALIASES', false);
   }
+
+  /** **Experimental:** Use the network inspector by overriding the metro inspector proxy with a custom version */
+  get EXPO_USE_NETWORK_INSPECTOR(): boolean {
+    return boolish('EXPO_USE_NETWORK_INSPECTOR', false);
+  }
 }
 
 export const env = new Env();
