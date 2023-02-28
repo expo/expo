@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update tests to use latest Expo template.
+
 ## 6.0.0 — 2023-02-03
 
 ### 🛠 Breaking changes
