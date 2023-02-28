@@ -2,7 +2,6 @@ package expo.modules.maps
 
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.UIManagerModule
-import expo.modules.core.interfaces.services.UIManager
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
@@ -31,7 +30,7 @@ class ExpoGoogleMapsModule : Module() {
       }
     }
 
-    ViewManager {
+    View(GoogleMapsView::class) {
       Events(
         "onMapPress",
         "onLongPress",
@@ -49,13 +48,6 @@ class ExpoGoogleMapsModule : Module() {
         "onLocationDotPress",
         "onLocationChange"
       )
-
-      View {
-        GoogleMapsView(it).also { googleMapsView ->
-          appContext.legacyModule<UIManager>()
-            ?.registerLifecycleEventListener(googleMapsView.lifecycleEventListener)
-        }
-      }
 
       OnViewDestroys<GoogleMapsView> {
         it.onViewDestroyed()
