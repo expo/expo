@@ -109,7 +109,12 @@ async function main(target, options) {
     }
     console.log();
     console.log('✅ Successfully created Expo module');
-    printFurtherInstructions(targetDir, packageManager, options.example);
+    if (options.local) {
+        printFurtherLocalInstructions(slug, data.project.moduleName);
+    }
+    else {
+        printFurtherInstructions(targetDir, packageManager, options.example);
+    }
 }
 /**
  * Recursively scans for the files within the directory. Returned paths are relative to the `root` path.
@@ -292,6 +297,13 @@ function printFurtherInstructions(targetDir, packageManager, includesExample) {
         commands.forEach((command) => console.log(chalk_1.default.gray('>'), chalk_1.default.bold(command)));
         console.log();
     }
+    console.log(`Visit ${chalk_1.default.blue.bold(DOCS_URL)} for the documentation on Expo Modules APIs`);
+}
+function printFurtherLocalInstructions(slug, name) {
+    console.log(`You can now import this module inside your application:`);
+    console.log();
+    console.log(chalk_1.default.blue(`import { hello } from '${slug}';`));
+    console.log();
     console.log(`Visit ${chalk_1.default.blue.bold(DOCS_URL)} for the documentation on Expo Modules APIs`);
 }
 const program = new commander_1.Command();

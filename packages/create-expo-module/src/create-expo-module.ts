@@ -130,8 +130,11 @@ async function main(target: string | undefined, options: CommandOptions) {
 
   console.log();
   console.log('✅ Successfully created Expo module');
-
-  printFurtherInstructions(targetDir, packageManager, options.example);
+  if (options.local) {
+    printFurtherLocalInstructions(slug, data.project.moduleName);
+  } else {
+    printFurtherInstructions(targetDir, packageManager, options.example);
+  }
 }
 
 /**
@@ -372,6 +375,14 @@ function printFurtherInstructions(
     commands.forEach((command) => console.log(chalk.gray('>'), chalk.bold(command)));
     console.log();
   }
+  console.log(`Visit ${chalk.blue.bold(DOCS_URL)} for the documentation on Expo Modules APIs`);
+}
+
+function printFurtherLocalInstructions(slug: string, name: string) {
+  console.log(`You can now import this module inside your application:`);
+  console.log();
+  console.log(chalk.blue(`import { hello } from '${slug}';`));
+  console.log();
   console.log(`Visit ${chalk.blue.bold(DOCS_URL)} for the documentation on Expo Modules APIs`);
 }
 
