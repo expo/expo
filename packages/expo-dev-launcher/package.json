@@ -29,7 +29,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
   "dependencies": {
-    "expo-dev-menu": "2.1.2",
+    "expo-dev-menu": "2.1.3",
     "resolve-from": "^5.0.0",
     "semver": "^7.3.5"
   },
