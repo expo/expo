@@ -25,7 +25,7 @@ prepare_react_native_project!
 # }
 # ```
 flipper_config = FlipperConfiguration.disabled
-if ENV['NO_FLIPPER'] == "1" || ENV['CI'] then
+if ENV['NO_FLIPPER'] == "1" || (ENV['CI'] && !ENV['EAS_BUILD']) then
   # Explicitly disabled through environment variables
   flipper_config = FlipperConfiguration.disabled
 elsif podfile_properties.key?('ios.flipper') then
