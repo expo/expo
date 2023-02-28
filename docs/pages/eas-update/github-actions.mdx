@@ -136,7 +136,7 @@ jobs:
           command: eas update --auto
 ```
 
-Although the code above is similar to the code in the previous example, there are a few differences. In this action, we changed the workflow event (`on`) to run every time a pull request is opened or updated. In the `update` job, we still set up Node, Expo's GitHub Action, and the dependencies using GitHub action's built in cache. But, instead of running `eas update --auto` ourselves, we let the [preview subaction](https://github.com/expo/expo-github-action/tree/main/preview#readme) run it for us. This will add a comment to the pull request with basic information about the update, and a QR code to scan the update.
+Although the code above is similar to the example in the previous section, there are a few differences. In this action, we changed the workflow event (`on`) to run every time a pull request is opened or updated. In the `update` job, we still set up Node, Expo's GitHub Action, and the dependencies using GitHub action's built-in cache. But, instead of running `eas update --auto` ourselves, we let the [preview subaction](https://github.com/expo/expo-github-action/tree/main/preview#readme) run it for us. This will add a comment to the pull request with basic information about the update and a QR code to scan the update.
 
 > Don't forget to add the `permissions` section to the job. This enables the job to add comments to the pull request.
 
@@ -144,9 +144,10 @@ Although the code above is similar to the code in the previous example, there ar
 
 <Step label="3">
 
-Finally, just like the previous example, we need to give the script above permission to run by providing an `EXPO_TOKEN` environment variable.
 
-If you already have done this, you can skip this step. Only one valid `EXPO_TOKEN` is required to authenticate GitHub Actions with your Expo account.
+You can skip this step if you have already set up `EXPO_TOKEN` in the previous section. Only one valid `EXPO_TOKEN` is required to authenticate GitHub Actions with your Expo account.
+
+If you haven't, you must give the script above permission to run by providing an `EXPO_TOKEN` environment variable.
 
 1.  Navigate to [https://expo.dev/settings/access-tokens](https://expo.dev/settings/access-tokens).
 2.  Click "Create" to create a new access token.
