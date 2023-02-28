@@ -9,7 +9,7 @@
     "*.fx.js",
     "*.fx.web.js"
   ],
-  "bin": "bin/cli.js",
+  "bin": "bin/cli",
   "files": [
     "android",
     "bin",

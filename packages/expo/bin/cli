@@ -1,0 +1,4 @@
+#!/usr/bin/env bash
+
+# Forward all arguments to the local CLI (@expo/cli).
+npx expo-internal "$@"
