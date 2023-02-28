@@ -8,7 +8,6 @@ import * as path from 'path';
 import { SAMPLE_COLORS_XML } from '../../../__tests__/fixtures/androidIcons';
 import rnFixture from '../../../__tests__/fixtures/react-native-project';
 import { getDirFromFS } from '../../../__tests__/getDirFromFS';
-
 import {
   getNotificationColor,
   getNotificationIcon,
