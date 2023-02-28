@@ -360,6 +360,7 @@ describe('built-in plugins', () => {
       'ios/HelloWorld/main.m',
       'ios/HelloWorld/GoogleService-Info.plist',
       'ios/HelloWorld/noop-file.swift',
+      'ios/HelloWorld/HelloWorld-Bridging-Header.h',
       'ios/HelloWorld/mycoolapp.entitlements',
       'ios/HelloWorld.xcodeproj/project.pbxproj',
       'ios/HelloWorld.xcodeproj/project.xcworkspace/contents.xcworkspacedata',
