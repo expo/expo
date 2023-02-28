@@ -20,6 +20,10 @@
 - Break up E2E tests for reliability. ([#21223](https://github.com/expo/expo/pull/21223) by [@douglowder](https://github.com/douglowder))
 - Convert E2E tests to TypeScript. ([#21278](https://github.com/expo/expo/pull/21278) by [@douglowder](https://github.com/douglowder))
 - Improved README and other chagnes for E2E tests. ([#21331](https://github.com/expo/expo/pull/21331) by [@douglowder](https://github.com/douglowder))
+- Protocol 1 support and rollback test in E2E tests. ([#21197](https://github.com/expo/expo/pull/21197) by [@wschurman](https://github.com/wschurman), [@douglowder](https://github.com/douglowder))
+- Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
+- Start converting to Swift. ([#21320](https://github.com/expo/expo/pull/21320), [#21329](https://github.com/expo/expo/pull/21329), [#21332](https://github.com/expo/expo/pull/21332) by [@wschurman](https://github.com/wschurman))
+- Fix E2E rollback test and other improvements. ([#21389](https://github.com/expo/expo/pull/21389) by [@douglowder](https://github.com/douglowder))
 
 ## 0.16.1 — 2023-02-09
 

@@ -18,10 +18,7 @@
   },
   "keywords": [
     "expo",
-    "expo-cli",
-    "react",
-    "metro",
-    "metro-config"
+    "metro"
   ],
   "license": "MIT",
   "bugs": {

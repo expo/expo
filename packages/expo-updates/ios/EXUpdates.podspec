@@ -21,6 +21,7 @@ Pod::Spec.new do |s|
   s.dependency 'EXUpdatesInterface'
   s.dependency 'EXManifests'
   s.dependency 'EASClient'
+  s.dependency 'EXJSONUtils'
   s.dependency 'ASN1Decoder', '~> 1.8'
 
   ex_updates_native_debug = ENV['EX_UPDATES_NATIVE_DEBUG'] == '1'
@@ -57,6 +58,7 @@ Pod::Spec.new do |s|
     }
   end
 
+  s.exclude_files = 'Tests/'
   s.test_spec 'Tests' do |test_spec|
     test_spec.source_files = 'Tests/*.{h,m,swift}'
     test_spec.resources = 'Tests/Support/**/*'
@@ -66,10 +68,11 @@ Pod::Spec.new do |s|
     test_spec.dependency 'OCMockito', '~> 6.0'
 
     test_spec.pod_target_xcconfig = {
-    'GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS' => 'YES',
-    'GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS' => 'YES',
-    'DEFINES_MODULE' => 'YES',
-    'SWIFT_COMPILATION_MODE' => 'wholemodule'
-  }
+      'USER_HEADER_SEARCH_PATHS' => '"${CONFIGURATION_TEMP_DIR}/EXUpdates.build/DerivedSources"',
+      'GCC_TREAT_INCOMPATIBLE_POINTER_TYPE_WARNINGS_AS_ERRORS' => 'YES',
+      'GCC_TREAT_IMPLICIT_FUNCTION_DECLARATIONS_AS_ERRORS' => 'YES',
+      'DEFINES_MODULE' => 'YES',
+      'SWIFT_COMPILATION_MODE' => 'wholemodule'
+    }
   end
 end

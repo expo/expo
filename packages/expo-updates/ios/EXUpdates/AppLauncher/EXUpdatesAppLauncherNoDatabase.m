@@ -1,9 +1,14 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesUtils.h>
+
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -31,7 +36,7 @@ static NSString * const EXUpdatesErrorLogFile = @"expo-error.log";
 {
   _launchedUpdate = [EXUpdatesEmbeddedAppLoader embeddedManifestWithConfig:config database:nil];
   if (_launchedUpdate) {
-    if (_launchedUpdate.status == EXUpdatesUpdateStatusEmbedded) {
+    if (_launchedUpdate.status == EXUpdatesUpdateStatusStatusEmbedded) {
       NSAssert(_assetFilesMap == nil, @"assetFilesMap should be null for embedded updates");
       _launchAssetUrl = [[NSBundle mainBundle] URLForResource:EXUpdatesBareEmbeddedBundleFilename withExtension:EXUpdatesBareEmbeddedBundleFileType];
     } else {

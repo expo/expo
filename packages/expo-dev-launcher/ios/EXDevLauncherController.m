@@ -25,8 +25,7 @@
 #import <EXDevLauncher-Swift.h>
 #endif
 
-#import <EXManifests/EXManifestsManifestFactory.h>
-
+@import EXManifests;
 @import EXDevMenu;
 
 #ifdef EX_DEV_LAUNCHER_VERSION
@@ -84,9 +83,9 @@
 
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
-  
-  NSMutableArray *modules = [[DevMenuVendoredModulesUtils vendoredModules:bridge addReanimated2:FALSE] mutableCopy];
-  
+
+  NSMutableArray *modules = [[DevMenuVendoredModulesUtils vendoredModules:bridge] mutableCopy];
+
   [modules addObject:[RCTDevMenu new]];
 #ifndef EX_DEV_LAUNCHER_URL
   [modules addObject:[EXDevLauncherRCTDevSettings new]];
@@ -94,7 +93,7 @@
   [modules addObject:[EXDevLauncherLoadingView new]];
   [modules addObject:[EXDevLauncherInternal new]];
   [modules addObject:[EXDevLauncherAuth new]];
-  
+
   return modules;
 }
 
@@ -193,7 +192,7 @@
   if (!deepLink) {
     return nil;
   }
-  
+
   return @{
     UIApplicationLaunchOptionsURLKey: deepLink
   };
@@ -265,14 +264,14 @@
 
   [_appBridge invalidate];
   [self invalidateDevMenuApp];
-  
+
   self.manifest = nil;
   self.manifestURL = nil;
 
   if (@available(iOS 12, *)) {
     [self _applyUserInterfaceStyle:UIUserInterfaceStyleUnspecified];
   }
-  
+
   [self _removeInitModuleObserver];
 
   _launcherBridge = [[EXDevLauncherRCTBridge alloc] initWithDelegate:self launchOptions:_launchOptions];
@@ -282,7 +281,7 @@
                                             initialProperties:@{}];
 
   [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:rootView];
-  
+
   [[NSNotificationCenter defaultCenter] addObserver:self
                                            selector:@selector(onAppContentDidAppear)
                                                name:RCTContentDidAppearNotification
@@ -310,14 +309,14 @@
   if (![EXDevLauncherURLHelper isDevLauncherURL:url]) {
     return [self _handleExternalDeepLink:url options:options];
   }
-  
+
   if (![EXDevLauncherURLHelper hasUrlQueryParam:url]) {
     // edgecase: this is a dev launcher url but it doesnt specify what url to open
     // fallback to navigating to the launcher home screen
     [self navigateToLauncher];
     return true;
   }
-  
+
   [self loadApp:url onSuccess:nil onError:^(NSError *error) {
     __weak typeof(self) weakSelf = self;
     dispatch_async(dispatch_get_main_queue(), ^{
@@ -333,7 +332,7 @@
       [self.errorManager showError:appError];
     });
   }];
-  
+
   return true;
 }
 
@@ -342,14 +341,14 @@
   if ([self isAppRunning]) {
     return false;
   }
-  
+
   self.pendingDeepLinkRegistry.pendingDeepLink = url;
 
   // cold boot -- need to initialize the dev launcher app RN app to handle the link
   if (![_launcherBridge isValid]) {
     [self navigateToLauncher];
   }
-  
+
   return true;
 }
 
@@ -366,7 +365,7 @@
   if ([url.host isEqual: @"u.expo.dev"]) {
     return true;
   }
-  
+
   return false;
 }
 
@@ -385,23 +384,23 @@
 - (void)loadApp:(NSURL *)url withProjectUrl:(NSURL * _Nullable)projectUrl onSuccess:(void (^ _Nullable)(void))onSuccess onError:(void (^ _Nullable)(NSError *error))onError
 {
   EXDevLauncherUrl *devLauncherUrl = [[EXDevLauncherUrl alloc] init:url];
-  NSURL *expoUrl = devLauncherUrl.url; 
+  NSURL *expoUrl = devLauncherUrl.url;
   [self _resetRemoteDebuggingForAppLoad];
   _possibleManifestURL = expoUrl;
   BOOL isEASUpdate = [self isEASUpdateURL:expoUrl];
-  
+
   // an update url requires a matching projectUrl
   // if one isn't provided, default to the configured project url in Expo.plist
   if (isEASUpdate && projectUrl == nil) {
     NSString *projectUrlString = [self getUpdatesConfigForKey:@"EXUpdatesURL"];
     projectUrl = [NSURL URLWithString:projectUrlString];
   }
-  
+
   // if there is no project url and its not an updates url, the project url can be the same as the app url
   if (!isEASUpdate && projectUrl == nil) {
     projectUrl = expoUrl;
   }
-  
+
   // Disable onboarding popup if "&disableOnboarding=1" is a param
   [EXDevLauncherURLHelper disableOnboardingPopupIfNeeded:expoUrl];
 
@@ -440,7 +439,7 @@
   }
 
   EXDevLauncherManifestParser *manifestParser = [[EXDevLauncherManifestParser alloc] initWithURL:expoUrl installationID:installationID session:[NSURLSession sharedSession]];
-  
+
   void (^onIsManifestURL)(BOOL) = ^(BOOL isManifestURL) {
     if (!isManifestURL) {
       // assume this is a direct URL to a bundle hosted by metro
@@ -475,7 +474,7 @@
       }
     } error:onError];
   };
-  
+
   [manifestParser isManifestURLWithCompletion:onIsManifestURL onError:^(NSError * _Nonnull error) {
     if (@available(iOS 14, *)) {
       // Try to retry if the network connection was rejected because of the luck of the lan network permission.
@@ -488,7 +487,7 @@
         return;
       }
     }
-    
+
     onError(error);
   }];
 }
@@ -507,25 +506,25 @@
   _possibleManifestURL = nil;
   __block UIInterfaceOrientation orientation = [EXDevLauncherManifestHelper exportManifestOrientation:manifest.orientation];
   __block UIColor *backgroundColor = [EXDevLauncherManifestHelper hexStringToColor:manifest.iosOrRootBackgroundColor];
-  
+
   __weak __typeof(self) weakSelf = self;
   dispatch_async(dispatch_get_main_queue(), ^{
     if (!weakSelf) {
       return;
     }
     __typeof(self) self = weakSelf;
-    
+
     self.sourceUrl = bundleUrl;
-    
+
 #if RCT_DEV
     // Connect to the websocket
     [[RCTPackagerConnection sharedPackagerConnection] setSocketConnectionURL:bundleUrl];
 #endif
-    
+
     if (@available(iOS 12, *)) {
       UIUserInterfaceStyle userInterfaceStyle = [EXDevLauncherManifestHelper exportManifestUserInterfaceStyle:manifest.userInterfaceStyle];
       [self _applyUserInterfaceStyle:userInterfaceStyle];
-      
+
       // Fix for the community react-native-appearance.
       // RNC appearance checks the global trait collection and doesn't have another way to override the user interface.
       // So we swap `currentTraitCollection` with one from the root view controller.
@@ -538,11 +537,11 @@
     }
 
     [self _addInitModuleObserver];
-    
+
     [self.delegate devLauncherController:self didStartWithSuccess:YES];
-    
+
     [self setDevMenuAppBridge];
-    
+
     [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:self.window.rootViewController];
 
     if (backgroundColor) {
@@ -601,7 +600,7 @@
   } else if (userInterfaceStyle == UIUserInterfaceStyleLight) {
     colorSchema = @"light";
   }
-  
+
   // change RN appearance
   RCTOverrideAppearancePreference(colorSchema);
 }
@@ -628,7 +627,7 @@
 }
 
 -(NSDictionary *)getBuildInfo
-{ 
+{
   NSMutableDictionary *buildInfo = [NSMutableDictionary new];
 
   NSString *appIcon = [self getAppIcon];
@@ -636,7 +635,7 @@
   NSString *sdkVersion = [self getUpdatesConfigForKey:@"EXUpdatesSDKVersion"];
   NSString *appVersion = [self getFormattedAppVersion];
   NSString *appName = [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleDisplayName"] ?: [[NSBundle mainBundle] objectForInfoDictionaryKey: @"CFBundleExecutable"];
-  
+
   [buildInfo setObject:appName forKey:@"appName"];
   [buildInfo setObject:appIcon forKey:@"appIcon"];
   [buildInfo setObject:appVersion forKey:@"appVersion"];
@@ -646,17 +645,17 @@
   return buildInfo;
 }
 
--(NSString *)getAppIcon 
+-(NSString *)getAppIcon
 {
   NSString *appIcon = @"";
   NSString *appIconName = [[[[[[NSBundle mainBundle] infoDictionary] objectForKey:@"CFBundleIcons"] objectForKey:@"CFBundlePrimaryIcon"] objectForKey:@"CFBundleIconFiles"]  lastObject];
-  
+
   if (appIconName != nil) {
     NSString *resourcePath = [[NSBundle mainBundle] resourcePath];
     NSString *appIconPath = [[resourcePath stringByAppendingString:appIconName] stringByAppendingString:@".png"];
     appIcon = [@"file://" stringByAppendingString:appIconPath];
   }
-  
+
   return appIcon;
 }
 
@@ -664,10 +663,10 @@
 {
   NSString *value = @"";
   NSString *path = [[NSBundle mainBundle] pathForResource:@"Expo" ofType:@"plist"];
-  
+
   if (path != nil) {
     NSDictionary *expoConfig = [NSDictionary dictionaryWithContentsOfFile:path];
-    
+
     if (expoConfig != nil) {
       value = [expoConfig objectForKey:key] ?: @"";
     }
@@ -676,7 +675,7 @@
   return value;
 }
 
--(NSString *)getFormattedAppVersion 
+-(NSString *)getFormattedAppVersion
 {
   NSString *shortVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleShortVersionString"];
   NSString *buildVersion = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"CFBundleVersion"];
@@ -693,7 +692,7 @@
 {
   DevMenuManager *manager = [DevMenuManager shared];
   manager.currentBridge = self.appBridge;
-  
+
   if (self.manifest != nil) {
     manager.currentManifest = self.manifest;
     manager.currentManifestURL = self.manifestURL;
@@ -711,34 +710,34 @@
 -(NSDictionary *)getUpdatesConfig
 {
   NSMutableDictionary *updatesConfig = [NSMutableDictionary new];
-  
+
   NSString *runtimeVersion = [self getUpdatesConfigForKey:@"EXUpdatesRuntimeVersion"];
   NSString *sdkVersion = [self getUpdatesConfigForKey:@"EXUpdatesSDKVersion"];
-  
+
   // url structure for EASUpdates: `http://u.expo.dev/{appId}`
   // this url field is added to app.json.updates when running `eas update:configure`
   // the `u.expo.dev` determines that it is the modern manifest protocol
   NSString *projectUrl = [self getUpdatesConfigForKey:@"EXUpdatesURL"];
   NSURL *url = [NSURL URLWithString:projectUrl];
   NSString *appId = [[url pathComponents] lastObject];
-  
+
   BOOL isModernManifestProtocol = [[url host] isEqualToString:@"u.expo.dev"] || [[url host] isEqualToString:@"staging-u.expo.dev"];
   BOOL expoUpdatesInstalled = EXDevLauncherController.sharedInstance.updatesInterface != nil;
   BOOL hasAppId = appId.length > 0;
-  
+
   BOOL usesEASUpdates = isModernManifestProtocol && expoUpdatesInstalled && hasAppId;
-  
+
   [updatesConfig setObject:runtimeVersion forKey:@"runtimeVersion"];
   [updatesConfig setObject:sdkVersion forKey:@"sdkVersion"];
-  
-  
+
+
   if (usesEASUpdates) {
     [updatesConfig setObject:appId forKey:@"appId"];
     [updatesConfig setObject:projectUrl forKey:@"projectUrl"];
   }
-  
+
   [updatesConfig setObject:@(usesEASUpdates) forKey:@"usesEASUpdates"];
-    
+
   return updatesConfig;
 }
 

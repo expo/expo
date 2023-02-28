@@ -1,6 +1,6 @@
 name: "\U0001F41B CLI Bug Report"
 description: 'Report a reproducible bug in the versioned Expo CLI (npx expo)'
-labels: ['needs review', 'CLI']
+labels: ['needs validation', 'CLI']
 body:
   - type: markdown
     attributes:

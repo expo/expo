@@ -132,6 +132,7 @@ const general = [
     makePage('guides/typescript.mdx'),
     makePage('guides/using-flipper.mdx'),
     makePage('guides/using-analytics.mdx'),
+    makePage('guides/facebook-authentication.mdx'),
     makePage('guides/google-authentication.mdx'),
   ]),
   makeSection('Assorted guides', [
@@ -313,9 +314,13 @@ const preview = [
 ];
 
 const archive = [
-  makeSection('Archive', [makeGroup('Archive', [makePage('archive/index.mdx')])], {
-    expanded: true,
-  }),
+  makeGroup('Archive', [makePage('archive/index.mdx')]),
+  makeGroup('Miscellaneous', [
+    makePage('archive/adhoc-builds.mdx'),
+    makePage('archive/expo-cli.mdx'),
+    makePage('archive/notification-channels.mdx'),
+    makePage('archive/glossary.mdx'),
+  ]),
   makeSection(
     'Classic Updates',
     [
@@ -342,26 +347,6 @@ const archive = [
       expanded: true,
     }
   ),
-  makeSection(
-    'Deprecated',
-    [
-      makeGroup('ExpoKit', [
-        makePage('archive/expokit/overview.mdx'),
-        makePage('archive/expokit/eject.mdx'),
-        makePage('archive/expokit/expokit.mdx'),
-        makePage('archive/expokit/advanced-expokit-topics.mdx'),
-        makePage('archive/expokit/universal-modules-and-expokit.mdx'),
-      ]),
-    ],
-    {
-      expanded: true,
-    }
-  ),
-  makeGroup('Miscellaneous', [
-    makePage('archive/adhoc-builds.mdx'),
-    makePage('archive/expo-cli.mdx'),
-    makePage('archive/notification-channels.mdx'),
-  ]),
 ];
 
 const featurePreview = [];

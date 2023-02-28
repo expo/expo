@@ -2,12 +2,14 @@
 
 #import <XCTest/XCTest.h>
 
-#import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesDatabaseIntegrityCheck.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
 #import <EXUpdates/EXUpdatesUtils.h>
+
+#import "EXUpdates-Swift.h"
+
+@import EXManifests;
 
 /**
  * special test implementation of this class that will mock the situation
@@ -78,11 +80,28 @@
     EXUpdatesConfigScopeKeyKey: scopeKey,
     EXUpdatesConfigRuntimeVersionKey: runtimeVersion
   }];
-  EXUpdatesUpdate *update1 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667851] runtimeVersion:runtimeVersion manifest:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:_db];
-  EXUpdatesUpdate *update2 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667852] runtimeVersion:runtimeVersion manifest:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:_db];
-
-  update1.status = EXUpdatesUpdateStatusEmbedded;
-  update2.status = EXUpdatesUpdateStatusEmbedded;
+  EXUpdatesUpdate *update1 = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:@{}]
+                                                                config:config
+                                                              database:_db
+                                                              updateId:NSUUID.UUID
+                                                              scopeKey:scopeKey
+                                                            commitTime:[NSDate dateWithTimeIntervalSince1970:1608667851]
+                                                        runtimeVersion:runtimeVersion
+                                                                  keep:YES
+                                                                status:EXUpdatesUpdateStatusStatusEmbedded
+                                                     isDevelopmentMode:NO
+                                                    assetsFromManifest:@[]];
+  EXUpdatesUpdate *update2 = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:@{}]
+                                                                config:config
+                                                              database:_db
+                                                              updateId:NSUUID.UUID
+                                                              scopeKey:scopeKey
+                                                            commitTime:[NSDate dateWithTimeIntervalSince1970:1608667852]
+                                                        runtimeVersion:runtimeVersion
+                                                                  keep:YES
+                                                                status:EXUpdatesUpdateStatusStatusEmbedded
+                                                     isDevelopmentMode:NO
+                                                    assetsFromManifest:@[]];
 
   dispatch_sync(_db.databaseQueue, ^{
     NSError *error1;
@@ -119,11 +138,28 @@
     EXUpdatesConfigScopeKeyKey: scopeKey,
     EXUpdatesConfigRuntimeVersionKey: runtimeVersion
   }];
-  EXUpdatesUpdate *update1 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667851] runtimeVersion:runtimeVersion manifest:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:_db];
-  EXUpdatesUpdate *update2 = [EXUpdatesUpdate updateWithId:NSUUID.UUID scopeKey:scopeKey commitTime:[NSDate dateWithTimeIntervalSince1970:1608667852] runtimeVersion:runtimeVersion manifest:nil status:EXUpdatesUpdateStatusReady keep:YES config:config database:_db];
-
-  update1.status = EXUpdatesUpdateStatusReady;
-  update2.status = EXUpdatesUpdateStatusReady;
+  EXUpdatesUpdate *update1 = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:@{}]
+                                                                config:config
+                                                              database:_db
+                                                              updateId:NSUUID.UUID
+                                                              scopeKey:scopeKey
+                                                            commitTime:[NSDate dateWithTimeIntervalSince1970:1608667851]
+                                                        runtimeVersion:runtimeVersion
+                                                                  keep:YES
+                                                                status:EXUpdatesUpdateStatusStatusReady
+                                                     isDevelopmentMode:NO
+                                                    assetsFromManifest:@[]];
+  EXUpdatesUpdate *update2 = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:@{}]
+                                                                config:config
+                                                              database:_db
+                                                              updateId:NSUUID.UUID
+                                                              scopeKey:scopeKey
+                                                            commitTime:[NSDate dateWithTimeIntervalSince1970:1608667852]
+                                                        runtimeVersion:runtimeVersion
+                                                                  keep:YES
+                                                                status:EXUpdatesUpdateStatusStatusReady
+                                                     isDevelopmentMode:NO
+                                                    assetsFromManifest:@[]];
 
   dispatch_sync(_db.databaseQueue, ^{
     NSError *error1;
@@ -152,8 +188,8 @@
     XCTAssertEqual(2, allAssets.count);
 
     NSArray<EXUpdatesUpdate *> *sortedUpdates = [allUpdates sortedArrayUsingDescriptors:@[[NSSortDescriptor sortDescriptorWithKey:@"commitTime" ascending:YES]]];
-    XCTAssertEqual(EXUpdatesUpdateStatusReady, sortedUpdates[0].status);
-    XCTAssertEqual(EXUpdatesUpdateStatusPending, sortedUpdates[1].status);
+    XCTAssertEqual(EXUpdatesUpdateStatusStatusReady, sortedUpdates[0].status);
+    XCTAssertEqual(EXUpdatesUpdateStatusStatusPending, sortedUpdates[1].status);
   });
 }
 

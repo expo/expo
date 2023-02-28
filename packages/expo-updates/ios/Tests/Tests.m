@@ -2,10 +2,10 @@
 
 @import XCTest;
 
-#import <EXUpdates/EXUpdatesAsset.h>
 #import <EXUpdates/EXUpdatesConfig.h>
-#import <EXUpdates/EXUpdatesLegacyUpdate.h>
 #import <EXUpdates/EXUpdatesUtils.h>
+
+#import "EXUpdates-Swift.h"
 
 @interface Tests : XCTestCase
 

@@ -8,9 +8,20 @@
 
 ### 🐛 Bug fixes
 
-- Fixed dev client crash when server URL has no scheme. ([#21274](https://github.com/expo/expo/pull/21274) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 💡 Others
+
+- Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
+
+## 2.1.4 — 2023-02-28
+
+### 🐛 Bug fixes
+
+- Fixed dev client crash when server URL has no scheme. ([#21274](https://github.com/expo/expo/pull/21274) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fixed dev client not showing logged user and initial data. ([#21425](https://github.com/expo/expo/pull/21425) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 2.1.3 — 2023-02-25
+
+_This version does not introduce any user-facing changes._
 
 ## 2.1.2 — 2023-02-17
 

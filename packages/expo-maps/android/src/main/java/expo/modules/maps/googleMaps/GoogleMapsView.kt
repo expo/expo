@@ -7,6 +7,8 @@ import com.google.android.gms.maps.MapView
 import com.google.android.gms.maps.OnMapReadyCallback
 import com.google.android.gms.maps.model.MapStyleOptions
 import com.google.maps.android.collections.MarkerManager
+import expo.modules.core.interfaces.services.UIManager
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.viewevent.EventDispatcher
 import expo.modules.maps.*
@@ -16,7 +18,7 @@ import kotlinx.coroutines.*
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.collectLatest
 
-class GoogleMapsView(context: Context) : LinearLayout(context), OnMapReadyCallback, ExpoMapView {
+class GoogleMapsView(context: Context, appContext: AppContext) : LinearLayout(context), OnMapReadyCallback, ExpoMapView {
 
   private val mapView: MapView = MapView(context)
   private lateinit var googleMap: GoogleMap
@@ -63,6 +65,9 @@ class GoogleMapsView(context: Context) : LinearLayout(context), OnMapReadyCallba
     mapView.onStart()
     mapView.onResume()
     addView(mapView)
+
+    appContext.legacyModule<UIManager>()
+      ?.registerLifecycleEventListener(lifecycleEventListener)
   }
 
   override fun onMapReady(googleMap: GoogleMap) {

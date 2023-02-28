@@ -6,7 +6,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     class="css-165e1mf-AppConfigProperty"
   >
     <p
-      class="  css-yszm2s-TextComponent"
+      class="  css-1kfqm4n-TextComponent"
       data-text="true"
     >
       <a
@@ -21,7 +21,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="css-cj6ctd-PropertyName"
+            class="css-ter5io-PropertyName"
             data-text="true"
           >
             name
@@ -63,14 +63,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     >
       Type: 
       <code
-        class="css-kzvbfm-TextComponent"
+        class="css-4xa05b-TextComponent"
         data-text="true"
       >
         string
       </code>
     </p>
     <p
-      class="css-1oym3r-TextComponent"
+      class="css-hnkmoy-TextComponent"
       data-text="true"
     >
       Name of your app.
@@ -113,7 +113,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="css-b8vpa7-Collapsible"
       >
         <p
-          class="css-1oym3r-TextComponent"
+          class="css-hnkmoy-TextComponent"
           data-text="true"
         >
           Edit the 'Display Name' field in Xcode
@@ -126,7 +126,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     class="css-165e1mf-AppConfigProperty"
   >
     <p
-      class="  css-yszm2s-TextComponent"
+      class="  css-1kfqm4n-TextComponent"
       data-text="true"
     >
       <a
@@ -141,7 +141,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="css-cj6ctd-PropertyName"
+            class="css-ter5io-PropertyName"
             data-text="true"
           >
             androidNavigationBar
@@ -183,14 +183,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     >
       Type: 
       <code
-        class="css-kzvbfm-TextComponent"
+        class="css-4xa05b-TextComponent"
         data-text="true"
       >
         object
       </code>
     </p>
     <p
-      class="css-1oym3r-TextComponent"
+      class="css-hnkmoy-TextComponent"
       data-text="true"
     >
       Configuration for the bottom navigation bar on Android.
@@ -233,7 +233,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="css-b8vpa7-Collapsible"
       >
         <p
-          class="css-1oym3r-TextComponent"
+          class="css-hnkmoy-TextComponent"
           data-text="true"
         >
           Set this property using AppConstants.java.
@@ -278,7 +278,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="css-b8vpa7-Collapsible"
       >
         <p
-          class="css-1oym3r-TextComponent"
+          class="css-hnkmoy-TextComponent"
           data-text="true"
         >
           Set this property using just Xcode
@@ -290,7 +290,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="css-165e1mf-AppConfigProperty"
       >
         <p
-          class="  css-yszm2s-TextComponent"
+          class="  css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <a
@@ -305,7 +305,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="css-cj6ctd-PropertyName"
+                class="css-ter5io-PropertyName"
                 data-text="true"
               >
                 visible
@@ -347,7 +347,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="css-kzvbfm-TextComponent"
+            class="css-4xa05b-TextComponent"
             data-text="true"
           >
             enum
@@ -363,7 +363,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </code>
         </p>
         <p
-          class="css-1oym3r-TextComponent"
+          class="css-hnkmoy-TextComponent"
           data-text="true"
         >
           Determines how and when the navigation bar is shown.
@@ -406,7 +406,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="css-b8vpa7-Collapsible"
           >
             <p
-              class="css-1oym3r-TextComponent"
+              class="css-hnkmoy-TextComponent"
               data-text="true"
             >
               Set this property using Xcode.
@@ -418,7 +418,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="css-165e1mf-AppConfigProperty"
           >
             <p
-              class="  css-yszm2s-TextComponent"
+              class="  css-1kfqm4n-TextComponent"
               data-text="true"
             >
               <a
@@ -433,7 +433,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="css-6n7j50"
                 >
                   <code
-                    class="css-cj6ctd-PropertyName"
+                    class="css-ter5io-PropertyName"
                     data-text="true"
                   >
                     always
@@ -475,7 +475,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             >
               Type: 
               <code
-                class="css-kzvbfm-TextComponent"
+                class="css-4xa05b-TextComponent"
                 data-text="true"
               >
                 boolean
@@ -491,7 +491,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </code>
             </p>
             <p
-              class="css-1oym3r-TextComponent"
+              class="css-hnkmoy-TextComponent"
               data-text="true"
             >
               Test sub-sub-property
@@ -504,7 +504,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="css-165e1mf-AppConfigProperty"
       >
         <p
-          class="  css-yszm2s-TextComponent"
+          class="  css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <a
@@ -519,7 +519,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="css-cj6ctd-PropertyName"
+                class="css-ter5io-PropertyName"
                 data-text="true"
               >
                 backgroundColor
@@ -561,7 +561,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="css-kzvbfm-TextComponent"
+            class="css-4xa05b-TextComponent"
             data-text="true"
           >
             string
@@ -577,7 +577,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </code>
         </p>
         <p
-          class="css-1oym3r-TextComponent"
+          class="css-hnkmoy-TextComponent"
           data-text="true"
         >
           Specifies the background color of the navigation bar.
@@ -585,12 +585,12 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         
 
         <p
-          class="css-1oym3r-TextComponent"
+          class="css-hnkmoy-TextComponent"
           data-text="true"
         >
           6 character long hex color string, eg: 
           <code
-            class="css-zmv3vl-TextComponent"
+            class="css-23wgco-TextComponent"
             data-text="true"
           >
             '#000000'
@@ -604,7 +604,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     class="css-165e1mf-AppConfigProperty"
   >
     <p
-      class="  css-yszm2s-TextComponent"
+      class="  css-1kfqm4n-TextComponent"
       data-text="true"
     >
       <a
@@ -619,7 +619,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="css-cj6ctd-PropertyName"
+            class="css-ter5io-PropertyName"
             data-text="true"
           >
             intentFilters
@@ -661,14 +661,14 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
     >
       Type: 
       <code
-        class="css-kzvbfm-TextComponent"
+        class="css-4xa05b-TextComponent"
         data-text="true"
       >
         array
       </code>
     </p>
     <p
-      class="css-1oym3r-TextComponent"
+      class="css-hnkmoy-TextComponent"
       data-text="true"
     >
       Configuration for setting an array of custom intent filters in Android manifest.
@@ -711,7 +711,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="css-b8vpa7-Collapsible"
       >
         <p
-          class="css-1oym3r-TextComponent"
+          class="css-hnkmoy-TextComponent"
           data-text="true"
         >
           This is set in AndroidManifest.xml directly.
@@ -752,7 +752,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           Example
         </strong>
         <p
-          class="css-1oym3r-TextComponent"
+          class="css-hnkmoy-TextComponent"
           data-text="true"
         >
           [{  "autoVerify": true,  "data": {"host": "*.example.com"  }  }]
@@ -764,7 +764,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="css-165e1mf-AppConfigProperty"
       >
         <p
-          class="  css-yszm2s-TextComponent"
+          class="  css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <a
@@ -779,7 +779,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="css-cj6ctd-PropertyName"
+                class="css-ter5io-PropertyName"
                 data-text="true"
               >
                 autoVerify
@@ -821,7 +821,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="css-kzvbfm-TextComponent"
+            class="css-4xa05b-TextComponent"
             data-text="true"
           >
             boolean
@@ -837,7 +837,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </code>
         </p>
         <p
-          class="css-1oym3r-TextComponent"
+          class="css-hnkmoy-TextComponent"
           data-text="true"
         >
           You may also use an intent filter to set your app as the default handler for links
@@ -848,7 +848,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="css-165e1mf-AppConfigProperty"
       >
         <p
-          class="  css-yszm2s-TextComponent"
+          class="  css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <a
@@ -863,7 +863,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="css-cj6ctd-PropertyName"
+                class="css-ter5io-PropertyName"
                 data-text="true"
               >
                 data
@@ -905,7 +905,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         >
           Type: 
           <code
-            class="css-kzvbfm-TextComponent"
+            class="css-4xa05b-TextComponent"
             data-text="true"
           >
             array || object
@@ -925,7 +925,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="css-165e1mf-AppConfigProperty"
           >
             <p
-              class="  css-yszm2s-TextComponent"
+              class="  css-1kfqm4n-TextComponent"
               data-text="true"
             >
               <a
@@ -940,7 +940,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   class="css-6n7j50"
                 >
                   <code
-                    class="css-cj6ctd-PropertyName"
+                    class="css-ter5io-PropertyName"
                     data-text="true"
                   >
                     host
@@ -982,7 +982,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             >
               Type: 
               <code
-                class="css-kzvbfm-TextComponent"
+                class="css-4xa05b-TextComponent"
                 data-text="true"
               >
                 string

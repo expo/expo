@@ -193,7 +193,6 @@ const renderAPI = (
         cls.children?.filter(
           child =>
             (child?.kind === TypeDocKind.Method || child?.kind === TypeDocKind.Property) &&
-            child?.flags?.isExternal !== true &&
             !child.inheritedFrom &&
             child.name !== 'render' &&
             // note(simek): hide unannotated "private" methods

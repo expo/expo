@@ -6,16 +6,17 @@
 #import <EXUpdates/EXUpdatesSelectionPolicies.h>
 #import <EXUpdates/EXUpdatesMultipartStreamReader.h>
 #import <EXUpdates/EXUpdatesParameterParser.h>
-#import <EXUpdates/EXUpdatesManifestHeaders.h>
 #import <EXUpdates/EXUpdatesAppController.h>
 
 @import EASClient;
+@import EXManifests;
 
 #if __has_include(<EXUpdates/EXUpdates-Swift.h>)
 #import <EXUpdates/EXUpdates-Swift.h>
 #else
 #import "EXUpdates-Swift.h"
 #endif
+
 
 NS_ASSUME_NONNULL_BEGIN
 

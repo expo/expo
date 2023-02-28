@@ -6,6 +6,16 @@
 
 #import <sqlite3.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
+@import EXManifests;
+
+#define NULL_TO_NIL(obj) ({ __typeof__ (obj) __obj = (obj); __obj == [NSNull null] ? nil : obj; })
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesDatabase ()
@@ -66,7 +76,7 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
                       update.scopeKey,
                       update.commitTime,
                       update.runtimeVersion,
-                      update.manifestJSON ?: [NSNull null],
+                      update.manifest.rawManifestJSON,
                       @(update.status),
                       update.lastAccessed,
                       @(update.successfulLaunchCount),
@@ -92,7 +102,7 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
                           asset.url ? asset.url.absoluteString : [NSNull null],
                           asset.headers ?: [NSNull null],
                           asset.extraRequestHeaders ?: [NSNull null],
-                          asset.type,
+                          asset.type ?: [NSNull null],
                           asset.metadata ?: [NSNull null],
                           asset.downloadTime,
                           asset.filename,
@@ -172,12 +182,12 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
                       asset.key ?: [NSNull null],
                       asset.headers ?: [NSNull null],
                       asset.extraRequestHeaders ?: [NSNull null],
-                      asset.type,
+                      asset.type ?: [NSNull null],
                       asset.metadata ?: [NSNull null],
                       asset.downloadTime,
                       asset.filename,
                       asset.contentHash,
-                      asset.expectedHash,
+                      asset.expectedHash ?: [NSNull null],
                       asset.url ? asset.url.absoluteString : [NSNull null]
                       ]
               error:error];
@@ -210,8 +220,8 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
 
 - (void)markUpdateFinished:(EXUpdatesUpdate *)update error:(NSError ** _Nullable)error
 {
-  if (update.status != EXUpdatesUpdateStatusDevelopment) {
-    update.status = EXUpdatesUpdateStatusReady;
+  if (update.status != EXUpdatesUpdateStatusStatusDevelopment) {
+    update.status = EXUpdatesUpdateStatusStatusReady;
   }
   NSString * const updateSql = @"UPDATE updates SET status = ?1, keep = 1 WHERE id = ?2;";
   [self _executeSql:updateSql
@@ -256,7 +266,7 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
   NSString * const updatesSql = @"UPDATE updates SET status = ?1 WHERE id IN\
     (SELECT DISTINCT update_id FROM updates_assets WHERE asset_id = ?2);";
   for (EXUpdatesAsset *asset in assets) {
-    if ([self _executeSql:updatesSql withArgs:@[@(EXUpdatesUpdateStatusPending), @(asset.assetId)] error:error] == nil) {
+    if ([self _executeSql:updatesSql withArgs:@[@(EXUpdatesUpdateStatusStatusPending), @(asset.assetId)] error:error] == nil) {
       sqlite3_exec(_db, "ROLLBACK;", NULL, NULL, NULL);
       return;
     }
@@ -399,7 +409,7 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
   FROM updates\
   WHERE scope_key = ?1\
   AND (successful_launch_count > 0 OR failed_launch_count < 1)\
-  AND status IN (%li, %li, %li);", (long)EXUpdatesUpdateStatusReady, (long)EXUpdatesUpdateStatusEmbedded, (long)EXUpdatesUpdateStatusDevelopment];
+  AND status IN (%li, %li, %li);", (long)EXUpdatesUpdateStatusStatusReady, (long)EXUpdatesUpdateStatusStatusEmbedded, (long)EXUpdatesUpdateStatusStatusDevelopment];
 
   NSArray<NSDictionary *> *rows = [self _executeSql:sql withArgs:@[config.scopeKey] error:error];
   if (!rows) {
@@ -607,15 +617,17 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
     manifest = [NSJSONSerialization JSONObjectWithData:[(NSString *)rowManifest dataUsingEncoding:NSUTF8StringEncoding] options:kNilOptions error:&error];
     NSAssert(!error && manifest && [manifest isKindOfClass:[NSDictionary class]], @"Update manifest should be a valid JSON object");
   }
-  EXUpdatesUpdate *update = [EXUpdatesUpdate updateWithId:row[@"id"]
-                                                 scopeKey:row[@"scope_key"]
-                                               commitTime:[EXUpdatesDatabaseUtils dateFromUnixTimeMilliseconds:(NSNumber *)row[@"commit_time"]]
-                                           runtimeVersion:row[@"runtime_version"]
-                                                 manifest:manifest
-                                                   status:(EXUpdatesUpdateStatus)[(NSNumber *)row[@"status"] integerValue]
-                                                     keep:[(NSNumber *)row[@"keep"] boolValue]
-                                                   config:config
-                                                 database:self];
+  EXUpdatesUpdate *update = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:(manifest ?: @{})]
+                                                               config:config
+                                                             database:self
+                                                             updateId:row[@"id"]
+                                                             scopeKey:row[@"scope_key"]
+                                                           commitTime:[EXUpdatesDatabaseUtils dateFromUnixTimeMilliseconds:(NSNumber *)row[@"commit_time"]]
+                                                       runtimeVersion:row[@"runtime_version"]
+                                                                 keep:[(NSNumber *)row[@"keep"] boolValue]
+                                                               status:(EXUpdatesUpdateStatus)[(NSNumber *)row[@"status"] integerValue]
+                                                    isDevelopmentMode:NO
+                                                   assetsFromManifest:nil];
   update.lastAccessed = [EXUpdatesDatabaseUtils dateFromUnixTimeMilliseconds:(NSNumber *)row[@"last_accessed"]];
   update.successfulLaunchCount = [(NSNumber *)row[@"successful_launch_count"] integerValue];
   update.failedLaunchCount = [(NSNumber *)row[@"failed_launch_count"] integerValue];
@@ -656,9 +668,9 @@ static NSString * const EXUpdatesDatabaseStaticBuildDataKey = @"staticBuildData"
   asset.url = url;
   asset.extraRequestHeaders = extraRequestHeaders;
   asset.downloadTime = [EXUpdatesDatabaseUtils dateFromUnixTimeMilliseconds:(NSNumber *)row[@"download_time"]];
-  asset.filename = row[@"relative_path"];
-  asset.contentHash = row[@"hash"];
-  asset.expectedHash = row[@"expected_hash"];
+  asset.filename = NULL_TO_NIL(row[@"relative_path"]);
+  asset.contentHash = NULL_TO_NIL(row[@"hash"]);
+  asset.expectedHash = NULL_TO_NIL(row[@"expected_hash"]);
   asset.metadata = metadata;
   asset.isLaunchAsset = (launchAssetId && [launchAssetId isKindOfClass:[NSNumber class]])
     ? [(NSNumber *)launchAssetId isEqualToNumber:(NSNumber *)row[@"id"]]
