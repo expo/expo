@@ -17,7 +17,7 @@ It allows taking a screenshot of any DOM node and turning it into a vector (SVG)
 
 Stop the development server and run the following command to install the library:
 
-<Terminal cmd={['$ npm install dom-to-image']} />
+<Terminal cmd={['$ npx expo install dom-to-image']} />
 
 After installing it, make sure to restart the development server and press <kbd>w</kbd> in the terminal.
 
@@ -81,21 +81,20 @@ const onSaveImageAsync = async () => {
       console.log(e);
     }
   } /* @info Add an else condition to run the logic when the current platform is the web. */else {
-    domtoimage
-      .toJpeg(imageRef.current, {
-          quality: 0.95,
-          width: 320,
-          height: 440,
-        })
-      .then(dataUrl => {
-        let link = document.createElement('a');
-        link.download = 'sticker-smash.jpeg';
-        link.href = dataUrl;
-        link.click();
-      })
-      .catch(e => {
-        console.log(e);
+    try {
+      const dataUrl = await domtoimage.toJpeg(imageRef.current, {
+        quality: 0.95,
+        width: 320,
+        height: 440,
       });
+
+      let link = document.createElement('a');
+      link.download = 'sticker-smash.jpeg';
+      link.href = dataUrl;
+      link.click();
+    } catch (e) {
+      console.log(e);
+    }
   } /* @end */
 };
 ```
