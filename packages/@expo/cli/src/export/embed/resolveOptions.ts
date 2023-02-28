@@ -1,8 +1,10 @@
 import arg from 'arg';
-import { env } from '../utils/env';
-import { CommandError } from '../utils/errors';
-import { resolveCustomBooleanArgsAsync } from '../utils/resolveArgs';
 import path from 'path';
+
+import { env } from '../../utils/env';
+import { CommandError } from '../../utils/errors';
+import { resolveCustomBooleanArgsAsync } from '../../utils/resolveArgs';
+
 export interface Options {
   assetsDest?: string;
   entryFile: string;

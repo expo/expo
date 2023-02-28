@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added internal `bundle:proxy` command for use in Xcode and Android Studio builds. ([#21396](https://github.com/expo/expo/pull/21396) by [@EvanBacon](https://github.com/EvanBacon))
+- Added internal `export:embed` command for use in Xcode and Android Studio builds. ([#21396](https://github.com/expo/expo/pull/21396) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 

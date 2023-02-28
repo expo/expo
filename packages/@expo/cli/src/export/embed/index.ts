@@ -3,10 +3,10 @@ import arg from 'arg';
 import chalk from 'chalk';
 import path from 'path';
 
-import { Command } from '../../bin/cli';
-import { assertWithOptionsArgs, printHelp } from '../utils/args';
+import { Command } from '../../../bin/cli';
+import { assertWithOptionsArgs, printHelp } from '../../utils/args';
 
-export const expoBundleProxy: Command = async (argv) => {
+export const expoExportEmbed: Command = async (argv) => {
   const rawArgsMap: arg.Spec = {
     // Types
     '--entry-file': String,
@@ -32,10 +32,10 @@ export const expoBundleProxy: Command = async (argv) => {
 
   if (args['--help']) {
     printHelp(
-      `Export the JavaScript bundle during a native build script for embedding in a native binary`,
-      chalk`npx expo bundle:proxy {dim <dir>}`,
+      `(Internal) Export the JavaScript bundle during a native build script for embedding in a native binary`,
+      chalk`npx expo export:embed {dim <dir>}`,
       [
-        chalk`<dir>                                    Directory of the Expo project. {dim Default: Current working directory}`,
+        chalk`<dir>                                  Directory of the Expo project. {dim Default: Current working directory}`,
         `--entry-file <path>                    Path to the root JS file, either absolute or relative to JS root`,
         `--platform <string>                    Either "ios" or "android" (default: "ios")`,
         `--transformer <string>                 Specify a custom transformer to be used`,
@@ -62,17 +62,16 @@ export const expoBundleProxy: Command = async (argv) => {
   }
 
   const [
-    { bundleProxyAsync },
+    { exportEmbedAsync },
     { resolveOptions },
-    // ../utils/errors
     { logCmdError },
+    { resolveCustomBooleanArgsAsync },
   ] = await Promise.all([
-    import('./bundleProxyAsync'),
+    import('./exportEmbedAsync'),
     import('./resolveOptions'),
-    import('../utils/errors'),
+    import('../../utils/errors'),
+    import('../../utils/resolveArgs'),
   ]);
-
-  const { resolveCustomBooleanArgsAsync } = await import('../utils/resolveArgs');
 
   return (async () => {
     const parsed = await resolveCustomBooleanArgsAsync(argv ?? [], rawArgsMap, {
@@ -83,6 +82,6 @@ export const expoBundleProxy: Command = async (argv) => {
       '--read-global-cache': Boolean,
       '--generate-static-view-configs': Boolean,
     });
-    return bundleProxyAsync(path.resolve(parsed.projectRoot), resolveOptions(args, parsed));
+    return exportEmbedAsync(path.resolve(parsed.projectRoot), resolveOptions(args, parsed));
   })().catch(logCmdError);
 };
