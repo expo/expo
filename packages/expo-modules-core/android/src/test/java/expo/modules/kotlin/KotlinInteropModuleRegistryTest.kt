@@ -1,5 +1,6 @@
 package expo.modules.kotlin
 
+import android.view.View
 import com.facebook.react.bridge.JavaOnlyArray
 import com.facebook.react.bridge.JavaOnlyMap
 import com.google.common.truth.Truth
@@ -51,8 +52,7 @@ private class TestModule_2 : Module() {
     AsyncFunction("f2") { arg1: Int ->
       arg1
     }
-    ViewManager {
-      View { mockk() }
+    View(View::class) {
     }
   }
 }

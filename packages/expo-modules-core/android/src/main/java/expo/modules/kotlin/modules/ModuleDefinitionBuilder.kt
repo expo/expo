@@ -15,7 +15,6 @@ import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
 import expo.modules.kotlin.views.ViewDefinitionBuilder
 import expo.modules.kotlin.views.ViewManagerDefinition
-import expo.modules.kotlin.views.ViewManagerDefinitionBuilder
 import kotlin.reflect.KClass
 
 @DefinitionMarker
@@ -48,18 +47,6 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
    */
   fun Name(name: String) {
     this.name = name
-  }
-
-  /**
-   * Creates the view manager definition that scopes other view-related definitions.
-   */
-  @Deprecated(message = "Use a `View` component instead.")
-  inline fun ViewManager(body: ViewManagerDefinitionBuilder.() -> Unit) {
-    require(viewManagerDefinition == null) { "The module definition may have exported only one view manager." }
-
-    val viewManagerDefinitionBuilder = ViewManagerDefinitionBuilder()
-    body.invoke(viewManagerDefinitionBuilder)
-    viewManagerDefinition = viewManagerDefinitionBuilder.build()
   }
 
   /**
