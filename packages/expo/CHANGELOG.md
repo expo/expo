@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- drop `EXPO_USE_LOCAL_CLI` in favor of using `expo` for the local CLI and `expo-cli` for the global CLI.
+- drop `EXPO_USE_LOCAL_CLI` in favor of using `expo` for the local CLI and `expo-cli` for the global CLI. ([#21388](https://github.com/expo/expo/pull/21388) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
