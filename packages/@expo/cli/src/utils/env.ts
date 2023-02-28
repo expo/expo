@@ -143,8 +143,8 @@ class Env {
   }
 
   /** **Experimental:** Use the network inspector by overriding the metro inspector proxy with a custom version */
-  get EXPO_USE_NETWORK_INSPECTOR(): boolean {
-    return boolish('EXPO_USE_NETWORK_INSPECTOR', false);
+  get EXPO_USE_CUSTOM_INSPECTOR_PROXY(): boolean {
+    return boolish('EXPO_USE_CUSTOM_INSPECTOR_PROXY', false);
   }
 }
 

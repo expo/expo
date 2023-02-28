@@ -23,7 +23,7 @@ export function createInspectorProxy(projectRoot: string) {
 }
 
 export function withInspectorProxy(config: MetroConfig, projectRoot: string) {
-  if (!env.EXPO_USE_NETWORK_INSPECTOR) {
+  if (!env.EXPO_USE_CUSTOM_INSPECTOR_PROXY) {
     return config;
   }
 
