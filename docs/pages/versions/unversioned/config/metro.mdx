@@ -33,7 +33,7 @@ react {
   ...
 +     // Use Expo CLI to bundle the app, this ensures the Metro config
 +     // works correctly with Expo projects.
-+     cliPath = new File(["node", "--print", "require.resolve('@expo/cli')"].execute(null, rootDir).text.trim()).getAbsolutePath()
++     cliFile = new File(["node", "--print", "require.resolve('@expo/cli')"].execute(null, rootDir).text.trim()).getAbsolutePath()
 +     bundleCommand = "export:embed"
 }
 ```
