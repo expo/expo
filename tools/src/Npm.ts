@@ -82,6 +82,7 @@ export async function publishPackageAsync(
   }
   await spawnAsync('npm', args, {
     cwd: packageDir,
+    stdio: 'inherit',
   });
 }
 
