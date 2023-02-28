@@ -31,7 +31,7 @@ import { SnackInline } from '~/ui/components/Snippet';
 
 <APIInstallSection />
 
-## Configuration in app.json/app.config.js
+## Configuration
 
 <ConfigReactNative>
 
@@ -80,7 +80,7 @@ try {
   console.error(e);
 }
 
-//To resume a download across app restarts, assuming the the DownloadResumable.savable() object was stored:
+//To resume a download across app restarts, assuming the DownloadResumable.savable() object was stored:
 const downloadSnapshotJson = await AsyncStorage.getItem('pausedDownload');
 const downloadSnapshot = JSON.parse(downloadSnapshotJson);
 const downloadResumable = new FileSystem.DownloadResumable(

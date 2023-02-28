@@ -28,6 +28,22 @@ in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]
 The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 If your app does **not** use EAS Build, then you'll need to manually configure the package.
 
+<ConfigPluginExample>
+
+> This plugin is included automatically when installed.
+
+Running [EAS Build](/build/introduction) locally will use [iOS capabilities signing](/build-reference/ios-capabilities) to enable the required capabilities before building.
+
+```json app.json
+{
+  "expo": {
+    "plugins": ["expo-apple-authentication"]
+  }
+}
+```
+
+</ConfigPluginExample>
+
 <ConfigReactNative>
 
 Apps that don't use [EAS Build](/build/introduction) must [manually configure](/build-reference/ios-capabilities#manual-setup)
@@ -46,22 +62,6 @@ then be sure to add the following entitlements in your **ios/[app]/[app].entitle
 Also be sure to set `CFBundleAllowMixedLocalizations` to `true` in your **ios/[app]/Info.plist** to ensure the sign in button uses the device locale.
 
 </ConfigReactNative>
-
-<ConfigPluginExample>
-
-> This plugin is included automatically when installed.
-
-Running [EAS Build](/build/introduction) locally will use [iOS capabilities signing](/build-reference/ios-capabilities) to enable the required capabilities before building.
-
-```json app.json
-{
-  "expo": {
-    "plugins": ["expo-apple-authentication"]
-  }
-}
-```
-
-</ConfigPluginExample>
 
 ## Usage
 

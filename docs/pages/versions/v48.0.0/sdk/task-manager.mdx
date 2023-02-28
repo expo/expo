@@ -7,9 +7,10 @@ packageName: 'expo-task-manager'
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import APISection from '~/components/plugins/APISection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { SnackInline} from '~/ui/components/Snippet';
+import { SnackInline } from '~/ui/components/Snippet';
+import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 
-**`expo-task-manager`** provides an API that allows you to manage long-running tasks, in particular those tasks that can run while your app is in the background.
+`expo-task-manager` provides an API that allows you to manage long-running tasks, in particular those tasks that can run while your app is in the background.
 Some features of this module are used by other modules under the hood. Here is a list of Expo modules that use TaskManager:
 
 - [Location](location.mdx)
@@ -25,30 +26,29 @@ Some features of this module are used by other modules under the hood. Here is a
 
 ### Background modes on iOS
 
-`TaskManager` works out of the box in the Expo Go app on Android, but on iOS you'll need to test using [a development build](/development/introduction.mdx)
+`TaskManager` works out of the box in the Expo Go app on Android, however, on iOS, you'll need to use a [development build](/development/introduction).
 
-Standalone apps need some extra configuration: on iOS, each background feature requires a special key in `UIBackgroundModes` array in your **Info.plist** file. In standalone apps this array is empty by default, so in order to use background features you will need to add appropriate keys to your **app.json** configuration.
+Standalone apps need some extra configuration: on iOS, each background feature requires a special key in `UIBackgroundModes` array in your **Info.plist** file. In standalone apps this array is empty by default, so to use background features you will need to add appropriate keys to your **app.json** configuration.
+
 Here is an example of an **app.json** configuration that enables background location and background fetch:
 
 ```json app.json
 {
   "expo": {
-    /* @hide ... */ /* @end */
     "ios": {
-      /* @hide ... */ /* @end */
       "infoPlist": {
-        /* @hide ... */ /* @end */
-        "UIBackgroundModes": [
-          "location",
-          "fetch"
-        ]
+        "UIBackgroundModes": ["location", "fetch"]
       }
     }
   }
 }
 ```
 
-For bare React Native apps, you need to add those keys manually. You can do it by clicking on your project in Xcode, then `Signing & Capabilities`, adding the `BackgroundMode` capability (if absent), and checking either `Location updates` or `Background fetch`, depending on your needs.
+<ConfigReactNative>
+
+Learn how to configure the native projects in the [installation instructions in the `expo-task-manager` repository](https://github.com/expo/expo/tree/main/packages/expo-task-manager#installation-in-bare-ios-react-native-project).
+
+</ConfigReactNative>
 
 ## Example
 
@@ -96,8 +96,8 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     alignItems: 'center',
-    justifyContent: 'center'
-  }
+    justifyContent: 'center',
+  },
 });
 /* @end */
 
