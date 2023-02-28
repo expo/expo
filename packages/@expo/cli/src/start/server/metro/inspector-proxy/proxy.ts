@@ -1,5 +1,5 @@
 import type { IncomingMessage, ServerResponse } from 'http';
-import { InspectorProxy as MetroProxy, Device as MetroDevice } from 'metro-inspector-proxy';
+import type { InspectorProxy as MetroProxy, Device as MetroDevice } from 'metro-inspector-proxy';
 import type { AddressInfo } from 'net';
 import { parse } from 'url';
 import type { Server as WSServer } from 'ws';

@@ -22,7 +22,7 @@ describe(NetworkResponseHandler, () => {
     expect(response).toMatchObject(responseData);
   });
 
-  it('returns null request id is not found', () => {
+  it('returns undefined when request id is not found', () => {
     const handler = new NetworkResponseHandler();
     const response = handler.onDebuggerMessage({
       id: 420,
@@ -30,6 +30,6 @@ describe(NetworkResponseHandler, () => {
       params: { requestId: '1337' },
     });
 
-    expect(response).toBeNull();
+    expect(response).toBeUndefined();
   });
 });
