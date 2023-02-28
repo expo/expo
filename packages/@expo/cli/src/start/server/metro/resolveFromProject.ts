@@ -30,11 +30,6 @@ function importFromProject(projectRoot: string, moduleId: string) {
 export function importMetroFromProject(projectRoot: string): typeof import('metro') {
   return importFromProject(projectRoot, 'metro');
 }
-export function importMetroInspectorProxyFromProject(
-  projectRoot: string
-): typeof import('metro-inspector-proxy') {
-  return importFromProject(projectRoot, 'metro-inspector-proxy');
-}
 export function importMetroCreateWebsocketServerFromProject(
   projectRoot: string
 ): typeof import('metro/src/lib/createWebsocketServer').createWebsocketServer {
@@ -58,6 +53,25 @@ export function importMetroResolverFromProject(
   projectRoot: string
 ): typeof import('metro-resolver') {
   return importFromProject(projectRoot, 'metro-resolver');
+}
+
+/** Import `metro-inspector-proxy` from the project. */
+export function importMetroInspectorProxyFromProject(
+  projectRoot: string
+): typeof import('metro-inspector-proxy') {
+  return importFromProject(projectRoot, 'metro-inspector-proxy');
+}
+
+/** Import `metro-inspector-proxy/src/Device` from the project. */
+export function importMetroInspectorDeviceFromProject(
+  projectRoot: string
+): typeof import('metro-inspector-proxy/src/Device') {
+  return importFromProject(projectRoot, 'metro-inspector-proxy/src/Device');
+}
+
+/** Import `ws` from the project, installed by `metro-inspector-proxy` */
+export function importMetroInspectorWebSocketFromProject(projectRoot: string): typeof import('ws') {
+  return importFromProject(projectRoot, 'ws');
 }
 
 /**
