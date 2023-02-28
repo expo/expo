@@ -27,6 +27,7 @@ import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroE
 import { importMetroResolverFromProject } from './resolveFromProject';
 import { getAppRouterRelativeEntryPath } from './router';
 import { withMetroResolvers } from './withMetroResolvers';
+import { getConfig } from '@expo/config';
 
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
 
@@ -97,7 +98,11 @@ export async function getExtraDependenciesAsync(projectRoot: string, platform: '
   ];
 
   const extraAutolinkedDeps = autolinkedDeps.filter((dep) => !bundledNativeModules.includes(dep));
-  return extraAutolinkedDeps;
+  return {
+    extras: extraAutolinkedDeps.sort(),
+    linked: autolinkedDeps.sort(),
+    required: bundledNativeModules.sort(),
+  };
 }
 
 export async function printExtraDependenciesAsync(
@@ -106,47 +111,143 @@ export async function printExtraDependenciesAsync(
 ) {
   if (!platforms.length) return;
 
-  const extraDependencies = await Promise.all(
-    platforms.map((platform) => getExtraDependenciesAsync(projectRoot, platform))
-  );
+  const extraDependencies = (
+    await Promise.all(platforms.map((platform) => getExtraDependenciesAsync(projectRoot, platform)))
+  ).filter(Boolean) as any as NonNullable<Awaited<ReturnType<typeof getExtraDependenciesAsync>>>[];
 
-  const json = platforms.reduce((acc, platform, index) => {
-    const extraDeps = extraDependencies[index];
-    if (extraDeps && extraDeps.length > 0) {
-      acc[platform] = extraDeps;
-    }
-    return acc;
-  }, {} as Record<string, string[]>);
-
-  if (Object.keys(json).length === 0) {
+  if (!extraDependencies.length) {
     // No recommendations.
     return;
   }
 
+  let hasLoggedHeader = false;
+  const logHeader = () => {
+    if (hasLoggedHeader) return;
+    hasLoggedHeader = true;
+    console.log();
+    console.log(
+      'Found recommended updates for autolinking.',
+      learnMore('https://docs.expo.dev/modules/autolinking/#exclude')
+    );
+  };
+
+  const { pkg } = getConfig(projectRoot, { skipPlugins: true });
+  const json = platforms.reduce((acc, platform, index) => {
+    const extraDeps = extraDependencies[index];
+    acc[platform] = {
+      ...pkg.expo?.autolinking?.[platform],
+      exclude: extraDeps.extras,
+    };
+    return acc;
+  }, {} as Record<string, { exclude: string[] }>);
+
   const recommendedJson = {
     expo: {
-      autolinking: json,
+      ...pkg.expo,
+      autolinking: {
+        ...pkg.expo?.autolinking,
+        ...json,
+      },
     },
   };
 
-  console.log();
-  console.log(
-    wrapForTerminal(
-      chalk`Some native modules are not {magenta {bold import}}'d in the production JavaScript bundles.\nIt {italic may} be safe to exclude them from the native apps to reduce download size and build time:`
-    )
-  );
-  console.log(learnMore('https://docs.expo.dev/modules/autolinking/#exclude'));
-  console.log();
-  console.log(chalk.cyan('package.json'));
-  console.log(
-    util.inspect(recommendedJson, {
-      colors: true,
-      compact: false,
-      showHidden: false,
-      depth: null,
-    })
-  );
-  console.log();
+  const required = platforms.reduce((acc, platform, index) => {
+    const extraDeps = extraDependencies[index];
+    if (extraDeps && extraDeps.required.length > 0) {
+      acc[platform] = extraDeps.required;
+    }
+    return acc;
+  }, {} as Record<string, string[]>);
+
+  if (pkg.expo?.autolinking) {
+    // First check if the user is excluding a required dependency.
+
+    const userExcludingImportedDependencies: Record<string, string[]> = {};
+
+    Object.entries(pkg.expo?.autolinking).forEach(([platform, config]: [string, any]) => {
+      if (typeof config !== 'object') {
+        return;
+      }
+
+      const userExcluded = config.exclude as string[];
+      const platformRequired = required[platform];
+      if (platformRequired?.length && userExcluded?.length) {
+        // User is excluding a required dependency.
+        userExcludingImportedDependencies[platform] = userExcluded.filter((nativeModule) => {
+          return platformRequired.includes(nativeModule);
+        });
+      }
+    });
+
+    if (Object.values(userExcludingImportedDependencies).some((value) => value.length)) {
+      logHeader();
+      // Warn the user that they're excluding native dependencies that are imported in the JS.
+      console.log();
+      console.log(
+        chalk.yellow('Warning:'),
+        'Excluding required dependencies from the native apps that are imported in the JS bundle.'
+      );
+
+      for (const [platform, suggestions] of Object.entries(userExcludingImportedDependencies)) {
+        if (suggestions.length) {
+          console.log(
+            chalk`- Remove the following values from the {bold expo.${platform}.exclude} array in {bold package.json}: ${util.inspect(
+              suggestions,
+              { colors: true }
+            )}`
+          );
+        }
+      }
+    }
+  }
+
+  const unappliedSuggestions: Record<string, string[]> = {};
+
+  Object.entries(json).forEach(([platform, config]) => {
+    const suggestions = config.exclude;
+
+    if (!pkg.expo?.[platform]?.exclude) {
+      unappliedSuggestions[platform] = suggestions;
+    } else {
+      // User is not excluding a recommended dependency.
+      unappliedSuggestions[platform] = suggestions.filter((suggestion) => {
+        return pkg.expo?.[platform].exclude?.includes(suggestion);
+      });
+    }
+  });
+
+  const hasSuggestions = Object.values(unappliedSuggestions).some((value) => value.length);
+  if (hasSuggestions) {
+    logHeader();
+    console.log();
+    console.log(
+      wrapForTerminal(
+        chalk`{cyan Suggestion:} Some native modules are not {magenta {bold import}}'d in the production JavaScript bundles.\nIt {italic may} be safe to exclude them from the native apps to reduce download size and build time.`
+      )
+    );
+
+    for (const [platform, suggestions] of Object.entries(unappliedSuggestions)) {
+      if (suggestions.length) {
+        console.log(
+          chalk`- Add the following values to the {bold expo.${platform}.exclude} array in {bold package.json}: ${util.inspect(
+            suggestions,
+            { colors: true }
+          )}`
+        );
+      }
+    }
+    // TODO: Can we somehow print an estimate of the reduced binary size?
+  }
+
+  if (hasLoggedHeader) {
+    console.log();
+    console.log(chalk`Recommended Autolinking configuration:`);
+    console.log(chalk`{cyan package.json}`);
+    console.log(JSON.stringify(recommendedJson, null, 2));
+    console.log();
+  } else {
+    console.log(chalk`{cyan Autolinking fully optimized.}`);
+  }
 }
 
 /**  Wrap long messages to fit smaller terminals. */
