@@ -54,7 +54,7 @@ async function main(target, options) {
     const packageManager = await (0, resolvePackageManager_1.resolvePackageManager)();
     const packagePath = options.source
         ? path_1.default.join(CWD, options.source)
-        : await downloadPackageAsync(targetDir);
+        : await downloadPackageAsync(targetDir, options.local);
     (0, telemetry_1.logEventAsync)((0, telemetry_1.eventCreateExpoModule)(packageManager, options));
     await (0, utils_1.newStep)('Creating the module from template files', async (step) => {
         await createModuleFromTemplate(packagePath, targetDir, data);
@@ -144,9 +144,9 @@ async function getNpmTarballUrl(packageName, version = 'latest') {
 /**
  * Downloads the template from NPM registry.
  */
-async function downloadPackageAsync(targetDir) {
+async function downloadPackageAsync(targetDir, isLocal = false) {
     return await (0, utils_1.newStep)('Downloading module template from npm', async (step) => {
-        const tarballUrl = await getNpmTarballUrl('expo-module-template', EXPO_BETA ? 'next' : 'latest');
+        const tarballUrl = await getNpmTarballUrl(isLocal ? 'expo-module-template-local' : 'expo-module-template', EXPO_BETA ? 'next' : 'latest');
         await (0, download_tarball_1.default)({
             url: tarballUrl,
             dir: targetDir,

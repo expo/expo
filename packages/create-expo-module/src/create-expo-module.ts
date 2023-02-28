@@ -71,7 +71,7 @@ async function main(target: string | undefined, options: CommandOptions) {
   const packageManager = await resolvePackageManager();
   const packagePath = options.source
     ? path.join(CWD, options.source)
-    : await downloadPackageAsync(targetDir);
+    : await downloadPackageAsync(targetDir, options.local);
 
   logEventAsync(eventCreateExpoModule(packageManager, options));
 
@@ -172,10 +172,10 @@ async function getNpmTarballUrl(packageName: string, version: string = 'latest')
 /**
  * Downloads the template from NPM registry.
  */
-async function downloadPackageAsync(targetDir: string): Promise<string> {
+async function downloadPackageAsync(targetDir: string, isLocal = false): Promise<string> {
   return await newStep('Downloading module template from npm', async (step) => {
     const tarballUrl = await getNpmTarballUrl(
-      'expo-module-template',
+      isLocal ? 'expo-module-template-local' : 'expo-module-template',
       EXPO_BETA ? 'next' : 'latest'
     );
 
