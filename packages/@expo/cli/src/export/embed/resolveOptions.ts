@@ -69,7 +69,7 @@ export function resolveOptions(
     unstableTransformProfile: args['--unstable-transform-profile'],
     resetCache: !!parsed.args['--reset-cache'],
     resetGlobalCache: false,
-    verbose: env.EXPO_DEBUG,
+    verbose: args['--verbose'] ?? env.EXPO_DEBUG,
     config: args['--config'] ? path.resolve(args['--config']) : undefined,
     dev,
     generateStaticViewConfigs,

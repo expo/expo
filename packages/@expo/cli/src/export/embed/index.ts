@@ -21,9 +21,13 @@ export const expoExportEmbed: Command = async (argv) => {
     '--unstable-transform-profile': String,
     '--config': String,
 
+    // This is here for compatibility with the `npx react-native bundle` command.
+    // devs should use `DEBUG=expo:*` instead.
+    '--verbose': Boolean,
     '--help': Boolean,
     // Aliases
     '-h': '--help',
+    '-v': '--verbose',
   };
   const args = assertWithOptionsArgs(rawArgsMap, {
     argv,
@@ -50,6 +54,7 @@ export const expoExportEmbed: Command = async (argv) => {
         `--assets-dest <string>                 Directory name where to store assets referenced in the bundle`,
         `--unstable-transform-profile <string>  Experimental, transform JS for a specific JS engine. Currently supported: hermes, hermes-canary, default`,
         `--reset-cache                          Removes cached files`,
+        `-v, --verbose                          Enables debug logging`,
 
         `--config <string>                      Path to the CLI configuration file`,
         `--generate-static-view-configs         Generate static view configs for Fabric components. If there are no Fabric components in the bundle or Fabric is disabled, this is just no-op.`,

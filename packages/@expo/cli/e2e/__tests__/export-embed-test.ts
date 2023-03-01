@@ -66,6 +66,7 @@ it('runs `npx expo export:embed --help`', async () => {
         --assets-dest <string>                 Directory name where to store assets referenced in the bundle
         --unstable-transform-profile <string>  Experimental, transform JS for a specific JS engine. Currently supported: hermes, hermes-canary, default
         --reset-cache                          Removes cached files
+        -v, --verbose                          Enables debug logging
         --config <string>                      Path to the CLI configuration file
         --generate-static-view-configs         Generate static view configs for Fabric components. If there are no Fabric components in the bundle or Fabric is disabled, this is just no-op.
         --read-global-cache                    Try to fetch transformed JS code from the global cache, if configured.
