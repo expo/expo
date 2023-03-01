@@ -1,4 +1,5 @@
 import { ExpoConfig } from '@expo/config';
+import chalk from 'chalk';
 import fs from 'fs/promises';
 import path from 'path';
 
@@ -17,12 +18,10 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite {
   /** Ensure a project that hasn't explicitly disabled web support has all the required packages for running in the browser. */
   async assertImplementation(): Promise<void> {
     if (env.EXPO_NO_TYPESCRIPT_SETUP) {
-      Log.warn('Skipping TypeScript setup: EXPO_NO_TYPESCRIPT_SETUP is enabled.');
-      return;
+      return Log.warn('Skipping TypeScript setup: EXPO_NO_TYPESCRIPT_SETUP is enabled.');
     }
-    debug('Ensuring TypeScript support is setup');
 
-    const tsConfigPath = path.join(this.projectRoot, 'tsconfig.json');
+    debug('Ensuring TypeScript support is setup');
 
     // Ensure the project is TypeScript before continuing.
     const intent = await this._getSetupRequirements();
@@ -34,7 +33,10 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite {
     await this._ensureDependenciesInstalledAsync();
 
     // Update the config
-    await updateTSConfigAsync({ tsConfigPath, isBootstrapping: intent.isBootstrapping });
+    await updateTSConfigAsync({
+      tsConfigPath: path.join(this.projectRoot, 'tsconfig.json'),
+      isBootstrapping: intent.isBootstrapping,
+    });
   }
 
   /** Exposed for testing. */
@@ -70,8 +72,8 @@ export class TypeScriptProjectPrerequisite extends ProjectPrerequisite {
       return await ensureDependenciesAsync(this.projectRoot, {
         exp,
         installMessage: `It looks like you're trying to use TypeScript but don't have the required dependencies installed.`,
-        warningMessage:
-          "If you're not using TypeScript, please remove the TypeScript files from your project",
+        warningMessage: `If you're not using TypeScript, remove the TypeScript files from your project.`,
+        disableMessage: chalk`You can disable this setup with {bold EXPO_NO_TYPESCRIPT_SETUP}.`,
         requiredPackages: [
           // use typescript/package.json to skip node module cache issues when the user installs
           // the package and attempts to resolve the module in the same process.

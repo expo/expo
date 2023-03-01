@@ -5,9 +5,6 @@ import wrapAnsi from 'wrap-ansi';
 import { installAsync } from '../../../install/installAsync';
 import * as Log from '../../../log';
 import { CommandError } from '../../../utils/errors';
-import { isInteractive } from '../../../utils/interactive';
-import { logNewSection } from '../../../utils/ora';
-import { confirmAsync } from '../../../utils/prompts';
 import { getMissingPackagesAsync, ResolvedPackage } from './getMissingPackages';
 
 export async function ensureDependenciesAsync(
@@ -17,14 +14,13 @@ export async function ensureDependenciesAsync(
     requiredPackages,
     warningMessage,
     installMessage,
-    // Don't prompt in CI
-    skipPrompt = !isInteractive(),
+    disableMessage,
   }: {
     exp?: ExpoConfig;
     installMessage: string;
     warningMessage: string;
+    disableMessage?: string;
     requiredPackages: ResolvedPackage[];
-    skipPrompt?: boolean;
   }
 ): Promise<boolean> {
   const { missing } = await getMissingPackagesAsync(projectRoot, {
@@ -35,57 +31,42 @@ export async function ensureDependenciesAsync(
     return true;
   }
 
-  // Prompt to install or bail out...
+  // Inform the user about what is wrong, and is currently being fixed
+  Log.log(installMessage, '\n');
+  if (disableMessage) {
+    Log.warn(warningMessage);
+    Log.log(chalk.dim(disableMessage), '\n');
+  } else {
+    Log.warn(warningMessage, '\n');
+  }
+
+  // Format with version if available.
+  const packages = missing.map(({ pkg, version }) => (version ? [pkg, version].join('@') : pkg));
+
+  // Install packages with versions
+  await installPackagesAsync(projectRoot, {
+    packages,
+  });
+
+  // Verify that the packages were installed correctly
+  const { missing: missingAfterInstall } = await getMissingPackagesAsync(projectRoot, {
+    sdkVersion: exp.sdkVersion,
+    requiredPackages,
+  });
+  if (!missingAfterInstall.length) {
+    return true;
+  }
+
+  // When failed, inform the user how to install the packages manually
+  const installCommand = createInstallCommand({ packages: missing });
   const readableMissingPackages = missing
     .map(({ pkg, version }) => (version ? [pkg, version].join('@') : pkg))
     .join(', ');
 
-  let title = installMessage;
-
-  if (skipPrompt) {
-    title += '\n\n';
-  } else {
-    const confirm = await confirmAsync({
-      message: wrapForTerminal(
-        title + ` Would you like to install ${chalk.cyan(readableMissingPackages)}?`
-      ),
-      initial: true,
-    });
-
-    if (confirm) {
-      // Format with version if available.
-      const packages = missing.map(({ pkg, version }) =>
-        version ? [pkg, version].join('@') : pkg
-      );
-      // Install packages with versions
-      await installPackagesAsync(projectRoot, {
-        packages,
-      });
-      // Try again but skip prompting twice, simply fail if the packages didn't install correctly.
-      return await ensureDependenciesAsync(projectRoot, {
-        skipPrompt: true,
-        installMessage,
-        warningMessage,
-        requiredPackages,
-      });
-    }
-
-    // Reset the title so it doesn't print twice in interactive mode.
-    title = '';
-  }
-
-  const installCommand = createInstallCommand({
-    packages: missing,
-  });
-
-  const disableMessage = warningMessage;
-
-  const solution = `Please install ${chalk.bold(
-    readableMissingPackages
-  )} by running:\n\n  ${chalk.reset.bold(installCommand)}\n\n`;
+  const solution = chalk`Please install {bold ${readableMissingPackages}} by running:\n\n  {reset.bold ${installCommand}}\n\n`;
 
   // This prevents users from starting a misconfigured JS or TS project by default.
-  throw new CommandError(wrapForTerminal(title + solution + disableMessage + '\n'));
+  throw new CommandError(wrapForTerminal(installMessage + solution + warningMessage + '\n'));
 }
 
 /**  Wrap long messages to fit smaller terminals. */
@@ -118,14 +99,12 @@ export function createInstallCommand({
 
 /** Install packages in the project. */
 async function installPackagesAsync(projectRoot: string, { packages }: { packages: string[] }) {
-  const packagesStr = chalk.bold(packages.join(', '));
-  Log.log();
-  const installingPackageStep = logNewSection(`Installing ${packagesStr}`);
+  const readablePackages = chalk.bold(packages.join(', '));
+
   try {
     await installAsync(packages, { projectRoot });
   } catch (e: any) {
-    installingPackageStep.fail(`Failed to install ${packagesStr} with error: ${e.message}`);
+    Log.error(chalk`Failed to install {bold ${readablePackages}} because of: ${e.message}`);
     throw e;
   }
-  installingPackageStep.succeed(`Installed ${packagesStr}`);
 }
