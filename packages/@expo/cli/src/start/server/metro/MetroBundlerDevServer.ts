@@ -1,6 +1,8 @@
 import { getConfig } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
+import chalk from 'chalk';
 
+import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { getFreePortAsync } from '../../../utils/port';
@@ -156,8 +158,19 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         const { TypeScriptProjectPrerequisite } = await import(
           '../../doctor/typescript/TypeScriptProjectPrerequisite'
         );
-        const req = new TypeScriptProjectPrerequisite(this.projectRoot);
-        await req.bootstrapAsync();
+
+        try {
+          const req = new TypeScriptProjectPrerequisite(this.projectRoot);
+          await req.bootstrapAsync();
+        } catch (error: any) {
+          // Ensure the process doesn't fail if the TypeScript check fails.
+          // This could happen during the install.
+          Log.log();
+          Log.error(
+            chalk.red`Failed to automatically setup TypeScript for your project. Try restarting the dev server to fix.`
+          );
+          Log.exception(error);
+        }
       }
     );
   }
