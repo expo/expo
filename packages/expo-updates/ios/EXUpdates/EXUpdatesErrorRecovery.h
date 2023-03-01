@@ -1,9 +1,9 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAppLauncher.h>
-#import <EXUpdates/EXUpdatesConfig.h>
 #import <Foundation/Foundation.h>
 
+@class EXUpdatesConfig;
 @class EXUpdatesUpdate;
 
 NS_ASSUME_NONNULL_BEGIN

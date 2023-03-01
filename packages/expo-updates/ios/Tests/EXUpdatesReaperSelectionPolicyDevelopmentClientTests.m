@@ -2,7 +2,6 @@
 
 #import <XCTest/XCTest.h>
 
-#import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesReaperSelectionPolicyDevelopmentClient.h>
 
@@ -31,7 +30,7 @@
 
   // test updates with different scopes to ensure this policy ignores scopes
   _update1 = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:@{}]
-                                                config:[EXUpdatesConfig configWithDictionary:@{ EXUpdatesConfigScopeKeyKey: @"scope1" }]
+                                                config:[EXUpdatesConfig configFromDictionary:@{ EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: @"scope1" }]
                                               database:database
                                               updateId:NSUUID.UUID
                                               scopeKey:@"scope1"
@@ -42,7 +41,7 @@
                                      isDevelopmentMode:NO
                                     assetsFromManifest:@[]];
   _update2 = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:@{}]
-                                                config:[EXUpdatesConfig configWithDictionary:@{ EXUpdatesConfigScopeKeyKey: @"scope2" }]
+                                                config:[EXUpdatesConfig configFromDictionary:@{ EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: @"scope2" }]
                                               database:database
                                               updateId:NSUUID.UUID
                                               scopeKey:@"scope2"
@@ -53,7 +52,7 @@
                                      isDevelopmentMode:NO
                                     assetsFromManifest:@[]];
   _update3 = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:@{}]
-                                                config:[EXUpdatesConfig configWithDictionary:@{ EXUpdatesConfigScopeKeyKey: @"scope3" }]
+                                                config:[EXUpdatesConfig configFromDictionary:@{ EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: @"scope3" }]
                                               database:database
                                               updateId:NSUUID.UUID
                                               scopeKey:@"scope3"
@@ -64,7 +63,7 @@
                                      isDevelopmentMode:NO
                                     assetsFromManifest:@[]];
   _update4 = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:@{}]
-                                                config:[EXUpdatesConfig configWithDictionary:@{ EXUpdatesConfigScopeKeyKey: @"scope4" }]
+                                                config:[EXUpdatesConfig configFromDictionary:@{ EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: @"scope4" }]
                                               database:database
                                               updateId:NSUUID.UUID
                                               scopeKey:@"scope4"
@@ -75,7 +74,7 @@
                                      isDevelopmentMode:NO
                                     assetsFromManifest:@[]];
   _update5 = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:@{}]
-                                                config:[EXUpdatesConfig configWithDictionary:@{ EXUpdatesConfigScopeKeyKey: @"scope5" }]
+                                                config:[EXUpdatesConfig configFromDictionary:@{ EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: @"scope5" }]
                                               database:database
                                               updateId:NSUUID.UUID
                                               scopeKey:@"scope5"

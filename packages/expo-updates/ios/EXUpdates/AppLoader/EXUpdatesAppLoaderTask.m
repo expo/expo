@@ -124,11 +124,11 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
   _isRunning = YES;
 
   __block BOOL shouldCheckForUpdate = [EXUpdatesUtils shouldCheckForUpdateWithConfig:_config];
-  NSNumber *launchWaitMs = _config.launchWaitMs;
-  if ([launchWaitMs isEqualToNumber:@(0)] || !shouldCheckForUpdate) {
+  NSInteger launchWaitMs = _config.launchWaitMs;
+  if (launchWaitMs == 0 || !shouldCheckForUpdate) {
     self->_isTimerFinished = YES;
   } else {
-    NSDate *fireDate = [NSDate dateWithTimeIntervalSinceNow:[launchWaitMs doubleValue] / 1000];
+    NSDate *fireDate = [NSDate dateWithTimeIntervalSinceNow:launchWaitMs / 1000];
     self->_timer = [[NSTimer alloc] initWithFireDate:fireDate interval:0 target:self selector:@selector(_timerDidFire) userInfo:nil repeats:NO];
     [[NSRunLoop mainRunLoop] addTimer:self->_timer forMode:NSDefaultRunLoopMode];
   }

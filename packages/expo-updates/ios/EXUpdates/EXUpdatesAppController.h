@@ -2,7 +2,6 @@
 
 #import <EXUpdates/EXUpdatesAppLoader.h>
 #import <EXUpdates/EXUpdatesAppLoaderTask.h>
-#import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesSelectionPolicy.h>
@@ -11,6 +10,7 @@
 
 NS_ASSUME_NONNULL_BEGIN
 
+@class EXUpdatesConfig;
 @class EXUpdatesAppController;
 
 @protocol EXUpdatesAppControllerDelegate <NSObject>

@@ -2,7 +2,6 @@
 
 #import <EXUpdates/EXUpdatesAppController+Internal.h>
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
-#import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDevLauncherController.h>
 #import <EXupdates/EXUpdatesLauncherSelectionPolicySingleUpdate.h>
 #import <EXUpdates/EXUpdatesReaper.h>
@@ -28,6 +27,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
   EXUpdatesDevLauncherErrorCodeDirectoryInitializationFailed,
   EXUpdatesDevLauncherErrorCodeDatabaseInitializationFailed,
   EXUpdatesDevLauncherErrorCodeUpdateLaunchFailed,
+  EXUpdatesDevLauncherErrorCodeConfigFailed,
 };
 
 @interface EXUpdatesDevLauncherController ()
@@ -146,8 +146,15 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
                                error:(EXUpdatesErrorBlock)errorBlock
 {
   EXUpdatesAppController *controller = EXUpdatesAppController.sharedInstance;
-  EXUpdatesConfig *updatesConfiguration = [EXUpdatesConfig configWithExpoPlist];
-  [updatesConfiguration loadConfigFromDictionary:configuration];
+  NSError *error;
+  EXUpdatesConfig *updatesConfiguration = [EXUpdatesConfig configWithExpoPlistWithMergingOtherDictionary:nil error:&error];
+  if (error) {
+    errorBlock([NSError errorWithDomain:EXUpdatesDevLauncherControllerErrorDomain
+                                   code:EXUpdatesDevLauncherErrorCodeConfigFailed
+                               userInfo:@{NSLocalizedDescriptionKey: @"Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."}]);
+    return nil;
+  }
+  
   if (!updatesConfiguration.updateUrl || !updatesConfiguration.scopeKey) {
     errorBlock([NSError errorWithDomain:EXUpdatesDevLauncherControllerErrorDomain code:EXUpdatesDevLauncherErrorCodeInvalidUpdateURL userInfo:@{NSLocalizedDescriptionKey: @"Failed to read stored updates: configuration object must include a valid update URL"}]);
     return nil;

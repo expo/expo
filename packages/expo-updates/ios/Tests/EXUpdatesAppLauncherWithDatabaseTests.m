@@ -3,7 +3,6 @@
 #import <XCTest/XCTest.h>
 
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase+Tests.h>
-#import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesSelectionPolicy.h>
 
@@ -27,7 +26,7 @@
     if (!theUpdate) {
       NSString *runtimeVersion = @"1.0";
       NSString *scopeKey = @"dummyScope";
-      EXUpdatesConfig *config = [EXUpdatesConfig new];
+      EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{}];
       EXUpdatesDatabase *database = [EXUpdatesDatabase new];
       theUpdate = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:@{}]
                                                      config:config
@@ -151,7 +150,8 @@
   });
 
   __block NSNumber *successValue;
-  EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabaseMock alloc] initWithConfig:[EXUpdatesConfig new] database:_db directory:_testDatabaseDir completionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)];
+  EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{}];
+  EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabaseMock alloc] initWithConfig:config database:_db directory:_testDatabaseDir completionQueue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)];
   [launcher launchUpdateWithSelectionPolicy:[EXUpdatesSelectionPolicy new] completion:^(NSError * _Nullable error, BOOL success) {
     successValue = @(success);
   }];
@@ -164,7 +164,7 @@
 
   dispatch_sync(_db.databaseQueue, ^{
     NSError *error3;
-    EXUpdatesUpdate *sameUpdate = [_db updateWithId:testUpdate.updateId config:[EXUpdatesConfig new] error:&error3];
+    EXUpdatesUpdate *sameUpdate = [_db updateWithId:testUpdate.updateId config:config error:&error3];
     XCTAssertNil(error3);
     XCTAssertNotEqualObjects(yesterday, sameUpdate.lastAccessed);
     XCTAssertTrue(fabs(sameUpdate.lastAccessed.timeIntervalSinceNow) < 1, @"new lastAccessed date should be within 1 second of now");

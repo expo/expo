@@ -1,7 +1,8 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesConfig.h>
+#import <Foundation/Foundation.h>
 
+@class EXUpdatesConfig;
 @class EXUpdatesUpdate;
 @class EXUpdatesAsset;
 
