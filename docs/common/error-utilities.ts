@@ -296,5 +296,5 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/util/': '/versions/latest/',
   // Push notifications
   '/push-notifications/using-fcm/': '/push-notifications/push-notifications-setup',
-  '/config/app/': '/versions/latest/config/app/',
+  '/config/app/': '/workflow/configuration/',
 };
