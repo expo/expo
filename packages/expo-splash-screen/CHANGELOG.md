@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Deprecated `@expo/configure-splash-screen` in favor of the splash screen config plugin.
+- Deprecated `@expo/configure-splash-screen` in favor of the splash screen config plugin. ([#21464](https://github.com/expo/expo/pull/21464) by [@byCedric](https://github.com/byCedric))
 
 ### 🎉 New features
 
