@@ -17,6 +17,7 @@
 
 ### 💡 Others
 
+- Update fixtures.
 - Upgrade e2e tests to SDK 47. ([#21335](https://github.com/expo/expo/pull/21335) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.6.1 — 2023-02-15
