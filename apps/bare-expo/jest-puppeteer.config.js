@@ -15,10 +15,11 @@ const port = 19006;
 
 function getCommand() {
   if (!isProduction) {
+    const cliBin = require.resolve('@expo/cli');
     // Note(cedric): we can only change the port when using Metro web bundler
     // As of writing, we use Webpack for web, which can't run on the same port as Metro.
     // It always tries to fall back to Webpack's default port, which is 19006.
-    return `npx expo-internal start ${projectPath} --web --https`;
+    return `node ${cliBin} start ${projectPath} --web --https`;
   }
 
   // Production mode
