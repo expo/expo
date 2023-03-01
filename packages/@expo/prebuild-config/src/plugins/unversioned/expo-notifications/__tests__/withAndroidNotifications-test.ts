@@ -1,13 +1,13 @@
-import { AndroidConfig } from '@expo/config-plugins';
+import { AndroidConfig, AndroidManifest, XML } from '@expo/config-plugins';
 import { Colors } from '@expo/config-plugins/build/android';
 import { readResourcesXMLAsync } from '@expo/config-plugins/build/android/Resources';
 import { ExpoConfig } from '@expo/config-types';
 import { fs, vol } from 'memfs';
 import * as path from 'path';
-import { resolve } from 'path';
 
 import { SAMPLE_COLORS_XML } from '../../../__tests__/fixtures/androidIcons';
-import { getDirFromFS } from '../../../icons/__tests__/utils/getDirFromFS';
+import rnFixture from '../../../__tests__/fixtures/react-native-project';
+import { getDirFromFS } from '../../../__tests__/getDirFromFS';
 import {
   getNotificationColor,
   getNotificationIcon,
@@ -105,8 +105,12 @@ function setUpDrawableDirectories() {
 
 const { getMainApplication } = AndroidConfig.Manifest;
 
-const fixturesPath = resolve(__dirname, '../../../__tests__/fixtures');
-const sampleManifestPath = resolve(fixturesPath, 'react-native-AndroidManifest.xml');
+async function getFixtureManifestAsync() {
+  return (await XML.parseXMLAsync(
+    rnFixture['android/app/src/main/AndroidManifest.xml']
+  )) as AndroidManifest;
+}
+
 const notificationConfig: ExpoConfig = {
   name: 'lol',
   slug: 'lol',
@@ -117,15 +121,8 @@ const notificationConfig: ExpoConfig = {
 };
 
 describe('Applies proper Android Notification configuration to AndroidManifest.xml', () => {
-  beforeEach(() => {
-    vol.fromJSON({
-      './AndroidManifest.xml': fsReal.readFileSync(sampleManifestPath, 'utf-8') as string,
-    });
-  });
   it('adds config if provided & does not duplicate', async () => {
-    let androidManifestJson = await AndroidConfig.Manifest.readAndroidManifestAsync(
-      './AndroidManifest.xml'
-    );
+    let androidManifestJson = await getFixtureManifestAsync();
 
     androidManifestJson = setNotificationConfig(notificationConfig, androidManifestJson);
     // Run this twice to ensure copies don't get added.
@@ -133,13 +130,13 @@ describe('Applies proper Android Notification configuration to AndroidManifest.x
 
     const mainApplication = getMainApplication(androidManifestJson);
 
-    const notificationIcon = mainApplication['meta-data'].filter(
+    const notificationIcon = mainApplication!['meta-data']!.filter(
       (e) => e.$['android:name'] === META_DATA_NOTIFICATION_ICON
     );
     expect(notificationIcon).toHaveLength(1);
     expect(notificationIcon[0].$['android:resource']).toMatch(NOTIFICATION_ICON_RESOURCE);
 
-    const notificationColor = mainApplication['meta-data'].filter(
+    const notificationColor = mainApplication!['meta-data']!.filter(
       (e) => e.$['android:name'] === META_DATA_NOTIFICATION_ICON_COLOR
     );
     expect(notificationColor).toHaveLength(1);
@@ -147,9 +144,7 @@ describe('Applies proper Android Notification configuration to AndroidManifest.x
   });
 
   it('removes existing config if null is provided', async () => {
-    let androidManifestJson = await AndroidConfig.Manifest.readAndroidManifestAsync(
-      './AndroidManifest.xml'
-    );
+    let androidManifestJson = await getFixtureManifestAsync();
 
     androidManifestJson = setNotificationConfig(notificationConfig, androidManifestJson);
     // Now let's get rid of the configuration:
@@ -157,12 +152,12 @@ describe('Applies proper Android Notification configuration to AndroidManifest.x
 
     const mainApplication = getMainApplication(androidManifestJson);
 
-    const notificationIcon = mainApplication['meta-data'].filter(
+    const notificationIcon = mainApplication!['meta-data']!.filter(
       (e) => e.$['android:name'] === META_DATA_NOTIFICATION_ICON
     );
     expect(notificationIcon).toHaveLength(0);
 
-    const notificationColor = mainApplication['meta-data'].filter(
+    const notificationColor = mainApplication!['meta-data']!.filter(
       (e) => e.$['android:name'] === META_DATA_NOTIFICATION_ICON_COLOR
     );
     expect(notificationColor).toHaveLength(0);

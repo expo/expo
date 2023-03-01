@@ -1,10 +1,13 @@
-import { resolve } from 'path';
-
-import { getMainActivity, readAndroidManifestAsync } from '../Manifest';
+import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
+import * as XML from '../../utils/XML';
+import { AndroidManifest, getMainActivity } from '../Manifest';
 import { getOrientation, setAndroidOrientation } from '../Orientation';
 
-const fixturesPath = resolve(__dirname, 'fixtures');
-const sampleManifestPath = resolve(fixturesPath, 'react-native-AndroidManifest.xml');
+async function getFixtureManifestAsync() {
+  return (await XML.parseXMLAsync(
+    rnFixture['android/app/src/main/AndroidManifest.xml']
+  )) as AndroidManifest;
+}
 
 describe('Android orientation', () => {
   it(`returns null if no orientation is provided`, () => {
@@ -18,7 +21,7 @@ describe('Android orientation', () => {
   describe('File changes', () => {
     let androidManifestJson;
     it('adds orientation attribute if not present', async () => {
-      androidManifestJson = await readAndroidManifestAsync(sampleManifestPath);
+      androidManifestJson = await getFixtureManifestAsync();
       androidManifestJson = await setAndroidOrientation(
         { orientation: 'landscape' },
         androidManifestJson
@@ -26,11 +29,11 @@ describe('Android orientation', () => {
 
       const mainActivity = getMainActivity(androidManifestJson);
 
-      expect(mainActivity.$['android:screenOrientation']).toMatch('landscape');
+      expect(mainActivity!.$['android:screenOrientation']).toMatch('landscape');
     });
 
     it('replaces orientation attribute if present', async () => {
-      androidManifestJson = await readAndroidManifestAsync(sampleManifestPath);
+      androidManifestJson = await getFixtureManifestAsync();
 
       androidManifestJson = await setAndroidOrientation(
         { orientation: 'portrait' },
@@ -39,11 +42,11 @@ describe('Android orientation', () => {
 
       const mainActivity = getMainActivity(androidManifestJson);
 
-      expect(mainActivity.$['android:screenOrientation']).toMatch('portrait');
+      expect(mainActivity!.$['android:screenOrientation']).toMatch('portrait');
     });
 
     it('replaces orientation with unspecified if provided default', async () => {
-      androidManifestJson = await readAndroidManifestAsync(sampleManifestPath);
+      androidManifestJson = await getFixtureManifestAsync();
       androidManifestJson = await setAndroidOrientation(
         { orientation: 'default' },
         androidManifestJson
@@ -51,7 +54,7 @@ describe('Android orientation', () => {
 
       const mainActivity = getMainActivity(androidManifestJson);
 
-      expect(mainActivity.$['android:screenOrientation']).toMatch('unspecified');
+      expect(mainActivity!.$['android:screenOrientation']).toMatch('unspecified');
     });
   });
 });

@@ -1,9 +1,11 @@
 import { resolve } from 'path';
 
+import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import * as XML from '../../utils/XML';
 import {
   addMetaDataItemToMainApplication,
   addUsesLibraryItemToMainApplication,
+  AndroidManifest,
   ensureToolsAvailable,
   findMetaDataItem,
   findUsesLibraryItem,
@@ -16,13 +18,16 @@ import {
   removeUsesLibraryItemFromMainApplication,
 } from '../Manifest';
 
-const fixturesPath = resolve(__dirname, 'fixtures');
-const sampleManifestPath = resolve(fixturesPath, 'react-native-AndroidManifest.xml');
+async function getFixtureManifestAsync() {
+  return (await XML.parseXMLAsync(
+    rnFixture['android/app/src/main/AndroidManifest.xml']
+  )) as AndroidManifest;
+}
 
 describe(getMainActivity, () => {
   it(`works`, async () => {
-    const manifest = await readAndroidManifestAsync(sampleManifestPath);
-    const activity = getMainActivity(manifest);
+    const manifest = await getFixtureManifestAsync();
+    const activity = getMainActivity(manifest)!;
     expect(activity.$).toBeDefined();
     expect(Array.isArray(activity['intent-filter'])).toBe(true);
   });
@@ -33,9 +38,12 @@ describe(getMainActivity, () => {
 });
 describe(getRunnableActivity, () => {
   it(`works`, async () => {
-    const sampleManifestPath = resolve(fixturesPath, 'complex-react-native-AndroidManifest.xml');
+    const sampleManifestPath = resolve(
+      __dirname,
+      'fixtures/complex-react-native-AndroidManifest.xml'
+    );
     const manifest = await readAndroidManifestAsync(sampleManifestPath);
-    const activity = getRunnableActivity(manifest);
+    const activity = getRunnableActivity(manifest)!;
     expect(activity.$).toBeDefined();
     expect(activity.$['android:name']).toBe('.CustomNamed');
     expect(Array.isArray(activity['intent-filter'])).toBe(true);
@@ -43,8 +51,8 @@ describe(getRunnableActivity, () => {
 });
 describe(getMainApplication, () => {
   it(`works`, async () => {
-    const manifest = await readAndroidManifestAsync(sampleManifestPath);
-    const app = getMainApplication(manifest);
+    const manifest = await getFixtureManifestAsync();
+    const app = getMainApplication(manifest)!;
     expect(app.$).toBeDefined();
     expect(app.activity).toBeDefined();
   });
@@ -53,26 +61,26 @@ describe(getMainApplication, () => {
     expect(app).toBe(null);
   });
   it(`matches against fully qualified MainApplications`, async () => {
-    const manifest = await readAndroidManifestAsync(sampleManifestPath);
-    const app = getMainApplication(manifest);
+    const manifest = await getFixtureManifestAsync();
+    const app = getMainApplication(manifest)!;
     app.$['android:name'] = 'dev.expo.go.MainApplication';
     expect(getMainApplication(manifest)).toBeDefined();
   });
 });
 describe(addMetaDataItemToMainApplication, () => {
   it(`adds then removes meta-data item`, async () => {
-    const manifest = await readAndroidManifestAsync(sampleManifestPath);
-    const app = getMainApplication(manifest);
+    const manifest = await getFixtureManifestAsync();
+    const app = getMainApplication(manifest)!;
     addMetaDataItemToMainApplication(app, 'bacon', 'pancake');
-    expect(findMetaDataItem(app, 'bacon')).toBe(0);
+    expect(findMetaDataItem(app, 'bacon')).toBe(2);
     removeMetaDataItemFromMainApplication(app, 'bacon');
     expect(findMetaDataItem(app, 'bacon')).toBe(-1);
   });
 });
 describe(addUsesLibraryItemToMainApplication, () => {
   it(`adds then removes uses-library item`, async () => {
-    const manifest = await readAndroidManifestAsync(sampleManifestPath);
-    const app = getMainApplication(manifest);
+    const manifest = await getFixtureManifestAsync();
+    const app = getMainApplication(manifest)!;
     addUsesLibraryItemToMainApplication(app, { name: 'bacon', required: true });
     expect(findUsesLibraryItem(app, 'bacon')).toBe(0);
     removeUsesLibraryItemFromMainApplication(app, 'bacon');
@@ -90,7 +98,7 @@ describe(prefixAndroidKeys, () => {
 
 describe(ensureToolsAvailable, () => {
   it(`ensures tools are available`, async () => {
-    const manifest = await readAndroidManifestAsync(sampleManifestPath);
+    const manifest = await getFixtureManifestAsync();
     expect(XML.format(manifest)).not.toMatch(/xmlns:tools="http:\/\/schemas\.android\.com\/tools"/);
 
     const firstFewLines = XML.format(ensureToolsAvailable(manifest))
@@ -98,7 +106,7 @@ describe(ensureToolsAvailable, () => {
       .splice(0, 1)
       .join('\n');
     expect(firstFewLines).toMatchInlineSnapshot(
-      `"<manifest xmlns:android="http://schemas.android.com/apk/res/android" package="com.expo.mycoolapp" xmlns:tools="http://schemas.android.com/tools">"`
+      `"<manifest xmlns:android="http://schemas.android.com/apk/res/android" xmlns:tools="http://schemas.android.com/tools">"`
     );
     expect(firstFewLines).toMatch(/xmlns:tools="http:\/\/schemas\.android\.com\/tools"/);
 

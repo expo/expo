@@ -1,10 +1,13 @@
-import { resolve } from 'path';
-
+import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
+import * as XML from '../../utils/XML';
 import { getGoogleMapsApiKey, setGoogleMapsApiKey } from '../GoogleMapsApiKey';
-import { AndroidManifest, getMainApplicationOrThrow, readAndroidManifestAsync } from '../Manifest';
+import { AndroidManifest, getMainApplicationOrThrow } from '../Manifest';
 
-const fixturesPath = resolve(__dirname, 'fixtures');
-const sampleManifestPath = resolve(fixturesPath, 'react-native-AndroidManifest.xml');
+async function getFixtureManifestAsync() {
+  return (await XML.parseXMLAsync(
+    rnFixture['android/app/src/main/AndroidManifest.xml']
+  )) as AndroidManifest;
+}
 
 describe(getGoogleMapsApiKey, () => {
   it(`returns null if no android google maps API key is provided`, () => {
@@ -23,13 +26,13 @@ describe(setGoogleMapsApiKey, () => {
     function hasSingleEntry(androidManifest: AndroidManifest) {
       const mainApplication = getMainApplicationOrThrow(androidManifest);
 
-      const apiKeyItem = mainApplication['meta-data'].filter(
+      const apiKeyItem = mainApplication!['meta-data']!.filter(
         (e) => e.$['android:name'] === 'com.google.android.geo.API_KEY'
       );
       expect(apiKeyItem).toHaveLength(1);
       expect(apiKeyItem[0].$['android:value']).toMatch('MY-API-KEY');
 
-      const usesLibraryItem = mainApplication['uses-library'].filter(
+      const usesLibraryItem = mainApplication['uses-library']!.filter(
         (e) => e.$['android:name'] === 'org.apache.http.legacy'
       );
       expect(usesLibraryItem).toHaveLength(1);
@@ -38,18 +41,18 @@ describe(setGoogleMapsApiKey, () => {
     function isRemoved(androidManifest: AndroidManifest) {
       const mainApplication = getMainApplicationOrThrow(androidManifest);
 
-      const apiKeyItem = mainApplication['meta-data'].filter(
+      const apiKeyItem = mainApplication['meta-data']!.filter(
         (e) => e.$['android:name'] === 'com.google.android.geo.API_KEY'
       );
       expect(apiKeyItem).toHaveLength(0);
 
-      const usesLibraryItem = mainApplication['uses-library'].filter(
+      const usesLibraryItem = mainApplication['uses-library']!.filter(
         (e) => e.$['android:name'] === 'org.apache.http.legacy'
       );
       expect(usesLibraryItem).toHaveLength(0);
     }
 
-    let manifest = await readAndroidManifestAsync(sampleManifestPath);
+    let manifest = await getFixtureManifestAsync();
 
     // Add the key once
     manifest = setGoogleMapsApiKey(

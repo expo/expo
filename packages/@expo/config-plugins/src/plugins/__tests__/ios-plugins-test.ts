@@ -20,12 +20,7 @@ describe(createInfoPlistPluginWithPropertyGuard, () => {
 
   beforeEach(async () => {
     asMock(addWarningIOS).mockClear();
-    vol.fromJSON(
-      {
-        ...rnFixture,
-      },
-      projectRoot
-    );
+    vol.fromJSON(rnFixture, projectRoot);
   });
 
   afterEach(() => {
