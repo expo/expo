@@ -7,6 +7,7 @@ description: Learn how to configure development builds for bare React Native pro
 import { DiffBlock } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 The installation steps on this page are only required to add the `expo-dev-client` library to a React Native or a bare project.
 
@@ -18,13 +19,19 @@ If you're starting your project, you can create a new project with our `with-dev
 
 Otherwise, if you already have an existing React Native or a bare project, follow the steps below to add `expo-dev-client` to it.
 
-## 1. Set up Expo modules
+<Step label="1">
+
+## Set up Expo modules
 
 If you created your project with `npx react-native init` and do not have any other Expo packages installed, **you'd need to [install Expo modules](/bare/installing-expo-modules)** before proceeding.
 
 Otherwise, if you already have `expo` and/or other Expo modules up and running, you can skip this step.
 
-## 2. Installation
+</Step>
+
+<Step label="2">
+
+## Installation
 
 Add the `expo-dev-client` library to your **package.json**:
 
@@ -36,7 +43,11 @@ If your project has an **ios/** directory on disk, run the following command to 
 
 If your project doesn't have an **ios/** directory, you can skip this step.
 
-## 3. Basic configuration
+</Step>
+
+<Step label="3">
+
+## Basic configuration
 
 Development builds use deep links to open projects from the QR code. If you have added a custom deep link scheme to your project, your development build will use it. However, if this isn't the case, you need to configure the deep link support for your app. The `uri-scheme` package will do this for you once you have chosen a scheme.
 
@@ -44,7 +55,11 @@ Development builds use deep links to open projects from the QR code. If you have
 
 For more information, see [uri-scheme package](https://www.npmjs.com/package/uri-scheme).
 
-## 4. Optional configuration
+</Step>
+
+<Step label="4">
+
+## Optional configuration
 
 There are a few more changes you can make to get the best experience, but you [can skip ahead to building](/development/create-development-builds/#build-with-eas) if you prefer.
 
@@ -78,6 +93,12 @@ After doing so, if your project has an **ios/** directory on disk, you will need
 
 <Terminal cmd={['$ npx pod-install']} />
 
-## 5. Build and install
+</Step>
 
-You're now ready to [build your first development build](/development/create-development-builds/#build-with-eas).
+<Step label="5">
+
+## Build and install
+
+You're now ready to [build your first development build](/development/create-development-builds/#create-and-install-eas-build).
+
+</Step>
