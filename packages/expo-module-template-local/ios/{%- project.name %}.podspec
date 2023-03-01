@@ -5,7 +5,6 @@ Pod::Spec.new do |s|
   s.version        = '0.0.1'
   s.summary        = 'A sample project summary'
   s.description    = 'A sample project description'
-  s.license        = ''
   s.author         = ''
   s.homepage       = 'https://expo.dev/'
   s.platform       = :ios, '13.0'
