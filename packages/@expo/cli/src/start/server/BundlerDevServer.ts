@@ -446,6 +446,13 @@ export abstract class BundlerDevServer {
     );
   }
 
+  public getReactDevToolsUrl(): string {
+    return new URL(
+      '_expo/react-devtools',
+      this.getUrlCreator().constructUrl({ scheme: 'http' })
+    ).toString();
+  }
+
   protected async getPlatformManagerAsync(platform: keyof typeof PLATFORM_MANAGERS) {
     if (!this.platformManagers[platform]) {
       const Manager = PLATFORM_MANAGERS[platform]();
