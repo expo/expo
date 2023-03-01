@@ -11,10 +11,10 @@ type Props = {
 };
 
 export const PageTitle = ({ title, packageName, iconUrl, sourceCodeUrl }: Props) => (
-  <H1>
+  <H1 crawlable={false}>
     {iconUrl && <img src={iconUrl} css={titleIconStyle} alt={`Expo ${title} icon`} />}
     {packageName && packageName.startsWith('expo-') && 'Expo '}
-    {title}
+    <span data-heading="true">{title}</span>
     {packageName && (
       <span css={linksContainerStyle}>
         {sourceCodeUrl && (
