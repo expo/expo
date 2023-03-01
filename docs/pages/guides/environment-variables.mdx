@@ -37,14 +37,14 @@ API_URL="https://production.example.com" npx expo start
 
 ### Reading environment variables
 
-To read `extra` properties in your app, you can use the [`expo-constants`](/versions/latest/sdk/constants.mdx) library. It is available on the `Constants.expoConfig` property.
+To read `extra` properties in your app, you can use the [`expo-constants`](/versions/latest/sdk/constants.mdx) library. It is available on the `Constants.default.expoConfig` property.
 
 ```tsx
 import { Button } from 'react-native';
 import Constants from 'expo-constants';
 
 function Post() {
-  const apiUrl = Constants.expoConfig.extra.apiUrl;
+  const apiUrl = Constants.default.expoConfig.extra.apiUrl;
 
   async function onPress() {
     await fetch(apiUrl, { ... })
