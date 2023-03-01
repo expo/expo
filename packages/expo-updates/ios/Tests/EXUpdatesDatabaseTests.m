@@ -2,7 +2,6 @@
 
 #import <XCTest/XCTest.h>
 
-#import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase+Tests.h>
 
 #import "EXUpdates-Swift.h"
@@ -43,8 +42,8 @@
     @"createdAt": @"2020-11-11T00:17:54.797Z",
     @"launchAsset": @{@"url": @"https://url.to/bundle.js", @"contentType": @"application/javascript"}
   }];
-  _config = [EXUpdatesConfig configWithDictionary:@{
-    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+  _config = [EXUpdatesConfig configFromDictionary:@{
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
   }];
 }
 

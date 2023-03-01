@@ -7,11 +7,9 @@ import ExpoModulesTestCore
 import EXManifests
 
 class EXUpdatesUpdateSpec : ExpoSpec {
-  let config = EXUpdatesConfig(
-    dictionary: [
-      EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test"
-    ]
-  )
+  let config = EXUpdatesConfig.config(fromDictionary: [
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test"
+  ])
   let database = EXUpdatesDatabase()
   
   override func spec() {

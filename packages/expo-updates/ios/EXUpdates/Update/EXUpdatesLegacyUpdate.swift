@@ -105,7 +105,7 @@ public class EXUpdatesLegacyUpdate: EXUpdatesUpdate {
       config: config,
       database: database,
       updateId: updateId,
-      scopeKey: config.scopeKey,
+      scopeKey: config.scopeKey.require("Must supply scopeKey in configuration"),
       commitTime: commitTime,
       runtimeVersion: runtimeVersion,
       keep: true,
@@ -122,7 +122,7 @@ public class EXUpdatesLegacyUpdate: EXUpdatesUpdate {
 
   public static func bundledAssetBaseUrl(withManifest: EXManifestsLegacyManifest, config: EXUpdatesConfig) -> URL {
     let manifestUrl = config.updateUrl
-    let host = manifestUrl.host
+    let host = manifestUrl?.host
 
     guard let host = host else {
       // The URL is valid and constant, so it'll never throw

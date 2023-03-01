@@ -22,14 +22,14 @@ public class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, EXUpdate
     }
     // if Expo.plist not found or its content is invalid, disable the auto setup
     guard
-      let configPath = Bundle.main.path(forResource: EXUpdatesConfigPlistName, ofType: "plist"),
+      let configPath = Bundle.main.path(forResource: EXUpdatesConfig.EXUpdatesConfigPlistName, ofType: "plist"),
       let config = NSDictionary(contentsOfFile: configPath)
     else {
       return false
     }
 
     // if `EXUpdatesAutoSetup` is false, disable the auto setup
-    let enableAutoSetupValue = config[EXUpdatesConfigEnableAutoSetupKey]
+    let enableAutoSetupValue = config[EXUpdatesConfig.EXUpdatesConfigEnableAutoSetupKey]
     if let enableAutoSetup = enableAutoSetupValue as? NSNumber, enableAutoSetup.boolValue == false {
       return false
     }

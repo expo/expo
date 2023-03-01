@@ -2,7 +2,6 @@
 
 #import <XCTest/XCTest.h>
 
-#import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesReaperSelectionPolicyFilterAware.h>
 
@@ -30,7 +29,7 @@
   [super setUp];
   NSString *runtimeVersion = @"1.0";
   NSString *scopeKey = @"dummyScope";
-  _config = [EXUpdatesConfig configWithDictionary:@{ EXUpdatesConfigScopeKeyKey: @"scope1" }];
+  _config = [EXUpdatesConfig configFromDictionary:@{ EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: @"scope1" }];
   _database = [EXUpdatesDatabase new];
 
   _update1 = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:@{}]
@@ -130,7 +129,7 @@
 
 - (void)testUpdatesToDelete_differentScopeKey
 {
-  EXUpdatesConfig *configDifferentScope = [EXUpdatesConfig configWithDictionary:@{ EXUpdatesConfigScopeKeyKey: @"differentScopeKey" }];
+  EXUpdatesConfig *configDifferentScope = [EXUpdatesConfig configFromDictionary:@{ EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: @"differentScopeKey" }];
   EXUpdatesUpdate *update4DifferentScope = [[EXUpdatesUpdate alloc] initWithManifest:_update4.manifest
                                                                               config:configDifferentScope
                                                                             database:_database

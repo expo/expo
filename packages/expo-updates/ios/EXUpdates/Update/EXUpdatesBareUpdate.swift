@@ -52,7 +52,7 @@ public class EXUpdatesBareUpdate: EXUpdatesUpdate {
       config: config,
       database: database,
       updateId: uuid,
-      scopeKey: config.scopeKey,
+      scopeKey: config.scopeKey.require("Must supply scopeKey in configuration"),
       commitTime: Date(timeIntervalSince1970: Double(commitTime) / 1000),
       runtimeVersion: EXUpdatesUtils.getRuntimeVersion(with: config),
       keep: true,

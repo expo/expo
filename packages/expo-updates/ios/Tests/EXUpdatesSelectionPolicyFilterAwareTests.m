@@ -2,7 +2,6 @@
 
 #import <XCTest/XCTest.h>
 
-#import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
 #import <EXUpdates/EXUpdatesSelectionPolicies.h>
@@ -47,9 +46,9 @@
 
   NSString *runtimeVersion = @"1.0";
   NSString *scopeKey = @"dummyScope";
-  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    EXUpdatesConfigRuntimeVersionKey: runtimeVersion,
-    EXUpdatesConfigScopeKeyKey: scopeKey
+  EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{
+    EXUpdatesConfig.EXUpdatesConfigRuntimeVersionKey: runtimeVersion,
+    EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey
   }];
   EXUpdatesDatabase *database = [EXUpdatesDatabase new];
   EXUpdatesManifestHeaders *manifestHeaders = [[EXUpdatesManifestHeaders alloc] initWithProtocolVersion:nil

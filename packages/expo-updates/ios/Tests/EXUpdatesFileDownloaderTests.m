@@ -2,7 +2,6 @@
 
 #import <XCTest/XCTest.h>
 
-#import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 
 #import "EXUpdates-Swift.h"
@@ -17,9 +16,9 @@
 
 - (void)testCacheControl_LegacyManifest
 {
-  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
-    EXUpdatesConfigRuntimeVersionKey: @"1.0",
+  EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    EXUpdatesConfig.EXUpdatesConfigRuntimeVersionKey: @"1.0",
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
 
@@ -30,9 +29,9 @@
 
 - (void)testCacheControl_NewManifest
 {
-  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    EXUpdatesConfigUpdateUrlKey: @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
-    EXUpdatesConfigRuntimeVersionKey: @"1.0",
+  EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
+    EXUpdatesConfig.EXUpdatesConfigRuntimeVersionKey: @"1.0",
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
 
@@ -43,9 +42,9 @@
 
 - (void)testExtraHeaders_ObjectTypes
 {
-  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    EXUpdatesConfigUpdateUrlKey: @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
-    EXUpdatesConfigRuntimeVersionKey: @"1.0"
+  EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
+    EXUpdatesConfig.EXUpdatesConfigRuntimeVersionKey: @"1.0"
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
   
@@ -65,10 +64,10 @@
 
 - (void)testExtraHeaders_OverrideOrder
 {
-  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    EXUpdatesConfigUpdateUrlKey: @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
-    EXUpdatesConfigRuntimeVersionKey: @"1.0",
-    EXUpdatesConfigRequestHeadersKey: @{
+  EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
+    EXUpdatesConfig.EXUpdatesConfigRuntimeVersionKey: @"1.0",
+    EXUpdatesConfig.EXUpdatesConfigRequestHeadersKey: @{
       // custom headers configured at build-time should be able to override preset headers
       @"expo-updates-environment": @"custom"
     }
@@ -138,10 +137,10 @@
 
 - (void)testAssetExtraHeaders_OverrideOrder
 {
-  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    EXUpdatesConfigUpdateUrlKey: @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
-    EXUpdatesConfigRuntimeVersionKey: @"1.0",
-    EXUpdatesConfigRequestHeadersKey: @{
+  EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
+    EXUpdatesConfig.EXUpdatesConfigRuntimeVersionKey: @"1.0",
+    EXUpdatesConfig.EXUpdatesConfigRequestHeadersKey: @{
       // custom headers configured at build-time should be able to override preset headers
       @"expo-updates-environment": @"custom"
     }
@@ -160,9 +159,9 @@
 
 - (void)testAssetExtraHeaders_ObjectTypes
 {
-  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    EXUpdatesConfigUpdateUrlKey: @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
-    EXUpdatesConfigRuntimeVersionKey: @"1.0"
+  EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
+    EXUpdatesConfig.EXUpdatesConfigRuntimeVersionKey: @"1.0"
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
 

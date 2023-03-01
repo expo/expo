@@ -3,6 +3,12 @@
 #import <EXUpdates/EXUpdatesBuildData+Tests.h>
 #import <EXUpdates/EXUpdatesDatabaseUtils.h>
 
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
+
 NS_ASSUME_NONNULL_BEGIN
 
 /**
