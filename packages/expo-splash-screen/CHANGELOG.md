@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Deprecated `@expo/configure-splash-screen` in favor of the splash screen config plugin.
+
 ### 🎉 New features
 
 - Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
