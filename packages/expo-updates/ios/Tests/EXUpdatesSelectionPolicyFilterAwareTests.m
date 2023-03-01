@@ -3,8 +3,6 @@
 #import <XCTest/XCTest.h>
 
 #import <EXUpdates/EXUpdatesDatabase.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
-#import <EXUpdates/EXUpdatesSelectionPolicies.h>
 
 #import "EXUpdates-Swift.h"
 

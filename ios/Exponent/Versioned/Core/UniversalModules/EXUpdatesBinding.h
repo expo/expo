@@ -4,11 +4,11 @@
 #import <Foundation/Foundation.h>
 #import <ExpoModulesCore/EXInternalModule.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
-#import <EXUpdates/EXUpdatesSelectionPolicy.h>
 #import <EXUpdates/EXUpdatesService.h>
 
 @class EXUpdatesConfig;
 @class EXUpdatesUpdate;
+@class EXUpdatesSelectionPolicy;
 
 NS_ASSUME_NONNULL_BEGIN
 

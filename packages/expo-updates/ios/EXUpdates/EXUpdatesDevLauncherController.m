@@ -3,11 +3,8 @@
 #import <EXUpdates/EXUpdatesAppController+Internal.h>
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
 #import <EXUpdates/EXUpdatesDevLauncherController.h>
-#import <EXupdates/EXUpdatesLauncherSelectionPolicySingleUpdate.h>
 #import <EXUpdates/EXUpdatesReaper.h>
-#import <EXUpdates/EXUpdatesReaperSelectionPolicyDevelopmentClient.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
-#import <EXUpdates/EXUpdatesSelectionPolicy.h>
 #import <React/RCTBridge.h>
 
 #if __has_include(<EXUpdates/EXUpdates-Swift.h>)
@@ -181,7 +178,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
   [controller setDefaultSelectionPolicy:[[EXUpdatesSelectionPolicy alloc]
                                          initWithLauncherSelectionPolicy:currentSelectionPolicy.launcherSelectionPolicy
                                          loaderSelectionPolicy:currentSelectionPolicy.loaderSelectionPolicy
-                                         reaperSelectionPolicy:[EXUpdatesReaperSelectionPolicyDevelopmentClient new]]];
+                                         reaperSelectionPolicy:[[EXUpdatesReaperSelectionPolicyDevelopmentClient alloc] init]]];
   [controller resetSelectionPolicyToDefault];
 }
 
@@ -199,7 +196,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
   // the default selection policy here instead, the update we are launching here would keep being
   // launched by `reloadAsync` even if a newer one is downloaded.
   [controller setNextSelectionPolicy:[[EXUpdatesSelectionPolicy alloc]
-                                      initWithLauncherSelectionPolicy:[[EXUpdatesLauncherSelectionPolicySingleUpdate alloc] initWithUpdateID:update.updateId]
+                                      initWithLauncherSelectionPolicy:[[EXUpdatesLauncherSelectionPolicySingleUpdate alloc] initWithUpdateId:update.updateId]
                                       loaderSelectionPolicy:currentSelectionPolicy.loaderSelectionPolicy
                                       reaperSelectionPolicy:currentSelectionPolicy.reaperSelectionPolicy]];
 

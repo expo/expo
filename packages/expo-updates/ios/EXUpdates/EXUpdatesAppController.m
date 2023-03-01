@@ -7,7 +7,6 @@
 #import <EXUpdates/EXUpdatesErrorRecovery.h>
 #import <EXUpdates/EXUpdatesReaper.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <EXUpdates/EXUpdatesBuildData.h>
 #import <ExpoModulesCore/EXDefines.h>
