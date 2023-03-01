@@ -52,7 +52,7 @@ export const createPermalinkedComponent = (
 
 export function createTextComponent(Element: TextElement, textStyle?: SerializedStyles) {
   function TextComponent(props: TextComponentProps) {
-    const { testID, tag, weight: textWeight, theme: textTheme, ...rest } = props;
+    const { testID, tag, weight: textWeight, theme: textTheme, crawlable = true, ...rest } = props;
     const TextElementTag = tag ?? Element;
 
     return (
@@ -64,8 +64,8 @@ export function createTextComponent(Element: TextElement, textStyle?: Serialized
           textTheme && { color: theme.text[textTheme] },
         ]}
         data-testid={testID}
-        data-heading={CRAWLABLE_HEADINGS.includes(TextElementTag) || undefined}
-        data-text={CRAWLABLE_TEXT.includes(TextElementTag) || undefined}
+        data-heading={(crawlable && CRAWLABLE_HEADINGS.includes(TextElementTag)) || undefined}
+        data-text={(crawlable && CRAWLABLE_TEXT.includes(TextElementTag)) || undefined}
         {...rest}
       />
     );

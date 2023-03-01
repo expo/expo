@@ -30,6 +30,10 @@ export async function readXMLAsync(options: {
   const parser = new Parser();
   const manifest = await parser.parseStringPromise(contents || options.fallback || '');
 
+  return _processAndroidXML(manifest);
+}
+
+export function _processAndroidXML(manifest: any): XMLObject {
   // For strings.xml
   if (Array.isArray(manifest?.resources?.string)) {
     for (const string of manifest?.resources?.string) {

@@ -2,10 +2,10 @@
 
 #import <XCTest/XCTest.h>
 
-#import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 
 #import "EXUpdates_Unit_Tests-Swift.h"
+#import "EXUpdates-Swift.h"
 
 @interface EXUpdatesFileDownloaderManifestParsingTests : XCTestCase
 
@@ -72,8 +72,8 @@
 
 - (void)testManifestParsing_JSONBody
 {
-  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+  EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
   
@@ -103,8 +103,8 @@
 
 - (void)testManifestParsing_MultipartBody
 {
-  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+  EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
   
@@ -134,10 +134,10 @@
 }
 
 - (void)testManifestParsing_JSONBodySigned {
-  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
-    EXUpdatesConfigCodeSigningCertificateKey: _modernJSONCertificate,
-    EXUpdatesConfigCodeSigningMetadataKey: @{},
+  EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    EXUpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: _modernJSONCertificate,
+    EXUpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: @{},
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
   
@@ -170,10 +170,10 @@
 
 - (void)testManifestParsing_MultipartBodySigned
 {
-  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
-    EXUpdatesConfigCodeSigningCertificateKey: _modernJSONCertificate,
-    EXUpdatesConfigCodeSigningMetadataKey: @{},
+  EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    EXUpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: _modernJSONCertificate,
+    EXUpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: @{},
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
   
@@ -205,10 +205,10 @@
 }
 
 - (void)testManifestParsing_JSONBodyExpectsSigned_ReceivedUnsignedRequest {
-  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
-    EXUpdatesConfigCodeSigningCertificateKey: _modernJSONCertificate,
-    EXUpdatesConfigCodeSigningMetadataKey: @{},
+  EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    EXUpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: _modernJSONCertificate,
+    EXUpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: @{},
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
   
@@ -239,11 +239,11 @@
 }
 
 - (void)testManifestParsing_JSONBodySigned_UnsignedRequest_ManifestSignatureOptional {
-  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
-    EXUpdatesConfigCodeSigningCertificateKey: _modernJSONCertificate,
-    EXUpdatesConfigCodeSigningMetadataKey: @{},
-    EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey: @YES,
+  EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    EXUpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: _modernJSONCertificate,
+    EXUpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: @{},
+    EXUpdatesConfig.EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey: @YES,
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
   
@@ -274,13 +274,13 @@
 }
 
 - (void)testManifestParsing_MultipartBodySignedCertificateParticularExperience {
-  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
-    EXUpdatesConfigCodeSigningCertificateKey: _rootCertificate,
-    EXUpdatesConfigCodeSigningMetadataKey: @{
+  EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    EXUpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: _rootCertificate,
+    EXUpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: @{
       @"keyid": @"ca-root",
     },
-    EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey: @YES,
+    EXUpdatesConfig.EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey: @YES,
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
   
@@ -314,13 +314,13 @@
 }
 
 - (void)testManifestParsing_MultipartBodySignedCertificateParticularExperience_IncorrectExperienceInManifest {
-  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
-    EXUpdatesConfigCodeSigningCertificateKey: _rootCertificate,
-    EXUpdatesConfigCodeSigningMetadataKey: @{
+  EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+    EXUpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: _rootCertificate,
+    EXUpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: @{
       @"keyid": @"ca-root",
     },
-    EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey: @YES,
+    EXUpdatesConfig.EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey: @YES,
   }];
   EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
   

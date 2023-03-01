@@ -29,4 +29,5 @@ export type TextComponentProps = HTMLAttributes<
   weight?: TextWeight;
   theme?: TextTheme;
   tag?: `${TextElement}`;
+  crawlable?: boolean;
 };

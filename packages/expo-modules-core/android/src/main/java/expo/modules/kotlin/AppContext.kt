@@ -6,7 +6,6 @@ import android.content.Intent
 import android.os.Handler
 import android.os.HandlerThread
 import android.view.View
-import androidx.annotation.MainThread
 import androidx.annotation.UiThread
 import androidx.appcompat.app.AppCompatActivity
 import com.facebook.react.bridge.ReactApplicationContext
@@ -28,10 +27,7 @@ import expo.modules.interfaces.permissions.Permissions
 import expo.modules.interfaces.sensors.SensorServiceInterface
 import expo.modules.interfaces.taskManager.TaskManagerInterface
 import expo.modules.kotlin.activityresult.ActivityResultsManager
-import expo.modules.kotlin.activityresult.AppContextActivityResultCaller
-import expo.modules.kotlin.activityresult.AppContextActivityResultContract
-import expo.modules.kotlin.activityresult.AppContextActivityResultFallbackCallback
-import expo.modules.kotlin.activityresult.AppContextActivityResultLauncher
+import expo.modules.kotlin.activityresult.DefaultAppContextActivityResultCaller
 import expo.modules.kotlin.defaultmodules.ErrorManagerModule
 import expo.modules.kotlin.defaultmodules.NativeModulesProxyModule
 import expo.modules.kotlin.events.EventEmitter
@@ -49,14 +45,13 @@ import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.android.asCoroutineDispatcher
 import kotlinx.coroutines.cancel
 import java.io.File
-import java.io.Serializable
 import java.lang.ref.WeakReference
 
 class AppContext(
   modulesProvider: ModulesProvider,
   val legacyModuleRegistry: expo.modules.core.ModuleRegistry,
   private val reactContextHolder: WeakReference<ReactApplicationContext>
-) : CurrentActivityProvider, AppContextActivityResultCaller {
+) : CurrentActivityProvider {
   val registry = ModuleRegistry(WeakReference(this))
   private val reactLifecycleDelegate = ReactLifecycleDelegate(this)
 
@@ -86,6 +81,7 @@ class AppContext(
   internal var legacyModulesProxyHolder: WeakReference<NativeModulesProxy>? = null
 
   private val activityResultsManager = ActivityResultsManager(this)
+  internal val appContextActivityResultCaller = DefaultAppContextActivityResultCaller(activityResultsManager)
 
   init {
     requireNotNull(reactContextHolder.get()) {
@@ -333,24 +329,6 @@ class AppContext(
     get() {
       return activityProvider?.currentActivity
     }
-
-// endregion
-
-// region AppContextActivityResultCaller
-
-  /**
-   * For the time being [fallbackCallback] is not working.
-   * There are some problems with saving and restoring the state of [activityResultsManager]
-   * connected with [Activity]'s lifecycle and [AppContext] lifespan. So far, we've failed with identifying
-   * what parts of the application outlives the Activity destruction (especially [AppContext] and other [Bridge]-related parts).
-   */
-  @MainThread
-  @Deprecated(message = "`registerForActivityResult` was deprecated. Please use `RegisterActivityContracts` component instead.")
-  override suspend fun <I : Serializable, O> registerForActivityResult(
-    contract: AppContextActivityResultContract<I, O>,
-    fallbackCallback: AppContextActivityResultFallbackCallback<I, O>
-  ): AppContextActivityResultLauncher<I, O> =
-    activityResultsManager.registerForActivityResult(contract, fallbackCallback)
 
 // endregion
 }
