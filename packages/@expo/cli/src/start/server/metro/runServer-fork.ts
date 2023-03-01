@@ -1,16 +1,17 @@
+// Copyright © 2023 650 Industries.
+// Copyright (c) Meta Platforms, Inc. and affiliates.
+//
+// Forks https://github.com/facebook/metro/blob/b80d9a0f638ee9fb82ff69cd3c8d9f4309ca1da2/packages/metro/src/index.flow.js#L57
+// and adds the ability to access the bundler instance.
 import http from 'http';
 import https from 'https';
 import { RunServerOptions, Server } from 'metro';
+import { ConfigT } from 'metro-config';
 import resolveFrom from 'resolve-from';
 import { parse } from 'url';
 
 import { importMetroFromProject } from './resolveFromProject';
 
-import type { ConfigT } from 'metro-config';
-import type { Server as HttpServer } from 'http';
-import type { Server as HttpsServer } from 'https';
-
-// Fork of upstream runServer but with the ability to access the bundler instance.
 export const runServer = async (
   projectRoot: string,
   config: ConfigT,
@@ -24,7 +25,7 @@ export const runServer = async (
     websocketEndpoints = {},
     watch,
   }: RunServerOptions
-): Promise<{ server: HttpServer | HttpsServer; metro: Server }> => {
+): Promise<{ server: http.Server | https.Server; metro: Server }> => {
   const Metro = importMetroFromProject(projectRoot);
 
   const createWebsocketServer = require(resolveFrom(
@@ -72,14 +73,14 @@ export const runServer = async (
     inspectorProxy = new InspectorProxy(config.projectRoot);
   }
 
-  let httpServer: HttpServer | HttpsServer;
+  let httpServer: http.Server | https.Server;
 
   if (secureServerOptions != null) {
     httpServer = https.createServer(secureServerOptions, serverApp);
   } else {
     httpServer = http.createServer(serverApp);
   }
-  return new Promise<{ server: HttpServer | HttpsServer; metro: Server }>((resolve, reject) => {
+  return new Promise<{ server: http.Server | https.Server; metro: Server }>((resolve, reject) => {
     httpServer.on('error', (error) => {
       if (onError) {
         onError(error);
@@ -105,7 +106,7 @@ export const runServer = async (
       });
 
       httpServer.on('upgrade', (request, socket, head) => {
-        const { pathname } = parse(request.url);
+        const { pathname } = parse(request.url!);
         if (pathname != null && websocketEndpoints[pathname]) {
           websocketEndpoints[pathname].handleUpgrade(request, socket, head, (ws) => {
             websocketEndpoints[pathname].emit('connection', ws, request);

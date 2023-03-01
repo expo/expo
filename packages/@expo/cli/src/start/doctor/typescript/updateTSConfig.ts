@@ -14,7 +14,7 @@ export async function updateTSConfigAsync({
   isBootstrapping: boolean;
 }): Promise<void> {
   const shouldGenerate = !fs.existsSync(tsConfigPath);
-  if (isBootstrapping && shouldGenerate) {
+  if (isBootstrapping) {
     await JsonFile.writeAsync(tsConfigPath, {});
   }
 

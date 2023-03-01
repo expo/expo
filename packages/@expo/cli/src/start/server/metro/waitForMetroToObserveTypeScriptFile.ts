@@ -49,6 +49,7 @@ export function waitForMetroToObserveTypeScriptFile(
           debug('Detected TypeScript file added to the project: ', filePath);
           callback();
           off();
+          return;
         }
       }
     }

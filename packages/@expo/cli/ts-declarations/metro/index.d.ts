@@ -16,6 +16,13 @@ declare module 'metro/src/shared/output/bundle' {
   ): Promise<unknown>;
 }
 
+declare module 'metro/src/HmrServer' {
+  class MetroHmrServer {
+    constructor(...args: any[]);
+  }
+  module.exports = MetroHmrServer;
+}
+
 declare module 'metro/src/lib/createWebsocketServer' {
   export function createWebsocketServer<TClient extends object>({
     websocketServer,
