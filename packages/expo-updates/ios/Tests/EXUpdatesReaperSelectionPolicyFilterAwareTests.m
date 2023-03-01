@@ -3,7 +3,6 @@
 #import <XCTest/XCTest.h>
 
 #import <EXUpdates/EXUpdatesDatabase.h>
-#import <EXUpdates/EXUpdatesReaperSelectionPolicyFilterAware.h>
 
 #import "EXUpdates-Swift.h"
 
