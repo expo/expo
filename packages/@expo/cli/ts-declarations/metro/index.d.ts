@@ -15,6 +15,12 @@ declare module 'metro/src/shared/output/bundle' {
     arg2: (...args: Array<string>) => void
   ): Promise<unknown>;
 }
+
+declare module 'metro/src/lib/createWebsocketServer' {
+  export function createWebsocketServer<TClient extends object>({
+    websocketServer,
+  }: HMROptions<TClient>): typeof import('ws').Server;
+}
 declare module 'metro' {
   //#region metro/src/Assets.js
 
@@ -160,17 +166,25 @@ declare module 'metro' {
     middleware: Middleware;
   };
 
-  type RunServerOptions = {
+  export type RunServerOptions = {
     hasReducedPerformance?: boolean;
     hmrEnabled?: boolean;
     host?: string;
     onError?: (arg0: Error & { code?: string }) => void;
     onReady?: (server: HttpServer | HttpsServer) => void;
     runInspectorProxy?: boolean;
+    /** @deprecated */
     secure?: boolean;
+    /** @deprecated */
     secureCert?: string;
+    /** @deprecated */
     secureKey?: string;
-    websocketEndpoints?: object;
+    websocketEndpoints?: Record<string, import('ws').Server>;
+    hasReducedPerformance?: boolean;
+    host?: string;
+    secureServerOptions?: any;
+    waitForBundler?: boolean;
+    watch?: boolean;
   };
 
   type BuildGraphOptions = {
@@ -382,8 +396,14 @@ declare module 'metro' {
 
   import { IncomingMessage, ServerResponse } from 'http';
 
-  // TODO: type declaration
-  type IncrementalBundler = unknown;
+  class Bundler {
+    getWatcher(): import('events').EventEmitter;
+  }
+
+  class IncrementalBundler {
+    // TODO: type declaration
+    getBundler(): Bundler;
+  }
 
   export class Server {
     constructor(config: ConfigT, options?: ServerOptions);

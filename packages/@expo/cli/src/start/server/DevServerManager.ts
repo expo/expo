@@ -8,6 +8,7 @@ import { ProjectPrerequisite } from '../doctor/Prerequisite';
 import * as AndroidDebugBridge from '../platforms/android/adb';
 import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
 import { getPlatformBundlers } from './platformBundlers';
+import { TypeScriptProjectPrerequisite } from '../doctor/typescript/TypeScriptProjectPrerequisite';
 
 const debug = require('debug')('expo:start:server:devServerManager') as typeof console.log;
 
@@ -29,7 +30,7 @@ const BUNDLERS = {
 
 /** Manages interacting with multiple dev servers. */
 export class DevServerManager {
-  private projectPrerequisites: ProjectPrerequisite[] = [];
+  private projectPrerequisites: ProjectPrerequisite<any, void>[] = [];
 
   private notifier: FileNotifier | null = null;
 
@@ -62,7 +63,7 @@ export class DevServerManager {
   }
 
   /** Lazily load and assert a project-level prerequisite. */
-  async ensureProjectPrerequisiteAsync(PrerequisiteClass: typeof ProjectPrerequisite) {
+  async ensureProjectPrerequisiteAsync(PrerequisiteClass: typeof ProjectPrerequisite<any, any>) {
     let prerequisite = this.projectPrerequisites.find(
       (prerequisite) => prerequisite instanceof PrerequisiteClass
     );
@@ -70,7 +71,7 @@ export class DevServerManager {
       prerequisite = new PrerequisiteClass(this.projectRoot);
       this.projectPrerequisites.push(prerequisite);
     }
-    await prerequisite.assertAsync();
+    return await prerequisite.assertAsync();
   }
 
   /**
@@ -148,6 +149,19 @@ export class DevServerManager {
     }
 
     return exp;
+  }
+
+  async bootstrapTypeScriptAsync() {
+    if (await this.ensureProjectPrerequisiteAsync(TypeScriptProjectPrerequisite)) {
+      return;
+    }
+    // Optionally, wait for the user to add TypeScript during the
+    // development cycle.
+    const server = devServers.find((server) => server.name === 'metro');
+    if (!server) {
+      return;
+    }
+    await server.waitForTypeScriptAsync();
   }
 
   /** Stop all servers including ADB. */
