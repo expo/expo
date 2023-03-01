@@ -113,7 +113,7 @@ android {
 
   buildTypes {
     release {
-      // consumerProguardFiles('proguard-rules.pro')
+      consumerProguardFiles('proguard-rules.pro')
     }
   }
 

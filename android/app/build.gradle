@@ -67,9 +67,9 @@ android {
       debuggable true
     }
     release {
-      // minifyEnabled true
-      // proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
-      // consumerProguardFiles 'proguard-rules.pro'
+      minifyEnabled true
+      proguardFiles getDefaultProguardFile('proguard-android.txt'), 'proguard-rules.pro'
+      consumerProguardFiles 'proguard-rules.pro'
       if (!System.getenv("ANDROID_UNSIGNED")) {
         signingConfig signingConfigs.release
       }
