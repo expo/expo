@@ -14,12 +14,7 @@ describe(withGradleProperties, () => {
   const projectRoot = '/app';
 
   beforeEach(async () => {
-    vol.fromJSON(
-      {
-        ...rnFixture,
-      },
-      projectRoot
-    );
+    vol.fromJSON(rnFixture, projectRoot);
   });
 
   afterEach(() => {
