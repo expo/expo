@@ -26,7 +26,7 @@ export interface Options {
   generateStaticViewConfigs: boolean;
 }
 
-function isBool(val: any): asserts val is boolean {
+function assertIsBoolean(val: any): asserts val is boolean {
   if (typeof val !== 'boolean') {
     throw new CommandError(`Expected boolean, got ${typeof val}`);
   }
@@ -37,13 +37,13 @@ export function resolveOptions(
   parsed: Awaited<ReturnType<typeof resolveCustomBooleanArgsAsync>>
 ): Options {
   const dev = parsed.args['--dev'] ?? true;
-  isBool(dev);
+  assertIsBoolean(dev);
 
   const generateStaticViewConfigs = parsed.args['--generate-static-view-configs'] ?? true;
-  isBool(generateStaticViewConfigs);
+  assertIsBoolean(generateStaticViewConfigs);
 
   const minify = parsed.args['--minify'] ?? true;
-  isBool(minify);
+  assertIsBoolean(minify);
 
   const entryFile = args['--entry-file'];
   if (!entryFile) {
