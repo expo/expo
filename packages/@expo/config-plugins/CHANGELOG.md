@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Update fixtures.
+- Update fixtures. ([#21397](https://github.com/expo/expo/pull/21397) by [@EvanBacon](https://github.com/EvanBacon))
 - Update tests to use latest Expo template. ([#21339](https://github.com/expo/expo/pull/21339) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 6.0.0 — 2023-02-03
