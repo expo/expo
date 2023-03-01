@@ -17,3 +17,4 @@ export declare function findGitHubProfileUrl(email: string): Promise<string>;
  * Guesses the repository URL based on the author profile URL and the package slug.
  */
 export declare function guessRepoUrl(authorUrl: string, slug: string): Promise<string>;
+export declare function findPackageJson(startDir: any): string | null;

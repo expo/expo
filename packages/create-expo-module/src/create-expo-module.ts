@@ -23,7 +23,7 @@ import {
 } from './resolvePackageManager';
 import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './telemetry';
 import { CommandOptions, LocalSubstitutionData, SubstitutionData } from './types';
-import { newStep } from './utils';
+import { findPackageJson, newStep } from './utils';
 
 const debug = require('debug')('create-expo-module:main') as typeof console.log;
 const packageJson = require('../package.json');
@@ -48,6 +48,24 @@ const IGNORES_PATHS = [
 // Url to the documentation on Expo Modules
 const DOCS_URL = 'https://docs.expo.dev/modules';
 
+const getCorrectLocalDirectory = (targetOrSlug: string) => {
+  const packageJsonPath = findPackageJson(CWD);
+  if (!packageJsonPath) {
+    console.log(
+      chalk.red.bold(
+        '⚠️ This command should  be run inside your Expo project when run with the --local flag.'
+      )
+    );
+    console.log(
+      chalk.red(
+        'For native modules to autolink correctly, you need to place them in the `modules` directory in the root of the project.'
+      )
+    );
+    return null;
+  }
+  return path.join(packageJsonPath, '..', 'modules', targetOrSlug);
+};
+
 /**
  * The main function of the command.
  *
@@ -56,8 +74,13 @@ const DOCS_URL = 'https://docs.expo.dev/modules';
  */
 async function main(target: string | undefined, options: CommandOptions) {
   const slug = await askForPackageSlugAsync(target, options.local);
-  const targetDir = path.join(CWD, target || slug);
+  const targetDir = options.local
+    ? getCorrectLocalDirectory(target || slug)
+    : path.join(CWD, target || slug);
 
+  if (!targetDir) {
+    return;
+  }
   await fs.ensureDir(targetDir);
   await confirmTargetDirAsync(targetDir);
 
@@ -384,6 +407,11 @@ function printFurtherLocalInstructions(slug: string, name: string) {
   console.log(chalk.blue(`import { hello } from '${slug}';`));
   console.log();
   console.log(`Visit ${chalk.blue.bold(DOCS_URL)} for the documentation on Expo Modules APIs`);
+  console.log(
+    chalk.yellow(
+      `Remember you need to rebuild your development client or reinstall pods to see the changes.`
+    )
+  );
 }
 
 const program = new Command();

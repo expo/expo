@@ -36,6 +36,15 @@ const IGNORES_PATHS = [
 ];
 // Url to the documentation on Expo Modules
 const DOCS_URL = 'https://docs.expo.dev/modules';
+const getCorrectLocalDirectory = (targetOrSlug) => {
+    const packageJsonPath = (0, utils_1.findPackageJson)(CWD);
+    if (!packageJsonPath) {
+        console.log(chalk_1.default.red.bold('⚠️ This command should  be run inside your Expo project when run with the --local flag.'));
+        console.log(chalk_1.default.red('For native modules to autolink correctly, you need to place them in the `modules` directory in the root of the project.'));
+        return null;
+    }
+    return path_1.default.join(packageJsonPath, '..', 'modules', targetOrSlug);
+};
 /**
  * The main function of the command.
  *
@@ -44,7 +53,12 @@ const DOCS_URL = 'https://docs.expo.dev/modules';
  */
 async function main(target, options) {
     const slug = await askForPackageSlugAsync(target, options.local);
-    const targetDir = path_1.default.join(CWD, target || slug);
+    const targetDir = options.local
+        ? getCorrectLocalDirectory(target || slug)
+        : path_1.default.join(CWD, target || slug);
+    if (!targetDir) {
+        return;
+    }
     await fs_extra_1.default.ensureDir(targetDir);
     await confirmTargetDirAsync(targetDir);
     options.target = targetDir;
@@ -305,6 +319,7 @@ function printFurtherLocalInstructions(slug, name) {
     console.log(chalk_1.default.blue(`import { hello } from '${slug}';`));
     console.log();
     console.log(`Visit ${chalk_1.default.blue.bold(DOCS_URL)} for the documentation on Expo Modules APIs`);
+    console.log(chalk_1.default.yellow(`Remember you need to rebuild your development client or reinstall pods to see the changes.`));
 }
 const program = new commander_1.Command();
 program
