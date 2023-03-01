@@ -3,7 +3,6 @@
 #import <XCTest/XCTest.h>
 
 #import <EXUpdates/EXUpdatesDatabase.h>
-#import <EXUpdates/EXUpdatesReaperSelectionPolicyDevelopmentClient.h>
 
 #import "EXUpdates-Swift.h"
 
@@ -139,16 +138,6 @@
 
   XCTAssertEqual(1, updatesToDelete.count);
   XCTAssertTrue([updatesToDelete containsObject:_update2]);
-}
-
-- (void)testUpdatesToDelete_NoLaunchedUpdate
-{
-  // if launchedUpdate is null, something has gone wrong, so don't delete anything
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wnonnull"
-  NSArray<EXUpdatesUpdate *> *updatesToDelete = [_selectionPolicy updatesToDeleteWithLaunchedUpdate:nil updates:@[_update1, _update2, _update3, _update4] filters:nil];
-#pragma clang diagnostic pop
-  XCTAssertEqual(0, updatesToDelete.count);
 }
 
 - (void)testUpdatesToDelete_BelowMaxNumber

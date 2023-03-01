@@ -1,8 +1,9 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAppLauncher.h>
-#import <EXUpdates/EXUpdatesSelectionPolicy.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
+
+@class EXUpdatesSelectionPolicy;
 
 NS_ASSUME_NONNULL_BEGIN
 

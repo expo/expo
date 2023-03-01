@@ -3,9 +3,9 @@
 #import "EXAbstractLoader.h"
 
 #import <EXUpdates/EXUpdatesAppLauncher.h>
-#import <EXUpdates/EXUpdatesSelectionPolicy.h>
 
 @class EXUpdatesConfig;
+@class EXUpdatesSelectionPolicy;
 
 NS_ASSUME_NONNULL_BEGIN
 
