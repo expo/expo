@@ -2,6 +2,7 @@ import { ExpoConfig } from '@expo/config-types';
 import { fs as memfs, vol } from 'memfs';
 import path from 'path';
 
+import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import {
   getBundleIdentifier,
   getBundleIdentifierFromPbxproj,
@@ -47,15 +48,13 @@ describe('BundleIdentifier module', () => {
     it('returns the bundle identifier defined in project.pbxproj', () => {
       vol.fromJSON(
         {
-          'ios/testproject.xcodeproj/project.pbxproj': originalFs.readFileSync(
-            path.join(__dirname, 'fixtures/project.pbxproj'),
-            'utf-8'
-          ),
+          'ios/HelloWorld.xcodeproj/project.pbxproj':
+            rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
         },
         projectRoot
       );
-      const bundleId = getBundleIdentifierFromPbxproj(projectRoot, { targetName: 'testproject' });
-      expect(bundleId).toBe('org.name.testproject');
+      const bundleId = getBundleIdentifierFromPbxproj(projectRoot, { targetName: 'HelloWorld' });
+      expect(bundleId).toBe('org.name.HelloWorld');
     });
 
     describe('multi-target project', () => {
@@ -129,14 +128,8 @@ describe('BundleIdentifier module', () => {
     beforeEach(() => {
       vol.fromJSON(
         {
-          [pbxProjPath]: originalFs.readFileSync(
-            path.join(__dirname, 'fixtures/project.pbxproj'),
-            'utf-8'
-          ),
-          [otherPbxProjPath]: originalFs.readFileSync(
-            path.join(__dirname, 'fixtures/project.pbxproj'),
-            'utf-8'
-          ),
+          [pbxProjPath]: rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
+          [otherPbxProjPath]: rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
         },
         projectRoot
       );

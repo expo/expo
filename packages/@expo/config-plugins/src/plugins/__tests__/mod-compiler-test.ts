@@ -10,7 +10,9 @@ jest.mock('fs');
 
 describe(compileModsAsync, () => {
   const projectRoot = '/app';
+  const originalWarn = console.warn;
   beforeEach(async () => {
+    console.warn = jest.fn();
     // Trick XDL Info.plist reading
     Object.defineProperty(process, 'platform', {
       value: 'not-darwin',
@@ -19,6 +21,7 @@ describe(compileModsAsync, () => {
   });
 
   afterEach(() => {
+    console.warn = originalWarn;
     vol.reset();
   });
 
@@ -121,7 +124,7 @@ describe(compileModsAsync, () => {
     // Apply mod plugin
     const config = await compileModsAsync(exportedConfig, { projectRoot });
 
-    expect(internalValue).toBe('en');
+    expect(internalValue).toBe('$(DEVELOPMENT_LANGUAGE)');
 
     // App config should have been modified
     expect(config.name).toBe('app');
@@ -133,7 +136,7 @@ describe(compileModsAsync, () => {
     expect(Object.values(config.mods.ios).every((value) => typeof value === 'function')).toBe(true);
 
     // Test that the actual file was rewritten.
-    const data = await fs.promises.readFile('/app/ios/ReactNativeProject/Info.plist', 'utf8');
+    const data = await fs.promises.readFile('/app/ios/HelloWorld/Info.plist', 'utf8');
     expect(data).toMatch(/CFBundleDevelopmentRegion-crazy-random-value/);
   });
 

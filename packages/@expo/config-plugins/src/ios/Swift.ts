@@ -65,7 +65,7 @@ function shouldCreateSwiftBridgingHeader({
   project: XcodeProject;
 }): boolean {
   // Only create a bridging header if the project is using in Objective C (AppDelegate is written in Objc).
-  const isObjc = getAppDelegate(projectRoot).language === 'objc';
+  const isObjc = getAppDelegate(projectRoot).language !== 'swift';
   return isObjc && !getDesignatedSwiftBridgingHeaderFileReference({ project });
 }
 

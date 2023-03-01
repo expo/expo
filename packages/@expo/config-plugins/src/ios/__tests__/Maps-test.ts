@@ -10,8 +10,6 @@ import {
   removeMapsCocoaPods,
   setGoogleMapsApiKey,
 } from '../Maps';
-import { DefaultAppDelegate } from './fixtures/AppDelegate';
-import { PodfileBasic } from './fixtures/Podfile';
 
 describe('MATCH_INIT', () => {
   it(`matches React AppDelegate`, () => {
@@ -44,7 +42,7 @@ describe(getGoogleMapsApiKey, () => {
 
 describe(addMapsCocoaPods, () => {
   it(`adds maps pods to Podfile`, () => {
-    const results = addMapsCocoaPods(PodfileBasic);
+    const results = addMapsCocoaPods(rnFixture['ios/Podfile']);
     // matches a static snapshot
     expect(results.contents).toMatchSnapshot();
     expect(results.contents).toMatch(/e9cc66c360abe50bc66d89fffb3c55b034d7d369/);
@@ -59,7 +57,7 @@ describe(addMapsCocoaPods, () => {
     expect(modded.didClear).toBe(false);
 
     const modded2 = removeMapsCocoaPods(modded.contents);
-    expect(modded2.contents).toBe(PodfileBasic);
+    expect(modded2.contents).toBe(rnFixture['ios/Podfile']);
     // didn't add new content
     expect(modded2.didMerge).toBe(false);
     // did remove the generated content
@@ -69,9 +67,7 @@ describe(addMapsCocoaPods, () => {
 
 describe(addGoogleMapsAppDelegateImport, () => {
   it(`adds maps import to AppDelegate`, () => {
-    const results = addGoogleMapsAppDelegateImport(
-      rnFixture['ios/ReactNativeProject/AppDelegate.m']
-    );
+    const results = addGoogleMapsAppDelegateImport(rnFixture['ios/HelloWorld/AppDelegate.mm']);
     // matches a static snapshot
     expect(results.contents).toMatchSnapshot();
     expect(results.contents).toMatch(/f2f83125c99c0d74b42a2612947510c4e08c423a/);
@@ -86,7 +82,7 @@ describe(addGoogleMapsAppDelegateImport, () => {
     expect(modded.didClear).toBe(false);
 
     const modded2 = removeGoogleMapsAppDelegateImport(modded.contents);
-    expect(modded2.contents).toBe(rnFixture['ios/ReactNativeProject/AppDelegate.m']);
+    expect(modded2.contents).toBe(rnFixture['ios/HelloWorld/AppDelegate.mm']);
     // didn't add new content
     expect(modded2.didMerge).toBe(false);
     // did remove the generated content
@@ -100,7 +96,7 @@ describe(addGoogleMapsAppDelegateImport, () => {
 describe(addGoogleMapsAppDelegateInit, () => {
   it(`adds maps import to AppDelegate`, () => {
     const results = addGoogleMapsAppDelegateInit(
-      rnFixture['ios/ReactNativeProject/AppDelegate.m'],
+      rnFixture['ios/HelloWorld/AppDelegate.mm'],
       'mykey'
     );
     // matches a static snapshot
@@ -125,14 +121,17 @@ describe(addGoogleMapsAppDelegateInit, () => {
     expect(modded2.didClear).toBe(true);
 
     const modded3 = removeGoogleMapsAppDelegateInit(modded.contents);
-    expect(modded3.contents).toBe(rnFixture['ios/ReactNativeProject/AppDelegate.m']);
+    expect(modded3.contents).toBe(rnFixture['ios/HelloWorld/AppDelegate.mm']);
     // didn't add new content
     expect(modded3.didMerge).toBe(false);
     // did remove the generated content
     expect(modded3.didClear).toBe(true);
   });
   it(`adds maps import to AppDelegate`, () => {
-    const results = addGoogleMapsAppDelegateInit(DefaultAppDelegate, 'mykey');
+    const results = addGoogleMapsAppDelegateInit(
+      rnFixture['ios/HelloWorld/AppDelegate.mm'],
+      'mykey'
+    );
     // matches a static snapshot
     expect(results.contents).toMatchSnapshot();
     expect(results.contents).toMatch(/97501819d6911e5f50d66c63d369b0cec62853c2/);

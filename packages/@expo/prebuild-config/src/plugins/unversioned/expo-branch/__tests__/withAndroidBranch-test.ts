@@ -1,15 +1,15 @@
-import { AndroidConfig } from '@expo/config-plugins';
-import { resolve } from 'path';
+import { AndroidConfig, AndroidManifest, XML } from '@expo/config-plugins';
 
+import rnFixture from '../../../__tests__/fixtures/react-native-project';
 import { getBranchApiKey, setBranchApiKey } from '../withAndroidBranch';
 
-const { findMetaDataItem, getMainApplication, readAndroidManifestAsync } = AndroidConfig.Manifest;
+const { findMetaDataItem, getMainApplication } = AndroidConfig.Manifest;
 
-const sampleManifestPath = resolve(
-  __dirname,
-  '../../../__tests__/fixtures',
-  'react-native-AndroidManifest.xml'
-);
+async function getFixtureManifestAsync() {
+  return (await XML.parseXMLAsync(
+    rnFixture['android/app/src/main/AndroidManifest.xml']
+  )) as AndroidManifest;
+}
 
 describe('Android branch test', () => {
   it(`returns null if no android branch api key is provided`, () => {
@@ -23,7 +23,7 @@ describe('Android branch test', () => {
   });
 
   it('sets branch api key in AndroidManifest.xml if given', async () => {
-    let androidManifestJson = await readAndroidManifestAsync(sampleManifestPath);
+    let androidManifestJson = await getFixtureManifestAsync();
     androidManifestJson = await setBranchApiKey(
       { android: { config: { branch: { apiKey: 'MY-API-KEY' } } } } as any,
       androidManifestJson

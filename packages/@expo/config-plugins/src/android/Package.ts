@@ -204,6 +204,7 @@ export async function renamePackageOnDiskForType({
   const filesToUpdate = [...globSync('**/*', { cwd: newPackagePath, absolute: true })];
   // Only update the BUCK file to match the main package name
   if (type === 'main') {
+    // NOTE(EvanBacon): We dropped this file in SDK 48 but other templates may still use it.
     filesToUpdate.push(path.join(projectRoot, 'android', 'app', 'BUCK'));
   }
   // Replace all occurrences of the path in the project

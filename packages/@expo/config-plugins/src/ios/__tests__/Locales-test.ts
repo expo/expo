@@ -1,13 +1,11 @@
 import * as fs from 'fs';
 import { vol } from 'memfs';
-import * as path from 'path';
 
+import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import * as WarningAggregator from '../../utils/warnings';
 import { getLocales, setLocalesAsync } from '../Locales';
 import { getPbxproj } from '../utils/Xcodeproj';
 import { getDirFromFS } from './utils/getDirFromFS';
-
-const fsReal = jest.requireActual('fs') as typeof fs;
 
 jest.mock('fs');
 jest.mock('../../utils/warnings');
@@ -31,10 +29,8 @@ describe('e2e: iOS locales', () => {
   beforeAll(async () => {
     vol.fromJSON(
       {
-        'ios/testproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ),
+        'ios/testproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
         'ios/testproject/AppDelegate.m': '',
         'lang/fr.json': JSON.stringify({
           CFBundleDisplayName: 'french-name',
