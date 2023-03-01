@@ -84,7 +84,9 @@ if (!isSubcommand && args['--help']) {
     prebuild,
     'run:ios': runIos,
     'run:android': runAndroid,
-    // Don't document this command
+    // NOTE(EvanBacon): Don't document this command as it's a temporary
+    // workaround until we can use `expo export` for all production bundling.
+    // https://github.com/expo/expo/pull/21396/files#r1121025873
     'export:embed': bundleProxy_unused,
     ...others
   } = commands;
