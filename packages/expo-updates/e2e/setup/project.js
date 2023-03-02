@@ -475,6 +475,13 @@ async function initAsync(
     'utf-8'
   );
 
+  // Append additional Proguard rule for Detox 20
+  await fs.appendFile(
+    path.join(projectRoot, 'android', 'app', 'proguard-rules.pro'),
+    '\n-keep class org.apache.commons.** { *; }\n',
+    'utf-8'
+  );
+
   // Force bundling on iOS for debug builds
   const iosProjectPath = glob.sync(
     path.join(projectRoot, 'ios', '*.xcodeproj', 'project.pbxproj')

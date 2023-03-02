@@ -40,7 +40,7 @@ if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
 fi
 
 # Execute tests
-detox test --configuration $EAS_BUILD_PLATFORM.debug 2>&1 | tee ./logs/detox-tests.log
+detox test --configuration $EAS_BUILD_PLATFORM.release 2>&1 | tee ./logs/detox-tests.log
 
 export DETOX_EXIT_CODE=$?
 
