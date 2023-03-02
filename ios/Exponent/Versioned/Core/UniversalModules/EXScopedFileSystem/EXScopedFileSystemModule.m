@@ -1,6 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #if __has_include(<EXFileSystem/EXFileSystem.h>)
+#import <ExpoModulesCore/EXDefines.h>
+#import <ExpoModulesCore/EXInternalModule.h>
 #import "EXScopedFileSystemModule.h"
 #import "EXUtil.h"
 

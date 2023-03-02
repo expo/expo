@@ -5,7 +5,7 @@
 
 #import <EXUpdatesInterface/EXUpdatesExternalInterface.h>
 
-@import EXManifests;
+#import <EXManifests/EXManifests-Swift.h>
 
 NS_ASSUME_NONNULL_BEGIN
 
