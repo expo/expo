@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed jsc import when using use_frameworks
+
 ### 💡 Others
 
 ## 1.2.3 - 2023-02-21
