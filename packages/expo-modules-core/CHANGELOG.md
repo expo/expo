@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- [iOS] Fixed jsc import when using use_frameworks
+- [iOS] Fixed jsc import when using use_frameworks ([#21479](https://github.com/expo/expo/pull/21479) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
