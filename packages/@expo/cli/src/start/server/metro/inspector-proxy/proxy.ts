@@ -78,7 +78,7 @@ export class ExpoInspectorProxy<D extends MetroDevice> {
 
         socket.on('close', () => {
           this.devices.delete(deviceId);
-          debug('Device connected: device=%s, app=%s', deviceName, appName);
+          debug('Device disconnected: device=%s, app=%s', deviceName, appName);
         });
       } catch (error: unknown) {
         const message = error instanceof Error && error.toString();
@@ -113,6 +113,10 @@ export class ExpoInspectorProxy<D extends MetroDevice> {
         debug('New debugger connected: device=%s, app=%s', device._name, device._app);
 
         device.handleDebuggerConnection(socket, pageId);
+
+        socket.on('close', () => {
+          debug('Debugger disconnected: device=%s, app=%s', device._name, device._app);
+        });
       } catch (error: unknown) {
         const message = error instanceof Error && error.toString();
         debug('Could not establish a connection to debugger:', error);
