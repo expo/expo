@@ -24,6 +24,7 @@
 - Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
 - Start converting to Swift. ([#21320](https://github.com/expo/expo/pull/21320), [#21329](https://github.com/expo/expo/pull/21329), [#21332](https://github.com/expo/expo/pull/21332), [#21391](https://github.com/expo/expo/pull/21391), [#21394](https://github.com/expo/expo/pull/21394) by [@wschurman](https://github.com/wschurman))
 - Fix E2E rollback test and other improvements. ([#21389](https://github.com/expo/expo/pull/21389) by [@douglowder](https://github.com/douglowder))
+- Consolidate E2E tests. ([#21458](https://github.com/expo/expo/pull/21458) by [@douglowder](https://github.com/douglowder))
 
 ## 0.16.1 — 2023-02-09
 

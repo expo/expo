@@ -1,12 +1,12 @@
 {
-  "testRunner": "jest",
-  "runnerConfig": "e2e/config.json",
-  "skipLegacyWorkersInjection": true,
-  "behavior": {
-    "init": {
-      "reinstallApp": true,
-      "exposeGlobals": false,
-      "keepLockFile": false
+  "testRunner": {
+    "$0": "jest",
+    "args": {
+      "config": "e2e/jest.config.js",
+      "_": ["e2e"]
+    },
+    "jest": {
+      "preset": "ts-jest"
     }
   },
   "apps": {
