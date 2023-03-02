@@ -1,4 +1,5 @@
-import { by, device, element, expect as detoxExpect } from 'detox';
+import { by, device, element, waitFor } from 'detox';
+import jestExpect from 'expect';
 import path from 'path';
 import { setTimeout } from 'timers/promises';
 
@@ -6,14 +7,16 @@ import Server from './utils/server';
 import Update from './utils/update';
 
 const projectRoot = process.env.PROJECT_ROOT || process.cwd();
-const platform = (process.env.DETOX_CONFIGURATION || 'ios.release').split('.')[0];
+const platform = device.getPlatform();
 const protocolVersion = platform === 'android' ? 1 : 0;
 const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
 
 const checkNumAssetsAsync = async () => {
   await element(by.id('readAssetFiles')).tap();
   await setTimeout(20 * TIMEOUT_BIAS);
-  await detoxExpect(element(by.id('activity'))).not.toBeVisible();
+  await waitFor(element(by.id('activity')))
+    .not.toBeVisible()
+    .withTimeout(2000);
   const attributes: any = await element(by.id('numAssetFiles')).getAttributes();
   return parseInt(attributes?.text || -1, 10);
 };
@@ -21,7 +24,9 @@ const checkNumAssetsAsync = async () => {
 const clearNumAssetsAsync = async () => {
   await element(by.id('clearAssetFiles')).tap();
   await setTimeout(20 * TIMEOUT_BIAS);
-  await detoxExpect(element(by.id('activity'))).not.toBeVisible();
+  await waitFor(element(by.id('activity')))
+    .not.toBeVisible()
+    .withTimeout(2000);
 };
 
 const checkIsEmbeddedAsync = async () => {
@@ -42,7 +47,9 @@ const checkUpdateStringAsync = async () => {
 const readLogEntriesAsync = async () => {
   await element(by.id('readLogEntries')).tap();
   await setTimeout(20 * TIMEOUT_BIAS);
-  await detoxExpect(element(by.id('activity'))).not.toBeVisible();
+  await waitFor(element(by.id('activity')))
+    .not.toBeVisible()
+    .withTimeout(2000);
   const attributes: any = await element(by.id('logEntries')).getAttributes();
   try {
     return JSON.parse(attributes?.text) || [];
@@ -52,6 +59,12 @@ const readLogEntriesAsync = async () => {
   }
 };
 
+const waitForAppToBecomeVisible = async () => {
+  await waitFor(element(by.id('updateString')))
+    .toBeVisible()
+    .withTimeout(2000);
+};
+
 describe('Basic tests', () => {
   afterEach(async () => {
     await device.uninstallApp();
@@ -59,20 +72,23 @@ describe('Basic tests', () => {
   });
 
   it('starts app, stops, and starts again', async () => {
+    console.warn(`Platform = ${platform}`);
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     Server.start(Update.serverPort, protocolVersion);
     await device.installApp();
     await device.launchApp({
       newInstance: true,
     });
+    await waitForAppToBecomeVisible();
 
     const message = await checkUpdateStringAsync();
-    expect(message).toBe('test');
+    jestExpect(message).toBe('test');
     await device.terminateApp();
     await device.launchApp();
+    await waitForAppToBecomeVisible();
 
     const message2 = await checkUpdateStringAsync();
-    expect(message2).toBe('test');
+    jestExpect(message2).toBe('test');
 
     await device.terminateApp();
   });
@@ -85,10 +101,10 @@ describe('Basic tests', () => {
       newInstance: true,
     });
     const request = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
-    expect(request.headers['expo-embedded-update-id'] || null).toBeDefined();
-    expect(request.headers['expo-current-update-id']).toBeDefined();
+    jestExpect(request.headers['expo-embedded-update-id'] || null).toBeDefined();
+    jestExpect(request.headers['expo-current-update-id']).toBeDefined();
     // before any updates, the current update ID and embedded update ID should be the same
-    expect(request.headers['expo-current-update-id']).toEqual(
+    jestExpect(request.headers['expo-current-update-id']).toEqual(
       request.headers['expo-embedded-update-id']
     );
   });
@@ -118,25 +134,27 @@ describe('Basic tests', () => {
       newInstance: true,
     });
     const firstRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
+    await waitForAppToBecomeVisible();
     const message = await checkUpdateStringAsync();
-    expect(message).toBe('test');
+    jestExpect(message).toBe('test');
 
     // give the app time to load the new update in the background
-    expect(Server.consumeRequestedStaticFiles().length).toBe(1);
+    jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1);
 
     // restart the app so it will launch the new update
     await device.terminateApp();
     await device.launchApp();
     const secondRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
+    await waitForAppToBecomeVisible();
     const updatedMessage = await checkUpdateStringAsync();
-    expect(updatedMessage).toBe(newNotifyString);
+    jestExpect(updatedMessage).toBe(newNotifyString);
 
-    expect(secondRequest.headers['expo-embedded-update-id']).toBeDefined();
-    expect(secondRequest.headers['expo-embedded-update-id']).toEqual(
+    jestExpect(secondRequest.headers['expo-embedded-update-id']).toBeDefined();
+    jestExpect(secondRequest.headers['expo-embedded-update-id']).toEqual(
       firstRequest.headers['expo-embedded-update-id']
     );
-    expect(secondRequest.headers['expo-current-update-id']).toBeDefined();
-    expect(secondRequest.headers['expo-current-update-id']).toEqual(manifest.id);
+    jestExpect(secondRequest.headers['expo-current-update-id']).toBeDefined();
+    jestExpect(secondRequest.headers['expo-current-update-id']).toEqual(manifest.id);
   });
 
   it('does not run update with incorrect hash', async () => {
@@ -160,18 +178,19 @@ describe('Basic tests', () => {
       newInstance: true,
     });
     await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
+    await waitForAppToBecomeVisible();
     const message = await checkUpdateStringAsync();
-    expect(message).toBe('test');
+    jestExpect(message).toBe('test');
 
     // give the app time to load the new update in the background
-    expect(Server.consumeRequestedStaticFiles().length).toBe(1);
+    jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1);
 
     // restart the app to verify the new update isn't used
     await device.terminateApp();
     await device.launchApp();
     await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
     const updatedMessage = await checkUpdateStringAsync();
-    expect(updatedMessage).toBe('test');
+    jestExpect(updatedMessage).toBe('test');
   });
 
   it('update with bad asset hash yields expected log entry', async () => {
@@ -220,19 +239,19 @@ describe('Basic tests', () => {
       newInstance: true,
     });
     // give the app time to load the new update in the background
-    await setTimeout(2000 * TIMEOUT_BIAS);
+    await waitForAppToBecomeVisible();
     const message = await checkUpdateStringAsync();
-    expect(message).toBe('test');
+    jestExpect(message).toBe('test');
 
-    expect(Server.consumeRequestedStaticFiles().length).toBe(4);
+    jestExpect(Server.consumeRequestedStaticFiles().length).toBe(4);
 
     // restart the app so it will launch the new update
     await device.terminateApp();
     await device.launchApp();
-    await setTimeout(2000 * TIMEOUT_BIAS);
+    await waitForAppToBecomeVisible();
     const updatedMessage = await checkUpdateStringAsync();
     // Because of the mismatch, the new update will not load, so updatedMessage will still be 'test'
-    expect(updatedMessage).toBe('test');
+    jestExpect(updatedMessage).toBe('test');
 
     /**
      * Check readLogEntriesAsync
@@ -246,14 +265,14 @@ describe('Basic tests', () => {
     );
 
     // Should have at least one message
-    expect(logEntries.length > 0).toBe(true);
+    jestExpect(logEntries.length > 0).toBe(true);
     // Check for message that hash is mismatched, with expected error code
     // (this check will be reworked after some logging PRs go in)
     /*
-    expect(logEntries.map((entry) => entry.code)).toEqual(
+   jestExpect(logEntries.map((entry) => entry.code)).toEqual(
       expect.arrayContaining(['AssetsFailedToLoad'])
     );
-    expect(logEntries.map((entry) => entry.message)).toEqual(
+   jestExpect(logEntries.map((entry) => entry.message)).toEqual(
       expect.arrayContaining([expect.stringContaining('SHA-256 did not match expected')])
     );
      */
@@ -303,18 +322,19 @@ describe('Basic tests', () => {
     await device.launchApp({
       newInstance: true,
     });
+    await waitForAppToBecomeVisible();
     const message = await checkUpdateStringAsync();
-    expect(message).toBe('test');
+    jestExpect(message).toBe('test');
 
     // give the app time to load the new update in the background
-    expect(Server.consumeRequestedStaticFiles().length).toBe(4);
+    jestExpect(Server.consumeRequestedStaticFiles().length).toBe(4);
 
     // restart the app so it will launch the new update
     await device.terminateApp();
     await device.launchApp();
     const updatedMessage = await checkUpdateStringAsync();
 
-    expect(updatedMessage).toBe(newNotifyString);
+    jestExpect(updatedMessage).toBe(newNotifyString);
   });
 
   // important for usage accuracy
@@ -342,17 +362,18 @@ describe('Basic tests', () => {
       newInstance: true,
     });
     await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
+    await waitForAppToBecomeVisible();
     const firstMessage = await checkUpdateStringAsync();
-    expect(firstMessage).toBe('test');
+    jestExpect(firstMessage).toBe('test');
 
     // give the app time to load the new update in the background (i.e. to make sure it doesn't)
-    expect(Server.consumeRequestedStaticFiles().length).toBe(0);
+    jestExpect(Server.consumeRequestedStaticFiles().length).toBe(0);
 
     // restart the app and make sure it's still running the initial update
     await device.terminateApp();
     await device.launchApp();
     const secondMessage = await checkUpdateStringAsync();
-    expect(secondMessage).toBe('test');
+    jestExpect(secondMessage).toBe('test');
   });
 
   it('supports rollbacks', async () => {
@@ -384,18 +405,20 @@ describe('Basic tests', () => {
       newInstance: true,
     });
     const firstRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
+    await waitForAppToBecomeVisible();
     const message = await checkUpdateStringAsync();
-    expect(message).toBe('test');
+    jestExpect(message).toBe('test');
 
     // give the app time to load the new update in the background
-    expect(Server.consumeRequestedStaticFiles().length).toBe(1);
+    jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1);
 
     // restart the app so it will launch the new update
     await device.terminateApp();
     await device.launchApp();
     const secondRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
+    await waitForAppToBecomeVisible();
     const updatedMessage = await checkUpdateStringAsync();
-    expect(updatedMessage).toBe(newNotifyString);
+    jestExpect(updatedMessage).toBe(newNotifyString);
 
     // serve a rollback now
     const rollbackDirective = Update.getRollbackDirective(new Date());
@@ -410,25 +433,26 @@ describe('Basic tests', () => {
     await device.terminateApp();
     await device.launchApp();
     const fourthRequest = await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
+    await waitForAppToBecomeVisible();
     const rolledBackMessage = await checkUpdateStringAsync();
-    expect(rolledBackMessage).toBe('test');
-    expect(secondRequest.headers['expo-embedded-update-id']).toBeDefined();
-    expect(secondRequest.headers['expo-embedded-update-id']).toEqual(
+    jestExpect(rolledBackMessage).toBe('test');
+    jestExpect(secondRequest.headers['expo-embedded-update-id']).toBeDefined();
+    jestExpect(secondRequest.headers['expo-embedded-update-id']).toEqual(
       firstRequest.headers['expo-embedded-update-id']
     );
-    expect(thirdRequest.headers['expo-embedded-update-id']).toEqual(
+    jestExpect(thirdRequest.headers['expo-embedded-update-id']).toEqual(
       firstRequest.headers['expo-embedded-update-id']
     );
-    expect(fourthRequest.headers['expo-embedded-update-id']).toEqual(
+    jestExpect(fourthRequest.headers['expo-embedded-update-id']).toEqual(
       firstRequest.headers['expo-embedded-update-id']
     );
 
-    expect(firstRequest.headers['expo-current-update-id']).toEqual(
+    jestExpect(firstRequest.headers['expo-current-update-id']).toEqual(
       firstRequest.headers['expo-embedded-update-id']
     );
-    expect(secondRequest.headers['expo-current-update-id']).toEqual(manifest.id);
-    expect(thirdRequest.headers['expo-current-update-id']).toEqual(manifest.id);
-    expect(fourthRequest.headers['expo-current-update-id']).toEqual(
+    jestExpect(secondRequest.headers['expo-current-update-id']).toEqual(manifest.id);
+    jestExpect(thirdRequest.headers['expo-current-update-id']).toEqual(manifest.id);
+    jestExpect(fourthRequest.headers['expo-current-update-id']).toEqual(
       firstRequest.headers['expo-embedded-update-id']
     );
   });
@@ -468,18 +492,18 @@ describe('Asset deletion recovery', () => {
     await device.launchApp({
       newInstance: true,
     });
-    await setTimeout(2000 * TIMEOUT_BIAS);
+    await waitForAppToBecomeVisible();
     /**
      * Check that we are running the embedded update
      */
     const isEmbedded = await checkIsEmbeddedAsync();
-    expect(isEmbedded).toEqual(true);
+    jestExpect(isEmbedded).toEqual(true);
 
     /**
      * Check that asset files are present
      */
     let numAssets = await checkNumAssetsAsync();
-    expect(numAssets).toBeGreaterThan(2);
+    jestExpect(numAssets).toBeGreaterThan(2);
 
     /**
      * Get current update ID
@@ -491,26 +515,26 @@ describe('Asset deletion recovery', () => {
      */
     await clearNumAssetsAsync();
     numAssets = await checkNumAssetsAsync();
-    expect(numAssets).toBe(0);
+    jestExpect(numAssets).toBe(0);
 
     /**
      * Stop and then restart app.
      */
     await device.terminateApp();
     await device.launchApp();
-    await setTimeout(2000 * TIMEOUT_BIAS);
+    await waitForAppToBecomeVisible();
 
     /**
      * Check that assets are restored from DB
      */
     numAssets = await checkNumAssetsAsync();
-    expect(numAssets).toBeGreaterThan(2);
+    jestExpect(numAssets).toBeGreaterThan(2);
 
     /**
      * Check that update ID is the same
      */
     const updateID2 = await checkUpdateIDAsync();
-    expect(updateID2).toEqual(updateID);
+    jestExpect(updateID2).toEqual(updateID);
 
     /**
      * Check for log messages
@@ -522,7 +546,7 @@ describe('Asset deletion recovery', () => {
         '\n' +
         JSON.stringify(logEntries, null, 2)
     );
-    expect(logEntries.length).toBeGreaterThan(0);
+    jestExpect(logEntries.length).toBeGreaterThan(0);
   });
 
   it('embedded assets deleted from internal storage should be re-copied from a new embedded update', async () => {
@@ -547,20 +571,20 @@ describe('Asset deletion recovery', () => {
     await device.launchApp({
       newInstance: true,
     });
-    await setTimeout(2000 * TIMEOUT_BIAS);
+    await waitForAppToBecomeVisible();
 
     /**
      * Save the number of assets in storage
      */
     const numAssetsSaved = await checkNumAssetsAsync();
-    expect(numAssetsSaved).toBeGreaterThan(0);
+    jestExpect(numAssetsSaved).toBeGreaterThan(0);
 
     /**
      * Clear assets and check that number of assets is now 0
      */
     await clearNumAssetsAsync();
     let numAssets = await checkNumAssetsAsync();
-    expect(numAssets).toBe(0);
+    jestExpect(numAssets).toBe(0);
 
     /**
      * Stop the app and install a newer build on top of it. The newer build has a different
@@ -577,6 +601,7 @@ describe('Asset deletion recovery', () => {
     await device.launchApp({
       newInstance: true,
     });
+    await waitForAppToBecomeVisible();
 
     /**
      * Verify all the assets that were deleted have been re-copied back into internal storage, and
@@ -584,14 +609,14 @@ describe('Asset deletion recovery', () => {
      * from the previous one.
      */
     numAssets = await checkNumAssetsAsync();
-    expect(numAssets).toEqual(numAssetsSaved);
+    jestExpect(numAssets).toEqual(numAssetsSaved);
 
     /**
      * TODO: develop a way to modify the embedded update used by the build in a Detox test environment,
      * so that we can actually do this test with a real modified update. Until then, disable the line below
      * to allow the test to pass.
      */
-    // expect(readAssetsMessage.updateId).not.toEqual(clearAssetsMessage.updateId);
+    //jestExpect(readAssetsMessage.updateId).not.toEqual(clearAssetsMessage.updateId);
   });
 
   it('assets in a downloaded update deleted from internal storage should be re-copied or re-downloaded', async () => {
@@ -653,7 +678,7 @@ describe('Asset deletion recovery', () => {
     await Server.waitForUpdateRequest(10000 * TIMEOUT_BIAS);
 
     // give the app time to load the new update in the background
-    expect(Server.consumeRequestedStaticFiles().length).toBe(1); // only the bundle should be new
+    jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1); // only the bundle should be new
 
     /**
      * Stop and restart the app so it will launch the new update. Immediately send it a message to
@@ -661,17 +686,18 @@ describe('Asset deletion recovery', () => {
      */
     await device.terminateApp();
     await device.launchApp({ newInstance: true });
+    await waitForAppToBecomeVisible();
     const updateString = await checkUpdateStringAsync();
-    expect(updateString).toEqual(newNotifyString);
+    jestExpect(updateString).toEqual(newNotifyString);
     await clearNumAssetsAsync();
 
     /**
      * Verify that the assets were cleared correctly.
      */
     let numAssets = await checkNumAssetsAsync();
-    expect(numAssets).toBe(0);
+    jestExpect(numAssets).toBe(0);
     let updateID = await checkUpdateIDAsync();
-    expect(updateID).toEqual(manifest.id);
+    jestExpect(updateID).toEqual(manifest.id);
 
     /**
      * Stop and restart the app and immediately send it a message to read internal storage. Verify
@@ -679,7 +705,7 @@ describe('Asset deletion recovery', () => {
      */
     await device.terminateApp();
     await device.launchApp({ newInstance: true });
-    await setTimeout(2000 * TIMEOUT_BIAS);
+    await waitForAppToBecomeVisible();
 
     /**
      * Verify all the assets -- including the JS bundle from the update (which wasn't in the
@@ -687,9 +713,9 @@ describe('Asset deletion recovery', () => {
      * updated bundle was re-downloaded.
      */
     numAssets = await checkNumAssetsAsync();
-    expect(numAssets).toBe(manifest.assets.length + 1);
+    jestExpect(numAssets).toBe(manifest.assets.length + 1);
     updateID = await checkUpdateIDAsync();
-    expect(updateID).toEqual(manifest.id);
-    expect(Server.consumeRequestedStaticFiles().length).toBe(1); // should have re-downloaded only the JS bundle; the rest should have been copied from the app binary
+    jestExpect(updateID).toEqual(manifest.id);
+    jestExpect(Server.consumeRequestedStaticFiles().length).toBe(1); // should have re-downloaded only the JS bundle; the rest should have been copied from the app binary
   });
 });
