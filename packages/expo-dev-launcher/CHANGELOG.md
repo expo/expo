@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added experimental network inspector. ([#21265](https://github.com/expo/expo/pull/21265) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
