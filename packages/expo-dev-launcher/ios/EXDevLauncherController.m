@@ -78,6 +78,7 @@
     self.errorManager = [[EXDevLauncherErrorManager alloc] initWithController:self];
     self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
+    [EXDevLauncherNetworkLogger.shared enable];
   }
   return self;
 }
