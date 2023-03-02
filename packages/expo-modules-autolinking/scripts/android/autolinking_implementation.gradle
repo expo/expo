@@ -160,7 +160,11 @@ class ExpoAutolinkingManager {
 
 class Colors {
   static final String GREEN = "\u001B[32m"
+  static final String YELLOW = "\u001B[33m"
   static final String RESET = "\u001B[0m"
+}
+class Emojis {
+  static final String INFORMATION = "\u2139\uFE0F"
 }
 
 // We can't cast a manager that is created in `settings.gradle` to the `ExpoAutolinkingManager`
@@ -211,7 +215,7 @@ if (rootProject instanceof ProjectDescriptor) {
       }
       for (module in modules) {
         for (modulePlugin in module.plugins) {
-          println "Applying gradle plugin '${Colors.GREEN}${modulePlugin.id}${Colors.RESET}' (${module.name}@${module.version})"
+          println " ${Emojis.INFORMATION}  ${Colors.YELLOW}Applying gradle plugin${Colors.RESET} '${Colors.GREEN}${modulePlugin.id}${Colors.RESET}' (${module.name}@${module.version})"
           project.plugins.apply(modulePlugin.id)
         }
       }
