@@ -56,44 +56,45 @@ export function useDevSettings() {
   const toggleElementInspector = React.useCallback(async () => {
     eagerToggleValue('isElementInspectorShown');
     await DevMenu.toggleElementInspectorAsync();
-    DevMenu.hideMenu();
+    DevMenu.closeMenu();
   }, []);
 
   const toggleFastRefresh = React.useCallback(async () => {
     eagerToggleValue('isHotLoadingEnabled');
     await DevMenu.toggleFastRefreshAsync();
-    DevMenu.hideMenu();
+    DevMenu.closeMenu();
   }, []);
 
   const toggleDebugRemoteJS = React.useCallback(async () => {
     eagerToggleValue('isDebuggingRemotely');
     await DevMenu.toggleDebugRemoteJSAsync();
-    DevMenu.hideMenu();
+    DevMenu.closeMenu();
   }, []);
 
   const togglePerformanceMonitor = React.useCallback(async () => {
     eagerToggleValue('isPerfMonitorShown');
     await DevMenu.togglePerformanceMonitorAsync();
-    DevMenu.hideMenu();
+    DevMenu.closeMenu();
   }, []);
 
   const navigateToLauncher = React.useCallback(async () => {
     await DevLauncher.navigateToLauncherAsync();
-    DevMenu.hideMenu();
+    DevMenu.closeMenu();
   }, []);
 
   const reload = React.useCallback(async () => {
     await DevMenu.reloadAsync();
-    DevMenu.hideMenu();
+    DevMenu.closeMenu();
   }, []);
 
   const openRNDevMenu = React.useCallback(async () => {
     await DevMenu.openDevMenuFromReactNative();
+    DevMenu.closeMenu();
   }, []);
 
   const openJSInspector = React.useCallback(async () => {
     await DevMenu.openJSInspector();
-    DevMenu.hideMenu();
+    DevMenu.closeMenu();
   }, []);
 
   return {

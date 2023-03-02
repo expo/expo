@@ -52,15 +52,31 @@ private let extensionToDevMenuDataSourcesMap = NSMapTable<DevMenuExtensionProtoc
  */
 @objc
 open class DevMenuManager: NSObject {
+  public class Callback {
+    let name: String
+    let shouldCollapse: Bool
+    
+    init(name: String, shouldCollapse: Bool) {
+      self.name = name
+      self.shouldCollapse = shouldCollapse
+    }
+  }
+  
   var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
   lazy var extensionSettings: DevMenuExtensionSettingsProtocol = DevMenuExtensionDefaultSettings(manager: self)
   var canLaunchDevMenuOnStart = true
+
+  static public var wasInitilized = false
 
   /**
    Shared singleton instance.
    */
   @objc
-  static public let shared = DevMenuManager()
+  static public let shared: DevMenuManager = {
+    wasInitilized = true
+    return DevMenuManager()
+  }()
+
   /**
    The window that controls and displays the dev menu view.
    */
@@ -99,9 +115,6 @@ open class DevMenuManager: NSObject {
 
   @objc
   public var currentManifestURL: URL?
-
-
-
 
   @objc
   public func autoLaunch(_ shouldRemoveObserver: Bool = true) {
@@ -152,7 +165,13 @@ open class DevMenuManager: NSObject {
   @discardableResult
   public func closeMenu() -> Bool {
     if isVisible {
-      appInstance.sendCloseEvent()
+      if (Thread.isMainThread) {
+        window?.closeBottomSheet()
+      } else {
+        DispatchQueue.main.async { [self] in
+          window?.closeBottomSheet()
+        }
+      }
       return true
     }
 
@@ -431,7 +450,5 @@ open class DevMenuManager: NSObject {
   // captures any callbacks that are registered via the `registerDevMenuItems` module method
   // it is set and unset by the public facing `DevMenuModule`
   // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty array
-  @objc
-  public var registeredCallbacks: [String] = []
-
+  public var registeredCallbacks: [Callback] = []
 }

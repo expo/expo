@@ -74,6 +74,11 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   func hideMenu() {
     manager.hideMenu()
   }
+  
+  @objc
+  func closeMenu() {
+    manager.closeMenu()
+  }
 
   @objc
   func setOnboardingFinished(_ finished: Bool) {
@@ -99,12 +104,14 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   
   @objc
   func fireCallback(_ name: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    
-    if (!manager.registeredCallbacks.contains(name)) {
+    guard let callback = manager.registeredCallbacks.first(where: { $0.name == name }) else {
       return reject("ERR_DEVMENU_ACTION_FAILED", "\(name) is not a registered callback", nil)
     }
-    manager.sendEventToDelegateBridge("registeredCallbackFired", data: name)
     
+    manager.sendEventToDelegateBridge("registeredCallbackFired", data: name)
+    if (callback.shouldCollapse) {
+      closeMenu()
+    }
     return resolve(nil)
   }
 }
