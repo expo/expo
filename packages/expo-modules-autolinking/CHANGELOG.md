@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added Gradle plugin autolinking support for Android. ([#21377](https://github.com/expo/expo/pull/21377) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
