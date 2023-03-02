@@ -4,12 +4,16 @@
 @objc
 class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
   private static let REQUEST_ID = "EXDevLauncherRequestLoggerProtocol.requestId"
+  private static let MAX_BODY_SIZE = 1_048_576
   private lazy var urlSession = URLSession(
     configuration: URLSessionConfiguration.default,
     delegate: self,
     delegateQueue: nil
   )
   private var dataTask_: URLSessionDataTask?
+  private let responseBody = NSMutableData()
+  private var responseIsText = false
+  private var responseContentLength: Int64 = 0
 
   // MARK: URLProtocol implementations
 
@@ -65,6 +69,9 @@ class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
 
   func urlSession(_: URLSession, dataTask _: URLSessionDataTask, didReceive data: Data) {
     client?.urlProtocol(self, didLoad: data)
+    if responseBody.length + data.count <= EXDevLauncherRequestLoggerProtocol.MAX_BODY_SIZE {
+      responseBody.append(data)
+    }
   }
 
   func urlSession(
@@ -84,16 +91,29 @@ class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
         requestId: requestId,
         response: resp
       )
+
+      let contentType = resp.value(forHTTPHeaderField: "Content-Type")
+      responseIsText = (contentType?.starts(with: "text/") ?? false) || contentType == "application/json"
+      responseContentLength = resp.expectedContentLength
     }
     completionHandler(.allow)
     client?.urlProtocol(self, didReceive: response, cacheStoragePolicy: .allowed)
   }
 
-  func urlSession(_: URLSession, task _: URLSessionTask, didCompleteWithError error: Error?) {
+  func urlSession(_: URLSession, task: URLSessionTask, didCompleteWithError error: Error?) {
     if let error = error {
       client?.urlProtocol(self, didFailWithError: error)
     } else {
       client?.urlProtocolDidFinishLoading(self)
+      if responseContentLength > 0 && responseContentLength <= EXDevLauncherRequestLoggerProtocol.MAX_BODY_SIZE,
+        let currentRequest = task.currentRequest,
+        let requestId = URLProtocol.property(
+          forKey: EXDevLauncherRequestLoggerProtocol.REQUEST_ID,
+          in: currentRequest
+        ) as? String {
+        EXDevLauncherNetworkLogger.shared.emitNetworkDidReceiveBody(
+          requestId: requestId, responseBody: responseBody as Data, isText: responseIsText)
+      }
     }
   }
 

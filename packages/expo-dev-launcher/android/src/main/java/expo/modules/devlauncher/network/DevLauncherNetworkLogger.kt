@@ -108,8 +108,33 @@ class DevLauncherNetworkLogger private constructor() {
     inspectorPackagerConnection.sendWrappedEventToAllPages(data.toString())
   }
 
+  /**
+   * Emits our custom `Expo(Network.receivedResponseBody)` event
+   */
+  fun emitNetworkDidReceiveBody(requestId: String, response: Response) {
+    val contentLength = response.body()?.contentLength() ?: 0
+    if (contentLength <= 0 || contentLength > MAX_BODY_SIZE) {
+      return
+    }
+    val body = response.peekBody(MAX_BODY_SIZE)
+    val contentType = body.contentType()
+    val isText = contentType?.type() == "text" || (contentType?.type() == "application" && contentType?.subtype() == "json")
+    val bodyString = if (isText) body.string() else body.source().readByteString().base64()
+    var params = mapOf(
+      "requestId" to requestId,
+      "body" to bodyString,
+      "base64Encoded" to !isText,
+    )
+    var data = JSONObject(mapOf(
+      "method" to "Expo(Network.receivedResponseBody)",
+      "params" to params,
+    ))
+    inspectorPackagerConnection.sendWrappedEventToAllPages(data.toString())
+  }
+
   companion object {
     val instance = DevLauncherNetworkLogger()
+    private const val MAX_BODY_SIZE = 1048576L
   }
 }
 
