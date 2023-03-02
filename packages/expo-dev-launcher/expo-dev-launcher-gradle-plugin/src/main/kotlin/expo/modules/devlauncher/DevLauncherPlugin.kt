@@ -76,7 +76,7 @@ abstract class DevLauncherPlugin : Plugin<Project> {
       visitTypeInsn(Opcodes.CHECKCAST, "okhttp3/Interceptor")
       visitMethodInsn(Opcodes.INVOKEVIRTUAL, "okhttp3/OkHttpClient\$Builder", "addNetworkInterceptor", "(Lokhttp3/Interceptor;)Lokhttp3/OkHttpClient\$Builder;", false)
 
-      // opcode for `return OkHttpClient(this)`
+      // opcodes for `return OkHttpClient(this)`
       visitTypeInsn(Opcodes.NEW, "okhttp3/OkHttpClient")
       visitInsn(Opcodes.DUP)
       visitVarInsn(Opcodes.ALOAD, 0)
