@@ -274,6 +274,8 @@ const RENAMED_PAGES: Record<string, string> = {
   '/archived/': '/archive/',
   '/versions/latest/expokit/eject/': '/archive/glossary/#eject',
   '/expokit/eject/': '/archive/glossary/#eject',
+  '/expokit/expokit/': '/archive/glossary/#expokit',
+  '/submit/classic-builds/': '/submit/introduction/',
 
   // Redirects for removed API docs based on Sentry
   '/versions/latest/sdk/facebook/': '/guides/authentication/',
@@ -294,4 +296,5 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/util/': '/versions/latest/',
   // Push notifications
   '/push-notifications/using-fcm/': '/push-notifications/push-notifications-setup',
+  '/config/app/': '/workflow/configuration/',
 };

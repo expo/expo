@@ -1,12 +1,10 @@
 import type { ExpoConfig } from '@expo/config-types';
 import fs from 'fs';
 import { vol } from 'memfs';
-import * as path from 'path';
 
+import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import { getName, setDisplayName, setName, setProductName } from '../Name';
 import { getPbxproj, isBuildConfig, isNotComment } from '../utils/Xcodeproj';
-
-const fsReal = jest.requireActual('fs') as typeof fs;
 
 jest.mock('fs');
 
@@ -36,10 +34,8 @@ describe(setProductName, () => {
   beforeAll(async () => {
     vol.fromJSON(
       {
-        'ios/testproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ),
+        'ios/testproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
         'ios/testproject/AppDelegate.m': '',
       },
       projectRoot

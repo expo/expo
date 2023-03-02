@@ -2,7 +2,6 @@
 
 #import <XCTest/XCTest.h>
 
-#import <EXUpdates/EXUpdatesConfig.h>
 #import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesDatabaseIntegrityCheck.h>
 #import <EXUpdates/EXUpdatesUtils.h>
@@ -76,9 +75,9 @@
 
   NSString *scopeKey = @"testScopeKey";
   NSString *runtimeVersion = @"1.0";
-  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    EXUpdatesConfigScopeKeyKey: scopeKey,
-    EXUpdatesConfigRuntimeVersionKey: runtimeVersion
+  EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{
+    EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey,
+    EXUpdatesConfig.EXUpdatesConfigRuntimeVersionKey: runtimeVersion
   }];
   EXUpdatesUpdate *update1 = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:@{}]
                                                                 config:config
@@ -134,9 +133,9 @@
 
   NSString *scopeKey = @"testScopeKey";
   NSString *runtimeVersion = @"1.0";
-  EXUpdatesConfig *config = [EXUpdatesConfig configWithDictionary:@{
-    EXUpdatesConfigScopeKeyKey: scopeKey,
-    EXUpdatesConfigRuntimeVersionKey: runtimeVersion
+  EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{
+    EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey,
+    EXUpdatesConfig.EXUpdatesConfigRuntimeVersionKey: runtimeVersion
   }];
   EXUpdatesUpdate *update1 = [[EXUpdatesUpdate alloc] initWithManifest:[EXManifestsManifestFactory manifestForManifestJSON:@{}]
                                                                 config:config

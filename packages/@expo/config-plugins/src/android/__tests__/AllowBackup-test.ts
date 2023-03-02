@@ -1,10 +1,13 @@
-import { resolve } from 'path';
-
+import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
+import * as XML from '../../utils/XML';
 import { getAllowBackup, getAllowBackupFromManifest, setAllowBackup } from '../AllowBackup';
-import { readAndroidManifestAsync } from '../Manifest';
+import { AndroidManifest } from '../Manifest';
 
-const fixturesPath = resolve(__dirname, 'fixtures');
-const sampleManifestPath = resolve(fixturesPath, 'react-native-AndroidManifest.xml');
+async function getFixtureManifestAsync() {
+  return (await XML.parseXMLAsync(
+    rnFixture['android/app/src/main/AndroidManifest.xml']
+  )) as AndroidManifest;
+}
 
 describe('allowBackup', () => {
   it(`defaults to true`, () => {
@@ -13,26 +16,28 @@ describe('allowBackup', () => {
   });
 
   it('sets the allowBackup property to true', async () => {
-    const androidManifestJsonUnaltered = await readAndroidManifestAsync(sampleManifestPath);
-    let androidManifestJson = await readAndroidManifestAsync(sampleManifestPath);
+    const androidManifestJsonUnaltered = await getFixtureManifestAsync();
+    let androidManifestJson = await getFixtureManifestAsync();
     androidManifestJson = await setAllowBackup({}, { ...androidManifestJson });
 
     const result = getAllowBackupFromManifest(androidManifestJson);
-    expect(androidManifestJsonUnaltered).toEqual(androidManifestJson);
+    // The fixture has `android:allowBackup="false"`, lets test that it did in fact get modified.
+    expect(getAllowBackupFromManifest(androidManifestJsonUnaltered)).not.toEqual(result);
+
     // Sanity check `getAllowBackupFromManifest` works as expected.
     expect(result).toBe(true);
   });
   it('sets the allowBackup property to false', async () => {
-    const androidManifestJsonUnaltered = await readAndroidManifestAsync(sampleManifestPath);
-    let androidManifestJson = await readAndroidManifestAsync(sampleManifestPath);
+    const androidManifestJsonUnaltered = await getFixtureManifestAsync();
+    let androidManifestJson = await getFixtureManifestAsync();
     androidManifestJson = await setAllowBackup(
       { android: { allowBackup: false } },
       androidManifestJson
     );
 
     const result = getAllowBackupFromManifest(androidManifestJson);
-    // The fixture has `android:allowBackup="true"`, lets test that it did in fact get modified.
-    expect(getAllowBackupFromManifest(androidManifestJsonUnaltered)).not.toEqual(result);
+
+    expect(androidManifestJsonUnaltered).toEqual(androidManifestJson);
     expect(result).toBe(false);
   });
 });
