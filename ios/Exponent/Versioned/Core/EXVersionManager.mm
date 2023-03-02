@@ -43,9 +43,6 @@
 #import <EXMediaLibrary/EXMediaLibraryImageLoader.h>
 #import <EXFileSystem/EXFileSystem.h>
 #import <EXManifests/EXManifests-Swift.h>
-#import "EXScopedModuleRegistry.h"
-#import "EXScopedModuleRegistryAdapter.h"
-#import "EXScopedModuleRegistryDelegate.h"
 
 #import <RNReanimated/REAModule.h>
 #import <RNReanimated/REAEventDispatcher.h>
@@ -63,6 +60,10 @@
 // Import 3rd party modules that need to be scoped.
 #import <RNCAsyncStorage/RNCAsyncStorage.h>
 #import "RNCWebViewManager.h"
+
+#import "EXScopedModuleRegistry.h"
+#import "EXScopedModuleRegistryAdapter.h"
+#import "EXScopedModuleRegistryDelegate.h"
 
 RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(void);
 RCT_EXTERN void EXRegisterScopedModule(Class, ...);
