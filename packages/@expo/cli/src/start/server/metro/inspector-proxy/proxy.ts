@@ -1,4 +1,5 @@
-import type { IncomingMessage, ServerResponse } from 'http';
+import type { Server as HttpServer, IncomingMessage, ServerResponse } from 'http';
+import type { Server as HttpsServer } from 'https';
 import type { InspectorProxy as MetroProxy, Device as MetroDevice } from 'metro-inspector-proxy';
 import type { AddressInfo } from 'net';
 import { parse } from 'url';
@@ -29,12 +30,20 @@ export class ExpoInspectorProxy<D extends MetroDevice> {
     this.httpEndpointMiddleware = this.httpEndpointMiddleware.bind(this);
   }
 
-  public setServerAddress({ port, family }: Pick<AddressInfo, 'port' | 'family'>) {
-    if (family === 'IPv6') {
-      this.metroProxy._serverAddressWithPort = `[::1]:${port}`;
-    } else {
-      this.metroProxy._serverAddressWithPort = `localhost:${port}`;
+  /**
+   * When the Metro is fully initialized, resolve the server address being used
+   * This is required to properly reference sourcemaps for the debugger.
+   */
+  public onServerReady(server: HttpServer | HttpsServer) {
+    const address = server.address();
+
+    if (typeof address === 'string') {
+      throw new Error(`Inspector proxy could not resolve the server address, got ${address}`);
+    } else if (address === null) {
+      throw new Error(`Inspector proxy could not resolve the server address, got "null"`);
     }
+
+    this.setServerAddress(address);
   }
 
   /** @see https://chromedevtools.github.io/devtools-protocol/#endpoints */
@@ -48,12 +57,21 @@ export class ExpoInspectorProxy<D extends MetroDevice> {
 
   public createWebSocketEndpoints(port = 1111): Record<string, WSServer> {
     // Auto-initialize the server address on a best-guess basis
-    this.setServerAddress({ port, family: 'IPv4' });
+    // If `onServerReady` is not called, this might break sourcemap references
+    this.setServerAddress({ port, family: 'IPv4', address: '' });
 
     return {
       [WS_DEVICE_URL]: this.createDeviceWebSocketServer(),
       [WS_DEBUGGER_URL]: this.createDebuggerWebSocketServer(),
     };
+  }
+
+  private setServerAddress({ port, family, address }: AddressInfo) {
+    if (family === 'IPv6') {
+      this.metroProxy._serverAddressWithPort = `${address ?? '[::1]'}:${port}`;
+    } else {
+      this.metroProxy._serverAddressWithPort = `${address ?? 'localhost'}:${port}`;
+    }
   }
 
   private createDeviceWebSocketServer() {
