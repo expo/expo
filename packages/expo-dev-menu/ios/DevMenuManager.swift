@@ -55,13 +55,13 @@ open class DevMenuManager: NSObject {
   public class Callback {
     let name: String
     let shouldCollapse: Bool
-    
+
     init(name: String, shouldCollapse: Bool) {
       self.name = name
       self.shouldCollapse = shouldCollapse
     }
   }
-  
+
   var packagerConnectionHandler: DevMenuPackagerConnectionHandler?
   lazy var extensionSettings: DevMenuExtensionSettingsProtocol = DevMenuExtensionDefaultSettings(manager: self)
   var canLaunchDevMenuOnStart = true
@@ -165,7 +165,7 @@ open class DevMenuManager: NSObject {
   @discardableResult
   public func closeMenu() -> Bool {
     if isVisible {
-      if (Thread.isMainThread) {
+      if Thread.isMainThread {
         window?.closeBottomSheet()
       } else {
         DispatchQueue.main.async { [self] in

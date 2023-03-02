@@ -74,7 +74,7 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
   func hideMenu() {
     manager.hideMenu()
   }
-  
+
   @objc
   func closeMenu() {
     manager.closeMenu()
@@ -101,15 +101,15 @@ public class DevMenuInternalModule: NSObject, RCTBridgeModule {
     manager.setCurrentScreen(currentScreen)
     resolve(nil)
   }
-  
+
   @objc
   func fireCallback(_ name: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
     guard let callback = manager.registeredCallbacks.first(where: { $0.name == name }) else {
       return reject("ERR_DEVMENU_ACTION_FAILED", "\(name) is not a registered callback", nil)
     }
-    
+
     manager.sendEventToDelegateBridge("registeredCallbackFired", data: name)
-    if (callback.shouldCollapse) {
+    if callback.shouldCollapse {
       closeMenu()
     }
     return resolve(nil)

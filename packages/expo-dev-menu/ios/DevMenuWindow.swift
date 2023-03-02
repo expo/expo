@@ -112,7 +112,7 @@ class DevMenuWindow: UIWindow, OverlayContainerViewControllerDelegate {
       manager.hideMenu()
     }
   }
-  
+
   func closeBottomSheet() {
     bottomSheetController.moveOverlay(toNotchAt: OverlayNotch.hidden.rawValue, animated: true)
   }

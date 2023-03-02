@@ -8,19 +8,19 @@ open class DevMenuModule: NSObject {
       DevMenuManager.shared.registeredCallbacks = []
     }
   }
-  
+
   // MARK: JavaScript API
 
   @objc
   func openMenu() {
     DevMenuManager.shared.openMenu()
   }
-  
+
   @objc
   func closeMenu() {
     DevMenuManager.shared.closeMenu()
   }
-  
+
   @objc
   func hideMenu() {
     DevMenuManager.shared.hideMenu()
@@ -32,13 +32,13 @@ open class DevMenuModule: NSObject {
       guard let name = callback["name"] as? String else {
         return
       }
-      
+
       let shouldCollapse = callback["shouldCollapse"] as? Bool ?? true
       DevMenuManager.shared.registeredCallbacks.append(
         DevMenuManager.Callback(name: name, shouldCollapse: shouldCollapse)
       )
     }
-    
+
     return resolve(nil)
   }
 }
