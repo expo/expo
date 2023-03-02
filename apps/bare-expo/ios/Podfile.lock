@@ -1206,7 +1206,7 @@ SPEC CHECKSUMS:
   EXPermissions: 2291c6736a823b4c680d5bf8e12d3c1c5d11da35
   Expo: 79deb55f33fab1b232232868a74713772943238d
   expo-dev-client: 71c7a10806a324e4312c1cac34d4a439670d2c3b
-  expo-dev-launcher: 53556b0670fe41380948d5010a3bf7dd5274c946
+  expo-dev-launcher: b3ef874bd1676f248bc134c2ba38fa916e6dd314
   expo-dev-menu: eb775efe4b2c0aeba59e69dbae74f5fcb570ceb6
   expo-dev-menu-interface: 6c82ae323c4b8724dead4763ce3ff24a2108bdb1
   ExpoAppleAuthentication: 7bd5e4150d59e8df37aa80b425850ae88adf9e65
@@ -1329,6 +1329,6 @@ SPEC CHECKSUMS:
   Yoga: 5ed1699acbba8863755998a4245daa200ff3817b
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: c59f327102c50f126198cfae3dbc05c01a4190e9
+PODFILE CHECKSUM: 221d96cc63183a5dfbb774316e11def3300ac02d
 
 COCOAPODS: 1.11.2
