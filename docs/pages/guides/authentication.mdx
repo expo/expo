@@ -1991,7 +1991,7 @@ In some cases there will be anywhere between 1 to 3 slashes (`/`).
   - `your.app:///` -> `makeRedirectUri({ scheme: 'your.app', isTripleSlashed: true })`
   - `your.app:/authorize` -> `makeRedirectUri({ native: 'your.app:/authorize' })`
   - `your.app://auth?foo=bar` -> `makeRedirectUri({ scheme: 'your.app', path: 'auth', queryParams: { foo: 'bar' } })`
-  - `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]` -> `makeRedirectUri({})`
+  - `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]` -> `makeRedirectUri()`
   - This link can often be created automatically but we recommend you define the `scheme` property at least. The entire URL can be overridden in custom apps by passing the `native` property. Often this will be used for providers like Google or Okta which require you to use a custom native URI redirect. You can add, list, and open URI schemes using `npx uri-scheme`.
   - If you change the `expo.scheme` after ejecting then you'll need to use the `expo apply` command to apply the changes to your native project, then rebuild them (`yarn ios`, `yarn android`).
 - **Usage:** `promptAsync({ redirectUri })`
