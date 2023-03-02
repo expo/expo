@@ -249,6 +249,7 @@ describe('Basic tests', () => {
     await device.terminateApp();
     await device.launchApp();
     await waitForAppToBecomeVisible();
+    await setTimeout(2000 * TIMEOUT_BIAS);
     const updatedMessage = await checkUpdateStringAsync();
     // Because of the mismatch, the new update will not load, so updatedMessage will still be 'test'
     jestExpect(updatedMessage).toBe('test');
@@ -256,7 +257,7 @@ describe('Basic tests', () => {
     /**
      * Check readLogEntriesAsync
      */
-    const logEntries = await readLogEntriesAsync();
+    const logEntries: any[] = await readLogEntriesAsync();
     console.warn(
       'Total number of log entries = ' +
         logEntries.length +
@@ -267,15 +268,9 @@ describe('Basic tests', () => {
     // Should have at least one message
     jestExpect(logEntries.length > 0).toBe(true);
     // Check for message that hash is mismatched, with expected error code
-    // (this check will be reworked after some logging PRs go in)
-    /*
-   jestExpect(logEntries.map((entry) => entry.code)).toEqual(
-      expect.arrayContaining(['AssetsFailedToLoad'])
+    jestExpect(logEntries.map((entry) => entry.code)).toEqual(
+      jestExpect.arrayContaining(['AssetsFailedToLoad'])
     );
-   jestExpect(logEntries.map((entry) => entry.message)).toEqual(
-      expect.arrayContaining([expect.stringContaining('SHA-256 did not match expected')])
-    );
-     */
   });
 
   it('downloads and runs update with multiple assets', async () => {
