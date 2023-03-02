@@ -73,6 +73,12 @@ class ExpoModuleConfig {
         return arrayize(this.rawConfig.android?.gradlePath ?? []);
     }
     /**
+     * Returns gradle plugins descriptors defined by the module author.
+     */
+    androidGradlePlugins() {
+        return arrayize(this.rawConfig.android?.gradlePlugins ?? []);
+    }
+    /**
      * Returns serializable raw config.
      */
     toJSON() {

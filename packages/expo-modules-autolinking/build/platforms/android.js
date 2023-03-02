@@ -44,9 +44,15 @@ async function resolveModuleAsync(packageName, revision) {
             sourceDir: path_1.default.dirname(gradleFilePath),
         };
     });
+    const plugins = (revision.config?.androidGradlePlugins() ?? []).map(({ id, group, sourceDir }) => ({
+        id,
+        group,
+        sourceDir: path_1.default.join(revision.path, sourceDir),
+    }));
     return {
         packageName,
         projects,
+        ...(plugins.length > 0 ? { plugins } : {}),
         modules: revision.config?.androidModules() ?? [],
     };
 }

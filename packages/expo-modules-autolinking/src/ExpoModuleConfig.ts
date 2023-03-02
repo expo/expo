@@ -1,4 +1,4 @@
-import { RawExpoModuleConfig, SupportedPlatform } from './types';
+import { AndroidGradlePluginDescriptor, RawExpoModuleConfig, SupportedPlatform } from './types';
 
 function arrayize<T>(value: T[] | T | undefined): T[] {
   if (Array.isArray(value)) {
@@ -80,6 +80,13 @@ export class ExpoModuleConfig {
    */
   androidGradlePaths(): string[] {
     return arrayize(this.rawConfig.android?.gradlePath ?? []);
+  }
+
+  /**
+   * Returns gradle plugins descriptors defined by the module author.
+   */
+  androidGradlePlugins(): AndroidGradlePluginDescriptor[] {
+    return arrayize(this.rawConfig.android?.gradlePlugins ?? []);
   }
 
   /**
