@@ -7,8 +7,6 @@ exports.convertPackageNameToProjectName = exports.resolveModuleAsync = exports.g
 const fast_glob_1 = __importDefault(require("fast-glob"));
 const fs_extra_1 = __importDefault(require("fs-extra"));
 const path_1 = __importDefault(require("path"));
-// Only modules in this whitelist could apply gradle plugins automatically
-const GRADLE_PLUGIN_WHITELISTS = ['expo-dev-launcher'];
 /**
  * Generates Java file that contains all autolinked packages.
  */
@@ -54,7 +52,7 @@ async function resolveModuleAsync(packageName, revision) {
     return {
         packageName,
         projects,
-        ...(plugins.length > 0 && GRADLE_PLUGIN_WHITELISTS.includes(packageName) ? { plugins } : {}),
+        ...(plugins.length > 0 ? { plugins } : {}),
         modules: revision.config?.androidModules() ?? [],
     };
 }

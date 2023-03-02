@@ -168,7 +168,6 @@ export interface RawExpoModuleConfig {
 
     /**
      * Gradle plugins.
-     * Currently only whitelisted `GRADLE_PLUGIN_WHITELISTS` modules could link gradle plugins automatically.
      */
     gradlePlugins?: AndroidGradlePluginDescriptor[];
   };
