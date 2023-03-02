@@ -11,7 +11,6 @@ const app = express();
 let server: { close: () => void } | null;
 
 let messages: any[] = [];
-let logEntries: string | any[] = [];
 let responsesToServe: any[] = [];
 
 let updateRequest: null = null;
@@ -37,7 +36,6 @@ function stop() {
     server = null;
   }
   messages = [];
-  logEntries = [];
   responsesToServe = [];
   updateRequest = null;
   manifestToServe = null;
@@ -98,56 +96,6 @@ app.post(
     }
   }
 );
-
-app.post(
-  '/log',
-  (
-    req: { body: { logEntries: never[] } },
-    res: {
-      set: (arg0: string, arg1: string) => void;
-      send: (arg0: string) => void;
-    }
-  ) => {
-    logEntries = req.body.logEntries || [];
-    res.set('Cache-Control', 'no-store');
-    res.send('Received request');
-  }
-);
-
-async function waitForRequest(timeout: number, responseToServe: any = null) {
-  const finishTime = new Date().getTime() + timeout;
-
-  if (responseToServe) {
-    responsesToServe.push(responseToServe);
-  }
-
-  while (!messages.length) {
-    const currentTime = new Date().getTime();
-    if (currentTime >= finishTime) {
-      throw new Error('Timed out waiting for message');
-    }
-    await setTimeout(50);
-  }
-
-  return messages.shift();
-}
-
-async function waitForLogEntries(timeout: number) {
-  const finishTime = new Date().getTime() + timeout;
-
-  while (!logEntries.length && server) {
-    const currentTime = new Date().getTime();
-    if (currentTime >= finishTime) {
-      throw new Error('Timed out waiting for message');
-    }
-    if (!server) {
-      throw new Error('Server killed while waiting for message');
-    }
-    await setTimeout(50);
-  }
-
-  return logEntries;
-}
 
 app.get('/update', (req: any, res: any) => {
   updateRequest = req;
@@ -303,8 +251,6 @@ async function serveSignedDirective(directive: any, projectRoot: string) {
 const Server = {
   start,
   stop,
-  waitForLogEntries,
-  waitForRequest,
   waitForUpdateRequest,
   serveManifest,
   serveSignedManifest,

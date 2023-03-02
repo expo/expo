@@ -23,16 +23,16 @@ mkdir $WORKING_DIR_ROOT
 - From the Expo repo root directory, execute
 
 ```bash
-node packages/expo-updates/e2e/setup/create-eas-project-basic.js
-```
-
-or
-
-```bash
-node packages/expo-updates/e2e/setup/create-eas-project-assets.js
+node packages/expo-updates/e2e/setup/create-eas-project.js
 ```
 
 - Change to the `TEST_PROJECT_ROOT` location above.
+
+- Execute
+
+```
+yarn generate-test-update-bundles
+```
 
 - To run iOS tests:
 

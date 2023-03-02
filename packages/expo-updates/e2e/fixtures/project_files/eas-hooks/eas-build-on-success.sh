@@ -18,6 +18,7 @@ export NO_FLIPPER=1
 
 mkdir ./logs
 
+yarn generate-test-update-bundles
 
 if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
   # Start emulator
@@ -32,12 +33,14 @@ if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
     counter=$((counter + 1))
   done
 
+  sleep 10
+
   # Ensure emulator can reach the local updates server
   adb reverse tcp:4747 tcp:4747
 fi
 
 # Execute tests
-detox test --configuration $EAS_BUILD_PLATFORM.debug --headless 2>&1 | tee ./logs/detox-tests.log
+detox test --configuration $EAS_BUILD_PLATFORM.release 2>&1 | tee ./logs/detox-tests.log
 
 export DETOX_EXIT_CODE=$?
 

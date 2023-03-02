@@ -29,8 +29,8 @@ if [[ "$EAS_BUILD_RUNNER" == "eas-build" && "$EAS_BUILD_PROFILE" == "updates_tes
       pulseaudio \
       socat
 
-    sdkmanager --install "system-images;android-33;google_apis;x86_64"
-    avdmanager --verbose create avd --force --name "pixel_4" --device "pixel_4" --package "system-images;android-33;google_apis;x86_64"
+    sdkmanager --install "system-images;android-31;google_apis;x86_64"
+    avdmanager --verbose create avd --force --name "pixel_4" --device "pixel_4" --package "system-images;android-31;google_apis;x86_64"
   else
     brew tap wix/brew
     brew install applesimutils

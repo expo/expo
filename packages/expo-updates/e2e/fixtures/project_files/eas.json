@@ -18,14 +18,14 @@
         "NO_FLIPPER": "1"
       },
       "android": {
-        "gradleCommand": ":app:assembleDebug :app:assembleAndroidTest -DtestBuildType=debug",
+        "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
         "withoutCredentials": true,
         "resourceClass": "large"
       },
       "ios": {
         "simulator": true,
         "resourceClass": "m1-medium",
-        "buildConfiguration": "Debug",
+        "buildConfiguration": "Release",
         "cache": {
           "cacheDefaultPaths": false
         }
