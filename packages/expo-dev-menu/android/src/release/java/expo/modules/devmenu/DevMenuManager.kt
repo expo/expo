@@ -24,7 +24,9 @@ object DevMenuManager : DevMenuManagerInterface {
   var currentManifest: Manifest? = null
   var currentManifestURL: String? = null
 
-  var registeredCallbacks = arrayListOf<String>()
+  data class Callback(val name: String, val shouldCollapse: Boolean)
+
+  var registeredCallbacks = arrayListOf<Callback>()
 
   fun getReactInstanceManager(): ReactInstanceManager? {
     return null

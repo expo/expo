@@ -69,7 +69,7 @@ class DevMenuActivity : ReactActivity() {
         putBundle("devSettings", DevMenuManager.getDevSettings())
         putBundle("menuPreferences", DevMenuManager.getMenuPreferences())
         putBoolean("isDevice", !isEmulator)
-        putStringArrayList("registeredCallbacks", DevMenuManager.registeredCallbacks)
+        putStringArray("registeredCallbacks", DevMenuManager.registeredCallbacks.map { it.name }.toTypedArray())
       }
 
       override fun createRootView(): ReactRootView {
@@ -138,6 +138,11 @@ class DevMenuActivity : ReactActivity() {
         state = BottomSheetBehavior.STATE_HIDDEN
       }
     }
+  }
+
+  fun closeBottomSheet() {
+    val bottomSheet = findViewById<FrameLayout>(R.id.bottom_sheet)
+    BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_HIDDEN
   }
 
   companion object {
