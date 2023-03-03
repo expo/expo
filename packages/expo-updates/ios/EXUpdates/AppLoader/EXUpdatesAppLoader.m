@@ -1,7 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAppLoader+Private.h>
-#import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <ExpoModulesCore/EXUtilities.h>
@@ -134,7 +133,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 
   dispatch_async(_database.databaseQueue, ^{
     NSError *existingUpdateError;
-    EXUpdatesUpdate *existingUpdate = [self->_database updateWithId:updateManifest.updateId config:self->_config error:&existingUpdateError];
+    EXUpdatesUpdate *existingUpdate = [self->_database updateWithId:updateManifest.updateId config:self->_config error:&existingUpdateError].update;
 
     // if something has gone wrong on the server and we have two updates with the same id
     // but different scope keys, we should try to launch something rather than show a cryptic
@@ -185,7 +184,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
       for (EXUpdatesAsset *asset in self->_updateManifest.assets) {
         // before downloading, check to see if we already have this asset in the database
         NSError *matchingAssetError;
-        EXUpdatesAsset *matchingDbEntry = [self->_database assetWithKey:asset.key error:&matchingAssetError];
+        EXUpdatesAsset *matchingDbEntry = [self->_database assetWithKey:asset.key error:&matchingAssetError].asset;
 
         if (matchingAssetError || !matchingDbEntry || !matchingDbEntry.filename) {
           [self downloadAsset:asset];

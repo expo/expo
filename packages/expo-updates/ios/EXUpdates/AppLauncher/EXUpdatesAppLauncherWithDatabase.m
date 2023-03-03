@@ -2,7 +2,6 @@
 
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase+Tests.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
-#import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 
@@ -82,7 +81,7 @@ static NSString * const EXUpdatesAppLauncherErrorDomain = @"AppLauncher";
     NSError *error;
     NSArray<EXUpdatesUpdate *> *launchableUpdates = [database launchableUpdatesWithConfig:config error:&error];
     NSError *manifestFiltersError;
-    NSDictionary *manifestFilters = [database manifestFiltersWithScopeKey:config.scopeKey error:&manifestFiltersError];
+    NSDictionary *manifestFilters = [database manifestFiltersWithScopeKey:config.scopeKey error:&manifestFiltersError].jsonData;
     dispatch_async(completionQueue, ^{
       if (!launchableUpdates) {
         completion(error, nil);

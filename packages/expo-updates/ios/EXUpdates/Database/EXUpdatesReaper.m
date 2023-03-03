@@ -36,7 +36,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
 
     NSError *manifestFiltersError;
-    NSDictionary *manifestFilters = [database manifestFiltersWithScopeKey:config.scopeKey error:&manifestFiltersError];
+    NSDictionary *manifestFilters = [database manifestFiltersWithScopeKey:config.scopeKey error:&manifestFiltersError].jsonData;
     if (manifestFiltersError) {
       NSLog(@"Error selecting manifest filters while reaping updates: %@", error.localizedDescription);
       return;
@@ -49,7 +49,7 @@ NS_ASSUME_NONNULL_BEGIN
       return;
     }
 
-    NSArray<EXUpdatesAsset *> *assetsForDeletion = [database deleteUnusedAssetsWithError:&error];
+    NSArray<EXUpdatesAsset *> *assetsForDeletion = [database deleteUnusedAssetsAndReturnError:&error];
     if (error) {
       NSLog(@"Error reaping updates: %@", error.localizedDescription);
       return;

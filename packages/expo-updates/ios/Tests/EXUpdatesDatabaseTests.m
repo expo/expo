@@ -2,8 +2,6 @@
 
 #import <XCTest/XCTest.h>
 
-#import <EXUpdates/EXUpdatesDatabase+Tests.h>
-
 #import "EXUpdates-Swift.h"
 
 @import EXManifests;
@@ -23,6 +21,10 @@
 {
   NSURL *applicationSupportDir = [NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask].lastObject;
   _testDatabaseDir = [applicationSupportDir URLByAppendingPathComponent:@"EXUpdatesDatabaseTests"];
+  
+  NSError *error;
+  [NSFileManager.defaultManager removeItemAtPath:_testDatabaseDir.path error:&error];
+  
   if (![NSFileManager.defaultManager fileExistsAtPath:_testDatabaseDir.path]) {
     NSError *error;
     [NSFileManager.defaultManager createDirectoryAtPath:_testDatabaseDir.path withIntermediateDirectories:YES attributes:nil error:&error];
@@ -32,7 +34,7 @@
   _db = [[EXUpdatesDatabase alloc] init];
   dispatch_sync(_db.databaseQueue, ^{
     NSError *dbOpenError;
-    [_db openDatabaseInDirectory:_testDatabaseDir withError:&dbOpenError];
+    [_db openDatabaseInDirectory:_testDatabaseDir error:&dbOpenError];
     XCTAssertNil(dbOpenError);
   });
 
@@ -78,11 +80,13 @@
     }
 
     NSError *updatesAssetsError;
-    [_db _executeSql:@"INSERT OR REPLACE INTO updates_assets (\"update_id\", \"asset_id\") VALUES (?1, ?2)" withArgs:@[update.updateId, @(47)] error:&updatesAssetsError];
+    [_db executeForObjCWithSql:@"INSERT OR REPLACE INTO updates_assets (\"update_id\", \"asset_id\") VALUES (?1, ?2)"
+                      withArgs:@[update.updateId, @(47)]
+                         error:&updatesAssetsError];
     expectedError = updatesAssetsError;
   });
   XCTAssertNotNil(expectedError);
-  XCTAssertEqual(787, expectedError.code); // SQLITE_CONSTRAINT_FOREIGNKEY
+  XCTAssertTrue([expectedError.description containsString:@"787"]); // SQLITE_CONSTRAINT_FOREIGNKEY for swift error, change when convert to swift
 }
 
 - (void)testSetMetadata_OverwriteAllFields
@@ -123,7 +127,7 @@
   __block NSDictionary *actual;
   __block NSError *readError;
   dispatch_sync(_db.databaseQueue, ^{
-    actual = [_db manifestFiltersWithScopeKey:update2.scopeKey error:&readError];
+    actual = [_db manifestFiltersWithScopeKey:update2.scopeKey error:&readError].jsonData;
   });
   XCTAssertNil(readError);
   XCTAssertNotNil(actual);
@@ -168,7 +172,7 @@
   __block NSDictionary *actual;
   __block NSError *readError;
   dispatch_sync(_db.databaseQueue, ^{
-    actual = [_db manifestFiltersWithScopeKey:update2.scopeKey error:&readError];
+    actual = [_db manifestFiltersWithScopeKey:update2.scopeKey error:&readError].jsonData;
   });
   XCTAssertNil(readError);
   XCTAssertNotNil(actual);
@@ -213,7 +217,7 @@
   __block NSDictionary *actual;
   __block NSError *readError;
   dispatch_sync(_db.databaseQueue, ^{
-    actual = [_db manifestFiltersWithScopeKey:update2.scopeKey error:&readError];
+    actual = [_db manifestFiltersWithScopeKey:update2.scopeKey error:&readError].jsonData;
   });
   XCTAssertNil(readError);
   XCTAssertNotNil(actual);
@@ -282,11 +286,11 @@
       return;
     }
 
-    NSArray<EXUpdatesAsset *> *assets = [_db allAssetsWithError:nil];
+    NSArray<EXUpdatesAsset *> *assets = [_db allAssetsAndReturnError:nil];
     XCTAssertEqual(3, assets.count); // two bundles and asset1 and asset2
 
     NSError *deleteAssetsError;
-    NSArray<EXUpdatesAsset *> *deletedAssets = [_db deleteUnusedAssetsWithError:&deleteAssetsError];
+    NSArray<EXUpdatesAsset *> *deletedAssets = [_db deleteUnusedAssetsAndReturnError:&deleteAssetsError];
     if (deleteAssetsError) {
       XCTFail(@"%@", deleteAssetsError.localizedDescription);
       return;
@@ -299,9 +303,9 @@
       XCTAssertEqualObjects(@"key1", deletedAsset.key);
     }
 
-    XCTAssertNil([_db assetWithKey:@"key1" error:nil]);
-    XCTAssertNotNil([_db assetWithKey:@"key2" error:nil]);
-    XCTAssertNotNil([_db assetWithKey:@"key3" error:nil]);
+    XCTAssertNil([_db assetWithKey:@"key1" error:nil].asset);
+    XCTAssertNotNil([_db assetWithKey:@"key2" error:nil].asset);
+    XCTAssertNotNil([_db assetWithKey:@"key3" error:nil].asset);
   });
 }
 

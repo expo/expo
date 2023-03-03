@@ -1,9 +1,9 @@
 // Copyright 2021-present 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesDatabase.h>
-
 @class EXUpdatesConfig;
 @class EXUpdatesUpdate;
+@class EXUpdatesDatabase;
+@class EXUpdatesAsset;
 
 NS_ASSUME_NONNULL_BEGIN
 
