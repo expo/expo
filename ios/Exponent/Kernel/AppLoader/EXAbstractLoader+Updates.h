@@ -2,9 +2,9 @@
 
 #import "EXAbstractLoader.h"
 
-#import <EXUpdates/EXUpdatesAppLauncher.h>
-#import <EXUpdates/EXUpdatesConfig.h>
-#import <EXUpdates/EXUpdatesSelectionPolicy.h>
+@class EXUpdatesConfig;
+@class EXUpdatesSelectionPolicy;
+@protocol EXUpdatesAppLauncher;
 
 NS_ASSUME_NONNULL_BEGIN
 

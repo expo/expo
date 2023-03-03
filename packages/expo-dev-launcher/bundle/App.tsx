@@ -26,8 +26,8 @@ type LauncherAppProps = object;
 
 export function App(props: LauncherAppProps) {
   return (
-    <LoadInitialData loader={<Splash />}>
-      <View style={{ direction: 'ltr', flex: 1 }}>
+    <View style={{ direction: 'ltr', flex: 1 }}>
+      <LoadInitialData loader={<Splash />}>
         <AppProviders>
           <Stack.Navigator
             initialRouteName="Main"
@@ -44,8 +44,8 @@ export function App(props: LauncherAppProps) {
             <Stack.Screen name="Crash Report" component={CrashReportScreen} />
           </Stack.Navigator>
         </AppProviders>
-      </View>
-    </LoadInitialData>
+      </LoadInitialData>
+    </View>
   );
 }
 

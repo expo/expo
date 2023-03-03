@@ -1,15 +1,9 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAppController+Internal.h>
-#import <EXUpdates/EXUpdatesAppLauncher.h>
-#import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
-#import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
 #import <EXUpdates/EXUpdatesErrorRecovery.h>
-#import <EXUpdates/EXUpdatesReaper.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
-#import <EXUpdates/EXUpdatesSelectionPolicyFactory.h>
 #import <EXUpdates/EXUpdatesUtils.h>
-#import <EXUpdates/EXUpdatesBuildData.h>
 #import <ExpoModulesCore/EXDefines.h>
 #import <React/RCTReloadCommand.h>
 
@@ -91,7 +85,15 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 - (instancetype)init
 {
   if (self = [super init]) {
-    _config = [EXUpdatesConfig configWithExpoPlist];
+    NSError *error;
+    _config = [EXUpdatesConfig configWithExpoPlistWithMergingOtherDictionary:nil
+                                                                       error:&error];
+    if (error) {
+      @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                     reason:@"Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
+                                   userInfo:@{}];
+    }
+    
     _database = [[EXUpdatesDatabase alloc] init];
     _defaultSelectionPolicy = [EXUpdatesSelectionPolicyFactory filterAwarePolicyWithRuntimeVersion:[EXUpdatesUtils getRuntimeVersionWithConfig:_config]];
     _errorRecovery = [EXUpdatesErrorRecovery new];
@@ -113,7 +115,15 @@ static NSString * const EXUpdatesErrorEventName = @"error";
                                    reason:@"EXUpdatesAppController:setConfiguration should not be called after start"
                                  userInfo:@{}];
   }
-  [_config loadConfigFromDictionary:configuration];
+  
+  NSError *error;
+  _config = [EXUpdatesConfig configWithExpoPlistWithMergingOtherDictionary:configuration error:&error];
+  if (error) {
+    @throw [NSException exceptionWithName:NSInternalInconsistencyException
+                                   reason:@"Cannot load configuration from Expo.plist or merged dictionary. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
+                                 userInfo:@{}];
+  }
+  
   [self resetSelectionPolicyToDefault];
 }
 
@@ -183,7 +193,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     return;
   }
 
-  [EXUpdatesBuildData ensureBuildDataIsConsistentAsync:_database config:_config];
+  [EXUpdatesBuildData ensureBuildDataIsConsistentAsyncWithDatabase:_database config:_config];
 
   [_errorRecovery startMonitoring];
 
@@ -353,7 +363,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
   __block NSError *dbError;
   dispatch_semaphore_t dbSemaphore = dispatch_semaphore_create(0);
   dispatch_async(_database.databaseQueue, ^{
-    [self->_database openDatabaseInDirectory:self->_updatesDirectory withError:&dbError];
+    [self->_database openDatabaseInDirectory:self->_updatesDirectory error:&dbError];
     dispatch_semaphore_signal(dbSemaphore);
   });
 
@@ -402,7 +412,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 # pragma mark - EXUpdatesErrorRecoveryDelegate
 
-- (void)relaunchWithCompletion:(EXUpdatesAppLauncherCompletionBlock)completion
+- (void)relaunchWithCompletion:(void (^_Nonnull)(NSError * _Nullable, BOOL))completion
 {
   EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:_config database:_database directory:_updatesDirectory completionQueue:_controllerQueue];
   _candidateLauncher = launcher;

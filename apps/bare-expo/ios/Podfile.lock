@@ -54,21 +54,21 @@ PODS:
     - ExpoModulesCore
   - Expo (48.0.1):
     - ExpoModulesCore
-  - expo-dev-client (2.1.2):
+  - expo-dev-client (2.1.4):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (2.1.2):
+  - expo-dev-launcher (2.1.4):
     - EXManifests
-    - expo-dev-launcher/Main (= 2.1.2)
+    - expo-dev-launcher/Main (= 2.1.4)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Main (2.1.2):
+  - expo-dev-launcher/Main (2.1.4):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -76,33 +76,33 @@ PODS:
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Unsafe (2.1.2):
+  - expo-dev-launcher/Unsafe (2.1.4):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-menu (2.1.2):
-    - expo-dev-menu/Main (= 2.1.2)
+  - expo-dev-menu (2.1.3):
+    - expo-dev-menu/Main (= 2.1.3)
   - expo-dev-menu-interface (1.1.1)
-  - expo-dev-menu/GestureHandler (2.1.2)
-  - expo-dev-menu/Main (2.1.2):
+  - expo-dev-menu/GestureHandler (2.1.3)
+  - expo-dev-menu/Main (2.1.3):
     - EXManifests
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - ExpoModulesCore
     - React-Core
-  - expo-dev-menu/SafeAreaView (2.1.2)
-  - expo-dev-menu/Tests (2.1.2):
+  - expo-dev-menu/SafeAreaView (2.1.3)
+  - expo-dev-menu/Tests (2.1.3):
     - ExpoModulesTestCore
     - Nimble
     - Quick
     - React-CoreModules
-  - expo-dev-menu/UITests (2.1.2):
+  - expo-dev-menu/UITests (2.1.3):
     - React
     - React-CoreModules
-  - expo-dev-menu/Vendored (2.1.2):
+  - expo-dev-menu/Vendored (2.1.3):
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/SafeAreaView
   - ExpoAppleAuthentication (6.0.1):
@@ -1205,9 +1205,9 @@ SPEC CHECKSUMS:
   EXNotifications: dd628737af60fc8cc62dccebacd326b0fbbc0dcb
   EXPermissions: 2291c6736a823b4c680d5bf8e12d3c1c5d11da35
   Expo: 79deb55f33fab1b232232868a74713772943238d
-  expo-dev-client: fb5994b219d6df2a39d73f45b40a4ad2f29d47c2
-  expo-dev-launcher: 0eaee0ae43104252e3994f6d7a4810c3aad62fc0
-  expo-dev-menu: b1f53d0ec3d9f330b53a1c701ea3257aad5ce28a
+  expo-dev-client: 71c7a10806a324e4312c1cac34d4a439670d2c3b
+  expo-dev-launcher: b3ef874bd1676f248bc134c2ba38fa916e6dd314
+  expo-dev-menu: eb775efe4b2c0aeba59e69dbae74f5fcb570ceb6
   expo-dev-menu-interface: 6c82ae323c4b8724dead4763ce3ff24a2108bdb1
   ExpoAppleAuthentication: 7bd5e4150d59e8df37aa80b425850ae88adf9e65
   ExpoBattery: 678d2b710a8fc398c30258c4dc22c12340ee5411
@@ -1329,6 +1329,6 @@ SPEC CHECKSUMS:
   Yoga: 5ed1699acbba8863755998a4245daa200ff3817b
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: c59f327102c50f126198cfae3dbc05c01a4190e9
+PODFILE CHECKSUM: 221d96cc63183a5dfbb774316e11def3300ac02d
 
 COCOAPODS: 1.11.2

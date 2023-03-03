@@ -31,6 +31,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - On iOS, dismiss share sheet after sharing to an app is canceled, so the file doesn't fail to attach when trying to share again ([#19656](https://github.com/expo/expo/pull/19656) by [@keith-kurak](https://github.com/keith-kurak))
+- Fixed `shareAsync` not resolving on Android. ([#21432](https://github.com/expo/expo/pull/21432) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 11.0.0 — 2022-10-25
 

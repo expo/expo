@@ -3,12 +3,12 @@
 #if __has_include(<EXUpdates/EXUpdatesService.h>)
 #import <Foundation/Foundation.h>
 #import <ExpoModulesCore/EXInternalModule.h>
-#import <EXUpdates/EXUpdatesConfig.h>
-#import <EXUpdates/EXUpdatesDatabase.h>
-#import <EXUpdates/EXUpdatesSelectionPolicy.h>
 #import <EXUpdates/EXUpdatesService.h>
 
+@class EXUpdatesConfig;
 @class EXUpdatesUpdate;
+@class EXUpdatesSelectionPolicy;
+@class EXUpdatesDatabase;
 
 NS_ASSUME_NONNULL_BEGIN
 
