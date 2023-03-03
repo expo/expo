@@ -28,6 +28,8 @@ export const Orientation: OrientationType = ExponentPrint.Orientation;
  * @return Resolves to an empty `Promise` if printing started.
  */
 export async function printAsync(options: PrintOptions): Promise<void> {
+  console.log('test');
+  return;
   if (Platform.OS === 'web') {
     return await ExponentPrint.print(options);
   }
