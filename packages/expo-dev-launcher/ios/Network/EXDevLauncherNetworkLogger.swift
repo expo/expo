@@ -199,6 +199,9 @@ public class EXDevLauncherNetworkLogger: NSObject {
 
   func emitNetworkResponse(request: URLRequest, requestId: String, response: HTTPURLResponse) {
   }
+
+  func emitNetworkDidReceiveBody(requestId: String, responseBody: Data, isText: Bool) {
+  }
 }
 
 #endif
