@@ -17,9 +17,10 @@ declare module 'metro/src/shared/output/bundle' {
 }
 
 declare module 'metro/src/HmrServer' {
-  class MetroHmrServer {
+  export class MetroHmrServer {
     constructor(...args: any[]);
   }
+
   module.exports = MetroHmrServer;
 }
 
@@ -27,6 +28,8 @@ declare module 'metro/src/lib/createWebsocketServer' {
   export function createWebsocketServer<TClient extends object>({
     websocketServer,
   }: HMROptions<TClient>): typeof import('ws').Server;
+
+  module.exports = createWebsocketServer;
 }
 declare module 'metro' {
   //#region metro/src/Assets.js

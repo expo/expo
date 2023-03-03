@@ -23,7 +23,7 @@ const debug = require('debug')('expo:start:server:devServer') as typeof console.
 
 export type ServerLike = {
   close(callback?: (err?: Error) => void): void;
-  addListener(event: string, listener: (...args: any[]) => void): unknown;
+  addListener?(event: string, listener: (...args: any[]) => void): unknown;
 };
 
 export type DevServerInstance = {

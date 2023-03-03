@@ -7,10 +7,15 @@ import http from 'http';
 import https from 'https';
 import { RunServerOptions, Server } from 'metro';
 import { ConfigT } from 'metro-config';
-import resolveFrom from 'resolve-from';
+import { InspectorProxy } from 'metro-inspector-proxy';
 import { parse } from 'url';
 
-import { importMetroFromProject } from './resolveFromProject';
+import {
+  importMetroCreateWebsocketServerFromProject,
+  importMetroFromProject,
+  importMetroHmrServerFromProject,
+  importMetroInspectorProxyFromProject,
+} from './resolveFromProject';
 
 export const runServer = async (
   projectRoot: string,
@@ -28,20 +33,11 @@ export const runServer = async (
 ): Promise<{ server: http.Server | https.Server; metro: Server }> => {
   const Metro = importMetroFromProject(projectRoot);
 
-  const createWebsocketServer = require(resolveFrom(
-    projectRoot,
-    'metro/src/lib/createWebsocketServer'
-  )) as typeof import('metro/src/lib/createWebsocketServer');
+  const createWebsocketServer = importMetroCreateWebsocketServerFromProject(projectRoot);
 
-  const { InspectorProxy } = require(resolveFrom(
-    projectRoot,
-    'metro-inspector-proxy'
-  )) as typeof import('metro-inspector-proxy');
+  const { InspectorProxy } = importMetroInspectorProxyFromProject(projectRoot);
 
-  const MetroHmrServer = require(resolveFrom(
-    projectRoot,
-    'metro/src/HmrServer'
-  )) as typeof import('metro/src/HmrServer');
+  const MetroHmrServer = importMetroHmrServerFromProject(projectRoot);
 
   // await earlyPortCheck(host, config.server.port);
 
@@ -68,7 +64,7 @@ export const runServer = async (
 
   serverApp.use(middleware);
 
-  let inspectorProxy: typeof InspectorProxy | null = null;
+  let inspectorProxy: InspectorProxy | null = null;
   if (config.server.runInspectorProxy) {
     inspectorProxy = new InspectorProxy(config.projectRoot);
   }

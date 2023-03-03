@@ -62,6 +62,6 @@ export function waitForMetroToObserveTypeScriptFile(
     watcher.removeListener('change', listener);
   };
 
-  runner.server.addListener('close', off);
+  runner.server.addListener?.('close', off);
   return off;
 }
