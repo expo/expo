@@ -1,9 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAppController+Internal.h>
-#import <EXUpdates/EXUpdatesAppLauncher.h>
-#import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
-#import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
 #import <EXUpdates/EXUpdatesErrorRecovery.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesUtils.h>
@@ -415,7 +412,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 # pragma mark - EXUpdatesErrorRecoveryDelegate
 
-- (void)relaunchWithCompletion:(EXUpdatesAppLauncherCompletionBlock)completion
+- (void)relaunchWithCompletion:(void (^_Nonnull)(NSError * _Nullable, BOOL))completion
 {
   EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:_config database:_database directory:_updatesDirectory completionQueue:_controllerQueue];
   _candidateLauncher = launcher;
