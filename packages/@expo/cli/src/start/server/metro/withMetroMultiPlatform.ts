@@ -73,17 +73,14 @@ export async function getExtraDependenciesAsync(projectRoot: string, platform: '
     // foo/bar/package.json -> bar
     return self.map(({ name }) => name).indexOf(value.name) === index;
   });
-  // console.log(
-  //   'all bundled deps',
-  //   depsWithoutDuplicates.map((v) => v.name)
-  // );
+
   const depsThatAreNativeModules = depsWithoutDuplicates.filter(({ packageJsonPath }) => {
     // foo/bar/package.json -> bar
     const v = [
       'unimodule.json',
       'expo-module.config.json',
       // TODO: This is a different list of autolinking
-      'react-native.config.js',
+      // 'react-native.config.js',
       // TODO: RNGH wouldn't show up in this test
     ].some((filename) => {
       return fs.existsSync(path.join(path.dirname(packageJsonPath), filename));
@@ -95,6 +92,12 @@ export async function getExtraDependenciesAsync(projectRoot: string, platform: '
     ...depsThatAreNativeModules.map((v) => v.name),
     // expo is a special-case
     'expo',
+    'expo-updates',
+    'expo-eas-client',
+    'expo-gl-cpp',
+    'expo-json-utils',
+    'expo-manifests',
+    'expo-structured-headers',
   ];
 
   const extraAutolinkedDeps = autolinkedDeps.filter((dep) => !bundledNativeModules.includes(dep));
@@ -483,7 +486,8 @@ export async function withMetroMultiPlatformAsync(
     await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
   } else if (!env.EXPO_USE_PATH_ALIASES) {
     // Bail out early for performance enhancements if no special features are enabled.
-    return config;
+    //TODO: Add new flag to enable tree shaking
+    // return config;
   }
 
   let tsconfig: null | TsConfigPaths = null;
