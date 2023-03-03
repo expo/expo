@@ -28,6 +28,10 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
     devMenuManager.hideMenu()
   }
 
+  override fun closeMenu() {
+    devMenuManager.closeMenu()
+  }
+
   override fun setOnboardingFinished(finished: Boolean) {
     devMenuManager.getSettings()?.isOnboardingFinished = finished
   }
@@ -37,7 +41,6 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
     val devSupportManager = instanceManager.devSupportManager
     val activity = instanceManager.currentReactContext?.currentActivity ?: return
 
-    devMenuManager.closeMenu()
     activity.runOnUiThread {
       devSupportManager.devSupportEnabled = true
       devSupportManager.showDevOptionsDialog()
@@ -70,11 +73,13 @@ class DevMenuInternalMenuControllerModule(private val reactContext: ReactContext
   }
 
   override fun fireCallback(name: String, promise: Promise) {
-    if (!devMenuManager.registeredCallbacks.contains(name)) {
-      return promise.reject("ERR_DEVMENU_CALLBACK_FAILED", "Callback with name: $name is not registered")
-    }
+    val callback = devMenuManager.registeredCallbacks.firstOrNull { it.name == name }
+      ?: return promise.reject("ERR_DEVMENU_CALLBACK_FAILED", "Callback with name: $name is not registered")
 
     devMenuManager.sendEventToDelegateBridge("registeredCallbackFired", name)
+    if (callback.shouldCollapse) {
+      devMenuManager.closeMenu()
+    }
     return promise.resolve(null)
   }
 }

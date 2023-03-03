@@ -18,6 +18,9 @@ interface DevMenuInternalMenuControllerModuleInterface {
   fun hideMenu()
 
   @ReactMethod
+  fun closeMenu()
+
+  @ReactMethod
   fun setOnboardingFinished(finished: Boolean)
 
   @ReactMethod

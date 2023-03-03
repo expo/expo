@@ -41,6 +41,10 @@ export function hideMenu(): void {
   DevMenu.hideMenu();
 }
 
+export function closeMenu(): void {
+  DevMenu.closeMenu();
+}
+
 export function subscribeToCloseEvents(listener: () => void): EventSubscription {
   return DeviceEventEmitter.addListener('closeDevMenu', listener);
 }

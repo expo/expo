@@ -47,6 +47,8 @@ import kotlinx.coroutines.Dispatchers
 import java.lang.ref.WeakReference
 
 object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
+  data class Callback(val name: String, val shouldCollapse: Boolean)
+
   val metroClient: DevMenuMetroClient by lazy { DevMenuMetroClient() }
   private var fontsWereLoaded = false
 
@@ -286,8 +288,8 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
 
   // captures any callbacks that are registered via the `registerDevMenuItems` module method
   // it is set and unset by the public facing `DevMenuModule`
-  // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty array
-  var registeredCallbacks = arrayListOf<String>()
+  // when the DevMenuModule instance is unloaded (e.g between app loads) the callback list is reset to an empty list
+  var registeredCallbacks = mutableListOf<Callback>()
 
   //endregion
 
@@ -359,19 +361,16 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     setCurrentScreen(null)
 
     activity.startActivity(Intent(activity, DevMenuActivity::class.java))
-
-    hostReactContext
-      ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-      ?.emit("openDevMenu", null)
   }
 
   /**
-   * Sends an event to JS triggering the animation that collapses the dev menu.
+   * Triggers the animation that collapses the dev menu.
    */
   override fun closeMenu() {
-    hostReactContext
-      ?.getJSModule(DeviceEventManagerModule.RCTDeviceEventEmitter::class.java)
-      ?.emit("closeDevMenu", null)
+    val activity = hostActivity as? DevMenuActivity ?: return
+    if (!activity.isDestroyed) {
+      activity.closeBottomSheet()
+    }
   }
 
   override fun hideMenu() {
