@@ -3,7 +3,6 @@
 #import <XCTest/XCTest.h>
 
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase+Tests.h>
-#import <EXUpdates/EXUpdatesDatabase.h>
 
 #import "EXUpdates-Swift.h"
 
@@ -86,7 +85,7 @@
   _db = [[EXUpdatesDatabase alloc] init];
   dispatch_sync(_db.databaseQueue, ^{
     NSError *dbOpenError;
-    [_db openDatabaseInDirectory:_testDatabaseDir withError:&dbOpenError];
+    [_db openDatabaseInDirectory:_testDatabaseDir error:&dbOpenError];
     XCTAssertNil(dbOpenError);
   });
 }
@@ -163,7 +162,7 @@
 
   dispatch_sync(_db.databaseQueue, ^{
     NSError *error3;
-    EXUpdatesUpdate *sameUpdate = [_db updateWithId:testUpdate.updateId config:config error:&error3];
+    EXUpdatesUpdate *sameUpdate = [_db updateWithId:testUpdate.updateId config:config error:&error3].update;
     XCTAssertNil(error3);
     XCTAssertNotEqualObjects(yesterday, sameUpdate.lastAccessed);
     XCTAssertTrue(fabs(sameUpdate.lastAccessed.timeIntervalSinceNow) < 1, @"new lastAccessed date should be within 1 second of now");
