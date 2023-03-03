@@ -1,6 +1,5 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppLauncher.h>
 #import <Foundation/Foundation.h>
 
 @class EXUpdatesConfig;
@@ -20,7 +19,7 @@ typedef NS_ENUM(NSInteger, EXUpdatesRemoteLoadStatus) {
 @property (nonatomic, readonly, strong) EXUpdatesUpdate *launchedUpdate;
 @property (nonatomic, readonly, assign) EXUpdatesRemoteLoadStatus remoteLoadStatus;
 
-- (void)relaunchWithCompletion:(EXUpdatesAppLauncherCompletionBlock)completion;
+- (void)relaunchWithCompletion:(void (^_Nonnull)(NSError * _Nullable, BOOL))completion;
 - (void)loadRemoteUpdate;
 
 - (void)markFailedLaunchForLaunchedUpdate;

@@ -1,10 +1,10 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAppController.h>
-#import <EXUpdates/EXUpdatesAppLauncher.h>
 
 @class EXUpdatesConfig;
 @class EXUpdatesSelectionPolicy;
+@protocol EXUpdatesAppLauncher;
 
 NS_ASSUME_NONNULL_BEGIN
 

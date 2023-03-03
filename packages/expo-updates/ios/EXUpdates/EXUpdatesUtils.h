@@ -16,8 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 + (void)sendEventToBridge:(nullable RCTBridge *)bridge withType:(NSString *)eventType body:(NSDictionary *)body;
 + (BOOL)shouldCheckForUpdateWithConfig:(EXUpdatesConfig *)config;
 + (NSString *)getRuntimeVersionWithConfig:(EXUpdatesConfig *)config;
-+ (NSURL *)urlForBundledAsset:(EXUpdatesAsset *)asset;
-+ (NSString *)pathForBundledAsset:(EXUpdatesAsset *)asset;
++ (nullable NSURL *)urlForBundledAsset:(EXUpdatesAsset *)asset;
++ (nullable NSString *)pathForBundledAsset:(EXUpdatesAsset *)asset;
 + (BOOL)isNativeDebuggingEnabled;
 + (void)purgeUpdatesLogsOlderThanOneDay;
 

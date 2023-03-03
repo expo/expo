@@ -1,7 +1,6 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAppController+Internal.h>
-#import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
 #import <EXUpdates/EXUpdatesDevLauncherController.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <React/RCTBridge.h>
