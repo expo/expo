@@ -13,6 +13,7 @@
 #import <React/RCTBridge.h>
 
 @import EXManifests;
+@import EXUpdates;
 
 NSString * const EXUpdatesEventName = @"Expo.nativeUpdatesEvent";
 NSString * const EXUpdatesErrorEventType = @"error";
