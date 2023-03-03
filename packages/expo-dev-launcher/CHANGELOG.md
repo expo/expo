@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 2.1.5 — 2023-03-03
+
+### 💡 Others
+
 - Update JS bundle to fix dev client not showing logged user and initial data. ([#21510](https://github.com/expo/expo/pull/21510) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 2.1.4 — 2023-02-28
