@@ -13,6 +13,7 @@
 ### 💡 Others
 
 - Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
+- Update JS bundle to fix dev client not showing logged user and initial data. ([#21510](https://github.com/expo/expo/pull/21510) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 2.1.4 — 2023-02-28
 
