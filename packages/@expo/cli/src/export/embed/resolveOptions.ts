@@ -7,6 +7,7 @@ import { resolveCustomBooleanArgsAsync } from '../../utils/resolveArgs';
 
 export interface Options {
   assetsDest?: string;
+  assetCatalogDest?: string;
   entryFile: string;
   resetCache: boolean;
   resetGlobalCache: boolean;
@@ -55,6 +56,7 @@ export function resolveOptions(
   }
   return {
     entryFile,
+    assetCatalogDest: args['--asset-catalog-dest'],
     platform: args['--platform'] ?? 'ios',
     transformer: args['--transformer'],
     // TODO: Support `--dev false`

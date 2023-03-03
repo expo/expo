@@ -18,6 +18,7 @@ export const expoExportEmbed: Command = async (argv) => {
     '--sourcemap-output': String,
     '--sourcemap-sources-root': String,
     '--assets-dest': String,
+    '--asset-catalog-dest': String,
     '--unstable-transform-profile': String,
     '--config': String,
 
@@ -52,6 +53,7 @@ export const expoExportEmbed: Command = async (argv) => {
         `--sourcemap-sources-root <string>      Path to make sourcemap's sources entries relative to, ex. /root/dir`,
         `--sourcemap-use-absolute-path          Report SourceMapURL using its full path`,
         `--assets-dest <string>                 Directory name where to store assets referenced in the bundle`,
+        `--asset-catalog-dest <string>          Directory to create an iOS Asset Catalog for images`,
         `--unstable-transform-profile <string>  Experimental, transform JS for a specific JS engine. Currently supported: hermes, hermes-canary, default`,
         `--reset-cache                          Removes cached files`,
         `-v, --verbose                          Enables debug logging`,
