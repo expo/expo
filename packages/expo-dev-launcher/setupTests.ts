@@ -1,5 +1,4 @@
 import { cleanup } from '@testing-library/react-native';
-import 'react-native-gesture-handler/jestSetup';
 
 global.fetch = jest.fn().mockResolvedValue({
   ok: true,
