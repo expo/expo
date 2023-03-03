@@ -41,7 +41,7 @@ public final class EXUpdatesAsset: NSObject {
     self.type = type
   }
 
-  public lazy var filename: String? = {
+  public lazy var filename: String = {
     var fileExtension = ""
     if let type = type {
       if type.hasPrefix(".") {

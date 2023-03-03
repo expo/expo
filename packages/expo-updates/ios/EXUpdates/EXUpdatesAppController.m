@@ -5,10 +5,8 @@
 #import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
 #import <EXUpdates/EXUpdatesErrorRecovery.h>
-#import <EXUpdates/EXUpdatesReaper.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesUtils.h>
-#import <EXUpdates/EXUpdatesBuildData.h>
 #import <ExpoModulesCore/EXDefines.h>
 #import <React/RCTReloadCommand.h>
 
@@ -198,7 +196,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     return;
   }
 
-  [EXUpdatesBuildData ensureBuildDataIsConsistentAsync:_database config:_config];
+  [EXUpdatesBuildData ensureBuildDataIsConsistentAsyncWithDatabase:_database config:_config];
 
   [_errorRecovery startMonitoring];
 
