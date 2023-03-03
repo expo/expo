@@ -5,7 +5,7 @@ description: Learn how to add Expo SDK to an existing React Native project.
 
 import InstallSection from '~/components/plugins/InstallSection';
 import { DiffBlock } from '~/ui/components/Snippet';
-import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { YesIcon, NoIcon, WarningIcon } from '~/ui/components/DocIcons';
 
 > Are you migrating from `react-native-unimodules`? If yes, please refer to [the Expo modules migration guide](https://expo.fyi/expo-modules-migration).
 
@@ -30,6 +30,8 @@ To install and use Expo modules, the easiest way to get up and running is with t
 
 - <YesIcon small /> **When the command succeeds**, you will be able to add any Expo module in your app!
   Proceed to [Usage](#usage) for more information.
+
+- <WarningIcon small /> **If the command fails to find a valid react-native project**, after confirming you're running from the correct directory, remove package-lock.json and reinstall packages with yarn.
 
 - <NoIcon small /> **If the command fails**, please follow the manual installation instructions. Updating
   code programmatically can be tricky, and if your project deviates significantly from a default React
