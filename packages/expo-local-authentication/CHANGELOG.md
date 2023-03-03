@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+- On iOS, fix incorrect nil check when checking for `NSFaceIDUsageDescription` in the Info.plist.
 
 ### 💡 Others
 
