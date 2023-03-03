@@ -20,7 +20,7 @@ const warnDisabled = memoize(() => {
 /** Ensure the project has the required TypeScript support settings. */
 export class TypeScriptProjectPrerequisite extends ProjectPrerequisite<boolean> {
   /**
-   * Ensure a project that hasn't explicitly disabled web support has all the required packages for running in the browser.
+   * Ensure a project that hasn't explicitly disabled typescript support has all the required packages for running in the browser.
    *
    * @returns `true` if the setup finished and no longer needs to be run again.
    */
