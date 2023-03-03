@@ -2,7 +2,6 @@
 
 #import <XCTest/XCTest.h>
 
-#import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesDatabaseIntegrityCheck.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 
@@ -52,7 +51,7 @@
   _db = [[EXUpdatesDatabase alloc] init];
   dispatch_sync(_db.databaseQueue, ^{
     NSError *dbOpenError;
-    [_db openDatabaseInDirectory:_testDatabaseDir withError:&dbOpenError];
+    [_db openDatabaseInDirectory:_testDatabaseDir error:&dbOpenError];
     XCTAssertNil(dbOpenError);
   });
 }
@@ -175,14 +174,14 @@
     XCTAssertNil(error4);
 
     XCTAssertEqual(2, [_db allUpdatesWithConfig:config error:nil].count);
-    XCTAssertEqual(2, [_db allAssetsWithError:nil].count);
+    XCTAssertEqual(2, [_db allAssetsAndReturnError:nil].count);
 
     NSError *error5;
     [EXUpdatesDatabaseIntegrityCheckMockingAssetExists runWithDatabase:_db directory:_testDatabaseDir config:config embeddedUpdate:nil error:&error5];
     XCTAssertNil(error5);
 
     NSArray<EXUpdatesUpdate *> *allUpdates = [_db allUpdatesWithConfig:config error:nil];
-    NSArray<EXUpdatesAsset *> *allAssets = [_db allAssetsWithError:nil];
+    NSArray<EXUpdatesAsset *> *allAssets = [_db allAssetsAndReturnError:nil];
     XCTAssertEqual(2, allUpdates.count);
     XCTAssertEqual(2, allAssets.count);
 

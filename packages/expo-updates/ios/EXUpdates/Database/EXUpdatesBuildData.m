@@ -1,7 +1,6 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesBuildData+Tests.h>
-#import <EXUpdates/EXUpdatesDatabaseUtils.h>
 
 #if __has_include(<EXUpdates/EXUpdates-Swift.h>)
 #import <EXUpdates/EXUpdates-Swift.h>
@@ -47,7 +46,7 @@ NS_ASSUME_NONNULL_BEGIN
     }
     
     NSError *getStaticBuildDataError;
-    NSDictionary *staticBuildData = [database staticBuildDataWithScopeKey:config.scopeKey error:&getStaticBuildDataError];
+    NSDictionary *staticBuildData = [database staticBuildDataWithScopeKey:config.scopeKey error:&getStaticBuildDataError].jsonData;
     if (getStaticBuildDataError) {
       NSLog(@"Error getting static build data: %@", getStaticBuildDataError);
       return;

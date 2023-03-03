@@ -3,6 +3,8 @@
 #import "EXUpdatesDatabaseManager.h"
 #import <EXUpdates/EXUpdatesUtils.h>
 
+@import EXUpdates;
+
 NS_ASSUME_NONNULL_BEGIN
 
 @interface EXUpdatesDatabaseManager ()
@@ -46,7 +48,7 @@ NS_ASSUME_NONNULL_BEGIN
   __block BOOL success = NO;
   __block NSError *dbError;
   dispatch_sync(self.database.databaseQueue, ^{
-    success = [self.database openDatabaseInDirectory:self.updatesDirectory withError:&dbError];
+    success = [self.database openDatabaseInDirectory:self.updatesDirectory error:&dbError];
   });
 
   if (dbError) {
