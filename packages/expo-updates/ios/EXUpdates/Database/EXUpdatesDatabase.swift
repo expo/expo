@@ -287,7 +287,7 @@ public final class EXUpdatesDatabase: NSObject {
     }
 
     let updateSql = "UPDATE updates SET status = ?1, keep = 1 WHERE id = ?2;"
-    _ = try execute(sql: updateSql, withArgs: [update.status, update.updateId])
+    _ = try execute(sql: updateSql, withArgs: [update.status.rawValue, update.updateId])
   }
 
   public func markUpdateAccessed(_ update: EXUpdatesUpdate) throws {
@@ -434,7 +434,9 @@ public final class EXUpdatesDatabase: NSObject {
     // even if it has also failed to launch at least once
     let sql = String(
       format: "SELECT * FROM updates WHERE scope_key = ?1 AND (successful_launch_count > 0 OR failed_launch_count < 1) AND status IN (%li, %li, %li);",
-      [EXUpdatesUpdateStatus.StatusReady.rawValue, EXUpdatesUpdateStatus.StatusEmbedded.rawValue, EXUpdatesUpdateStatus.StatusDevelopment.rawValue]
+      EXUpdatesUpdateStatus.StatusReady.rawValue,
+      EXUpdatesUpdateStatus.StatusEmbedded.rawValue,
+      EXUpdatesUpdateStatus.StatusDevelopment.rawValue
     )
 
     let rows = try execute(sql: sql, withArgs: [config.scopeKey])
@@ -623,7 +625,7 @@ public final class EXUpdatesDatabase: NSObject {
       extraRequestHeaders = (try? JSONSerialization.jsonObject(with: rowExtraRequestHeaders.data(using: .utf8)!) as? [String: Any]).require("Asset extra_request_headers should be a valid JSON object")
     }
 
-    let launchAssetId: Int? = row.optionalValue(forKey: "launch_asset_id")
+    let launchAssetId: NSNumber? = row.optionalValue(forKey: "launch_asset_id")
 
     var url: URL?
     let rowUrl: Any? = row.optionalValue(forKey: "url")
@@ -648,8 +650,8 @@ public final class EXUpdatesDatabase: NSObject {
     asset.expectedHash = row.optionalValue(forKey: "expected_hash")
     asset.metadata = metadata
 
-    if let launchAssetId = launchAssetId,
-      launchAssetId == row.requiredValue(forKey: "id") {
+    if let launchAssetId = launchAssetId?.intValue,
+       launchAssetId == assetId.intValue {
       asset.isLaunchAsset = true
     } else {
       asset.isLaunchAsset = false
