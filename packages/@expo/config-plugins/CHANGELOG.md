@@ -10,6 +10,7 @@
 
 ### 💡 Others
 
+- Update tests.
 - Update tests to use latest Expo template. ([#21339](https://github.com/expo/expo/pull/21339) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 6.0.0 — 2023-02-03
