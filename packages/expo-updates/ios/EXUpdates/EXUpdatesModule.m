@@ -1,6 +1,5 @@
 // Copyright 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesFileDownloader.h>
 #import <EXUpdates/EXUpdatesModule.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesService.h>
@@ -129,7 +128,7 @@ EX_EXPORT_METHOD_AS(checkForUpdateAsync,
                                                       embeddedUpdate:self->_updatesService.embeddedUpdate];
   });
 
-  EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:_updatesService.config];
+  EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithConfig:_updatesService.config];
   [fileDownloader downloadManifestFromURL:_updatesService.config.updateUrl
                              withDatabase:_updatesService.database
                              extraHeaders:extraHeaders
