@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed Android property name of BarCodeScannedEvent from boundingBox to bounds to match TypeScript definitions ([#21384](https://github.com/expo/expo/pull/21384) by [@frw](https://github.com/frw))
-
 ### 💡 Others
+
+## 12.3.2 — 2023-03-03
+
+### 🐛 Bug fixes
+
+- Fixed Android property name of BarCodeScannedEvent from boundingBox to bounds to match TypeScript definitions ([#21384](https://github.com/expo/expo/pull/21384) by [@frw](https://github.com/frw))
 
 ## 12.3.1 — 2023-02-09
 

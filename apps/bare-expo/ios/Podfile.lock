@@ -10,7 +10,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - EXBackgroundFetch (11.1.1):
     - ExpoModulesCore
-  - EXBarCodeScanner (12.3.1):
+  - EXBarCodeScanner (12.3.2):
     - EXImageLoader
     - ExpoModulesCore
     - ZXingObjC/OneD
@@ -144,7 +144,7 @@ PODS:
     - ExpoModulesCore
   - ExpoCellular (5.1.1):
     - ExpoModulesCore
-  - ExpoClipboard (4.1.1):
+  - ExpoClipboard (4.1.2):
     - ExpoModulesCore
   - ExpoCrypto (12.2.1):
     - ExpoModulesCore
@@ -180,7 +180,7 @@ PODS:
     - ExpoModulesCore
     - GoogleMaps (= 7.1.0)
     - GooglePlaces (= 7.1.0)
-  - ExpoModulesCore (1.2.3):
+  - ExpoModulesCore (1.2.4):
     - React-Core
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
@@ -216,7 +216,7 @@ PODS:
     - ExpoModulesCore
   - EXSensors (12.1.1):
     - ExpoModulesCore
-  - EXSharing (11.2.1):
+  - EXSharing (11.2.2):
     - ExpoModulesCore
   - EXSpeech (11.1.1):
     - ExpoModulesCore
@@ -1216,7 +1216,7 @@ SPEC CHECKSUMS:
   EXApplication: d8f53a7eee90a870a75656280e8d4b85726ea903
   EXAV: f1f69397ecdcf44cfacd4ff5d338cd1b96891e87
   EXBackgroundFetch: afa9f178aa29338eac33228e9d5d3239f5c61df9
-  EXBarCodeScanner: a0ce3f62afd873351c7a5743649574b57422bb7d
+  EXBarCodeScanner: 8e23fae8d267dbef9f04817833a494200f1fce35
   EXCalendar: 7d68f53f0f3df241d3af203c94082aee93cd1c93
   EXCamera: a323a5942b5e7fc8349e17d728e91c18840ad561
   EXConstants: f348da07e21b23d2b085e270d7b74f282df1a7d9
@@ -1243,7 +1243,7 @@ SPEC CHECKSUMS:
   ExpoBlur: fac3c6318fdf409dd5740afd3313b2bd52a35bac
   ExpoBrightness: fa662d10f9a8547c86264cde7ad754226a1efa72
   ExpoCellular: 2daef47056576e5735f9e93e38739e3176e399ad
-  ExpoClipboard: 8a36a8376ab93df9050c14577e9e0fcb805e9114
+  ExpoClipboard: 9b87df0ad145e3aa841614fab6aea54b7a604850
   ExpoCrypto: 477dfe89c81527b376f2c344ca1d2a01244b243c
   ExpoDevice: e0bebf68f978b3d353377ce42e73c20c0a070215
   ExpoGL: 8f8e40e494a462f33c1f513cf101bf7d6abe767e
@@ -1257,7 +1257,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: f26cd431ad9ea3533c5b08c4fabd879176a794bb
   ExpoMailComposer: 0085b258d00ba40664f7acb40d96042b29a1da7d
   ExpoMaps: be6983038f20ab7d6c953cda7aa48f81713896d3
-  ExpoModulesCore: f11d8a16e8d3f26c183da2541d75edc6aa9cf8eb
+  ExpoModulesCore: 1667335d4f4c9b7801990930e6f0eea42c916a21
   ExpoModulesTestCore: faf43ba18dd6809d2e91567260e132b385a5842e
   ExpoNetwork: 242fe1bd68bfe744a2f69fccfe4bfe1d89d1e790
   ExpoRandom: 7ee07d62e7003b74d0536e0495e3a653fe1b2a74
@@ -1272,7 +1272,7 @@ SPEC CHECKSUMS:
   EXScreenOrientation: 52220f8f2477ed25a37e3b2cdbbaa8635d250256
   EXSecureStore: e8923258361cc406d0401af380f12bd05b2b720f
   EXSensors: 29448aedea6ac26f1f11f349c038dbe8698d41e6
-  EXSharing: 5a28af9de0884c255f401e1f1f0bea269e9c9bb9
+  EXSharing: 09839ace249f61bfa13c50c6a28256c31d260355
   EXSpeech: a8da505f08d539364dbcbb2804ac3e63e7bec22b
   EXSplashScreen: cd7fb052dff5ba8311d5c2455ecbebffe1b7a8ca
   EXSQLite: 848167441b14cb6cdd6ae46c8d62289161a79550
