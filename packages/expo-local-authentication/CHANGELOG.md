@@ -7,7 +7,8 @@
 ### 🎉 New features
 
 ### 🐛 Bug fixes
-- On iOS, fix incorrect nil check when checking for `NSFaceIDUsageDescription` in the Info.plist.
+
+- On iOS, fix incorrect nil check when checking for `NSFaceIDUsageDescription` in the Info.plist. ([#21500](https://github.com/expo/expo/pull/21500) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
