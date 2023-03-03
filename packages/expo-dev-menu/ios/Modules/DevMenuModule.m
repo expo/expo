@@ -10,6 +10,8 @@
 }
 
 RCT_EXTERN_METHOD(openMenu)
-RCT_EXTERN_METHOD(addDevMenuCallbacks:(NSArray *)names
+RCT_EXTERN_METHOD(closeMenu)
+RCT_EXTERN_METHOD(hideMenu)
+RCT_EXTERN_METHOD(addDevMenuCallbacks:(NSArray<NSDictionary> *)callbacks
                   resolve:(RCTPromiseResolveBlock)resolve reject:(RCTPromiseRejectBlock)reject)
 @end
