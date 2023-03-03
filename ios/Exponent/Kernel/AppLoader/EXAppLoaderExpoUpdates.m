@@ -19,11 +19,9 @@
 #import "Expo_Go-Swift.h"
 #endif // defined(EX_DETACHED)
 
-#import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
 #import <EXUpdates/EXUpdatesAppLoaderTask.h>
 #import <EXUpdates/EXUpdatesErrorRecovery.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
-#import <EXUpdates/EXUpdatesReaper.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <React/RCTUtils.h>
 #import <sys/utsname.h>
