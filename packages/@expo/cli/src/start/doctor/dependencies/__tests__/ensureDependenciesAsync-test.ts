@@ -1,8 +1,8 @@
-import { createInstallCommand, ensureDependenciesAsync } from '../ensureDependenciesAsync';
-import { confirmAsync } from '../../../../utils/prompts';
-import { isInteractive } from '../../../../utils/interactive';
-import { getMissingPackagesAsync } from '../getMissingPackages';
 import { installAsync } from '../../../../install/installAsync';
+import { isInteractive } from '../../../../utils/interactive';
+import { confirmAsync } from '../../../../utils/prompts';
+import { createInstallCommand, ensureDependenciesAsync } from '../ensureDependenciesAsync';
+import { getMissingPackagesAsync } from '../getMissingPackages';
 
 jest.mock('@expo/config', () => ({
   getConfig: jest.fn(() => ({

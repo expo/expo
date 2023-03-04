@@ -5,10 +5,10 @@ import chalk from 'chalk';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { logEventAsync } from '../../utils/analytics/rudderstackClient';
 import { ProjectPrerequisite } from '../doctor/Prerequisite';
+import { TypeScriptProjectPrerequisite } from '../doctor/typescript/TypeScriptProjectPrerequisite';
 import * as AndroidDebugBridge from '../platforms/android/adb';
 import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
 import { getPlatformBundlers } from './platformBundlers';
-import { TypeScriptProjectPrerequisite } from '../doctor/typescript/TypeScriptProjectPrerequisite';
 
 const debug = require('debug')('expo:start:server:devServerManager') as typeof console.log;
 

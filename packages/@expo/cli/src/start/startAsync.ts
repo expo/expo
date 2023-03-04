@@ -9,7 +9,6 @@ import { isInteractive } from '../utils/interactive';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { profile } from '../utils/profile';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
-import { TypeScriptProjectPrerequisite } from './doctor/typescript/TypeScriptProjectPrerequisite';
 import { WebSupportProjectPrerequisite } from './doctor/web/WebSupportProjectPrerequisite';
 import { startInterfaceAsync } from './interface/startInterface';
 import { Options, resolvePortsAsync } from './resolveOptions';
