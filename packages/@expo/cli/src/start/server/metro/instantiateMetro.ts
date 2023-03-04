@@ -90,8 +90,8 @@ export async function instantiateMetroAsync(
     });
 
   const customEnhanceMiddleware = metroConfig.server.enhanceMiddleware;
-  // @ts-ignore can't mutate readonly config
-  config.server.enhanceMiddleware = (metroMiddleware: any, server: Metro.Server) => {
+  // @ts-expect-error: can't mutate readonly config
+  metroConfig.server.enhanceMiddleware = (metroMiddleware: any, server: Metro.Server) => {
     if (customEnhanceMiddleware) {
       metroMiddleware = customEnhanceMiddleware(metroMiddleware, server);
     }
