@@ -67,7 +67,7 @@ class MockBundlerDevServer extends BundlerDevServer {
     const host = 'localhost';
     this.setInstance({
       // Server instance
-      server: { close: jest.fn((fn) => fn?.()) },
+      server: { close: jest.fn((fn) => fn?.()), addListener() {} },
       // URL Info
       location: {
         url: `${protocol}://${host}:${port}`,

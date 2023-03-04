@@ -56,5 +56,10 @@ export async function startBundlerAsync(
       Log.log(chalk`Waiting on {underline ${url}}`);
     }
   }
+
+  if (!options.headless) {
+    await devServerManager.bootstrapTypeScriptAsync();
+  }
+
   return devServerManager;
 }
