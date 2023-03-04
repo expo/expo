@@ -9,7 +9,6 @@ import { isInteractive } from '../utils/interactive';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { profile } from '../utils/profile';
 import { validateDependenciesVersionsAsync } from './doctor/dependencies/validateDependenciesVersions';
-import { TypeScriptProjectPrerequisite } from './doctor/typescript/TypeScriptProjectPrerequisite';
 import { WebSupportProjectPrerequisite } from './doctor/web/WebSupportProjectPrerequisite';
 import { startInterfaceAsync } from './interface/startInterface';
 import { Options, resolvePortsAsync } from './resolveOptions';
@@ -97,7 +96,13 @@ export async function startAsync(
     await devServerManager.ensureProjectPrerequisiteAsync(WebSupportProjectPrerequisite);
   }
 
-  await devServerManager.ensureProjectPrerequisiteAsync(TypeScriptProjectPrerequisite);
+  // Start the server as soon as possible.
+  await profile(devServerManager.startAsync.bind(devServerManager))(startOptions);
+
+  if (!settings.webOnly) {
+    // After the server starts, we can start attempting to bootstrap TypeScript.
+    await devServerManager.bootstrapTypeScriptAsync();
+  }
 
   if (!settings.webOnly && !options.devClient) {
     await profile(validateDependenciesVersionsAsync)(projectRoot, exp, pkg);
@@ -108,8 +113,6 @@ export async function startAsync(
   if (options.devClient) {
     await trackAsync(projectRoot, exp);
   }
-
-  await profile(devServerManager.startAsync.bind(devServerManager))(startOptions);
 
   // Open project on devices.
   await profile(openPlatformsAsync)(devServerManager, options);

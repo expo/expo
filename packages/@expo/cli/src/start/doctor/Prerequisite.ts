@@ -46,7 +46,7 @@ export class Prerequisite<T = void, TProps = void> {
 }
 
 /** A prerequisite that is project specific. */
-export class ProjectPrerequisite extends Prerequisite {
+export class ProjectPrerequisite<T = void, TProps = void> extends Prerequisite<T, TProps> {
   constructor(protected projectRoot: string) {
     super();
   }

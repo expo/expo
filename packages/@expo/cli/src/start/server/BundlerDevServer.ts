@@ -23,6 +23,7 @@ const debug = require('debug')('expo:start:server:devServer') as typeof console.
 
 export type ServerLike = {
   close(callback?: (err?: Error) => void): void;
+  addListener?(event: string, listener: (...args: any[]) => void): unknown;
 };
 
 export type DevServerInstance = {
@@ -162,6 +163,10 @@ export abstract class BundlerDevServer {
     options: BundlerStartOptions
   ): Promise<DevServerInstance>;
 
+  public async waitForTypeScriptAsync(): Promise<void> {
+    // noop -- We've only implemented this functionality in Metro.
+  }
+
   /**
    * Creates a mock server representation that can be used to estimate URLs for a server started in another process.
    * This is used for the run commands where you can reuse the server from a previous run.
@@ -177,6 +182,7 @@ export abstract class BundlerDevServer {
         close: () => {
           this.instance = null;
         },
+        addListener() {},
       },
       location: {
         // The port is the main thing we want to send back.
