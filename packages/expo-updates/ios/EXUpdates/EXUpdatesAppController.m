@@ -1,14 +1,9 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAppController+Internal.h>
-#import <EXUpdates/EXUpdatesAppLauncher.h>
-#import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
-#import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
 #import <EXUpdates/EXUpdatesErrorRecovery.h>
-#import <EXUpdates/EXUpdatesReaper.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesUtils.h>
-#import <EXUpdates/EXUpdatesBuildData.h>
 #import <ExpoModulesCore/EXDefines.h>
 #import <React/RCTReloadCommand.h>
 
@@ -198,7 +193,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     return;
   }
 
-  [EXUpdatesBuildData ensureBuildDataIsConsistentAsync:_database config:_config];
+  [EXUpdatesBuildData ensureBuildDataIsConsistentAsyncWithDatabase:_database config:_config];
 
   [_errorRecovery startMonitoring];
 
@@ -368,7 +363,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
   __block NSError *dbError;
   dispatch_semaphore_t dbSemaphore = dispatch_semaphore_create(0);
   dispatch_async(_database.databaseQueue, ^{
-    [self->_database openDatabaseInDirectory:self->_updatesDirectory withError:&dbError];
+    [self->_database openDatabaseInDirectory:self->_updatesDirectory error:&dbError];
     dispatch_semaphore_signal(dbSemaphore);
   });
 
@@ -417,7 +412,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 # pragma mark - EXUpdatesErrorRecoveryDelegate
 
-- (void)relaunchWithCompletion:(EXUpdatesAppLauncherCompletionBlock)completion
+- (void)relaunchWithCompletion:(void (^_Nonnull)(NSError * _Nullable, BOOL))completion
 {
   EXUpdatesAppLauncherWithDatabase *launcher = [[EXUpdatesAppLauncherWithDatabase alloc] initWithConfig:_config database:_database directory:_updatesDirectory completionQueue:_controllerQueue];
   _candidateLauncher = launcher;

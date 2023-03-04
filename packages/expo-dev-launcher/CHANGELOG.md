@@ -6,11 +6,14 @@
 
 ### 🎉 New features
 
+- Added experimental network inspector. ([#21265](https://github.com/expo/expo/pull/21265), [#21327](https://github.com/expo/expo/pull/21327) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
 - Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
+- Update JS bundle to fix dev client not showing logged user and initial data. ([#21510](https://github.com/expo/expo/pull/21510) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 2.1.4 — 2023-02-28
 
