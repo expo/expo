@@ -1,6 +1,9 @@
 #!/usr/bin/env bash
 
-set -eox pipefail
+# Do not set pipefail in this script, as we need to clean up the emulator
+# even if Detox fails
+
+# set -eox pipefail
 
 if [[ "$EAS_BUILD_PROFILE" != "updates_testing" ]]; then
   exit
@@ -22,7 +25,11 @@ yarn generate-test-update-bundles
 
 if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
   # Start emulator
-  $ANDROID_SDK_ROOT/emulator/emulator @$ANDROID_EMULATOR -no-audio -no-boot-anim -no-window -use-system-libs 2>&1 >/dev/null &
+  if [[ "$LOCAL_TESTING" == "1" ]]; then
+    $ANDROID_SDK_ROOT/emulator/emulator @$ANDROID_EMULATOR -no-audio -no-boot-anim 2>&1 >/dev/null &
+  else
+    $ANDROID_SDK_ROOT/emulator/emulator @$ANDROID_EMULATOR -no-audio -no-boot-anim -no-window -use-system-libs 2>&1 >/dev/null &
+  fi
 
   # Wait for emulator
   max_retry=10
@@ -42,7 +49,10 @@ fi
 # Execute tests
 detox test --configuration $EAS_BUILD_PLATFORM.release 2>&1 | tee ./logs/detox-tests.log
 
-export DETOX_EXIT_CODE=$?
+# The usual error code variable ($?) does not work due to the pipe to tee, so check the exit code this way
+DETOX_EXIT_CODE=${PIPESTATUS[0]}
+
+echo "Detox exit code = $DETOX_EXIT_CODE"
 
 if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
   # Kill emulator
