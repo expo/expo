@@ -1,7 +1,6 @@
 // Copyright 2019 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesModule.h>
-#import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesService.h>
 
 #if __has_include(<EXUpdates/EXUpdates-Swift.h>)
@@ -195,9 +194,9 @@ EX_EXPORT_METHOD_AS(fetchUpdateAsync,
   }
 
   EXUpdatesRemoteAppLoader *remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_updatesService.config database:_updatesService.database directory:_updatesService.directory launchedUpdate:_updatesService.launchedUpdate completionQueue:self.methodQueue];
-  [remoteAppLoader loadUpdateFromUrl:_updatesService.config.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
+  [remoteAppLoader loadUpdateFromURL:_updatesService.config.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
     return [self->_updatesService.selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_updatesService.launchedUpdate filters:update.manifestFilters];
-  } asset:^(EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
+  } asset:^(EXUpdatesAsset * _Nonnull asset, NSInteger successfulAssetCount, NSInteger failedAssetCount, NSInteger totalAssetCount) {
     // do nothing for now
   } success:^(EXUpdatesUpdate * _Nullable update) {
     if (update) {
