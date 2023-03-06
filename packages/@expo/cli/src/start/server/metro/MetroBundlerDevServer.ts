@@ -8,6 +8,7 @@ import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../Bun
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
+import { ReactDevToolsPageMiddleware } from '../middleware/ReactDevToolsPageMiddleware';
 import {
   DeepLinkHandler,
   RuntimeRedirectMiddleware,
@@ -77,6 +78,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         scheme: options.location.scheme ?? null,
       }).getHandler()
     );
+    middleware.use(new ReactDevToolsPageMiddleware(this.projectRoot).getHandler());
 
     const deepLinkMiddleware = new RuntimeRedirectMiddleware(this.projectRoot, {
       onDeepLink: getDeepLinkHandler(this.projectRoot),
