@@ -28,6 +28,18 @@
                                       nil);
 }
 
+- (void)writeGIF:(NSURL *)gifUrl withCallback:(EXSaveToLibraryCallback) callback
+{
+  _callback = callback;
+  [[PHPhotoLibrary sharedPhotoLibrary] performChanges:^{
+    NSData *data = [NSData dataWithContentsOfURL:gifUrl];
+    PHAssetCreationRequest *request = [PHAssetCreationRequest creationRequestForAsset];
+    [request addResourceWithType:PHAssetResourceTypePhoto data:data options:NULL];
+  } completionHandler:^(BOOL success, NSError *error) {
+    [self triggerCallback:nil withError:error];
+  }];
+}
+
 - (void)image:(UIImage*)image
         didFinishSavingWithError:(NSError *)error
         contextInfo:(void *)info

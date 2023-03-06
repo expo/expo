@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix saving animated GIFs on iOS. ([#21549](https://github.com/expo/expo/pull/21549) by [@desi-ivanov](https://github.com/desi-ivanov))
+
 ### 💡 Others
 
 ## 15.2.1 — 2023-02-09
