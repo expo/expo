@@ -37,9 +37,3 @@
         rejecter:(EXPromiseRejectBlock)reject;
 
 @end
-
-@interface NSData (EXFileSystem)
-
-- (NSString *)md5String;
-
-@end

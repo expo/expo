@@ -1,5 +1,6 @@
 
 #import <EXFileSystem/EXFileSystemAssetLibraryHandler.h>
+#import <EXFileSystem/NSData+EXFileSystem.h>
 
 #import <Photos/Photos.h>
 
