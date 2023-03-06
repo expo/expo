@@ -12,6 +12,7 @@ class DevLauncherOkHttpInterceptor : Interceptor {
       DevLauncherNetworkLogger.instance.emitNetworkWillBeSent(request, requestId)
       val response = chain.proceed(request)
       DevLauncherNetworkLogger.instance.emitNetworkResponse(request, requestId, response)
+      DevLauncherNetworkLogger.instance.emitNetworkDidReceiveBody(requestId, response)
       return response
     }
     return chain.proceed(request)
