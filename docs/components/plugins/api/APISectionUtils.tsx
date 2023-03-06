@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { borderRadius, breakpoints, shadows, spacing, theme, typography } from '@expo/styleguide';
+import { shadows, theme, typography } from '@expo/styleguide';
+import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
 import type { ComponentProps, ComponentType } from 'react';
 import { Fragment } from 'react';
 import ReactMarkdown from 'react-markdown';

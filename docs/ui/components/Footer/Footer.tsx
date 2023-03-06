@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { breakpoints, spacing, theme } from '@expo/styleguide';
+import { theme } from '@expo/styleguide';
+import { breakpoints, spacing } from '@expo/styleguide-base';
 import { useRouter } from 'next/router';
 
 import { ForumsLink, EditPageLink, IssuesLink } from './Links';
@@ -50,7 +51,10 @@ const footerStyle = css({
 
 const linksListStyle = css({
   flex: 1,
-  listStyle: 'none',
   marginLeft: 0,
   marginBottom: spacing[5],
+
+  li: {
+    listStyle: 'none',
+  },
 });

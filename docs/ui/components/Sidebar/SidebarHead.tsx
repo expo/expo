@@ -1,5 +1,7 @@
 import { css } from '@emotion/react';
-import { spacing, theme, PlanEnterpriseIcon, ArrowLeftIcon, DocsLogo } from '@expo/styleguide';
+import { theme, DocsLogo } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
+import { ArrowLeftIcon, PlanEnterpriseIcon } from '@expo/styleguide-icons';
 
 import { GuidesIcon } from './icons/Guides';
 import { PreviewIcon, PreviewInactiveIcon } from './icons/Preview';
@@ -18,7 +20,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
     return (
       <div css={sidebarHeadContainerStyle}>
         <A isStyled href="/" css={sidebarBackLinkStyle}>
-          <ArrowLeftIcon color={theme.icon.secondary} />
+          <ArrowLeftIcon className="icon-md text-icon-secondary" />
           Back
         </A>
       </div>

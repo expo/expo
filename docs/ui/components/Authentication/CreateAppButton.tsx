@@ -1,25 +1,14 @@
-import { css } from '@emotion/react';
-import { ArrowUpRightIcon, breakpoints, theme } from '@expo/styleguide';
-
-import { Button } from '~/ui/components/Button';
+import { Button } from '@expo/styleguide';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons';
 
 type CreateAppButtonProps = { href: string; name: string };
 
 export const CreateAppButton = ({ href, name }: CreateAppButtonProps) => (
   <Button
-    css={buttonStyle}
+    className="flex fit-content medium:min-w-full"
     href={href}
     openInNewTab
-    iconRight={<ArrowUpRightIcon color={theme.button.primary.icon} />}>
+    rightSlot={<ArrowUpRightIcon />}>
     Create {name} App
   </Button>
 );
-
-const buttonStyle = css({
-  display: 'flex',
-  minWidth: 'fit-content',
-
-  [`@media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px)`]: {
-    minWidth: '100%',
-  },
-});

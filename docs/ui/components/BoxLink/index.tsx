@@ -1,26 +1,17 @@
 import { css } from '@emotion/react';
-import {
-  borderRadius,
-  spacing,
-  theme,
-  ArrowRightIcon,
-  iconSize,
-  shadows,
-  ArrowUpRightIcon,
-  breakpoints,
-} from '@expo/styleguide';
-import type { IconProps } from '@expo/styleguide/dist/types';
-import React, { ComponentType, PropsWithChildren, ReactNode } from 'react';
+import { theme, shadows } from '@expo/styleguide';
+import { borderRadius, spacing, breakpoints } from '@expo/styleguide-base';
+import { ArrowRightIcon, ArrowUpRightIcon } from '@expo/styleguide-icons';
+import { AnchorHTMLAttributes, ComponentType, ReactNode } from 'react';
 
 import { A, DEMI, P } from '~/ui/components/Text';
 
-type BoxLinkProps = PropsWithChildren<{
+type BoxLinkProps = AnchorHTMLAttributes<HTMLLinkElement> & {
   title: string;
-  description: string | ReactNode;
-  href?: string;
+  description: ReactNode;
   testID?: string;
-  Icon?: ComponentType<IconProps>;
-}>;
+  Icon?: ComponentType;
+};
 
 export function BoxLink({ title, description, href, testID, Icon }: BoxLinkProps) {
   const isExternal = Boolean(href && href.startsWith('http'));
@@ -30,7 +21,7 @@ export function BoxLink({ title, description, href, testID, Icon }: BoxLinkProps
       <div css={tileContentWrapperStyle}>
         {Icon && (
           <div css={tileIconBackgroundStyle}>
-            <Icon width={iconSize.md} />
+            <Icon />
           </div>
         )}
         <div>
@@ -38,7 +29,7 @@ export function BoxLink({ title, description, href, testID, Icon }: BoxLinkProps
           <P>{description}</P>
         </div>
       </div>
-      <ArrowIcon css={arrowIconStyle} color={theme.icon.secondary} />
+      <ArrowIcon className="icon-md text-icon-secondary self-center content-end ml-3" />
     </A>
   );
 }
@@ -76,11 +67,4 @@ const tileIconBackgroundStyle = css({
   [`@media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px)`]: {
     alignSelf: 'flex-start',
   },
-});
-
-const arrowIconStyle = css({
-  alignSelf: 'center',
-  alignContent: 'flex-end',
-  minWidth: iconSize.md,
-  marginLeft: spacing[3],
 });

@@ -1,12 +1,7 @@
 import { css } from '@emotion/react';
-import {
-  spacing,
-  theme,
-  SnackLogo,
-  ChangelogIcon,
-  DiscordIcon,
-  MessageIcon,
-} from '@expo/styleguide';
+import { theme, SnackLogo } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
+import { ChangelogIcon, DiscordIcon, MessageDotsSquareSolidIcon } from '@expo/styleguide-icons';
 import { useRouter } from 'next/router';
 
 import { SidebarSingleEntry } from './SidebarSingleEntry';
@@ -44,7 +39,7 @@ export const SidebarFooter = () => {
         secondary
         href="https://forums.expo.dev"
         title="Forums"
-        Icon={MessageIcon}
+        Icon={MessageDotsSquareSolidIcon}
         isExternal
       />
       <SidebarSingleEntry

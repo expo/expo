@@ -1,5 +1,6 @@
 import { matchers } from '@emotion/jest';
-import { theme, CheckIcon } from '@expo/styleguide';
+import { theme } from '@expo/styleguide';
+import { CheckCircleSolidIcon } from '@expo/styleguide-icons';
 import { render, screen } from '@testing-library/react';
 import ReactMarkdown from 'react-markdown';
 
@@ -15,7 +16,7 @@ describe(Callout, () => {
   });
 
   it('renders callout with icon component', () => {
-    render(<Callout icon={CheckIcon}>Hello</Callout>);
+    render(<Callout icon={CheckCircleSolidIcon}>Hello</Callout>);
     expect(screen.getByTitle('Check-icon')).toBeInTheDocument();
     expect(screen.getByText('Hello')).toBeInTheDocument();
   });

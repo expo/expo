@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { iconSize, spacing, theme } from '@expo/styleguide';
+import { theme } from '@expo/styleguide';
+import { iconSize, spacing } from '@expo/styleguide-base';
 import * as React from 'react';
 
 export type DocIconProps = {

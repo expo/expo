@@ -1,13 +1,7 @@
 import { css } from '@emotion/react';
-import {
-  theme,
-  typography,
-  spacing,
-  iconSize,
-  shadows,
-  ChevronDownIcon,
-  borderRadius,
-} from '@expo/styleguide';
+import { theme, typography, shadows } from '@expo/styleguide';
+import { spacing, borderRadius } from '@expo/styleguide-base';
+import { ChevronDownIcon } from '@expo/styleguide-icons';
 
 import { A } from '../Text';
 
@@ -16,10 +10,6 @@ import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
 
 const { VERSIONS, LATEST_VERSION, BETA_VERSION } = versions;
-
-const STYLES_CONTAINER = css({
-  position: 'relative',
-});
 
 const STYLES_SELECT = css({
   ...typography.fontSizes[14],
@@ -39,13 +29,6 @@ const STYLES_SELECT = css({
   cursor: 'pointer',
 });
 
-const STYLES_ICON = css({
-  position: 'absolute',
-  right: 12,
-  top: 16,
-  pointerEvents: 'none',
-});
-
 export const VersionSelector = () => {
   const { version, hasVersion, setVersion } = usePageApiVersion();
 
@@ -54,7 +37,7 @@ export const VersionSelector = () => {
   }
 
   return (
-    <div css={STYLES_CONTAINER}>
+    <div className="relative">
       {
         // Add hidden links to create crawlable references to other SDK versions
         // We can use JS to switch between them, while helping search bots find other SDK versions
@@ -77,7 +60,7 @@ export const VersionSelector = () => {
           </option>
         ))}
       </select>
-      <ChevronDownIcon size={iconSize.sm} css={STYLES_ICON} />
+      <ChevronDownIcon className="icon-sm absolute right-3 top-4 pointer-events-none" />
     </div>
   );
 };

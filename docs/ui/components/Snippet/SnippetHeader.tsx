@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { borderRadius, theme, darkTheme } from '@expo/styleguide';
+import { theme } from '@expo/styleguide';
+import { borderRadius, palette } from '@expo/styleguide-base';
 import { PropsWithChildren } from 'react';
 
 import { LABEL } from '~/ui/components/Text';
@@ -11,7 +12,7 @@ type SnippetHeaderProps = PropsWithChildren<{
 
 export const SnippetHeader = ({ title, children, alwaysDark = false }: SnippetHeaderProps) => (
   <div css={[headerStyle, alwaysDark && headerDarkStyle]}>
-    <LABEL css={[headerTitleStyle, alwaysDark && { color: darkTheme.text.default }]}>{title}</LABEL>
+    <LABEL css={[headerTitleStyle, alwaysDark && { color: palette.white }]}>{title}</LABEL>
     {!!children && <div css={headerActionsStyle}>{children}</div>}
   </div>
 );
@@ -30,7 +31,7 @@ const headerStyle = css`
 `;
 
 const headerDarkStyle = css`
-  background-color: ${darkTheme.background.element};
+  background-color: ${palette.dark.gray3};
   border-color: transparent;
   padding-right: 8px;
 `;

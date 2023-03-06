@@ -1,11 +1,12 @@
 import { css } from '@emotion/react';
-import { theme, breakpoints, HamburgerIcon, iconSize, spacing, GithubIcon } from '@expo/styleguide';
-import { ReactNode } from 'react';
+import { theme, Button, LinkBase } from '@expo/styleguide';
+import { breakpoints, spacing } from '@expo/styleguide-base';
+import { GithubIcon, Menu01Icon } from '@expo/styleguide-icons';
+import type { ReactNode } from 'react';
 
 import { Logo } from './Logo';
 import { ThemeSelector } from './ThemeSelector';
 
-import { Button } from '~/ui/components/Button';
 import { SidebarFooter, SidebarHead } from '~/ui/components/Sidebar';
 import { A, BOLD } from '~/ui/components/Text';
 
@@ -33,20 +34,21 @@ export const Header = ({
           <A isStyled css={headerLink} href="https://blog.expo.dev">
             Blog
           </A>
-          <A href="https://github.com/expo/expo" ariaLabel="GitHub">
-            <GithubIcon title="" />
-          </A>
+          <LinkBase href="https://github.com/expo/expo" aria-label="GitHub">
+            {/* @ts-ignore: TODO */}
+            <GithubIcon className="icon-lg text-icon-default" title="" />
+          </LinkBase>
           <div css={hideOnMobileStyle}>
             <ThemeSelector />
           </div>
           <div css={showOnMobileStyle}>
             <Button
-              theme="transparent"
+              theme="tertiary"
               css={[mobileButtonStyle, isMobileMenuVisible && mobileButtonActiveStyle]}
               onClick={() => {
                 setMobileMenuVisible(!isMobileMenuVisible);
               }}>
-              <HamburgerIcon size={iconSize.sm} />
+              <Menu01Icon className="icon-sm" />
             </Button>
           </div>
         </div>
@@ -84,7 +86,7 @@ const containerStyle = css`
   height: 60px;
   box-sizing: border-box;
   border-bottom: 1px solid ${theme.border.default};
-  gap: ${spacing[4]}px;
+  gap: ${spacing[3]}px;
 `;
 
 const columnStyle = css`

@@ -1,5 +1,7 @@
 import { css } from '@emotion/react';
-import { theme, typography, spacing, ArrowUpRightIcon, iconSize } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons';
 import { useRouter } from 'next/router';
 import type { PropsWithChildren } from 'react';
 import { useEffect, useRef } from 'react';
@@ -67,11 +69,7 @@ export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
         {isSelected && <div css={STYLES_ACTIVE_BULLET} />}
         {children}
         {info.href.startsWith('http') && (
-          <ArrowUpRightIcon
-            size={iconSize.sm}
-            color={theme.icon.secondary}
-            css={STYLES_EXTERNAL_ICON}
-          />
+          <ArrowUpRightIcon className="icons-sm text-icon-secondary ml-1" />
         )}
       </LinkBase>
     </div>
@@ -115,8 +113,4 @@ const STYLES_ACTIVE_BULLET = css`
   background-color: ${theme.text.link};
   border-radius: 100%;
   margin: ${spacing[2]}px ${spacing[1.5]}px;
-`;
-
-const STYLES_EXTERNAL_ICON = css`
-  margin-left: ${spacing[1]}px;
 `;

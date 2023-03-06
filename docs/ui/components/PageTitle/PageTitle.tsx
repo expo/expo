@@ -1,5 +1,7 @@
 import { css } from '@emotion/react';
-import { breakpoints, BuildIcon, GithubIcon, spacing, theme } from '@expo/styleguide';
+import { theme } from '@expo/styleguide';
+import { breakpoints, spacing } from '@expo/styleguide-base';
+import { BuildIcon, GithubIcon } from '@expo/styleguide-icons';
 
 import { A, CALLOUT, H1 } from '~/ui/components/Text';
 
@@ -24,7 +26,8 @@ export const PageTitle = ({ title, packageName, iconUrl, sourceCodeUrl }: Props)
             href={sourceCodeUrl}
             css={linkStyle}
             title={`View source code of ${packageName} on GitHub`}>
-            <GithubIcon color={theme.icon.secondary} title="" />
+            {/* @ts-ignore: TODO */}
+            <GithubIcon className="text-icon-secondary" title="" />
             <CALLOUT theme="secondary">GitHub</CALLOUT>
           </A>
         )}
@@ -34,6 +37,7 @@ export const PageTitle = ({ title, packageName, iconUrl, sourceCodeUrl }: Props)
           href={`https://www.npmjs.com/package/${packageName}`}
           css={linkStyle}
           title="View package in npm Registry">
+          {/* @ts-ignore: TODO */}
           <BuildIcon color={theme.icon.secondary} title="" />
           <CALLOUT theme="secondary">npm</CALLOUT>
         </A>

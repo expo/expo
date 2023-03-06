@@ -1,7 +1,8 @@
 import { css, Global } from '@emotion/react';
 import { SerializedStyles } from '@emotion/serialize';
-import { breakpoints, spacing, theme } from '@expo/styleguide';
-import React, { PropsWithChildren, ReactNode } from 'react';
+import { theme } from '@expo/styleguide';
+import { breakpoints, spacing } from '@expo/styleguide-base';
+import { PropsWithChildren, ReactNode } from 'react';
 
 import { Sidebar } from '../Sidebar';
 

@@ -1,10 +1,11 @@
 import { css } from '@emotion/react';
-import { breakpoints, iconSize, SearchIcon, shadows, spacing, theme } from '@expo/styleguide';
+import { Button, shadows, theme } from '@expo/styleguide';
+import { breakpoints, spacing } from '@expo/styleguide-base';
+import { SearchSmIcon } from '@expo/styleguide-icons';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 import { isAppleDevice } from './utils';
 
-import { Button } from '~/ui/components/Button';
 import { CALLOUT, KBD } from '~/ui/components/Text';
 
 type Props = {
@@ -32,8 +33,9 @@ export const CommandMenuTrigger = ({ setOpen }: Props) => {
   }, [isMac]);
 
   return (
-    <Button theme="ghost" css={buttonStyle} onClick={() => setOpen(true)}>
-      <SearchIcon size={iconSize.sm} title="" />
+    <Button theme="secondary" css={buttonStyle} onClick={() => setOpen(true)}>
+      {/* @ts-ignore: TODO */}
+      <SearchSmIcon className="icon-md text-icon-default" title="" />
       <CALLOUT css={labelStyle}>Search</CALLOUT>
       {isMac !== null && (
         <div css={[keysWrapperStyle, hideOnMobileStyle]}>
@@ -50,14 +52,17 @@ const buttonStyle = css({
   borderColor: theme.border.default,
   boxShadow: shadows.xs,
   marginBottom: spacing[2.5],
+  minHeight: spacing[10],
+  display: 'flex',
 
   '&:focus': {
     boxShadow: shadows.xs,
   },
 
-  '> div': {
+  '> span': {
     width: '100%',
     gap: spacing[2.5],
+    alignItems: 'center',
   },
 
   kbd: {

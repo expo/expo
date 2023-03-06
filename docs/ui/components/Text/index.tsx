@@ -1,5 +1,6 @@
 import { css, CSSObject, SerializedStyles } from '@emotion/react';
-import { theme, typography, spacing, borderRadius } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
+import { spacing, borderRadius } from '@expo/styleguide-base';
 import * as React from 'react';
 
 import { LinkBase, LinkProps } from './Link';
@@ -103,7 +104,7 @@ const linkStyled = css({
     },
   },
 
-  'span, code, strong, em, b, i': {
+  'code, strong, em, b, i': {
     color: theme.text.link,
   },
 });

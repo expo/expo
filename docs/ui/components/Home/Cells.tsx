@@ -1,16 +1,7 @@
 import { css } from '@emotion/react';
-import {
-  ArrowRightIcon,
-  ArrowUpRightIcon,
-  borderRadius,
-  breakpoints,
-  iconSize,
-  palette,
-  shadows,
-  spacing,
-  theme,
-  typography,
-} from '@expo/styleguide';
+import { shadows, theme, typography } from '@expo/styleguide';
+import { borderRadius, breakpoints, palette, spacing } from '@expo/styleguide-base';
+import { ArrowRightIcon, ArrowUpRightIcon } from '@expo/styleguide-icons';
 import { PropsWithChildren } from 'react';
 import { Col, ColProps } from 'react-grid-system';
 
@@ -62,7 +53,7 @@ export const APIGridCell = ({
       <div css={cellIconWrapperStyle}>{icon}</div>
       <div css={cellTitleWrapperStyle}>
         {title}
-        <ArrowRightIcon color={theme.icon.secondary} />
+        <ArrowRightIcon className="icon-md text-icon-secondary" />
       </div>
     </A>
   </CustomCol>
@@ -95,7 +86,7 @@ export const CommunityGridCell = ({
         <span css={cellCommunityTitleStyle}>{title}</span>
         <P css={cellCommunityDescriptionStyle}>{description}</P>
       </div>
-      <ArrowUpRightIcon color={theme.icon.secondary} css={cellCommunityLinkIconStyle} />
+      <ArrowUpRightIcon className="icon-md text-icon-secondary self-center ml-1.5" />
     </A>
   </CustomCol>
 );
@@ -223,12 +214,6 @@ const cellCommunityTitleStyle = css({
 const cellCommunityDescriptionStyle = css({
   ...typography.fontSizes[14],
   color: theme.text.secondary,
-});
-
-const cellCommunityLinkIconStyle = css({
-  marginLeft: spacing[1.5],
-  alignSelf: 'center',
-  minWidth: iconSize.md,
 });
 
 const cellCommunityHoverStyle = css`

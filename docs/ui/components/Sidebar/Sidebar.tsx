@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
-import { theme, spacing, breakpoints } from '@expo/styleguide';
-import React from 'react';
+import { theme } from '@expo/styleguide';
+import { spacing, breakpoints } from '@expo/styleguide-base';
+import type { PropsWithChildren, ComponentType } from 'react';
 
 import { SidebarGroup, SidebarSection, VersionSelector } from './index';
 
@@ -32,7 +33,7 @@ const STYLES_SIDEBAR_FADE = css`
   }
 `;
 
-type SidebarProps = React.PropsWithChildren<{
+type SidebarProps = PropsWithChildren<{
   routes?: NavigationRoute[];
 }>;
 
@@ -42,7 +43,7 @@ export type SidebarNodeProps = {
 };
 
 export const Sidebar = ({ routes = [] }: SidebarProps) => {
-  const renderTypes: Record<NavigationType, React.ComponentType<SidebarNodeProps> | null> = {
+  const renderTypes: Record<NavigationType, ComponentType<SidebarNodeProps> | null> = {
     section: SidebarSection,
     group: SidebarGroup,
     page: null, // Pages are rendered inside groups and should not be rendered directly

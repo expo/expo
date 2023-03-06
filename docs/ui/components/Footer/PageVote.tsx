@@ -1,12 +1,12 @@
 import { css } from '@emotion/react';
-import { iconSize, spacing, theme, ThumbsDownIcon, ThumbsUpIcon } from '@expo/styleguide';
+import { Button } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
+import { ThumbsDownSolidIcon, ThumbsUpSolidIcon } from '@expo/styleguide-icons';
 import { useState } from 'react';
 
-import { Button } from '../Button';
 import { CALLOUT } from '../Text';
 
 import { reportPageVote } from '~/providers/Analytics';
-import { durations } from '~/ui/foundations/durations';
 
 export const PageVote = () => {
   const [userVoted, setUserVoted] = useState(false);
@@ -22,27 +22,27 @@ export const PageVote = () => {
       ) : (
         <div css={voteButtonsWrapperStyle}>
           <Button
-            theme="transparent"
-            size="mini"
+            theme="quaternary"
+            size="xs"
             aria-label="Vote up"
             css={voteButtonStyle}
+            leftSlot={<ThumbsUpSolidIcon className="icon-sm" />}
             onClick={() => {
               reportPageVote({ status: true });
               setUserVoted(true);
-            }}>
-            <ThumbsUpIcon size={iconSize.sm} />
-          </Button>
+            }}
+          />
           <Button
-            theme="secondary"
-            size="mini"
+            theme="quaternary"
+            size="xs"
             aria-label="Vote down"
             css={voteButtonStyle}
+            leftSlot={<ThumbsDownSolidIcon className="icon-sm" />}
             onClick={() => {
               reportPageVote({ status: false });
               setUserVoted(true);
-            }}>
-            <ThumbsDownIcon size={iconSize.sm} />
-          </Button>
+            }}
+          />
         </div>
       )}
     </div>
@@ -62,12 +62,6 @@ const voteButtonStyle = css({
   margin: `${spacing[2.5]}px ${spacing[1]}px 0`,
   minWidth: 42,
   textAlign: 'center',
-  backgroundColor: theme.background.element,
-
-  '&:hover': {
-    transition: durations.hover,
-    backgroundColor: theme.palette.gray5,
-  },
 });
 
 const ratedTextStyle = css({

@@ -1,8 +1,8 @@
 import { css } from '@emotion/react';
-import { borderRadius, shadows, spacing, theme } from '@expo/styleguide';
+import { Button, shadows, theme } from '@expo/styleguide';
+import { borderRadius, spacing } from '@expo/styleguide-base';
 import { useState } from 'react';
 
-import { Button } from '../Button';
 import { A, CALLOUT, FOOTNOTE } from '../Text';
 
 export const NewsletterSignUp = () => {
@@ -24,8 +24,8 @@ export const NewsletterSignUp = () => {
           disabled={userSignedUp}
         />
         <Button
-          size="mini"
-          theme={userSignedUp ? 'ghost' : 'secondary'}
+          size="xs"
+          theme={userSignedUp ? 'tertiary' : 'secondary'}
           css={sendButtonStyle}
           disabled={userSignedUp || !email.length}
           onClick={() => {

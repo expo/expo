@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { spacing, theme, typography } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
 
 export const itemStyle = css({
   display: 'inline-flex',

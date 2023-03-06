@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { breakpoints, theme } from '@expo/styleguide';
+import { theme } from '@expo/styleguide';
+import { breakpoints } from '@expo/styleguide-base';
 import Router, { useRouter } from 'next/router';
 import { useEffect, useState, createRef } from 'react';
 
@@ -23,6 +24,14 @@ const STYLES_DOCUMENT = css`
   background: ${theme.background.default};
   margin: 0 auto;
   padding: 40px 56px;
+
+  // TODO(simek): clash between TW preflight styles and our base styles, cleanup needed
+  ul {
+    list-style: disc;
+  }
+  ol {
+    list-style: decimal;
+  }
 
   @media screen and (max-width: ${breakpoints.medium + 124}px) {
     padding: 20px 16px 48px 16px;

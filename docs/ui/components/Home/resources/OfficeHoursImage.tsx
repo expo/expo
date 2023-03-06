@@ -1,4 +1,5 @@
-import { palette, theme } from '@expo/styleguide';
+import { theme } from '@expo/styleguide';
+import { palette } from '@expo/styleguide-base';
 
 export const OfficeHoursImage = () => (
   <svg

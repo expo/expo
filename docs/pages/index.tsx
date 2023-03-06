@@ -1,9 +1,7 @@
 import { css } from '@emotion/react';
+import { theme, typography } from '@expo/styleguide';
+import { spacing, breakpoints } from '@expo/styleguide-base';
 import {
-  iconSize,
-  spacing,
-  theme,
-  typography,
   ArrowUpRightIcon,
   ArrowRightIcon,
   DiscordIcon,
@@ -11,8 +9,7 @@ import {
   GithubIcon,
   RedditIcon,
   TwitterIcon,
-  breakpoints,
-} from '@expo/styleguide';
+} from '@expo/styleguide-icons';
 import type { PropsWithChildren } from 'react';
 import { Container, Row, ScreenClassProvider } from 'react-grid-system';
 
@@ -116,7 +113,7 @@ const Home = () => {
                   height: 40,
                 })}
                 href="/tutorial/introduction/"
-                iconRight={<ArrowRightIcon color={button.primary.icon} />}>
+                rightSlot={<ArrowRightIcon color={button.primary.icon} />}>
                 Start Tutorial
               </HomeButton>
             </GridCell>
@@ -146,7 +143,7 @@ const Home = () => {
                 css={css({ backgroundColor: palette.purple11, color: palette.purple3 })}
                 href="https://snack.expo.dev/"
                 target="_blank"
-                iconRight={<ArrowUpRightIcon color={palette.purple3} />}>
+                rightSlot={<ArrowUpRightIcon color={palette.purple3} />}>
                 Create a Snack
               </HomeButton>
             </GridCell>
@@ -173,7 +170,7 @@ const Home = () => {
                 })}
                 href="https://www.codecademy.com/learn/learn-react-native"
                 target="_blank"
-                iconRight={<ArrowUpRightIcon color={palette.orange4} />}>
+                rightSlot={<ArrowUpRightIcon color={palette.orange4} />}>
                 Start Course
               </HomeButton>
             </GridCell>
@@ -194,7 +191,7 @@ const Home = () => {
               <HomeButton
                 css={css({ backgroundColor: palette.green11, color: palette.green2 })}
                 href="/introduction/faq"
-                iconRight={<ArrowRightIcon color={palette.green2} />}>
+                rightSlot={<ArrowRightIcon color={palette.green2} />}>
                 Read
               </HomeButton>
             </GridCell>
@@ -219,7 +216,7 @@ const Home = () => {
                 })}
                 href="https://us02web.zoom.us/meeting/register/tZcvceivqj0oHdGVOjEeKY0dRxCRPb0HzaAK"
                 target="_blank"
-                iconRight={<ArrowUpRightIcon color={palette.yellow2} />}>
+                rightSlot={<ArrowUpRightIcon color={palette.yellow2} />}>
                 Register
               </HomeButton>
             </GridCell>
@@ -261,8 +258,6 @@ const Home = () => {
 };
 
 export function JoinTheCommunity() {
-  const { palette } = theme;
-
   return (
     <>
       <Description>See the source code, connect with others, and get connected.</Description>
@@ -272,14 +267,14 @@ export function JoinTheCommunity() {
             title="GitHub"
             description="View our SDK, submit a PR, or report an issue."
             link="https://github.com/expo/expo"
-            icon={<GithubIcon color={palette.white} size={iconSize.lg} />}
+            icon={<GithubIcon className="icon-lg text-palette-white" />}
             css={communityCellStyle}
           />
           <CommunityGridCell
             title="Discord"
             description="Join our Discord and chat with other Expo users."
             link="https://chat.expo.dev"
-            icon={<DiscordIcon color={palette.white} size={iconSize.lg} />}
+            icon={<DiscordIcon className="icon-lg text-palette-white" />}
             iconBackground="#3131E8"
             css={communityCellStyle}
           />
@@ -289,7 +284,7 @@ export function JoinTheCommunity() {
             title="Twitter"
             description="Follow Expo on Twitter for news and updates."
             link="https://twitter.com/expo"
-            icon={<TwitterIcon color={palette.white} size={iconSize.lg} />}
+            icon={<TwitterIcon className="icon-lg text-palette-white" />}
             iconBackground="#1E8EF0"
             css={communityCellStyle}
           />
@@ -297,7 +292,7 @@ export function JoinTheCommunity() {
             title="Forums"
             description="Ask or answer a question on the forums."
             link="https://forums.expo.dev/"
-            icon={<DiscourseIcon color={palette.white} size={iconSize.lg} />}
+            icon={<DiscourseIcon className="icon-lg text-palette-white" />}
             css={communityCellStyle}
           />
         </Row>
@@ -306,7 +301,7 @@ export function JoinTheCommunity() {
             title="Reddit"
             description="Get the latest on r/expo."
             link="https://www.reddit.com/r/expo"
-            icon={<RedditIcon color={palette.white} size={iconSize.lg} />}
+            icon={<RedditIcon className="icon-lg text-palette-white" />}
             iconBackground="#FC471E"
             css={communityCellStyle}
           />

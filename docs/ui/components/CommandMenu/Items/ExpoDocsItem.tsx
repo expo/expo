@@ -1,4 +1,5 @@
-import { DocsLogo, PlanEnterpriseIcon, iconSize, theme } from '@expo/styleguide';
+import { DocsLogo } from '@expo/styleguide';
+import { PlanEnterpriseIcon } from '@expo/styleguide-icons';
 import { Command } from 'cmdk';
 
 import type { AlgoliaItemType } from '../types';
@@ -21,9 +22,9 @@ const isDev = process.env.NODE_ENV === 'development';
 
 const ItemIcon = ({ url }: { url: string }) => {
   if (url.includes('/versions/')) {
-    return <DocsLogo width={iconSize.md} color={theme.icon.secondary} />;
+    return <DocsLogo className="text-icon-secondary" />;
   } else if (isEASPath(url)) {
-    return <PlanEnterpriseIcon color={theme.icon.secondary} />;
+    return <PlanEnterpriseIcon className="text-icon-secondary" />;
   }
   return <GuideIcon />;
 };

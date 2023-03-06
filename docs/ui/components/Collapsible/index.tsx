@@ -1,12 +1,7 @@
 import { css } from '@emotion/react';
-import {
-  borderRadius,
-  iconSize,
-  shadows,
-  spacing,
-  theme,
-  TriangleDownIcon,
-} from '@expo/styleguide';
+import { shadows, theme } from '@expo/styleguide';
+import { borderRadius, spacing } from '@expo/styleguide-base';
+import { TriangleDownIcon } from '@expo/styleguide-icons';
 import type { PropsWithChildren, ReactNode } from 'react';
 
 import { DEMI } from '~/ui/components/Text';
@@ -28,7 +23,7 @@ export function Collapsible({ summary, open, testID, children }: CollapsibleProp
     <details css={detailsStyle} open={open} data-testid={testID}>
       <summary css={summaryStyle}>
         <div css={markerWrapperStyle}>
-          <TriangleDownIcon css={markerStyle} size={iconSize.sm} />
+          <TriangleDownIcon className="icon-sm" css={markerStyle} />
         </div>
         <DEMI>{summary}</DEMI>
       </summary>

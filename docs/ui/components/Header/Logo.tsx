@@ -1,15 +1,7 @@
 import { css } from '@emotion/react';
-import {
-  breakpoints,
-  theme,
-  spacing,
-  typography,
-  Logo as LogoIcon,
-  WordMarkLogo,
-  borderRadius,
-  iconSize,
-  ChevronRightIcon,
-} from '@expo/styleguide';
+import { theme, typography, Logo as LogoIcon, WordMarkLogo } from '@expo/styleguide';
+import { breakpoints, spacing, borderRadius } from '@expo/styleguide-base';
+import { ChevronRightIcon } from '@expo/styleguide-icons';
 
 import { DocumentationIcon } from '~/ui/components/Sidebar/icons/Documentation';
 import { LinkBase } from '~/ui/components/Text';
@@ -26,13 +18,18 @@ export const Logo = ({ subgroup }: Props) => (
     </LinkBase>
     <LinkBase css={linkStyle} href="/">
       <div css={iconContainer}>
-        <DocumentationIcon size={iconSize.sm} />
+        <DocumentationIcon className="icon-sm" />
       </div>
       <span css={subtitleStyle}>Docs</span>
     </LinkBase>
     {subgroup && (
       <>
-        <ChevronRightIcon css={[chevronStyle, hideOnMobile]} color={theme.icon.tertiary} title="" />
+        <ChevronRightIcon
+          className="text-icon-secondary"
+          css={[chevronStyle, hideOnMobile]}
+          // @ts-ignore: TODO
+          title=""
+        />
         <span css={[subtitleStyle, hideOnMobile]}>{subgroup}</span>
       </>
     )}
