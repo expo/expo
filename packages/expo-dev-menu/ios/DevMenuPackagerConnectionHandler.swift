@@ -53,6 +53,10 @@ class DevMenuPackagerConnectionHandler {
       devDelegate.toggleElementInsector()
     case "togglePerformanceMonitor":
       devDelegate.togglePerformanceMonitor()
+    case "reconnectReactDevTools":
+      // Emit the `RCTDevMenuShown` for the app to reconnect react-devtools
+      // https://github.com/facebook/react-native/blob/22ba1e45c52edcc345552339c238c1f5ef6dfc65/Libraries/Core/setUpReactDevTools.js#L80
+      bridge.enqueueJSCall("RCTNativeAppEventEmitter.emit", args: ["RCTDevMenuShown"])
     default:
       NSLog("Unknown command from packager: %@", command)
     }
