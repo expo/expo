@@ -1,5 +1,5 @@
 import type { Protocol } from 'devtools-protocol';
-import { DebuggerInfo } from 'metro-inspector-proxy';
+import type { DebuggerInfo } from 'metro-inspector-proxy';
 
 import {
   CdpMessage,
