@@ -6,8 +6,7 @@ import React from 'react';
 import { Button, NativeModules, StyleSheet, Text, View } from 'react-native';
 import { v4 as uuidV4 } from 'uuid';
 
-// A workaround for `TypeError: Cannot read property 'now' of undefined` error.
-
+// A workaround for `TypeError: Cannot read property 'now' of undefined` error thrown from reanimated code.
 global.performance = {
   now: () => 0,
 };
@@ -26,7 +25,9 @@ if (!ExpoNativeModuleIntrospection) {
 const keysOrder = ['type', 'functionType', 'name', 'argumentsCount', 'key'];
 
 function isNumeric(str) {
-  if (typeof str != 'string') return false; // we only process strings!
+  if (typeof str !== 'string') {
+    return false; // we only process strings!
+  }
   return (
     !isNaN(str) && // use type coercion to parse the _entirety_ of the string (`parseFloat` alone does not do this)...
     !isNaN(parseFloat(str))
@@ -67,15 +68,13 @@ const replacer = (_key, value) => {
 };
 
 export default class App extends React.Component {
-  constructor(props) {
-    super(props);
-    this.state = {};
-  }
+  state = {};
+
   async componentDidMount() {
     const moduleSpecs = await _getExpoModuleSpecsAsync();
     const code = `module.exports = ${JSON.stringify(moduleSpecs, replacer)};`;
     await setStringAsync(code);
-    this.state.moduleSpecs = moduleSpecs;
+    this.setState({ moduleSpecs });
     const message = `
 
 ------------------------------COPY THE TEXT BELOW------------------------------
