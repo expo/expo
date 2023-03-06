@@ -25,24 +25,5 @@ export function createInspectorProxy(projectRoot: string) {
     ExpoInspectorDevice
   );
 
-  // TODO(cedric): Remove this if we can
-  // Temporarily add the debugging messages, to keep the socket alive
-  setInterval(() => {
-    inspectorProxy.devices.forEach((device) => {
-      const socket = device?._debuggerConnection?.socket;
-      const payload = {
-        method: 'Console.messageAdded',
-        params: {
-          message: {
-            source: 'javascript',
-            level: 'info',
-            text: 'ooxx text',
-          },
-        },
-      };
-      socket?.send(JSON.stringify(payload));
-    });
-  }, 3000);
-
   return inspectorProxy;
 }
