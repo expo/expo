@@ -11,4 +11,6 @@ typedef void(^EXSaveToLibraryCallback)(id asset, NSError *error);
 
 - (void)writeVideo:(NSString *)movieUrl withCallback:(EXSaveToLibraryCallback) callback;
 
+- (void)writeGIF:(NSURL *)gifUrl withCallback:(EXSaveToLibraryCallback)callback;
+
 @end

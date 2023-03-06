@@ -225,6 +225,11 @@ EX_EXPORT_METHOD_AS(saveToLibraryAsync,
   };
   
   if (assetType == PHAssetMediaTypeImage) {
+
+    if ([[assetUrl.pathExtension lowercaseString] isEqualToString:@"gif"]) {
+      return [delegate writeGIF:assetUrl withCallback:callback];
+    }
+
     UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:assetUrl]];
     if (image == nil) {
       return reject(@"E_FILE_IS_MISSING", [NSString stringWithFormat:@"Couldn't open file: %@. Make sure if this file exists.", localUri], nil);
