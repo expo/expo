@@ -102,18 +102,18 @@ export async function getStaticPageContentsAsync(
     options
   );
 
-  const { getStaticContentAsync, getDataLoader } = profile(
-    requireString,
-    'eval-metro-bundle'
-  )(scriptContents);
+  const {
+    getStaticContent,
+    // getDataLoader
+  } = profile(requireString, 'eval-metro-bundle')(scriptContents);
 
   return function loadPageAsync(url: URL) {
-    const fetchData = getDataLoader(url);
+    // const fetchData = getDataLoader(url);
 
     return {
-      fetchData,
+      fetchData: false,
       scriptContents,
-      renderAsync: () => getStaticContentAsync(url),
+      renderAsync: () => getStaticContent(url),
     };
   };
 }

@@ -161,7 +161,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           const location = new URL(req.url, devServerUrl);
 
           try {
-            const { getStaticContentAsync } = await getStaticRenderFunctions(
+            const { getStaticContent } = await getStaticRenderFunctions(
               this.projectRoot,
               devServerUrl,
               {
@@ -170,7 +170,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               }
             );
 
-            let content = await getStaticContentAsync(location);
+            let content = await getStaticContent(location);
 
             //TODO: Not this -- disable injection some other way
             if (options.mode !== 'production') {
