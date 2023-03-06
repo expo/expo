@@ -1,11 +1,11 @@
 import { DocsLogo } from '@expo/styleguide';
-import { PlanEnterpriseIcon } from '@expo/styleguide-icons';
+import { PlanEnterpriseIcon, BookClosedIcon } from '@expo/styleguide-icons';
 import { Command } from 'cmdk';
 
 import type { AlgoliaItemType } from '../types';
 import { getContentHighlightHTML, getHighlightHTML, isEASPath, openLink } from '../utils';
 import { FootnoteSection } from './FootnoteSection';
-import { FootnoteArrowIcon, GuideIcon } from './icons';
+import { FootnoteArrowIcon } from './icons';
 import { contentStyle, footnoteStyle, itemIconWrapperStyle, itemStyle } from './styles';
 
 import versions from '~/public/static/constants/versions.json';
@@ -22,11 +22,11 @@ const isDev = process.env.NODE_ENV === 'development';
 
 const ItemIcon = ({ url }: { url: string }) => {
   if (url.includes('/versions/')) {
-    return <DocsLogo className="text-icon-secondary" />;
+    return <DocsLogo className="icon-md text-icon-secondary" />;
   } else if (isEASPath(url)) {
-    return <PlanEnterpriseIcon className="text-icon-secondary" />;
+    return <PlanEnterpriseIcon className="icon-md text-icon-secondary" />;
   }
-  return <GuideIcon />;
+  return <BookClosedIcon className="icon-md text-icon-secondary" />;
 };
 
 const getFootnotePrefix = (url: string) => {

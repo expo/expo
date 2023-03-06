@@ -60,7 +60,7 @@ export const VersionSelector = () => {
           </option>
         ))}
       </select>
-      <ChevronDownIcon className="icon-sm absolute right-3 top-4 pointer-events-none" />
+      <ChevronDownIcon className="icon-sm text-icon-secondary absolute right-3 top-4 pointer-events-none" />
     </div>
   );
 };

@@ -80,7 +80,7 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
         <MONOSPACE weight="medium">{name}</MONOSPACE>
       </H3Code>
       {(extendedTypes?.length || implementedTypes?.length) && (
-        <P>
+        <P className="mb-3">
           <BOLD>Type: </BOLD>
           {type ? <CODE>{resolveTypeName(type)}</CODE> : 'Class'}
           {extendedTypes?.length && (
@@ -122,7 +122,7 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
           </div>
         </>
       ) : null}
-      {methods?.length && (
+      {methods?.length > 0 && (
         <>
           <BoxSectionHeader text={`${name} Methods`} exposeInSidebar={exposeInSidebar} />
           {methods.map(method => renderMethod(method, { exposeInSidebar }))}

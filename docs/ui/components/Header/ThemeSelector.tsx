@@ -36,7 +36,7 @@ export const ThemeSelector = () => {
         {themeName === 'dark' && <Moon01SolidIcon className="icon-sm text-icon-default" />}
         {themeName === 'light' && <SunIcon className="icon-sm text-icon-default" />}
       </div>
-      <ChevronDownIcon className="icon-2xs text-icon-secondary absolute right-2 top-3 pointer-events-none" />
+      <ChevronDownIcon className="icon-xs text-icon-secondary absolute right-2 top-3 pointer-events-none" />
     </div>
   );
 };

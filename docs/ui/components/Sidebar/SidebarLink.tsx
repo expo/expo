@@ -57,6 +57,7 @@ export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
   const customDataAttributes = isSelected && {
     'data-sidebar-anchor-selected': true,
   };
+  const isExternal = info.href.startsWith('http');
 
   return (
     <div css={STYLES_CONTAINER}>
@@ -64,13 +65,11 @@ export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
         href={info.href as string}
         {...customDataAttributes}
         ref={ref}
-        target={info.href.startsWith('http') ? '_blank' : undefined}
+        target={isExternal ? '_blank' : undefined}
         css={[STYLES_LINK, isSelected && STYLES_LINK_ACTIVE]}>
         {isSelected && <div css={STYLES_ACTIVE_BULLET} />}
         {children}
-        {info.href.startsWith('http') && (
-          <ArrowUpRightIcon className="icons-sm text-icon-secondary ml-1" />
-        )}
+        {isExternal && <ArrowUpRightIcon className="icon-sm text-icon-secondary ml-auto" />}
       </LinkBase>
     </div>
   );
@@ -86,9 +85,14 @@ const STYLES_LINK = css`
   align-items: center;
   padding-left: ${spacing[4] + spacing[0.5]}px;
   scroll-margin: 60px;
+  width: 100%;
 
   &:hover {
     color: ${theme.text.link};
+  }
+
+  &:hover svg {
+    color: ${theme.button.tertiary.icon};
   }
 `;
 
