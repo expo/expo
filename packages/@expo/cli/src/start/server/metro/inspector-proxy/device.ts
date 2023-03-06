@@ -1,50 +1,38 @@
 import type { DebuggerInfo, Device as MetroDevice } from 'metro-inspector-proxy';
 import type WS from 'ws';
 
-import {
-  NetworkResponseHandler,
-  NetworkReceivedResponseBody,
-  NetworkGetResponseBody,
-} from './messages/NetworkRespose';
-import { DeviceRequest, DebuggerRequest } from './messages/types';
-
-type KnownDeviceRequests = DeviceRequest<NetworkReceivedResponseBody>;
-type KnownDebuggerRequests = DebuggerRequest<NetworkGetResponseBody>;
+import { NetworkResponseHandler } from './messages/NetworkRespose';
+import { DeviceRequest, InspectorHandler, DebuggerRequest } from './messages/types';
 
 export function createInspectorDeviceClass(MetroDeviceClass: typeof MetroDevice) {
-  return class ExpoInspectorDevice extends MetroDeviceClass {
-    networkResponseBodyHandler = new NetworkResponseHandler();
+  return class ExpoInspectorDevice extends MetroDeviceClass implements InspectorHandler {
+    /** All handlers that should be used to intercept or reply to CDP events */
+    public handlers: InspectorHandler[] = [new NetworkResponseHandler()];
 
-    onDeviceMessage(request: KnownDeviceRequests, debuggerInfo: DebuggerInfo): void {
-      switch (request.method) {
-        case 'Expo(Network.receivedResponseBody)':
-          return this.networkResponseBodyHandler.onDeviceMessage(request);
-      }
+    onDeviceMessage(message: any, info: DebuggerInfo): boolean {
+      return this.handlers.some((handler) => handler.onDeviceMessage?.(message, info) ?? false);
     }
 
-    onDebuggerMessage(request: KnownDebuggerRequests, debuggerInfo: DebuggerInfo, socket: WS): any {
-      switch (request.method) {
-        case 'Network.getResponseBody':
-          return this.networkResponseBodyHandler.onDebuggerMessage(request);
-      }
+    onDebuggerMessage(message: any, info: DebuggerInfo): boolean {
+      return this.handlers.some((handler) => handler.onDebuggerMessage?.(message, info) ?? false);
     }
 
     /** Hook into the message life cycle to answer more complex CDP messages */
-    _processMessageFromDevice(message: DeviceRequest<any>, debuggerInfo: DebuggerInfo) {
-      this.onDeviceMessage(message, debuggerInfo);
-      return super._processMessageFromDevice(message, debuggerInfo);
+    _processMessageFromDevice(message: DeviceRequest<any>, info: DebuggerInfo) {
+      if (!this.onDeviceMessage(message, info)) {
+        super._processMessageFromDevice(message, info);
+      }
     }
 
     /** Hook into the message life cycle to answer more complex CDP messages */
     _interceptMessageFromDebugger(
-      request: DebuggerRequest<any>,
-      debuggerInfo: DebuggerInfo,
+      request: DebuggerRequest,
+      info: DebuggerInfo,
       socket: WS
-    ) {
-      const result = this.onDebuggerMessage(request, debuggerInfo, socket);
-      return result
-        ? { id: request.id, result }
-        : super._interceptMessageFromDebugger(request, debuggerInfo, socket);
+    ): boolean {
+      // Note, `socket` is the exact same as `info.socket`
+      const handled = this.onDebuggerMessage(request, info);
+      return handled ?? super._interceptMessageFromDebugger(request, info, socket);
     }
   };
 }

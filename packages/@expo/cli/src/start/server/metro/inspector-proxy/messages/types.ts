@@ -1,5 +1,4 @@
 import { DebuggerInfo } from 'metro-inspector-proxy';
-import type WS from 'ws';
 
 /**
  * The outline of a basic Chrome DevTools Protocol request, either from device or debugger.
@@ -15,16 +14,28 @@ export type CdpMessage<
   result: Response;
 };
 
-export type DeviceRequest<M extends CdpMessage> = Pick<M, 'method' | 'params'>;
+export type DeviceRequest<M extends CdpMessage = CdpMessage> = Pick<M, 'method' | 'params'>;
+export type DeviceResponse<M extends CdpMessage = CdpMessage> = Pick<M, 'result'> & {
+  /** The request identifier, used to link requests and responses */
+  id: number;
+};
 
-export type DebuggerRequest<M extends CdpMessage> = { id: number } & Pick<M, 'method' | 'params'>;
-export type DebuggerResponse<M extends CdpMessage> = M['result'];
+export type DebuggerRequest<M extends CdpMessage = CdpMessage> = Pick<M, 'method' | 'params'> & {
+  /** The request identifier, used to link requests and responses */
+  id: number;
+};
+export type DebuggerResponse<M extends CdpMessage = CdpMessage> = Pick<M, 'result'>;
 
-export interface InspectorHandler<Device extends CdpMessage, Debugger extends CdpMessage> {
-  onDeviceMessage(request: DeviceRequest<Device>, debuggerInfo: DebuggerInfo): void;
-  onDebuggerMessage(
-    request: DebuggerRequest<Debugger>,
-    debuggerInfo: DebuggerInfo,
-    socket: WS
-  ): void | DebuggerResponse<Debugger>;
+export interface InspectorHandler {
+  /**
+   * Intercept a message coming from the device, modify or respond to it through `this._sendMessageToDevice`.
+   * Return `true` if the message was handled, this will stop the message propagation.
+   */
+  onDeviceMessage?(message: DeviceRequest | DeviceResponse, info: DebuggerInfo): boolean;
+
+  /**
+   * Intercept a message coming from the debugger, modify or respond to it through `socket.send`.
+   * Return `true` if the message was handled, this will stop the message propagation.
+   */
+  onDebuggerMessage?(message: DebuggerRequest, info: DebuggerInfo): boolean;
 }

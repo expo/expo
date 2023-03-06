@@ -68,7 +68,7 @@ export class ExpoInspectorProxy<D extends MetroDevice> {
 
   private setServerAddress({ port, family, address }: AddressInfo) {
     if (family === 'IPv6') {
-      this.metroProxy._serverAddressWithPort = `${address ?? '[::1]'}:${port}`;
+      this.metroProxy._serverAddressWithPort = `[${address ?? '::1'}]:${port}`;
     } else {
       this.metroProxy._serverAddressWithPort = `${address ?? 'localhost'}:${port}`;
     }
