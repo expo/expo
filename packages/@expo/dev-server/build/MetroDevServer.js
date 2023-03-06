@@ -109,6 +109,8 @@ function getExpoMetroConfig(projectRoot, {
   }, _chalk().default.gray(`\u203A Unversioned ${_chalk().default.bold`@expo/metro-config@${unversionedVersion}`} is being used. Bundling apps may not work as expected, and is subject to breaking changes. Install ${_chalk().default.bold`expo`} or set the app.json sdkVersion to use a stable version of @expo/metro-config.`));
   return require('@expo/metro-config');
 }
+
+/** @deprecated */
 async function runMetroDevServerAsync(projectRoot, options) {
   const Metro = (0, _importMetroFromProject().importMetroFromProject)(projectRoot);
   const reporter = new (_LogReporter().default)(options.logger);
@@ -167,7 +169,7 @@ async function runMetroDevServerAsync(projectRoot, options) {
 
 let nextBuildID = 0;
 
-// TODO: deprecate options.target
+/** @deprecated */
 async function bundleAsync(projectRoot, expoConfig, options, bundles) {
   const metro = (0, _importMetroFromProject().importMetroFromProject)(projectRoot);
   const Server = (0, _importMetroFromProject().importMetroServerFromProject)(projectRoot);

@@ -102,6 +102,29 @@ public class EXDevLauncherNetworkLogger: NSObject {
       inspectorPackagerConn?.sendWrappedEventToAllPages(message)
     }
   }
+
+  /**
+   Emits our custom `Expo(Network.receivedResponseBody)` event
+   */
+  func emitNetworkDidReceiveBody(requestId: String, responseBody: Data, isText: Bool) {
+    let bodyString = isText
+      ? String(data: responseBody, encoding: .utf8)
+      : responseBody.base64EncodedString()
+    let params = [
+      "requestId": requestId,
+      "body": bodyString,
+      "base64Encoded": !isText
+    ] as [String: Any]
+    if let data = try? JSONSerialization.data(
+      withJSONObject: [
+        "method": "Expo(Network.receivedResponseBody)",
+        "params": params
+      ],
+      options: []
+    ), let message = String(data: data, encoding: .utf8) {
+      inspectorPackagerConn?.sendWrappedEventToAllPages(message)
+    }
+  }
 }
 
 extension URLSessionConfiguration {
@@ -175,6 +198,9 @@ public class EXDevLauncherNetworkLogger: NSObject {
   }
 
   func emitNetworkResponse(request: URLRequest, requestId: String, response: HTTPURLResponse) {
+  }
+
+  func emitNetworkDidReceiveBody(requestId: String, responseBody: Data, isText: Bool) {
   }
 }
 

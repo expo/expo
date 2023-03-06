@@ -562,6 +562,22 @@ abstract class ReactNativeActivity :
     }
   }
 
+  /**
+   * Emits events to `RCTNativeAppEventEmitter`
+   */
+  fun emitRCTNativeAppEvent(eventName: String, eventArgs: Map<String, String>?) {
+    try {
+      val nativeAppEventEmitter =
+        RNObject("com.facebook.react.modules.core.RCTNativeAppEventEmitter")
+      nativeAppEventEmitter.loadVersion(detachSdkVersion!!)
+      val emitter = reactInstanceManager.callRecursive("getCurrentReactContext")!!
+        .callRecursive("getJSModule", nativeAppEventEmitter.rnClass())
+      emitter?.call("emit", eventName, eventArgs)
+    } catch (e: Throwable) {
+      EXL.e(TAG, e)
+    }
+  }
+
   // for getting global permission
   override fun checkSelfPermission(permission: String): Int {
     return super.checkPermission(permission, Process.myPid(), Process.myUid())
