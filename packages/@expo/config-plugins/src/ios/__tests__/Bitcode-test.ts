@@ -1,13 +1,11 @@
 import * as fs from 'fs';
 import { vol } from 'memfs';
-import * as path from 'path';
 
 import { XcodeProject } from '../../Plugin.types';
+import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import * as WarningAggregator from '../../utils/warnings';
 import { setBitcodeWithConfig } from '../Bitcode';
 import { getPbxproj, isNotComment } from '../utils/Xcodeproj';
-
-const fsReal = jest.requireActual('fs') as typeof fs;
 
 jest.mock('fs');
 jest.mock('../../utils/warnings');
@@ -17,10 +15,8 @@ describe(setBitcodeWithConfig, () => {
   beforeEach(async () => {
     vol.fromJSON(
       {
-        'ios/testproject.xcodeproj/project.pbxproj': fsReal.readFileSync(
-          path.join(__dirname, 'fixtures/project.pbxproj'),
-          'utf-8'
-        ),
+        'ios/testproject.xcodeproj/project.pbxproj':
+          rnFixture['ios/HelloWorld.xcodeproj/project.pbxproj'],
         'ios/testproject/AppDelegate.m': '',
       },
       projectRoot

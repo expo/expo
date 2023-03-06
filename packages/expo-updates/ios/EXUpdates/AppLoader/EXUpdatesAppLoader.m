@@ -1,10 +1,15 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAppLoader+Private.h>
-#import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <ExpoModulesCore/EXUtilities.h>
+
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -128,7 +133,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
 
   dispatch_async(_database.databaseQueue, ^{
     NSError *existingUpdateError;
-    EXUpdatesUpdate *existingUpdate = [self->_database updateWithId:updateManifest.updateId config:self->_config error:&existingUpdateError];
+    EXUpdatesUpdate *existingUpdate = [self->_database updateWithId:updateManifest.updateId config:self->_config error:&existingUpdateError].update;
 
     // if something has gone wrong on the server and we have two updates with the same id
     // but different scope keys, we should try to launch something rather than show a cryptic
@@ -145,7 +150,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
       NSLog(@"EXUpdatesAppLoader: Loaded an update with the same ID but a different scopeKey than one we already have on disk. This is a server error. Overwriting the scopeKey and loading the existing update.");
     }
 
-    if (existingUpdate && existingUpdate.status == EXUpdatesUpdateStatusReady) {
+    if (existingUpdate && existingUpdate.status == EXUpdatesUpdateStatusStatusReady) {
       if (self->_successBlock) {
         dispatch_async(self->_completionQueue, ^{
           self->_successBlock(updateManifest);
@@ -179,7 +184,7 @@ static NSString * const EXUpdatesAppLoaderErrorDomain = @"EXUpdatesAppLoader";
       for (EXUpdatesAsset *asset in self->_updateManifest.assets) {
         // before downloading, check to see if we already have this asset in the database
         NSError *matchingAssetError;
-        EXUpdatesAsset *matchingDbEntry = [self->_database assetWithKey:asset.key error:&matchingAssetError];
+        EXUpdatesAsset *matchingDbEntry = [self->_database assetWithKey:asset.key error:&matchingAssetError].asset;
 
         if (matchingAssetError || !matchingDbEntry || !matchingDbEntry.filename) {
           [self downloadAsset:asset];

@@ -472,6 +472,10 @@ abstract class ReactNativeActivity :
     if (devSettings != null) {
       devSettings.setField("exponentActivityId", activityId)
       if (devSettings.call("isRemoteJSDebugEnabled") as Boolean) {
+        if (manifest?.jsEngine == "hermes") {
+          // Disable remote debugging when running on Hermes
+          devSettings.call("setRemoteJSDebugEnabled", false)
+        }
         waitForReactAndFinishLoading()
       }
     }
@@ -553,6 +557,22 @@ abstract class ReactNativeActivity :
           existingEmitter.call("emit", eventName, eventPayload)
         }
       }
+    } catch (e: Throwable) {
+      EXL.e(TAG, e)
+    }
+  }
+
+  /**
+   * Emits events to `RCTNativeAppEventEmitter`
+   */
+  fun emitRCTNativeAppEvent(eventName: String, eventArgs: Map<String, String>?) {
+    try {
+      val nativeAppEventEmitter =
+        RNObject("com.facebook.react.modules.core.RCTNativeAppEventEmitter")
+      nativeAppEventEmitter.loadVersion(detachSdkVersion!!)
+      val emitter = reactInstanceManager.callRecursive("getCurrentReactContext")!!
+        .callRecursive("getJSModule", nativeAppEventEmitter.rnClass())
+      emitter?.call("emit", eventName, eventArgs)
     } catch (e: Throwable) {
       EXL.e(TAG, e)
     }

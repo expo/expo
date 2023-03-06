@@ -1,10 +1,11 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesConfig.h>
-#import <EXUpdates/EXUpdatesDatabase.h>
-#import <EXUpdates/EXUpdatesSelectionPolicy.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
 #import <ExpoModulesCore/EXInternalModule.h>
+
+@class EXUpdatesConfig;
+@class EXUpdatesUpdate;
+@class EXUpdatesSelectionPolicy;
+@class EXUpdatesDatabase;
 
 NS_ASSUME_NONNULL_BEGIN
 

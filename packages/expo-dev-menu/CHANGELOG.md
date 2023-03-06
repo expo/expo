@@ -6,9 +6,21 @@
 
 ### 🎉 New features
 
+- Added experimental react-devtools integration. ([#21462](https://github.com/expo/expo/pull/21462) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
+- Fixed reload crash when expo-dev-menu is turned off. ([#21279](https://github.com/expo/expo/pull/21279) by [@jayshah123](https://github.com/jayshah123))
+
 ### 💡 Others
+
+- Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
+
+## 2.1.2 — 2023-02-17
+
+### 🐛 Bug fixes
+
+- Fixed `'jsc/JSCRuntime.h' file not found` when using JSC on iOS. ([#21246](https://github.com/expo/expo/pull/21246) by [@lukmccall](https://github.com/lukmccall))
 
 ## 2.1.1 — 2023-02-09
 

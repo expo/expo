@@ -1,6 +1,6 @@
 {
   "name": "@expo/metro-config",
-  "version": "0.6.0",
+  "version": "0.7.0",
   "description": "A Metro config for running React Native projects with the Metro bundler",
   "main": "build/ExpoMetroConfig.js",
   "scripts": {
@@ -18,10 +18,7 @@
   },
   "keywords": [
     "expo",
-    "expo-cli",
-    "react",
-    "metro",
-    "metro-config"
+    "metro"
   ],
   "license": "MIT",
   "bugs": {

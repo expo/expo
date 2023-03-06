@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0ExpoImageManipulator",
-  "version": "11.1.0",
+  "version": "11.1.1",
   "summary": "Provides functions that let you manipulation images on the local file system, eg: resize, crop.",
   "description": "Provides functions that let you manipulation images on the local file system, eg: resize, crop.",
   "license": "MIT",

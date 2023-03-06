@@ -41,6 +41,14 @@ public final class ImageView: ExpoView {
 
   var cachePolicy: ImageCachePolicy = .disk
 
+  var recyclingKey: String? {
+    didSet {
+      if recyclingKey != oldValue {
+        sdImageView.image = nil
+      }
+    }
+  }
+
   // MARK: - Events
 
   let onLoadStart = EventDispatcher()
@@ -151,6 +159,11 @@ public final class ImageView: ExpoView {
   // MARK: - Loading
 
   private func imageLoadProgress(_ receivedSize: Int, _ expectedSize: Int, _ imageUrl: URL?) {
+    // Don't send the event when the expected size is unknown (it's usually -1 or 0 when called for the first time).
+    if expectedSize <= 0 {
+      return
+    }
+
     // Photos library requester emits the progress as a double `0...1` that we map to `0...100` int in `PhotosLoader`.
     // When that loader is used, we don't have any information about the sizes in bytes, so we only send the `progress` param.
     let isPhotoLibraryAsset = isPhotoLibraryAssetUrl(imageUrl)

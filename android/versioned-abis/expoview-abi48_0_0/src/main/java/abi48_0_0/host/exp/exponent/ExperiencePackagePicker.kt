@@ -20,7 +20,6 @@ import abi48_0_0.expo.modules.crypto.CryptoModule
 import abi48_0_0.expo.modules.device.DeviceModule
 import abi48_0_0.expo.modules.documentpicker.DocumentPickerModule
 import abi48_0_0.expo.modules.easclient.EASClientModule
-import abi48_0_0.expo.modules.errorrecovery.ErrorRecoveryPackage
 import abi48_0_0.expo.modules.facedetector.FaceDetectorPackage
 import abi48_0_0.expo.modules.filesystem.FileSystemPackage
 import abi48_0_0.expo.modules.font.FontLoaderPackage
@@ -76,7 +75,6 @@ object ExperiencePackagePicker : ModulesProvider {
     CalendarPackage(),
     ConstantsPackage(),
     ContactsPackage(),
-    ErrorRecoveryPackage(),
     FaceDetectorPackage(),
     FileSystemPackage(),
     FontLoaderPackage(),

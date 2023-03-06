@@ -89,7 +89,7 @@ it(
 
     // Added expected package
     const pkgDependencies = pkg.dependencies as Record<string, string>;
-    expect(pkgDependencies['expo-sms']).toBe('~10.2.0');
+    expect(pkgDependencies['expo-sms']).toBe('~11.0.0');
     expect(pkg.devDependencies).toEqual({
       '@babel/core': '^7.12.9',
     });
@@ -125,15 +125,13 @@ it(
     } catch (e) {
       const error = e as ExecaError;
       expect(error.stderr).toMatch(/expo-auth-session@1\.0\.0 - expected version: ~3\.\d\.\d/);
-      expect(error.stderr).toMatch(/expo-sms@1\.0\.0 - expected version: ~10\.\d\.\d/);
-      expect(error.stderr).toMatch(
-        /npx expo install expo-auth-session@~3\.\d\.\d expo-sms@~10\.\d\.\d/
-      );
+      expect(error.stderr).toMatch(/expo-sms@1\.0\.0 - expected version: ~11\.\d\.\d/);
+      expect(error.stderr).toMatch(/npx expo install --fix/);
     }
 
     await expect(
       execa('node', [bin, 'install', 'expo-sms', '--check'], { cwd: projectRoot })
-    ).rejects.toThrowError(/expo-sms@1\.0\.0 - expected version: ~10\.\d\.\d/);
+    ).rejects.toThrowError(/expo-sms@1\.0\.0 - expected version: ~11\.\d\.\d/);
 
     // Check doesn't fix packages
     pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
@@ -162,7 +160,7 @@ it(
     let pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
     // Added expected package
     let pkgDependencies = pkg.dependencies as Record<string, string>;
-    expect(pkgDependencies['expo-sms']).toBe('~10.2.0');
+    expect(pkgDependencies['expo-sms']).toBe('~11.0.0');
 
     // Didn't fix expo-auth-session since we didn't pass it in
     expect(pkgDependencies['expo-auth-session']).toBe('1.0.0');
@@ -175,7 +173,7 @@ it(
 
     // Didn't fix expo-auth-session since we didn't pass it in
     pkgDependencies = pkg.dependencies as Record<string, string>;
-    expect(pkgDependencies['expo-auth-session']).toBe('~3.6.1');
+    expect(pkgDependencies['expo-auth-session']).toBe('~3.8.0');
   },
   // Could take 45s depending on how fast npm installs
   60 * 1000

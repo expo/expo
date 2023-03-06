@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0ExpoTrackingTransparency",
-  "version": "3.0.2",
+  "version": "3.0.3",
   "summary": "An Expo library for requesting permission to track the users on devices using iOS 14.5 and higher.",
   "description": "An Expo library for requesting permission to track the users on devices using iOS 14.5 and higher.",
   "license": "MIT",

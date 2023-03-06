@@ -1,38 +1,4 @@
 require 'json'
-require_relative './scripts/reanimated_utils'
-
-# reanimated 2
-
-config = find_config()
-reactVersion = '0.0.0'
-
-begin
-  reactVersion = `node --print "require('react-native/package.json').version"`
-rescue
-  reactVersion = '0.66.0'
-end
-
-if ENV["REACT_NATIVE_OVERRIDE_VERSION"]
-  reactVersion = ENV["REACT_NATIVE_OVERRIDE_VERSION"]
-end
-
-splitedReactVersion = reactVersion.split('.')
-rnVersion = splitedReactVersion[1]
-rnPatchVersion = splitedReactVersion[2]
-
-folly_prefix = ""
-if rnVersion.to_i >= 64
-  folly_prefix = "RCT-"
-end
-
-folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -DRNVERSION=' + rnVersion + ' -DRNPATCHVERSION=' + rnPatchVersion
-folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
-folly_version = '2021.04.26.00'
-boost_compiler_flags = '-Wno-documentation'
-
-
-require_relative 'TargetValidator'
-# end reanimated 2
 
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
@@ -81,58 +47,6 @@ Pod::Spec.new do |s|
     end
   end
 
-  s.subspec 'Reanimated' do |reanimated|
-    reanimated.compiler_flags = folly_compiler_flags + ' ' + boost_compiler_flags + ' -w -Xanalyzer -analyzer-disable-all-checks -x objective-c++'
-    reanimated.private_header_files = 'vendored/react-native-reanimated/**/*.h'
-    reanimated.source_files = 'vendored/react-native-reanimated/**/*.{h,m,mm,cpp}'
-    reanimated.preserve_paths = 'vendored/react-native-reanimated/Common/cpp/hidden_headers/**'
-    reanimated.pod_target_xcconfig = {
-      "USE_HEADERMAP" => "YES",
-      "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/#{folly_prefix}Folly\" \"$(PODS_ROOT)/boost\"  \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Headers/Private/React-Core\" ",
-      'CLANG_CXX_LIBRARY' => 'libc++',
-      "CLANG_CXX_LANGUAGE_STANDARD" => "c++17"
-    }
-    reanimated.xcconfig = {
-      "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/glog\" \"$(PODS_ROOT)/#{folly_prefix}Folly\" \"${PODS_ROOT}/Headers/Public/React-hermes\" \"${PODS_ROOT}/Headers/Public/hermes-engine\" \"$(PODS_ROOT)/Headers/Private/#{config[:react_native_common_dir]}\"",
-                                 "OTHER_CFLAGS" => "$(inherited)" + " " + folly_flags
-    }
-
-    reanimated.dependency 'FBLazyVector'
-    reanimated.dependency 'FBReactNativeSpec'
-    reanimated.dependency 'RCTRequired'
-    reanimated.dependency 'RCTTypeSafety'
-    reanimated.dependency 'React-Core'
-    reanimated.dependency 'React-CoreModules'
-    reanimated.dependency 'React-Core/DevSupport'
-    reanimated.dependency 'React-RCTActionSheet'
-    reanimated.dependency 'React-RCTNetwork'
-    reanimated.dependency 'React-RCTAnimation'
-    reanimated.dependency 'React-RCTLinking'
-    reanimated.dependency 'React-RCTBlob'
-    reanimated.dependency 'React-RCTSettings'
-    reanimated.dependency 'React-RCTText'
-    reanimated.dependency 'React-RCTVibration'
-    reanimated.dependency 'React-RCTImage'
-    reanimated.dependency 'React-Core/RCTWebSocket'
-    reanimated.dependency 'React-cxxreact'
-    reanimated.dependency 'React-jsi'
-    reanimated.dependency 'React-jsiexecutor'
-    reanimated.dependency 'React-jsinspector'
-    reanimated.dependency 'ReactCommon/turbomodule/core'
-    reanimated.dependency 'Yoga'
-    reanimated.dependency 'DoubleConversion'
-    reanimated.dependency 'glog'
-
-    if reactVersion.match(/^0.62/)
-      reanimated.dependency 'ReactCommon/callinvoker'
-    else
-      reanimated.dependency 'React-callinvoker'
-    end
-
-    reanimated.dependency "#{folly_prefix}Folly"
-  end
-
-
   s.subspec 'SafeAreaView' do |safearea|
     if File.exist?("vendored/react-native-safe-area-context/dev-menu-react-native-safe-area-context.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
       safearea.source_files = "vendored/react-native-safe-area-context/**/*.{h}"
@@ -148,7 +62,6 @@ Pod::Spec.new do |s|
 
   s.subspec 'Vendored' do |vendored|
     vendored.dependency "expo-dev-menu/GestureHandler"
-    vendored.dependency "expo-dev-menu/Reanimated"
     vendored.dependency "expo-dev-menu/SafeAreaView"
   end
 

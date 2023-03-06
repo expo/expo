@@ -1,8 +1,8 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesConfig.h>
-#import <EXUpdates/EXUpdatesDatabase.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
+@class EXUpdatesConfig;
+@class EXUpdatesUpdate;
+@class EXUpdatesDatabase;
 
 NS_ASSUME_NONNULL_BEGIN
 

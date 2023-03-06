@@ -47,6 +47,7 @@
 #import "Expo_Go-Swift.h"
 #endif // defined(EX_DETACHED)
 
+@import EXManifests;
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
@@ -272,7 +273,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 - (bool)_readSupportsRTLFromManifest:(EXManifestsManifest *)manifest
 {
-  return [[[[manifest expoClientConfigRootObject] valueForKey:@"extra"] valueForKey: @"supportsRTL"] boolValue];
+  return manifest.supportsRTL;
 }
 
 - (void)appStateDidBecomeActive

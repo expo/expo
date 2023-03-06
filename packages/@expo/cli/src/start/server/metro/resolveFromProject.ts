@@ -30,6 +30,21 @@ function importFromProject(projectRoot: string, moduleId: string) {
 export function importMetroFromProject(projectRoot: string): typeof import('metro') {
   return importFromProject(projectRoot, 'metro');
 }
+export function importMetroInspectorProxyFromProject(
+  projectRoot: string
+): typeof import('metro-inspector-proxy') {
+  return importFromProject(projectRoot, 'metro-inspector-proxy');
+}
+export function importMetroCreateWebsocketServerFromProject(
+  projectRoot: string
+): typeof import('metro/src/lib/createWebsocketServer').createWebsocketServer {
+  return importFromProject(projectRoot, 'metro/src/lib/createWebsocketServer');
+}
+export function importMetroHmrServerFromProject(
+  projectRoot: string
+): typeof import('metro/src/HmrServer').MetroHmrServer {
+  return importFromProject(projectRoot, 'metro/src/HmrServer');
+}
 
 /** Import `@expo/metro-config` from the project. */
 export function importExpoMetroConfigFromProject(
@@ -56,6 +71,15 @@ export function importCliSaveAssetsFromProject(
     projectRoot,
     '@react-native-community/cli-plugin-metro/build/commands/bundle/saveAssets'
   ).default;
+}
+
+export function importCliBuildBundleWithConfigFromProject(
+  projectRoot: string
+): typeof import('@react-native-community/cli-plugin-metro/build/commands/bundle/buildBundle').buildBundleWithConfig {
+  return importFromProject(
+    projectRoot,
+    '@react-native-community/cli-plugin-metro/build/commands/bundle/buildBundle'
+  ).buildBundleWithConfig;
 }
 
 /** Resolve the installed Metro version from project */

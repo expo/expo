@@ -7,6 +7,8 @@
 
 #import <React/RCTUtils.h>
 
+@import EXManifests;
+
 NSString *kEXKernelBridgeDidForegroundNotification = @"EXKernelBridgeDidForegroundNotification";
 NSString *kEXKernelBridgeDidBackgroundNotification = @"EXKernelBridgeDidBackgroundNotification";
 

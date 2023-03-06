@@ -1,18 +1,18 @@
 // Copyright 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesConfig.h>
-#import <EXUpdates/EXUpdatesDatabase.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
 #import <EXUpdates/EXUpdatesModule.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesService.h>
-#import <EXUpdates/EXUpdatesUpdate.h>
+#import <EXUpdates/EXUpdatesUtils.h>
 
 #if __has_include(<EXUpdates/EXUpdates-Swift.h>)
 #import <EXUpdates/EXUpdates-Swift.h>
 #else
 #import "EXUpdates-Swift.h"
 #endif
+
+@import EXManifests;
 
 @interface EXUpdatesModule ()
 
@@ -81,7 +81,8 @@ EX_EXPORT_MODULE(ExpoUpdates);
     @"releaseChannel": releaseChannel,
     @"runtimeVersion": runtimeVersion,
     @"channel": channel,
-    @"commitTime": @(commitTime)
+    @"commitTime": @(commitTime),
+    @"nativeDebug": @([EXUpdatesUtils isNativeDebuggingEnabled])
   };
 }
 

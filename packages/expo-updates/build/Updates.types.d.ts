@@ -26,6 +26,12 @@ export type ClassicManifest = typeof Constants.manifest;
  * @hidden
  */
 export type Manifest = ClassicManifest | typeof Constants.manifest2;
+type UpdateCheckResultRollBackToEmbedded = {
+    /**
+     * Signifies that a roll back update is available.
+     */
+    isRollBackToEmbedded: true;
+};
 /**
  * The successful result of checking for a new update.
  */
@@ -55,11 +61,11 @@ type UpdateCheckResultFailure = {
 /**
  * The result of checking for a new update.
  */
-export type UpdateCheckResult = UpdateCheckResultSuccess | UpdateCheckResultFailure;
+export type UpdateCheckResult = UpdateCheckResultRollBackToEmbedded | UpdateCheckResultSuccess | UpdateCheckResultFailure;
 /**
  * The successful result of fetching a new update.
  */
-type UpdateFetchResultSuccess = {
+export type UpdateFetchResultSuccess = {
     /**
      * Signifies that the fetched bundle is new (that is, a different version than what's currently
      * running).
@@ -73,7 +79,7 @@ type UpdateFetchResultSuccess = {
 /**
  * The failed result of fetching a new update.
  */
-type UpdateFetchResultFailure = {
+export type UpdateFetchResultFailure = {
     /**
      * Signifies that the fetched bundle is the same as version which is currently running.
      */

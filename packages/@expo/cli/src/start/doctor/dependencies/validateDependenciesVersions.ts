@@ -64,15 +64,9 @@ export function logIncorrectDependencies(incorrectDeps: IncorrectDependency[]) {
   Log.warn(chalk`Some dependencies are incompatible with the installed {bold expo} version:`);
   incorrectDeps.forEach((dep) => logInvalidDependency(dep));
 
-  const requiredVersions = incorrectDeps.map(
-    ({ packageName, expectedVersionOrRange }) => `${packageName}@${expectedVersionOrRange}`
-  );
-
   Log.warn(
     'Your project may not work correctly until you install the correct versions of the packages.\n' +
-      chalk`Install individual packages by running {inverse npx expo install ${requiredVersions.join(
-        ' '
-      )}}`
+      chalk`Fix with: {bold npx expo install --fix}`
   );
   return false;
 }

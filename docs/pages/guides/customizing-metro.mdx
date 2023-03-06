@@ -20,14 +20,6 @@ Run the following command to generate the template file:
 
 <Terminal cmd={['$ npx expo customize metro.config.js']} />
 
-<Collapsible summary="Using SDK 45 or below?">
-
-For SDK 45 or below, run the following command:
-
-<Terminal cmd={['$ npx expo customize:web']} />
-
-</Collapsible>
-
 The **metro.config.js** file looks as below:
 
 ```js metro.config.js
@@ -78,7 +70,9 @@ You can use [`esbuild`](https://esbuild.github.io/) to minify exponentially fast
 
 ### Terser
 
-You can use [`terser`](https://github.com/terser/terser) instead of `uglify-es` to mangle and compress your project.
+> [`terser`](https://github.com/terser/terser) is the default minifier in SDK 48 and above: ([Metro@0.73.0 changelog](https://github.com/facebook/metro/releases/tag/v0.73.0)).
+
+For projects SDK 47 and below, you can use [`terser`](https://github.com/terser/terser) instead of `uglify-es` to mangle and compress your project.
 
 <Step label="1">
 
@@ -109,22 +103,38 @@ module.exports = config;
 
 ### Uglify
 
-By default, Metro uses [`uglify-es`](https://github.com/mishoo/UglifyJS) to minify and compress your code. You can customize `uglify` by passing [options](https://github.com/mishoo/UglifyJS#compress-options) to `transformer.minifierConfig`.
+> [`uglify-es`](https://github.com/mishoo/UglifyJS) is the default minifier in SDK 47 and below, this used the [following options](https://github.com/facebook/metro/blob/b629f44239bbb3414491755185cf19b5834b4b7a/packages/metro-config/src/defaults/index.js#L94-L111).
 
-For example, if you want to remove all `console.log()` methods from your app in production, you add the following to the **metro.config.js** file:
+For projects SDK 48 and above, you can use [`uglify-es`](https://github.com/mishoo/UglifyJS) like so:
+
+<Step label="1">
+
+Install Uglify in your project by running the following command:
+
+<Terminal cmd={['$ yarn add --dev metro-minify-uglify']} />
+
+> Ensure the version of `metro-minify-uglify` matches the version of `metro` in your project.
+
+</Step>
+
+<Step label="2">
+
+Set Uglify as a minifier with `transformer.minifierPath`, and pass in [options](https://github.com/mishoo/UglifyJS#compress-options) to `transformer.minifierConfig`.
 
 ```js metro.config.js
 const { getDefaultConfig } = require('expo/metro-config');
 
 const config = getDefaultConfig(__dirname);
 
-// Remove all console logs in production...
-config.transformer.minifierConfig.compress.drop_console = true;
+config.transformer.minifierPath = 'metro-minify-uglify';
+config.transformer.minifierConfig = {
+  // Options: https://github.com/mishoo/UglifyJS#compress-options
+};
 
 module.exports = config;
 ```
 
-See the list of all [default Uglify options](https://github.com/facebook/metro/blob/b629f44239bbb3414491755185cf19b5834b4b7a/packages/metro-config/src/defaults/index.js#L94-L111) applied in Metro bundler.
+</Step>
 
 ## Source map exploration
 
@@ -138,7 +148,7 @@ This will show an interactive breakdown of what makes up your JavaScript bundle.
 
 ## Web Support
 
-> **info** Metro web support is an experimental feature and only works with the [local Expo CLI](/workflow/expo-cli) and Expo SDK 46 or newer.
+> **info** Metro web support is under development and only works with the [local Expo CLI](/workflow/expo-cli) and Expo SDK 46 or newer. It's recommended you use it with [Expo Router](https://expo.github.io/router/docs).
 
 By default, Expo CLI uses webpack as the bundler on web platforms because Metro historically did not support web. Using different bundlers across platforms leads to some critical divergence in how an app works across platforms. Features such as Fast Refresh which works on native don't work on the web, and important production functionality such as assets are treated differently across bundlers.
 
@@ -152,19 +162,20 @@ Learn once, bundle everywhere!
 
 Universal Expo Metro is designed to be fully universal, meaning any web bundling features should also work on native too. Because of this, we make some breaking changes between the two bundler implementations, carefully check the difference if you're moving from webpack to Metro.
 
-| Feature          | Metro                            | webpack                |
-| ---------------- | -------------------------------- | ---------------------- |
-| Start command    | `npx expo start`                 | `npx expo start`       |
-| Bundle command   | `npx expo export`                | `npx expo export:web`  |
-| Output folder    | **dist**                         | **web-build**          |
-| Static folder    | **public**                       | **web**                |
-| Config file      | **metro.config.js**              | **webpack.config.js**  |
-| Default config   | `@expo/metro-config`             | `@expo/webpack-config` |
-| Fast Refresh     | <PendingIcon /> (coming soon)    | <NoIcon />             |
-| Tree Shaking     | <NoIcon />                       | <YesIcon />            |
-| CSS Handling     | <NoIcon />                       | <YesIcon />            |
-| Asset Manifests  | <NoIcon />                       | <YesIcon />            |
-| Bundle Splitting | <PendingIcon /> (pending native) | <YesIcon />            |
+| Feature          | Metro                               | webpack                |
+| ---------------- | ----------------------------------- | ---------------------- |
+| Start command    | `npx expo start`                    | `npx expo start`       |
+| Bundle command   | `npx expo export`                   | `npx expo export:web`  |
+| Output folder    | **dist**                            | **web-build**          |
+| Static folder    | **public**                          | **web**                |
+| Config file      | **metro.config.js**                 | **webpack.config.js**  |
+| Default config   | `@expo/metro-config`                | `@expo/webpack-config` |
+| Fast Refresh     | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
+| Error Overlay    | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
+| Tree Shaking     | <NoIcon />                          | <YesIcon />            |
+| CSS Handling     | <NoIcon />                          | <YesIcon />            |
+| Asset Manifests  | <NoIcon />                          | <YesIcon />            |
+| Bundle Splitting | <PendingIcon /> (pending native)    | <YesIcon />            |
 
 Note that aliases, resolution, and other bundler features are now universal across platforms as well!
 
@@ -227,3 +238,9 @@ When exporting with `npx expo export`, the contents of the **public** directory 
 You can overwrite the default **index.html** in Metro web by creating a **public/index.html** file in your project.
 
 In the future, this will work universally across platforms with EAS Update hosting. Currently, the feature is web-only based on the static host used for the native app, for example, the legacy Expo service updates do not support this feature.
+
+## TypeScript
+
+> Experimental feature in SDK 49. Enable with the environment variable `EXPO_USE_PATH_ALIASES=1`.
+
+Expo's Metro config has experimental support for the `compilerOptions.paths` and `compilerOptions.baseUrl` fields in the project's `tsconfig.json` (or `jsconfig.json`) file. This enables absolute imports and aliases in the project. Learn more in the [TypeScript guide](/guides/typescript).

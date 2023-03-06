@@ -189,6 +189,58 @@ class FileDownloaderManifestParsingTest {
   }
 
   @Test
+  fun testManifestParsing_MultipartBodyOnlyDirective_v0CompatibilityMode() {
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    val boundary = "blah"
+    val contentType = "multipart/mixed; boundary=$boundary"
+
+    val directive = CertificateFixtures.testDirectiveNoUpdateAvailable
+
+    val multipartBody = MultipartBody.Builder(boundary)
+      .setType(MultipartBody.MIXED)
+      .addPart(
+        mapOf("Content-Disposition" to "form-data; name=\"directive\"; filename=\"hello3\"").toHeaders(),
+        RequestBody.create("application/json; charset=utf-8".toMediaTypeOrNull(), directive)
+      )
+      .build()
+
+    val contentBuffer = Buffer().also { multipartBody.writeTo(it) }
+
+    val response = mockk<Response>().apply {
+      every { header("content-type") } returns contentType
+      every { headers } returns mapOf("content-type" to contentType).toHeaders()
+      every { body } returns ResponseBody.create(MultipartBody.MIXED, contentBuffer.readByteArray())
+    }
+
+    val configuration = UpdatesConfiguration(
+      null,
+      mapOf(
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
+        UpdatesConfiguration.UPDATES_CONFIGURATION_ENABLE_EXPO_UPDATES_PROTOCOL_V0_COMPATIBILITY_MODE to true,
+      )
+    )
+
+    var errorOccurred: Exception? = null
+    var resultUpdateManifest: UpdateManifest? = null
+
+    FileDownloader(context).parseRemoteUpdateResponse(
+      response, configuration,
+      object : FileDownloader.RemoteUpdateDownloadCallback {
+        override fun onFailure(message: String, e: Exception) {
+          errorOccurred = e
+        }
+
+        override fun onSuccess(updateResponse: UpdateResponse) {
+          resultUpdateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest
+        }
+      }
+    )
+
+    Assert.assertEquals("Multipart response missing manifest part. Manifest is required in version 0 of the expo-updates protocol. This may be due to the update being a rollback or other directive.", errorOccurred!!.message)
+    Assert.assertNull(resultUpdateManifest)
+  }
+
+  @Test
   fun testManifestParsing_MultipartBodyNoRelevantParts() {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     val boundary = "blah"

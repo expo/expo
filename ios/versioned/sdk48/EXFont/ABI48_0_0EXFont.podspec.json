@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0EXFont",
-  "version": "11.1.0",
+  "version": "11.1.1",
   "summary": "Load fonts at runtime and use them in React Native components.",
   "description": "Load fonts at runtime and use them in React Native components.",
   "license": "MIT",

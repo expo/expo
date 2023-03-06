@@ -3,8 +3,8 @@ package abi48_0_0.host.exp.exponent.modules.api.components.reactnativestripesdk.
 import android.content.Context
 import android.view.View
 import android.view.inputmethod.InputMethodManager
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import abi48_0_0.com.facebook.react.bridge.ReactApplicationContext
 import abi48_0_0.com.facebook.react.bridge.ReadableMap
 
@@ -25,7 +25,7 @@ fun View.hideSoftKeyboard() {
 }
 
 fun Fragment.removeFragment(context: ReactApplicationContext) {
-  (context.currentActivity as? AppCompatActivity)?.supportFragmentManager?.let {
+  (context.currentActivity as? FragmentActivity)?.supportFragmentManager?.let {
     if (it.findFragmentByTag(this.tag) != null) {
       it.beginTransaction().remove(this).commitAllowingStateLoss()
     }

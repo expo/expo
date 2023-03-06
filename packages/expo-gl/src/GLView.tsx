@@ -16,7 +16,7 @@ import {
   SnapshotOptions,
   GLViewProps,
 } from './GLView.types';
-import { createWorkletContextProvider } from './GLWorkletContextProvider';
+import { createWorkletContextManager } from './GLWorkletContextManager';
 
 // @docsMissing
 export type WebGLObject = {
@@ -28,6 +28,7 @@ declare let global: any;
 const { ExponentGLObjectManager, ExponentGLViewManager } = NativeModulesProxy;
 
 const NativeView = requireNativeViewManager('ExponentGLView');
+const workletContextManager = createWorkletContextManager();
 
 // @needsAudit
 /**
@@ -61,6 +62,7 @@ export class GLView extends React.Component<GLViewProps> {
    */
   static async destroyContextAsync(exgl?: ExpoWebGLRenderingContext | number): Promise<boolean> {
     const exglCtxId = getContextId(exgl);
+    unregisterGLContext(exglCtxId);
     return ExponentGLObjectManager.destroyContextAsync(exglCtxId);
   }
 
@@ -79,7 +81,7 @@ export class GLView extends React.Component<GLViewProps> {
   }
 
   static getWorkletContext: (contextId: number) => ExpoWebGLRenderingContext | undefined =
-    createWorkletContextProvider();
+    workletContextManager.getContext;
 
   nativeRef: ComponentOrHandle = null;
   exglCtxId?: number;
@@ -126,6 +128,12 @@ export class GLView extends React.Component<GLViewProps> {
       this.props.onContextCreate(gl);
     }
   };
+
+  componentWillUnmount(): void {
+    if (this.exglCtxId) {
+      unregisterGLContext(this.exglCtxId);
+    }
+  }
 
   // @docsMissing
   async startARSessionAsync(): Promise<any> {
@@ -178,6 +186,13 @@ export class GLView extends React.Component<GLViewProps> {
 }
 
 GLView.NativeView = NativeView;
+
+function unregisterGLContext(exglCtxId: number) {
+  if (global.__EXGLContexts) {
+    delete global.__EXGLContexts[String(exglCtxId)];
+  }
+  workletContextManager.unregister?.(exglCtxId);
+}
 
 // Get the GL interface from an EXGLContextId
 const getGl = (exglCtxId: number): ExpoWebGLRenderingContext => {

@@ -1,17 +1,16 @@
 import { css } from '@emotion/react';
-import { theme, breakpoints, HamburgerIcon, iconSize, spacing } from '@expo/styleguide';
-import React from 'react';
+import { theme, breakpoints, HamburgerIcon, iconSize, spacing, GithubIcon } from '@expo/styleguide';
+import { ReactNode } from 'react';
 
-import { Search } from '../Search';
 import { Logo } from './Logo';
 import { ThemeSelector } from './ThemeSelector';
 
 import { Button } from '~/ui/components/Button';
 import { SidebarFooter, SidebarHead } from '~/ui/components/Sidebar';
-import { BOLD } from '~/ui/components/Text';
+import { A, BOLD } from '~/ui/components/Text';
 
 type HeaderProps = {
-  sidebar: React.ReactNode;
+  sidebar: ReactNode;
   sidebarActiveGroup: string;
   isMobileMenuVisible: boolean;
   setMobileMenuVisible: (isMobileMenuVisible: boolean) => void;
@@ -23,14 +22,20 @@ export const Header = ({
   isMobileMenuVisible,
   setMobileMenuVisible,
 }: HeaderProps) => {
+  const isArchive = sidebarActiveGroup === 'archive';
   return (
     <>
       <nav css={[containerStyle, isMobileMenuVisible]}>
         <div css={[columnStyle, leftColumnStyle]}>
-          <Logo />
+          <Logo subgroup={isArchive ? 'Archive' : undefined} />
         </div>
         <div css={[columnStyle, rightColumnStyle]}>
-          <Search />
+          <A isStyled css={headerLink} href="https://blog.expo.dev">
+            Blog
+          </A>
+          <A href="https://github.com/expo/expo" ariaLabel="GitHub">
+            <GithubIcon title="" />
+          </A>
           <div css={hideOnMobileStyle}>
             <ThemeSelector />
           </div>
@@ -85,7 +90,21 @@ const containerStyle = css`
 const columnStyle = css`
   flex-shrink: 0;
   display: flex;
+  gap: ${spacing[8]}px;
+  align-items: center;
   background-color: transparent;
+
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
+    gap: ${spacing[4]}px;
+  }
+`;
+
+const headerLink = css`
+  color: ${theme.text.secondary};
+
+  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
+    margin-right: ${spacing[2]}px;
+  }
 `;
 
 const leftColumnStyle = css`
@@ -123,7 +142,6 @@ const hideOnMobileStyle = css`
 
 const mobileButtonStyle = css`
   padding: 0 ${spacing[3]}px;
-  margin-left: ${spacing[2]}px;
 
   &:hover {
     background-color: ${theme.background.element};

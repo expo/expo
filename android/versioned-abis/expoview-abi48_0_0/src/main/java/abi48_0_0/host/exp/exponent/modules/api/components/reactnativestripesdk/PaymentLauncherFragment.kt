@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import abi48_0_0.com.facebook.react.bridge.Promise
 import abi48_0_0.com.facebook.react.bridge.ReactApplicationContext
 import abi48_0_0.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.*
@@ -113,7 +113,7 @@ class PaymentLauncherFragment(
     }
 
     private fun addFragment(fragment: PaymentLauncherFragment, context: ReactApplicationContext, promise: Promise) {
-      (context.currentActivity as? AppCompatActivity)?.let {
+      (context.currentActivity as? FragmentActivity)?.let {
         try {
           it.supportFragmentManager.beginTransaction()
             .add(fragment, TAG)
@@ -278,7 +278,7 @@ class PaymentLauncherFragment(
       StripeIntent.NextActionType.WeChatPayRedirect,
       StripeIntent.NextActionType.UpiAwaitNotification,
       StripeIntent.NextActionType.CashAppRedirect,
-      null -> false
+      null, -> false
     }
   }
 }

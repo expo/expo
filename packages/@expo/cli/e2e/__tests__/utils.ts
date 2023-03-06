@@ -187,7 +187,7 @@ export async function setupTestProjectAsync(name: string, fixtureName: string): 
 
   // Many of the factors in this test are based on the expected SDK version that we're testing against.
   const { exp } = getConfig(projectRoot, { skipPlugins: true });
-  expect(exp.sdkVersion).toBe('45.0.0');
+  expect(exp.sdkVersion).toBe('47.0.0');
   return projectRoot;
 }
 

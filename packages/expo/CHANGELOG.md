@@ -4,11 +4,23 @@
 
 ### 🛠 Breaking changes
 
+- drop `EXPO_USE_LOCAL_CLI` in favor of using `expo` for the local CLI and `expo-cli` for the global CLI. ([#21388](https://github.com/expo/expo/pull/21388) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
+
+- Added internal `export:embed` command for use in Xcode and Android Studio builds. ([#21396](https://github.com/expo/expo/pull/21396) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 48.0.1 — 2023-02-15
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.0 — 2023-02-14
+
+_This version does not introduce any user-facing changes._
 
 ## 48.0.0-beta.2 — 2023-02-09
 

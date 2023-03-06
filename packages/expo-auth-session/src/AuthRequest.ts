@@ -23,7 +23,7 @@ type AuthDiscoveryDocument = Pick<DiscoveryDocument, 'authorizationEndpoint'>;
 
 // @needsAudit @docsMissing
 /**
- * Used to manage an authorization request according to the OAuth spec: [Section 4.1.1][https://tools.ietf.org/html/rfc6749#section-4.1.1].
+ * Used to manage an authorization request according to the OAuth spec: [Section 4.1.1](https://tools.ietf.org/html/rfc6749#section-4.1.1).
  * You can use this class directly for more info around the authorization.
  *
  * **Common use-cases:**
@@ -163,6 +163,9 @@ export class AuthRequest implements Omit<AuthRequestConfig, 'state'> {
     let startUrl: string = url!;
     let returnUrl: string = this.redirectUri;
     if (options.useProxy) {
+      console.warn(
+        'The useProxy option is deprecated and will be removed in a future release, for more information check https://expo.fyi/auth-proxy-migration.'
+      );
       returnUrl = sessionUrlProvider.getDefaultReturnUrl(proxyOptions?.path, proxyOptions);
       startUrl = sessionUrlProvider.getStartUrl(url, returnUrl, options.projectNameForProxy);
     }

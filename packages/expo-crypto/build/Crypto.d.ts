@@ -62,7 +62,7 @@ export declare function getRandomValues<T extends IntBasedTypedArray | UintBased
  * console.log('Your UUID: ' + UUID);
  * ```
  */
-export declare function randomUUID(): any;
+export declare function randomUUID(): string;
 /**
  * The `digest()` method of `Crypto` generates a digest of the supplied `TypedArray` of bytes `data` with the provided digest `algorithm`.
  * A digest is a short fixed-length value derived from some variable-length input. **Cryptographic digests** should exhibit _collision-resistance_,

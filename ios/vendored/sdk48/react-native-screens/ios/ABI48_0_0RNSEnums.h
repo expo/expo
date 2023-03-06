@@ -57,9 +57,3 @@ typedef NS_ENUM(NSInteger, ABI48_0_0RNSScreenStackHeaderSubviewType) {
   ABI48_0_0RNSScreenStackHeaderSubviewTypeCenter,
   ABI48_0_0RNSScreenStackHeaderSubviewTypeSearchBar,
 };
-
-typedef NS_ENUM(NSInteger, ABI48_0_0RNSScreenDetentType) {
-  ABI48_0_0RNSScreenDetentTypeMedium,
-  ABI48_0_0RNSScreenDetentTypeLarge,
-  ABI48_0_0RNSScreenDetentTypeAll,
-};

@@ -2,13 +2,10 @@
 title: Notifications
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-48/packages/expo-notifications'
 packageName: 'expo-notifications'
+iconUrl: '/static/images/packages/expo-notifications.png'
 ---
 
-import {
-  ConfigClassic,
-  ConfigReactNative,
-  ConfigPluginProperties,
-} from '~/components/plugins/ConfigSection';
+import { ConfigReactNative, ConfigPluginProperties } from '~/components/plugins/ConfigSection';
 import { AndroidPermissions } from '~/components/plugins/permissions';
 import { SnackInline } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
@@ -314,12 +311,6 @@ Here is an example of using the config plugin in the Expo config file:
 }
 ```
 
-<ConfigClassic>
-
-Learn how to configure notifications with the [app manifest `notification` property](../config/app.mdx#notification).
-
-</ConfigClassic>
-
 <ConfigReactNative>
 
 Learn how to configure the native projects in the [installation instructions in the `expo-notifications` repository](https://github.com/expo/expo/tree/main/packages/expo-notifications#installation-in-bare-react-native-projects).
@@ -383,7 +374,7 @@ and wasn't killed by the user, however, this is ultimately decided by the OS, so
 
 Custom notification sounds are only supported when using [EAS Build](/build/introduction).
 
-To add custom push notification sounds to your app, add the `expo-notifications` plugin to your **app.json** file:
+To add custom push notification sounds to your app, add the `expo-notifications` plugin to your **app.json** file and then under the `sounds` key, provide an array of local paths to sound files that can be used as custom notification sounds. These local paths are local to your project.
 
 ```json app.json
 {
@@ -556,15 +547,19 @@ You can also set a custom notification color **per-notification** directly in yo
 import * as Notifications from 'expo-notifications';
 ```
 
-<APISection packageName="expo-notifications" apiName="Notifications" headersMapping={{
-  fetch: "Fetch tokens for push notifications",
-  listen: "Listen to notification events",
-  inForeground: "Handle incoming notifications when the app is in the foreground",
-  inBackground: "Handle incoming notifications when the app is not in the foreground",
-  permissions: "Fetch information about notifications-related permissions",
-  badge: "Manage application badge icon",
-  schedule: "Schedule notifications",
-  dismiss: "Dismiss notifications",
-  channels: "Manage notification channels (Android-specific)",
-  categories: "Manage notification categories (interactive notifications)"
-}} />
+<APISection
+  packageName="expo-notifications"
+  apiName="Notifications"
+  headersMapping={{
+    fetch: 'Fetch tokens for push notifications',
+    listen: 'Listen to notification events',
+    inForeground: 'Handle incoming notifications when the app is in the foreground',
+    inBackground: 'Handle incoming notifications when the app is not in the foreground',
+    permissions: 'Fetch information about notifications-related permissions',
+    badge: 'Manage application badge icon',
+    schedule: 'Schedule notifications',
+    dismiss: 'Dismiss notifications',
+    channels: 'Manage notification channels (Android-specific)',
+    categories: 'Manage notification categories (interactive notifications)',
+  }}
+/>

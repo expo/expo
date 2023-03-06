@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0ExpoDevice",
-  "version": "5.2.0",
+  "version": "5.2.1",
   "summary": "A universal module that gets physical information about the device running the application",
   "description": "A universal module that gets physical information about the device running the application",
   "license": "MIT",

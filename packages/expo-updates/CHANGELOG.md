@@ -6,14 +6,26 @@
 
 - [android] Add support for version 1 of the protocol. ([#20275](https://github.com/expo/expo/pull/20275) by [@wschurman](https://github.com/wschurman))
 
-
 ### 🎉 New features
 
+- New `useUpdateEvents` hook. ([#21258](https://github.com/expo/expo/pull/21258) by [@douglowder](https://github.com/douglowder))
 - [android] [expo-updates][android] Add rollback to embedded update directive. ([#21007](https://github.com/expo/expo/pull/21007) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
+- Make Updates API work with native debug. ([#21253](https://github.com/expo/expo/pull/21253) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
+
+- Break up E2E tests for reliability. ([#21223](https://github.com/expo/expo/pull/21223) by [@douglowder](https://github.com/douglowder))
+- Convert E2E tests to TypeScript. ([#21278](https://github.com/expo/expo/pull/21278) by [@douglowder](https://github.com/douglowder))
+- Improved README and other chagnes for E2E tests. ([#21331](https://github.com/expo/expo/pull/21331) by [@douglowder](https://github.com/douglowder))
+- Protocol 1 support and rollback test in E2E tests. ([#21197](https://github.com/expo/expo/pull/21197) by [@wschurman](https://github.com/wschurman), [@douglowder](https://github.com/douglowder))
+- Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
+- Start converting to Swift. ([#21320](https://github.com/expo/expo/pull/21320), [#21329](https://github.com/expo/expo/pull/21329), [#21332](https://github.com/expo/expo/pull/21332), [#21391](https://github.com/expo/expo/pull/21391), [#21394](https://github.com/expo/expo/pull/21394), [#21450](https://github.com/expo/expo/pull/21450), [#21451](https://github.com/expo/expo/pull/21451), [#21467](https://github.com/expo/expo/pull/21467), [#21471](https://github.com/expo/expo/pull/21471), [#21478](https://github.com/expo/expo/pull/21478) by [@wschurman](https://github.com/wschurman))
+- Fix E2E rollback test and other improvements. ([#21389](https://github.com/expo/expo/pull/21389) by [@douglowder](https://github.com/douglowder))
+- Consolidate E2E tests. ([#21458](https://github.com/expo/expo/pull/21458) by [@douglowder](https://github.com/douglowder))
+- E2E tests: graceful Detox failures. ([#21520](https://github.com/expo/expo/pull/21520) by [@douglowder](https://github.com/douglowder))
 
 ## 0.16.1 — 2023-02-09
 

@@ -138,10 +138,15 @@ class Env {
   }
 
   /**
-   * **Experimental** Use static generation for Metro web projects. This only works with Expo Router.
+   * **Experimental:** Use static generation for Metro web projects. This only works with Expo Router.
    */
   get EXPO_USE_STATIC(): boolean {
     return boolish('EXPO_USE_STATIC', false);
+  }
+
+  /** **Experimental:** Prevent Metro from using the `compilerOptions.paths` feature from `tsconfig.json` (or `jsconfig.json`) to enable import aliases. */
+  get EXPO_USE_PATH_ALIASES(): boolean {
+    return boolish('EXPO_USE_PATH_ALIASES', false);
   }
 }
 

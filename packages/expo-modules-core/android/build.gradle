@@ -6,7 +6,7 @@ apply plugin: 'maven-publish'
 apply plugin: "de.undercouch.download"
 
 group = 'host.exp.exponent'
-version = '1.2.1'
+version = '1.2.2'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -173,7 +173,7 @@ android {
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "1.2.1"
+    versionName "1.2.2"
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
     testInstrumentationRunner "expo.modules.TestRunner"
@@ -274,6 +274,7 @@ dependencies {
   api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
   api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0"
   api "androidx.core:core-ktx:1.6.0"
+  api project(':expo-modules-core$android-annotation')
 
   /**
    * ReactActivity (the base activity for every React Native application) is subclassing AndroidX classes.

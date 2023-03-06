@@ -10,7 +10,7 @@
     "generate": "ts-node ./scripts/generate.ts",
     "prepare": "yarn run clean && yarn build",
     "clean": "rimraf build ./tsconfig.tsbuildinfo",
-    "lint": "eslint .",
+    "lint": "eslint . && npx prettier --write src/ExpoConfig.ts",
     "test": "jest"
   },
   "repository": {
@@ -35,8 +35,9 @@
     "build"
   ],
   "devDependencies": {
+    "@expo/babel-preset-cli": "^0.2.24",
     "json-schema-to-typescript": "^10.0.0",
-    "@expo/babel-preset-cli": "^0.2.24"
+    "ts-node": "^10.9.1"
   },
   "publishConfig": {
     "access": "public"

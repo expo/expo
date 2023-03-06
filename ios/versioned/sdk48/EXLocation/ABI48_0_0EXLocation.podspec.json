@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0EXLocation",
-  "version": "15.1.0",
+  "version": "15.1.1",
   "summary": "Allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.",
   "description": "Allows reading geolocation information from the device. Your app can poll for the current location or subscribe to location update events.",
   "license": "MIT",

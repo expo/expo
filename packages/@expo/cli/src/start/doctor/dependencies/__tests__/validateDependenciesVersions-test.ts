@@ -42,10 +42,7 @@ describe(logIncorrectDependencies, () => {
       expect.stringContaining('Some dependencies are incompatible')
     );
     expect(Log.warn).toHaveBeenNthCalledWith(2, expect.stringContaining('expected version'));
-    expect(Log.warn).toHaveBeenNthCalledWith(
-      3,
-      expect.stringContaining('npx expo install react-native@~2.0.0')
-    );
+    expect(Log.warn).toHaveBeenNthCalledWith(3, expect.stringContaining('npx expo install --fix'));
   });
 });
 

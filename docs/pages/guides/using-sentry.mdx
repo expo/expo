@@ -4,7 +4,7 @@ maxHeadingDepth: 4
 description: A guide on installing and configuring Sentry for crash reporting.
 ---
 
-import { ConfigReactNative, ConfigClassic } from '~/components/plugins/ConfigSection';
+import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
@@ -25,17 +25,19 @@ It notifies you of exceptions or errors that your users run into while using you
 - It is free for up to 5,000 events per month.
 - It streamlines your error-reporting code across iOS, Android, and web
 
-> Native crash reporting is not available with the classic build system (`expo build:[ios|android]`), but is available via EAS Build.
+> Native crash reporting is not available in Expo Go, it is only available in standalone builds or development builds.
 
 <PlatformsSection title="Platform compatibility" android emulator ios simulator web />
 
 ## Installing and configuring Sentry
 
-### Step 1: Sign up for a Sentry account and create a project
+<Step label="1">
+
+### Sign up for a Sentry account and create a project
 
 Before getting real-time updates on errors and making your app generally incredible, you'll need to make sure you've created a Sentry project. Here's how to do that:
 
-<Step label="1">
+<Step label="1.1">
   [Sign up for Sentry](https://sentry.io/signup/) (it's free), and create a project in your
   Dashboard. Take note of your **organization name**, **project name**, and **`DSN`**; you'll need
   them later. - **organization name** is available in your `Organization settings` tab - **project
@@ -44,7 +46,7 @@ Before getting real-time updates on errors and making your app generally incredi
   (DSN)` tab
 </Step>
 
-<Step label="2">
+<Step label="1.2">
   Go to the [Sentry API section](https://sentry.io/settings/account/api/auth-tokens/), and create an
   **auth token**. The token requires the scopes: `org:read`, `project:releases`, and
   `project:write`. Save this, too.
@@ -52,7 +54,11 @@ Before getting real-time updates on errors and making your app generally incredi
 
 Once you have each of these: organization name, project name, DSN, and auth token, you're all set!
 
-### Step 2: Installation
+</Step>
+
+<Step label="2">
+
+### Installation
 
 In your project directory, run:
 
@@ -66,7 +72,11 @@ In your project directory, run:
   ]}
 />
 
-### Step 3: Code
+</Step>
+
+<Step label="3">
+
+### Code
 
 #### Initialization
 
@@ -104,15 +114,13 @@ try {
 }
 ```
 
-### Step 4: App Configuration
+</Step>
+
+<Step label="4">
+
+### App Configuration
 
 Configuring sentry-expo is done through the config plugin in your **app.json** or **app.config.js**.
-
-<ConfigClassic>
-
-The instructions below will still apply, with the exception of the `plugin` configuration. Config plugins have no effect when using the classic build system.
-
-</ConfigClassic>
 
 <ConfigReactNative>
 
@@ -200,6 +208,8 @@ Add `expo.plugins` to your project's **app.json** or **app.config.js** file:
 }
 ```
 
+</Step>
+
 ## Source Maps
 
 {/* TODO: Drop `expo publish` mention */}
@@ -209,8 +219,6 @@ With the `postPublish` hook in place, now all you need to do is run `expo publis
 > This hook can also be used as a `postExport` hook if you're [self-hosting your updates](../distribution/custom-updates-server.mdx).
 
 ### Uploading source maps at build time
-
-> Note: Disregard the following if you're using the classic build system (`expo build:[android|ios]`).
 
 With `expo-updates`, release builds of both iOS and Android apps will create and embed a new update from your JavaScript source at build-time. **This new update will not be published automatically** and will exist only in the binary with which it was bundled. Since it isn't published, the source maps aren't uploaded in the usual way like they are when you run `expo publish` (actually, we are relying on Sentry's native scripts to handle that). Because of this you have some extra things to be aware of:
 
@@ -305,7 +313,7 @@ Make sure your `organization`, `project` and `authToken` properties are set corr
 
 </Collapsible>
 
-<Collapsible summary={<>`expo-dev-client` transactions never finish</>}>
+<Collapsible summary={<><CODE>expo-dev-client</CODE> transactions never finish</>}>
 
 This error is caused by the HTTP request tracking, which creates spans for log requests to the development server. To fix this, stop creating spans by adding the following code snippet:
 
@@ -315,13 +323,15 @@ import * as Network from 'expo-network';
 
 const devServerPort = 8081;
 let devServerIpAddress: string | null = null;
-Network.getIpAddressAsync().then((ip) => {devServerIpAddress = ip});
+Network.getIpAddressAsync().then(ip => {
+  devServerIpAddress = ip;
+});
 
 Sentry.init({
   tracesSampleRate: 1.0,
   integrations: [
     new Sentry.Native.ReactNativeTracing({
-      shouldCreateSpanForRequest: (url) => {
+      shouldCreateSpanForRequest: url => {
         return !__DEV__ || !url.startsWith(`http://${devServerIpAddress}:${devServerPort}/logs`);
       },
     }),
@@ -330,7 +340,6 @@ Sentry.init({
 ```
 
 </Collapsible>
-
 
 ## Learn more about Sentry
 

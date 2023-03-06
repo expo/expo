@@ -2,12 +2,15 @@
 title: Brightness
 sourceCodeUrl: 'https://github.com/expo/expo/tree/sdk-48/packages/expo-brightness'
 packageName: 'expo-brightness'
+iconUrl: '/static/images/packages/expo-brightness.png'
 ---
 
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { SnackInline} from '~/ui/components/Snippet';
+import { SnackInline } from '~/ui/components/Snippet';
+import { ConfigReactNative } from '~/components/plugins/ConfigSection';
+import { AndroidPermissions } from '~/components/plugins/permissions';
 
 An API to get and set screen brightness.
 
@@ -18,6 +21,14 @@ On Android, there is a global system-wide brightness setting, and each app has i
 ## Installation
 
 <APIInstallSection />
+
+## Configuration
+
+<ConfigReactNative>
+
+Learn how to configure the native projects in the [installation instructions in the `expo-brightness` repository](https://github.com/expo/expo/tree/main/packages/expo-brightness#installation-in-bare-react-native-projects).
+
+</ConfigReactNative>
 
 ## Usage
 
@@ -88,3 +99,15 @@ An error occurred when getting or setting the system brightness.
 ### `ERR_INVALID_ARGUMENT`
 
 An invalid argument was passed. Only `BrightnessMode.MANUAL` or `BrightnessMode.AUTOMATIC` are allowed.
+
+## Permissions
+
+### Android
+
+You must add the following permissions to your **app.json** inside the [`expo.android.permissions`](/versions/latest/config/app/#permissions) array.
+
+<AndroidPermissions permissions={['WRITE_SETTINGS']} />
+
+### iOS
+
+_No permissions required_.

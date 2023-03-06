@@ -21,7 +21,7 @@ import java.util.Date
 
 // these unused imports must stay because of versioning
 /* ktlint-disable no-unused-imports */
-
+import expo.modules.updates.UpdatesConfiguration
 /* ktlint-enable no-unused-imports */
 
 /**
@@ -64,6 +64,7 @@ class UpdatesModule(
         constants["isUsingEmbeddedAssets"] = updatesServiceLocal.isUsingEmbeddedAssets
         constants["runtimeVersion"] = updatesServiceLocal.configuration.runtimeVersion ?: ""
         constants["channel"] = updatesServiceLocal.configuration.requestHeaders["expo-channel-name"] ?: ""
+        constants["nativeDebug"] = BuildConfig.EX_UPDATES_NATIVE_DEBUG
 
         val launchedUpdate = updatesServiceLocal.launchedUpdate
         if (launchedUpdate != null) {

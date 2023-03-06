@@ -20,7 +20,6 @@ import expo.modules.crypto.CryptoModule
 import expo.modules.device.DeviceModule
 import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
-import expo.modules.errorrecovery.ErrorRecoveryPackage
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemPackage
 import expo.modules.font.FontLoaderPackage
@@ -39,7 +38,7 @@ import expo.modules.lineargradient.LinearGradientModule
 import expo.modules.localauthentication.LocalAuthenticationPackage
 import expo.modules.localization.LocalizationModule
 import expo.modules.location.LocationPackage
-import expo.modules.mailcomposer.MailComposerPackage
+import expo.modules.mailcomposer.MailComposerModule
 import expo.modules.manifests.core.Manifest
 import expo.modules.medialibrary.MediaLibraryModule
 import expo.modules.navigationbar.NavigationBarPackage
@@ -76,7 +75,6 @@ object ExperiencePackagePicker : ModulesProvider {
     CalendarPackage(),
     ConstantsPackage(),
     ContactsPackage(),
-    ErrorRecoveryPackage(),
     FaceDetectorPackage(),
     FileSystemPackage(),
     FontLoaderPackage(),
@@ -85,7 +83,6 @@ object ExperiencePackagePicker : ModulesProvider {
     KeepAwakePackage(),
     LocalAuthenticationPackage(),
     LocationPackage(),
-    MailComposerPackage(),
     NavigationBarPackage(),
     NotificationsPackage(),
     PermissionsPackage(),
@@ -135,6 +132,7 @@ object ExperiencePackagePicker : ModulesProvider {
     IntentLauncherModule::class.java,
     LinearGradientModule::class.java,
     LocalizationModule::class.java,
+    MailComposerModule::class.java,
     MediaLibraryModule::class.java,
     NetworkModule::class.java,
     RandomModule::class.java,

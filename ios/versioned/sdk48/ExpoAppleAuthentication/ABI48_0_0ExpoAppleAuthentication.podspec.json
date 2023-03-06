@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0ExpoAppleAuthentication",
-  "version": "6.0.0",
+  "version": "6.0.1",
   "summary": "A package that provides 'Sign in with Apple' capability for Expo and React Native apps.",
   "description": "A package that provides 'Sign in with Apple' capability for Expo and React Native apps.",
   "license": "MIT",

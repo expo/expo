@@ -46,6 +46,12 @@ function checkSortByKey(sortBy) {
         throw new Error(`Invalid sortBy key: ${sortBy}`);
     }
 }
+function sortByOptionToString(sortBy) {
+    if (Array.isArray(sortBy)) {
+        return `${sortBy[0]} ${sortBy[1] ? 'ASC' : 'DESC'}`;
+    }
+    return `${sortBy} DESC`;
+}
 function dateToNumber(value) {
     return value instanceof Date ? value.getTime() : value;
 }
@@ -371,6 +377,7 @@ export async function getAssetsAsync(assetsOptions = {}) {
     }
     options.sortBy.forEach(checkSortBy);
     options.mediaType.forEach(checkMediaType);
+    options.sortBy = options.sortBy.map(sortByOptionToString);
     return await MediaLibrary.getAssetsAsync(options);
 }
 // @needsAudit

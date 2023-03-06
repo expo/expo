@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix saving animated GIFs on iOS. ([#21549](https://github.com/expo/expo/pull/21549) by [@desi-ivanov](https://github.com/desi-ivanov))
+
 ### 💡 Others
 
 ## 15.2.1 — 2023-02-09
@@ -30,6 +32,7 @@ _This version does not introduce any user-facing changes._
 ### 🐛 Bug fixes
 
 - Renamed the module on iOS to match the name used on Android. ([#20283](https://github.com/expo/expo/pull/20283) by [@alanhughes](https://github.com/alanjhughes))
+- Fixed an issue where passing the `sortBy` argument to `MediaLibrary.getAssetsAsync` would cause the method to throw an error. ([#21363](https://github.com/expo/expo/pull/21363) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 15.0.0 — 2022-10-25
 

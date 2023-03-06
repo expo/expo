@@ -10,6 +10,24 @@
 
 ### 💡 Others
 
+## 1.0.0 — 2023-02-21
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.0-rc.2 — 2023-02-20
+
+### 🎉 New features
+
+- Added `recyclingKey` prop that allows reseting the image view content when the view is recycled. ([#21297](https://github.com/expo/expo/pull/21297) & [#21309](https://github.com/expo/expo/pull/21309) by [@tsapeta](https://github.com/tsapeta) & [@lukmccall](https://github.com/lukmccall))
+
+## 1.0.0-rc.1 — 2023-02-14
+
+### 🐛 Bug fixes
+
+- Fixed `You can't start or clear loads in RequestListener or Target callbacks` on Android. ([#21192](https://github.com/expo/expo/pull/21192) by [@lukmccall](https://github.com/lukmccall))
+- Fixed SVGs are not rendered in the release mode on Android. ([#21214](https://github.com/expo/expo/pull/21214) by [@lukmccall](https://github.com/lukmccall))
+- Stop sending `onProgress` event when the asset size is unknown which led to diving by zero and a crash. ([#21215](https://github.com/expo/expo/pull/21215) by [@tsapeta](https://github.com/tsapeta))
+
 ## 1.0.0-rc.0 — 2023-02-09
 
 ### 🎉 New features

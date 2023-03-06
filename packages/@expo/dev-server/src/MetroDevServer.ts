@@ -69,6 +69,7 @@ function getExpoMetroConfig(
   return require('@expo/metro-config');
 }
 
+/** @deprecated */
 export async function runMetroDevServerAsync(
   projectRoot: string,
   options: MetroDevServerOptions
@@ -138,7 +139,7 @@ export async function runMetroDevServerAsync(
 
 let nextBuildID = 0;
 
-// TODO: deprecate options.target
+/** @deprecated */
 export async function bundleAsync(
   projectRoot: string,
   expoConfig: ExpoConfig,

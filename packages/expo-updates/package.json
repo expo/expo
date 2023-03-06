@@ -42,7 +42,7 @@
     "@expo/code-signing-certificates": "0.0.5",
     "@expo/config": "~8.0.0",
     "@expo/config-plugins": "~6.0.0",
-    "@expo/metro-config": "~0.6.0",
+    "@expo/metro-config": "~0.7.0",
     "arg": "4.1.0",
     "expo-eas-client": "~0.5.0",
     "expo-manifests": "~0.5.0",
@@ -57,6 +57,7 @@
     "@types/node-forge": "^1.0.0",
     "expo-module-scripts": "^3.0.0",
     "express": "^4.17.2",
+    "form-data": "^4.0.0",
     "fs-extra": "^9.1.0",
     "memfs": "^3.2.0"
   },

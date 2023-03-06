@@ -37,7 +37,11 @@ import {
   RawH4,
   UL,
   createPermalinkedComponent,
+  DEMI,
+  CALLOUT,
+  createTextComponent,
 } from '~/ui/components/Text';
+import { TextElement } from '~/ui/components/Text/types';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -155,6 +159,7 @@ const hardcodedTypeLinks: Record<string, string> = {
     'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
   File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
   FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
+  Manifest: '/versions/latest/sdk/constants/#manifest',
   MediaTrackSettings: 'https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
@@ -407,6 +412,29 @@ export const ParamsTableHeadRow = () => (
   </TableHead>
 );
 
+const InheritPermalink = createPermalinkedComponent(
+  createTextComponent(
+    TextElement.SPAN,
+    css({ fontSize: 'inherit', fontWeight: 'inherit', color: 'inherit' })
+  ),
+  { baseNestingLevel: 2 }
+);
+
+export const BoxSectionHeader = ({
+  text,
+  exposeInSidebar,
+}: {
+  text: string;
+  exposeInSidebar?: boolean;
+}) => {
+  const TextWrapper = exposeInSidebar ? InheritPermalink : Fragment;
+  return (
+    <CALLOUT theme="secondary" weight="medium" css={STYLES_NESTED_SECTION_HEADER}>
+      <TextWrapper>{text}</TextWrapper>
+    </CALLOUT>
+  );
+};
+
 export const renderParams = (parameters: MethodParamData[]) => (
   <Table>
     <ParamsTableHeadRow />
@@ -420,7 +448,7 @@ export const listParams = (parameters: MethodParamData[]) =>
 export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue && defaultValue !== '...' ? (
     <div css={defaultValueContainerStyle}>
-      <BOLD>Default:</BOLD> <CODE>{defaultValue}</CODE>
+      <DEMI>Default:</DEMI> <CODE>{defaultValue}</CODE>
     </div>
   ) : undefined;
 
@@ -570,9 +598,7 @@ export const CommentTextBlock = ({
           <BOLD>Example</BOLD>
         </div>
       ) : (
-        <div css={STYLES_NESTED_SECTION_HEADER}>
-          <RawH4>Example</RawH4>
-        </div>
+        <BoxSectionHeader text="Example" />
       )}
       <ReactMarkdown components={mdComponents}>{getCommentContent(example.content)}</ReactMarkdown>
     </Fragment>
@@ -610,9 +636,6 @@ export const CommentTextBlock = ({
     </>
   );
 };
-
-export const getAPISectionHeader = (exposeInSidebar?: boolean) =>
-  exposeInSidebar ? createPermalinkedComponent(RawH4, { baseNestingLevel: 2 }) : H4;
 
 const getMonospaceHeader = (element: ComponentType<any>) => {
   const level = parseInt(element?.displayName?.replace(/\D/g, '') ?? '0', 10);

@@ -365,7 +365,7 @@ The second button with the label "Use this photo" resembles the actual button fr
 ## Step 7: Enhance the reusable button component
 
 The "Choose a photo" button requires different styling than the "Use this photo" button, so we will add a new button theme prop that will allow us to apply a `primary` theme.
-This button also has an icon before the label. We will use an icon from the <A href="/guides/icons/#expovector-icons" openInNewTab>`@expo/vector-icons` library</A> that icons from popular icon sets.
+This button also has an icon before the label. We will use an icon from the <A href="/guides/icons/#expovector-icons" openInNewTab>`@expo/vector-icons`</A> library that includes icons from popular icon sets.
 
 Stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>c</kbd> in the terminal. Then, install the `@expo/vector-icons` library:
 
@@ -440,7 +440,7 @@ export default function App() {
   return (
     <View style={styles.container}>
       <View style={styles.imageContainer}>
-        <Image source={PlaceholderImage} style={styles.image} />
+        <ImageViewer placeholderImageSource={PlaceholderImage} />
       </View>
       <View style={styles.footerContainer}>
         /* @info Add primary theme on the first button */

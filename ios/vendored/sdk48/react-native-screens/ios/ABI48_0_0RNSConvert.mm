@@ -89,32 +89,6 @@
   }
 }
 
-+ (ABI48_0_0RNSScreenDetentType)ABI48_0_0RNSScreenDetentTypeFromAllowedDetents:
-    (ABI48_0_0facebook::ABI48_0_0React::ABI48_0_0RNSScreenSheetAllowedDetents)allowedDetents
-{
-  switch (allowedDetents) {
-    case ABI48_0_0facebook::ABI48_0_0React::ABI48_0_0RNSScreenSheetAllowedDetents::All:
-      return ABI48_0_0RNSScreenDetentTypeAll;
-    case ABI48_0_0facebook::ABI48_0_0React::ABI48_0_0RNSScreenSheetAllowedDetents::Large:
-      return ABI48_0_0RNSScreenDetentTypeLarge;
-    case ABI48_0_0facebook::ABI48_0_0React::ABI48_0_0RNSScreenSheetAllowedDetents::Medium:
-      return ABI48_0_0RNSScreenDetentTypeMedium;
-  }
-}
-
-+ (ABI48_0_0RNSScreenDetentType)ABI48_0_0RNSScreenDetentTypeFromLargestUndimmedDetent:
-    (ABI48_0_0facebook::ABI48_0_0React::ABI48_0_0RNSScreenSheetLargestUndimmedDetent)detent
-{
-  switch (detent) {
-    case ABI48_0_0facebook::ABI48_0_0React::ABI48_0_0RNSScreenSheetLargestUndimmedDetent::All:
-      return ABI48_0_0RNSScreenDetentTypeAll;
-    case ABI48_0_0facebook::ABI48_0_0React::ABI48_0_0RNSScreenSheetLargestUndimmedDetent::Large:
-      return ABI48_0_0RNSScreenDetentTypeLarge;
-    case ABI48_0_0facebook::ABI48_0_0React::ABI48_0_0RNSScreenSheetLargestUndimmedDetent::Medium:
-      return ABI48_0_0RNSScreenDetentTypeMedium;
-  }
-}
-
 + (NSDictionary *)gestureResponseDistanceDictFromCppStruct:
     (const ABI48_0_0facebook::ABI48_0_0React::ABI48_0_0RNSScreenGestureResponseDistanceStruct &)gestureResponseDistance
 {

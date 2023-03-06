@@ -76,7 +76,7 @@ private func createEventSetter(eventName: String, bridge: ABI48_0_0RCTBridge?) -
     installEventDispatcher(forEvent: eventName, onView: target) { [weak target] (body: [String: Any]) in
       if let target = target {
         let componentEvent = ABI48_0_0RCTComponentEvent(name: eventName, viewTag: target.abi48_0_0ReactTag, body: body)
-        bridge?.eventDispatcher().send(componentEvent)
+        bridge?.eventDispatcher()?.send(componentEvent)
       }
     }
   }

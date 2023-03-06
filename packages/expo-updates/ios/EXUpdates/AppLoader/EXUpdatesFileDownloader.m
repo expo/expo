@@ -3,19 +3,19 @@
 #import <EXUpdates/EXUpdatesCrypto.h>
 #import <EXUpdates/EXUpdatesErrorRecovery.h>
 #import <EXUpdates/EXUpdatesFileDownloader.h>
-#import <EXUpdates/EXUpdatesSelectionPolicies.h>
 #import <EXUpdates/EXUpdatesMultipartStreamReader.h>
 #import <EXUpdates/EXUpdatesParameterParser.h>
-#import <EXUpdates/EXUpdatesManifestHeaders.h>
 #import <EXUpdates/EXUpdatesAppController.h>
 
 @import EASClient;
+@import EXManifests;
 
 #if __has_include(<EXUpdates/EXUpdates-Swift.h>)
 #import <EXUpdates/EXUpdates-Swift.h>
 #else
 #import "EXUpdates-Swift.h"
 #endif
+
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -730,7 +730,7 @@ certificateChainFromManifestResponse:(nullable NSString *)certificateChainFromMa
                             embeddedUpdate:(nullable EXUpdatesUpdate *)embeddedUpdate
 {
   NSError *headersError;
-  NSMutableDictionary *extraHeaders = [database serverDefinedHeadersWithScopeKey:config.scopeKey error:&headersError].mutableCopy ?: [NSMutableDictionary new];
+  NSMutableDictionary *extraHeaders = [database serverDefinedHeadersWithScopeKey:config.scopeKey error:&headersError].jsonData.mutableCopy ?: [NSMutableDictionary new];
   if (headersError) {
     NSLog(@"Error selecting serverDefinedHeaders from database: %@", headersError.localizedDescription);
   }

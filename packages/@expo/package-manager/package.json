@@ -1,7 +1,7 @@
 {
   "name": "@expo/package-manager",
-  "version": "0.0.58",
-  "description": "A library for installing and finding packages in a node project",
+  "version": "1.0.0",
+  "description": "A library for installing and finding packages in a project",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "scripts": {
