@@ -35,6 +35,7 @@
   },
   "dependencies": {},
   "devDependencies": {
+    "expo-modules-core": "^X.Y.Z",
     "expo-module-scripts": "^3.0.0"
   },
   "peerDependencies": {
