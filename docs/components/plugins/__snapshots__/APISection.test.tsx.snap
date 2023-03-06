@@ -121,7 +121,7 @@ exports[`APISection expo-apple-authentication 1`] = `
         React.Element
         &lt;
         <a
-          class="css-1na8e0o-A"
+          class="css-3mpoiz-A"
           href="#appleauthenticationbuttonprops"
         >
           AppleAuthenticationButtonProps
@@ -146,7 +146,7 @@ available via the provided properties.
     >
       You should only attempt to render this if 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="#isavailableasync"
       >
         <code
@@ -238,28 +238,29 @@ button.
 not appear on the screen.
     </p>
     <blockquote
-      class="css-opaww-Callout"
+      class="css-zknray-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-ks2t0-Callout"
+        class="css-1o8qjfc-Callout"
       >
         <svg
-          color="var(--expo-theme-icon-default)"
-          fill="none"
-          height="16"
+          class="icon-sm text-icon-default"
+          fill="currentColor"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Info-icon
-          </title>
-          <path
-            d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
-            fill="var(--expo-theme-icon-default)"
-          />
+          <g
+            id="info-circle"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+              fill-rule="evenodd"
+              id="Solid"
+            />
+          </g>
         </svg>
       </div>
       <div
@@ -276,7 +277,7 @@ not appear on the screen.
           </strong>
            
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidbutton"
             rel="noopener noreferrer"
             target="_blank"
@@ -407,7 +408,7 @@ for more details.
             data-text="true"
           >
             <a
-              class="css-1na8e0o-A"
+              class="css-3mpoiz-A"
               href="#appleauthenticationbuttonstyle"
             >
               AppleAuthenticationButtonStyle
@@ -420,7 +421,6 @@ for more details.
         >
           The Apple-defined color scheme to use to display the button.
         </p>
-        <br />
       </div>
       <div
         class="css-11xr3cd"
@@ -492,7 +492,7 @@ for more details.
             data-text="true"
           >
             <a
-              class="css-1na8e0o-A"
+              class="css-3mpoiz-A"
               href="#appleauthenticationbuttontype"
             >
               AppleAuthenticationButtonType
@@ -505,7 +505,6 @@ for more details.
         >
           The type of button text to display ("Sign In with Apple" vs. "Continue with Apple").
         </p>
-        <br />
       </div>
       <div
         class="css-11xr3cd"
@@ -598,7 +597,6 @@ for more details.
           </code>
            in other Views.
         </p>
-        <br />
       </div>
       <div
         class="css-11xr3cd"
@@ -680,7 +678,7 @@ for more details.
         >
           The method to call when the user presses the button. You should call 
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="#isavailableasync"
           >
             <code
@@ -693,7 +691,6 @@ for more details.
           
 in here.
         </p>
-        <br />
       </div>
       <div
         class="css-11xr3cd"
@@ -773,7 +770,7 @@ in here.
             &lt;
             <span>
               <a
-                class="css-1na8e0o-A"
+                class="css-3mpoiz-A"
                 href="https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys"
                 rel="noopener noreferrer"
                 target="_blank"
@@ -783,7 +780,7 @@ in here.
               &lt;
               <span>
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="https://reactnative.dev/docs/view-style-props"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -827,7 +824,6 @@ in here.
           
 properties.
         </p>
-        <br />
       </div>
       <h3
         class="  css-6r23rc-TextComponent"
@@ -877,7 +873,7 @@ properties.
         </a>
       </h3>
       <ul
-        class="css-57cmsk-TextComponent"
+        class="css-1p13rjl-TextComponent"
       >
         <li
           class="css-1hxzfrf-TextComponent"
@@ -888,7 +884,7 @@ properties.
             data-text="true"
           >
             <a
-              class="css-1na8e0o-A"
+              class="css-3mpoiz-A"
               href="https://reactnative.dev/docs/view#props"
               rel="noopener noreferrer"
               target="_blank"
@@ -1064,7 +1060,7 @@ properties.
                 The unique identifier for the user whose credential state you'd like to check.
 This should come from the user field of an 
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#appleauthenticationcredentialstate"
                 >
                   <code
@@ -1091,28 +1087,29 @@ This should come from the user field of an
     
 
     <blockquote
-      class="css-opaww-Callout"
+      class="css-zknray-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-ks2t0-Callout"
+        class="css-1o8qjfc-Callout"
       >
         <svg
-          color="var(--expo-theme-icon-default)"
-          fill="none"
-          height="16"
+          class="icon-sm text-icon-default"
+          fill="currentColor"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Info-icon
-          </title>
-          <path
-            d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
-            fill="var(--expo-theme-icon-default)"
-          />
+          <g
+            id="info-circle"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+              fill-rule="evenodd"
+              id="Solid"
+            />
+          </g>
         </svg>
       </div>
       <div
@@ -1142,36 +1139,38 @@ This should come from the user field of an
       Returns
     </p>
     <ul
-      class="css-1c9clym-TextComponent"
+      class="css-9xo9oi-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
         data-text="true"
       >
         <svg
-          class="css-1a9xr20"
-          color="var(--expo-theme-icon-secondary)"
+          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
           fill="none"
-          height="16"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Undo-icon
-          </title>
-          <path
-            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
-            fill="var(--expo-theme-icon-secondary)"
-          />
+          <g
+            id="corner-down-right"
+          >
+            <path
+              d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
         </svg>
         <code
           class="css-4xa05b-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -1181,7 +1180,7 @@ This should come from the user field of an
           &lt;
           <span>
             <a
-              class="css-1na8e0o-A"
+              class="css-3mpoiz-A"
               href="#appleauthenticationcredentialstate"
             >
               AppleAuthenticationCredentialState
@@ -1198,7 +1197,7 @@ This should come from the user field of an
     >
       A promise that fulfills with an 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="#appleauthenticationcredentialstate"
       >
         <code
@@ -1280,36 +1279,38 @@ value depending on the state of the credential.
       Returns
     </p>
     <ul
-      class="css-1c9clym-TextComponent"
+      class="css-9xo9oi-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
         data-text="true"
       >
         <svg
-          class="css-1a9xr20"
-          color="var(--expo-theme-icon-secondary)"
+          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
           fill="none"
-          height="16"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Undo-icon
-          </title>
-          <path
-            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
-            fill="var(--expo-theme-icon-secondary)"
-          />
+          <g
+            id="corner-down-right"
+          >
+            <path
+              d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
         </svg>
         <code
           class="css-4xa05b-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -1451,7 +1452,7 @@ value depending on the state of the credential.
                 data-text="true"
               >
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#appleauthenticationrefreshoptions"
                 >
                   AppleAuthenticationRefreshOptions
@@ -1467,7 +1468,7 @@ value depending on the state of the credential.
               >
                 An 
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#appleauthenticationrefreshoptions"
                 >
                   <code
@@ -1499,36 +1500,38 @@ Calling this method will show the sign in modal before actually refreshing the u
       Returns
     </p>
     <ul
-      class="css-1c9clym-TextComponent"
+      class="css-9xo9oi-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
         data-text="true"
       >
         <svg
-          class="css-1a9xr20"
-          color="var(--expo-theme-icon-secondary)"
+          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
           fill="none"
-          height="16"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Undo-icon
-          </title>
-          <path
-            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
-            fill="var(--expo-theme-icon-secondary)"
-          />
+          <g
+            id="corner-down-right"
+          >
+            <path
+              d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
         </svg>
         <code
           class="css-4xa05b-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -1538,7 +1541,7 @@ Calling this method will show the sign in modal before actually refreshing the u
           &lt;
           <span>
             <a
-              class="css-1na8e0o-A"
+              class="css-3mpoiz-A"
               href="#appleauthenticationcredential"
             >
               AppleAuthenticationCredential
@@ -1555,7 +1558,7 @@ Calling this method will show the sign in modal before actually refreshing the u
     >
       A promise that fulfills with an 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="#appleauthenticationcredential"
       >
         <code
@@ -1688,7 +1691,7 @@ refresh operation.
                 data-text="true"
               >
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#appleauthenticationsigninoptions"
                 >
                   AppleAuthenticationSignInOptions
@@ -1704,7 +1707,7 @@ refresh operation.
               >
                 An optional 
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#appleauthenticationsigninoptions"
                 >
                   <code
@@ -1749,7 +1752,7 @@ of these options at runtime.
 into your app, so you must store it for later use. It's best to store this information either
 server-side, or using 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="./securestore"
       >
         SecureStore
@@ -1757,7 +1760,7 @@ server-side, or using
       , so that the data persists across app installs.
 You can use 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="#appleauthenticationcredential"
       >
         <code
@@ -1777,36 +1780,38 @@ the user, since this remains the same for apps released by the same developer.
       Returns
     </p>
     <ul
-      class="css-1c9clym-TextComponent"
+      class="css-9xo9oi-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
         data-text="true"
       >
         <svg
-          class="css-1a9xr20"
-          color="var(--expo-theme-icon-secondary)"
+          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
           fill="none"
-          height="16"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Undo-icon
-          </title>
-          <path
-            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
-            fill="var(--expo-theme-icon-secondary)"
-          />
+          <g
+            id="corner-down-right"
+          >
+            <path
+              d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
         </svg>
         <code
           class="css-4xa05b-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -1816,7 +1821,7 @@ the user, since this remains the same for apps released by the same developer.
           &lt;
           <span>
             <a
-              class="css-1na8e0o-A"
+              class="css-3mpoiz-A"
               href="#appleauthenticationcredential"
             >
               AppleAuthenticationCredential
@@ -1833,7 +1838,7 @@ the user, since this remains the same for apps released by the same developer.
     >
       A promise that fulfills with an 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="#appleauthenticationcredential"
       >
         <code
@@ -1960,7 +1965,7 @@ sign-in operation.
                 data-text="true"
               >
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#appleauthenticationsignoutoptions"
                 >
                   AppleAuthenticationSignOutOptions
@@ -1976,7 +1981,7 @@ sign-in operation.
               >
                 An 
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#appleauthenticationsignoutoptions"
                 >
                   <code
@@ -2011,7 +2016,7 @@ Calling this method will show the sign in modal before actually signing the user
 Instead of using this method it is recommended to simply clear all the user's data collected
 from using 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="./#signinasync"
       >
         <code
@@ -2023,7 +2028,7 @@ from using
       </a>
        or 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="./#refreshasync"
       >
         <code
@@ -2042,36 +2047,38 @@ from using
       Returns
     </p>
     <ul
-      class="css-1c9clym-TextComponent"
+      class="css-9xo9oi-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
         data-text="true"
       >
         <svg
-          class="css-1a9xr20"
-          color="var(--expo-theme-icon-secondary)"
+          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
           fill="none"
-          height="16"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Undo-icon
-          </title>
-          <path
-            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
-            fill="var(--expo-theme-icon-secondary)"
-          />
+          <g
+            id="corner-down-right"
+          >
+            <path
+              d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
         </svg>
         <code
           class="css-4xa05b-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -2081,7 +2088,7 @@ from using
           &lt;
           <span>
             <a
-              class="css-1na8e0o-A"
+              class="css-3mpoiz-A"
               href="#appleauthenticationcredential"
             >
               AppleAuthenticationCredential
@@ -2098,7 +2105,7 @@ from using
     >
       A promise that fulfills with an 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="#appleauthenticationcredential"
       >
         <code
@@ -2293,36 +2300,38 @@ sign-out operation.
       Returns
     </p>
     <ul
-      class="css-1c9clym-TextComponent"
+      class="css-9xo9oi-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
         data-text="true"
       >
         <svg
-          class="css-1a9xr20"
-          color="var(--expo-theme-icon-secondary)"
+          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
           fill="none"
-          height="16"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Undo-icon
-          </title>
-          <path
-            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
-            fill="var(--expo-theme-icon-secondary)"
-          />
+          <g
+            id="corner-down-right"
+          >
+            <path
+              d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
         </svg>
         <code
           class="css-4xa05b-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="#subscription"
           >
             Subscription
@@ -2440,7 +2449,7 @@ sign-out operation.
     >
       The object type returned from a successful call to 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="#appleauthenticationsigninasyncoptions"
       >
         <code
@@ -2453,7 +2462,7 @@ sign-out operation.
       ,
 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="#appleauthenticationrefreshasyncoptions"
       >
         <code
@@ -2465,7 +2474,7 @@ sign-out operation.
       </a>
       , or 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="#appleauthenticationsignoutasyncoptions"
       >
         <code
@@ -2479,28 +2488,29 @@ sign-out operation.
 which contains all of the pertinent user and credential information.
     </p>
     <blockquote
-      class="css-opaww-Callout"
+      class="css-zknray-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-ks2t0-Callout"
+        class="css-1o8qjfc-Callout"
       >
         <svg
-          color="var(--expo-theme-icon-default)"
-          fill="none"
-          height="16"
+          class="icon-sm text-icon-default"
+          fill="currentColor"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Info-icon
-          </title>
-          <path
-            d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
-            fill="var(--expo-theme-icon-default)"
-          />
+          <g
+            id="info-circle"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+              fill-rule="evenodd"
+              id="Solid"
+            />
+          </g>
         </svg>
       </div>
       <div
@@ -2517,7 +2527,7 @@ which contains all of the pertinent user and credential information.
           </strong>
            
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidcredential"
             rel="noopener noreferrer"
             target="_blank"
@@ -2677,7 +2687,7 @@ an Apple domain.
               >
                 <span>
                   <a
-                    class="css-1na8e0o-A"
+                    class="css-3mpoiz-A"
                     href="#appleauthenticationfullname"
                   >
                     AppleAuthenticationFullName
@@ -2782,7 +2792,7 @@ your app.
                 data-text="true"
               >
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#appleauthenticationuserdetectionstatus"
                 >
                   AppleAuthenticationUserDetectionStatus
@@ -3271,7 +3281,7 @@ may be
     >
       The options you can supply when making a call to 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="#appleauthenticationrefreshasyncoptions"
       >
         <code
@@ -3285,28 +3295,29 @@ may be
 You must include the ID string of the user whose credentials you'd like to refresh.
     </p>
     <blockquote
-      class="css-opaww-Callout"
+      class="css-zknray-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-ks2t0-Callout"
+        class="css-1o8qjfc-Callout"
       >
         <svg
-          color="var(--expo-theme-icon-default)"
-          fill="none"
-          height="16"
+          class="icon-sm text-icon-default"
+          fill="currentColor"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Info-icon
-          </title>
-          <path
-            d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
-            fill="var(--expo-theme-icon-default)"
-          />
+          <g
+            id="info-circle"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+              fill-rule="evenodd"
+              id="Solid"
+            />
+          </g>
         </svg>
       </div>
       <div
@@ -3323,7 +3334,7 @@ You must include the ID string of the user whose credentials you'd like to refre
           </strong>
            
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
             rel="noopener noreferrer"
             target="_blank"
@@ -3392,7 +3403,7 @@ for more details.
                 data-text="true"
               >
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#appleauthenticationscope"
                 >
                   AppleAuthenticationScope
@@ -3476,7 +3487,7 @@ successful authentication. This can be used to verify that the response was from
 you made and avoid replay attacks. More information on this property is available in the
 OAuth 2.0 protocol 
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="https://tools.ietf.org/html/rfc6749#section-10.12"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -3580,7 +3591,7 @@ OAuth 2.0 protocol
     >
       The options you can supply when making a call to 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="#appleauthenticationsigninasyncoptions"
       >
         <code
@@ -3594,28 +3605,29 @@ OAuth 2.0 protocol
 None of these options are required.
     </p>
     <blockquote
-      class="css-opaww-Callout"
+      class="css-zknray-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-ks2t0-Callout"
+        class="css-1o8qjfc-Callout"
       >
         <svg
-          color="var(--expo-theme-icon-default)"
-          fill="none"
-          height="16"
+          class="icon-sm text-icon-default"
+          fill="currentColor"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Info-icon
-          </title>
-          <path
-            d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
-            fill="var(--expo-theme-icon-default)"
-          />
+          <g
+            id="info-circle"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+              fill-rule="evenodd"
+              id="Solid"
+            />
+          </g>
         </svg>
       </div>
       <div
@@ -3632,7 +3644,7 @@ None of these options are required.
           </strong>
            
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
             rel="noopener noreferrer"
             target="_blank"
@@ -3713,7 +3725,7 @@ for more details.
                 An arbitrary string that is used to prevent replay attacks. See more information on this in the
 
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="https://openid.net/specs/openid-connect-core-1_0.html#CodeFlowSteps"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -3750,7 +3762,7 @@ for more details.
                 data-text="true"
               >
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#appleauthenticationscope"
                 >
                   AppleAuthenticationScope
@@ -3834,7 +3846,7 @@ successful authentication. This can be used to verify that the response was from
 you made and avoid replay attacks. More information on this property is available in the
 OAuth 2.0 protocol 
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="https://tools.ietf.org/html/rfc6749#section-10.12"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -3910,7 +3922,7 @@ OAuth 2.0 protocol
     >
       The options you can supply when making a call to 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="#appleauthenticationsignoutasyncoptions"
       >
         <code
@@ -3924,28 +3936,29 @@ OAuth 2.0 protocol
 You must include the ID string of the user to sign out.
     </p>
     <blockquote
-      class="css-opaww-Callout"
+      class="css-zknray-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-ks2t0-Callout"
+        class="css-1o8qjfc-Callout"
       >
         <svg
-          color="var(--expo-theme-icon-default)"
-          fill="none"
-          height="16"
+          class="icon-sm text-icon-default"
+          fill="currentColor"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Info-icon
-          </title>
-          <path
-            d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
-            fill="var(--expo-theme-icon-default)"
-          />
+          <g
+            id="info-circle"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+              fill-rule="evenodd"
+              id="Solid"
+            />
+          </g>
         </svg>
       </div>
       <div
@@ -3962,7 +3975,7 @@ You must include the ID string of the user to sign out.
           </strong>
            
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationopenidrequest"
             rel="noopener noreferrer"
             target="_blank"
@@ -4045,7 +4058,7 @@ successful authentication. This can be used to verify that the response was from
 you made and avoid replay attacks. More information on this property is available in the
 OAuth 2.0 protocol 
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="https://tools.ietf.org/html/rfc6749#section-10.12"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -4315,7 +4328,7 @@ OAuth 2.0 protocol
     >
       An enum whose values control which pre-defined color scheme to use when rendering an 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="#appleauthenticationappleauthenticationbutton"
       >
         <code
@@ -4593,7 +4606,7 @@ OAuth 2.0 protocol
     >
       An enum whose values control which pre-defined text to use when rendering an 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="#appleauthenticationappleauthenticationbutton"
       >
         <code
@@ -4754,21 +4767,21 @@ OAuth 2.0 protocol
         class="css-ia0kxc-PlatformTag"
       >
         <svg
-          color="var(--blue12)"
+          class="icon-xs text-palette-blue12"
           fill="none"
-          height="12"
           role="img"
-          size="12"
-          viewBox="0 0 20 20"
-          width="12"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Apple-icon
-          </title>
-          <path
-            d="M17.66 15.391a10.489 10.489 0 01-1.039 1.866c-.545.778-.992 1.317-1.336 1.616-.534.49-1.106.742-1.719.757-.44 0-.97-.125-1.587-.38-.619-.252-1.188-.377-1.708-.377-.546 0-1.131.125-1.757.378-.627.253-1.132.386-1.519.399-.587.025-1.172-.234-1.757-.777-.373-.325-.839-.883-1.398-1.673-.6-.843-1.092-1.822-1.478-2.937-.414-1.205-.621-2.371-.621-3.5 0-1.294.28-2.41.839-3.345A4.924 4.924 0 014.338 5.64a4.73 4.73 0 012.377-.67c.466 0 1.078.144 1.838.427.758.285 1.245.429 1.458.429.16 0 .7-.169 1.617-.505.867-.312 1.599-.441 2.198-.39 1.624.13 2.844.77 3.656 1.924-1.453.88-2.171 2.113-2.157 3.694.013 1.232.46 2.257 1.338 3.07.398.378.843.67 1.337.878-.107.31-.22.608-.34.894zM13.934.735c0 .965-.353 1.866-1.056 2.7-.848.992-1.875 1.566-2.987 1.475a3.005 3.005 0 01-.023-.366c0-.926.404-1.918 1.12-2.73.358-.41.813-.751 1.364-1.023.55-.269 1.072-.417 1.561-.443.015.13.02.259.02.387z"
-            fill="var(--blue12)"
-          />
+          <g
+            id="apple"
+          >
+            <path
+              d="M20.4478 17.3538C20.1312 18.0852 19.7564 18.7585 19.3222 19.3775C18.7303 20.2214 18.2457 20.8055 17.8722 21.1299C17.2933 21.6623 16.673 21.935 16.0088 21.9505C15.5319 21.9505 14.9568 21.8148 14.2874 21.5395C13.6158 21.2656 12.9986 21.1299 12.4343 21.1299C11.8424 21.1299 11.2076 21.2656 10.5287 21.5395C9.84865 21.8148 9.30085 21.9582 8.88201 21.9724C8.24504 21.9996 7.61014 21.7192 6.9764 21.1299C6.57191 20.7771 6.06598 20.1723 5.45989 19.3155C4.80961 18.4005 4.27499 17.3396 3.85615 16.13C3.4076 14.8235 3.18274 13.5583 3.18274 12.3335C3.18274 10.9304 3.48591 9.72034 4.09316 8.70628C4.5704 7.89174 5.20531 7.24922 5.99994 6.77753C6.79457 6.30584 7.65317 6.06547 8.57781 6.0501C9.08374 6.0501 9.7472 6.20659 10.5717 6.51416C11.3938 6.82276 11.9217 6.97926 12.1532 6.97926C12.3262 6.97926 12.9127 6.79627 13.9068 6.43145C14.847 6.09313 15.6404 5.95304 16.2905 6.00823C18.0519 6.15038 19.3752 6.84473 20.2552 8.09567C18.6799 9.05016 17.9007 10.387 17.9162 12.102C17.9304 13.4379 18.415 14.5495 19.3674 15.4321C19.799 15.8418 20.2811 16.1584 20.8174 16.3833C20.7011 16.7206 20.5783 17.0436 20.4478 17.3538ZM16.4081 1.45728C16.4081 2.50431 16.0256 3.48192 15.2631 4.38678C14.343 5.46249 13.2301 6.08408 12.0232 5.986C12.0078 5.86039 11.9989 5.72819 11.9989 5.58926C11.9989 4.58412 12.4365 3.50841 13.2135 2.62888C13.6015 2.18355 14.0949 1.81327 14.6932 1.51789C15.2902 1.22692 15.855 1.066 16.3861 1.03845C16.4016 1.17842 16.4081 1.3184 16.4081 1.45727V1.45728Z"
+              fill="currentColor"
+              id="Vector"
+            />
+          </g>
         </svg>
         <span
           class="css-6g4m4t-PlatformTag"
@@ -4904,7 +4917,7 @@ OAuth 2.0 protocol
     >
       An enum whose values specify state of the credential when checked with 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="#appleauthenticationgetcredentialstateasyncuser"
       >
         <code
@@ -4917,28 +4930,29 @@ OAuth 2.0 protocol
       .
     </p>
     <blockquote
-      class="css-opaww-Callout"
+      class="css-zknray-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-ks2t0-Callout"
+        class="css-1o8qjfc-Callout"
       >
         <svg
-          color="var(--expo-theme-icon-default)"
-          fill="none"
-          height="16"
+          class="icon-sm text-icon-default"
+          fill="currentColor"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Info-icon
-          </title>
-          <path
-            d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
-            fill="var(--expo-theme-icon-default)"
-          />
+          <g
+            id="info-circle"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+              fill-rule="evenodd"
+              id="Solid"
+            />
+          </g>
         </svg>
       </div>
       <div
@@ -4955,7 +4969,7 @@ OAuth 2.0 protocol
           </strong>
            
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationappleidprovidercredentialstate"
             rel="noopener noreferrer"
             target="_blank"
@@ -5588,7 +5602,7 @@ for more details.
     >
       An enum whose values specify scopes you can request when calling 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="#appleauthenticationsigninasyncoptions"
       >
         <code
@@ -5603,28 +5617,29 @@ for more details.
     
 
     <blockquote
-      class="css-opaww-Callout"
+      class="css-zknray-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-ks2t0-Callout"
+        class="css-1o8qjfc-Callout"
       >
         <svg
-          color="var(--expo-theme-icon-default)"
-          fill="none"
-          height="16"
+          class="icon-sm text-icon-default"
+          fill="currentColor"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Info-icon
-          </title>
-          <path
-            d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
-            fill="var(--expo-theme-icon-default)"
-          />
+          <g
+            id="info-circle"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+              fill-rule="evenodd"
+              id="Solid"
+            />
+          </g>
         </svg>
       </div>
       <div
@@ -5644,28 +5659,29 @@ You will still need to handle null values for any fields you request.
       </div>
     </blockquote>
     <blockquote
-      class="css-opaww-Callout"
+      class="css-zknray-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-ks2t0-Callout"
+        class="css-1o8qjfc-Callout"
       >
         <svg
-          color="var(--expo-theme-icon-default)"
-          fill="none"
-          height="16"
+          class="icon-sm text-icon-default"
+          fill="currentColor"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Info-icon
-          </title>
-          <path
-            d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
-            fill="var(--expo-theme-icon-default)"
-          />
+          <g
+            id="info-circle"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+              fill-rule="evenodd"
+              id="Solid"
+            />
+          </g>
         </svg>
       </div>
       <div
@@ -5682,7 +5698,7 @@ You will still need to handle null values for any fields you request.
           </strong>
            
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="https://developer.apple.com/documentation/authenticationservices/asauthorizationscope"
             rel="noopener noreferrer"
             target="_blank"
@@ -5882,28 +5898,29 @@ for more details.
       An enum whose values specify the system's best guess for how likely the current user is a real person.
     </p>
     <blockquote
-      class="css-opaww-Callout"
+      class="css-zknray-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-ks2t0-Callout"
+        class="css-1o8qjfc-Callout"
       >
         <svg
-          color="var(--expo-theme-icon-default)"
-          fill="none"
-          height="16"
+          class="icon-sm text-icon-default"
+          fill="currentColor"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Info-icon
-          </title>
-          <path
-            d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
-            fill="var(--expo-theme-icon-default)"
-          />
+          <g
+            id="info-circle"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+              fill-rule="evenodd"
+              id="Solid"
+            />
+          </g>
         </svg>
       </div>
       <div
@@ -5920,7 +5937,7 @@ for more details.
           </strong>
            
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="https://developer.apple.com/documentation/authenticationservices/asuserdetectionstatus"
             rel="noopener noreferrer"
             target="_blank"
@@ -6264,7 +6281,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
         &lt;
         <span>
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="#barcodescannerprops"
           >
             BarCodeScannerProps
@@ -6419,7 +6436,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           </code>
            is one of these 
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="#supported-formats"
           >
             listed above
@@ -6443,7 +6460,6 @@ minimize battery usage.
           </code>
           .
         </p>
-        <br />
       </div>
       <div
         class="css-11xr3cd"
@@ -6520,7 +6536,7 @@ minimize battery usage.
             data-text="true"
           >
             <a
-              class="css-1na8e0o-A"
+              class="css-3mpoiz-A"
               href="#barcodescannedcallback"
             >
               BarCodeScannedCallback
@@ -6534,7 +6550,7 @@ minimize battery usage.
           A callback that is invoked when a bar code has been successfully scanned. The callback is
 provided with an 
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="#barcodescannerresult"
           >
             BarCodeScannerResult
@@ -6544,28 +6560,29 @@ provided with an
         
 
         <blockquote
-          class="css-opaww-Callout"
+          class="css-zknray-Callout"
           data-testid="callout-container"
         >
           <div
-            class="css-ks2t0-Callout"
+            class="css-1o8qjfc-Callout"
           >
             <svg
-              color="var(--expo-theme-icon-default)"
-              fill="none"
-              height="16"
+              class="icon-sm text-icon-default"
+              fill="currentColor"
               role="img"
-              size="16"
-              viewBox="0 0 20 20"
-              width="16"
+              viewBox="0 0 24 24"
+              xmlns="http://www.w3.org/2000/svg"
             >
-              <title>
-                Info-icon
-              </title>
-              <path
-                d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
-                fill="var(--expo-theme-icon-default)"
-              />
+              <g
+                id="info-circle"
+              >
+                <path
+                  clip-rule="evenodd"
+                  d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+                  fill-rule="evenodd"
+                  id="Solid"
+                />
+              </g>
             </svg>
           </div>
           <div
@@ -6604,7 +6621,6 @@ data has been retrieved.
 
           </div>
         </blockquote>
-        <br />
       </div>
       <div
         class="css-11xr3cd"
@@ -6742,7 +6758,6 @@ Same as
           </code>
           .
         </p>
-        <br />
       </div>
       <h3
         class="  css-6r23rc-TextComponent"
@@ -6792,7 +6807,7 @@ Same as
         </a>
       </h3>
       <ul
-        class="css-57cmsk-TextComponent"
+        class="css-1p13rjl-TextComponent"
       >
         <li
           class="css-1hxzfrf-TextComponent"
@@ -6803,7 +6818,7 @@ Same as
             data-text="true"
           >
             <a
-              class="css-1na8e0o-A"
+              class="css-3mpoiz-A"
               href="https://reactnative.dev/docs/view#props"
               rel="noopener noreferrer"
               target="_blank"
@@ -6973,7 +6988,7 @@ Same as
                 data-text="true"
               >
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#permissionhookoptions"
                 >
                   PermissionHookOptions
@@ -7102,29 +7117,31 @@ This uses both
       Returns
     </p>
     <ul
-      class="css-1c9clym-TextComponent"
+      class="css-9xo9oi-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
         data-text="true"
       >
         <svg
-          class="css-1a9xr20"
-          color="var(--expo-theme-icon-secondary)"
+          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
           fill="none"
-          height="16"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Undo-icon
-          </title>
-          <path
-            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
-            fill="var(--expo-theme-icon-secondary)"
-          />
+          <g
+            id="corner-down-right"
+          >
+            <path
+              d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
         </svg>
         <code
           class="css-4xa05b-TextComponent"
@@ -7138,7 +7155,7 @@ This uses both
             </span>
             <span>
               <a
-                class="css-1na8e0o-A"
+                class="css-3mpoiz-A"
                 href="#permissionresponse"
               >
                 PermissionResponse
@@ -7151,7 +7168,7 @@ This uses both
             &lt;
             <span>
               <a
-                class="css-1na8e0o-A"
+                class="css-3mpoiz-A"
                 href="#permissionresponse"
               >
                 PermissionResponse
@@ -7165,7 +7182,7 @@ This uses both
             &lt;
             <span>
               <a
-                class="css-1na8e0o-A"
+                class="css-3mpoiz-A"
                 href="#permissionresponse"
               >
                 PermissionResponse
@@ -7294,36 +7311,38 @@ This uses both
       Returns
     </p>
     <ul
-      class="css-1c9clym-TextComponent"
+      class="css-9xo9oi-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
         data-text="true"
       >
         <svg
-          class="css-1a9xr20"
-          color="var(--expo-theme-icon-secondary)"
+          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
           fill="none"
-          height="16"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Undo-icon
-          </title>
-          <path
-            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
-            fill="var(--expo-theme-icon-secondary)"
-          />
+          <g
+            id="corner-down-right"
+          >
+            <path
+              d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
         </svg>
         <code
           class="css-4xa05b-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -7333,7 +7352,7 @@ This uses both
           &lt;
           <span>
             <a
-              class="css-1na8e0o-A"
+              class="css-3mpoiz-A"
               href="#permissionresponse"
             >
               PermissionResponse
@@ -7350,7 +7369,7 @@ This uses both
     >
       Return a promise that fulfills to an object of type 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="#permissionresponse"
       >
         <code
@@ -7453,36 +7472,38 @@ This uses both
       Returns
     </p>
     <ul
-      class="css-1c9clym-TextComponent"
+      class="css-9xo9oi-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
         data-text="true"
       >
         <svg
-          class="css-1a9xr20"
-          color="var(--expo-theme-icon-secondary)"
+          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
           fill="none"
-          height="16"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Undo-icon
-          </title>
-          <path
-            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
-            fill="var(--expo-theme-icon-secondary)"
-          />
+          <g
+            id="corner-down-right"
+          >
+            <path
+              d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
         </svg>
         <code
           class="css-4xa05b-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -7492,7 +7513,7 @@ This uses both
           &lt;
           <span>
             <a
-              class="css-1na8e0o-A"
+              class="css-3mpoiz-A"
               href="#permissionresponse"
             >
               PermissionResponse
@@ -7509,7 +7530,7 @@ This uses both
     >
       Return a promise that fulfills to an object of type 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="#permissionresponse"
       >
         <code
@@ -7681,28 +7702,29 @@ the platform.
               
 
               <blockquote
-                class="css-opaww-Callout"
+                class="css-zknray-Callout"
                 data-testid="callout-container"
               >
                 <div
-                  class="css-ks2t0-Callout"
+                  class="css-1o8qjfc-Callout"
                 >
                   <svg
-                    color="var(--expo-theme-icon-default)"
-                    fill="none"
-                    height="16"
+                    class="icon-sm text-icon-default"
+                    fill="currentColor"
                     role="img"
-                    size="16"
-                    viewBox="0 0 20 20"
-                    width="16"
+                    viewBox="0 0 24 24"
+                    xmlns="http://www.w3.org/2000/svg"
                   >
-                    <title>
-                      Info-icon
-                    </title>
-                    <path
-                      d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
-                      fill="var(--expo-theme-icon-default)"
-                    />
+                    <g
+                      id="info-circle"
+                    >
+                      <path
+                        clip-rule="evenodd"
+                        d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+                        fill-rule="evenodd"
+                        id="Solid"
+                      />
+                    </g>
                   </svg>
                 </div>
                 <div
@@ -7744,36 +7766,38 @@ the platform.
       Returns
     </p>
     <ul
-      class="css-1c9clym-TextComponent"
+      class="css-9xo9oi-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
         data-text="true"
       >
         <svg
-          class="css-1a9xr20"
-          color="var(--expo-theme-icon-secondary)"
+          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
           fill="none"
-          height="16"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Undo-icon
-          </title>
-          <path
-            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
-            fill="var(--expo-theme-icon-secondary)"
-          />
+          <g
+            id="corner-down-right"
+          >
+            <path
+              d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
         </svg>
         <code
           class="css-4xa05b-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -7783,7 +7807,7 @@ the platform.
           &lt;
           <span>
             <a
-              class="css-1na8e0o-A"
+              class="css-3mpoiz-A"
               href="#barcodescannerresult"
             >
               BarCodeScannerResult
@@ -8010,7 +8034,7 @@ in order to enable/disable the permission.
                 data-text="true"
               >
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#permissionexpiration"
                 >
                   PermissionExpiration
@@ -8081,7 +8105,7 @@ in order to enable/disable the permission.
                 data-text="true"
               >
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#permissionstatus"
                 >
                   PermissionStatus
@@ -8256,7 +8280,7 @@ in order to enable/disable the permission.
                 data-text="true"
               >
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#barcodepoint"
                 >
                   BarCodePoint
@@ -8294,7 +8318,7 @@ in order to enable/disable the permission.
                 data-text="true"
               >
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#barcodesize"
                 >
                   BarCodeSize
@@ -8380,7 +8404,7 @@ in order to enable/disable the permission.
         data-text="true"
       >
         <a
-          class="css-1na8e0o-A"
+          class="css-3mpoiz-A"
           href="#barcodescannerresult"
         >
           BarCodeScannerResult
@@ -8563,7 +8587,7 @@ in order to enable/disable the permission.
                 data-text="true"
               >
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#barcodeevent"
                 >
                   BarCodeEvent
@@ -8863,7 +8887,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                   data-text="true"
                 >
                   <a
-                    class="css-1na8e0o-A"
+                    class="css-3mpoiz-A"
                     href="#barcodeevent"
                   >
                     BarCodeEvent
@@ -8986,7 +9010,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
                 data-text="true"
               >
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#barcodebounds"
                 >
                   BarCodeBounds
@@ -9002,7 +9026,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               >
                 The 
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#barcodebounds"
                 >
                   BarCodeBounds
@@ -9048,7 +9072,7 @@ For some types, they will represent the area used by the scanner.
                 data-text="true"
               >
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#barcodepoint"
                 >
                   BarCodePoint
@@ -9823,36 +9847,38 @@ exports[`APISection expo-pedometer 1`] = `
       Returns
     </p>
     <ul
-      class="css-1c9clym-TextComponent"
+      class="css-9xo9oi-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
         data-text="true"
       >
         <svg
-          class="css-1a9xr20"
-          color="var(--expo-theme-icon-secondary)"
+          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
           fill="none"
-          height="16"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Undo-icon
-          </title>
-          <path
-            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
-            fill="var(--expo-theme-icon-secondary)"
-          />
+          <g
+            id="corner-down-right"
+          >
+            <path
+              d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
         </svg>
         <code
           class="css-4xa05b-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -9862,7 +9888,7 @@ exports[`APISection expo-pedometer 1`] = `
           &lt;
           <span>
             <a
-              class="css-1na8e0o-A"
+              class="css-3mpoiz-A"
               href="#permissionresponse"
             >
               PermissionResponse
@@ -9979,7 +10005,7 @@ exports[`APISection expo-pedometer 1`] = `
                 data-text="true"
               >
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -10019,7 +10045,7 @@ exports[`APISection expo-pedometer 1`] = `
                 data-text="true"
               >
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Date"
                   rel="noopener noreferrer"
                   target="_blank"
@@ -10056,36 +10082,38 @@ exports[`APISection expo-pedometer 1`] = `
       Returns
     </p>
     <ul
-      class="css-1c9clym-TextComponent"
+      class="css-9xo9oi-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
         data-text="true"
       >
         <svg
-          class="css-1a9xr20"
-          color="var(--expo-theme-icon-secondary)"
+          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
           fill="none"
-          height="16"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Undo-icon
-          </title>
-          <path
-            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
-            fill="var(--expo-theme-icon-secondary)"
-          />
+          <g
+            id="corner-down-right"
+          >
+            <path
+              d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
         </svg>
         <code
           class="css-4xa05b-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -10095,7 +10123,7 @@ exports[`APISection expo-pedometer 1`] = `
           &lt;
           <span>
             <a
-              class="css-1na8e0o-A"
+              class="css-3mpoiz-A"
               href="#pedometerresult"
             >
               PedometerResult
@@ -10112,7 +10140,7 @@ exports[`APISection expo-pedometer 1`] = `
     >
       Returns a promise that fulfills with a 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="#pedometerresult"
       >
         <code
@@ -10132,7 +10160,7 @@ exports[`APISection expo-pedometer 1`] = `
     >
       As 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="https://developer.apple.com/documentation/coremotion/cmpedometer/1613946-querypedometerdatafromdate?language=objc"
         rel="noopener noreferrer"
         target="_blank"
@@ -10144,28 +10172,29 @@ exports[`APISection expo-pedometer 1`] = `
     
 
     <blockquote
-      class="css-opaww-Callout"
+      class="css-zknray-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-ks2t0-Callout"
+        class="css-1o8qjfc-Callout"
       >
         <svg
-          color="var(--expo-theme-icon-default)"
-          fill="none"
-          height="16"
+          class="icon-sm text-icon-default"
+          fill="currentColor"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Info-icon
-          </title>
-          <path
-            d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
-            fill="var(--expo-theme-icon-default)"
-          />
+          <g
+            id="info-circle"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+              fill-rule="evenodd"
+              id="Solid"
+            />
+          </g>
         </svg>
       </div>
       <div
@@ -10253,36 +10282,38 @@ a start date that is more than seven days in the past returns only the available
       Returns
     </p>
     <ul
-      class="css-1c9clym-TextComponent"
+      class="css-9xo9oi-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
         data-text="true"
       >
         <svg
-          class="css-1a9xr20"
-          color="var(--expo-theme-icon-secondary)"
+          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
           fill="none"
-          height="16"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Undo-icon
-          </title>
-          <path
-            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
-            fill="var(--expo-theme-icon-secondary)"
-          />
+          <g
+            id="corner-down-right"
+          >
+            <path
+              d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
         </svg>
         <code
           class="css-4xa05b-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -10381,36 +10412,38 @@ available on this device.
       Returns
     </p>
     <ul
-      class="css-1c9clym-TextComponent"
+      class="css-9xo9oi-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
         data-text="true"
       >
         <svg
-          class="css-1a9xr20"
-          color="var(--expo-theme-icon-secondary)"
+          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
           fill="none"
-          height="16"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Undo-icon
-          </title>
-          <path
-            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
-            fill="var(--expo-theme-icon-secondary)"
-          />
+          <g
+            id="corner-down-right"
+          >
+            <path
+              d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
         </svg>
         <code
           class="css-4xa05b-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise"
             rel="noopener noreferrer"
             target="_blank"
@@ -10420,7 +10453,7 @@ available on this device.
           &lt;
           <span>
             <a
-              class="css-1na8e0o-A"
+              class="css-3mpoiz-A"
               href="#permissionresponse"
             >
               PermissionResponse
@@ -10537,7 +10570,7 @@ available on this device.
                 data-text="true"
               >
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#pedometerupdatecallback"
                 >
                   PedometerUpdateCallback
@@ -10554,7 +10587,7 @@ available on this device.
                 A callback that is invoked when new step count data is available. The callback is
 provided with a single argument that is 
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#pedometerresult"
                 >
                   <code
@@ -10585,36 +10618,38 @@ provided with a single argument that is
       Returns
     </p>
     <ul
-      class="css-1c9clym-TextComponent"
+      class="css-9xo9oi-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
         data-text="true"
       >
         <svg
-          class="css-1a9xr20"
-          color="var(--expo-theme-icon-secondary)"
+          class="inline-block icon-sm text-icon-secondary align-middle mr-2"
           fill="none"
-          height="16"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          stroke="currentColor"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Undo-icon
-          </title>
-          <path
-            d="M7.982 7.664v3.98L0 6.657l7.982-4.99v3.98h6.941a5.044 5.044 0 015.044 5.045v7.938a1.009 1.009 0 11-2.017 0v-7.938a3.026 3.026 0 00-3.027-3.027h-6.94z"
-            fill="var(--expo-theme-icon-secondary)"
-          />
+          <g
+            id="corner-down-right"
+          >
+            <path
+              d="M4 4V5.4C4 8.76031 4 10.4405 4.65396 11.7239C5.2292 12.8529 6.14708 13.7708 7.27606 14.346C8.55953 15 10.2397 15 13.6 15H20M20 15L15 10M20 15L15 20"
+              id="Icon"
+              stroke-linecap="round"
+              stroke-linejoin="round"
+              stroke-width="2"
+            />
+          </g>
         </svg>
         <code
           class="css-4xa05b-TextComponent"
           data-text="true"
         >
           <a
-            class="css-1na8e0o-A"
+            class="css-3mpoiz-A"
             href="#subscription"
           >
             Subscription
@@ -10629,7 +10664,7 @@ provided with a single argument that is
     >
       Returns a 
       <a
-        class="css-1na8e0o-A"
+        class="css-3mpoiz-A"
         href="#subscription"
       >
         <code
@@ -10849,7 +10884,7 @@ in order to enable/disable the permission.
                 data-text="true"
               >
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#permissionexpiration"
                 >
                   PermissionExpiration
@@ -10920,7 +10955,7 @@ in order to enable/disable the permission.
                 data-text="true"
               >
                 <a
-                  class="css-1na8e0o-A"
+                  class="css-3mpoiz-A"
                   href="#permissionstatus"
                 >
                   PermissionStatus
@@ -11225,7 +11260,7 @@ in order to enable/disable the permission.
                   data-text="true"
                 >
                   <a
-                    class="css-1na8e0o-A"
+                    class="css-3mpoiz-A"
                     href="#pedometerresult"
                   >
                     PedometerResult

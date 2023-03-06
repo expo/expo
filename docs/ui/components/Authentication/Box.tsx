@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { breakpoints, spacing } from '@expo/styleguide';
+import { breakpoints, spacing } from '@expo/styleguide-base';
 
 import { CreateAppButton } from './CreateAppButton';
 import { Icon } from './Icon';

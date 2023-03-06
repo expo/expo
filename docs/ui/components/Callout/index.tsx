@@ -120,7 +120,7 @@ const containerStyle = css({
 
 const iconStyle = css({
   fontStyle: 'normal',
-  marginTop: spacing[1],
+  marginTop: 5,
   userSelect: 'none',
 });
 

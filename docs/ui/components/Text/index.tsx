@@ -17,13 +17,13 @@ const CRAWLABLE_HEADINGS = ['h1', 'h2', 'h3', 'h4', 'h5'];
 const CRAWLABLE_TEXT = ['span', 'p', 'li', 'blockquote', 'code', 'pre'];
 
 type PermalinkedComponentProps = React.PropsWithChildren<
-  { level?: number; id?: string } & AdditionalProps
+  { level?: number; id?: string } & AdditionalProps & TextComponentProps
 >;
 
 const isDev = process.env.NODE_ENV === 'development';
 
 export const createPermalinkedComponent = (
-  BaseComponent: React.ComponentType<React.PropsWithChildren<any>>,
+  BaseComponent: React.ComponentType<React.PropsWithChildren<TextComponentProps>>,
   options?: {
     baseNestingLevel?: number;
     sidebarType?: HeadingType;
@@ -53,11 +53,20 @@ export const createPermalinkedComponent = (
 
 export function createTextComponent(Element: TextElement, textStyle?: SerializedStyles) {
   function TextComponent(props: TextComponentProps) {
-    const { testID, tag, weight: textWeight, theme: textTheme, crawlable = true, ...rest } = props;
+    const {
+      testID,
+      tag,
+      className,
+      weight: textWeight,
+      theme: textTheme,
+      crawlable = true,
+      ...rest
+    } = props;
     const TextElementTag = tag ?? Element;
 
     return (
       <TextElementTag
+        className={className}
         css={[
           baseTextStyle,
           textStyle,
@@ -110,7 +119,7 @@ const linkStyled = css({
 });
 
 const listStyle = css({
-  marginLeft: '1.5rem',
+  marginTop: spacing[2],
 });
 
 const codeStyle = css({

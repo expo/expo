@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { Button, shadows, theme } from '@expo/styleguide';
 import { breakpoints, spacing } from '@expo/styleguide-base';
-import { SearchSmIcon } from '@expo/styleguide-icons';
+import { SearchRefractionIcon } from '@expo/styleguide-icons';
 import { Dispatch, SetStateAction, useEffect, useState } from 'react';
 
 import { isAppleDevice } from './utils';
@@ -35,7 +35,7 @@ export const CommandMenuTrigger = ({ setOpen }: Props) => {
   return (
     <Button theme="secondary" css={buttonStyle} onClick={() => setOpen(true)}>
       {/* @ts-ignore: TODO */}
-      <SearchSmIcon className="icon-md text-icon-default" title="" />
+      <SearchRefractionIcon className="icon-md text-icon-default" title="" />
       <CALLOUT css={labelStyle}>Search</CALLOUT>
       {isMac !== null && (
         <div css={[keysWrapperStyle, hideOnMobileStyle]}>

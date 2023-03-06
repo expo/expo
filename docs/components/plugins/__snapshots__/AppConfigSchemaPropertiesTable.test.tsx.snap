@@ -85,21 +85,21 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-166ujkg-Collapsible"
         >
           <svg
-            class="css-1wgpnk4-Collapsible"
+            class="icon-sm css-1wgpnk4-Collapsible"
             fill="none"
-            height="16"
             role="img"
-            size="16"
-            viewBox="0 0 20 20"
-            width="16"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <title>
-              Triangle-down-icon
-            </title>
-            <path
-              d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
-              fill="var(--expo-theme-icon-default)"
-            />
+            <g
+              id="triangle-down"
+            >
+              <path
+                d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
+                fill="currentColor"
+                id="Vector 250"
+              />
+            </g>
           </svg>
         </div>
         <span
@@ -205,21 +205,21 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-166ujkg-Collapsible"
         >
           <svg
-            class="css-1wgpnk4-Collapsible"
+            class="icon-sm css-1wgpnk4-Collapsible"
             fill="none"
-            height="16"
             role="img"
-            size="16"
-            viewBox="0 0 20 20"
-            width="16"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <title>
-              Triangle-down-icon
-            </title>
-            <path
-              d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
-              fill="var(--expo-theme-icon-default)"
-            />
+            <g
+              id="triangle-down"
+            >
+              <path
+                d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
+                fill="currentColor"
+                id="Vector 250"
+              />
+            </g>
           </svg>
         </div>
         <span
@@ -250,21 +250,21 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-166ujkg-Collapsible"
         >
           <svg
-            class="css-1wgpnk4-Collapsible"
+            class="icon-sm css-1wgpnk4-Collapsible"
             fill="none"
-            height="16"
             role="img"
-            size="16"
-            viewBox="0 0 20 20"
-            width="16"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <title>
-              Triangle-down-icon
-            </title>
-            <path
-              d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
-              fill="var(--expo-theme-icon-default)"
-            />
+            <g
+              id="triangle-down"
+            >
+              <path
+                d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
+                fill="currentColor"
+                id="Vector 250"
+              />
+            </g>
           </svg>
         </div>
         <span
@@ -378,21 +378,21 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-166ujkg-Collapsible"
             >
               <svg
-                class="css-1wgpnk4-Collapsible"
+                class="icon-sm css-1wgpnk4-Collapsible"
                 fill="none"
-                height="16"
                 role="img"
-                size="16"
-                viewBox="0 0 20 20"
-                width="16"
+                viewBox="0 0 24 24"
+                xmlns="http://www.w3.org/2000/svg"
               >
-                <title>
-                  Triangle-down-icon
-                </title>
-                <path
-                  d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
-                  fill="var(--expo-theme-icon-default)"
-                />
+                <g
+                  id="triangle-down"
+                >
+                  <path
+                    d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
+                    fill="currentColor"
+                    id="Vector 250"
+                  />
+                </g>
               </svg>
             </div>
             <span
@@ -683,21 +683,21 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-166ujkg-Collapsible"
         >
           <svg
-            class="css-1wgpnk4-Collapsible"
+            class="icon-sm css-1wgpnk4-Collapsible"
             fill="none"
-            height="16"
             role="img"
-            size="16"
-            viewBox="0 0 20 20"
-            width="16"
+            viewBox="0 0 24 24"
+            xmlns="http://www.w3.org/2000/svg"
           >
-            <title>
-              Triangle-down-icon
-            </title>
-            <path
-              d="M16.883 7.43H3.117L10 14.313l6.883-6.883z"
-              fill="var(--expo-theme-icon-default)"
-            />
+            <g
+              id="triangle-down"
+            >
+              <path
+                d="M18.8831 9.43005H5.11694L12 16.3131L18.8831 9.43005Z"
+                fill="currentColor"
+                id="Vector 250"
+              />
+            </g>
           </svg>
         </div>
         <span
@@ -719,28 +719,29 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
     </details>
     <blockquote
-      class="css-opaww-Callout"
+      class="css-zknray-Callout"
       data-testid="callout-container"
     >
       <div
-        class="css-ks2t0-Callout"
+        class="css-1o8qjfc-Callout"
       >
         <svg
-          color="var(--expo-theme-icon-default)"
-          fill="none"
-          height="16"
+          class="icon-sm text-icon-default"
+          fill="currentColor"
           role="img"
-          size="16"
-          viewBox="0 0 20 20"
-          width="16"
+          viewBox="0 0 24 24"
+          xmlns="http://www.w3.org/2000/svg"
         >
-          <title>
-            Info-icon
-          </title>
-          <path
-            d="M10 1a9 9 0 100 18 9 9 0 000-18zm-.01 4.064a.962.962 0 01.73-.33c.229 0 .43.082.582.238.152.155.23.354.23.59 0 .295-.104.558-.308.78-.209.23-.453.347-.726.347a.777.777 0 01-.576-.244.844.844 0 01-.227-.607c0-.3.099-.561.295-.774zm1.499 8.48c-.746.7-1.279 1.138-1.628 1.337-.372.213-.679.317-.937.317a.814.814 0 01-.622-.254c-.152-.162-.23-.382-.23-.652 0-.69.392-2.293 1.197-4.9.013-.044.024-.086.031-.125a.814.814 0 00-.105.056c-.066.042-.267.2-.854.773a.25.25 0 01-.329.02l-.347-.27a.25.25 0 01-.033-.367c.542-.596 1.047-1.029 1.502-1.286.477-.269.88-.4 1.232-.4.227 0 .411.057.547.17a.621.621 0 01.225.492c0 .132-.063.474-.522 2.015-.657 2.203-.814 3.003-.825 3.28.125-.074.419-.283 1.046-.873a.25.25 0 01.347.003l.308.3a.25.25 0 01-.003.363z"
-            fill="var(--expo-theme-icon-default)"
-          />
+          <g
+            id="info-circle"
+          >
+            <path
+              clip-rule="evenodd"
+              d="M12 1C5.92487 1 1 5.92487 1 12C1 18.0751 5.92487 23 12 23C18.0751 23 23 18.0751 23 12C23 5.92487 18.0751 1 12 1ZM12 7C11.4477 7 11 7.44772 11 8C11 8.55228 11.4477 9 12 9H12.01C12.5623 9 13.01 8.55228 13.01 8C13.01 7.44772 12.5623 7 12.01 7H12ZM13 12C13 11.4477 12.5523 11 12 11C11.4477 11 11 11.4477 11 12V16C11 16.5523 11.4477 17 12 17C12.5523 17 13 16.5523 13 16V12Z"
+              fill-rule="evenodd"
+              id="Solid"
+            />
+          </g>
         </svg>
       </div>
       <div

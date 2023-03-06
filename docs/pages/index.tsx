@@ -113,7 +113,7 @@ const Home = () => {
                   height: 40,
                 })}
                 href="/tutorial/introduction/"
-                rightSlot={<ArrowRightIcon color={button.primary.icon} />}>
+                rightSlot={<ArrowRightIcon className="text-button-primary-icon" />}>
                 Start Tutorial
               </HomeButton>
             </GridCell>
@@ -143,7 +143,7 @@ const Home = () => {
                 css={css({ backgroundColor: palette.purple11, color: palette.purple3 })}
                 href="https://snack.expo.dev/"
                 target="_blank"
-                rightSlot={<ArrowUpRightIcon color={palette.purple3} />}>
+                rightSlot={<ArrowUpRightIcon className="text-palette-purple3" />}>
                 Create a Snack
               </HomeButton>
             </GridCell>
@@ -170,7 +170,7 @@ const Home = () => {
                 })}
                 href="https://www.codecademy.com/learn/learn-react-native"
                 target="_blank"
-                rightSlot={<ArrowUpRightIcon color={palette.orange4} />}>
+                rightSlot={<ArrowUpRightIcon className="text-palette-orange4" />}>
                 Start Course
               </HomeButton>
             </GridCell>
@@ -191,7 +191,7 @@ const Home = () => {
               <HomeButton
                 css={css({ backgroundColor: palette.green11, color: palette.green2 })}
                 href="/introduction/faq"
-                rightSlot={<ArrowRightIcon color={palette.green2} />}>
+                rightSlot={<ArrowRightIcon className="text-palette-green2" />}>
                 Read
               </HomeButton>
             </GridCell>
@@ -216,7 +216,7 @@ const Home = () => {
                 })}
                 href="https://us02web.zoom.us/meeting/register/tZcvceivqj0oHdGVOjEeKY0dRxCRPb0HzaAK"
                 target="_blank"
-                rightSlot={<ArrowUpRightIcon color={palette.yellow2} />}>
+                rightSlot={<ArrowUpRightIcon className="text-palette-yellow2" />}>
                 Register
               </HomeButton>
             </GridCell>
@@ -228,26 +228,18 @@ const Home = () => {
         </Description>
         <CellContainer>
           <Row>
-            <APIGridCell
-              title="Maps"
-              link="/versions/latest/sdk/map-view"
-              icon={<APIMapsIcon size={70} />}
-            />
+            <APIGridCell title="Maps" link="/versions/latest/sdk/map-view" icon={<APIMapsIcon />} />
             <APIGridCell
               title="Camera"
               link="/versions/latest/sdk/camera"
-              icon={<APICameraIcon size={70} />}
+              icon={<APICameraIcon />}
             />
             <APIGridCell
               title="Notifications"
               link="/versions/latest/sdk/notifications"
-              icon={<APINotificationsIcon size={70} />}
+              icon={<APINotificationsIcon />}
             />
-            <APIGridCell
-              title="View all APIs"
-              link="/versions/latest/"
-              icon={<APIListIcon size={70} />}
-            />
+            <APIGridCell title="View all APIs" link="/versions/latest/" icon={<APIListIcon />} />
           </Row>
         </CellContainer>
         <RawH3>Join the community</RawH3>

@@ -1,9 +1,8 @@
 import { css } from '@emotion/react';
 import { theme, DocsLogo } from '@expo/styleguide';
 import { spacing } from '@expo/styleguide-base';
-import { ArrowLeftIcon, PlanEnterpriseIcon } from '@expo/styleguide-icons';
+import { ArrowLeftIcon, BookOpen02Icon, PlanEnterpriseIcon } from '@expo/styleguide-icons';
 
-import { GuidesIcon } from './icons/Guides';
 import { PreviewIcon, PreviewInactiveIcon } from './icons/Preview';
 
 import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags.cjs';
@@ -33,7 +32,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
       <SidebarSingleEntry
         href="/"
         title="Guides"
-        Icon={GuidesIcon}
+        Icon={BookOpen02Icon}
         isActive={sidebarActiveGroup === 'general'}
       />
       <SidebarSingleEntry

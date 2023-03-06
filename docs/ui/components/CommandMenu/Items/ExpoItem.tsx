@@ -1,4 +1,4 @@
-import { BuildIcon, iconSize, theme } from '@expo/styleguide';
+import { BuildIcon } from '@expo/styleguide-icons';
 import { Command } from 'cmdk';
 
 import type { ExpoItemType } from '../types';
@@ -23,7 +23,7 @@ export const ExpoItem = ({ item, onSelect, query }: Props) => {
         onSelect && onSelect();
       }}>
       <div css={itemStyle}>
-        <Icon color={theme.icon.secondary} width={iconSize.md} />
+        <Icon className="icon-md text-icon-secondary" />
         <CALLOUT
           weight="medium"
           dangerouslySetInnerHTML={{ __html: addHighlight(item.label, query) }}

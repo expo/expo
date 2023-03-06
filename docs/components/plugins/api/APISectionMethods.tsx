@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { theme, spacing, UndoIcon, iconSize } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
+import { CornerDownRightIcon } from '@expo/styleguide-icons';
 import ReactMarkdown from 'react-markdown';
 
 import { APIDataType } from '~/components/plugins/api/APIDataType';
@@ -82,11 +83,7 @@ export const renderMethod = (
               <BoxSectionHeader text="Returns" />
               <UL css={STYLES_NO_BULLET_LIST}>
                 <LI>
-                  <UndoIcon
-                    color={theme.icon.secondary}
-                    size={iconSize.sm}
-                    css={returnIconStyles}
-                  />
+                  <CornerDownRightIcon className="inline-block icon-sm text-icon-secondary align-middle mr-2" />
                   <APIDataType typeDefinition={type} />
                 </LI>
               </UL>
@@ -120,12 +117,6 @@ const APISectionMethods = ({
       )}
     </>
   ) : null;
-
-const returnIconStyles = css({
-  transform: 'rotate(180deg)',
-  marginRight: spacing[2],
-  verticalAlign: 'middle',
-});
 
 export default APISectionMethods;
 
@@ -187,6 +178,6 @@ export const APIMethod = ({
 };
 
 const STYLES_NO_BULLET_LIST = css({
-  listStyle: 'none',
+  listStyle: 'none !important',
   marginLeft: spacing[2],
 });

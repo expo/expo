@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { theme, typography } from '@expo/styleguide';
 import { spacing } from '@expo/styleguide-base';
-import { Edit05Icon, GithubIcon, MessageDotsSquareSolidIcon } from '@expo/styleguide-icons';
+import { Edit05Icon, GithubIcon, MessageDotsSquareIcon } from '@expo/styleguide-icons';
 
 import { A, LI } from '../Text';
 import { githubUrl } from './utils';
@@ -27,7 +27,7 @@ export const ForumsLink = ({ isAPIPage, title }: { isAPIPage: boolean; title: st
     <LI>
       <A css={linkStyle} openInNewTab href={`https://forums.expo.dev/tag/${title}`}>
         <span css={iconStyle}>
-          <MessageDotsSquareSolidIcon className="icon-sm" />
+          <MessageDotsSquareIcon className="icon-sm" />
         </span>
         Ask a question on the forums about {title}
       </A>
@@ -36,7 +36,7 @@ export const ForumsLink = ({ isAPIPage, title }: { isAPIPage: boolean; title: st
     <LI>
       <A css={linkStyle} openInNewTab href="https://forums.expo.dev/">
         <span css={iconStyle}>
-          <MessageDotsSquareSolidIcon className="icon-sm" />
+          <MessageDotsSquareIcon className="icon-sm" />
         </span>
         Ask a question on the forums
       </A>

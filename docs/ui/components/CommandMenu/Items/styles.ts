@@ -27,16 +27,3 @@ export const footnoteStyle = css({
     opacity: 0.65,
   },
 });
-
-export const footerArrowStyle = css({
-  display: 'inline-block',
-  position: 'relative',
-  margin: `0 ${spacing[1]}px`,
-  top: 2,
-});
-
-export const externalLinkStyles = css({
-  alignSelf: 'center',
-  marginLeft: 'auto',
-  flexShrink: 0,
-});

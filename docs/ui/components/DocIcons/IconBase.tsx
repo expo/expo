@@ -1,22 +1,26 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
-import { iconSize, spacing } from '@expo/styleguide-base';
-import * as React from 'react';
+import { spacing } from '@expo/styleguide-base';
+import type { ElementType } from 'react';
+import { twMerge } from 'tailwind-merge';
 
 export type DocIconProps = {
-  Icon?: React.ElementType;
-  color?: string;
+  Icon?: ElementType;
+  className?: string;
   small?: boolean;
 };
 
-export const IconBase = ({ color, small, Icon }: DocIconProps) => {
+export const IconBase = ({ className, small, Icon }: DocIconProps) => {
   if (!Icon) return null;
 
   return (
     <Icon
+      className={twMerge(
+        'inline-block',
+        small ? 'icon-sm' : 'icon-md',
+        'text-icon-default',
+        className
+      )}
       css={iconStyles}
-      color={color ?? theme.icon.default}
-      size={small ? iconSize.sm : iconSize.md}
     />
   );
 };

@@ -1,14 +1,14 @@
-import { iconSize, theme } from '@expo/styleguide';
-import { IconProps } from '@expo/styleguide/dist/types';
-import React from 'react';
+import { theme } from '@expo/styleguide';
+import type { HTMLAttributes } from 'react';
+import { twMerge } from 'tailwind-merge';
 
-export const APIMapsIcon = ({ size = iconSize.md }: IconProps) => (
+export const APIMapsIcon = ({ className, ...rest }: HTMLAttributes<SVGSVGElement>) => (
   <svg
-    width={size}
-    height={size}
+    className={twMerge('h-16 w-16', className)}
     viewBox="0 0 70 70"
     fill="none"
-    xmlns="http://www.w3.org/2000/svg">
+    xmlns="http://www.w3.org/2000/svg"
+    {...rest}>
     <path
       d="M26.25 61.2499C25.7957 61.2562 25.3463 61.1563 24.9375 60.9582L7.43749 52.2082C6.95205 51.9636 6.54463 51.5882 6.26118 51.1244C5.97773 50.6606 5.82954 50.1268 5.83332 49.5832V11.6665C5.82983 11.1669 5.95477 10.6747 6.19614 10.2372C6.43752 9.7997 6.78724 9.43155 7.21178 9.16804C7.63631 8.90454 8.12143 8.75451 8.6206 8.73236C9.11978 8.71021 9.61628 8.81667 10.0625 9.04153L26.25 17.179V61.2499ZM43.75 8.74986C44.2042 8.74354 44.6537 8.84342 45.0625 9.04153L62.5625 17.7915C63.0479 18.0361 63.4553 18.4115 63.7388 18.8753C64.0222 19.3392 64.1704 19.873 64.1667 20.4165V58.3332C64.1701 58.8329 64.0452 59.325 63.8038 59.7625C63.5625 60.2 63.2127 60.5682 62.7882 60.8317C62.3637 61.0952 61.8786 61.2452 61.3794 61.2674C60.8802 61.2895 60.3837 61.1831 59.9375 60.9582L43.75 52.8499V8.74986Z"
       fill={theme.icon.secondary}
@@ -20,13 +20,13 @@ export const APIMapsIcon = ({ size = iconSize.md }: IconProps) => (
   </svg>
 );
 
-export const APICameraIcon = ({ size = iconSize.md }: IconProps) => (
+export const APICameraIcon = ({ className, ...rest }: HTMLAttributes<SVGSVGElement>) => (
   <svg
-    width={size}
-    height={size}
+    className={twMerge('h-16 w-16', className)}
     viewBox="0 0 70 70"
     fill="none"
-    xmlns="http://www.w3.org/2000/svg">
+    xmlns="http://www.w3.org/2000/svg"
+    {...rest}>
     <path
       d="M19.2208 17.5L27.0958 9.625C27.3659 9.34941 27.6881 9.13016 28.0435 8.97997C28.399 8.82977 28.7808 8.7516 29.1666 8.75H40.8333C41.6026 8.76096 42.3365 9.07546 42.875 9.625L50.8083 17.5H58.3333C59.8804 17.5 61.3641 18.1146 62.4581 19.2085C63.5521 20.3025 64.1666 21.7862 64.1666 23.3333V55.4167C64.1666 56.9638 63.5521 58.4475 62.4581 59.5415C61.3641 60.6354 59.8804 61.25 58.3333 61.25H11.6666C10.1196 61.25 8.63582 60.6354 7.54186 59.5415C6.44789 58.4475 5.83331 56.9638 5.83331 55.4167V23.3333C5.83331 20.125 8.45831 17.5 11.6666 17.5H19.2208ZM55.4166 29.1667C56.1902 29.1667 56.9321 28.8594 57.479 28.3124C58.026 27.7654 58.3333 27.0235 58.3333 26.25C58.3333 25.4765 58.026 24.7346 57.479 24.1876C56.9321 23.6406 56.1902 23.3333 55.4166 23.3333C54.6431 23.3333 53.9012 23.6406 53.3543 24.1876C52.8073 24.7346 52.5 25.4765 52.5 26.25C52.5 27.0235 52.8073 27.7654 53.3543 28.3124C53.9012 28.8594 54.6431 29.1667 55.4166 29.1667ZM35 52.5C38.8677 52.5 42.577 50.9635 45.312 48.2286C48.0469 45.4937 49.5833 41.7844 49.5833 37.9167C49.5833 34.0489 48.0469 30.3396 45.312 27.6047C42.577 24.8698 38.8677 23.3333 35 23.3333C31.1322 23.3333 27.4229 24.8698 24.688 27.6047C21.9531 30.3396 20.4166 34.0489 20.4166 37.9167C20.4166 41.7844 21.9531 45.4937 24.688 48.2286C27.4229 50.9635 31.1322 52.5 35 52.5Z"
       fill={theme.icon.secondary}
@@ -38,13 +38,13 @@ export const APICameraIcon = ({ size = iconSize.md }: IconProps) => (
   </svg>
 );
 
-export const APINotificationsIcon = ({ size = iconSize.md }: IconProps) => (
+export const APINotificationsIcon = ({ className, ...rest }: HTMLAttributes<SVGSVGElement>) => (
   <svg
-    width={size}
-    height={size}
+    className={twMerge('h-16 w-16', className)}
     viewBox="0 0 70 70"
     fill="none"
-    xmlns="http://www.w3.org/2000/svg">
+    xmlns="http://www.w3.org/2000/svg"
+    {...rest}>
     <path
       d="M35 64.1666C39.8325 64.1666 43.75 60.2491 43.75 55.4166C43.75 50.5841 39.8325 46.6666 35 46.6666C30.1675 46.6666 26.25 50.5841 26.25 55.4166C26.25 60.2491 30.1675 64.1666 35 64.1666Z"
       fill={theme.icon.default}
@@ -56,13 +56,13 @@ export const APINotificationsIcon = ({ size = iconSize.md }: IconProps) => (
   </svg>
 );
 
-export const APIListIcon = ({ size = iconSize.md }: IconProps) => (
+export const APIListIcon = ({ className, ...rest }: HTMLAttributes<SVGSVGElement>) => (
   <svg
-    width={size}
-    height={size}
+    className={twMerge('h-16 w-16', className)}
     viewBox="0 0 70 70"
     fill="none"
-    xmlns="http://www.w3.org/2000/svg">
+    xmlns="http://www.w3.org/2000/svg"
+    {...rest}>
     <path
       d="M7.58337 17.7623L33.8334 6.09567C34.2014 5.93507 34.5985 5.85217 35 5.85217C35.4015 5.85217 35.7987 5.93507 36.1667 6.09567L62.4167 17.7623C62.9259 17.9943 63.3577 18.3679 63.6604 18.8385C63.9631 19.3092 64.1241 19.8569 64.1241 20.4165C64.1241 20.9761 63.9631 21.5238 63.6604 21.9945C63.3577 22.4651 62.9259 22.8387 62.4167 23.0707L36.1667 34.7373C35.7987 34.8979 35.4015 34.9808 35 34.9808C34.5985 34.9808 34.2014 34.8979 33.8334 34.7373L7.58337 23.0707C7.07415 22.8387 6.64243 22.4651 6.33969 21.9945C6.03695 21.5238 5.87598 20.9761 5.87598 20.4165C5.87598 19.8569 6.03695 19.3092 6.33969 18.8385C6.64243 18.3679 7.07415 17.9943 7.58337 17.7623Z"
       fill={theme.icon.secondary}

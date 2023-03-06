@@ -1,4 +1,4 @@
-import { GithubIcon, theme } from '@expo/styleguide';
+import { GithubIcon } from '@expo/styleguide-icons';
 import { Command } from 'cmdk';
 
 import type { RNDirectoryItemType } from '../types';
@@ -25,7 +25,7 @@ export const RNDirectoryItem = ({ item, onSelect, query }: Props) => {
         onSelect && onSelect();
       }}>
       <div css={itemStyle}>
-        <GithubIcon color={theme.icon.secondary} />
+        <GithubIcon className="icon-md text-icon-secondary" />
         <div>
           <CALLOUT
             weight="medium"

@@ -1,4 +1,4 @@
-import { SearchIcon, theme, XIcon } from '@expo/styleguide';
+import { SearchRefractionIcon, XIcon } from '@expo/styleguide-icons';
 import { Command } from 'cmdk';
 import { useEffect, useState } from 'react';
 import type { Dispatch, SetStateAction } from 'react';
@@ -71,8 +71,10 @@ export const CommandMenu = ({ version, open, setOpen }: Props) => {
 
   return (
     <Command.Dialog open={open} onOpenChange={setOpen} label="Search Menu" shouldFilter={false}>
-      <SearchIcon color={theme.icon.secondary} css={searchIconStyle} />
-      <XIcon color={theme.icon.secondary} css={closeIconStyle} onClick={() => setOpen(false)} />
+      <SearchRefractionIcon className="icon-md text-icon-secondary" css={searchIconStyle} />
+      <div css={closeIconStyle}>
+        <XIcon className="icon-md text-icon-secondary" onClick={() => setOpen(false)} />
+      </div>
       <Command.Input value={query} onValueChange={setQuery} placeholder="search anything…" />
       <BarLoader isLoading={loading} />
       <Command.List>

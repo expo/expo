@@ -17,23 +17,26 @@ describe(Callout, () => {
 
   it('renders callout with icon component', () => {
     render(<Callout icon={CheckCircleSolidIcon}>Hello</Callout>);
-    expect(screen.getByTitle('Check-icon')).toBeInTheDocument();
+    expect(screen.getByRole('img')).toBeInTheDocument();
     expect(screen.getByText('Hello')).toBeInTheDocument();
   });
 
   it('renders callout with default icon from info type', () => {
     render(<Callout type="info">Hello</Callout>);
-    expect(screen.getByTitle('Info-icon')).toBeInTheDocument();
+    expect(screen.getByRole('img')).toBeInTheDocument();
+    expect(screen.getByRole('img')).toHaveClass('icon-sm text-info');
   });
 
   it('renders callout with default icon from warning type', () => {
     render(<Callout type="warning">Hello</Callout>);
-    expect(screen.getByTitle('Warning-icon')).toBeInTheDocument();
+    expect(screen.getByRole('img')).toBeInTheDocument();
+    expect(screen.getByRole('img')).toHaveClass('icon-sm text-warning');
   });
 
   it('renders callout with default icon from error type', () => {
     render(<Callout type="error">Hello</Callout>);
-    expect(screen.getByTitle('Error-icon')).toBeInTheDocument();
+    expect(screen.getByRole('img')).toBeInTheDocument();
+    expect(screen.getByRole('img')).toHaveClass('icon-sm text-danger');
   });
 
   it('renders callout with warning style from warning type', () => {
@@ -80,7 +83,7 @@ describe(Callout, () => {
       'background-color',
       theme.background.warning
     );
-    expect(screen.getByTitle('Warning-icon')).toBeInTheDocument();
+    expect(screen.getByRole('img')).toBeInTheDocument();
     expect(screen.getByText('Hello')).toBeInTheDocument();
   });
 
