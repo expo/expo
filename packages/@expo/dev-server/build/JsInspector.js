@@ -32,9 +32,9 @@ async function openJsInspector(app) {
   // 3. The full commit hash is the desired revision
   const devtoolsFrontendRev = 'd9568d04d7dd79269c5a655d7ada69650c5a8336'; // Chrome 100.0.4896.75
 
-  const urlBase = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${devtoolsFrontendRev}/inspector.html`;
+  const urlBase = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${devtoolsFrontendRev}/devtools_app.html`;
   const ws = app.webSocketDebuggerUrl.replace(/^ws:\/\//, '');
-  const url = `${urlBase}?panel=sources&v8only=true&ws=${encodeURIComponent(ws)}`;
+  const url = `${urlBase}?panel=sources&ws=${encodeURIComponent(ws)}`;
   await closeJsInspector();
   openingBrowserInstance = await (0, _LaunchBrowser().launchBrowserAsync)(url);
 }

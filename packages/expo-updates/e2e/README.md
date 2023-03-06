@@ -23,16 +23,16 @@ mkdir $WORKING_DIR_ROOT
 - From the Expo repo root directory, execute
 
 ```bash
-node packages/expo-updates/e2e/setup/create-eas-project-basic.js
-```
-
-or
-
-```bash
-node packages/expo-updates/e2e/setup/create-eas-project-assets.js
+node packages/expo-updates/e2e/setup/create-eas-project.js
 ```
 
 - Change to the `TEST_PROJECT_ROOT` location above.
+
+- Execute
+
+```
+yarn generate-test-update-bundles
+```
 
 - To run iOS tests:
 
@@ -63,6 +63,49 @@ Edit `app.json` and remove the `extra` section with the EAS project ID, then exe
 ```bash
 eas init
 eas build --profile=updates_testing --platform=<android|ios>
+```
+
+- Testing the EAS build locally:
+
+  - Ensure you have an emulator running named `pixel_4`
+  - Make the change below in `eas.json`:
+
+```diff
+--- a/packages/expo-updates/e2e/fixtures/project_files/eas.json
++++ b/packages/expo-updates/e2e/fixtures/project_files/eas.json
+@@ -15,7 +15,8 @@
+     "updates_testing": {
+       "env": {
+         "EX_UPDATES_NATIVE_DEBUG": "1",
+-        "NO_FLIPPER": "1"
++        "NO_FLIPPER": "1",
++        "LOCAL_TESTING": "1"
+       },
+       "android": {
+         "gradleCommand": ":app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release",
+```
+
+  - Clone the `eas-build` repo, and build it (`yarn`, `yarn build`)
+  - Set up the local EAS build environment as in this example:
+
+```
+#!/usr/bin/env bash
+
+export EAS_LOCAL_BUILD_HOME=<the eas-build directory that you just cloned above>
+
+export EAS_LOCAL_BUILD_PLUGIN_PATH=$EAS_LOCAL_BUILD_HOME/bin/eas-cli-local-build-plugin
+export EAS_LOCAL_BUILD_WORKINGDIR=$TMPDIR/eas-build-workingdir
+export EAS_LOCAL_BUILD_SKIP_CLEANUP=1
+export EAS_LOCAL_BUILD_ARTIFACTS_DIR=$TMPDIR/eas-build-workingdir/results
+
+rm -rf $EAS_LOCAL_BUILD_WORKINGDIR
+```
+
+  - Execute
+
+```bash
+eas init
+eas build --profile=updates_testing --platform=<android|ios> --local
 ```
 
 ## Updates API test project:

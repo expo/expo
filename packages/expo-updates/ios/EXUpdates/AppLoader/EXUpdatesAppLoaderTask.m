@@ -1,9 +1,7 @@
 //  Copyright © 2020 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
 #import <EXUpdates/EXUpdatesAppLoaderTask.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
-#import <EXUpdates/EXUpdatesReaper.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 
@@ -231,10 +229,10 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 
 - (void)_loadEmbeddedUpdateWithCompletion:(void (^)(void))completion
 {
-  [EXUpdatesAppLauncherWithDatabase launchableUpdateWithConfig:_config database:_database selectionPolicy:_selectionPolicy completion:^(NSError * _Nullable error, EXUpdatesUpdate * _Nullable launchableUpdate) {
+  [EXUpdatesAppLauncherWithDatabase launchableUpdateWithConfig:_config database:_database selectionPolicy:_selectionPolicy completionQueue:_loaderTaskQueue completion:^(NSError * _Nullable error, EXUpdatesUpdate * _Nullable launchableUpdate) {
     dispatch_async(self->_database.databaseQueue, ^{
       NSError *manifestFiltersError;
-      NSDictionary *manifestFilters = [self->_database manifestFiltersWithScopeKey:self->_config.scopeKey error:&manifestFiltersError];
+      NSDictionary *manifestFilters = [self->_database manifestFiltersWithScopeKey:self->_config.scopeKey error:&manifestFiltersError].jsonData;
       dispatch_async(self->_loaderTaskQueue, ^{
         if (manifestFiltersError) {
           completion();
@@ -262,7 +260,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
         }
       });
     });
-  } completionQueue:_loaderTaskQueue];
+  }];
 }
 
 - (void)_launchWithCompletion:(void (^)(NSError * _Nullable error, BOOL success))completion

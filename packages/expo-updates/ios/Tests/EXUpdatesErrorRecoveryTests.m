@@ -419,7 +419,7 @@
 {
   HCArgumentCaptor *argument = [[HCArgumentCaptor alloc] init];
   [verify(mockDelegate) relaunchWithCompletion:(id)argument];
-  EXUpdatesAppLauncherCompletionBlock completion = argument.value;
+  void (^completion)(NSError * _Nullable, BOOL) = argument.value;
   completion(nil, YES);
   dispatch_sync(_testQueue, ^{}); // flush queue
 }
@@ -428,7 +428,7 @@
 {
   HCArgumentCaptor *argument = [[HCArgumentCaptor alloc] init];
   [verify(mockDelegate) relaunchWithCompletion:(id)argument];
-  EXUpdatesAppLauncherCompletionBlock completion = argument.value;
+  void (^completion)(NSError * _Nullable, BOOL) = argument.value;
   completion(mock([NSError class]), NO);
   dispatch_sync(_testQueue, ^{}); // flush queue
 }

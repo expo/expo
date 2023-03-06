@@ -33,11 +33,13 @@ export type BundleOutput = {
 export type MessageSocket = {
     broadcast: (method: string, params?: Record<string, any> | undefined) => void;
 };
+/** @deprecated */
 export declare function runMetroDevServerAsync(projectRoot: string, options: MetroDevServerOptions): Promise<{
     server: http.Server;
     middleware: any;
     messageSocket: MessageSocket;
 }>;
+/** @deprecated */
 export declare function bundleAsync(projectRoot: string, expoConfig: ExpoConfig, options: MetroDevServerOptions, bundles: BundleOptions[]): Promise<BundleOutput[]>;
 /**
  * Attach the inspector proxy to a development server.

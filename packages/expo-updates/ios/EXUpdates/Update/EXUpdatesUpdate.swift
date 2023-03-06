@@ -184,12 +184,12 @@ public class EXUpdatesUpdate: NSObject {
    */
   public func assets() -> [EXUpdatesAsset]? {
     guard let assetsFromManifest = self.assetsFromManifest else {
-      return self.assetsFromDatabase
+      return self.assetsFromDatabase()
     }
     return assetsFromManifest
   }
 
-  private lazy var assetsFromDatabase: [EXUpdatesAsset]? = {
+  private func assetsFromDatabase() -> [EXUpdatesAsset]? {
     guard let database = self.database else {
       return nil
     }
@@ -198,10 +198,10 @@ public class EXUpdatesUpdate: NSObject {
     database.databaseQueue.sync {
       // The pattern is valid, so it'll never throw
       // swiftlint:disable:next force_try
-      assetsLocal = try! database.assets(withUpdate: self.updateId)
+      assetsLocal = try! database.assets(withUpdateId: self.updateId)
     }
     return assetsLocal
-  }()
+  }
 
   public func loggingId() -> String {
     self.updateId.uuidString.lowercased()

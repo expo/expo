@@ -3,6 +3,12 @@ import ExpoDevMenu from './ExpoDevMenu';
 export function openMenu() {
     ExpoDevMenu.openMenu();
 }
+export function hideMenu() {
+    ExpoDevMenu.hideMenu();
+}
+export function closeMenu() {
+    ExpoDevMenu.closeMenu();
+}
 let hasRegisteredCallbackListener = false;
 function registerCallbackListener() {
     if (!hasRegisteredCallbackListener) {
@@ -26,7 +32,7 @@ export async function registerDevMenuItems(items) {
     const callbackNames = [];
     items.forEach((item) => {
         handlers.set(item.name, item.callback);
-        callbackNames.push(item.name);
+        callbackNames.push({ name: item.name, shouldCollapse: item.shouldCollapse });
     });
     return await ExpoDevMenu.addDevMenuCallbacks(callbackNames);
 }

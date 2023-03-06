@@ -1,6 +1,5 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppLauncherWithDatabase.h>
 #import <EXUpdates/EXUpdatesErrorRecovery.h>
 #import <React/RCTAssert.h>
 #import <React/RCTBridge.h>
