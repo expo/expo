@@ -38,7 +38,7 @@ describe('ExpoInspectorDevice', () => {
       expect(MetroDevice.prototype._processMessageFromDevice).toBeCalled();
     });
 
-    it('does not handle without handlers', () =>{
+    it('does not handle without handlers', () => {
       const { device, MetroDevice } = createTestDevice();
       device.handlers = [];
 

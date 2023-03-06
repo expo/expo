@@ -53,7 +53,7 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
 
   /** @see https://chromedevtools.github.io/devtools-protocol/#endpoints */
   public processRequest(req: IncomingMessage, res: ServerResponse, next: (error?: Error) => any) {
-    return this.metroProxy.processRequest(req, res, next);
+    this.metroProxy.processRequest(req, res, next);
   }
 
   public createWebSocketListeners(server: HttpServer | HttpsServer): Record<string, WSServer> {
