@@ -40,6 +40,7 @@ export class VscodeCompatHandler implements InspectorHandler {
       this.interceptDeviceMessage.delete(message.id);
 
       // Force-fully format the properties description to be an empty string
+      // See: https://github.com/facebook/hermes/issues/114
       for (const item of message.result.result ?? []) {
         if (item.value) {
           item.value.description = item.value.description ?? '';
