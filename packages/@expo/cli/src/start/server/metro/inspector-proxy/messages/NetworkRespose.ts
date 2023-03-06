@@ -24,7 +24,10 @@ export class NetworkResponseHandler implements InspectorHandler {
     return false;
   }
 
-  onDebuggerMessage(message: DebuggerRequest<NetworkGetResponseBody>, { socket }: DebuggerInfo) {
+  onDebuggerMessage(
+    message: DebuggerRequest<NetworkGetResponseBody>,
+    { socket }: Pick<DebuggerInfo, 'socket'>
+  ) {
     if (
       message.method === 'Network.getResponseBody' &&
       this.storage.has(message.params.requestId)

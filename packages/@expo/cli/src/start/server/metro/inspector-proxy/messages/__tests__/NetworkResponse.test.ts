@@ -1,35 +1,62 @@
 import { NetworkResponseHandler } from '../NetworkRespose';
 
 describe(NetworkResponseHandler, () => {
-  it('returns response data by request id', () => {
+  it('responds to response body from device and debugger', () => {
     const handler = new NetworkResponseHandler();
-    const responseData = {
-      body: 'hello',
-      base64Encoded: false,
-    };
+    const debuggerSocket = { send: jest.fn() };
 
-    handler.onDeviceMessage({
-      method: 'Expo(Network.receivedResponseBody)',
-      params: { requestId: '1337', ...responseData },
-    });
+    // Expect the device message to be handled
+    expect(
+      handler.onDeviceMessage({
+        method: 'Expo(Network.receivedResponseBody)',
+        params: {
+          requestId: '1337',
+          body: 'hello',
+          base64Encoded: false,
+        },
+      })
+    ).toBe(true);
 
-    const response = handler.onDebuggerMessage({
-      id: 420,
-      method: 'Network.getResponseBody',
-      params: { requestId: '1337' },
-    });
+    // Expect the debugger message to be handled
+    expect(
+      handler.onDebuggerMessage(
+        {
+          id: 420,
+          method: 'Network.getResponseBody',
+          params: { requestId: '1337' },
+        },
+        { socket: debuggerSocket }
+      )
+    ).toBe(true);
 
-    expect(response).toMatchObject(responseData);
+    // Expect the proper response was sent
+    expect(debuggerSocket.send).toBeCalledWith(
+      JSON.stringify({
+        id: 420,
+        result: {
+          body: 'hello',
+          base64Encoded: false,
+        },
+      })
+    );
   });
 
-  it('returns undefined when request id is not found', () => {
+  it('does not respond to non-existing response', () => {
     const handler = new NetworkResponseHandler();
-    const response = handler.onDebuggerMessage({
-      id: 420,
-      method: 'Network.getResponseBody',
-      params: { requestId: '1337' },
-    });
+    const debuggerSocket = { send: jest.fn() };
 
-    expect(response).toBeUndefined();
+    // Expect the debugger message to not be handled
+    expect(
+      handler.onDebuggerMessage(
+        {
+          id: 420,
+          method: 'Network.getResponseBody',
+          params: { requestId: '1337' },
+        },
+        { socket: debuggerSocket }
+      )
+    ).toBe(false);
+
+    expect(debuggerSocket.send).not.toBeCalled();
   });
 });
