@@ -31,8 +31,11 @@ export function createInspectorDeviceClass(MetroDeviceClass: typeof MetroDevice)
       socket: WS
     ): boolean {
       // Note, `socket` is the exact same as `info.socket`
-      const handled = this.onDebuggerMessage(request, info);
-      return handled ?? super._interceptMessageFromDebugger(request, info, socket);
+      if (this.onDebuggerMessage(request, info)) {
+        return true;
+      }
+
+      return super._interceptMessageFromDebugger(request, info, socket);
     }
   };
 }
