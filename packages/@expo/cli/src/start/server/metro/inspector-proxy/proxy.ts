@@ -1,7 +1,6 @@
 import type { Server as HttpServer, IncomingMessage, ServerResponse } from 'http';
 import type { Server as HttpsServer } from 'https';
 import type { InspectorProxy as MetroProxy, Device as MetroDevice } from 'metro-inspector-proxy';
-import type { AddressInfo } from 'net';
 import { parse } from 'url';
 import type { Server as WSServer } from 'ws';
 
@@ -16,7 +15,7 @@ const debug = require('debug')('expo:metro:inspector-proxy:proxy') as typeof con
 // This is a workaround for `ConstructorType` not working on dynamically generated classes
 type Instantiatable<Instance> = new (...args: any) => Instance;
 
-export class ExpoInspectorProxy<D extends MetroDevice> {
+export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
   constructor(
     public readonly metroProxy: MetroProxy,
     private DeviceClass: Instantiatable<D>,
@@ -27,51 +26,43 @@ export class ExpoInspectorProxy<D extends MetroDevice> {
     this.metroProxy._devices = this.devices;
 
     // force httpEndpointMiddleware to be bound to this proxy instance
-    this.httpEndpointMiddleware = this.httpEndpointMiddleware.bind(this);
+    this.processRequest = this.processRequest.bind(this);
   }
 
   /**
-   * When the Metro is fully initialized, resolve the server address being used
+   * Initialize the server address from the metro server.
    * This is required to properly reference sourcemaps for the debugger.
    */
-  public onServerReady(server: HttpServer | HttpsServer) {
-    const address = server.address();
+  private setServerAddress(server: HttpServer | HttpsServer) {
+    const addressInfo = server.address();
 
-    if (typeof address === 'string') {
-      throw new Error(`Inspector proxy could not resolve the server address, got ${address}`);
-    } else if (address === null) {
+    if (typeof addressInfo === 'string') {
+      throw new Error(`Inspector proxy could not resolve the server address, got "${addressInfo}"`);
+    } else if (addressInfo === null) {
       throw new Error(`Inspector proxy could not resolve the server address, got "null"`);
     }
 
-    this.setServerAddress(address);
-  }
+    const { address, port, family } = addressInfo;
 
-  /** @see https://chromedevtools.github.io/devtools-protocol/#endpoints */
-  public httpEndpointMiddleware(
-    req: IncomingMessage,
-    res: ServerResponse,
-    next: (error?: Error) => any
-  ) {
-    return this.metroProxy.processRequest(req, res, next);
-  }
-
-  public createWebSocketEndpoints(port = 1111): Record<string, WSServer> {
-    // Auto-initialize the server address on a best-guess basis
-    // If `onServerReady` is not called, this might break sourcemap references
-    this.setServerAddress({ port, family: 'IPv4', address: '' });
-
-    return {
-      [WS_DEVICE_URL]: this.createDeviceWebSocketServer(),
-      [WS_DEBUGGER_URL]: this.createDebuggerWebSocketServer(),
-    };
-  }
-
-  private setServerAddress({ port, family, address }: AddressInfo) {
     if (family === 'IPv6') {
       this.metroProxy._serverAddressWithPort = `[${address ?? '::1'}]:${port}`;
     } else {
       this.metroProxy._serverAddressWithPort = `${address ?? 'localhost'}:${port}`;
     }
+  }
+
+  /** @see https://chromedevtools.github.io/devtools-protocol/#endpoints */
+  public processRequest(req: IncomingMessage, res: ServerResponse, next: (error?: Error) => any) {
+    return this.metroProxy.processRequest(req, res, next);
+  }
+
+  public createWebSocketListeners(server: HttpServer | HttpsServer): Record<string, WSServer> {
+    this.setServerAddress(server);
+
+    return {
+      [WS_DEVICE_URL]: this.createDeviceWebSocketServer(),
+      [WS_DEBUGGER_URL]: this.createDebuggerWebSocketServer(),
+    };
   }
 
   private createDeviceWebSocketServer() {

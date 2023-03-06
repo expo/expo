@@ -1,6 +1,3 @@
-import { MetroConfig } from '@expo/metro-config';
-
-import { env } from '../../../../utils/env';
 import {
   importMetroInspectorDeviceFromProject,
   importMetroInspectorProxyFromProject,
@@ -8,7 +5,7 @@ import {
 import { createInspectorDeviceClass } from './device';
 import { ExpoInspectorProxy } from './proxy';
 
-const debug = require('debug')('expo:metro:inspector-proxy') as typeof console.log;
+export { ExpoInspectorProxy } from './proxy';
 
 export function createInspectorProxy(projectRoot: string) {
   // Import the installed `metro-inspector-proxy` from the project
@@ -44,15 +41,4 @@ export function createInspectorProxy(projectRoot: string) {
   }, 3000);
 
   return inspectorProxy;
-}
-
-export function withInspectorProxy(config: MetroConfig, projectRoot: string) {
-  if (!env.EXPO_USE_CUSTOM_INSPECTOR_PROXY) {
-    return config;
-  }
-
-  debug('Adding inspector proxy with Network Inspector support');
-
-  // Turn off the built-in inspector proxy
-  return { ...config, server: { ...config.server, runInspectorProxy: false } };
 }
