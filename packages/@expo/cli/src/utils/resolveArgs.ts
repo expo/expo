@@ -3,6 +3,25 @@ import arg, { Spec } from 'arg';
 import { replaceValue } from './array';
 import { CommandError } from './errors';
 
+/** Split up arguments that are formatted like `--foo=bar` or `-f="bar"` to `['--foo', 'bar']` */
+function splitArgs(args: string[]): string[] {
+  const result: string[] = [];
+
+  for (const arg of args) {
+    if (arg.startsWith('-')) {
+      const [key, ...props] = arg.split('=');
+      result.push(key);
+      if (props.length) {
+        result.push(props.join('='));
+      }
+    } else {
+      result.push(arg);
+    }
+  }
+
+  return result;
+}
+
 /**
  * Enables the resolution of arguments that can either be a string or a boolean.
  *
@@ -16,6 +35,8 @@ export async function resolveStringOrBooleanArgsAsync(
   rawMap: arg.Spec,
   extraArgs: arg.Spec
 ) {
+  args = splitArgs(args);
+
   // Assert any missing arguments
   assertUnknownArgs(
     {
@@ -30,6 +51,42 @@ export async function resolveStringOrBooleanArgsAsync(
 
   // Resolve all of the string or boolean arguments and the project root.
   return _resolveStringOrBooleanArgs({ ...rawMap, ...extraArgs }, args);
+}
+
+/**
+ * Enables the resolution of boolean arguments that can be formatted like `--foo=true` or `--foo false`
+ *
+ * @param args arguments that were passed to the command.
+ * @param rawMap raw map of arguments that are passed to the command.
+ * @param extraArgs extra arguments and aliases that should be resolved as string or boolean.
+ * @returns parsed arguments and project root.
+ */
+export async function resolveCustomBooleanArgsAsync(
+  args: string[],
+  rawMap: arg.Spec,
+  extraArgs: arg.Spec
+) {
+  const results = await resolveStringOrBooleanArgsAsync(args, rawMap, extraArgs);
+
+  return {
+    ...results,
+    args: Object.fromEntries(
+      Object.entries(results.args).map(([key, value]) => {
+        if (extraArgs[key]) {
+          if (typeof value === 'string') {
+            if (!['true', 'false'].includes(value)) {
+              throw new CommandError(
+                'BAD_ARGS',
+                `Invalid boolean argument: ${key}=${value}. Expected one of: true, false`
+              );
+            }
+            return [key, value === 'true'];
+          }
+        }
+        return [key, value];
+      })
+    ),
+  };
 }
 
 export function _resolveStringOrBooleanArgs(arg: Spec, args: string[]) {

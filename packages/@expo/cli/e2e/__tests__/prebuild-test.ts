@@ -203,6 +203,7 @@ it(
         "ios/basicprebuild/Info.plist",
         "ios/basicprebuild/SplashScreen.storyboard",
         "ios/basicprebuild/Supporting/Expo.plist",
+        "ios/basicprebuild/basicprebuild-Bridging-Header.h",
         "ios/basicprebuild/basicprebuild.entitlements",
         "ios/basicprebuild/main.m",
         "ios/basicprebuild/noop-file.swift",
