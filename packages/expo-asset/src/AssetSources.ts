@@ -1,3 +1,4 @@
+import { PackagerAsset } from '@react-native/assets/registry';
 import { Platform } from 'expo-modules-core';
 import path from 'path-browserify';
 import { PixelRatio } from 'react-native';
@@ -5,7 +6,6 @@ import URL from 'url-parse';
 
 import AssetSourceResolver from './AssetSourceResolver';
 import { getManifest, getManifest2, manifestBaseUrl } from './PlatformUtils';
-import { PackagerAsset } from './ReactNativeCompatibleAssetsRegistry';
 
 // @docsMissing
 export type AssetMetadata = Pick<
