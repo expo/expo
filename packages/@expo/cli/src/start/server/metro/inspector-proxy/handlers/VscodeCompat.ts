@@ -8,7 +8,9 @@ export class VscodeCompatHandler implements InspectorHandler {
   interceptDeviceMessage = new Set<number>();
 
   onDebuggerMessage(
-    message: DebuggerRequest<DebuggerGetPossibleBreakpoints | RuntimeGetProperties>,
+    message:
+      | DebuggerRequest<DebuggerGetPossibleBreakpoints>
+      | DebuggerRequest<RuntimeGetProperties>,
     { socket }: Pick<DebuggerInfo, 'socket'>
   ) {
     // Hermes doesn't seem to handle this request, but `locations` have to be returned.

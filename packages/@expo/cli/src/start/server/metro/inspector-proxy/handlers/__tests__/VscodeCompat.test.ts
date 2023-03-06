@@ -36,10 +36,7 @@ describe(VscodeCompatHandler, () => {
         {
           id: 420,
           method: 'Runtime.getProperties',
-          params: {
-            objectId: '1337',
-            start: { lineNumber: 13, columnNumber: 37, scriptId: '1337' },
-          },
+          params: { objectId: '1337' },
         },
         { socket: debuggerSocket }
       )
