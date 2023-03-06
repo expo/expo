@@ -1,5 +1,6 @@
 
 #import <EXFileSystem/EXFileSystemLocalFileHandler.h>
+#import <EXFileSystem/NSData+EXFileSystem.h>
 
 @implementation EXFileSystemLocalFileHandler
 
