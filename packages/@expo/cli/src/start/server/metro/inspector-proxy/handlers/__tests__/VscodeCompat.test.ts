@@ -54,6 +54,12 @@ describe(VscodeCompatHandler, () => {
           enumerable: true,
           value: { type: 'function' },
         },
+        {
+          name: 'bar',
+          configurable: true,
+          enumerable: true,
+          value: { type: 'string', description: 'Dont overwrite' },
+        },
       ],
     };
 
@@ -61,5 +67,6 @@ describe(VscodeCompatHandler, () => {
     expect(handler.onDeviceMessage({ id: 420, result: descriptors })).toBe(false);
     // Expect the descriptor values to be mutated
     expect(descriptors.result[0].value).toHaveProperty('description', '');
+    expect(descriptors.result[1].value).toHaveProperty('description', 'Dont overwrite');
   });
 });
