@@ -1,11 +1,17 @@
 import { openJsInspector, queryAllInspectorAppsAsync } from '@expo/dev-server';
 import assert from 'assert';
+import openBrowserAsync from 'better-opn';
 import chalk from 'chalk';
 
 import * as Log from '../../log';
+import { delayAsync } from '../../utils/delay';
 import { learnMore } from '../../utils/link';
 import { selectAsync } from '../../utils/prompts';
 import { DevServerManager } from '../server/DevServerManager';
+import {
+  addReactDevToolsReloadListener,
+  startReactDevToolsProxyAsync,
+} from '../server/ReactDevToolsProxy';
 import { BLT, printHelp, printItem, printQRCode, printUsage, StartOptions } from './commandsTable';
 
 const debug = require('debug')('expo:start:interface:interactiveActions') as typeof console.log;
@@ -97,17 +103,38 @@ export class DevServerManagerActions {
         { title: 'Toggle performance monitor', value: 'togglePerformanceMonitor' },
         { title: 'Toggle developer menu', value: 'toggleDevMenu' },
         { title: 'Reload app', value: 'reload' },
+        { title: 'Start React devtools', value: 'startReactDevTools' },
         // TODO: Maybe a "View Source" option to open code.
         // Toggling Remote JS Debugging is pretty rough, so leaving it disabled.
         // { title: 'Toggle Remote Debugging', value: 'toggleRemoteDebugging' },
       ]);
-      this.devServerManager.broadcastMessage('sendDevCommand', { name: value });
+      if (value === 'startReactDevTools') {
+        this.startReactDevToolsAsync();
+      } else {
+        this.devServerManager.broadcastMessage('sendDevCommand', { name: value });
+      }
     } catch (error: any) {
       debug(error);
       // do nothing
     } finally {
       printHelp();
     }
+  }
+
+  async startReactDevToolsAsync() {
+    await startReactDevToolsProxyAsync();
+    const url = this.devServerManager.getDefaultDevServer().getReactDevToolsUrl();
+    await openBrowserAsync(url);
+    addReactDevToolsReloadListener(() => {
+      this.reconnectReactDevTools();
+    });
+    this.reconnectReactDevTools();
+  }
+
+  async reconnectReactDevTools() {
+    // Wait a little time for react-devtools to be initialized in browser
+    await delayAsync(3000);
+    this.devServerManager.broadcastMessage('sendDevCommand', { name: 'reconnectReactDevTools' });
   }
 
   toggleDevMenu() {

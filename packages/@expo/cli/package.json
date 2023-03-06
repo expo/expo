@@ -95,7 +95,8 @@
     "terminal-link": "^2.1.1",
     "text-table": "^0.2.0",
     "url-join": "4.0.0",
-    "wrap-ansi": "^7.0.0"
+    "wrap-ansi": "^7.0.0",
+    "ws": "^8.12.1"
   },
   "taskr": {
     "requires": [
