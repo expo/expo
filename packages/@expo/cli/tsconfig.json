@@ -4,7 +4,6 @@
   "exclude": ["**/__mocks__/*", "**/__tests__/*"],
   "compilerOptions": {
     "outDir": "./build",
-    "jsx": "react",
     "typeRoots": [
       "ts-declarations",
       "../../expo-module-scripts/ts-declarations",

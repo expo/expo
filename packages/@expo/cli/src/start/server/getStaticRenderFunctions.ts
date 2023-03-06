@@ -58,10 +58,7 @@ export async function getStaticRenderFunctionsContentAsync(
   console.log(serverPath);
   debug('Loading render functions from:', tempFile, moduleId, root);
 
-  const res = await fetch(
-    `${devServerUrl}/${serverPath}?platform=web&dev=${dev}&minify=${minify}`
-    // `${devServerUrl}/${moduleId}.bundle?platform=web&dev=${dev}&minify=${minify}`
-  );
+  const res = await fetch(`${devServerUrl}/${serverPath}?platform=web&dev=${dev}&minify=${minify}`);
 
   // TODO: Improve error handling
   if (res.status === 500) {

@@ -138,7 +138,7 @@ class Env {
   }
 
   /**
-   * Force Expo CLI to use static site generation for Metro web projects. This only works with Expo Router.
+   * **Experimental** Use static generation for Metro web projects. This only works with Expo Router.
    */
   get EXPO_USE_STATIC(): boolean {
     return boolish('EXPO_USE_STATIC', false);

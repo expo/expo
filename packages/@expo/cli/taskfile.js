@@ -10,7 +10,7 @@ export async function bin(task, opts) {
 
 export async function cli(task, opts) {
   await task
-    .source('src/**/*.+(js|ts|tsx)', {
+    .source('src/**/*.+(js|ts)', {
       ignore: ['**/__tests__/**', '**/__mocks__/**'],
     })
     .swc('cli', { dev: opts.dev })
@@ -27,7 +27,7 @@ export default async function (task) {
   await task.start('build', opts);
   if (process.stdout.isTTY && !boolish('CI', false) && !boolish('EXPO_NONINTERACTIVE', false)) {
     await task.watch('bin/*', 'bin', opts);
-    await task.watch('src/**/*.+(js|ts|tsx)', 'cli', opts);
+    await task.watch('src/**/*.+(js|ts)', 'cli', opts);
   }
 }
 
