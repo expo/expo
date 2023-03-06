@@ -11,6 +11,7 @@ import { getMetroProperties } from '../../../utils/analytics/getMetroProperties'
 import { createDebuggerTelemetryMiddleware } from '../../../utils/analytics/metroDebuggerMiddleware';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
+import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
@@ -31,9 +32,10 @@ export async function loadMetroConfigAsync(
   }: { exp?: ExpoConfig } = {}
 ) {
   let reportEvent: ((event: any) => void) | undefined;
+  const serverRoot = getMetroServerRoot(projectRoot);
 
   const terminal = new Terminal(process.stdout);
-  const terminalReporter = new MetroTerminalReporter(projectRoot, terminal);
+  const terminalReporter = new MetroTerminalReporter(serverRoot, terminal);
 
   const reporter = {
     update(event: any) {
