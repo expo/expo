@@ -123,6 +123,7 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
           debug('Debugger disconnected: device=%s, app=%s', device._name, device._app);
         });
       } catch (error: unknown) {
+        console.log('ERRR', error);
         const message = error instanceof Error && error.toString();
         debug('Could not establish a connection to debugger:', error);
         socket.close(WS_GENERIC_ERROR_STATUS, message || 'Unknown error');
