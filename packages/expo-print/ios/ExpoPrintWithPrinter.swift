@@ -1,8 +1,8 @@
 import ExpoModulesCore
 
-public class ExpoPrintToPrinter {
+public class ExpoPrintWithPrinter {
   var renderTasks: [ExpoWKPDFRenderer] = []
-  var printers: [String: UIPrinter] = [:]
+  var cachedPrinters: [String: UIPrinter] = [:]
   let delegate: ExpoPrintModuleDelegate
   let appContext: AppContext?
 
@@ -11,9 +11,7 @@ public class ExpoPrintToPrinter {
     self.appContext = appContext
   }
 
-  func startPrint(promise: Promise, options: PrintOptions, printers: [String: UIPrinter]) {
-    self.printers = printers
-    print(self.printers)
+  func startPrint(promise: Promise, options: PrintOptions) {
     if let uri = options.uri {
       guard let printingData = dataFromUri(uri: uri) else {
         promise.reject(InvalidUrlException())
@@ -65,7 +63,7 @@ public class ExpoPrintToPrinter {
       self.renderTasks.removeAll {
         $0 == task
       }
-      if error != nil {
+      if error == nil {
         self.printWithData(printingData: pdfData, options: options, promise: promise)
       } else {
         promise.reject(PdfNotRenderedException(error?.localizedDescription))
@@ -97,40 +95,27 @@ public class ExpoPrintToPrinter {
     }
 
     if !printerUrl.isEmpty {
-      let printer = UIPrinter(url: candidateUrl)
+      // Found by @tsapeta
+      // In older versions of iOS there is a bug, where finding the printer using UIPrinter(url:) will fail
+      // https://stackoverflow.com/questions/34602302/creating-a-working-uiprinter-object-from-url-for-dialogue-free-printing
+      // the workaround is to use a printer saved during picking, fall back to this method if the regular one fails
+
+      // Also on ios 16 there is a bug when printing multiple files https://github.com/expo/expo/issues/19399.
+      // Caching the previously used printer fixes the bug
+      let printer = self.cachedPrinters[printerUrl] ?? UIPrinter(url: candidateUrl)
+      self.cachedPrinters[printerUrl] = printer
+
       printer.contactPrinter { available in
         if available {
-          //          printInteractionController.print(to: printer, completionHandler: completionHandler)
-
+          printInteractionController.print(to: printer, completionHandler: completionHandler)
         } else {
-          // Found by @tsapeta
-          // In older versions of iOS there is a bug, where finding the printer using UIPrinter(url:) will fail
-          // https://stackoverflow.com/questions/34602302/creating-a-working-uiprinter-object-from-url-for-dialogue-free-printing
-          // the workaround is to use a printer saved during picking, fall back to this method if the regular one fails
-          self.findCachedPrinter(printerUrl: printerUrl, promise: promise) { _ in
-            // printInteractionController.print(to: cachedPrinter, completionHandler: completionHandler)
-          }
+          promise.reject(PrintingJobFailedException("Provided printer is not available."))
         }
       }
     } else if UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad {
       printInteractionController.present(from: rootController.view.frame, in: rootController.view, animated: true, completionHandler: completionHandler)
     } else {
       printInteractionController.present(animated: true, completionHandler: completionHandler)
-    }
-  }
-
-  private func findCachedPrinter(printerUrl: String, promise: Promise, completionHandler: @escaping (_ printer: UIPrinter) -> Void) {
-    guard let cachedPrinter = self.printers[printerUrl] else {
-      promise.reject(PrintingJobFailedException("Provided printer is not available."))
-      return
-    }
-
-    cachedPrinter.contactPrinter { available in
-      if available {
-        completionHandler(cachedPrinter)
-      } else {
-        promise.reject(PrintingJobFailedException("Provided printer is not available."))
-      }
     }
   }
 

@@ -1,3 +1,3 @@
-declare const _default: any;
-export default _default;
+declare const printModule: any;
+export default printModule;
 //# sourceMappingURL=ExponentPrint.d.ts.map

@@ -3,11 +3,10 @@ import ExpoModulesCore
 public class ExpoPrintModule: Module {
   var renderTasks: [ExpoWKPDFRenderer] = []
   var delegate = ExpoPrintModuleDelegate()
-  var printers: [String: UIPrinter] = [:]
 
   lazy var printerSelector = {
     ExpoPrinterSelector(delegate: &self.delegate, addPrinterToCache: { key, printer in
-      self.printers[key] = printer
+      self.printWithPrinter.cachedPrinters[key] = printer
     })
   }()
 
@@ -15,15 +14,15 @@ public class ExpoPrintModule: Module {
     ExpoPrintToFile(appContext: self.appContext)
   }()
 
-  lazy var printToPrinter = {
-    ExpoPrintToPrinter(delegate: self.delegate, appContext: self.appContext)
+  lazy var printWithPrinter = {
+    ExpoPrintWithPrinter(delegate: self.delegate, appContext: self.appContext)
   }()
 
   public func definition() -> ModuleDefinition {
     Name("ExpoPrint")
 
     AsyncFunction("print") { (options: PrintOptions, promise: Promise) in
-      printToPrinter.startPrint(promise: promise, options: options, printers: self.printers)
+      printWithPrinter.startPrint(promise: promise, options: options)
     }
     .runOnQueue(.main)
 

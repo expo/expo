@@ -25,9 +25,11 @@ public class ExpoWKViewPrintPDFRenderer {
       let data = NSMutableData()
       UIGraphicsBeginPDFContextToData(data, CGRect.zero, nil)
       renderer.prepare(forDrawingPages: NSRange(location: 0, length: renderer.numberOfPages))
-      for i in 0...renderer.numberOfPages - 1 {
-        UIGraphicsBeginPDFPageWithInfo(paperRect, nil)
-        renderer.drawPage(at: i, in: UIGraphicsGetPDFContextBounds())
+      if renderer.numberOfPages > 0 {
+        for i in 0...renderer.numberOfPages - 1 {
+          UIGraphicsBeginPDFPageWithInfo(paperRect, nil)
+          renderer.drawPage(at: i, in: UIGraphicsGetPDFContextBounds())
+        }
       }
       UIGraphicsEndPDFContext()
 

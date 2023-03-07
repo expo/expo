@@ -6,7 +6,11 @@
 
 ### 🎉 New features
 
+- Migrated iOS codebase to use Expo modules API.
+
 ### 🐛 Bug fixes
+
+- Fixed ([Multiple Print Bug on iOS 16](https://github.com/expo/expo/issues/19399))
 
 ### 💡 Others
 
