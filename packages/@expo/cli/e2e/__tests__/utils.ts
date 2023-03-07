@@ -4,9 +4,12 @@ import JsonFile from '@expo/json-file';
 import { SpawnOptions, SpawnResult } from '@expo/spawn-async';
 import assert from 'assert';
 import execa from 'execa';
+import findProcess from 'find-process';
 import fs from 'fs';
 import os from 'os';
 import path from 'path';
+import treeKill from 'tree-kill';
+import { promisify } from 'util';
 
 import { copySync } from '../../src/utils/dir';
 
@@ -208,4 +211,20 @@ export async function getLoadedModulesAsync(statement: string): Promise<string[]
   );
   const loadedModules = JSON.parse(results.stdout.trim());
   return loadedModules.map((value: string) => path.relative(repoRoot, value)).sort();
+}
+
+const pTreeKill = promisify(treeKill);
+
+export async function ensurePortFreeAsync(port: number) {
+  const [portProcess] = await findProcess('port', port);
+  if (!portProcess) {
+    return;
+  }
+  console.log(`Killing process ${portProcess.name} on port ${port}...`);
+  try {
+    await pTreeKill(portProcess.pid);
+    console.log(`Killed process ${portProcess.name} on port ${port}`);
+  } catch (error: any) {
+    console.log(`Failed to kill process ${portProcess.name} on port ${port}: ${error.message}`);
+  }
 }

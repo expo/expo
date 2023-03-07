@@ -1,6 +1,6 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
-exports[`runs \`npx expo export -p web\` for static rendering 1`] = `
+exports[`server runs \`npx expo export -p web\` for static rendering 1`] = `
 "<!DOCTYPE html><html  lang="en" style="height:100%"><head><title data-rh="true">About | Website</title><meta data-rh="true" name="fake" content="bar"/><meta data-rh="true" name="description" content="About page"/><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1.00001,viewport-fit=cover"/><style id="expo-reset">
 html, body, #root {
   -webkit-overflow-scrolling: touch;
