@@ -62,9 +62,9 @@ export async function getStaticRenderFunctionsContentAsync(
   const requiredModuleId = getRenderModuleId(root);
   let moduleId = requiredModuleId;
 
-  const isInProject = requiredModuleId.startsWith(root);
-
-  if (!isInProject) {
+  // Cannot be accessed using Metro's server API, we need to move the file
+  // into the project root and try again.
+  if (path.relative(root, moduleId).startsWith('..')) {
     moduleId = await moveStaticRenderFunction(projectRoot, requiredModuleId);
   }
 
