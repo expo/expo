@@ -10,7 +10,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed ([Multiple Print Bug on iOS 16](https://github.com/expo/expo/issues/19399)) ([#21561](https://github.com/expo/expo/pull/21561) by [@behenate](https://github.com/behenate))
+- Fixed [Multiple Print Bug on iOS 16](https://github.com/expo/expo/issues/19399). ([#21561](https://github.com/expo/expo/pull/21561) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
