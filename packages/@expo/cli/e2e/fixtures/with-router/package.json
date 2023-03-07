@@ -10,14 +10,12 @@
     "react-dom": "18.2.0",
     "react-native": "0.71.3",
     "react-native-gesture-handler": "~2.9.0",
-    "react-native-reanimated": "~2.14.4",
     "react-native-safe-area-context": "4.5.0",
     "react-native-screens": "~3.20.0",
     "react-native-web": "~0.18.7"
   },
   "devDependencies": {
-    "@babel/core": "^7.19.3",
-    "@babel/plugin-proposal-export-namespace-from": "^7.18.9"
+    "@babel/core": "^7.19.3"
   },
   "name": "with-router",
   "version": "1.0.0"
