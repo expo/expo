@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed the `tintColor` not being passed to native view. ([#21576](https://github.com/expo/expo/pull/21576) by [@andrew-levy](https://github.com/andrew-levy))
+
 ### 💡 Others
 
 ## 1.0.0 — 2023-02-21
