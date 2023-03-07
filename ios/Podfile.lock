@@ -2247,7 +2247,6 @@ PODS:
     - ExpoModulesTestCore
     - EXStructuredHeaders
     - EXUpdatesInterface
-    - OCMockito (~> 6.0)
     - React-Core
   - EXUpdatesInterface (0.9.1)
   - FBAEMKit (15.1.0):
@@ -2474,9 +2473,6 @@ PODS:
   - nanopb/decode (2.30909.0)
   - nanopb/encode (2.30909.0)
   - Nimble (9.2.1)
-  - OCHamcrest (8.0.0)
-  - OCMockito (6.0.0):
-    - OCHamcrest (~> 8.0)
   - PromisesObjC (2.1.1)
   - Protobuf (3.21.12)
   - Quick (5.0.1)
@@ -3473,8 +3469,6 @@ SPEC REPOS:
     - MLKitFaceDetection
     - MLKitVision
     - nanopb
-    - OCHamcrest
-    - OCMockito
     - PromisesObjC
     - Protobuf
     - Quick
@@ -4780,7 +4774,7 @@ SPEC CHECKSUMS:
   EXSQLite: 848167441b14cb6cdd6ae46c8d62289161a79550
   EXStructuredHeaders: b1a48d732562e2cc81f11771bcfd29534f5d9254
   EXTaskManager: f8257faa4c20acfc3f31e21ab82a62544d70db85
-  EXUpdates: 3ffd111cc082f2a0f63aa6ad3d5ab8ab0af52fb3
+  EXUpdates: 2ab50246f8d7f96900c4b28767a031dccea8e427
   EXUpdatesInterface: dd699d1930e28639dcbd70a402caea98e86364ca
   FBAEMKit: c7f82b5145d446bcbbcd50485c032689032fc6a2
   FBAudienceNetwork: e0fcc9091fced34910ed0b6da06f129db46ac9e6
@@ -4826,8 +4820,6 @@ SPEC CHECKSUMS:
   MLKitVision: e87dc3f2e456a6ab32361ebd985e078dd2746143
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   Nimble: d954d0accfd082f2225e62d71008440493e318f4
-  OCHamcrest: a613690381f1dac7637c18962c10dbe8feca4bb5
-  OCMockito: 780f04370226f81a9d972c97d1203864ef609f5b
   PromisesObjC: ab77feca74fa2823e7af4249b8326368e61014cb
   Protobuf: 120350fc38646e2dedc26f49ecba778184ea1de2
   Quick: 749aa754fd1e7d984f2000fe051e18a3a9809179

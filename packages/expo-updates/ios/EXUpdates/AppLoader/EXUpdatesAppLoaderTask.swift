@@ -243,7 +243,7 @@ public class EXUpdatesAppLoaderTask: NSObject {
   }
 
   private func runReaper() {
-    if let launchedUpdate = finalizedLauncher!.launchedUpdate {
+    if let launchedUpdate = finalizedLauncher?.launchedUpdate {
       EXUpdatesReaper.reapUnusedUpdates(
         withConfig: config,
         database: database,
@@ -321,7 +321,7 @@ public class EXUpdatesAppLoaderTask: NSObject {
       config: config,
       database: database,
       directory: directory,
-      launchedUpdate: candidateLauncher!.launchedUpdate,
+      launchedUpdate: candidateLauncher?.launchedUpdate,
       completionQueue: loaderTaskQueue
     )
     remoteAppLoader!.loadUpdate(

@@ -65,7 +65,6 @@ Pod::Spec.new do |s|
 
     # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
     test_spec.dependency 'ExpoModulesTestCore'
-    test_spec.dependency 'OCMockito', '~> 6.0'
 
     test_spec.pod_target_xcconfig = {
       'USER_HEADER_SEARCH_PATHS' => '"${CONFIGURATION_TEMP_DIR}/EXUpdates.build/DerivedSources"',

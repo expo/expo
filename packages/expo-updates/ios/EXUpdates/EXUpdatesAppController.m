@@ -1,7 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAppController+Internal.h>
-#import <EXUpdates/EXUpdatesErrorRecovery.h>
 #import <ExpoModulesCore/EXDefines.h>
 #import <React/RCTReloadCommand.h>
 
@@ -345,7 +344,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
            assetId:nil];
     [EXUpdatesUtils sendEventToBridge:_bridge withType:EXUpdatesNoUpdateAvailableEventName body:@{}];
   }
-  [_errorRecovery notifyNewRemoteLoadStatus:_remoteLoadStatus];
+  [_errorRecovery notifyWithNewRemoteLoadStatus:_remoteLoadStatus];
 }
 
 # pragma mark - EXUpdatesAppController+Internal
@@ -441,12 +440,12 @@ static NSString * const EXUpdatesErrorEventName = @"error";
     // do nothing for now
   } success:^(EXUpdatesUpdate * _Nullable update) {
     self->_remoteLoadStatus = update ? EXUpdatesRemoteLoadStatusNewUpdateLoaded : EXUpdatesRemoteLoadStatusIdle;
-    [self->_errorRecovery notifyNewRemoteLoadStatus:self->_remoteLoadStatus];
+    [self->_errorRecovery notifyWithNewRemoteLoadStatus:self->_remoteLoadStatus];
   } error:^(NSError * _Nonnull error) {
     [self->_logger error:[NSString stringWithFormat:@"EXUpdatesAppController loadRemoteUpdate error: %@", error.localizedDescription]
               code:EXUpdatesErrorCodeUpdateFailedToLoad];
     self->_remoteLoadStatus = EXUpdatesRemoteLoadStatusIdle;
-    [self->_errorRecovery notifyNewRemoteLoadStatus:self->_remoteLoadStatus];
+    [self->_errorRecovery notifyWithNewRemoteLoadStatus:self->_remoteLoadStatus];
   }];
 }
 
