@@ -53,8 +53,7 @@ class ExpoImage extends React.PureComponent {
         if (Platform.OS === 'android') {
             delete resolvedStyle.backgroundColor;
         }
-        // @ts-ignore
-        const tintColor = processColor(props.tintColor);
+        const tintColor = processColor(props.tintColor || resolvedStyle.tintColor);
         const borderColor = processColor(resolvedStyle.borderColor);
         // @ts-ignore
         const borderStartColor = processColor(resolvedStyle.borderStartColor);
