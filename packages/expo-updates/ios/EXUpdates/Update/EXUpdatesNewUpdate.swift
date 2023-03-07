@@ -35,10 +35,10 @@ import EXStructuredHeaders
 
     let bundleKey: String? = launchAsset.optionalValue(forKey: "key")
     // TODO-JJ save launch assets with no file extension to match android
-    let jsBundleAsset = EXUpdatesAsset(key: bundleKey, type: EXUpdatesEmbeddedBundleFileType)
+    let jsBundleAsset = EXUpdatesAsset(key: bundleKey, type: EXUpdatesEmbeddedAppLoader.EXUpdatesEmbeddedBundleFileType)
     jsBundleAsset.url = bundleUrl
     jsBundleAsset.isLaunchAsset = true
-    jsBundleAsset.mainBundleFilename = EXUpdatesEmbeddedBundleFilename
+    jsBundleAsset.mainBundleFilename = EXUpdatesEmbeddedAppLoader.EXUpdatesEmbeddedBundleFilename
     jsBundleAsset.extraRequestHeaders = bundleKey.let { it in
       assetHeaders.optionalValue(forKey: it)
     }
