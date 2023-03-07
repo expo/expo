@@ -1,7 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAppLoader+Private.h>
-#import <EXUpdates/EXUpdatesUtils.h>
 #import <ExpoModulesCore/EXUtilities.h>
 
 #if __has_include(<EXUpdates/EXUpdates-Swift.h>)
