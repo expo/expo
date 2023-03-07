@@ -6,20 +6,19 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
-import expo.modules.devmenu
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.react.uimanager.ReactShadowNode
 import com.facebook.react.uimanager.ViewManager
+import expo.modules.core.interfaces.Package
+import expo.modules.core.interfaces.ReactActivityHandler
+import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.devmenu.extensions.DevMenuExtension
 import expo.modules.devmenu.modules.DevMenuInternalModule
 import expo.modules.devmenu.modules.DevMenuModule
 import expo.modules.devmenu.modules.DevMenuPreferences
-import expo.modules.core.interfaces.Package
-import expo.modules.core.interfaces.ReactActivityHandler
-import expo.modules.core.interfaces.ReactActivityLifecycleListener
 import expo.modules.devmenu.react.DevMenuAwareReactActivity
 
 object DevMenuPackageDelegate {
