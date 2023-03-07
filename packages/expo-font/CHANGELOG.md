@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix require cycle on web.
+- Fix require cycle on web. ([#21593](https://github.com/expo/expo/pull/21593) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
