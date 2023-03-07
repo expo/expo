@@ -97,7 +97,7 @@ public class EXUpdatesAppLauncherWithDatabase: NSObject, EXUpdatesAppLauncher {
         // We can only run an update marked as embedded if it's actually the update embedded in the
         // current binary. We might have an older update from a previous binary still listed in the
         // database with Embedded status so we need to filter that out here.
-        let embeddedManifest = EXUpdatesEmbeddedAppLoader.embeddedManifest(with: config, database: database)
+        let embeddedManifest = EXUpdatesEmbeddedAppLoader.embeddedManifest(withConfig: config, database: database)
         var filteredLaunchableUpdates: [EXUpdatesUpdate] = []
 
         for update in launchableUpdates {
@@ -197,7 +197,10 @@ public class EXUpdatesAppLauncherWithDatabase: NSObject, EXUpdatesAppLauncher {
 
     if launchedUpdate.status == EXUpdatesUpdateStatus.StatusEmbedded {
       precondition(assetFilesMap == nil, "assetFilesMap should be null for embedded updates")
-      launchAssetUrl = Bundle.main.url(forResource: EXUpdatesBareEmbeddedBundleFilename, withExtension: EXUpdatesBareEmbeddedBundleFileType)
+      launchAssetUrl = Bundle.main.url(
+        forResource: EXUpdatesEmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFilename,
+        withExtension: EXUpdatesEmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFileType
+      )
 
       completionQueue.async {
         self.completion!(self.launchAssetError, self.launchAssetUrl != nil)
@@ -299,7 +302,7 @@ public class EXUpdatesAppLauncherWithDatabase: NSObject, EXUpdatesAppLauncher {
     withLocalUrl assetLocalUrl: URL,
     completion: @escaping (Bool, Error?) -> Void
   ) {
-    guard let embeddedManifest = EXUpdatesEmbeddedAppLoader.embeddedManifest(with: config, database: database) else {
+    guard let embeddedManifest = EXUpdatesEmbeddedAppLoader.embeddedManifest(withConfig: config, database: database) else {
       completion(false, nil)
       return
     }

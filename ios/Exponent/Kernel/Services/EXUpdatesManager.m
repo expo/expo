@@ -7,8 +7,6 @@
 #import "EXUpdatesDatabaseManager.h"
 #import "EXUpdatesManager.h"
 
-#import <EXUpdates/EXUpdatesRemoteAppLoader.h>
-
 #import <React/RCTBridge.h>
 
 @import EXManifests;

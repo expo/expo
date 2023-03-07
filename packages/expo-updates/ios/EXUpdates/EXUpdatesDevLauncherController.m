@@ -2,7 +2,6 @@
 
 #import <EXUpdates/EXUpdatesAppController+Internal.h>
 #import <EXUpdates/EXUpdatesDevLauncherController.h>
-#import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <React/RCTBridge.h>
 
 #if __has_include(<EXUpdates/EXUpdates-Swift.h>)
@@ -98,9 +97,9 @@ typedef NS_ENUM(NSInteger, EXUpdatesDevLauncherErrorCode) {
 
   EXUpdatesRemoteAppLoader *loader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:updatesConfiguration database:controller.database directory:controller.updatesDirectory launchedUpdate:nil completionQueue:controller.controllerQueue];
 
-  [loader loadUpdateFromUrl:updatesConfiguration.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
+  [loader loadUpdateFromURL:updatesConfiguration.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
     return manifestBlock(update.manifest.rawManifestJSON);
-  } asset:^(EXUpdatesAsset * _Nonnull asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
+  } asset:^(EXUpdatesAsset * _Nonnull asset, NSInteger successfulAssetCount, NSInteger failedAssetCount, NSInteger totalAssetCount) {
     progressBlock(successfulAssetCount, failedAssetCount, totalAssetCount);
   } success:^(EXUpdatesUpdate * _Nullable update) {
     if (!update) {
