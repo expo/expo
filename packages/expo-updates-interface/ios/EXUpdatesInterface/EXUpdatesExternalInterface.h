@@ -23,7 +23,7 @@ typedef BOOL (^EXUpdatesManifestBlock) (NSDictionary *manifest);
 
 @property (nonatomic, weak) id bridge;
 
-- (NSURL *)launchAssetURL;
+- (nullable NSURL *)launchAssetURL;
 
 - (void)reset;
 
