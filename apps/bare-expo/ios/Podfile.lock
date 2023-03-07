@@ -164,6 +164,8 @@ PODS:
     - ExpoModulesCore
   - ExpoRandom (13.1.1):
     - ExpoModulesCore
+  - ExpoSecureStore (12.1.1):
+    - ExpoModulesCore
   - ExpoSMS (11.2.1):
     - ExpoModulesCore
   - ExpoStoreReview (6.2.1):
@@ -183,8 +185,6 @@ PODS:
   - EXScreenOrientation (5.1.1):
     - ExpoModulesCore
     - React-Core
-  - EXSecureStore (12.1.1):
-    - ExpoModulesCore
   - EXSensors (12.1.1):
     - ExpoModulesCore
   - EXSharing (11.2.1):
@@ -770,6 +770,7 @@ DEPENDENCIES:
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
   - ExpoRandom (from `../../../packages/expo-random/ios`)
+  - ExpoSecureStore (from `../../../packages/expo-secure-store/ios`)
   - ExpoSMS (from `../../../packages/expo-sms/ios`)
   - ExpoStoreReview (from `../../../packages/expo-store-review/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
@@ -779,7 +780,6 @@ DEPENDENCIES:
   - EXPrint (from `../../../packages/expo-print/ios`)
   - EXScreenCapture (from `../../../packages/expo-screen-capture/ios`)
   - EXScreenOrientation (from `../../../packages/expo-screen-orientation/ios`)
-  - EXSecureStore (from `../../../packages/expo-secure-store/ios`)
   - EXSensors (from `../../../packages/expo-sensors/ios`)
   - EXSharing (from `../../../packages/expo-sharing/ios`)
   - EXSpeech (from `../../../packages/expo-speech/ios`)
@@ -1022,6 +1022,9 @@ EXTERNAL SOURCES:
   ExpoRandom:
     inhibit_warnings: false
     :path: "../../../packages/expo-random/ios"
+  ExpoSecureStore:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-secure-store/ios"
   ExpoSMS:
     inhibit_warnings: false
     :path: "../../../packages/expo-sms/ios"
@@ -1049,9 +1052,6 @@ EXTERNAL SOURCES:
   EXScreenOrientation:
     inhibit_warnings: false
     :path: "../../../packages/expo-screen-orientation/ios"
-  EXSecureStore:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-secure-store/ios"
   EXSensors:
     inhibit_warnings: false
     :path: "../../../packages/expo-sensors/ios"
@@ -1232,6 +1232,7 @@ SPEC CHECKSUMS:
   ExpoModulesTestCore: faf43ba18dd6809d2e91567260e132b385a5842e
   ExpoNetwork: 242fe1bd68bfe744a2f69fccfe4bfe1d89d1e790
   ExpoRandom: 7ee07d62e7003b74d0536e0495e3a653fe1b2a74
+  ExpoSecureStore: 22b2088cf8cb9d5a276d7a143fdd5b26f83cc601
   ExpoSMS: e4f3901fdb30ab239ee1172005dbe6634f2d6138
   ExpoStoreReview: d057dcca4b9c95f3c9db11bd2e168dab9cba59f3
   ExpoSystemUI: 0be5173ee2a7c01e9abc44f56d879a1eaaa16527
@@ -1241,7 +1242,6 @@ SPEC CHECKSUMS:
   EXPrint: 7f4c9435f522c8efaaa945a1ace51f7c4211b0f2
   EXScreenCapture: d9284f4a6508c86d0d463805b93672397d18de0f
   EXScreenOrientation: 52220f8f2477ed25a37e3b2cdbbaa8635d250256
-  EXSecureStore: e8923258361cc406d0401af380f12bd05b2b720f
   EXSensors: 29448aedea6ac26f1f11f349c038dbe8698d41e6
   EXSharing: 5a28af9de0884c255f401e1f1f0bea269e9c9bb9
   EXSpeech: a8da505f08d539364dbcbb2804ac3e63e7bec22b
