@@ -53,7 +53,8 @@ class ExpoImage extends React.PureComponent {
         if (Platform.OS === 'android') {
             delete resolvedStyle.backgroundColor;
         }
-        const tintColor = processColor(resolvedStyle.tintColor);
+        // @ts-ignore
+        const tintColor = processColor(props.tintColor);
         const borderColor = processColor(resolvedStyle.borderColor);
         // @ts-ignore
         const borderStartColor = processColor(resolvedStyle.borderStartColor);
@@ -67,9 +68,7 @@ class ExpoImage extends React.PureComponent {
         const borderTopColor = processColor(resolvedStyle.borderTopColor);
         // @ts-ignore
         const borderBottomColor = processColor(resolvedStyle.borderBottomColor);
-        return (React.createElement(NativeExpoImage, { ...props, ...resolvedStyle, style: resolvedStyle, onLoadStart: this.onLoadStart, onLoad: this.onLoad, onProgress: this.onProgress, onError: this.onError, 
-            // @ts-ignore
-            tintColor: tintColor, borderColor: borderColor, borderLeftColor: borderLeftColor, borderRightColor: borderRightColor, borderTopColor: borderTopColor, borderBottomColor: borderBottomColor, borderStartColor: borderStartColor, borderEndColor: borderEndColor, backgroundColor: backgroundColor }));
+        return (React.createElement(NativeExpoImage, { ...props, ...resolvedStyle, style: resolvedStyle, onLoadStart: this.onLoadStart, onLoad: this.onLoad, onProgress: this.onProgress, onError: this.onError, tintColor: tintColor, borderColor: borderColor, borderLeftColor: borderLeftColor, borderRightColor: borderRightColor, borderTopColor: borderTopColor, borderBottomColor: borderBottomColor, borderStartColor: borderStartColor, borderEndColor: borderEndColor, backgroundColor: backgroundColor }));
     }
 }
 export { ExpoImageModule };
