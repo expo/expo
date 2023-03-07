@@ -9,11 +9,12 @@ import fetch from 'node-fetch';
 import path from 'path';
 import requireString from 'require-from-string';
 import resolveFrom from 'resolve-from';
+
 import { delayAsync } from '../../utils/delay';
 import { memoize } from '../../utils/fn';
-
 import { profile } from '../../utils/profile';
 import { getMetroServerRoot } from './middleware/ManifestMiddleware';
+
 const debug = require('debug')('expo:start:server:node-renderer') as typeof console.log;
 
 function wrapBundle(str: string) {
