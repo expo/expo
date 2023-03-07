@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed cancellation type not being marked as a `Record` on Android. ([#21588](https://github.com/expo/expo/pull/21588) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 11.2.1 — 2023-02-09
