@@ -18,9 +18,9 @@ export function createInspectorDeviceClass(MetroDeviceClass: typeof MetroDevice)
     }
 
     /** Hook into the message life cycle to answer more complex CDP messages */
-    _processMessageFromDevice(message: DeviceRequest<any>, info: DebuggerInfo) {
+    async _processMessageFromDevice(message: DeviceRequest<any>, info: DebuggerInfo) {
       if (!this.onDeviceMessage(message, info)) {
-        super._processMessageFromDevice(message, info);
+        await super._processMessageFromDevice(message, info);
       }
     }
 
