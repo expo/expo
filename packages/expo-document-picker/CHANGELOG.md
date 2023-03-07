@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed cancellation type not being marked as a `Record` on Android.
+- Fixed cancellation type not being marked as a `Record` on Android. ([#21588](https://github.com/expo/expo/pull/21588) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
