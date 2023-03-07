@@ -88,6 +88,10 @@ const STYLES_LINK = css`
   &:hover {
     color: ${theme.text.link};
   }
+
+  &:hover svg {
+    color: ${theme.button.tertiary.icon};
+  }
 `;
 
 const STYLES_LINK_ACTIVE = css`
