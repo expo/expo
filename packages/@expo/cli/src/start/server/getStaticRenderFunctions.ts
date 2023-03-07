@@ -9,6 +9,8 @@ import fetch from 'node-fetch';
 import path from 'path';
 import requireString from 'require-from-string';
 import resolveFrom from 'resolve-from';
+import { delayAsync } from '../../utils/delay';
+import { memoize } from '../../utils/fn';
 
 import { profile } from '../../utils/profile';
 import { getMetroServerRoot } from './middleware/ManifestMiddleware';
@@ -38,6 +40,18 @@ type StaticRenderOptions = {
   minify?: boolean;
 };
 
+const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredModuleId: string) => {
+  // Copy the file into the project to ensure it works in monorepos.
+  // This means the file cannot have any relative imports.
+  const tempDir = path.join(projectRoot, '.expo/static');
+  await fs.promises.mkdir(tempDir, { recursive: true });
+  const moduleId = path.join(tempDir, 'render.js');
+  await fs.promises.writeFile(moduleId, await fs.promises.readFile(requiredModuleId, 'utf8'));
+  // Sleep to give watchman time to register the file.
+  await delayAsync(50);
+  return moduleId;
+});
+
 /** @returns the js file contents required to generate the static generation function. */
 export async function getStaticRenderFunctionsContentAsync(
   projectRoot: string,
@@ -45,18 +59,18 @@ export async function getStaticRenderFunctionsContentAsync(
   { dev = false, minify = false }: StaticRenderOptions = {}
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
-  const moduleId = getRenderModuleId(root);
+  const requiredModuleId = getRenderModuleId(root);
+  let moduleId = requiredModuleId;
 
-  // Copy the file into the project to ensure it works in monorepos.
-  // This means the file cannot have any relative imports.
-  const tempDir = path.join(root, '.expo/static');
-  await fs.promises.mkdir(tempDir, { recursive: true });
-  const tempFile = path.join(tempDir, 'render.js');
-  await fs.promises.writeFile(tempFile, await fs.promises.readFile(moduleId, 'utf8'));
+  const isInProject = requiredModuleId.startsWith(root);
 
-  const serverPath = path.relative(projectRoot, tempFile).replace(/\.[jt]sx?$/, '.bundle');
+  if (!isInProject) {
+    moduleId = await moveStaticRenderFunction(projectRoot, requiredModuleId);
+  }
+
+  const serverPath = path.relative(root, moduleId).replace(/\.[jt]sx?$/, '.bundle');
   console.log(serverPath);
-  debug('Loading render functions from:', tempFile, moduleId, root);
+  debug('Loading render functions from:', moduleId, moduleId, root);
 
   const res = await fetch(`${devServerUrl}/${serverPath}?platform=web&dev=${dev}&minify=${minify}`);
 
