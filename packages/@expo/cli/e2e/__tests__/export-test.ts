@@ -298,7 +298,13 @@ describe('server', () => {
       expect(about).toContain('<div id="root">');
       // Content of the page
       expect(about).toContain('data-testid="content">About</div>');
-      expect(about).toMatchSnapshot();
+
+      // <script src="/bundles/web-c91ecb663cfce9b9e90e28d253e72e0a.js" defer>
+      const sanitizedAbout = about.replace(
+        /<script src="\/bundles\/.*" defer>/g,
+        '<script src="/bundles/[mock].js" defer>'
+      );
+      expect(sanitizedAbout).toMatchSnapshot();
     },
     // Could take 45s depending on how fast npm installs
     240 * 1000
