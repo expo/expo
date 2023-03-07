@@ -205,7 +205,7 @@ internal final class EXUpdatesFileDownloader: NSObject, URLSessionDataDelegate {
   ) -> [String: Any] {
     var extraHeaders: [String: Any] = [:]
     do {
-      extraHeaders = try database.serverDefinedHeaders(withScopeKey: config.scopeKey.require("Must have scopeKey in config")).jsonData ?? [:]
+      extraHeaders = try database.serverDefinedHeaders(withScopeKey: config.scopeKey.require("Must have scopeKey in config")) ?? [:]
     } catch {
       NSLog("Error selecting serverDefinedHeaders from database: %@", [error.localizedDescription])
     }

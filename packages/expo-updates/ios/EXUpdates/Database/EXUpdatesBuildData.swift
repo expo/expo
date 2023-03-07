@@ -38,7 +38,7 @@ internal final class EXUpdatesBuildData {
 
       let staticBuildData: [AnyHashable: Any]?
       do {
-        staticBuildData = try database.staticBuildData(withScopeKey: scopeKey).jsonData
+        staticBuildData = try database.staticBuildData(withScopeKey: scopeKey)
       } catch {
         NSLog("Error getting static build data: %@", [error.localizedDescription])
         return
