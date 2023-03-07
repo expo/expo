@@ -14,7 +14,7 @@ import SQLite3
 import EXManifests
 
 @objc
-enum EXUpdatesDatabaseError: Int, Error {
+public enum EXUpdatesDatabaseError: Int, Error {
   case addExistingAssetMissingAssetKey
   case addExistingAssetInsertError
   case addExistingAssetAssetNotFoundError
@@ -192,9 +192,9 @@ public final class EXUpdatesDatabase: NSObject {
     sqlite3_exec(db, "COMMIT;", nil, nil, nil)
   }
 
-  public func addExistingAsset(_ asset: EXUpdatesAsset, toUpdateWithId updateId: UUID) throws {
+  public func addExistingAsset(_ asset: EXUpdatesAsset, toUpdateWithId updateId: UUID) throws -> Bool {
     guard let key = asset.key else {
-      throw EXUpdatesDatabaseError.addExistingAssetMissingAssetKey
+      return false
     }
 
     sqlite3_exec(db, "BEGIN;", nil, nil, nil)
@@ -229,8 +229,10 @@ public final class EXUpdatesDatabase: NSObject {
     sqlite3_exec(db, "COMMIT;", nil, nil, nil)
 
     if rows.isEmpty {
-      throw EXUpdatesDatabaseError.addExistingAssetAssetNotFoundError
+      return false
     }
+    
+    return true
   }
 
   public func updateAsset(_ asset: EXUpdatesAsset) throws {

@@ -1,8 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppLoader.h>
 #import <EXUpdates/EXUpdatesAppLoaderTask.h>
-#import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesService.h>
 #import <React/RCTBridge.h>
 

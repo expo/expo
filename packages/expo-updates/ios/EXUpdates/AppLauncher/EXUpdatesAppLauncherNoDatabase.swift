@@ -21,13 +21,19 @@ public class EXUpdatesAppLauncherNoDatabase: NSObject, EXUpdatesAppLauncher {
   public override init() {}
 
   public func launchUpdate(withConfig config: EXUpdatesConfig) {
-    launchedUpdate = EXUpdatesEmbeddedAppLoader.embeddedManifest(with: config, database: nil)
+    launchedUpdate = EXUpdatesEmbeddedAppLoader.embeddedManifest(withConfig: config, database: nil)
     if let launchedUpdate = launchedUpdate {
       if launchedUpdate.status == EXUpdatesUpdateStatus.StatusEmbedded {
         precondition(assetFilesMap == nil, "assetFilesMap should be null for embedded updates")
-        launchAssetUrl = Bundle.main.url(forResource: EXUpdatesBareEmbeddedBundleFilename, withExtension: EXUpdatesBareEmbeddedBundleFileType)
+        launchAssetUrl = Bundle.main.url(
+          forResource: EXUpdatesEmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFilename,
+          withExtension: EXUpdatesEmbeddedAppLoader.EXUpdatesBareEmbeddedBundleFileType
+        )
       } else {
-        launchAssetUrl = Bundle.main.url(forResource: EXUpdatesEmbeddedBundleFilename, withExtension: EXUpdatesEmbeddedBundleFileType)
+        launchAssetUrl = Bundle.main.url(
+          forResource: EXUpdatesEmbeddedAppLoader.EXUpdatesEmbeddedBundleFilename,
+          withExtension: EXUpdatesEmbeddedAppLoader.EXUpdatesEmbeddedBundleFileType
+        )
 
         var assetFilesMapLocal: [String: String] = [:]
         for asset in launchedUpdate.assets()! {

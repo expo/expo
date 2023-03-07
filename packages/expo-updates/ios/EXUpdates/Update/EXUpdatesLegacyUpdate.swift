@@ -58,10 +58,10 @@ public class EXUpdatesLegacyUpdate: EXUpdatesUpdate {
     var processedAssets: [EXUpdatesAsset] = []
 
     let bundleKey = manifest.bundleKey()
-    let jsBundleAsset = EXUpdatesAsset(key: bundleKey, type: EXUpdatesEmbeddedBundleFileType)
+    let jsBundleAsset = EXUpdatesAsset(key: bundleKey, type: EXUpdatesEmbeddedAppLoader.EXUpdatesEmbeddedBundleFileType)
     jsBundleAsset.url = bundleUrl
     jsBundleAsset.isLaunchAsset = true
-    jsBundleAsset.mainBundleFilename = EXUpdatesEmbeddedBundleFilename
+    jsBundleAsset.mainBundleFilename = EXUpdatesEmbeddedAppLoader.EXUpdatesEmbeddedBundleFilename
     processedAssets.append(jsBundleAsset)
 
     let bundledAssetBaseUrl = EXUpdatesLegacyUpdate.bundledAssetBaseUrl(withManifest: manifest, config: config)

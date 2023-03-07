@@ -1,8 +1,6 @@
 //  Copyright © 2020 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesAppLoaderTask.h>
-#import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
-#import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 
 #if __has_include(<EXUpdates/EXUpdates-Swift.h>)
 #import <EXUpdates/EXUpdates-Swift.h>
@@ -247,7 +245,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
           [self->_embeddedAppLoader loadUpdateFromEmbeddedManifestWithCallback:^BOOL(EXUpdatesUpdate * _Nonnull update) {
             // we already checked using selection policy, so we don't need to check again
             return YES;
-          } onAsset:^(EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
+          } asset:^(EXUpdatesAsset * _Nonnull asset, NSInteger successfulAssetCount, NSInteger failedAssetCount, NSInteger totalAssetCount) {
             // do nothing for now
           } success:^(EXUpdatesUpdate * _Nullable update) {
             completion();
@@ -272,7 +270,7 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
 - (void)_loadRemoteUpdateWithCompletion:(void (^)(NSError * _Nullable error, EXUpdatesUpdate * _Nullable update))completion
 {
   _remoteAppLoader = [[EXUpdatesRemoteAppLoader alloc] initWithConfig:_config database:_database directory:_directory launchedUpdate:_candidateLauncher.launchedUpdate completionQueue:_loaderTaskQueue];
-  [_remoteAppLoader loadUpdateFromUrl:_config.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
+  [_remoteAppLoader loadUpdateFromURL:_config.updateUrl onManifest:^BOOL(EXUpdatesUpdate * _Nonnull update) {
     if ([self->_selectionPolicy shouldLoadNewUpdate:update withLaunchedUpdate:self->_candidateLauncher.launchedUpdate filters:update.manifestFilters]) {
       self->_isUpToDate = NO;
       if (self->_delegate) {
@@ -285,11 +283,11 @@ static NSString * const EXUpdatesAppLoaderTaskErrorDomain = @"EXUpdatesAppLoader
       self->_isUpToDate = YES;
       return NO;
     }
-  } asset:^(EXUpdatesAsset *asset, NSUInteger successfulAssetCount, NSUInteger failedAssetCount, NSUInteger totalAssetCount) {
+  } asset:^(EXUpdatesAsset * _Nonnull asset, NSInteger successfulAssetCount, NSInteger failedAssetCount, NSInteger totalAssetCount) {
     // do nothing for now
   } success:^(EXUpdatesUpdate * _Nullable update) {
     completion(nil, update);
-  } error:^(NSError *error) {
+  } error:^(NSError * _Nonnull error) {
     completion(error, nil);
   }];
 }
