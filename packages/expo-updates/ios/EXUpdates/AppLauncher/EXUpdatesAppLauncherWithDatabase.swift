@@ -286,7 +286,7 @@ public class EXUpdatesAppLauncherWithDatabase: NSObject, EXUpdatesAppLauncher {
   }
 
   private func checkExistence(ofAsset asset: EXUpdatesAsset, withLocalUrl assetLocalUrl: URL, completion: @escaping (Bool) -> Void) {
-    EXUpdatesFileDownloader.assetFilesQueue().async {
+    EXUpdatesFileDownloader.assetFilesQueue.async {
       let exists = FileManager.default.fileExists(atPath: assetLocalUrl.path)
       self.launcherQueue.async {
         completion(exists)
@@ -309,7 +309,7 @@ public class EXUpdatesAppLauncherWithDatabase: NSObject, EXUpdatesAppLauncher {
     }
 
     if let matchingAsset = matchingAsset, matchingAsset.mainBundleFilename != nil {
-      EXUpdatesFileDownloader.assetFilesQueue().async {
+      EXUpdatesFileDownloader.assetFilesQueue.async {
         guard let bundlePath = EXUpdatesUtils.path(forBundledAsset: matchingAsset) else {
           self.launcherQueue.async {
             completion(
@@ -364,9 +364,9 @@ public class EXUpdatesAppLauncherWithDatabase: NSObject, EXUpdatesAppLauncher {
       return
     }
 
-    EXUpdatesFileDownloader.assetFilesQueue().async {
+    EXUpdatesFileDownloader.assetFilesQueue.async {
       self.downloader.downloadFile(
-        from: assetUrl,
+        fromURL: assetUrl,
         verifyingHash: asset.expectedHash,
         toPath: assetLocalUrl.path,
         extraHeaders: asset.extraRequestHeaders ?? [:]
@@ -388,6 +388,6 @@ public class EXUpdatesAppLauncherWithDatabase: NSObject, EXUpdatesAppLauncher {
   }
 
   private lazy var downloader: EXUpdatesFileDownloader = {
-    EXUpdatesFileDownloader(updatesConfig: config)
+    EXUpdatesFileDownloader(config: config)
   }()
 }

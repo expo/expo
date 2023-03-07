@@ -106,7 +106,7 @@ NS_ASSUME_NONNULL_BEGIN
 /**
  * Extracts a map of name/value pairs from the given string. Names are expected to be unique.
  */
-- (NSDictionary<NSString *, NSString *> *)parseParameterString:(NSString *)parameterString withDelimiter:(unichar)delimiter {
+- (NSDictionary *)parseParameterString:(NSString *)parameterString withDelimiter:(unichar)delimiter {
   _parameterString = parameterString;
   
   NSMutableDictionary *params = [NSMutableDictionary new];

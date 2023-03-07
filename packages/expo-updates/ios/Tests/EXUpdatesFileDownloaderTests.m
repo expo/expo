@@ -2,17 +2,49 @@
 
 #import <XCTest/XCTest.h>
 
-#import <EXUpdates/EXUpdatesFileDownloader.h>
-
 #import "EXUpdates-Swift.h"
 
 @import EXManifests;
 
 @interface EXUpdatesFileDownloaderTests : XCTestCase
 
+@property (nonatomic, strong) EXUpdatesDatabase *db;
+@property (nonatomic, strong) NSURL *testDatabaseDir;
+
 @end
 
 @implementation EXUpdatesFileDownloaderTests
+
+- (void)setUp
+{
+  NSURL *applicationSupportDir = [NSFileManager.defaultManager URLsForDirectory:NSApplicationSupportDirectory inDomains:NSUserDomainMask].lastObject;
+  _testDatabaseDir = [applicationSupportDir URLByAppendingPathComponent:@"EXUpdatesDatabaseTests"];
+  if ([NSFileManager.defaultManager fileExistsAtPath:_testDatabaseDir.path]) {
+    NSError *error;
+    [NSFileManager.defaultManager removeItemAtPath:_testDatabaseDir.path error:&error];
+    XCTAssertNil(error);
+  }
+  NSError *error;
+  [NSFileManager.defaultManager createDirectoryAtPath:_testDatabaseDir.path withIntermediateDirectories:YES attributes:nil error:&error];
+  XCTAssertNil(error);
+
+  _db = [[EXUpdatesDatabase alloc] init];
+  dispatch_sync(_db.databaseQueue, ^{
+    NSError *dbOpenError;
+    [_db openDatabaseInDirectory:_testDatabaseDir error:&dbOpenError];
+    XCTAssertNil(dbOpenError);
+  });
+}
+
+- (void)tearDown
+{
+  dispatch_sync(_db.databaseQueue, ^{
+    [_db closeDatabase];
+  });
+  NSError *error;
+  [NSFileManager.defaultManager removeItemAtPath:_testDatabaseDir.path error:&error];
+  XCTAssertNil(error);
+}
 
 - (void)testCacheControl_LegacyManifest
 {
@@ -20,7 +52,7 @@
     EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
     EXUpdatesConfig.EXUpdatesConfigRuntimeVersionKey: @"1.0",
   }];
-  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
+  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithConfig:config];
 
   NSURLRequest *actual = [downloader createManifestRequestWithURL:[NSURL URLWithString:@"https://exp.host/@test/test"] extraHeaders:nil];
   XCTAssertEqual(NSURLRequestUseProtocolCachePolicy, actual.cachePolicy);
@@ -33,7 +65,7 @@
     EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
     EXUpdatesConfig.EXUpdatesConfigRuntimeVersionKey: @"1.0",
   }];
-  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
+  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithConfig:config];
 
   NSURLRequest *actual = [downloader createManifestRequestWithURL:[NSURL URLWithString:@"https://u.expo.dev/00000000-0000-0000-0000-000000000000"] extraHeaders:nil];
   XCTAssertEqual(NSURLRequestUseProtocolCachePolicy, actual.cachePolicy);
@@ -46,7 +78,7 @@
     EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
     EXUpdatesConfig.EXUpdatesConfigRuntimeVersionKey: @"1.0"
   }];
-  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
+  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithConfig:config];
   
   NSDictionary *extraHeaders = @{
     @"expo-string": @"test",
@@ -72,7 +104,7 @@
       @"expo-updates-environment": @"custom"
     }
   }];
-  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
+  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithConfig:config];
 
   // serverDefinedHeaders should not be able to override preset headers
   NSDictionary *extraHeaders = @{
@@ -84,8 +116,6 @@
   XCTAssertEqualObjects(@"custom", [actual valueForHTTPHeaderField:@"expo-updates-environment"]);
 }
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wnonnull"
 - (void)testGetExtraHeaders
 {
   NSString *launchedUpdateUUIDString = @"7c1d2bd0-f88b-454d-998c-7fa92a924dbf";
@@ -113,27 +143,35 @@
                                                                        status:EXUpdatesUpdateStatusStatus0_Unused
                                                             isDevelopmentMode:NO
                                                            assetsFromManifest:@[]];
-  NSDictionary *extraHeaders = [EXUpdatesFileDownloader extraHeadersWithDatabase:nil
-                                                                          config:nil
-                                                                  launchedUpdate:launchedUpdate
-                                                                  embeddedUpdate:embeddedUpdate];
+  __block NSDictionary *extraHeaders;
+  dispatch_sync(_db.databaseQueue, ^{
+    extraHeaders = [EXUpdatesFileDownloader extraHeadersWithDatabase:_db
+                                                              config:[EXUpdatesConfig configFromDictionary:@{
+                                                                EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+                                                              }]
+                                                      launchedUpdate:launchedUpdate
+                                                      embeddedUpdate:embeddedUpdate];
+  });
+  
   XCTAssertEqualObjects(launchedUpdateUUIDString, extraHeaders[@"Expo-Current-Update-ID"]);
   XCTAssertEqualObjects(embeddedUpdateUUIDString, extraHeaders[@"Expo-Embedded-Update-ID"]);
 }
-#pragma clang diagnostic pop
 
-#pragma clang diagnostic push
-#pragma clang diagnostic ignored "-Wnonnull"
 - (void)testGetExtraHeaders_NoLaunchedOrEmbeddedUpdate
 {
-  NSDictionary *extraHeaders = [EXUpdatesFileDownloader extraHeadersWithDatabase:nil
-                                                                          config:nil
-                                                                  launchedUpdate:nil
-                                                                  embeddedUpdate:nil];
+  __block NSDictionary *extraHeaders;
+  dispatch_sync(_db.databaseQueue, ^{
+    extraHeaders = [EXUpdatesFileDownloader extraHeadersWithDatabase:_db
+                                                              config:[EXUpdatesConfig configFromDictionary:@{
+                                                                EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
+                                                              }]
+                                                      launchedUpdate:nil
+                                                      embeddedUpdate:nil];
+  });
+  
   XCTAssertNil(extraHeaders[@"Expo-Current-Update-ID"]);
   XCTAssertNil(extraHeaders[@"Expo-Embedded-Update-ID"]);
 }
-#pragma clang diagnostic pop
 
 - (void)testAssetExtraHeaders_OverrideOrder
 {
@@ -145,7 +183,7 @@
       @"expo-updates-environment": @"custom"
     }
   }];
-  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
+  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithConfig:config];
 
   // assetRequestHeaders should not be able to override preset headers
   NSDictionary *extraHeaders = @{
@@ -163,7 +201,7 @@
     EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://u.expo.dev/00000000-0000-0000-0000-000000000000",
     EXUpdatesConfig.EXUpdatesConfigRuntimeVersionKey: @"1.0"
   }];
-  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
+  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithConfig:config];
 
   NSDictionary *extraHeaders = @{
     @"expo-string": @"test",

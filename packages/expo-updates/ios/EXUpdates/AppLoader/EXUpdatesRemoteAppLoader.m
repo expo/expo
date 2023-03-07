@@ -3,7 +3,6 @@
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesCrypto.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
-#import <EXUpdates/EXUpdatesFileDownloader.h>
 #import <EXUpdates/EXUpdatesUtils.h>
 #import <ExpoModulesCore/EXUtilities.h>
 
@@ -37,7 +36,7 @@ static NSString * const EXUpdatesRemoteAppLoaderErrorDomain = @"EXUpdatesRemoteA
                completionQueue:(dispatch_queue_t)completionQueue
 {
   if (self = [super initWithConfig:config database:database directory:directory launchedUpdate:launchedUpdate completionQueue:completionQueue]) {
-    _downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:self.config];
+    _downloader = [[EXUpdatesFileDownloader alloc] initWithConfig:self.config];
     _completionQueue = completionQueue;
   }
   return self;

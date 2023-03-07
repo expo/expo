@@ -36,7 +36,7 @@
     NSString *parameterString = testCase[0];
     NSDictionary *expectedDictionary = testCase[1];
     
-    NSDictionary<NSString *, NSString *> *parameters = [[EXUpdatesParameterParser new] parseParameterString:parameterString withDelimiter:';'];
+    NSDictionary *parameters = [[EXUpdatesParameterParser new] parseParameterString:parameterString withDelimiter:';'];
     XCTAssertTrue([expectedDictionary isEqualToDictionary:parameters], @"result did not match expected");
   }
 }

@@ -61,7 +61,7 @@ public final class EXUpdatesConfig: NSObject {
   public let expectsSignedManifest: Bool
   public let scopeKey: String?
   public let updateUrl: URL?
-  public let requestHeaders: [String: Any]
+  public let requestHeaders: [String: String]
   public let releaseChannel: String
   public let launchWaitMs: Int
   public let checkOnLaunch: EXUpdatesCheckAutomaticallyConfig
@@ -77,7 +77,7 @@ public final class EXUpdatesConfig: NSObject {
     expectsSignedManifest: Bool,
     scopeKey: String?,
     updateUrl: URL?,
-    requestHeaders: [String: Any],
+    requestHeaders: [String: String],
     releaseChannel: String,
     launchWaitMs: Int,
     checkOnLaunch: EXUpdatesCheckAutomaticallyConfig,
@@ -134,7 +134,7 @@ public final class EXUpdatesConfig: NSObject {
       scopeKey = EXUpdatesConfig.normalizedURLOrigin(url: updateUrl)
     }
 
-    let requestHeaders: [String: Any] = config.optionalValue(forKey: EXUpdatesConfigRequestHeadersKey) ?? [:]
+    let requestHeaders: [String: String] = config.optionalValue(forKey: EXUpdatesConfigRequestHeadersKey) ?? [:]
     let releaseChannel = config.optionalValue(forKey: EXUpdatesConfigReleaseChannelKey) ?? ReleaseChannelDefaultValue
     let launchWaitMs = config.optionalValue(forKey: EXUpdatesConfigLaunchWaitMsKey).let { (it: Any) in
       // The only way I can figure out how to detect numbers is to do a is NSNumber (is any Numeric didn't work).
