@@ -5,7 +5,7 @@ export const HomeButton = ({ children, style, href, ...rest }: ButtonProps) => (
   <Button
     {...rest}
     href={href}
-    rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+    openInNewTab={href?.startsWith('http')}
     style={{
       ...typography.fontSizes[14],
       height: 36,

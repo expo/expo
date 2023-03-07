@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { breakpoints, spacing } from '@expo/styleguide-base';
+import { spacing } from '@expo/styleguide-base';
+import type { PropsWithChildren } from 'react';
 
 import { CreateAppButton } from './CreateAppButton';
 import { Icon } from './Icon';
@@ -8,18 +9,18 @@ import { APIBox } from '~/components/plugins/APIBox';
 import { tableWrapperStyle } from '~/ui/components/Table/Table';
 import { H3 } from '~/ui/components/Text';
 
-type BoxProps = React.PropsWithChildren<{
+type BoxProps = PropsWithChildren<{
   name: string;
   image: string;
   createUrl?: string;
 }>;
 
 export const Box = ({ name, image, createUrl, children }: BoxProps) => (
-  <APIBox css={boxStyle}>
-    <div css={headerStyle}>
-      <div css={headerTitleStyle}>
+  <APIBox className="mt-6" css={boxStyle}>
+    <div className="inline-flex flex-row items-center gap-4 pb-4 w-full max-medium:gap-3 max-medium:flex-col">
+      <div className="flex flex-row gap-3 items-center w-[inherit]">
         <Icon title={name} image={image} size={48} />
-        <H3>{name}</H3>
+        <H3 style={{ marginBottom: 0 }}>{name}</H3>
       </div>
       {createUrl && <CreateAppButton name={name} href={createUrl} />}
     </div>
@@ -28,36 +29,7 @@ export const Box = ({ name, image, createUrl, children }: BoxProps) => (
 );
 
 const boxStyle = css({
-  marginTop: spacing[6],
-
   [`.css-${tableWrapperStyle.name}`]: {
     marginBottom: spacing[4],
-  },
-});
-
-const headerStyle = css({
-  paddingBottom: spacing[4],
-  display: 'inline-flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-  gap: spacing[4],
-  width: '100%',
-
-  [`@media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px)`]: {
-    paddingTop: spacing[4],
-    gap: spacing[3],
-    flexDirection: 'column',
-  },
-});
-
-const headerTitleStyle = css({
-  display: 'flex',
-  gap: spacing[3],
-  flexDirection: 'row',
-  alignItems: 'center',
-  width: 'inherit',
-
-  h3: {
-    marginBottom: 0,
   },
 });

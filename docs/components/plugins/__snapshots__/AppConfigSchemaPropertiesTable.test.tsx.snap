@@ -85,7 +85,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-166ujkg-Collapsible"
         >
           <svg
-            class="icon-sm css-1wgpnk4-Collapsible"
+            class="icon-sm text-icon-default css-1wgpnk4-Collapsible"
             fill="none"
             role="img"
             viewBox="0 0 24 24"
@@ -205,7 +205,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-166ujkg-Collapsible"
         >
           <svg
-            class="icon-sm css-1wgpnk4-Collapsible"
+            class="icon-sm text-icon-default css-1wgpnk4-Collapsible"
             fill="none"
             role="img"
             viewBox="0 0 24 24"
@@ -250,7 +250,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-166ujkg-Collapsible"
         >
           <svg
-            class="icon-sm css-1wgpnk4-Collapsible"
+            class="icon-sm text-icon-default css-1wgpnk4-Collapsible"
             fill="none"
             role="img"
             viewBox="0 0 24 24"
@@ -378,7 +378,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               class="css-166ujkg-Collapsible"
             >
               <svg
-                class="icon-sm css-1wgpnk4-Collapsible"
+                class="icon-sm text-icon-default css-1wgpnk4-Collapsible"
                 fill="none"
                 role="img"
                 viewBox="0 0 24 24"
@@ -683,7 +683,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           class="css-166ujkg-Collapsible"
         >
           <svg
-            class="icon-sm css-1wgpnk4-Collapsible"
+            class="icon-sm text-icon-default css-1wgpnk4-Collapsible"
             fill="none"
             role="img"
             viewBox="0 0 24 24"

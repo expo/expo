@@ -25,7 +25,7 @@ export const NewsletterSignUp = () => {
         />
         <Button
           size="xs"
-          theme={userSignedUp ? 'tertiary' : 'secondary'}
+          theme={userSignedUp ? 'quaternary' : 'secondary'}
           css={sendButtonStyle}
           disabled={userSignedUp || !email.length}
           onClick={() => {
@@ -80,6 +80,6 @@ const sendButtonStyle = css({
   position: 'absolute',
   outline: 'none',
   right: 10,
-  top: 10,
+  top: 8,
   minWidth: buttonMinWidth,
 });

@@ -46,7 +46,7 @@ const Description = ({ children }: PropsWithChildren<object>) => (
 );
 
 const Home = () => {
-  const { palette, button, background } = theme;
+  const { palette, background } = theme;
   return (
     <ScreenClassProvider>
       <DocumentationPage tocVisible={false} hideFromSearch>
@@ -107,13 +107,9 @@ const Home = () => {
                 and web app
               </RawH2>
               <HomeButton
-                css={css({
-                  background: button.primary.background,
-                  color: button.primary.text,
-                  height: 40,
-                })}
+                className="hocus:bg-button-primary hocus:opacity-80"
                 href="/tutorial/introduction/"
-                rightSlot={<ArrowRightIcon className="text-button-primary-icon" />}>
+                rightSlot={<ArrowRightIcon />}>
                 Start Tutorial
               </HomeButton>
             </GridCell>
@@ -140,7 +136,7 @@ const Home = () => {
                 with zero local setup.
               </P>
               <HomeButton
-                css={css({ backgroundColor: palette.purple11, color: palette.purple3 })}
+                className="bg-palette-purple11 text-palette-purple3 hocus:bg-palette-purple11 hocus:opacity-80"
                 href="https://snack.expo.dev/"
                 target="_blank"
                 rightSlot={<ArrowUpRightIcon className="text-palette-purple3" />}>
@@ -161,6 +157,7 @@ const Home = () => {
                 Codecademy
               </RawH3>
               <HomeButton
+                className="bg-palette-orange11 text-palette-orange4 hocus:bg-palette-orange11 hocus:opacity-80"
                 css={css({
                   backgroundColor: palette.orange11,
                   color: palette.orange4,
@@ -189,7 +186,7 @@ const Home = () => {
                 using Expo.
               </P>
               <HomeButton
-                css={css({ backgroundColor: palette.green11, color: palette.green2 })}
+                className="bg-palette-green11 text-palette-green2 hocus:bg-palette-green11 hocus:opacity-80"
                 href="/introduction/faq"
                 rightSlot={<ArrowRightIcon className="text-palette-green2" />}>
                 Read
@@ -210,12 +207,8 @@ const Home = () => {
                 get advice from the Expo team.
               </P>
               <HomeButton
-                css={css({
-                  backgroundColor: palette.yellow11,
-                  color: palette.yellow2,
-                })}
+                className="bg-palette-yellow11 text-palette-yellow2 hocus:bg-palette-yellow11 hocus:opacity-80"
                 href="https://us02web.zoom.us/meeting/register/tZcvceivqj0oHdGVOjEeKY0dRxCRPb0HzaAK"
-                target="_blank"
                 rightSlot={<ArrowUpRightIcon className="text-palette-yellow2" />}>
                 Register
               </HomeButton>

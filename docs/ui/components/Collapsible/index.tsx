@@ -23,7 +23,7 @@ export function Collapsible({ summary, open, testID, children }: CollapsibleProp
     <details css={detailsStyle} open={open} data-testid={testID}>
       <summary css={summaryStyle}>
         <div css={markerWrapperStyle}>
-          <TriangleDownIcon className="icon-sm" css={markerStyle} />
+          <TriangleDownIcon className="icon-sm text-icon-default" css={markerStyle} />
         </div>
         <DEMI>{summary}</DEMI>
       </summary>

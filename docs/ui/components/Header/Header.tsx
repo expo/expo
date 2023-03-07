@@ -34,7 +34,10 @@ export const Header = ({
           <A isStyled css={headerLink} href="https://blog.expo.dev">
             Blog
           </A>
-          <LinkBase href="https://github.com/expo/expo" aria-label="GitHub" className="hocus:opacity-80">
+          <LinkBase
+            href="https://github.com/expo/expo"
+            aria-label="GitHub"
+            className="hocus:opacity-80">
             {/* @ts-ignore: TODO */}
             <GithubIcon className="icon-lg text-icon-default" title="" />
           </LinkBase>
