@@ -246,7 +246,7 @@ public final class EXUpdatesFileDownloader: NSObject, URLSessionDataDelegate {
     }
   }
 
-  private func setHTTPHeaderFields(request: inout URLRequest, extraHeaders: [String: Any]) {
+  private func setHTTPHeaderFields(request: inout URLRequest, extraHeaders: [String: Any?]) {
     EXUpdatesFileDownloader.setHTTPHeaderFields(extraHeaders, onRequest: &request)
     request.setValue("ios", forHTTPHeaderField: "Expo-Platform")
     request.setValue("1", forHTTPHeaderField: "Expo-API-Version")
@@ -258,7 +258,7 @@ public final class EXUpdatesFileDownloader: NSObject, URLSessionDataDelegate {
     }
   }
 
-  private func setManifestHTTPHeaderFields(request: inout URLRequest, extraHeaders: [String: Any]?) {
+  private func setManifestHTTPHeaderFields(request: inout URLRequest, extraHeaders: [String: Any?]?) {
     // apply extra headers before anything else, so they don't override preset headers
     EXUpdatesFileDownloader.setHTTPHeaderFields(extraHeaders, onRequest: &request)
 
@@ -293,7 +293,7 @@ public final class EXUpdatesFileDownloader: NSObject, URLSessionDataDelegate {
     }
   }
 
-  public func createManifestRequest(withURL url: URL, extraHeaders: [String: Any]?) -> URLRequest {
+  public func createManifestRequest(withURL url: URL, extraHeaders: [String: Any?]?) -> URLRequest {
     var request = URLRequest(
       url: url,
       cachePolicy: self.sessionConfiguration.requestCachePolicy,
@@ -303,7 +303,7 @@ public final class EXUpdatesFileDownloader: NSObject, URLSessionDataDelegate {
     return request
   }
 
-  public func createGenericRequest(withURL url: URL, extraHeaders: [String: Any]) -> URLRequest {
+  public func createGenericRequest(withURL url: URL, extraHeaders: [String: Any?]) -> URLRequest {
     var request = URLRequest(
       url: url,
       cachePolicy: self.sessionConfiguration.requestCachePolicy,
