@@ -3,7 +3,6 @@
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
 #import <EXUpdates/EXUpdatesCrypto.h>
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
-#import <EXUpdates/EXUpdatesUtils.h>
 #import <ExpoModulesCore/EXUtilities.h>
 
 #if __has_include(<EXUpdates/EXUpdates-Swift.h>)

@@ -54,7 +54,7 @@ public class EXUpdatesBareUpdate: EXUpdatesUpdate {
       updateId: uuid,
       scopeKey: config.scopeKey.require("Must supply scopeKey in configuration"),
       commitTime: Date(timeIntervalSince1970: Double(commitTime) / 1000),
-      runtimeVersion: EXUpdatesUtils.getRuntimeVersion(with: config),
+      runtimeVersion: EXUpdatesUtils.getRuntimeVersion(withConfig: config),
       keep: true,
       status: EXUpdatesUpdateStatus.StatusEmbedded,
       isDevelopmentMode: false,

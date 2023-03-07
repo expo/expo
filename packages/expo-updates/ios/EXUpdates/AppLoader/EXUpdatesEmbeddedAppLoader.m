@@ -1,7 +1,6 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
 #import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
-#import <EXUpdates/EXUpdatesUtils.h>
 
 #if __has_include(<EXUpdates/EXUpdates-Swift.h>)
 #import <EXUpdates/EXUpdates-Swift.h>
