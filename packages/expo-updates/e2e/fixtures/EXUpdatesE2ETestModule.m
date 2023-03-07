@@ -1,6 +1,5 @@
 // Copyright 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppController.h>
 #import <EXUpdates/EXUpdatesE2ETestModule.h>
 
 #if __has_include(<EXUpdates/EXUpdates-Swift.h>)
