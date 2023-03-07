@@ -2,7 +2,12 @@
 
 #import <CommonCrypto/CommonDigest.h>
 #import <EXUpdates/EXUpdatesCrypto.h>
-#import <EXUpdates/EXUpdatesFileDownloader.h>
+
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -33,7 +38,7 @@ static NSString * const EXUpdatesCryptoPublicKeyFilename = @"manifestPublicKey.p
     [[self class] fetchAndVerifySignatureWithData:data signature:signature config:config successBlock:successBlock errorBlock:errorBlock];
   };
 
-  EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config URLSessionConfiguration:configuration];
+  EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithConfig:config urlSessionConfiguration:configuration];
   [fileDownloader downloadDataFromURL:[NSURL URLWithString:EXUpdatesCryptoPublicKeyUrl]
                          extraHeaders:@{}
                          successBlock:^(NSData *publicKeyData, NSURLResponse *response) {
@@ -60,7 +65,7 @@ static NSString * const EXUpdatesCryptoPublicKeyFilename = @"manifestPublicKey.p
   NSURLSessionConfiguration *configuration = NSURLSessionConfiguration.defaultSessionConfiguration;
   configuration.requestCachePolicy = NSURLRequestReloadIgnoringLocalCacheData;
 
-  EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config URLSessionConfiguration:configuration];
+  EXUpdatesFileDownloader *fileDownloader = [[EXUpdatesFileDownloader alloc] initWithConfig:config urlSessionConfiguration:configuration];
   [fileDownloader downloadDataFromURL:[NSURL URLWithString:EXUpdatesCryptoPublicKeyUrl]
                          extraHeaders:@{}
                          successBlock:^(NSData *publicKeyData, NSURLResponse *response) {

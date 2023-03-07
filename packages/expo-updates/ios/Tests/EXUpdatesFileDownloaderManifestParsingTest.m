@@ -2,8 +2,6 @@
 
 #import <XCTest/XCTest.h>
 
-#import <EXUpdates/EXUpdatesFileDownloader.h>
-
 #import "EXUpdates_Unit_Tests-Swift.h"
 #import "EXUpdates-Swift.h"
 
@@ -75,7 +73,7 @@
   EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{
     EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
   }];
-  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
+  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithConfig:config];
   
   NSString *contentType = @"application/json";
   
@@ -106,7 +104,7 @@
   EXUpdatesConfig *config = [EXUpdatesConfig configFromDictionary:@{
     EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: @"https://exp.host/@test/test",
   }];
-  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
+  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithConfig:config];
   
   NSString *boundary = @"blah";
   NSString *contentType = [NSString stringWithFormat:@"multipart/mixed; boundary=%@", boundary];
@@ -139,7 +137,7 @@
     EXUpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: _modernJSONCertificate,
     EXUpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: @{},
   }];
-  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
+  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithConfig:config];
   
   NSString *contentType = @"application/json";
   
@@ -175,7 +173,7 @@
     EXUpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: _modernJSONCertificate,
     EXUpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: @{},
   }];
-  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
+  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithConfig:config];
   
   NSString *boundary = @"blah";
   NSString *contentType = [NSString stringWithFormat:@"multipart/mixed; boundary=%@", boundary];
@@ -210,7 +208,7 @@
     EXUpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: _modernJSONCertificate,
     EXUpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: @{},
   }];
-  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
+  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithConfig:config];
   
   NSString *contentType = @"application/json";
   
@@ -234,7 +232,7 @@
     errorOccurred = error;
   }];
   
-  XCTAssertTrue([errorOccurred.localizedDescription isEqualToString:@"Downloaded manifest signature is invalid: No expo-signature header specified"]);
+  XCTAssertTrue([errorOccurred.localizedDescription isEqualToString:@"No expo-signature header specified"]);
   XCTAssertNil(resultUpdateManifest);
 }
 
@@ -245,7 +243,7 @@
     EXUpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: @{},
     EXUpdatesConfig.EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey: @YES,
   }];
-  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
+  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithConfig:config];
   
   NSString *contentType = @"application/json";
   
@@ -282,7 +280,7 @@
     },
     EXUpdatesConfig.EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey: @YES,
   }];
-  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
+  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithConfig:config];
   
   NSString *boundary = @"blah";
   NSString *contentType = [NSString stringWithFormat:@"multipart/mixed; boundary=%@", boundary];
@@ -322,7 +320,7 @@
     },
     EXUpdatesConfig.EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey: @YES,
   }];
-  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithUpdatesConfig:config];
+  EXUpdatesFileDownloader *downloader = [[EXUpdatesFileDownloader alloc] initWithConfig:config];
   
   NSString *boundary = @"blah";
   NSString *contentType = [NSString stringWithFormat:@"multipart/mixed; boundary=%@", boundary];

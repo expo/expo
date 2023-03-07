@@ -62,7 +62,7 @@ public final class EXUpdatesReaper: NSObject {
 
       NSLog("Deleted assets and updates from SQLite in %f ms", [beginDeleteFromDatabase.timeIntervalSinceNow * -1000])
 
-      EXUpdatesFileDownloader.assetFilesQueue().async {
+      EXUpdatesFileDownloader.assetFilesQueue.async {
         var deletedAssets = 0
         var erroredAssets: [EXUpdatesAsset] = []
 
