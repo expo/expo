@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix require cycle on web.
+
 ### 💡 Others
 
 ## 11.1.1 — 2023-02-09
