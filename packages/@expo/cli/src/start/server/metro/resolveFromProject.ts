@@ -69,11 +69,6 @@ export function importMetroInspectorDeviceFromProject(
   return importFromProject(projectRoot, 'metro-inspector-proxy/src/Device');
 }
 
-/** Import `ws` from the project, installed by `metro-inspector-proxy` */
-export function importMetroInspectorWebSocketFromProject(projectRoot: string): typeof import('ws') {
-  return importFromProject(projectRoot, 'ws');
-}
-
 /**
  * Import the internal `saveAssets()` function from `react-native` for the purpose
  * of saving production assets as-is instead of converting them to a hash.

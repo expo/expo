@@ -2,9 +2,7 @@ import type { Server as HttpServer, IncomingMessage, ServerResponse } from 'http
 import type { Server as HttpsServer } from 'https';
 import type { InspectorProxy as MetroProxy, Device as MetroDevice } from 'metro-inspector-proxy';
 import { parse } from 'url';
-import type { Server as WSServer } from 'ws';
-
-import { importMetroInspectorWebSocketFromProject } from '../resolveFromProject';
+import WS, { Server as WSServer } from 'ws';
 
 const WS_DEVICE_URL = '/inspector/device';
 const WS_DEBUGGER_URL = '/inspector/debug';
@@ -66,7 +64,6 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
   }
 
   private createDeviceWebSocketServer() {
-    const WS = importMetroInspectorWebSocketFromProject(this.metroProxy._projectRoot);
     const wss = new WS.Server({
       noServer: true,
       perMessageDeflate: false,
@@ -100,7 +97,6 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
   }
 
   private createDebuggerWebSocketServer() {
-    const WS = importMetroInspectorWebSocketFromProject(this.metroProxy._projectRoot);
     const wss = new WS.Server({
       noServer: true,
       perMessageDeflate: false,
