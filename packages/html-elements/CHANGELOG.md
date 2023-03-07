@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Prevent babel plugin from running on node_modules.
+- Prevent babel plugin from transforming `html` and `body` on web.
+
 ### 💡 Others
 
 ## 0.4.1 — 2023-02-09
