@@ -19,7 +19,6 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
     private DeviceClass: Instantiatable<D>,
     public readonly devices: Map<number, D> = new Map()
   ) {
-    this.metroProxy = metroProxy;
     // monkey-patch the device list to expose it within the metro inspector
     this.metroProxy._devices = this.devices;
 
@@ -88,7 +87,8 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
         });
       } catch (error: unknown) {
         const message = error instanceof Error && error.toString();
-        console.error('Could not establish a connection to device:', error);
+        Log.error('Failed to create socket connection to on-device debugger (Hermes engine).')
+        Log.exception(error);
         socket.close(WS_GENERIC_ERROR_STATUS, message || 'Unknown error');
       }
     });
@@ -107,11 +107,13 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
       try {
         const { deviceId, pageId } = getExistingDeviceInfo(request.url);
         if (!deviceId || !pageId) {
+          // TODO(cedric): change these errors to proper error types
           throw new Error(`Missing "device" and/or "page" IDs in query parameters`);
         }
 
         const device = this.devices.get(parseInt(deviceId, 10));
         if (!device) {
+          // TODO(cedric): change these errors to proper error types
           throw new Error(`Device with ID "${deviceId}" not found.`);
         }
 
@@ -123,7 +125,6 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
           debug('Debugger disconnected: device=%s, app=%s', device._name, device._app);
         });
       } catch (error: unknown) {
-        console.log('ERRR', error);
         const message = error instanceof Error && error.toString();
         debug('Could not establish a connection to debugger:', error);
         socket.close(WS_GENERIC_ERROR_STATUS, message || 'Unknown error');
@@ -134,7 +135,7 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
   }
 }
 
-function asString(value?: string | string[]) {
+function asString(value?: string | string[]): string {
   return Array.isArray(value) ? value.join() : value;
 }
 
