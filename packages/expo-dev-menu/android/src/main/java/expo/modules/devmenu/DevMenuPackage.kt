@@ -6,6 +6,7 @@ import android.os.Bundle
 import android.view.KeyEvent
 import android.view.View
 import android.view.ViewGroup
+import expo.modules.devmenu
 import com.facebook.react.ReactApplication
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.NativeModule
@@ -55,7 +56,7 @@ class DevMenuPackage : Package, ReactPackage {
   }
 
   override fun createReactActivityLifecycleListeners(activityContext: Context?): List<ReactActivityLifecycleListener> {
-    if (!DevMenuPackageDelegate.shouldEnableAutoSetup(activityContext)) {
+    if (!DevMenuPackageDelegate.shouldEnableAutoSetup(activityContext) || !BuildConfig.DEBUG) {
       return emptyList()
     }
 
@@ -73,7 +74,7 @@ class DevMenuPackage : Package, ReactPackage {
   }
 
   override fun createReactActivityHandlers(activityContext: Context?): List<ReactActivityHandler> {
-    if (!DevMenuPackageDelegate.shouldEnableAutoSetup(activityContext)) {
+    if (!DevMenuPackageDelegate.shouldEnableAutoSetup(activityContext) || !BuildConfig.DEBUG) {
       return emptyList()
     }
 
