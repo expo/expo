@@ -11,7 +11,7 @@ public class EXUpdatesDatabaseIntegrityCheck {
   ) throws {
     let assets = try database.allAssets()
     var missingAssets: [EXUpdatesAsset] = []
-    EXUpdatesFileDownloader.assetFilesQueue().sync {
+    EXUpdatesFileDownloader.assetFilesQueue.sync {
       for asset in assets where !assetExists(asset, inDirectory: directory) {
         missingAssets.append(asset)
       }
