@@ -660,7 +660,7 @@ internal final class EXUpdatesFileDownloader: NSObject, URLSessionDataDelegate {
     //    project, it is assumed to be valid for all projects
     // 3. mark the manifest as verified if both of these pass
     if let codeSigningConfiguration = config.codeSigningConfiguration {
-      let signatureValidationResult: EXUpdatesSignatureValidationResult
+      let signatureValidationResult: SignatureValidationResult
       do {
         signatureValidationResult = try codeSigningConfiguration.validateSignature(
           signature: manifestHeaders.signature,
@@ -668,7 +668,8 @@ internal final class EXUpdatesFileDownloader: NSObject, URLSessionDataDelegate {
           manifestResponseCertificateChain: certificateChainFromManifestResponse
         )
       } catch {
-        let message = EXUpdatesCodeSigningErrorUtils.message(forError: error as! EXUpdatesCodeSigningError)
+        let codeSigningError = error as? CodeSigningError
+        let message = codeSigningError?.message() ?? error.localizedDescription
         self.logger.error(message: message, code: .unknown)
         errorBlock(NSError(
           domain: EXUpdatesFileDownloaderErrorDomain,
@@ -678,7 +679,7 @@ internal final class EXUpdatesFileDownloader: NSObject, URLSessionDataDelegate {
         return
       }
 
-      if signatureValidationResult.validationResult == .Invalid {
+      if signatureValidationResult.validationResult == .invalid {
         let message = "Manifest download was successful, but signature was incorrect"
         self.logger.error(message: message, code: .unknown)
         errorBlock(NSError(
@@ -689,7 +690,7 @@ internal final class EXUpdatesFileDownloader: NSObject, URLSessionDataDelegate {
         return
       }
 
-      if signatureValidationResult.validationResult != .Skipped {
+      if signatureValidationResult.validationResult != .skipped {
         if let expoProjectInformation = signatureValidationResult.expoProjectInformation {
           let update: EXUpdatesUpdate
           do {

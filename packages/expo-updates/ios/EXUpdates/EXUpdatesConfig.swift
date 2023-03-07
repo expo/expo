@@ -65,7 +65,7 @@ public final class EXUpdatesConfig: NSObject {
   public let releaseChannel: String
   public let launchWaitMs: Int
   public let checkOnLaunch: EXUpdatesCheckAutomaticallyConfig
-  public let codeSigningConfiguration: EXUpdatesCodeSigningConfiguration?
+  public let codeSigningConfiguration: CodeSigningConfiguration?
 
   public let sdkVersion: String?
   public let runtimeVersion: String?
@@ -81,7 +81,7 @@ public final class EXUpdatesConfig: NSObject {
     releaseChannel: String,
     launchWaitMs: Int,
     checkOnLaunch: EXUpdatesCheckAutomaticallyConfig,
-    codeSigningConfiguration: EXUpdatesCodeSigningConfiguration?,
+    codeSigningConfiguration: CodeSigningConfiguration?,
     sdkVersion: String?,
     runtimeVersion: String?,
     hasEmbeddedUpdate: Bool
@@ -205,8 +205,8 @@ public final class EXUpdatesConfig: NSObject {
     codeSigningMetadata: [String: String],
     codeSigningIncludeManifestResponseCertificateChain: Bool,
     codeSigningAllowUnsignedManifests: Bool
-  ) throws -> EXUpdatesCodeSigningConfiguration? {
-    return try EXUpdatesCodeSigningConfiguration(
+  ) throws -> CodeSigningConfiguration? {
+    return try CodeSigningConfiguration(
       embeddedCertificateString: codeSigningCertificate,
       metadata: codeSigningMetadata,
       includeManifestResponseCertificateChain: codeSigningIncludeManifestResponseCertificateChain,

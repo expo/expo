@@ -1,8 +1,10 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+// swiftlint:disable identifier_name
+
 import Foundation
 
-internal enum EXUpdatesCodeSigningError : Error {
+internal enum CodeSigningError: Error {
   case CertificateEncodingError
   case CertificateDERDecodeError
   case CertificateValidityError
@@ -23,11 +25,9 @@ internal enum EXUpdatesCodeSigningError : Error {
   case SignatureEncodingError
   case AlgorithmParseError
   case InvalidExpoProjectInformationExtensionValue
-}
 
-internal class EXUpdatesCodeSigningErrorUtils {
-  static func message(forError: EXUpdatesCodeSigningError) -> String {
-    switch forError {
+  func message() -> String {
+    switch self {
     case .CertificateEncodingError:
       return "Code signing certificate could not be encoded in a lossless manner using utf8 encoding"
     case .CertificateDERDecodeError:
