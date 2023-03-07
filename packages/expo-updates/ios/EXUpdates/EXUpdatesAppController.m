@@ -3,7 +3,6 @@
 #import <EXUpdates/EXUpdatesAppController+Internal.h>
 #import <EXUpdates/EXUpdatesErrorRecovery.h>
 #import <EXUpdates/EXUpdatesRemoteAppLoader.h>
-#import <EXUpdates/EXUpdatesUtils.h>
 #import <ExpoModulesCore/EXDefines.h>
 #import <React/RCTReloadCommand.h>
 
@@ -354,7 +353,7 @@ static NSString * const EXUpdatesErrorEventName = @"error";
 
 - (BOOL)initializeUpdatesDirectoryWithError:(NSError ** _Nullable)error
 {
-  _updatesDirectory = [EXUpdatesUtils initializeUpdatesDirectoryWithError:error];
+  _updatesDirectory = [EXUpdatesUtils initializeUpdatesDirectoryAndReturnError:error];
   return _updatesDirectory != nil;
 }
 

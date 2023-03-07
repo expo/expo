@@ -14,20 +14,20 @@ class MiscellaneousSpec : ExpoSpec {
           "EXUpdatesScopeKey": "test",
           "EXUpdatesSDKVersion": "38.0.0"
         ])
-        expect(EXUpdatesUtils.getRuntimeVersion(with: sdkOnlyConfig)) == "38.0.0"
+        expect(EXUpdatesUtils.getRuntimeVersion(withConfig: sdkOnlyConfig)) == "38.0.0"
         
         let runtimeOnlyConfig = EXUpdatesConfig.config(fromDictionary: [
           "EXUpdatesScopeKey": "test",
           "EXUpdatesRuntimeVersion": "1.0"
         ])
-        expect(EXUpdatesUtils.getRuntimeVersion(with: runtimeOnlyConfig)) == "1.0"
+        expect(EXUpdatesUtils.getRuntimeVersion(withConfig: runtimeOnlyConfig)) == "1.0"
         
         let bothConfig = EXUpdatesConfig.config(fromDictionary: [
           "EXUpdatesScopeKey": "test",
           "EXUpdatesSDKVersion": "38.0.0",
           "EXUpdatesRuntimeVersion": "1.0"
         ])
-        expect(EXUpdatesUtils.getRuntimeVersion(with: bothConfig)) == "1.0"
+        expect(EXUpdatesUtils.getRuntimeVersion(withConfig: bothConfig)) == "1.0"
       }
     }
     

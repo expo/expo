@@ -116,7 +116,7 @@ public final class EXUpdatesFileDownloader: NSObject, URLSessionDataDelegate {
       fromURL: url,
       extraHeaders: extraHeaders
     ) { data, response in
-      let hashBase64String = EXUpdatesUtils.base64UrlEncodedSHA256(with: data)
+      let hashBase64String = EXUpdatesUtils.base64UrlEncodedSHA256WithData(data)
       if let expectedBase64URLEncodedSHA256Hash = expectedBase64URLEncodedSHA256Hash,
         expectedBase64URLEncodedSHA256Hash != hashBase64String {
         let errorMessage = String(
