@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix issue where the array of permissions could end up empty causing an exception. ([#21589](https://github.com/expo/expo/pull/21589) by [@alanhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 11.2.1 — 2023-02-09
