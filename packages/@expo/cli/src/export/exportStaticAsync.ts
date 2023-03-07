@@ -60,32 +60,36 @@ function appendScriptsToHtml(html: string, scripts: string[]) {
   );
 }
 
-async function exportFromServerAsync(
-  devServerManager: DevServerManager,
-  { outputDir, scripts }: Options
-) {
-  const devServerUrl = devServerManager.getDefaultDevServer().getDevServerUrl();
-  const devServer = devServerManager.getDefaultDevServer();
-
-  assert(devServer instanceof MetroBundlerDevServer);
-
-  const manifest = await getExpoRoutesAsync(devServerManager);
-
-  debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
+export async function getFilesToExportFromServerAsync({
+  manifest,
+  scripts,
+  renderAsync,
+}: {
+  manifest: any;
+  scripts: string[];
+  renderAsync: (pathname: string) => Promise<{
+    fetchData: boolean;
+    scriptContents: string;
+    renderAsync: () => any;
+  }>;
+}): Promise<Map<string, string>> {
   // name : contents
   const files = new Map<string, string>();
+
+  const sanitizeName = (segment: string) => {
+    // Strip group names from the segment
+    return segment
+      .split('/')
+      .map((s) => (matchGroupName(s) ? '' : s))
+      .filter(Boolean)
+      .join('/');
+  };
 
   const fetchScreens = (
     screens: Record<string, any>,
     additionPath: string = ''
   ): Promise<any>[] => {
-    async function fetchScreenAsync({ segment, filename }: { segment: string; filename: string }) {
-      // Strip group names from the segment
-      const cleanSegment = matchGroupName(segment) ? '' : segment;
-
-      // Full filtered pathname to request.
-      const pathname = [additionPath, cleanSegment].filter(Boolean).join('/');
-
+    async function fetchScreenExactAsync(pathname: string, filename: string) {
       const outputPath = [additionPath, filename].filter(Boolean).join('/').replace(/^\//, '');
       // TODO: Ensure no duplicates in the manifest.
       if (files.has(outputPath)) {
@@ -94,13 +98,12 @@ async function exportFromServerAsync(
 
       // Prevent duplicate requests while running in parallel.
       files.set(outputPath, '');
-      assert(devServer instanceof MetroBundlerDevServer);
 
       try {
-        const data = await devServer.getStaticPageAsync(pathname, { mode: 'production' });
+        const data = await renderAsync(pathname);
 
         if (data.fetchData) {
-          console.log('ssr:', pathname);
+          // console.log('ssr:', pathname);
         } else {
           files.set(outputPath, appendScriptsToHtml(data.renderAsync(), scripts));
         }
@@ -113,12 +116,30 @@ async function exportFromServerAsync(
       }
     }
 
+    async function fetchScreenAsync({ segment, filename }: { segment: string; filename: string }) {
+      // Strip group names from the segment
+      const cleanSegment = sanitizeName(segment);
+
+      if (cleanSegment !== segment) {
+        // has groups, should request multiple screens.
+        await fetchScreenExactAsync(
+          [additionPath, segment].filter(Boolean).join('/'),
+          [additionPath, filename].filter(Boolean).join('/').replace(/^\//, '')
+        );
+      }
+
+      await fetchScreenExactAsync(
+        [additionPath, cleanSegment].filter(Boolean).join('/'),
+        [additionPath, sanitizeName(filename)].filter(Boolean).join('/').replace(/^\//, '')
+      );
+    }
+
     return Object.entries(screens).map(async ([name, segment]) => {
       const filename = name + '.html';
 
       // Segment is a directory.
       if (typeof segment !== 'string') {
-        const cleanSegment = matchGroupName(segment.path) ? '' : segment.path;
+        const cleanSegment = sanitizeName(segment.path);
         return Promise.all(
           fetchScreens(segment.screens, [additionPath, cleanSegment].filter(Boolean).join('/'))
         );
@@ -133,6 +154,29 @@ async function exportFromServerAsync(
   };
 
   await Promise.all(fetchScreens(manifest.screens));
+
+  return files;
+}
+
+/** Perform all fs commits */
+export async function exportFromServerAsync(
+  devServerManager: DevServerManager,
+  { outputDir, scripts }: Options
+): Promise<void> {
+  const devServer = devServerManager.getDefaultDevServer();
+
+  const manifest = await getExpoRoutesAsync(devServerManager);
+
+  debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
+
+  const files = await getFilesToExportFromServerAsync({
+    manifest,
+    scripts,
+    renderAsync(pathname: string) {
+      assert(devServer instanceof MetroBundlerDevServer);
+      return devServer.getStaticPageAsync(pathname, { mode: 'production' });
+    },
+  });
 
   fs.mkdirSync(path.join(outputDir), { recursive: true });
 

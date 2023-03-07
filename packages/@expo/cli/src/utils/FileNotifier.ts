@@ -1,5 +1,5 @@
 import chalk from 'chalk';
-import { watchFile, StatWatcher } from 'fs';
+import { watchFile } from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
