@@ -2,7 +2,7 @@
 
 import Foundation
 
-public final class EXUpdatesDatabaseMigrationRegistry {
+internal final class EXUpdatesDatabaseMigrationRegistry {
   public static func migrations() -> [EXUpdatesDatabaseMigration] {
     // migrations should be added here in the order they should be performed (e.g. oldest first)
     return [

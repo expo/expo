@@ -4,22 +4,21 @@ import Foundation
 import CommonCrypto
 import ASN1Decoder
 
-struct EXUpdatesCodeSigningMetadataFields {
+internal struct EXUpdatesCodeSigningMetadataFields {
   static let KeyIdFieldKey = "keyid"
   static let AlgorithmFieldKey = "alg"
 }
 
-@objc public enum EXUpdatesValidationResult : Int {
+internal enum EXUpdatesValidationResult {
   case Valid
   case Invalid
   case Skipped
 }
 
 
-@objc
-public class EXUpdatesSignatureValidationResult : NSObject {
-  @objc private(set) public var validationResult: EXUpdatesValidationResult
-  @objc private(set) public var expoProjectInformation: EXUpdatesExpoProjectInformation?
+internal final class EXUpdatesSignatureValidationResult {
+  private(set) internal var validationResult: EXUpdatesValidationResult
+  private(set) internal var expoProjectInformation: EXUpdatesExpoProjectInformation?
   
   required init(validationResult: EXUpdatesValidationResult, expoProjectInformation: EXUpdatesExpoProjectInformation?) {
     self.validationResult = validationResult
@@ -28,18 +27,17 @@ public class EXUpdatesSignatureValidationResult : NSObject {
 }
 
 @objc
-public class EXUpdatesCodeSigningConfiguration : NSObject {
+public final class EXUpdatesCodeSigningConfiguration: NSObject {
   private var embeddedCertificateString: String
   private var keyIdFromMetadata: String
   private var algorithmFromMetadata: EXUpdatesCodeSigningAlgorithm
   private var includeManifestResponseCertificateChain: Bool
   private var allowUnsignedManifests: Bool
   
-  @objc
-  public required init(embeddedCertificateString: String,
-                       metadata: [String: String],
-                       includeManifestResponseCertificateChain: Bool,
-                       allowUnsignedManifests: Bool) throws {
+  internal required init(embeddedCertificateString: String,
+                         metadata: [String: String],
+                         includeManifestResponseCertificateChain: Bool,
+                         allowUnsignedManifests: Bool) throws {
     self.embeddedCertificateString = embeddedCertificateString
     self.keyIdFromMetadata = metadata[EXUpdatesCodeSigningMetadataFields.KeyIdFieldKey] ?? EXUpdatesSignatureHeaderInfo.DefaultKeyId
     self.algorithmFromMetadata = try EXUpdatesCodeSigningAlgorithm.parseFromString(metadata[EXUpdatesCodeSigningMetadataFields.AlgorithmFieldKey])
@@ -54,13 +52,11 @@ public class EXUpdatesCodeSigningConfiguration : NSObject {
     return str.replacingOccurrences(of: "\\", with: "\\\\").replacingOccurrences(of: "\"", with: "\\\"")
   }
   
-  @objc
-  public func createAcceptSignatureHeader() -> String {
+  internal func createAcceptSignatureHeader() -> String {
     return "sig, keyid=\"\(EXUpdatesCodeSigningConfiguration.escapeStructuredHeaderStringItem(keyIdFromMetadata))\", alg=\"\(EXUpdatesCodeSigningConfiguration.escapeStructuredHeaderStringItem(algorithmFromMetadata.rawValue))\""
   }
-  
-  @objc
-  public func validateSignature(signature: String?,
+
+  internal func validateSignature(signature: String?,
                                 signedData: Data,
                                 manifestResponseCertificateChain: String?) throws -> EXUpdatesSignatureValidationResult {
     guard let signature = signature else {
@@ -138,7 +134,7 @@ public class EXUpdatesCodeSigningConfiguration : NSObject {
     }
   }
   
-  public static func separateCertificateChain(certificateChainInManifestResponse: String) -> [String] {
+  internal static func separateCertificateChain(certificateChainInManifestResponse: String) -> [String] {
     let startDelimiter = "-----BEGIN CERTIFICATE-----"
     let endDelimiter = "-----END CERTIFICATE-----"
     var certificateStringList = [] as [String]
@@ -161,19 +157,19 @@ public class EXUpdatesCodeSigningConfiguration : NSObject {
   }
 }
 
-extension SecCertificate {
-  public var publicKey: SecKey? {
+private extension SecCertificate {
+  var publicKey: SecKey? {
     SecCertificateCopyKey(self)
   }
 }
 
-extension OSStatus {
-  public var isSuccess: Bool {
+internal extension OSStatus {
+  var isSuccess: Bool {
     self == errSecSuccess
   }
 }
 
-extension Data {
+private extension Data {
   func sha256() -> Data {
     var digest = Data(count: Int(CC_SHA256_DIGEST_LENGTH))
     withUnsafeBytes { bytes in
@@ -185,7 +181,7 @@ extension Data {
   }
 }
 
-extension String {
+private extension String {
   func firstIndex(of: String, startingAt: String.Index) -> String.Index? {
     return self[startingAt...].range(of: of)?.lowerBound
   }

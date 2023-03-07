@@ -6,10 +6,10 @@ import Foundation
 import ASN1Decoder
 import CommonCrypto
 
-public typealias EXUpdatesVerifySignatureSuccessBlock = (Bool) -> Void
-public typealias EXUpdatesVerifySignatureErrorBlock = (Error) -> Void
+internal typealias EXUpdatesVerifySignatureSuccessBlock = (Bool) -> Void
+internal typealias EXUpdatesVerifySignatureErrorBlock = (Error) -> Void
 
-public enum PEMType {
+internal enum PEMType {
   case publicKey
   case certificate
 
@@ -35,7 +35,7 @@ public enum PEMType {
 /**
  * Methods for legacy signature verification of manifests.
  */
-public class EXUpdatesCrypto {
+internal final class EXUpdatesCrypto {
   // this always succeeds since it is hardcoded
   // swiftlint:disable:next force_unwrapping
   private static let PublicKeyUrl = URL(string: "https://exp.host/--/manifest-public-key")!

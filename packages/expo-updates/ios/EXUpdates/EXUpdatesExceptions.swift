@@ -4,7 +4,7 @@
 
 import ExpoModulesCore
 
-internal class UpdatesDisabledException: Exception {
+internal final class UpdatesDisabledException: Exception {
   override var code: String {
     "ERR_UPDATES_DISABLED"
   }
@@ -14,7 +14,7 @@ internal class UpdatesDisabledException: Exception {
   }
 }
 
-internal class UpdatesNotInitializedException: Exception {
+internal final class UpdatesNotInitializedException: Exception {
   override var code: String {
     "ERR_UPDATES_DISABLED"
   }
@@ -24,7 +24,7 @@ internal class UpdatesNotInitializedException: Exception {
   }
 }
 
-internal class UpdatesReloadException: Exception {
+internal final class UpdatesReloadException: Exception {
   override var code: String {
     "ERR_UPDATES_RELOAD"
   }

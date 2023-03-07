@@ -5,8 +5,7 @@ import Foundation
 /**
  Error codes for expo-updates logs
  */
-@objc(EXUpdatesErrorCode)
-public enum UpdatesErrorCode: Int {
+internal enum UpdatesErrorCode: Int {
   case none = 0
   case noUpdatesAvailable = 1
   case updateAssetsNotAvailable = 2
