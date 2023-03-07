@@ -68,7 +68,7 @@ class EXUpdatesCertificateChain {
       throw EXUpdatesCodeSigningError.CertificateEncodingError
     }
     
-    guard let certificateDataDer = decodeToDER(pem: certificateData) else {
+    guard let certificateDataDer = EXUpdatesCrypto.decodePEMToDER(pem: certificateData, pemType: .certificate) else {
       throw EXUpdatesCodeSigningError.CertificateDERDecodeError
     }
     
@@ -83,42 +83,6 @@ class EXUpdatesCertificateChain {
     }
     
     return (secCertificate, x509Certificate)
-  }
-  
-  private static let beginPemBlock = "-----BEGIN CERTIFICATE-----"
-  private static let endPemBlock   = "-----END CERTIFICATE-----"
-  
-  /**
-   * Mostly from ASN1Decoder with the fix for disallowing multiple certificates in the PEM.
-   */
-  private static func decodeToDER(pem pemData: Data) -> Data? {
-    guard let pem = String(data: pemData, encoding: .ascii) else {
-      return nil
-    }
-    
-    if pem.components(separatedBy: beginPemBlock).count - 1 != 1 {
-      return nil
-    }
-    
-    let lines = pem.components(separatedBy: .newlines)
-    var base64Buffer  = ""
-    var certLine = false
-    for line in lines {
-      if line == endPemBlock {
-        certLine = false
-      }
-      if certLine {
-        base64Buffer.append(line)
-      }
-      if line == beginPemBlock {
-        certLine = true
-      }
-    }
-    if let derDataDecoded = Data(base64Encoded: base64Buffer) {
-      return derDataDecoded
-    }
-    
-    return nil
   }
 }
 
