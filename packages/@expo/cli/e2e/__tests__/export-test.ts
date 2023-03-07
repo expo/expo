@@ -15,6 +15,7 @@ beforeAll(async () => {
   process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
   process.env.EXPO_USE_PATH_ALIASES = '1';
+  delete process.env.EXPO_USE_STATIC;
 });
 
 afterAll(() => {
@@ -213,6 +214,82 @@ it(
       'metadata.json',
       'raw/assets_font.ttf',
     ]);
+  },
+  // Could take 45s depending on how fast npm installs
+  120 * 1000
+);
+
+it(
+  'runs `npx expo export -p web` for static rendering',
+  async () => {
+    const projectRoot = await setupTestProjectAsync('export-router', 'with-router', '48.0.0');
+    await execa('node', [bin, 'export', '-p', 'web'], {
+      cwd: projectRoot,
+      env: {
+        EXPO_USE_STATIC: '1',
+      },
+    });
+
+    const outputDir = path.join(projectRoot, 'dist');
+    // List output files with sizes for snapshotting.
+    // This is to make sure that any changes to the output are intentional.
+    // Posix path formatting is used to make paths the same across OSes.
+    const files = klawSync(outputDir)
+      .map((entry) => {
+        if (entry.path.includes('node_modules') || !entry.stats.isFile()) {
+          return null;
+        }
+        return path.posix.relative(outputDir, entry.path);
+      })
+      .filter(Boolean);
+
+    const metadata = await JsonFile.readAsync(path.resolve(outputDir, 'metadata.json'));
+
+    expect(metadata).toEqual({
+      bundler: 'metro',
+      fileMetadata: {
+        web: {
+          assets: expect.anything(),
+          bundle: expect.stringMatching(/bundles\/web-.*\.js/),
+        },
+      },
+      version: 0,
+    });
+
+    // If this changes then everything else probably changed as well.
+    expect(files).toEqual([
+      '[...404].html',
+      '_sitemap.html',
+      'about.html',
+      'assets/35ba0eaec5a4f5ed12ca16fabeae451d',
+      'assets/369745d4a4a6fa62fa0ed495f89aa964',
+      'assets/4f355ba1efca4b9c0e7a6271af047f61',
+      'assets/5223c8d9b0d08b82a5670fb5f71faf78',
+      'assets/52dec48a970c0a4eed4119cd1252ab09',
+      'assets/5b50965d3dfbc518fe50ce36c314a6ec',
+      'assets/817aca47ff3cea63020753d336e628a4',
+      'assets/b2de8e638d92e0f719fa92fa4085e02a',
+      'assets/cbbeac683d803ac27cefb817787d2bfa',
+      'assets/e62addcde857ebdb7342e6b9f1095e97',
+      expect.stringMatching(/bundles\/web-[\w\d]+\.js/),
+      'favicon.ico',
+      'index.html',
+      'metadata.json',
+    ]);
+
+    const about = await fs.readFile(path.join(outputDir, 'about.html'), 'utf8');
+
+    // Route-specific head tags
+    expect(about).toContain(`<title data-rh="true">About | Website</title>`);
+
+    // Nested head tags from layout route
+    expect(about).toContain('<meta data-rh="true" name="fake" content="bar"/>');
+
+    // Root element
+    expect(about).toContain('<div id="root">');
+    // Content of the page
+    expect(about).toContain('data-testid="content">About</div>');
+    expect(about).toMatchSnapshot();
   },
   // Could take 45s depending on how fast npm installs
   120 * 1000

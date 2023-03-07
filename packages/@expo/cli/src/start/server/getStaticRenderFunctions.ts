@@ -67,6 +67,7 @@ export async function getStaticRenderFunctionsContentAsync(
       const errorObject = JSON.parse(text);
       throw new Error(errorObject.message);
     }
+    throw new Error(`[${res.status}]: ${res.statusText}\n${text}`);
   }
 
   if (!res.ok) {
