@@ -2,8 +2,7 @@ import { Asset } from 'expo-asset';
 import { CodedError } from 'expo-modules-core';
 
 import ExpoFontLoader from './ExpoFontLoader';
-import { FontDisplay } from './Font';
-import { FontResource, FontSource } from './Font.types';
+import { FontResource, FontSource, FontDisplay } from './Font.types';
 
 function uriFromFontSource(asset: any): string | null {
   if (typeof asset === 'string') {
