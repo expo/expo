@@ -1,6 +1,5 @@
 //  Copyright © 2019 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppLoaderTask.h>
 #import <EXUpdates/EXUpdatesService.h>
 #import <React/RCTBridge.h>
 
@@ -10,6 +9,7 @@ NS_ASSUME_NONNULL_BEGIN
 @class EXUpdatesAppController;
 @class EXUpdatesSelectionPolicy;
 @class EXUpdatesDatabase;
+@protocol EXUpdatesAppLoaderTaskDelegate;
 
 @protocol EXUpdatesAppControllerDelegate <NSObject>
 

@@ -12,13 +12,10 @@
 
 import Foundation
 
-public typealias EXUpdatesAppLoaderManifestBlock = (EXUpdatesUpdate) -> Bool
-
-// asset, successfulAssetCount, failedAssetCount, totalAssetCount
-public typealias EXUpdatesAppLoaderAssetBlock = (EXUpdatesAsset, Int, Int, Int) -> Void
-
-public typealias EXUpdatesAppLoaderSuccessBlock = (EXUpdatesUpdate?) -> Void
-public typealias EXUpdatesAppLoaderErrorBlock = (Error) -> Void
+public typealias EXUpdatesAppLoaderManifestBlock = (_ update: EXUpdatesUpdate) -> Bool
+public typealias EXUpdatesAppLoaderAssetBlock = (_ asset: EXUpdatesAsset, _ successfulAssetCount: Int, _ failedAssetCount: Int, _ totalAssetCount: Int) -> Void
+public typealias EXUpdatesAppLoaderSuccessBlock = (_ update: EXUpdatesUpdate?) -> Void
+public typealias EXUpdatesAppLoaderErrorBlock = (_ error: Error) -> Void
 
 /**
  * Responsible for loading an update's manifest, enumerating the assets required for it to launch,
