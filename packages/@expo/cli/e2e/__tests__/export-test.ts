@@ -292,5 +292,5 @@ it(
     expect(about).toMatchSnapshot();
   },
   // Could take 45s depending on how fast npm installs
-  120 * 1000
+  240 * 1000
 );
