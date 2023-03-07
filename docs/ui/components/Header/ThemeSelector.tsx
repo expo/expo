@@ -1,7 +1,12 @@
 import { css } from '@emotion/react';
 import { useTheme, theme, shadows, typography } from '@expo/styleguide';
 import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
-import { ChevronDownIcon, Moon01SolidIcon, SunIcon, ThemeAutoIcon } from '@expo/styleguide-icons';
+import {
+  ChevronDownIcon,
+  Moon01SolidIcon,
+  SunSolidIcon,
+  ThemeAutoIcon,
+} from '@expo/styleguide-icons';
 import { useEffect, useState } from 'react';
 
 export const ThemeSelector = () => {
@@ -34,7 +39,7 @@ export const ThemeSelector = () => {
       <div css={selectIconStyle}>
         {themeName === 'auto' && <ThemeAutoIcon className="icon-sm text-icon-default" />}
         {themeName === 'dark' && <Moon01SolidIcon className="icon-sm text-icon-default" />}
-        {themeName === 'light' && <SunIcon className="icon-sm text-icon-default" />}
+        {themeName === 'light' && <SunSolidIcon className="icon-sm text-icon-default" />}
       </div>
       <ChevronDownIcon className="icon-xs text-icon-secondary absolute right-2 top-3 pointer-events-none" />
     </div>

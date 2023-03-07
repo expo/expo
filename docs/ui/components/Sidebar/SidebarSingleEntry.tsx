@@ -27,13 +27,13 @@ export const SidebarSingleEntry = ({
   return (
     <A
       href={href}
-      css={[containerStyle, isActive && activeContainerStyle, secondary && secondaryContainerStyle]}
+      css={[containerStyle, secondary && secondaryContainerStyle, isActive && activeContainerStyle]}
       isStyled>
       <span
         css={[
           iconWrapperStyle,
-          isActive && activeIconWrapperStyle,
           secondary && secondaryIconWrapperStyle,
+          isActive && activeIconWrapperStyle,
         ]}>
         <Icon
           className={twMerge('icon-sm', isActive ? 'text-palette-blue11' : 'text-icon-secondary')}

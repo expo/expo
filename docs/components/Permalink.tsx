@@ -1,4 +1,5 @@
 import { css } from '@emotion/react';
+import { LinkBase } from '@expo/styleguide';
 import * as React from 'react';
 
 import { AdditionalProps } from '~/common/headingManager';
@@ -6,7 +7,6 @@ import PermalinkIcon from '~/components/icons/Permalink';
 import withHeadingManager, {
   HeadingManagerProps,
 } from '~/components/page-higher-order/withHeadingManager';
-import { LinkBase } from '~/ui/components/Text';
 
 type BaseProps = React.PropsWithChildren<{
   component: any;

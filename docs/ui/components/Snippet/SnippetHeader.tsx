@@ -26,7 +26,8 @@ const headerStyle = css`
   display: flex;
   padding: 0 0 0 16px;
   justify-content: space-between;
-  height: 42px;
+  min-height: 42px;
+  max-height: 42px;
   overflow: hidden;
 `;
 

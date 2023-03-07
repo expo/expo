@@ -122,6 +122,10 @@ const iconStyle = css({
   fontStyle: 'normal',
   marginTop: 5,
   userSelect: 'none',
+
+  'table &': {
+    marginTop: 3,
+  },
 });
 
 const contentStyle = css({

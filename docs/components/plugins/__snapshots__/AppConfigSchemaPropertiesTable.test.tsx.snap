@@ -723,7 +723,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       data-testid="callout-container"
     >
       <div
-        class="css-1o8qjfc-Callout"
+        class="css-7jywx8-Callout"
       >
         <svg
           class="icon-sm text-icon-default"

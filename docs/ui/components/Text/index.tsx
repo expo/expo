@@ -1,16 +1,14 @@
 import { css, CSSObject, SerializedStyles } from '@emotion/react';
-import { theme, typography } from '@expo/styleguide';
+import { theme, typography, LinkBase, LinkBaseProps } from '@expo/styleguide';
 import { spacing, borderRadius } from '@expo/styleguide-base';
 import * as React from 'react';
 
-import { LinkBase, LinkProps } from './Link';
 import { TextComponentProps, TextElement } from './types';
 
 import { AdditionalProps, HeadingType } from '~/common/headingManager';
 import Permalink from '~/components/Permalink';
 import { durations } from '~/ui/foundations/durations';
 
-export { LinkBase } from './Link';
 export { AnchorContext } from './withAnchor';
 
 const CRAWLABLE_HEADINGS = ['h1', 'h2', 'h3', 'h4', 'h5'];
@@ -225,7 +223,7 @@ export const MONOSPACE = createTextComponent(TextElement.CODE);
 
 const isExternalLink = (href?: string) => href?.includes('://');
 
-export const A = (props: LinkProps & { isStyled?: boolean }) => {
+export const A = (props: LinkBaseProps & { isStyled?: boolean }) => {
   const { isStyled, ...rest } = props;
   return (
     <LinkBase

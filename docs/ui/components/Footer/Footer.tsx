@@ -51,6 +51,7 @@ const footerStyle = css({
 
 const linksListStyle = css({
   flex: 1,
+  marginTop: 0,
   marginLeft: 0,
   marginBottom: spacing[5],
 

@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { theme, typography } from '@expo/styleguide';
+import { theme, typography, LinkBase } from '@expo/styleguide';
 import { spacing } from '@expo/styleguide-base';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons';
 import { useRouter } from 'next/router';
@@ -8,7 +8,6 @@ import { useEffect, useRef } from 'react';
 
 import { stripVersionFromPath } from '~/common/utilities';
 import { NavigationRoute } from '~/types/common';
-import { LinkBase } from '~/ui/components/Text';
 
 type SidebarLinkProps = PropsWithChildren<{
   info: NavigationRoute;
@@ -63,10 +62,9 @@ export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
     <div css={STYLES_CONTAINER}>
       <LinkBase
         href={info.href as string}
-        {...customDataAttributes}
         ref={ref}
-        target={isExternal ? '_blank' : undefined}
-        css={[STYLES_LINK, isSelected && STYLES_LINK_ACTIVE]}>
+        css={[STYLES_LINK, isSelected && STYLES_LINK_ACTIVE]}
+        {...customDataAttributes}>
         {isSelected && <div css={STYLES_ACTIVE_BULLET} />}
         {children}
         {isExternal && <ArrowUpRightIcon className="icon-sm text-icon-secondary ml-auto" />}
@@ -89,10 +87,6 @@ const STYLES_LINK = css`
 
   &:hover {
     color: ${theme.text.link};
-  }
-
-  &:hover svg {
-    color: ${theme.button.tertiary.icon};
   }
 `;
 

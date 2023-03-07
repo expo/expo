@@ -1,17 +1,16 @@
 import { css } from '@emotion/react';
-import { theme, typography, Logo as LogoIcon, WordMarkLogo } from '@expo/styleguide';
+import { theme, typography, Logo as LogoIcon, WordMarkLogo, LinkBase } from '@expo/styleguide';
 import { breakpoints, spacing, borderRadius } from '@expo/styleguide-base';
 import { ChevronRightIcon } from '@expo/styleguide-icons';
 
 import { DocumentationIcon } from '~/ui/components/Sidebar/icons/Documentation';
-import { LinkBase } from '~/ui/components/Text';
 
 type Props = {
   subgroup?: string;
 };
 
 export const Logo = ({ subgroup }: Props) => (
-  <div css={logoWrapperStyle}>
+  <div className="flex items-center gap-4">
     <LinkBase css={linkStyle} href="https://expo.dev">
       <WordMarkLogo color={theme.text.default} css={[logoStyle, hideOnMobile]} title="Expo" />
       <LogoIcon color={theme.text.default} css={[logoStyle, showOnMobile]} title="Expo" />
@@ -25,7 +24,7 @@ export const Logo = ({ subgroup }: Props) => (
     {subgroup && (
       <>
         <ChevronRightIcon
-          className="text-icon-secondary"
+          className="icon-md text-icon-secondary"
           css={[chevronStyle, hideOnMobile]}
           // @ts-ignore: TODO
           title=""
@@ -35,12 +34,6 @@ export const Logo = ({ subgroup }: Props) => (
     )}
   </div>
 );
-
-const logoWrapperStyle = css({
-  display: 'flex',
-  gap: spacing[4],
-  alignItems: 'center',
-});
 
 const linkStyle = css`
   display: flex;
@@ -83,6 +76,7 @@ const showOnMobile = css`
 const subtitleStyle = css`
   color: ${theme.text.default};
   font-weight: 500;
+  user-select: none;
   ${typography.fontSizes[18]}
 `;
 

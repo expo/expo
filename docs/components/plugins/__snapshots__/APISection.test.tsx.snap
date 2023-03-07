@@ -242,7 +242,7 @@ not appear on the screen.
       data-testid="callout-container"
     >
       <div
-        class="css-1o8qjfc-Callout"
+        class="css-7jywx8-Callout"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -1091,7 +1091,7 @@ This should come from the user field of an
       data-testid="callout-container"
     >
       <div
-        class="css-1o8qjfc-Callout"
+        class="css-7jywx8-Callout"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -2492,7 +2492,7 @@ which contains all of the pertinent user and credential information.
       data-testid="callout-container"
     >
       <div
-        class="css-1o8qjfc-Callout"
+        class="css-7jywx8-Callout"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -3299,7 +3299,7 @@ You must include the ID string of the user whose credentials you'd like to refre
       data-testid="callout-container"
     >
       <div
-        class="css-1o8qjfc-Callout"
+        class="css-7jywx8-Callout"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -3609,7 +3609,7 @@ None of these options are required.
       data-testid="callout-container"
     >
       <div
-        class="css-1o8qjfc-Callout"
+        class="css-7jywx8-Callout"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -3940,7 +3940,7 @@ You must include the ID string of the user to sign out.
       data-testid="callout-container"
     >
       <div
-        class="css-1o8qjfc-Callout"
+        class="css-7jywx8-Callout"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -4934,7 +4934,7 @@ OAuth 2.0 protocol
       data-testid="callout-container"
     >
       <div
-        class="css-1o8qjfc-Callout"
+        class="css-7jywx8-Callout"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -5621,7 +5621,7 @@ for more details.
       data-testid="callout-container"
     >
       <div
-        class="css-1o8qjfc-Callout"
+        class="css-7jywx8-Callout"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -5663,7 +5663,7 @@ You will still need to handle null values for any fields you request.
       data-testid="callout-container"
     >
       <div
-        class="css-1o8qjfc-Callout"
+        class="css-7jywx8-Callout"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -5902,7 +5902,7 @@ for more details.
       data-testid="callout-container"
     >
       <div
-        class="css-1o8qjfc-Callout"
+        class="css-7jywx8-Callout"
       >
         <svg
           class="icon-sm text-icon-default"
@@ -6564,7 +6564,7 @@ provided with an
           data-testid="callout-container"
         >
           <div
-            class="css-1o8qjfc-Callout"
+            class="css-7jywx8-Callout"
           >
             <svg
               class="icon-sm text-icon-default"
@@ -7706,7 +7706,7 @@ the platform.
                 data-testid="callout-container"
               >
                 <div
-                  class="css-1o8qjfc-Callout"
+                  class="css-7jywx8-Callout"
                 >
                   <svg
                     class="icon-sm text-icon-default"
@@ -10176,7 +10176,7 @@ exports[`APISection expo-pedometer 1`] = `
       data-testid="callout-container"
     >
       <div
-        class="css-1o8qjfc-Callout"
+        class="css-7jywx8-Callout"
       >
         <svg
           class="icon-sm text-icon-default"
