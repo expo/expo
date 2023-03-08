@@ -1,8 +1,7 @@
 import { css } from '@emotion/react';
-import { shadows, theme, Button, ButtonProps } from '@expo/styleguide';
+import { shadows, theme, Button, ButtonProps, mergeClasses } from '@expo/styleguide';
 import { palette } from '@expo/styleguide-base';
 import { cloneElement, ReactElement } from 'react';
-import { twMerge } from 'tailwind-merge';
 
 import { FOOTNOTE } from '~/ui/components/Text';
 
@@ -18,7 +17,7 @@ export const SnippetAction = (props: SnippetActionProps) => {
   const styledIcon =
     icon &&
     cloneElement(icon, {
-      className: twMerge('icon-sm', alwaysDark && 'text-palette-white'),
+      className: mergeClasses('icon-sm', alwaysDark && 'text-palette-white'),
     });
 
   return (

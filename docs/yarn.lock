@@ -457,17 +457,17 @@
   dependencies:
     "@radix-ui/colors" "^0.1.8"
 
-"@expo/styleguide-icons@^1.0.0-alpha.2":
-  version "1.0.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide-icons/-/styleguide-icons-1.0.0-alpha.2.tgz#d296a2b0417d6bc1f1bae3528340b93704d99865"
-  integrity sha512-t/i9YVRjiANFvbCPsrog7la8aHK7+lOgHoIjcW4mtrfuk6DBiSziedz0xMIZYusdpeO6eUj/BpBP1NqNrAZW9A==
+"@expo/styleguide-icons@^1.0.0-alpha.3":
+  version "1.0.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide-icons/-/styleguide-icons-1.0.0-alpha.3.tgz#eceedf9237fdaa992bbf98ef4eab58c857d9e4f5"
+  integrity sha512-yy0uxHZmT7PoylbzJHdzCmujfHJnFaJjQxzylMCQQ8kg7oKH89zAFlrhRCT9iIJN6L1QpL0CmuvDkLdaBWnMUg==
   dependencies:
     tailwind-merge "^1.10.0"
 
-"@expo/styleguide@^8.0.0-alpha.2":
-  version "8.0.0-alpha.2"
-  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-8.0.0-alpha.2.tgz#3da59a28cfa3668ce720ec53a162e9bf08ca4e4b"
-  integrity sha512-OchWM0PSxVqSXU4FzhJCL5z0D8GM7any8dC75WFlmAqNDkifUDM6EX2JRhPpM/06d3YekUBN+zUqCQpZtyel4g==
+"@expo/styleguide@^8.0.0-alpha.3":
+  version "8.0.0-alpha.3"
+  resolved "https://registry.yarnpkg.com/@expo/styleguide/-/styleguide-8.0.0-alpha.3.tgz#a43ce56cd0ad09e90ce3c14a22f2ec3edbdd9185"
+  integrity sha512-O4AIkXaHxocfVL26DIuSVSM0M0Ya3y5XtNNvn8UoL+ANCpYnNz3hOPJ4FY4/HgJLzaPlgOizFVhf9TBoCnSvoA==
   dependencies:
     "@expo/styleguide-base" "^1.0.0-alpha.2"
     tailwind-merge "^1.10.0"

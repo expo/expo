@@ -19,7 +19,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
     return (
       <div css={sidebarHeadContainerStyle}>
         <A isStyled href="/" css={sidebarBackLinkStyle}>
-          <ArrowLeftIcon className="icon-md text-icon-secondary" />
+          <ArrowLeftIcon className="text-icon-secondary" />
           Back
         </A>
       </div>

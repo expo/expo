@@ -25,7 +25,7 @@ export const RNDirectoryItem = ({ item, onSelect, query }: Props) => {
         onSelect && onSelect();
       }}>
       <div css={itemStyle}>
-        <GithubIcon className="icon-md text-icon-secondary" />
+        <GithubIcon className="text-icon-secondary" />
         <div>
           <CALLOUT
             weight="medium"

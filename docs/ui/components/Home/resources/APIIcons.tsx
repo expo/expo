@@ -1,10 +1,9 @@
-import { theme } from '@expo/styleguide';
+import { mergeClasses, theme } from '@expo/styleguide';
 import type { HTMLAttributes } from 'react';
-import { twMerge } from 'tailwind-merge';
 
 export const APIMapsIcon = ({ className, ...rest }: HTMLAttributes<SVGSVGElement>) => (
   <svg
-    className={twMerge('h-16 w-16', className)}
+    className={mergeClasses('h-16 w-16', className)}
     viewBox="0 0 70 70"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -22,7 +21,7 @@ export const APIMapsIcon = ({ className, ...rest }: HTMLAttributes<SVGSVGElement
 
 export const APICameraIcon = ({ className, ...rest }: HTMLAttributes<SVGSVGElement>) => (
   <svg
-    className={twMerge('h-16 w-16', className)}
+    className={mergeClasses('h-16 w-16', className)}
     viewBox="0 0 70 70"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -40,7 +39,7 @@ export const APICameraIcon = ({ className, ...rest }: HTMLAttributes<SVGSVGEleme
 
 export const APINotificationsIcon = ({ className, ...rest }: HTMLAttributes<SVGSVGElement>) => (
   <svg
-    className={twMerge('h-16 w-16', className)}
+    className={mergeClasses('h-16 w-16', className)}
     viewBox="0 0 70 70"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"
@@ -58,7 +57,7 @@ export const APINotificationsIcon = ({ className, ...rest }: HTMLAttributes<SVGS
 
 export const APIListIcon = ({ className, ...rest }: HTMLAttributes<SVGSVGElement>) => (
   <svg
-    className={twMerge('h-16 w-16', className)}
+    className={mergeClasses('h-16 w-16', className)}
     viewBox="0 0 70 70"
     fill="none"
     xmlns="http://www.w3.org/2000/svg"

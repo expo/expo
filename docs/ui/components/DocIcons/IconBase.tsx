@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
+import { mergeClasses } from '@expo/styleguide';
 import { spacing } from '@expo/styleguide-base';
 import type { ElementType } from 'react';
-import { twMerge } from 'tailwind-merge';
 
 export type DocIconProps = {
   Icon?: ElementType;
@@ -14,7 +14,7 @@ export const IconBase = ({ className, small, Icon }: DocIconProps) => {
 
   return (
     <Icon
-      className={twMerge(
+      className={mergeClasses(
         'inline-block',
         small ? 'icon-sm' : 'icon-md',
         'text-icon-default',

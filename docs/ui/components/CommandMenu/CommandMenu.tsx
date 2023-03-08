@@ -71,9 +71,9 @@ export const CommandMenu = ({ version, open, setOpen }: Props) => {
 
   return (
     <Command.Dialog open={open} onOpenChange={setOpen} label="Search Menu" shouldFilter={false}>
-      <SearchSmIcon className="icon-md text-icon-secondary" css={searchIconStyle} />
+      <SearchSmIcon className="text-icon-secondary" css={searchIconStyle} />
       <div css={closeIconStyle}>
-        <XIcon className="icon-md text-icon-secondary" onClick={() => setOpen(false)} />
+        <XIcon className="text-icon-secondary" onClick={() => setOpen(false)} />
       </div>
       <Command.Input value={query} onValueChange={setQuery} placeholder="search anything…" />
       <BarLoader isLoading={loading} />

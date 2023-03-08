@@ -34,8 +34,7 @@ export const CommandMenuTrigger = ({ setOpen }: Props) => {
 
   return (
     <Button theme="secondary" css={buttonStyle} onClick={() => setOpen(true)}>
-      {/* @ts-ignore: TODO */}
-      <SearchSmIcon className="icon-md text-icon-default" title="" />
+      <SearchSmIcon />
       <CALLOUT css={labelStyle}>Search</CALLOUT>
       {isMac !== null && (
         <div css={[keysWrapperStyle, hideOnMobileStyle]}>

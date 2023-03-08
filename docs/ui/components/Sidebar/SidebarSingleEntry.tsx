@@ -1,9 +1,8 @@
 import { css } from '@emotion/react';
-import { theme, typography } from '@expo/styleguide';
+import { mergeClasses, theme, typography } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons';
 import type { ComponentType, HTMLAttributes } from 'react';
-import { twMerge } from 'tailwind-merge';
 
 import { A } from '../Text';
 
@@ -36,7 +35,10 @@ export const SidebarSingleEntry = ({
           isActive && activeIconWrapperStyle,
         ]}>
         <Icon
-          className={twMerge('icon-sm', isActive ? 'text-palette-blue11' : 'text-icon-secondary')}
+          className={mergeClasses(
+            'icon-sm',
+            isActive ? 'text-palette-blue11' : 'text-icon-secondary'
+          )}
         />
       </span>
       {title}

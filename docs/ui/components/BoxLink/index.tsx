@@ -31,7 +31,7 @@ export function BoxLink({ title, description, href, testID, Icon }: BoxLinkProps
           <P>{description}</P>
         </div>
       </div>
-      <ArrowIcon className="icon-md text-icon-secondary self-center content-end ml-3 min-w-[20px]" />
+      <ArrowIcon className="text-icon-secondary self-center content-end ml-3 min-w-[20px]" />
     </A>
   );
 }

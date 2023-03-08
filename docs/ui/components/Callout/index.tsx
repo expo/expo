@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { theme, typography } from '@expo/styleguide';
+import { mergeClasses, theme, typography } from '@expo/styleguide';
 import { borderRadius, spacing } from '@expo/styleguide-base';
 import {
   XSquareSolidIcon,
@@ -8,7 +8,6 @@ import {
 } from '@expo/styleguide-icons';
 import { Children, HTMLAttributes, isValidElement } from 'react';
 import type { PropsWithChildren, ReactNode, ComponentType } from 'react';
-import { twMerge } from 'tailwind-merge';
 
 type CalloutType = 'default' | 'warning' | 'error' | 'info';
 
@@ -46,7 +45,7 @@ export const Callout = ({ type = 'default', icon, children }: CalloutProps) => {
         {typeof icon === 'string' ? (
           icon
         ) : (
-          <Icon className={twMerge('icon-sm', getCalloutIconColor(finalType))} />
+          <Icon className={mergeClasses('icon-sm', getCalloutIconColor(finalType))} />
         )}
       </div>
       <div css={contentStyle}>

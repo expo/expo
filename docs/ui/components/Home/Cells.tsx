@@ -53,7 +53,7 @@ export const APIGridCell = ({
       <div css={cellIconWrapperStyle}>{icon}</div>
       <div css={cellTitleWrapperStyle}>
         {title}
-        <ArrowRightIcon className="icon-md text-icon-secondary" />
+        <ArrowRightIcon className="text-icon-secondary" />
       </div>
     </A>
   </CustomCol>
@@ -86,7 +86,7 @@ export const CommunityGridCell = ({
         <span css={cellCommunityTitleStyle}>{title}</span>
         <P css={cellCommunityDescriptionStyle}>{description}</P>
       </div>
-      <ArrowUpRightIcon className="icon-md text-icon-secondary self-center ml-1.5" />
+      <ArrowUpRightIcon className="text-icon-secondary self-center ml-1.5" />
     </A>
   </CustomCol>
 );

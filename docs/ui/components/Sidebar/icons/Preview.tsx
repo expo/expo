@@ -1,5 +1,5 @@
+import { mergeClasses } from '@expo/styleguide';
 import { HTMLAttributes } from 'react';
-import { twMerge } from 'tailwind-merge';
 
 export const PreviewIcon = ({ className, ...rest }: HTMLAttributes<SVGSVGElement>) => {
   return (
@@ -63,11 +63,11 @@ export const PreviewIcon = ({ className, ...rest }: HTMLAttributes<SVGSVGElement
 export const PreviewInactiveIcon = ({ className, ...rest }: HTMLAttributes<SVGSVGElement>) => {
   return (
     <svg
-      className={twMerge('icon-md text-icon-default', className)}
+      className={mergeClasses('icon-md text-icon-default', className)}
       viewBox="0 0 18 18"
       fill="none"
-      xmlns="http://www.w3.org/2000/svg">
-      =
+      xmlns="http://www.w3.org/2000/svg"
+      {...rest}>
       <path
         d="M14.3039 12.3883L13.0393 15.6802C12.8399 16.1992 12.1129 16.219 11.8856 15.7117L10.3817 12.3562C10.3152 12.2079 10.1937 12.0913 10.0427 12.0312L7.05426 10.8405C6.56523 10.6456 6.5214 9.9705 6.98113 9.71405L10.097 7.97598C10.2146 7.9104 10.3078 7.80862 10.3629 7.68577L11.8856 4.2883C12.1129 3.78093 12.8399 3.80077 13.0393 4.31978L14.3202 7.65403C14.3749 7.7964 14.4797 7.91385 14.615 7.98427L17.9189 9.70439C18.3994 9.95454 18.3559 10.6558 17.8482 10.8446L14.6695 12.0266C14.5014 12.0892 14.3682 12.2209 14.3039 12.3883Z"
         fill="#9B9EA3"

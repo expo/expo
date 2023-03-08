@@ -12,8 +12,12 @@ type Props = {
 export const Logo = ({ subgroup }: Props) => (
   <div className="flex items-center gap-4">
     <LinkBase css={linkStyle} href="https://expo.dev">
-      <WordMarkLogo color={theme.text.default} css={[logoStyle, hideOnMobile]} title="Expo" />
-      <LogoIcon color={theme.text.default} css={[logoStyle, showOnMobile]} title="Expo" />
+      <WordMarkLogo
+        className="w-[72px] mt-[1px] h-5 text-default"
+        css={hideOnMobile}
+        title="Expo"
+      />
+      <LogoIcon className="icon-lg mt-[1px] text-default" css={showOnMobile} title="Expo" />
     </LinkBase>
     <LinkBase css={linkStyle} href="/">
       <div css={iconContainer}>
@@ -23,12 +27,7 @@ export const Logo = ({ subgroup }: Props) => (
     </LinkBase>
     {subgroup && (
       <>
-        <ChevronRightIcon
-          className="icon-md text-icon-secondary"
-          css={[chevronStyle, hideOnMobile]}
-          // @ts-ignore: TODO
-          title=""
-        />
+        <ChevronRightIcon className="text-icon-secondary" css={[chevronStyle, hideOnMobile]} />
         <span css={[subtitleStyle, hideOnMobile]}>{subgroup}</span>
       </>
     )}
@@ -42,11 +41,6 @@ const linkStyle = css`
   text-decoration: none;
   user-select: none;
   gap: ${spacing[2]}px;
-`;
-
-const logoStyle = css`
-  height: 20px;
-  margin-top: 1px;
 `;
 
 const chevronStyle = css`

@@ -6,7 +6,7 @@ import { NewsletterSignUp } from '~/ui/components/Footer/NewsletterSignUp';
 import { PageVote } from '~/ui/components/Footer/PageVote';
 import { UL } from '~/ui/components/Text';
 
-const NEWSLETTER_DISABLED = false as const;
+const NEWSLETTER_DISABLED = true as const;
 
 type Props = {
   title: string;

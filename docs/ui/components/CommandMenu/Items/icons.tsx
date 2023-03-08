@@ -1,19 +1,19 @@
+import { mergeClasses } from '@expo/styleguide';
 import { ArrowUpRightIcon, ChevronRightIcon } from '@expo/styleguide-icons';
 import { HTMLAttributes } from 'react';
-import { twMerge } from 'tailwind-merge';
 
 export const FootnoteArrowIcon = () => (
   <ChevronRightIcon className="icon-xs text-icon-secondary inline-block relative mx-1 top-0.5" />
 );
 
 export const ExternalLinkIcon = () => (
-  <ArrowUpRightIcon className="icon-md text-icon-secondary self-center ml-auto flex-shrink-0" />
+  <ArrowUpRightIcon className="text-icon-secondary self-center ml-auto flex-shrink-0" />
 );
 
 export const ReactIcon = ({ className }: HTMLAttributes<SVGSVGElement>) => (
   <svg
     viewBox="-11.5 -10.23174 23 20.46348"
-    className={twMerge('icon-md text-icon-secondary', className)}>
+    className={mergeClasses('icon-md text-icon-secondary', className)}>
     <circle cx="0" cy="0" r="2.05" fill="currentColor" />
     <g stroke="currentColor" strokeWidth="1" fill="none">
       <ellipse rx="11" ry="4.2" />

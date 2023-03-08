@@ -136,7 +136,7 @@ const Home = () => {
                 with zero local setup.
               </P>
               <HomeButton
-                className="bg-palette-purple11 text-palette-purple3 hocus:bg-palette-purple11 hocus:opacity-80"
+                className="bg-palette-purple11 border-palette-purple11 text-palette-purple3 hocus:bg-palette-purple11 hocus:opacity-80"
                 href="https://snack.expo.dev/"
                 target="_blank"
                 rightSlot={<ArrowUpRightIcon className="text-palette-purple3" />}>
@@ -157,7 +157,7 @@ const Home = () => {
                 Codecademy
               </RawH3>
               <HomeButton
-                className="bg-palette-orange11 text-palette-orange4 hocus:bg-palette-orange11 hocus:opacity-80"
+                className="bg-palette-orange11 border-palette-orange11 text-palette-orange4 hocus:bg-palette-orange11 hocus:opacity-80"
                 css={css({
                   backgroundColor: palette.orange11,
                   color: palette.orange4,
@@ -186,7 +186,7 @@ const Home = () => {
                 using Expo.
               </P>
               <HomeButton
-                className="bg-palette-green11 text-palette-green2 hocus:bg-palette-green11 hocus:opacity-80"
+                className="bg-palette-green11 border-palette-green11 text-palette-green2 hocus:bg-palette-green11 hocus:opacity-80"
                 href="/introduction/faq"
                 rightSlot={<ArrowRightIcon className="text-palette-green2" />}>
                 Read
@@ -207,7 +207,7 @@ const Home = () => {
                 get advice from the Expo team.
               </P>
               <HomeButton
-                className="bg-palette-yellow11 text-palette-yellow2 hocus:bg-palette-yellow11 hocus:opacity-80"
+                className="bg-palette-yellow11 border-palette-yellow11 text-palette-yellow2 hocus:bg-palette-yellow11 hocus:opacity-80"
                 href="https://us02web.zoom.us/meeting/register/tZcvceivqj0oHdGVOjEeKY0dRxCRPb0HzaAK"
                 rightSlot={<ArrowUpRightIcon className="text-palette-yellow2" />}>
                 Register

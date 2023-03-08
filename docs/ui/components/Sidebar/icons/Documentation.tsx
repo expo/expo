@@ -1,6 +1,6 @@
+import { mergeClasses } from '@expo/styleguide';
 import { palette } from '@expo/styleguide-base';
 import type { HTMLAttributes } from 'react';
-import { twMerge } from 'tailwind-merge';
 
 export const DocumentationIcon = ({ className, ...rest }: HTMLAttributes<SVGSVGElement>) => {
   return (
@@ -8,7 +8,7 @@ export const DocumentationIcon = ({ className, ...rest }: HTMLAttributes<SVGSVGE
       viewBox="0 0 16 12"
       fill="none"
       xmlns="http://www.w3.org/2000/svg"
-      className={twMerge('icon-md', className)}
+      className={mergeClasses('icon-md', className)}
       {...rest}>
       <path
         d="M14.477 12.0001H7.17725V2.91919H14.477C14.8606 2.91919 15.1716 3.23015 15.1716 3.61374V11.3055C15.1716 11.6891 14.8606 12.0001 14.477 12.0001Z"

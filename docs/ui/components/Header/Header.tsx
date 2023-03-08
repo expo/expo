@@ -38,8 +38,7 @@ export const Header = ({
             href="https://github.com/expo/expo"
             aria-label="GitHub"
             className="hocus:opacity-80">
-            {/* @ts-ignore: TODO */}
-            <GithubIcon className="icon-lg text-icon-default" title="" />
+            <GithubIcon className="icon-lg" />
           </LinkBase>
           <div css={hideOnMobileStyle}>
             <ThemeSelector />
@@ -89,7 +88,7 @@ const containerStyle = css`
   height: 60px;
   box-sizing: border-box;
   border-bottom: 1px solid ${theme.border.default};
-  gap: ${spacing[3]}px;
+  gap: ${spacing[2.5]}px;
 `;
 
 const columnStyle = css`

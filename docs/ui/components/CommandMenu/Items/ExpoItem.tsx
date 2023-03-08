@@ -23,7 +23,7 @@ export const ExpoItem = ({ item, onSelect, query }: Props) => {
         onSelect && onSelect();
       }}>
       <div css={itemStyle}>
-        <Icon className="icon-md text-icon-secondary" />
+        <Icon className="text-icon-secondary" />
         <CALLOUT
           weight="medium"
           dangerouslySetInnerHTML={{ __html: addHighlight(item.label, query) }}

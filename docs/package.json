@@ -22,9 +22,9 @@
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
-    "@expo/styleguide": "^8.0.0-alpha.2",
+    "@expo/styleguide": "^8.0.0-alpha.3",
     "@expo/styleguide-base": "^1.0.0-alpha.2",
-    "@expo/styleguide-icons": "^1.0.0-alpha.2",
+    "@expo/styleguide-icons": "^1.0.0-alpha.3",
     "@mdx-js/loader": "^2.2.1",
     "@mdx-js/mdx": "^2.2.1",
     "@mdx-js/react": "^2.2.1",

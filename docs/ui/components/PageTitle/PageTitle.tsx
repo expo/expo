@@ -25,8 +25,7 @@ export const PageTitle = ({ title, packageName, iconUrl, sourceCodeUrl }: Props)
             href={sourceCodeUrl}
             css={linkStyle}
             title={`View source code of ${packageName} on GitHub`}>
-            {/* @ts-ignore: TODO */}
-            <GithubIcon className="icon-md text-icon-secondary" title="" />
+            <GithubIcon className="text-icon-secondary" />
             <CALLOUT theme="secondary">GitHub</CALLOUT>
           </A>
         )}
@@ -36,8 +35,7 @@ export const PageTitle = ({ title, packageName, iconUrl, sourceCodeUrl }: Props)
           href={`https://www.npmjs.com/package/${packageName}`}
           css={linkStyle}
           title="View package in npm Registry">
-          {/* @ts-ignore: TODO */}
-          <BuildIcon className="icon-md text-icon-secondary" title="" />
+          <BuildIcon className="text-icon-secondary" />
           <CALLOUT theme="secondary">npm</CALLOUT>
         </A>
       </span>

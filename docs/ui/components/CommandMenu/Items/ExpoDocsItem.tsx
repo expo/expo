@@ -1,5 +1,5 @@
 import { DocsLogo } from '@expo/styleguide';
-import { PlanEnterpriseIcon, BookClosedIcon } from '@expo/styleguide-icons';
+import { PlanEnterpriseIcon, BookOpen02Icon } from '@expo/styleguide-icons';
 import { Command } from 'cmdk';
 
 import type { AlgoliaItemType } from '../types';
@@ -22,11 +22,11 @@ const isDev = process.env.NODE_ENV === 'development';
 
 const ItemIcon = ({ url }: { url: string }) => {
   if (url.includes('/versions/')) {
-    return <DocsLogo className="icon-md text-icon-secondary" />;
+    return <DocsLogo className="text-icon-secondary" />;
   } else if (isEASPath(url)) {
-    return <PlanEnterpriseIcon className="icon-md text-icon-secondary" />;
+    return <PlanEnterpriseIcon className="text-icon-secondary" />;
   }
-  return <BookClosedIcon className="icon-md text-icon-secondary" />;
+  return <BookOpen02Icon className="text-icon-secondary" />;
 };
 
 const getFootnotePrefix = (url: string) => {
