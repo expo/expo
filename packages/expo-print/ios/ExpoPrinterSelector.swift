@@ -4,7 +4,7 @@ public class ExpoPrinterSelector {
   let delegate: ExpoPrintModuleDelegate
   let addPrinterToCache: (_: String, _: UIPrinter) -> Void
 
-  init(delegate: inout ExpoPrintModuleDelegate, addPrinterToCache: @escaping (_: String, _: UIPrinter) -> Void) {
+  init(delegate: ExpoPrintModuleDelegate, addPrinterToCache: @escaping (_: String, _: UIPrinter) -> Void) {
     self.addPrinterToCache = addPrinterToCache
     self.delegate = delegate
   }
@@ -29,7 +29,6 @@ public class ExpoPrinterSelector {
       }
 
       self.addPrinterToCache(selectedPrinter.url.absoluteString, selectedPrinter)
-//      self.printers[selectedPrinter.url.absoluteString] = selectedPrinter
       promise.resolve(PrinterSelectResult(
         url: selectedPrinter.url.absoluteString,
         name: selectedPrinter.displayName))

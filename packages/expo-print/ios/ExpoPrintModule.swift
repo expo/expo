@@ -5,7 +5,7 @@ public class ExpoPrintModule: Module {
   var delegate = ExpoPrintModuleDelegate()
 
   lazy var printerSelector = {
-    ExpoPrinterSelector(delegate: &self.delegate, addPrinterToCache: { key, printer in
+    ExpoPrinterSelector(delegate: self.delegate, addPrinterToCache: { key, printer in
       self.printWithPrinter.cachedPrinters[key] = printer
     })
   }()
