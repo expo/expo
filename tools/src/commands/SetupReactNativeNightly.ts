@@ -9,7 +9,7 @@ import path from 'path';
 import { EXPO_DIR, EXPOTOOLS_DIR } from '../Constants';
 import logger from '../Logger';
 import { getPackageViewAsync } from '../Npm';
-import { transformFileAsync, transformFilesAsync } from '../Transforms';
+import { transformFileAsync } from '../Transforms';
 import { applyPatchAsync } from '../Utils';
 import { installAsync as workspaceInstallAsync } from '../Workspace';
 
@@ -178,17 +178,6 @@ async function updateExpoModulesAsync() {
       },
     ]
   );
-
-  const assetFiles = await glob('**/*.{js,ts}', {
-    absolute: true,
-    cwd: path.join(EXPO_DIR, 'packages/expo-asset'),
-  });
-  await transformFilesAsync(assetFiles, [
-    {
-      find: /@react-native\/assets\b/g,
-      replaceWith: '@react-native/assets-registry',
-    },
-  ]);
 }
 
 async function updateBareExpoAsync(nightlyVersion: string) {
