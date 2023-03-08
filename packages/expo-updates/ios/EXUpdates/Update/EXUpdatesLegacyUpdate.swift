@@ -3,8 +3,7 @@
 import Foundation
 import EXManifests
 
-@objcMembers
-public class EXUpdatesLegacyUpdate: EXUpdatesUpdate {
+internal final class EXUpdatesLegacyUpdate: EXUpdatesUpdate {
   /**
    * Method for initializing updates with manifests in the classic format (i.e. come from Expo's
    * classic updates service or a self-hosted service following the classic updates format, such as

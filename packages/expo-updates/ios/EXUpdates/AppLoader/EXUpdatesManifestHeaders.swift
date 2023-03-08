@@ -2,8 +2,7 @@
 
 import Foundation
 
-@objcMembers
-public final class EXUpdatesManifestHeaders: NSObject {
+public final class EXUpdatesManifestHeaders {
   public let protocolVersion: String?
   public let serverDefinedHeaders: String?
   public let manifestFilters: String?

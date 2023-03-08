@@ -25,8 +25,7 @@ import Foundation
  *
  *   EXUpdatesRequestHeaders
  */
-@objcMembers
-public final class EXUpdatesBuildData: NSObject {
+internal final class EXUpdatesBuildData {
   public static func ensureBuildDataIsConsistentAsync(database: EXUpdatesDatabase, config: EXUpdatesConfig) {
     database.databaseQueue.async {
       guard let scopeKey = config.scopeKey else {

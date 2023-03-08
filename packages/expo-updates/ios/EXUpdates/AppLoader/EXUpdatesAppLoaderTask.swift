@@ -57,7 +57,7 @@ public enum EXUpdatesBackgroundUpdateStatus: Int {
  *   be sent to JS.
  */
 @objcMembers
-public class EXUpdatesAppLoaderTask: NSObject {
+public final class EXUpdatesAppLoaderTask: NSObject {
   private static let ErrorDomain = "EXUpdatesAppLoaderTask"
 
   public weak var delegate: EXUpdatesAppLoaderTaskDelegate?

@@ -9,7 +9,7 @@ struct EXUpdatesSignatureHeaderFields {
   static let AlgorithmFieldKey = "alg"
 }
 
-public final class EXUpdatesSignatureHeaderInfo {
+internal final class EXUpdatesSignatureHeaderInfo {
   static let DefaultKeyId = "root"
   
   let signature: String

@@ -2,7 +2,7 @@
 
 import Foundation
 
-@objc public enum EXUpdatesCodeSigningError : Int, Error {
+internal enum EXUpdatesCodeSigningError : Error {
   case CertificateEncodingError
   case CertificateDERDecodeError
   case CertificateValidityError
@@ -25,8 +25,8 @@ import Foundation
   case InvalidExpoProjectInformationExtensionValue
 }
 
-@objc public class EXUpdatesCodeSigningErrorUtils : NSObject {
-  @objc public static func message(forError: EXUpdatesCodeSigningError) -> String {
+internal class EXUpdatesCodeSigningErrorUtils {
+  static func message(forError: EXUpdatesCodeSigningError) -> String {
     switch forError {
     case .CertificateEncodingError:
       return "Code signing certificate could not be encoded in a lossless manner using utf8 encoding"

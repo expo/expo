@@ -71,7 +71,7 @@ public protocol EXUpdatesErrorRecoveryDelegate: AnyObject {
  * This behavior is documented in more detail at https://docs.expo.dev/bare/error-recovery/.
  */
 @objcMembers
-public class EXUpdatesErrorRecovery: NSObject {
+public final class EXUpdatesErrorRecovery: NSObject {
   enum ErrorRecoveryTask {
     case waitForRemoteUpdate
     case launchNew

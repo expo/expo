@@ -2,7 +2,7 @@
 
 import Foundation
 
-public class EXUpdatesDatabaseIntegrityCheck {
+internal class EXUpdatesDatabaseIntegrityCheck {
   public func run(
     withDatabase database: EXUpdatesDatabase,
     directory: URL,
