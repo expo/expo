@@ -2123,7 +2123,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (14.1.1):
     - ExpoModulesCore
-  - Expo (48.0.5):
+  - Expo (48.0.6):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.0.1):
     - ExpoModulesCore
@@ -2162,7 +2162,7 @@ PODS:
     - ExpoModulesCore
   - ExpoKeepAwake (12.0.1):
     - ExpoModulesCore
-  - ExpoLinearGradient (12.1.1):
+  - ExpoLinearGradient (12.1.2):
     - ExpoModulesCore
   - ExpoLocalAuthentication (13.2.1):
     - ExpoModulesCore
@@ -4733,7 +4733,7 @@ SPEC CHECKSUMS:
   EXMediaLibrary: 792fe9b828b5bfa2c5a8b629730f175af2938285
   EXNotifications: dd628737af60fc8cc62dccebacd326b0fbbc0dcb
   EXPermissions: 2291c6736a823b4c680d5bf8e12d3c1c5d11da35
-  Expo: ac2226798ad1f7db860107a4f309303e7a1b4434
+  Expo: 04ba1ddde0be07aff4306ae636a1804810679145
   ExpoAppleAuthentication: 7bd5e4150d59e8df37aa80b425850ae88adf9e65
   ExpoBattery: 678d2b710a8fc398c30258c4dc22c12340ee5411
   ExpoBlur: fac3c6318fdf409dd5740afd3313b2bd52a35bac
@@ -4748,7 +4748,7 @@ SPEC CHECKSUMS:
   ExpoImageManipulator: 85ab87e9641b9d83108f8d603e0418c12fc19e2d
   ExpoImagePicker: 270dea232b3a072d981dd564e2cafc63a864edb1
   ExpoKeepAwake: 69f5f627670d62318410392d03e0b5db0f85759a
-  ExpoLinearGradient: 496147427ac1a8ee4738e016e94fc19ba2f3a00a
+  ExpoLinearGradient: 8eaab76b7f55c612ed8348c8be8c2a18a9b4529f
   ExpoLocalAuthentication: b870b7a8df5e15b8b0be042185a2bb7764093096
   ExpoLocalization: f26cd431ad9ea3533c5b08c4fabd879176a794bb
   ExpoMailComposer: 0085b258d00ba40664f7acb40d96042b29a1da7d

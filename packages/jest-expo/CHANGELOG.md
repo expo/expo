@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Use the mocked `globalThis` rather than `global`. ([#21581](https://github.com/expo/expo/pull/21581) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 48.0.2 — 2023-03-08
+
+### 🐛 Bug fixes
+
+- Use the mocked `globalThis` rather than `global`. ([#21581](https://github.com/expo/expo/pull/21581) by [@kudo](https://github.com/kudo))
 
 ## 48.0.1 — 2023-02-21
 
