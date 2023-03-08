@@ -53,8 +53,12 @@ if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
 
   # Ensure emulator can reach the local updates server
   adb reverse tcp:4747 tcp:4747
+
+  # Execute Android tests
+  detox test --configuration android.release 2>&1 | tee ./logs/detox-tests.log
+else
+  # Execute iOS tests
+  detox test --configuration ios.debug 2>&1 | tee ./logs/detox-tests.log
 fi
 
-# Execute tests
-detox test --configuration $EAS_BUILD_PLATFORM.release 2>&1 | tee ./logs/detox-tests.log
 
