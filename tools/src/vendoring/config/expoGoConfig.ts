@@ -199,6 +199,12 @@ const config: VendoringTargetConfig = {
               find: /"\$\{BUILD_DIR\}\/.+\/libhermes\.so"/g,
               replaceWith: `hermes-engine::libhermes`,
             },
+            {
+              // expose `ReanimatedUIManagerFactory.create` publicly
+              paths: 'ReanimatedUIManagerFactory.java',
+              find: /((?<!public )static UIManagerModule create\()/g,
+              replaceWith: 'public $1',
+            },
           ],
         },
       },
