@@ -2192,6 +2192,8 @@ PODS:
     - ExpoModulesCore
   - ExpoRandom (13.1.1):
     - ExpoModulesCore
+  - ExpoSecureStore (12.1.1):
+    - ExpoModulesCore
   - ExpoSMS (11.2.1):
     - ExpoModulesCore
   - ExpoStoreReview (6.2.1):
@@ -2211,8 +2213,6 @@ PODS:
   - EXScreenOrientation (5.1.1):
     - ExpoModulesCore
     - React-Core
-  - EXSecureStore (12.1.1):
-    - ExpoModulesCore
   - EXSensors (12.1.1):
     - ExpoModulesCore
   - EXSharing (11.2.1):
@@ -2232,21 +2232,21 @@ PODS:
   - EXUpdates (0.16.1):
     - ASN1Decoder (~> 1.8)
     - EASClient
-    - EXJSONUtils
     - EXManifests
     - ExpoModulesCore
     - EXStructuredHeaders
     - EXUpdatesInterface
+    - ReachabilitySwift
     - React-Core
   - EXUpdates/Tests (0.16.1):
     - ASN1Decoder (~> 1.8)
     - EASClient
-    - EXJSONUtils
     - EXManifests
     - ExpoModulesCore
     - ExpoModulesTestCore
     - EXStructuredHeaders
     - EXUpdatesInterface
+    - ReachabilitySwift
     - React-Core
   - EXUpdatesInterface (0.9.1)
   - FBAEMKit (15.1.0):
@@ -2498,6 +2498,7 @@ PODS:
     - FBLazyVector (= 0.71.3)
     - RCTRequired (= 0.71.3)
     - React-Core (= 0.71.3)
+  - ReachabilitySwift (5.0.0)
   - React (0.71.3):
     - React-Core (= 0.71.3)
     - React-Core/DevSupport (= 0.71.3)
@@ -3344,6 +3345,7 @@ DEPENDENCIES:
   - ExpoModulesTestCore (from `../packages/expo-modules-test-core/ios`)
   - ExpoNetwork (from `../packages/expo-network/ios`)
   - ExpoRandom (from `../packages/expo-random/ios`)
+  - ExpoSecureStore (from `../packages/expo-secure-store/ios`)
   - ExpoSMS (from `../packages/expo-sms/ios`)
   - ExpoStoreReview (from `../packages/expo-store-review/ios`)
   - ExpoSystemUI (from `../packages/expo-system-ui/ios`)
@@ -3353,7 +3355,6 @@ DEPENDENCIES:
   - EXPrint (from `../packages/expo-print/ios`)
   - EXScreenCapture (from `../packages/expo-screen-capture/ios`)
   - EXScreenOrientation (from `../packages/expo-screen-orientation/ios`)
-  - EXSecureStore (from `../packages/expo-secure-store/ios`)
   - EXSensors (from `../packages/expo-sensors/ios`)
   - EXSharing (from `../packages/expo-sharing/ios`)
   - EXSpeech (from `../packages/expo-speech/ios`)
@@ -3472,6 +3473,7 @@ SPEC REPOS:
     - PromisesObjC
     - Protobuf
     - Quick
+    - ReachabilitySwift
     - SDWebImage
     - SDWebImageAVIFCoder
     - SDWebImageSVGCoder
@@ -4235,6 +4237,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-network/ios"
   ExpoRandom:
     :path: "../packages/expo-random/ios"
+  ExpoSecureStore:
+    :path: "../packages/expo-secure-store/ios"
   ExpoSMS:
     :path: "../packages/expo-sms/ios"
   ExpoStoreReview:
@@ -4253,8 +4257,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-screen-capture/ios"
   EXScreenOrientation:
     :path: "../packages/expo-screen-orientation/ios"
-  EXSecureStore:
-    :path: "../packages/expo-secure-store/ios"
   EXSensors:
     :path: "../packages/expo-sensors/ios"
   EXSharing:
@@ -4757,6 +4759,7 @@ SPEC CHECKSUMS:
   ExpoModulesTestCore: faf43ba18dd6809d2e91567260e132b385a5842e
   ExpoNetwork: 242fe1bd68bfe744a2f69fccfe4bfe1d89d1e790
   ExpoRandom: 7ee07d62e7003b74d0536e0495e3a653fe1b2a74
+  ExpoSecureStore: 22b2088cf8cb9d5a276d7a143fdd5b26f83cc601
   ExpoSMS: e4f3901fdb30ab239ee1172005dbe6634f2d6138
   ExpoStoreReview: d057dcca4b9c95f3c9db11bd2e168dab9cba59f3
   ExpoSystemUI: 0be5173ee2a7c01e9abc44f56d879a1eaaa16527
@@ -4766,7 +4769,6 @@ SPEC CHECKSUMS:
   EXPrint: 7f4c9435f522c8efaaa945a1ace51f7c4211b0f2
   EXScreenCapture: d9284f4a6508c86d0d463805b93672397d18de0f
   EXScreenOrientation: 52220f8f2477ed25a37e3b2cdbbaa8635d250256
-  EXSecureStore: e8923258361cc406d0401af380f12bd05b2b720f
   EXSensors: 29448aedea6ac26f1f11f349c038dbe8698d41e6
   EXSharing: 5a28af9de0884c255f401e1f1f0bea269e9c9bb9
   EXSpeech: a8da505f08d539364dbcbb2804ac3e63e7bec22b
@@ -4774,7 +4776,7 @@ SPEC CHECKSUMS:
   EXSQLite: 848167441b14cb6cdd6ae46c8d62289161a79550
   EXStructuredHeaders: b1a48d732562e2cc81f11771bcfd29534f5d9254
   EXTaskManager: f8257faa4c20acfc3f31e21ab82a62544d70db85
-  EXUpdates: 2ab50246f8d7f96900c4b28767a031dccea8e427
+  EXUpdates: 420867157adb8712ce5cbb18f662dc915a86646b
   EXUpdatesInterface: dd699d1930e28639dcbd70a402caea98e86364ca
   FBAEMKit: c7f82b5145d446bcbbcd50485c032689032fc6a2
   FBAudienceNetwork: e0fcc9091fced34910ed0b6da06f129db46ac9e6
@@ -4826,6 +4828,7 @@ SPEC CHECKSUMS:
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: bec48f07daf7bcdc2655a0cde84e07d24d2a9e2a
   RCTTypeSafety: 171394eebacf71e1cfad79dbfae7ee8fc16ca80a
+  ReachabilitySwift: 985039c6f7b23a1da463388634119492ff86c825
   React: d7433ccb6a8c36e4cbed59a73c0700fc83c3e98a
   React-callinvoker: 15f165009bd22ae829b2b600e50bcc98076ce4b8
   React-Codegen: b5910000eaf1e0c2f47d29be6f82f5f1264420d7

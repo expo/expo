@@ -5,6 +5,7 @@
 import Foundation
 import SystemConfiguration
 import CommonCrypto
+import Reachability
 
 internal extension Array where Element: Equatable {
   mutating func remove(_ element: Element) {
@@ -88,22 +89,8 @@ public final class EXUpdatesUtils: NSObject {
   }
 
   internal static func shouldCheckForUpdate(withConfig config: EXUpdatesConfig) -> Bool {
-    // TODO(wschurman): replace with reachability library
     func isConnectedToWifi() -> Bool {
-      var zeroAddress = sockaddr_in()
-      zeroAddress.sin_len = UInt8(MemoryLayout<sockaddr_in>.size)
-      zeroAddress.sin_family = sa_family_t(AF_INET)
-      let reachability = withUnsafePointer(to: &zeroAddress, {
-        $0.withMemoryRebound(to: sockaddr.self, capacity: 1) {
-          SCNetworkReachabilityCreateWithAddress(nil, $0)
-        }
-      })!
-
-      var flags = SCNetworkReachabilityFlags()
-      _ = withUnsafeMutablePointer(to: &flags) {
-        SCNetworkReachabilityGetFlags(reachability, UnsafeMutablePointer($0))
-      }
-      return !flags.contains(.isWWAN)
+      return try! Reachability().connection == .wifi
     }
 
     switch config.checkOnLaunch {
