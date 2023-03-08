@@ -17,7 +17,7 @@ import java.util.List;
 
 public class ReanimatedUIManagerFactory {
 
-  static UIManagerModule create(ReactApplicationContext reactContext, List<ViewManager> viewManagers, int minTimeLeftInFrameForNonBatchedOperationMs) {
+  public static UIManagerModule create(ReactApplicationContext reactContext, List<ViewManager> viewManagers, int minTimeLeftInFrameForNonBatchedOperationMs) {
     ViewManagerRegistry viewManagerRegistry = new ViewManagerRegistry(viewManagers);
 
     UIManagerModule uiManagerModule =
