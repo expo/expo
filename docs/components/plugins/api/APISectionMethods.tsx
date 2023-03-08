@@ -1,5 +1,3 @@
-import { css } from '@emotion/react';
-import { spacing } from '@expo/styleguide-base';
 import { CornerDownRightIcon } from '@expo/styleguide-icons';
 import ReactMarkdown from 'react-markdown';
 
@@ -81,7 +79,7 @@ export const renderMethod = (
           {resolveTypeName(type) !== 'undefined' && (
             <>
               <BoxSectionHeader text="Returns" />
-              <UL css={STYLES_NO_BULLET_LIST}>
+              <UL className="!list-none !ml-0">
                 <LI>
                   <CornerDownRightIcon className="inline-block icon-sm text-icon-secondary align-middle mr-2" />
                   <APIDataType typeDefinition={type} />
@@ -176,8 +174,3 @@ export const APIMethod = ({
     { exposeInSidebar }
   );
 };
-
-const STYLES_NO_BULLET_LIST = css({
-  listStyle: 'none !important',
-  marginLeft: spacing[2],
-});

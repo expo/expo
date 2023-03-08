@@ -28,7 +28,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -70,7 +70,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </code>
     </p>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Name of your app.
@@ -113,7 +113,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="css-b8vpa7-Collapsible"
       >
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           Edit the 'Display Name' field in Xcode
@@ -148,7 +148,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -190,7 +190,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </code>
     </p>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Configuration for the bottom navigation bar on Android.
@@ -233,7 +233,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="css-b8vpa7-Collapsible"
       >
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           Set this property using AppConstants.java.
@@ -278,7 +278,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="css-b8vpa7-Collapsible"
       >
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           Set this property using just Xcode
@@ -312,7 +312,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </code>
             </span>
             <span
-              class="css-1eysgws"
+              class="css-1n7zw4g"
             >
               <svg
                 aria-label="permalink"
@@ -363,7 +363,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </code>
         </p>
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           Determines how and when the navigation bar is shown.
@@ -406,7 +406,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
             class="css-b8vpa7-Collapsible"
           >
             <p
-              class="css-hnkmoy-TextComponent"
+              class="mb-4 css-1kfqm4n-TextComponent"
               data-text="true"
             >
               Set this property using Xcode.
@@ -440,7 +440,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   </code>
                 </span>
                 <span
-                  class="css-1eysgws"
+                  class="css-1n7zw4g"
                 >
                   <svg
                     aria-label="permalink"
@@ -491,7 +491,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </code>
             </p>
             <p
-              class="css-hnkmoy-TextComponent"
+              class="mb-4 css-1kfqm4n-TextComponent"
               data-text="true"
             >
               Test sub-sub-property
@@ -526,7 +526,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </code>
             </span>
             <span
-              class="css-1eysgws"
+              class="css-1n7zw4g"
             >
               <svg
                 aria-label="permalink"
@@ -577,7 +577,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </code>
         </p>
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           Specifies the background color of the navigation bar.
@@ -585,7 +585,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         
 
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           6 character long hex color string, eg: 
@@ -626,7 +626,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -668,7 +668,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </code>
     </p>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Configuration for setting an array of custom intent filters in Android manifest.
@@ -711,7 +711,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
         class="css-b8vpa7-Collapsible"
       >
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           This is set in AndroidManifest.xml directly.
@@ -753,7 +753,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           Example
         </strong>
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           [{  "autoVerify": true,  "data": {"host": "*.example.com"  }  }]
@@ -787,7 +787,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </code>
             </span>
             <span
-              class="css-1eysgws"
+              class="css-1n7zw4g"
             >
               <svg
                 aria-label="permalink"
@@ -838,7 +838,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           </code>
         </p>
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           You may also use an intent filter to set your app as the default handler for links
@@ -871,7 +871,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
               </code>
             </span>
             <span
-              class="css-1eysgws"
+              class="css-1n7zw4g"
             >
               <svg
                 aria-label="permalink"
@@ -948,7 +948,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
                   </code>
                 </span>
                 <span
-                  class="css-1eysgws"
+                  class="css-1n7zw4g"
                 >
                   <svg
                     aria-label="permalink"

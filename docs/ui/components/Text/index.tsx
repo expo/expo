@@ -116,10 +116,6 @@ const linkStyled = css({
   },
 });
 
-const listStyle = css({
-  marginTop: spacing[2],
-});
-
 const codeStyle = css({
   borderColor: theme.border.secondary,
   borderRadius: borderRadius.sm,
@@ -212,8 +208,14 @@ export const FOOTNOTE = createTextComponent(TextElement.P, css(typography.body.f
 export const CALLOUT = createTextComponent(TextElement.P, css(typography.body.callout));
 export const BOLD = createTextComponent(TextElement.STRONG, css({ fontWeight: 600 }));
 export const DEMI = createTextComponent(TextElement.SPAN, css({ fontWeight: 500 }));
-export const UL = createTextComponent(TextElement.UL, css([typography.body.ul, listStyle]));
-export const OL = createTextComponent(TextElement.OL, css([typography.body.ol, listStyle]));
+export const UL = createTextComponent(
+  TextElement.UL,
+  css([typography.body.ul, { listStyle: 'disc' }])
+);
+export const OL = createTextComponent(
+  TextElement.OL,
+  css([typography.body.ol, { listStyle: 'decimal' }])
+);
 export const PRE = createTextComponent(TextElement.PRE, css(typography.utility.pre as CSSObject));
 export const KBD = createTextComponent(
   TextElement.KBD,

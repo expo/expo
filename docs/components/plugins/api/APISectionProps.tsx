@@ -1,3 +1,5 @@
+import { mergeClasses } from '@expo/styleguide';
+
 import {
   DefaultPropsDefinitionData,
   PropData,
@@ -18,7 +20,7 @@ import {
   resolveTypeName,
   STYLES_APIBOX,
   STYLES_APIBOX_NESTED,
-  STYLES_ELEMENT_SPACING,
+  ELEMENT_SPACING,
   STYLES_NESTED_SECTION_HEADER,
   STYLES_NOT_EXPOSED_HEADER,
   STYLES_SECONDARY,
@@ -124,7 +126,7 @@ export const renderProp = (
           {name}
         </MONOSPACE>
       </HeaderComponent>
-      <P css={extractedComment && STYLES_ELEMENT_SPACING}>
+      <P className={mergeClasses(extractedComment && ELEMENT_SPACING)}>
         {flags?.isOptional && <span css={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}
         <span css={STYLES_SECONDARY}>Type:</span>{' '}
         {renderTypeOrSignatureType(type, extractedSignatures)}

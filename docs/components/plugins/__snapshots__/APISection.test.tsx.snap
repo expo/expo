@@ -20,7 +20,7 @@ exports[`APISection expo-apple-authentication 1`] = `
         Component
       </span>
       <span
-        class="css-1eysgws"
+        class="css-1n7zw4g"
       >
         <svg
           aria-label="permalink"
@@ -75,7 +75,7 @@ exports[`APISection expo-apple-authentication 1`] = `
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -105,7 +105,7 @@ exports[`APISection expo-apple-authentication 1`] = `
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       <strong
@@ -130,7 +130,7 @@ exports[`APISection expo-apple-authentication 1`] = `
       </code>
     </p>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       This component displays the proprietary "Sign In with Apple" / "Continue with Apple" button on
@@ -141,7 +141,7 @@ available via the provided properties.
     
 
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       You should only attempt to render this if 
@@ -177,7 +177,7 @@ a warning in development mode (
     
 
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       The properties of this component extend from 
@@ -231,7 +231,7 @@ button.
     
 
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Make sure to attach height and width via the style props as without these styles, the button will
@@ -267,7 +267,7 @@ not appear on the screen.
         class="css-1m74yfi-Callout"
       >
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <strong
@@ -308,7 +308,7 @@ for more details.
           Props
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -364,7 +364,7 @@ for more details.
               </code>
             </span>
             <span
-              class="css-1eysgws"
+              class="css-1n7zw4g"
             >
               <svg
                 aria-label="permalink"
@@ -394,7 +394,7 @@ for more details.
           </a>
         </h3>
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <span
@@ -416,7 +416,7 @@ for more details.
           </code>
         </p>
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           The Apple-defined color scheme to use to display the button.
@@ -448,7 +448,7 @@ for more details.
               </code>
             </span>
             <span
-              class="css-1eysgws"
+              class="css-1n7zw4g"
             >
               <svg
                 aria-label="permalink"
@@ -478,7 +478,7 @@ for more details.
           </a>
         </h3>
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <span
@@ -500,7 +500,7 @@ for more details.
           </code>
         </p>
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           The type of button text to display ("Sign In with Apple" vs. "Continue with Apple").
@@ -532,7 +532,7 @@ for more details.
               </code>
             </span>
             <span
-              class="css-1eysgws"
+              class="css-1n7zw4g"
             >
               <svg
                 aria-label="permalink"
@@ -562,7 +562,7 @@ for more details.
           </a>
         </h3>
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <span
@@ -584,7 +584,7 @@ for more details.
           </code>
         </p>
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           The border radius to use when rendering the button. This works similarly to
@@ -624,7 +624,7 @@ for more details.
               </code>
             </span>
             <span
-              class="css-1eysgws"
+              class="css-1n7zw4g"
             >
               <svg
                 aria-label="permalink"
@@ -654,7 +654,7 @@ for more details.
           </a>
         </h3>
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <span
@@ -673,7 +673,7 @@ for more details.
           </code>
         </p>
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           The method to call when the user presses the button. You should call 
@@ -718,7 +718,7 @@ in here.
               </code>
             </span>
             <span
-              class="css-1eysgws"
+              class="css-1n7zw4g"
             >
               <svg
                 aria-label="permalink"
@@ -748,7 +748,7 @@ in here.
           </a>
         </h3>
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <span
@@ -804,7 +804,7 @@ in here.
           </code>
         </p>
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           The custom style to apply to the button. Should not include 
@@ -843,7 +843,7 @@ properties.
             Inherited Props
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -873,7 +873,7 @@ properties.
         </a>
       </h3>
       <ul
-        class="css-1p13rjl-TextComponent"
+        class="css-118jp6n-TextComponent"
       >
         <li
           class="css-1hxzfrf-TextComponent"
@@ -914,7 +914,7 @@ properties.
         Methods
       </span>
       <span
-        class="css-1eysgws"
+        class="css-1n7zw4g"
       >
         <svg
           aria-label="permalink"
@@ -969,7 +969,7 @@ properties.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -1054,7 +1054,7 @@ properties.
               class="css-zstkv9-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The unique identifier for the user whose credential state you'd like to check.
@@ -1079,7 +1079,7 @@ This should come from the user field of an
     </div>
     <br />
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Queries the current state of a user credential, to determine if it is still valid or if it has been revoked.
@@ -1118,7 +1118,7 @@ This should come from the user field of an
         
 
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <strong
@@ -1139,7 +1139,7 @@ This should come from the user field of an
       Returns
     </p>
     <ul
-      class="css-9xo9oi-TextComponent"
+      class="!list-none ml-2 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -1192,7 +1192,7 @@ This should come from the user field of an
     </ul>
     <br />
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       A promise that fulfills with an 
@@ -1237,7 +1237,7 @@ value depending on the state of the credential.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -1267,7 +1267,7 @@ value depending on the state of the credential.
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Determine if the current device's operating system supports Apple authentication.
@@ -1279,7 +1279,7 @@ value depending on the state of the credential.
       Returns
     </p>
     <ul
-      class="css-9xo9oi-TextComponent"
+      class="!list-none ml-2 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -1327,7 +1327,7 @@ value depending on the state of the credential.
     </ul>
     <br />
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       A promise that fulfills with 
@@ -1373,7 +1373,7 @@ value depending on the state of the credential.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -1463,7 +1463,7 @@ value depending on the state of the credential.
               class="css-zstkv9-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 An 
@@ -1487,7 +1487,7 @@ value depending on the state of the credential.
     </div>
     <br />
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       An operation that refreshes the logged-in user’s credentials.
@@ -1500,7 +1500,7 @@ Calling this method will show the sign in modal before actually refreshing the u
       Returns
     </p>
     <ul
-      class="css-9xo9oi-TextComponent"
+      class="!list-none ml-2 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -1553,7 +1553,7 @@ Calling this method will show the sign in modal before actually refreshing the u
     </ul>
     <br />
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       A promise that fulfills with an 
@@ -1606,7 +1606,7 @@ refresh operation.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -1702,7 +1702,7 @@ refresh operation.
               class="css-zstkv9-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 An optional 
@@ -1726,7 +1726,7 @@ refresh operation.
     </div>
     <br />
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Sends a request to the operating system to initiate the Apple authentication flow, which will
@@ -1735,7 +1735,7 @@ present a modal to the user over your app and allow them to sign in.
     
 
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       You can request access to the user's full name and email address in this method, which allows you
@@ -1745,7 +1745,7 @@ of these options at runtime.
     
 
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Additionally, you will only receive Apple Authentication Credentials the first time users sign
@@ -1780,7 +1780,7 @@ the user, since this remains the same for apps released by the same developer.
       Returns
     </p>
     <ul
-      class="css-9xo9oi-TextComponent"
+      class="!list-none ml-2 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -1833,7 +1833,7 @@ the user, since this remains the same for apps released by the same developer.
     </ul>
     <br />
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       A promise that fulfills with an 
@@ -1886,7 +1886,7 @@ sign-in operation.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -1976,7 +1976,7 @@ sign-in operation.
               class="css-zstkv9-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 An 
@@ -2000,7 +2000,7 @@ sign-in operation.
     </div>
     <br />
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       An operation that ends the authenticated session.
@@ -2009,7 +2009,7 @@ Calling this method will show the sign in modal before actually signing the user
     
 
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       It is not recommended to use this method to sign out the user as it works counterintuitively.
@@ -2047,7 +2047,7 @@ from using
       Returns
     </p>
     <ul
-      class="css-9xo9oi-TextComponent"
+      class="!list-none ml-2 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -2100,7 +2100,7 @@ from using
     </ul>
     <br />
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       A promise that fulfills with an 
@@ -2145,7 +2145,7 @@ sign-out operation.
         Event Subscriptions
       </span>
       <span
-        class="css-1eysgws"
+        class="css-1n7zw4g"
       >
         <svg
           aria-label="permalink"
@@ -2200,7 +2200,7 @@ sign-out operation.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -2300,7 +2300,7 @@ sign-out operation.
       Returns
     </p>
     <ul
-      class="css-9xo9oi-TextComponent"
+      class="!list-none ml-2 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -2359,7 +2359,7 @@ sign-out operation.
         Types
       </span>
       <span
-        class="css-1eysgws"
+        class="css-1n7zw4g"
       >
         <svg
           aria-label="permalink"
@@ -2414,7 +2414,7 @@ sign-out operation.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -2444,7 +2444,7 @@ sign-out operation.
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       The object type returned from a successful call to 
@@ -2517,7 +2517,7 @@ which contains all of the pertinent user and credential information.
         class="css-1m74yfi-Callout"
       >
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <strong
@@ -2602,7 +2602,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 A short-lived session token used by your app for proof of authorization when interacting with
@@ -2649,7 +2649,7 @@ the app's server counterpart. Unlike
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The user's email address. Might not be present if you didn't request the 
@@ -2703,7 +2703,7 @@ an Apple domain.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The user's name. May be 
@@ -2765,7 +2765,7 @@ your app.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 A JSON Web Token (JWT) that securely communicates information about the user to your app.
@@ -2803,7 +2803,7 @@ your app.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 A value that indicates whether the user appears to the system to be a real person.
@@ -2842,7 +2842,7 @@ your app.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 An arbitrary string that your app provided as 
@@ -2899,7 +2899,7 @@ will be
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 An identifier associated with the authenticated user. You can use this to check if the user is
@@ -2939,7 +2939,7 @@ developers.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -2969,7 +2969,7 @@ developers.
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       An object representing the tokenized portions of the user's full name. Any of all of the fields
@@ -3246,7 +3246,7 @@ may be
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -3276,7 +3276,7 @@ may be
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       The options you can supply when making a call to 
@@ -3324,7 +3324,7 @@ You must include the ID string of the user whose credentials you'd like to refre
         class="css-1m74yfi-Callout"
       >
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <strong
@@ -3415,7 +3415,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 Array of user information scopes to which your app is requesting access. Note that the user can
@@ -3479,7 +3479,7 @@ requests they will be
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -3556,7 +3556,7 @@ OAuth 2.0 protocol
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -3586,7 +3586,7 @@ OAuth 2.0 protocol
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       The options you can supply when making a call to 
@@ -3634,7 +3634,7 @@ None of these options are required.
         class="css-1m74yfi-Callout"
       >
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <strong
@@ -3719,7 +3719,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 An arbitrary string that is used to prevent replay attacks. See more information on this in the
@@ -3774,7 +3774,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 Array of user information scopes to which your app is requesting access. Note that the user can
@@ -3838,7 +3838,7 @@ requests they will be
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -3887,7 +3887,7 @@ OAuth 2.0 protocol
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -3917,7 +3917,7 @@ OAuth 2.0 protocol
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       The options you can supply when making a call to 
@@ -3965,7 +3965,7 @@ You must include the ID string of the user to sign out.
         class="css-1m74yfi-Callout"
       >
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <strong
@@ -4050,7 +4050,7 @@ for more details.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 An arbitrary string that is returned unmodified in the corresponding credential after a
@@ -4127,7 +4127,7 @@ OAuth 2.0 protocol
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -4238,7 +4238,7 @@ OAuth 2.0 protocol
         Enums
       </span>
       <span
-        class="css-1eysgws"
+        class="css-1n7zw4g"
       >
         <svg
           aria-label="permalink"
@@ -4293,7 +4293,7 @@ OAuth 2.0 protocol
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -4323,7 +4323,7 @@ OAuth 2.0 protocol
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       An enum whose values control which pre-defined color scheme to use when rendering an 
@@ -4366,7 +4366,7 @@ OAuth 2.0 protocol
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -4402,7 +4402,7 @@ OAuth 2.0 protocol
         AppleAuthenticationButtonStyle.WHITE ＝ 0
       </code>
       <p
-        class="css-hnkmoy-TextComponent"
+        class="mb-4 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         White button with black text.
@@ -4434,7 +4434,7 @@ OAuth 2.0 protocol
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -4470,7 +4470,7 @@ OAuth 2.0 protocol
         AppleAuthenticationButtonStyle.WHITE_OUTLINE ＝ 1
       </code>
       <p
-        class="css-hnkmoy-TextComponent"
+        class="mb-4 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         White button with a black outline and black text.
@@ -4502,7 +4502,7 @@ OAuth 2.0 protocol
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -4538,7 +4538,7 @@ OAuth 2.0 protocol
         AppleAuthenticationButtonStyle.BLACK ＝ 2
       </code>
       <p
-        class="css-hnkmoy-TextComponent"
+        class="mb-4 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         Black button with white text.
@@ -4571,7 +4571,7 @@ OAuth 2.0 protocol
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -4601,7 +4601,7 @@ OAuth 2.0 protocol
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       An enum whose values control which pre-defined text to use when rendering an 
@@ -4644,7 +4644,7 @@ OAuth 2.0 protocol
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -4680,7 +4680,7 @@ OAuth 2.0 protocol
         AppleAuthenticationButtonType.SIGN_IN ＝ 0
       </code>
       <p
-        class="css-hnkmoy-TextComponent"
+        class="mb-4 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         "Sign in with Apple"
@@ -4712,7 +4712,7 @@ OAuth 2.0 protocol
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -4748,7 +4748,7 @@ OAuth 2.0 protocol
         AppleAuthenticationButtonType.CONTINUE ＝ 1
       </code>
       <p
-        class="css-hnkmoy-TextComponent"
+        class="mb-4 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         "Continue with Apple"
@@ -4813,7 +4813,7 @@ OAuth 2.0 protocol
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -4849,7 +4849,7 @@ OAuth 2.0 protocol
         AppleAuthenticationButtonType.SIGN_UP ＝ 2
       </code>
       <p
-        class="css-hnkmoy-TextComponent"
+        class="mb-4 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         "Sign up with Apple"
@@ -4882,7 +4882,7 @@ OAuth 2.0 protocol
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -4912,7 +4912,7 @@ OAuth 2.0 protocol
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       An enum whose values specify state of the credential when checked with 
@@ -4959,7 +4959,7 @@ OAuth 2.0 protocol
         class="css-1m74yfi-Callout"
       >
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <strong
@@ -5008,7 +5008,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -5070,7 +5070,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -5132,7 +5132,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -5194,7 +5194,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -5257,7 +5257,7 @@ for more details.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -5312,7 +5312,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -5348,7 +5348,7 @@ for more details.
         AppleAuthenticationOperation.IMPLICIT ＝ 0
       </code>
       <p
-        class="css-hnkmoy-TextComponent"
+        class="mb-4 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         An operation that depends on the particular kind of credential provider.
@@ -5380,7 +5380,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -5442,7 +5442,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -5504,7 +5504,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -5567,7 +5567,7 @@ for more details.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -5597,7 +5597,7 @@ for more details.
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       An enum whose values specify scopes you can request when calling 
@@ -5648,7 +5648,7 @@ for more details.
         
 
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           Note that it is possible that you will not be granted all of the scopes which you request.
@@ -5688,7 +5688,7 @@ You will still need to handle null values for any fields you request.
         class="css-1m74yfi-Callout"
       >
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <strong
@@ -5737,7 +5737,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -5799,7 +5799,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -5862,7 +5862,7 @@ for more details.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -5892,7 +5892,7 @@ for more details.
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       An enum whose values specify the system's best guess for how likely the current user is a real person.
@@ -5927,7 +5927,7 @@ for more details.
         class="css-1m74yfi-Callout"
       >
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <strong
@@ -5976,7 +5976,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -6012,7 +6012,7 @@ for more details.
         AppleAuthenticationUserDetectionStatus.UNSUPPORTED ＝ 0
       </code>
       <p
-        class="css-hnkmoy-TextComponent"
+        class="mb-4 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         The system does not support this determination and there is no data.
@@ -6044,7 +6044,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -6080,7 +6080,7 @@ for more details.
         AppleAuthenticationUserDetectionStatus.UNKNOWN ＝ 1
       </code>
       <p
-        class="css-hnkmoy-TextComponent"
+        class="mb-4 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         The system has not determined whether the user might be a real person.
@@ -6112,7 +6112,7 @@ for more details.
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -6148,7 +6148,7 @@ for more details.
         AppleAuthenticationUserDetectionStatus.LIKELY_REAL ＝ 2
       </code>
       <p
-        class="css-hnkmoy-TextComponent"
+        class="mb-4 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         The user appears to be a real person.
@@ -6178,7 +6178,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
         Component
       </span>
       <span
-        class="css-1eysgws"
+        class="css-1n7zw4g"
       >
         <svg
           aria-label="permalink"
@@ -6233,7 +6233,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -6263,7 +6263,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       <strong
@@ -6308,7 +6308,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           Props
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -6364,7 +6364,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
               </code>
             </span>
             <span
-              class="css-1eysgws"
+              class="css-1n7zw4g"
             >
               <svg
                 aria-label="permalink"
@@ -6394,7 +6394,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           </a>
         </h3>
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <span
@@ -6416,7 +6416,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           </code>
         </p>
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           An array of bar code types. Usage: 
@@ -6448,7 +6448,7 @@ minimize battery usage.
         
 
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           For example: 
@@ -6487,7 +6487,7 @@ minimize battery usage.
               </code>
             </span>
             <span
-              class="css-1eysgws"
+              class="css-1n7zw4g"
             >
               <svg
                 aria-label="permalink"
@@ -6517,7 +6517,7 @@ minimize battery usage.
           </a>
         </h3>
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <span
@@ -6544,7 +6544,7 @@ minimize battery usage.
           </code>
         </p>
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           A callback that is invoked when a bar code has been successfully scanned. The callback is
@@ -6591,7 +6591,7 @@ provided with an
             
 
             <p
-              class="css-hnkmoy-TextComponent"
+              class="mb-4 css-1kfqm4n-TextComponent"
               data-text="true"
             >
               <strong
@@ -6648,7 +6648,7 @@ data has been retrieved.
               </code>
             </span>
             <span
-              class="css-1eysgws"
+              class="css-1n7zw4g"
             >
               <svg
                 aria-label="permalink"
@@ -6678,7 +6678,7 @@ data has been retrieved.
           </a>
         </h3>
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           <span
@@ -6724,7 +6724,7 @@ data has been retrieved.
           </span>
         </p>
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           Camera facing. Use one of 
@@ -6777,7 +6777,7 @@ Same as
             Inherited Props
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -6807,7 +6807,7 @@ Same as
         </a>
       </h3>
       <ul
-        class="css-1p13rjl-TextComponent"
+        class="css-118jp6n-TextComponent"
       >
         <li
           class="css-1hxzfrf-TextComponent"
@@ -6848,7 +6848,7 @@ Same as
         Hooks
       </span>
       <span
-        class="css-1eysgws"
+        class="css-1n7zw4g"
       >
         <svg
           aria-label="permalink"
@@ -6903,7 +6903,7 @@ Same as
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -7011,7 +7011,7 @@ Same as
     </div>
     <br />
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Check or request permissions for the barcode scanner.
@@ -7117,7 +7117,7 @@ This uses both
       Returns
     </p>
     <ul
-      class="css-9xo9oi-TextComponent"
+      class="!list-none ml-2 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -7214,7 +7214,7 @@ This uses both
         Methods
       </span>
       <span
-        class="css-1eysgws"
+        class="css-1n7zw4g"
       >
         <svg
           aria-label="permalink"
@@ -7269,7 +7269,7 @@ This uses both
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -7299,7 +7299,7 @@ This uses both
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Checks user's permissions for accessing the camera.
@@ -7311,7 +7311,7 @@ This uses both
       Returns
     </p>
     <ul
-      class="css-9xo9oi-TextComponent"
+      class="!list-none ml-2 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -7364,7 +7364,7 @@ This uses both
     </ul>
     <br />
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Return a promise that fulfills to an object of type 
@@ -7408,7 +7408,7 @@ This uses both
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -7438,7 +7438,7 @@ This uses both
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Asks the user to grant permissions for accessing the camera.
@@ -7446,7 +7446,7 @@ This uses both
     
 
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       On iOS this will require apps to specify the 
@@ -7472,7 +7472,7 @@ This uses both
       Returns
     </p>
     <ul
-      class="css-9xo9oi-TextComponent"
+      class="!list-none ml-2 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -7525,7 +7525,7 @@ This uses both
     </ul>
     <br />
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Return a promise that fulfills to an object of type 
@@ -7569,7 +7569,7 @@ This uses both
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -7654,7 +7654,7 @@ This uses both
               class="css-zstkv9-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 URL to get the image from.
@@ -7693,7 +7693,7 @@ This uses both
               class="css-zstkv9-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 An array of bar code types. Defaults to all supported bar code types on
@@ -7733,7 +7733,7 @@ the platform.
                   
 
                   <p
-                    class="css-hnkmoy-TextComponent"
+                    class="mb-4 css-1kfqm4n-TextComponent"
                     data-text="true"
                   >
                     <strong
@@ -7754,7 +7754,7 @@ the platform.
     </div>
     <br />
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Scan bar codes from the image given by the URL.
@@ -7766,7 +7766,7 @@ the platform.
       Returns
     </p>
     <ul
-      class="css-9xo9oi-TextComponent"
+      class="!list-none ml-2 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -7820,7 +7820,7 @@ the platform.
     </ul>
     <br />
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       A possibly empty array of objects of the 
@@ -7853,7 +7853,7 @@ code.
         Interfaces
       </span>
       <span
-        class="css-1eysgws"
+        class="css-1n7zw4g"
       >
         <svg
           aria-label="permalink"
@@ -7908,7 +7908,7 @@ code.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -7938,7 +7938,7 @@ code.
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       An object obtained by permissions get and request functions.
@@ -8005,7 +8005,7 @@ code.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 Indicates if user can be asked again for specific permission.
@@ -8045,7 +8045,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 Determines time when the permission expires.
@@ -8078,7 +8078,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 A convenience boolean that indicates if the permission is granted.
@@ -8116,7 +8116,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 Determines the status of the permission.
@@ -8146,7 +8146,7 @@ in order to enable/disable the permission.
         Types
       </span>
       <span
-        class="css-1eysgws"
+        class="css-1n7zw4g"
       >
         <svg
           aria-label="permalink"
@@ -8201,7 +8201,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -8291,7 +8291,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The origin point of the bounding box.
@@ -8329,7 +8329,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The size of the bounding box.
@@ -8366,7 +8366,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -8508,7 +8508,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -8630,7 +8630,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -8660,7 +8660,7 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Those coordinates are represented in the coordinate space of the barcode source (e.g. when you
@@ -8722,7 +8722,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The 
@@ -8762,7 +8762,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The 
@@ -8807,7 +8807,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -8931,7 +8931,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -9021,7 +9021,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The 
@@ -9084,7 +9084,7 @@ For some types, they will represent the area used by the scanner.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 Corner points of the bounding box.
@@ -9140,7 +9140,7 @@ you don't get this value.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The information encoded in the bar code.
@@ -9173,7 +9173,7 @@ you don't get this value.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The barcode type.
@@ -9210,7 +9210,7 @@ you don't get this value.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -9295,7 +9295,7 @@ you don't get this value.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The height value.
@@ -9328,7 +9328,7 @@ you don't get this value.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 The width value.
@@ -9365,7 +9365,7 @@ you don't get this value.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -9438,7 +9438,7 @@ you don't get this value.
         Enums
       </span>
       <span
-        class="css-1eysgws"
+        class="css-1n7zw4g"
       >
         <svg
           aria-label="permalink"
@@ -9493,7 +9493,7 @@ you don't get this value.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -9548,7 +9548,7 @@ you don't get this value.
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -9584,7 +9584,7 @@ you don't get this value.
         PermissionStatus.DENIED ＝ "denied"
       </code>
       <p
-        class="css-hnkmoy-TextComponent"
+        class="mb-4 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         User has denied the permission.
@@ -9616,7 +9616,7 @@ you don't get this value.
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -9652,7 +9652,7 @@ you don't get this value.
         PermissionStatus.GRANTED ＝ "granted"
       </code>
       <p
-        class="css-hnkmoy-TextComponent"
+        class="mb-4 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         User has granted the permission.
@@ -9684,7 +9684,7 @@ you don't get this value.
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -9720,7 +9720,7 @@ you don't get this value.
         PermissionStatus.UNDETERMINED ＝ "undetermined"
       </code>
       <p
-        class="css-hnkmoy-TextComponent"
+        class="mb-4 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         User hasn't granted or denied the permission yet.
@@ -9750,7 +9750,7 @@ exports[`APISection expo-pedometer 1`] = `
         Methods
       </span>
       <span
-        class="css-1eysgws"
+        class="css-1n7zw4g"
       >
         <svg
           aria-label="permalink"
@@ -9805,7 +9805,7 @@ exports[`APISection expo-pedometer 1`] = `
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -9835,7 +9835,7 @@ exports[`APISection expo-pedometer 1`] = `
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Checks user's permissions for accessing pedometer.
@@ -9847,7 +9847,7 @@ exports[`APISection expo-pedometer 1`] = `
       Returns
     </p>
     <ul
-      class="css-9xo9oi-TextComponent"
+      class="!list-none ml-2 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -9926,7 +9926,7 @@ exports[`APISection expo-pedometer 1`] = `
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -10018,7 +10018,7 @@ exports[`APISection expo-pedometer 1`] = `
               class="css-zstkv9-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 A date indicating the start of the range over which to measure steps.
@@ -10058,7 +10058,7 @@ exports[`APISection expo-pedometer 1`] = `
               class="css-zstkv9-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 A date indicating the end of the range over which to measure steps.
@@ -10070,7 +10070,7 @@ exports[`APISection expo-pedometer 1`] = `
     </div>
     <br />
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Get the step count between two dates.
@@ -10082,7 +10082,7 @@ exports[`APISection expo-pedometer 1`] = `
       Returns
     </p>
     <ul
-      class="css-9xo9oi-TextComponent"
+      class="!list-none ml-2 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -10135,7 +10135,7 @@ exports[`APISection expo-pedometer 1`] = `
     </ul>
     <br />
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Returns a promise that fulfills with a 
@@ -10155,7 +10155,7 @@ exports[`APISection expo-pedometer 1`] = `
     
 
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       As 
@@ -10203,7 +10203,7 @@ exports[`APISection expo-pedometer 1`] = `
         
 
         <p
-          class="css-hnkmoy-TextComponent"
+          class="mb-4 css-1kfqm4n-TextComponent"
           data-text="true"
         >
           Only the past seven days worth of data is stored and available for you to retrieve. Specifying
@@ -10240,7 +10240,7 @@ a start date that is more than seven days in the past returns only the available
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -10270,7 +10270,7 @@ a start date that is more than seven days in the past returns only the available
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Returns whether the pedometer is enabled on the device.
@@ -10282,7 +10282,7 @@ a start date that is more than seven days in the past returns only the available
       Returns
     </p>
     <ul
-      class="css-9xo9oi-TextComponent"
+      class="!list-none ml-2 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -10330,7 +10330,7 @@ a start date that is more than seven days in the past returns only the available
     </ul>
     <br />
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Returns a promise that fulfills with a 
@@ -10370,7 +10370,7 @@ available on this device.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -10400,7 +10400,7 @@ available on this device.
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Asks the user to grant permissions for accessing pedometer.
@@ -10412,7 +10412,7 @@ available on this device.
       Returns
     </p>
     <ul
-      class="css-9xo9oi-TextComponent"
+      class="!list-none ml-2 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -10491,7 +10491,7 @@ available on this device.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -10581,7 +10581,7 @@ available on this device.
               class="css-zstkv9-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 A callback that is invoked when new step count data is available. The callback is
@@ -10606,7 +10606,7 @@ provided with a single argument that is
     </div>
     <br />
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Subscribe to pedometer updates.
@@ -10618,7 +10618,7 @@ provided with a single argument that is
       Returns
     </p>
     <ul
-      class="css-9xo9oi-TextComponent"
+      class="!list-none ml-2 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -10659,7 +10659,7 @@ provided with a single argument that is
     </ul>
     <br />
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Returns a 
@@ -10703,7 +10703,7 @@ provided with a single argument that is
         Interfaces
       </span>
       <span
-        class="css-1eysgws"
+        class="css-1n7zw4g"
       >
         <svg
           aria-label="permalink"
@@ -10758,7 +10758,7 @@ provided with a single argument that is
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -10788,7 +10788,7 @@ provided with a single argument that is
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       An object obtained by permissions get and request functions.
@@ -10855,7 +10855,7 @@ provided with a single argument that is
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 Indicates if user can be asked again for specific permission.
@@ -10895,7 +10895,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 Determines time when the permission expires.
@@ -10928,7 +10928,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 A convenience boolean that indicates if the permission is granted.
@@ -10966,7 +10966,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 Determines the status of the permission.
@@ -10996,7 +10996,7 @@ in order to enable/disable the permission.
         Types
       </span>
       <span
-        class="css-1eysgws"
+        class="css-1n7zw4g"
       >
         <svg
           aria-label="permalink"
@@ -11051,7 +11051,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -11136,7 +11136,7 @@ in order to enable/disable the permission.
               class="css-18p3734-Cell"
             >
               <p
-                class="css-hnkmoy-TextComponent"
+                class="mb-4 css-1kfqm4n-TextComponent"
                 data-text="true"
               >
                 Number of steps taken between the given dates.
@@ -11174,7 +11174,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -11205,7 +11205,7 @@ in order to enable/disable the permission.
     </h3>
     <div>
       <p
-        class="css-hnkmoy-TextComponent"
+        class="mb-4 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         Callback function providing event result as an argument.
@@ -11304,7 +11304,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -11334,7 +11334,7 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <p
-      class="css-hnkmoy-TextComponent"
+      class="mb-4 css-1kfqm4n-TextComponent"
       data-text="true"
     >
       Permission expiration time. Currently, all permissions are granted permanently.
@@ -11391,7 +11391,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -11502,7 +11502,7 @@ in order to enable/disable the permission.
         Enums
       </span>
       <span
-        class="css-1eysgws"
+        class="css-1n7zw4g"
       >
         <svg
           aria-label="permalink"
@@ -11557,7 +11557,7 @@ in order to enable/disable the permission.
           </code>
         </span>
         <span
-          class="css-1eysgws"
+          class="css-1n7zw4g"
         >
           <svg
             aria-label="permalink"
@@ -11612,7 +11612,7 @@ in order to enable/disable the permission.
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -11648,7 +11648,7 @@ in order to enable/disable the permission.
         PermissionStatus.DENIED ＝ "denied"
       </code>
       <p
-        class="css-hnkmoy-TextComponent"
+        class="mb-4 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         User has denied the permission.
@@ -11680,7 +11680,7 @@ in order to enable/disable the permission.
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -11716,7 +11716,7 @@ in order to enable/disable the permission.
         PermissionStatus.GRANTED ＝ "granted"
       </code>
       <p
-        class="css-hnkmoy-TextComponent"
+        class="mb-4 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         User has granted the permission.
@@ -11748,7 +11748,7 @@ in order to enable/disable the permission.
             </code>
           </span>
           <span
-            class="css-1eysgws"
+            class="css-1n7zw4g"
           >
             <svg
               aria-label="permalink"
@@ -11784,7 +11784,7 @@ in order to enable/disable the permission.
         PermissionStatus.UNDETERMINED ＝ "undetermined"
       </code>
       <p
-        class="css-hnkmoy-TextComponent"
+        class="mb-4 css-1kfqm4n-TextComponent"
         data-text="true"
       >
         User hasn't granted or denied the permission yet.

@@ -3,7 +3,7 @@
 exports[`APISectionUtils.CommentTextBlock component basic comment 1`] = `
 <div>
   <p
-    class="css-hnkmoy-TextComponent"
+    class="mb-4 css-1kfqm4n-TextComponent"
     data-text="true"
   >
     This is the basic comment.
@@ -47,7 +47,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
   </div>
   <br />
   <p
-    class="css-hnkmoy-TextComponent"
+    class="mb-4 css-1kfqm4n-TextComponent"
     data-text="true"
   >
     Gets the referrer URL of the installed app with the 

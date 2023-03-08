@@ -1,15 +1,14 @@
 import { css } from '@emotion/react';
 import { mergeClasses } from '@expo/styleguide';
 import { spacing } from '@expo/styleguide-base';
-import type { ElementType } from 'react';
+import type { ElementType, HTMLAttributes } from 'react';
 
-export type DocIconProps = {
+export type DocIconProps = HTMLAttributes<SVGSVGElement> & {
   Icon?: ElementType;
-  className?: string;
   small?: boolean;
 };
 
-export const IconBase = ({ className, small, Icon }: DocIconProps) => {
+export const IconBase = ({ className, small, Icon, ...rest }: DocIconProps) => {
   if (!Icon) return null;
 
   return (
@@ -21,6 +20,7 @@ export const IconBase = ({ className, small, Icon }: DocIconProps) => {
         className
       )}
       css={iconStyles}
+      {...rest}
     />
   );
 };
