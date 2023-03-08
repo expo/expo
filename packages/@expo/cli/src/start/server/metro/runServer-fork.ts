@@ -10,6 +10,8 @@ import { ConfigT } from 'metro-config';
 import { InspectorProxy } from 'metro-inspector-proxy';
 import { parse } from 'url';
 
+import { env } from '../../../utils/env';
+import { createInspectorProxy, ExpoInspectorProxy } from './inspector-proxy';
 import {
   importMetroCreateWebsocketServerFromProject,
   importMetroFromProject,
@@ -64,8 +66,10 @@ export const runServer = async (
 
   serverApp.use(middleware);
 
-  let inspectorProxy: InspectorProxy | null = null;
-  if (config.server.runInspectorProxy) {
+  let inspectorProxy: InspectorProxy | ExpoInspectorProxy | null = null;
+  if (config.server.runInspectorProxy && env.EXPO_USE_CUSTOM_INSPECTOR_PROXY) {
+    inspectorProxy = createInspectorProxy(config.projectRoot);
+  } else if (config.server.runInspectorProxy) {
     inspectorProxy = new InspectorProxy(config.projectRoot);
   }
 
