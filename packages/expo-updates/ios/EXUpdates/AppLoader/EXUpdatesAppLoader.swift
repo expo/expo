@@ -121,7 +121,7 @@ public class EXUpdatesAppLoader: NSObject {
       var existingUpdateError: Error?
       var existingUpdate: EXUpdatesUpdate?
       do {
-        existingUpdate = try self.database.update(withId: updateManifest.updateId, config: self.config).update
+        existingUpdate = try self.database.update(withId: updateManifest.updateId, config: self.config)
       } catch {
         existingUpdateError = error
       }
@@ -176,7 +176,7 @@ public class EXUpdatesAppLoader: NSObject {
         self.assetsToLoad = assets
         for asset in assets {
           // before downloading, check to see if we already have this asset in the database
-          let matchingDbEntry = try? self.database.asset(withKey: asset.key).asset
+          let matchingDbEntry = try? self.database.asset(withKey: asset.key)
 
           if let matchingDbEntry = matchingDbEntry,
             !matchingDbEntry.filename.isEmpty {

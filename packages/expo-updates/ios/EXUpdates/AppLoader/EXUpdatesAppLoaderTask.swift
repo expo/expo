@@ -265,7 +265,7 @@ public final class EXUpdatesAppLoaderTask: NSObject {
         var manifestFiltersError: Error?
         var manifestFilters: [String: Any]?
         do {
-          manifestFilters = try self.database.manifestFilters(withScopeKey: self.config.scopeKey!).jsonData
+          manifestFilters = try self.database.manifestFilters(withScopeKey: self.config.scopeKey!)
         } catch {
           manifestFiltersError = error
         }
