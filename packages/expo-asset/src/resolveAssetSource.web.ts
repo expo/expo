@@ -1,4 +1,4 @@
-import { getAssetByID } from '@react-native/assets/registry';
+import { getAssetByID } from 'react-native/Libraries/Image/AssetRegistry';
 
 import AssetSourceResolver, { ResolvedAssetSource } from './AssetSourceResolver';
 
