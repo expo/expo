@@ -16,7 +16,7 @@ class MockErrorRecoveryDelegate: EXUpdatesErrorRecoveryDelegate {
   }
   
   public var config: EXUpdates.EXUpdatesConfig
-  public var launchedUpdate: EXUpdates.EXUpdatesUpdate? = nil
+  public var launchedUpdateToReturn: EXUpdates.EXUpdatesUpdate? = nil
   public var remoteLoadStatus: EXUpdates.EXUpdatesRemoteLoadStatus = .Idle
   
   private let relaunchCompletionParams: (Error?, Bool)
@@ -24,6 +24,10 @@ class MockErrorRecoveryDelegate: EXUpdatesErrorRecoveryDelegate {
   init(config: EXUpdatesConfig, relaunchCompletionParams: (Error?, Bool)) {
     self.config = config
     self.relaunchCompletionParams = relaunchCompletionParams
+  }
+  
+  func launchedUpdate() -> EXUpdates.EXUpdatesUpdate? {
+    return launchedUpdateToReturn
   }
   
   private var callRecord: [Method: Int] = [:]
@@ -250,7 +254,7 @@ class EXUpdatesErrorRecoverySpec : ExpoSpec {
         )
         mockUpdate.successfulLaunchCount = 1
         
-        mockDelegate.launchedUpdate = mockUpdate
+        mockDelegate.launchedUpdateToReturn = mockUpdate
         errorRecovery.delegate = mockDelegate
         
         let error = NSError(domain: "wat", code: 1)
@@ -320,7 +324,7 @@ class EXUpdatesErrorRecoverySpec : ExpoSpec {
         )
         mockUpdate.successfulLaunchCount = 1
         
-        mockDelegate.launchedUpdate = mockUpdate
+        mockDelegate.launchedUpdateToReturn = mockUpdate
         errorRecovery.delegate = mockDelegate
         
         let error = NSError(domain: "wat", code: 1)
@@ -501,7 +505,7 @@ class EXUpdatesErrorRecoverySpec : ExpoSpec {
       it("consume") {
         let (testQueue, errorRecovery) = setUp()
         // start with a clean slate
-        EXUpdatesErrorRecovery.consumeErrorLog()
+        _ = EXUpdatesErrorRecovery.consumeErrorLog()
         
         let error = NSError(domain: "TestDomain", code: 47, userInfo: [NSLocalizedDescriptionKey: "TestLocalizedDescription"])
         errorRecovery.writeErrorOrExceptionToLog(error)
@@ -516,7 +520,7 @@ class EXUpdatesErrorRecoverySpec : ExpoSpec {
       it("consume multiple errors") {
         let (testQueue, errorRecovery) = setUp()
         // start with a clean slate
-        EXUpdatesErrorRecovery.consumeErrorLog()
+        _ = EXUpdatesErrorRecovery.consumeErrorLog()
         
         let error = NSError(domain: "TestDomain", code: 47, userInfo: [NSLocalizedDescriptionKey: "TestLocalizedDescription"])
         errorRecovery.writeErrorOrExceptionToLog(error)
