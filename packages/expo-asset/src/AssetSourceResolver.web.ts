@@ -1,7 +1,6 @@
 import { Platform } from 'expo-modules-core';
 import { PixelRatio } from 'react-native';
-
-import { PackagerAsset } from './ReactNativeCompatibleAssetsRegistry';
+import { PackagerAsset } from 'react-native/Libraries/Image/AssetRegistry';
 
 export type ResolvedAssetSource = {
   __packager_asset: boolean;
