@@ -1,0 +1,223 @@
+//  Copyright © 2021 650 Industries. All rights reserved.
+
+// this class used a bunch of implicit non-null patterns for member variables. not worth refactoring to appease lint.
+// swiftlint:disable force_unwrapping
+
+import Foundation
+import EXUpdatesInterface
+
+/**
+ * Main entry point to expo-updates in development builds with expo-dev-client. Singleton that still
+ * makes use of EXUpdatesAppController for keeping track of updates state, but provides capabilities
+ * that are not usually exposed but that expo-dev-client needs (launching and downloading a specific
+ * update by URL, allowing dynamic configuration, introspecting the database).
+ *
+ * Implements the EXUpdatesExternalInterface from the expo-updates-interface package. This allows
+ * expo-dev-client to compile without needing expo-updates to be installed.
+ */
+@objcMembers
+public final class EXUpdatesDevLauncherController: NSObject, EXUpdatesExternalInterface {
+  private static let ErrorDomain = "EXUpdatesDevLauncherController"
+
+  enum ErrorCode: Int {
+    case invalidUpdateURL = 1
+    case updateLaunchFailed = 4
+    case configFailed = 5
+  }
+
+  private var tempConfig: EXUpdatesConfig?
+
+  private weak var _bridge: AnyObject?
+  public weak var bridge: AnyObject? {
+    get {
+      return _bridge
+    }
+    set(value) {
+      _bridge = value
+      if let value = value as? RCTBridge {
+        EXUpdatesAppController.sharedInstance.bridge = value
+      }
+    }
+  }
+
+  public static let sharedInstance = EXUpdatesDevLauncherController()
+
+  override init() {}
+
+  public func launchAssetURL() -> URL? {
+    return EXUpdatesAppController.sharedInstance.launchAssetUrl()
+  }
+
+  public func reset() {
+    let controller = EXUpdatesAppController.sharedInstance
+    controller.launcher = nil
+    controller.isStarted = true
+  }
+
+  public func fetchUpdate(
+    withConfiguration configuration: [AnyHashable: Any],
+    onManifest manifestBlock: @escaping EXUpdatesManifestBlock,
+    progress progressBlock: @escaping EXUpdatesProgressBlock,
+    success successBlock: @escaping EXUpdatesUpdateSuccessBlock,
+    error errorBlock: @escaping EXUpdatesErrorBlock
+  ) {
+    guard let updatesConfiguration = setup(configuration: configuration, error: errorBlock) else {
+      return
+    }
+
+    let controller = EXUpdatesAppController.sharedInstance
+
+    // since controller is a singleton, save its config so we can reset to it if our request fails
+    tempConfig = controller.config
+
+    setDevelopmentSelectionPolicy()
+    controller.setConfigurationInternal(config: updatesConfiguration)
+
+    let loader = EXUpdatesRemoteAppLoader(
+      config: updatesConfiguration,
+      database: controller.database,
+      directory: controller.updatesDirectory!,
+      launchedUpdate: nil,
+      completionQueue: controller.controllerQueue
+    )
+    loader.loadUpdate(
+      fromURL: updatesConfiguration.updateUrl!
+    ) { update in
+      return manifestBlock(update.manifest.rawManifestJSON())
+    } asset: { _, successfulAssetCount, failedAssetCount, totalAssetCount in
+      progressBlock(UInt(successfulAssetCount), UInt(failedAssetCount), UInt(totalAssetCount))
+    } success: { update in
+      guard let update = update else {
+        successBlock(nil)
+        return
+      }
+      self.launch(update: update, withConfiguration: updatesConfiguration, success: successBlock, error: errorBlock)
+    } error: { error in
+      // reset controller's configuration to what it was before this request
+      controller.setConfigurationInternal(config: self.tempConfig!)
+      errorBlock(error)
+    }
+  }
+
+  public func storedUpdateIds(
+    withConfiguration configuration: [AnyHashable: Any],
+    success successBlock: @escaping EXUpdatesQuerySuccessBlock,
+    error errorBlock: @escaping EXUpdatesErrorBlock
+  ) {
+    guard setup(configuration: configuration, error: errorBlock) != nil else {
+      successBlock([])
+      return
+    }
+
+    EXUpdatesAppLauncherWithDatabase.storedUpdateIds(
+      inDatabase: EXUpdatesAppController.sharedInstance.database
+    ) { error, storedUpdateIds in
+      if let error = error {
+        errorBlock(error)
+      } else {
+        successBlock(storedUpdateIds!)
+      }
+    }
+  }
+
+  /**
+   Common initialization for both fetchUpdateWithConfiguration: and storedUpdateIdsWithConfiguration:
+   Sets up EXUpdatesAppController shared instance
+   Returns the updatesConfiguration
+   */
+  private func setup(configuration: [AnyHashable: Any], error errorBlock: EXUpdatesErrorBlock) -> EXUpdatesConfig? {
+    let controller = EXUpdatesAppController.sharedInstance
+    var updatesConfiguration: EXUpdatesConfig
+    do {
+      updatesConfiguration = try EXUpdatesConfig.configWithExpoPlist(mergingOtherDictionary: nil)
+    } catch {
+      errorBlock(NSError(
+        domain: EXUpdatesDevLauncherController.ErrorDomain,
+        code: ErrorCode.configFailed.rawValue,
+        userInfo: [
+          // swiftlint:disable:next line_length
+          NSLocalizedDescriptionKey: "Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
+        ]
+      ))
+      return nil
+    }
+
+    guard updatesConfiguration.updateUrl != nil && updatesConfiguration.scopeKey != nil else {
+      errorBlock(NSError(
+        domain: EXUpdatesDevLauncherController.ErrorDomain,
+        code: ErrorCode.invalidUpdateURL.rawValue,
+        userInfo: [
+          NSLocalizedDescriptionKey: "Failed to read stored updates: configuration object must include a valid update URL"
+        ]
+      ))
+      return nil
+    }
+
+    do {
+      try controller.initializeUpdatesDirectory()
+      try controller.initializeUpdatesDatabase()
+    } catch {
+      errorBlock(error)
+      return nil
+    }
+
+    return updatesConfiguration
+  }
+
+  private func setDevelopmentSelectionPolicy() {
+    let controller = EXUpdatesAppController.sharedInstance
+    controller.resetSelectionPolicyToDefault()
+    let currentSelectionPolicy = controller.selectionPolicy()
+    controller.defaultSelectionPolicy = EXUpdatesSelectionPolicy(
+      launcherSelectionPolicy: currentSelectionPolicy.launcherSelectionPolicy,
+      loaderSelectionPolicy: currentSelectionPolicy.loaderSelectionPolicy,
+      reaperSelectionPolicy: EXUpdatesReaperSelectionPolicyDevelopmentClient()
+    )
+    controller.resetSelectionPolicyToDefault()
+  }
+
+  private func launch(
+    update: EXUpdatesUpdate,
+    withConfiguration configuration: EXUpdatesConfig,
+    success successBlock: @escaping EXUpdatesUpdateSuccessBlock,
+    error errorBlock: @escaping EXUpdatesErrorBlock
+  ) {
+    let controller = EXUpdatesAppController.sharedInstance
+    // ensure that we launch the update we want, even if it isn't the latest one
+    let currentSelectionPolicy = controller.selectionPolicy()
+
+    // Calling `setNextSelectionPolicy` allows the Updates module's `reloadAsync` method to reload
+    // with a different (newer) update if one is downloaded, e.g. using `fetchUpdateAsync`. If we set
+    // the default selection policy here instead, the update we are launching here would keep being
+    // launched by `reloadAsync` even if a newer one is downloaded.
+    controller.setNextSelectionPolicy(EXUpdatesSelectionPolicy(
+      launcherSelectionPolicy: EXUpdatesLauncherSelectionPolicySingleUpdate(updateId: update.updateId),
+      loaderSelectionPolicy: currentSelectionPolicy.loaderSelectionPolicy,
+      reaperSelectionPolicy: currentSelectionPolicy.reaperSelectionPolicy
+    ))
+
+    let launcher = EXUpdatesAppLauncherWithDatabase(
+      config: configuration,
+      database: controller.database,
+      directory: controller.updatesDirectory!,
+      completionQueue: controller.controllerQueue
+    )
+    launcher.launchUpdate(withSelectionPolicy: controller.selectionPolicy()) { error, success in
+      if !success {
+        // reset controller's configuration to what it was before this request
+        controller.setConfigurationInternal(config: self.tempConfig!)
+        errorBlock(error ?? NSError(
+          domain: EXUpdatesDevLauncherController.ErrorDomain,
+          code: ErrorCode.updateLaunchFailed.rawValue,
+          userInfo: [NSLocalizedDescriptionKey: "Failed to launch update with an unknown error"]
+        ))
+        return
+      }
+
+      controller.isStarted = true
+      controller.launcher = launcher
+      successBlock(launcher.launchedUpdate?.manifest.rawManifestJSON())
+      controller.runReaper()
+    }
+  }
+}

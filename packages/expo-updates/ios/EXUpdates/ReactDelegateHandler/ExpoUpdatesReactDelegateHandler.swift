@@ -36,7 +36,7 @@ public class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, EXUpdate
 
     // Backward compatible if main AppDelegate already has expo-updates setup,
     // we just skip in this case.
-    if EXUpdatesAppController.sharedInstance().isStarted {
+    if EXUpdatesAppController.sharedInstance.isStarted {
       return false
     }
 
@@ -49,7 +49,7 @@ public class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, EXUpdate
     }
 
     self.reactDelegate = reactDelegate
-    let controller = EXUpdatesAppController.sharedInstance()
+    let controller = EXUpdatesAppController.sharedInstance
     controller.delegate = self
 
     // TODO: launch screen should move to expo-splash-screen
@@ -98,7 +98,7 @@ public class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, EXUpdate
   // MARK: RCTBridgeDelegate implementations
 
   public func sourceURL(for bridge: RCTBridge!) -> URL! {
-    return EXUpdatesAppController.sharedInstance().launchAssetUrl
+    return EXUpdatesAppController.sharedInstance.launchAssetUrl()
   }
 
   // MARK: Internals
