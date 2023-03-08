@@ -1,8 +1,8 @@
 import type { DebuggerInfo, Device as MetroDevice } from 'metro-inspector-proxy';
 import type WS from 'ws';
 
-import { NetworkResponseHandler } from './messages/NetworkRespose';
-import { DeviceRequest, InspectorHandler, DebuggerRequest } from './messages/types';
+import { NetworkResponseHandler } from './handlers/NetworkResponse';
+import { DeviceRequest, InspectorHandler, DebuggerRequest } from './handlers/types';
 
 export function createInspectorDeviceClass(MetroDeviceClass: typeof MetroDevice) {
   return class ExpoInspectorDevice extends MetroDeviceClass implements InspectorHandler {
