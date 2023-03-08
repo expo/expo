@@ -50,10 +50,26 @@ const elementToComponent = {
   // NOTE: head, meta, link should use some special component in the future.
 };
 
-module.exports = ({ types: t }, { expo }) => {
+function getPlatform(caller) {
+  return caller && caller.platform;
+}
+
+module.exports = ({ types: t, ...api }, { expo }) => {
+  const platform = api.caller(getPlatform);
+
   function replaceElement(path, state) {
+    // Not supported in node modules
+    if (/\/node_modules\//.test(state.filename)) {
+      return;
+    }
+
     const { name } = path.node.openingElement.name;
 
+    if (platform === 'web') {
+      if (['html', 'body'].includes(name)) {
+        return;
+      }
+    }
     // Replace element with @expo/html-elements
     const component = elementToComponent[name];
 
