@@ -27,6 +27,7 @@
 - Fix E2E rollback test and other improvements. ([#21389](https://github.com/expo/expo/pull/21389) by [@douglowder](https://github.com/douglowder))
 - Consolidate E2E tests. ([#21458](https://github.com/expo/expo/pull/21458) by [@douglowder](https://github.com/douglowder))
 - E2E tests: graceful Detox failures. ([#21520](https://github.com/expo/expo/pull/21520) by [@douglowder](https://github.com/douglowder))
+- Fix E2E after Swift conversion. ([#21592](https://github.com/expo/expo/pull/21592) by [@douglowder](https://github.com/douglowder))
 
 ## 0.16.1 — 2023-02-09
 

@@ -204,12 +204,12 @@ public final class EXUpdatesDatabase: NSObject {
     """
     let rows = try execute(sql: assetSelectSql, withArgs: [key])
     if !rows.isEmpty {
-      let assetId: UUID = rows[0].requiredValue(forKey: "id")
+      let assetId: NSNumber = rows[0].requiredValue(forKey: "id")
       let insertSql = """
         INSERT OR REPLACE INTO updates_assets ("update_id", "asset_id") VALUES (?1, ?2);
       """
       do {
-        _ = try execute(sql: insertSql, withArgs: [updateId, assetId])
+        _ = try execute(sql: insertSql, withArgs: [updateId, assetId.intValue])
       } catch {
         sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
         throw EXUpdatesDatabaseError.addExistingAssetInsertError
@@ -218,7 +218,7 @@ public final class EXUpdatesDatabase: NSObject {
       if asset.isLaunchAsset {
         let updateSql = "UPDATE updates SET launch_asset_id = ?1 WHERE id = ?2;"
         do {
-          _ = try execute(sql: updateSql, withArgs: [assetId, updateId])
+          _ = try execute(sql: updateSql, withArgs: [assetId.intValue, updateId])
         } catch {
           sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
           throw EXUpdatesDatabaseError.addExistingAssetInsertError

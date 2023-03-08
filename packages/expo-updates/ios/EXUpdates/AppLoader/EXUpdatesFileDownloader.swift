@@ -123,7 +123,7 @@ public final class EXUpdatesFileDownloader: NSObject, URLSessionDataDelegate {
           format: "File download was successful but base64url-encoded SHA-256 did not match expected; expected: %@; actual: %@",
           [expectedBase64URLEncodedSHA256Hash, hashBase64String]
         )
-        self.logger.error(message: errorMessage, code: UpdatesErrorCode.unknown)
+        self.logger.error(message: errorMessage, code: UpdatesErrorCode.assetsFailedToLoad)
         errorBlock(NSError(
           domain: EXUpdatesFileDownloaderErrorDomain,
           code: EXUpdatesFileDownloaderErrorCode.FileHashMismatchError.rawValue,
