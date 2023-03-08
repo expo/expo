@@ -3,7 +3,7 @@
 import Foundation
 import SQLite3
 
-public final class EXUpdatesDatabaseMigration7To8: EXUpdatesDatabaseMigration {
+internal final class EXUpdatesDatabaseMigration7To8: EXUpdatesDatabaseMigration {
   public private(set) var filename: String = "expo-v7.db"
 
   public func runMigration(onDatabase db: OpaquePointer) throws {

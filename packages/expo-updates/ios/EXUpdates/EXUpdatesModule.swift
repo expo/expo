@@ -14,7 +14,7 @@ import ExpoModulesCore
  * Expo Go and legacy standalone apps) via EXUpdatesService, an internal module which is overridden
  * by EXUpdatesBinding, a scoped module, in Expo Go.
  */
-public class EXUpdatesModule: Module {
+public final class EXUpdatesModule: Module {
   private let updatesService: EXUpdatesModuleInterface?
   private let methodQueue = DispatchQueue(label: "expo.modules.EXUpdatesQueue")
 

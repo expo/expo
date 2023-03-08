@@ -2,14 +2,6 @@
 
 import Foundation
 
-extension Array where Element: Equatable {
-  mutating func remove(_ element: Element) {
-    if let index = firstIndex(of: element) {
-      remove(at: index)
-    }
-  }
-}
-
 /**
  * An EXUpdatesReaperSelectionPolicy which chooses which updates to delete taking into account manifest filters
  * originating from the server. If an older update is available, it will choose to keep one older

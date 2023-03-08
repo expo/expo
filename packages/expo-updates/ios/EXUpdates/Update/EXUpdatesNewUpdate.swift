@@ -4,7 +4,7 @@ import Foundation
 import EXManifests
 import EXStructuredHeaders
 
-@objcMembers public class EXUpdatesNewUpdate: EXUpdatesUpdate {
+internal final class EXUpdatesNewUpdate: EXUpdatesUpdate {
   /**
    * Method for initializing updates with modern format manifests that conform to the Expo Updates
    * specification (https://docs.expo.dev/technical-specs/expo-updates-0/). This is used by EAS

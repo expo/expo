@@ -9,7 +9,7 @@ import ExpoModulesCore
  * RCTBridge and RCTRootView objects to return to the ReactDelegate, replacing them with the real
  * objects when expo-updates is ready.
  */
-public class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, EXUpdatesAppControllerDelegate, RCTBridgeDelegate {
+public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, EXUpdatesAppControllerDelegate, RCTBridgeDelegate {
   private weak var reactDelegate: ExpoReactDelegate?
   private var bridgeDelegate: RCTBridgeDelegate?
   private var launchOptions: [AnyHashable: Any]?

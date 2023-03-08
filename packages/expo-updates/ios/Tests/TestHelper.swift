@@ -32,7 +32,7 @@ enum TestCertificate : String {
 
 class ForBundle {}
 
-public class TestHelper {
+internal final class TestHelper {
   static func getTestCertificate(_ name: TestCertificate) throws -> String {
     let bundle = Bundle(for: ForBundle.self)
     guard let certPath = bundle.path(forResource: name.rawValue, ofType: "pem") else {

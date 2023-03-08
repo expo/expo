@@ -10,13 +10,13 @@
 import Foundation
 import SQLite3
 
-public struct EXUpdatesDatabaseUtilsErrorInfo {
+internal struct EXUpdatesDatabaseUtilsErrorInfo {
   let code: Int
   let extendedCode: Int
   let message: String
 }
 
-struct EXUpdatesDatabaseUtilsError: Error {
+internal struct EXUpdatesDatabaseUtilsError: Error {
   enum ErrorKind {
     case SQLitePrepareError
     case SQLiteArgsBindError
@@ -32,7 +32,7 @@ struct EXUpdatesDatabaseUtilsError: Error {
 let SQLITE_STATIC = unsafeBitCast(0, to: sqlite3_destructor_type.self)
 let SQLITE_TRANSIENT = unsafeBitCast(-1, to: sqlite3_destructor_type.self)
 
-public extension UUID {
+private extension UUID {
   var data: Data {
     return withUnsafeBytes(of: self.uuid, { Data($0) })
   }
@@ -41,8 +41,7 @@ public extension UUID {
 /**
  * Utility class with methods for common database functions used across multiple classes.
  */
-@objcMembers
-public final class EXUpdatesDatabaseUtils {
+internal final class EXUpdatesDatabaseUtils {
   public static func execute(sql: String, withArgs args: [Any?]?, onDatabase db: OpaquePointer) throws -> [[String: Any?]] {
     var stmt: OpaquePointer?
     guard sqlite3_prepare_v2(db, String(sql.utf8), -1, &stmt, nil) == SQLITE_OK,

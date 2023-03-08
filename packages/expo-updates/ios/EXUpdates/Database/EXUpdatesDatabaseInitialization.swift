@@ -20,7 +20,7 @@ enum EXUpdatesDatabaseInitializationError: Error {
 /**
  * Utility class that handles database initialization and migration.
  */
-public final class EXUpdatesDatabaseInitialization: NSObject {
+internal final class EXUpdatesDatabaseInitialization {
   private static let LatestFilename = "expo-v9.db"
   private static let LatestSchema = """
     CREATE TABLE "updates" (

@@ -7,8 +7,7 @@ import Foundation
 /**
  * Subclass of EXUpdatesAppLoader which handles downloading updates from a remote server.
  */
-@objcMembers
-public final class EXUpdatesRemoteAppLoader: EXUpdatesAppLoader {
+internal final class EXUpdatesRemoteAppLoader: EXUpdatesAppLoader {
   private static let EXUpdatesRemoteAppLoaderErrorDomain = "EXUpdatesRemoteAppLoader"
 
   private let downloader: EXUpdatesFileDownloader

@@ -13,7 +13,7 @@ import Foundation
  * EXUpdatesModule should be `true` whenever this class is used.
  */
 @objcMembers
-public class EXUpdatesAppLauncherNoDatabase: NSObject, EXUpdatesAppLauncher {
+public final class EXUpdatesAppLauncherNoDatabase: NSObject, EXUpdatesAppLauncher {
   public var launchedUpdate: EXUpdatesUpdate?
   public var launchAssetUrl: URL?
   public var assetFilesMap: [String: Any]?
