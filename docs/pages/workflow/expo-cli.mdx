@@ -360,6 +360,7 @@ From here, you can choose to generate basic project files like:
 - `EXPO_IMAGE_UTILS_NO_SHARP` (**boolean**) disable the usage of global Sharp CLI installation in favor of the slower Jimp package for image manipulation. This is used in places like `npx expo prebuild` for generating app icons.
 - `EXPO_TUNNEL_SUBDOMAIN` (**boolean**) **Experimental** Disable using `exp.direct` as the hostname for `--tunnel` connections. This enables **https://** forwarding which can be used to test universal links on iOS. This may cause unexpected issues with `expo-linking` and Expo Go. Select the exact subdomain to use by passing a `string` value that is not one of: `true`, `false`, `1`, `0`.
 - `EXPO_METRO_NO_MAIN_FIELD_OVERRIDE` (**boolean**) force Expo CLI to use the [`resolver.resolverMainFields`](https://facebook.github.io/metro/docs/configuration/#resolvermainfields) from the project's **metro.config.js** for all platforms. By default, Expo CLI will use `['browser', 'module', 'main']`, which is the default for webpack, for the web and the user-defined main fields for other platforms.
+- `EXPO_USE_CUSTOM_INSPECTOR_PROXY` (**boolean**) **Experimental:** _SDK 49+_ Use a customized inspector proxy with improved support for the Chrome DevTools protocol. This includes support for the network inspector.
 
 ## Telemetry
 
