@@ -3,12 +3,11 @@
 import Foundation
 import ASN1Decoder
 
-typealias Certificate = (SecCertificate, X509Certificate)
+internal typealias Certificate = (SecCertificate, X509Certificate)
 
-@objc
-public class EXUpdatesExpoProjectInformation : NSObject {
-  @objc private(set) public var projectId: String
-  @objc private(set) public var scopeKey: String
+internal final class EXUpdatesExpoProjectInformation: Equatable {
+  private(set) public var projectId: String
+  private(set) public var scopeKey: String
   
   required init(projectId: String, scopeKey: String) {
     self.projectId = projectId
@@ -32,7 +31,7 @@ public class EXUpdatesExpoProjectInformation : NSObject {
  * - certificate chain is valid and each certificate is valid
  * - 0th certificate is a valid code signing certificate
  */
-class EXUpdatesCertificateChain {
+internal final class EXUpdatesCertificateChain {
   // ASN.1 path to the extended key usage info within a CERT
   static let EXUpdatesCodeSigningCertificateExtendedUsageCodeSigningOID = "1.3.6.1.5.5.7.3.3"
   // OID of expo project info, stored as `<projectId>,<scopeKey>`
@@ -86,7 +85,7 @@ class EXUpdatesCertificateChain {
   }
 }
 
-extension X509Certificate {
+internal extension X509Certificate {
   func isCACertificate() -> Bool {
     if let ext = self.extensionObject(oid: .basicConstraints) as? X509Certificate.BasicConstraintExtension {
       if (!ext.isCA) {
@@ -135,7 +134,7 @@ extension X509Certificate {
   }
 }
 
-extension Array where Element == Certificate {
+private extension Array where Element == Certificate {
   func validateChain() throws {
     let (anchorSecCert, anchorX509Cert) = self.last!
     
@@ -172,7 +171,7 @@ extension Array where Element == Certificate {
   }
 }
 
-extension SecTrust {
+private extension SecTrust {
   static func create(certificates: [SecCertificate], policy: SecPolicy) throws -> SecTrust {
     var optionalTrust: SecTrust?
     let status = SecTrustCreateWithCertificates(certificates as AnyObject, policy, &optionalTrust)

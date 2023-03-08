@@ -5,7 +5,7 @@ import Foundation
 /**
  Schema for the fields in expo-updates log message JSON strings
  */
-public struct UpdatesLogEntry: Codable {
+internal struct UpdatesLogEntry: Codable {
   var timestamp: UInt // milliseconds since 1/1/1970 UTC
   var message: String
   var code: String // One of the UpdatesErrorCode string values

@@ -3,13 +3,13 @@
 import Foundation
 import SQLite3
 
-public enum EXUpdatesDatabaseMigrationError: Error {
+internal enum EXUpdatesDatabaseMigrationError: Error {
   case foreignKeysError
   case transactionError
   case migrationSQLError
 }
 
-public class TransactionExecutor {
+internal final class TransactionExecutor {
   let db: OpaquePointer
 
   init(db: OpaquePointer) {
@@ -33,8 +33,8 @@ public class TransactionExecutor {
   }
 }
 
-extension OpaquePointer {
-  public func withForeignKeysOff<R>(_ body: () throws -> R) throws -> R {
+internal extension OpaquePointer {
+  func withForeignKeysOff<R>(_ body: () throws -> R) throws -> R {
     // https://www.sqlite.org/lang_altertable.html#otheralter
     guard sqlite3_exec(self, "PRAGMA foreign_keys=OFF;", nil, nil, nil) == SQLITE_OK else {
       throw EXUpdatesDatabaseMigrationError.foreignKeysError
@@ -46,7 +46,7 @@ extension OpaquePointer {
     return try body()
   }
 
-  public func withTransaction<R>(_ body: (TransactionExecutor) throws -> R) throws -> R {
+  func withTransaction<R>(_ body: (TransactionExecutor) throws -> R) throws -> R {
     guard sqlite3_exec(self, "BEGIN;", nil, nil, nil) == SQLITE_OK else {
       throw EXUpdatesDatabaseMigrationError.transactionError
     }
@@ -61,7 +61,7 @@ extension OpaquePointer {
   }
 }
 
-public protocol EXUpdatesDatabaseMigration {
+internal protocol EXUpdatesDatabaseMigration {
   var filename: String { get }
   func runMigration(onDatabase db: OpaquePointer) throws
 }

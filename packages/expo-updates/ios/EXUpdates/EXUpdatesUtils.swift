@@ -6,12 +6,20 @@ import Foundation
 import SystemConfiguration
 import CommonCrypto
 
+internal extension Array where Element: Equatable {
+  mutating func remove(_ element: Element) {
+    if let index = firstIndex(of: element) {
+      remove(at: index)
+    }
+  }
+}
+
 @objcMembers
-public class EXUpdatesUtils: NSObject {
+public final class EXUpdatesUtils: NSObject {
   private static let EXUpdatesEventName = "Expo.nativeUpdatesEvent"
   private static let EXUpdatesUtilsErrorDomain = "EXUpdatesUtils"
 
-  public static func runBlockOnMainThread(_ block: @escaping () -> Void) {
+  internal static func runBlockOnMainThread(_ block: @escaping () -> Void) {
     if Thread.isMainThread {
       block()
     } else {
@@ -21,7 +29,7 @@ public class EXUpdatesUtils: NSObject {
     }
   }
 
-  public static func hexEncodedSHA256WithData(_ data: Data) -> String {
+  internal static func hexEncodedSHA256WithData(_ data: Data) -> String {
     var digest = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
     data.withUnsafeBytes { bytes in
       _ = CC_SHA256(bytes.baseAddress, CC_LONG(data.count), &digest)
@@ -29,7 +37,7 @@ public class EXUpdatesUtils: NSObject {
     return digest.reduce("") { $0 + String(format: "%02x", $1) }
   }
 
-  public static func base64UrlEncodedSHA256WithData(_ data: Data) -> String {
+  internal static func base64UrlEncodedSHA256WithData(_ data: Data) -> String {
     var digest = [UInt8](repeating: 0, count: Int(CC_SHA256_DIGEST_LENGTH))
     data.withUnsafeBytes { bytes in
       _ = CC_SHA256(bytes.baseAddress, CC_LONG(data.count), &digest)
@@ -68,7 +76,7 @@ public class EXUpdatesUtils: NSObject {
     return updatesDirectory
   }
 
-  public static func sendEvent(toBridge bridge: RCTBridge?, withType eventType: String, body: [AnyHashable: Any]) {
+  internal static func sendEvent(toBridge bridge: RCTBridge?, withType eventType: String, body: [AnyHashable: Any]) {
     guard let bridge = bridge else {
       NSLog("EXUpdates: Could not emit %@ event. Did you set the bridge property on the controller singleton?", eventType)
       return
@@ -79,7 +87,7 @@ public class EXUpdatesUtils: NSObject {
     bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [EXUpdatesEventName, mutableBody])
   }
 
-  public static func shouldCheckForUpdate(withConfig config: EXUpdatesConfig) -> Bool {
+  internal static func shouldCheckForUpdate(withConfig config: EXUpdatesConfig) -> Bool {
     // TODO(wschurman): replace with reachability library
     func isConnectedToWifi() -> Bool {
       var zeroAddress = sockaddr_in()
@@ -111,21 +119,21 @@ public class EXUpdatesUtils: NSObject {
     }
   }
 
-  public static func getRuntimeVersion(withConfig config: EXUpdatesConfig) -> String {
+  internal static func getRuntimeVersion(withConfig config: EXUpdatesConfig) -> String {
     // various places in the code assume that we have a nonnull runtimeVersion, so if the developer
     // hasn't configured either runtimeVersion or sdkVersion, we'll use a dummy value of "1" but warn
     // the developer in JS that they need to configure one of these values
     return config.runtimeVersion ?? config.sdkVersion ?? "1"
   }
 
-  public static func url(forBundledAsset asset: EXUpdatesAsset) -> URL? {
+  internal static func url(forBundledAsset asset: EXUpdatesAsset) -> URL? {
     guard let mainBundleDir = asset.mainBundleDir else {
       return Bundle.main.url(forResource: asset.mainBundleFilename, withExtension: asset.type)
     }
     return Bundle.main.url(forResource: asset.mainBundleFilename, withExtension: asset.type, subdirectory: mainBundleDir)
   }
 
-  public static func path(forBundledAsset asset: EXUpdatesAsset) -> String? {
+  internal static func path(forBundledAsset asset: EXUpdatesAsset) -> String? {
     guard let mainBundleDir = asset.mainBundleDir else {
       return Bundle.main.path(forResource: asset.mainBundleFilename, ofType: asset.type)
     }
@@ -135,7 +143,7 @@ public class EXUpdatesUtils: NSObject {
   /**
    Purges entries in the expo-updates log file that are older than 1 day
    */
-  public static func purgeUpdatesLogsOlderThanOneDay() {
+  internal static func purgeUpdatesLogsOlderThanOneDay() {
     UpdatesLogReader().purgeLogEntries { error in
       if let error = error {
         NSLog("EXUpdatesUtils: error in purgeOldUpdatesLogs: %@", error.localizedDescription)
@@ -143,7 +151,7 @@ public class EXUpdatesUtils: NSObject {
     }
   }
 
-  public static func isNativeDebuggingEnabled() -> Bool {
+  internal static func isNativeDebuggingEnabled() -> Bool {
     #if EX_UPDATES_NATIVE_DEBUG
     return true
     #else

@@ -5,7 +5,7 @@
 import Foundation
 import SQLite3
 
-public final class EXUpdatesDatabaseMigration5To6: EXUpdatesDatabaseMigration {
+internal final class EXUpdatesDatabaseMigration5To6: EXUpdatesDatabaseMigration {
   public private(set) var filename: String = "expo-v5.db"
 
   public func runMigration(onDatabase db: OpaquePointer) throws {

@@ -3,10 +3,10 @@
 import Foundation
 
 enum EXUpdatesCodeSigningAlgorithm: String {
-    case RSA_SHA256 = "rsa-v1_5-sha256"
+  case RSA_SHA256 = "rsa-v1_5-sha256"
 }
 
-extension EXUpdatesCodeSigningAlgorithm {
+internal extension EXUpdatesCodeSigningAlgorithm {
   static func parseFromString(_ str: String?) throws -> EXUpdatesCodeSigningAlgorithm {
     guard let str = str else {
       return EXUpdatesCodeSigningAlgorithm.RSA_SHA256

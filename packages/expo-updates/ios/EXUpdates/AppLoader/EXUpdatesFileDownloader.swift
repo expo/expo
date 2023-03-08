@@ -13,10 +13,10 @@
 import Foundation
 import EASClient
 
-public typealias SuccessBlock = (Data, URLResponse) -> Void
-public typealias ErrorBlock = (Error) -> Void
-public typealias HashSuccessBlock = (Data, URLResponse, String) -> Void
-public typealias ManifestSuccessBlock = (EXUpdatesUpdate) -> Void
+internal typealias SuccessBlock = (Data, URLResponse) -> Void
+internal typealias ErrorBlock = (Error) -> Void
+internal typealias HashSuccessBlock = (Data, URLResponse, String) -> Void
+internal typealias ManifestSuccessBlock = (EXUpdatesUpdate) -> Void
 
 let EXUpdatesFileDownloaderErrorDomain = "EXUpdatesFileDownloader"
 enum EXUpdatesFileDownloaderErrorCode: Int {
@@ -40,8 +40,8 @@ enum FileDownloaderInternalError: Error {
   case extractUpdateResponseDictionaryNil
 }
 
-extension String {
-  public func truncate(toMaxLength: Int) -> String {
+private extension String {
+  func truncate(toMaxLength: Int) -> String {
     if toMaxLength <= 0 {
       return ""
     } else if toMaxLength < self.count {
@@ -53,8 +53,8 @@ extension String {
   }
 }
 
-extension Dictionary where Iterator.Element == (key: String, value: Any) {
-  public func stringValueForCaseInsensitiveKey(_ searchKey: Key) -> String? {
+private extension Dictionary where Iterator.Element == (key: String, value: Any) {
+  func stringValueForCaseInsensitiveKey(_ searchKey: Key) -> String? {
     let valueRaw = self.first { (key: Key, _: Value) in
       return key.caseInsensitiveCompare(searchKey) == .orderedSame
     }?.value
@@ -70,8 +70,7 @@ extension Dictionary where Iterator.Element == (key: String, value: Any) {
  * Utility class that holds all the logic for downloading data and files, such as update manifests
  * and assets, using NSURLSession.
  */
-@objcMembers
-public final class EXUpdatesFileDownloader: NSObject, URLSessionDataDelegate {
+internal final class EXUpdatesFileDownloader: NSObject, URLSessionDataDelegate {
   private static let DefaultTimeoutInterval: TimeInterval = 60
   private static let MultipartManifestPartName = "manifest"
   private static let MultipartExtensionsPartName = "extensions"
