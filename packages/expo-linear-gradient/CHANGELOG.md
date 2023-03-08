@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed crashes when R8 or Proguard is enabled. ([#21580](https://github.com/expo/expo/pull/21580) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 12.1.1 — 2023-02-09
