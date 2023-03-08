@@ -21,7 +21,7 @@ Pod::Spec.new do |s|
   s.dependency 'EXUpdatesInterface'
   s.dependency 'EXManifests'
   s.dependency 'EASClient'
-  s.dependency 'EXJSONUtils'
+  s.dependency 'ReachabilitySwift'
   s.dependency 'ASN1Decoder', '~> 1.8'
 
   ex_updates_native_debug = ENV['EX_UPDATES_NATIVE_DEBUG'] == '1'
