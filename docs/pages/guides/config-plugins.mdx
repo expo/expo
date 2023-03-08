@@ -262,7 +262,7 @@ The following default mods are provided by the mod compiler for common file mani
 > Always opt towards using application code to modify application code, that is, [Expo Modules][emc] native API.
 
 | Android mod                       |    Dangerous    | Description                                                                                               |
-|-----------------------------------|:---------------:|-----------------------------------------------------------------------------------------------------------|
+| --------------------------------- | :-------------: | --------------------------------------------------------------------------------------------------------- |
 | `mods.android.manifest`           |        -        | Modify the **android/app/src/main/AndroidManifest.xml** as JSON (parsed with [`xml2js`][xml2js]).         |
 | `mods.android.strings`            |        -        | Modify the **android/app/src/main/res/values/strings.xml** as JSON (parsed with [`xml2js`][xml2js]).      |
 | `mods.android.colors`             |        -        | Modify the **android/app/src/main/res/values/colors.xml** as JSON (parsed with [`xml2js`][xml2js]).       |
@@ -276,7 +276,7 @@ The following default mods are provided by the mod compiler for common file mani
 | `mods.android.settingsGradle`     | <WarningIcon /> | Modify the **android/settings.gradle** as a string.                                                       |
 
 | iOS mod                      |    Dangerous    | Description                                                                                                                         |
-|------------------------------|:---------------:|-------------------------------------------------------------------------------------------------------------------------------------|
+| ---------------------------- | :-------------: | ----------------------------------------------------------------------------------------------------------------------------------- |
 | `mods.ios.infoPlist`         |        -        | Modify the **ios/&lt;name&gt;/Info.plist** as JSON (parsed with [`@expo/plist`][expo-plist]).                                       |
 | `mods.ios.entitlements`      |        -        | Modify the **ios/&lt;name&gt;/&lt;product-name&gt;.entitlements** as JSON (parsed with [`@expo/plist`][expo-plist]).                |
 | `mods.ios.expoPlist`         |        -        | Modify the **ios/&lt;ame&gt;/Expo.plist** as JSON (Expo updates config for iOS) (parsed with [`@expo/plist`][expo-plist]).          |
@@ -297,7 +297,7 @@ Instead you should use the helper mods provided by `expo/config-plugins`:
 #### Android
 
 | Android mod                       | Mod plugin               |    Dangerous    |
-|-----------------------------------|--------------------------|:---------------:|
+| --------------------------------- | ------------------------ | :-------------: |
 | `mods.android.manifest`           | `withAndroidManifest`    |        -        |
 | `mods.android.strings`            | `withStringsXml`         |        -        |
 | `mods.android.colors`             | `withAndroidColors`      |        -        |
@@ -313,7 +313,7 @@ Instead you should use the helper mods provided by `expo/config-plugins`:
 #### iOS
 
 | iOS mod                      | Mod plugin              |    Dangerous    |
-|------------------------------|-------------------------|:---------------:|
+| ---------------------------- | ----------------------- | :-------------: |
 | `mods.ios.infoPlist`         | `withInfoPlist`         |        -        |
 | `mods.ios.entitlements`      | `withEntitlementsPlist` |        -        |
 | `mods.ios.expoPlist`         | `withExpoPlist`         |        -        |
@@ -551,6 +551,7 @@ Use the following dependencies in a library that provides a config plugin:
 
 The `expo/config-plugins` and `expo/config` packages are re-exported from the `expo` package.
 
+{/* prettier-ignore */}
 ```js
 const { /* @hide ...*//* @end */ } = require('expo/config-plugins');
 const { /* @hide ...*//* @end */ } = require('expo/config');
@@ -572,6 +573,7 @@ import { ExpoConfig, ConfigContext } from 'expo/config';
 
 For SDK 46 and lower, import the `@expo/config-plugins` package directly. This is installed automatically by the `expo` package, but not re-exported as it is in SDK 47 and higher.
 
+{/* prettier-ignore */}
 ```js
 const { /* @hide ...*//* @end */ } = require('@expo/config-plugins');
 ```
@@ -753,7 +755,7 @@ export default createRunOncePlugin(
 - **Split up plugins by platform**: For example — `withIosSplash`, `withAndroidSplash`. This makes using the `--platform` flag in `expo prebuild` a bit easier to follow in `EXPO_DEBUG` mode.
 - **Unit test your plugin**: Write Jest tests for complex modifications. If your plugin requires access to the filesystem,
   use a mock system (we strongly recommend [`memfs`][memfs]), you can see examples of this in the [`expo-notifications`](https://github.com/expo/expo/blob/fc3fb2e81ad3a62332fa1ba6956c1df1c3186464/packages/expo-notifications/plugin/src/__tests__/withNotificationsAndroid-test.ts#L34) plugin tests.
-  - Notice the root [\*\*/\_\_mocks\_\_/\*\*/*](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/__mocks__) folder and [**plugin/jest.config.js**](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/jest.config.js).
+  - Notice the root [\*\*/\_\_mocks\_\_/\*\*/\*](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/__mocks__) folder and [**plugin/jest.config.js**](https://github.com/expo/expo/tree/main/packages/expo-notifications/plugin/jest.config.js).
 - A TypeScript plugin is always better than a JavaScript plugin. Check out the [`expo-module-script` plugin][ems-plugin] tooling for more info.
 - Do not modify the `sdkVersion` via a config plugin, this can break commands like `expo install` and cause other unexpected issues.
 
@@ -913,7 +915,7 @@ By re-running `expo prebuild -p` (`eas build -p android`, or `expo run:ios`) the
 
 As you can see from the example, we rely heavily on application code (expo-modules-core) to interact with application code (the native project). This ensures that our config plugins are safe and reliable, hopefully for a very long time!
 
-## Debugging
+## Debugging config plugins
 
 You can debug config plugins by running `EXPO_DEBUG=1 expo prebuild`. If `EXPO_DEBUG` is enabled, the plugin stack logs will be printed,
 these are useful for viewing which mods ran, and in what order they ran in.
