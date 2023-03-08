@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `@react-native/assets-registry` module not found issue on Web. ([#21469](https://github.com/expo/expo/pull/21469) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 8.9.0 — 2023-02-09
