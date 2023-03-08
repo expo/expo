@@ -206,7 +206,7 @@ export default function App() {
         async getInitialURL() {
           // First, you may want to do the default deep link handling
           // Check if app was opened from a deep link
-          const url = await Linking.getInitialURL();
+          let url = await Linking.getInitialURL();
 
           if (url != null) {
             return url;
@@ -214,7 +214,7 @@ export default function App() {
 
           // Handle URL from expo push notifications
           const response = await Notifications.getLastNotificationResponseAsync();
-          const url = response?.notification.request.content.data.url;
+          url = response?.notification.request.content.data.url;
 
           return url;
         },
