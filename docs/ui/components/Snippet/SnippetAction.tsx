@@ -28,7 +28,7 @@ export const SnippetAction = (props: SnippetActionProps) => {
       rightSlot={iconRight}
       css={[!alwaysDark && snippetActionStyle, alwaysDark && alwaysDarkStyle]}
       {...rest}>
-      <FOOTNOTE css={alwaysDark && { color: theme.palette.white }}>{children}</FOOTNOTE>
+      <FOOTNOTE className={mergeClasses(alwaysDark && 'text-palette-white')}>{children}</FOOTNOTE>
     </Button>
   );
 };

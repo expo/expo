@@ -1,6 +1,4 @@
-import { css } from '@emotion/react';
 import { Button } from '@expo/styleguide';
-import { spacing } from '@expo/styleguide-base';
 import { ThumbsDownSolidIcon, ThumbsUpSolidIcon } from '@expo/styleguide-icons';
 import { useState } from 'react';
 
@@ -11,21 +9,21 @@ import { reportPageVote } from '~/providers/Analytics';
 export const PageVote = () => {
   const [userVoted, setUserVoted] = useState(false);
   return (
-    <div css={wrapperStyle}>
+    <div className="min-w-[200px]">
       <CALLOUT theme="secondary" weight="medium">
         Was this doc helpful?
       </CALLOUT>
       {userVoted ? (
-        <CALLOUT theme="secondary" css={ratedTextStyle}>
+        <CALLOUT theme="secondary" className="py-3">
           Thank you for your vote! 💙
         </CALLOUT>
       ) : (
-        <div css={voteButtonsWrapperStyle}>
+        <div className="flex flex-row">
           <Button
             theme="quaternary"
             size="xs"
             aria-label="Vote up"
-            css={voteButtonStyle}
+            className="mt-2.5 mx-1 min-w-[40px] text-center"
             leftSlot={<ThumbsUpSolidIcon className="icon-sm" />}
             onClick={() => {
               reportPageVote({ status: true });
@@ -36,7 +34,7 @@ export const PageVote = () => {
             theme="quaternary"
             size="xs"
             aria-label="Vote down"
-            css={voteButtonStyle}
+            className="mt-2.5 mx-1 min-w-[40px] text-center"
             leftSlot={<ThumbsDownSolidIcon className="icon-sm" />}
             onClick={() => {
               reportPageVote({ status: false });
@@ -48,22 +46,3 @@ export const PageVote = () => {
     </div>
   );
 };
-
-const wrapperStyle = css({
-  minWidth: 200,
-});
-
-const voteButtonsWrapperStyle = css({
-  display: 'flex',
-  flexDirection: 'row',
-});
-
-const voteButtonStyle = css({
-  margin: `${spacing[2.5]}px ${spacing[1]}px 0`,
-  minWidth: 42,
-  textAlign: 'center',
-});
-
-const ratedTextStyle = css({
-  padding: `${spacing[3]}px 0`,
-});

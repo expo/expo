@@ -1005,7 +1005,7 @@ properties.
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -1409,7 +1409,7 @@ value depending on the state of the credential.
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -1642,7 +1642,7 @@ refresh operation.
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -1922,7 +1922,7 @@ sign-in operation.
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -2236,7 +2236,7 @@ sign-out operation.
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -2547,7 +2547,7 @@ for more details.
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -2989,7 +2989,7 @@ may be
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -3354,7 +3354,7 @@ for more details.
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -3664,7 +3664,7 @@ for more details.
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -3995,7 +3995,7 @@ for more details.
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -4163,7 +4163,7 @@ OAuth 2.0 protocol
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -4764,7 +4764,7 @@ OAuth 2.0 protocol
          
       </strong>
       <div
-        class="css-ia0kxc-PlatformTag"
+        class="!bg-palette-blue4 !text-palette-blue12 !border-palette-blue5 css-r2zk2g-PlatformTag"
       >
         <svg
           class="icon-xs text-palette-blue12"
@@ -6939,7 +6939,7 @@ Same as
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -7605,7 +7605,7 @@ This uses both
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -7956,7 +7956,7 @@ code.
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -8237,7 +8237,7 @@ in order to enable/disable the permission.
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -8421,7 +8421,7 @@ in order to enable/disable the permission.
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -8544,7 +8544,7 @@ in order to enable/disable the permission.
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -8673,7 +8673,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -8844,7 +8844,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           class="css-q84cm9-Table"
         >
           <thead
-            class="css-1hxdjqf-TableHead"
+            class="bg-subtle border-b border-b-default border-solid"
           >
             <tr
               class="css-190f936-Row"
@@ -8967,7 +8967,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -9246,7 +9246,7 @@ you don't get this value.
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -9962,7 +9962,7 @@ exports[`APISection expo-pedometer 1`] = `
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -10527,7 +10527,7 @@ available on this device.
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -10806,7 +10806,7 @@ provided with a single argument that is
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -11087,7 +11087,7 @@ in order to enable/disable the permission.
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
@@ -11217,7 +11217,7 @@ in order to enable/disable the permission.
           class="css-q84cm9-Table"
         >
           <thead
-            class="css-1hxdjqf-TableHead"
+            class="bg-subtle border-b border-b-default border-solid"
           >
             <tr
               class="css-190f936-Row"
@@ -11427,7 +11427,7 @@ in order to enable/disable the permission.
         class="css-q84cm9-Table"
       >
         <thead
-          class="css-1hxdjqf-TableHead"
+          class="bg-subtle border-b border-b-default border-solid"
         >
           <tr
             class="css-190f936-Row"
