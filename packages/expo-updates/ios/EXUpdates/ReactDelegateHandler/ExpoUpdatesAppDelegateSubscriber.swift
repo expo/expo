@@ -10,8 +10,8 @@ import EXUpdatesInterface
  */
 public final class ExpoUpdatesAppDelegateSubscriber: ExpoAppDelegateSubscriber {
   public func application(_ application: UIApplication, willFinishLaunchingWithOptions launchOptions: [UIApplication.LaunchOptionsKey: Any]? = nil) -> Bool {
-    if EXAppDefines.APP_DEBUG && !EXUpdatesUtils.isNativeDebuggingEnabled() {
-      EXUpdatesControllerRegistry.sharedInstance().controller = EXUpdatesDevLauncherController.sharedInstance
+    if EXAppDefines.APP_DEBUG && !UpdatesUtils.isNativeDebuggingEnabled() {
+      EXUpdatesControllerRegistry.sharedInstance().controller = DevLauncherController.sharedInstance
     }
     return true
   }

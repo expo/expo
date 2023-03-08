@@ -67,7 +67,7 @@ internal final class CertificateChain {
       throw CodeSigningError.CertificateEncodingError
     }
 
-    guard let certificateDataDer = EXUpdatesCrypto.decodePEMToDER(pem: certificateData, pemType: .certificate) else {
+    guard let certificateDataDer = Crypto.decodePEMToDER(pem: certificateData, pemType: .certificate) else {
       throw CodeSigningError.CertificateDERDecodeError
     }
 
