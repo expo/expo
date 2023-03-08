@@ -24,10 +24,10 @@ public enum EXUpdatesRemoteLoadStatus: Int {
 @objc
 public protocol EXUpdatesErrorRecoveryDelegate: AnyObject {
   @objc var config: EXUpdatesConfig { get }
-  @objc var launchedUpdate: EXUpdatesUpdate? { get }
   @objc var remoteLoadStatus: EXUpdatesRemoteLoadStatus { get }
 
-  @objc func relaunch(completion: (_ error: Error?, _ success: Bool) -> Void)
+  @objc func launchedUpdate() -> EXUpdatesUpdate?
+  @objc func relaunch(completion: @escaping (_ error: Error?, _ success: Bool) -> Void)
   @objc func loadRemoteUpdate()
 
   @objc func markFailedLaunchForLaunchedUpdate()
@@ -164,7 +164,7 @@ public class EXUpdatesErrorRecovery: NSObject {
     errorRecoveryQueue.async {
       self.encounteredErrors.append(encounteredError)
 
-      if let launchedUpdate = self.delegate?.launchedUpdate,
+      if let launchedUpdate = self.delegate?.launchedUpdate(),
         launchedUpdate.successfulLaunchCount > 0 {
         self.pipeline.remove(.launchCached)
       } else if !self.rctContentHasAppeared {
@@ -230,7 +230,7 @@ public class EXUpdatesErrorRecovery: NSObject {
   private func tryRelaunchFromCache() {
     dispatchPrecondition(condition: .onQueue(errorRecoveryQueue))
     delegate?.relaunch { error, success in
-      errorRecoveryQueue.async {
+      self.errorRecoveryQueue.async {
         if !success {
           if let error = error {
             self.encounteredErrors.append(error)

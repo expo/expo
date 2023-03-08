@@ -1,6 +1,5 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppController.h>
 #import <EXUpdates/EXUpdatesService.h>
 #import <ExpoModulesCore/EXUtilities.h>
 
