@@ -8,6 +8,9 @@
 
 ### 🐛 Bug fixes
 
+- Prevent babel plugin from running on node_modules. ([#21594](https://github.com/expo/expo/pull/21594) by [@EvanBacon](https://github.com/EvanBacon))
+- Prevent babel plugin from transforming `html` and `body` on web. ([#21594](https://github.com/expo/expo/pull/21594) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 0.4.1 — 2023-02-09
