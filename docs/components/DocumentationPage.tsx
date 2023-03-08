@@ -13,6 +13,7 @@ import DocumentationSidebarRight, {
 } from '~/components/DocumentationSidebarRight';
 import Head from '~/components/Head';
 import { usePageApiVersion } from '~/providers/page-api-version';
+import { AppJSBanner } from '~/ui/components/AppJSBanner';
 import { Footer } from '~/ui/components/Footer';
 import { Header } from '~/ui/components/Header';
 import { PageTitle } from '~/ui/components/PageTitle';
@@ -132,6 +133,7 @@ export default function DocumentationPage(props: Props) {
         )}
       </Head>
       <div css={STYLES_DOCUMENT}>
+        <AppJSBanner />
         {props.title && (
           <PageTitle
             title={props.title}
