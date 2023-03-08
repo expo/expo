@@ -154,15 +154,15 @@ If we've made builds and updates with EAS, we can view the state of our project 
 
 The EAS website has a page that shows the current state of our apps. We can view it at [https://expo.dev/accounts/[account]/projects/[project]/deployments](https://expo.dev/accounts/[account]/projects/[project]/deployments).
 
-## Debugging
+## Debugging EAS Update
 
-After verifying expo-updates and EAS Update configurations, we can move on to debugging how our project is interacting with updates.
+After verifying `expo-updates` and EAS Update configurations, we can move on to debugging how our project is interacting with updates.
 
 ### In-app debugging
 
 The expo-updates library exports a variety of functions to interact with updates once the app is already running. In certain cases, making a call to fetch an update and seeing an error message can help us narrow down the root cause.
 
-We can write the following code then make a simulator build of our project to see if there are errors fetching updates:
+We can write the following code and then make a simulator build of our project to see if there are errors fetching updates:
 
 ```jsx
 import { View, Button } from 'react-native';
