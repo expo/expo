@@ -78,7 +78,7 @@ public class EXUpdatesAppLauncherWithDatabase: NSObject, EXUpdatesAppLauncher {
       var manifestFilters: [String: Any]?
       var manifestFiltersError: Error?
       do {
-        manifestFilters = try database.manifestFilters(withScopeKey: config.scopeKey!).jsonData
+        manifestFilters = try database.manifestFilters(withScopeKey: config.scopeKey!)
       } catch {
         manifestFiltersError = error
       }

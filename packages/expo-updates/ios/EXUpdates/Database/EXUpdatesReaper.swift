@@ -38,7 +38,7 @@ public final class EXUpdatesReaper: NSObject {
 
       var manifestFilters: [String: Any]?
       do {
-        manifestFilters = try database.manifestFilters(withScopeKey: config.scopeKey.require("Must have scopeKey in config")).jsonData
+        manifestFilters = try database.manifestFilters(withScopeKey: config.scopeKey.require("Must have scopeKey in config"))
       } catch {
         NSLog("Error selecting manifest filters while reaping updates: %@", [error.localizedDescription])
         return
