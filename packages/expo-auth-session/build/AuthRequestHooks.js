@@ -86,7 +86,7 @@ export function useAuthRequestResult(request, discovery, customOptions = {}) {
  * Load an authorization request for a code. When the prompt method completes then the response will be fulfilled.
  *
  * > In order to close the popup window on web, you need to invoke `WebBrowser.maybeCompleteAuthSession()`.
- * > See the [Identity example](/guides/authentication.md#identityserver-4) for more info.
+ * > See the [Identity example](/guides/authentication#identityserver-4) for more info.
  *
  * If an Implicit grant flow was used, you can pass the `response.params` to `TokenResponse.fromQueryParams()`
  * to get a `TokenResponse` instance which you can use to easily refresh the token.
