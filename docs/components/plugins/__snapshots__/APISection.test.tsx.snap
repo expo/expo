@@ -1139,7 +1139,7 @@ This should come from the user field of an
       Returns
     </p>
     <ul
-      class="!list-none ml-2 css-118jp6n-TextComponent"
+      class="!list-none !ml-0 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -1279,7 +1279,7 @@ value depending on the state of the credential.
       Returns
     </p>
     <ul
-      class="!list-none ml-2 css-118jp6n-TextComponent"
+      class="!list-none !ml-0 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -1500,7 +1500,7 @@ Calling this method will show the sign in modal before actually refreshing the u
       Returns
     </p>
     <ul
-      class="!list-none ml-2 css-118jp6n-TextComponent"
+      class="!list-none !ml-0 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -1780,7 +1780,7 @@ the user, since this remains the same for apps released by the same developer.
       Returns
     </p>
     <ul
-      class="!list-none ml-2 css-118jp6n-TextComponent"
+      class="!list-none !ml-0 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -2047,7 +2047,7 @@ from using
       Returns
     </p>
     <ul
-      class="!list-none ml-2 css-118jp6n-TextComponent"
+      class="!list-none !ml-0 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -2300,7 +2300,7 @@ sign-out operation.
       Returns
     </p>
     <ul
-      class="!list-none ml-2 css-118jp6n-TextComponent"
+      class="!list-none !ml-0 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -7117,7 +7117,7 @@ This uses both
       Returns
     </p>
     <ul
-      class="!list-none ml-2 css-118jp6n-TextComponent"
+      class="!list-none !ml-0 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -7311,7 +7311,7 @@ This uses both
       Returns
     </p>
     <ul
-      class="!list-none ml-2 css-118jp6n-TextComponent"
+      class="!list-none !ml-0 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -7472,7 +7472,7 @@ This uses both
       Returns
     </p>
     <ul
-      class="!list-none ml-2 css-118jp6n-TextComponent"
+      class="!list-none !ml-0 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -7766,7 +7766,7 @@ the platform.
       Returns
     </p>
     <ul
-      class="!list-none ml-2 css-118jp6n-TextComponent"
+      class="!list-none !ml-0 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -9847,7 +9847,7 @@ exports[`APISection expo-pedometer 1`] = `
       Returns
     </p>
     <ul
-      class="!list-none ml-2 css-118jp6n-TextComponent"
+      class="!list-none !ml-0 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -10082,7 +10082,7 @@ exports[`APISection expo-pedometer 1`] = `
       Returns
     </p>
     <ul
-      class="!list-none ml-2 css-118jp6n-TextComponent"
+      class="!list-none !ml-0 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -10282,7 +10282,7 @@ a start date that is more than seven days in the past returns only the available
       Returns
     </p>
     <ul
-      class="!list-none ml-2 css-118jp6n-TextComponent"
+      class="!list-none !ml-0 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -10412,7 +10412,7 @@ available on this device.
       Returns
     </p>
     <ul
-      class="!list-none ml-2 css-118jp6n-TextComponent"
+      class="!list-none !ml-0 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
@@ -10618,7 +10618,7 @@ provided with a single argument that is
       Returns
     </p>
     <ul
-      class="!list-none ml-2 css-118jp6n-TextComponent"
+      class="!list-none !ml-0 css-118jp6n-TextComponent"
     >
       <li
         class="css-1hxzfrf-TextComponent"
