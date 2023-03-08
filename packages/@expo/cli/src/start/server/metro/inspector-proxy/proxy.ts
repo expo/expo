@@ -4,6 +4,8 @@ import type { InspectorProxy as MetroProxy, Device as MetroDevice } from 'metro-
 import { parse } from 'url';
 import WS, { Server as WSServer } from 'ws';
 
+import { Log } from '../../../../log';
+
 const WS_DEVICE_URL = '/inspector/device';
 const WS_DEBUGGER_URL = '/inspector/debug';
 const WS_GENERIC_ERROR_STATUS = 1011;
@@ -86,9 +88,20 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
           debug('Device disconnected: device=%s, app=%s', deviceName, appName);
         });
       } catch (error: unknown) {
-        const message = error instanceof Error && error.toString();
-        Log.error('Failed to create socket connection to on-device debugger (Hermes engine).')
-        Log.exception(error);
+        let message = '';
+
+        debug('Could not establish a connection to on-device debugger:', error);
+
+        if (error instanceof Error) {
+          message = error.toString();
+          Log.error('Failed to create a socket connection to on-device debugger (Hermes engine).');
+          Log.exception(error);
+        } else {
+          Log.error(
+            'Failed to create a socket connection to on-device debugger (Hermes engine), unknown error.'
+          );
+        }
+
         socket.close(WS_GENERIC_ERROR_STATUS, message || 'Unknown error');
       }
     });
@@ -125,8 +138,18 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
           debug('Debugger disconnected: device=%s, app=%s', device._name, device._app);
         });
       } catch (error: unknown) {
-        const message = error instanceof Error && error.toString();
+        let message = '';
+
         debug('Could not establish a connection to debugger:', error);
+
+        if (error instanceof Error) {
+          message = error.toString();
+          Log.error('Failed to create a socket connection to the debugger.');
+          Log.exception(error);
+        } else {
+          Log.error('Failed to create a socket connection to the debugger, unkown error.');
+        }
+
         socket.close(WS_GENERIC_ERROR_STATUS, message || 'Unknown error');
       }
     });
