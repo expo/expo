@@ -135,7 +135,7 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
   }
 }
 
-function asString(value?: string | string[]): string {
+function asString(value: string | string[] = ''): string {
   return Array.isArray(value) ? value.join() : value;
 }
 
