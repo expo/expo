@@ -1,9 +1,18 @@
 #!/usr/bin/env bash
 
-# Do not set pipefail in this script, as we need to clean up the emulator
-# even if Detox fails
+function cleanup()
+{
+  echo 'Cleaning up...'
+  if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
+    # Kill emulator
+    adb emu kill &
+  fi
+}
 
-# set -eox pipefail
+# Fail if anything errors
+set -eox pipefail
+# If this script exits, trap it first and clean up the emulator
+trap cleanup EXIT
 
 if [[ "$EAS_BUILD_PROFILE" != "updates_testing" ]]; then
   exit
@@ -48,24 +57,4 @@ fi
 
 # Execute tests
 detox test --configuration $EAS_BUILD_PLATFORM.release 2>&1 | tee ./logs/detox-tests.log
-
-# The usual error code variable ($?) does not work due to the pipe to tee, so check the exit code this way
-DETOX_EXIT_CODE=${PIPESTATUS[0]}
-
-echo "Detox exit code = $DETOX_EXIT_CODE"
-
-if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
-  # Kill emulator
-  adb emu kill &
-fi
-
-# Attempt to handle exit codes correctly (handle Android emulator occasional crashes gracefully)
-if [ $DETOX_EXIT_CODE -eq 0 ]
-then
-  echo "Tests were successful"
-  exit 0
-else
-  echo "Tests failed" >&2
-  exit 1
-fi
 

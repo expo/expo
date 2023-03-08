@@ -41,6 +41,7 @@ concurrency:
 jobs:
   build:
     strategy:
+      fail-fast: false
       matrix:
         platform: [ios, android]
     runs-on: ubuntu-20.04
