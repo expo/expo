@@ -26,6 +26,7 @@
 - Convert iOS EXUpdatesCrypto to swift. ([#21524](https://github.com/expo/expo/pull/21524) by [@wschurman](https://github.com/wschurman))
 - iOS: Decrease access control on classes and remove unnecessary objc attributes. ([#21597](https://github.com/expo/expo/pull/21597) by [@wschurman](https://github.com/wschurman))
 - iOS: Replace reachability code with library for wifi detection. ([#21598](https://github.com/expo/expo/pull/21598) by [@wschurman](https://github.com/wschurman))
+- iOS: Clean up and rename code signing classes. ([#21600](https://github.com/expo/expo/pull/21600) by [@wschurman](https://github.com/wschurman))
 - Fix E2E rollback test and other improvements. ([#21389](https://github.com/expo/expo/pull/21389) by [@douglowder](https://github.com/douglowder))
 - Consolidate E2E tests. ([#21458](https://github.com/expo/expo/pull/21458) by [@douglowder](https://github.com/douglowder))
 - E2E tests: graceful Detox failures. ([#21520](https://github.com/expo/expo/pull/21520) by [@douglowder](https://github.com/douglowder))
