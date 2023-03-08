@@ -120,14 +120,14 @@ class EXUpdatesBuildDataSpec : ExpoSpec {
     describe("build data consistency") {
       it("no updates are cleared and build data is set when build data is null") {
         db.databaseQueue.sync {
-          expect(try! db.staticBuildData(withScopeKey: scopeKey).jsonData).to(beNil())
+          expect(try! db.staticBuildData(withScopeKey: scopeKey)).to(beNil())
           expect(try! db.allUpdates(withConfig: configChannelTest).count) == 1
         }
         
         EXUpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configChannelTest)
         
         db.databaseQueue.sync {
-          expect(try! db.staticBuildData(withScopeKey: scopeKey).jsonData).toNot(beNil())
+          expect(try! db.staticBuildData(withScopeKey: scopeKey)).toNot(beNil())
           expect(try! db.allUpdates(withConfig: configChannelTest).count) == 1
         }
       }
@@ -141,7 +141,7 @@ class EXUpdatesBuildDataSpec : ExpoSpec {
         EXUpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configChannelTest)
         
         db.databaseQueue.sync {
-          let staticBuildData = try! db.staticBuildData(withScopeKey: scopeKey).jsonData
+          let staticBuildData = try! db.staticBuildData(withScopeKey: scopeKey)
           expect(
             NSDictionary(dictionary: staticBuildData!).isEqual(to: EXUpdatesBuildData.getBuildDataFromConfig(configChannelTest))
           ) == true
@@ -158,7 +158,7 @@ class EXUpdatesBuildDataSpec : ExpoSpec {
         EXUpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configReleaseChannelTest)
         
         db.databaseQueue.sync {
-          let staticBuildData = try! db.staticBuildData(withScopeKey: scopeKey).jsonData
+          let staticBuildData = try! db.staticBuildData(withScopeKey: scopeKey)
           expect(
             NSDictionary(dictionary: staticBuildData!).isEqual(to: EXUpdatesBuildData.getBuildDataFromConfig(configReleaseChannelTest))
           ) == true
@@ -175,7 +175,7 @@ class EXUpdatesBuildDataSpec : ExpoSpec {
         EXUpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configChannelTestTwo)
         
         db.databaseQueue.sync {
-          let staticBuildData = try! db.staticBuildData(withScopeKey: scopeKey).jsonData
+          let staticBuildData = try! db.staticBuildData(withScopeKey: scopeKey)
           expect(
             NSDictionary(dictionary: staticBuildData!).isEqual(to: EXUpdatesBuildData.getBuildDataFromConfig(configChannelTestTwo))
           ) == true
@@ -192,7 +192,7 @@ class EXUpdatesBuildDataSpec : ExpoSpec {
         EXUpdatesBuildData.ensureBuildDataIsConsistentAsync(database: db, config: configReleaseChannelTestTwo)
         
         db.databaseQueue.sync {
-          let staticBuildData = try! db.staticBuildData(withScopeKey: scopeKey).jsonData
+          let staticBuildData = try! db.staticBuildData(withScopeKey: scopeKey)
           expect(
             NSDictionary(dictionary: staticBuildData!).isEqual(to: EXUpdatesBuildData.getBuildDataFromConfig(configReleaseChannelTestTwo))
           ) == true

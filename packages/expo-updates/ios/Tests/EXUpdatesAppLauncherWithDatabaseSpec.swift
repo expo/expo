@@ -130,7 +130,7 @@ class EXUpdatesAppLauncherWithDatabaseSpec : ExpoSpec {
         expect(successValue) == true
         
         db.databaseQueue.sync {
-          let sameUpdate = try! db.update(withId: testUpdate.updateId, config: config).update
+          let sameUpdate = try! db.update(withId: testUpdate.updateId, config: config)
           expect(yesterday) != sameUpdate?.lastAccessed
           expect(abs(sameUpdate!.lastAccessed.timeIntervalSinceNow)) < 1
         }

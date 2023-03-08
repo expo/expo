@@ -121,7 +121,7 @@ class EXUpdatesDatabaseSpec : ExpoSpec {
         
         db.databaseQueue.sync {
           let expected = ["branch-name": "rollout-2"]
-          let actual = try! db.manifestFilters(withScopeKey: update2.scopeKey).jsonData
+          let actual = try! db.manifestFilters(withScopeKey: update2.scopeKey)
           expect(NSDictionary(dictionary: actual!).isEqual(to: expected)) == true
         }
       }
@@ -167,7 +167,7 @@ class EXUpdatesDatabaseSpec : ExpoSpec {
         
         db.databaseQueue.sync {
           let expected = [:]
-          let actual = try! db.manifestFilters(withScopeKey: update2.scopeKey).jsonData
+          let actual = try! db.manifestFilters(withScopeKey: update2.scopeKey)
           expect(NSDictionary(dictionary: actual!).isEqual(to: expected)) == true
         }
       }
@@ -213,7 +213,7 @@ class EXUpdatesDatabaseSpec : ExpoSpec {
         
         db.databaseQueue.sync {
           let expected = ["branch-name": "rollout-1"]
-          let actual = try! db.manifestFilters(withScopeKey: update2.scopeKey).jsonData
+          let actual = try! db.manifestFilters(withScopeKey: update2.scopeKey)
           expect(NSDictionary(dictionary: actual!).isEqual(to: expected)) == true
         }
       }
@@ -295,9 +295,9 @@ class EXUpdatesDatabaseSpec : ExpoSpec {
             asset.key == "key1"
           })) == true
           
-          expect(try! db.asset(withKey: "key1").asset).to(beNil())
-          expect(try! db.asset(withKey: "key2").asset).toNot(beNil())
-          expect(try! db.asset(withKey: "key3").asset).toNot(beNil())
+          expect(try! db.asset(withKey: "key1")).to(beNil())
+          expect(try! db.asset(withKey: "key2")).toNot(beNil())
+          expect(try! db.asset(withKey: "key3")).toNot(beNil())
         }
       }
     }

@@ -29,33 +29,6 @@ enum EXUpdatesDatabaseHashType: Int {
   case Sha1 = 0
 }
 
-@objcMembers
-public final class EXUpdatesDatabaseJsonData: NSObject {
-  public let jsonData: [String: Any]?
-
-  init(jsonData: [String: Any]?) {
-    self.jsonData = jsonData
-  }
-}
-
-@objcMembers
-public final class EXUpdatesDatabaseUpdateSingle: NSObject {
-  public let update: EXUpdatesUpdate?
-
-  init(update: EXUpdatesUpdate?) {
-    self.update = update
-  }
-}
-
-@objcMembers
-public final class EXUpdatesDatabaseAssetSingle: NSObject {
-  public let asset: EXUpdatesAsset?
-
-  init(asset: EXUpdatesAsset?) {
-    self.asset = asset
-  }
-}
-
 /**
  * SQLite database that keeps track of updates currently loaded/loading to disk, including the
  * update manifest and metadata, status, and the individual assets (including bundles/bytecode) that
@@ -447,13 +420,13 @@ public final class EXUpdatesDatabase: NSObject {
     }
   }
 
-  public func update(withId updateId: UUID, config: EXUpdatesConfig) throws -> EXUpdatesDatabaseUpdateSingle {
+  public func update(withId updateId: UUID, config: EXUpdatesConfig) throws -> EXUpdatesUpdate? {
     let sql = "SELECT * FROM updates WHERE updates.id = ?1;"
     let rows = try execute(sql: sql, withArgs: [updateId])
     if rows.isEmpty {
-      return EXUpdatesDatabaseUpdateSingle(update: nil)
+      return nil
     }
-    return EXUpdatesDatabaseUpdateSingle(update: update(withRow: rows.first!, config: config))
+    return update(withRow: rows.first!, config: config)
   }
 
   public func allAssets() throws -> [EXUpdatesAsset] {
@@ -472,9 +445,9 @@ public final class EXUpdatesDatabase: NSObject {
     }
   }
 
-  public func asset(withKey key: String?) throws -> EXUpdatesDatabaseAssetSingle {
+  public func asset(withKey key: String?) throws -> EXUpdatesAsset? {
     guard let key = key else {
-      return EXUpdatesDatabaseAssetSingle(asset: nil)
+      return nil
     }
 
     let sql = """
@@ -483,22 +456,22 @@ public final class EXUpdatesDatabase: NSObject {
 
     let rows = try execute(sql: sql, withArgs: [key])
     if rows.isEmpty {
-      return EXUpdatesDatabaseAssetSingle(asset: nil)
+      return nil
     }
-    return EXUpdatesDatabaseAssetSingle(asset: asset(withRow: rows.first!))
+    return asset(withRow: rows.first!)
   }
 
-  private func jsonData(withKey key: String, scopeKey: String) throws -> EXUpdatesDatabaseJsonData {
+  private func jsonData(withKey key: String, scopeKey: String) throws -> [String: Any]? {
     let sql = """
       SELECT * FROM json_data WHERE "key" = ?1 AND "scope_key" = ?2
     """
     let rows = try execute(sql: sql, withArgs: [key, scopeKey])
     guard let firstRow = rows.first,
       let value = firstRow["value"] as? String else {
-      return EXUpdatesDatabaseJsonData(jsonData: nil)
+      return nil
     }
 
-    return EXUpdatesDatabaseJsonData(jsonData: try JSONSerialization.jsonObject(with: value.data(using: .utf8)!) as? [String: Any])
+    return try JSONSerialization.jsonObject(with: value.data(using: .utf8)!) as? [String: Any]
   }
 
   private func setJsonData(_ data: [String: Any], withKey key: String, scopeKey: String, isInTransaction: Bool) throws {
@@ -535,15 +508,15 @@ public final class EXUpdatesDatabase: NSObject {
     }
   }
 
-  public func serverDefinedHeaders(withScopeKey scopeKey: String) throws -> EXUpdatesDatabaseJsonData {
+  public func serverDefinedHeaders(withScopeKey scopeKey: String) throws -> [String: Any]? {
     return try jsonData(withKey: EXUpdatesDatabase.ServerDefinedHeadersKey, scopeKey: scopeKey)
   }
 
-  public func manifestFilters(withScopeKey scopeKey: String) throws -> EXUpdatesDatabaseJsonData {
+  public func manifestFilters(withScopeKey scopeKey: String) throws -> [String: Any]? {
     return try jsonData(withKey: EXUpdatesDatabase.ManifestFiltersKey, scopeKey: scopeKey)
   }
 
-  public func staticBuildData(withScopeKey scopeKey: String) throws -> EXUpdatesDatabaseJsonData {
+  public func staticBuildData(withScopeKey scopeKey: String) throws -> [String: Any]? {
     return try jsonData(withKey: EXUpdatesDatabase.StaticBuildDataKey, scopeKey: scopeKey)
   }
 
