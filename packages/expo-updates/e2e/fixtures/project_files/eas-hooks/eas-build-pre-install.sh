@@ -33,6 +33,7 @@ if [[ "$EAS_BUILD_RUNNER" == "eas-build" && "$EAS_BUILD_PROFILE" == "updates_tes
       pulseaudio \
       socat
 
+    # Emulator must be API 31 -- API 32 and 33 fail due to https://github.com/wix/Detox/issues/3762
     sdkmanager --install "system-images;android-31;google_apis;x86_64"
     avdmanager --verbose create avd --force --name "pixel_4" --device "pixel_4" --package "system-images;android-31;google_apis;x86_64"
   else
