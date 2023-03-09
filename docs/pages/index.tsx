@@ -109,7 +109,7 @@ const Home = () => {
               <HomeButton
                 className="hocus:bg-button-primary hocus:opacity-80"
                 href="/tutorial/introduction/"
-                rightSlot={<ArrowRightIcon />}>
+                rightSlot={<ArrowRightIcon className="icon-md" />}>
                 Start Tutorial
               </HomeButton>
             </GridCell>
@@ -129,7 +129,7 @@ const Home = () => {
                 borderColor: palette.purple7,
               })}>
               <SnackImage />
-              <RawH3 css={css({ color: palette.purple12 })}>Try Expo in your browser</RawH3>
+              <RawH3 css={css({ color: palette.purple11 })}>Try Expo in your browser</RawH3>
               <P css={css({ color: palette.purple11, ...typography.fontSizes[14] })}>
                 Expo’s Snack lets you try Expo
                 <br />
@@ -139,7 +139,7 @@ const Home = () => {
                 className="bg-palette-purple11 border-palette-purple11 text-palette-purple3 hocus:bg-palette-purple11 hocus:opacity-80"
                 href="https://snack.expo.dev/"
                 target="_blank"
-                rightSlot={<ArrowUpRightIcon className="text-palette-purple3" />}>
+                rightSlot={<ArrowUpRightIcon className="text-palette-purple3 icon-md" />}>
                 Create a Snack
               </HomeButton>
             </GridCell>
@@ -151,7 +151,7 @@ const Home = () => {
                 borderColor: palette.orange8,
               })}>
               <CodecademyImage />
-              <RawH3 css={css({ color: palette.orange12 })}>
+              <RawH3 css={css({ color: palette.orange11 })}>
                 Learn Expo on
                 <br />
                 Codecademy
@@ -167,7 +167,7 @@ const Home = () => {
                 })}
                 href="https://www.codecademy.com/learn/learn-react-native"
                 target="_blank"
-                rightSlot={<ArrowUpRightIcon className="text-palette-orange4" />}>
+                rightSlot={<ArrowUpRightIcon className="text-palette-orange4 icon-md" />}>
                 Start Course
               </HomeButton>
             </GridCell>
@@ -179,8 +179,8 @@ const Home = () => {
                 borderColor: palette.green7,
               })}>
               <WhyImage />
-              <RawH3 css={css({ color: palette.green12 })}>Why choose Expo?</RawH3>
-              <P css={{ color: palette.green12, ...typography.fontSizes[14] }}>
+              <RawH3 css={css({ color: palette.green11 })}>Why choose Expo?</RawH3>
+              <P css={{ color: palette.green11, ...typography.fontSizes[14] }}>
                 Learn the tradeoffs of
                 <br />
                 using Expo.
@@ -188,7 +188,7 @@ const Home = () => {
               <HomeButton
                 className="bg-palette-green11 border-palette-green11 text-palette-green2 hocus:bg-palette-green11 hocus:opacity-80"
                 href="/introduction/faq"
-                rightSlot={<ArrowRightIcon className="text-palette-green2" />}>
+                rightSlot={<ArrowRightIcon className="text-palette-green2 icon-md" />}>
                 Read
               </HomeButton>
             </GridCell>
@@ -200,7 +200,7 @@ const Home = () => {
                 borderColor: palette.yellow8,
               })}>
               <OfficeHoursImage />
-              <RawH3 css={css({ color: palette.yellow12 })}>Join us for Office Hours</RawH3>
+              <RawH3 css={css({ color: palette.yellow11 })}>Join us for Office Hours</RawH3>
               <P css={css({ color: palette.yellow11, ...typography.fontSizes[14] })}>
                 Get answers to your questions and
                 <br />
@@ -209,7 +209,7 @@ const Home = () => {
               <HomeButton
                 className="bg-palette-yellow11 border-palette-yellow11 text-palette-yellow2 hocus:bg-palette-yellow11 hocus:opacity-80"
                 href="https://us02web.zoom.us/meeting/register/tZcvceivqj0oHdGVOjEeKY0dRxCRPb0HzaAK"
-                rightSlot={<ArrowUpRightIcon className="text-palette-yellow2" />}>
+                rightSlot={<ArrowUpRightIcon className="text-palette-yellow2 icon-md" />}>
                 Register
               </HomeButton>
             </GridCell>
