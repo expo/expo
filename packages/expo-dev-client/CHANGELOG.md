@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Update e2e tests to use custom entry file system.
+- Update e2e tests to use custom entry file system. ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 2.1.4 — 2023-02-28
 

@@ -21,7 +21,7 @@
 
 ### 💡 Others
 
-- Use latest `@expo/metro-config` instead of importing from project (effects testing locally).
+- Use latest `@expo/metro-config` instead of importing from project (effects testing locally). ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))
 - Upgrade e2e tests to SDK 47. ([#21335](https://github.com/expo/expo/pull/21335) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.6.1 — 2023-02-15

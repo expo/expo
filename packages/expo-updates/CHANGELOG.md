@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Updated **setup documentation** to reflect that setup should include changing the entry from `index` to `.expo/.virtual-metro-entry` which is only available in SDK 49 `@expo/metro-config`.
+- Updated **setup documentation** to reflect that setup should include changing the entry from `index` to `.expo/.virtual-metro-entry` which is only available in SDK 49 `@expo/metro-config`. ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))
 - [android] Add support for version 1 of the protocol. ([#20275](https://github.com/expo/expo/pull/20275) by [@wschurman](https://github.com/wschurman))
 
 ### 🎉 New features
