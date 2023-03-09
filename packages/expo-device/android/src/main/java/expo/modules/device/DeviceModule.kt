@@ -49,7 +49,7 @@ class DeviceModule : Module() {
           memoryInfo.totalMem
         },
         "deviceType" to run {
-          getDeviceType(mContext).JSValue
+          getDeviceType(context).JSValue
         },
         "supportedCpuArchitectures" to Build.SUPPORTED_ABIS?.takeIf { it.isNotEmpty() },
         "osName" to systemName,
