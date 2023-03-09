@@ -24,6 +24,8 @@ import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroE
 import { importMetroResolverFromProject } from './resolveFromProject';
 import { getAppRouterRelativeEntryPath } from './router';
 import { withMetroResolvers } from './withMetroResolvers';
+// import { getConfig } from '@expo/config';
+// import { getEntryWithServerRoot } from '../middleware/ManifestMiddleware';
 
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
 
