@@ -40,7 +40,7 @@ public class DeviceModule: Module {
 
 func getDeviceType() -> Int {
   // if it's a macOS Catalyst app
-  if (ProcessInfo.processInfo.isMacCatalystApp) {
+  if ProcessInfo.processInfo.isMacCatalystApp {
     return DeviceType.desktop.rawValue
   }
 
