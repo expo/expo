@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Make `exp` type optional in `resolveEntryPoint`.
+
 ### 💡 Others
 
 ## 8.0.1 — 2023-02-09

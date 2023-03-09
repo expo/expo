@@ -48,7 +48,7 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
 
   override fun getBundleAssetName() = "EXDevMenuApp.android.js"
 
-  override fun getJSMainModuleName() = "index"
+  override fun getJSMainModuleName() = ".expo/.virtual-metro-entry"
 
   fun getContext(): Context = super.getApplication()
 

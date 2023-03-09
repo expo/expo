@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update e2e tests to use custom entry file system.
+
 ## 2.1.4 — 2023-02-28
 
 _This version does not introduce any user-facing changes._

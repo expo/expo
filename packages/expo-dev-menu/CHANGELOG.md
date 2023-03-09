@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Update iOS and Android entry points to support custom entry files (changed `index` to `.expo/.virtual-metro-entry`). This requires all projects to use `expo/metro-config` as the base config.
+
 ### 🎉 New features
 
 - Added experimental react-devtools integration. ([#21462](https://github.com/expo/expo/pull/21462) by [@kudo](https://github.com/kudo))
