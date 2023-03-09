@@ -1,6 +1,5 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
-import { getPackageJson } from '@expo/config';
-import { getBareExtensions, resolveEntryPoint } from '@expo/config/paths';
+import { getBareExtensions } from '@expo/config/paths';
 import chalk from 'chalk';
 import { Reporter } from 'metro';
 import {
@@ -15,10 +14,9 @@ import resolveFrom from 'resolve-from';
 
 import { getDefaultCustomizeFrame, INTERNAL_CALLSITES_REGEX } from './customizeFrame';
 import { env } from './env';
-import { getModulesPaths, getWorkspaceRoot } from './getModulesPaths';
+import { getModulesPaths, getServerRoot } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
-
-const debug = require('debug')('expo:metro:config');
+import { getRewriteRequestUrl } from './rewriteRequestUrl';
 
 export interface LoadOptions {
   config?: string;
@@ -48,12 +46,6 @@ function getAssetPlugins(projectRoot: string): string[] {
   }
 
   return [hashAssetFilesPath];
-}
-
-function getServerRoot(projectRoot: string) {
-  return env.EXPO_USE_METRO_WORKSPACE_ROOT
-    ? getWorkspaceRoot(projectRoot) ?? projectRoot
-    : projectRoot;
 }
 
 let hasWarnedAboutExotic = false;
@@ -154,38 +146,7 @@ export function getDefaultConfig(
       getPolyfills: () => require(path.join(reactNativePath, 'rn-get-polyfills'))(),
     },
     server: {
-      rewriteRequestUrl(url: string): string {
-        // Like: `/.expo/find-entry.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.bacon.test-custom-entry`
-        if (url.startsWith('/.expo/find-entry.bundle')) {
-          // TODO: Maybe this function could be memoized in some capacity?
-          const { search, searchParams } = new URL(url, 'https://acme.dev');
-
-          const platform = searchParams.get('platform') ?? 'web';
-
-          debug('Rewriting magic request url to entry point', { url, platform });
-
-          const serverRoot = getServerRoot(projectRoot);
-          const entry = resolveEntryPoint(serverRoot, {
-            platform,
-            projectConfig: {
-              pkg: getPackageJson(projectRoot),
-            },
-          });
-
-          if (!entry) {
-            throw new Error(
-              chalk`The project entry file could not be resolved (platform: ${platform}, root: ${projectRoot}). Define it in the {bold package.json} "main" field.`
-            );
-          }
-
-          const relativeEntry = path.relative(serverRoot, entry);
-          debug('Resolved entry point', { entry, relativeEntry, serverRoot });
-
-          // Like: `/index.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.bacon.test-custom-entry`
-          return '/' + relativeEntry + '.bundle' + search;
-        }
-        return url;
-      },
+      rewriteRequestUrl: getRewriteRequestUrl(projectRoot),
       port: Number(env.RCT_METRO_PORT) || 8081,
       // NOTE(EvanBacon): Moves the server root down to the monorepo root.
       // This enables proper monorepo support for web.

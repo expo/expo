@@ -5,7 +5,6 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.EXPO_DEBUG = exports.INTERNAL_CALLSITES_REGEX = exports.loadAsync = exports.getDefaultConfig = void 0;
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
-const config_1 = require("@expo/config");
 const paths_1 = require("@expo/config/paths");
 const chalk_1 = __importDefault(require("chalk"));
 const metro_config_1 = require("metro-config");
@@ -16,7 +15,7 @@ Object.defineProperty(exports, "INTERNAL_CALLSITES_REGEX", { enumerable: true, g
 const env_1 = require("./env");
 const getModulesPaths_1 = require("./getModulesPaths");
 const getWatchFolders_1 = require("./getWatchFolders");
-const debug = require('debug')('expo:metro:config');
+const rewriteRequestUrl_1 = require("./rewriteRequestUrl");
 function getProjectBabelConfigFile(projectRoot) {
     return (resolve_from_1.default.silent(projectRoot, './babel.config.js') ||
         resolve_from_1.default.silent(projectRoot, './.babelrc') ||
@@ -28,11 +27,6 @@ function getAssetPlugins(projectRoot) {
         throw new Error(`The required package \`expo-asset\` cannot be found`);
     }
     return [hashAssetFilesPath];
-}
-function getServerRoot(projectRoot) {
-    return env_1.env.EXPO_USE_METRO_WORKSPACE_ROOT
-        ? (0, getModulesPaths_1.getWorkspaceRoot)(projectRoot) ?? projectRoot
-        : projectRoot;
 }
 let hasWarnedAboutExotic = false;
 function getDefaultConfig(projectRoot, options = {}) {
@@ -113,35 +107,12 @@ function getDefaultConfig(projectRoot, options = {}) {
             getPolyfills: () => require(path_1.default.join(reactNativePath, 'rn-get-polyfills'))(),
         },
         server: {
-            rewriteRequestUrl(url) {
-                // Like: `/.expo/find-entry.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.bacon.test-custom-entry`
-                if (url.startsWith('/.expo/find-entry.bundle')) {
-                    // TODO: Maybe this function could be memoized in some capacity?
-                    const { search, searchParams } = new URL(url, 'https://acme.dev');
-                    const platform = searchParams.get('platform') ?? 'web';
-                    debug('Rewriting magic request url to entry point', { url, platform });
-                    const serverRoot = getServerRoot(projectRoot);
-                    const entry = (0, paths_1.resolveEntryPoint)(serverRoot, {
-                        platform,
-                        projectConfig: {
-                            pkg: (0, config_1.getPackageJson)(projectRoot),
-                        },
-                    });
-                    if (!entry) {
-                        throw new Error((0, chalk_1.default) `The project entry file could not be resolved (platform: ${platform}, root: ${projectRoot}). Define it in the {bold package.json} "main" field.`);
-                    }
-                    const relativeEntry = path_1.default.relative(serverRoot, entry);
-                    debug('Resolved entry point', { entry, relativeEntry, serverRoot });
-                    // Like: `/index.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.bacon.test-custom-entry`
-                    return '/' + relativeEntry + '.bundle' + search;
-                }
-                return url;
-            },
+            rewriteRequestUrl: (0, rewriteRequestUrl_1.getRewriteRequestUrl)(projectRoot),
             port: Number(env_1.env.RCT_METRO_PORT) || 8081,
             // NOTE(EvanBacon): Moves the server root down to the monorepo root.
             // This enables proper monorepo support for web.
             // @ts-expect-error: not on type
-            unstable_serverRoot: getServerRoot(projectRoot),
+            unstable_serverRoot: (0, getModulesPaths_1.getServerRoot)(projectRoot),
         },
         symbolicator: {
             customizeFrame: (0, customizeFrame_1.getDefaultCustomizeFrame)(),

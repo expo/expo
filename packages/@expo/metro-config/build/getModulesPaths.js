@@ -3,9 +3,10 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getModulesPaths = exports.getWorkspaceRoot = void 0;
+exports.getServerRoot = exports.getModulesPaths = exports.getWorkspaceRoot = void 0;
 const find_yarn_workspace_root_1 = __importDefault(require("find-yarn-workspace-root"));
 const path_1 = __importDefault(require("path"));
+const env_1 = require("./env");
 /** Wraps `findWorkspaceRoot` and guards against having an empty `package.json` file in an upper directory. */
 function getWorkspaceRoot(projectRoot) {
     try {
@@ -31,3 +32,9 @@ function getModulesPaths(projectRoot) {
     return paths;
 }
 exports.getModulesPaths = getModulesPaths;
+function getServerRoot(projectRoot) {
+    return env_1.env.EXPO_USE_METRO_WORKSPACE_ROOT
+        ? getWorkspaceRoot(projectRoot) ?? projectRoot
+        : projectRoot;
+}
+exports.getServerRoot = getServerRoot;
