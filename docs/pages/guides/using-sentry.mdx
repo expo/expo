@@ -289,9 +289,9 @@ These values should match the values you pass to the `sentry-cli` when uploading
 
 When building tests for your application, you want to assert that the right flow-tracking or error is being sent to Sentry, but without really sending it to Sentry servers. This way you won't swamp Sentry with false reports during test running and other CI operations.
 
-[`sentry-testkit`](https://wix.github.io/sentry-testkit) enables Sentry to work natively in your application, and by overriding the default Sentry transport mechanism, the report is not really sent but rather logged locally into memory. In this way, the logged reports can be fetched later for your own usage, verification, or any other use you may have in your local developing/testing environment.
+[`sentry-testkit`](https://zivl.github.io/sentry-testkit) enables Sentry to work natively in your application, and by overriding the default Sentry transport mechanism, the report is not really sent but rather logged locally into memory. In this way, the logged reports can be fetched later for your own usage, verification, or any other use you may have in your local developing/testing environment.
 
-For more information on how to get started, see [`sentry-testkit` documentation](https://wix.github.io/sentry-testkit/).
+For more information on how to get started, see [`sentry-testkit` documentation](https://zivl.github.io/sentry-testkit/).
 
 > If you're using `jest`, make sure to add `@sentry/.*` and `sentry-expo` to your `transformIgnorePatterns`.
 
