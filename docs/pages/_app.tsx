@@ -21,7 +21,7 @@ export const regularFont = Inter({
   display: 'swap',
 });
 export const monospaceFont = Fira_Code({
-  weight: '400',
+  weight: ['400', '500'],
   display: 'swap',
 });
 

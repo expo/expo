@@ -24,7 +24,7 @@ import {
   STYLES_SECONDARY,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
-import { CODE, H2, H3, H4, LI, P, UL } from '~/ui/components/Text';
+import { CODE, H2, H3, H4, LI, MONOSPACE, P, UL } from '~/ui/components/Text';
 
 export type APISectionPropsProps = {
   data: PropsDefinitionData[];
@@ -119,7 +119,9 @@ export const renderProp = (
       <APISectionDeprecationNote comment={extractedComment} />
       <APISectionPlatformTags comment={comment} prefix="Only for:" />
       <HeaderComponent tags={getTagNamesList(comment)}>
-        <CODE css={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>{name}</CODE>
+        <MONOSPACE weight="medium" css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}>
+          {name}
+        </MONOSPACE>
       </HeaderComponent>
       <P css={extractedComment && STYLES_ELEMENT_SPACING}>
         {flags?.isOptional && <span css={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}

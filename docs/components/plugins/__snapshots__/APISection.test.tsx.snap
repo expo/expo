@@ -50,7 +50,7 @@ exports[`APISection expo-apple-authentication 1`] = `
     </a>
   </h2>
   <div
-    class="css-1h8tzv"
+    class="css-1fultt1"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -68,7 +68,7 @@ exports[`APISection expo-apple-authentication 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             AppleAuthenticationButton
@@ -338,7 +338,7 @@ for more details.
     </h2>
     <div>
       <div
-        class="css-c22nmz"
+        class="css-11xr3cd"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -356,7 +356,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="css-1qdx416-TextComponent"
+                class="css-s0csg4-TextComponent"
                 data-text="true"
               >
                 buttonStyle
@@ -423,7 +423,7 @@ for more details.
         <br />
       </div>
       <div
-        class="css-c22nmz"
+        class="css-11xr3cd"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -441,7 +441,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="css-1qdx416-TextComponent"
+                class="css-s0csg4-TextComponent"
                 data-text="true"
               >
                 buttonType
@@ -508,7 +508,7 @@ for more details.
         <br />
       </div>
       <div
-        class="css-c22nmz"
+        class="css-11xr3cd"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -526,7 +526,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="css-1qdx416-TextComponent"
+                class="css-s0csg4-TextComponent"
                 data-text="true"
               >
                 cornerRadius
@@ -601,7 +601,7 @@ for more details.
         <br />
       </div>
       <div
-        class="css-c22nmz"
+        class="css-11xr3cd"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -619,7 +619,7 @@ for more details.
               class="css-6n7j50"
             >
               <code
-                class="css-1qdx416-TextComponent"
+                class="css-s0csg4-TextComponent"
                 data-text="true"
               >
                 onPress
@@ -696,7 +696,7 @@ in here.
         <br />
       </div>
       <div
-        class="css-c22nmz"
+        class="css-11xr3cd"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -714,7 +714,7 @@ in here.
               class="css-6n7j50"
             >
               <code
-                class="css-1qdx416-TextComponent"
+                class="css-s0csg4-TextComponent"
                 data-text="true"
               >
                 style
@@ -948,7 +948,7 @@ properties.
     </a>
   </h2>
   <div
-    class="css-c22nmz"
+    class="css-11xr3cd"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -966,7 +966,7 @@ properties.
           class="css-6n7j50"
         >
           <code
-            class="css-1qdx416-TextComponent"
+            class="css-s0csg4-TextComponent"
             data-text="true"
           >
             getCredentialStateAsync(user)
@@ -1213,7 +1213,7 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-    class="css-c22nmz"
+    class="css-11xr3cd"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -1231,7 +1231,7 @@ value depending on the state of the credential.
           class="css-6n7j50"
         >
           <code
-            class="css-1qdx416-TextComponent"
+            class="css-s0csg4-TextComponent"
             data-text="true"
           >
             isAvailableAsync()
@@ -1347,7 +1347,7 @@ value depending on the state of the credential.
     </p>
   </div>
   <div
-    class="css-c22nmz"
+    class="css-11xr3cd"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -1365,7 +1365,7 @@ value depending on the state of the credential.
           class="css-6n7j50"
         >
           <code
-            class="css-1qdx416-TextComponent"
+            class="css-s0csg4-TextComponent"
             data-text="true"
           >
             refreshAsync(options)
@@ -1578,7 +1578,7 @@ refresh operation.
     </p>
   </div>
   <div
-    class="css-c22nmz"
+    class="css-11xr3cd"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -1596,7 +1596,7 @@ refresh operation.
           class="css-6n7j50"
         >
           <code
-            class="css-1qdx416-TextComponent"
+            class="css-s0csg4-TextComponent"
             data-text="true"
           >
             signInAsync(options)
@@ -1856,7 +1856,7 @@ sign-in operation.
     </p>
   </div>
   <div
-    class="css-c22nmz"
+    class="css-11xr3cd"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -1874,7 +1874,7 @@ sign-in operation.
           class="css-6n7j50"
         >
           <code
-            class="css-1qdx416-TextComponent"
+            class="css-s0csg4-TextComponent"
             data-text="true"
           >
             signOutAsync(options)
@@ -2168,7 +2168,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="css-c22nmz"
+    class="css-11xr3cd"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -2186,7 +2186,7 @@ sign-out operation.
           class="css-6n7j50"
         >
           <code
-            class="css-1qdx416-TextComponent"
+            class="css-s0csg4-TextComponent"
             data-text="true"
           >
             addRevokeListener(listener)
@@ -2380,7 +2380,7 @@ sign-out operation.
     </a>
   </h2>
   <div
-    class="css-1h8tzv"
+    class="css-1fultt1"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -2398,7 +2398,7 @@ sign-out operation.
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             AppleAuthenticationCredential
@@ -2904,7 +2904,7 @@ developers.
     </div>
   </div>
   <div
-    class="css-1h8tzv"
+    class="css-1fultt1"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -2922,7 +2922,7 @@ developers.
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             AppleAuthenticationFullName
@@ -3211,7 +3211,7 @@ may be
     </div>
   </div>
   <div
-    class="css-1h8tzv"
+    class="css-1fultt1"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -3229,7 +3229,7 @@ may be
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             AppleAuthenticationRefreshOptions
@@ -3520,7 +3520,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-1h8tzv"
+    class="css-1fultt1"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -3538,7 +3538,7 @@ OAuth 2.0 protocol
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             AppleAuthenticationSignInOptions
@@ -3850,7 +3850,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-1h8tzv"
+    class="css-1fultt1"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -3868,7 +3868,7 @@ OAuth 2.0 protocol
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             AppleAuthenticationSignOutOptions
@@ -4089,7 +4089,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-1h8tzv"
+    class="css-1fultt1"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -4107,7 +4107,7 @@ OAuth 2.0 protocol
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             Subscription
@@ -4255,7 +4255,7 @@ OAuth 2.0 protocol
     </a>
   </h2>
   <div
-    class="css-1kkk53e"
+    class="css-1gsbrid"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -4273,7 +4273,7 @@ OAuth 2.0 protocol
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             AppleAuthenticationButtonStyle
@@ -4328,7 +4328,7 @@ OAuth 2.0 protocol
       .
     </p>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -4396,7 +4396,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -4464,7 +4464,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -4533,7 +4533,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-1kkk53e"
+    class="css-1gsbrid"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -4551,7 +4551,7 @@ OAuth 2.0 protocol
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             AppleAuthenticationButtonType
@@ -4606,7 +4606,7 @@ OAuth 2.0 protocol
       .
     </p>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -4674,7 +4674,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -4742,7 +4742,7 @@ OAuth 2.0 protocol
       </p>
     </div>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <strong
         class="css-bvflvn-TextComponent"
@@ -4844,7 +4844,7 @@ OAuth 2.0 protocol
     </div>
   </div>
   <div
-    class="css-1kkk53e"
+    class="css-1gsbrid"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -4862,7 +4862,7 @@ OAuth 2.0 protocol
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             AppleAuthenticationCredentialState
@@ -4969,7 +4969,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5031,7 +5031,7 @@ for more details.
       </code>
     </div>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5093,7 +5093,7 @@ for more details.
       </code>
     </div>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5155,7 +5155,7 @@ for more details.
       </code>
     </div>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5218,7 +5218,7 @@ for more details.
     </div>
   </div>
   <div
-    class="css-1kkk53e"
+    class="css-1gsbrid"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -5236,7 +5236,7 @@ for more details.
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             AppleAuthenticationOperation
@@ -5273,7 +5273,7 @@ for more details.
       </a>
     </h3>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5341,7 +5341,7 @@ for more details.
       </p>
     </div>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5403,7 +5403,7 @@ for more details.
       </code>
     </div>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5465,7 +5465,7 @@ for more details.
       </code>
     </div>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5528,7 +5528,7 @@ for more details.
     </div>
   </div>
   <div
-    class="css-1kkk53e"
+    class="css-1gsbrid"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -5546,7 +5546,7 @@ for more details.
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             AppleAuthenticationScope
@@ -5696,7 +5696,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5758,7 +5758,7 @@ for more details.
       </code>
     </div>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -5821,7 +5821,7 @@ for more details.
     </div>
   </div>
   <div
-    class="css-1kkk53e"
+    class="css-1gsbrid"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -5839,7 +5839,7 @@ for more details.
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             AppleAuthenticationUserDetectionStatus
@@ -5934,7 +5934,7 @@ for more details.
       </div>
     </blockquote>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -6002,7 +6002,7 @@ for more details.
       </p>
     </div>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -6070,7 +6070,7 @@ for more details.
       </p>
     </div>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -6191,7 +6191,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </a>
   </h2>
   <div
-    class="css-1h8tzv"
+    class="css-1fultt1"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -6209,7 +6209,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             BarCodeScanner
@@ -6322,7 +6322,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
     </h2>
     <div>
       <div
-        class="css-c22nmz"
+        class="css-11xr3cd"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -6340,7 +6340,7 @@ exports[`APISection expo-barcode-scanner 1`] = `
               class="css-6n7j50"
             >
               <code
-                class="css-1qdx416-TextComponent"
+                class="css-s0csg4-TextComponent"
                 data-text="true"
               >
                 barCodeTypes
@@ -6446,7 +6446,7 @@ minimize battery usage.
         <br />
       </div>
       <div
-        class="css-c22nmz"
+        class="css-11xr3cd"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -6464,7 +6464,7 @@ minimize battery usage.
               class="css-6n7j50"
             >
               <code
-                class="css-1qdx416-TextComponent"
+                class="css-s0csg4-TextComponent"
                 data-text="true"
               >
                 onBarCodeScanned
@@ -6607,7 +6607,7 @@ data has been retrieved.
         <br />
       </div>
       <div
-        class="css-c22nmz"
+        class="css-11xr3cd"
       >
         <h3
           class="  css-6r23rc-TextComponent"
@@ -6625,7 +6625,7 @@ data has been retrieved.
               class="css-6n7j50"
             >
               <code
-                class="css-1qdx416-TextComponent"
+                class="css-s0csg4-TextComponent"
                 data-text="true"
               >
                 type
@@ -6863,7 +6863,7 @@ Same as
     </a>
   </h2>
   <div
-    class="css-c22nmz"
+    class="css-11xr3cd"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -6881,7 +6881,7 @@ Same as
           class="css-6n7j50"
         >
           <code
-            class="css-1qdx416-TextComponent"
+            class="css-s0csg4-TextComponent"
             data-text="true"
           >
             usePermissions(options)
@@ -7227,7 +7227,7 @@ This uses both
     </a>
   </h2>
   <div
-    class="css-c22nmz"
+    class="css-11xr3cd"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -7245,7 +7245,7 @@ This uses both
           class="css-6n7j50"
         >
           <code
-            class="css-1qdx416-TextComponent"
+            class="css-s0csg4-TextComponent"
             data-text="true"
           >
             BarCodeScanner.getPermissionsAsync()
@@ -7364,7 +7364,7 @@ This uses both
     </p>
   </div>
   <div
-    class="css-c22nmz"
+    class="css-11xr3cd"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -7382,7 +7382,7 @@ This uses both
           class="css-6n7j50"
         >
           <code
-            class="css-1qdx416-TextComponent"
+            class="css-s0csg4-TextComponent"
             data-text="true"
           >
             BarCodeScanner.requestPermissionsAsync()
@@ -7523,7 +7523,7 @@ This uses both
     </p>
   </div>
   <div
-    class="css-c22nmz"
+    class="css-11xr3cd"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -7541,7 +7541,7 @@ This uses both
           class="css-6n7j50"
         >
           <code
-            class="css-1qdx416-TextComponent"
+            class="css-s0csg4-TextComponent"
             data-text="true"
           >
             BarCodeScanner.scanFromURLAsync(url, barCodeTypes)
@@ -7859,7 +7859,7 @@ code.
     </a>
   </h2>
   <div
-    class="css-c22nmz"
+    class="css-11xr3cd"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -7877,7 +7877,7 @@ code.
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             PermissionResponse
@@ -8152,7 +8152,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="css-1h8tzv"
+    class="css-1fultt1"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -8170,7 +8170,7 @@ in order to enable/disable the permission.
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             BarCodeBounds
@@ -8317,7 +8317,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-1h8tzv"
+    class="css-1fultt1"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -8335,7 +8335,7 @@ in order to enable/disable the permission.
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             BarCodeEvent
@@ -8459,7 +8459,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-1h8tzv"
+    class="css-1fultt1"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -8477,7 +8477,7 @@ in order to enable/disable the permission.
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             BarCodeEventCallbackArguments
@@ -8581,7 +8581,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-1h8tzv"
+    class="css-1fultt1"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -8599,7 +8599,7 @@ in order to enable/disable the permission.
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             BarCodePoint
@@ -8757,7 +8757,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-1h8tzv"
+    class="css-1fultt1"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -8775,7 +8775,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             BarCodeScannedCallback
@@ -8882,7 +8882,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
     </div>
   </div>
   <div
-    class="css-1h8tzv"
+    class="css-1fultt1"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -8900,7 +8900,7 @@ are using the barcode scanner view, these values are adjusted to the dimensions 
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             BarCodeScannerResult
@@ -9161,7 +9161,7 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="css-1h8tzv"
+    class="css-1fultt1"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9179,7 +9179,7 @@ you don't get this value.
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             BarCodeSize
@@ -9316,7 +9316,7 @@ you don't get this value.
     </div>
   </div>
   <div
-    class="css-1h8tzv"
+    class="css-1fultt1"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9334,7 +9334,7 @@ you don't get this value.
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             PermissionHookOptions
@@ -9444,7 +9444,7 @@ you don't get this value.
     </a>
   </h2>
   <div
-    class="css-1kkk53e"
+    class="css-1gsbrid"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9462,7 +9462,7 @@ you don't get this value.
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             PermissionStatus
@@ -9499,7 +9499,7 @@ you don't get this value.
       </a>
     </h3>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -9567,7 +9567,7 @@ you don't get this value.
       </p>
     </div>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -9635,7 +9635,7 @@ you don't get this value.
       </p>
     </div>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -9756,7 +9756,7 @@ exports[`APISection expo-pedometer 1`] = `
     </a>
   </h2>
   <div
-    class="css-c22nmz"
+    class="css-11xr3cd"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9774,7 +9774,7 @@ exports[`APISection expo-pedometer 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="css-1qdx416-TextComponent"
+            class="css-s0csg4-TextComponent"
             data-text="true"
           >
             getPermissionsAsync()
@@ -9875,7 +9875,7 @@ exports[`APISection expo-pedometer 1`] = `
     <br />
   </div>
   <div
-    class="css-c22nmz"
+    class="css-11xr3cd"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -9893,7 +9893,7 @@ exports[`APISection expo-pedometer 1`] = `
           class="css-6n7j50"
         >
           <code
-            class="css-1qdx416-TextComponent"
+            class="css-s0csg4-TextComponent"
             data-text="true"
           >
             getStepCountAsync(start, end)
@@ -10186,7 +10186,7 @@ a start date that is more than seven days in the past returns only the available
     </blockquote>
   </div>
   <div
-    class="css-c22nmz"
+    class="css-11xr3cd"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -10204,7 +10204,7 @@ a start date that is more than seven days in the past returns only the available
           class="css-6n7j50"
         >
           <code
-            class="css-1qdx416-TextComponent"
+            class="css-s0csg4-TextComponent"
             data-text="true"
           >
             isAvailableAsync()
@@ -10314,7 +10314,7 @@ available on this device.
     </p>
   </div>
   <div
-    class="css-c22nmz"
+    class="css-11xr3cd"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -10332,7 +10332,7 @@ available on this device.
           class="css-6n7j50"
         >
           <code
-            class="css-1qdx416-TextComponent"
+            class="css-s0csg4-TextComponent"
             data-text="true"
           >
             requestPermissionsAsync()
@@ -10433,7 +10433,7 @@ available on this device.
     <br />
   </div>
   <div
-    class="css-c22nmz"
+    class="css-11xr3cd"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -10451,7 +10451,7 @@ available on this device.
           class="css-6n7j50"
         >
           <code
-            class="css-1qdx416-TextComponent"
+            class="css-s0csg4-TextComponent"
             data-text="true"
           >
             watchStepCount(callback)
@@ -10698,7 +10698,7 @@ provided with a single argument that is
     </a>
   </h2>
   <div
-    class="css-c22nmz"
+    class="css-11xr3cd"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -10716,7 +10716,7 @@ provided with a single argument that is
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             PermissionResponse
@@ -10991,7 +10991,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="css-1h8tzv"
+    class="css-1fultt1"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -11009,7 +11009,7 @@ in order to enable/disable the permission.
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             PedometerResult
@@ -11113,7 +11113,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-1h8tzv"
+    class="css-1fultt1"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -11131,7 +11131,7 @@ in order to enable/disable the permission.
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             PedometerUpdateCallback
@@ -11244,7 +11244,7 @@ in order to enable/disable the permission.
     </div>
   </div>
   <div
-    class="css-1h8tzv"
+    class="css-1fultt1"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -11262,7 +11262,7 @@ in order to enable/disable the permission.
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             PermissionExpiration
@@ -11331,7 +11331,7 @@ in order to enable/disable the permission.
     </p>
   </div>
   <div
-    class="css-1h8tzv"
+    class="css-1fultt1"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -11349,7 +11349,7 @@ in order to enable/disable the permission.
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             Subscription
@@ -11497,7 +11497,7 @@ in order to enable/disable the permission.
     </a>
   </h2>
   <div
-    class="css-1kkk53e"
+    class="css-1gsbrid"
   >
     <h3
       class="  css-6r23rc-TextComponent"
@@ -11515,7 +11515,7 @@ in order to enable/disable the permission.
           class="css-6n7j50"
         >
           <code
-            class="css-4xa05b-TextComponent"
+            class="css-yd3r23-TextComponent"
             data-text="true"
           >
             PermissionStatus
@@ -11552,7 +11552,7 @@ in order to enable/disable the permission.
       </a>
     </h3>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -11620,7 +11620,7 @@ in order to enable/disable the permission.
       </p>
     </div>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
@@ -11688,7 +11688,7 @@ in order to enable/disable the permission.
       </p>
     </div>
     <div
-      class="css-c22nmz"
+      class="css-11xr3cd"
     >
       <h4
         class="  css-1gu5rqd-TextComponent"
