@@ -152,7 +152,7 @@ const h2Style = {
   ...h2,
   fontWeight: 600,
   marginTop: spacing[8],
-  marginBottom: spacing[3],
+  marginBottom: spacing[3.5],
   ...codeInHeaderStyle,
 };
 
@@ -160,7 +160,7 @@ const h3Style = {
   ...h3,
   fontWeight: 600,
   marginTop: spacing[6],
-  marginBottom: spacing[1.5],
+  marginBottom: spacing[2.5],
   ...codeInHeaderStyle,
 };
 
@@ -168,7 +168,7 @@ const h4Style = {
   ...h4,
   fontWeight: 600,
   marginTop: spacing[6],
-  marginBottom: spacing[1],
+  marginBottom: spacing[1.5],
   ...codeInHeaderStyle,
 };
 
