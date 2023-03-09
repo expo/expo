@@ -1,0 +1,39 @@
+{
+  "configurations": [
+    {
+      "type": "pwa-node",
+      "request": "attach",
+      "name": "Attach to bare-expo",
+
+      // Define the source and actual bundled code roots
+      // This is used to load and map source code
+      // Note, this configuration assumes Metro is launched with the following flags:
+      //   - `EXPO_USE_METRO_WORKSPACE_ROOT=true`
+      //   - `EXPO_USE_CUSTOM_INSPECTOR_PROXY=true`
+      //   - `--localhost`
+      "localRoot": "${workspaceFolder}",
+      "remoteRoot": "http://127.0.0.1:8081",
+
+      // Define the websocket that `vscode-js-debug` will connect to
+      // See: http://localhost/json/list, and look for "React Native Experimental (Improved Chrome Reloads)"
+      "websocketAddress": "ws://[::]:8081/inspector/debug?device=0&page=-1",
+
+      // Enable sourcemaps
+      "sourceMaps": true,
+      // But avoid loading some specific sources if they aren't available
+      "resolveSourceMapLocations": [
+        "!**/__prelude__",
+        "!**/node_modules/**"
+      ],
+
+      // Attach to whatever processes is running in Hermes (not sure if required)
+      "attachExistingChildren": true,
+      // When Hermes/app or the inspector unexpectedly disconnects, close the debug session
+      "restart": false,
+      // Speed up the sourcemap loading, it's kind of experimental in `vscode-js-debug`, but does work fine eiher way
+      "enableTurboSourcemaps": true,
+      // Enable `vscode-js-debug` to dump all incoming and outgoing messages, helps to debug (see debug console in vscode)
+      "trace": true
+    }
+  ]
+}
