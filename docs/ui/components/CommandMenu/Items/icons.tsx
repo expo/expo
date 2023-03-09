@@ -7,7 +7,7 @@ export const FootnoteArrowIcon = () => (
 );
 
 export const ExternalLinkIcon = () => (
-  <ArrowUpRightIcon className="text-icon-secondary self-center ml-auto flex-shrink-0" />
+  <ArrowUpRightIcon className="text-icon-secondary self-center ml-auto shrink-0" />
 );
 
 export const ReactIcon = ({ className }: HTMLAttributes<SVGSVGElement>) => (

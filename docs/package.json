@@ -81,6 +81,7 @@
     "eslint-config-next": "^13.1.6",
     "eslint-config-universe": "^11.1.1",
     "eslint-plugin-lodash": "^7.4.0",
+    "eslint-plugin-tailwindcss": "^3.10.1",
     "eslint-plugin-testing-library": "^5.9.1",
     "http-server": "^0.12.3",
     "jest": "^29.3.1",
