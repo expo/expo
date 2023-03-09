@@ -17,12 +17,13 @@ const HERMES_INVALID_SCRIPT_ID = '4294967295';
 const HERMES_NATIVE_FUNCTION_NAME = '(native)';
 
 export class VscodeCompatHandler implements InspectorHandler {
-  /** Keep track of device messages to intercept, by request id */
-  interceptDeviceMessage = new Set<number>();
+  /** Keep track of `Runtime.getProperties` responses to intercept, by request id */
+  interceptGetProperties = new Set<number>();
 
   onDebuggerMessage(
     message:
       | DebuggerRequest<DebuggerGetPossibleBreakpoints>
+      | DebuggerRequest<DebuggerSetBreakpointByUrl>
       | DebuggerRequest<RuntimeGetProperties>,
     { socket }: Pick<DebuggerInfo, 'socket'>
   ) {
@@ -40,7 +41,20 @@ export class VscodeCompatHandler implements InspectorHandler {
     // Vscode doesn't seem to work nicely with missing `description` fields on `RemoteObject` instances.
     // See: https://github.com/microsoft/vscode-js-debug/issues/1583
     if (message.method === 'Runtime.getProperties') {
-      this.interceptDeviceMessage.add(message.id);
+      this.interceptGetProperties.add(message.id);
+    }
+
+    // Hermes and vscode have trouble setting breakpoints by `urlRegex` through `Debugger.setBreakpointByUrl`.
+    // Vscode adds `file://` to a URL containing `http://`, which confuses Hermes and sets it to the wrong location.
+    // Hermes needs to create the breakpoint to get the proper ID, but it must be unbounded.
+    // Once the sourcemap is loaded, vscode will rebind the unbounded breakpoint to the correct location (using `Debugger.setBreakpoint`).
+    if (
+      message.method === 'Debugger.setBreakpointByUrl' &&
+      message.params.urlRegex?.startsWith('file:\\/\\/http')
+    ) {
+      // Avoid `urlRegex` to accidentally bind to the wrong location, even when the `url` is invalid
+      message.params.url = message.params.urlRegex;
+      delete message.params.urlRegex;
     }
 
     return false;
@@ -49,8 +63,8 @@ export class VscodeCompatHandler implements InspectorHandler {
   onDeviceMessage(message: DeviceResponse<RuntimeGetProperties> | DeviceRequest<DebuggerPaused>) {
     // Vscode doesn't seem to work nicely with missing `description` fields on `RemoteObject` instances.
     // See: https://github.com/microsoft/vscode-js-debug/issues/1583
-    if ('id' in message && this.interceptDeviceMessage.has(message.id)) {
-      this.interceptDeviceMessage.delete(message.id);
+    if ('id' in message && this.interceptGetProperties.has(message.id)) {
+      this.interceptGetProperties.delete(message.id);
 
       // Force-fully format the properties description to be an empty string
       // See: https://github.com/facebook/hermes/issues/114
@@ -75,6 +89,9 @@ export class VscodeCompatHandler implements InspectorHandler {
   }
 }
 
+/** @see https://chromedevtools.github.io/devtools-protocol/v8/Debugger/#method-setBreakpoint */
+export type DebuggerPaused = CdpMessage<'Debugger.paused', Protocol.Debugger.PausedEvent, never>;
+
 /** @see https://chromedevtools.github.io/devtools-protocol/v8/Debugger/#method-getPossibleBreakpoints */
 export type DebuggerGetPossibleBreakpoints = CdpMessage<
   'Debugger.getPossibleBreakpoints',
@@ -82,8 +99,12 @@ export type DebuggerGetPossibleBreakpoints = CdpMessage<
   Protocol.Debugger.GetPossibleBreakpointsResponse
 >;
 
-/** @see https://chromedevtools.github.io/devtools-protocol/v8/Debugger/#method-setBreakpoint */
-export type DebuggerPaused = CdpMessage<'Debugger.paused', Protocol.Debugger.PausedEvent, never>;
+/** @see https://chromedevtools.github.io/devtools-protocol/v8/Debugger/#method-setBreakpointByUrl */
+export type DebuggerSetBreakpointByUrl = CdpMessage<
+  'Debugger.setBreakpointByUrl',
+  Protocol.Debugger.SetBreakpointByUrlRequest,
+  Protocol.Debugger.SetBreakpointByUrlResponse
+>;
 
 /** @see https://chromedevtools.github.io/devtools-protocol/v8/Runtime/#method-getProperties */
 export type RuntimeGetProperties = CdpMessage<
