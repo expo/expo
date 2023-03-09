@@ -21,7 +21,7 @@ import expo.modules.devlauncher.DevLauncherPackageDelegate;
 import expo.modules.devmenu.DevMenuPackageDelegate;
 
 public class MainApplication extends Application implements ReactApplication {
-  static final boolean USE_DEV_CLIENT = false;
+  static final boolean USE_DEV_CLIENT = true;
 
   private final ReactNativeHost mReactNativeHost =
     new ReactNativeHostWrapper(this, new DefaultReactNativeHost(this) {
