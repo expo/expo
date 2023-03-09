@@ -75,7 +75,7 @@ class ExpoImage extends React.PureComponent<ImageNativeProps> {
       delete resolvedStyle.backgroundColor;
     }
 
-    const tintColor = processColor(resolvedStyle.tintColor);
+    const tintColor = processColor(props.tintColor || resolvedStyle.tintColor);
 
     const borderColor = processColor(resolvedStyle.borderColor);
     // @ts-ignore
@@ -100,7 +100,6 @@ class ExpoImage extends React.PureComponent<ImageNativeProps> {
         onLoad={this.onLoad}
         onProgress={this.onProgress}
         onError={this.onError}
-        // @ts-ignore
         tintColor={tintColor}
         borderColor={borderColor}
         borderLeftColor={borderLeftColor}

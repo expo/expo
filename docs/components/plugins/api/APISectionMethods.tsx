@@ -30,7 +30,7 @@ import {
   getCommentContent,
   BoxSectionHeader,
 } from '~/components/plugins/api/APISectionUtils';
-import { H2, LI, UL, CODE } from '~/ui/components/Text';
+import { H2, LI, UL, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionMethodsProps = {
   data: (MethodDefinitionData | PropData)[];
@@ -66,9 +66,9 @@ export const renderMethod = (
           <APISectionDeprecationNote comment={comment} />
           <APISectionPlatformTags comment={comment} prefix="Only for:" />
           <HeaderComponent tags={getTagNamesList(comment)}>
-            <CODE css={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
+            <MONOSPACE weight="medium" css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}>
               {getMethodName(method as MethodDefinitionData, apiName, name, parameters)}
-            </CODE>
+            </MONOSPACE>
           </HeaderComponent>
           {parameters && parameters.length > 0 && (
             <>

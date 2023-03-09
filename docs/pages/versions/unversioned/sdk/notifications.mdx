@@ -214,9 +214,8 @@ export default function App() {
 
           // Handle URL from expo push notifications
           const response = await Notifications.getLastNotificationResponseAsync();
-          const url = response?.notification.request.content.data.url;
-
-          return url;
+                         
+          return response?.notification.request.content.data.url;
         },
         subscribe(listener) {
           const onReceiveURL = ({ url }: { url: string }) => listener(url);

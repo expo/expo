@@ -25,7 +25,7 @@
       "ios": {
         "simulator": true,
         "resourceClass": "m1-medium",
-        "buildConfiguration": "Release",
+        "buildConfiguration": "Debug",
         "cache": {
           "cacheDefaultPaths": false
         }
