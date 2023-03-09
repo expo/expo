@@ -13,8 +13,7 @@ import Foundation
 import SQLite3
 import EXManifests
 
-@objc
-public enum EXUpdatesDatabaseError: Int, Error {
+internal enum UpdatesDatabaseError: Error {
   case addExistingAssetMissingAssetKey
   case addExistingAssetInsertError
   case addExistingAssetAssetNotFoundError
@@ -25,7 +24,7 @@ public enum EXUpdatesDatabaseError: Int, Error {
   case setJsonDataError
 }
 
-enum EXUpdatesDatabaseHashType: Int {
+enum UpdatesDatabaseHashType: Int {
   case Sha1 = 0
 }
 
@@ -37,7 +36,7 @@ enum EXUpdatesDatabaseHashType: Int {
  *
  * SQLite allows a many-to-many relationship between updates and assets, which means we can keep
  * only one copy of each asset on disk at a time while also being able to clear unused assets with
- * relative ease (see EXUpdatesReaper).
+ * relative ease (see UpdatesReaper).
  *
  * Occasionally it's necessary to add migrations when the data structures for updates or assets must
  * change. Extra care must be taken here, since these migrations will happen on users' devices for
@@ -45,10 +44,10 @@ enum EXUpdatesDatabaseHashType: Int {
  * https://github.com/expo/expo/blob/main/packages/expo-updates/guides/migrations.md for step by
  * step instructions.
  *
- * EXUpdatesDatabase provides a serial queue on which all database operations must be run (methods
+ * UpdatesDatabase provides a serial queue on which all database operations must be run (methods
  * in this class will assert). This is primarily for control over what high-level operations
  * involving the database can occur simultaneously - e.g. we don't want to be trying to download a
- * new update at the same time EXUpdatesReaper is running.
+ * new update at the same time UpdatesReaper is running.
  *
  * The `scopeKey` field in various methods here is only relevant in environments such as Expo Go in
  * which updates from multiple scopes can be launched.
@@ -132,7 +131,7 @@ public final class UpdatesDatabase: NSObject {
             asset.downloadTime.require("asset downloadTime should be nonnull"),
             asset.filename,
             asset.contentHash,
-            EXUpdatesDatabaseHashType.Sha1.rawValue,
+            UpdatesDatabaseHashType.Sha1.rawValue,
             asset.expectedHash
           ]
         )
@@ -186,7 +185,7 @@ public final class UpdatesDatabase: NSObject {
         _ = try execute(sql: insertSql, withArgs: [updateId, assetId.intValue])
       } catch {
         sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-        throw EXUpdatesDatabaseError.addExistingAssetInsertError
+        throw UpdatesDatabaseError.addExistingAssetInsertError
       }
 
       if asset.isLaunchAsset {
@@ -195,7 +194,7 @@ public final class UpdatesDatabase: NSObject {
           _ = try execute(sql: updateSql, withArgs: [assetId.intValue, updateId])
         } catch {
           sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-          throw EXUpdatesDatabaseError.addExistingAssetInsertError
+          throw UpdatesDatabaseError.addExistingAssetInsertError
         }
       }
     }
@@ -298,7 +297,7 @@ public final class UpdatesDatabase: NSObject {
         _ = try execute(sql: updateSql, withArgs: [UpdateStatus.StatusPending.rawValue, asset.assetId])
       } catch {
         sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-        throw EXUpdatesDatabaseError.markMissingAssetsError
+        throw UpdatesDatabaseError.markMissingAssetsError
       }
     }
 
@@ -314,7 +313,7 @@ public final class UpdatesDatabase: NSObject {
         _ = try execute(sql: updateSql, withArgs: [update.updateId])
       } catch {
         sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-        throw EXUpdatesDatabaseError.deleteUpdatesError
+        throw UpdatesDatabaseError.deleteUpdatesError
       }
     }
 
@@ -334,7 +333,7 @@ public final class UpdatesDatabase: NSObject {
       _ = try execute(sql: update1Sql, withArgs: nil)
     } catch {
       sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-      throw EXUpdatesDatabaseError.deleteUnusedAssetsError
+      throw UpdatesDatabaseError.deleteUnusedAssetsError
     }
 
     let update2Sql = "UPDATE assets SET marked_for_deletion = 0 WHERE id IN (SELECT asset_id FROM updates_assets INNER JOIN updates ON updates_assets.update_id = updates.id WHERE updates.keep = 1);"
@@ -342,7 +341,7 @@ public final class UpdatesDatabase: NSObject {
       _ = try execute(sql: update2Sql, withArgs: nil)
     } catch {
       sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-      throw EXUpdatesDatabaseError.deleteUnusedAssetsError
+      throw UpdatesDatabaseError.deleteUnusedAssetsError
     }
 
     // check for duplicate rows representing a single file on disk
@@ -351,7 +350,7 @@ public final class UpdatesDatabase: NSObject {
       _ = try execute(sql: update3Sql, withArgs: nil)
     } catch {
       sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-      throw EXUpdatesDatabaseError.deleteUnusedAssetsError
+      throw UpdatesDatabaseError.deleteUnusedAssetsError
     }
 
     var rows: [[String: Any?]]
@@ -360,7 +359,7 @@ public final class UpdatesDatabase: NSObject {
       rows = try execute(sql: selectSql, withArgs: nil)
     } catch {
       sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-      throw EXUpdatesDatabaseError.deleteUnusedAssetsError
+      throw UpdatesDatabaseError.deleteUnusedAssetsError
     }
 
     let assets = rows.map { row in
@@ -372,7 +371,7 @@ public final class UpdatesDatabase: NSObject {
       _ = try execute(sql: deleteSql, withArgs: nil)
     } catch {
       sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-      throw EXUpdatesDatabaseError.deleteUnusedAssetsError
+      throw UpdatesDatabaseError.deleteUnusedAssetsError
     }
 
     sqlite3_exec(db, "COMMIT;", nil, nil, nil)
@@ -489,7 +488,7 @@ public final class UpdatesDatabase: NSObject {
       if !isInTransaction {
         sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
       }
-      throw EXUpdatesDatabaseError.setJsonDataError
+      throw UpdatesDatabaseError.setJsonDataError
     }
 
     let insertSql = """
@@ -501,7 +500,7 @@ public final class UpdatesDatabase: NSObject {
       if !isInTransaction {
         sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
       }
-      throw EXUpdatesDatabaseError.setJsonDataError
+      throw UpdatesDatabaseError.setJsonDataError
     }
 
     if !isInTransaction {
@@ -541,7 +540,7 @@ public final class UpdatesDatabase: NSObject {
         _ = try setJsonData(serverDefinedHeaders, withKey: UpdatesDatabase.ServerDefinedHeadersKey, scopeKey: updateManifest.scopeKey, isInTransaction: true)
       } catch {
         sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-        throw EXUpdatesDatabaseError.setJsonDataError
+        throw UpdatesDatabaseError.setJsonDataError
       }
     }
 
@@ -550,7 +549,7 @@ public final class UpdatesDatabase: NSObject {
         _ = try setJsonData(manifestFilters, withKey: UpdatesDatabase.ManifestFiltersKey, scopeKey: updateManifest.scopeKey, isInTransaction: true)
       } catch {
         sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
-        throw EXUpdatesDatabaseError.setJsonDataError
+        throw UpdatesDatabaseError.setJsonDataError
       }
     }
 

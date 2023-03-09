@@ -16,7 +16,7 @@ public protocol AppLoaderTaskDelegate: AnyObject {
    * a remote load if it decides the cached update is not runnable. Returning NO from this
    * callback will force a remote load, overriding the timeout and configuration settings for
    * whether or not to check for a remote update. Returning YES from this callback will make
-   * EXUpdatesAppLoaderTask proceed as usual.
+   * AppLoaderTask proceed as usual.
    */
   func appLoaderTask(_: AppLoaderTask, didLoadCachedUpdate update: Update) -> Bool
   func appLoaderTask(_: AppLoaderTask, didStartLoadingUpdate update: Update)
@@ -41,16 +41,16 @@ public enum BackgroundUpdateStatus: Int {
  * Controlling class that handles the complex logic that needs to happen each time the app is cold
  * booted. From a high level, this class does the following:
  *
- * - Immediately starts an instance of EXUpdatesEmbeddedAppLoader to load the embedded update into
+ * - Immediately starts an instance of EmbeddedAppLoader to load the embedded update into
  *   SQLite. This does nothing if SQLite already has the embedded update or a newer one, but we have
  *   to do this on each cold boot, as we have no way of knowing if a new build was just installed
  *   (which could have a new embedded update).
  * - If the app is configured for automatic update downloads (most apps), starts a timer based on
- *   the `launchWaitMs` value in EXUpdatesConfig.
+ *   the `launchWaitMs` value in UpdatesConfig.
  * - Again if the app is configured for automatic update downloads, starts an instance of
- *   EXUpdatesRemoteAppLoader to check for and download a new update if there is one.
+ *   RemoteAppLoader to check for and download a new update if there is one.
  * - Once the download succeeds, fails, or the timer runs out (whichever happens first), creates an
- *   instance of EXUpdatesAppLauncherWithDatabase and signals that the app is ready to be launched
+ *   instance of AppLauncherWithDatabase and signals that the app is ready to be launched
  *   with the newest update available locally at that time (which may not be the newest update if
  *   the download is still in progress).
  * - If the download succeeds or fails after this point, fires a callback which causes an event to
@@ -107,7 +107,7 @@ public final class AppLoaderTask: NSObject {
   public func start() {
     guard config.isEnabled else {
       // swiftlint:disable:next line_length
-      let errorMessage = "EXUpdatesAppLoaderTask was passed a configuration object with updates disabled. You should load updates from an embedded source rather than calling EXUpdatesAppLoaderTask, or enable updates in the configuration."
+      let errorMessage = "AppLoaderTask was passed a configuration object with updates disabled. You should load updates from an embedded source rather than calling AppLoaderTask, or enable updates in the configuration."
       logger.error(message: errorMessage, code: .updateFailedToLoad)
       delegateQueue.async {
         self.delegate?.appLoaderTask(
@@ -124,7 +124,7 @@ public final class AppLoaderTask: NSObject {
 
     guard config.updateUrl != nil else {
       // swiftlint:disable:next line_length
-      let errorMessage = "EXUpdatesAppLoaderTask was passed a configuration object with a null URL. You must pass a nonnull URL in order to use EXUpdatesAppLoaderTask to load updates."
+      let errorMessage = "AppLoaderTask was passed a configuration object with a null URL. You must pass a nonnull URL in order to use AppLoaderTask to load updates."
       logger.error(message: errorMessage, code: .updateFailedToLoad)
       delegateQueue.async {
         self.delegate?.appLoaderTask(
@@ -209,7 +209,7 @@ public final class AppLoaderTask: NSObject {
               domain: AppLoaderTask.ErrorDomain,
               code: 1031,
               userInfo: [
-                NSLocalizedDescriptionKey: "EXUpdatesAppLoaderTask encountered an unexpected error and could not launch an update."
+                NSLocalizedDescriptionKey: "AppLoaderTask encountered an unexpected error and could not launch an update."
               ]
             )
           )
@@ -283,7 +283,7 @@ public final class AppLoaderTask: NSObject {
             filters: manifestFilters
           ) {
             // launchedUpdate is nil because we don't yet have one, and it doesn't matter as we won't
-            // be sending an HTTP request from EXUpdatesEmbeddedAppLoader
+            // be sending an HTTP request from EmbeddedAppLoader
             self.embeddedAppLoader = EmbeddedAppLoader(
               config: self.config,
               database: self.database,

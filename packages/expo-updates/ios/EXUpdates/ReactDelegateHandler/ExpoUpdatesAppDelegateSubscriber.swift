@@ -5,7 +5,7 @@ import EXUpdatesInterface
 
 /**
  * Used only in development builds with expo-dev-client; completes the auto-setup for development
- * builds with the expo-updates integration by passing a reference to EXUpdatesDevLauncherController
+ * builds with the expo-updates integration by passing a reference to DevLauncherController
  * over to the registry, which expo-dev-client can access.
  */
 public final class ExpoUpdatesAppDelegateSubscriber: ExpoAppDelegateSubscriber {

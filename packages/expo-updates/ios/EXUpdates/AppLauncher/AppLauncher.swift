@@ -2,7 +2,7 @@
 
 import Foundation
 
-public typealias EXUpdatesAppLauncherCompletionBlock = (Error?, Bool) -> Void
+public typealias AppLauncherCompletionBlock = (Error?, Bool) -> Void
 
 /**
  * Protocol through which an update can be launched from disk. Classes that implement this protocol
