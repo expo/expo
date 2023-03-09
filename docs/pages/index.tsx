@@ -34,7 +34,7 @@ import { H1, RawH2, RawH3, P } from '~/ui/components/Text';
 
 export const CellContainer = ({ children }: PropsWithChildren<object>) => (
   // https://github.com/sealninja/react-grid-system/issues/175
-  <Container fluid style={{ paddingLeft: -15, paddingRight: -15, marginBottom: spacing[8] }}>
+  <Container fluid style={{ paddingLeft: -15, paddingRight: -15, marginBottom: spacing[6] }}>
     {children}
   </Container>
 );

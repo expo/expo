@@ -20,7 +20,7 @@ export const PageVote = () => {
       ) : (
         <div className="flex flex-row">
           <Button
-            theme="quaternary"
+            theme="secondary"
             size="xs"
             aria-label="Vote up"
             className="mt-2.5 mx-1 min-w-[40px] text-center"
@@ -31,7 +31,7 @@ export const PageVote = () => {
             }}
           />
           <Button
-            theme="quaternary"
+            theme="secondary"
             size="xs"
             aria-label="Vote down"
             className="mt-2.5 mx-1 min-w-[40px] text-center"

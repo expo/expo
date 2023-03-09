@@ -21,7 +21,7 @@ export const itemIconWrapperStyle = css({
 
 export const footnoteStyle = css({
   ...typography.fontSizes[12],
-  display: 'flex',
+  display: 'inline',
   color: theme.icon.secondary,
 
   mark: {

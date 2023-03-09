@@ -3,7 +3,7 @@ import { ArrowUpRightIcon, ChevronRightIcon } from '@expo/styleguide-icons';
 import { HTMLAttributes } from 'react';
 
 export const FootnoteArrowIcon = () => (
-  <ChevronRightIcon className="icon-xs text-icon-secondary inline-block relative mx-1 top-0.5" />
+  <ChevronRightIcon className="icon-xs text-icon-secondary inline-block relative mx-1 top-[-1px]" />
 );
 
 export const ExternalLinkIcon = () => (

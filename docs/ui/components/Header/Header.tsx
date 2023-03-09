@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { theme, Button, LinkBase } from '@expo/styleguide';
+import { theme, Button } from '@expo/styleguide';
 import { breakpoints, spacing } from '@expo/styleguide-base';
 import { GithubIcon, Menu01Icon } from '@expo/styleguide-icons';
 import type { ReactNode } from 'react';
@@ -8,7 +8,7 @@ import { Logo } from './Logo';
 import { ThemeSelector } from './ThemeSelector';
 
 import { SidebarFooter, SidebarHead } from '~/ui/components/Sidebar';
-import { A, BOLD } from '~/ui/components/Text';
+import { DEMI } from '~/ui/components/Text';
 
 type HeaderProps = {
   sidebar: ReactNode;
@@ -31,21 +31,27 @@ export const Header = ({
           <Logo subgroup={isArchive ? 'Archive' : undefined} />
         </div>
         <div css={[columnStyle, rightColumnStyle]}>
-          <A isStyled css={headerLink} href="https://blog.expo.dev">
+          <Button
+            openInNewTab
+            theme="quaternary"
+            className="px-2 text-secondary"
+            href="https://blog.expo.dev">
             Blog
-          </A>
-          <LinkBase
+          </Button>
+          <Button
+            openInNewTab
+            theme="quaternary"
             href="https://github.com/expo/expo"
             aria-label="GitHub"
-            className="hocus:opacity-80">
+            className="px-2">
             <GithubIcon className="icon-lg" />
-          </LinkBase>
+          </Button>
           <div css={hideOnMobileStyle}>
             <ThemeSelector />
           </div>
           <div css={showOnMobileStyle}>
             <Button
-              theme="tertiary"
+              theme="quaternary"
               css={[mobileButtonStyle, isMobileMenuVisible && mobileButtonActiveStyle]}
               onClick={() => {
                 setMobileMenuVisible(!isMobileMenuVisible);
@@ -58,7 +64,7 @@ export const Header = ({
       {isMobileMenuVisible && (
         <nav css={[containerStyle, showOnMobileStyle]}>
           <div css={[columnStyle, leftColumnStyle]}>
-            <BOLD>Theme</BOLD>
+            <DEMI>Theme</DEMI>
           </div>
           <div css={[columnStyle, rightColumnStyle]}>
             <ThemeSelector />
@@ -103,14 +109,6 @@ const columnStyle = css`
   }
 `;
 
-const headerLink = css`
-  color: ${theme.text.secondary};
-
-  @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
-    margin-right: ${spacing[2]}px;
-  }
-`;
-
 const leftColumnStyle = css`
   flex-grow: 1;
   align-items: center;
@@ -123,6 +121,7 @@ const leftColumnStyle = css`
 
 const rightColumnStyle = css`
   justify-content: flex-end;
+  gap: ${spacing[4]}px;
 
   @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
     flex-basis: auto;
