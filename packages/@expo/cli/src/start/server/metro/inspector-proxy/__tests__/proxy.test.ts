@@ -68,7 +68,7 @@ it('creates a new device when a client connects', async () => {
   const device = new WS(deviceWebSocketUrl);
 
   try {
-    await new Promise<void>((resolve) => device.on('open', resolve));
+    await new Promise((resolve) => device.on('open', resolve));
 
     expect(device.readyState).toBe(device.OPEN);
     expect(expoProxy.devices.size).toBe(1);
@@ -86,12 +86,15 @@ it('removes device when client disconnects', async () => {
   const device = new WS(deviceWebSocketUrl);
 
   try {
-    await new Promise<void>((resolve) => device.on('open', resolve));
+    await new Promise((resolve) => device.on('open', resolve));
     expect(expoProxy.devices.size).toBe(1);
 
     device.close();
 
-    await new Promise<void>((resolve) => device.on('close', resolve));
+    await new Promise((resolve) => device.on('close', resolve));
+    // Wait until the `socket.on('close')` handler is called in the proxy
+    await new Promise((resolve) => setTimeout(resolve));
+
     expect(expoProxy.devices.size).toBe(0);
   } finally {
     server.close();
@@ -109,7 +112,7 @@ it('accepts debugger connections when device is connected', async () => {
 
   try {
     deviceWs = new WS(deviceWebSocketUrl);
-    await new Promise<void>((resolve) => deviceWs?.on('open', resolve));
+    await new Promise((resolve) => deviceWs?.on('open', resolve));
 
     const device = expoProxy.devices.values().next().value;
     expect(device).toBeDefined();
@@ -117,7 +120,7 @@ it('accepts debugger connections when device is connected', async () => {
     const deviceDebugHandler = jest.spyOn(device, 'handleDebuggerConnection');
 
     debuggerWs = new WS(`${debuggerWebSocketUrl}?device=${device.id}&page=1`);
-    await new Promise<void>((resolve) => debuggerWs?.on('open', resolve));
+    await new Promise((resolve) => debuggerWs?.on('open', resolve));
 
     expect(debuggerWs.readyState).toBe(debuggerWs.OPEN);
     expect(deviceDebugHandler).toBeCalled();

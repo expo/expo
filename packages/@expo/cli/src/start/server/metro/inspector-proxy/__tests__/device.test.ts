@@ -1,5 +1,5 @@
 import { createInspectorDeviceClass } from '../device';
-import { InspectorHandler } from '../messages/types';
+import { InspectorHandler } from '../handlers/types';
 
 describe('ExpoInspectorDevice', () => {
   it('initializes with default handlers', () => {
