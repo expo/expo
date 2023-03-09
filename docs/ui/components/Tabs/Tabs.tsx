@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { borderRadius, shadows, spacing, theme } from '@expo/styleguide';
+import { shadows, theme } from '@expo/styleguide';
+import { borderRadius, spacing } from '@expo/styleguide-base';
 import { TabList, TabPanels, Tabs as ReachTabs, TabsProps } from '@reach/tabs';
 import * as React from 'react';
 

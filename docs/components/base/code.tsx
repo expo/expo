@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { borderRadius, spacing, theme, typography } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
+import { borderRadius, spacing } from '@expo/styleguide-base';
 import { Language, Prism } from 'prism-react-renderer';
 import * as React from 'react';
 import tippy, { roundArrow } from 'tippy.js';

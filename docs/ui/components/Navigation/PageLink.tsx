@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { borderRadius, iconSize, shadows, spacing, theme } from '@expo/styleguide';
+import { shadows, theme } from '@expo/styleguide';
+import { borderRadius, spacing } from '@expo/styleguide-base';
 
 import { NavigationRenderProps } from './types';
 
@@ -40,9 +41,9 @@ const linkStyleActive = css({
 const markerStyle = css({
   flexShrink: 0,
   backgroundColor: theme.icon.secondary,
-  borderRadius: iconSize['2xs'],
-  width: iconSize['2xs'] / 2,
-  height: iconSize['2xs'] / 2,
+  borderRadius: '100%',
+  width: 4,
+  height: 4,
   marginRight: spacing[2],
   visibility: 'hidden',
 });

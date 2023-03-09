@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { breakpoints, spacing, theme, typography } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
+import { breakpoints, spacing } from '@expo/styleguide-base';
 
 import { FOOTNOTE, KBD } from '~/ui/components/Text';
 

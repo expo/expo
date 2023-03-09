@@ -1,6 +1,5 @@
 import { css } from '@emotion/react';
-import { breakpoints, darkTheme, palette } from '@expo/styleguide';
-import React from 'react';
+import { breakpoints, darkTheme, palette } from '@expo/styleguide-base';
 
 export const DevicesImage = () => (
   <svg

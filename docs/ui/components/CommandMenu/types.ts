@@ -1,4 +1,3 @@
-import type { IconProps } from '@expo/styleguide';
 import type { ComponentType } from 'react';
 
 type AlgoliaHighlight = {
@@ -30,7 +29,7 @@ export type AlgoliaItemType = {
 export type ExpoItemType = {
   label: string;
   url: string;
-  Icon?: ComponentType<IconProps>;
+  Icon?: ComponentType<any>;
 };
 
 export type RNDirectoryItemType = {

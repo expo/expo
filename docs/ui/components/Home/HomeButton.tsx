@@ -1,13 +1,11 @@
-import { spacing, typography } from '@expo/styleguide';
-import React from 'react';
-
-import { Button, ButtonProps } from '~/ui/components/Button';
+import { typography, Button, ButtonProps } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
 
 export const HomeButton = ({ children, style, href, ...rest }: ButtonProps) => (
   <Button
     {...rest}
     href={href}
-    rel={href?.startsWith('http') ? 'noopener noreferrer' : undefined}
+    openInNewTab={href?.startsWith('http')}
     style={{
       ...typography.fontSizes[14],
       height: 36,

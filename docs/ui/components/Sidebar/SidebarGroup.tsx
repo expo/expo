@@ -1,6 +1,5 @@
 import { css } from '@emotion/react';
-import { spacing } from '@expo/styleguide';
-import * as React from 'react';
+import { spacing } from '@expo/styleguide-base';
 
 import { SidebarNodeProps } from './Sidebar';
 import { SidebarTitle, SidebarLink } from './index';

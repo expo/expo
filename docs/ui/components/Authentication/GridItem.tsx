@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { borderRadius, breakpoints, shadows, spacing, theme } from '@expo/styleguide';
+import { shadows, theme } from '@expo/styleguide';
+import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
 
 import { Icon } from './Icon';
 

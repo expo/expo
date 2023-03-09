@@ -1,12 +1,13 @@
 import { css } from '@emotion/react';
-import { theme, typography, spacing, ArrowUpRightIcon, iconSize } from '@expo/styleguide';
+import { theme, typography, LinkBase } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons';
 import { useRouter } from 'next/router';
 import type { PropsWithChildren } from 'react';
 import { useEffect, useRef } from 'react';
 
 import { stripVersionFromPath } from '~/common/utilities';
 import { NavigationRoute } from '~/types/common';
-import { LinkBase } from '~/ui/components/Text';
 
 type SidebarLinkProps = PropsWithChildren<{
   info: NavigationRoute;
@@ -55,24 +56,18 @@ export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
   const customDataAttributes = isSelected && {
     'data-sidebar-anchor-selected': true,
   };
+  const isExternal = info.href.startsWith('http');
 
   return (
     <div css={STYLES_CONTAINER}>
       <LinkBase
         href={info.href as string}
-        {...customDataAttributes}
         ref={ref}
-        target={info.href.startsWith('http') ? '_blank' : undefined}
-        css={[STYLES_LINK, isSelected && STYLES_LINK_ACTIVE]}>
+        css={[STYLES_LINK, isSelected && STYLES_LINK_ACTIVE]}
+        {...customDataAttributes}>
         {isSelected && <div css={STYLES_ACTIVE_BULLET} />}
         {children}
-        {info.href.startsWith('http') && (
-          <ArrowUpRightIcon
-            size={iconSize.sm}
-            color={theme.icon.secondary}
-            css={STYLES_EXTERNAL_ICON}
-          />
-        )}
+        {isExternal && <ArrowUpRightIcon className="icon-sm text-icon-secondary ml-auto" />}
       </LinkBase>
     </div>
   );
@@ -88,9 +83,14 @@ const STYLES_LINK = css`
   align-items: center;
   padding-left: ${spacing[4] + spacing[0.5]}px;
   scroll-margin: 60px;
+  width: 100%;
 
   &:hover {
     color: ${theme.text.link};
+  }
+
+  &:hover svg {
+    color: ${theme.button.tertiary.icon};
   }
 `;
 
@@ -115,8 +115,4 @@ const STYLES_ACTIVE_BULLET = css`
   background-color: ${theme.text.link};
   border-radius: 100%;
   margin: ${spacing[2]}px ${spacing[1.5]}px;
-`;
-
-const STYLES_EXTERNAL_ICON = css`
-  margin-left: ${spacing[1]}px;
 `;

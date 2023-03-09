@@ -1,7 +1,7 @@
-import { StatusWaitingIcon, theme } from '@expo/styleguide';
+import { StatusWaitingIcon } from '@expo/styleguide-icons';
 
 import { IconBase, DocIconProps } from './IconBase';
 
 export const PendingIcon = ({ small }: DocIconProps) => (
-  <IconBase Icon={StatusWaitingIcon} color={theme.icon.warning} small={small} />
+  <IconBase Icon={StatusWaitingIcon} className="text-icon-warning" small={small} />
 );

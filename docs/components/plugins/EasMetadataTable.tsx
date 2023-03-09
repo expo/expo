@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { spacing } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
 import assert from 'assert';
 import { ComponentType, Fragment, ReactNode, useId } from 'react';
 

@@ -1,4 +1,5 @@
 import { css } from '@emotion/react';
+import { LinkBase } from '@expo/styleguide';
 import * as React from 'react';
 
 import { AdditionalProps } from '~/common/headingManager';
@@ -6,7 +7,6 @@ import PermalinkIcon from '~/components/icons/Permalink';
 import withHeadingManager, {
   HeadingManagerProps,
 } from '~/components/page-higher-order/withHeadingManager';
-import { LinkBase } from '~/ui/components/Text';
 
 type BaseProps = React.PropsWithChildren<{
   component: any;
@@ -45,10 +45,10 @@ const STYLED_PERMALINK_CONTENT = css`
 
 const STYLES_PERMALINK_ICON = css`
   cursor: pointer;
-  vertical-align: text-top;
+  vertical-align: middle;
   display: inline-block;
   width: 1.2em;
-  height: 1.2em;
+  height: 1em;
   padding: 0 0.2em;
   visibility: hidden;
 

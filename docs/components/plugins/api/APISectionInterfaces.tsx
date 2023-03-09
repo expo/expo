@@ -21,7 +21,7 @@ import {
   STYLES_APIBOX,
   getTagNamesList,
   STYLES_APIBOX_NESTED,
-  STYLES_ELEMENT_SPACING,
+  ELEMENT_SPACING,
   H3Code,
   getCommentContent,
   BoxSectionHeader,
@@ -125,7 +125,7 @@ const renderInterface = ({
         <MONOSPACE weight="medium">{name}</MONOSPACE>
       </H3Code>
       {extendedTypes?.length ? (
-        <P css={STYLES_ELEMENT_SPACING}>
+        <P className={ELEMENT_SPACING}>
           <DEMI>Extends: </DEMI>
           {extendedTypes.map(extendedType => (
             <CODE key={`extend-${extendedType.name}`}>{resolveTypeName(extendedType)}</CODE>
