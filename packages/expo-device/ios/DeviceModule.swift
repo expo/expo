@@ -19,20 +19,12 @@ public class DeviceModule: Module {
       "osBuildId": osBuildId(),
       "osInternalBuildId": osBuildId(),
       "deviceName": UIDevice.current.name,
+      "deviceType": getDeviceType(),
       "supportedCpuArchitectures": cpuArchitectures()
     ])
 
     AsyncFunction("getDeviceTypeAsync") { () -> Int in
-      switch UIDevice.current.userInterfaceIdiom {
-      case UIUserInterfaceIdiom.phone:
-        return DeviceType.phone.rawValue
-      case UIUserInterfaceIdiom.pad:
-        return DeviceType.tablet.rawValue
-      case UIUserInterfaceIdiom.tv:
-        return DeviceType.tv.rawValue
-      default:
-        return DeviceType.unknown.rawValue
-      }
+      return getDeviceType()
     }
 
     AsyncFunction("getUptimeAsync") { () -> Double in
@@ -44,6 +36,19 @@ public class DeviceModule: Module {
     AsyncFunction("isRootedExperimentalAsync") { () -> Bool in
       return UIDevice.current.isJailbroken
     }
+  }
+}
+
+func getDeviceType() -> Int {
+  switch UIDevice.current.userInterfaceIdiom {
+    case UIUserInterfaceIdiom.phone:
+      return DeviceType.phone.rawValue
+    case UIUserInterfaceIdiom.pad:
+      return DeviceType.tablet.rawValue
+    case UIUserInterfaceIdiom.tv:
+      return DeviceType.tv.rawValue
+    default:
+      return DeviceType.unknown.rawValue
   }
 }
 

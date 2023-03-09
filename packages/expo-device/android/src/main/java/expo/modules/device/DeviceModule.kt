@@ -48,6 +48,9 @@ class DeviceModule : Module() {
           (context.getSystemService(Context.ACTIVITY_SERVICE) as ActivityManager).getMemoryInfo(memoryInfo)
           memoryInfo.totalMem
         },
+        "deviceType" to run {
+          getDeviceType(mContext).JSValue
+        },
         "supportedCpuArchitectures" to Build.SUPPORTED_ABIS?.takeIf { it.isNotEmpty() },
         "osName" to systemName,
         "osVersion" to Build.VERSION.RELEASE,

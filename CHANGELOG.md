@@ -5,6 +5,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ## Unpublished
 
+- Added deviceType constant ([#15084](https://github.com/expo/expo/pull/15084) by [@robertherber](https://github.com/robertherber))
+
 ### 📚 3rd party library updates
 
 ### 🛠 Breaking changes
