@@ -5,7 +5,7 @@
 import Foundation
 
 /**
- * Subclass of EXUpdatesAppLoader which handles downloading updates from a remote server.
+ * Subclass of AppLoader which handles downloading updates from a remote server.
  */
 internal final class RemoteAppLoader: AppLoader {
   private static let ErrorDomain = "EXUpdatesRemoteAppLoader"

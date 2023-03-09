@@ -63,7 +63,7 @@ internal final class BareUpdate: Update {
     if update.runtimeVersion.contains(",") {
       let exception = NSException(
         name: NSExceptionName.internalInconsistencyException,
-        reason: "Should not be initializing EXUpdatesBareUpdate in an environment with multiple runtime versions.",
+        reason: "Should not be initializing BareUpdate in an environment with multiple runtime versions.",
         userInfo: [:]
       )
       exception.raise()

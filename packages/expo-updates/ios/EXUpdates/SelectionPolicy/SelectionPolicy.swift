@@ -16,7 +16,7 @@ import Foundation
  * The three methods are individually pluggable to allow for different behavior of specific parts of
  * the module in different situations. For example, in a development client, our policy for
  * retaining and deleting updates is different than in a release build, so we use a different
- * implementation of EXUpdatesReaperSelectionPolicy.
+ * implementation of ReaperSelectionPolicy.
  *
  * Importantly (and non-trivially), expo-updates must be able to make all these determinations
  * without talking to any server. This is because the embedded update can change at any time,

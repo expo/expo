@@ -8,7 +8,7 @@ import EXUpdatesInterface
 
 /**
  * Main entry point to expo-updates in development builds with expo-dev-client. Singleton that still
- * makes use of EXUpdatesAppController for keeping track of updates state, but provides capabilities
+ * makes use of AppController for keeping track of updates state, but provides capabilities
  * that are not usually exposed but that expo-dev-client needs (launching and downloading a specific
  * update by URL, allowing dynamic configuration, introspecting the database).
  *

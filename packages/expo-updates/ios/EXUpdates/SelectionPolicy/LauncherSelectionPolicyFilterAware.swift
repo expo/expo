@@ -3,7 +3,7 @@
 import Foundation
 
 /**
- * An EXUpdatesLauncherSelectionPolicy which chooses an update to launch based on the manifest
+ * A LauncherSelectionPolicy which chooses an update to launch based on the manifest
  * filters provided by the server. If multiple updates meet the criteria, the newest one (using
  * `commitTime` for ordering) is chosen, but the manifest filters are always taken into account
  * before the `commitTime`.

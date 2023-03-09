@@ -3,7 +3,7 @@
 import Foundation
 
 /**
- * An EXUpdatesReaperSelectionPolicy which keeps a predefined maximum number of updates across all scopes,
+ * A ReaperSelectionPolicy which keeps a predefined maximum number of updates across all scopes,
  * and, once that number is surpassed, selects the updates least recently accessed (and then least
  * recently published) to delete. Ignores filters and scopes.
  *
@@ -24,7 +24,7 @@ public final class ReaperSelectionPolicyDevelopmentClient: NSObject, ReaperSelec
     if maxUpdatesToKeep <= 0 {
       NSException.init(
         name: .invalidArgumentException,
-        reason: "Cannot initiailize EXUpdatesReaperSelectionPolicy with maxUpdatesToKeep <= 0"
+        reason: "Cannot initiailize ReaperSelectionPolicy with maxUpdatesToKeep <= 0"
       )
       .raise()
     }
@@ -53,7 +53,7 @@ public final class ReaperSelectionPolicyDevelopmentClient: NSObject, ReaperSelec
           // avoid infinite loop
           NSException.init(
             name: .internalInconsistencyException,
-            reason: "Multiple updates with the same ID were passed into EXUpdatesReaperSelectionPolicyDevelopmentClient"
+            reason: "Multiple updates with the same ID were passed into ReaperSelectionPolicyDevelopmentClient"
           )
           .raise()
         }
