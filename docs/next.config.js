@@ -42,7 +42,9 @@ export default {
   trailingSlash: true,
   experimental: {
     esmExternals: true,
-    optimizeCss: true,
+    // note(simek): would be nice enhancement, but it breaks the `@next/font` styles currently,
+    // and results in font face swap on every page reload
+    optimizeCss: false,
     fontLoaders: [{ loader: '@next/font/google', options: { subsets: ['latin'] } }],
   },
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
