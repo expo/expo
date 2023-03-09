@@ -42,6 +42,7 @@ export default {
   trailingSlash: true,
   experimental: {
     esmExternals: true,
+    optimizeCss: true,
     fontLoaders: [{ loader: '@next/font/google', options: { subsets: ['latin'] } }],
   },
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],

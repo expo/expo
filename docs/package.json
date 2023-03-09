@@ -76,6 +76,7 @@
     "autoprefixer": "^10.4.13",
     "axios": "^0.27.2",
     "case-police": "^0.5.10",
+    "critters": "^0.0.16",
     "danger": "^11.2.0",
     "eslint": "^8.29.0",
     "eslint-config-next": "^13.1.6",

@@ -226,11 +226,11 @@ export const MONOSPACE = createTextComponent(TextElement.CODE);
 const isExternalLink = (href?: string) => href?.includes('://');
 
 export const A = (props: LinkBaseProps & { isStyled?: boolean }) => {
-  const { isStyled, ...rest } = props;
+  const { isStyled, openInNewTab, ...rest } = props;
   return (
     <LinkBase
       css={[link, !isStyled && linkStyled]}
-      openInNewTab={isExternalLink(props.href)}
+      openInNewTab={openInNewTab ?? isExternalLink(props.href)}
       {...rest}
     />
   );
