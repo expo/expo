@@ -185,7 +185,7 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
 
   const extraDevDependencies = configureE2E
     ? {
-        '@config-plugins/detox': '^3.0.0',
+        '@config-plugins/detox': '^5.0.1',
         '@types/express': '^4.17.17',
         '@types/jest': '^29.4.0',
         '@types/react': '~18.0.14',
