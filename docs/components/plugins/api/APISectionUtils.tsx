@@ -665,7 +665,7 @@ export const STYLES_APIBOX = css({
   overflowX: 'hidden',
 
   h3: {
-    marginBottom: spacing[2],
+    marginBottom: spacing[2.5],
   },
 
   'h2, h3, h4': {

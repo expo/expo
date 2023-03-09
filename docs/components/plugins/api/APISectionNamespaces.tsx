@@ -18,7 +18,7 @@ import {
   getCommentContent,
   BoxSectionHeader,
 } from '~/components/plugins/api/APISectionUtils';
-import { H2, CODE } from '~/ui/components/Text';
+import { H2, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionNamespacesProps = {
   data: GeneratedData[];
@@ -43,7 +43,7 @@ const renderNamespace = (namespace: ClassDefinitionData, exposeInSidebar: boolea
     <div key={`class-definition-${name}`} css={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>
-        <CODE>{name}</CODE>
+        <MONOSPACE weight="medium">{name}</MONOSPACE>
       </H3Code>
       <CommentTextBlock comment={comment} />
       {returnComment && (

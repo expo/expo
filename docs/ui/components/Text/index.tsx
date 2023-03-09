@@ -211,7 +211,7 @@ export const KBD = createTextComponent(
   TextElement.KBD,
   css([typography.utility.pre as CSSObject, kbdStyle])
 );
-export const MONOSPACE = createTextComponent(TextElement.CODE, css({ fontWeight: 500 }));
+export const MONOSPACE = createTextComponent(TextElement.CODE);
 
 const isExternalLink = (href?: string) => href?.includes('://');
 

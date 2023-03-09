@@ -27,7 +27,7 @@ import {
   BoxSectionHeader,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
-import { H2, BOLD, P, CODE, DEMI } from '~/ui/components/Text';
+import { H2, BOLD, P, CODE, DEMI, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
@@ -122,7 +122,7 @@ const renderInterface = ({
       <APISectionDeprecationNote comment={comment} />
       <APISectionPlatformTags comment={comment} prefix="Only for:" />
       <H3Code tags={getTagNamesList(comment)}>
-        <CODE>{name}</CODE>
+        <MONOSPACE weight="medium">{name}</MONOSPACE>
       </H3Code>
       {extendedTypes?.length ? (
         <P css={STYLES_ELEMENT_SPACING}>

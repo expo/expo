@@ -39,7 +39,7 @@ exports[`DocumentationSidebarRight correctly matches snapshot 1`] = `
       href="#code-heading-depth-1"
     >
       <code
-        class="css-ma1quf-TextComponent"
+        class="css-13j9lyg-TextComponent"
         data-text="true"
       >
         Code heading depth 1
