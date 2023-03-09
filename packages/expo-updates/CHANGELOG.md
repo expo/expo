@@ -33,6 +33,7 @@
 - E2E tests: graceful Detox failures. ([#21520](https://github.com/expo/expo/pull/21520) by [@douglowder](https://github.com/douglowder))
 - Fix E2E after Swift conversion. ([#21592](https://github.com/expo/expo/pull/21592) by [@douglowder](https://github.com/douglowder))
 - Fix iOS native debug after Swift conversion. ([#21602](https://github.com/expo/expo/pull/21602) by [@douglowder](https://github.com/douglowder))
+- Fix compilation errors and enable modules after Swift conversion. ([#21621](https://github.com/expo/expo/pull/21621) by [@wschurman](https://github.com/wschurman), [@douglowder](https://github.com/douglowder))
 
 ## 0.16.1 — 2023-02-09
 

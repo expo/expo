@@ -24,7 +24,7 @@ public final class UpdatesModule: Module {
   }
 
   public func definition() -> ModuleDefinition {
-    Name("EXUpdates")
+    Name("ExpoUpdates")
 
     Constants {
       let releaseChannel = updatesService?.config.releaseChannel
