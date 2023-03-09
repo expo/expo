@@ -84,7 +84,12 @@ class ExpoImageView(
     val imageRect = RectF(0f, 0f, drawable.intrinsicWidth.toFloat(), drawable.intrinsicHeight.toFloat())
     val viewRect = RectF(0f, 0f, width.toFloat(), height.toFloat())
 
-    val matrix = contentFit.toMatrix(imageRect, viewRect)
+    val matrix = contentFit.toMatrix(
+      imageRect,
+      viewRect,
+      currentTarget?.sourceWidth ?: -1,
+      currentTarget?.sourceHeight ?: -1
+    )
     val scaledImageRect = imageRect.transform(matrix)
 
     imageMatrix = matrix.apply {

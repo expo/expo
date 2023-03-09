@@ -41,7 +41,7 @@ enum class ContentFit(val value: String) : Enumerable {
    */
   ScaleDown("scale-down");
 
-  internal fun toMatrix(imageRect: RectF, viewRect: RectF) = Matrix().apply {
+  internal fun toMatrix(imageRect: RectF, viewRect: RectF, sourceWidth: Int, sourceHeight: Int) = Matrix().apply {
     when (this@ContentFit) {
       Contain -> setRectToRect(imageRect, viewRect, Matrix.ScaleToFit.START)
       Cover -> {
@@ -60,8 +60,28 @@ enum class ContentFit(val value: String) : Enumerable {
         // we don't need to do anything
       }
       ScaleDown -> {
-        if (imageRect.width() >= viewRect.width() || imageRect.height() >= viewRect.height()) {
-          setRectToRect(imageRect, viewRect, Matrix.ScaleToFit.START)
+        // If we have information about the original size of the source, we can resize the image more drastically.
+        // In certain situations, we may even permit upscaling when we anticipate the image to be reloaded without any reduction in size,
+        // which will create a seamless transition between various states.
+        if (sourceWidth != -1 && sourceHeight != -1) {
+          val sourceRect = RectF(0f, 0f, sourceWidth.toFloat(), sourceHeight.toFloat())
+          // Rather than checking if the image rectangle is within the bounds of the view rectangle, we verify the original source rectangle.
+          // We know that the newly loaded image has larger dimensions than the current one, and therefore,
+          // it will not be downscaled.
+          if (sourceRect.width() >= viewRect.width() || sourceRect.height() >= viewRect.height()) {
+            setRectToRect(imageRect, viewRect, Matrix.ScaleToFit.START)
+          }
+          // If the source rectangle is larger than the view rectangle and the image rectangle has not been upscaled to match the source rectangle,
+          // temporary upscaling is necessary to ensure a seamless transition.
+          // It should be noted that this upscaling is applied to the downscaled version of the image,
+          // not the original source image, and will be replaced by the original asset shortly thereafter.
+          else if (imageRect.width() < sourceRect.width() || imageRect.height() < sourceRect.height()) {
+            setRectToRect(imageRect, sourceRect, Matrix.ScaleToFit.START)
+          }
+        } else {
+          if (imageRect.width() >= viewRect.width() || imageRect.height() >= viewRect.height()) {
+            setRectToRect(imageRect, viewRect, Matrix.ScaleToFit.START)
+          }
         }
       }
     }

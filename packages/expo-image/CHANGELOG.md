@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [Android] Add automatic asset downscaling to improve performance.
+
 ### 🐛 Bug fixes
 
 - Fixed the `tintColor` not being passed to native view. ([#21576](https://github.com/expo/expo/pull/21576) by [@andrew-levy](https://github.com/andrew-levy))
