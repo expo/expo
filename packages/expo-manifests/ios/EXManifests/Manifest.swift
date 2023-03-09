@@ -3,6 +3,8 @@
 // this uses abstract class patterns
 // swiftlint:disable unavailable_function
 
+// swiftlint:disable type_body_length
+
 import Foundation
 import UIKit
 
@@ -11,7 +13,6 @@ import UIKit
  backwards compatibility with the previous objective-c implementation so that we don't need to do
  error handling at every callsite. When all the code is swift, we might be able to use these exceptions.
  */
-
 public extension Dictionary where Key == String {
   func optionalValue<T>(forKey: String) -> T? {
     guard let value = self[forKey] else {
@@ -65,9 +66,9 @@ public extension Optional {
   }
 }
 
+@objc(EXManifestsManifest)
 @objcMembers
-// swiftlint:disable:next type_body_length
-public class EXManifestsManifest: NSObject {
+public class Manifest: NSObject {
   private let rawManifestJSONInternal: [String: Any]
 
   public required init(rawManifestJSON: [String: Any]) {
@@ -253,7 +254,7 @@ public class EXManifestsManifest: NSObject {
 
   public func iosSplashBackgroundColor() -> String? {
     return expoClientConfigRootObject().let { it in
-      EXManifestsManifest.string(fromManifest: it, atPaths: [
+      Manifest.string(fromManifest: it, atPaths: [
         ["ios", "splash", "backgroundColor"],
         ["splash", "backgroundColor"]
       ])
@@ -262,7 +263,7 @@ public class EXManifestsManifest: NSObject {
 
   public func iosSplashImageUrl() -> String? {
     return expoClientConfigRootObject().let { it in
-      EXManifestsManifest.string(fromManifest: it, atPaths: [
+      Manifest.string(fromManifest: it, atPaths: [
         UIDevice.current.userInterfaceIdiom == UIUserInterfaceIdiom.pad
           ? ["ios", "splash", "tabletImageUrl"] : [],
         ["ios", "splash", "imageUrl"],
@@ -273,7 +274,7 @@ public class EXManifestsManifest: NSObject {
 
   public func iosSplashImageResizeMode() -> String? {
     return expoClientConfigRootObject().let { it in
-      EXManifestsManifest.string(fromManifest: it, atPaths: [
+      Manifest.string(fromManifest: it, atPaths: [
         ["ios", "splash", "resizeMode"],
         ["splash", "resizeMode"]
       ])
@@ -296,7 +297,7 @@ public class EXManifestsManifest: NSObject {
 
   public func jsEngine() -> String {
     let jsEngine = expoClientConfigRootObject().let { it in
-      EXManifestsManifest.string(fromManifest: it, atPaths: [
+      Manifest.string(fromManifest: it, atPaths: [
         ["ios", "jsEngine"],
         ["jsEngine"]
       ])
