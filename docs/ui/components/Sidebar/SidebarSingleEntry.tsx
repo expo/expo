@@ -1,21 +1,15 @@
 import { css } from '@emotion/react';
-import {
-  borderRadius,
-  spacing,
-  theme,
-  typography,
-  iconSize,
-  ArrowUpRightIcon,
-} from '@expo/styleguide';
-import { IconProps } from '@expo/styleguide/dist/types';
-import { ComponentType } from 'react';
+import { mergeClasses, theme, typography } from '@expo/styleguide';
+import { borderRadius, spacing } from '@expo/styleguide-base';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons';
+import type { ComponentType, HTMLAttributes } from 'react';
 
 import { A } from '../Text';
 
 type SidebarSingleEntryProps = {
   href: string;
   title: string;
-  Icon: ComponentType<IconProps>;
+  Icon: ComponentType<HTMLAttributes<SVGSVGElement>>;
   isActive?: boolean;
   isExternal?: boolean;
   secondary?: boolean;
@@ -32,28 +26,23 @@ export const SidebarSingleEntry = ({
   return (
     <A
       href={href}
-      css={[containerStyle, isActive && activeContainerStyle, secondary && secondaryContainerStyle]}
+      css={[containerStyle, secondary && secondaryContainerStyle, isActive && activeContainerStyle]}
       isStyled>
       <span
         css={[
           iconWrapperStyle,
-          isActive && activeIconWrapperStyle,
           secondary && secondaryIconWrapperStyle,
+          isActive && activeIconWrapperStyle,
         ]}>
         <Icon
-          color={isActive ? theme.palette.blue11 : theme.icon.secondary}
-          size={secondary ? iconSize.sm : iconSize.xs}
-          width={secondary ? iconSize.sm : iconSize.xs}
+          className={mergeClasses(
+            'icon-sm',
+            isActive ? 'text-palette-blue11' : 'text-icon-secondary'
+          )}
         />
       </span>
       {title}
-      {isExternal && (
-        <ArrowUpRightIcon
-          color={theme.icon.secondary}
-          size={iconSize.sm}
-          css={css({ marginLeft: 'auto' })}
-        />
-      )}
+      {isExternal && <ArrowUpRightIcon className="icon-sm text-icon-secondary ml-auto" />}
     </A>
   );
 };

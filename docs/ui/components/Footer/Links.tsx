@@ -1,13 +1,7 @@
 import { css } from '@emotion/react';
-import {
-  EditIcon,
-  GithubIcon,
-  iconSize,
-  MessageIcon,
-  spacing,
-  theme,
-  typography,
-} from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
+import { Edit05Icon, GithubIcon, MessageDotsSquareIcon } from '@expo/styleguide-icons';
 
 import { A, LI } from '../Text';
 import { githubUrl } from './utils';
@@ -20,8 +14,8 @@ export const IssuesLink = ({ title, repositoryUrl }: { title: string; repository
       href={
         repositoryUrl ? `${repositoryUrl}/issues` : `https://github.com/expo/expo/labels/${title}`
       }>
-      <span css={iconStyle}>
-        <GithubIcon size={iconSize.sm} />
+      <span className="flex items-center mr-2.5">
+        <GithubIcon className="icon-sm" />
       </span>
       View open bug reports for {title}
     </A>
@@ -32,8 +26,8 @@ export const ForumsLink = ({ isAPIPage, title }: { isAPIPage: boolean; title: st
   isAPIPage ? (
     <LI>
       <A css={linkStyle} openInNewTab href={`https://forums.expo.dev/tag/${title}`}>
-        <span css={iconStyle}>
-          <MessageIcon size={iconSize.sm} />
+        <span className="flex items-center mr-2.5">
+          <MessageDotsSquareIcon className="icon-sm" />
         </span>
         Ask a question on the forums about {title}
       </A>
@@ -41,8 +35,8 @@ export const ForumsLink = ({ isAPIPage, title }: { isAPIPage: boolean; title: st
   ) : (
     <LI>
       <A css={linkStyle} openInNewTab href="https://forums.expo.dev/">
-        <span css={iconStyle}>
-          <MessageIcon size={iconSize.sm} />
+        <span className="flex items-center mr-2.5">
+          <MessageDotsSquareIcon className="icon-sm" />
         </span>
         Ask a question on the forums
       </A>
@@ -52,8 +46,8 @@ export const ForumsLink = ({ isAPIPage, title }: { isAPIPage: boolean; title: st
 export const EditPageLink = ({ pathname }: { pathname: string }) => (
   <LI>
     <A css={linkStyle} openInNewTab href={githubUrl(pathname)}>
-      <span css={iconStyle}>
-        <EditIcon size={iconSize.sm} />
+      <span className="flex items-center mr-2.5">
+        <Edit05Icon className="icon-sm" />
       </span>
       Edit this page
     </A>
@@ -71,10 +65,4 @@ const linkStyle = css({
   ':visited': {
     color: theme.text.secondary,
   },
-});
-
-const iconStyle = css({
-  display: 'flex',
-  alignItems: 'center',
-  marginRight: spacing[2.5],
 });

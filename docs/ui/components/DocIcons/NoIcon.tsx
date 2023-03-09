@@ -1,7 +1,7 @@
-import { StatusFailedIcon, theme } from '@expo/styleguide';
+import { StatusFailureIcon } from '@expo/styleguide-icons';
 
 import { IconBase, DocIconProps } from './IconBase';
 
 export const NoIcon = ({ small }: DocIconProps) => (
-  <IconBase Icon={StatusFailedIcon} color={theme.icon.danger} small={small} />
+  <IconBase Icon={StatusFailureIcon} className="text-icon-danger" small={small} />
 );

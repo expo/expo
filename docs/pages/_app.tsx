@@ -13,6 +13,7 @@ import { AnalyticsProvider } from '~/providers/Analytics';
 import { markdownComponents } from '~/ui/components/Markdown';
 
 import '@expo/styleguide/dist/expo-theme.css';
+import '@expo/styleguide/dist/global.css';
 import 'tippy.js/dist/tippy.css';
 
 const isDev = process.env.NODE_ENV === 'development';

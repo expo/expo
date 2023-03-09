@@ -1,5 +1,7 @@
 import { css } from '@emotion/react';
-import { borderRadius, iconSize, shadows, spacing, theme, ChevronDownIcon } from '@expo/styleguide';
+import { shadows, theme } from '@expo/styleguide';
+import { borderRadius, spacing } from '@expo/styleguide-base';
+import { ChevronDownIcon } from '@expo/styleguide-icons';
 
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
@@ -20,7 +22,7 @@ export function ApiVersionSelect() {
     <div css={containerStyle}>
       <label css={labelStyle} htmlFor="api-version-select">
         <LABEL css={labelTextStyle}>{versionToText(version)}</LABEL>
-        <ChevronDownIcon css={labelIconStyle} size={iconSize.sm} />
+        <ChevronDownIcon className="icon-sm shrink-0" />
       </label>
       <select
         id="api-version-select"
@@ -70,10 +72,6 @@ const labelStyle = css({
 
 const labelTextStyle = css({
   flex: 1,
-});
-
-const labelIconStyle = css({
-  flexShrink: 0,
 });
 
 const crawlerLinkStyle = css({

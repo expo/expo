@@ -1,49 +1,38 @@
 import { css } from '@emotion/react';
-import {
-  breakpoints,
-  theme,
-  spacing,
-  typography,
-  Logo as LogoIcon,
-  WordMarkLogo,
-  borderRadius,
-  iconSize,
-  ChevronRightIcon,
-} from '@expo/styleguide';
+import { theme, typography, Logo as LogoIcon, WordMarkLogo, LinkBase } from '@expo/styleguide';
+import { breakpoints, spacing, borderRadius } from '@expo/styleguide-base';
+import { ChevronRightIcon } from '@expo/styleguide-icons';
 
 import { DocumentationIcon } from '~/ui/components/Sidebar/icons/Documentation';
-import { LinkBase } from '~/ui/components/Text';
 
 type Props = {
   subgroup?: string;
 };
 
 export const Logo = ({ subgroup }: Props) => (
-  <div css={logoWrapperStyle}>
+  <div className="flex items-center gap-4">
     <LinkBase css={linkStyle} href="https://expo.dev">
-      <WordMarkLogo color={theme.text.default} css={[logoStyle, hideOnMobile]} title="Expo" />
-      <LogoIcon color={theme.text.default} css={[logoStyle, showOnMobile]} title="Expo" />
+      <WordMarkLogo
+        className="w-[72px] mt-[1px] h-5 text-default"
+        css={hideOnMobile}
+        title="Expo"
+      />
+      <LogoIcon className="icon-lg mt-[1px] text-default" css={showOnMobile} title="Expo" />
     </LinkBase>
     <LinkBase css={linkStyle} href="/">
       <div css={iconContainer}>
-        <DocumentationIcon size={iconSize.sm} />
+        <DocumentationIcon className="icon-sm" />
       </div>
       <span css={subtitleStyle}>Docs</span>
     </LinkBase>
     {subgroup && (
       <>
-        <ChevronRightIcon css={[chevronStyle, hideOnMobile]} color={theme.icon.tertiary} title="" />
+        <ChevronRightIcon className="text-icon-secondary" css={[chevronStyle, hideOnMobile]} />
         <span css={[subtitleStyle, hideOnMobile]}>{subgroup}</span>
       </>
     )}
   </div>
 );
-
-const logoWrapperStyle = css({
-  display: 'flex',
-  gap: spacing[4],
-  alignItems: 'center',
-});
 
 const linkStyle = css`
   display: flex;
@@ -52,11 +41,6 @@ const linkStyle = css`
   text-decoration: none;
   user-select: none;
   gap: ${spacing[2]}px;
-`;
-
-const logoStyle = css`
-  height: 20px;
-  margin-top: 1px;
 `;
 
 const chevronStyle = css`
@@ -86,6 +70,7 @@ const showOnMobile = css`
 const subtitleStyle = css`
   color: ${theme.text.default};
   font-weight: 500;
+  user-select: none;
   ${typography.fontSizes[18]}
 `;
 
