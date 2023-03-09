@@ -15,14 +15,14 @@ public class ExpoPrintModule: Module {
   }()
 
   lazy var printWithPrinter = {
-    ExpoPrintWithPrinter(delegate: self.delegate, appContext: self.appContext)
+    ExpoPrintWithPrinter(delegate: self.delegate)
   }()
 
   public func definition() -> ModuleDefinition {
     Name("ExpoPrint")
 
     AsyncFunction("print") { (options: PrintOptions, promise: Promise) in
-      printWithPrinter.startPrint(promise: promise, options: options)
+      printWithPrinter.startPrint(options: options, promise: promise)
     }
     .runOnQueue(.main)
 

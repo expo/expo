@@ -1,5 +1,7 @@
 import ExpoModulesCore
 
+// Disable swiftlint for redundant_optional_initialization. Optional initialization with nil is necessary for the Record constructors to work.
+// swiftlint:disable  redundant_optional_initialization
 internal struct FilePrintResult: Record {
   @Field
   var uri: String = ""

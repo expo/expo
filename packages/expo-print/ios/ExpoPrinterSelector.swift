@@ -24,7 +24,7 @@ public class ExpoPrinterSelector {
       }
 
       guard let selectedPrinter = picker.selectedPrinter, userDidSelect else {
-        promise.reject(PickerCancelledException())
+        promise.reject(PickerCanceledException())
         return
       }
 

@@ -4,14 +4,12 @@ public class ExpoPrintWithPrinter {
   var renderTasks: [ExpoWKPDFRenderer] = []
   var cachedPrinters: [String: UIPrinter] = [:]
   let delegate: ExpoPrintModuleDelegate
-  let appContext: AppContext?
 
-  init(delegate: ExpoPrintModuleDelegate, appContext: AppContext?) {
+  init(delegate: ExpoPrintModuleDelegate) {
     self.delegate = delegate
-    self.appContext = appContext
   }
 
-  func startPrint(promise: Promise, options: PrintOptions) {
+  func startPrint(options: PrintOptions, promise: Promise) {
     if let uri = options.uri {
       guard let printingData = dataFromUri(uri: uri) else {
         promise.reject(InvalidUrlException())

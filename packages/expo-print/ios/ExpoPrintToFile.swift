@@ -2,7 +2,7 @@ import ExpoModulesCore
 
 public class ExpoPrintToFile {
   var renderTasks: [ExpoWKPDFRenderer] = []
-  let appContext: AppContext?
+  weak var appContext: AppContext?
 
   init(appContext: AppContext?) {
     self.appContext = appContext
@@ -50,9 +50,19 @@ public class ExpoPrintToFile {
     }
 
     if options.useMarkupFormatter {
-      ExpoPrintToFile.pdfWithHtmlMarkupFormatter(htmlString: htmlString, pageSize: pageSize, printableRect: printableRect, onFinished: completionHandler)
+      ExpoPrintToFile.pdfWithHtmlMarkupFormatter(
+        htmlString: htmlString,
+        pageSize: pageSize,
+        printableRect: printableRect,
+        onFinished: completionHandler
+      )
     } else {
-      let renderTask = ExpoWKPDFRenderer(htmlString: htmlString, pageSize: pageSize, printableRect: printableRect, completionHandler: completionHandler)
+      let renderTask = ExpoWKPDFRenderer(
+        htmlString: htmlString,
+        pageSize: pageSize,
+        printableRect: printableRect,
+        completionHandler: completionHandler
+      )
       renderTasks.append(renderTask)
       renderTask.pdfWithHtml()
     }
