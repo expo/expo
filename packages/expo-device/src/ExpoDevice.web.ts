@@ -30,7 +30,7 @@ function getDeviceType(): DeviceType {
     default:
       return DeviceType.DESKTOP;
   }
-},
+}
 
 export default {
   get isDevice(): boolean {
