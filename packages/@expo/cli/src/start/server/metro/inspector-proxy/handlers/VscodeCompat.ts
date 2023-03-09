@@ -52,11 +52,18 @@ export class VscodeCompatHandler implements InspectorHandler {
     if ('id' in message && this.interceptDeviceMessage.has(message.id)) {
       this.interceptDeviceMessage.delete(message.id);
 
-      // Force-fully format the properties description to be an empty string
-      // See: https://github.com/facebook/hermes/issues/114
       for (const item of message.result.result ?? []) {
+        // Force-fully format the properties description to be an empty string
+        // See: https://github.com/facebook/hermes/issues/114
         if (item.value) {
           item.value.description = item.value.description ?? '';
+        }
+
+        // Avoid passing the `objectId` for symbol types.
+        // When collapsing in vscode, it will fetch information about the symbol using the `objectId`.
+        // The `Runtime.getProperties` request of the symbol hard-crashes Hermes.
+        if (item.value?.type === 'symbol' && item.value.objectId) {
+          delete item.value.objectId;
         }
       }
     }
