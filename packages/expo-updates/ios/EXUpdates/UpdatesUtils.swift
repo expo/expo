@@ -134,7 +134,7 @@ public final class UpdatesUtils: NSObject {
   internal static func purgeUpdatesLogsOlderThanOneDay() {
     UpdatesLogReader().purgeLogEntries { error in
       if let error = error {
-        NSLog("EXUpdatesUtils: error in purgeOldUpdatesLogs: %@", error.localizedDescription)
+        NSLog("UpdatesUtils: error in purgeOldUpdatesLogs: %@", error.localizedDescription)
       }
     }
   }

@@ -21,14 +21,14 @@ public protocol AppControllerDelegate: AnyObject {
  * to instances of other updates classes, and is the central hub for all updates-related tasks.
  *
  * The `start` method in this class should be invoked early in the application lifecycle, via
- * ExpoUpdatesReactDelegateHandler. It delegates to an instance of EXUpdatesAppLoaderTask to start
+ * ExpoUpdatesReactDelegateHandler. It delegates to an instance of AppLoaderTask to start
  * the process of loading and launching an update, then responds appropriately depending on the
  * callbacks that are invoked.
  *
  * This class also provides getter methods to access information about the updates state, which are
- * used by the exported EXUpdatesModule through EXUpdatesService. Such information includes
- * references to: the database, the EXUpdatesConfig object, the path on disk to the updates
- * directory, any currently active EXUpdatesAppLoaderTask, the current EXUpdatesSelectionPolicy, the
+ * used by the exported UpdatesModule through EXUpdatesService. Such information includes
+ * references to: the database, the UpdatesConfig object, the path on disk to the updates
+ * directory, any currently active AppLoaderTask, the current SelectionPolicy, the
  * error recovery handler, and the current launched update. This class is intended to be the source
  * of truth for these objects, so other classes shouldn't retain any of them indefinitely.
  */
@@ -55,7 +55,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
 
   /**
    The URL on disk to source asset for the RCTBridge.
-   Will be null until the EXUpdatesAppController delegate method is called.
+   Will be null until the AppController delegate method is called.
    This should be provided in the `sourceURLForBridge:` method of RCTBridgeDelegate.
    */
   public func launchAssetUrl() -> URL? {
@@ -128,7 +128,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     self.remoteLoadStatus = .Idle
     self.isEmergencyLaunch = false
     self.logger = UpdatesLogger()
-    self.logger.info(message: "EXUpdatesAppController sharedInstance created")
+    self.logger.info(message: "AppController sharedInstance created")
 
     super.init()
 
@@ -139,13 +139,13 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
    Overrides the configuration values specified in Expo.plist with the ones provided in this
    dictionary. This method can be used if any of these values should be determined at runtime
    instead of buildtime. If used, this method must be called before any other method on the
-   shared instance of EXUpdatesAppController.
+   shared instance of AppController.
    */
   public func setConfiguration(_ configuration: [String: Any]) {
     if isStarted {
       NSException(
         name: .internalInconsistencyException,
-        reason: "EXUpdatesAppController:setConfiguration should not be called after start"
+        reason: "AppController:setConfiguration should not be called after start"
       )
       .raise()
     }
@@ -185,7 +185,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
 
   /**
    * Similar to the above method, but sets the next selection policy to whatever
-   * EXUpdatesAppController's default selection policy is.
+   * AppController's default selection policy is.
    */
   public func resetSelectionPolicyToDefault() {
     _selectionPolicy = nil
@@ -201,7 +201,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
    `startAndShowLaunchScreen:` method instead.
    */
   public func start() {
-    precondition(!isStarted, "EXUpdatesAppController:start should only be called once per instance")
+    precondition(!isStarted, "AppController:start should only be called once per instance")
 
     if !config.isEnabled {
       let launcherNoDatabase = AppLauncherNoDatabase()
@@ -328,20 +328,20 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     return launcher?.launchedUpdate
   }
 
-  // MARK: - EXUpdatesAppLoaderTaskDelegate
+  // MARK: - AppLoaderTaskDelegate
 
   public func appLoaderTask(_: AppLoaderTask, didLoadCachedUpdate update: Update) -> Bool {
     return true
   }
 
   public func appLoaderTask(_: AppLoaderTask, didStartLoadingUpdate update: Update) {
-    logger.info(message: "EXUpdatesAppController appLoaderTask didStartLoadingUpdate", code: .none, updateId: update.loggingId(), assetId: nil)
+    logger.info(message: "AppController appLoaderTask didStartLoadingUpdate", code: .none, updateId: update.loggingId(), assetId: nil)
     remoteLoadStatus = .Loading
   }
 
   public func appLoaderTask(_: AppLoaderTask, didFinishWithLauncher launcher: AppLauncher, isUpToDate: Bool) {
     let logMessage = String(
-      format: "EXUpdatesAppController appLoaderTask didFinishWithLauncher, isUpToDate=%d, remoteLoadStatus=%ld",
+      format: "AppController appLoaderTask didFinishWithLauncher, isUpToDate=%d, remoteLoadStatus=%ld",
       isUpToDate,
       remoteLoadStatus.rawValue
     )
@@ -364,7 +364,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
   }
 
   public func appLoaderTask(_: AppLoaderTask, didFinishWithError error: Error) {
-    let logMessage = String(format: "EXUpdatesAppController appLoaderTask didFinishWithError: %@", error.localizedDescription)
+    let logMessage = String(format: "AppController appLoaderTask didFinishWithError: %@", error.localizedDescription)
     logger.error(message: logMessage, code: .updateFailedToLoad)
     emergencyLaunch(fatalError: error as NSError)
   }
@@ -382,7 +382,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
         preconditionFailure("Background update with error status must have a nonnull error object")
       }
       logger.error(
-        message: "EXUpdatesAppController appLoaderTask didFinishBackgroundUpdateWithStatus=Error",
+        message: "AppController appLoaderTask didFinishBackgroundUpdateWithStatus=Error",
         code: .none,
         updateId: update?.loggingId(),
         assetId: nil
@@ -398,7 +398,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
         preconditionFailure("Background update with error status must have a nonnull update object")
       }
       logger.info(
-        message: "EXUpdatesAppController appLoaderTask didFinishBackgroundUpdateWithStatus=NewUpdateLoaded",
+        message: "AppController appLoaderTask didFinishBackgroundUpdateWithStatus=NewUpdateLoaded",
         code: .none,
         updateId: update.loggingId(),
         assetId: nil
@@ -413,7 +413,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     case .noUpdateAvailable:
       remoteLoadStatus = .Idle
       logger.error(
-        message: "EXUpdatesAppController appLoaderTask didFinishBackgroundUpdateWithStatus=NoUpdateAvailable",
+        message: "AppController appLoaderTask didFinishBackgroundUpdateWithStatus=NoUpdateAvailable",
         code: .noUpdatesAvailable,
         updateId: update?.loggingId(),
         assetId: nil
@@ -469,7 +469,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     }
   }
 
-  // MARK: - EXUpdatesErrorRecoveryDelegate
+  // MARK: - ErrorRecoveryDelegate
 
   public func relaunch(completion: @escaping (Error?, Bool) -> Void) {
     let launcher = AppLauncherWithDatabase(
@@ -516,7 +516,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
       self.remoteLoadStatus = update != nil ? .NewUpdateLoaded : .Idle
       self.errorRecovery.notify(newRemoteLoadStatus: self.remoteLoadStatus)
     } error: { error in
-      self.logger.error(message: "EXUpdatesAppController loadRemoteUpdate error: \(error.localizedDescription)", code: .updateFailedToLoad)
+      self.logger.error(message: "AppController loadRemoteUpdate error: \(error.localizedDescription)", code: .updateFailedToLoad)
       self.remoteLoadStatus = .Idle
       self.errorRecovery.notify(newRemoteLoadStatus: self.remoteLoadStatus)
     }
@@ -533,7 +533,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
       }
 
       self.logger.error(
-        message: "EXUpdatesAppController markFailedLaunchForUpdate",
+        message: "AppController markFailedLaunchForUpdate",
         code: .unknown,
         updateId: launchedUpdate.loggingId(),
         assetId: nil

@@ -11,16 +11,16 @@ public typealias AppLauncherUpdateCompletionBlock = (Error?, Update?) -> Void
 public typealias AppLauncherQueryCompletionBlock = (Error?, [UUID]?) -> Void
 
 /**
- * Implementation of EXUpdatesAppLauncher that uses the SQLite database and expo-updates file store
+ * Implementation of AppLauncher that uses the SQLite database and expo-updates file store
  * as the source of updates.
  *
- * Uses the EXUpdatesSelectionPolicy to choose an update from SQLite to launch, then ensures that
+ * Uses the SelectionPolicy to choose an update from SQLite to launch, then ensures that
  * the update is safe and ready to launch (i.e. all the assets that SQLite expects to be stored on
  * disk are actually there).
  *
  * This class also includes failsafe code to attempt to re-download any assets unexpectedly missing
  * from disk (since it isn't necessarily safe to just revert to an older update in this case).
- * Distinct from the EXUpdatesAppLoader classes, though, this class does *not* make any major
+ * Distinct from the AppLoader classes, though, this class does *not* make any major
  * modifications to the database; its role is mostly to read the database and ensure integrity with
  * the file system.
  *
@@ -43,7 +43,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
   private let database: UpdatesDatabase
   private let directory: URL
   public private(set) var completionQueue: DispatchQueue
-  public private(set) var completion: EXUpdatesAppLauncherCompletionBlock?
+  public private(set) var completion: AppLauncherCompletionBlock?
 
   private var launchAssetError: Error?
 
@@ -130,9 +130,9 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
 
   public func launchUpdate(
     withSelectionPolicy selectionPolicy: SelectionPolicy,
-    completion: @escaping EXUpdatesAppLauncherCompletionBlock
+    completion: @escaping AppLauncherCompletionBlock
   ) {
-    precondition(self.completion == nil, "EXUpdatesAppLauncher:launchUpdateWithSelectionPolicy:successBlock should not be called twice on the same instance")
+    precondition(self.completion == nil, "AppLauncher:launchUpdateWithSelectionPolicy:completion should not be called twice on the same instance")
     self.completion = completion
 
     if launchedUpdate == nil {

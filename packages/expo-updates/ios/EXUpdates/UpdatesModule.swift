@@ -10,7 +10,7 @@ import ExpoModulesCore
  * and updates state, along with methods to check for and download new updates, reload with the
  * newest downloaded update applied, and read/clear native log entries.
  *
- * Communicates with the updates hub (EXUpdatesAppController in most apps, EXAppLoaderExpoUpdates in
+ * Communicates with the updates hub (AppController in most apps, EXAppLoaderExpoUpdates in
  * Expo Go and legacy standalone apps) via EXUpdatesService, an internal module which is overridden
  * by EXUpdatesBinding, a scoped module, in Expo Go.
  */

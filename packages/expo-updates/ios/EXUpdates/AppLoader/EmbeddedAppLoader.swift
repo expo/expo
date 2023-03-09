@@ -9,7 +9,7 @@
 import Foundation
 
 /**
- * Subclass of EXUpdatesAppLoader which handles copying the embedded update's assets into the
+ * Subclass of AppLoader which handles copying the embedded update's assets into the
  * expo-updates cache location.
  *
  * Rather than launching the embedded update directly from its location in the app bundle/apk, we
@@ -28,7 +28,7 @@ public final class EmbeddedAppLoader: AppLoader {
   public static let EXUpdatesBareEmbeddedBundleFilename = "main"
   public static let EXUpdatesBareEmbeddedBundleFileType = "jsbundle"
 
-  private static let EXUpdatesEmbeddedAppLoaderErrorDomain = "EXUpdatesEmbeddedAppLoader"
+  private static let ErrorDomain = "EXUpdatesEmbeddedAppLoader"
 
   private static var embeddedManifestInternal: Update?
   public static func embeddedManifest(withConfig config: UpdatesConfig, database: UpdatesDatabase?) -> Update? {
@@ -108,7 +108,7 @@ public final class EmbeddedAppLoader: AppLoader {
   ) {
     guard let embeddedManifest = EmbeddedAppLoader.embeddedManifest(withConfig: config, database: database) else {
       errorBlock(NSError(
-        domain: EmbeddedAppLoader.EXUpdatesEmbeddedAppLoaderErrorDomain,
+        domain: EmbeddedAppLoader.ErrorDomain,
         code: 1008,
         userInfo: [
           NSLocalizedDescriptionKey: "Failed to load embedded manifest. Make sure you have configured expo-updates correctly."
@@ -163,6 +163,6 @@ public final class EmbeddedAppLoader: AppLoader {
     success successBlock: @escaping AppLoaderSuccessBlock,
     error errorBlock: @escaping AppLoaderErrorBlock
   ) {
-    preconditionFailure("Should not call EXUpdatesEmbeddedAppLoader#loadUpdateFromUrl")
+    preconditionFailure("Should not call EmbeddedAppLoader#loadUpdateFromUrl")
   }
 }

@@ -3,7 +3,7 @@
 import Foundation
 
 /**
- * A trivial EXUpdatesLauncherSelectionPolicy that will choose a single predetermined update to launch.
+ * A trivial LauncherSelectionPolicy that will choose a single predetermined update to launch.
  */
 @objc(EXUpdatesLauncherSelectionPolicySingleUpdate)
 @objcMembers
