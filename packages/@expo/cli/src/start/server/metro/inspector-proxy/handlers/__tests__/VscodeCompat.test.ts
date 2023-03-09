@@ -1,5 +1,10 @@
-import { DebuggerPaused, RuntimeGetProperties, VscodeCompatHandler } from '../VscodeCompat';
-import { DeviceRequest } from '../types';
+import {
+  DebuggerPaused,
+  DebuggerSetBreakpointByUrl,
+  RuntimeGetProperties,
+  VscodeCompatHandler,
+} from '../VscodeCompat';
+import { DebuggerRequest, DeviceRequest } from '../types';
 
 it('responds to `Debugger.getPossibleBreakpoints` with empty `locations`', () => {
   const handler = new VscodeCompatHandler();
@@ -105,4 +110,59 @@ it('mutates `Debugger.paused` callFrames without Hermes native function frames',
   // Expect the first callFrame to be filtered
   expect(message.params.callFrames).toHaveLength(1);
   expect(message.params.callFrames[0]).toMatchObject({ callFrameId: '27' });
+});
+
+it('mutates `Debugger.setBreakpointByUrl` debugger request to create an unbounded breakpoint', () => {
+  const handler = new VscodeCompatHandler();
+  const debuggerSocket = { send: jest.fn() };
+
+  const localHttpUrl: DebuggerRequest<DebuggerSetBreakpointByUrl> = {
+    id: 420,
+    method: 'Debugger.setBreakpointByUrl',
+    params: {
+      urlRegex: 'file:\\/\\/http:\\/localhost:8081\\/App\\.js($|\\?)',
+      lineNumber: 14,
+      columnNumber: 0,
+    },
+  };
+
+  const lanHttpsUrl: DebuggerRequest<DebuggerSetBreakpointByUrl> = {
+    id: 421,
+    method: 'Debugger.setBreakpointByUrl',
+    params: {
+      urlRegex: 'file:\\/\\/http:\\/192\\.168\\.10\\.10:8081\\/App\\.js($|\\?)',
+      lineNumber: 14,
+      columnNumber: 0,
+    },
+  };
+
+  const correctUrl: DebuggerRequest<DebuggerSetBreakpointByUrl> = {
+    id: 422,
+    method: 'Debugger.setBreakpointByUrl',
+    params: {
+      url: 'file:\\/\\/path\\/to\\/App\\.js',
+      lineNumber: 14,
+      columnNumber: 0,
+    },
+  };
+
+  // These messages should still be propagated, it should return `false`
+  expect(handler.onDebuggerMessage(localHttpUrl, { socket: debuggerSocket })).toBe(false);
+  expect(handler.onDebuggerMessage(lanHttpsUrl, { socket: debuggerSocket })).toBe(false);
+  expect(handler.onDebuggerMessage(correctUrl, { socket: debuggerSocket })).toBe(false);
+
+  // Expect the `localHttpUrl` and `lanHttpsUrl` to be mutated
+  expect(localHttpUrl.params).not.toHaveProperty('urlRegex');
+  expect(localHttpUrl.params).toHaveProperty(
+    'url',
+    'file:\\/\\/http:\\/localhost:8081\\/App\\.js($|\\?)'
+  );
+  expect(lanHttpsUrl.params).not.toHaveProperty('urlRegex');
+  expect(lanHttpsUrl.params).toHaveProperty(
+    'url',
+    'file:\\/\\/http:\\/192\\.168\\.10\\.10:8081\\/App\\.js($|\\?)'
+  );
+
+  // Expect the `correctUrl` to not be mutated
+  expect(correctUrl.params.url).toBe('file:\\/\\/path\\/to\\/App\\.js');
 });
