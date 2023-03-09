@@ -40,13 +40,13 @@ public class DeviceModule: Module {
 
 func getDeviceType() -> Int {
   // if it's a macOS Catalyst app
-  if ((ProcessInfo.processInfo.isMacCatalystApp)) {
+  if (ProcessInfo.processInfo.isMacCatalystApp) {
     return DeviceType.desktop.rawValue
   }
-  
+
   // if it's built for iPad running on a Mac
   if #available(iOS 14.0, *) {
-    if (ProcessInfo.processInfo.isiOSAppOnMac) {
+    if ProcessInfo.processInfo.isiOSAppOnMac {
       return DeviceType.desktop.rawValue
     }
   }
