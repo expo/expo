@@ -77,6 +77,7 @@ const selectStyle = css`
     padding: 0 ${spacing[2]}px;
     padding-left: ${spacing[8]}px;
     color: ${theme.text.secondary};
+    text-indent: 0;
   }
 `;
 
