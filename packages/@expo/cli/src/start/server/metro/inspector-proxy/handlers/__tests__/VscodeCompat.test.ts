@@ -1,5 +1,5 @@
-import { DeviceRequest } from '../types';
 import { DebuggerPaused, RuntimeGetProperties, VscodeCompatHandler } from '../VscodeCompat';
+import { DeviceRequest } from '../types';
 
 it('responds to `Debugger.getPossibleBreakpoints` with empty `locations`', () => {
   const handler = new VscodeCompatHandler();
