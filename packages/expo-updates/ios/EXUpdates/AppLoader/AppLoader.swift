@@ -140,7 +140,7 @@ public class AppLoader: NSObject {
         }
 
         // swiftlint:disable:next line_length
-        NSLog("EXUpdatesAppLoader: Loaded an update with the same ID but a different scopeKey than one we already have on disk. This is a server error. Overwriting the scopeKey and loading the existing update.")
+        NSLog("AppLoader: Loaded an update with the same ID but a different scopeKey than one we already have on disk. This is a server error. Overwriting the scopeKey and loading the existing update.")
       }
 
       if let existingUpdate = existingUpdate,

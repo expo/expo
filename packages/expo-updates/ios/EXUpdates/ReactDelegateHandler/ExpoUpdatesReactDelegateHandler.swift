@@ -74,7 +74,7 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     return self.deferredRootView
   }
 
-  // MARK: EXUpdatesAppControllerDelegate implementations
+  // MARK: AppControllerDelegate implementations
 
   public func appController(_ appController: AppController, didStartWithSuccess success: Bool) {
     guard let reactDelegate = self.reactDelegate else {

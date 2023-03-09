@@ -186,16 +186,16 @@ public final class ErrorRecovery: NSObject {
 
     switch nextTask {
     case .waitForRemoteUpdate:
-      logger.info(message: "EXUpdatesErrorRecovery: attempting to fetch a new update, waiting")
+      logger.info(message: "ErrorRecovery: attempting to fetch a new update, waiting")
       waitForRemoteLoaderToFinish()
     case .launchNew:
-      logger.info(message: "EXUpdatesErrorRecovery: launching a new update")
+      logger.info(message: "ErrorRecovery: launching a new update")
       tryRelaunchFromCache()
     case .launchCached:
-      logger.info(message: "EXUpdatesErrorRecovery: launching a cached update")
+      logger.info(message: "ErrorRecovery: launching a cached update")
       tryRelaunchFromCache()
     case .crash:
-      logger.error(message: "EXUpdatesErrorRecovery: could not recover from error, crashing", code: .updateFailedToLoad)
+      logger.error(message: "ErrorRecovery: could not recover from error, crashing", code: .updateFailedToLoad)
       crash()
     }
   }
@@ -325,7 +325,7 @@ public final class ErrorRecovery: NSObject {
     }
     // wait 10s before unsetting error handlers; even though we won't try to relaunch if our handlers
     // are triggered after now, we still want to give the app a reasonable window of time to start the
-    // EXUpdatesErrorRecoveryTaskWaitForRemoteUpdate task and check for a new update is there is one
+    // ErrorRecoveryTaskWaitForRemoteUpdate task and check for a new update is there is one
     errorRecoveryQueue.asyncAfter(deadline: DispatchTime.now() + .seconds(10)) {
       self.unsetRCTErrorHandlers()
     }
@@ -388,7 +388,7 @@ public final class ErrorRecovery: NSObject {
         return
       }
 
-      self.logger.error(message: "EXUpdatesErrorRecovery fatal exception: \(serializedError)", code: .jsRuntimeError)
+      self.logger.error(message: "ErrorRecovery fatal exception: \(serializedError)", code: .jsRuntimeError)
       let data = serializedError.data(using: .utf8)!
       let errorLogFile = ErrorRecovery.errorLogFile()
       if FileManager.default.fileExists(atPath: errorLogFile.path) {
