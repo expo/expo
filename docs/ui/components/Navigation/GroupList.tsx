@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { spacing, theme } from '@expo/styleguide';
+import { theme } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
 import type { PropsWithChildren } from 'react';
 
 import { NavigationRenderProps } from '.';

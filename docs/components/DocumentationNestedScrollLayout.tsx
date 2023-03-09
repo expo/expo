@@ -2,7 +2,8 @@
 // GETTING NESTED SCROLL RIGHT IS DELICATE BUSINESS. THEREFORE THIS COMPONENT
 // IS THE ONLY PLACE WHERE SCROLL CODE SHOULD BE HANDLED. THANKS.
 import { css } from '@emotion/react';
-import { breakpoints, theme } from '@expo/styleguide';
+import { theme } from '@expo/styleguide';
+import { breakpoints } from '@expo/styleguide-base';
 import * as React from 'react';
 
 import { SidebarHead, SidebarFooter } from '~/ui/components/Sidebar';

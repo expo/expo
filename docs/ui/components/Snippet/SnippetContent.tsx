@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { borderRadius, theme, spacing } from '@expo/styleguide';
+import { theme } from '@expo/styleguide';
+import { borderRadius, spacing } from '@expo/styleguide-base';
 import { forwardRef, PropsWithChildren } from 'react';
 
 export type SnippetContentProps = PropsWithChildren<{

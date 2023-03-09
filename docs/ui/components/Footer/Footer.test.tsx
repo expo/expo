@@ -47,7 +47,7 @@ describe('Footer', () => {
     );
 
     const link = screen.getByRole('link', {
-      name: 'Github-icon View open bug reports for GestureHandler',
+      name: 'View open bug reports for GestureHandler',
     });
     expect(link.getAttribute('href')).toBe(
       'https://github.com/software-mansion/react-native-gesture-handler/issues'

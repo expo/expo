@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { theme, shadows, borderRadius, spacing, breakpoints, typography } from '@expo/styleguide';
+import { theme, shadows, typography } from '@expo/styleguide';
+import { borderRadius, spacing, breakpoints } from '@expo/styleguide-base';
 
 export const commandMenuStyles = css`
   #__next[aria-hidden] {

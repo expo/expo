@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { borderRadius, breakpoints, shadows, spacing, theme, typography } from '@expo/styleguide';
+import { shadows, theme, typography } from '@expo/styleguide';
+import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
 import type { ComponentProps, ComponentType } from 'react';
 import { Fragment } from 'react';
 import ReactMarkdown from 'react-markdown';
@@ -73,8 +74,8 @@ export const mdComponents: MDComponents = {
       <CODE css={css({ display: 'inline' })}>{children}</CODE>
     ),
   h1: ({ children }) => <H4>{children}</H4>,
-  ul: ({ children }) => <UL css={STYLES_ELEMENT_SPACING}>{children}</UL>,
-  ol: ({ children }) => <OL css={STYLES_ELEMENT_SPACING}>{children}</OL>,
+  ul: ({ children }) => <UL className={ELEMENT_SPACING}>{children}</UL>,
+  ol: ({ children }) => <OL className={ELEMENT_SPACING}>{children}</OL>,
   li: ({ children }) => <LI>{children}</LI>,
   a: ({ href, children }) => {
     if (
@@ -90,7 +91,7 @@ export const mdComponents: MDComponents = {
     }
     return <A href={href}>{children}</A>;
   },
-  p: ({ children }) => (children ? <P css={STYLES_ELEMENT_SPACING}>{children}</P> : null),
+  p: ({ children }) => (children ? <P className={ELEMENT_SPACING}>{children}</P> : null),
   strong: ({ children }) => <BOLD>{children}</BOLD>,
   span: ({ children }) => (children ? <span>{children}</span> : null),
   table: ({ children }) => <Table>{children}</Table>,
@@ -763,6 +764,4 @@ const STYLES_EXAMPLE_IN_TABLE = css({
   margin: `${spacing[2]}px 0`,
 });
 
-export const STYLES_ELEMENT_SPACING = css({
-  marginBottom: spacing[4],
-});
+export const ELEMENT_SPACING = 'mb-4';

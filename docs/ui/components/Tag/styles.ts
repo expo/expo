@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { borderRadius, spacing, theme } from '@expo/styleguide';
+import { theme } from '@expo/styleguide';
+import { borderRadius, spacing } from '@expo/styleguide-base';
 
 export const tagStyle = css({
   display: 'inline-flex',

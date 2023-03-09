@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
-import { spacing, theme } from '@expo/styleguide';
-import React, { PropsWithChildren } from 'react';
+import { theme } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
+import type { PropsWithChildren } from 'react';
 
 import { TextAlign } from './types';
 import { convertAlign } from './utils';

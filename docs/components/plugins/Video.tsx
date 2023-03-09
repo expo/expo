@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { borderRadius, breakpoints } from '@expo/styleguide';
+import { borderRadius, breakpoints } from '@expo/styleguide-base';
 import React, { useState } from 'react';
 import ReactPlayer from 'react-player';
 import VisibilitySensor from 'react-visibility-sensor';

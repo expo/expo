@@ -1,19 +1,13 @@
 import { css } from '@emotion/react';
+import { useTheme, theme, shadows, typography } from '@expo/styleguide';
+import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
 import {
-  useTheme,
-  theme,
   ChevronDownIcon,
+  Moon01SolidIcon,
+  SunSolidIcon,
   ThemeAutoIcon,
-  ThemeDarkIcon,
-  ThemeLightIcon,
-  iconSize,
-  shadows,
-  typography,
-  borderRadius,
-  breakpoints,
-  spacing,
-} from '@expo/styleguide';
-import React, { useEffect, useState } from 'react';
+} from '@expo/styleguide-icons';
+import { useEffect, useState } from 'react';
 
 export const ThemeSelector = () => {
   const { themeName, setAutoMode, setDarkMode, setLightMode } = useTheme();
@@ -43,13 +37,11 @@ export const ThemeSelector = () => {
         <option value="dark">Dark</option>
       </select>
       <div css={selectIconStyle}>
-        {themeName === 'auto' && <ThemeAutoIcon size={iconSize.sm} />}
-        {themeName === 'dark' && <ThemeDarkIcon size={iconSize.sm} />}
-        {themeName === 'light' && <ThemeLightIcon size={iconSize.sm} />}
+        {themeName === 'auto' && <ThemeAutoIcon className="icon-sm text-icon-default" />}
+        {themeName === 'dark' && <Moon01SolidIcon className="icon-sm text-icon-default" />}
+        {themeName === 'light' && <SunSolidIcon className="icon-sm text-icon-default" />}
       </div>
-      <div css={themeIconStyle}>
-        <ChevronDownIcon size={iconSize['2xs']} />
-      </div>
+      <ChevronDownIcon className="icon-xs text-icon-secondary absolute right-2 top-3 pointer-events-none" />
     </div>
   );
 };
@@ -85,6 +77,7 @@ const selectStyle = css`
     padding: 0 ${spacing[2]}px;
     padding-left: ${spacing[8]}px;
     color: ${theme.text.secondary};
+    text-indent: 0;
   }
 `;
 
@@ -92,12 +85,5 @@ const selectIconStyle = css`
   position: absolute;
   left: 10px;
   top: 10px;
-  pointer-events: none;
-`;
-
-const themeIconStyle = css`
-  position: absolute;
-  right: 8px;
-  top: 11px;
   pointer-events: none;
 `;

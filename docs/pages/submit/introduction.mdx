@@ -7,7 +7,7 @@ description: EAS Submit is a hosted service for uploading and submitting an app 
 
 import { CODE } from '~/ui/components/Text';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { AppleAppStoreIcon, GoogleAppStoreIcon } from '@expo/styleguide';
+import { AppleAppStoreIcon, GoogleAppStoreIcon, Settings01Icon } from '@expo/styleguide-icons';
 
 **EAS Submit** is a hosted service for uploading and submitting your app binaries to the app stores. Since it's a hosted service, you can submit your app to both stores as long as you can run EAS CLI on your machine. This means you can easily submit your iOS and Android apps from your macOS, Windows, or Linux workstation or from CI.
 
@@ -28,12 +28,6 @@ import { AppleAppStoreIcon, GoogleAppStoreIcon } from '@expo/styleguide';
 />
 
 <BoxLink
-  title={'Learn how to use EAS Submit with "expo build"'}
-  description="EAS Submit works with EAS Build projects by default, but it's easy to use EAS Submit to submit apps built with Classic Builds too."
-  href="/submit/classic-builds"
-/>
-
-<BoxLink
   title="Configuration with eas.json"
   description={
     <>
@@ -41,4 +35,5 @@ import { AppleAppStoreIcon, GoogleAppStoreIcon } from '@expo/styleguide';
     </>
   }
   href="/submit/eas-json"
+  Icon={Settings01Icon}
 />

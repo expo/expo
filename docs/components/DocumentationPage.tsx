@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { breakpoints, theme } from '@expo/styleguide';
+import { theme } from '@expo/styleguide';
+import { breakpoints } from '@expo/styleguide-base';
 import Router, { useRouter } from 'next/router';
 import { useEffect, useState, createRef } from 'react';
 

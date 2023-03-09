@@ -20,7 +20,7 @@ export default function ImageSpotlight({ alt, src, style, containerStyle }: Prop
         marginBottom: 20,
         ...containerStyle,
       }}>
-      <img src={src} alt={alt} style={style} />
+      <img src={src} alt={alt} style={style} className="inline" />
     </div>
   );
 }

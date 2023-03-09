@@ -1,6 +1,5 @@
-import { spacing } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
 import { render, screen } from '@testing-library/react';
-import React from 'react';
 
 import { getHeadingIndent, getHeadingInfo } from './TableOfContents';
 

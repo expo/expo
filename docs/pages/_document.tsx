@@ -1,15 +1,14 @@
 import { Global } from '@emotion/react';
 import { BlockingSetInitialColorMode } from '@expo/styleguide';
 import Document, { Html, Head, Main, NextScript, DocumentContext } from 'next/document';
-import React from 'react';
 
+import { globalDiff } from '~/global-styles/diff';
 import { globalExtras } from '~/global-styles/extras';
 import { globalNProgress } from '~/global-styles/nprogress';
 import { globalPrism } from '~/global-styles/prism';
-import { globalReset } from '~/global-styles/reset';
 import { globalTippy } from '~/global-styles/tippy';
 
-export default class MyDocument extends Document<{ css?: string }> {
+export default class DocsDocument extends Document {
   static async getInitialProps(ctx: DocumentContext) {
     const initialProps = await Document.getInitialProps(ctx);
     return {
@@ -22,7 +21,7 @@ export default class MyDocument extends Document<{ css?: string }> {
     return (
       <Html lang="en">
         <Head>
-          <Global styles={[globalReset, globalNProgress, globalPrism, globalTippy, globalExtras]} />
+          <Global styles={[globalNProgress, globalPrism, globalTippy, globalDiff, globalExtras]} />
         </Head>
         <body>
           <BlockingSetInitialColorMode />

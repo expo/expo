@@ -1,4 +1,5 @@
-import { palette, theme } from '@expo/styleguide';
+import { theme } from '@expo/styleguide';
+import { palette } from '@expo/styleguide-base';
 
 export const OfficeHoursImage = () => (
   <svg
@@ -15,7 +16,7 @@ export const OfficeHoursImage = () => (
     <circle
       r="43.5"
       transform="matrix(-0.866025 0.5 0.5 0.866025 59.5 59.5002)"
-      fill={theme.palette.yellow7}
+      fill={theme.palette.yellow6}
     />
     <path
       d="M85.1531 66.298C86.3163 64.1977 87.9879 58.5711 85.3679 52.8673M90.9175 67.6973C90.9175 67.6973 94.6519 58.5123 90.9414 50.2689"

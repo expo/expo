@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { spacing } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
 import ReactMarkdown from 'react-markdown';
 
 import { CommentData } from '~/components/plugins/api/APIDataTypes';

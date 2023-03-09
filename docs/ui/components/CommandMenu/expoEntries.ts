@@ -1,27 +1,27 @@
+import { SnackLogo } from '@expo/styleguide';
 import {
   BuildIcon,
   DeploymentIcon,
-  OverviewIcon,
-  SettingsIcon,
+  Grid01Icon,
+  Settings01Icon,
   EasSubmitIcon,
   ChannelIcon,
-  BranchIcon,
+  GitBranch01Icon,
   UpdateIcon,
   CredentialIcon,
-  SecretsIcon,
-  SnackLogo,
-} from '@expo/styleguide';
+  Key01Icon,
+} from '@expo/styleguide-icons';
 
 export const entries = [
   {
     label: 'Account Settings',
     url: 'https://expo.dev/accounts/[account]/settings',
-    Icon: SettingsIcon,
+    Icon: Settings01Icon,
   },
   {
     label: 'User Settings',
     url: 'https://expo.dev/settings',
-    Icon: SettingsIcon,
+    Icon: Settings01Icon,
   },
   {
     label: 'Snacks',
@@ -31,7 +31,7 @@ export const entries = [
   {
     label: 'Project Overview',
     url: 'https://expo.dev/accounts/[account]/projects/[project]',
-    Icon: OverviewIcon,
+    Icon: Grid01Icon,
   },
   {
     label: 'Project Deployments',
@@ -56,7 +56,7 @@ export const entries = [
   {
     label: 'Project Branches',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/branches',
-    Icon: BranchIcon,
+    Icon: GitBranch01Icon,
   },
   {
     label: 'Project Updates',
@@ -71,11 +71,11 @@ export const entries = [
   {
     label: 'Project Secrets',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/secrets',
-    Icon: SecretsIcon,
+    Icon: Key01Icon,
   },
   {
     label: 'Project Settings',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/settings',
-    Icon: SettingsIcon,
+    Icon: Settings01Icon,
   },
 ];
