@@ -888,7 +888,8 @@ class LinearGradientModule : Module() {
 
 ## Guides
 
-<APIBox header="Sending events">
+<APIBox>
+### Sending events
 
 While JavaScript/TypeScript to Native communication is mostly covered by native functions, you might also want to let the JavaScript/TypeScript code know about certain system events, for example, when the clipboard content changes.
 
@@ -979,7 +980,8 @@ export function addClipboardListener(listener: (event) => void): Subscription {
 
 </APIBox>
 
-<APIBox header="View callbacks">
+<APIBox>
+### View callbacks
 
 Some events are connected to a certain view. For example, the touch event should be sent only to the underlying JavaScript view which was pressed. In that case, you can't use `sendEvent` described in [`Sending events`](#sending-events). The `expo-modules-core` introduces a view callbacks mechanism to handle view-bound events.
 
