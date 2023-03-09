@@ -56,7 +56,7 @@ internal class NoPrintDataException: Exception {
 
 internal class PrintingJobFailedException: GenericException<String?> {
   override var reason: String {
-    "Printing job encountered an error: '\(param ?? "nil")'"
+    "Printing job encountered an error: '\(param ?? "unknown error")'"
   }
 }
 
