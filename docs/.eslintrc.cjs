@@ -25,6 +25,9 @@ module.exports = {
   },
   settings: {
     tailwindcss: {
+      cssFiles: [
+        "node_modules/@expo/styleguide/dist/global.css"
+      ],
       callees: ["mergeClasses"],
       config: "tailwind.config.cjs",
     }
