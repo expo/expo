@@ -52,14 +52,14 @@ func getDeviceType() -> Int {
   }
 
   switch UIDevice.current.userInterfaceIdiom {
-    case UIUserInterfaceIdiom.phone:
-      return DeviceType.phone.rawValue
-    case UIUserInterfaceIdiom.pad:
-      return DeviceType.tablet.rawValue
-    case UIUserInterfaceIdiom.tv:
-      return DeviceType.tv.rawValue
-    default:
-      return DeviceType.unknown.rawValue
+  case UIUserInterfaceIdiom.phone:
+    return DeviceType.phone.rawValue
+  case UIUserInterfaceIdiom.pad:
+    return DeviceType.tablet.rawValue
+  case UIUserInterfaceIdiom.tv:
+    return DeviceType.tv.rawValue
+  default:
+    return DeviceType.unknown.rawValue
   }
 }
 
