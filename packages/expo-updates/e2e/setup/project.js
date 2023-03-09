@@ -239,21 +239,13 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
  */
 async function prepareLocalUpdatesModule(repoRoot) {
   // copy UpdatesE2ETest exported module into the local package
-  const iosE2ETestModuleHPath = path.join(
+  const iosE2ETestModuleSwiftPath = path.join(
     repoRoot,
     'packages',
     'expo-updates',
     'ios',
     'EXUpdates',
-    'EXUpdatesE2ETestModule.h'
-  );
-  const iosE2ETestModuleMPath = path.join(
-    repoRoot,
-    'packages',
-    'expo-updates',
-    'ios',
-    'EXUpdates',
-    'EXUpdatesE2ETestModule.m'
+    'E2ETestModule.swift'
   );
   const androidE2ETestModuleKTPath = path.join(
     repoRoot,
@@ -269,12 +261,8 @@ async function prepareLocalUpdatesModule(repoRoot) {
     'UpdatesE2ETestModule.kt'
   );
   await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'EXUpdatesE2ETestModule.h'),
-    iosE2ETestModuleHPath
-  );
-  await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'EXUpdatesE2ETestModule.m'),
-    iosE2ETestModuleMPath
+    path.resolve(dirName, '..', 'fixtures', 'E2ETestModule.swift'),
+    iosE2ETestModuleSwiftPath
   );
   await fs.copyFile(
     path.resolve(dirName, '..', 'fixtures', 'UpdatesE2ETestModule.kt'),
@@ -310,11 +298,29 @@ async function prepareLocalUpdatesModule(repoRoot) {
   }
   await fs.writeFile(updatesPackageFilePath, updatesPackageFileContents, 'utf8');
 
+  // Add E2ETestModule to expo-module.config.json
+  const expoModuleConfigFilePath = path.join(
+    repoRoot,
+    'packages',
+    'expo-updates',
+    'expo-module.config.json'
+  );
+  const originalExpoModuleConfigJsonString = await fs.readFile(expoModuleConfigFilePath, 'utf-8');
+  const originalExpoModuleConfig = JSON.parse(originalExpoModuleConfigJsonString);
+  const expoModuleConfig = {
+    ...originalExpoModuleConfig,
+    ios: {
+      ...originalExpoModuleConfig.ios,
+      modules: ['UpdatesModule', 'E2ETestModule'],
+    },
+  };
+  await fs.writeFile(expoModuleConfigFilePath, JSON.stringify(expoModuleConfig, null, 2), 'utf-8');
+
   // Return cleanup function
   return async () => {
     await fs.writeFile(updatesPackageFilePath, originalUpdatesPackageFileContents, 'utf8');
-    await fs.rm(iosE2ETestModuleHPath, { force: true });
-    await fs.rm(iosE2ETestModuleMPath, { force: true });
+    await fs.writeFile(expoModuleConfigFilePath, originalExpoModuleConfigJsonString, 'utf-8');
+    await fs.rm(iosE2ETestModuleSwiftPath, { force: true });
     await fs.rm(androidE2ETestModuleKTPath, { force: true });
   };
 }
@@ -330,7 +336,7 @@ function transformAppJsonForE2E(appJson, projectName, runtimeVersion) {
       name: projectName,
       owner: 'expo-ci',
       runtimeVersion,
-      jsEngine: 'hermes',
+      jsEngine: 'jsc',
       plugins: ['expo-updates', '@config-plugins/detox'],
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
@@ -497,14 +503,6 @@ async function initAsync(
   }
 
   return projectRoot;
-}
-
-async function createUpdateBundleAsync(projectRoot, localCliBin) {
-  await fs.rm(path.join(projectRoot, 'dist'), { force: true, recursive: true });
-  await spawnAsync(localCliBin, ['export'], {
-    cwd: projectRoot,
-    stdio: 'inherit',
-  });
 }
 
 async function setupE2EAppAsync(projectRoot, localCliBin, repoRoot) {
