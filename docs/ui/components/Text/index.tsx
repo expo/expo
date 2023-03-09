@@ -111,7 +111,7 @@ const linkStyled = css({
     },
   },
 
-  'code, strong, em, b, i': {
+  'span, code, strong, em, b, i': {
     color: theme.text.link,
   },
 });
