@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added deviceType constant ([#21633](https://github.com/expo/expo/pull/21633) by [@robertherber](https://github.com/robertherber))
+
 ### 🐛 Bug fixes
 
 - Fixed Device.getDeviceTypeAsync() returning TABLET on some devices. ([#21325](https://github.com/expo/expo/pull/21325) by [@behenate](https://github.com/behenate))
