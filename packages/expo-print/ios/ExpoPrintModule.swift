@@ -32,7 +32,7 @@ public class ExpoPrintModule: Module {
     .runOnQueue(.main)
 
     AsyncFunction("printToFileAsync") { (options: PrintOptions, promise: Promise) in
-      printToFile.printToFile(promise: promise, options: options)
+      printToFile.printToFile(options: options, promise: promise)
     }
     .runOnQueue(.main)
   }

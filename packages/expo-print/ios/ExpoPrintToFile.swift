@@ -8,7 +8,7 @@ public class ExpoPrintToFile {
     self.appContext = appContext
   }
 
-  func printToFile(promise: Promise, options: PrintOptions) {
+  func printToFile(options: PrintOptions, promise: Promise) {
     let htmlString = options.html ?? ""
     let pageSize = options.toPageSize()
     let printableRect = options.toPrintableRect()
