@@ -89,7 +89,7 @@ class ImageViewWrapperTarget(
 
   override fun onLoadStarted(placeholder: Drawable?) = Unit
 
-  // When the load fails, it's handel by the global listener, therefore that method can be NOOP.
+  // When loading fails, it's handled by the global listener, therefore that method can be NOOP.
   override fun onLoadFailed(errorDrawable: Drawable?) = Unit
 
   override fun onLoadCleared(placeholder: Drawable?) = Unit

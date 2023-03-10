@@ -228,10 +228,10 @@ export interface ImageProps extends ViewProps {
      * However, it would result in smoother image resizing, and end-users would always have access to the highest possible asset quality.
      *
      * Downscaling is disable when the `contentFit` is set to `none` or `fill`.
-     * @default false
+     * @default true
      * @platform android
      */
-    disableDownscaling?: boolean;
+    enableDownscaling?: boolean;
 }
 /**
  * It narrows down some props to types expected by the native/web side.

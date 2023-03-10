@@ -162,8 +162,8 @@ class ExpoImageModule : Module() {
         view.recyclingKey = recyclingKey
       }
 
-      Prop("disableDownscaling") { view: ExpoImageViewWrapper, disableDownscaling: Boolean? ->
-        view.disableDownscaling = disableDownscaling ?: false
+      Prop("enableDownscaling") { view: ExpoImageViewWrapper, enableDownscaling: Boolean? ->
+        view.enableDownscaling = enableDownscaling ?: true
       }
 
       OnViewDidUpdateProps { view: ExpoImageViewWrapper ->

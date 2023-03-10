@@ -75,7 +75,7 @@ enum class ContentFit(val value: String) : Enumerable {
           // temporary upscaling is necessary to ensure a seamless transition.
           // It should be noted that this upscaling is applied to the downscaled version of the image,
           // not the original source image, and will be replaced by the original asset shortly thereafter.
-          else if (imageRect.width() < sourceRect.width() || imageRect.height() < sourceRect.height()) {
+          else {
             setRectToRect(imageRect, sourceRect, Matrix.ScaleToFit.START)
           }
         } else {

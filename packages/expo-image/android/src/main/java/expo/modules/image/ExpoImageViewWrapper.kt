@@ -156,7 +156,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       field = value
     }
 
-  internal var disableDownscaling: Boolean = false
+  internal var enableDownscaling: Boolean = true
     set(value) {
       field = value
       shouldRerender = true
@@ -395,7 +395,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
     super.onSizeChanged(w, h, oldw, oldh)
     rerenderIfNeeded(
-      shouldRerenderBecauseOfResize = !disableDownscaling &&
+      shouldRerenderBecauseOfResize = enableDownscaling &&
         contentFit != ContentFit.Fill &&
         contentFit != ContentFit.None
     )
@@ -482,9 +482,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       }
       newTarget.hasSource = sourceToLoad != null
 
-      val downsampleStrategy = if (disableDownscaling) {
-        DownsampleStrategy.NONE
-      } else {
+      val downsampleStrategy = if (enableDownscaling) {
         object : DownsampleStrategy() {
           var wasTrigger = false
           override fun getScaleFactor(
@@ -545,6 +543,8 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
             requestedHeight: Int
           ) = SampleSizeRounding.QUALITY
         }
+      } else {
+        DownsampleStrategy.NONE
       }
 
       val request = requestManager
