@@ -13,8 +13,9 @@ import {
  * "4294967295" is decimal for "0xffffffff", describing an invalid script id.
  * @see https://github.com/facebook/hermes/issues/168#issuecomment-568809021
  */
-const HERMES_INVALID_SCRIPT_ID = '4294967295';
-const HERMES_NATIVE_FUNCTION_NAME = '(native)';
+// TODO(cedric): re-enable this for breakpoint callFrames only, errors should still include everything.
+// const HERMES_INVALID_SCRIPT_ID = '4294967295';
+// const HERMES_NATIVE_FUNCTION_NAME = '(native)';
 
 export class VscodeCompatHandler implements InspectorHandler {
   /** Keep track of `Runtime.getProperties` responses to intercept, by request id */
@@ -81,13 +82,14 @@ export class VscodeCompatHandler implements InspectorHandler {
 
     // Hermes adds traces of JSI to the callFrames, which are refering to native code.
     // It doesn't make sense to show these to the user, so we filter them out.
-    if ('method' in message && message.method === 'Debugger.paused') {
-      message.params.callFrames = message.params.callFrames.filter(
-        (frame) =>
-          frame.location.scriptId !== HERMES_INVALID_SCRIPT_ID &&
-          frame.functionName !== HERMES_NATIVE_FUNCTION_NAME
-      );
-    }
+    // TODO(cedric): re-enable this for breakpoint callFrames only, errors should still include everything.
+    // if ('method' in message && message.method === 'Debugger.paused') {
+    //   message.params.callFrames = message.params.callFrames.filter(
+    //     (frame) =>
+    //       frame.location.scriptId !== HERMES_INVALID_SCRIPT_ID &&
+    //       frame.functionName !== HERMES_NATIVE_FUNCTION_NAME
+    //   );
+    // }
 
     return false;
   }
