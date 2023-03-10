@@ -193,7 +193,6 @@ class ExpoImageView(
       }
     }
     super.draw(canvas)
-
   }
 
   public override fun onDraw(canvas: Canvas) {
