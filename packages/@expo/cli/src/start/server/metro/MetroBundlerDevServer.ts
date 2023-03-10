@@ -106,7 +106,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     // Middleware for hosting middleware
     middleware.use((req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-      if (!req?.url) {
+      if (!req?.url || !req.method) {
         return next();
       }
 
@@ -133,11 +133,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       const middleware = fresh(resolved);
 
       // Interop default
-      const func = middleware.default || middleware;
+      const func = middleware[req.method];
+      // const func = middleware.default || middleware;
 
-      console.log('run:', func);
+      console.log('run:', req.method, func, Object.keys(middleware));
       // 4. Execute.
-      return func(req, res, next);
+      return func?.(req, res, next);
     });
 
     if (this.isTargetingWeb()) {
@@ -189,10 +190,10 @@ export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
 function fresh(file: string) {
   file = require.resolve(file);
 
-  var tmp = require.cache[file];
+  const tmp = require.cache[file];
   delete require.cache[file];
 
-  var mod = require(file);
+  const mod = require(file);
 
   require.cache[file] = tmp;
 
