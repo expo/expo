@@ -13,9 +13,9 @@ typedef void (^EXUpdatesAppRelaunchCompletionBlock)(BOOL success);
 
 @protocol EXUpdatesModuleInterface
 
-@property (nonatomic, readonly) EXUpdatesConfig *config;
+@property (nonatomic, readonly, nullable) EXUpdatesConfig *config;
 @property (nonatomic, readonly) EXUpdatesDatabase *database;
-@property (nonatomic, readonly) EXUpdatesSelectionPolicy *selectionPolicy;
+@property (nonatomic, readonly, nullable) EXUpdatesSelectionPolicy *selectionPolicy;
 @property (nonatomic, readonly) NSURL *directory;
 
 @property (nullable, nonatomic, readonly, strong) EXUpdatesUpdate *embeddedUpdate;

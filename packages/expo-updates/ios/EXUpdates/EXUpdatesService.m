@@ -31,7 +31,7 @@ EX_REGISTER_MODULE();
   return @[@protocol(EXUpdatesModuleInterface)];
 }
 
-- (EXUpdatesConfig *)config
+- (nullable EXUpdatesConfig *)config
 {
 #if SUPPRESS_EXPO_UPDATES_SERVICE // used in Expo Go
   return nil;
@@ -44,7 +44,7 @@ EX_REGISTER_MODULE();
   return EXUpdatesAppController.sharedInstance.database;
 }
 
-- (EXUpdatesSelectionPolicy *)selectionPolicy
+- (nullable EXUpdatesSelectionPolicy *)selectionPolicy
 {
   return EXUpdatesAppController.sharedInstance.selectionPolicy;
 }

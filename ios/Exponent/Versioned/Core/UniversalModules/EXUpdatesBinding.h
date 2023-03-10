@@ -14,8 +14,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @protocol EXUpdatesBindingDelegate
 
-- (EXUpdatesConfig *)configForScopeKey:(NSString *)scopeKey;
-- (EXUpdatesSelectionPolicy *)selectionPolicyForScopeKey:(NSString *)scopeKey;
+- (nullable EXUpdatesConfig *)configForScopeKey:(NSString *)scopeKey;
+- (nullable EXUpdatesSelectionPolicy *)selectionPolicyForScopeKey:(NSString *)scopeKey;
 - (nullable EXUpdatesUpdate *)launchedUpdateForScopeKey:(NSString *)scopeKey;
 - (nullable NSDictionary *)assetFilesMapForScopeKey:(NSString *)scopeKey;
 - (BOOL)isUsingEmbeddedAssetsForScopeKey:(NSString *)scopeKey;
