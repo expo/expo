@@ -2,8 +2,9 @@
 
 import Foundation
 
+@objc(EXManifestsNewManifest)
 @objcMembers
-public class EXManifestsNewManifest: EXManifestsManifest {
+public class NewManifest: Manifest {
   public func rawId() -> String {
     return rawManifestJSON().requiredValue(forKey: "id")
   }

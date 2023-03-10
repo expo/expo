@@ -12,7 +12,7 @@ class UpdatesBuildDataSpec : ExpoSpec {
 
     var testDatabaseDir: URL!
     var db: UpdatesDatabase!
-    var manifest: EXManifestsNewManifest!
+    var manifest: NewManifest!
     var configChannelTestDictionary: [String: Any]!
     var configChannelTest: UpdatesConfig!
     var configChannelTestTwoDictionary: [String: Any]!
@@ -37,7 +37,7 @@ class UpdatesBuildDataSpec : ExpoSpec {
         try! db.openDatabase(inDirectory: testDatabaseDir)
       }
       
-      manifest = EXManifestsNewManifest(rawManifestJSON: [
+      manifest = NewManifest(rawManifestJSON: [
         "runtimeVersion": "1",
         "id": "0eef8214-4833-4089-9dff-b4138a14f196",
         "createdAt": "2020-11-11T00:17:54.797Z",

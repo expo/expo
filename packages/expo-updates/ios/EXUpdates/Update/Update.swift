@@ -91,7 +91,7 @@ public class Update: NSObject {
   public internal(set) var serverDefinedHeaders: [String: Any]?
   public internal(set) var manifestFilters: [String: Any]?
 
-  public let manifest: EXManifestsManifest
+  public let manifest: Manifest
 
   public var status: UpdateStatus
   public var lastAccessed: Date
@@ -102,7 +102,7 @@ public class Update: NSObject {
   private let database: UpdatesDatabase?
 
   public init(
-    manifest: EXManifestsManifest,
+    manifest: Manifest,
     config: UpdatesConfig,
     database: UpdatesDatabase?,
     updateId: UUID,
@@ -142,13 +142,13 @@ public class Update: NSObject {
     switch protocolVersion {
     case nil:
       return LegacyUpdate.update(
-        withLegacyManifest: EXManifestsLegacyManifest(rawManifestJSON: withManifest),
+        withLegacyManifest: LegacyManifest(rawManifestJSON: withManifest),
         config: config,
         database: database
       )
     case "0":
       return NewUpdate.update(
-        withNewManifest: EXManifestsNewManifest(rawManifestJSON: withManifest),
+        withNewManifest: NewManifest(rawManifestJSON: withManifest),
         manifestHeaders: manifestHeaders,
         extensions: extensions,
         config: config,
@@ -166,13 +166,13 @@ public class Update: NSObject {
   ) -> Update {
     if withEmbeddedManifest["releaseId"] != nil {
       return LegacyUpdate.update(
-        withLegacyManifest: EXManifestsLegacyManifest(rawManifestJSON: withEmbeddedManifest),
+        withLegacyManifest: LegacyManifest(rawManifestJSON: withEmbeddedManifest),
         config: config,
         database: database
       )
     } else {
       return BareUpdate.update(
-        withBareManifest: EXManifestsBareManifest(rawManifestJSON: withEmbeddedManifest),
+        withBareManifest: BareManifest(rawManifestJSON: withEmbeddedManifest),
         config: config,
         database: database
       )

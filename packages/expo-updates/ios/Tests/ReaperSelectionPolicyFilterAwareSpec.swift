@@ -25,7 +25,7 @@ class ReaperSelectionPolicyFilterAwareSpec : ExpoSpec {
       ])
       database = UpdatesDatabase()
       update1 = Update(
-        manifest: EXManifestsManifestFactory.manifest(forManifestJSON: [:]),
+        manifest: ManifestFactory.manifest(forManifestJSON: [:]),
         config: config,
         database: database,
         updateId: UUID(),
@@ -38,7 +38,7 @@ class ReaperSelectionPolicyFilterAwareSpec : ExpoSpec {
         assetsFromManifest: []
       )
       update2 = Update(
-        manifest: EXManifestsManifestFactory.manifest(forManifestJSON: [:]),
+        manifest: ManifestFactory.manifest(forManifestJSON: [:]),
         config: config,
         database: database,
         updateId: UUID(),
@@ -51,7 +51,7 @@ class ReaperSelectionPolicyFilterAwareSpec : ExpoSpec {
         assetsFromManifest: []
       )
       update3 = Update(
-        manifest: EXManifestsManifestFactory.manifest(forManifestJSON: [:]),
+        manifest: ManifestFactory.manifest(forManifestJSON: [:]),
         config: config,
         database: database,
         updateId: UUID(),
@@ -64,7 +64,7 @@ class ReaperSelectionPolicyFilterAwareSpec : ExpoSpec {
         assetsFromManifest: []
       )
       update4 = Update(
-        manifest: EXManifestsManifestFactory.manifest(forManifestJSON: [:]),
+        manifest: ManifestFactory.manifest(forManifestJSON: [:]),
         config: config,
         database: database,
         updateId: UUID(),
@@ -77,7 +77,7 @@ class ReaperSelectionPolicyFilterAwareSpec : ExpoSpec {
         assetsFromManifest: []
       )
       update5 = Update(
-        manifest: EXManifestsManifestFactory.manifest(forManifestJSON: [:]),
+        manifest: ManifestFactory.manifest(forManifestJSON: [:]),
         config: config,
         database: database,
         updateId: UUID(),

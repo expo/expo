@@ -240,7 +240,7 @@ class ErrorRecoverySpec : ExpoSpec {
         mockDelegate.remoteLoadStatus = .NewUpdateLoaded
         
         let mockUpdate = Update(
-          manifest: EXManifestsManifestFactory.manifest(forManifestJSON: [:]),
+          manifest: ManifestFactory.manifest(forManifestJSON: [:]),
           config: config,
           database: database,
           updateId: UUID(),
@@ -310,7 +310,7 @@ class ErrorRecoverySpec : ExpoSpec {
         errorRecovery.delegate = mockDelegate
         
         let mockUpdate = Update(
-          manifest: EXManifestsManifestFactory.manifest(forManifestJSON: [:]),
+          manifest: ManifestFactory.manifest(forManifestJSON: [:]),
           config: config,
           database: database,
           updateId: UUID(),

@@ -1,8 +1,9 @@
 //  Copyright © 2021 650 Industries. All rights reserved.
 import Foundation
 
+@objc(EXManifestsLegacyManifest)
 @objcMembers
-public class EXManifestsLegacyManifest: EXManifestBaseLegacyManifest {
+public class LegacyManifest: BaseLegacyManifest {
   public func releaseID() -> String {
     return rawManifestJSON().requiredValue(forKey: "releaseId")
   }

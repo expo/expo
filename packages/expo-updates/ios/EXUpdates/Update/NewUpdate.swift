@@ -11,7 +11,7 @@ internal final class NewUpdate: Update {
    * Update.
    */
   public static func update(
-    withNewManifest: EXManifestsNewManifest,
+    withNewManifest: NewManifest,
     manifestHeaders: ManifestHeaders,
     extensions: [String: Any],
     config: UpdatesConfig,
