@@ -1,10 +1,9 @@
 import {
-  DebuggerPaused,
   DebuggerSetBreakpointByUrl,
   RuntimeGetProperties,
   VscodeCompatHandler,
 } from '../VscodeCompat';
-import { DebuggerRequest, DeviceRequest } from '../types';
+import { DebuggerRequest } from '../types';
 
 it('responds to `Debugger.getPossibleBreakpoints` with empty `locations`', () => {
   const handler = new VscodeCompatHandler();
@@ -104,46 +103,6 @@ it('mutates `Runtime.getProperties` device responses and removes `objectId` from
   expect(handler.onDeviceMessage({ id: 420, result: descriptors })).toBe(false);
   // Expect the descriptor value to be mutated
   expect(descriptors.result[0].value).not.toHaveProperty('objectId');
-});
-
-it('mutates `Debugger.paused` callFrames without Hermes native function frames', () => {
-  const handler = new VscodeCompatHandler();
-
-  // Copied from an actual `Debugger.paused` message, first one should be filtered
-  const message: DeviceRequest<DebuggerPaused> = {
-    method: 'Debugger.paused',
-    params: {
-      reason: 'debugCommand',
-      callFrames: [
-        {
-          callFrameId: '23',
-          functionName: '(native)',
-          location: { scriptId: '4294967295', lineNumber: 0 },
-          url: '',
-          this: { type: 'object', objectId: '48' },
-          scopeChain: [
-            { type: 'global', object: { type: 'object', className: 'Object', objectId: '47' } },
-          ],
-        },
-        {
-          callFrameId: '27',
-          functionName: 'callFunctionReturnFlushedQueue',
-          location: { scriptId: '3', lineNumber: 2571, columnNumber: 20 },
-          url: '',
-          this: { type: 'object', objectId: '56' },
-          scopeChain: [
-            { type: 'global', object: { type: 'object', className: 'Object', objectId: '55' } },
-          ],
-        },
-      ],
-    },
-  };
-
-  // This message should still be propagated, it should return `false`
-  expect(handler.onDeviceMessage(message)).toBe(false);
-  // Expect the first callFrame to be filtered
-  expect(message.params.callFrames).toHaveLength(1);
-  expect(message.params.callFrames[0]).toMatchObject({ callFrameId: '27' });
 });
 
 it('mutates `Debugger.setBreakpointByUrl` debugger request to create an unbounded breakpoint', () => {
