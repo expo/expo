@@ -32,7 +32,7 @@ NS_ASSUME_NONNULL_BEGIN
   return self;
 }
 
-- (EXUpdatesConfig *)config
+- (nullable EXUpdatesConfig *)config
 {
   return [_updatesKernelService configForScopeKey:_scopeKey];
 }
@@ -42,7 +42,7 @@ NS_ASSUME_NONNULL_BEGIN
   return _databaseKernelService.database;
 }
 
-- (EXUpdatesSelectionPolicy *)selectionPolicy
+- (nullable EXUpdatesSelectionPolicy *)selectionPolicy
 {
   return [_updatesKernelService selectionPolicyForScopeKey:_scopeKey];
 }
