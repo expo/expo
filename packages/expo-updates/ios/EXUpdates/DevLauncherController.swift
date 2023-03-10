@@ -17,7 +17,7 @@ import EXUpdatesInterface
  */
 @objc(EXUpdatesDevLauncherController)
 @objcMembers
-public final class DevLauncherController: NSObject, EXUpdatesExternalInterface {
+public final class DevLauncherController: NSObject, UpdatesExternalInterface {
   private static let ErrorDomain = "EXUpdatesDevLauncherController"
 
   enum ErrorCode: Int {
@@ -45,7 +45,7 @@ public final class DevLauncherController: NSObject, EXUpdatesExternalInterface {
 
   override init() {}
 
-  public func launchAssetURL() -> URL? {
+  public var launchAssetURL: URL? {
     return AppController.sharedInstance.launchAssetUrl()
   }
 
@@ -56,11 +56,11 @@ public final class DevLauncherController: NSObject, EXUpdatesExternalInterface {
   }
 
   public func fetchUpdate(
-    withConfiguration configuration: [AnyHashable: Any],
-    onManifest manifestBlock: @escaping EXUpdatesManifestBlock,
-    progress progressBlock: @escaping EXUpdatesProgressBlock,
-    success successBlock: @escaping EXUpdatesUpdateSuccessBlock,
-    error errorBlock: @escaping EXUpdatesErrorBlock
+    withConfiguration configuration: [String: Any],
+    onManifest manifestBlock: @escaping UpdatesManifestBlock,
+    progress progressBlock: @escaping UpdatesProgressBlock,
+    success successBlock: @escaping UpdatesUpdateSuccessBlock,
+    error errorBlock: @escaping UpdatesErrorBlock
   ) {
     guard let updatesConfiguration = setup(configuration: configuration, error: errorBlock) else {
       return
@@ -101,9 +101,9 @@ public final class DevLauncherController: NSObject, EXUpdatesExternalInterface {
   }
 
   public func storedUpdateIds(
-    withConfiguration configuration: [AnyHashable: Any],
-    success successBlock: @escaping EXUpdatesQuerySuccessBlock,
-    error errorBlock: @escaping EXUpdatesErrorBlock
+    withConfiguration configuration: [String: Any],
+    success successBlock: @escaping UpdatesQuerySuccessBlock,
+    error errorBlock: @escaping UpdatesErrorBlock
   ) {
     guard setup(configuration: configuration, error: errorBlock) != nil else {
       successBlock([])
@@ -126,7 +126,7 @@ public final class DevLauncherController: NSObject, EXUpdatesExternalInterface {
    Sets up EXUpdatesAppController shared instance
    Returns the updatesConfiguration
    */
-  private func setup(configuration: [AnyHashable: Any], error errorBlock: EXUpdatesErrorBlock) -> UpdatesConfig? {
+  private func setup(configuration: [AnyHashable: Any], error errorBlock: UpdatesErrorBlock) -> UpdatesConfig? {
     let controller = AppController.sharedInstance
     var updatesConfiguration: UpdatesConfig
     do {
@@ -180,8 +180,8 @@ public final class DevLauncherController: NSObject, EXUpdatesExternalInterface {
   private func launch(
     update: Update,
     withConfiguration configuration: UpdatesConfig,
-    success successBlock: @escaping EXUpdatesUpdateSuccessBlock,
-    error errorBlock: @escaping EXUpdatesErrorBlock
+    success successBlock: @escaping UpdatesUpdateSuccessBlock,
+    error errorBlock: @escaping UpdatesErrorBlock
   ) {
     let controller = AppController.sharedInstance
     // ensure that we launch the update we want, even if it isn't the latest one
