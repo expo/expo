@@ -72,19 +72,10 @@ class UpdatesBuildDataSpec : ExpoSpec {
       ]
       configReleaseChannelTestTwo = UpdatesConfig.config(fromDictionary: configReleaseChannelTestTwoDictionary)
       
-      let manifestHeaders = ManifestHeaders(
-        protocolVersion: nil,
-        serverDefinedHeaders: nil,
-        manifestFilters: nil,
-        manifestSignature: nil,
-        signature: nil
-      )
-      
       // start every test with an update
       db.databaseQueue.sync {
         let update = NewUpdate.update(
           withNewManifest: manifest,
-          manifestHeaders: manifestHeaders,
           extensions: [:],
           config: configChannelTest,
           database: db
