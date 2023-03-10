@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- [Android] Made `fallbackCallback` optional in the `registerForActivityResult` method.
+
 ## 1.2.3 - 2023-02-21
 
 ### 🐛 Bug fixes
