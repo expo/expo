@@ -27,22 +27,10 @@ public final class UpdatesModule: Module {
     Name("ExpoUpdates")
 
     Constants {
-      // this is nil in expo go for some reason
-      guard let config = (updatesService?.config as UpdatesConfig?) else {
-        return [
-          "isEnabled": false,
-          "isEmbeddedLaunch": false,
-          "isMissingRuntimeVersion": false,
-          "releaseChannel": "",
-          "runtimeVersion": "",
-          "channel": ""
-        ]
-      }
-      
-      let releaseChannel = config.releaseChannel
-      let channel = config.requestHeaders["expo-channel-name"] ?? ""
-      let runtimeVersion = config.runtimeVersion ?? ""
-      let isMissingRuntimeVersion = config.isMissingRuntimeVersion()
+      let releaseChannel = updatesService?.config?.releaseChannel
+      let channel = updatesService?.config?.requestHeaders["expo-channel-name"] ?? ""
+      let runtimeVersion = updatesService?.config?.runtimeVersion ?? ""
+      let isMissingRuntimeVersion = updatesService?.config?.isMissingRuntimeVersion()
 
       guard let updatesService = updatesService,
         updatesService.isStarted,
@@ -76,7 +64,7 @@ public final class UpdatesModule: Module {
     }
 
     AsyncFunction("reloadAsync") { (promise: Promise) in
-      guard let updatesService = updatesService, updatesService.config.isEnabled else {
+      guard let updatesService = updatesService, let config = updatesService.config, config.isEnabled else {
         throw UpdatesDisabledException()
       }
       guard updatesService.canRelaunch else {
@@ -92,7 +80,10 @@ public final class UpdatesModule: Module {
     }
 
     AsyncFunction("checkForUpdateAsync") { (promise: Promise) in
-      guard let updatesService = updatesService, updatesService.config.isEnabled else {
+      guard let updatesService = updatesService,
+        let config = updatesService.config,
+        let selectionPolicy = updatesService.selectionPolicy,
+        config.isEnabled else {
         throw UpdatesDisabledException()
       }
       guard updatesService.isStarted else {
@@ -103,21 +94,20 @@ public final class UpdatesModule: Module {
       updatesService.database.databaseQueue.sync {
         extraHeaders = FileDownloader.extraHeaders(
           withDatabase: updatesService.database,
-          config: updatesService.config,
+          config: config,
           launchedUpdate: updatesService.launchedUpdate,
           embeddedUpdate: updatesService.embeddedUpdate
         )
       }
 
-      let fileDownloader = FileDownloader(config: updatesService.config)
+      let fileDownloader = FileDownloader(config: config)
       fileDownloader.downloadManifest(
         // swiftlint:disable:next force_unwrapping
-        fromURL: updatesService.config.updateUrl!,
+        fromURL: config.updateUrl!,
         withDatabase: updatesService.database,
         extraHeaders: extraHeaders
       ) { update in
         let launchedUpdate = updatesService.launchedUpdate
-        let selectionPolicy = updatesService.selectionPolicy
         if selectionPolicy.shouldLoadNewUpdate(update, withLaunchedUpdate: launchedUpdate, filters: update.manifestFilters) {
           promise.resolve([
             "isAvailable": true,
@@ -149,7 +139,10 @@ public final class UpdatesModule: Module {
     }
 
     AsyncFunction("fetchUpdateAsync") { (promise: Promise) in
-      guard let updatesService = updatesService, updatesService.config.isEnabled else {
+      guard let updatesService = updatesService,
+        let config = updatesService.config,
+        let selectionPolicy = updatesService.selectionPolicy,
+        config.isEnabled else {
         throw UpdatesDisabledException()
       }
       guard updatesService.isStarted else {
@@ -157,7 +150,7 @@ public final class UpdatesModule: Module {
       }
 
       let remoteAppLoader = RemoteAppLoader(
-        config: updatesService.config,
+        config: config,
         database: updatesService.database,
         directory: updatesService.directory,
         launchedUpdate: updatesService.launchedUpdate,
@@ -165,9 +158,9 @@ public final class UpdatesModule: Module {
       )
       remoteAppLoader.loadUpdate(
         // swiftlint:disable:next force_unwrapping
-        fromURL: updatesService.config.updateUrl!
+        fromURL: config.updateUrl!
       ) { update in
-        return updatesService.selectionPolicy.shouldLoadNewUpdate(
+        return selectionPolicy.shouldLoadNewUpdate(
           update,
           withLaunchedUpdate: updatesService.launchedUpdate,
           filters: update.manifestFilters
