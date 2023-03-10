@@ -569,7 +569,7 @@ public final class UpdatesDatabase: NSObject {
     let failedLaunchCount: NSNumber = row.requiredValue(forKey: "failed_launch_count")
 
     let update = Update(
-      manifest: EXManifestsManifestFactory.manifest(forManifestJSON: manifest ?? [:]),
+      manifest: ManifestFactory.manifest(forManifestJSON: manifest ?? [:]),
       config: config,
       database: self,
       updateId: row.requiredValue(forKey: "id"),

@@ -4,11 +4,15 @@ import ExpoModulesTestCore
 
 @testable import EXManifests
 
-class EXManifestsNewManifestSpec : ExpoSpec {
+enum ManifestTestError: Error {
+    case testError
+}
+
+class BareManifestSpec : ExpoSpec {
   override func spec() {
     describe("instantiation") {
       it("instantiates and reads properties") {
-        let manifestJson = "{\"runtimeVersion\":\"1\",\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"createdAt\":\"2020-11-11T00:17:54.797Z\",\"launchAsset\":{\"url\":\"https://classic-assets.eascdn.net/%40esamelson%2Fnative-component-list%2F39.0.0%2F01c86fd863cfee878068eebd40f165df-39.0.0-ios.js\",\"contentType\":\"application/javascript\"}}"
+        let manifestJson = "{\"id\":\"0eef8214-4833-4089-9dff-b4138a14f196\",\"commitTime\":1609975977832}"
         let manifestData = manifestJson.data(using: .utf8)
         guard let manifestData = manifestData else {
           throw ManifestTestError.testError
@@ -18,18 +22,19 @@ class EXManifestsNewManifestSpec : ExpoSpec {
           throw ManifestTestError.testError
         }
 
-        let manifest = EXManifestsNewManifest(rawManifestJSON: manifestJsonObject)
+        let manifest = BareManifest(rawManifestJSON: manifestJsonObject)
 
         expect(manifest.rawId()) == "0eef8214-4833-4089-9dff-b4138a14f196"
-        expect(manifest.createdAt()) == "2020-11-11T00:17:54.797Z"
-        expect(manifest.runtimeVersion()) == "1"
-        expect(NSDictionary(dictionary: [
-          "url": "https://classic-assets.eascdn.net/%40esamelson%2Fnative-component-list%2F39.0.0%2F01c86fd863cfee878068eebd40f165df-39.0.0-ios.js",
-          "contentType": "application/javascript"
-        ]).isEqual(to: manifest.launchAsset())) == true
-        expect(manifest.assets()).to(beNil())
+        expect(manifest.commitTimeNumber()) == 1609975977832
+        expect(manifest.metadata()).to(beNil())
 
         // from base class
+        expect(manifest.stableLegacyId()) == "0eef8214-4833-4089-9dff-b4138a14f196"
+        expect(manifest.scopeKey()) == "0eef8214-4833-4089-9dff-b4138a14f196"
+        expect(manifest.easProjectId()).to(beNil())
+        expect(manifest.sdkVersion()).to(beNil())
+
+        // from base base class
         expect(manifest.legacyId()) == "0eef8214-4833-4089-9dff-b4138a14f196"
         expect(manifest.revisionId()).to(beNil())
         expect(manifest.slug()).to(beNil())
@@ -58,39 +63,6 @@ class EXManifestsNewManifestSpec : ExpoSpec {
         expect(manifest.iosGoogleServicesFile()).to(beNil())
         expect(manifest.supportsRTL()) == false
         expect(manifest.jsEngine()) == "hermes"
-      }
-    }
-
-    describe("SDK Version") {
-      it("is correct with valid numeric case") {
-        let runtimeVersion = "exposdk:39.0.0"
-        let manifestJson = ["runtimeVersion": runtimeVersion]
-        let manifest = EXManifestsNewManifest(rawManifestJSON: manifestJson)
-        expect(manifest.sdkVersion()) == "39.0.0"
-      }
-
-      it("is UNVERSIONED with valid unversioned case") {
-        let runtimeVersion = "exposdk:UNVERSIONED"
-        let manifestJson = ["runtimeVersion": runtimeVersion]
-        let manifest = EXManifestsNewManifest(rawManifestJSON: manifestJson)
-        expect(manifest.sdkVersion()) == "UNVERSIONED"
-      }
-
-      it("is nil with non-sdk runtime version cases") {
-        let runtimeVersions = [
-          "exposdk:123",
-          "exposdkd:39.0.0",
-          "exposdk:hello",
-          "bexposdk:39.0.0",
-          "exposdk:39.0.0-beta.0",
-          "exposdk:39.0.0-alpha.256"
-        ]
-
-        for runtimeVersion in runtimeVersions {
-          let manifestJson = ["runtimeVersion": runtimeVersion]
-          let manifest = EXManifestsNewManifest(rawManifestJSON: manifestJson)
-          expect(manifest.sdkVersion()).to(beNil())
-        }
       }
     }
   }

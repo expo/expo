@@ -15,7 +15,7 @@ class NewUpdateSpec : ExpoSpec {
   override func spec() {
     describe("instantiation") {
       it("all fields") {
-        let manifest = EXManifestsNewManifest(
+        let manifest = NewManifest(
           rawManifestJSON: [
             "runtimeVersion": "1",
             "id": "0eef8214-4833-4089-9dff-b4138a14f196",
@@ -45,7 +45,7 @@ class NewUpdateSpec : ExpoSpec {
       }
 
       it("no runtime version") {
-        let manifest = EXManifestsNewManifest(
+        let manifest = NewManifest(
           rawManifestJSON: [
             "id": "0eef8214-4833-4089-9dff-b4138a14f196",
             "createdAt": "2020-11-11T00:17:54.797Z",
@@ -74,7 +74,7 @@ class NewUpdateSpec : ExpoSpec {
       }
 
       it("no id") {
-        let manifest = EXManifestsNewManifest(
+        let manifest = NewManifest(
           rawManifestJSON: [
             "runtimeVersion": "1",
             "createdAt": "2020-11-11T00:17:54.797Z",
@@ -103,7 +103,7 @@ class NewUpdateSpec : ExpoSpec {
       }
 
       it("no created at") {
-        let manifest = EXManifestsNewManifest(
+        let manifest = NewManifest(
           rawManifestJSON: [
             "runtimeVersion": "1",
             "id": "0eef8214-4833-4089-9dff-b4138a14f196",
@@ -132,7 +132,7 @@ class NewUpdateSpec : ExpoSpec {
       }
 
       it("no launch asset") {
-        let manifest = EXManifestsNewManifest(
+        let manifest = NewManifest(
           rawManifestJSON: [
             "runtimeVersion": "1",
             "id": "0eef8214-4833-4089-9dff-b4138a14f196",

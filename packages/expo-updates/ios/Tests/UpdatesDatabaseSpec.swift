@@ -9,7 +9,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
   override func spec() {
     var testDatabaseDir: URL!
     var db: UpdatesDatabase!
-    var manifest: EXManifestsNewManifest!
+    var manifest: NewManifest!
     var config: UpdatesConfig!
     
     beforeEach {
@@ -27,7 +27,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
         try! db.openDatabase(inDirectory: testDatabaseDir)
       }
       
-      manifest = EXManifestsNewManifest(rawManifestJSON: [
+      manifest = NewManifest(rawManifestJSON: [
         "runtimeVersion": "1",
         "id": "0eef8214-4833-4089-9dff-b4138a14f196",
         "createdAt": "2020-11-11T00:17:54.797Z",
@@ -229,13 +229,13 @@ class UpdatesDatabaseSpec : ExpoSpec {
           return asset
         }
         
-        let manifest1 = EXManifestsNewManifest(rawManifestJSON: [
+        let manifest1 = NewManifest(rawManifestJSON: [
           "runtimeVersion": "1",
           "id": "0eef8214-4833-4089-9dff-b4138a14f196",
           "createdAt": "2020-11-11T00:17:54.797Z",
           "launchAsset": ["url": "https://url.to/bundle1.js", "contentType": "application/javascript"]
         ])
-        let manifest2 = EXManifestsNewManifest(rawManifestJSON: [
+        let manifest2 = NewManifest(rawManifestJSON: [
           "runtimeVersion": "1",
           "id": "0eef8214-4833-4089-9dff-b4138a14f197",
           "createdAt": "2020-11-11T00:17:55.797Z",
