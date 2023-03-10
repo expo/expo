@@ -12,7 +12,7 @@ internal final class BareUpdate: Update {
    * the update and insert it into SQLite.
    */
   public static func update(
-    withBareManifest: EXManifestsBareManifest,
+    withBareManifest: BareManifest,
     config: UpdatesConfig,
     database: UpdatesDatabase?
   ) -> Update {

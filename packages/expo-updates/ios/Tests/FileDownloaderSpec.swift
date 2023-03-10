@@ -113,7 +113,7 @@ class FileDownloaderSpec : ExpoSpec {
         
         let launchedUpdateUUIDString = "7c1d2bd0-f88b-454d-998c-7fa92a924dbf"
         let launchedUpdate = Update(
-          manifest: EXManifestsManifestFactory.manifest(forManifestJSON: [:]),
+          manifest: ManifestFactory.manifest(forManifestJSON: [:]),
           config: config,
           database: db,
           updateId: UUID(uuidString: launchedUpdateUUIDString)!,
@@ -128,7 +128,7 @@ class FileDownloaderSpec : ExpoSpec {
         
         let embeddedUpdateUUIDString = "9433b1ed-4006-46b8-8aa7-fdc7eeb203fd"
         let embeddedUpdate = Update(
-          manifest: EXManifestsManifestFactory.manifest(forManifestJSON: [:]),
+          manifest: ManifestFactory.manifest(forManifestJSON: [:]),
           config: config,
           database: db,
           updateId: UUID(uuidString: embeddedUpdateUUIDString)!,

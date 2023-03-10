@@ -52,7 +52,7 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
       )
 
       updateRollout0 = NewUpdate.update(
-        withNewManifest: EXManifestsNewManifest(rawManifestJSON: [
+        withNewManifest: NewManifest(rawManifestJSON: [
           "id": "079cde35-8433-4c17-81c8-7117c1513e71",
           "createdAt": "2021-01-10T19:39:22.480Z",
           "runtimeVersion": "1.0",
@@ -67,7 +67,7 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
       )
 
       updateDefault1 = NewUpdate.update(
-        withNewManifest: EXManifestsNewManifest(rawManifestJSON: [
+        withNewManifest: NewManifest(rawManifestJSON: [
           "id": "079cde35-8433-4c17-81c8-7117c1513e72",
           "createdAt": "2021-01-11T19:39:22.480Z",
           "runtimeVersion": "1.0",
@@ -82,7 +82,7 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
       )
       
       updateRollout1 = NewUpdate.update(
-        withNewManifest: EXManifestsNewManifest(rawManifestJSON: [
+        withNewManifest: NewManifest(rawManifestJSON: [
           "id": "079cde35-8433-4c17-81c8-7117c1513e73",
           "createdAt": "2021-01-12T19:39:22.480Z",
           "runtimeVersion": "1.0",
@@ -97,7 +97,7 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
       )
       
       updateDefault2 = NewUpdate.update(
-        withNewManifest: EXManifestsNewManifest(rawManifestJSON: [
+        withNewManifest: NewManifest(rawManifestJSON: [
           "id": "079cde35-8433-4c17-81c8-7117c1513e74",
           "createdAt": "2021-01-13T19:39:22.480Z",
           "runtimeVersion": "1.0",
@@ -112,7 +112,7 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
       )
       
       updateRollout2 = NewUpdate.update(
-        withNewManifest: EXManifestsNewManifest(rawManifestJSON: [
+        withNewManifest: NewManifest(rawManifestJSON: [
           "id": "079cde35-8433-4c17-81c8-7117c1513e75",
           "createdAt": "2021-01-14T19:39:22.480Z",
           "runtimeVersion": "1.0",
@@ -127,7 +127,7 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
       )
       
       updateMultipleFilters = NewUpdate.update(
-        withNewManifest: EXManifestsNewManifest(rawManifestJSON: [
+        withNewManifest: NewManifest(rawManifestJSON: [
           "id": "079cde35-8433-4c17-81c8-7117c1513e72",
           "createdAt": "2021-01-11T19:39:22.480Z",
           "runtimeVersion": "1.0",
@@ -142,7 +142,7 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
       )
       
       updateNoMetadata = NewUpdate.update(
-        withNewManifest: EXManifestsNewManifest(rawManifestJSON: [
+        withNewManifest: NewManifest(rawManifestJSON: [
           "id": "079cde35-8433-4c17-81c8-7117c1513e72",
           "createdAt": "2021-01-11T19:39:22.480Z",
           "runtimeVersion": "1.0",

@@ -9,7 +9,7 @@ import EXManifests
 class AppLauncherWithDatabaseMock : AppLauncherWithDatabase {
   public static let testUpdate: Update = {
     return Update(
-      manifest: EXManifestsManifestFactory.manifest(forManifestJSON: [:]),
+      manifest: ManifestFactory.manifest(forManifestJSON: [:]),
       config: UpdatesConfig.config(fromDictionary: [:]),
       database: UpdatesDatabase(),
       updateId: UUID(),

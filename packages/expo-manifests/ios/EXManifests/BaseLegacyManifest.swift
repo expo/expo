@@ -2,8 +2,9 @@
 
 import Foundation
 
+@objc(EXManifestBaseLegacyManifest)
 @objcMembers
-public class EXManifestBaseLegacyManifest: EXManifestsManifest {
+public class BaseLegacyManifest: Manifest {
   override func expoClientConfigRootObject() -> [String: Any]? {
     return rawManifestJSON()
   }
