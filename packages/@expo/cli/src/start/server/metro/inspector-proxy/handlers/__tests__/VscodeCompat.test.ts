@@ -146,15 +146,10 @@ it('mutates `Debugger.setBreakpointByUrl` debugger request to create an unbounde
 
   // Expect the `localHttpUrl` and `lanHttpsUrl` to be mutated
   expect(localHttpUrl.params).not.toHaveProperty('urlRegex');
-  expect(localHttpUrl.params).toHaveProperty(
-    'url',
-    'file:\\/\\/http:\\/localhost:8081\\/App\\.js($|\\?)'
-  );
+  expect(localHttpUrl.params).toHaveProperty('url', 'file://__invalid_url__');
+
   expect(lanHttpsUrl.params).not.toHaveProperty('urlRegex');
-  expect(lanHttpsUrl.params).toHaveProperty(
-    'url',
-    'file:\\/\\/http:\\/192\\.168\\.10\\.10:8081\\/App\\.js($|\\?)'
-  );
+  expect(lanHttpsUrl.params).toHaveProperty('url', 'file://__invalid_url__');
 
   // Expect the `correctUrl` to not be mutated
   expect(correctUrl.params.url).toBe('file:\\/\\/path\\/to\\/App\\.js');
