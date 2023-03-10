@@ -8,13 +8,14 @@ const debug = require('debug')('expo:start:server:metro:waitForTypescript') as t
  * Use the native file watcher / Metro ruleset to detect if a
  * TypeScript file is added to the project during development.
  */
-export function waitForMetroToObserveTypeScriptFile(
+export function metroWatchTypeScriptFiles(
   projectRoot: string,
   runner: {
     metro: import('metro').Server;
     server: ServerLike;
+    tsconfig?: boolean;
   },
-  callback: () => Promise<void>
+  callback: (filePath: string) => void
 ): () => void {
   const watcher = runner.metro.getBundler().getBundler().getWatcher();
 
@@ -44,11 +45,10 @@ export function waitForMetroToObserveTypeScriptFile(
           // If the user adds a TypeScript file to the observable files in their project.
           /\.tsx?$/.test(filePath) ||
           // Or if the user adds a tsconfig.json file to the project root.
-          filePath === tsconfigPath
+          (runner.tsconfig && filePath === tsconfigPath)
         ) {
-          debug('Detected TypeScript file added to the project: ', filePath);
-          callback();
-          off();
+          debug('Detected TypeScript file changed in the project: ', filePath);
+          callback(filePath);
           return;
         }
       }

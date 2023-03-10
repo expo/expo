@@ -1,5 +1,5 @@
 import { ServerLike } from '../../BundlerDevServer';
-import { waitForMetroToObserveTypeScriptFile } from '../waitForMetroToObserveTypeScriptFile';
+import { metroWatchTypeScriptFiles } from '../metroWatchTypeScriptFiles';
 
 function createRunner() {
   const listeners = new Map();
@@ -34,12 +34,12 @@ function createRunner() {
   };
 }
 
-describe(waitForMetroToObserveTypeScriptFile, () => {
+describe(metroWatchTypeScriptFiles, () => {
   for (const filePath of ['/foo.ts', '/bar/foo.tsx', '/app/tsconfig.json']) {
     it(`invokes the callback when a project file is added: (${filePath})`, () => {
       const { watcher, runner, invoke } = createRunner();
       const callback = jest.fn();
-      waitForMetroToObserveTypeScriptFile('/app/', runner, callback);
+      metroWatchTypeScriptFiles('/app/', runner, callback);
       expect(watcher.addListener).toBeCalledWith('change', expect.any(Function));
 
       invoke([
@@ -75,7 +75,7 @@ describe(waitForMetroToObserveTypeScriptFile, () => {
     it(`skips non conforming files: (${filePath})`, () => {
       const { watcher, runner, invoke } = createRunner();
       const callback = jest.fn();
-      waitForMetroToObserveTypeScriptFile('/app/', runner, callback);
+      metroWatchTypeScriptFiles('/app/', runner, callback);
       expect(watcher.addListener).toBeCalledWith('change', expect.any(Function));
 
       invoke([
@@ -96,7 +96,7 @@ describe(waitForMetroToObserveTypeScriptFile, () => {
   it(`skips on delete events`, () => {
     const { watcher, runner, invoke } = createRunner();
     const callback = jest.fn();
-    waitForMetroToObserveTypeScriptFile('/app/', runner, callback);
+    metroWatchTypeScriptFiles('/app/', runner, callback);
     expect(watcher.addListener).toBeCalledWith('change', expect.any(Function));
 
     invoke([

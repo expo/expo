@@ -146,6 +146,11 @@ class Env {
   get EXPO_USE_CUSTOM_INSPECTOR_PROXY(): boolean {
     return boolish('EXPO_USE_CUSTOM_INSPECTOR_PROXY', false);
   }
+
+  /** Enable Expo Router typed router generation */
+  get EXPO_ROUTER_TYPED_ROUTES() {
+    return boolish('EXPO_ROUTER_TYPED_ROUTES', false);
+  }
 }
 
 export const env = new Env();

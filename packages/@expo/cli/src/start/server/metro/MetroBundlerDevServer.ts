@@ -16,8 +16,9 @@ import {
   RuntimeRedirectMiddleware,
 } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
+import { typedRouteGenerator } from '../type-generation/TypedRouteGenerator';
 import { instantiateMetroAsync } from './instantiateMetro';
-import { waitForMetroToObserveTypeScriptFile } from './waitForMetroToObserveTypeScriptFile';
+import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -143,6 +144,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     if (!this.instance) {
       throw new Error('Cannot wait for TypeScript without a running server.');
     }
+
     if (!this.metro) {
       // This can happen when the run command is used and the server is already running in another
       // process. In this case we can't wait for the TypeScript check to complete because we don't
@@ -151,9 +153,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return;
     }
 
-    const off = waitForMetroToObserveTypeScriptFile(
+    const off = metroWatchTypeScriptFiles(
       this.projectRoot,
-      { server: this.instance!.server, metro: this.metro },
+      { server: this.instance!.server, metro: this.metro, tsconfig: true },
       async () => {
         // Run once, this prevents the TypeScript project prerequisite from running on every file change.
         off();
@@ -164,6 +166,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         try {
           const req = new TypeScriptProjectPrerequisite(this.projectRoot);
           await req.bootstrapAsync();
+          await this.startTypeScriptServices();
         } catch (error: any) {
           // Ensure the process doesn't fail if the TypeScript check fails.
           // This could happen during the install.
@@ -175,6 +178,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         }
       }
     );
+  }
+
+  public async startTypeScriptServices() {
+    typedRouteGenerator({
+      server: this.instance!.server,
+      metro: this.metro,
+      projectRoot: this.projectRoot,
+    });
   }
 
   protected getConfigModuleIds(): string[] {

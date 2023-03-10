@@ -167,6 +167,10 @@ export abstract class BundlerDevServer {
     // noop -- We've only implemented this functionality in Metro.
   }
 
+  public async startTypeScriptServices(): Promise<void> {
+    // noop -- We've only implemented this functionality in Metro.
+  }
+
   /**
    * Creates a mock server representation that can be used to estimate URLs for a server started in another process.
    * This is used for the run commands where you can reuse the server from a previous run.
