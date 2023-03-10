@@ -5,12 +5,15 @@ title: Handle platform differences
 import { SnackInline, Terminal } from '~/ui/components/Snippet';
 import Video from '~/components/plugins/Video';
 import { A } from '~/ui/components/Text';
+import { Step } from '~/ui/components/Step';
 
 Android, iOS, and the web have different capabilities. In our case, Android and iOS both are able to capture a screenshot with the `react-native-view-shot` library, however web browsers cannot.
 
 In this chapter, let's learn how to make an exception for web browsers to get the same functionality on all platforms.
 
-## Step 1: Install and import dom-to-image
+<Step label="1">
+
+## Install and import dom-to-image
 
 To capture a screenshot on the web and save it as an image , we'll use a third-party library called [dom-to-image](https://github.com/tsayen/dom-to-image#readme).
 It allows taking a screenshot of any DOM node and turning it into a vector (SVG) or raster (PNG or JPEG) image.
@@ -27,7 +30,11 @@ To use it, let's import it into **App.js**:
 import domtoimage from 'dom-to-image';
 ```
 
-## Step 2: Add platform-specific code
+</Step>
+
+<Step label="2">
+
+## Add platform-specific code
 
 React Native provides a `Platform` module that gives us access to information about the platform on which the app is currently running.
 You can use it to implement platform-specific behavior.
@@ -105,6 +112,8 @@ const onSaveImageAsync = async () => {
 On running the app in a web browser, we can now save a screenshot:
 
 <Video file="tutorial/web.mp4" />
+
+</Step>
 
 ## Next steps
 
