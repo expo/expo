@@ -6,8 +6,8 @@ import Foundation
 import ASN1Decoder
 import CommonCrypto
 
-internal typealias VerifySignatureSuccessBlock = (Bool) -> Void
-internal typealias VerifySignatureErrorBlock = (Error) -> Void
+internal typealias VerifySignatureSuccessBlock = (_ success: Bool) -> Void
+internal typealias VerifySignatureErrorBlock = (_ error: Error) -> Void
 
 internal enum PEMType {
   case publicKey
