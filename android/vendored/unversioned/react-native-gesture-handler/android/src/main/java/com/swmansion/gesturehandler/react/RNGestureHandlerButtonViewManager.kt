@@ -331,6 +331,7 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
       // don't preform click when a child button is pressed (mainly to prevent sound effect of
       // a parent button from playing)
       return if (!isChildTouched() && soundResponder == this) {
+        tryFreeingResponder()
         soundResponder = null
         super.performClick()
       } else {

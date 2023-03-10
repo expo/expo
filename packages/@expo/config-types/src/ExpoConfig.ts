@@ -21,11 +21,11 @@ export interface ExpoConfig {
    */
   owner?: string;
   /**
-   * The auto generated Expo account name and slug used for display purposes. Formatted like `@username/slug`. When unauthenticated, the username is `@anonymous`. For published projects, this value may change when a project is transferred between accounts or renamed.
+   * The auto generated Expo account name and slug used for display purposes. It is not meant to be set directly. Formatted like `@username/slug`. When unauthenticated, the username is `@anonymous`. For published projects, this value may change when a project is transferred between accounts or renamed.
    */
   currentFullName?: string;
   /**
-   * The auto generated Expo account name and slug used for services like Notifications and AuthSession proxy. Formatted like `@username/slug`. When unauthenticated, the username is `@anonymous`. For published projects, this value will not change when a project is transferred between accounts or renamed.
+   * The auto generated Expo account name and slug used for services like Notifications and AuthSession proxy. It is not meant to be set directly. Formatted like `@username/slug`. When unauthenticated, the username is `@anonymous`. For published projects, this value will not change when a project is transferred between accounts or renamed.
    */
   originalFullName?: string;
   /**
@@ -117,7 +117,7 @@ export interface ExpoConfig {
      */
     hidden?: boolean;
     /**
-     * Sets `android:windowTranslucentStatus` in `styles.xml`. When false, the system status bar pushes the content of your app down (similar to `position: relative`). When true, the status bar floats above the content in your app (similar to `position: absolute`). Defaults to `true` to match the iOS status bar behavior (which can only float above content).
+     * When false, the system status bar pushes the content of your app down (similar to `position: relative`). When true, the status bar floats above the content in your app (similar to `position: absolute`). Defaults to `true` to match the iOS status bar behavior (which can only float above content). Explicitly setting this property to `true` will add `android:windowTranslucentStatus` to `styles.xml` and may cause unexpected keyboard behavior on Android when using the `softwareKeyboardLayoutMode` set to `resize`. In this case you will have to use `KeyboardAvoidingView` to manage the keyboard layout.
      */
     translucent?: boolean;
   };
@@ -158,7 +158,7 @@ export interface ExpoConfig {
    */
   scheme?: string;
   /**
-   * The relative path to your main JavaScript file.
+   * @deprecated Use a `main` field in the project `package.json` instead.
    */
   entryPoint?: string;
   /**
@@ -228,30 +228,6 @@ export interface ExpoConfig {
         };
   };
   /**
-   * Used for all Facebook libraries. Set up your Facebook App ID at https://developers.facebook.com.
-   */
-  facebookAppId?: string;
-  /**
-   * Whether the Facebook SDK should be initialized automatically. The default in Expo (Client and in standalone apps) is `false`.
-   */
-  facebookAutoInitEnabled?: boolean;
-  /**
-   * Whether the Facebook SDK log app events automatically. If you don't set this property, Facebook's default will be used. (Applicable only to standalone apps.) Note: The Facebook SDK must be initialized for app events to work. You may autoinitialize Facebook SDK by setting `facebookAutoInitEnabled` to `true`
-   */
-  facebookAutoLogAppEventsEnabled?: boolean;
-  /**
-   * Whether the Facebook SDK should collect advertiser ID properties, like the Apple IDFA and Android Advertising ID, automatically. If you don't set this property, Facebook's default policy will be used. (Applicable only to standalone apps.)
-   */
-  facebookAdvertiserIDCollectionEnabled?: boolean;
-  /**
-   * Used for native Facebook login.
-   */
-  facebookDisplayName?: string;
-  /**
-   * Used for Facebook native login. Starts with 'fb' and followed by a string of digits, like 'fb1234567890'. You can find your scheme [here](https://developers.facebook.com/docs/facebook-login/ios)in the 'Configuring Your info.plist' section (only applicable to standalone apps and custom Expo Go apps).
-   */
-  facebookScheme?: string;
-  /**
    * Is app detached
    */
   isDetached?: boolean;
@@ -271,7 +247,7 @@ export interface ExpoConfig {
   plugins?: (string | [] | [string] | [string, any])[];
   splash?: Splash;
   /**
-   * Specifies the JavaScript engine for apps. Supported only on EAS Build. Defaults to `jsc`. Valid values: `hermes`, `jsc`.
+   * Specifies the JavaScript engine for apps. Supported only on EAS Build. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
    */
   jsEngine?: 'hermes' | 'jsc';
   ios?: IOS;
@@ -359,7 +335,7 @@ export interface IOS {
    */
   appStoreUrl?: string;
   /**
-   * Enable iOS Bitcode optimizations in the native build. Accepts the name of an iOS build configuration to enable for a single configuration and disable for all others, e.g. Debug, Release. Not available in the classic 'expo build:ios' or Expo Go. Defaults to `undefined` which uses the template's predefined settings.
+   * Enable iOS Bitcode optimizations in the native build. Accepts the name of an iOS build configuration to enable for a single configuration and disable for all others, e.g. Debug, Release. Not available in Expo Go. Defaults to `undefined` which uses the template's predefined settings.
    */
   bitcode?: boolean | string;
   /**
@@ -460,6 +436,28 @@ export interface IOS {
      * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
      */
     tabletImage?: string;
+    /**
+     * Configuration for loading and splash screen for standalone iOS apps in dark mode.
+     */
+    dark?: {
+      /**
+       * Color to fill the loading screen background
+       */
+      backgroundColor?: string;
+      /**
+       * Determines how the `image` will be displayed in the splash loading screen. Must be one of `cover` or `contain`, defaults to `contain`.
+       */
+      resizeMode?: 'cover' | 'contain';
+      /**
+       * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+       */
+      image?: string;
+      /**
+       * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+       */
+      tabletImage?: string;
+      [k: string]: any;
+    };
     [k: string]: any;
   };
   /**
@@ -582,7 +580,7 @@ export interface Android {
    */
   permissions?: string[];
   /**
-   * List of permissions to block in the final `AndroidManifest.xml`. This is useful for removing permissions that are added by native package `AndroidManifest.xml` files which are merged into the final manifest. Internally this feature uses the `tools:node="remove"` XML attribute to remove permissions. Not available in the classic `expo build:android` or Expo Go.
+   * List of permissions to block in the final `AndroidManifest.xml`. This is useful for removing permissions that are added by native package `AndroidManifest.xml` files which are merged into the final manifest. Internally this feature uses the `tools:node="remove"` XML attribute to remove permissions. Not available in Expo Go.
    */
   blockedPermissions?: string[];
   /**
@@ -666,6 +664,54 @@ export interface Android {
      *  `Scale 4x`
      */
     xxxhdpi?: string;
+    /**
+     * Configuration for loading and splash screen for managed and standalone Android apps in dark mode.
+     */
+    dark?: {
+      /**
+       * Color to fill the loading screen background
+       */
+      backgroundColor?: string;
+      /**
+       * Determines how the `image` will be displayed in the splash loading screen. Must be one of `cover`, `contain` or `native`, defaults to `contain`.
+       */
+      resizeMode?: 'cover' | 'contain' | 'native';
+      /**
+       * Local path or remote URL to an image to fill the background of the loading screen. Image size and aspect ratio are up to you. Must be a .png.
+       */
+      image?: string;
+      /**
+       * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
+       *
+       *  `Natural sized image (baseline)`
+       */
+      mdpi?: string;
+      /**
+       * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
+       *
+       *  `Scale 1.5x`
+       */
+      hdpi?: string;
+      /**
+       * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
+       *
+       *  `Scale 2x`
+       */
+      xhdpi?: string;
+      /**
+       * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
+       *
+       *  `Scale 3x`
+       */
+      xxhdpi?: string;
+      /**
+       * Local path or remote URL to an image to fill the background of the loading screen in "native" mode. Image size and aspect ratio are up to you. [Learn more]( https://developer.android.com/training/multiscreen/screendensities)
+       *
+       *  `Scale 4x`
+       */
+      xxxhdpi?: string;
+      [k: string]: any;
+    };
     [k: string]: any;
   };
   /**

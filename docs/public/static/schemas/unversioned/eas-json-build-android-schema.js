@@ -17,7 +17,10 @@ export default [
     name: 'resourceClass',
     enum: ['default', 'medium', 'large'],
     description: [
-      'The Android-specific resource class that will be used to run this build.',
+      'The Android-specific resource class that will be used to run this build. [Learn more](../../build-reference/infrastructure#android-build-server-configurations)',
+      '- `default` maps to `medium`',
+      '',
+      'This can change over time. To ensure you stay on the same configuration even when we change our defaults, use the specific resource class name.',
     ],
   },
   {

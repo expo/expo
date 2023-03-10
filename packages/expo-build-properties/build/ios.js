@@ -12,6 +12,15 @@ exports.withIosBuildProperties = createBuildPodfilePropsConfigPlugin([
         propName: 'ios.useFrameworks',
         propValueGetter: (config) => config.ios?.useFrameworks,
     },
+    {
+        propName: 'ios.flipper',
+        propValueGetter: (config) => {
+            if (typeof config.ios?.flipper === 'string' || typeof config.ios?.flipper === 'boolean') {
+                return config.ios.flipper.toString();
+            }
+            return undefined;
+        },
+    },
 ], 'withIosBuildProperties');
 const withIosDeploymentTarget = (config, props) => {
     const deploymentTarget = props.ios?.deploymentTarget;

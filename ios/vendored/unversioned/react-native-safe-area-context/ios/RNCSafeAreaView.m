@@ -14,7 +14,7 @@
   UIEdgeInsets _currentSafeAreaInsets;
   RNCSafeAreaViewMode _mode;
   RNCSafeAreaViewEdges _edges;
-  __weak UIView *_Nullable _providerView;
+  __weak RNCSafeAreaProvider *_Nullable _providerView;
 }
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
@@ -55,15 +55,16 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   [self invalidateSafeAreaInsets];
 
   if (previousProviderView != _providerView) {
-    [NSNotificationCenter.defaultCenter
-     removeObserver:self
-     name:RNCSafeAreaDidChange
-     object:previousProviderView];
-    [NSNotificationCenter.defaultCenter
-     addObserver:self
-     selector:@selector(safeAreaProviderInsetsDidChange:)
-     name:RNCSafeAreaDidChange
-     object:_providerView];
+    if (previousProviderView != nil) {
+      [NSNotificationCenter.defaultCenter removeObserver:self name:RNCSafeAreaDidChange object:previousProviderView];
+    }
+
+    if (_providerView != nil) {
+      [NSNotificationCenter.defaultCenter addObserver:self
+                                             selector:@selector(safeAreaProviderInsetsDidChange:)
+                                                 name:RNCSafeAreaDidChange
+                                               object:_providerView];
+    }
   }
 }
 
@@ -87,16 +88,16 @@ RCT_NOT_IMPLEMENTED(-(instancetype)initWithFrame : (CGRect)frame)
   [self updateLocalData];
 }
 
-- (UIView *)findNearestProvider
+- (nullable RNCSafeAreaProvider *)findNearestProvider
 {
   UIView *current = self.reactSuperview;
   while (current != nil) {
     if ([current isKindOfClass:RNCSafeAreaProvider.class]) {
-      return current;
+      return (RNCSafeAreaProvider *)current;
     }
     current = current.reactSuperview;
   }
-  return self;
+  return nil;
 }
 
 - (void)updateLocalData

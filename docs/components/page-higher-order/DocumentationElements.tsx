@@ -32,7 +32,8 @@ export default function DocumentationElements(props: DocumentationElementsProps)
               sourceCodeUrl={props.meta.sourceCodeUrl}
               tocVisible={!props.meta.hideTOC}
               hideFromSearch={props.meta.hideFromSearch}
-              packageName={props.meta.packageName}>
+              packageName={props.meta.packageName}
+              iconUrl={props.meta.iconUrl}>
               {props.children}
             </DocumentationPage>
           </PageApiVersionProvider>

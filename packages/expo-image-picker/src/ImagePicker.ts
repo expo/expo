@@ -13,18 +13,8 @@ import {
   CameraPermissionResponse,
   MediaLibraryPermissionResponse,
   ImagePickerResult,
-  ImagePickerAsset,
   ImagePickerErrorResult,
-  MediaTypeOptions,
   ImagePickerOptions,
-  VideoExportPreset,
-  ExpandImagePickerResult,
-  ImageInfo,
-  ImagePickerMultipleResult,
-  ImagePickerCancelledResult,
-  OpenFileBrowserOptions,
-  UIImagePickerControllerQualityType,
-  UIImagePickerPresentationStyle,
 } from './ImagePicker.types';
 
 function validateOptions(options: ImagePickerOptions) {
@@ -257,24 +247,6 @@ export async function launchImageLibraryAsync(
   return mergeDeprecatedResult(result);
 }
 
-export {
-  MediaTypeOptions,
-  ImagePickerOptions,
-  ImagePickerResult,
-  ImagePickerErrorResult,
-  ImagePickerAsset,
-  VideoExportPreset,
-  CameraPermissionResponse,
-  MediaLibraryPermissionResponse,
-  PermissionStatus,
-  PermissionExpiration,
-  PermissionHookOptions,
-  PermissionResponse,
-  ImageInfo, // deprecated
-  ImagePickerMultipleResult, // deprecated
-  ImagePickerCancelledResult, // deprecated
-  OpenFileBrowserOptions,
-  ExpandImagePickerResult, // deprecated
-  UIImagePickerControllerQualityType,
-  UIImagePickerPresentationStyle,
-};
+export * from './ImagePicker.types';
+
+export { PermissionStatus, PermissionExpiration, PermissionHookOptions, PermissionResponse };

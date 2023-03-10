@@ -30,6 +30,16 @@ function importFromProject(projectRoot: string, moduleId: string) {
 export function importMetroFromProject(projectRoot: string): typeof import('metro') {
   return importFromProject(projectRoot, 'metro');
 }
+export function importMetroCreateWebsocketServerFromProject(
+  projectRoot: string
+): typeof import('metro/src/lib/createWebsocketServer').createWebsocketServer {
+  return importFromProject(projectRoot, 'metro/src/lib/createWebsocketServer');
+}
+export function importMetroHmrServerFromProject(
+  projectRoot: string
+): typeof import('metro/src/HmrServer').MetroHmrServer {
+  return importFromProject(projectRoot, 'metro/src/HmrServer');
+}
 
 /** Import `@expo/metro-config` from the project. */
 export function importExpoMetroConfigFromProject(
@@ -45,6 +55,20 @@ export function importMetroResolverFromProject(
   return importFromProject(projectRoot, 'metro-resolver');
 }
 
+/** Import `metro-inspector-proxy` from the project. */
+export function importMetroInspectorProxyFromProject(
+  projectRoot: string
+): typeof import('metro-inspector-proxy') {
+  return importFromProject(projectRoot, 'metro-inspector-proxy');
+}
+
+/** Import `metro-inspector-proxy/src/Device` from the project. */
+export function importMetroInspectorDeviceFromProject(
+  projectRoot: string
+): typeof import('metro-inspector-proxy/src/Device') {
+  return importFromProject(projectRoot, 'metro-inspector-proxy/src/Device');
+}
+
 /**
  * Import the internal `saveAssets()` function from `react-native` for the purpose
  * of saving production assets as-is instead of converting them to a hash.
@@ -56,4 +80,18 @@ export function importCliSaveAssetsFromProject(
     projectRoot,
     '@react-native-community/cli-plugin-metro/build/commands/bundle/saveAssets'
   ).default;
+}
+
+export function importCliBuildBundleWithConfigFromProject(
+  projectRoot: string
+): typeof import('@react-native-community/cli-plugin-metro/build/commands/bundle/buildBundle').buildBundleWithConfig {
+  return importFromProject(
+    projectRoot,
+    '@react-native-community/cli-plugin-metro/build/commands/bundle/buildBundle'
+  ).buildBundleWithConfig;
+}
+
+/** Resolve the installed Metro version from project */
+export function resolveMetroVersionFromProject(projectRoot: string): string {
+  return importFromProject(projectRoot, 'metro/package.json').version;
 }

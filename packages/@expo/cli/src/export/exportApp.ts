@@ -6,6 +6,7 @@ import { importCliSaveAssetsFromProject } from '../start/server/metro/resolveFro
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
+import { setNodeEnv } from '../utils/nodeEnv';
 import { createBundlesAsync } from './createBundles';
 import { exportAssetsAsync } from './exportAssets';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
@@ -42,6 +43,8 @@ export async function exportAppAsync(
     dumpSourcemap,
   }: Pick<Options, 'dumpAssetmap' | 'dumpSourcemap' | 'dev' | 'clear' | 'outputDir' | 'platforms'>
 ): Promise<void> {
+  setNodeEnv(dev ? 'development' : 'production');
+
   const exp = await getPublicExpoManifestAsync(projectRoot);
 
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
@@ -61,7 +64,6 @@ export async function exportAppAsync(
     {
       platforms,
       dev,
-      useDevServer: true,
       // TODO: Disable source map generation if we aren't outputting them.
     }
   );

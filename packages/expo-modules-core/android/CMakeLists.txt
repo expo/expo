@@ -6,7 +6,7 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_STANDARD 17)
 set(PACKAGE_NAME "expo-modules-core")
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
-set(ignoreMe "${PROJECT_BUILD_DIR} ${REACT_ANDROID_BUILD_DIR} ${REACT_ANDROID_DIR} ${HERMES_HEADER_DIR}")
+set(ignoreMe "${PROJECT_BUILD_DIR} ${REACT_ANDROID_BUILD_DIR} ${REACT_ANDROID_DIR} ${HERMES_HEADER_DIR} ${BOOST_VERSION}")
 
 string(APPEND CMAKE_CXX_FLAGS " -DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}")
 
@@ -106,21 +106,18 @@ target_include_directories(
 
         # header only imports from turbomodule, e.g. CallInvokerHolder.h
         "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"
-
-        "${BUILD_DIR}/third-party-ndk/boost/boost_${BOOST_VERSION}"
         "${COMMON_DIR}"
         "${SRC_DIR}/fabric"
 )
 
 # linking
 
+include("${REACT_NATIVE_DIR}/ReactAndroid/cmake-utils/folly-flags.cmake")
+
 target_compile_options(
         ${PACKAGE_NAME}
-        PRIVATE -DFOLLY_NO_CONFIG=1
-        -DFOLLY_HAVE_CLOCK_GETTIME=1
-        -DFOLLY_HAVE_MEMRCHR=1
-        -DFOLLY_USE_LIBCPP=1
-        -DFOLLY_MOBILE=1
+        PRIVATE
+        ${folly_FLAGS}
 )
 
 target_link_libraries(

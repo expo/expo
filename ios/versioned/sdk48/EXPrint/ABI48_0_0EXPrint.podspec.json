@@ -1,0 +1,20 @@
+{
+  "name": "ABI48_0_0EXPrint",
+  "version": "12.2.1",
+  "summary": "Provides an API for iOS (AirPrint) and Android printing functionality.",
+  "description": "Provides an API for iOS (AirPrint) and Android printing functionality.",
+  "license": "MIT",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://docs.expo.dev/versions/latest/sdk/print/",
+  "platforms": {
+    "ios": "13.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "static_framework": true,
+  "dependencies": {
+    "ABI48_0_0ExpoModulesCore": []
+  },
+  "source_files": "EXPrint/**/*.{h,m}"
+}

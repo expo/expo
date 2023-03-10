@@ -8,11 +8,18 @@ const isCI = boolish('CI', false);
 const isProduction = process.env.EXPO_WEB_E2E_ENV === 'production';
 const projectPath = process.cwd();
 
-const port = 19007;
+// Note(cedric): we can only change the port when using Metro web bundler
+// As of writing, we use Webpack for web, which can't run on the same port as Metro.
+// It always tries to fall back to Webpack's default port, which is 19006.
+const port = 19006;
 
 function getCommand() {
   if (!isProduction) {
-    return `expo-cli start:web ${projectPath} -p ${port} --non-interactive --https`;
+    const cliBin = require.resolve('@expo/cli');
+    // Note(cedric): we can only change the port when using Metro web bundler
+    // As of writing, we use Webpack for web, which can't run on the same port as Metro.
+    // It always tries to fall back to Webpack's default port, which is 19006.
+    return `node ${cliBin} start ${projectPath} --web --https`;
   }
 
   // Production mode
@@ -22,7 +29,7 @@ function getCommand() {
 
   return [
     // Optionally bundle the project
-    (isCI || !hasBuild) && `npx expo export:web`,
+    (isCI || !hasBuild) && `npx expo-internal export:web`,
     // Serve for puppeteer
     `npx serve ${buildFolder}`,
   ]

@@ -40,6 +40,7 @@ export declare class GLView extends React.Component<GLViewProps> {
     render(): JSX.Element;
     _setNativeRef: (nativeRef: ComponentOrHandle) => void;
     _onSurfaceCreate: ({ nativeEvent: { exglCtxId } }: SurfaceCreateEvent) => void;
+    componentWillUnmount(): void;
     startARSessionAsync(): Promise<any>;
     createCameraTextureAsync(cameraRefOrHandle: ComponentOrHandle): Promise<WebGLTexture>;
     destroyObjectAsync(glObject: WebGLObject): Promise<boolean>;

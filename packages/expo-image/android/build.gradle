@@ -20,7 +20,7 @@ buildscript {
     if (ext.has("kotlinVersion")) {
       ext.kotlinVersion()
     } else {
-      ext.safeExtGet("kotlinVersion", "1.6.10")
+      ext.safeExtGet("kotlinVersion", "1.8.10")
     }
   }
 
@@ -49,20 +49,16 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 1
-    versionName "1.0.0-beta.1"
+    versionName "1.0.0"
   }
   lintOptions {
     abortOnError false
   }
-  sourceSets {
-    main {
-      java {
-        if (safeExtGet("excludeAppGlideModule", false)) {
-          srcDir "src"
-          exclude "**/ExpoImageAppGlideModule.java"
-        }
-      }
-    }
+}
+
+if (safeExtGet("excludeAppGlideModule", false)) {
+  tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
+    exclude("**/ExpoImageAppGlideModule.kt")
   }
 }
 

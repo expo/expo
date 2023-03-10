@@ -7,6 +7,7 @@
 #include "JsiSkPaint.h"
 
 #include <memory>
+#include <mutex>
 #include <utility>
 
 namespace RNSkia {
@@ -76,7 +77,11 @@ protected:
                    static_cast<const jsi::Value *>(args.data()), 1);
 
           auto picture = recorder.finishRecordingAsPicture();
-          this->_drawingProp->setPicture(picture);
+          {
+            // Lock access to the picture property's setter
+            std::lock_guard<std::mutex> lock(_pictureLock);
+            this->_drawingProp->setPicture(picture);
+          }
 
           // Ask view to redraw itself
           _inRedrawCycle = true;
@@ -86,6 +91,7 @@ protected:
     }
 
     if (_drawingProp->isSet()) {
+      std::lock_guard<std::mutex> lock(_pictureLock);
       context->getCanvas()->drawPicture(_drawingProp->getDerivedValue());
       _inRedrawCycle = false;
     }
@@ -115,6 +121,7 @@ private:
   std::shared_ptr<JsiSkCanvas> _jsiCanvas;
 
   std::atomic<bool> _inRedrawCycle = {false};
+  std::mutex _pictureLock;
 };
 
 } // namespace RNSkia

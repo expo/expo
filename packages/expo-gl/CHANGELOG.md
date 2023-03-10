@@ -6,9 +6,29 @@
 
 ### 🎉 New features
 
-- Migrated the view manager to the new Expo modules API and thus added support for Fabric on Android. ([#20749](https://github.com/expo/expo/pull/20749) by [@lukmccall](https://github.com/lukmccall))
-
 ### 🐛 Bug fixes
+
+- Fixed leaking GL context. ([#21247](https://github.com/expo/expo/pull/21247) by [@wkozyra95](https://github.com/wkozyra95))
+
+### 💡 Others
+
+- Remove legacy code for old Expo Go. ([#21247](https://github.com/expo/expo/pull/21247) by [@wkozyra95](https://github.com/wkozyra95))
+
+## 12.4.0 — 2023-02-14
+
+### 🎉 New features
+
+- Add support for the `GL_UNPACK_ALIGNMENT` parameter in the `pixelStorei` method. ([#21212](https://github.com/expo/expo/pull/21212) by [@BanBart](https://github.com/BanBart))
+
+## 12.3.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 12.3.0 — 2023-02-03
+
+### 🎉 New features
+
+- Migrated the view manager to the new Expo modules API and thus added support for Fabric on Android. ([#20749](https://github.com/expo/expo/pull/20749) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 

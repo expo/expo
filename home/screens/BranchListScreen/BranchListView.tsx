@@ -2,7 +2,6 @@ import { spacing } from '@expo/styleguide-native';
 import { Divider, useExpoTheme, View } from 'expo-dev-client-components';
 import * as React from 'react';
 import { FlatList, ActivityIndicator, View as RNView } from 'react-native';
-import InfiniteScrollView from 'react-native-infinite-scroll-view';
 
 import { BranchListItem } from '../../components/BranchListItem';
 import { BranchesForProjectQuery } from '../../graphql/types';
@@ -56,7 +55,6 @@ export function BranchListView(props: Props) {
 }
 
 function BranchList({ data, appId, loadMoreAsync }: Props) {
-  const [isLoadingMore, setLoadingMore] = React.useState(false);
   const isLoading = React.useRef<null | boolean>(false);
   const theme = useExpoTheme();
 
@@ -65,7 +63,6 @@ function BranchList({ data, appId, loadMoreAsync }: Props) {
   const handleLoadMoreAsync = async () => {
     if (isLoading.current) return;
     isLoading.current = true;
-    setLoadingMore(true);
 
     try {
       await loadMoreAsync();
@@ -73,15 +70,6 @@ function BranchList({ data, appId, loadMoreAsync }: Props) {
       console.error(e);
     } finally {
       isLoading.current = false;
-      setLoadingMore(false);
-    }
-  };
-
-  const canLoadMore = () => {
-    if (isLoadingMore) {
-      return false;
-    } else {
-      return true;
     }
   };
 
@@ -111,13 +99,10 @@ function BranchList({ data, appId, loadMoreAsync }: Props) {
         data={data}
         keyExtractor={extractKey}
         renderItem={renderItem}
-        // @ts-expect-error typescript cannot infer that props should include infinite-scroll-view props
-        renderLoadingIndicator={() => <RNView />}
-        renderScrollComponent={(props) => <InfiniteScrollView {...props} />}
         contentContainerStyle={{ padding: spacing[4] }}
         ItemSeparatorComponent={() => <Divider style={{ height: 1 }} />}
-        canLoadMore={canLoadMore()}
-        onLoadMoreAsync={handleLoadMoreAsync}
+        onEndReached={handleLoadMoreAsync}
+        onEndReachedThreshold={0.2}
       />
     </View>
   );

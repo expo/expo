@@ -199,6 +199,12 @@ const config: VendoringTargetConfig = {
               find: /"\$\{BUILD_DIR\}\/.+\/libhermes\.so"/g,
               replaceWith: `hermes-engine::libhermes`,
             },
+            {
+              // expose `ReanimatedUIManagerFactory.create` publicly
+              paths: 'ReanimatedUIManagerFactory.java',
+              find: /((?<!public )static UIManagerModule create\()/g,
+              replaceWith: 'public $1',
+            },
           ],
         },
       },
@@ -367,6 +373,9 @@ const config: VendoringTargetConfig = {
     'react-native-pager-view': {
       source: 'https://github.com/callstack/react-native-viewpager',
       ios: {},
+      android: {
+        excludeFiles: ['android/gradle{/**,**}', 'android/settings.gradle'],
+      },
     },
     'react-native-shared-element': {
       source: 'https://github.com/IjzerenHein/react-native-shared-element',
@@ -380,7 +389,7 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-community/slider': {
       source: 'https://github.com/callstack/react-native-slider',
-      rootDir: 'src',
+      rootDir: 'package',
       ios: {},
       android: {
         includeFiles: 'android/**',

@@ -1,4 +1,11 @@
-# expo-linear-gradient
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/linear-gradient/">
+    <img
+      src="../../.github/resources/expo-linear-gradient.svg"
+      alt="expo-linear-gradient"
+      height="64" />
+  </a>
+</p>
 
 Provides a React component that renders a gradient view.
 

@@ -5,13 +5,13 @@ import groovy.json.JsonSlurper
 buildscript {
     ext {
         buildToolsVersion = '33.0.0'
-        gradlePluginVersion = '7.3.1'
+        gradlePluginVersion = '7.4.1'
         minSdkVersion = 21
         compileSdkVersion = 33
         targetSdkVersion = 33
         // Some dependencies still expect supportLibVersion to be defined
         supportLibVersion = "29.0.0"
-        kotlinVersion = '1.6.10'
+        kotlinVersion = '1.8.10'
         // for expo-dev-client
         expoUpdatesVersion = null
 

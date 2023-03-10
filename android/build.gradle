@@ -9,8 +9,8 @@ buildscript {
 
     dbFlowVersion = '4.2.4'
     buildToolsVersion = '33.0.0'
-    kotlinVersion = '1.6.10'
-    gradlePluginVersion = '7.3.1'
+    kotlinVersion = '1.8.10'
+    gradlePluginVersion = '7.4.1'
     gradleDownloadTaskVersion = '5.0.1'
     repositoryUrl = "file:${System.env.HOME}/.m2/repository/"
 
@@ -47,6 +47,9 @@ allprojects {
       url "$rootDir/maven"
     }
     // For old expoviews to work
+    maven {
+      url "$rootDir/versioned-abis/expoview-abi48_0_0/maven"
+    }
     maven {
       url "$rootDir/versioned-abis/expoview-abi47_0_0/maven"
     }

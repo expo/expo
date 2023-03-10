@@ -1,5 +1,6 @@
 import { Fragment } from 'react';
 
+import { APIDataType } from '~/components/plugins/api/APIDataType';
 import {
   PropData,
   TypeDeclarationContentData,
@@ -8,6 +9,7 @@ import {
   TypeSignaturesData,
 } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
+import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import {
   resolveTypeName,
   renderFlags,
@@ -26,7 +28,7 @@ import {
   getCommentContent,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
-import { H2, UL, LI, BOLD, P, CODE } from '~/ui/components/Text';
+import { H2, BOLD, P, CODE, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
@@ -111,13 +113,14 @@ const renderType = ({
     return (
       <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
+        <APISectionPlatformTags comment={comment} prefix="Only for:" />
         <H3Code tags={getTagNamesList(comment)}>
-          <CODE>
+          <MONOSPACE weight="medium">
             {name}
             {type.declaration.signatures ? '()' : ''}
-          </CODE>
+          </MONOSPACE>
         </H3Code>
-        <CommentTextBlock comment={comment} />
+        <CommentTextBlock comment={comment} includePlatforms={false} />
         {type.declaration.children && renderTypeDeclarationTable(type.declaration)}
         {type.declaration.signatures
           ? type.declaration.signatures.map(({ parameters, comment }: TypeSignaturesData) => (
@@ -138,10 +141,11 @@ const renderType = ({
       return (
         <div key={`prop-type-definition-${name}`} css={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} />
+          <APISectionPlatformTags comment={comment} prefix="Only for:" />
           <H3Code tags={getTagNamesList(comment)}>
-            <CODE>{name}</CODE>
+            <MONOSPACE weight="medium">{name}</MONOSPACE>
           </H3Code>
-          <CommentTextBlock comment={comment} />
+          <CommentTextBlock comment={comment} includePlatforms={false} />
           {type.type === 'intersection' ? (
             <>
               <P>
@@ -167,10 +171,11 @@ const renderType = ({
       return (
         <div key={`type-definition-${name}`} css={STYLES_APIBOX}>
           <APISectionDeprecationNote comment={comment} />
+          <APISectionPlatformTags comment={comment} prefix="Only for:" />
           <H3Code tags={getTagNamesList(comment)}>
-            <CODE>{name}</CODE>
+            <MONOSPACE weight="medium">{name}</MONOSPACE>
           </H3Code>
-          <CommentTextBlock comment={comment} />
+          <CommentTextBlock comment={comment} includePlatforms={false} />
           <P>
             {defineLiteralType(literalTypes)}
             Acceptable values are:{' '}
@@ -188,25 +193,26 @@ const renderType = ({
     return (
       <div key={`record-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
+        <APISectionPlatformTags comment={comment} prefix="Only for:" />
         <H3Code tags={getTagNamesList(comment)}>
-          <CODE>{name}</CODE>
+          <MONOSPACE weight="medium">{name}</MONOSPACE>
         </H3Code>
-        <UL>
-          <LI>
-            <CODE>{resolveTypeName(type)}</CODE>
-          </LI>
-        </UL>
-        <CommentTextBlock comment={comment} />
+        <div css={{ display: 'flex', gap: 8, marginBottom: 12 }}>
+          <BOLD>Type: </BOLD>
+          <APIDataType typeDefinition={type} />
+        </div>
+        <CommentTextBlock comment={comment} includePlatforms={false} />
       </div>
     );
   } else if (type.type === 'intrinsic') {
     return (
       <div key={`generic-type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
+        <APISectionPlatformTags comment={comment} prefix="Only for:" />
         <H3Code tags={getTagNamesList(comment)}>
-          <CODE>{name}</CODE>
+          <MONOSPACE weight="medium">{name}</MONOSPACE>
         </H3Code>
-        <CommentTextBlock comment={comment} />
+        <CommentTextBlock comment={comment} includePlatforms={false} />
         <P>
           <BOLD>Type: </BOLD>
           <CODE>{type.name}</CODE>
@@ -217,12 +223,13 @@ const renderType = ({
     return (
       <div key={`conditional-type-definition-${name}`} css={STYLES_APIBOX}>
         <APISectionDeprecationNote comment={comment} />
+        <APISectionPlatformTags comment={comment} prefix="Only for:" />
         <H3Code tags={getTagNamesList(comment)}>
-          <CODE>
+          <MONOSPACE weight="medium">
             {name}&lt;{type.checkType.name}&gt;
-          </CODE>
+          </MONOSPACE>
         </H3Code>
-        <CommentTextBlock comment={comment} />
+        <CommentTextBlock comment={comment} includePlatforms={false} />
         <P>
           <BOLD>Generic: </BOLD>
           <CODE>

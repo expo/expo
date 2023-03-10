@@ -60,7 +60,7 @@ type Props = {
 /**
  * Helper type for typing out the function description that is later passed to the `FunctionDemo` component.
  */
-export type FunctionDescription = Omit<Props, 'namespace' | 'renderAdditionalResult'>;
+export type FunctionDescription = Omit<Props, 'namespace'>;
 
 type Result =
   | {

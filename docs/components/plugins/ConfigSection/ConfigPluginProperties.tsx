@@ -1,6 +1,8 @@
 import type { PropsWithChildren } from 'react';
+import ReactMarkdown from 'react-markdown';
 
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+import { mdComponents } from '~/components/plugins/api/APISectionUtils';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { P, CODE, H3 } from '~/ui/components/Text';
 
@@ -36,7 +38,7 @@ export const ConfigPluginProperties = ({ children, properties }: Props) => (
                   ]}
                 />
               )}
-              {property.description}
+              <ReactMarkdown components={mdComponents}>{property.description}</ReactMarkdown>
             </Cell>
           </Row>
         ))}

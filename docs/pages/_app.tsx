@@ -13,13 +13,16 @@ import { AnalyticsProvider } from '~/providers/Analytics';
 import { markdownComponents } from '~/ui/components/Markdown';
 
 import '@expo/styleguide/dist/expo-theme.css';
+import '@expo/styleguide/dist/global.css';
 import 'tippy.js/dist/tippy.css';
 
 const isDev = process.env.NODE_ENV === 'development';
 
-export const regularFont = Inter();
+export const regularFont = Inter({
+  display: 'swap',
+});
 export const monospaceFont = Fira_Code({
-  weight: '400',
+  weight: ['400', '500'],
   display: 'swap',
 });
 

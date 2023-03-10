@@ -8,9 +8,11 @@ on:
     branches: [main]
     paths:
       - .github/workflows/test-suite-nightly.yml
+      - tools/src/commands/SetupReactNativeNightly.ts
   pull_request:
     paths:
       - .github/workflows/test-suite-nightly.yml
+      - tools/src/commands/SetupReactNativeNightly.ts
 
 concurrency:
   group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}

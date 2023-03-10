@@ -538,7 +538,11 @@ class RNGestureHandlerModule(reactContext: ReactApplicationContext?) :
         sendEventForReanimated(event)
       } else if (handler.actionType == GestureHandler.ACTION_TYPE_NATIVE_ANIMATED_EVENT) {
         // Animated with useNativeDriver: true
-        val event = RNGestureHandlerEvent.obtain(handler, handlerFactory)
+        val event = RNGestureHandlerEvent.obtain(
+          handler,
+          handlerFactory,
+          useTopPrefixedName = BuildConfig.REACT_NATIVE_MINOR_VERSION >= 71
+        )
         sendEventForNativeAnimatedEvent(event)
       } else if (handler.actionType == GestureHandler.ACTION_TYPE_JS_FUNCTION_OLD_API) {
         // JS function, Animated.event with useNativeDriver: false using old API

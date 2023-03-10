@@ -5,6 +5,7 @@ import chalk from 'chalk';
 import { FileNotifier } from '../../utils/FileNotifier';
 import { logEventAsync } from '../../utils/analytics/rudderstackClient';
 import { ProjectPrerequisite } from '../doctor/Prerequisite';
+import { TypeScriptProjectPrerequisite } from '../doctor/typescript/TypeScriptProjectPrerequisite';
 import * as AndroidDebugBridge from '../platforms/android/adb';
 import { BundlerDevServer, BundlerStartOptions } from './BundlerDevServer';
 import { getPlatformBundlers } from './platformBundlers';
@@ -29,14 +30,16 @@ const BUNDLERS = {
 
 /** Manages interacting with multiple dev servers. */
 export class DevServerManager {
-  private projectPrerequisites: ProjectPrerequisite[] = [];
+  private projectPrerequisites: ProjectPrerequisite<any, void>[] = [];
+
+  private notifier: FileNotifier | null = null;
 
   constructor(
     public projectRoot: string,
     /** Keep track of the original CLI options for bundlers that are started interactively. */
     public options: BundlerStartOptions
   ) {
-    this.watchBabelConfig();
+    this.notifier = this.watchBabelConfig();
   }
 
   private watchBabelConfig() {
@@ -60,7 +63,7 @@ export class DevServerManager {
   }
 
   /** Lazily load and assert a project-level prerequisite. */
-  async ensureProjectPrerequisiteAsync(PrerequisiteClass: typeof ProjectPrerequisite) {
+  async ensureProjectPrerequisiteAsync(PrerequisiteClass: typeof ProjectPrerequisite<any, any>) {
     let prerequisite = this.projectPrerequisites.find(
       (prerequisite) => prerequisite instanceof PrerequisiteClass
     );
@@ -68,7 +71,7 @@ export class DevServerManager {
       prerequisite = new PrerequisiteClass(this.projectRoot);
       this.projectPrerequisites.push(prerequisite);
     }
-    await prerequisite.assertAsync();
+    return await prerequisite.assertAsync();
   }
 
   /**
@@ -148,9 +151,23 @@ export class DevServerManager {
     return exp;
   }
 
+  async bootstrapTypeScriptAsync() {
+    if (await this.ensureProjectPrerequisiteAsync(TypeScriptProjectPrerequisite)) {
+      return;
+    }
+    // Optionally, wait for the user to add TypeScript during the
+    // development cycle.
+    const server = devServers.find((server) => server.name === 'metro');
+    if (!server) {
+      return;
+    }
+    await server.waitForTypeScriptAsync();
+  }
+
   /** Stop all servers including ADB. */
   async stopAsync(): Promise<void> {
     await Promise.allSettled([
+      this.notifier?.stopObserving(),
       // Stop all dev servers
       ...devServers.map((server) => server.stopAsync()),
       // Stop ADB

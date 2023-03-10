@@ -2,7 +2,7 @@ import chalk from 'chalk';
 
 import logger from '../Logger';
 import { Package } from '../Packages';
-import checkBuildUniformityAsync from './checkBuildUniformityAsync';
+import checkUniformityAsync from './checkUniformityAsync';
 import runPackageScriptAsync from './runPackageScriptAsync';
 import { ActionOptions } from './types';
 
@@ -26,9 +26,15 @@ export default async function checkPackageAsync(
     if (options.build) {
       await runPackageScriptAsync(pkg, 'clean', args);
       await runPackageScriptAsync(pkg, 'build', args);
+      if (pkg.scripts.bundle) {
+        await runPackageScriptAsync(pkg, 'bundle', args);
+      }
 
       if (options.uniformityCheck) {
-        await checkBuildUniformityAsync(pkg);
+        await checkUniformityAsync(pkg, './build');
+        if (pkg.scripts.bundle) {
+          await checkUniformityAsync(pkg, '*bundle');
+        }
       }
     }
     if (options.test) {

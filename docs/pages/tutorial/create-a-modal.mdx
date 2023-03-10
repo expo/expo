@@ -6,15 +6,16 @@ import { SnackInline } from '~/ui/components/Snippet';
 import Video from '~/components/plugins/Video';
 import { A } from '~/ui/components/Text';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { Step } from '~/ui/components/Step';
 
-React Native provides a [`<Modal>` component](https://reactnative.dev/docs/modal) that presents content above the rest of your app.
-In general, modals are used to draw a user's attention toward critical information or guide them to take action.
-For example, in the <A href="/tutorial/build-a-screen/#step-7-enhance-the-reusable-button-component" openInNewTab>second chapter</A>,
+React Native provides a [`<Modal>` component](https://reactnative.dev/docs/modal) that presents content above the rest of your app. In general, modals are used to draw a user's attention toward critical information or guide them to take action. For example, in the <A href="/tutorial/build-a-screen/#step-7-enhance-the-reusable-button-component" openInNewTab>second chapter</A>,
 we used `alert()` to display a placeholder when a button is pressed. That's how a modal component displays an overlay.
 
 In this chapter, we'll create a modal that shows an emoji picker list.
 
-## Step 1: Declare a state variable to show buttons
+<Step label="1">
+
+## Declare a state variable to show buttons
 
 Before implementing the modal, we are going to add three new buttons. These buttons will only be visible when the user picks an image from the media library
 or decides to use the placeholder image. One of these buttons will trigger the emoji picker modal.
@@ -91,7 +92,11 @@ export default function App() {
 
 For now, when the value of `showAppOptions` is `true`, let's render an empty `<View>` component. We'll address this state in the next step.
 
-## Step 2: Add buttons
+</Step>
+
+<Step label="2">
+
+## Add buttons
 
 Let's break down the layout of the option buttons we will implement in this chapter. The design looks like this:
 
@@ -102,7 +107,7 @@ Let's break down the layout of the option buttons we will implement in this chap
   containerStyle={{ marginBottom: 10 }}
 />
 
-It contains a parent `<View>` with three buttons aligned in a row. The button in the middle with the plus icon (+) will open the model and is styled differently than the other two buttons.
+It contains a parent `<View>` with three buttons aligned in a row. The button in the middle with the plus icon (+) will open the modal and is styled differently than the other two buttons.
 
 Inside the **components** directory, create a new file called **CircleButton.js** with the following code:
 
@@ -258,7 +263,11 @@ Let's take a look at our app on iOS, Android and the web:
   containerStyle={{ marginBottom: 0 }}
 />
 
-## Step 3: Create an emoji picker modal
+</Step>
+
+<Step label="3">
+
+## Create an emoji picker modal
 
 The modal allows the user to choose an emoji from a list of available emoji. Create an **EmojiPicker.js** file inside the **components** directory. This component accepts three props:
 
@@ -340,7 +349,7 @@ Now, let's modify the **App.js** to:
 - Then, create an `isModalVisible` state variable with the `useState` hook. It has a default value of `false` to ensure that the modal is hidden until the user presses the button to open it.
 - Replace the comment in the `onAddSticker()` function to update the `isModalVisible` variable to `true` when the user presses the button. This will open the emoji picker.
 - Create a`onModalClose()` function to update the `isModalVisible` state variable.
-- Place the `<EmojiPicker>` component at the bottom of the `<App>` component, below the `<StatusBar>` component.
+- Place the `<EmojiPicker>` component at the bottom of the `<App>` component, above the `<StatusBar>` component.
 
 <SnackInline
 label="Create a modal"
@@ -424,7 +433,11 @@ Here is the result after this step:
   containerStyle={{ marginBottom: 0 }}
 />
 
-## Step 4: Display a list of emoji
+</Step>
+
+<Step label="4">
+
+## Display a list of emoji
 
 Let's implement a horizontal list of emoji in the modal's content. We'll use is the [`<FlatList>`](https://reactnative.dev/docs/flatlist) component from React Native for it.
 
@@ -525,7 +538,11 @@ Let's take a look at our app on iOS, Android and the web:
 
 <Video file="tutorial/emoji-picker.mp4" />
 
-## Step 5: Display the selected emoji
+</Step>
+
+<Step label="5">
+
+## Display the selected emoji
 
 Now we'll put the emoji sticker on the image.
 
@@ -600,6 +617,8 @@ export default function App() {
 Let's take a look at our app on iOS, Android and the web:
 
 <Video file="tutorial/select-emoji.mp4" />
+
+</Step>
 
 ## Next steps
 

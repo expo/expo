@@ -1,4 +1,11 @@
-# expo-gl
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/gl-view/">
+    <img
+      src="../../.github/resources/expo-gl.svg"
+      alt="expo-gl"
+      height="64" />
+  </a>
+</p>
 
 Provides GLView that acts as OpenGL ES render target and gives GL context object implementing WebGL 2.0 specification.
 

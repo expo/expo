@@ -62,7 +62,7 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
         },
         {
           paths: 'build.gradle',
-          find: `compileOnly(project(":ReactAndroid:hermes-engine"))`,
+          find: `compileOnly "com.facebook.react:hermes-android:\${REACT_NATIVE_VERSION}"`,
           replaceWith:
             `if (file("\${reactNativeRootDir}/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-release.aar").exists()) {\n` +
             `    compileOnly(files("\${reactNativeRootDir}/ReactAndroid/hermes-engine/build/outputs/aar/hermes-engine-release.aar"))\n` +
@@ -73,6 +73,15 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
           paths: 'build.gradle',
           transform: (text: string) =>
             text + `\nandroid.packagingOptions.excludes.add("**/libhermes*.so")`,
+        },
+        {
+          paths: 'build.gradle',
+          // The `android/versioned-react-native/ReactAndroid/gradle.properties` is not committed to git,
+          // we use the `ReactAndroid/gradle.properties` for versioned reanimated instead.
+          // Even though it not always correct, e.g. when ReactAndroid upgrades to newer version, the versions are inconsistent.
+          // Since reanimated doesn't use these properties for react-native 0.71, that should be safe.
+          find: '$reactNativeRootDir/ReactAndroid/gradle.properties',
+          replaceWith: '$rootDir/../react-native-lab/react-native/ReactAndroid/gradle.properties',
         },
         {
           paths: 'CMakeLists.txt',
@@ -89,13 +98,21 @@ export function vendoredModulesTransforms(prefix: string): Record<string, FileTr
           find: new RegExp(`\\b(?<!${prefix}\\.)(com.swmansion.reanimated.R\\.)`, 'g'),
           replaceWith: `${prefix}.$1`,
         },
+      ],
+    },
+    '@react-native-async-storage/async-storage': {
+      content: [
         {
-          paths: 'build.gradle',
-          // The `android/versioned-react-native/ReactAndroid/gradle.properties` is not committed to git,
-          // we use the `react-native-lab/react-native/ReactAndroid/gradle.properties` instead.
-          find: 'file("$reactNativeRootDir/ReactAndroid/gradle.properties")',
-          replaceWith:
-            'file("$reactNativeRootDir/../../react-native-lab/react-native/ReactAndroid/gradle.properties")',
+          find: /\b(import (static )?)(com.reactnativecommunity.asyncstorage.)/g,
+          replaceWith: `$1${prefix}.$3`,
+        },
+      ],
+    },
+    'react-native-pager-view': {
+      content: [
+        {
+          find: /\b(import (static )?)(com.reactnativepagerview.)/g,
+          replaceWith: `$1${prefix}.$3`,
         },
       ],
     },
@@ -137,6 +154,18 @@ export function exponentPackageTransforms(prefix: string): Record<string, String
     'react-native-svg': [
       {
         find: /\bimport (com.horcrux.svg)/g,
+        replaceWith: `import ${prefix}.$1`,
+      },
+    ],
+    '@react-native-async-storage/async-storage': [
+      {
+        find: /\bimport (com.reactnativecommunity.asyncstorage.)/g,
+        replaceWith: `import ${prefix}.$1`,
+      },
+    ],
+    'react-native-pager-view': [
+      {
+        find: /\bimport (com.reactnativepagerview.)/g,
         replaceWith: `import ${prefix}.$1`,
       },
     ],

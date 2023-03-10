@@ -4,14 +4,11 @@ exports[`renders H1 1`] = `
 <Text
   accessibilityRole="header"
   style={
-    [
-      {
-        "fontSize": 64,
-        "fontWeight": "bold",
-        "marginVertical": 21.44,
-      },
-      undefined,
-    ]
+    {
+      "fontSize": 64,
+      "fontWeight": "bold",
+      "marginVertical": 21.44,
+    }
   }
 />
 `;
@@ -20,14 +17,11 @@ exports[`renders H2 1`] = `
 <Text
   accessibilityRole="header"
   style={
-    [
-      {
-        "fontSize": 48,
-        "fontWeight": "bold",
-        "marginVertical": 26.56,
-      },
-      undefined,
-    ]
+    {
+      "fontSize": 48,
+      "fontWeight": "bold",
+      "marginVertical": 26.56,
+    }
   }
 />
 `;
@@ -36,14 +30,11 @@ exports[`renders H3 1`] = `
 <Text
   accessibilityRole="header"
   style={
-    [
-      {
-        "fontSize": 37.44,
-        "fontWeight": "bold",
-        "marginVertical": 32,
-      },
-      undefined,
-    ]
+    {
+      "fontSize": 37.44,
+      "fontWeight": "bold",
+      "marginVertical": 32,
+    }
   }
 />
 `;
@@ -52,14 +43,11 @@ exports[`renders H4 1`] = `
 <Text
   accessibilityRole="header"
   style={
-    [
-      {
-        "fontSize": 32,
-        "fontWeight": "bold",
-        "marginVertical": 42.56,
-      },
-      undefined,
-    ]
+    {
+      "fontSize": 32,
+      "fontWeight": "bold",
+      "marginVertical": 42.56,
+    }
   }
 />
 `;
@@ -68,14 +56,11 @@ exports[`renders H5 1`] = `
 <Text
   accessibilityRole="header"
   style={
-    [
-      {
-        "fontSize": 26.56,
-        "fontWeight": "bold",
-        "marginVertical": 53.44,
-      },
-      undefined,
-    ]
+    {
+      "fontSize": 26.56,
+      "fontWeight": "bold",
+      "marginVertical": 53.44,
+    }
   }
 />
 `;
@@ -84,14 +69,11 @@ exports[`renders H6 1`] = `
 <Text
   accessibilityRole="header"
   style={
-    [
-      {
-        "fontSize": 21.44,
-        "fontWeight": "bold",
-        "marginVertical": 74.56,
-      },
-      undefined,
-    ]
+    {
+      "fontSize": 21.44,
+      "fontWeight": "bold",
+      "marginVertical": 74.56,
+    }
   }
 />
 `;

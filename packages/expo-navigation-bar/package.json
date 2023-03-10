@@ -1,6 +1,6 @@
 {
   "name": "expo-navigation-bar",
-  "version": "2.0.1",
+  "version": "2.1.1",
   "description": "Interact with the system navigation bar",
   "main": "build/NavigationBar.js",
   "types": "build/NavigationBar.d.ts",

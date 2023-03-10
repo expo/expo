@@ -3,13 +3,18 @@ package expo.modules.devmenu
 import android.os.Build
 import android.os.Bundle
 import android.view.KeyEvent
+import android.view.View
 import android.view.ViewGroup
+import android.widget.FrameLayout
+import androidx.coordinatorlayout.widget.CoordinatorLayout
+import androidx.core.view.doOnLayout
 import com.facebook.react.ReactActivity
 import com.facebook.react.ReactActivityDelegate
 import com.facebook.react.ReactDelegate
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
 import com.facebook.react.devsupport.interfaces.DevSupportManager
+import com.google.android.material.bottomsheet.BottomSheetBehavior
 import expo.modules.devmenu.helpers.getPrivateDeclaredFieldValue
 import expo.modules.devmenu.helpers.setPrivateDeclaredFieldValue
 import java.util.*
@@ -64,7 +69,7 @@ class DevMenuActivity : ReactActivity() {
         putBundle("devSettings", DevMenuManager.getDevSettings())
         putBundle("menuPreferences", DevMenuManager.getMenuPreferences())
         putBoolean("isDevice", !isEmulator)
-        putStringArrayList("registeredCallbacks", DevMenuManager.registeredCallbacks)
+        putStringArray("registeredCallbacks", DevMenuManager.registeredCallbacks.map { it.name }.toTypedArray())
       }
 
       override fun createRootView(): ReactRootView {
@@ -105,6 +110,39 @@ class DevMenuActivity : ReactActivity() {
 
       devSupportManager.devSupportEnabled = true
     }
+  }
+
+  override fun setContentView(view: View?) {
+    super.setContentView(R.layout.bottom_sheet)
+
+    val mainLayout = findViewById<CoordinatorLayout>(R.id.main_layout)
+    val bottomSheet = findViewById<FrameLayout>(R.id.bottom_sheet)
+    bottomSheet.addView(view)
+
+    BottomSheetBehavior.from(bottomSheet).apply {
+      addBottomSheetCallback(object : BottomSheetBehavior.BottomSheetCallback() {
+        override fun onStateChanged(bottomSheet: View, newState: Int) {
+          if (newState == BottomSheetBehavior.STATE_HIDDEN || newState == BottomSheetBehavior.STATE_COLLAPSED) {
+            DevMenuManager.hideMenu()
+          }
+        }
+
+        override fun onSlide(bottomSheet: View, slideOffset: Float) = Unit
+      })
+
+      bottomSheet.doOnLayout {
+        state = BottomSheetBehavior.STATE_HALF_EXPANDED
+      }
+
+      mainLayout.setOnClickListener {
+        state = BottomSheetBehavior.STATE_HIDDEN
+      }
+    }
+  }
+
+  fun closeBottomSheet() {
+    val bottomSheet = findViewById<FrameLayout>(R.id.bottom_sheet)
+    BottomSheetBehavior.from(bottomSheet).state = BottomSheetBehavior.STATE_HIDDEN
   }
 
   companion object {

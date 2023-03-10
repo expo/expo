@@ -23,7 +23,6 @@ const MINIFY_JSON = true;
 
 const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-accelerometer': [['Accelerometer.ts', 'DeviceSensor.ts'], 'expo-sensors'],
-  'expo-app-loading': ['index.ts'],
   'expo-apple-authentication': ['index.ts'],
   'expo-application': ['Application.ts'],
   'expo-audio': [['Audio.ts', 'Audio.types.ts'], 'expo-av'],
@@ -48,11 +47,8 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-device': ['Device.ts'],
   'expo-device-motion': [['DeviceMotion.ts', 'DeviceSensor.ts'], 'expo-sensors'],
   'expo-document-picker': ['index.ts'],
-  'expo-error-recovery': ['ErrorRecovery.ts'],
   'expo-face-detector': ['FaceDetector.ts'],
   'expo-file-system': ['index.ts'],
-  'expo-firebase-analytics': ['Analytics.ts'],
-  'expo-firebase-core': ['FirebaseCore.ts'],
   'expo-font': ['index.ts'],
   'expo-gl': ['index.ts'],
   'expo-gyroscope': [['Gyroscope.ts', 'DeviceSensor.ts'], 'expo-sensors'],
@@ -74,6 +70,7 @@ const PACKAGES_MAPPING: Record<string, CommandAdditionalParams> = {
   'expo-media-library': ['MediaLibrary.ts'],
   'expo-navigation-bar': ['NavigationBar.ts'],
   'expo-network': ['Network.ts'],
+  'expo-notifications': ['index.ts'],
   'expo-pedometer': ['Pedometer.ts', 'expo-sensors'],
   'expo-print': ['Print.ts'],
   'expo-random': ['Random.ts'],
@@ -140,6 +137,9 @@ const executeCommand = async (
     hideGenerator: true,
     excludePrivate: true,
     excludeProtected: true,
+    skipErrorChecking: true,
+    excludeExternals: true,
+    pretty: !MINIFY_JSON,
   });
 
   const project = app.convert();
@@ -162,7 +162,8 @@ const executeCommand = async (
       const minifiedJson = recursiveOmitBy(
         output,
         ({ key, node }) =>
-          ['id', 'groups', 'target'].includes(key) || (key === 'flags' && !Object.keys(node).length)
+          ['id', 'groups', 'target', 'kindString', 'originalName'].includes(key) ||
+          (key === 'flags' && !Object.keys(node).length)
       );
       await fs.writeFile(jsonOutputPath, JSON.stringify(minifiedJson, null, 0));
     } else {

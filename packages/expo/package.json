@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "47.0.1",
+  "version": "48.0.1",
   "description": "The Expo SDK",
   "main": "build/Expo.js",
   "module": "build/Expo.js",
@@ -9,9 +9,7 @@
     "*.fx.js",
     "*.fx.web.js"
   ],
-  "bin": {
-    "expo": "bin/cli.js"
-  },
+  "bin": "bin/cli",
   "files": [
     "android",
     "bin",
@@ -58,31 +56,26 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
-    "@babel/runtime": "^7.14.0",
-    "@expo/cli": "0.4.6",
+    "@babel/runtime": "^7.20.0",
+    "@expo/cli": "0.6.1",
     "@expo/vector-icons": "^13.0.0",
-    "@expo/config-plugins": "5.0.4",
-    "@expo/config": "7.0.3",
-    "babel-preset-expo": "~9.2.2",
-    "cross-spawn": "^6.0.5",
-    "expo-application": "~5.0.1",
-    "expo-asset": "~8.6.2",
-    "expo-constants": "~14.1.0",
-    "expo-file-system": "~15.1.1",
-    "expo-font": "~11.0.1",
-    "expo-keep-awake": "~11.0.1",
-    "expo-modules-autolinking": "1.0.2",
-    "expo-modules-core": "1.1.1",
+    "@expo/config-plugins": "6.0.0",
+    "@expo/config": "8.0.1",
+    "babel-preset-expo": "~9.3.0",
+    "expo-application": "~5.1.1",
+    "expo-asset": "~8.9.0",
+    "expo-constants": "~14.2.1",
+    "expo-file-system": "~15.2.2",
+    "expo-font": "~11.1.1",
+    "expo-keep-awake": "~12.0.1",
+    "expo-modules-autolinking": "1.1.2",
+    "expo-modules-core": "1.2.2",
     "fbemitter": "^3.0.0",
-    "getenv": "^1.0.0",
     "invariant": "^2.2.4",
     "md5-file": "^3.2.3",
     "node-fetch": "^2.6.7",
     "pretty-format": "^26.5.2",
     "uuid": "^3.4.0"
-  },
-  "optionalDependencies": {
-    "expo-error-recovery": "~4.0.1"
   },
   "devDependencies": {
     "@types/fbemitter": "^2.0.32",
@@ -90,9 +83,9 @@
     "@types/react": "~18.0.14",
     "@types/react-test-renderer": "^18.0.0",
     "@types/uuid": "^3.4.7",
-    "expo-module-scripts": "^3.0.5",
+    "expo-module-scripts": "^3.0.7",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.71.0"
+    "react-native": "0.71.3"
   }
 }

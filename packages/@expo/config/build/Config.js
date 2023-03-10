@@ -86,13 +86,6 @@ function _getExpoSDKVersion() {
   };
   return data;
 }
-function _getFullName() {
-  const data = require("./getFullName");
-  _getFullName = function () {
-    return data;
-  };
-  return data;
-}
 function _withConfigPlugins() {
   const data = require("./plugins/withConfigPlugins");
   _withConfigPlugins = function () {
@@ -241,12 +234,6 @@ function getConfig(projectRoot, options = {}) {
       if ((_configWithDefaultVal2 = configWithDefaultValues.exp.android) !== null && _configWithDefaultVal2 !== void 0 && _configWithDefaultVal2.config) {
         delete configWithDefaultValues.exp.android.config;
       }
-
-      // These value will be overwritten when the manifest is being served from the host (i.e. not completely accurate).
-      // @ts-ignore: currentFullName not on type yet.
-      configWithDefaultValues.exp.currentFullName = (0, _getFullName().getFullName)(configWithDefaultValues.exp);
-      // @ts-ignore: originalFullName not on type yet.
-      configWithDefaultValues.exp.originalFullName = (0, _getFullName().getFullName)(configWithDefaultValues.exp);
       (_configWithDefaultVal3 = configWithDefaultValues.exp.updates) === null || _configWithDefaultVal3 === void 0 ? true : delete _configWithDefaultVal3.codeSigningCertificate;
       (_configWithDefaultVal4 = configWithDefaultValues.exp.updates) === null || _configWithDefaultVal4 === void 0 ? true : delete _configWithDefaultVal4.codeSigningMetadata;
     }

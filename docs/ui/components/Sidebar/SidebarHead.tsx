@@ -1,48 +1,54 @@
 import { css } from '@emotion/react';
-import { spacing, theme, PlanEnterpriseIcon, iconSize } from '@expo/styleguide';
-import * as React from 'react';
+import { theme, DocsLogo } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
+import { ArrowLeftIcon, BookOpen02Icon, PlanEnterpriseIcon } from '@expo/styleguide-icons';
 
-import { APIIcon, APIInactiveIcon } from './icons/API';
-import { DocumentationIcon, DocumentationInactiveIcon } from './icons/Documentation';
 import { PreviewIcon, PreviewInactiveIcon } from './icons/Preview';
 
 import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags.cjs';
-import { SidebarHeadEntry } from '~/ui/components/Sidebar/SidebarHeadEntry';
+import { Search } from '~/ui/components/Search';
+import { SidebarSingleEntry } from '~/ui/components/Sidebar/SidebarSingleEntry';
+import { A } from '~/ui/components/Text';
 
 type SidebarHeadProps = {
   sidebarActiveGroup: string;
 };
 
 export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
+  if (sidebarActiveGroup === 'archive') {
+    return (
+      <div css={sidebarHeadContainerStyle}>
+        <A isStyled href="/" css={sidebarBackLinkStyle}>
+          <ArrowLeftIcon className="text-icon-secondary" />
+          Back
+        </A>
+      </div>
+    );
+  }
+
   return (
-    <div css={sidebarHeadContainer}>
-      <SidebarHeadEntry
+    <div css={sidebarHeadContainerStyle}>
+      <Search />
+      <SidebarSingleEntry
         href="/"
         title="Guides"
-        Icon={sidebarActiveGroup === 'general' ? DocumentationIcon : DocumentationInactiveIcon}
+        Icon={BookOpen02Icon}
         isActive={sidebarActiveGroup === 'general'}
       />
-      <SidebarHeadEntry
+      <SidebarSingleEntry
         href="/eas"
         title="Expo Application Services"
-        Icon={() => (
-          <div css={easIconContainerStyle}>
-            <PlanEnterpriseIcon
-              color={sidebarActiveGroup === 'eas' ? theme.text.link : theme.icon.default}
-              size={iconSize.sm}
-            />
-          </div>
-        )}
+        Icon={PlanEnterpriseIcon}
         isActive={sidebarActiveGroup === 'eas'}
       />
-      <SidebarHeadEntry
+      <SidebarSingleEntry
         href="/versions/latest"
         title="API Reference"
-        Icon={sidebarActiveGroup === 'reference' ? APIIcon : APIInactiveIcon}
+        Icon={DocsLogo}
         isActive={sidebarActiveGroup === 'reference'}
       />
       {shouldShowFeaturePreviewLink() && (
-        <SidebarHeadEntry
+        <SidebarSingleEntry
           href="/feature-preview"
           title="Feature Preview"
           Icon={
@@ -57,19 +63,18 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
   );
 };
 
-const sidebarHeadContainer = css({
+const sidebarHeadContainerStyle = css({
   display: 'flex',
   flexDirection: 'column',
   padding: spacing[4],
   borderBottom: `1px solid ${theme.border.default}`,
   background: theme.background.default,
+  gap: spacing[0.5],
 });
 
-const easIconContainerStyle = css({
-  height: spacing[5],
-  width: spacing[5],
+const sidebarBackLinkStyle = css({
+  color: theme.text.secondary,
   display: 'flex',
+  gap: spacing[3],
   alignItems: 'center',
-  justifyContent: 'center',
-  marginRight: spacing[2.5],
 });

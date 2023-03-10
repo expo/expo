@@ -28,6 +28,22 @@ in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]
 The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 If your app does **not** use EAS Build, then you'll need to manually configure the package.
 
+<ConfigPluginExample>
+
+> This plugin is included automatically when installed.
+
+Running [EAS Build](/build/introduction) locally will use [iOS capabilities signing](/build-reference/ios-capabilities) to enable the required capabilities before building.
+
+```json app.json
+{
+  "expo": {
+    "plugins": ["expo-apple-authentication"]
+  }
+}
+```
+
+</ConfigPluginExample>
+
 <ConfigReactNative>
 
 Apps that don't use [EAS Build](/build/introduction) must [manually configure](/build-reference/ios-capabilities#manual-setup)
@@ -46,22 +62,6 @@ then be sure to add the following entitlements in your **ios/[app]/[app].entitle
 Also be sure to set `CFBundleAllowMixedLocalizations` to `true` in your **ios/[app]/Info.plist** to ensure the sign in button uses the device locale.
 
 </ConfigReactNative>
-
-<ConfigPluginExample>
-
-> This plugin is included automatically when installed.
-
-Running [EAS Build](/build/introduction) locally will use [iOS capabilities signing](/build-reference/ios-capabilities) to enable the required capabilities before building.
-
-```json app.json
-{
-  "expo": {
-    "plugins": ["expo-apple-authentication"]
-  }
-}
-```
-
-</ConfigPluginExample>
 
 ## Usage
 
@@ -89,7 +89,7 @@ export default function App() {
             });
             // signed in
           } catch (e) {
-            if (e.code === 'ERR_CANCELED') {
+            if (e.code === 'ERR_REQUEST_CANCELED') {
               // handle that the user canceled the sign-in flow
             } else {
               // handle other errors
@@ -143,10 +143,15 @@ import * as AppleAuthentication from 'expo-apple-authentication';
 
 ## Error Codes
 
-| Code                                    | Description                                                                                            |
-| --------------------------------------- | ------------------------------------------------------------------------------------------------------ |
-| ERR_APPLE_AUTHENTICATION_CREDENTIAL     | The request to get credential state failed. See the error message for additional specific information. |
-| ERR_APPLE_AUTHENTICATION_INVALID_SCOPE  | An invalid [`AppleAuthenticationScope`](#appleauthenticationappleauthenticationscope) was passed in.   |
-| ERR_APPLE_AUTHENTICATION_REQUEST_FAILED | The authentication request failed. See the error message for additional specific information.          |
-| ERR_APPLE_AUTHENTICATION_UNAVAILABLE    | Apple authentication is unavailable on the device.                                                     |
-| ERR_CANCELED                            | The user canceled the sign-in request from the system modal.                                           |
+Most of the error codes matches the official [Apple Authorization errors](https://developer.apple.com/documentation/authenticationservices/asauthorizationerror/code).
+
+| Code                        | Description                                                                            |
+| --------------------------- | -------------------------------------------------------------------------------------- |
+| ERR_INVALID_OPERATION       | An invalid authorization operation has been performed.                                 |
+| ERR_INVALID_RESPONSE        | The authorization request received an invalid response.                                |
+| ERR_INVALID_SCOPE           | An invalid [`AppleAuthenticationScope`](#appleauthenticationscope) was passed in.      |
+| ERR_REQUEST_CANCELED        | The user canceled the authorization attempt.                                           |
+| ERR_REQUEST_FAILED          | The authorization attempt failed. See the error message for an additional information. |
+| ERR_REQUEST_NOT_HANDLED     | The authorization request wasn’t correctly handled.                                    |
+| ERR_REQUEST_NOT_INTERACTIVE | The authorization request isn’t interactive.                                           |
+| ERR_REQUEST_UNKNOWN         | The authorization attempt failed for an unknown reason.                                |

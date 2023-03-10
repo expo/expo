@@ -76,7 +76,7 @@ private func createEventSetter(eventName: String, bridge: RCTBridge?) -> RCTProp
     installEventDispatcher(forEvent: eventName, onView: target) { [weak target] (body: [String: Any]) in
       if let target = target {
         let componentEvent = RCTComponentEvent(name: eventName, viewTag: target.reactTag, body: body)
-        bridge?.eventDispatcher().send(componentEvent)
+        bridge?.eventDispatcher()?.send(componentEvent)
       }
     }
   }

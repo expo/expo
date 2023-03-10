@@ -13,9 +13,19 @@ require File.join(File.dirname(`node --print "require.resolve('expo/package.json
 
 require 'json'
 podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {}
+ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = '1' if podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR'] == true
 
 prepare_react_native_project!
 
+# If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
+# because `react-native-flipper` depends on (FlipperKit,...) that will be excluded
+#
+# To fix this you can also exclude `react-native-flipper` using a `react-native.config.js`
+# ```js
+# module.exports = {
+#   dependencies: {
+#     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
+# ```
 flipper_config = ENV['NO_FLIPPER'] == "1" || ENV['CI'] ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
 
 abstract_target 'BareExpoMain' do
@@ -79,7 +89,7 @@ abstract_target 'BareExpoMain' do
   target 'BareExpo' do
     use_react_native!(
       :path => config[:reactNativePath],
-      :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes',
+      :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
       :fabric_enabled => flags[:fabric_enabled],
       # An absolute path to your application root.
       :app_path => "#{Pod::Config.instance.installation_root}/..",
@@ -93,7 +103,7 @@ abstract_target 'BareExpoMain' do
   target 'BareExpoDetox' do
     use_react_native!(
       :path => config[:reactNativePath],
-      :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes',
+      :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
       :fabric_enabled => flags[:fabric_enabled],
       # An absolute path to your application root.
       :app_path => "#{Pod::Config.instance.installation_root}/..",
@@ -104,7 +114,7 @@ abstract_target 'BareExpoMain' do
   target 'BareExpoTests' do
     use_react_native!(
       :path => config[:reactNativePath],
-      :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes',
+      :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
       :fabric_enabled => flags[:fabric_enabled],
       # An absolute path to your application root.
       :app_path => "#{Pod::Config.instance.installation_root}/..",

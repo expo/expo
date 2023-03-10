@@ -1,6 +1,6 @@
 {
   "name": "@expo/cli",
-  "version": "0.4.6",
+  "version": "0.6.1",
   "description": "The Expo CLI",
   "main": "build/bin/cli",
   "bin": {
@@ -36,18 +36,18 @@
   },
   "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/cli",
   "dependencies": {
-    "@babel/runtime": "^7.14.0",
+    "@babel/runtime": "^7.20.0",
     "@expo/code-signing-certificates": "0.0.5",
-    "@expo/config": "~7.0.2",
-    "@expo/config-plugins": "~5.0.3",
-    "@expo/dev-server": "0.1.122",
+    "@expo/config": "~8.0.0",
+    "@expo/config-plugins": "~6.0.0",
+    "@expo/dev-server": "0.2.2",
     "@expo/devcert": "^1.0.0",
     "@expo/json-file": "^8.2.37",
-    "@expo/metro-config": "~0.5.2",
+    "@expo/metro-config": "~0.7.0",
     "@expo/osascript": "^2.0.31",
-    "@expo/package-manager": "~0.0.53",
+    "@expo/package-manager": "~1.0.0",
     "@expo/plist": "^0.0.20",
-    "@expo/prebuild-config": "5.0.6",
+    "@expo/prebuild-config": "6.0.0",
     "@expo/rudder-sdk-node": "1.1.1",
     "@expo/spawn-async": "1.5.0",
     "@expo/xcpretty": "^4.2.1",
@@ -95,7 +95,8 @@
     "terminal-link": "^2.1.1",
     "text-table": "^0.2.0",
     "url-join": "4.0.0",
-    "wrap-ansi": "^7.0.0"
+    "wrap-ansi": "^7.0.0",
+    "ws": "^8.12.1"
   },
   "taskr": {
     "requires": [
@@ -132,6 +133,8 @@
     "@types/webpack": "~4.41.32",
     "@types/webpack-dev-server": "3.11.0",
     "@types/wrap-ansi": "^8.0.1",
+    "@types/ws": "^8.5.4",
+    "devtools-protocol": "^0.0.1113120",
     "expo-module-scripts": "^3.0.0",
     "klaw-sync": "^6.0.0",
     "nock": "~13.2.2",

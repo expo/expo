@@ -8,6 +8,18 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `@react-native/assets-registry` module not found issue on Web. ([#21469](https://github.com/expo/expo/pull/21469) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 8.9.0 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 8.8.0 — 2023-02-03
+
+### 🐛 Bug fixes
+
 - Fix loading Metro web assets from origins other than `/`. ([#20258](https://github.com/expo/expo/pull/20258) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others

@@ -2,10 +2,11 @@
 // GETTING NESTED SCROLL RIGHT IS DELICATE BUSINESS. THEREFORE THIS COMPONENT
 // IS THE ONLY PLACE WHERE SCROLL CODE SHOULD BE HANDLED. THANKS.
 import { css } from '@emotion/react';
-import { breakpoints, theme } from '@expo/styleguide';
+import { theme } from '@expo/styleguide';
+import { breakpoints } from '@expo/styleguide-base';
 import * as React from 'react';
 
-import { SidebarHead } from '~/ui/components/Sidebar/SidebarHead';
+import { SidebarHead, SidebarFooter } from '~/ui/components/Sidebar';
 
 const STYLES_CONTAINER = css`
   width: 100%;
@@ -121,12 +122,12 @@ const STYLES_SCROLL_CONTAINER = css`
 
   /* Handle */
   ::-webkit-scrollbar-thumb {
-    background: ${theme.background.element};
+    background: ${theme.palette.gray5};
   }
 
   /* Handle on hover */
   ::-webkit-scrollbar-thumb:hover {
-    background: ${theme.background.hover};
+    background: ${theme.palette.gray6};
   }
 
   @media screen and (max-width: ${(breakpoints.medium + breakpoints.large) / 2}px) {
@@ -227,6 +228,7 @@ export default class DocumentationNestedScrollLayout extends React.Component<Pro
             <SidebarHead sidebarActiveGroup={sidebarActiveGroup} />
             <ScrollContainer ref={this.sidebarRef} scrollPosition={sidebarScrollPosition}>
               {sidebar}
+              <SidebarFooter />
             </ScrollContainer>
           </div>
           <div css={[STYLES_CENTER, isMobileMenuVisible && STYLES_HIDDEN]}>

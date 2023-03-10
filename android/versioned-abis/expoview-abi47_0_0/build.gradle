@@ -197,8 +197,8 @@ dependencies {
   api 'com.github.troZee:ViewPager2:v1.0.6'
 
   // stripe-react-native
-  implementation('com.stripe:stripe-android:20.12.+')
-  implementation('com.stripe:financial-connections:20.12.+')
+  implementation('com.stripe:stripe-android:20.19.+')
+  implementation('com.stripe:financial-connections:20.19.+')
   compileOnly 'com.stripe:stripe-android-issuing-push-provisioning:1.1.0'
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"

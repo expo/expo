@@ -63,6 +63,10 @@ class ExpoImageModule : Module() {
         view.contentFit = contentFit ?: ContentFit.Cover
       }
 
+      Prop("placeholderContentFit") { view: ExpoImageViewWrapper, placeholderContentFit: ContentFit? ->
+        view.placeholderContentFit = placeholderContentFit ?: ContentFit.ScaleDown
+      }
+
       Prop("contentPosition") { view: ExpoImageViewWrapper, contentPosition: ContentPosition? ->
         view.contentPosition = contentPosition ?: ContentPosition.center
       }
@@ -152,6 +156,10 @@ class ExpoImageModule : Module() {
 
       Prop("cachePolicy") { view: ExpoImageViewWrapper, cachePolicy: CachePolicy? ->
         view.cachePolicy = cachePolicy ?: CachePolicy.DISK
+      }
+
+      Prop("recyclingKey") { view: ExpoImageViewWrapper, recyclingKey: String? ->
+        view.recyclingKey = recyclingKey
       }
 
       OnViewDidUpdateProps { view: ExpoImageViewWrapper ->

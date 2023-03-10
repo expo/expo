@@ -5,7 +5,6 @@ import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import expo.modules.manifests.core.NewManifest
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.entity.UpdateEntity
-import expo.modules.updates.manifest.ManifestHeaderData
 import expo.modules.updates.manifest.NewUpdateManifest
 import org.json.JSONException
 import org.json.JSONObject
@@ -34,19 +33,19 @@ class SelectionPolicyFilterAwareTest {
     val configMap = mapOf<String, Any>("updateUrl" to Uri.parse("https://exp.host/@test/test"))
     val config = UpdatesConfiguration(null, configMap)
     val manifestJsonRollout0 = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e71\",\"createdAt\":\"2021-01-10T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"metadata\":{\"branchName\":\"rollout\"}}"))
-    updateRollout0 = NewUpdateManifest.fromNewManifest(manifestJsonRollout0, ManifestHeaderData(), null, config).updateEntity
+    updateRollout0 = NewUpdateManifest.fromNewManifest(manifestJsonRollout0, null, config).updateEntity
     val manifestJsonDefault1 = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"metadata\":{\"branchName\":\"default\"}}"))
-    updateDefault1 = NewUpdateManifest.fromNewManifest(manifestJsonDefault1, ManifestHeaderData(), null, config).updateEntity
+    updateDefault1 = NewUpdateManifest.fromNewManifest(manifestJsonDefault1, null, config).updateEntity
     val manifestJsonRollout1 = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e73\",\"createdAt\":\"2021-01-12T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"metadata\":{\"branchName\":\"rollout\"}}"))
-    updateRollout1 = NewUpdateManifest.fromNewManifest(manifestJsonRollout1, ManifestHeaderData(), null, config).updateEntity
+    updateRollout1 = NewUpdateManifest.fromNewManifest(manifestJsonRollout1, null, config).updateEntity
     val manifestJsonDefault2 = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e74\",\"createdAt\":\"2021-01-13T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"metadata\":{\"branchName\":\"default\"}}"))
-    updateDefault2 = NewUpdateManifest.fromNewManifest(manifestJsonDefault2, ManifestHeaderData(), null, config).updateEntity
+    updateDefault2 = NewUpdateManifest.fromNewManifest(manifestJsonDefault2, null, config).updateEntity
     val manifestJsonRollout2 = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e75\",\"createdAt\":\"2021-01-14T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"metadata\":{\"branchName\":\"rollout\"}}"))
-    updateRollout2 = NewUpdateManifest.fromNewManifest(manifestJsonRollout2, ManifestHeaderData(), null, config).updateEntity
+    updateRollout2 = NewUpdateManifest.fromNewManifest(manifestJsonRollout2, null, config).updateEntity
     val manifestJsonMultipleFilters = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}],\"metadata\":{\"firstKey\": \"value1\", \"secondKey\": \"value2\"}}"))
-    updateMultipleFilters = NewUpdateManifest.fromNewManifest(manifestJsonMultipleFilters, ManifestHeaderData(), null, config).updateEntity
+    updateMultipleFilters = NewUpdateManifest.fromNewManifest(manifestJsonMultipleFilters, null, config).updateEntity
     val manifestJsonNoMetadata = NewManifest(JSONObject("{\"id\":\"079cde35-8433-4c17-81c8-7117c1513e72\",\"createdAt\":\"2021-01-11T19:39:22.480Z\",\"runtimeVersion\":\"1.0\",\"launchAsset\":{\"hash\":\"DW5MBgKq155wnX8rCP1lnsW6BsTbfKLXxGXRQx1RcOA\",\"key\":\"0436e5821bff7b95a84c21f22a43cb96.bundle\",\"contentType\":\"application/javascript\",\"url\":\"https://url.to/bundle\"},\"assets\":[{\"hash\":\"JSeRsPNKzhVdHP1OEsDVsLH500Zfe4j1O7xWfa14oBo\",\"key\":\"3261e570d51777be1e99116562280926.png\",\"contentType\":\"image/png\",\"url\":\"https://url.to/asset\"}]}"))
-    updateNoMetadata = NewUpdateManifest.fromNewManifest(manifestJsonNoMetadata, ManifestHeaderData(), null, config).updateEntity
+    updateNoMetadata = NewUpdateManifest.fromNewManifest(manifestJsonNoMetadata, null, config).updateEntity
   }
 
   @Test

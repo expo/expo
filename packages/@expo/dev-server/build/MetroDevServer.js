@@ -109,6 +109,8 @@ function getExpoMetroConfig(projectRoot, {
   }, _chalk().default.gray(`\u203A Unversioned ${_chalk().default.bold`@expo/metro-config@${unversionedVersion}`} is being used. Bundling apps may not work as expected, and is subject to breaking changes. Install ${_chalk().default.bold`expo`} or set the app.json sdkVersion to use a stable version of @expo/metro-config.`));
   return require('@expo/metro-config');
 }
+
+/** @deprecated */
 async function runMetroDevServerAsync(projectRoot, options) {
   const Metro = (0, _importMetroFromProject().importMetroFromProject)(projectRoot);
   const reporter = new (_LogReporter().default)(options.logger);
@@ -167,7 +169,7 @@ async function runMetroDevServerAsync(projectRoot, options) {
 
 let nextBuildID = 0;
 
-// TODO: deprecate options.target
+/** @deprecated */
 async function bundleAsync(projectRoot, expoConfig, options, bundles) {
   const metro = (0, _importMetroFromProject().importMetroFromProject)(projectRoot);
   const Server = (0, _importMetroFromProject().importMetroServerFromProject)(projectRoot);
@@ -183,13 +185,14 @@ async function bundleAsync(projectRoot, expoConfig, options, bundles) {
   });
   const buildAsync = async bundle => {
     var _bundle$dev, _bundle$minify, _bundle$dev2, _bundle$minify2;
+    const isHermes = (0, _HermesBundler().isEnableHermesManaged)(expoConfig, bundle.platform);
     const bundleOptions = {
       ...Server.DEFAULT_BUNDLE_OPTIONS,
       bundleType: 'bundle',
       platform: bundle.platform,
       entryFile: bundle.entryPoint,
       dev: (_bundle$dev = bundle.dev) !== null && _bundle$dev !== void 0 ? _bundle$dev : false,
-      minify: (_bundle$minify = bundle.minify) !== null && _bundle$minify !== void 0 ? _bundle$minify : !bundle.dev,
+      minify: !isHermes && ((_bundle$minify = bundle.minify) !== null && _bundle$minify !== void 0 ? _bundle$minify : !bundle.dev),
       inlineSourceMap: false,
       sourceMapUrl: bundle.sourceMapUrl,
       createModuleIdFactory: config.serializer.createModuleIdFactory,
@@ -212,7 +215,7 @@ async function bundleAsync(projectRoot, expoConfig, options, bundles) {
         platform: bundle.platform,
         entryFile: bundle.entryPoint,
         dev: (_bundle$dev2 = bundle.dev) !== null && _bundle$dev2 !== void 0 ? _bundle$dev2 : false,
-        minify: (_bundle$minify2 = bundle.minify) !== null && _bundle$minify2 !== void 0 ? _bundle$minify2 : false
+        minify: !isHermes && ((_bundle$minify2 = bundle.minify) !== null && _bundle$minify2 !== void 0 ? _bundle$minify2 : !bundle.dev)
       }
     });
     const {
@@ -240,6 +243,7 @@ async function bundleAsync(projectRoot, expoConfig, options, bundles) {
     const configFilePath = (_ref = (_paths$dynamicConfigP = paths.dynamicConfigPath) !== null && _paths$dynamicConfigP !== void 0 ? _paths$dynamicConfigP : paths.staticConfigPath) !== null && _ref !== void 0 ? _ref : 'app.json';
     await (0, _HermesBundler().maybeThrowFromInconsistentEngineAsync)(projectRoot, configFilePath, platform, isHermesManaged);
     if (isHermesManaged) {
+      var _bundle$minify3;
       const platformTag = _chalk().default.bold({
         ios: 'iOS',
         android: 'Android',
@@ -248,7 +252,7 @@ async function bundleAsync(projectRoot, expoConfig, options, bundles) {
       options.logger.info({
         tag: 'expo'
       }, `💿 ${platformTag} Building Hermes bytecode for the bundle`);
-      const hermesBundleOutput = await (0, _HermesBundler().buildHermesBundleAsync)(projectRoot, bundleOutput.code, bundleOutput.map, bundle.minify);
+      const hermesBundleOutput = await (0, _HermesBundler().buildHermesBundleAsync)(projectRoot, bundleOutput.code, bundleOutput.map, (_bundle$minify3 = bundle.minify) !== null && _bundle$minify3 !== void 0 ? _bundle$minify3 : !bundle.dev);
       bundleOutput.hermesBytecodeBundle = hermesBundleOutput.hbc;
       bundleOutput.hermesSourcemap = hermesBundleOutput.sourcemap;
     }

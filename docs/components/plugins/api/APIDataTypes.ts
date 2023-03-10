@@ -154,9 +154,11 @@ export type MethodSignatureData = {
 
 export type PropsDefinitionData = {
   name: string;
-  type: TypeDefinitionData;
+  type?: TypeDefinitionData;
   kind: TypeDocKind;
   comment?: CommentData;
+  children?: PropData[];
+  extendedTypes?: TypeDefinitionData[];
 };
 
 export type PropData = {

@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { theme, shadows, borderRadius, spacing, breakpoints, typography } from '@expo/styleguide';
+import { theme, shadows, typography } from '@expo/styleguide';
+import { borderRadius, spacing, breakpoints } from '@expo/styleguide-base';
 
 export const commandMenuStyles = css`
   #__next[aria-hidden] {
@@ -63,10 +64,6 @@ export const commandMenuStyles = css`
 
     &::placeholder {
       color: ${theme.icon.secondary};
-    }
-
-    &::selection {
-      color: ${theme.palette.white};
     }
   }
 
@@ -153,7 +150,7 @@ export const commandMenuStyles = css`
     padding: ${spacing[8]}px 0;
   }
 
-  html[data-expo-theme='dark'] {
+  html.dark-theme {
     [cmdk-item] mark {
       background: ${theme.palette.blue5};
 

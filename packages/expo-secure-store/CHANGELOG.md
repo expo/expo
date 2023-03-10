@@ -6,7 +6,17 @@
 
 ### 🎉 New features
 
+- Migrated iOS codebase to use Expo modules API. ([#21393](https://github.com/expo/expo/pull/21393) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 12.1.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 12.1.0 — 2023-02-03
 
 ### 💡 Others
 

@@ -1,0 +1,54 @@
+{
+  "name": "ABI48_0_0ExpoModulesProvider",
+  "version": "48",
+  "summary": "Pod containing versioned Swift modules provider",
+  "authors": "650 Industries, Inc.",
+  "homepage": "https://expo.dev",
+  "license": "MIT",
+  "platforms": {
+    "ios": "13.0"
+  },
+  "source": {
+    "git": "https://github.com/expo/expo.git"
+  },
+  "source_files": "ExpoModulesProvider.swift",
+  "pod_target_xcconfig": {
+    "DEFINES_MODULE": "YES"
+  },
+  "dependencies": {
+    "ABI48_0_0ExpoModulesCore": [],
+    "ABI48_0_0ExpoAppleAuthentication": [],
+    "ABI48_0_0EXAV": [],
+    "ABI48_0_0EXBarCodeScanner": [],
+    "ABI48_0_0ExpoBattery": [],
+    "ABI48_0_0ExpoBlur": [],
+    "ABI48_0_0ExpoBrightness": [],
+    "ABI48_0_0EXCamera": [],
+    "ABI48_0_0ExpoCellular": [],
+    "ABI48_0_0ExpoClipboard": [],
+    "ABI48_0_0EXConstants": [],
+    "ABI48_0_0ExpoCrypto": [],
+    "ABI48_0_0ExpoDevice": [],
+    "ABI48_0_0EASClient": [],
+    "ABI48_0_0ExpoGL": [],
+    "ABI48_0_0ExpoHaptics": [],
+    "ABI48_0_0ExpoImage": [],
+    "ABI48_0_0ExpoImageManipulator": [],
+    "ABI48_0_0ExpoImagePicker": [],
+    "ABI48_0_0ExpoKeepAwake": [],
+    "ABI48_0_0ExpoLinearGradient": [],
+    "ABI48_0_0ExpoLocalAuthentication": [],
+    "ABI48_0_0ExpoLocalization": [],
+    "ABI48_0_0ExpoMailComposer": [],
+    "ABI48_0_0ExpoNetwork": [],
+    "ABI48_0_0ExpoRandom": [],
+    "ABI48_0_0EXScreenOrientation": [],
+    "ABI48_0_0ExpoSMS": [],
+    "ABI48_0_0ExpoStoreReview": [],
+    "ABI48_0_0ExpoSystemUI": [],
+    "ABI48_0_0ExpoTrackingTransparency": [],
+    "ABI48_0_0EXUpdates": [],
+    "ABI48_0_0ExpoVideoThumbnails": [],
+    "ABI48_0_0ExpoWebBrowser": []
+  }
+}

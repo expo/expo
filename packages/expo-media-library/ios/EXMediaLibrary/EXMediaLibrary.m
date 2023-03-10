@@ -225,6 +225,11 @@ EX_EXPORT_METHOD_AS(saveToLibraryAsync,
   };
   
   if (assetType == PHAssetMediaTypeImage) {
+
+    if ([[assetUrl.pathExtension lowercaseString] isEqualToString:@"gif"]) {
+      return [delegate writeGIF:assetUrl withCallback:callback];
+    }
+
     UIImage *image = [UIImage imageWithData:[NSData dataWithContentsOfURL:assetUrl]];
     if (image == nil) {
       return reject(@"E_FILE_IS_MISSING", [NSString stringWithFormat:@"Couldn't open file: %@. Make sure if this file exists.", localUri], nil);
@@ -1110,21 +1115,18 @@ EX_EXPORT_METHOD_AS(getAssetsAsync,
 
 + (NSSortDescriptor *)_sortDescriptorFrom:(id)config
 {
-  if ([config isKindOfClass:[NSString class]]) {
-    NSString *key = [EXMediaLibrary _convertSortByKey:config];
-    
-    if (key) {
-      return [NSSortDescriptor sortDescriptorWithKey:key ascending:NO];
+  NSArray *parts = [config componentsSeparatedByString:@" "];
+  NSString *key = [EXMediaLibrary _convertSortByKey:parts[0]];
+
+  BOOL ascending = NO;
+  if ([parts count] > 1) {
+    if ([parts[1] isEqualToString: @"ASC"]) {
+      ascending = YES;
     }
   }
-  if ([config isKindOfClass:[NSArray class]]) {
-    NSArray *sortArray = (NSArray *)config;
-    NSString *key = [EXMediaLibrary _convertSortByKey:sortArray[0]];
-    BOOL ascending = [(NSNumber *)sortArray[1] boolValue];
-    
-    if (key) {
-      return [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
-    }
+
+  if (key) {
+    return [NSSortDescriptor sortDescriptorWithKey:key ascending:ascending];
   }
   return nil;
 }

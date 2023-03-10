@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { borderRadius, breakpoints, shadows, spacing, theme, typography } from '@expo/styleguide';
+import { shadows, theme, typography } from '@expo/styleguide';
+import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
 import type { ComponentProps, ComponentType } from 'react';
 import { Fragment } from 'react';
 import ReactMarkdown from 'react-markdown';
@@ -37,7 +38,11 @@ import {
   RawH4,
   UL,
   createPermalinkedComponent,
+  DEMI,
+  CALLOUT,
+  createTextComponent,
 } from '~/ui/components/Text';
+import { TextElement } from '~/ui/components/Text/types';
 
 const isDev = process.env.NODE_ENV === 'development';
 
@@ -69,8 +74,8 @@ export const mdComponents: MDComponents = {
       <CODE css={css({ display: 'inline' })}>{children}</CODE>
     ),
   h1: ({ children }) => <H4>{children}</H4>,
-  ul: ({ children }) => <UL css={STYLES_ELEMENT_SPACING}>{children}</UL>,
-  ol: ({ children }) => <OL css={STYLES_ELEMENT_SPACING}>{children}</OL>,
+  ul: ({ children }) => <UL className={ELEMENT_SPACING}>{children}</UL>,
+  ol: ({ children }) => <OL className={ELEMENT_SPACING}>{children}</OL>,
   li: ({ children }) => <LI>{children}</LI>,
   a: ({ href, children }) => {
     if (
@@ -86,7 +91,7 @@ export const mdComponents: MDComponents = {
     }
     return <A href={href}>{children}</A>;
   },
-  p: ({ children }) => (children ? <P css={STYLES_ELEMENT_SPACING}>{children}</P> : null),
+  p: ({ children }) => (children ? <P className={ELEMENT_SPACING}>{children}</P> : null),
   strong: ({ children }) => <BOLD>{children}</BOLD>,
   span: ({ children }) => (children ? <span>{children}</span> : null),
   table: ({ children }) => <Table>{children}</Table>,
@@ -119,6 +124,7 @@ const nonLinkableTypes = [
   'React.FC',
   'ForwardRefExoticComponent',
   'StyleProp',
+  'HTMLInputElement',
   // Cross-package permissions management
   'RequestPermissionMethod',
   'GetPermissionMethod',
@@ -154,6 +160,7 @@ const hardcodedTypeLinks: Record<string, string> = {
     'https://github.com/expo/expo/blob/main/packages/%40expo/config-types/src/ExpoConfig.ts',
   File: 'https://developer.mozilla.org/en-US/docs/Web/API/File',
   FileList: 'https://developer.mozilla.org/en-US/docs/Web/API/FileList',
+  Manifest: '/versions/latest/sdk/constants/#manifest',
   MediaTrackSettings: 'https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings',
   MessageEvent: 'https://developer.mozilla.org/en-US/docs/Web/API/MessageEvent',
   Omit: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#omittype-keys',
@@ -161,6 +168,8 @@ const hardcodedTypeLinks: Record<string, string> = {
   Partial: 'https://www.typescriptlang.org/docs/handbook/utility-types.html#partialtype',
   Promise:
     'https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Global_Objects/Promise',
+  SyntheticEvent:
+    'https://beta.reactjs.org/reference/react-dom/components/common#react-event-object',
   View: 'https://reactnative.dev/docs/view',
   ViewProps: 'https://reactnative.dev/docs/view#props',
   ViewStyle: 'https://reactnative.dev/docs/view-style-props',
@@ -404,6 +413,29 @@ export const ParamsTableHeadRow = () => (
   </TableHead>
 );
 
+const InheritPermalink = createPermalinkedComponent(
+  createTextComponent(
+    TextElement.SPAN,
+    css({ fontSize: 'inherit', fontWeight: 'inherit', color: 'inherit' })
+  ),
+  { baseNestingLevel: 2 }
+);
+
+export const BoxSectionHeader = ({
+  text,
+  exposeInSidebar,
+}: {
+  text: string;
+  exposeInSidebar?: boolean;
+}) => {
+  const TextWrapper = exposeInSidebar ? InheritPermalink : Fragment;
+  return (
+    <CALLOUT theme="secondary" weight="medium" css={STYLES_NESTED_SECTION_HEADER}>
+      <TextWrapper>{text}</TextWrapper>
+    </CALLOUT>
+  );
+};
+
 export const renderParams = (parameters: MethodParamData[]) => (
   <Table>
     <ParamsTableHeadRow />
@@ -417,7 +449,7 @@ export const listParams = (parameters: MethodParamData[]) =>
 export const renderDefaultValue = (defaultValue?: string) =>
   defaultValue && defaultValue !== '...' ? (
     <div css={defaultValueContainerStyle}>
-      <BOLD>Default:</BOLD> <CODE>{defaultValue}</CODE>
+      <DEMI>Default:</DEMI> <CODE>{defaultValue}</CODE>
     </div>
   ) : undefined;
 
@@ -567,9 +599,7 @@ export const CommentTextBlock = ({
           <BOLD>Example</BOLD>
         </div>
       ) : (
-        <div css={STYLES_NESTED_SECTION_HEADER}>
-          <RawH4>Example</RawH4>
-        </div>
+        <BoxSectionHeader text="Example" />
       )}
       <ReactMarkdown components={mdComponents}>{getCommentContent(example.content)}</ReactMarkdown>
     </Fragment>
@@ -608,9 +638,6 @@ export const CommentTextBlock = ({
   );
 };
 
-export const getAPISectionHeader = (exposeInSidebar?: boolean) =>
-  exposeInSidebar ? createPermalinkedComponent(RawH4, { baseNestingLevel: 2 }) : H4;
-
 const getMonospaceHeader = (element: ComponentType<any>) => {
   const level = parseInt(element?.displayName?.replace(/\D/g, '') ?? '0', 10);
   return createPermalinkedComponent(element, {
@@ -639,7 +666,7 @@ export const STYLES_APIBOX = css({
   overflowX: 'hidden',
 
   h3: {
-    marginBottom: spacing[2],
+    marginBottom: spacing[2.5],
   },
 
   'h2, h3, h4': {
@@ -737,6 +764,4 @@ const STYLES_EXAMPLE_IN_TABLE = css({
   margin: `${spacing[2]}px 0`,
 });
 
-export const STYLES_ELEMENT_SPACING = css({
-  marginBottom: spacing[4],
-});
+export const ELEMENT_SPACING = 'mb-4';

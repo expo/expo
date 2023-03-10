@@ -2,6 +2,7 @@
 
 import SDWebImage
 import ExpoModulesCore
+import VisionKit
 
 typealias SDWebImageContext = [SDWebImageContextOption: Any]
 
@@ -39,6 +40,14 @@ public final class ImageView: ExpoView {
   var imageTintColor: UIColor = .clear
 
   var cachePolicy: ImageCachePolicy = .disk
+
+  var recyclingKey: String? {
+    didSet {
+      if recyclingKey != oldValue {
+        sdImageView.image = nil
+      }
+    }
+  }
 
   // MARK: - Events
 
@@ -150,6 +159,11 @@ public final class ImageView: ExpoView {
   // MARK: - Loading
 
   private func imageLoadProgress(_ receivedSize: Int, _ expectedSize: Int, _ imageUrl: URL?) {
+    // Don't send the event when the expected size is unknown (it's usually -1 or 0 when called for the first time).
+    if expectedSize <= 0 {
+      return
+    }
+
     // Photos library requester emits the progress as a double `0...1` that we map to `0...100` int in `PhotosLoader`.
     // When that loader is used, we don't have any information about the sizes in bytes, so we only send the `progress` param.
     let isPhotoLibraryAsset = isPhotoLibraryAssetUrl(imageUrl)
@@ -196,10 +210,13 @@ public final class ImageView: ExpoView {
         scale: scale,
         contentFit: contentFit
       ).rounded(.up)
-      let image = processImage(image, idealSize: idealSize, scale: scale)
 
-      applyContentPosition(contentSize: idealSize, containerSize: frame.size)
-      renderImage(image)
+      Task {
+        let image = await processImage(image, idealSize: idealSize, scale: scale)
+
+        applyContentPosition(contentSize: idealSize, containerSize: frame.size)
+        renderImage(image)
+      }
     } else {
       displayPlaceholderIfNecessary()
     }
@@ -225,9 +242,8 @@ public final class ImageView: ExpoView {
    Content fit for the placeholder. `scale-down` seems to be the best choice for spinners
    and that the placeholders are usually smaller than the proper image, but it doesn't
    apply to blurhash that by default could use the same fitting as the proper image.
-   - ToDo: Add `placeholderContentFit` prop to control this.
    */
-  var placeholderContentFit: ContentFit?
+  var placeholderContentFit: ContentFit = .scaleDown
 
   /**
    Same as `bestSource`, but for placeholders.
@@ -269,7 +285,7 @@ public final class ImageView: ExpoView {
         return
       }
       self.placeholderImage = placeholder
-      self.placeholderContentFit = isBlurhash ? self.contentFit : .scaleDown
+      self.placeholderContentFit = isBlurhash ? self.contentFit : self.placeholderContentFit
       self.displayPlaceholderIfNecessary()
     }
   }
@@ -281,7 +297,7 @@ public final class ImageView: ExpoView {
     guard isViewEmpty || !hasAnySource, let placeholder = placeholderImage else {
       return
     }
-    setImage(placeholder, contentFit: placeholderContentFit ?? .scaleDown)
+    setImage(placeholder, contentFit: placeholderContentFit)
   }
 
   // MARK: - Processing
@@ -294,13 +310,13 @@ public final class ImageView: ExpoView {
     return SDImagePipelineTransformer(transformers: transformers)
   }
 
-  private func processImage(_ image: UIImage?, idealSize: CGSize, scale: Double) -> UIImage? {
+  private func processImage(_ image: UIImage?, idealSize: CGSize, scale: Double) async -> UIImage? {
     guard let image = image, !bounds.isEmpty else {
       return nil
     }
     // Downscale the image only when necessary
     if shouldDownscale(image: image, toSize: idealSize, scale: scale) {
-      return resize(animatedImage: image, toSize: idealSize, scale: scale)
+      return await resize(animatedImage: image, toSize: idealSize, scale: scale)
     }
     return image
   }
@@ -333,6 +349,10 @@ public final class ImageView: ExpoView {
   private func setImage(_ image: UIImage?, contentFit: ContentFit) {
     sdImageView.contentMode = contentFit.toContentMode()
     sdImageView.image = image
+
+    if enableLiveTextInteraction {
+      analyzeImage()
+    }
   }
 
   // MARK: - Helpers
@@ -369,5 +389,57 @@ public final class ImageView: ExpoView {
    */
   var hasAnySource: Bool {
     return sources?.isEmpty == false
+  }
+
+  // MARK: - Live Text Interaction
+
+  @available(iOS 16.0, *)
+  static let imageAnalyzer = ImageAnalyzer.isSupported ? ImageAnalyzer() : nil
+
+  var enableLiveTextInteraction: Bool = false {
+    didSet {
+      guard #available(iOS 16.0, *), oldValue != enableLiveTextInteraction, ImageAnalyzer.isSupported else {
+        return
+      }
+      if enableLiveTextInteraction {
+        let imageAnalysisInteraction = ImageAnalysisInteraction()
+        sdImageView.addInteraction(imageAnalysisInteraction)
+      } else if let interaction = findImageAnalysisInteraction() {
+        sdImageView.removeInteraction(interaction)
+      }
+    }
+  }
+
+  private func analyzeImage() {
+    guard #available(iOS 16.0, *), ImageAnalyzer.isSupported, let image = sdImageView.image else {
+      return
+    }
+
+    Task {
+      guard let imageAnalyzer = Self.imageAnalyzer, let imageAnalysisInteraction = findImageAnalysisInteraction() else {
+        return
+      }
+      let configuration = ImageAnalyzer.Configuration([.text, .machineReadableCode])
+
+      do {
+        let imageAnalysis = try await imageAnalyzer.analyze(image, configuration: configuration)
+
+        // Make sure the image haven't changed in the meantime.
+        if image == sdImageView.image {
+          imageAnalysisInteraction.analysis = imageAnalysis
+          imageAnalysisInteraction.preferredInteractionTypes = .automatic
+        }
+      } catch {
+        log.error(error)
+      }
+    }
+  }
+
+  @available(iOS 16.0, *)
+  private func findImageAnalysisInteraction() -> ImageAnalysisInteraction? {
+    let interaction = sdImageView.interactions.first {
+      return $0 is ImageAnalysisInteraction
+    }
+    return interaction as? ImageAnalysisInteraction
   }
 }

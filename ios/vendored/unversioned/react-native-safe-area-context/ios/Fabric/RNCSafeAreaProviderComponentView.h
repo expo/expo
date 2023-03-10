@@ -6,7 +6,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @interface RNCSafeAreaProviderComponentView : RCTViewComponentView
 
-extern NSString * const RNCSafeAreaDidChange;
+extern NSString *const RNCSafeAreaDidChange;
 
 @end
 

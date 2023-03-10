@@ -6,10 +6,20 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 7.2.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 7.2.0 — 2023-02-03
+
+### 🎉 New features
+
 - Native module on iOS is now written in Swift using the Sweet API. ([#19561](https://github.com/expo/expo/pull/19561) by [@fobos531](https://github.com/fobos531))
 - Migrated Android codebase to use the new Expo modules API. ([#20541](https://github.com/expo/expo/pull/20541) by [@alanhughes](https://github.com/alanjhughes))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 

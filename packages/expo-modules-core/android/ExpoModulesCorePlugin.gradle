@@ -4,7 +4,23 @@ class KotlinExpoModulesCorePlugin implements Plugin<Project> {
       project.ext.kotlinVersion = {
         project.rootProject.ext.has("kotlinVersion")
             ? project.rootProject.ext.get("kotlinVersion")
-            : "1.6.10"
+            : "1.8.10"
+      }
+
+      project.ext.kspVersion = {
+        def kspVersionsMap = [
+          "1.6.10": "1.6.10-1.0.4",
+          "1.6.21": "1.6.21-1.0.6",
+          "1.7.22": "1.7.22-1.0.8",
+          "1.8.0": "1.8.0-1.0.9",
+          "1.8.10": "1.8.10-1.0.9"
+        ]
+
+        project.rootProject.ext.has("kspVersion")
+          ? project.rootProject.ext.get("kspVersion")
+          : kspVersionsMap.containsKey(project.ext.kotlinVersion())
+          ? kspVersionsMap.get(project.ext.kotlinVersion())
+          : "1.8.10-1.0.9"
       }
     }
   }
@@ -74,7 +90,6 @@ class LegacyReactNativeLibsExtractionPlugin implements Plugin<Project> {
     def reactProperties = new Properties()
     new File("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
     def FOLLY_VERSION = reactProperties.getProperty("FOLLY_VERSION")
-    def BOOST_VERSION = reactProperties.getProperty("BOOST_VERSION")
     def DOUBLE_CONVERSION_VERSION = reactProperties.getProperty("DOUBLE_CONVERSION_VERSION")
     def REACT_NATIVE_VERSION = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")
     def REACT_NATIVE_TARGET_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()

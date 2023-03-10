@@ -8,6 +8,16 @@
 
 ### 🐛 Bug fixes
 
+- Fixed cancellation type not being marked as a `Record` on Android. ([#21588](https://github.com/expo/expo/pull/21588) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+## 11.2.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 11.2.0 — 2023-02-03
+
 ### 💡 Others
 
 - On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))

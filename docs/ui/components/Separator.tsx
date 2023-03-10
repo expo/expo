@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { theme, spacing as themeSpacing } from '@expo/styleguide';
+import { theme } from '@expo/styleguide';
+import { spacing as themeSpacing } from '@expo/styleguide-base';
 
 type SeparatorProps = {
   spacing?: number;

@@ -63,7 +63,7 @@ export type AuthSessionResult = {
     url: string;
 };
 /**
- * Options passed to `makeRedirectUriAsync`.
+ * Options passed to `makeRedirectUri`.
  */
 export type AuthSessionRedirectUriOptions = {
     /**
@@ -92,6 +92,7 @@ export type AuthSessionRedirectUriOptions = {
      * This is useful for testing managed native apps that require a custom URI scheme.
      *
      * @default false
+     * @deprecated This option will be removed in a future release, for more information check [the migration guide](https://expo.fyi/auth-proxy-migration).
      */
     useProxy?: boolean;
     /**

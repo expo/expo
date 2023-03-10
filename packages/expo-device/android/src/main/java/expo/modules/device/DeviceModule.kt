@@ -18,8 +18,6 @@ import java.io.File
 import kotlin.math.pow
 import kotlin.math.sqrt
 
-private const val NAME = "ExpoDevice"
-
 class DeviceModule : Module() {
   // Keep this enum in sync with JavaScript
   enum class DeviceType(val JSValue: Int) {
@@ -130,8 +128,6 @@ class DeviceModule : Module() {
     }
 
   companion object {
-    private val TAG = DeviceModule::class.java.simpleName
-
     private val isRunningOnEmulator: Boolean
       get() = EmulatorUtilities.isRunningOnEmulator()
 
@@ -146,18 +142,54 @@ class DeviceModule : Module() {
         return DeviceType.TV
       }
 
+      val deviceTypeFromResourceConfiguration = getDeviceTypeFromResourceConfiguration(context)
+      return if (deviceTypeFromResourceConfiguration != DeviceType.UNKNOWN) {
+        deviceTypeFromResourceConfiguration
+      } else {
+        getDeviceTypeFromPhysicalSize(context)
+      }
+    }
+
+    // Device type based on the smallest screen width quantifier
+    // https://developer.android.com/guide/topics/resources/providing-resources#SmallestScreenWidthQualifier
+    private fun getDeviceTypeFromResourceConfiguration(context: Context): DeviceType {
+      val smallestScreenWidthDp = context.resources.configuration.smallestScreenWidthDp
+
+      return if (smallestScreenWidthDp == Configuration.SMALLEST_SCREEN_WIDTH_DP_UNDEFINED) {
+        DeviceType.UNKNOWN
+      } else if (smallestScreenWidthDp >= 600) {
+        DeviceType.TABLET
+      } else {
+        DeviceType.PHONE
+      }
+    }
+
+    private fun getDeviceTypeFromPhysicalSize(context: Context): DeviceType {
       // Find the current window manager, if none is found we can't measure the device physical size.
       val windowManager = context.getSystemService(Context.WINDOW_SERVICE) as WindowManager?
         ?: return DeviceType.UNKNOWN
 
       // Get display metrics to see if we can differentiate phones and tablets.
-      val metrics = DisplayMetrics()
-      windowManager.defaultDisplay.getMetrics(metrics)
+      val widthInches: Double
+      val heightInches: Double
+
+      // windowManager.defaultDisplay was marked as deprecated in API level 30 (Android R) and above
+      if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+        val windowBounds = windowManager.currentWindowMetrics.bounds
+        val densityDpi = context.resources.configuration.densityDpi
+        widthInches = windowBounds.width() / densityDpi.toDouble()
+        heightInches = windowBounds.height() / densityDpi.toDouble()
+      } else {
+        val metrics = DisplayMetrics()
+        @Suppress("DEPRECATION")
+        windowManager.defaultDisplay.getRealMetrics(metrics)
+        widthInches = metrics.widthPixels / metrics.xdpi.toDouble()
+        heightInches = metrics.heightPixels / metrics.ydpi.toDouble()
+      }
 
       // Calculate physical size.
-      val widthInches = metrics.widthPixels / metrics.xdpi.toDouble()
-      val heightInches = metrics.heightPixels / metrics.ydpi.toDouble()
       val diagonalSizeInches = sqrt(widthInches.pow(2.0) + heightInches.pow(2.0))
+
       return if (diagonalSizeInches in 3.0..6.9) {
         // Devices in a sane range for phones are considered to be phones.
         DeviceType.PHONE

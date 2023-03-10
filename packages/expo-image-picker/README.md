@@ -1,4 +1,11 @@
-# expo-image-picker
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/imagepicker/">
+    <img
+      src="../../.github/resources/expo-image-picker.svg"
+      alt="expo-image-picker"
+      height="64" />
+  </a>
+</p>
 
 Provides access to the system's UI for selecting images and videos from the phone's library or taking a photo with the camera.
 

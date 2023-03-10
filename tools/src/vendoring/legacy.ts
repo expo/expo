@@ -670,20 +670,6 @@ const vendoredModulesConfig: { [key: string]: VendoredModuleConfig } = {
       },
     ],
   },
-  'react-native-pager-view': {
-    repoUrl: 'https://github.com/callstack/react-native-pager-view',
-    installableInManagedApps: true,
-    steps: [
-      {
-        sourceIosPath: 'ios',
-        targetIosPath: 'Api/Components/PagerView',
-        sourceAndroidPath: 'android/src/main/java/com/reactnativepagerview/',
-        targetAndroidPath: 'modules/api/components/pagerview',
-        sourceAndroidPackage: 'com.reactnativepagerview',
-        targetAndroidPackage: 'versioned.host.exp.exponent.modules.api.components.pagerview',
-      },
-    ],
-  },
   'react-native-shared-element': {
     repoUrl: 'https://github.com/IjzerenHein/react-native-shared-element',
     installableInManagedApps: true,

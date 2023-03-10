@@ -53,6 +53,15 @@ exports[`built-in plugins compiles mods 1`] = `
                 ],
               },
             ],
+            "device": [
+              {
+                "$": {
+                  "appearance": "light",
+                  "id": "retina5_5",
+                  "orientation": "portrait",
+                },
+              },
+            ],
             "resources": [
               {
                 "image": [
@@ -111,14 +120,6 @@ exports[`built-in plugins compiles mods 1`] = `
                                     },
                                   },
                                 ],
-                                "color": [
-                                  {
-                                    "$": {
-                                      "key": "backgroundColor",
-                                      "systemColor": "systemBackgroundColor",
-                                    },
-                                  },
-                                ],
                                 "constraints": [
                                   {
                                     "constraint": [
@@ -154,6 +155,42 @@ exports[`built-in plugins compiles mods 1`] = `
                                           "firstAttribute": "bottom",
                                           "firstItem": "EXPO-SplashScreenBackground",
                                           "id": "jkI-2V-eW5",
+                                          "secondAttribute": "bottom",
+                                          "secondItem": "EXPO-ContainerView",
+                                        },
+                                      },
+                                      {
+                                        "$": {
+                                          "firstAttribute": "top",
+                                          "firstItem": "EXPO-SplashScreen",
+                                          "id": "2VS-Uz-0LU",
+                                          "secondAttribute": "top",
+                                          "secondItem": "EXPO-ContainerView",
+                                        },
+                                      },
+                                      {
+                                        "$": {
+                                          "firstAttribute": "leading",
+                                          "firstItem": "EXPO-SplashScreen",
+                                          "id": "LhH-Ei-DKo",
+                                          "secondAttribute": "leading",
+                                          "secondItem": "EXPO-ContainerView",
+                                        },
+                                      },
+                                      {
+                                        "$": {
+                                          "firstAttribute": "trailing",
+                                          "firstItem": "EXPO-SplashScreen",
+                                          "id": "I6l-TP-6fn",
+                                          "secondAttribute": "trailing",
+                                          "secondItem": "EXPO-ContainerView",
+                                        },
+                                      },
+                                      {
+                                        "$": {
+                                          "firstAttribute": "bottom",
+                                          "firstItem": "EXPO-SplashScreen",
+                                          "id": "nbp-HC-eaG",
                                           "secondAttribute": "bottom",
                                           "secondItem": "EXPO-ContainerView",
                                         },
@@ -205,7 +242,7 @@ exports[`built-in plugins compiles mods 1`] = `
                                 "viewLayoutGuide": [
                                   {
                                     "$": {
-                                      "id": "EXPO-SafeArea",
+                                      "id": "Rmq-lb-GrQ",
                                       "key": "safeArea",
                                     },
                                   },
@@ -214,6 +251,15 @@ exports[`built-in plugins compiles mods 1`] = `
                             ],
                           },
                         ],
+                      },
+                    ],
+                    "point": [
+                      {
+                        "$": {
+                          "key": "canvasLocation",
+                          "x": "140.625",
+                          "y": "129.4921875",
+                        },
                       },
                     ],
                   },
@@ -243,10 +289,6 @@ exports[`built-in plugins compiles mods 1`] = `
       },
       "expo-document-picker": {
         "name": "expo-document-picker",
-        "version": "UNVERSIONED",
-      },
-      "expo-facebook": {
-        "name": "expo-facebook",
         "version": "UNVERSIONED",
       },
       "expo-navigation-bar": {
@@ -379,13 +421,13 @@ exports[`built-in plugins compiles mods 1`] = `
     },
     "googleServicesFile": "./config/GoogleService-Info.plist",
     "infoPlist": {
-      "CFBundleDevelopmentRegion": "en",
+      "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
       "CFBundleDisplayName": "my cool app",
       "CFBundleExecutable": "$(EXECUTABLE_NAME)",
       "CFBundleIdentifier": "$(PRODUCT_BUNDLE_IDENTIFIER)",
       "CFBundleInfoDictionaryVersion": "6.0",
       "CFBundleName": "$(PRODUCT_NAME)",
-      "CFBundlePackageType": "APPL",
+      "CFBundlePackageType": "$(PRODUCT_BUNDLE_PACKAGE_TYPE)",
       "CFBundleShortVersionString": "1.0.0",
       "CFBundleSignature": "????",
       "CFBundleURLTypes": [
@@ -400,27 +442,11 @@ exports[`built-in plugins compiles mods 1`] = `
             "com.googleusercontent.apps.1234567890123-abcdef",
           ],
         },
-        {
-          "CFBundleURLSchemes": [
-            "fb1234567890",
-          ],
-        },
       ],
       "CFBundleVersion": "6.5.0",
-      "FacebookAdvertiserIDCollectionEnabled": true,
-      "FacebookAppID": "1234567890",
-      "FacebookAutoInitEnabled": true,
-      "FacebookAutoLogAppEventsEnabled": true,
-      "FacebookDisplayName": "my-fb-test-app",
       "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
       "GMSApiKey": "TEST_googleMapsApiKey",
       "ITSAppUsesNonExemptEncryption": true,
-      "LSApplicationQueriesSchemes": [
-        "fbapi",
-        "fb-messenger-api",
-        "fbauth2",
-        "fbshareextension",
-      ],
       "LSRequiresIPhoneOS": true,
       "NSAppTransportSecurity": {
         "NSAllowsArbitraryLoads": true,
@@ -431,19 +457,12 @@ exports[`built-in plugins compiles mods 1`] = `
         },
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
-      "SKAdNetworkItems": [
-        {
-          "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork",
-        },
-        {
-          "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork",
-        },
-      ],
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
         "armv7",
       ],
       "UIRequiresFullScreen": true,
+      "UIStatusBarStyle": "UIStatusBarStyleDefault",
       "UISupportedInterfaceOrientations": [
         "UIInterfaceOrientationPortrait",
         "UIInterfaceOrientationPortraitUpsideDown",
@@ -517,6 +536,12 @@ exports[`built-in plugins introspects mods 1`] = `
             "color": [
               {
                 "$": {
+                  "name": "splashscreen_background",
+                },
+                "_": "#ff00ff",
+              },
+              {
+                "$": {
                   "name": "colorPrimary",
                 },
                 "_": "#fff000",
@@ -532,12 +557,6 @@ exports[`built-in plugins introspects mods 1`] = `
                   "name": "navigationBarColor",
                 },
                 "_": "#ff0000",
-              },
-              {
-                "$": {
-                  "name": "splashscreen_background",
-                },
-                "_": "#ff00ff",
               },
               {
                 "$": {
@@ -610,11 +629,12 @@ exports[`built-in plugins introspects mods 1`] = `
           },
           {
             "type": "comment",
-            "value": "Default value: -Xmx10248m -XX:MaxPermSize=256m",
+            "value": "Default value: -Xmx512m -XX:MaxMetaspaceSize=256m",
           },
           {
-            "type": "comment",
-            "value": "org.gradle.jvmargs=-Xmx2048m -XX:MaxPermSize=512m -XX:+HeapDumpOnOutOfMemoryError -Dfile.encoding=UTF-8",
+            "key": "org.gradle.jvmargs",
+            "type": "property",
+            "value": "-Xmx2048m -XX:MaxMetaspaceSize=512m",
           },
           {
             "type": "empty",
@@ -677,15 +697,108 @@ exports[`built-in plugins introspects mods 1`] = `
           {
             "key": "FLIPPER_VERSION",
             "type": "property",
-            "value": "0.54.0",
+            "value": "0.125.0",
           },
           {
             "type": "empty",
           },
           {
+            "type": "comment",
+            "value": "Use this property to specify which architecture you want to build.",
+          },
+          {
+            "type": "comment",
+            "value": "You can also override it from the CLI using",
+          },
+          {
+            "type": "comment",
+            "value": "./gradlew <task> -PreactNativeArchitectures=x86_64",
+          },
+          {
+            "key": "reactNativeArchitectures",
+            "type": "property",
+            "value": "armeabi-v7a,arm64-v8a,x86,x86_64",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
+            "value": "Use this property to enable support to the new architecture.",
+          },
+          {
+            "type": "comment",
+            "value": "This will allow you to use TurboModules and the Fabric render in",
+          },
+          {
+            "type": "comment",
+            "value": "your application. You should enable this flag either if you want",
+          },
+          {
+            "type": "comment",
+            "value": "to write custom TurboModules/Fabric components OR use libraries that",
+          },
+          {
+            "type": "comment",
+            "value": "are providing them.",
+          },
+          {
+            "key": "newArchEnabled",
+            "type": "property",
+            "value": "false",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
+            "value": "The hosted JavaScript engine",
+          },
+          {
+            "type": "comment",
+            "value": "Supported values: expo.jsEngine = "hermes" | "jsc"",
+          },
+          {
             "key": "expo.jsEngine",
             "type": "property",
-            "value": "jsc",
+            "value": "hermes",
+          },
+          {
+            "type": "empty",
+          },
+          {
+            "type": "comment",
+            "value": "Enable GIF support in React Native images (~200 B increase)",
+          },
+          {
+            "key": "expo.gif.enabled",
+            "type": "property",
+            "value": "true",
+          },
+          {
+            "type": "comment",
+            "value": "Enable webp support in React Native images (~85 KB increase)",
+          },
+          {
+            "key": "expo.webp.enabled",
+            "type": "property",
+            "value": "true",
+          },
+          {
+            "type": "comment",
+            "value": "Enable animated webp support (~3.4 MB increase)",
+          },
+          {
+            "type": "comment",
+            "value": "Disabled by default because iOS doesn't support animated webp",
+          },
+          {
+            "key": "expo.webp.animated",
+            "type": "property",
+            "value": "false",
+          },
+          {
+            "type": "empty",
           },
         ],
         "manifest": {
@@ -699,18 +812,23 @@ exports[`built-in plugins introspects mods 1`] = `
               {
                 "$": {
                   "android:allowBackup": "true",
+                  "android:icon": "@mipmap/ic_launcher",
                   "android:label": "@string/app_name",
                   "android:name": ".MainApplication",
+                  "android:roundIcon": "@mipmap/ic_launcher_round",
                   "android:theme": "@style/AppTheme",
+                  "android:usesCleartextTraffic": "true",
                 },
                 "activity": [
                   {
                     "$": {
                       "android:configChanges": "keyboard|keyboardHidden|orientation|screenSize|uiMode",
+                      "android:exported": "true",
                       "android:label": "@string/app_name",
                       "android:launchMode": "singleTask",
                       "android:name": ".MainActivity",
                       "android:screenOrientation": "unspecified",
+                      "android:theme": "@style/Theme.App.SplashScreen",
                       "android:windowSoftInputMode": "adjustPan",
                     },
                     "intent-filter": [
@@ -800,75 +918,16 @@ exports[`built-in plugins introspects mods 1`] = `
                   },
                   {
                     "$": {
+                      "android:exported": "false",
                       "android:name": "com.facebook.react.devsupport.DevSettingsActivity",
                     },
-                  },
-                  {
-                    "$": {
-                      "android:exported": "true",
-                      "android:name": "com.facebook.CustomTabActivity",
-                    },
-                    "intent-filter": [
-                      {
-                        "action": [
-                          {
-                            "$": {
-                              "android:name": "android.intent.action.VIEW",
-                            },
-                          },
-                        ],
-                        "category": [
-                          {
-                            "$": {
-                              "android:name": "android.intent.category.DEFAULT",
-                            },
-                          },
-                          {
-                            "$": {
-                              "android:name": "android.intent.category.BROWSABLE",
-                            },
-                          },
-                        ],
-                        "data": [
-                          {
-                            "$": {
-                              "android:scheme": "fb1234567890",
-                            },
-                          },
-                        ],
-                      },
-                    ],
                   },
                 ],
                 "meta-data": [
                   {
                     "$": {
-                      "android:name": "com.facebook.sdk.ApplicationId",
-                      "android:value": "@string/facebook_app_id",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "com.facebook.sdk.ApplicationName",
-                      "android:value": "my-fb-test-app",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "com.facebook.sdk.AutoInitEnabled",
-                      "android:value": "true",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "com.facebook.sdk.AutoLogAppEventsEnabled",
-                      "android:value": "true",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "com.facebook.sdk.AdvertiserIDCollectionEnabled",
-                      "android:value": "true",
+                      "android:name": "expo.modules.updates.EXPO_UPDATE_URL",
+                      "android:value": "https://exp.host/@bacon/mycoolapp",
                     },
                   },
                   {
@@ -893,12 +952,6 @@ exports[`built-in plugins introspects mods 1`] = `
                     "$": {
                       "android:name": "expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS",
                       "android:value": "650",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "expo.modules.updates.EXPO_UPDATE_URL",
-                      "android:value": "https://exp.host/@bacon/mycoolapp",
                     },
                   },
                   {
@@ -979,6 +1032,26 @@ exports[`built-in plugins introspects mods 1`] = `
               },
               {
                 "$": {
+                  "android:name": "android.permission.SYSTEM_ALERT_WINDOW",
+                },
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.VIBRATE",
+                },
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.READ_EXTERNAL_STORAGE",
+                },
+              },
+              {
+                "$": {
+                  "android:name": "android.permission.WRITE_EXTERNAL_STORAGE",
+                },
+              },
+              {
+                "$": {
                   "android:name": "android.permission.CAMERA",
                 },
               },
@@ -1030,12 +1103,6 @@ exports[`built-in plugins introspects mods 1`] = `
                 },
                 "_": "true",
               },
-              {
-                "$": {
-                  "name": "facebook_app_id",
-                },
-                "_": "1234567890",
-              },
             ],
           },
         },
@@ -1055,7 +1122,19 @@ exports[`built-in plugins introspects mods 1`] = `
                     "$": {
                       "name": "android:textColor",
                     },
-                    "_": "#000000",
+                    "_": "@android:color/black",
+                  },
+                  {
+                    "$": {
+                      "name": "android:editTextStyle",
+                    },
+                    "_": "@style/ResetEditText",
+                  },
+                  {
+                    "$": {
+                      "name": "android:editTextBackground",
+                    },
+                    "_": "@drawable/rn_edit_text_material",
                   },
                   {
                     "$": {
@@ -1097,6 +1176,32 @@ exports[`built-in plugins introspects mods 1`] = `
               },
               {
                 "$": {
+                  "name": "ResetEditText",
+                  "parent": "@android:style/Widget.EditText",
+                },
+                "item": [
+                  {
+                    "$": {
+                      "name": "android:padding",
+                    },
+                    "_": "0dp",
+                  },
+                  {
+                    "$": {
+                      "name": "android:textColorHint",
+                    },
+                    "_": "#c8c8c8",
+                  },
+                  {
+                    "$": {
+                      "name": "android:textColor",
+                    },
+                    "_": "@android:color/black",
+                  },
+                ],
+              },
+              {
+                "$": {
                   "name": "Theme.App.SplashScreen",
                   "parent": "AppTheme",
                 },
@@ -1129,13 +1234,13 @@ exports[`built-in plugins introspects mods 1`] = `
           "EXUpdatesURL": "https://exp.host/@bacon/mycoolapp",
         },
         "infoPlist": {
-          "CFBundleDevelopmentRegion": "en",
+          "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
           "CFBundleDisplayName": "my cool app",
           "CFBundleExecutable": "$(EXECUTABLE_NAME)",
           "CFBundleIdentifier": "$(PRODUCT_BUNDLE_IDENTIFIER)",
           "CFBundleInfoDictionaryVersion": "6.0",
           "CFBundleName": "$(PRODUCT_NAME)",
-          "CFBundlePackageType": "APPL",
+          "CFBundlePackageType": "$(PRODUCT_BUNDLE_PACKAGE_TYPE)",
           "CFBundleShortVersionString": "1.0.0",
           "CFBundleSignature": "????",
           "CFBundleURLTypes": [
@@ -1150,27 +1255,11 @@ exports[`built-in plugins introspects mods 1`] = `
                 "com.googleusercontent.apps.1234567890123-abcdef",
               ],
             },
-            {
-              "CFBundleURLSchemes": [
-                "fb1234567890",
-              ],
-            },
           ],
           "CFBundleVersion": "6.5.0",
-          "FacebookAdvertiserIDCollectionEnabled": true,
-          "FacebookAppID": "1234567890",
-          "FacebookAutoInitEnabled": true,
-          "FacebookAutoLogAppEventsEnabled": true,
-          "FacebookDisplayName": "my-fb-test-app",
           "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
           "GMSApiKey": "TEST_googleMapsApiKey",
           "ITSAppUsesNonExemptEncryption": true,
-          "LSApplicationQueriesSchemes": [
-            "fbapi",
-            "fb-messenger-api",
-            "fbauth2",
-            "fbshareextension",
-          ],
           "LSRequiresIPhoneOS": true,
           "NSAppTransportSecurity": {
             "NSAllowsArbitraryLoads": true,
@@ -1181,19 +1270,12 @@ exports[`built-in plugins introspects mods 1`] = `
             },
           },
           "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
-          "SKAdNetworkItems": [
-            {
-              "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork",
-            },
-            {
-              "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork",
-            },
-          ],
           "UILaunchStoryboardName": "SplashScreen",
           "UIRequiredDeviceCapabilities": [
             "armv7",
           ],
           "UIRequiresFullScreen": true,
+          "UIStatusBarStyle": "UIStatusBarStyleDefault",
           "UISupportedInterfaceOrientations": [
             "UIInterfaceOrientationPortrait",
             "UIInterfaceOrientationPortraitUpsideDown",
@@ -1212,7 +1294,7 @@ exports[`built-in plugins introspects mods 1`] = `
           },
         },
         "podfileProperties": {
-          "expo.jsEngine": "jsc",
+          "expo.jsEngine": "hermes",
         },
         "splashScreenStoryboard": {
           "document": {
@@ -1260,6 +1342,15 @@ exports[`built-in plugins introspects mods 1`] = `
                     },
                   },
                 ],
+              },
+            ],
+            "device": [
+              {
+                "$": {
+                  "appearance": "light",
+                  "id": "retina5_5",
+                  "orientation": "portrait",
+                },
               },
             ],
             "resources": [
@@ -1320,14 +1411,6 @@ exports[`built-in plugins introspects mods 1`] = `
                                     },
                                   },
                                 ],
-                                "color": [
-                                  {
-                                    "$": {
-                                      "key": "backgroundColor",
-                                      "systemColor": "systemBackgroundColor",
-                                    },
-                                  },
-                                ],
                                 "constraints": [
                                   {
                                     "constraint": [
@@ -1363,6 +1446,42 @@ exports[`built-in plugins introspects mods 1`] = `
                                           "firstAttribute": "bottom",
                                           "firstItem": "EXPO-SplashScreenBackground",
                                           "id": "jkI-2V-eW5",
+                                          "secondAttribute": "bottom",
+                                          "secondItem": "EXPO-ContainerView",
+                                        },
+                                      },
+                                      {
+                                        "$": {
+                                          "firstAttribute": "top",
+                                          "firstItem": "EXPO-SplashScreen",
+                                          "id": "2VS-Uz-0LU",
+                                          "secondAttribute": "top",
+                                          "secondItem": "EXPO-ContainerView",
+                                        },
+                                      },
+                                      {
+                                        "$": {
+                                          "firstAttribute": "leading",
+                                          "firstItem": "EXPO-SplashScreen",
+                                          "id": "LhH-Ei-DKo",
+                                          "secondAttribute": "leading",
+                                          "secondItem": "EXPO-ContainerView",
+                                        },
+                                      },
+                                      {
+                                        "$": {
+                                          "firstAttribute": "trailing",
+                                          "firstItem": "EXPO-SplashScreen",
+                                          "id": "I6l-TP-6fn",
+                                          "secondAttribute": "trailing",
+                                          "secondItem": "EXPO-ContainerView",
+                                        },
+                                      },
+                                      {
+                                        "$": {
+                                          "firstAttribute": "bottom",
+                                          "firstItem": "EXPO-SplashScreen",
+                                          "id": "nbp-HC-eaG",
                                           "secondAttribute": "bottom",
                                           "secondItem": "EXPO-ContainerView",
                                         },
@@ -1414,7 +1533,7 @@ exports[`built-in plugins introspects mods 1`] = `
                                 "viewLayoutGuide": [
                                   {
                                     "$": {
-                                      "id": "EXPO-SafeArea",
+                                      "id": "Rmq-lb-GrQ",
                                       "key": "safeArea",
                                     },
                                   },
@@ -1423,6 +1542,15 @@ exports[`built-in plugins introspects mods 1`] = `
                             ],
                           },
                         ],
+                      },
+                    ],
+                    "point": [
+                      {
+                        "$": {
+                          "key": "canvasLocation",
+                          "x": "140.625",
+                          "y": "129.4921875",
+                        },
                       },
                     ],
                   },
@@ -1452,10 +1580,6 @@ exports[`built-in plugins introspects mods 1`] = `
       },
       "expo-document-picker": {
         "name": "expo-document-picker",
-        "version": "UNVERSIONED",
-      },
-      "expo-facebook": {
-        "name": "expo-facebook",
         "version": "UNVERSIONED",
       },
       "expo-navigation-bar": {
@@ -1588,13 +1712,13 @@ exports[`built-in plugins introspects mods 1`] = `
     },
     "googleServicesFile": "./config/GoogleService-Info.plist",
     "infoPlist": {
-      "CFBundleDevelopmentRegion": "en",
+      "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
       "CFBundleDisplayName": "my cool app",
       "CFBundleExecutable": "$(EXECUTABLE_NAME)",
       "CFBundleIdentifier": "$(PRODUCT_BUNDLE_IDENTIFIER)",
       "CFBundleInfoDictionaryVersion": "6.0",
       "CFBundleName": "$(PRODUCT_NAME)",
-      "CFBundlePackageType": "APPL",
+      "CFBundlePackageType": "$(PRODUCT_BUNDLE_PACKAGE_TYPE)",
       "CFBundleShortVersionString": "1.0.0",
       "CFBundleSignature": "????",
       "CFBundleURLTypes": [
@@ -1609,27 +1733,11 @@ exports[`built-in plugins introspects mods 1`] = `
             "com.googleusercontent.apps.1234567890123-abcdef",
           ],
         },
-        {
-          "CFBundleURLSchemes": [
-            "fb1234567890",
-          ],
-        },
       ],
       "CFBundleVersion": "6.5.0",
-      "FacebookAdvertiserIDCollectionEnabled": true,
-      "FacebookAppID": "1234567890",
-      "FacebookAutoInitEnabled": true,
-      "FacebookAutoLogAppEventsEnabled": true,
-      "FacebookDisplayName": "my-fb-test-app",
       "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
       "GMSApiKey": "TEST_googleMapsApiKey",
       "ITSAppUsesNonExemptEncryption": true,
-      "LSApplicationQueriesSchemes": [
-        "fbapi",
-        "fb-messenger-api",
-        "fbauth2",
-        "fbshareextension",
-      ],
       "LSRequiresIPhoneOS": true,
       "NSAppTransportSecurity": {
         "NSAllowsArbitraryLoads": true,
@@ -1640,19 +1748,12 @@ exports[`built-in plugins introspects mods 1`] = `
         },
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
-      "SKAdNetworkItems": [
-        {
-          "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork",
-        },
-        {
-          "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork",
-        },
-      ],
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
         "armv7",
       ],
       "UIRequiresFullScreen": true,
+      "UIStatusBarStyle": "UIStatusBarStyleDefault",
       "UISupportedInterfaceOrientations": [
         "UIInterfaceOrientationPortrait",
         "UIInterfaceOrientationPortraitUpsideDown",
@@ -1779,7 +1880,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
           {
             "key": "expo.jsEngine",
             "type": "property",
-            "value": "jsc",
+            "value": "hermes",
           },
         ],
         "manifest": {
@@ -1901,78 +2002,12 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                       "android:name": "com.facebook.react.devsupport.DevSettingsActivity",
                     },
                   },
-                  {
-                    "$": {
-                      "android:exported": "true",
-                      "android:name": "com.facebook.CustomTabActivity",
-                    },
-                    "intent-filter": [
-                      {
-                        "action": [
-                          {
-                            "$": {
-                              "android:name": "android.intent.action.VIEW",
-                            },
-                          },
-                        ],
-                        "category": [
-                          {
-                            "$": {
-                              "android:name": "android.intent.category.DEFAULT",
-                            },
-                          },
-                          {
-                            "$": {
-                              "android:name": "android.intent.category.BROWSABLE",
-                            },
-                          },
-                        ],
-                        "data": [
-                          {
-                            "$": {
-                              "android:scheme": "fb1234567890",
-                            },
-                          },
-                        ],
-                      },
-                    ],
-                  },
                 ],
                 "meta-data": [
                   {
                     "$": {
                       "android:name": "expo.modules.updates.EXPO_UPDATE_URL",
                       "android:value": "https://exp.host/@bacon/mycoolapp",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "com.facebook.sdk.ApplicationId",
-                      "android:value": "@string/facebook_app_id",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "com.facebook.sdk.ApplicationName",
-                      "android:value": "my-fb-test-app",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "com.facebook.sdk.AutoInitEnabled",
-                      "android:value": "true",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "com.facebook.sdk.AutoLogAppEventsEnabled",
-                      "android:value": "true",
-                    },
-                  },
-                  {
-                    "$": {
-                      "android:name": "com.facebook.sdk.AdvertiserIDCollectionEnabled",
-                      "android:value": "true",
                     },
                   },
                   {
@@ -2143,12 +2178,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                 },
                 "_": "true",
               },
-              {
-                "$": {
-                  "name": "facebook_app_id",
-                },
-                "_": "1234567890",
-              },
             ],
           },
         },
@@ -2257,27 +2286,11 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                 "com.googleusercontent.apps.1234567890123-abcdef",
               ],
             },
-            {
-              "CFBundleURLSchemes": [
-                "fb1234567890",
-              ],
-            },
           ],
           "CFBundleVersion": "6.5.0",
-          "FacebookAdvertiserIDCollectionEnabled": true,
-          "FacebookAppID": "1234567890",
-          "FacebookAutoInitEnabled": true,
-          "FacebookAutoLogAppEventsEnabled": true,
-          "FacebookDisplayName": "my-fb-test-app",
           "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
           "GMSApiKey": "TEST_googleMapsApiKey",
           "ITSAppUsesNonExemptEncryption": true,
-          "LSApplicationQueriesSchemes": [
-            "fbapi",
-            "fb-messenger-api",
-            "fbauth2",
-            "fbshareextension",
-          ],
           "LSRequiresIPhoneOS": true,
           "NSAppTransportSecurity": {
             "NSAllowsArbitraryLoads": true,
@@ -2288,14 +2301,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
             },
           },
           "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
-          "SKAdNetworkItems": [
-            {
-              "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork",
-            },
-            {
-              "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork",
-            },
-          ],
           "UILaunchStoryboardName": "SplashScreen",
           "UIRequiredDeviceCapabilities": [
             "armv7",
@@ -2320,7 +2325,7 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
           },
         },
         "podfileProperties": {
-          "expo.jsEngine": "jsc",
+          "expo.jsEngine": "hermes",
         },
         "splashScreenStoryboard": {
           "document": {
@@ -2562,10 +2567,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         "name": "expo-document-picker",
         "version": "UNVERSIONED",
       },
-      "expo-facebook": {
-        "name": "expo-facebook",
-        "version": "UNVERSIONED",
-      },
       "expo-navigation-bar": {
         "name": "expo-navigation-bar",
         "version": "UNVERSIONED",
@@ -2717,27 +2718,11 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
             "com.googleusercontent.apps.1234567890123-abcdef",
           ],
         },
-        {
-          "CFBundleURLSchemes": [
-            "fb1234567890",
-          ],
-        },
       ],
       "CFBundleVersion": "6.5.0",
-      "FacebookAdvertiserIDCollectionEnabled": true,
-      "FacebookAppID": "1234567890",
-      "FacebookAutoInitEnabled": true,
-      "FacebookAutoLogAppEventsEnabled": true,
-      "FacebookDisplayName": "my-fb-test-app",
       "GADApplicationIdentifier": "TEST_googleMobileAdsAppId",
       "GMSApiKey": "TEST_googleMapsApiKey",
       "ITSAppUsesNonExemptEncryption": true,
-      "LSApplicationQueriesSchemes": [
-        "fbapi",
-        "fb-messenger-api",
-        "fbauth2",
-        "fbshareextension",
-      ],
       "LSRequiresIPhoneOS": true,
       "NSAppTransportSecurity": {
         "NSAllowsArbitraryLoads": true,
@@ -2748,14 +2733,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
         },
       },
       "NSLocationWhenInUseUsageDescription": "Allow $(PRODUCT_NAME) to access your location",
-      "SKAdNetworkItems": [
-        {
-          "SKAdNetworkIdentifier": "v9wttpbfk9.skadnetwork",
-        },
-        {
-          "SKAdNetworkIdentifier": "n38lu8286q.skadnetwork",
-        },
-      ],
       "UILaunchStoryboardName": "SplashScreen",
       "UIRequiredDeviceCapabilities": [
         "armv7",

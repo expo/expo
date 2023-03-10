@@ -9,7 +9,7 @@ import ExpoModulesCore
  * RCTBridge and RCTRootView objects to return to the ReactDelegate, replacing them with the real
  * objects when expo-updates is ready.
  */
-public class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, EXUpdatesAppControllerDelegate, RCTBridgeDelegate {
+public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, AppControllerDelegate, RCTBridgeDelegate {
   private weak var reactDelegate: ExpoReactDelegate?
   private var bridgeDelegate: RCTBridgeDelegate?
   private var launchOptions: [AnyHashable: Any]?
@@ -17,26 +17,26 @@ public class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, EXUpdate
   private var rootViewModuleName: String?
   private var rootViewInitialProperties: [AnyHashable: Any]?
   private lazy var shouldEnableAutoSetup: Bool = {
-    if EXAppDefines.APP_DEBUG && !EXUpdatesUtils.isNativeDebuggingEnabled() {
+    if EXAppDefines.APP_DEBUG && !UpdatesUtils.isNativeDebuggingEnabled() {
       return false
     }
     // if Expo.plist not found or its content is invalid, disable the auto setup
     guard
-      let configPath = Bundle.main.path(forResource: EXUpdatesConfigPlistName, ofType: "plist"),
+      let configPath = Bundle.main.path(forResource: UpdatesConfig.EXUpdatesConfigPlistName, ofType: "plist"),
       let config = NSDictionary(contentsOfFile: configPath)
     else {
       return false
     }
 
     // if `EXUpdatesAutoSetup` is false, disable the auto setup
-    let enableAutoSetupValue = config[EXUpdatesConfigEnableAutoSetupKey]
+    let enableAutoSetupValue = config[UpdatesConfig.EXUpdatesConfigEnableAutoSetupKey]
     if let enableAutoSetup = enableAutoSetupValue as? NSNumber, enableAutoSetup.boolValue == false {
       return false
     }
 
     // Backward compatible if main AppDelegate already has expo-updates setup,
     // we just skip in this case.
-    if EXUpdatesAppController.sharedInstance().isStarted {
+    if AppController.sharedInstance.isStarted {
       return false
     }
 
@@ -49,7 +49,7 @@ public class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, EXUpdate
     }
 
     self.reactDelegate = reactDelegate
-    let controller = EXUpdatesAppController.sharedInstance()
+    let controller = AppController.sharedInstance
     controller.delegate = self
 
     // TODO: launch screen should move to expo-splash-screen
@@ -74,9 +74,9 @@ public class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, EXUpdate
     return self.deferredRootView
   }
 
-  // MARK: EXUpdatesAppControllerDelegate implementations
+  // MARK: AppControllerDelegate implementations
 
-  public func appController(_ appController: EXUpdatesAppController, didStartWithSuccess success: Bool) {
+  public func appController(_ appController: AppController, didStartWithSuccess success: Bool) {
     guard let reactDelegate = self.reactDelegate else {
       fatalError("`reactDelegate` should not be nil")
     }
@@ -98,7 +98,7 @@ public class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, EXUpdate
   // MARK: RCTBridgeDelegate implementations
 
   public func sourceURL(for bridge: RCTBridge!) -> URL! {
-    return EXUpdatesAppController.sharedInstance().launchAssetUrl
+    return AppController.sharedInstance.launchAssetUrl()
   }
 
   // MARK: Internals

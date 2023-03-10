@@ -46,17 +46,11 @@ open class ExpoModuleRegistryAdapter(moduleRegistryProvider: ReactModuleRegistry
     // Overriding expo-file-system FileSystemModule
     moduleRegistry.registerExportedModule(ScopedFileSystemModule(scopedContext))
 
-    // Overriding expo-error-recovery ErrorRecoveryModule
-    moduleRegistry.registerExportedModule(ScopedErrorRecoveryModule(scopedContext, manifest, experienceKey))
-
     // Overriding expo-permissions ScopedPermissionsService
     moduleRegistry.registerInternalModule(ScopedPermissionsService(scopedContext, experienceKey))
 
     // Overriding expo-updates UpdatesService
     moduleRegistry.registerInternalModule(UpdatesBinding(scopedContext, experienceProperties))
-
-    // Overriding expo-firebase-core
-    moduleRegistry.registerInternalModule(ScopedFirebaseCoreService(scopedContext, manifest, experienceKey))
 
     // Overriding expo-notifications classes
     moduleRegistry.registerExportedModule(ScopedNotificationsEmitter(scopedContext, experienceKey))

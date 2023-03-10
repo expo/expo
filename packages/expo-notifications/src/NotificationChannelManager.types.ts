@@ -1,5 +1,6 @@
 import { ProxyNativeModule } from 'expo-modules-core';
 
+// @docsMissing
 export enum AndroidNotificationVisibility {
   UNKNOWN = 0,
   PUBLIC = 1,
@@ -7,6 +8,7 @@ export enum AndroidNotificationVisibility {
   SECRET = 3,
 }
 
+// @docsMissing
 export enum AndroidAudioContentType {
   UNKNOWN = 0,
   SPEECH = 1,
@@ -15,6 +17,7 @@ export enum AndroidAudioContentType {
   SONIFICATION = 4,
 }
 
+// @docsMissing
 export enum AndroidImportance {
   UNKNOWN = 0,
   UNSPECIFIED = 1,
@@ -22,12 +25,15 @@ export enum AndroidImportance {
   MIN = 3,
   LOW = 4,
   DEFAULT = 5,
-  /** @deprecated use `DEFAULT` instead */
+  /**
+   * @deprecated Use `DEFAULT` instead.
+   */
   DEEFAULT = 5,
   HIGH = 6,
   MAX = 7,
 }
 
+// @docsMissing
 export enum AndroidAudioUsage {
   UNKNOWN = 0,
   MEDIA = 1,
@@ -46,6 +52,7 @@ export enum AndroidAudioUsage {
   GAME = 14,
 }
 
+// @docsMissing
 export interface AudioAttributes {
   usage: AndroidAudioUsage;
   contentType: AndroidAudioContentType;
@@ -60,6 +67,10 @@ export interface AudioAttributes {
 // to let it be left undefined.
 export type AudioAttributesInput = Partial<AudioAttributes>;
 
+/**
+ * An object represents a notification channel.
+ * @platform android
+ */
 export interface NotificationChannel {
   id: string;
   name: string | null;
@@ -79,6 +90,10 @@ export interface NotificationChannel {
 
 type RequiredBy<T, K extends keyof T> = Partial<Omit<T, K>> & Required<Pick<T, K>>;
 
+/**
+ * An object represents a notification channel to be set.
+ * @platform android
+ */
 export type NotificationChannelInput = RequiredBy<
   Omit<
     NotificationChannel,

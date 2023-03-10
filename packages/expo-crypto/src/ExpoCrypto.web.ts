@@ -43,6 +43,9 @@ export default {
   randomUUID() {
     return getCrypto().randomUUID();
   },
+  digestAsync(algorithm: AlgorithmIdentifier, data: ArrayBuffer): Promise<ArrayBuffer> {
+    return getCrypto().subtle.digest(algorithm, data);
+  },
 };
 
 function hexString(buffer: ArrayBuffer): string {
