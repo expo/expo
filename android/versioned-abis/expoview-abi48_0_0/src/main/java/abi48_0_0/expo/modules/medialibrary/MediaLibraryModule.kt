@@ -27,7 +27,6 @@ import abi48_0_0.expo.modules.interfaces.permissions.Permissions.getPermissionsW
 import abi48_0_0.expo.modules.kotlin.Promise
 import abi48_0_0.expo.modules.kotlin.exception.CodedException
 import abi48_0_0.expo.modules.kotlin.exception.Exceptions
-import abi48_0_0.expo.modules.kotlin.functions.Coroutine
 import abi48_0_0.expo.modules.kotlin.modules.Module
 import abi48_0_0.expo.modules.kotlin.modules.ModuleDefinition
 import abi48_0_0.expo.modules.medialibrary.MediaLibraryModule.Action
