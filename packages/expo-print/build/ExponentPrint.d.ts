@@ -1,3 +1,3 @@
-declare const _default: import("expo-modules-core").ProxyNativeModule;
-export default _default;
+declare const printModule: any;
+export default printModule;
 //# sourceMappingURL=ExponentPrint.d.ts.map
