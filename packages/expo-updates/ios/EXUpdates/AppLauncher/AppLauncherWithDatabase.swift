@@ -7,8 +7,8 @@
 
 import Foundation
 
-public typealias AppLauncherUpdateCompletionBlock = (Error?, Update?) -> Void
-public typealias AppLauncherQueryCompletionBlock = (Error?, [UUID]?) -> Void
+public typealias AppLauncherUpdateCompletionBlock = (_ error: Error?, _ update: Update?) -> Void
+public typealias AppLauncherQueryCompletionBlock = (_ error: Error?, _ updateIds: [UUID]?) -> Void
 
 /**
  * Implementation of AppLauncher that uses the SQLite database and expo-updates file store

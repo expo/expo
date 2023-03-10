@@ -13,10 +13,10 @@
 import Foundation
 import EASClient
 
-internal typealias SuccessBlock = (Data, URLResponse) -> Void
-internal typealias ErrorBlock = (Error) -> Void
-internal typealias HashSuccessBlock = (Data, URLResponse, String) -> Void
-internal typealias ManifestSuccessBlock = (Update) -> Void
+internal typealias SuccessBlock = (_ data: Data, _ urlResponse: URLResponse) -> Void
+internal typealias ErrorBlock = (_ error: Error) -> Void
+internal typealias HashSuccessBlock = (_ data: Data, _ urlResponse: URLResponse, _ base64URLEncodedSHA256Hash: String) -> Void
+internal typealias ManifestSuccessBlock = (_ update: Update) -> Void
 
 private let ErrorDomain = "EXUpdatesFileDownloader"
 private enum FileDownloaderErrorCode: Int {
