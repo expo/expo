@@ -2,12 +2,13 @@ import type { DebuggerInfo, Device as MetroDevice } from 'metro-inspector-proxy'
 import type WS from 'ws';
 
 import { NetworkResponseHandler } from './handlers/NetworkResponse';
+import { VscodeCompatHandler } from './handlers/VscodeCompat';
 import { DeviceRequest, InspectorHandler, DebuggerRequest } from './handlers/types';
 
 export function createInspectorDeviceClass(MetroDeviceClass: typeof MetroDevice) {
   return class ExpoInspectorDevice extends MetroDeviceClass implements InspectorHandler {
     /** All handlers that should be used to intercept or reply to CDP events */
-    public handlers: InspectorHandler[] = [new NetworkResponseHandler()];
+    public handlers: InspectorHandler[] = [new NetworkResponseHandler(), new VscodeCompatHandler()];
 
     onDeviceMessage(message: any, info: DebuggerInfo): boolean {
       return this.handlers.some((handler) => handler.onDeviceMessage?.(message, info) ?? false);
