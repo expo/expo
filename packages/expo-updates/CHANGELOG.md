@@ -14,6 +14,7 @@
 ### 🐛 Bug fixes
 
 - Make Updates API work with native debug. ([#21253](https://github.com/expo/expo/pull/21253) by [@douglowder](https://github.com/douglowder))
+- iOS: Fix odd nullability issue in expo module. ([#21655](https://github.com/expo/expo/pull/21655) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
