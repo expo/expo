@@ -1,7 +1,6 @@
 package expo.modules.kotlin.functions
 
 import com.facebook.react.bridge.ReadableArray
-import com.facebook.react.bridge.ReadableType
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.ArgumentCastException
 import expo.modules.kotlin.exception.CodedException
