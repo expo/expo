@@ -111,7 +111,7 @@ open class DevMenuManager: NSObject {
     }
   }
   @objc
-  public var currentManifest: EXManifestsManifest?
+  public var currentManifest: Manifest?
 
   @objc
   public var currentManifestURL: URL?
