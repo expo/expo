@@ -27,10 +27,22 @@ public final class UpdatesModule: Module {
     Name("ExpoUpdates")
 
     Constants {
-      let releaseChannel = updatesService?.config.releaseChannel
-      let channel = updatesService?.config.requestHeaders["expo-channel-name"] ?? ""
-      let runtimeVersion = updatesService?.config.runtimeVersion ?? ""
-      let isMissingRuntimeVersion = updatesService?.config.isMissingRuntimeVersion()
+      // this is nil in expo go for some reason
+      guard let config = (updatesService?.config as UpdatesConfig?) else {
+        return [
+          "isEnabled": false,
+          "isEmbeddedLaunch": false,
+          "isMissingRuntimeVersion": false,
+          "releaseChannel": "",
+          "runtimeVersion": "",
+          "channel": ""
+        ]
+      }
+      
+      let releaseChannel = config.releaseChannel
+      let channel = config.requestHeaders["expo-channel-name"] ?? ""
+      let runtimeVersion = config.runtimeVersion ?? ""
+      let isMissingRuntimeVersion = config.isMissingRuntimeVersion()
 
       guard let updatesService = updatesService,
         updatesService.isStarted,
