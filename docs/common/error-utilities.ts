@@ -199,6 +199,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/using-fcm/': '/push-notifications/using-fcm/',
   '/push-notifications/': '/push-notifications/overview/',
   '/distribution/hosting-your-app/': '/distribution/publishing-websites/',
+  '/build-reference/how-tos/': '/build-reference/private-npm-packages/',
+  '/get-started/': '/get-started/installation/',
+  '/guides/detach/': '/archive/glossary/#detach',
 
   // Renaming a submit section
   '/submit/submit-ios': '/submit/ios/',
@@ -206,8 +209,8 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Fundamentals had too many things
   '/workflow/linking/': '/guides/linking/',
-  '/workflow/how-expo-works/': '/guides/how-expo-works/',
-  '/guides/how-expo-works/': '/workflow/expo-go/',
+  '/workflow/how-expo-works/': '/workflow/already-used-react-native/#how-does-expo-work',
+  '/guides/how-expo-works/': '/workflow/already-used-react-native/#how-does-expo-work',
 
   // Archive unused pages
   '/guides/notification-channels/': '/archived/notification-channels/',

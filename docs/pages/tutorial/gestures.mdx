@@ -5,6 +5,7 @@ title: Add gestures
 import { SnackInline, Terminal } from '~/ui/components/Snippet';
 import Video from '~/components/plugins/Video';
 import { A } from '~/ui/components/Text';
+import { Step } from '~/ui/components/Step';
 
 Gestures are a great way to provide an intuitive user experience in an app.
 The [React Native Gesture Handler library](https://docs.swmansion.com/react-native-gesture-handler/docs/) provides built-in native components that can handle gestures.
@@ -15,7 +16,9 @@ In this chapter, we are going to add two different gestures using the React Nati
 - Double tap to scale the size of the emoji sticker.
 - Pan to move the emoji sticker around the screen so that the user can place the sticker anywhere on the image.
 
-## Step 1: Install and configure libraries
+<Step label="1">
+
+## Install and configure libraries
 
 The React Native Gesture Handler library provides a way to interact with the native platform's gesture response system.
 To animate between gesture states, we will use the [Reanimated library](https://docs.swmansion.com/react-native-reanimated/docs/).
@@ -69,7 +72,11 @@ export default function App() {
 }
 ```
 
-## Step 2: Create animated components
+</Step>
+
+<Step label="2">
+
+## Create animated components
 
 Open the **EmojiSticker.js** file in the **components** directory. Inside it, import `Animated` from the `react-native-reanimated` library to create animated components.
 
@@ -104,7 +111,11 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
 }
 ```
 
-## Step 3: Add a tap gesture
+</Step>
+
+<Step label="3">
+
+## Add a tap gesture
 
 React Native Gesture Handler allows us to add behavior when it detects touch input, like a double tap event.
 
@@ -213,7 +224,11 @@ Let's take a look at our app on iOS, Android and the web:
 
 > For a complete reference on the tap gesture API, refer to the [React Native Gesture Handler](https://docs.swmansion.com/react-native-gesture-handler/docs/api/gestures/tap-gesture) documentation.
 
-## Step 4: Add a pan gesture
+</Step>
+
+<Step label="4">
+
+## Add a pan gesture
 
 A pan gesture allows recognizing a dragging gesture and tracking its movement. We will use this gesture handler to drag the sticker across the image.
 
@@ -352,6 +367,8 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
 Let's take a look at our app on iOS, Android and the web:
 
 <Video file="tutorial/pan-gesture.mp4" />
+
+</Step>
 
 ## Next steps
 
