@@ -27,7 +27,6 @@ import expo.modules.interfaces.permissions.Permissions.getPermissionsWithPermiss
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.medialibrary.MediaLibraryModule.Action
@@ -251,7 +250,7 @@ class MediaLibraryModule : Module() {
       runActionWithPermissions(needsToCheckPermissions, action)
     }
 
-    AsyncFunction("albumNeedsMigrationAsync") Coroutine { albumId: String, promise: Promise ->
+    AsyncFunction("albumNeedsMigrationAsync") { albumId: String, promise: Promise ->
       throwUnlessPermissionsGranted {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
           moduleCoroutineScope.launch {

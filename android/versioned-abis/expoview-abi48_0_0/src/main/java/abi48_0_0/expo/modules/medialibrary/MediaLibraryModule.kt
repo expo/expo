@@ -251,7 +251,7 @@ class MediaLibraryModule : Module() {
       runActionWithPermissions(needsToCheckPermissions, action)
     }
 
-    AsyncFunction("albumNeedsMigrationAsync") Coroutine { albumId: String, promise: Promise ->
+    AsyncFunction("albumNeedsMigrationAsync") { albumId: String, promise: Promise ->
       throwUnlessPermissionsGranted {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
           moduleCoroutineScope.launch {
