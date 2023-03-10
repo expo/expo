@@ -6,7 +6,9 @@ import android.graphics.Canvas
 import android.graphics.Color
 import android.graphics.PorterDuff
 import android.graphics.RectF
+import android.graphics.drawable.BitmapDrawable
 import android.graphics.drawable.Drawable
+import android.util.Log
 import androidx.appcompat.widget.AppCompatImageView
 import androidx.core.graphics.transform
 import androidx.core.view.isVisible
@@ -179,7 +181,19 @@ class ExpoImageView(
     // is used for the Outline. Unfortunately clipping is not supported
     // for convex-paths and we fallback to Canvas clipping.
     outlineProvider.clipCanvasIfNeeded(canvas, this)
+    // If we encounter a recycled bitmap here, it suggests an issue where we may have failed to
+    // finish clearing the image bitmap before the UI attempts to display it.
+    // One solution could be to suppress the error and assume that the second image view is currently responsible for displaying the correct view.
+    if ((drawable as? BitmapDrawable)?.bitmap?.isRecycled == true) {
+      Log.e("ExpoImage", "Trying to use a recycled bitmap")
+      recycleView()?.let { target ->
+        (parent as? ExpoImageViewWrapper)?.requestManager?.let { requestManager ->
+          target.clear(requestManager)
+        }
+      }
+    }
     super.draw(canvas)
+
   }
 
   public override fun onDraw(canvas: Canvas) {
