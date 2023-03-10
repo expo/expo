@@ -14,7 +14,7 @@ internal final class RemoteAppLoader: AppLoader {
   private var remoteUpdate: Update?
   private let completionQueue: DispatchQueue
 
-  public required init(
+  required init(
     config: UpdatesConfig,
     database: UpdatesDatabase,
     directory: URL,
@@ -26,7 +26,7 @@ internal final class RemoteAppLoader: AppLoader {
     super.init(config: config, database: database, directory: directory, launchedUpdate: launchedUpdate, completionQueue: completionQueue)
   }
 
-  override public func loadUpdate(
+  override func loadUpdate(
     fromURL url: URL,
     onManifest manifestBlockArg: @escaping AppLoaderManifestBlock,
     asset assetBlockArg: @escaping AppLoaderAssetBlock,
@@ -81,7 +81,7 @@ internal final class RemoteAppLoader: AppLoader {
     }
   }
 
-  override public func downloadAsset(_ asset: UpdateAsset) {
+  override func downloadAsset(_ asset: UpdateAsset) {
     let urlOnDisk = self.directory.appendingPathComponent(asset.filename)
 
     FileDownloader.assetFilesQueue.async {

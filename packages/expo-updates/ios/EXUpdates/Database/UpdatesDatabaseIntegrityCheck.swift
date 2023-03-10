@@ -3,7 +3,7 @@
 import Foundation
 
 internal class UpdatesDatabaseIntegrityCheck {
-  public func run(
+  func run(
     withDatabase database: UpdatesDatabase,
     directory: URL,
     config: UpdatesConfig,
@@ -34,7 +34,7 @@ internal class UpdatesDatabaseIntegrityCheck {
     }
   }
 
-  public func assetExists(_ asset: UpdateAsset, inDirectory directory: URL) -> Bool {
+  func assetExists(_ asset: UpdateAsset, inDirectory directory: URL) -> Bool {
     return FileManager.default.fileExists(atPath: directory.appendingPathComponent(asset.filename).path)
   }
 }

@@ -43,7 +43,7 @@ internal final class Crypto {
   private static let PublicKeyTag = "exp.host.publickey"
   private static let PublicKeyFilename = "manifestPublicKey.pem"
 
-  public static func decodePEMToDER(pem: Data, pemType: PEMType) -> Data? {
+  static func decodePEMToDER(pem: Data, pemType: PEMType) -> Data? {
     // Mostly from ASN1Decoder with the fix for disallowing multiple bodies in the PEM.
 
     guard let pem = String(data: pem, encoding: .ascii) else {
@@ -75,7 +75,7 @@ internal final class Crypto {
     return nil
   }
 
-  public static func verifySignature(
+  static func verifySignature(
     withData data: String,
     signature: String,
     config: UpdatesConfig,

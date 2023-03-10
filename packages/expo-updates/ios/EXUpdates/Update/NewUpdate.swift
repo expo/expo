@@ -10,7 +10,7 @@ internal final class NewUpdate: Update {
    * specification (https://docs.expo.dev/technical-specs/expo-updates-0/). This is used by EAS
    * Update.
    */
-  public static func update(
+  static func update(
     withNewManifest: NewManifest,
     manifestHeaders: ManifestHeaders,
     extensions: [String: Any],
@@ -88,7 +88,7 @@ internal final class NewUpdate: Update {
     return update
   }
 
-  public static func dictionaryWithStructuredHeader(_ headerString: String?) -> [String: Any]? {
+  static func dictionaryWithStructuredHeader(_ headerString: String?) -> [String: Any]? {
     guard let headerString = headerString else {
       return nil
     }

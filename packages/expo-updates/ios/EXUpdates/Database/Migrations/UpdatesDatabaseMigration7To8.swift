@@ -4,9 +4,9 @@ import Foundation
 import SQLite3
 
 internal final class UpdatesDatabaseMigration7To8: UpdatesDatabaseMigration {
-  public private(set) var filename: String = "expo-v7.db"
+  private(set) var filename: String = "expo-v7.db"
 
-  public func runMigration(onDatabase db: OpaquePointer) throws {
+  func runMigration(onDatabase db: OpaquePointer) throws {
     // https://www.sqlite.org/lang_altertable.html#otheralter
     let sql = """
       ALTER TABLE "assets" ADD COLUMN "extra_request_headers" TEXT
