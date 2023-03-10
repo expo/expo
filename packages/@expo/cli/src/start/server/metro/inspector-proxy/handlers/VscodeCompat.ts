@@ -48,12 +48,9 @@ export class VscodeCompatHandler implements InspectorHandler {
     // Vscode adds `file://` to a URL containing `http://`, which confuses Hermes and sets it to the wrong location.
     // Hermes needs to create the breakpoint to get the proper ID, but it must be unbounded.
     // Once the sourcemap is loaded, vscode will rebind the unbounded breakpoint to the correct location (using `Debugger.setBreakpoint`).
-    if (
-      message.method === 'Debugger.setBreakpointByUrl' &&
-      message.params.urlRegex?.startsWith('file:\\/\\/http')
-    ) {
-      // Avoid `urlRegex` to accidentally bind to the wrong location, even when the `url` is invalid
-      message.params.url = message.params.urlRegex;
+    if (message.method === 'Debugger.setBreakpointByUrl' && message.params.urlRegex) {
+      // Explicitly force the breakpoint to be unbounded
+      message.params.url = 'file://__invalid_url__';
       delete message.params.urlRegex;
     }
 
