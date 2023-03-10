@@ -42,7 +42,7 @@ private extension UUID {
  * Utility class with methods for common database functions used across multiple classes.
  */
 internal final class UpdatesDatabaseUtils {
-  public static func execute(sql: String, withArgs args: [Any?]?, onDatabase db: OpaquePointer) throws -> [[String: Any?]] {
+  static func execute(sql: String, withArgs args: [Any?]?, onDatabase db: OpaquePointer) throws -> [[String: Any?]] {
     var stmt: OpaquePointer?
     guard sqlite3_prepare_v2(db, String(sql.utf8), -1, &stmt, nil) == SQLITE_OK,
       let stmt = stmt else {
@@ -175,14 +175,14 @@ internal final class UpdatesDatabaseUtils {
     }
   }
 
-  public static func errorCodesAndMessage(fromSqlite db: OpaquePointer) -> UpdatesDatabaseUtilsErrorInfo {
+  static func errorCodesAndMessage(fromSqlite db: OpaquePointer) -> UpdatesDatabaseUtilsErrorInfo {
     let code = sqlite3_errcode(db)
     let extendedCode = sqlite3_extended_errcode(db)
     let message = String(cString: sqlite3_errmsg(db))
     return UpdatesDatabaseUtilsErrorInfo(code: Int(code), extendedCode: Int(extendedCode), message: message)
   }
 
-  public static func date(fromUnixTimeMilliseconds number: NSNumber) -> Date {
+  static func date(fromUnixTimeMilliseconds number: NSNumber) -> Date {
     return Date(timeIntervalSince1970: number.doubleValue / 1000)
   }
 }

@@ -4,7 +4,7 @@ import Foundation
 
 enum CodeSigningAlgorithm: String {
   case RSA_SHA256 = "rsa-v1_5-sha256"
-  
+
   internal static func parseFromString(_ str: String?) throws -> CodeSigningAlgorithm {
     guard let str = str else {
       return CodeSigningAlgorithm.RSA_SHA256

@@ -11,7 +11,7 @@ internal final class BareUpdate: Update {
    * application binary. They contain the minimum amount of information needed to reliably identify
    * the update and insert it into SQLite.
    */
-  public static func update(
+  static func update(
     withBareManifest: BareManifest,
     config: UpdatesConfig,
     database: UpdatesDatabase?

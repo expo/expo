@@ -9,13 +9,13 @@ import ExpoModulesCore
  Class that implements logging for expo-updates in its own os.log category
  */
 internal final class UpdatesLogger {
-  public static let EXPO_UPDATES_LOG_CATEGORY = "expo-updates"
+  static let EXPO_UPDATES_LOG_CATEGORY = "expo-updates"
 
   private let logger = Logger(category: UpdatesLogger.EXPO_UPDATES_LOG_CATEGORY, options: [.logToOS, .logToFile])
 
   // MARK: - Public logging functions
 
-  public func trace(
+  func trace(
     message: String,
     code: UpdatesErrorCode = .none,
     updateId: String?,
@@ -25,18 +25,18 @@ internal final class UpdatesLogger {
     logger.trace(entry)
   }
 
-  public func trace(
+  func trace(
     message: String,
     code: UpdatesErrorCode = .none
   ) {
     trace(message: message, code: code, updateId: nil, assetId: nil)
   }
 
-  public func trace(message: String) {
+  func trace(message: String) {
     trace(message: message, code: .none)
   }
 
-  public func debug(
+  func debug(
     message: String,
     code: UpdatesErrorCode = .none,
     updateId: String?,
@@ -46,18 +46,18 @@ internal final class UpdatesLogger {
     logger.debug(entry)
   }
 
-  public func debug(
+  func debug(
     message: String,
     code: UpdatesErrorCode = .none
   ) {
     debug(message: message, code: code, updateId: nil, assetId: nil)
   }
 
-  public func debug(message: String) {
+  func debug(message: String) {
     debug(message: message, code: .none)
   }
 
-  public func info(
+  func info(
     message: String,
     code: UpdatesErrorCode = .none,
     updateId: String?,
@@ -67,18 +67,18 @@ internal final class UpdatesLogger {
     logger.info(entry)
   }
 
-  public func info(
+  func info(
     message: String,
     code: UpdatesErrorCode = .none
   ) {
     info(message: message, code: code, updateId: nil, assetId: nil)
   }
 
-  public func info(message: String) {
+  func info(message: String) {
     info(message: message, code: .none)
   }
 
-  public func warn(
+  func warn(
     message: String,
     code: UpdatesErrorCode = .none,
     updateId: String?,
@@ -88,18 +88,18 @@ internal final class UpdatesLogger {
     logger.warn(entry)
   }
 
-  public func warn(
+  func warn(
     message: String,
     code: UpdatesErrorCode = .none
   ) {
     warn(message: message, code: code, updateId: nil, assetId: nil)
   }
 
-  public func warn(message: String) {
+  func warn(message: String) {
     warn(message: message, code: .none)
   }
 
-  public func error(
+  func error(
     message: String,
     code: UpdatesErrorCode = .none,
     updateId: String?,
@@ -109,14 +109,14 @@ internal final class UpdatesLogger {
     logger.error(entry)
   }
 
-  public func error(
+  func error(
     message: String,
     code: UpdatesErrorCode = .none
   ) {
     error(message: message, code: code, updateId: nil, assetId: nil)
   }
 
-  public func fatal(
+  func fatal(
     message: String,
     code: UpdatesErrorCode = .none,
     updateId: String?,
@@ -126,14 +126,14 @@ internal final class UpdatesLogger {
     logger.fatal(entry)
   }
 
-  public func fatal(
+  func fatal(
     message: String,
     code: UpdatesErrorCode = .none
   ) {
     fatal(message: message, code: code, updateId: nil, assetId: nil)
   }
 
-  public func logEntryString(
+  func logEntryString(
     message: String,
     code: UpdatesErrorCode = .none,
     level: LogType = .trace,
@@ -146,7 +146,7 @@ internal final class UpdatesLogger {
     //   and the one below
     let symbols = (level == .error || level == .fatal) ? UpdatesLogEntry.currentStackTrace() : nil
     let logEntry = UpdatesLogEntry(
-      timestamp: UInt(Date().timeIntervalSince1970) * 1_000,
+      timestamp: UInt(Date().timeIntervalSince1970) * 1000,
       message: message,
       code: code.asString,
       level: "\(level)",

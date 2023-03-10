@@ -3,7 +3,7 @@
 import Foundation
 
 internal final class UpdatesDatabaseMigrationRegistry {
-  public static func migrations() -> [UpdatesDatabaseMigration] {
+  static func migrations() -> [UpdatesDatabaseMigration] {
     // migrations should be added here in the order they should be performed (e.g. oldest first)
     return [
       UpdatesDatabaseMigration4To5(),

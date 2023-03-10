@@ -204,7 +204,7 @@ public final class UpdatesDatabase: NSObject {
     if rows.isEmpty {
       return false
     }
-    
+
     return true
   }
 

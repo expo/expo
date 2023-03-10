@@ -121,7 +121,7 @@ internal extension X509Certificate {
     guard let projectInformationExtensionValue = extensionObject(oid: CertificateChain.CodeSigningCertificateExpoProjectInformationOID)?.value else {
       return nil
     }
-    
+
     guard let projectInformationExtensionValue = projectInformationExtensionValue as? String else {
       throw CodeSigningError.InvalidExpoProjectInformationExtensionValue
     }

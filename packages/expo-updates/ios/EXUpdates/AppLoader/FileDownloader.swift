@@ -85,11 +85,11 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
   private var config: UpdatesConfig!
   private var logger: UpdatesLogger!
 
-  public convenience init(config: UpdatesConfig) {
+  convenience init(config: UpdatesConfig) {
     self.init(config: config, urlSessionConfiguration: URLSessionConfiguration.default)
   }
 
-  public required init(config: UpdatesConfig, urlSessionConfiguration: URLSessionConfiguration) {
+  required init(config: UpdatesConfig, urlSessionConfiguration: URLSessionConfiguration) {
     super.init()
     self.sessionConfiguration = urlSessionConfiguration
     self.config = config
@@ -101,9 +101,9 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     self.session.finishTasksAndInvalidate()
   }
 
-  public static let assetFilesQueue: DispatchQueue = DispatchQueue(label: "expo.controller.AssetFilesQueue")
+  static let assetFilesQueue: DispatchQueue = DispatchQueue(label: "expo.controller.AssetFilesQueue")
 
-  public func downloadFile(
+  func downloadFile(
     fromURL url: URL,
     verifyingHash expectedBase64URLEncodedSHA256Hash: String?,
     toPath destinationPath: String,
@@ -156,7 +156,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     }
   }
 
-  public func downloadData(
+  func downloadData(
     fromURL url: URL,
     extraHeaders: [String: Any],
     successBlock: @escaping SuccessBlock,
@@ -166,7 +166,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     downloadData(withRequest: request, successBlock: successBlock, errorBlock: errorBlock)
   }
 
-  public func downloadManifest(
+  func downloadManifest(
     fromURL url: URL,
     withDatabase database: UpdatesDatabase,
     extraHeaders: [String: Any]?,
@@ -197,7 +197,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
    * Get extra (stateful) headers to pass into `downloadManifestFromURL:`
    * Must be called on the database queue
    */
-  public static func extraHeaders(
+  static func extraHeaders(
     withDatabase database: UpdatesDatabase,
     config: UpdatesConfig,
     launchedUpdate: Update?,
@@ -292,7 +292,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     }
   }
 
-  public func createManifestRequest(withURL url: URL, extraHeaders: [String: Any?]?) -> URLRequest {
+  func createManifestRequest(withURL url: URL, extraHeaders: [String: Any?]?) -> URLRequest {
     var request = URLRequest(
       url: url,
       cachePolicy: self.sessionConfiguration.requestCachePolicy,
@@ -302,7 +302,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     return request
   }
 
-  public func createGenericRequest(withURL url: URL, extraHeaders: [String: Any?]) -> URLRequest {
+  func createGenericRequest(withURL url: URL, extraHeaders: [String: Any?]) -> URLRequest {
     var request = URLRequest(
       url: url,
       cachePolicy: self.sessionConfiguration.requestCachePolicy,
@@ -314,7 +314,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
 
   // MARK: - manifest parsing
 
-  public func parseManifestResponse(
+  func parseManifestResponse(
     _ httpResponse: HTTPURLResponse,
     withData data: Data,
     database: UpdatesDatabase,
@@ -819,7 +819,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
 
   // MARK: - NSURLSessionTaskDelegate
 
-  public func urlSession(
+  func urlSession(
     _ session: URLSession,
     task: URLSessionTask,
     willPerformHTTPRedirection response: HTTPURLResponse,
@@ -831,7 +831,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
 
   // MARK: - URLSessionDataDelegate
 
-  public func urlSession(
+  func urlSession(
     _ session: URLSession,
     dataTask: URLSessionDataTask,
     willCacheResponse proposedResponse: CachedURLResponse,
