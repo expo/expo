@@ -6,11 +6,11 @@ import XCTest
 
 class CodeSigningConfigurationTests : XCTestCase {
   func test_separateCertificateChain() throws {
-    let leafCert = try TestHelper.getTestCertificate(TestCertificate.chainLeaf)
-    let intermediateCert = try TestHelper.getTestCertificate(TestCertificate.chainIntermediate)
-    let rootCert = try TestHelper.getTestCertificate(TestCertificate.chainRoot)
+    let leafCert = getTestCertificate(TestCertificate.chainLeaf)
+    let intermediateCert = getTestCertificate(TestCertificate.chainIntermediate)
+    let rootCert = getTestCertificate(TestCertificate.chainRoot)
     
-    let testCert = try TestHelper.getTestCertificate(TestCertificate.test)
+    let testCert = getTestCertificate(TestCertificate.test)
     
     let chain1 = CodeSigningConfiguration.separateCertificateChain(certificateChainInManifestResponse: leafCert)
     XCTAssertEqual(1, chain1.count)
@@ -26,7 +26,7 @@ class CodeSigningConfigurationTests : XCTestCase {
   }
   
   func test_createAcceptSignatureHeader_CreatesSignatureHeaderDefaultValues() throws {
-    let cert = try TestHelper.getTestCertificate(TestCertificate.test)
+    let cert = getTestCertificate(TestCertificate.test)
     let configuration = try CodeSigningConfiguration(embeddedCertificateString: cert,
                                                               metadata: [:],
                                                               includeManifestResponseCertificateChain: false,
@@ -36,7 +36,7 @@ class CodeSigningConfigurationTests : XCTestCase {
   }
   
   func test_createAcceptSignatureHeader_CreatesSignatureHeaderValuesFromConfig() throws {
-    let cert = try TestHelper.getTestCertificate(TestCertificate.test)
+    let cert = getTestCertificate(TestCertificate.test)
     let configuration = try CodeSigningConfiguration(embeddedCertificateString: cert,
                                                               metadata: [CodeSigningMetadataFields.AlgorithmFieldKey: CodeSigningAlgorithm.RSA_SHA256.rawValue,
                                                                          CodeSigningMetadataFields.KeyIdFieldKey: "test"],
@@ -47,7 +47,7 @@ class CodeSigningConfigurationTests : XCTestCase {
   }
   
   func test_createAcceptSignatureHeader_CreatesSignatureHeaderEscapedValues() throws {
-    let cert = try TestHelper.getTestCertificate(TestCertificate.test)
+    let cert = getTestCertificate(TestCertificate.test)
     let configuration = try CodeSigningConfiguration(embeddedCertificateString: cert,
                                                               metadata: [CodeSigningMetadataFields.AlgorithmFieldKey: CodeSigningAlgorithm.RSA_SHA256.rawValue,
                                                                          CodeSigningMetadataFields.KeyIdFieldKey: #"test"hello\"#],
@@ -58,7 +58,7 @@ class CodeSigningConfigurationTests : XCTestCase {
   }
   
   func test_createAcceptSignatureHeader_ThrowsInvalidAlg() throws {
-    let cert = try TestHelper.getTestCertificate(TestCertificate.test)
+    let cert = getTestCertificate(TestCertificate.test)
     XCTAssertThrowsError(try CodeSigningConfiguration(embeddedCertificateString: cert,
                                                                metadata: [CodeSigningMetadataFields.AlgorithmFieldKey: "fake",
                                                                           CodeSigningMetadataFields.KeyIdFieldKey: "test"],
@@ -69,62 +69,62 @@ class CodeSigningConfigurationTests : XCTestCase {
   }
   
   func test_validateSignature_Valid() throws {
-    let cert = try TestHelper.getTestCertificate(TestCertificate.test)
+    let cert = getTestCertificate(TestCertificate.test)
     let configuration = try CodeSigningConfiguration(embeddedCertificateString: cert,
                                                               metadata: [:],
                                                               includeManifestResponseCertificateChain: false,
                                                               allowUnsignedManifests: false)
-    let signatureValidationResult = try configuration.validateSignature(signature: TestHelper.testSignature,
-                                                                        signedData: TestHelper.testBody.data(using: .utf8)!,
+    let signatureValidationResult = try configuration.validateSignature(signature: CertificateFixtures.testNewManifestBodySignature,
+                                                                        signedData: CertificateFixtures.testNewManifestBody.data(using: .utf8)!,
                                                                         manifestResponseCertificateChain: nil)
     XCTAssertEqual(signatureValidationResult.validationResult, ValidationResult.valid)
     XCTAssertNil(signatureValidationResult.expoProjectInformation)
   }
   
   func test_validateSignature_ReturnsFalseWhenSignatureIsInvalid() throws {
-    let cert = try TestHelper.getTestCertificate(TestCertificate.test)
+    let cert = getTestCertificate(TestCertificate.test)
     let configuration = try CodeSigningConfiguration(embeddedCertificateString: cert,
                                                               metadata: [:],
                                                               includeManifestResponseCertificateChain: false,
                                                               allowUnsignedManifests: false)
-    let signatureValidationResult = try configuration.validateSignature(signature: "sig=\"aGVsbG8=\"", signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: nil)
+    let signatureValidationResult = try configuration.validateSignature(signature: "sig=\"aGVsbG8=\"", signedData: CertificateFixtures.testNewManifestBody.data(using: .utf8)!, manifestResponseCertificateChain: nil)
     XCTAssertEqual(signatureValidationResult.validationResult, ValidationResult.invalid)
     XCTAssertNil(signatureValidationResult.expoProjectInformation)
   }
   
   func test_validateSignature_ThrowsWhenKeyDoesNotMatch() throws {
-    let cert = try TestHelper.getTestCertificate(TestCertificate.test)
+    let cert = getTestCertificate(TestCertificate.test)
     let configuration = try CodeSigningConfiguration(embeddedCertificateString: cert,
                                                               metadata: [CodeSigningMetadataFields.KeyIdFieldKey: "test"],
                                                               includeManifestResponseCertificateChain: false,
                                                               allowUnsignedManifests: false)
-    XCTAssertThrowsError(try configuration.validateSignature(signature: "sig=\"aGVsbG8=\", keyid=\"other\"", signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: nil)) { error in
+    XCTAssertThrowsError(try configuration.validateSignature(signature: "sig=\"aGVsbG8=\", keyid=\"other\"", signedData: CertificateFixtures.testNewManifestBody.data(using: .utf8)!, manifestResponseCertificateChain: nil)) { error in
       XCTAssertEqual(error as? CodeSigningError, CodeSigningError.KeyIdMismatchError)
     }
   }
     
   func test_validateSignature_DoesNotUseChainInManifestResponseIfFlagIsFalse() throws {
-    let testCert = try TestHelper.getTestCertificate(TestCertificate.test)
-    let leafCert = try TestHelper.getTestCertificate(TestCertificate.chainLeaf)
-    let intermediateCert = try TestHelper.getTestCertificate(TestCertificate.chainIntermediate)
+    let testCert = getTestCertificate(TestCertificate.test)
+    let leafCert = getTestCertificate(TestCertificate.chainLeaf)
+    let intermediateCert = getTestCertificate(TestCertificate.chainIntermediate)
     let configuration = try CodeSigningConfiguration(embeddedCertificateString: testCert,
                                                               metadata: [:],
                                                               includeManifestResponseCertificateChain: false,
                                                               allowUnsignedManifests: false)
-    let signatureValidationResult = try configuration.validateSignature(signature: TestHelper.testSignature, signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: leafCert + intermediateCert)
+    let signatureValidationResult = try configuration.validateSignature(signature: CertificateFixtures.testNewManifestBodySignature, signedData: CertificateFixtures.testNewManifestBody.data(using: .utf8)!, manifestResponseCertificateChain: leafCert + intermediateCert)
     XCTAssertEqual(signatureValidationResult.validationResult, ValidationResult.valid)
     XCTAssertNil(signatureValidationResult.expoProjectInformation)
   }
     
   func test_validateSignature_DoesUseChainInManifestResponseIfFlagIsTrue() throws {
-    let leafCert = try TestHelper.getTestCertificate(TestCertificate.chainLeaf)
-    let intermediateCert = try TestHelper.getTestCertificate(TestCertificate.chainIntermediate)
-    let rootCert = try TestHelper.getTestCertificate(TestCertificate.chainRoot)
+    let leafCert = getTestCertificate(TestCertificate.chainLeaf)
+    let intermediateCert = getTestCertificate(TestCertificate.chainIntermediate)
+    let rootCert = getTestCertificate(TestCertificate.chainRoot)
     let configuration = try CodeSigningConfiguration(embeddedCertificateString: rootCert,
                                                               metadata: [CodeSigningMetadataFields.KeyIdFieldKey: "ca-root"],
                                                               includeManifestResponseCertificateChain: true,
                                                               allowUnsignedManifests: false)
-    let signatureValidationResult = try configuration.validateSignature(signature: TestHelper.testValidChainLeafSignature, signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: leafCert + intermediateCert)
+    let signatureValidationResult = try configuration.validateSignature(signature: CertificateFixtures.testNewManifestBodyValidChainLeafSignature, signedData: CertificateFixtures.testNewManifestBody.data(using: .utf8)!, manifestResponseCertificateChain: leafCert + intermediateCert)
     XCTAssertEqual(signatureValidationResult.validationResult, ValidationResult.valid)
     let expoProjectInformation = signatureValidationResult.expoProjectInformation
     XCTAssertEqual(expoProjectInformation?.scopeKey, "@test/app")
@@ -132,23 +132,23 @@ class CodeSigningConfigurationTests : XCTestCase {
   }
   
   func test_validateSignature_AllowsUnsignedManifestIfAllowUnsignedFlagIsTrue() throws {
-    let testCert = try TestHelper.getTestCertificate(TestCertificate.test)
+    let testCert = getTestCertificate(TestCertificate.test)
     let configuration = try CodeSigningConfiguration(embeddedCertificateString: testCert,
                                                               metadata: [CodeSigningMetadataFields.KeyIdFieldKey: "test"],
                                                               includeManifestResponseCertificateChain: true,
                                                               allowUnsignedManifests: true)
-    let signatureValidationResult = try configuration.validateSignature(signature: nil, signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: nil)
+    let signatureValidationResult = try configuration.validateSignature(signature: nil, signedData: CertificateFixtures.testNewManifestBody.data(using: .utf8)!, manifestResponseCertificateChain: nil)
     XCTAssertEqual(signatureValidationResult.validationResult, ValidationResult.skipped)
     XCTAssertNil(signatureValidationResult.expoProjectInformation)
   }
                                                                          
   func test_validateSignature_ChecksSignedManifestIfAllowUnsignedFlagIsTrueButSignatureIsProvided() throws {
-    let testCert = try TestHelper.getTestCertificate(TestCertificate.test)
+    let testCert = getTestCertificate(TestCertificate.test)
     let configuration = try CodeSigningConfiguration(embeddedCertificateString: testCert,
                                                              metadata: [CodeSigningMetadataFields.KeyIdFieldKey: "test"],
                                                              includeManifestResponseCertificateChain: true,
                                                              allowUnsignedManifests: true)
-    let signatureValidationResult = try configuration.validateSignature(signature: "sig=\"aGVsbG8=\"", signedData: TestHelper.testBody.data(using: .utf8)!, manifestResponseCertificateChain: nil)
+    let signatureValidationResult = try configuration.validateSignature(signature: "sig=\"aGVsbG8=\"", signedData: CertificateFixtures.testNewManifestBody.data(using: .utf8)!, manifestResponseCertificateChain: nil)
     XCTAssertEqual(signatureValidationResult.validationResult, ValidationResult.invalid)
     XCTAssertNil(signatureValidationResult.expoProjectInformation)
   }
