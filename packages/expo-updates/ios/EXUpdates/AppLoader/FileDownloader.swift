@@ -16,7 +16,14 @@ import EASClient
 internal typealias SuccessBlock = (_ data: Data, _ urlResponse: URLResponse) -> Void
 internal typealias ErrorBlock = (_ error: Error) -> Void
 internal typealias HashSuccessBlock = (_ data: Data, _ urlResponse: URLResponse, _ base64URLEncodedSHA256Hash: String) -> Void
-internal typealias ManifestSuccessBlock = (_ update: Update) -> Void
+
+internal typealias RemoteUpdateDownloadSuccessBlock = (_ updateResponse: UpdateResponse) -> Void
+internal typealias RemoteUpdateDownloadErrorBlock = (_ error: Error) -> Void
+
+private typealias ParseManifestSuccessBlock = (_ manifestUpdateResponsePart: ManifestUpdateResponsePart) -> Void
+private typealias ParseManifestErrorBlock = (_ error: Error) -> Void
+private typealias ParseDirectiveSuccessBlock = (_ directiveUpdateResponsePart: DirectiveUpdateResponsePart) -> Void
+private typealias ParseDirectiveErrorBlock = (_ error: Error) -> Void
 
 private let ErrorDomain = "EXUpdatesFileDownloader"
 private enum FileDownloaderErrorCode: Int {
@@ -73,6 +80,7 @@ private extension Dictionary where Iterator.Element == (key: String, value: Any)
 internal final class FileDownloader: NSObject, URLSessionDataDelegate {
   private static let DefaultTimeoutInterval: TimeInterval = 60
   private static let MultipartManifestPartName = "manifest"
+  private static let MultipartDirectivePartName = "directive"
   private static let MultipartExtensionsPartName = "extensions"
   private static let MultipartCertificateChainPartName = "certificate_chain"
 
@@ -166,12 +174,12 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     downloadData(withRequest: request, successBlock: successBlock, errorBlock: errorBlock)
   }
 
-  func downloadManifest(
+  func downloadRemoteUpdate(
     fromURL url: URL,
     withDatabase database: UpdatesDatabase,
     extraHeaders: [String: Any]?,
-    successBlock: @escaping ManifestSuccessBlock,
-    errorBlock: @escaping ErrorBlock
+    successBlock: @escaping RemoteUpdateDownloadSuccessBlock,
+    errorBlock: @escaping RemoteUpdateDownloadErrorBlock
   ) {
     let request = createManifestRequest(withURL: url, extraHeaders: extraHeaders)
     downloadData(
@@ -248,6 +256,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
   private func setHTTPHeaderFields(request: inout URLRequest, extraHeaders: [String: Any?]) {
     FileDownloader.setHTTPHeaderFields(extraHeaders, onRequest: &request)
     request.setValue("ios", forHTTPHeaderField: "Expo-Platform")
+    request.setValue("1", forHTTPHeaderField: "Expo-Protocol-Version")
     request.setValue("1", forHTTPHeaderField: "Expo-API-Version")
     request.setValue("BARE", forHTTPHeaderField: "Expo-Updates-Environment")
     request.setValue(EASClientID.uuid().uuidString, forHTTPHeaderField: "EAS-Client-ID")
@@ -263,6 +272,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
 
     request.setValue("multipart/mixed,application/expo+json,application/json", forHTTPHeaderField: "Accept")
     request.setValue("ios", forHTTPHeaderField: "Expo-Platform")
+    request.setValue("1", forHTTPHeaderField: "Expo-Protocol-Version")
     request.setValue("1", forHTTPHeaderField: "Expo-API-Version")
     request.setValue("BARE", forHTTPHeaderField: "Expo-Updates-Environment")
     request.setValue(EASClientID.uuid().uuidString, forHTTPHeaderField: "EAS-Client-ID")
@@ -318,8 +328,8 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     _ httpResponse: HTTPURLResponse,
     withData data: Data,
     database: UpdatesDatabase,
-    successBlock: @escaping ManifestSuccessBlock,
-    errorBlock: @escaping ErrorBlock
+    successBlock: @escaping RemoteUpdateDownloadSuccessBlock,
+    errorBlock: @escaping RemoteUpdateDownloadErrorBlock
   ) {
     let headerDictionary = httpResponse.allHeaderFields as! [String: Any]
     let contentType = headerDictionary.stringValueForCaseInsensitiveKey("content-type") ?? ""
@@ -350,23 +360,33 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       )
       return
     } else {
-      let manifestHeaders = ManifestHeaders(
+      let responseHeaderData = ResponseHeaderData(
         protocolVersion: headerDictionary.optionalValue(forKey: "expo-protocol-version"),
-        serverDefinedHeaders: headerDictionary.optionalValue(forKey: "expo-server-defined-headers"),
-        manifestFilters: headerDictionary.optionalValue(forKey: "expo-manifest-filters"),
-        manifestSignature: headerDictionary.optionalValue(forKey: "expo-manifest-signature"),
-        signature: headerDictionary.optionalValue(forKey: "expo-signature")
+        serverDefinedHeadersRaw: headerDictionary.optionalValue(forKey: "expo-server-defined-headers"),
+        manifestFiltersRaw: headerDictionary.optionalValue(forKey: "expo-manifest-filters"),
+        manifestSignature: headerDictionary.optionalValue(forKey: "expo-manifest-signature")
       )
 
-      parseManifestBodyData(
-        data,
-        manifestHeaders: manifestHeaders,
+      let manifestResponseInfo = ResponsePartInfo(
+        responseHeaderData: responseHeaderData,
+        responsePartHeaderData: ResponsePartHeaderData(signature: headerDictionary.optionalValue(forKey: "expo-signature")),
+        body: data
+      )
+
+      parseManifestResponsePartInfo(
+        manifestResponseInfo,
         extensions: [:],
         certificateChainFromManifestResponse: nil,
-        database: database,
-        successBlock: successBlock,
-        errorBlock: errorBlock
-      )
+        database: database
+      ) { manifestUpdateResponsePart in
+        successBlock(UpdateResponse(
+          responseHeaderData: responseHeaderData,
+          manifestUpdateResponsePart: manifestUpdateResponsePart,
+          directiveUpdateResponsePart: nil
+        ))
+      } errorBlock: { error in
+        errorBlock(error)
+      }
 
       return
     }
@@ -377,15 +397,15 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     withData data: Data,
     database: UpdatesDatabase,
     boundary: String,
-    successBlock: @escaping ManifestSuccessBlock,
-    errorBlock: @escaping ErrorBlock
+    successBlock: @escaping RemoteUpdateDownloadSuccessBlock,
+    errorBlock: @escaping RemoteUpdateDownloadErrorBlock
   ) {
     let reader = EXUpdatesMultipartStreamReader(inputStream: InputStream(data: data), boundary: boundary)
 
-    var manifestPartHeaders: [String: Any]?
-    var manifestPartData: Data?
+    var manifestPartHeadersAndData: ([String: Any], Data)?
     var extensionsData: Data?
     var certificateChainStringData: Data?
+    var directivePartHeadersAndData: ([String: Any], Data)?
 
     let completed = reader.readAllParts { headers, content, _ in
       if let contentDisposition = (headers as! [String: Any]).stringValueForCaseInsensitiveKey("content-disposition") {
@@ -396,8 +416,13 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
           let contentDispositionNameFieldValue: String = contentDispositionParameters.optionalValue(forKey: "name") {
           switch contentDispositionNameFieldValue {
           case FileDownloader.MultipartManifestPartName:
-            manifestPartHeaders = headers as? [String: Any]
-            manifestPartData = content
+            if let headers = headers as? [String: Any], let content = content {
+              manifestPartHeadersAndData = (headers, content)
+            }
+          case FileDownloader.MultipartDirectivePartName:
+            if let headers = headers as? [String: Any], let content = content {
+              directivePartHeadersAndData = (headers, content)
+            }
           case FileDownloader.MultipartExtensionsPartName:
             extensionsData = content
           case FileDownloader.MultipartCertificateChainPartName:
@@ -410,22 +435,11 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     }
 
     if !completed {
-      let message = "Could not read multipart manifest response"
+      let message = "Could not read multipart remote update response"
       logger.error(message: message, code: .unknown)
       errorBlock(NSError(
         domain: ErrorDomain,
         code: FileDownloaderErrorCode.MultipartParsingError.rawValue,
-        userInfo: [NSLocalizedDescriptionKey: message]
-      ))
-      return
-    }
-
-    guard let manifestPartHeaders = manifestPartHeaders, let manifestPartData = manifestPartData else {
-      let message = "Multipart manifest response missing manifest part"
-      logger.error(message: message, code: .unknown)
-      errorBlock(NSError(
-        domain: ErrorDomain,
-        code: FileDownloaderErrorCode.MultipartMissingManifestError.rawValue,
         userInfo: [NSLocalizedDescriptionKey: message]
       ))
       return
@@ -442,7 +456,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       }
 
       guard let parsedExtensions = parsedExtensions as? [String: Any] else {
-        let message = "Failed to parse multipart manifest extensions"
+        let message = "Failed to parse multipart remote update extensions"
         logger.error(message: message, code: .unknown)
         errorBlock(NSError(
           domain: ErrorDomain,
@@ -455,45 +469,210 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       extensions = parsedExtensions
     }
 
+    if config.enableExpoUpdatesProtocolV0CompatibilityMode && manifestPartHeadersAndData == nil {
+      let message = "Multipart response missing manifest part. Manifest is required in version 0 of the expo-updates protocol. This may be due to the update being a rollback or other directive."
+      logger.error(message: message, code: .unknown)
+      errorBlock(NSError(
+        domain: ErrorDomain,
+        code: FileDownloaderErrorCode.MultipartMissingManifestError.rawValue,
+        userInfo: [NSLocalizedDescriptionKey: message]
+      ))
+      return
+    }
+
     let certificateChain = certificateChainStringData.let { it -> String? in
       String(data: it, encoding: .utf8)
     }
 
     let responseHeaders = httpResponse.allHeaderFields as! [String: Any]
-    let manifestHeaders = ManifestHeaders(
+    let responseHeaderData = ResponseHeaderData(
       protocolVersion: responseHeaders.optionalValue(forKey: "expo-protocol-version"),
-      serverDefinedHeaders: responseHeaders.optionalValue(forKey: "expo-server-defined-headers"),
-      manifestFilters: responseHeaders.optionalValue(forKey: "expo-manifest-filters"),
-      manifestSignature: responseHeaders.optionalValue(forKey: "expo-manifest-signature"),
-      signature: manifestPartHeaders.optionalValue(forKey: "expo-signature")
+      serverDefinedHeadersRaw: responseHeaders.optionalValue(forKey: "expo-server-defined-headers"),
+      manifestFiltersRaw: responseHeaders.optionalValue(forKey: "expo-manifest-filters"),
+      manifestSignature: responseHeaders.optionalValue(forKey: "expo-manifest-signature")
     )
 
-    parseManifestBodyData(
-      manifestPartData,
-      manifestHeaders: manifestHeaders,
-      extensions: extensions,
-      certificateChainFromManifestResponse: certificateChain,
-      database: database,
-      successBlock: successBlock,
-      errorBlock: errorBlock
-    )
-    return
+    let manifestResponseInfo = manifestPartHeadersAndData.let { it in
+      ResponsePartInfo(
+        responseHeaderData: responseHeaderData,
+        responsePartHeaderData: ResponsePartHeaderData(signature: it.0.optionalValue(forKey: "expo-signature")),
+        body: it.1
+      )
+    }
+
+    // in v0 compatibility mode ignore directives
+    let directiveResponseInfo = config.enableExpoUpdatesProtocolV0CompatibilityMode ?
+    nil :
+    directivePartHeadersAndData.let { it in
+      ResponsePartInfo(
+        responseHeaderData: responseHeaderData,
+        responsePartHeaderData: ResponsePartHeaderData(signature: it.0.optionalValue(forKey: "expo-signature")),
+        body: it.1
+      )
+    }
+
+    var parseManifestResponse: ManifestUpdateResponsePart?
+    var parseDirectiveResponse: DirectiveUpdateResponsePart?
+    var didError = false
+
+    let maybeFinish = {
+      if !didError {
+        let isManifestDone = manifestResponseInfo == nil || parseManifestResponse != nil
+        let isDirectiveDone = directiveResponseInfo == nil || parseDirectiveResponse != nil
+
+        if isManifestDone && isDirectiveDone {
+          successBlock(UpdateResponse(
+            responseHeaderData: responseHeaderData,
+            manifestUpdateResponsePart: parseManifestResponse,
+            directiveUpdateResponsePart: parseDirectiveResponse
+          ))
+        }
+      }
+    }
+
+    if let directiveResponseInfo = directiveResponseInfo {
+      parseDirectiveResponsePartInfo(
+        directiveResponseInfo,
+        certificateChainFromManifestResponse: certificateChain
+      ) { directiveUpdateResponsePart in
+        parseDirectiveResponse = directiveUpdateResponsePart
+        maybeFinish()
+      } errorBlock: { error in
+        if !didError {
+          didError = true
+          errorBlock(error)
+        }
+      }
+    }
+
+    if let manifestResponseInfo = manifestResponseInfo {
+      parseManifestResponsePartInfo(
+        manifestResponseInfo,
+        extensions: extensions,
+        certificateChainFromManifestResponse: certificateChain,
+        database: database
+      ) { manifestUpdateResponsePart in
+        parseManifestResponse = manifestUpdateResponsePart
+        maybeFinish()
+      } errorBlock: { error in
+        if !didError {
+          didError = true
+          errorBlock(error)
+        }
+      }
+    }
+
+    // if both parts are empty, we still want to finish
+    if manifestResponseInfo == nil && directiveResponseInfo == nil {
+      maybeFinish()
+    }
   }
 
-  func parseManifestBodyData(
-    _ manifestBodyData: Data,
-    manifestHeaders: ManifestHeaders,
+  private func parseDirectiveResponsePartInfo(
+    _ responsePartInfo: ResponsePartInfo,
+    certificateChainFromManifestResponse: String?,
+    successBlock: @escaping ParseDirectiveSuccessBlock,
+    errorBlock: @escaping ParseDirectiveErrorBlock
+  ) {
+    // check code signing if code signing is configured
+    // 1. verify the code signing signature (throw if invalid)
+    // 2. then, if the code signing certificate is only valid for a particular project, verify that the manifest
+    //    has the correct info for code signing. If the code signing certificate doesn't specify a particular
+    //    project, it is assumed to be valid for all projects
+    // 3. consider the directive valid if both of these pass
+    if let codeSigningConfiguration = config.codeSigningConfiguration {
+      let signatureValidationResult: SignatureValidationResult
+      do {
+        signatureValidationResult = try codeSigningConfiguration.validateSignature(
+          signature: responsePartInfo.responsePartHeaderData.signature,
+          signedData: responsePartInfo.body,
+          manifestResponseCertificateChain: certificateChainFromManifestResponse
+        )
+      } catch {
+        let codeSigningError = error as? CodeSigningError
+        let message = codeSigningError?.message() ?? error.localizedDescription
+        self.logger.error(message: message, code: .unknown)
+        errorBlock(NSError(
+          domain: ErrorDomain,
+          code: FileDownloaderErrorCode.CodeSigningSignatureError.rawValue,
+          userInfo: [NSLocalizedDescriptionKey: message]
+        ))
+        return
+      }
+
+      if signatureValidationResult.validationResult == .invalid {
+        let message = "Directive download was successful, but signature was incorrect"
+        self.logger.error(message: message, code: .unknown)
+        errorBlock(NSError(
+          domain: ErrorDomain,
+          code: FileDownloaderErrorCode.CodeSigningSignatureError.rawValue,
+          userInfo: [NSLocalizedDescriptionKey: message]
+        ))
+        return
+      }
+
+      if signatureValidationResult.validationResult != .skipped {
+        if let expoProjectInformation = signatureValidationResult.expoProjectInformation {
+          let directive: UpdateDirective
+          do {
+            directive = try UpdateDirective.fromJSONData(responsePartInfo.body)
+          } catch {
+            let message = "Failed to parse directive: \(error.localizedDescription)"
+            self.logger.error(message: message, code: .unknown)
+            errorBlock(NSError(
+              domain: ErrorDomain,
+              code: FileDownloaderErrorCode.ManifestParseError.rawValue,
+              userInfo: [NSLocalizedDescriptionKey: message]
+            ))
+            return
+          }
+
+          if expoProjectInformation.projectId != directive.signingInfo?.easProjectId ||
+            expoProjectInformation.scopeKey != directive.signingInfo?.scopeKey {
+            let message = "Invalid certificate for directive project ID or scope key"
+            self.logger.error(message: message, code: .unknown)
+            errorBlock(NSError(
+              domain: ErrorDomain,
+              code: FileDownloaderErrorCode.CodeSigningSignatureError.rawValue,
+              userInfo: [NSLocalizedDescriptionKey: message]
+            ))
+            return
+          }
+        }
+        logger.info(message: "Update directive code signature verified successfully")
+      }
+    }
+
+    let directive: UpdateDirective
+    do {
+      directive = try UpdateDirective.fromJSONData(responsePartInfo.body)
+    } catch {
+      let message = "Failed to parse directive: \(error.localizedDescription)"
+      self.logger.error(message: message, code: .unknown)
+      errorBlock(NSError(
+        domain: ErrorDomain,
+        code: FileDownloaderErrorCode.ManifestParseError.rawValue,
+        userInfo: [NSLocalizedDescriptionKey: message]
+      ))
+      return
+    }
+
+    successBlock(DirectiveUpdateResponsePart(updateDirective: directive))
+  }
+
+  private func parseManifestResponsePartInfo(
+    _ responsePartInfo: ResponsePartInfo,
     extensions: [String: Any],
     certificateChainFromManifestResponse: String?,
     database: UpdatesDatabase,
-    successBlock: @escaping ManifestSuccessBlock,
-    errorBlock: @escaping ErrorBlock
+    successBlock: @escaping ParseManifestSuccessBlock,
+    errorBlock: @escaping ParseManifestErrorBlock
   ) {
-    let headerSignature = manifestHeaders.manifestSignature
+    let headerSignature = responsePartInfo.responseHeaderData.manifestSignature
 
     let updateResponseDictionary: [String: Any]
     do {
-      let manifestBodyJson = try JSONSerialization.jsonObject(with: manifestBodyData)
+      let manifestBodyJson = try JSONSerialization.jsonObject(with: responsePartInfo.body)
       updateResponseDictionary = try extractUpdateResponseDictionary(parsedJson: manifestBodyJson)
     } catch {
       errorBlock(error)
@@ -505,7 +684,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     let isSignatureInBody = bodyManifestString != nil && bodySignature != nil
 
     let signature = isSignatureInBody ? bodySignature : headerSignature
-    let manifestString = isSignatureInBody ? bodyManifestString : String(data: manifestBodyData, encoding: .utf8)
+    let manifestString = isSignatureInBody ? bodyManifestString : String(data: responsePartInfo.body, encoding: .utf8)
 
     // XDL serves unsigned manifests with the `signature` key set to "UNSIGNED".
     // We should treat these manifests as unsigned rather than signed with an invalid signature.
@@ -582,8 +761,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
 
         self.createUpdate(
           manifest: manifest,
-          manifestBodyData: manifestBodyData,
-          manifestHeaders: manifestHeaders,
+          responsePartInfo: responsePartInfo,
           extensions: extensions,
           certificateChainFromManifestResponse: certificateChainFromManifestResponse,
           database: database,
@@ -597,8 +775,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     } else {
       createUpdate(
         manifest: manifest,
-        manifestBodyData: manifestBodyData,
-        manifestHeaders: manifestHeaders,
+        responsePartInfo: responsePartInfo,
         extensions: extensions,
         certificateChainFromManifestResponse: certificateChainFromManifestResponse,
         database: database,
@@ -638,14 +815,13 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
 
   private func createUpdate(
     manifest: [String: Any],
-    manifestBodyData: Data,
-    manifestHeaders: ManifestHeaders,
+    responsePartInfo: ResponsePartInfo,
     extensions: [String: Any],
     certificateChainFromManifestResponse: String?,
     database: UpdatesDatabase,
     isVerified: Bool,
-    successBlock: ManifestSuccessBlock,
-    errorBlock: ErrorBlock
+    successBlock: ParseManifestSuccessBlock,
+    errorBlock: ParseManifestErrorBlock
   ) {
     var mutableManifest = manifest
     if config.expectsSignedManifest {
@@ -663,8 +839,8 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       let signatureValidationResult: SignatureValidationResult
       do {
         signatureValidationResult = try codeSigningConfiguration.validateSignature(
-          signature: manifestHeaders.signature,
-          signedData: manifestBodyData,
+          signature: responsePartInfo.responsePartHeaderData.signature,
+          signedData: responsePartInfo.body,
           manifestResponseCertificateChain: certificateChainFromManifestResponse
         )
       } catch {
@@ -696,7 +872,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
           do {
             update = try Update.update(
               withManifest: mutableManifest,
-              manifestHeaders: manifestHeaders,
+              responseHeaderData: responsePartInfo.responseHeaderData,
               extensions: extensions,
               config: config,
               database: database
@@ -737,7 +913,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     do {
       update = try Update.update(
         withManifest: mutableManifest,
-        manifestHeaders: manifestHeaders,
+        responseHeaderData: responsePartInfo.responseHeaderData,
         extensions: extensions,
         config: config,
         database: database
@@ -756,7 +932,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       return
     }
 
-    if !SelectionPolicies.doesUpdate(update, matchFilters: update.manifestFilters) {
+    if !SelectionPolicies.doesUpdate(update, matchFilters: responsePartInfo.responseHeaderData.manifestFilters) {
       let message = "Downloaded manifest is invalid; provides filters that do not match its content"
       self.logger.error(message: message, code: .unknown)
       errorBlock(NSError(
@@ -767,7 +943,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       return
     }
 
-    successBlock(update)
+    successBlock(ManifestUpdateResponsePart(updateManifest: update))
   }
 
   private func downloadData(

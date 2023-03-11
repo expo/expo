@@ -22,17 +22,16 @@ class UpdateSpec : ExpoSpec {
           "bundleUrl": "https://url.to/bundle.js"
         ]
         
-        let manifestHeaders = ManifestHeaders(
+        let responseHeaderData = ResponseHeaderData(
           protocolVersion: nil,
-          serverDefinedHeaders: nil,
-          manifestFilters: nil,
-          manifestSignature: nil,
-          signature: nil
+          serverDefinedHeadersRaw: nil,
+          manifestFiltersRaw: nil,
+          manifestSignature: nil
         )
         
         expect(try! Update.update(
           withManifest: legacyManifest,
-          manifestHeaders: manifestHeaders,
+          responseHeaderData: responseHeaderData,
           extensions: [:],
           config: self.config,
           database: self.database
@@ -50,17 +49,16 @@ class UpdateSpec : ExpoSpec {
           ]
         ]
         
-        let manifestHeaders = ManifestHeaders(
+        let responseHeaderData = ResponseHeaderData(
           protocolVersion: "0",
-          serverDefinedHeaders: nil,
-          manifestFilters: nil,
-          manifestSignature: nil,
-          signature: nil
+          serverDefinedHeadersRaw: nil,
+          manifestFiltersRaw: nil,
+          manifestSignature: nil
         )
         
         expect(try! Update.update(
           withManifest: easNewManifest,
-          manifestHeaders: manifestHeaders,
+          responseHeaderData: responseHeaderData,
           extensions: [:],
           config: self.config,
           database: self.database
@@ -78,17 +76,16 @@ class UpdateSpec : ExpoSpec {
           ]
         ]
         
-        let manifestHeaders = ManifestHeaders(
+        let responseHeaderData = ResponseHeaderData(
           protocolVersion: "2",
-          serverDefinedHeaders: nil,
-          manifestFilters: nil,
-          manifestSignature: nil,
-          signature: nil
+          serverDefinedHeadersRaw: nil,
+          manifestFiltersRaw: nil,
+          manifestSignature: nil
         )
         
         expect(try Update.update(
           withManifest: easNewManifest,
-          manifestHeaders: manifestHeaders,
+          responseHeaderData: responseHeaderData,
           extensions: [:],
           config: self.config,
           database: self.database

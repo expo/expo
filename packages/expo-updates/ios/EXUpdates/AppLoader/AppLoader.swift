@@ -12,10 +12,10 @@
 
 import Foundation
 
-public typealias AppLoaderManifestBlock = (_ update: Update) -> Bool
-public typealias AppLoaderAssetBlock = (_ asset: UpdateAsset, _ successfulAssetCount: Int, _ failedAssetCount: Int, _ totalAssetCount: Int) -> Void
-public typealias AppLoaderSuccessBlock = (_ update: Update?) -> Void
-public typealias AppLoaderErrorBlock = (_ error: Error) -> Void
+typealias AppLoaderUpdateResponseBlock = (_ updateResponse: UpdateResponse) -> Bool
+typealias AppLoaderAssetBlock = (_ asset: UpdateAsset, _ successfulAssetCount: Int, _ failedAssetCount: Int, _ totalAssetCount: Int) -> Void
+typealias AppLoaderSuccessBlock = (_ updateResponse: UpdateResponse?) -> Void
+typealias AppLoaderErrorBlock = (_ error: Error) -> Void
 
 /**
  * Responsible for loading an update's manifest, enumerating the assets required for it to launch,
@@ -34,9 +34,9 @@ public class AppLoader: NSObject {
   internal let directory: URL
   internal let launchedUpdate: Update?
 
-  private var updateManifest: Update?
+  private var updateResponseContainingManifest: UpdateResponse?
 
-  internal var manifestBlock: AppLoaderManifestBlock?
+  internal var updateResponseBlock: AppLoaderUpdateResponseBlock?
   internal var assetBlock: AppLoaderAssetBlock?
   internal var successBlock: AppLoaderSuccessBlock?
   internal var errorBlock: AppLoaderErrorBlock?
@@ -62,8 +62,8 @@ public class AppLoader: NSObject {
     erroredAssets = []
     finishedAssets = []
     existingAssets = []
-    updateManifest = nil
-    manifestBlock = nil
+    updateResponseContainingManifest = nil
+    updateResponseBlock = nil
     assetBlock = nil
     successBlock = nil
     errorBlock = nil
@@ -71,9 +71,20 @@ public class AppLoader: NSObject {
 
   // MARK: - abstract methods
 
-  public func loadUpdate(
+  /**
+   * Load an update from the given URL, which should respond with a valid manifest.
+   *
+   * The `updateResponseBlock` block is called as soon as the update response has been downloaded.
+   * The block should determine whether or not the update described by this update response
+   * should be downloaded, based on (for example) whether or not it already has the
+   * update downloaded locally, and return the corresponding BOOL value.
+   *
+   * The `asset` block is called when an asset has either been successfully downloaded
+   * or failed to download.
+   */
+  internal func loadUpdate(
     fromURL url: URL,
-    onManifest manifestBlock: @escaping AppLoaderManifestBlock,
+    onUpdateResponse updateResponseBlock: @escaping AppLoaderUpdateResponseBlock,
     asset assetBlock: @escaping AppLoaderAssetBlock,
     success successBlock: @escaping AppLoaderSuccessBlock,
     error errorBlock: @escaping AppLoaderErrorBlock
@@ -87,11 +98,20 @@ public class AppLoader: NSObject {
 
   // MARK: - loading and database logic
 
-  internal func startLoading(fromManifest updateManifest: Update) {
-    guard shouldStartLoadingUpdate(updateManifest) else {
+  internal func startLoading(fromUpdateResponse updateResponse: UpdateResponse) {
+    guard shouldStartLoadingUpdate(updateResponse) else {
       successBlock.let { it in
         completionQueue.async {
           it(nil)
+        }
+      }
+      return
+    }
+
+    guard let updateManifest = updateResponse.manifestUpdateResponsePart?.updateManifest else {
+      successBlock.let { it in
+        completionQueue.async {
+          it(updateResponse)
         }
       }
       return
@@ -110,7 +130,7 @@ public class AppLoader: NSObject {
         let successBlock = self.successBlock
         self.completionQueue.async {
           successBlock.let { it in
-            it(updateManifest)
+            it(updateResponse)
           }
           self.reset()
         }
@@ -147,7 +167,7 @@ public class AppLoader: NSObject {
         existingUpdate.status == .StatusReady {
         self.successBlock.let { it in
           self.completionQueue.async {
-            it(updateManifest)
+            it(updateResponse)
           }
         }
         return
@@ -156,14 +176,14 @@ public class AppLoader: NSObject {
       if existingUpdate != nil {
         // we've already partially downloaded the update.
         // however, it's not ready, so we should try to download all the assets again.
-        self.updateManifest = updateManifest
+        self.updateResponseContainingManifest = updateResponse
       } else {
         if let existingUpdateError = existingUpdateError {
           NSLog("Failed to select old update from DB: %@", existingUpdateError.localizedDescription)
         }
 
         // no update already exists with this ID, so we need to insert it and download everything.
-        self.updateManifest = updateManifest
+        self.updateResponseContainingManifest = updateResponse
         do {
           try self.database.addUpdate(updateManifest)
         } catch {
@@ -257,8 +277,8 @@ public class AppLoader: NSObject {
 
   // MARK: - internal
 
-  private func shouldStartLoadingUpdate(_ updateManifest: Update) -> Bool {
-    return manifestBlock!(updateManifest)
+  private func shouldStartLoadingUpdate(_ updateResponse: UpdateResponse) -> Bool {
+    return updateResponseBlock!(updateResponse)
   }
 
   /**
@@ -291,7 +311,10 @@ public class AppLoader: NSObject {
       for existingAsset in self.existingAssets {
         var existingAssetFound: Bool = false
         do {
-          existingAssetFound = try self.database.addExistingAsset(existingAsset, toUpdateWithId: self.updateManifest!.updateId)
+          existingAssetFound = try self.database.addExistingAsset(
+            existingAsset,
+            toUpdateWithId: self.updateResponseContainingManifest!.manifestUpdateResponsePart!.updateManifest.updateId
+          )
         } catch {
           NSLog("Error searching for existing asset in DB: %@", error.localizedDescription)
         }
@@ -311,7 +334,10 @@ public class AppLoader: NSObject {
       }
 
       do {
-        try self.database.addNewAssets(self.finishedAssets, toUpdateWithId: self.updateManifest!.updateId)
+        try self.database.addNewAssets(
+          self.finishedAssets,
+          toUpdateWithId: self.updateResponseContainingManifest!.manifestUpdateResponsePart!.updateManifest.updateId
+        )
       } catch {
         self.arrayLock.unlock()
         self.finish(withError: error)
@@ -320,7 +346,7 @@ public class AppLoader: NSObject {
 
       if self.erroredAssets.isEmpty {
         do {
-          try self.database.markUpdateFinished(self.updateManifest!)
+          try self.database.markUpdateFinished(self.updateResponseContainingManifest!.manifestUpdateResponsePart!.updateManifest)
         } catch {
           self.arrayLock.unlock()
           self.finish(withError: error)
@@ -353,7 +379,7 @@ public class AppLoader: NSObject {
             ]
           ))
         } else if let successBlock = successBlock {
-          successBlock(self.updateManifest!)
+          successBlock(self.updateResponseContainingManifest!)
         }
       }
     }
