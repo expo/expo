@@ -288,6 +288,11 @@ public final class UpdatesDatabase: NSObject {
     _ = try execute(sql: updateSql, withArgs: [scopeKey, update.updateId])
   }
 
+  public func setUpdateCommitTime(_ commitTime: Date, onUpdate update: Update) throws {
+    let updateSql = "UPDATE updates SET commit_time = ?1 WHERE id = ?2;"
+    _ = try execute(sql: updateSql, withArgs: [commitTime, update.updateId])
+  }
+
   public func markMissingAssets(_ assets: [UpdateAsset]) throws {
     sqlite3_exec(db, "BEGIN;", nil, nil, nil)
 
@@ -532,21 +537,21 @@ public final class UpdatesDatabase: NSObject {
     return try setJsonData(staticBuildData, withKey: UpdatesDatabase.StaticBuildDataKey, scopeKey: scopeKey, isInTransaction: false)
   }
 
-  public func setMetadata(withManifest updateManifest: Update) throws {
+  internal func setMetadata(withResponseHeaderData responseHeaderData: ResponseHeaderData, scopeKey: String) throws {
     sqlite3_exec(db, "BEGIN;", nil, nil, nil)
 
-    if let serverDefinedHeaders = updateManifest.serverDefinedHeaders {
+    if let serverDefinedHeaders = responseHeaderData.serverDefinedHeaders {
       do {
-        _ = try setJsonData(serverDefinedHeaders, withKey: UpdatesDatabase.ServerDefinedHeadersKey, scopeKey: updateManifest.scopeKey, isInTransaction: true)
+        _ = try setJsonData(serverDefinedHeaders, withKey: UpdatesDatabase.ServerDefinedHeadersKey, scopeKey: scopeKey, isInTransaction: true)
       } catch {
         sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
         throw UpdatesDatabaseError.setJsonDataError
       }
     }
 
-    if let manifestFilters = updateManifest.manifestFilters {
+    if let manifestFilters = responseHeaderData.manifestFilters {
       do {
-        _ = try setJsonData(manifestFilters, withKey: UpdatesDatabase.ManifestFiltersKey, scopeKey: updateManifest.scopeKey, isInTransaction: true)
+        _ = try setJsonData(manifestFilters, withKey: UpdatesDatabase.ManifestFiltersKey, scopeKey: scopeKey, isInTransaction: true)
       } catch {
         sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
         throw UpdatesDatabaseError.setJsonDataError
