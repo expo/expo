@@ -154,6 +154,10 @@ public class Manifest: NSObject {
     return expoClientConfigRootObject()?.optionalValue(forKey: "appKey")
   }
 
+  public func isVerified() -> Bool {
+    return rawManifestJSONInternal.optionalValue(forKey: "isVerified") ?? false
+  }
+
   public func name() -> String? {
     return expoClientConfigRootObject()?.optionalValue(forKey: "name")
   }

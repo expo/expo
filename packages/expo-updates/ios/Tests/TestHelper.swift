@@ -57,4 +57,12 @@ internal final class TestHelper {
 
   public static let testNewManifestBodyValidChainLeafSignatureIncorrectProjectId =
     "sig=\"Pqwt5yNggdCrXB1w+EeEl9ZLITZVdNeR99YRYw6la3P97xU6298eMs5Us3RNthy/DmsC1tEpqr9MZE4xv2b3l8DZTQ45OyH76TRzRKOtB+9t5VC3Zb/osYjkh/pexr7D9AopSbxNCrVLO3Ek/+2iPXhJAkO90oWpD1Axf7ZhfmzgD0t93lpCzNecyIz2/GRRA5us7VYCFJXkAF6MDzExGQmsWr4OvGpqxqYEHhLfrrFrr0aILCHRjiBlT6zhJi8RzpTPzmH3twq5LSVNES9aa5/VOCgrg2ci6rYXFbmLA4weUpzoEL1Hx88ONcchz7LuEg1zz8pJEJ0olzTGKpJFLQ==\""
+  
+  public static let testDirectiveNoUpdateAvailable = "{\"type\":\"noUpdateAvailable\",\"extra\":{\"signingInfo\":{\"projectId\":\"285dc9ca-a25d-4f60-93be-36dc312266d7\",\"scopeKey\":\"@test/app\"}}}"
+  public static let testDirectiveNoUpdateAvailableSignature = "sig=\"pOGsNA2+mO+A+dBO1g3xfWCSRvgkHUwAHPJyGl7Eds/IIuo/pVIvJNsO5Op5hAGTpRnOW8BFSeIplCQ7axdg/xg0Z6my+Uy529t+H4ReSoXIiyOI6kG6Q/mgKjnXE7HQsF0q7ycZ7qytxp6C7Wxzy3maKvHTQbuIT+gIouCd4SGb8lg2Y6B/L/yjN1LiehaKizQPNOC4AIDO5SKl3Wk5aTdnr6JYld4nSno2kfalwHnQc1NxojXoMIwAM1LBq/1YIGV8shXNgXP03pvIDwiwa548VIdSe+v4BvSKVEZvNC8Uw06j0Y1lOWkGdl+UOWR1oOZvH6PdgYj6h3rzr2gBIg==\""
+  public static let testDirectiveNoUpdateAvailableValidChainLeafSignature = "sig=\"fuzNbhZ4msyGc3K8512kXQ5HNGo7+DJh++S6t+sn8PzWTnCdcdheJGMs3Irkv6rcgWE28FBiysdeH2whD25yn2AsL3EzlOkxPyT6TSkYUvcyobtBVAkpsN755XyNWnvGGMEg5UvadKqJvVJA4YpXe9CBYOq1pZoCnfKfHMHk6+pETVtup5WEpwVpeoEDHQduVAgIs3IfO7atJ+fHQH0YOlzqxKvabNyzp6vm3lEjo4y86/fZ9UzfXzMwEAJpslLadOAkiLvbPcRUMU+YRZCOj/aZ2mUZ7lq1PHLmdxCedEfOKpEUwV4sIM0rzccqRs7JanK41Du/9Jaz6grfrZ100Q==\""
+
+  public static let testDirectiveNoUpdateAvailableIncorrectProjectId = "{\"type\":\"noUpdateAvailable\",\"extra\":{\"signingInfo\":{\"projectId\":\"485dc9ca-a25d-4f60-93be-36dc312266d8\",\"scopeKey\":\"@test/app\"}}}"
+  public static let testDirectiveNoUpdateAvailableValidChainLeafSignatureIncorrectProjectId = "sig=\"a0k2BPevnRlBWK7w1vODW2s5iK7kt11THgawNWn4gTnwkRr/M3g4tIRsReyiRPF7+Ka5hkt9eq7LRfNuyVwaxXoJT8PrZtrrYCFfZ6ShozDH43rnE39bjkz0ORAfkUrpAoe0feZi28Vod4XCJ5LVElENULXrAxm03vYjDljMWEnW81ODm4Wp5K/9XyUYGwzKfsIMpA1pJ7J5t56I8zNFskyzH8UASlkLYHJtnu9Irpt2DppePCYdKke/dDWyokg4vl5G+k4mysbQ4osoIJNXzD8brwMXSc3dxTc5ZkTX2mGUmsjOa0lcNwCb0zbBbp4tUIJEf29zMxt2MOhfdE0DJQ==\""
+
 }

@@ -43,13 +43,6 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
         UpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey
       ])
       let database = UpdatesDatabase()
-      let manifestHeaders = ManifestHeaders(
-        protocolVersion: nil,
-        serverDefinedHeaders: nil,
-        manifestFilters: nil,
-        manifestSignature: nil,
-        signature: nil
-      )
 
       updateRollout0 = NewUpdate.update(
         withNewManifest: NewManifest(rawManifestJSON: [
@@ -60,7 +53,6 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
           "assets": [imageAsset],
           "metadata": ["branchName": "rollout"]
         ]),
-        manifestHeaders: manifestHeaders,
         extensions: [:],
         config: config,
         database: database
@@ -75,7 +67,6 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
           "assets": [imageAsset],
           "metadata": ["branchName": "default"]
         ]),
-        manifestHeaders: manifestHeaders,
         extensions: [:],
         config: config,
         database: database
@@ -90,7 +81,6 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
           "assets": [imageAsset],
           "metadata": ["branchName": "rollout"]
         ]),
-        manifestHeaders: manifestHeaders,
         extensions: [:],
         config: config,
         database: database
@@ -105,7 +95,6 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
           "assets": [imageAsset],
           "metadata": ["branchName": "default"]
         ]),
-        manifestHeaders: manifestHeaders,
         extensions: [:],
         config: config,
         database: database
@@ -120,7 +109,6 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
           "assets": [imageAsset],
           "metadata": ["branchName": "rollout"]
         ]),
-        manifestHeaders: manifestHeaders,
         extensions: [:],
         config: config,
         database: database
@@ -135,7 +123,6 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
           "assets": [imageAsset],
           "metadata": ["firstKey": "value1", "secondKey": "value2"]
         ]),
-        manifestHeaders: manifestHeaders,
         extensions: [:],
         config: config,
         database: database
@@ -149,7 +136,6 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
           "launchAsset": launchAsset,
           "assets": [imageAsset]
         ]),
-        manifestHeaders: manifestHeaders,
         extensions: [:],
         config: config,
         database: database

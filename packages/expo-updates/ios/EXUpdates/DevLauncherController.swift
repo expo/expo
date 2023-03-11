@@ -83,12 +83,29 @@ public final class DevLauncherController: NSObject, UpdatesExternalInterface {
     )
     loader.loadUpdate(
       fromURL: updatesConfiguration.updateUrl!
-    ) { update in
+    ) { updateResponse in
+      if let updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective {
+        switch updateDirective {
+        case is NoUpdateAvailableUpdateDirective:
+          return false
+        case is RollBackToEmbeddedUpdateDirective:
+          return false
+        default:
+          NSException(name: .internalInconsistencyException, reason: "Unhandled update directive type").raise()
+          return false
+        }
+      }
+
+      guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
+        return false
+      }
+
       return manifestBlock(update.manifest.rawManifestJSON())
     } asset: { _, successfulAssetCount, failedAssetCount, totalAssetCount in
       progressBlock(UInt(successfulAssetCount), UInt(failedAssetCount), UInt(totalAssetCount))
-    } success: { update in
-      guard let update = update else {
+    } success: { updateResponse in
+      guard let updateResponse = updateResponse,
+        let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
         successBlock(nil)
         return
       }

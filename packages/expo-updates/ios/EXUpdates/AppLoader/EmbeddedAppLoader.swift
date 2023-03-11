@@ -100,8 +100,8 @@ public final class EmbeddedAppLoader: AppLoader {
     return embeddedManifestInternal
   }
 
-  public func loadUpdateFromEmbeddedManifest(
-    withCallback manifestBlock: @escaping AppLoaderManifestBlock,
+  internal func loadUpdateResponseFromEmbeddedManifest(
+    withCallback updateResponseBlock: @escaping AppLoaderUpdateResponseBlock,
     asset assetBlock: @escaping AppLoaderAssetBlock,
     success successBlock: @escaping AppLoaderSuccessBlock,
     error errorBlock: @escaping AppLoaderErrorBlock
@@ -117,11 +117,15 @@ public final class EmbeddedAppLoader: AppLoader {
       return
     }
 
-    self.manifestBlock = manifestBlock
+    self.updateResponseBlock = updateResponseBlock
     self.assetBlock = assetBlock
     self.successBlock = successBlock
     self.errorBlock = errorBlock
-    startLoading(fromManifest: embeddedManifest)
+    startLoading(fromUpdateResponse: UpdateResponse(
+      responseHeaderData: nil,
+      manifestUpdateResponsePart: ManifestUpdateResponsePart(updateManifest: embeddedManifest),
+      directiveUpdateResponsePart: nil
+    ))
   }
 
   override public func downloadAsset(_ asset: UpdateAsset) {
@@ -156,9 +160,9 @@ public final class EmbeddedAppLoader: AppLoader {
     }
   }
 
-  override public func loadUpdate(
+  override internal func loadUpdate(
     fromURL url: URL,
-    onManifest manifestBlock: @escaping AppLoaderManifestBlock,
+    onUpdateResponse updateResponseBlock: @escaping AppLoaderUpdateResponseBlock,
     asset assetBlock: @escaping AppLoaderAssetBlock,
     success successBlock: @escaping AppLoaderSuccessBlock,
     error errorBlock: @escaping AppLoaderErrorBlock

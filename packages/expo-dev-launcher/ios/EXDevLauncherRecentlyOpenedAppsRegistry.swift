@@ -19,7 +19,7 @@ public class EXDevLauncherRecentlyOpenedAppsRegistry: NSObject {
   }
 
   @objc
-  public func appWasOpened(_ url: String, queryParams: [String: String], manifest: EXManifestsManifest?) {
+  public func appWasOpened(_ url: String, queryParams: [String: String], manifest: Manifest?) {
     var appEntry: [String: Any] = [:]
 
     // reloading the same url - update the old entry w/ any new fields instead of creating a new one

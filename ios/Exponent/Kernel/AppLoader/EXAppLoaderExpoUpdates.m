@@ -394,6 +394,10 @@ NS_ASSUME_NONNULL_BEGIN
     };
     updatesConfig[EXUpdatesConfig.EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey] = @YES;
     updatesConfig[EXUpdatesConfig.EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey] = @YES;
+    
+    // in Expo Go, ignore directives in manifest responses and require a manifest. the current directives
+    // (no update available, roll back) don't have any practical use outside of standalone apps
+    updatesConfig[EXUpdatesConfig.EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey] = @YES;
   }
 
   _config = [EXUpdatesConfig configFromDictionary:updatesConfig];

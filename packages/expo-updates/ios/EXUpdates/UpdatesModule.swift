@@ -101,17 +101,28 @@ public final class UpdatesModule: Module {
       }
 
       let fileDownloader = FileDownloader(config: config)
-      fileDownloader.downloadManifest(
+      fileDownloader.downloadRemoteUpdate(
         // swiftlint:disable:next force_unwrapping
         fromURL: config.updateUrl!,
         withDatabase: updatesService.database,
         extraHeaders: extraHeaders
-      ) { update in
+      ) { updateResponse in
+        guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
+          promise.resolve([
+            "isAvailable": false
+          ])
+          return
+        }
+
         let launchedUpdate = updatesService.launchedUpdate
-        if selectionPolicy.shouldLoadNewUpdate(update, withLaunchedUpdate: launchedUpdate, filters: update.manifestFilters) {
+        if selectionPolicy.shouldLoadNewUpdate(update, withLaunchedUpdate: launchedUpdate, filters: updateResponse.responseHeaderData?.manifestFilters) {
           promise.resolve([
             "isAvailable": true,
             "manifest": update.manifest.rawManifestJSON()
+          ])
+        } else {
+          promise.resolve([
+            "isAvailable": false
           ])
         }
       } errorBlock: { error in
@@ -159,25 +170,47 @@ public final class UpdatesModule: Module {
       remoteAppLoader.loadUpdate(
         // swiftlint:disable:next force_unwrapping
         fromURL: config.updateUrl!
-      ) { update in
+      ) { updateResponse in
+        if let updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective {
+          switch updateDirective {
+          case is NoUpdateAvailableUpdateDirective:
+            return false
+          case is RollBackToEmbeddedUpdateDirective:
+            return true
+          default:
+            NSException(name: .internalInconsistencyException, reason: "Unhandled update directive type").raise()
+            return false
+          }
+        }
+
+        guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
+          return false
+        }
+
         return selectionPolicy.shouldLoadNewUpdate(
           update,
           withLaunchedUpdate: updatesService.launchedUpdate,
-          filters: update.manifestFilters
+          filters: updateResponse.responseHeaderData?.manifestFilters
         )
       } asset: { _, _, _, _ in
         // do nothing for now
-      } success: { update in
-        if let update = update {
-          updatesService.resetSelectionPolicy()
+      } success: { updateResponse in
+        if updateResponse?.directiveUpdateResponsePart?.updateDirective is RollBackToEmbeddedUpdateDirective {
           promise.resolve([
-            "isNew": true,
-            "manifest": update.manifest.rawManifestJSON()
+            "isRollBackToEmbedded": true
           ])
         } else {
-          promise.resolve([
-            "isNew": false
-          ])
+          if let update = updateResponse?.manifestUpdateResponsePart?.updateManifest {
+            updatesService.resetSelectionPolicy()
+            promise.resolve([
+              "isNew": true,
+              "manifest": update.manifest.rawManifestJSON()
+            ])
+          } else {
+            promise.resolve([
+              "isNew": false
+            ])
+          }
         }
       } error: { error in
         promise.reject("ERR_UPDATES_FETCH", "Failed to download new update: \(error.localizedDescription)")

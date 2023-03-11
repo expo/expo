@@ -50,6 +50,7 @@ public final class UpdatesConfig: NSObject {
   public static let EXUpdatesConfigCodeSigningMetadataKey = "EXUpdatesCodeSigningMetadata"
   public static let EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey = "EXUpdatesCodeSigningIncludeManifestResponseCertificateChain"
   public static let EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey = "EXUpdatesConfigCodeSigningAllowUnsignedManifests"
+  public static let EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey = "EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityMode"
 
   public static let EXUpdatesConfigCheckOnLaunchValueAlways = "ALWAYS"
   public static let EXUpdatesConfigCheckOnLaunchValueWifiOnly = "WIFI_ONLY"
@@ -68,6 +69,9 @@ public final class UpdatesConfig: NSObject {
   public let checkOnLaunch: CheckAutomaticallyConfig
   public let codeSigningConfiguration: CodeSigningConfiguration?
 
+  // used only in Expo Go to prevent loading rollbacks and other directives, which don't make much sense in the context of Expo Go
+  public let enableExpoUpdatesProtocolV0CompatibilityMode: Bool
+
   public let sdkVersion: String?
   public let runtimeVersion: String?
 
@@ -85,7 +89,8 @@ public final class UpdatesConfig: NSObject {
     codeSigningConfiguration: CodeSigningConfiguration?,
     sdkVersion: String?,
     runtimeVersion: String?,
-    hasEmbeddedUpdate: Bool
+    hasEmbeddedUpdate: Bool,
+    enableExpoUpdatesProtocolV0CompatibilityMode: Bool
   ) {
     self.isEnabled = isEnabled
     self.expectsSignedManifest = expectsSignedManifest
@@ -99,6 +104,7 @@ public final class UpdatesConfig: NSObject {
     self.sdkVersion = sdkVersion
     self.runtimeVersion = runtimeVersion
     self.hasEmbeddedUpdate = hasEmbeddedUpdate
+    self.enableExpoUpdatesProtocolV0CompatibilityMode = enableExpoUpdatesProtocolV0CompatibilityMode
   }
 
   public func isMissingRuntimeVersion() -> Bool {
@@ -185,6 +191,8 @@ public final class UpdatesConfig: NSObject {
       )).require("Invalid code signing configuration")
     }
 
+    let enableExpoUpdatesProtocolV0CompatibilityMode = config.optionalValue(forKey: EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey) ?? false
+
     return UpdatesConfig(
       isEnabled: isEnabled,
       expectsSignedManifest: expectsSignedManifest,
@@ -197,7 +205,8 @@ public final class UpdatesConfig: NSObject {
       codeSigningConfiguration: codeSigningConfiguration,
       sdkVersion: sdkVersion,
       runtimeVersion: runtimeVersion,
-      hasEmbeddedUpdate: hasEmbeddedUpdate
+      hasEmbeddedUpdate: hasEmbeddedUpdate,
+      enableExpoUpdatesProtocolV0CompatibilityMode: enableExpoUpdatesProtocolV0CompatibilityMode
     )
   }
 

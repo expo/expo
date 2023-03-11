@@ -176,7 +176,7 @@ public final class AppLoaderTask: NSObject {
 
         if shouldCheckForUpdate {
           self.loadRemoteUpdate { remoteError, remoteUpdate in
-            self.handleRemoteUpdateLoaded(remoteUpdate, error: remoteError)
+            self.handleRemoteUpdateResponseLoaded(remoteUpdate, error: remoteError)
           }
         } else {
           self.isRunning = false
@@ -291,7 +291,7 @@ public final class AppLoaderTask: NSObject {
               launchedUpdate: nil,
               completionQueue: self.loaderTaskQueue
             )
-            self.embeddedAppLoader!.loadUpdateFromEmbeddedManifest(
+            self.embeddedAppLoader!.loadUpdateResponseFromEmbeddedManifest(
               withCallback: { _ in
                 // we already checked using selection policy, so we don't need to check again
                 return true
@@ -317,7 +317,7 @@ public final class AppLoaderTask: NSObject {
     launcher.launchUpdate(withSelectionPolicy: selectionPolicy, completion: completion)
   }
 
-  private func loadRemoteUpdate(withCompletion completion: @escaping (_ remoteError: Error?, _ remoteUpdate: Update?) -> Void) {
+  private func loadRemoteUpdate(withCompletion completion: @escaping (_ remoteError: Error?, _ updateResponse: UpdateResponse?) -> Void) {
     remoteAppLoader = RemoteAppLoader(
       config: config,
       database: database,
@@ -327,8 +327,31 @@ public final class AppLoaderTask: NSObject {
     )
     remoteAppLoader!.loadUpdate(
       fromURL: config.updateUrl!
-    ) { update in
-      if self.selectionPolicy.shouldLoadNewUpdate(update, withLaunchedUpdate: self.candidateLauncher?.launchedUpdate, filters: update.manifestFilters) {
+    ) { updateResponse in
+      if let updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective {
+        switch updateDirective {
+        case is NoUpdateAvailableUpdateDirective:
+          self.isUpToDate = true
+          return false
+        case is RollBackToEmbeddedUpdateDirective:
+          self.isUpToDate = false
+          return true
+        default:
+          NSException(name: .internalInconsistencyException, reason: "Unhandled update directive type").raise()
+          return false
+        }
+      }
+
+      guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
+        self.isUpToDate = true
+        return false
+      }
+
+      if self.selectionPolicy.shouldLoadNewUpdate(
+        update,
+        withLaunchedUpdate: self.candidateLauncher?.launchedUpdate,
+        filters: updateResponse.responseHeaderData?.manifestFilters
+      ) {
         self.isUpToDate = false
         if let delegate = self.delegate {
           self.delegateQueue.async {
@@ -342,14 +365,14 @@ public final class AppLoaderTask: NSObject {
       }
     } asset: { _, _, _, _ in
       // do nothing for now
-    } success: { update in
-      completion(nil, update)
+    } success: { updateResponse in
+      completion(nil, updateResponse)
     } error: { error in
       completion(error, nil)
     }
   }
 
-  private func handleRemoteUpdateLoaded(_ update: Update?, error: Error?) {
+  private func handleRemoteUpdateResponseLoaded(_ updateResponse: UpdateResponse?, error: Error?) {
     // If the app has not yet been launched (because the timer is still running),
     // create a new launcher so that we can launch with the newly downloaded update.
     // Otherwise, we've already launched. Send an event to the notify JS of the new update.
@@ -357,7 +380,29 @@ public final class AppLoaderTask: NSObject {
     loaderTaskQueue.async {
       self.stopTimer()
 
-      if let update = update {
+      var errorToThrow = error
+      var updateBeingLaunched = updateResponse?.manifestUpdateResponsePart?.updateManifest
+
+      // If directive is to roll-back to the embedded update and there is an embedded update,
+      // we need to update embedded update in the DB with the newer commitTime from the message so that
+      // the selection policy will choose it. That way future updates can continue to be applied
+      // over this roll back, but older ones won't.
+      // The embedded update is guaranteed to be in the DB from the earlier [EmbeddedAppLoader] call in this task.
+      if let rollBackDirective = updateResponse?.directiveUpdateResponsePart?.updateDirective as? RollBackToEmbeddedUpdateDirective,
+        let update = EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database) {
+        do {
+          // do this synchronously as it is needed to launch, and we're already on a background dispatch queue so no UI will be blocked
+          try self.database.databaseQueue.sync {
+            try self.database.setUpdateCommitTime(rollBackDirective.commitTime, onUpdate: update)
+          }
+          updateBeingLaunched = update
+        } catch {
+          errorToThrow = error
+          updateBeingLaunched = nil // explicitly go with nil update path below
+        }
+      }
+
+      if let updateBeingLaunched = updateBeingLaunched {
         if !self.hasLaunched {
           let newLauncher = AppLauncherWithDatabase(
             config: self.config,
@@ -381,14 +426,14 @@ public final class AppLoaderTask: NSObject {
             self.runReaper()
           }
         } else {
-          self.didFinishBackgroundUpdate(withStatus: .updateAvailable, update: update, error: nil)
+          self.didFinishBackgroundUpdate(withStatus: .updateAvailable, update: updateBeingLaunched, error: nil)
           self.isRunning = false
           self.runReaper()
         }
       } else {
         // there's no update, so signal we're ready to launch
-        self.finish(withError: error)
-        if let error = error {
+        self.finish(withError: errorToThrow)
+        if let error = errorToThrow {
           self.didFinishBackgroundUpdate(withStatus: .error, update: nil, error: error)
         } else {
           self.didFinishBackgroundUpdate(withStatus: .noUpdateAvailable, update: nil, error: nil)

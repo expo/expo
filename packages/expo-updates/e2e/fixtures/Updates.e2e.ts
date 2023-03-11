@@ -8,7 +8,7 @@ import Update from './utils/update';
 
 const projectRoot = process.env.PROJECT_ROOT || process.cwd();
 const platform = device.getPlatform();
-const protocolVersion = platform === 'android' ? 1 : 0;
+const protocolVersion = 1;
 const TIMEOUT_BIAS = process.env.CI ? 10 : 1;
 
 const checkNumAssetsAsync = async () => {
@@ -372,10 +372,6 @@ describe('Basic tests', () => {
   });
 
   it('supports rollbacks', async () => {
-    if (platform === 'ios') {
-      console.warn('Rollbacks not yet implemented on iOS: exiting.');
-      return;
-    }
     jest.setTimeout(300000 * TIMEOUT_BIAS);
     const bundleFilename = 'bundle1.js';
     const newNotifyString = 'test-update-3';

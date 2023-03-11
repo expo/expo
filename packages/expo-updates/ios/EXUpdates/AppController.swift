@@ -508,12 +508,28 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     )
     remoteAppLoader.loadUpdate(
       fromURL: config.updateUrl!
-    ) { update in
-      return self.selectionPolicy().shouldLoadNewUpdate(update, withLaunchedUpdate: self.launchedUpdate(), filters: update.manifestFilters)
+    ) { updateResponse in
+      if let updateDirective = updateResponse.directiveUpdateResponsePart?.updateDirective {
+        switch updateDirective {
+        case is NoUpdateAvailableUpdateDirective:
+          return false
+        case is RollBackToEmbeddedUpdateDirective:
+          return false
+        default:
+          NSException(name: .internalInconsistencyException, reason: "Unhandled update directive type").raise()
+          return false
+        }
+      }
+
+      guard let update = updateResponse.manifestUpdateResponsePart?.updateManifest else {
+        return false
+      }
+
+      return self.selectionPolicy().shouldLoadNewUpdate(update, withLaunchedUpdate: self.launchedUpdate(), filters: updateResponse.responseHeaderData?.manifestFilters)
     } asset: { _, _, _, _ in
       // do nothing for now
-    } success: { update in
-      self.remoteLoadStatus = update != nil ? .NewUpdateLoaded : .Idle
+    } success: { updateResponse in
+      self.remoteLoadStatus = updateResponse != nil ? .NewUpdateLoaded : .Idle
       self.errorRecovery.notify(newRemoteLoadStatus: self.remoteLoadStatus)
     } error: { error in
       self.logger.error(message: "AppController loadRemoteUpdate error: \(error.localizedDescription)", code: .updateFailedToLoad)

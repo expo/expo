@@ -88,9 +88,6 @@ public class Update: NSObject {
   public let isDevelopmentMode: Bool
   private let assetsFromManifest: [UpdateAsset]?
 
-  public internal(set) var serverDefinedHeaders: [String: Any]?
-  public internal(set) var manifestFilters: [String: Any]?
-
   public let manifest: Manifest
 
   public var status: UpdateStatus
@@ -131,14 +128,14 @@ public class Update: NSObject {
     self.isDevelopmentMode = isDevelopmentMode
   }
 
-  public static func update(
+  internal static func update(
     withManifest: [String: Any],
-    manifestHeaders: ManifestHeaders,
+    responseHeaderData: ResponseHeaderData,
     extensions: [String: Any],
     config: UpdatesConfig,
     database: UpdatesDatabase
   ) throws -> Update {
-    let protocolVersion = manifestHeaders.protocolVersion
+    let protocolVersion = responseHeaderData.protocolVersion
     switch protocolVersion {
     case nil:
       return LegacyUpdate.update(
@@ -146,10 +143,9 @@ public class Update: NSObject {
         config: config,
         database: database
       )
-    case "0":
+    case "0", "1":
       return NewUpdate.update(
         withNewManifest: NewManifest(rawManifestJSON: withManifest),
-        manifestHeaders: manifestHeaders,
         extensions: extensions,
         config: config,
         database: database
