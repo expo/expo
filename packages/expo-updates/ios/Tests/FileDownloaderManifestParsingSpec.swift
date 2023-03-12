@@ -6,8 +6,8 @@ import ExpoModulesTestCore
 
 import EXManifests
 
-extension Data {
-  public mutating func appendStringData(_ str: String) {
+private extension Data {
+  mutating func appendStringData(_ str: String) {
     self.append(str.data(using: .utf8)!)
   }
 }
@@ -15,16 +15,6 @@ extension Data {
 class FileDownloaderManifestParsingSpec : ExpoSpec {
   override func spec() {
     let database = UpdatesDatabase()
-    let classicJSON = TestHelper.testClassicBody
-    let modernJSON = TestHelper.testBody
-    let modernJSONCertificate = try! TestHelper.getTestCertificate(.test)
-    let modernJSONSignature = TestHelper.testSignature
-    let leafCertificate = try! TestHelper.getTestCertificate(.chainLeaf)
-    let intermediateCertificate = try! TestHelper.getTestCertificate(.chainIntermediate)
-    let rootCertificate = try! TestHelper.getTestCertificate(.chainRoot)
-    let chainLeafSignature = TestHelper.testValidChainLeafSignature
-    let manifestBodyIncorrectProjectId = TestHelper.testNewManifestBodyIncorrectProjectId
-    let validChainLeafSignatureIncorrectProjectId = TestHelper.testNewManifestBodyValidChainLeafSignatureIncorrectProjectId
     
     describe("manifest parsing") {
       it("JSON body") {
@@ -40,7 +30,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           headerFields: ["content-type": contentType]
         )!
         
-        let bodyData = classicJSON.data(using: .utf8)!
+        let bodyData = CertificateFixtures.testClassicManifestBody.data(using: .utf8)!
         
         var resultUpdateResponse: UpdateResponse? = nil
         var errorOccurred: (any Error)? = nil
@@ -72,10 +62,10 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
         
         let bodyData = FileDownloaderManifestParsingSpec.mutlipartData(
           boundary: boundary,
-          manifest: classicJSON,
+          manifest: CertificateFixtures.testClassicManifestBody,
           manifestSignature: nil,
           certificateChain: nil,
-          directive: TestHelper.testDirectiveNoUpdateAvailable,
+          directive: CertificateFixtures.testDirectiveNoUpdateAvailable,
           directiveSignature: nil
         )
         
@@ -116,7 +106,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           manifest: nil,
           manifestSignature: nil,
           certificateChain: nil,
-          directive: TestHelper.testDirectiveNoUpdateAvailable,
+          directive: CertificateFixtures.testDirectiveNoUpdateAvailable,
           directiveSignature: nil
         )
         
@@ -158,7 +148,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           manifest: nil,
           manifestSignature: nil,
           certificateChain: nil,
-          directive: TestHelper.testDirectiveNoUpdateAvailable,
+          directive: CertificateFixtures.testDirectiveNoUpdateAvailable,
           directiveSignature: nil
         )
         
@@ -217,7 +207,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       it("json body signed") {
         let config = UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
-          UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: modernJSONCertificate,
+          UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: getTestCertificate(.test),
           UpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: [:],
         ])
         let downloader = FileDownloader(config: config)
@@ -230,11 +220,11 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
             "expo-protocol-version": "0",
             "expo-sfv-version": "0",
             "content-type": contentType,
-            "expo-signature": modernJSONSignature,
+            "expo-signature": CertificateFixtures.testNewManifestBodySignature,
           ]
         )!
         
-        let bodyData = modernJSON.data(using: .utf8)!
+        let bodyData = CertificateFixtures.testNewManifestBody.data(using: .utf8)!
         
         var resultUpdateResponse: UpdateResponse? = nil
         var errorOccurred: (any Error)? = nil
@@ -252,7 +242,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       it("multipart body signed") {
         let config = UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
-          UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: modernJSONCertificate,
+          UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: getTestCertificate(.test),
           UpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: [:],
         ])
         let downloader = FileDownloader(config: config)
@@ -272,11 +262,11 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
         
         let bodyData = FileDownloaderManifestParsingSpec.mutlipartData(
           boundary: boundary,
-          manifest: modernJSON,
-          manifestSignature: modernJSONSignature,
+          manifest: CertificateFixtures.testNewManifestBody,
+          manifestSignature: CertificateFixtures.testNewManifestBodySignature,
           certificateChain: nil,
-          directive: TestHelper.testDirectiveNoUpdateAvailable,
-          directiveSignature: TestHelper.testDirectiveNoUpdateAvailableSignature
+          directive: CertificateFixtures.testDirectiveNoUpdateAvailable,
+          directiveSignature: CertificateFixtures.testDirectiveNoUpdateAvailableSignature
         )
         
         var resultUpdateResponse: UpdateResponse? = nil
@@ -300,7 +290,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       it("json body expects signed receives unsigned") {
         let config = UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
-          UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: modernJSONCertificate,
+          UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: getTestCertificate(.test),
           UpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: [:],
         ])
         let downloader = FileDownloader(config: config)
@@ -316,7 +306,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           ]
         )!
         
-        let bodyData = modernJSON.data(using: .utf8)!
+        let bodyData = CertificateFixtures.testNewManifestBody.data(using: .utf8)!
         
         var resultUpdateResponse: UpdateResponse? = nil
         var errorOccurred: (any Error)? = nil
@@ -333,7 +323,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       it("multipart body signed certificate particular experience") {
         let config = UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
-          UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: rootCertificate,
+          UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: getTestCertificate(.chainRoot),
           UpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: [
             "keyid": "ca-root",
           ],
@@ -356,11 +346,11 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
         
         let bodyData = FileDownloaderManifestParsingSpec.mutlipartData(
           boundary: boundary,
-          manifest: modernJSON,
-          manifestSignature: chainLeafSignature,
-          certificateChain: "\(leafCertificate)\(intermediateCertificate)",
-          directive: TestHelper.testDirectiveNoUpdateAvailable,
-          directiveSignature: TestHelper.testDirectiveNoUpdateAvailableValidChainLeafSignature
+          manifest: CertificateFixtures.testNewManifestBody,
+          manifestSignature: CertificateFixtures.testNewManifestBodyValidChainLeafSignature,
+          certificateChain: "\(getTestCertificate(.chainLeaf))\(getTestCertificate(.chainIntermediate))",
+          directive: CertificateFixtures.testDirectiveNoUpdateAvailable,
+          directiveSignature: CertificateFixtures.testDirectiveNoUpdateAvailableValidChainLeafSignature
         )
         
         var resultUpdateResponse: UpdateResponse? = nil
@@ -382,7 +372,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       it("multipart body signed certificate particular experience incorrect experience in manifest") {
         let config = UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
-          UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: rootCertificate,
+          UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: getTestCertificate(.chainRoot),
           UpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: [
             "keyid": "ca-root",
           ],
@@ -405,9 +395,9 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
         
         let bodyData = FileDownloaderManifestParsingSpec.mutlipartData(
           boundary: boundary,
-          manifest: manifestBodyIncorrectProjectId,
-          manifestSignature: validChainLeafSignatureIncorrectProjectId,
-          certificateChain: "\(leafCertificate)\(intermediateCertificate)",
+          manifest: CertificateFixtures.testNewManifestBodyIncorrectProjectId,
+          manifestSignature: CertificateFixtures.testNewManifestBodyValidChainLeafSignatureIncorrectProjectId,
+          certificateChain: "\(getTestCertificate(.chainLeaf))\(getTestCertificate(.chainIntermediate))",
           directive: nil,
           directiveSignature: nil
         )
@@ -427,7 +417,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       it("multipart body signed certificate particular experience incorrect experience in directive") {
         let config = UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
-          UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: rootCertificate,
+          UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: getTestCertificate(.chainRoot),
           UpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: [
             "keyid": "ca-root",
           ],
@@ -452,9 +442,9 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           boundary: boundary,
           manifest: nil,
           manifestSignature: nil,
-          certificateChain: "\(leafCertificate)\(intermediateCertificate)",
-          directive: TestHelper.testDirectiveNoUpdateAvailableIncorrectProjectId,
-          directiveSignature: TestHelper.testDirectiveNoUpdateAvailableValidChainLeafSignatureIncorrectProjectId
+          certificateChain: "\(getTestCertificate(.chainLeaf))\(getTestCertificate(.chainIntermediate))",
+          directive: CertificateFixtures.testDirectiveNoUpdateAvailableIncorrectProjectId,
+          directiveSignature: CertificateFixtures.testDirectiveNoUpdateAvailableValidChainLeafSignatureIncorrectProjectId
         )
         
         var resultUpdateResponse: UpdateResponse? = nil
@@ -472,7 +462,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
       it("json body signed unsigned request manifest signature optional") {
         let config = UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
-          UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: modernJSONCertificate,
+          UpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey: getTestCertificate(.test),
           UpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey: [:],
           UpdatesConfig.EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey: true
         ])
@@ -489,7 +479,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
           ]
         )!
         
-        let bodyData = modernJSON.data(using: .utf8)!
+        let bodyData = CertificateFixtures.testNewManifestBody.data(using: .utf8)!
         
         var resultUpdateResponse: UpdateResponse? = nil
         var errorOccurred: (any Error)? = nil
