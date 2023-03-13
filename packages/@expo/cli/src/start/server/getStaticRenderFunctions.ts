@@ -39,6 +39,7 @@ type StaticRenderOptions = {
   // Ensure the style format is `css-xxxx` (prod) instead of `css-view-xxxx` (dev)
   dev?: boolean;
   minify?: boolean;
+  platform?: string;
 };
 
 const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredModuleId: string) => {
@@ -69,11 +70,22 @@ export async function getStaticRenderFunctionsContentAsync(
     moduleId = await moveStaticRenderFunction(projectRoot, requiredModuleId);
   }
 
-  const serverPath = path.relative(root, moduleId).replace(/\.[jt]sx?$/, '.bundle');
-  console.log(serverPath);
-  debug('Loading render functions from:', moduleId, moduleId, root);
+  return requireFileContentsWithMetro(root, devServerUrl, moduleId, { dev, minify });
+}
 
-  const res = await fetch(`${devServerUrl}/${serverPath}?platform=web&dev=${dev}&minify=${minify}`);
+export async function requireFileContentsWithMetro(
+  projectRoot: string,
+  devServerUrl: string,
+  absoluteFilePath: string,
+  { dev = false, platform = 'web', minify = false }: StaticRenderOptions = {}
+): Promise<string> {
+  const root = getMetroServerRoot(projectRoot);
+  const serverPath = path.relative(root, absoluteFilePath).replace(/\.[jt]sx?$/, '.bundle');
+  debug('fetching from Metro:', root, serverPath);
+
+  const res = await fetch(
+    `${devServerUrl}/${serverPath}?platform=${platform}&dev=${dev}&minify=${minify}`
+  );
 
   // TODO: Improve error handling
   if (res.status === 500) {
@@ -92,6 +104,20 @@ export async function getStaticRenderFunctionsContentAsync(
   const content = await res.text();
 
   return wrapBundle(content);
+}
+export async function requireWithMetro<T>(
+  projectRoot: string,
+  devServerUrl: string,
+  absoluteFilePath: string,
+  options: StaticRenderOptions = {}
+): Promise<T> {
+  const content = await requireFileContentsWithMetro(
+    projectRoot,
+    devServerUrl,
+    absoluteFilePath,
+    options
+  );
+  return profile(requireString, 'eval-metro-bundle')(content);
 }
 
 export async function getStaticRenderFunctions(

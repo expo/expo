@@ -10,7 +10,8 @@ import assert from 'assert';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
-import resolveFrom from 'resolve-from';
+import { promisify } from 'util';
+import resolve from 'resolve';
 
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
@@ -18,7 +19,11 @@ import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
-import { getStaticRenderFunctions, getStaticPageContentsAsync } from '../getStaticRenderFunctions';
+import {
+  getStaticRenderFunctions,
+  getStaticPageContentsAsync,
+  requireWithMetro,
+} from '../getStaticRenderFunctions';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
@@ -32,6 +37,11 @@ import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.
 import { instantiateMetroAsync } from './instantiateMetro';
 import { waitForMetroToObserveTypeScriptFile } from './waitForMetroToObserveTypeScriptFile';
 
+const resolveAsync = promisify(resolve) as any as (
+  id: string,
+  opts: resolve.AsyncOpts
+) => Promise<string | null>;
+
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
 /** Default port to use for apps running in Expo Go. */
@@ -40,6 +50,11 @@ const EXPO_GO_METRO_PORT = 19000;
 /** Default port to use for apps that run in standard React Native projects or Expo Dev Clients. */
 const DEV_CLIENT_METRO_PORT = 8081;
 
+import { ExpoResponse, installGlobals } from './installGlobals';
+
+if (env.EXPO_USE_API_ROUTES) {
+  installGlobals();
+}
 export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: import('metro').Server | null = null;
 
@@ -151,7 +166,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     if (env.EXPO_USE_API_ROUTES) {
       // Middleware for hosting middleware
-      middleware.use((req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+      middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
         if (!req?.url || !req.method) {
           return next();
         }
@@ -165,17 +180,35 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           return next();
         }
 
+        let resolved: string | null = null;
+        try {
+          resolved = await resolveAsync(
+            // TODO: Document this format of +api
+            '.' + pathname,
+            {
+              extensions: ['+api.js', '+api.jsx', '+api.ts', '+api.tsx'],
+              basedir: path.join(
+                this.projectRoot,
+                // TODO: Support other directories via app.json
+                'app'
+              ),
+            }
+          );
+        } catch (error) {
+          return next();
+        }
+
         // 2. Check if it's a middleware, e.g. `./app/thing+api.js` exists
         // TODO: Search through group syntax
-        const resolved = resolveFrom.silent(
-          path.join(
-            this.projectRoot,
-            // TODO: Support other directories via app.json
-            'app'
-          ),
-          // TODO: Document this format of +api
-          '.' + pathname + '+api'
-        );
+        // const resolved = resolveFrom.silent(
+        //   path.join(
+        //     this.projectRoot,
+        //     // TODO: Support other directories via app.json
+        //     'app'
+        //   ),
+        //   // TODO: Document this format of +api
+        //   '.' + pathname + '+api'
+        // );
 
         debug('Check API route:', resolved, path.join(this.projectRoot, 'app'), pathname);
 
@@ -185,7 +218,19 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
         // 3. Import middleware file
         // TODO: Bundle with Metro to support esmodules -- needs externals to work correctly...
-        const middleware = fresh(resolved);
+        const devServerUrl = `http://localhost:${options.port}`;
+
+        const middleware = await requireWithMetro<Record<string, any>>(
+          this.projectRoot,
+          devServerUrl,
+          resolved,
+          {
+            minify: options.mode === 'production',
+            dev: options.mode !== 'production',
+          }
+        );
+
+        // const middleware = fresh(resolved);
 
         debug(
           `Supported methods (API route exports):`,
@@ -197,8 +242,38 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         // Interop default
         const func = middleware[req.method];
 
-        // 4. Execute.
-        return func?.(req, res, next);
+        try {
+          // 4. Execute.
+          const response = (await func?.(req, res, next)) as ExpoResponse | undefined;
+
+          // 5. Respond
+          if (response) {
+            if (response.headers) {
+              for (const [key, value] of Object.entries(response.headers)) {
+                res.setHeader(key, value);
+              }
+            }
+
+            if (response.status) {
+              res.statusCode = response.status;
+            }
+
+            if (response.body) {
+              res.end(response.body);
+            } else {
+              res.end();
+            }
+          } else {
+            // TODO: Not sure what to do here yet
+            res.statusCode = 404;
+            res.end();
+          }
+        } catch (error) {
+          // TODO: Symbolicate error stack
+          console.error(error);
+          res.statusCode = 500;
+          res.end();
+        }
       });
     }
 
