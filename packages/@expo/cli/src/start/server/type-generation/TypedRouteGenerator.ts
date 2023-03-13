@@ -192,11 +192,12 @@ function expandGroupRoutes(route: string, routes: Set<string> = new Set()): Set<
   return routes;
 }
 
-const routerDotTSTemplate = unsafeTemplate`
-import "expo-router"
+const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
+  import type { LinkProps as OriginalLinkProps } from "expo-router/build/link/Link";
+  export * from "expo-router/build";
 
-declare module "expo-router" {
   type SearchOrHash = \`?\${string}\` | \`#\${string}\`;
+
 
   type PathString = \`./\${string}\` | \`/\${string}\`;
 
@@ -235,5 +236,17 @@ declare module "expo-router" {
     /** Query parameters for the path. */
     params?: RouteParams<T>
   }
+
+  export interface LinkProps<T extends string = ""> extends OriginalLinkProps {
+    href: Href<T>;
+  }
+
+  export interface LinkComponent {
+    <T>(props: React.PropsWithChildren<LinkProps<T>>): JSX.Element;
+    /** Helper method to resolve an Href object into a string. */
+    resolveHref: <T>(href: Href<T>) => string;
+  }
+
+  export const Link: LinkComponent;
 }
 `;
