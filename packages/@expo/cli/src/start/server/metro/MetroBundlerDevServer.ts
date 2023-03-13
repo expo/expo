@@ -1,16 +1,24 @@
+/**
+ * Copyright © 2022 650 Industries.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 import { getConfig } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
+import assert from 'assert';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
-import { parse } from 'url';
 
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
+import { env } from '../../../utils/env';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import { getStaticRenderFunctions, getStaticPageContentsAsync } from '../getStaticRenderFunctions';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
@@ -53,6 +61,32 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return port;
   }
 
+  /** Get routes from Expo Router. */
+  async getRoutesAsync() {
+    const url = this.getDevServerUrl();
+    assert(url, 'Dev server must be started');
+    const { getManifest } = await getStaticRenderFunctions(this.projectRoot, url);
+    return getManifest({ fetchData: true });
+  }
+
+  async getStaticPageAsync(
+    pathname: string,
+    {
+      mode,
+    }: {
+      mode: 'development' | 'production';
+    }
+  ) {
+    const location = new URL(pathname, 'https://example.dev');
+
+    const load = await getStaticPageContentsAsync(this.projectRoot, this.getDevServerUrl()!, {
+      minify: mode === 'production',
+      dev: mode !== 'production',
+    });
+
+    return await load(location);
+  }
+
   protected async startImplementationAsync(
     options: BundlerStartOptions
   ): Promise<DevServerInstance> {
@@ -82,7 +116,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // then the manifest handler will never run, the static middleware will run
     // and serve index.html instead of the manifest.
     // https://github.com/expo/expo/issues/13114
-    prependMiddleware(middleware, manifestMiddleware);
+
+    prependMiddleware(middleware, manifestMiddleware.getHandler());
 
     middleware.use(
       new InterstitialPageMiddleware(this.projectRoot, {
@@ -114,46 +149,116 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
     }
 
-    // Middleware for hosting middleware
-    middleware.use((req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-      if (!req?.url || !req.method) {
-        return next();
-      }
+    if (env.EXPO_USE_API_ROUTES) {
+      // Middleware for hosting middleware
+      middleware.use((req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+        if (!req?.url || !req.method) {
+          return next();
+        }
 
-      // 1. Get pathname, e.g. `/thing`
-      const pathname = parse(req.url).pathname?.replace(/\/$/, '');
+        const location = new URL(req.url, 'https://example.dev');
 
-      if (!pathname) {
-        return next();
-      }
+        // 1. Get pathname, e.g. `/thing`
+        const pathname = location.pathname?.replace(/\/$/, '');
 
-      // 2. Check if it's a middleware, e.g. `./app/thing+api.js` exists
-      // TODO: Search through group syntax
-      const resolved = resolveFrom.silent(
-        path.join(this.projectRoot, 'app'),
-        '.' + pathname + '+api'
-      );
+        if (!pathname) {
+          return next();
+        }
 
-      console.log('check:', resolved, path.join(this.projectRoot, 'app'), pathname);
-      if (!resolved || !fs.existsSync(resolved)) {
-        return next();
-      }
+        // 2. Check if it's a middleware, e.g. `./app/thing+api.js` exists
+        // TODO: Search through group syntax
+        const resolved = resolveFrom.silent(
+          path.join(
+            this.projectRoot,
+            // TODO: Support other directories via app.json
+            'app'
+          ),
+          // TODO: Document this format of +api
+          '.' + pathname + '+api'
+        );
 
-      // 3. Import middleware file
-      const middleware = fresh(resolved);
+        debug('Check API route:', resolved, path.join(this.projectRoot, 'app'), pathname);
 
-      // Interop default
-      const func = middleware[req.method];
-      // const func = middleware.default || middleware;
+        if (!resolved || !fs.existsSync(resolved)) {
+          return next();
+        }
 
-      console.log('run:', req.method, func, Object.keys(middleware));
-      // 4. Execute.
-      return func?.(req, res, next);
-    });
+        // 3. Import middleware file
+        // TODO: Bundle with Metro to support esmodules -- needs externals to work correctly...
+        const middleware = fresh(resolved);
+
+        debug(
+          `Supported methods (API route exports):`,
+          Object.keys(middleware),
+          ' -> ',
+          req.method
+        );
+
+        // Interop default
+        const func = middleware[req.method];
+
+        // 4. Execute.
+        return func?.(req, res, next);
+      });
+    }
 
     if (this.isTargetingWeb()) {
+      const devServerUrl = `http://localhost:${options.port}`;
+
+      if (env.EXPO_USE_STATIC) {
+        middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+          if (!req?.url) {
+            return next();
+          }
+
+          // TODO: Formal manifest for allowed paths
+          if (req.url.endsWith('.ico')) {
+            return next();
+          }
+
+          const location = new URL(req.url, devServerUrl);
+
+          try {
+            const { getStaticContent } = await getStaticRenderFunctions(
+              this.projectRoot,
+              devServerUrl,
+              {
+                minify: options.mode === 'production',
+                dev: options.mode !== 'production',
+              }
+            );
+
+            let content = await getStaticContent(location);
+
+            //TODO: Not this -- disable injection some other way
+            if (options.mode !== 'production') {
+              // Add scripts for rehydration
+              // TODO: bundle split
+              content = content.replace(
+                '</body>',
+                [`<script src="${manifestMiddleware.getWebBundleUrl()}" defer></script>`].join(
+                  '\n'
+                ) + '</body>'
+              );
+            }
+
+            res.setHeader('Content-Type', 'text/html');
+            res.end(content);
+            return;
+          } catch (error: any) {
+            console.error(error);
+            res.setHeader('Content-Type', 'text/html');
+            res.end(getErrorResult(error));
+          }
+        });
+      }
+
       // This MUST run last since it's the fallback.
-      middleware.use(new HistoryFallbackMiddleware(manifestMiddleware.internal).getHandler());
+      if (!env.EXPO_USE_STATIC) {
+        middleware.use(
+          new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
+        );
+      }
     }
     // Extend the close method to ensure that we clean up the local info.
     const originalClose = server.close.bind(server);
@@ -224,6 +329,23 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   protected getConfigModuleIds(): string[] {
     return ['./metro.config.js', './metro.config.json', './rn-cli.config.js'];
   }
+}
+
+function getErrorResult(error: Error) {
+  return `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Error</title>
+  </head>
+  <body>
+    <h1>Failed to render static app</h1>
+    <pre>${error.stack}</pre>
+  </body>
+  </html>
+  `;
 }
 
 export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
