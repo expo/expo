@@ -1,20 +1,13 @@
 import { css } from '@emotion/react';
-import {
-  borderRadius,
-  breakpoints,
-  shadows,
-  spacing,
-  theme,
-  ArrowUpRightIcon,
-  iconSize,
-} from '@expo/styleguide';
+import { Button, theme, shadows } from '@expo/styleguide';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons';
+import { borderRadius, breakpoints, spacing, iconSize } from '@expo/styleguide-base';
 import isBefore from 'date-fns/isBefore';
 import { useRouter } from 'next/router';
 import React from 'react';
 
 import { Background } from './Background';
 
-import { Button } from '~/ui/components/Button';
 import { CALLOUT, HEADLINE } from '~/ui/components/Text';
 
 export function AppJSBanner() {
@@ -28,8 +21,8 @@ export function AppJSBanner() {
   }
 
   return (
-    <div css={containerStyle}>
-      <div css={backgroundStyle}>
+    <div className='relative flex justify-between items-center bg-[#0019C1] py-4 px-6 rounded-md overflow-hidden gap-3 shadow-xs my-6 flex-wrap'>
+      <div className='absolute -top-1 -left-1'>
         <Background />
       </div>
       <div>
@@ -39,41 +32,16 @@ export function AppJSBanner() {
         </CALLOUT>
       </div>
       <Button
-        size="mini"
-        href="https://appjs.co"
+        size='xs'
+        href='https://appjs.co'
         openInNewTab
-        css={learnMoreButtonStyle}
-        iconRight={<ArrowUpRightIcon color="#0019C1" size={iconSize.sm} />}>
+        className='bg-palette-white text-[#0019C1] border-none'
+        rightSlot={<ArrowUpRightIcon className='icon-sm text-[#0019C1]' />}>
         Learn more
       </Button>
     </div>
   );
 }
-
-const containerStyle = css({
-  position: 'relative',
-  display: 'flex',
-  justifyContent: 'space-between',
-  alignItems: 'center',
-  backgroundColor: '#0019C1',
-  padding: `${spacing[4]}px ${spacing[6]}px ${spacing[4]}px ${spacing[4]}px`,
-  borderRadius: borderRadius.md,
-  overflow: 'hidden',
-  gap: spacing[3],
-  boxShadow: shadows.xs,
-  marginTop: spacing[6],
-  marginBottom: spacing[6],
-
-  [`@media (max-width: ${breakpoints.medium}px)`]: {
-    flexWrap: 'wrap',
-  },
-});
-
-const backgroundStyle = css({
-  position: 'absolute',
-  top: -4,
-  left: -4,
-});
 
 const headlineStyle = css({
   position: 'relative',
@@ -84,9 +52,4 @@ const headlineStyle = css({
 const descriptionStyle = css({
   position: 'relative',
   color: '#CCD3FF',
-});
-
-const learnMoreButtonStyle = css({
-  backgroundColor: theme.palette.white,
-  color: '#0019C1',
 });
