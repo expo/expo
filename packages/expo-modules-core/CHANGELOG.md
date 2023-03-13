@@ -13,7 +13,7 @@
 
 ### 💡 Others
 
-- [Android] Made `fallbackCallback` optional in the `registerForActivityResult` method.
+- [Android] Made `fallbackCallback` optional in the `registerForActivityResult` method. ([#21661](https://github.com/expo/expo/pull/21661) by [@lukmccall](https://github.com/lukmccall))
 
 ## 1.2.3 - 2023-02-21
 
