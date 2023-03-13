@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
 import { theme, typography } from '@expo/styleguide';
-import { spacing, breakpoints } from '@expo/styleguide-base';
+import { spacing, breakpoints, borderRadius } from '@expo/styleguide-base';
 import {
   ArrowUpRightIcon,
   ArrowRightIcon,
@@ -14,6 +14,7 @@ import type { PropsWithChildren } from 'react';
 import { Container, Row, ScreenClassProvider } from 'react-grid-system';
 
 import DocumentationPage from '~/components/DocumentationPage';
+import { AppJSBanner } from '~/ui/components/AppJSBanner';
 import { APIGridCell, CommunityGridCell, GridCell, HomeButton } from '~/ui/components/Home';
 import {
   APICameraIcon,
@@ -58,6 +59,7 @@ const Home = () => {
         <Description>
           Build one JavaScript/TypeScript project that runs natively on all your users' devices.
         </Description>
+        <AppJSBanner />
         <CellContainer>
           <Row>
             <GridCell xl={4} lg={12} css={quickStartCellStyle}>
@@ -311,6 +313,7 @@ const baseGradientStyle = css({
   width: '100%',
   height: '100%',
   position: 'absolute',
+  borderRadius: borderRadius.lg,
 });
 
 const quickStartCellStyle = css({

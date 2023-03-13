@@ -1,5 +1,13 @@
 import { css } from '@emotion/react';
-import { borderRadius, breakpoints, shadows, spacing, theme } from '@expo/styleguide';
+import {
+  borderRadius,
+  breakpoints,
+  shadows,
+  spacing,
+  theme,
+  ArrowUpRightIcon,
+  iconSize,
+} from '@expo/styleguide';
 import isBefore from 'date-fns/isBefore';
 import { useRouter } from 'next/router';
 import React from 'react';
@@ -30,7 +38,12 @@ export function AppJSBanner() {
           An Expo &amp; React Native conference in Europe is back, May 10-12 in Kraków, Poland!
         </CALLOUT>
       </div>
-      <Button size="mini" href="https://appjs.co" openInNewTab css={learnMoreButtonStyle}>
+      <Button
+        size="mini"
+        href="https://appjs.co"
+        openInNewTab
+        css={learnMoreButtonStyle}
+        iconRight={<ArrowUpRightIcon color="#0019C1" size={iconSize.sm} />}>
         Learn more
       </Button>
     </div>
@@ -48,7 +61,8 @@ const containerStyle = css({
   overflow: 'hidden',
   gap: spacing[3],
   boxShadow: shadows.xs,
-  marginBottom: spacing[10],
+  marginTop: spacing[6],
+  marginBottom: spacing[6],
 
   [`@media (max-width: ${breakpoints.medium}px)`]: {
     flexWrap: 'wrap',
