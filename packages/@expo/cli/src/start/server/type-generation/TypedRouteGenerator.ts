@@ -248,5 +248,18 @@ const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
   }
 
   export const Link: LinkComponent;
+
+  export type Router<T extends string = never> = {
+    /** Navigate to the provided href. */
+    push: (href: Href<T>) => void;
+    /** Navigate to route without appending to the history. */
+    replace: (href: Href<T>) => void;
+    /** Go back in the history. */
+    back: () => void;
+    /** Update the current route query params. */
+    setParams: (params?: T extends string ? RouteParams<T> : Record<string, string>) => void;
+  };
+
+  export declare function useRouter<T extends string>(): Router<T>
 }
 `;
