@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { Button, theme } from '@expo/styleguide';
-import { ArrowUpRightIcon } from '@expo/styleguide-icons';
 import { spacing } from '@expo/styleguide-base';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons';
 import isBefore from 'date-fns/isBefore';
 import { useRouter } from 'next/router';
 import React from 'react';
@@ -21,8 +21,8 @@ export function AppJSBanner() {
   }
 
   return (
-    <div className='relative flex justify-between items-center bg-[#0019C1] py-4 px-6 rounded-md overflow-hidden gap-3 shadow-xs my-6 flex-wrap'>
-      <div className='absolute -top-1 -left-1'>
+    <div className="relative flex justify-between items-center bg-[#0019C1] py-4 px-6 rounded-md overflow-hidden gap-3 shadow-xs my-6 flex-wrap">
+      <div className="absolute -top-1 -left-1">
         <Background />
       </div>
       <div>
@@ -32,11 +32,11 @@ export function AppJSBanner() {
         </CALLOUT>
       </div>
       <Button
-        size='xs'
-        href='https://appjs.co'
+        size="xs"
+        href="https://appjs.co"
         openInNewTab
-        className='bg-palette-white text-[#0019C1] border-none'
-        rightSlot={<ArrowUpRightIcon className='icon-sm text-[#0019C1]' />}>
+        className="bg-palette-white text-[#0019C1] border-none"
+        rightSlot={<ArrowUpRightIcon className="icon-sm text-[#0019C1]" />}>
         Learn more
       </Button>
     </div>
