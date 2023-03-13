@@ -9,7 +9,7 @@ EAS Update can help us fix critical bugs in production. It can also help us iter
 
 ## Developing locally
 
-When developing locally, `npx expo start` will start a server that serves a manifest and assets to Expo Go and development builds. Locally, those builds look for a local manifest, and when there's an update, they'll download any missing local assets. To accomplish this, Expo Go/development builds use a protocol. That protocol is either a classic version of the updates protocol (used with Classic Updates), or the modern version of the [updates protocol](/technical-specs/expo-updates-0) (used with EAS Update).
+When developing locally, `npx expo start` will start a server that serves a manifest and assets to Expo Go and development builds. Locally, those builds look for a local manifest, and when there's an update, they'll download any missing local assets. To accomplish this, Expo Go/development builds use a protocol. That protocol is either a classic version of the updates protocol (used with Classic Updates), or the modern version of the [updates protocol](/technical-specs/expo-updates-1) (used with EAS Update).
 
 We want to make sure that our locally developed app is using the same protocol locally as it does when we build our app.
 

@@ -7,7 +7,7 @@ import EXStructuredHeaders
 internal final class NewUpdate: Update {
   /**
    * Method for initializing updates with modern format manifests that conform to the Expo Updates
-   * specification (https://docs.expo.dev/technical-specs/expo-updates-0/). This is used by EAS
+   * specification (https://docs.expo.dev/technical-specs/expo-updates-1/). This is used by EAS
    * Update.
    */
   static func update(
