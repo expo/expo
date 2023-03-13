@@ -55,19 +55,25 @@ class ConvertiblesSpec: ExpoSpec {
         expect(url.fragment) == "anchor"
       }
 
-      it("converts from url containing percent character") {
-        // The percent character alone requires percent-encoding to `%25`.
-        let query = "param=%"
-        let urlString = "https://expo.dev/?\(query)"
+      it("converts from url with encoded path") {
+        let path = "/expo/%2F%25%3F%5E%26/test" // -> /expo//%?^&/test
+        let urlString = "https://expo.dev\(path)"
         let url = try URL.convert(from: urlString)
 
+        expect(url.absoluteString) == urlString
+        expect(url.path) == path.removingPercentEncoding
+
         if #available(iOS 16.0, *) {
-          expect(url.query(percentEncoded: true)) == "param=%25"
-          expect(url.query(percentEncoded: false)) == query
+          expect(url.path(percentEncoded: true)) == path
+          expect(url.path(percentEncoded: false)) == path.removingPercentEncoding
         }
-        expect(url.query) == "param=%25"
-        expect(url.absoluteString) == "https://expo.dev/?param=%25"
-        expect(url.absoluteString.removingPercentEncoding) == urlString
+      }
+
+      it("throws when url contains percent alone") {
+        // The percent character alone must be percent-encoded to `%25` beforehand, otherwise it should throw an exception.
+        let urlString = "https://expo.dev/?param=%"
+
+        expect({ try URL.convert(from: urlString) }).to(throwError(errorType: UrlContainsInvalidCharactersException.self))
       }
 
       it("converts from url containing the anchor") {
