@@ -47,6 +47,10 @@ export async function typedRouteGenerator({
   const routesParams = new Map<string, Set<string>>();
 
   const addFilePath = (filePath: string) => {
+    if (filePath.includes('_layout')) {
+      return;
+    }
+
     // Remove the appDir prefix, extentions and index routes
     const route = filePath
       .replace(appDir, '')
