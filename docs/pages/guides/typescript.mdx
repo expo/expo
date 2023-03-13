@@ -105,6 +105,7 @@ The default alias is `@/`, but you can change this in your **tsconfig.json**:
 - `jsconfig.json` can be used instead of `tsconfig.json` if you are not using TypeScript.
 - Path aliases add additional resolution time when defined.
 - Path aliases are Metro-only (including Metro web) and not supported by `@expo/webpack-config`.
+- This feature requires additional setup in bare projects. See the [versioned Metro setup guide](/versions/latest/config/metro#bare-workflow-setup) for more information.
 
 ## Absolute Imports
 
@@ -134,6 +135,7 @@ The base directory can be modified in the **tsconfig.json** (or **jsconfig.json*
 - Expo CLI must be restarted to update [`compilerOptions.baseUrl`][baseurl] when you change the **tsconfig.json**.
 - `jsconfig.json` can be used instead of `tsconfig.json` if you are not using TypeScript.
 - Absolute imports are Metro-only (including Metro web) and not supported by `@expo/webpack-config`.
+- This feature requires additional setup in bare projects. See the [versioned Metro setup guide](/versions/latest/config/metro#bare-workflow-setup) for more information.
 
 [baseurl]: https://www.typescriptlang.org/docs/handbook/module-resolution.html#base-url
 

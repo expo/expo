@@ -51,7 +51,6 @@ describe(ensureSwiftBridgingHeaderSetup, () => {
     // Won't link a bridging header
     expect(getDesignatedSwiftBridgingHeaderFileReference({ project })).toBe(null);
 
-    console.log('jj', Object.keys(vol.toJSON()));
     expect(
       vol.existsSync(path.join(projectRoot, 'ios/HelloWorld/HelloWorld-Bridging-Header.h'))
     ).toBe(false);
