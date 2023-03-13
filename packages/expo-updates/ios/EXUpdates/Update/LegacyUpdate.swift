@@ -78,9 +78,9 @@ internal final class LegacyUpdate: Update {
       var type: String
 
       if let extensionStartIndex = extensionStartIndex {
-        filename = String(bundledAssetString[...extensionStartIndex])
-        let hashStartIndex = bundledAssetString.index(extensionStartIndex, offsetBy: -1 * prefixLength)
-        hash = String(bundledAssetString[hashStartIndex...extensionStartIndex])
+        filename = String(bundledAssetString[..<extensionStartIndex])
+        let hashStartIndex = bundledAssetString.index(bundledAssetString.startIndex, offsetBy: prefixLength)
+        hash = String(bundledAssetString[hashStartIndex..<extensionStartIndex])
         let typeStartIndex = bundledAssetString.index(extensionStartIndex, offsetBy: 1)
         type = String(bundledAssetString[typeStartIndex...])
       } else {
