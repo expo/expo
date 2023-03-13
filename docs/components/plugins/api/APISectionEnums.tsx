@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { spacing, theme } from '@expo/styleguide';
+import { theme } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
 
 import { EnumDefinitionData, EnumValueData } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';

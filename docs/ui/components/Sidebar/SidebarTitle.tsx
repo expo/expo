@@ -1,10 +1,11 @@
 import { css } from '@emotion/react';
-import { theme, spacing } from '@expo/styleguide';
-import * as React from 'react';
+import { theme } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
+import type { PropsWithChildren } from 'react';
 
 import { CALLOUT } from '../Text';
 
-type SidebarTitleProps = React.PropsWithChildren<object>;
+type SidebarTitleProps = PropsWithChildren;
 
 export const SidebarTitle = ({ children }: SidebarTitleProps) => (
   <div css={STYLES_TITLE}>

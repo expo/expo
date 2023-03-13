@@ -1,5 +1,7 @@
 import { css } from '@emotion/react';
-import { spacing, theme, ArrowUpRightIcon, iconSize, SnackLogo } from '@expo/styleguide';
+import { SnackLogo } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
+import { ArrowUpRightIcon } from '@expo/styleguide-icons';
 import { useEffect, useRef, useState, PropsWithChildren } from 'react';
 
 import { Snippet } from '../Snippet';
@@ -98,8 +100,8 @@ export const SnackInline = ({
           )}
           <SnippetAction
             disabled={!isReady}
-            icon={<SnackLogo height={iconSize.md} />}
-            iconRight={<ArrowUpRightIcon size={iconSize.sm} color={theme.icon.secondary} />}
+            icon={<SnackLogo />}
+            iconRight={<ArrowUpRightIcon className="icon-sm text-icon-secondary" />}
             type="submit">
             {buttonTitle || 'Open in Snack'}
           </SnippetAction>

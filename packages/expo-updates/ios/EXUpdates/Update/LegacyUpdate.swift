@@ -12,8 +12,8 @@ internal final class LegacyUpdate: Update {
    * Asset URLs are relative in this format, and we assume that if no base URL is explicitly provided,
    * the base URL is Expo's classic asset CDN.
    */
-  public static func update(
-    withLegacyManifest: EXManifestsLegacyManifest,
+  static func update(
+    withLegacyManifest: LegacyManifest,
     config: UpdatesConfig,
     database: UpdatesDatabase?
   ) -> Update {
@@ -119,7 +119,7 @@ internal final class LegacyUpdate: Update {
   private static let EXUpdatesExpHostDomain = "exp.host"
   private static let EXUpdatesExpoTestDomain = "expo.test"
 
-  public static func bundledAssetBaseUrl(withManifest: EXManifestsLegacyManifest, config: UpdatesConfig) -> URL {
+  static func bundledAssetBaseUrl(withManifest: LegacyManifest, config: UpdatesConfig) -> URL {
     let manifestUrl = config.updateUrl
     let host = manifestUrl?.host
 

@@ -355,8 +355,8 @@
 
 - (nullable NSURL *)sourceUrl
 {
-  if (_shouldPreferUpdatesInterfaceSourceUrl && _updatesInterface && _updatesInterface.launchAssetURL) {
-    return _updatesInterface.launchAssetURL;
+  if (_shouldPreferUpdatesInterfaceSourceUrl && _updatesInterface && ((id<EXUpdatesExternalInterface>)_updatesInterface).launchAssetURL) {
+    return ((id<EXUpdatesExternalInterface>)_updatesInterface).launchAssetURL;
   }
   return _sourceUrl;
 }
@@ -471,7 +471,7 @@
       // do nothing for now
     } success:^(NSDictionary * _Nullable manifest) {
       if (manifest) {
-        launchExpoApp(self->_updatesInterface.launchAssetURL, [EXManifestsManifestFactory manifestForManifestJSON:manifest]);
+        launchExpoApp(((id<EXUpdatesExternalInterface>)self->_updatesInterface).launchAssetURL, [EXManifestsManifestFactory manifestForManifestJSON:manifest]);
       }
     } error:onError];
   };
@@ -551,7 +551,7 @@
     }
 
     if (self.updatesInterface) {
-      self.updatesInterface.bridge = self.appBridge;
+      ((id<EXUpdatesExternalInterface>)self.updatesInterface).bridge = self.appBridge;
     }
   });
 }
