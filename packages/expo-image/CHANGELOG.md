@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - Fixed the `tintColor` not being passed to native view. ([#21576](https://github.com/expo/expo/pull/21576) by [@andrew-levy](https://github.com/andrew-levy))
+- Fixed `canvas: trying to use a recycled bitmap` on Android. ([#21658](https://github.com/expo/expo/pull/21658) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
