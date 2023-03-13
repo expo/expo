@@ -73,6 +73,24 @@ export async function getStaticRenderFunctionsContentAsync(
   return requireFileContentsWithMetro(root, devServerUrl, moduleId, { dev, minify });
 }
 
+async function ensureFileInRootDirectory(projectRoot: string, otherFile: string) {
+  // Cannot be accessed using Metro's server API, we need to move the file
+  // into the project root and try again.
+  if (!path.relative(projectRoot, otherFile).startsWith('../')) {
+    return otherFile;
+  }
+
+  // Copy the file into the project to ensure it works in monorepos.
+  // This means the file cannot have any relative imports.
+  const tempDir = path.join(projectRoot, '.expo/static-tmp');
+  await fs.promises.mkdir(tempDir, { recursive: true });
+  const moduleId = path.join(tempDir, path.basename(otherFile));
+  await fs.promises.writeFile(moduleId, await fs.promises.readFile(otherFile, 'utf8'));
+  // Sleep to give watchman time to register the file.
+  await delayAsync(50);
+  return moduleId;
+}
+
 export async function requireFileContentsWithMetro(
   projectRoot: string,
   devServerUrl: string,
@@ -80,7 +98,8 @@ export async function requireFileContentsWithMetro(
   { dev = false, platform = 'web', minify = false }: StaticRenderOptions = {}
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
-  const serverPath = path.relative(root, absoluteFilePath).replace(/\.[jt]sx?$/, '.bundle');
+  const safeOtherFile = await ensureFileInRootDirectory(projectRoot, absoluteFilePath);
+  const serverPath = path.relative(root, safeOtherFile).replace(/\.[jt]sx?$/, '.bundle');
   debug('fetching from Metro:', root, serverPath);
 
   const res = await fetch(

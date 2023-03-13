@@ -51,10 +51,13 @@ const EXPO_GO_METRO_PORT = 19000;
 const DEV_CLIENT_METRO_PORT = 8081;
 
 import { ExpoResponse, installGlobals } from './installGlobals';
+import resolveFrom from 'resolve-from';
 
 if (env.EXPO_USE_API_ROUTES) {
   installGlobals();
 }
+
+import { sync as globSync } from 'glob';
 export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: import('metro').Server | null = null;
 
@@ -180,13 +183,42 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           return next();
         }
 
+        const devServerUrl = `http://localhost:${options.port}`;
+
+        const allFiles = await globSync('**/*+api.@(ts|tsx|js|jsx)', {
+          cwd: path.join(this.projectRoot, 'app'),
+          absolute: false,
+        }).map((path) => './' + path);
+
+        const matchNodePath = path.join(
+          resolveFrom(this.projectRoot, 'expo-router/package.json'),
+          '../match-node.ts'
+        );
+        const { buildMatcher } = await requireWithMetro<Record<string, any>>(
+          this.projectRoot,
+          devServerUrl,
+          matchNodePath,
+          {
+            minify: options.mode === 'production',
+            dev: options.mode !== 'production',
+          }
+        );
+
+        const matcher = buildMatcher(allFiles);
+
+        const node = await matcher(pathname);
+
+        if (!node?._route?.contextKey.match(/\+api\.[ts]x?/)) {
+          return next();
+        }
+
         let resolved: string | null = null;
         try {
           resolved = await resolveAsync(
             // TODO: Document this format of +api
-            '.' + pathname,
+            node._route.contextKey,
             {
-              extensions: ['+api.js', '+api.jsx', '+api.ts', '+api.tsx'],
+              extensions: ['.js', '.jsx', '.ts', '.tsx'],
               basedir: path.join(
                 this.projectRoot,
                 // TODO: Support other directories via app.json
@@ -218,7 +250,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
         // 3. Import middleware file
         // TODO: Bundle with Metro to support esmodules -- needs externals to work correctly...
-        const devServerUrl = `http://localhost:${options.port}`;
 
         const middleware = await requireWithMetro<Record<string, any>>(
           this.projectRoot,
