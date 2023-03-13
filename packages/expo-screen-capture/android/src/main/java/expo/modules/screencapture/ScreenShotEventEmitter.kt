@@ -7,18 +7,15 @@ import android.database.ContentObserver
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
-
-import androidx.core.content.ContextCompat
 import androidx.annotation.Nullable
-
+import androidx.core.content.ContextCompat
 import expo.modules.core.ModuleRegistry
 import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.core.interfaces.services.EventEmitter
 import expo.modules.core.interfaces.services.UIManager
-
-import java.lang.Exception
 
 class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistry) : LifecycleEventListener {
   private val onScreenshotEventName: String = "onScreenshot"
@@ -29,8 +26,11 @@ class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistr
   init {
     moduleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
     eventEmitter = moduleRegistry.getModule(EventEmitter::class.java)
-
-    val contentObserver: ContentObserver = object : ContentObserver(Handler()) {
+    val looper = Looper.myLooper()
+      ?: throw RuntimeException(
+        "Can't create handler inside thread ${Thread.currentThread()}"
+      )
+    val contentObserver: ContentObserver = object : ContentObserver(Handler(looper)) {
       override fun onChange(selfChange: Boolean, uri: Uri?) {
         super.onChange(selfChange, uri)
         if (isListening) {
