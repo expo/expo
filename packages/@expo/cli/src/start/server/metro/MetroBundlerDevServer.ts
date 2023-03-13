@@ -1,12 +1,21 @@
+/**
+ * Copyright © 2022 650 Industries.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
 import { getConfig } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
+import assert from 'assert';
 import chalk from 'chalk';
 
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
+import { env } from '../../../utils/env';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
+import { getStaticRenderFunctions, getStaticPageContentsAsync } from '../getStaticRenderFunctions';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
@@ -16,6 +25,7 @@ import {
   RuntimeRedirectMiddleware,
 } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
+import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { waitForMetroToObserveTypeScriptFile } from './waitForMetroToObserveTypeScriptFile';
 
@@ -48,6 +58,32 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     return port;
   }
 
+  /** Get routes from Expo Router. */
+  async getRoutesAsync() {
+    const url = this.getDevServerUrl();
+    assert(url, 'Dev server must be started');
+    const { getManifest } = await getStaticRenderFunctions(this.projectRoot, url);
+    return getManifest({ fetchData: true });
+  }
+
+  async getStaticPageAsync(
+    pathname: string,
+    {
+      mode,
+    }: {
+      mode: 'development' | 'production';
+    }
+  ) {
+    const location = new URL(pathname, 'https://example.dev');
+
+    const load = await getStaticPageContentsAsync(this.projectRoot, this.getDevServerUrl()!, {
+      minify: mode === 'production',
+      dev: mode !== 'production',
+    });
+
+    return await load(location);
+  }
+
   protected async startImplementationAsync(
     options: BundlerStartOptions
   ): Promise<DevServerInstance> {
@@ -77,7 +113,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     // then the manifest handler will never run, the static middleware will run
     // and serve index.html instead of the manifest.
     // https://github.com/expo/expo/issues/13114
-    prependMiddleware(middleware, manifestMiddleware);
+
+    prependMiddleware(middleware, manifestMiddleware.getHandler());
 
     middleware.use(
       new InterstitialPageMiddleware(this.projectRoot, {
@@ -108,8 +145,62 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
 
+      const devServerUrl = `http://localhost:${options.port}`;
+
+      if (env.EXPO_USE_STATIC) {
+        middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+          if (!req?.url) {
+            return next();
+          }
+
+          // TODO: Formal manifest for allowed paths
+          if (req.url.endsWith('.ico')) {
+            return next();
+          }
+
+          const location = new URL(req.url, devServerUrl);
+
+          try {
+            const { getStaticContent } = await getStaticRenderFunctions(
+              this.projectRoot,
+              devServerUrl,
+              {
+                minify: options.mode === 'production',
+                dev: options.mode !== 'production',
+              }
+            );
+
+            let content = await getStaticContent(location);
+
+            //TODO: Not this -- disable injection some other way
+            if (options.mode !== 'production') {
+              // Add scripts for rehydration
+              // TODO: bundle split
+              content = content.replace(
+                '</body>',
+                [`<script src="${manifestMiddleware.getWebBundleUrl()}" defer></script>`].join(
+                  '\n'
+                ) + '</body>'
+              );
+            }
+
+            res.setHeader('Content-Type', 'text/html');
+            res.end(content);
+            return;
+          } catch (error: any) {
+            console.error(error);
+            res.setHeader('Content-Type', 'text/html');
+            res.end(getErrorResult(error));
+          }
+        });
+      }
+
       // This MUST run last since it's the fallback.
-      middleware.use(new HistoryFallbackMiddleware(manifestMiddleware.internal).getHandler());
+      if (!env.EXPO_USE_STATIC) {
+        middleware.use(
+          new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
+        );
+      }
     }
     // Extend the close method to ensure that we clean up the local info.
     const originalClose = server.close.bind(server);
@@ -180,6 +271,23 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   protected getConfigModuleIds(): string[] {
     return ['./metro.config.js', './metro.config.json', './rn-cli.config.js'];
   }
+}
+
+function getErrorResult(error: Error) {
+  return `
+  <!DOCTYPE html>
+  <html lang="en">
+  <head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+    <title>Error</title>
+  </head>
+  <body>
+    <h1>Failed to render static app</h1>
+    <pre>${error.stack}</pre>
+  </body>
+  </html>
+  `;
 }
 
 export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {

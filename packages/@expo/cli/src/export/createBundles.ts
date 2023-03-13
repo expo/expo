@@ -1,7 +1,7 @@
 import { getConfig, Platform, ProjectTarget } from '@expo/config';
 
 import * as Log from '../log';
-import { resolveEntryPoint } from '../start/server/middleware/resolveEntryPoint';
+import { getEntryWithServerRoot } from '../start/server/middleware/ManifestMiddleware';
 import { bundleAsync, BundleOutput } from './fork-bundleAsync';
 
 export type PublishOptions = {
@@ -17,7 +17,8 @@ export async function createBundlesAsync(
   publishOptions: PublishOptions = {},
   bundleOptions: { platforms: Platform[]; dev?: boolean }
 ): Promise<Partial<Record<Platform, BundleOutput>>> {
-  const { exp } = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+  const projectConfig = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+  const { exp } = projectConfig;
 
   const bundles = await bundleAsync(
     projectRoot,
@@ -38,7 +39,7 @@ export async function createBundlesAsync(
     },
     bundleOptions.platforms.map((platform: Platform) => ({
       platform,
-      entryPoint: resolveEntryPoint(projectRoot, platform),
+      entryPoint: getEntryWithServerRoot(projectRoot, projectConfig, platform),
       dev: bundleOptions.dev,
     }))
   );
