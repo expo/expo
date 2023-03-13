@@ -33,6 +33,7 @@
     "@sentry/react": "^7.24.1",
     "@sentry/tracing": "^7.24.1",
     "cmdk": "^0.1.21",
+    "date-fns": "^2.29.3",
     "front-matter": "^4.0.2",
     "fs-extra": "^10.1.0",
     "github-slugger": "^1.3.0",
