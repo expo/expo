@@ -46,7 +46,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   private val activity: Activity
     get() = appContext.currentActivity ?: throw MissingActivity()
 
-  private val requestManager = getOrCreateRequestManager(appContext, activity)
+  internal val requestManager = getOrCreateRequestManager(appContext, activity)
   private val progressListener = OkHttpProgressListener(WeakReference(this))
 
   private val firstView = ExpoImageView(activity)
