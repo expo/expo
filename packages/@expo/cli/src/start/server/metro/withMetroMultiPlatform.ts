@@ -266,7 +266,7 @@ export async function withMetroMultiPlatformAsync(
   platformBundlers: PlatformBundlers
 ) {
   // Auto pick App entry: this is injected with Babel.
-  process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot);
+  process.env.EXPO_ROUTER_APP_ROOT = process.env.EXPO_ROUTER_APP_ROOT ?? getAppRouterRelativeEntryPath(projectRoot);
   process.env.EXPO_PROJECT_ROOT = process.env.EXPO_PROJECT_ROOT ?? projectRoot;
 
   if (platformBundlers.web === 'metro') {
