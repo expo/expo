@@ -35,7 +35,7 @@ export function AppJSBanner() {
         size="xs"
         href="https://appjs.co"
         openInNewTab
-        className="bg-palette-white text-[#0019C1] border-none"
+        className="bg-palette-white text-[#0019C1] border-none hocus:bg-palette-white hocus:opacity-80"
         rightSlot={<ArrowUpRightIcon className="icon-sm text-[#0019C1]" />}>
         Learn more
       </Button>
