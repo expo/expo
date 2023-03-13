@@ -156,7 +156,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       field = value
     }
 
-  internal var enableDownscaling: Boolean = true
+  internal var allowDownscaling: Boolean = true
     set(value) {
       field = value
       shouldRerender = true
@@ -395,7 +395,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   override fun onSizeChanged(w: Int, h: Int, oldw: Int, oldh: Int) {
     super.onSizeChanged(w, h, oldw, oldh)
     rerenderIfNeeded(
-      shouldRerenderBecauseOfResize = enableDownscaling &&
+      shouldRerenderBecauseOfResize = allowDownscaling &&
         contentFit != ContentFit.Fill &&
         contentFit != ContentFit.None
     )
@@ -482,9 +482,9 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       }
       newTarget.hasSource = sourceToLoad != null
 
-      val downsampleStrategy = if (enableDownscaling) {
+      val downsampleStrategy = if (allowDownscaling) {
         object : DownsampleStrategy() {
-          var wasTrigger = false
+          var wasTriggered = false
           override fun getScaleFactor(
             sourceWidth: Int,
             sourceHeight: Int,
@@ -494,10 +494,10 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
             // The method is invoked twice per asset, but we only need to preserve the original dimensions for the first call.
             // As Glide uses Android downsampling, it can only adjust dimensions by a factor of two,
             // and hence two distinct scaling factors are computed to achieve greater accuracy.
-            if (!wasTrigger) {
+            if (!wasTriggered) {
               newTarget.sourceWidth = sourceWidth
               newTarget.sourceHeight = sourceHeight
-              wasTrigger = true
+              wasTriggered = true
             }
 
             // The size of the container is unknown, we don't know what to do, so we just run the default scale.
@@ -505,35 +505,42 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
               return 1f
             }
 
-            val rW = requestedWidth.toFloat()
-            val rH = requestedHeight.toFloat()
-            val sW = sourceWidth.toFloat()
-            val sH = sourceHeight.toFloat()
-
-            val aspectRation = when (contentFit) {
-              ContentFit.Contain -> min(
-                rW / sW,
-                rH / sH
-              )
-              ContentFit.Cover -> max(
-                rW / sW,
-                rH / sH
-              )
-              ContentFit.Fill, ContentFit.None -> 1f
-              ContentFit.ScaleDown -> if (requestedWidth < sourceWidth || requestedHeight < sourceHeight) {
-                // The container is smaller than the image — scale it down and behave like `contain`
-                min(
-                  rW / sW,
-                  rH / sH
-                )
-              } else {
-                // The container is bigger than the image — don't scale it and behave like `none`
-                1f
-              }
-            }
+            val aspectRation = calculateScaleFactor(
+              sourceWidth.toFloat(),
+              sourceHeight.toFloat(),
+              requestedWidth.toFloat(),
+              requestedHeight.toFloat()
+            )
 
             // We don't want to upscale the image
             return min(1f, aspectRation)
+          }
+
+          private fun calculateScaleFactor(
+            sourceWidth: Float,
+            sourceHeight: Float,
+            requestedWidth: Float,
+            requestedHeight: Float
+          ): Float = when (contentFit) {
+            ContentFit.Contain -> min(
+              requestedWidth / sourceWidth,
+              requestedHeight / sourceHeight
+            )
+            ContentFit.Cover -> max(
+              requestedWidth / sourceWidth,
+              requestedHeight / sourceHeight
+            )
+            ContentFit.Fill, ContentFit.None -> 1f
+            ContentFit.ScaleDown -> if (requestedWidth < sourceWidth || requestedHeight < sourceHeight) {
+              // The container is smaller than the image — scale it down and behave like `contain`
+              min(
+                requestedWidth / sourceWidth,
+                requestedHeight / sourceHeight
+              )
+            } else {
+              // The container is bigger than the image — don't scale it and behave like `none`
+              1f
+            }
           }
 
           override fun getSampleSizeRounding(
