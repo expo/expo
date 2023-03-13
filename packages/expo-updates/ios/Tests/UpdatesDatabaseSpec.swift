@@ -49,16 +49,8 @@ class UpdatesDatabaseSpec : ExpoSpec {
     
     describe("foreign keys") {
       it("throws upon foreign key error") {
-        let manifestHeaders = ManifestHeaders(
-          protocolVersion: nil,
-          serverDefinedHeaders: nil,
-          manifestFilters: nil,
-          manifestSignature: nil,
-          signature: nil
-        )
         let update = NewUpdate.update(
           withNewManifest: manifest,
-          manifestHeaders: manifestHeaders,
           extensions: [:],
           config: config,
           database: db
@@ -81,139 +73,91 @@ class UpdatesDatabaseSpec : ExpoSpec {
     
     describe("setMetadata") {
       it("overwrites all fields") {
-        let manifestHeaders1 = ManifestHeaders(
+        let responseHeaderData1 = ResponseHeaderData(
           protocolVersion: nil,
-          serverDefinedHeaders: nil,
-          manifestFilters: "branch-name=\"rollout-1\",test=\"value\"",
-          manifestSignature: nil,
-          signature: nil
-        )
-        let update1 = NewUpdate.update(
-          withNewManifest: manifest,
-          manifestHeaders: manifestHeaders1,
-          extensions: [:],
-          config: config,
-          database: db
+          serverDefinedHeadersRaw: nil,
+          manifestFiltersRaw: "branch-name=\"rollout-1\",test=\"value\"",
+          manifestSignature: nil
         )
         
         db.databaseQueue.sync {
-          try! db.setMetadata(withManifest: update1)
+          try! db.setMetadata(withResponseHeaderData: responseHeaderData1, scopeKey: "test")
         }
         
-        let manifestHeaders2 = ManifestHeaders(
+        let responseHeaderData2 = ResponseHeaderData(
           protocolVersion: nil,
-          serverDefinedHeaders: nil,
-          manifestFilters: "branch-name=\"rollout-2\"",
-          manifestSignature: nil,
-          signature: nil
-        )
-        let update2 = NewUpdate.update(
-          withNewManifest: manifest,
-          manifestHeaders: manifestHeaders2,
-          extensions: [:],
-          config: config,
-          database: db
+          serverDefinedHeadersRaw: nil,
+          manifestFiltersRaw: "branch-name=\"rollout-2\"",
+          manifestSignature: nil
         )
         
         db.databaseQueue.sync {
-          try! db.setMetadata(withManifest: update2)
+          try! db.setMetadata(withResponseHeaderData: responseHeaderData2, scopeKey: "test")
         }
         
         db.databaseQueue.sync {
           let expected = ["branch-name": "rollout-2"]
-          let actual = try! db.manifestFilters(withScopeKey: update2.scopeKey)
+          let actual = try! db.manifestFilters(withScopeKey: "test")
           expect(NSDictionary(dictionary: actual!).isEqual(to: expected)) == true
         }
       }
       
       it("overwrites with empty") {
-        let manifestHeaders1 = ManifestHeaders(
+        let responseHeaderData1 = ResponseHeaderData(
           protocolVersion: nil,
-          serverDefinedHeaders: nil,
-          manifestFilters: "branch-name=\"rollout-1\"",
-          manifestSignature: nil,
-          signature: nil
-        )
-        let update1 = NewUpdate.update(
-          withNewManifest: manifest,
-          manifestHeaders: manifestHeaders1,
-          extensions: [:],
-          config: config,
-          database: db
+          serverDefinedHeadersRaw: nil,
+          manifestFiltersRaw: "branch-name=\"rollout-1\"",
+          manifestSignature: nil
         )
         
         db.databaseQueue.sync {
-          try! db.setMetadata(withManifest: update1)
+          try! db.setMetadata(withResponseHeaderData: responseHeaderData1, scopeKey: "test")
         }
         
-        let manifestHeaders2 = ManifestHeaders(
+        let responseHeaderData2 = ResponseHeaderData(
           protocolVersion: nil,
-          serverDefinedHeaders: nil,
-          manifestFilters: "",
-          manifestSignature: nil,
-          signature: nil
-        )
-        let update2 = NewUpdate.update(
-          withNewManifest: manifest,
-          manifestHeaders: manifestHeaders2,
-          extensions: [:],
-          config: config,
-          database: db
+          serverDefinedHeadersRaw: nil,
+          manifestFiltersRaw: "",
+          manifestSignature: nil
         )
         
         db.databaseQueue.sync {
-          try! db.setMetadata(withManifest: update2)
+          try! db.setMetadata(withResponseHeaderData: responseHeaderData2, scopeKey: "test")
         }
         
         db.databaseQueue.sync {
           let expected = [:]
-          let actual = try! db.manifestFilters(withScopeKey: update2.scopeKey)
+          let actual = try! db.manifestFilters(withScopeKey: "test")
           expect(NSDictionary(dictionary: actual!).isEqual(to: expected)) == true
         }
       }
       
       it("does not overwrite with nil") {
-        let manifestHeaders1 = ManifestHeaders(
+        let responseHeaderData1 = ResponseHeaderData(
           protocolVersion: nil,
-          serverDefinedHeaders: nil,
-          manifestFilters: "branch-name=\"rollout-1\"",
-          manifestSignature: nil,
-          signature: nil
-        )
-        let update1 = NewUpdate.update(
-          withNewManifest: manifest,
-          manifestHeaders: manifestHeaders1,
-          extensions: [:],
-          config: config,
-          database: db
+          serverDefinedHeadersRaw: nil,
+          manifestFiltersRaw: "branch-name=\"rollout-1\"",
+          manifestSignature: nil
         )
         
         db.databaseQueue.sync {
-          try! db.setMetadata(withManifest: update1)
+          try! db.setMetadata(withResponseHeaderData: responseHeaderData1, scopeKey: "test")
         }
         
-        let manifestHeaders2 = ManifestHeaders(
+        let responseHeaderData2 = ResponseHeaderData(
           protocolVersion: nil,
-          serverDefinedHeaders: nil,
-          manifestFilters: nil,
-          manifestSignature: nil,
-          signature: nil
-        )
-        let update2 = NewUpdate.update(
-          withNewManifest: manifest,
-          manifestHeaders: manifestHeaders2,
-          extensions: [:],
-          config: config,
-          database: db
+          serverDefinedHeadersRaw: nil,
+          manifestFiltersRaw: nil,
+          manifestSignature: nil
         )
         
         db.databaseQueue.sync {
-          try! db.setMetadata(withManifest: update2)
+          try! db.setMetadata(withResponseHeaderData: responseHeaderData2, scopeKey: "test")
         }
         
         db.databaseQueue.sync {
           let expected = ["branch-name": "rollout-1"]
-          let actual = try! db.manifestFilters(withScopeKey: update2.scopeKey)
+          let actual = try! db.manifestFilters(withScopeKey: "test")
           expect(NSDictionary(dictionary: actual!).isEqual(to: expected)) == true
         }
       }
@@ -251,23 +195,14 @@ class UpdatesDatabaseSpec : ExpoSpec {
         asset2.filename = "same-filename.png"
         asset3.filename = "same-filename.png"
         
-        let manifestHeaders = ManifestHeaders(
-          protocolVersion: nil,
-          serverDefinedHeaders: nil,
-          manifestFilters: nil,
-          manifestSignature: nil,
-          signature: nil
-        )
         let update1 = NewUpdate.update(
           withNewManifest: manifest1,
-          manifestHeaders: manifestHeaders,
           extensions: [:],
           config: config,
           database: db
         )
         let update2 = NewUpdate.update(
           withNewManifest: manifest2,
-          manifestHeaders: manifestHeaders,
           extensions: [:],
           config: config,
           database: db

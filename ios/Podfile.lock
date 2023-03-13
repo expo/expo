@@ -2190,6 +2190,8 @@ PODS:
     - React-hermes
   - ExpoNetwork (5.2.1):
     - ExpoModulesCore
+  - ExpoPrint (12.2.1):
+    - ExpoModulesCore
   - ExpoRandom (13.1.1):
     - ExpoModulesCore
   - ExpoSecureStore (12.1.1):
@@ -2205,8 +2207,6 @@ PODS:
   - ExpoVideoThumbnails (7.2.1):
     - ExpoModulesCore
   - ExpoWebBrowser (12.1.1):
-    - ExpoModulesCore
-  - EXPrint (12.2.1):
     - ExpoModulesCore
   - EXScreenCapture (5.1.1):
     - ExpoModulesCore
@@ -3344,6 +3344,7 @@ DEPENDENCIES:
   - ExpoModulesCore/Tests (from `../packages/expo-modules-core`)
   - ExpoModulesTestCore (from `../packages/expo-modules-test-core/ios`)
   - ExpoNetwork (from `../packages/expo-network/ios`)
+  - ExpoPrint (from `../packages/expo-print/ios`)
   - ExpoRandom (from `../packages/expo-random/ios`)
   - ExpoSecureStore (from `../packages/expo-secure-store/ios`)
   - ExpoSMS (from `../packages/expo-sms/ios`)
@@ -3352,7 +3353,6 @@ DEPENDENCIES:
   - ExpoTrackingTransparency (from `../packages/expo-tracking-transparency/ios`)
   - ExpoVideoThumbnails (from `../packages/expo-video-thumbnails/ios`)
   - ExpoWebBrowser (from `../packages/expo-web-browser/ios`)
-  - EXPrint (from `../packages/expo-print/ios`)
   - EXScreenCapture (from `../packages/expo-screen-capture/ios`)
   - EXScreenOrientation (from `../packages/expo-screen-orientation/ios`)
   - EXSensors (from `../packages/expo-sensors/ios`)
@@ -4235,6 +4235,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-modules-test-core/ios"
   ExpoNetwork:
     :path: "../packages/expo-network/ios"
+  ExpoPrint:
+    :path: "../packages/expo-print/ios"
   ExpoRandom:
     :path: "../packages/expo-random/ios"
   ExpoSecureStore:
@@ -4251,8 +4253,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-video-thumbnails/ios"
   ExpoWebBrowser:
     :path: "../packages/expo-web-browser/ios"
-  EXPrint:
-    :path: "../packages/expo-print/ios"
   EXScreenCapture:
     :path: "../packages/expo-screen-capture/ios"
   EXScreenOrientation:
@@ -4758,6 +4758,7 @@ SPEC CHECKSUMS:
   ExpoModulesCore: 79392ab654019ea3aadeae308919c3d9dd97879c
   ExpoModulesTestCore: faf43ba18dd6809d2e91567260e132b385a5842e
   ExpoNetwork: 242fe1bd68bfe744a2f69fccfe4bfe1d89d1e790
+  ExpoPrint: a0d6f6817ccd072af447bc96b6122b8e7341332c
   ExpoRandom: 7ee07d62e7003b74d0536e0495e3a653fe1b2a74
   ExpoSecureStore: 22b2088cf8cb9d5a276d7a143fdd5b26f83cc601
   ExpoSMS: e4f3901fdb30ab239ee1172005dbe6634f2d6138
@@ -4766,7 +4767,6 @@ SPEC CHECKSUMS:
   ExpoTrackingTransparency: a789bcac0228947730a27bb4bc163d7501475345
   ExpoVideoThumbnails: 0021303b614a89fcc5df8b59d9d37ddf14a7d4cf
   ExpoWebBrowser: 033d34c478d9986da2f1679729041423837626e0
-  EXPrint: 7f4c9435f522c8efaaa945a1ace51f7c4211b0f2
   EXScreenCapture: d9284f4a6508c86d0d463805b93672397d18de0f
   EXScreenOrientation: 52220f8f2477ed25a37e3b2cdbbaa8635d250256
   EXSensors: 29448aedea6ac26f1f11f349c038dbe8698d41e6
@@ -4776,8 +4776,8 @@ SPEC CHECKSUMS:
   EXSQLite: 848167441b14cb6cdd6ae46c8d62289161a79550
   EXStructuredHeaders: b1a48d732562e2cc81f11771bcfd29534f5d9254
   EXTaskManager: f8257faa4c20acfc3f31e21ab82a62544d70db85
-  EXUpdates: a762f7342744eddc9d7292a9588e5d3420e893e6
-  EXUpdatesInterface: 32d4a4c546f40502c83e22855126c3d0086664af
+  EXUpdates: ff2a383321dc018a91fa3fa132e4077f576c6fc3
+  EXUpdatesInterface: 353553ad3df1507f0d9e814a3dd79c7053606acd
   FBAEMKit: c7f82b5145d446bcbbcd50485c032689032fc6a2
   FBAudienceNetwork: e0fcc9091fced34910ed0b6da06f129db46ac9e6
   FBLazyVector: 60195509584153283780abdac5569feffb8f08cc
