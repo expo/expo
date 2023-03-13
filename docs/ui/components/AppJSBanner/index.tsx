@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
-import { Button, theme, shadows } from '@expo/styleguide';
+import { Button, theme } from '@expo/styleguide';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons';
-import { borderRadius, breakpoints, spacing, iconSize } from '@expo/styleguide-base';
+import { spacing } from '@expo/styleguide-base';
 import isBefore from 'date-fns/isBefore';
 import { useRouter } from 'next/router';
 import React from 'react';
