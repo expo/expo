@@ -75,6 +75,12 @@ export async function publishPackageAsync(
   tagName: string = 'latest',
   dryRun: boolean = false
 ): Promise<void> {
+  // check if two factor auth is required for publishing
+  const npmProfile = await spawnJSONCommandAsync<{
+    tfa: { mode: string };
+  }>('npm', ['profile', 'get', '--json']);
+  const requiresOTP = npmProfile?.tfa?.mode === 'auth-and-writes';
+
   const args = ['publish', '--tag', tagName, '--access', 'public'];
 
   if (dryRun) {
@@ -82,7 +88,7 @@ export async function publishPackageAsync(
   }
   await spawnAsync('npm', args, {
     cwd: packageDir,
-    stdio: 'inherit',
+    stdio: requiresOTP ? 'inherit' : undefined,
   });
 }
 
