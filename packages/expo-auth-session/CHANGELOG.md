@@ -10,9 +10,18 @@
 
 ### 💡 Others
 
+- Added deprecation warning to `promptAsync` when the `useProxy` option is used. ([#21367](https://github.com/expo/expo/pull/21367) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 4.0.3 - 2023-02-23
+
+_This version does not introduce any user-facing changes._
+
+## 4.0.2 - 2023-02-21
+
+### 💡 Others
+
 - Deprecated `useProxy` option. ([#21313](https://github.com/expo/expo/pull/21313) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Replaced references of `makeRedirectUriAsync` with `makeRedirectUri`. ([#21314](https://github.com/expo/expo/pull/21314) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- Added deprecation warning to `promptAsync` when the `useProxy` option is used. ([#21367](https://github.com/expo/expo/pull/21367) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 4.0.1 — 2023-02-09
 
