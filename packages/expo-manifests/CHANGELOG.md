@@ -8,11 +8,15 @@
 
 ### 🐛 Bug fixes
 
-- Fixed default `expo.jsEngine` value when SDK is lower than 48. ([#21266](https://github.com/expo/expo/pull/21266) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
 
 - Convert iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298), [#21648](https://github.com/expo/expo/pull/21648) by [@wschurman](https://github.com/wschurman))
+
+## 0.5.2 - 2023-02-21
+
+### 🐛 Bug fixes
+
+- Fixed default `expo.jsEngine` value when SDK is lower than 48. ([#21266](https://github.com/expo/expo/pull/21266) by [@kudo](https://github.com/kudo))
 
 ## 0.5.1 — 2023-02-09
 
