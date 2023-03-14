@@ -255,6 +255,17 @@ export interface ImageProps extends ViewProps {
    * @platform ios 16.0+
    */
   enableLiveTextInteraction?: boolean;
+
+  /**
+   * Whether the image should be downscaled to match the size of the view container.
+   * Turning off this functionality could negatively impact the application's performance, particularly when working with large assets.
+   * However, it would result in smoother image resizing, and end-users would always have access to the highest possible asset quality.
+   *
+   * Downscaling is never used when the `contentFit` prop is set to `none` or `fill`.
+   * @default true
+   * @platform android
+   */
+  allowDownscaling?: boolean;
 }
 
 /**
