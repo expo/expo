@@ -7,6 +7,12 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 
+@Suppress("NOTHING_TO_INLINE")
+inline fun Throwable.toCodedException() = when (this) {
+  is CodedException -> this
+  else -> UnexpectedException(this)
+}
+
 /**
  * A class for errors specifying its `code` and providing the `description`.
  */
@@ -143,6 +149,14 @@ internal class PropSetException(
 ) : DecoratedException(
   message = "Cannot set prop '$propName' on view '$viewType'",
   cause,
+)
+
+internal class OnViewDidUpdatePropsException(
+  viewType: KClass<*>,
+  cause: CodedException
+) : DecoratedException(
+  message = "Error occurred when invoking 'onViewDidUpdateProps' on '${viewType.simpleName}'",
+  cause
 )
 
 internal class ArgumentCastException(
