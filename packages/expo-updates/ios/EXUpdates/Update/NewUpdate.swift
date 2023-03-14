@@ -7,12 +7,11 @@ import EXStructuredHeaders
 internal final class NewUpdate: Update {
   /**
    * Method for initializing updates with modern format manifests that conform to the Expo Updates
-   * specification (https://docs.expo.dev/technical-specs/expo-updates-0/). This is used by EAS
+   * specification (https://docs.expo.dev/technical-specs/expo-updates-1/). This is used by EAS
    * Update.
    */
-  public static func update(
-    withNewManifest: EXManifestsNewManifest,
-    manifestHeaders: ManifestHeaders,
+  static func update(
+    withNewManifest: NewManifest,
     extensions: [String: Any],
     config: UpdatesConfig,
     database: UpdatesDatabase
@@ -70,7 +69,7 @@ internal final class NewUpdate: Update {
       processedAssets.append(asset)
     }
 
-    let update = Update.init(
+    return Update(
       manifest: manifest,
       config: config,
       database: database,
@@ -83,37 +82,5 @@ internal final class NewUpdate: Update {
       isDevelopmentMode: false,
       assetsFromManifest: processedAssets
     )
-    update.serverDefinedHeaders = NewUpdate.dictionaryWithStructuredHeader(manifestHeaders.serverDefinedHeaders)
-    update.manifestFilters = NewUpdate.dictionaryWithStructuredHeader(manifestHeaders.manifestFilters)
-    return update
-  }
-
-  public static func dictionaryWithStructuredHeader(_ headerString: String?) -> [String: Any]? {
-    guard let headerString = headerString else {
-      return nil
-    }
-    let parser = EXStructuredHeadersParser.init(
-      rawInput: headerString,
-      fieldType: EXStructuredHeadersParserFieldType.dictionary,
-      ignoringParameters: true
-    )
-    let parserOutput: Any
-    do {
-      parserOutput = try parser.parseStructuredFields()
-    } catch let error as NSError {
-      NSLog("Error parsing header value: %@", error.localizedDescription)
-      return nil
-    }
-
-    guard let parserOutputDictionary = parserOutput as? [String: Any] else {
-      NSLog("Error parsing header value: %@", "Header was not a structured fields dictionary")
-      return nil
-    }
-
-    // ignore any dictionary entries whose type is not string, number, or boolean
-    // since this will be re-serialized to JSON
-    // The only way I can figure out how to detect numbers is to do a isNSNumber (is any Numeric didn't work)
-    // swiftlint:disable:next legacy_objc_type
-    return parserOutputDictionary.filter { $0.value is String || $0.value is NSNumber || $0.value is Bool }
   }
 }

@@ -13,9 +13,9 @@ import {
   STYLES_APIBOX,
   getTagNamesList,
   H3Code,
-  STYLES_ELEMENT_SPACING,
+  ELEMENT_SPACING,
 } from '~/components/plugins/api/APISectionUtils';
-import { H2, BOLD, P, CODE } from '~/ui/components/Text';
+import { H2, BOLD, P, CODE, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionComponentsProps = {
   data: GeneratedData[];
@@ -57,10 +57,10 @@ const renderComponent = (
     <div key={`component-definition-${resolvedName}`} css={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={extractedComment} />
       <H3Code tags={getTagNamesList(comment)}>
-        <CODE>{resolvedName}</CODE>
+        <MONOSPACE weight="medium">{resolvedName}</MONOSPACE>
       </H3Code>
       {resolvedType && resolvedTypeParameters && (
-        <P css={STYLES_ELEMENT_SPACING}>
+        <P className={ELEMENT_SPACING}>
           <BOLD>Type:</BOLD>{' '}
           <CODE>
             {extendedTypes ? (

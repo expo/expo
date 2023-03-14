@@ -21,7 +21,7 @@ class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
       
       // test updates with different scopes to ensure this policy ignores scopes
       update1 = Update(
-        manifest: EXManifestsManifestFactory.manifest(forManifestJSON: [:]),
+        manifest: ManifestFactory.manifest(forManifestJSON: [:]),
         config: UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope1"
         ]),
@@ -36,7 +36,7 @@ class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
         assetsFromManifest: []
       )
       update2 = Update(
-        manifest: EXManifestsManifestFactory.manifest(forManifestJSON: [:]),
+        manifest: ManifestFactory.manifest(forManifestJSON: [:]),
         config: UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope2"
         ]),
@@ -51,7 +51,7 @@ class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
         assetsFromManifest: []
       )
       update3 = Update(
-        manifest: EXManifestsManifestFactory.manifest(forManifestJSON: [:]),
+        manifest: ManifestFactory.manifest(forManifestJSON: [:]),
         config: UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope3"
         ]),
@@ -66,7 +66,7 @@ class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
         assetsFromManifest: []
       )
       update4 = Update(
-        manifest: EXManifestsManifestFactory.manifest(forManifestJSON: [:]),
+        manifest: ManifestFactory.manifest(forManifestJSON: [:]),
         config: UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope4"
         ]),
@@ -81,7 +81,7 @@ class ReaperSelectionPolicyDevelopmentClientSpec : ExpoSpec {
         assetsFromManifest: []
       )
       update5 = Update(
-        manifest: EXManifestsManifestFactory.manifest(forManifestJSON: [:]),
+        manifest: ManifestFactory.manifest(forManifestJSON: [:]),
         config: UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigScopeKeyKey: "scope5"
         ]),

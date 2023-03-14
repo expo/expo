@@ -46,11 +46,11 @@ const markdownStyles: Record<string, Config | null> = {
   },
   ul: {
     Component: UL,
-    style: { marginBottom: '0.5ch', paddingLeft: `1ch` },
+    style: { marginBottom: '1.5ch', paddingLeft: `1ch` },
   },
   ol: {
     Component: OL,
-    style: { marginBottom: '0.5ch', paddingLeft: `1ch` },
+    style: { marginBottom: '1.5ch', paddingLeft: `1ch` },
   },
   li: {
     Component: LI,

@@ -1,3 +1,5 @@
+import { mergeClasses } from '@expo/styleguide';
+
 import {
   DefaultPropsDefinitionData,
   PropData,
@@ -18,13 +20,13 @@ import {
   resolveTypeName,
   STYLES_APIBOX,
   STYLES_APIBOX_NESTED,
-  STYLES_ELEMENT_SPACING,
+  ELEMENT_SPACING,
   STYLES_NESTED_SECTION_HEADER,
   STYLES_NOT_EXPOSED_HEADER,
   STYLES_SECONDARY,
   TypeDocKind,
 } from '~/components/plugins/api/APISectionUtils';
-import { CODE, H2, H3, H4, LI, P, UL } from '~/ui/components/Text';
+import { CODE, H2, H3, H4, LI, MONOSPACE, P, UL } from '~/ui/components/Text';
 
 export type APISectionPropsProps = {
   data: PropsDefinitionData[];
@@ -114,14 +116,17 @@ export const renderProp = (
   const HeaderComponent = exposeInSidebar ? H3Code : H4Code;
   const extractedSignatures = signatures || type?.declaration?.signatures;
   const extractedComment = getCommentOrSignatureComment(comment, extractedSignatures);
+  console.warn();
   return (
     <div key={`prop-entry-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
       <APISectionDeprecationNote comment={extractedComment} />
       <APISectionPlatformTags comment={comment} prefix="Only for:" />
       <HeaderComponent tags={getTagNamesList(comment)}>
-        <CODE css={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>{name}</CODE>
+        <MONOSPACE weight="medium" css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}>
+          {name}
+        </MONOSPACE>
       </HeaderComponent>
-      <P css={extractedComment && STYLES_ELEMENT_SPACING}>
+      <P className={mergeClasses(extractedComment && ELEMENT_SPACING)}>
         {flags?.isOptional && <span css={STYLES_SECONDARY}>Optional&emsp;&bull;&emsp;</span>}
         <span css={STYLES_SECONDARY}>Type:</span>{' '}
         {renderTypeOrSignatureType(type, extractedSignatures)}
@@ -133,14 +138,14 @@ export const renderProp = (
         ) : null}
       </P>
       <CommentTextBlock comment={extractedComment} includePlatforms={false} />
-      <br />
+      {!extractedComment && <br />}
     </div>
   );
 };
 
 const APISectionProps = ({ data, defaultProps, header = 'Props' }: APISectionPropsProps) => {
   const baseProp = data.find(prop => prop.name === header);
-  return data?.length ? (
+  return data?.length > 0 ? (
     <>
       {data?.length === 1 || header === 'Props' ? (
         <H2 key="props-header">{header}</H2>

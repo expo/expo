@@ -16,14 +16,14 @@ internal final class TransactionExecutor {
     self.db = db
   }
 
-  public func safeExecOrRollback(sql: String) throws {
+  func safeExecOrRollback(sql: String) throws {
     guard sqlite3_exec(db, String(sql.utf8), nil, nil, nil) == SQLITE_OK else {
       sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
       throw UpdatesDatabaseMigrationError.migrationSQLError
     }
   }
 
-  public func safeExecOrRollback(sql: String, args: [Any?]) throws {
+  func safeExecOrRollback(sql: String, args: [Any?]) throws {
     do {
       _ = try UpdatesDatabaseUtils.execute(sql: sql, withArgs: args, onDatabase: db)
     } catch {

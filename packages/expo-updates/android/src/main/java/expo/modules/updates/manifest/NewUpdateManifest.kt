@@ -18,7 +18,7 @@ import java.util.*
 
 /**
  * Class for manifests using the modern format defined in the Expo Updates specification
- * (https://docs.expo.dev/technical-specs/expo-updates-0/). This is used by EAS Update.
+ * (https://docs.expo.dev/technical-specs/expo-updates-1/). This is used by EAS Update.
  */
 class NewUpdateManifest private constructor(
   override val manifest: NewManifest,

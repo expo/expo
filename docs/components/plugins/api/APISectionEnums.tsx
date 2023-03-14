@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { spacing, theme } from '@expo/styleguide';
+import { theme } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
 
 import { EnumDefinitionData, EnumValueData } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
@@ -11,7 +12,7 @@ import {
   STYLES_APIBOX_NESTED,
   H3Code,
 } from '~/components/plugins/api/APISectionUtils';
-import { H2, H4, CODE } from '~/ui/components/Text';
+import { H2, H4, CODE, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionEnumsProps = {
   data: EnumDefinitionData[];
@@ -35,7 +36,7 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
     <APISectionDeprecationNote comment={comment} />
     <APISectionPlatformTags comment={comment} prefix="Only for:" />
     <H3Code tags={getTagNamesList(comment)}>
-      <CODE>{name}</CODE>
+      <MONOSPACE weight="medium">{name}</MONOSPACE>
     </H3Code>
     <CommentTextBlock comment={comment} includePlatforms={false} />
     {children.sort(sortByValue).map((enumValue: EnumValueData) => (

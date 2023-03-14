@@ -6,9 +6,9 @@ import Foundation
 import SQLite3
 
 internal final class UpdatesDatabaseMigration4To5: UpdatesDatabaseMigration {
-  public private(set) var filename: String = "expo-v4.db"
+  private(set) var filename: String = "expo-v4.db"
 
-  public func runMigration(onDatabase db: OpaquePointer) throws {
+  func runMigration(onDatabase db: OpaquePointer) throws {
     try db.withForeignKeysOff {
       try db.withTransaction { trx in
         try trx.safeExecOrRollback(sql: """

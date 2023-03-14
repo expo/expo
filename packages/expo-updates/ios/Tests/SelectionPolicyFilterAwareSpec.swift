@@ -43,16 +43,9 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
         UpdatesConfig.EXUpdatesConfigScopeKeyKey: scopeKey
       ])
       let database = UpdatesDatabase()
-      let manifestHeaders = ManifestHeaders(
-        protocolVersion: nil,
-        serverDefinedHeaders: nil,
-        manifestFilters: nil,
-        manifestSignature: nil,
-        signature: nil
-      )
 
       updateRollout0 = NewUpdate.update(
-        withNewManifest: EXManifestsNewManifest(rawManifestJSON: [
+        withNewManifest: NewManifest(rawManifestJSON: [
           "id": "079cde35-8433-4c17-81c8-7117c1513e71",
           "createdAt": "2021-01-10T19:39:22.480Z",
           "runtimeVersion": "1.0",
@@ -60,14 +53,13 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
           "assets": [imageAsset],
           "metadata": ["branchName": "rollout"]
         ]),
-        manifestHeaders: manifestHeaders,
         extensions: [:],
         config: config,
         database: database
       )
 
       updateDefault1 = NewUpdate.update(
-        withNewManifest: EXManifestsNewManifest(rawManifestJSON: [
+        withNewManifest: NewManifest(rawManifestJSON: [
           "id": "079cde35-8433-4c17-81c8-7117c1513e72",
           "createdAt": "2021-01-11T19:39:22.480Z",
           "runtimeVersion": "1.0",
@@ -75,14 +67,13 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
           "assets": [imageAsset],
           "metadata": ["branchName": "default"]
         ]),
-        manifestHeaders: manifestHeaders,
         extensions: [:],
         config: config,
         database: database
       )
       
       updateRollout1 = NewUpdate.update(
-        withNewManifest: EXManifestsNewManifest(rawManifestJSON: [
+        withNewManifest: NewManifest(rawManifestJSON: [
           "id": "079cde35-8433-4c17-81c8-7117c1513e73",
           "createdAt": "2021-01-12T19:39:22.480Z",
           "runtimeVersion": "1.0",
@@ -90,14 +81,13 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
           "assets": [imageAsset],
           "metadata": ["branchName": "rollout"]
         ]),
-        manifestHeaders: manifestHeaders,
         extensions: [:],
         config: config,
         database: database
       )
       
       updateDefault2 = NewUpdate.update(
-        withNewManifest: EXManifestsNewManifest(rawManifestJSON: [
+        withNewManifest: NewManifest(rawManifestJSON: [
           "id": "079cde35-8433-4c17-81c8-7117c1513e74",
           "createdAt": "2021-01-13T19:39:22.480Z",
           "runtimeVersion": "1.0",
@@ -105,14 +95,13 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
           "assets": [imageAsset],
           "metadata": ["branchName": "default"]
         ]),
-        manifestHeaders: manifestHeaders,
         extensions: [:],
         config: config,
         database: database
       )
       
       updateRollout2 = NewUpdate.update(
-        withNewManifest: EXManifestsNewManifest(rawManifestJSON: [
+        withNewManifest: NewManifest(rawManifestJSON: [
           "id": "079cde35-8433-4c17-81c8-7117c1513e75",
           "createdAt": "2021-01-14T19:39:22.480Z",
           "runtimeVersion": "1.0",
@@ -120,14 +109,13 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
           "assets": [imageAsset],
           "metadata": ["branchName": "rollout"]
         ]),
-        manifestHeaders: manifestHeaders,
         extensions: [:],
         config: config,
         database: database
       )
       
       updateMultipleFilters = NewUpdate.update(
-        withNewManifest: EXManifestsNewManifest(rawManifestJSON: [
+        withNewManifest: NewManifest(rawManifestJSON: [
           "id": "079cde35-8433-4c17-81c8-7117c1513e72",
           "createdAt": "2021-01-11T19:39:22.480Z",
           "runtimeVersion": "1.0",
@@ -135,21 +123,19 @@ class SelectionPolicyFilterAwareSpec : ExpoSpec {
           "assets": [imageAsset],
           "metadata": ["firstKey": "value1", "secondKey": "value2"]
         ]),
-        manifestHeaders: manifestHeaders,
         extensions: [:],
         config: config,
         database: database
       )
       
       updateNoMetadata = NewUpdate.update(
-        withNewManifest: EXManifestsNewManifest(rawManifestJSON: [
+        withNewManifest: NewManifest(rawManifestJSON: [
           "id": "079cde35-8433-4c17-81c8-7117c1513e72",
           "createdAt": "2021-01-11T19:39:22.480Z",
           "runtimeVersion": "1.0",
           "launchAsset": launchAsset,
           "assets": [imageAsset]
         ]),
-        manifestHeaders: manifestHeaders,
         extensions: [:],
         config: config,
         database: database

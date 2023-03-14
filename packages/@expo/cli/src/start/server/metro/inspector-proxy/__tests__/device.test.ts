@@ -1,10 +1,10 @@
 import { createInspectorDeviceClass } from '../device';
-import { InspectorHandler } from '../messages/types';
+import { InspectorHandler } from '../handlers/types';
 
 describe('ExpoInspectorDevice', () => {
   it('initializes with default handlers', () => {
     const { device } = createTestDevice();
-    expect(device.handlers).toHaveLength(1);
+    expect(device.handlers).toHaveLength(2);
   });
 
   describe('device', () => {

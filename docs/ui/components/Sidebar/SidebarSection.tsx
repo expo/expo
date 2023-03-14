@@ -1,6 +1,3 @@
-import { css } from '@emotion/react';
-import { spacing } from '@expo/styleguide';
-
 import { SidebarNodeProps } from './Sidebar';
 import { SidebarGroup, SidebarCollapsible, SidebarLink } from './index';
 
@@ -12,7 +9,7 @@ export const SidebarSection = ({ route, ...rest }: SidebarNodeProps) => {
 
   return (
     <SidebarCollapsible key={`section-${route.name}`} info={route}>
-      <div css={contentWrapperStyle}>
+      <div className="mt-1 mb-4">
         {route.children.map(child =>
           child.type === 'page' ? (
             <SidebarLink key={`${route.name}-${child.name}`} info={child}>
@@ -31,8 +28,3 @@ export const SidebarSection = ({ route, ...rest }: SidebarNodeProps) => {
     </SidebarCollapsible>
   );
 };
-
-const contentWrapperStyle = css({
-  marginBottom: spacing[4] + spacing[0.5],
-  marginTop: spacing[1],
-});

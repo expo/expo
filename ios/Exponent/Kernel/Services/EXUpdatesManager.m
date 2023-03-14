@@ -58,17 +58,17 @@ ofDownloadWithManifest:(EXManifestsManifest * _Nullable)manifest
 
 # pragma mark - EXUpdatesBindingDelegate
 
-- (EXUpdatesConfig *)configForScopeKey:(NSString *)scopeKey
+- (nullable EXUpdatesConfig *)configForScopeKey:(NSString *)scopeKey
 {
   return [self _appLoaderWithScopeKey:scopeKey].config;
 }
 
-- (EXUpdatesSelectionPolicy *)selectionPolicyForScopeKey:(NSString *)scopeKey
+- (nullable EXUpdatesSelectionPolicy *)selectionPolicyForScopeKey:(NSString *)scopeKey
 {
   return [self _appLoaderWithScopeKey:scopeKey].selectionPolicy;
 }
 
-- (nullable EXUpdatesUpdate *)launchedUpdateForScopeKey:(NSString *)scopeKey
+- (nullable nullable EXUpdatesUpdate *)launchedUpdateForScopeKey:(NSString *)scopeKey
 {
   return [self _appLoaderWithScopeKey:scopeKey].appLauncher.launchedUpdate;
 }

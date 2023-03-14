@@ -88,10 +88,7 @@ public class Update: NSObject {
   public let isDevelopmentMode: Bool
   private let assetsFromManifest: [UpdateAsset]?
 
-  public internal(set) var serverDefinedHeaders: [String: Any]?
-  public internal(set) var manifestFilters: [String: Any]?
-
-  public let manifest: EXManifestsManifest
+  public let manifest: Manifest
 
   public var status: UpdateStatus
   public var lastAccessed: Date
@@ -102,7 +99,7 @@ public class Update: NSObject {
   private let database: UpdatesDatabase?
 
   public init(
-    manifest: EXManifestsManifest,
+    manifest: Manifest,
     config: UpdatesConfig,
     database: UpdatesDatabase?,
     updateId: UUID,
@@ -131,25 +128,24 @@ public class Update: NSObject {
     self.isDevelopmentMode = isDevelopmentMode
   }
 
-  public static func update(
+  internal static func update(
     withManifest: [String: Any],
-    manifestHeaders: ManifestHeaders,
+    responseHeaderData: ResponseHeaderData,
     extensions: [String: Any],
     config: UpdatesConfig,
     database: UpdatesDatabase
   ) throws -> Update {
-    let protocolVersion = manifestHeaders.protocolVersion
+    let protocolVersion = responseHeaderData.protocolVersion
     switch protocolVersion {
     case nil:
       return LegacyUpdate.update(
-        withLegacyManifest: EXManifestsLegacyManifest(rawManifestJSON: withManifest),
+        withLegacyManifest: LegacyManifest(rawManifestJSON: withManifest),
         config: config,
         database: database
       )
-    case "0":
+    case "0", "1":
       return NewUpdate.update(
-        withNewManifest: EXManifestsNewManifest(rawManifestJSON: withManifest),
-        manifestHeaders: manifestHeaders,
+        withNewManifest: NewManifest(rawManifestJSON: withManifest),
         extensions: extensions,
         config: config,
         database: database
@@ -166,13 +162,13 @@ public class Update: NSObject {
   ) -> Update {
     if withEmbeddedManifest["releaseId"] != nil {
       return LegacyUpdate.update(
-        withLegacyManifest: EXManifestsLegacyManifest(rawManifestJSON: withEmbeddedManifest),
+        withLegacyManifest: LegacyManifest(rawManifestJSON: withEmbeddedManifest),
         config: config,
         database: database
       )
     } else {
       return BareUpdate.update(
-        withBareManifest: EXManifestsBareManifest(rawManifestJSON: withEmbeddedManifest),
+        withBareManifest: BareManifest(rawManifestJSON: withEmbeddedManifest),
         config: config,
         database: database
       )

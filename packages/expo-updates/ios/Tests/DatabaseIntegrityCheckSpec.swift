@@ -55,7 +55,7 @@ class UpdatesDatabaseIntegrityCheckSpec : ExpoSpec {
         ])
         
         let update1 = Update(
-          manifest: EXManifestsManifestFactory.manifest(forManifestJSON: [:]),
+          manifest: ManifestFactory.manifest(forManifestJSON: [:]),
           config: config,
           database: db,
           updateId: UUID(),
@@ -68,7 +68,7 @@ class UpdatesDatabaseIntegrityCheckSpec : ExpoSpec {
           assetsFromManifest: []
         )
         let update2 = Update(
-          manifest: EXManifestsManifestFactory.manifest(forManifestJSON: [:]),
+          manifest: ManifestFactory.manifest(forManifestJSON: [:]),
           config: config,
           database: db,
           updateId: UUID(),
@@ -113,7 +113,7 @@ class UpdatesDatabaseIntegrityCheckSpec : ExpoSpec {
         ])
         
         let update1 = Update(
-          manifest: EXManifestsManifestFactory.manifest(forManifestJSON: [:]),
+          manifest: ManifestFactory.manifest(forManifestJSON: [:]),
           config: config,
           database: db,
           updateId: UUID(),
@@ -126,7 +126,7 @@ class UpdatesDatabaseIntegrityCheckSpec : ExpoSpec {
           assetsFromManifest: []
         )
         let update2 = Update(
-          manifest: EXManifestsManifestFactory.manifest(forManifestJSON: [:]),
+          manifest: ManifestFactory.manifest(forManifestJSON: [:]),
           config: config,
           database: db,
           updateId: UUID(),

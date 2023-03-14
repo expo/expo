@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { borderRadius, breakpoints, spacing, theme, typography } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
+import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
 import ReactMarkdown from 'react-markdown';
 
 import { HeadingType } from '~/common/headingManager';

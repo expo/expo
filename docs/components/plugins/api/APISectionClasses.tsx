@@ -22,7 +22,7 @@ import {
   getCommentContent,
   BoxSectionHeader,
 } from '~/components/plugins/api/APISectionUtils';
-import { H2, BOLD, P, CODE } from '~/ui/components/Text';
+import { H2, BOLD, P, CODE, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionClassesProps = {
   data: GeneratedData[];
@@ -77,10 +77,10 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
       <APISectionDeprecationNote comment={comment} />
       <APISectionPlatformTags comment={comment} prefix="Only for:" />
       <H3Code tags={getTagNamesList(comment)}>
-        <CODE>{name}</CODE>
+        <MONOSPACE weight="medium">{name}</MONOSPACE>
       </H3Code>
       {(extendedTypes?.length || implementedTypes?.length) && (
-        <P>
+        <P className="mb-3">
           <BOLD>Type: </BOLD>
           {type ? <CODE>{resolveTypeName(type)}</CODE> : 'Class'}
           {extendedTypes?.length && (
@@ -122,7 +122,7 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
           </div>
         </>
       ) : null}
-      {methods?.length && (
+      {methods?.length > 0 && (
         <>
           <BoxSectionHeader text={`${name} Methods`} exposeInSidebar={exposeInSidebar} />
           {methods.map(method => renderMethod(method, { exposeInSidebar }))}

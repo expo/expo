@@ -18,7 +18,7 @@ internal final class UpdatesLogReader {
    Returns the log entries unpacked as dictionaries
    Maximum of one day lookback is allowed
    */
-  public func getLogEntries(newerThan: Date) throws -> [[String: Any]] {
+  func getLogEntries(newerThan: Date) throws -> [[String: Any]] {
     let epoch = epochFromDateOrOneDayAgo(date: newerThan)
     return logPersistence.readEntries()
       .compactMap { entryString in
@@ -31,7 +31,7 @@ internal final class UpdatesLogReader {
    Returned strings are all in the JSON format of UpdatesLogEntry
    Maximum of one day lookback is allowed
    */
-  public func getLogEntries(newerThan: Date) -> [String] {
+  func getLogEntries(newerThan: Date) -> [String] {
     let epoch = epochFromDateOrOneDayAgo(date: newerThan)
     return logPersistence.readEntries()
       .compactMap { entryString in
@@ -42,7 +42,7 @@ internal final class UpdatesLogReader {
   /**
    Purge all log entries written more than one day ago
    */
-  public func purgeLogEntries(completion: @escaping (Error?) -> Void) {
+  func purgeLogEntries(completion: @escaping (Error?) -> Void) {
     purgeLogEntries(
       olderThan: Date().addingTimeInterval(-UpdatesLogReader.MAXIMUM_LOOKBACK_INTERVAL),
       completion: completion
@@ -52,7 +52,7 @@ internal final class UpdatesLogReader {
   /**
    Purge all log entries written prior to the given date
    */
-  public func purgeLogEntries(olderThan: Date, completion: @escaping (Error?) -> Void) {
+  func purgeLogEntries(olderThan: Date, completion: @escaping (Error?) -> Void) {
     let epoch = epochFromDateOrOneDayAgo(date: olderThan)
     logPersistence.purgeEntriesNotMatchingFilter(filter: { entryString in
       self.logStringToFilteredLogEntry(entryString: entryString, epoch: epoch) != nil
@@ -81,6 +81,6 @@ internal final class UpdatesLogReader {
     let dateToUse = date.timeIntervalSince1970 < earliestDate.timeIntervalSince1970 ?
       earliestDate :
       date
-    return UInt(dateToUse.timeIntervalSince1970) * 1_000
+    return UInt(dateToUse.timeIntervalSince1970) * 1000
   }
 }
