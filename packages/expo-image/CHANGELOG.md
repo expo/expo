@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [Android] Add automatic asset downscaling to improve performance.
+- [Android] Add automatic asset downscaling to improve performance. ([#21628](https://github.com/expo/expo/pull/21628) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
 
