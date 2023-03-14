@@ -16,7 +16,7 @@ function convertGiBtoBytes(gib: number): number {
 }
 
 function getDeviceType(): DeviceType {
-  switch (result.device.type) {
+  switch (result?.device?.type) {
     case 'mobile':
       return DeviceType.PHONE;
     case 'tablet':
