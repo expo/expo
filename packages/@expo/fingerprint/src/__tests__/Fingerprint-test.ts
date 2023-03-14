@@ -105,7 +105,7 @@ describe(diffFingerprintChangesAsync, () => {
       [
         {
           "filePath": "ios",
-          "hash": "e4190c0af9142fe4add4842777d9aec713213cd4",
+          "hash": "a1d299fe057e87bb79dfd0eb6e33cee98d626aa1",
           "reasons": [
             "bareNativeDir",
           ],
