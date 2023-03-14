@@ -7,6 +7,9 @@ import com.facebook.react.common.MapBuilder
 import expo.modules.core.utilities.ifNull
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.events.normalizeEventName
+import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.OnViewDidUpdatePropsException
+import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.logger
 import expo.modules.kotlin.viewevent.ViewEventDelegate
 import kotlin.reflect.full.declaredMemberProperties
@@ -32,7 +35,16 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
 
   fun setProxiedProperties(view: View, proxiedProperties: ReadableMap) {
     definition.setProps(proxiedProperties, view)
-    definition.onViewDidUpdateProps?.invoke(view)
+    definition.onViewDidUpdateProps?.let {
+      try {
+        exceptionDecorator({ OnViewDidUpdatePropsException(view.javaClass.kotlin, it) }) {
+          it.invoke(view)
+        }
+      } catch (exception: CodedException) {
+        logger.error("❌ Error occurred when invoking 'onViewDidUpdateProps' on '${view.javaClass.simpleName}'", exception)
+        definition.handleException(view, exception)
+      }
+    }
   }
 
   fun onDestroy(view: View) =

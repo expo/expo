@@ -10,7 +10,7 @@ import expo.modules.core.ViewManager
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.DynamicNull
 import expo.modules.kotlin.exception.CodedException
-import expo.modules.kotlin.exception.UnexpectedException
+import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.logger
 import expo.modules.kotlin.recycle
 
@@ -53,10 +53,7 @@ class ViewManagerDefinition(
 
         handleException(
           onView,
-          when (exception) {
-            is CodedException -> exception
-            else -> UnexpectedException(exception)
-          }
+          exception.toCodedException()
         )
       }
     }
