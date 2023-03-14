@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added deviceType constant ([#21633](https://github.com/expo/expo/pull/21633) by [@robertherber](https://github.com/robertherber))
+- Added `deviceType` constant. ([#21633](https://github.com/expo/expo/pull/21633) by [@robertherber](https://github.com/robertherber))
 
 ### 🐛 Bug fixes
 
