@@ -9,9 +9,7 @@ import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.events.normalizeEventName
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.OnViewDidUpdatePropsException
-import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.exception.exceptionDecorator
-import expo.modules.kotlin.exception.toCodedException
 import expo.modules.kotlin.logger
 import expo.modules.kotlin.viewevent.ViewEventDelegate
 import kotlin.reflect.full.declaredMemberProperties
