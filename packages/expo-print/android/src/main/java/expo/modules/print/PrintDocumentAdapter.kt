@@ -10,16 +10,17 @@ import android.print.PrintAttributes
 import android.print.PrintDocumentAdapter
 import android.print.PrintDocumentInfo
 import android.webkit.URLUtil
-import expo.modules.core.Promise
 import java.io.IOException
 import java.net.URL
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resumeWithException
 
-class PrintDocumentAdapter(val context: Context, val promise: Promise, private val uri: String?) : PrintDocumentAdapter() {
+class PrintDocumentAdapter(private val context: Context, private val continuation: Continuation<Unit>, private val uri: String?) : PrintDocumentAdapter() {
   private val jobName = "Printing"
 
   override fun onWrite(pages: Array<PageRange>, destination: ParcelFileDescriptor, cancellationSignal: CancellationSignal, callback: WriteResultCallback) {
     if (uri == null) {
-      printFailed(callback, "E_INVALID_URI", "Given URI is null.", promise)
+      printFailed(callback, NullUriException(), continuation)
       return
     }
     val isUrl = URLUtil.isValidUrl(uri)
@@ -38,7 +39,7 @@ class PrintDocumentAdapter(val context: Context, val promise: Promise, private v
           }
         } catch (e: Exception) {
           e.printStackTrace()
-          printFailed(callback, "E_CANNOT_LOAD", e.message, promise)
+          printFailed(callback, CannotLoadUriException(e), continuation)
         }
       }.start()
     } else if (uri.startsWith("data:") && uri.contains(";base64,")) {
@@ -47,10 +48,10 @@ class PrintDocumentAdapter(val context: Context, val promise: Promise, private v
           FileUtils.copyToOutputStream(destination, callback, it)
         }
       } catch (e: IOException) {
-        printFailed(callback, "E_CANNOT_LOAD", "An error occurred while trying to load given data URI.", promise)
+        printFailed(callback, CannotLoadUriException(e), continuation)
       }
     } else {
-      printFailed(callback, "E_INVALID_URI", "Given URI is not valid.", promise)
+      printFailed(callback, InvalidUriException(), continuation)
     }
   }
 
@@ -63,8 +64,8 @@ class PrintDocumentAdapter(val context: Context, val promise: Promise, private v
     callback.onLayoutFinished(pdi, true)
   }
 
-  private fun printFailed(callback: WriteResultCallback, code: String, error: CharSequence?, promise: Promise) {
-    callback.onWriteFailed(error)
-    promise.reject(code, error as String)
+  private fun printFailed(callback: WriteResultCallback, exception: Throwable, continuation: Continuation<Unit>) {
+    continuation.resumeWithException(exception)
+    callback.onWriteFailed(exception.localizedMessage)
   }
 }

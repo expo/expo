@@ -1,140 +1,160 @@
 package expo.modules.print
 
 import android.content.Context
-import android.os.Bundle
+import android.os.ParcelFileDescriptor
 import android.print.PrintAttributes
-import android.print.PrintDocumentAdapter
 import android.print.PrintManager
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.Promise
-import expo.modules.core.interfaces.ActivityProvider
-import expo.modules.core.interfaces.ExpoMethod
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
+import android.print.PrintDocumentAdapter
+import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.functions.Coroutine
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.suspendCancellableCoroutine
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
+import kotlin.coroutines.Continuation
+import kotlin.coroutines.resume
+import kotlin.coroutines.resumeWithException
 
-class PrintModule(context: Context) : ExportedModule(context) {
-  private val ORIENTATION_PORTRAIT = "portrait"
-  private val ORIENTATION_LANDSCAPE = "landscape"
+private const val ORIENTATION_PORTRAIT = "portrait"
+private const val ORIENTATION_LANDSCAPE = "landscape"
+
+class PrintModule : Module() {
   private val jobName = "Printing"
-  private lateinit var moduleRegistry: ModuleRegistry
+  override fun definition() = ModuleDefinition {
+    Name("ExpoPrint")
 
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    this.moduleRegistry = moduleRegistry
-  }
+    AsyncFunction("print") Coroutine { options: PrintOptions ->
+      return@Coroutine print(options)
+    }
 
-  override fun getName(): String {
-    return "ExponentPrint"
-  }
+    AsyncFunction("printToFileAsync") Coroutine { options: PrintOptions ->
+      return@Coroutine printToFile(options)
+    }
 
-  override fun getConstants(): MutableMap<String, Any?> {
-    return hashMapOf(
-      "Orientation" to hashMapOf(
+    Constants(
+      "Orientation" to mapOf(
         "portrait" to ORIENTATION_PORTRAIT,
         "landscape" to ORIENTATION_LANDSCAPE
       )
     )
   }
 
-  @ExpoMethod
-  fun print(options: Map<String?, Any?>, promise: Promise) {
-    val html = if (options.containsKey("html")) {
-      options["html"] as String?
-    } else {
-      null
+  val context: Context
+    get() = requireNotNull(appContext.reactContext) { "React Application Context is null" }
+
+  private val currentActivity
+    get() = appContext.activityProvider?.currentActivity ?: throw MissingCurrentActivityException()
+
+  private suspend fun print(options: PrintOptions) {
+    withContext(Dispatchers.Main) {
+      suspendCancellableCoroutine { continuation ->
+        if (options.html != null) {
+          // Renders HTML to PDF and then prints
+          try {
+            val renderTask = PrintPDFRenderTask(context, options)
+            renderTask.render(
+              null,
+              null,
+              createPrintCallbacks(options, continuation)
+            )
+          } catch (e: Exception) {
+            continuation.resumeWithException(GenericPrintException("There was an error while trying to print HTML ", e))
+          }
+        } else {
+          // Prints from given URI (file path or base64 data URI starting with `data:*;base64,`)
+          try {
+            val pda = PrintDocumentAdapter(context, continuation, options.uri)
+            printDocumentToPrinter(pda, options)
+            continuation.resume(null)
+          } catch (e: Exception) {
+            continuation.resumeWithException(GenericPrintException("There was an error while trying to print file ", e))
+          }
+        }
+      }
     }
-    val uri = if (options.containsKey("uri")) {
-      options["uri"] as String?
-    } else {
-      null
-    }
-    if (html != null) {
-      // Renders HTML to PDF and then prints
+  }
+
+  private suspend fun printToFile(options: PrintOptions): FilePrintResult? {
+    var filePath: String
+    var fileDescriptor: ParcelFileDescriptor?
+    var outputFile: File
+
+    // Create the files on IO thread
+    withContext(Dispatchers.IO) {
       try {
-        val renderTask = PrintPDFRenderTask(context, options, moduleRegistry)
+        filePath = FileUtils.generateFilePath(context)
+      } catch (e: IOException) {
+        throw GenericPrintException("An unknown I/O exception occurred ", e)
+      }
+      try {
+        outputFile = File(filePath)
+        outputFile.createNewFile()
+        fileDescriptor = ParcelFileDescriptor.open(outputFile, ParcelFileDescriptor.MODE_TRUNCATE or ParcelFileDescriptor.MODE_WRITE_ONLY)
+      } catch (e: IOException) {
+        throw FileNotFoundException(e)
+      }
+    }
+
+    return withContext(Dispatchers.Main) {
+      return@withContext suspendCancellableCoroutine { continuation ->
+        val renderTask = PrintPDFRenderTask(context, options)
         renderTask.render(
-          null,
-          object : PrintPDFRenderTask.Callbacks() {
-            override fun onRenderFinished(document: PrintDocumentAdapter, outputFile: File?, numberOfPages: Int) {
-              printDocumentToPrinter(document, options)
-              promise.resolve(null)
-            }
-
-            override fun onRenderError(errorCode: String?, errorMessage: String?, exception: Exception?) {
-              promise.reject(errorCode, errorMessage, exception)
-            }
-          }
+          outputFile,
+          fileDescriptor,
+          createPrintToFileCallbacks(options, continuation)
         )
-      } catch (e: Exception) {
-        promise.reject("E_CANNOT_PRINT", "There was an error while trying to print HTML.", e)
-      }
-    } else {
-      // Prints from given URI (file path or base64 data URI starting with `data:*;base64,`)
-      try {
-        val pda = PrintDocumentAdapter(context, promise, uri)
-        printDocumentToPrinter(pda, options)
-        promise.resolve(null)
-      } catch (e: Exception) {
-        promise.reject("E_CANNOT_PRINT", "There was an error while trying to print a file.", e)
       }
     }
   }
 
-  @ExpoMethod
-  fun printToFileAsync(options: Map<String?, Any?>, promise: Promise) {
-    val filePath: String
-    try {
-      filePath = FileUtils.generateFilePath(context)
-    } catch (e: IOException) {
-      promise.reject("E_PRINT_FAILED", "An unknown I/O exception occurred.", e)
-      return
-    }
-    val renderTask = PrintPDFRenderTask(context, options, moduleRegistry)
-    renderTask.render(
-      filePath,
-      object : PrintPDFRenderTask.Callbacks() {
-        override fun onRenderFinished(document: PrintDocumentAdapter, outputFile: File?, numberOfPages: Int) {
-          val uri = FileUtils.uriFromFile(outputFile).toString()
-          var base64: String? = null
-          if (options.containsKey("base64") && (options["base64"] as Boolean? == true)) {
-            try {
-              base64 = outputFile?.let { FileUtils.encodeFromFile(it) }
-            } catch (e: IOException) {
-              promise.reject("E_PRINT_BASE64_FAILED", "An error occurred while encoding PDF file to base64 string.", e)
-              return
-            }
+  private fun createPrintToFileCallbacks(options: PrintOptions, continuation: Continuation<FilePrintResult>): PrintPDFRenderTask.Callbacks {
+    return object : PrintPDFRenderTask.Callbacks() {
+      override fun onRenderFinished(document: PrintDocumentAdapter, outputFile: File?, numberOfPages: Int) {
+        val uri = FileUtils.uriFromFile(outputFile).toString()
+        var base64: String? = null
+        if (options.base64) {
+          try {
+            base64 = outputFile?.let { FileUtils.encodeFromFile(it) }
+          } catch (e: IOException) {
+            continuation.resumeWithException(Base64EncodingFailedException(e))
+            return
           }
-          promise.resolve(
-            Bundle().apply {
-              putString("uri", uri)
-              putInt("numberOfPages", numberOfPages)
-              if (base64 != null) putString("base64", base64)
-            }
-          )
         }
-
-        override fun onRenderError(errorCode: String?, errorMessage: String?, exception: Exception?) {
-          promise.reject(errorCode, errorMessage, exception)
-        }
+        val result = FilePrintResult(uri, numberOfPages, base64)
+        continuation.resume(result)
       }
-    )
-  }
 
-  private fun printDocumentToPrinter(document: PrintDocumentAdapter, options: Map<String?, Any?>) {
-    val printManager = moduleRegistry
-      .getModule(ActivityProvider::class.java)
-      .currentActivity
-      ?.getSystemService(Context.PRINT_SERVICE) as? PrintManager
-    val attributes = getAttributesFromOptions(options)
-    printManager?.print(jobName, document, attributes.build())
-  }
-
-  private fun getAttributesFromOptions(options: Map<String?, Any?>): PrintAttributes.Builder {
-    val orientation = if (options.containsKey("orientation")) {
-      options["orientation"] as String?
-    } else {
-      null
+      override fun onRenderError(exception: CodedException) {
+        continuation.resumeWithException(exception)
+      }
     }
+  }
+
+  private fun createPrintCallbacks(options: PrintOptions, continuation: Continuation<Unit>): PrintPDFRenderTask.Callbacks {
+    return object : PrintPDFRenderTask.Callbacks() {
+      override fun onRenderFinished(document: PrintDocumentAdapter, outputFile: File?, numberOfPages: Int) {
+        printDocumentToPrinter(document, options)
+        continuation.resume(Unit)
+      }
+
+      override fun onRenderError(exception: CodedException) {
+        continuation.resumeWithException(exception)
+      }
+    }
+  }
+
+  private fun printDocumentToPrinter(document: PrintDocumentAdapter, options: PrintOptions) {
+    (currentActivity.getSystemService(Context.PRINT_SERVICE) as? PrintManager)?.let {
+      val attributes = getAttributesFromOptions(options)
+      it.print(jobName, document, attributes.build())
+    } ?: throw PrintManagerNotAvailableException()
+  }
+
+  private fun getAttributesFromOptions(options: PrintOptions): PrintAttributes.Builder {
+    val orientation = options.orientation
     val builder = PrintAttributes.Builder()
 
     // @tsapeta: Unfortunately these attributes might be ignored on some devices or Android versions,
