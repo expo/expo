@@ -8,6 +8,8 @@
 
 - Migrated iOS codebase to use Expo modules API. ([#21561](https://github.com/expo/expo/pull/21561) by [@behenate](https://github.com/behenate))
 
+- Migrated Android codebase to use the Expo modules API and Kotlin coroutines.
+
 ### 🐛 Bug fixes
 
 - Fixed [Multiple Print Bug on iOS 16](https://github.com/expo/expo/issues/19399). ([#21561](https://github.com/expo/expo/pull/21561) by [@behenate](https://github.com/behenate))
