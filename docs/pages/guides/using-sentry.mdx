@@ -151,9 +151,8 @@ Add `expo.hooks` property to your project's **app.json** or **app.config.js** fi
         {
           "file": "sentry-expo/upload-sourcemaps",
           "config": {
-            "organization": "your sentry organization slug here",
-            "project": "your sentry project name here",
-            "authToken": "your auth token here"
+            "organization": "sentry org slug, or use the `SENTRY_ORG` environment variable",
+            "project": "sentry project name, or use the `SENTRY_PROJECT` environment variable"
           }
         }
       ]
@@ -162,17 +161,14 @@ Add `expo.hooks` property to your project's **app.json** or **app.config.js** fi
 }
 ```
 
-The `authToken` value can be generated from the [Sentry API page](https://sentry.io/settings/account/api/).
+To upload the source map to Sentry, you must create a [Sentry auth token](https://docs.sentry.io/product/cli/configuration/). After creating your Sentry auth token [here](https://sentry.io/settings/account/api/), you can configure this token through the `SENTRY_AUTH_TOKEN` environment variable in [EAS Build](/build-reference/variables/#using-secrets-in-environment-variables).
 
-<Collapsible summary="Prefer to use environment variables instead of storing values in app.json?">
+> **warning** Never commit secrets to your repository. Keep the Sentry auth token in a safe place, outside your repository and use the environment variable instead.
 
-You can also use environment variables for your config, if you prefer:
+Besides the auth token, you can also configure the following options through environment variables:
 
 - organization → `SENTRY_ORG`
 - project → `SENTRY_PROJECT`
-- authToken → `SENTRY_AUTH_TOKEN`
-
-</Collapsible>
 
 <Collapsible summary="Additional configuration options">
 
