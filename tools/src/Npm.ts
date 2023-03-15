@@ -1,7 +1,7 @@
 import fs from 'fs-extra';
 import glob from 'glob-promise';
 
-import { spawnAsync, spawnJSONCommandAsync } from './Utils';
+import { spawnAsync, spawnJSONCommandAsync, SpawnOptions } from './Utils';
 
 export const EXPO_DEVELOPERS_TEAM_NAME = 'expo:developers';
 
@@ -29,6 +29,16 @@ export type PackageViewType = null | {
   [key: string]: unknown;
 };
 
+export type ProfileType = null | {
+  name: string;
+  email: string;
+  tfa: {
+    pending: boolean;
+    mode: string;
+  };
+  [key: string]: unknown;
+};
+
 /**
  * Runs `npm view` for package with given name. Returns null if package is not published yet.
  */
@@ -42,6 +52,17 @@ export async function getPackageViewAsync(
       version ? `${packageName}@${version}` : packageName,
       '--json',
     ]);
+  } catch {
+    return null;
+  }
+}
+
+/**
+ * Runs `npm profile get`. Returns null if user is not authenticated.
+ */
+export async function getProfileAsync(): Promise<ProfileType> {
+  try {
+    return await spawnJSONCommandAsync('npm', ['profile', 'get', '--json']);
   } catch {
     return null;
   }
@@ -73,7 +94,8 @@ export async function downloadPackageTarballAsync(
 export async function publishPackageAsync(
   packageDir: string,
   tagName: string = 'latest',
-  dryRun: boolean = false
+  dryRun: boolean = false,
+  spawnOptions: SpawnOptions = {}
 ): Promise<void> {
   const args = ['publish', '--tag', tagName, '--access', 'public'];
 
@@ -82,6 +104,7 @@ export async function publishPackageAsync(
   }
   await spawnAsync('npm', args, {
     cwd: packageDir,
+    ...spawnOptions,
   });
 }
 
