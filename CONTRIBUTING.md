@@ -54,7 +54,9 @@ Make sure that you're using Java 11 (e.g. Azul Zulu JDK 11.0.15+10). `ANDROID_SD
 
 If you will be working with the iOS project, ensure **ruby 2.7** is installed on your machine. macOS comes with ruby 2.6, which is not supported in this repository; if you use Homebrew you can just run `brew install ruby@2.7`. You will also need to have the latest stable version of Xcode installed, along with Xcode command line tools.
 
-Install [SwiftLint](https://github.com/realm/SwiftLint) to check and format your iOS code changes before submitting. Use `swiftlint --fix` to fix all auto-fixable issues, the run `swiftlint` to check for remaining issues that needs to be taken care of manually.
+Install [SwiftLint](https://github.com/realm/SwiftLint) to check and format your iOS code changes before submitting. Use `swiftlint --fix` to fix all auto-fixable issues, the run `swiftlint` to check for remaining issues that needs to be taken care of manually. It's important that it uses the .swiftlint.yml file in the root of the repository, and it's recommended to run it only for the directory you want to check, this can be done in two ways:
+1. Running `swiftlint path-to-directory/you-want-to-check` from the root of the repository.
+2. Running `swiftlint --config ../../.swiftlint.yml` from the directory you want to lint (point to the .swiftlint.yml in the root).
 
 ### Verify native installation is successful
 
@@ -156,7 +158,7 @@ To help keep CI green, please make sure of the following:
   - You transpiled the TypeScript with `yarn build` in the directory of whichever package you modified.
   - Run `yarn lint --fix` to fix the formatting of the code. Ensure that `yarn lint` succeeds without errors or warnings.
   - Run `yarn test` to ensure all existing tests pass for that package, along with any new tests you would've written.
-  - Run `swiftlint --fix` to fix most iOS code formatting, but be aware that it doesn't warn about issues requiring manual changes. Ensure that `swiftlint` succeeds without errors or warnings.
+  - If you've made iOS changes - ensure that `swiftlint` succeeds without errors or warnings, see [Setup iOS](#set-up-ios) for details.
   - All `console.log`s or commented out code blocks are removed! :]
 - If you edited the `docs/`:
   - Any change to the current SDK version should also be in the unversioned copy as well. Example:
