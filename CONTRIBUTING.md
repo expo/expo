@@ -54,7 +54,7 @@ Make sure that you're using Java 11 (e.g. Azul Zulu JDK 11.0.15+10). `ANDROID_SD
 
 If you will be working with the iOS project, ensure **ruby 2.7** is installed on your machine. macOS comes with ruby 2.6, which is not supported in this repository; if you use Homebrew you can just run `brew install ruby@2.7`. You will also need to have the latest stable version of Xcode installed, along with Xcode command line tools.
 
-Install [swiftlint](https://github.com/realm/SwiftLint) to check and format your iOS code changes before submitting. Use `swiftlint --fix` to fix all auto-fixable issues, the run `swiftlint` to check for remaining issues that needs to be taken care of manually.
+Install [SwiftLint](https://github.com/realm/SwiftLint) to check and format your iOS code changes before submitting. Use `swiftlint --fix` to fix all auto-fixable issues, the run `swiftlint` to check for remaining issues that needs to be taken care of manually.
 
 ### Verify native installation is successful
 
