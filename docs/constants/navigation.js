@@ -200,10 +200,8 @@ const general = [
   ]),
   makeSection('Regulatory compliance', sortAlphabetical(pagesFromDir('regulatory-compliance')), {}),
   makeSection('Technical specs', [
-    makeGroup('Current', [
-      makePage('technical-specs/expo-updates-1.mdx'),
-      makePage('technical-specs/expo-sfv-0.mdx'),
-    ]),
+    makePage('technical-specs/expo-updates-1.mdx'),
+    makePage('technical-specs/expo-sfv-0.mdx'),
   ]),
 ];
 
