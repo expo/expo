@@ -38,7 +38,6 @@ public final class SQLiteModule: Module {
 
       guard let path = self.pathForDatabaseName(name: dbName) else {
         throw Exceptions.FileSystemModuleNotFound()
-        return
       }
 
       if !FileManager.default.fileExists(atPath: path.absoluteString) {
