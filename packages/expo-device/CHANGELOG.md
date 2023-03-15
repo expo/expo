@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- Added `deviceType` constant. ([#21633](https://github.com/expo/expo/pull/21633) by [@robertherber](https://github.com/robertherber))
 - On iOS added support for deviceType detection of Desktop on MacOS, checking for Catalyst and iPad app running on Mac. ([#21636](https://github.com/expo/expo/pull/21636) by [@robertherber](https://github.com/robertherber))
 
 ### 🐛 Bug fixes
