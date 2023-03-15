@@ -4,31 +4,27 @@ import resolveFrom from 'resolve-from';
 
 import { getPackageJson } from '../Config';
 import { PackageJSONConfig } from '../Config.types';
+import { ConfigError } from '../Errors';
 import { getBareExtensions } from './extensions';
-
-const nativePlatforms = ['ios', 'android'];
 
 /** @returns the absolute entry file for an Expo project. */
 export function resolveEntryPoint(
   projectRoot: string,
-  { platform, pkg }: { platform: string; pkg?: PackageJSONConfig }
-): string {
-  const platforms = nativePlatforms.includes(platform) ? [platform, 'native'] : [platform];
-  const extensions = getBareExtensions(platforms);
-  return getEntryPointWithExtensions(projectRoot, { extensions, pkg });
-}
-
-// Used to resolve the main entry file for a project.
-export function getEntryPointWithExtensions(
-  projectRoot: string,
   {
-    extensions,
+    platform,
     pkg = getPackageJson(projectRoot),
   }: {
-    extensions: string[];
+    platform?: string;
     pkg?: PackageJSONConfig;
-  }
+  } = {}
 ): string {
+  const platforms = !platform
+    ? []
+    : ['ios', 'android'].includes(platform)
+    ? [platform, 'native']
+    : [platform];
+  const extensions = getBareExtensions(platforms);
+
   // If the config doesn't define a custom entry then we want to look at the `package.json`s `main` field, and try again.
   const { main } = pkg;
   if (main && typeof main === 'string') {
@@ -38,8 +34,9 @@ export function getEntryPointWithExtensions(
       // Allow for paths like: `{ "main": "expo/AppEntry" }`
       entry = resolveFromSilentWithExtensions(projectRoot, main, extensions);
       if (!entry)
-        throw new Error(
-          `Cannot resolve entry file: The \`main\` field defined in your \`package.json\` points to an unresolvable or non-existent path.`
+        throw new ConfigError(
+          `Cannot resolve entry file: The \`main\` field defined in your \`package.json\` points to an unresolvable or non-existent path.`,
+          'ENTRY_NOT_FOUND'
         );
     }
     return entry;
@@ -59,8 +56,9 @@ export function getEntryPointWithExtensions(
     // TODO(Bacon): We may want to do a check against `./App` and `expo` in the `package.json` `dependencies` as we can more accurately ensure that the project is expo-min without needing the modules installed.
     return resolveFrom(projectRoot, 'expo/AppEntry');
   } catch {
-    throw new Error(
-      `The project entry file could not be resolved. Please define it in the \`main\` field of the \`package.json\`, create an \`index.js\`, or install the \`expo\` package.`
+    throw new ConfigError(
+      `The project entry file could not be resolved. Define it in the \`main\` field of the \`package.json\`, create an \`index.js\`, or install the \`expo\` package.`,
+      'ENTRY_NOT_FOUND'
     );
   }
 }
@@ -73,7 +71,7 @@ function resolveFromSilentWithExtensions(
 ): string | null {
   for (const extension of extensions) {
     const modulePath = resolveFrom.silent(fromDirectory, `${moduleId}.${extension}`);
-    if (modulePath && modulePath.endsWith(extension)) {
+    if (modulePath?.endsWith(extension)) {
       return modulePath;
     }
   }

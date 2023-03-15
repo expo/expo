@@ -2,15 +2,8 @@ import { vol } from 'memfs';
 
 import { resolveEntryPoint } from '../paths';
 
-const packageJson = JSON.stringify(
-  {
-    name: 'testing123',
-    version: '0.1.0',
-    main: 'index.js',
-  },
-  null,
-  2
-);
+jest.mock('fs');
+jest.mock('resolve-from');
 
 const packageJsonAndroid = JSON.stringify(
   {
@@ -37,106 +30,110 @@ const packageJsonNoMain = JSON.stringify({
   version: '0.2.0',
 });
 
-const appJson = JSON.stringify(
-  {
-    expo: {
-      name: 'testing 123',
-      version: '0.1.0',
-      slug: 'testing-123',
-    },
-  },
-  null,
-  2
-);
-
 describe(resolveEntryPoint, () => {
   afterEach(() => vol.reset());
 
   it('exists-no-platform', () => {
     vol.fromJSON(
       {
-        'package.json': packageJson,
-        'app.json': appJson,
-        'index.js': 'console.log("lol")',
+        'package.json': JSON.stringify({
+          main: 'index.js',
+        }),
+        'index.js': '',
       },
       '/'
     );
 
-    expect(
-      resolveEntryPoint('/', {
-        // @ts-expect-error
-        platform: undefined,
-      })
-    ).toBe('index.js');
+    expect(resolveEntryPoint('/')).toBe('/index.js');
   });
 
   // Can't test resolving modules yet
   it('exists-no-platform-no-main', () => {
     vol.fromJSON(
       {
-        'package.json': packageJsonNoMain,
-        'app.json': appJson,
-        'index.js': 'console.log("lol")',
+        'package.json': JSON.stringify({}),
+        'index.js': '',
       },
       '/'
     );
-    expect(resolveEntryPoint('/', { platform: undefined })).toBe('index.js');
+    expect(resolveEntryPoint('/')).toBe('/index.js');
   });
 
-  it('exists-android', () => {
+  it('Uses android-specific entry', () => {
     vol.fromJSON(
       {
-        'package.json': packageJsonAndroid,
-        'app.json': appJson,
-        'index.android.js': 'console.log("lol")',
+        'package.json': JSON.stringify({ main: 'index.android.js' }),
+        'index.android.js': '',
       },
       '/'
     );
-    expect(resolveEntryPoint('/', { platform: 'android' })).toBe('index.android.js');
+    expect(resolveEntryPoint('/', { platform: 'android' })).toBe('/index.android.js');
   });
 
-  it('exists-ios', () => {
+  it('Uses multiple platform specific entry files', () => {
     vol.fromJSON(
       {
-        'package.json': packageJsonIos,
-        'app.json': appJson,
+        'package.json': JSON.stringify({}),
+        'index.js': '',
+        'index.ios.js': '',
+        'index.android.js': '',
+      },
+      '/'
+    );
+    expect(resolveEntryPoint('/', { platform: 'android' })).toBe('/index.android.js');
+    expect(resolveEntryPoint('/', { platform: 'ios' })).toBe('/index.ios.js');
+    expect(resolveEntryPoint('/', { platform: 'web' })).toBe('/index.js');
+    expect(resolveEntryPoint('/', { platform: undefined })).toBe('/index.js');
+  });
+
+  it('resolve ios with no others', () => {
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify({}),
         'index.ios.js': '',
       },
       '/'
     );
-    expect(resolveEntryPoint('/', { platform: 'ios' })).toBe('index.ios.js');
+    expect(resolveEntryPoint('/', { platform: 'ios' })).toBe('/index.ios.js');
   });
 
   it('exists-expjson', () => {
     vol.fromJSON(
       {
-        'package.json': packageJson,
-        'app.json': JSON.stringify({
-          expo: {
-            name: 'testing567',
-            version: '0.6.0',
-            entryPoint: 'main.js',
-          },
+        'package.json': JSON.stringify({
+          main: './unknown',
         }),
-        'main.js': 'console.log("lol")',
+        'main.js': '',
       },
       '/'
     );
 
-    expect(() => resolveEntryPoint('/')).toThrow();
+    expect(() => resolveEntryPoint('/')).toThrowErrorMatchingInlineSnapshot(
+      `"Cannot resolve entry file: The \`main\` field defined in your \`package.json\` points to an unresolvable or non-existent path."`
+    );
   });
 
-  // Can't test resolving modules yet
-  xit('uses node_modules/expo/AppEntry as a last resort', () => {
+  it('uses node_modules/expo/AppEntry as a last resort', () => {
     vol.fromJSON(
       {
-        'package.json': packageJsonNoMain,
-        'app.json': appJson,
-        'App.js': '',
+        'package.json': JSON.stringify({}),
+        'node_modules/expo/AppEntry.js': '',
       },
       '/'
     );
 
-    expect(resolveEntryPoint('/')).toBe('node_modules/expo/AppEntry.js');
+    expect(resolveEntryPoint('/')).toBe('/node_modules/expo/AppEntry.js');
+  });
+
+  it('resolves modules in package.json main', () => {
+    vol.fromJSON(
+      {
+        'package.json': JSON.stringify({ main: 'expo/AppEntry' }),
+        'node_modules/expo/AppEntry.js': '',
+      },
+      '/'
+    );
+
+    expect(resolveEntryPoint('/')).toBe('/node_modules/expo/AppEntry.js');
   });
 });

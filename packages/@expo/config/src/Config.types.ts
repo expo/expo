@@ -144,6 +144,7 @@ export type Platform = 'android' | 'ios' | 'web';
 export type ProjectTarget = 'managed' | 'bare';
 
 export type ConfigErrorCode =
+  | 'ENTRY_NOT_FOUND'
   | 'NO_APP_JSON'
   | 'NOT_OBJECT'
   | 'NO_EXPO'
