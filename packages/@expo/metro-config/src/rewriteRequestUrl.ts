@@ -36,7 +36,7 @@ export function getRewriteRequestUrl(projectRoot: string) {
       }
 
       const serverRoot = getServerRoot(projectRoot);
-      const relativeEntry = path.relative(serverRoot, entry);
+      const relativeEntry = path.relative(serverRoot, entry).replace(/\.[tj]sx?$/, '');
       debug('Resolved entry point', { entry, relativeEntry, serverRoot });
 
       // Like: `/index.bundle?platform=ios&dev=true&minify=false&modulesOnly=false&runModule=true&app=com.bacon.test-custom-entry`

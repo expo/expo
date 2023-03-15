@@ -6,8 +6,8 @@ describe(getRewriteRequestUrl, () => {
   it(`rewrites expo request url to entry point`, () => {
     vol.fromJSON(
       {
-        '/package.json': JSON.stringify({}),
-        '/index.js': 'console.log("lol")',
+        'package.json': JSON.stringify({ name: 'hey' }),
+        'index.js': 'console.log("lol")',
       },
       '/'
     );

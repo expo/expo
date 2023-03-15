@@ -71,7 +71,7 @@ function getRewriteRequestUrl(projectRoot) {
         throw new Error((0, _chalk().default)`The project entry file could not be resolved (platform: ${platform}, root: ${projectRoot}). Define it in the {bold package.json} "main" field.`);
       }
       const serverRoot = (0, _getModulesPaths().getServerRoot)(projectRoot);
-      const relativeEntry = _path().default.relative(serverRoot, entry);
+      const relativeEntry = _path().default.relative(serverRoot, entry).replace(/\.[tj]sx?$/, '');
       debug('Resolved entry point', {
         entry,
         relativeEntry,

@@ -1,7 +1,6 @@
 import { ExpoConfig, getConfig } from '@expo/config';
 import { MetroDevServerOptions } from '@expo/dev-server';
 import type { LoadOptions } from '@expo/metro-config';
-import * as ExpoMetroConfig from '@expo/metro-config';
 import chalk from 'chalk';
 import http from 'http';
 import type Metro from 'metro';
@@ -16,6 +15,7 @@ import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
+import { importExpoMetroConfig } from './resolveFromProject';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 
@@ -46,6 +46,7 @@ export async function loadMetroConfigAsync(
     },
   };
 
+  const ExpoMetroConfig = importExpoMetroConfig(projectRoot);
   let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
 
   const bundlerPlatforms = getPlatformBundlers(exp);
