@@ -164,7 +164,7 @@ Add `expo.hooks` property to your project's **app.json** or **app.config.js** fi
 
 To upload the source map to Sentry, you must create a [Sentry auth token](https://docs.sentry.io/product/cli/configuration/). After creating your Sentry auth token [here](https://sentry.io/settings/account/api/), you can configure this token through the `SENTRY_AUTH_TOKEN` environment variable in [EAS Build](/build-reference/variables/#using-secrets-in-environment-variables).
 
-<Callout>
+<Callout type="warning">
 
 Never commit secrets to your repository. Keep the Sentry auth token in a safe place, outside your repository and use the environment variable instead.
 
