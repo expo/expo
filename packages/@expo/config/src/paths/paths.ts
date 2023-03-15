@@ -2,98 +2,53 @@ import fs from 'fs';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
-import { getConfig } from '../Config';
-import { ProjectConfig } from '../Config.types';
-import { ConfigError } from '../Errors';
+import { getPackageJson } from '../Config';
+import { PackageJSONConfig } from '../Config.types';
 import { getBareExtensions } from './extensions';
-
-// https://github.com/facebook/create-react-app/blob/9750738cce89a967cc71f28390daf5d4311b193c/packages/react-scripts/config/paths.js#L22
-export function ensureSlash(inputPath: string, needsSlash: boolean): string {
-  const hasSlash = inputPath.endsWith('/');
-  if (hasSlash && !needsSlash) {
-    return inputPath.substr(0, inputPath.length - 1);
-  } else if (!hasSlash && needsSlash) {
-    return `${inputPath}/`;
-  } else {
-    return inputPath;
-  }
-}
-
-export function getPossibleProjectRoot(): string {
-  return fs.realpathSync(process.cwd());
-}
 
 const nativePlatforms = ['ios', 'android'];
 
+/** @returns the absolute entry file for an Expo project. */
 export function resolveEntryPoint(
   projectRoot: string,
-  { platform, projectConfig }: { platform: string; projectConfig?: ProjectConfig }
-) {
+  { platform, pkg }: { platform: string; pkg?: PackageJSONConfig }
+): string {
   const platforms = nativePlatforms.includes(platform) ? [platform, 'native'] : [platform];
-  return getEntryPoint(projectRoot, ['./index'], platforms, projectConfig);
-}
-
-export function getEntryPoint(
-  projectRoot: string,
-  entryFiles: string[],
-  platforms: string[],
-  projectConfig?: ProjectConfig
-): string | null {
   const extensions = getBareExtensions(platforms);
-  return getEntryPointWithExtensions(projectRoot, entryFiles, extensions, projectConfig);
+  return getEntryPointWithExtensions(projectRoot, { extensions, pkg });
 }
 
 // Used to resolve the main entry file for a project.
 export function getEntryPointWithExtensions(
   projectRoot: string,
-  entryFiles: string[],
-  extensions: string[],
-  projectConfig?: ProjectConfig
+  {
+    extensions,
+    pkg = getPackageJson(projectRoot),
+  }: {
+    extensions: string[];
+    pkg?: PackageJSONConfig;
+  }
 ): string {
-  if (!projectConfig) {
-    // drop all logging abilities
-    const original = process.stdout.write;
-    process.stdout.write = () => true;
-    try {
-      projectConfig = getConfig(projectRoot, { skipSDKVersionRequirement: true });
-    } finally {
-      process.stdout.write = original;
+  // If the config doesn't define a custom entry then we want to look at the `package.json`s `main` field, and try again.
+  const { main } = pkg;
+  if (main && typeof main === 'string') {
+    // Testing the main field against all of the provided extensions - for legacy reasons we can't use node module resolution as the package.json allows you to pass in a file without a relative path and expect it as a relative path.
+    let entry = getFileWithExtensions(projectRoot, main, extensions);
+    if (!entry) {
+      // Allow for paths like: `{ "main": "expo/AppEntry" }`
+      entry = resolveFromSilentWithExtensions(projectRoot, main, extensions);
+      if (!entry)
+        throw new Error(
+          `Cannot resolve entry file: The \`main\` field defined in your \`package.json\` points to an unresolvable or non-existent path.`
+        );
     }
+    return entry;
   }
 
-  const { exp, pkg } = projectConfig;
-
-  if (typeof exp?.entryPoint === 'string') {
-    // We want to stop reading the app.json for determining the entry file in SDK +49
-    throw new ConfigError(
-      'expo.entryPoint has been removed in favor of the main field in the package.json.',
-      'DEPRECATED'
-    );
-  }
-
-  if (pkg) {
-    // If the config doesn't define a custom entry then we want to look at the `package.json`s `main` field, and try again.
-    const { main } = pkg;
-    if (main && typeof main === 'string') {
-      // Testing the main field against all of the provided extensions - for legacy reasons we can't use node module resolution as the package.json allows you to pass in a file without a relative path and expect it as a relative path.
-      let entry = getFileWithExtensions(projectRoot, main, extensions);
-      if (!entry) {
-        // Allow for paths like: `{ "main": "expo/AppEntry" }`
-        entry = resolveFromSilentWithExtensions(projectRoot, main, extensions);
-        if (!entry)
-          throw new Error(
-            `Cannot resolve entry file: The \`main\` field defined in your \`package.json\` points to a non-existent path.`
-          );
-      }
-      return entry;
-    }
-  }
-
-  // Now we will start looking for a default entry point using the provided `entryFiles` argument.
-  // This will add support for create-react-app (src/index.js) and react-native-cli (index.js) which don't define a main.
-  for (const fileName of entryFiles) {
-    const entry = resolveFromSilentWithExtensions(projectRoot, fileName, extensions);
-    if (entry) return entry;
+  // Check for a root index.* file in the project root.
+  const entry = resolveFromSilentWithExtensions(projectRoot, './index', extensions);
+  if (entry) {
+    return entry;
   }
 
   try {
@@ -111,7 +66,7 @@ export function getEntryPointWithExtensions(
 }
 
 // Resolve from but with the ability to resolve like a bundler
-export function resolveFromSilentWithExtensions(
+function resolveFromSilentWithExtensions(
   fromDirectory: string,
   moduleId: string,
   extensions: string[]

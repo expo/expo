@@ -66,8 +66,10 @@ jest.mock('../../../../api/settings', () => ({
     isOffline: false,
   },
 }));
-jest.mock('../resolveEntryPoint', () => ({
-  resolveEntryPoint: jest.fn(() => './index.js'),
+jest.mock('@expo/config/paths', () => ({
+  resolveEntryPoint: jest.fn((projectRoot: string) =>
+    require('path').join(projectRoot, './index.js')
+  ),
 }));
 jest.mock('@expo/config', () => ({
   getProjectConfigDescriptionWithPaths: jest.fn(),

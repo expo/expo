@@ -107,8 +107,8 @@ async function copyPathsFromTemplateAsync(
     copyFilePaths: string[];
   }
 ): Promise<Pick<CopyFilesResults, 'copiedPaths' | 'skippedPaths'>> {
-  const copiedPaths = [];
-  const skippedPaths = [];
+  const copiedPaths: string[] = [];
+  const skippedPaths: string[] = [];
   for (const copyFilePath of copyFilePaths) {
     const projectPath = path.join(projectRoot, copyFilePath);
     if (!(await directoryExistsAsync(projectPath))) {

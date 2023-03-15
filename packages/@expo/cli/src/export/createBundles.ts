@@ -39,7 +39,7 @@ export async function createBundlesAsync(
     },
     bundleOptions.platforms.map((platform: Platform) => ({
       platform,
-      entryPoint: getEntryWithServerRoot(projectRoot, projectConfig, platform),
+      entryPoint: getEntryWithServerRoot(projectRoot, { pkg: projectConfig.pkg, platform }),
       dev: bundleOptions.dev,
     }))
   );
