@@ -1,5 +1,6 @@
-import { getRewriteRequestUrl } from '../rewriteRequestUrl';
 import { vol } from 'memfs';
+
+import { getRewriteRequestUrl } from '../rewriteRequestUrl';
 
 describe(getRewriteRequestUrl, () => {
   it(`rewrites expo request url to entry point`, () => {
