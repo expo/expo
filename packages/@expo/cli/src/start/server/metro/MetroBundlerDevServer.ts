@@ -213,7 +213,7 @@ export async function exportRouteHandlersAsync(
 
 function createRouteHandlerMiddleware(
   projectRoot: string,
-  options: { mode?: string; port?: number }
+  options: { mode?: string; port?: number; getWebBundleUrl: () => string }
 ) {
   const devServerUrl = `http://localhost:${options.port}`;
 
@@ -222,13 +222,13 @@ function createRouteHandlerMiddleware(
     // TODO: Support other directories via app.json
     'app'
   );
-  function getRouteFiles() {
-    // TODO: Cache this
-    return globSync('**/*+api.@(ts|tsx|js|jsx)', {
-      cwd: appDir,
-      absolute: false,
-    }).map((path) => './' + path);
-  }
+  // function getRouteFiles() {
+  //   // TODO: Cache this
+  //   return globSync('**/*+api.@(ts|tsx|js|jsx)', {
+  //     cwd: appDir,
+  //     absolute: false,
+  //   }).map((path) => './' + path);
+  // }
 
   return async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
     if (!req?.url || !req.method) {
@@ -240,23 +240,86 @@ function createRouteHandlerMiddleware(
     // 1. Get pathname, e.g. `/thing`
     const pathname = location.pathname?.replace(/\/$/, '');
 
-    if (!pathname) {
-      return next();
-    }
+    // if (!pathname) {
+    //   return next();
+    // }
 
     // TODO: use manifest for matching
 
-    const buildMatcher = await getMatcherMemoized(projectRoot, {
+    // const buildMatcher = await getMatcherMemoized(projectRoot, {
+    //   devServerUrl,
+    //   minify: options.mode === 'production',
+    //   dev: options.mode !== 'production',
+    // });
+
+    // const matcher = buildMatcher(getRouteFiles());
+
+    // const node = await matcher(pathname);
+
+    const getManifest = await getExpoRouteManifestBuilderAsync(projectRoot, {
       devServerUrl,
       minify: options.mode === 'production',
       dev: options.mode !== 'production',
     });
 
-    const matcher = buildMatcher(getRouteFiles());
+    const manifest = getManifest(
+      globSync('**/*.@(ts|tsx|js|jsx)', {
+        // globSync('**/*+api.@(ts|tsx|js|jsx)', {
+        cwd: appDir,
+        absolute: false,
+      }).map((path) => './' + path)
+    ).map((value: any) => {
+      return {
+        ...value,
+        regex: new RegExp(value.regex),
+      };
+    });
 
-    const node = await matcher(pathname);
+    const sanitizedPathname = pathname.replace(/^\/+/, '').replace(/\/+$/, '') + '/';
 
-    if (!node?._route?.contextKey.match(/\+api\.[ts]x?/)) {
+    console.log('manifest', manifest, sanitizedPathname);
+    let functionFilePath: string | null = null;
+    for (const route of manifest) {
+      if (route.regex.test(sanitizedPathname)) {
+        console.log('Using:', route.src, sanitizedPathname, route.regex);
+        if (route.type === 'static') {
+          try {
+            const { getStaticContent } = await getStaticRenderFunctions(projectRoot, devServerUrl, {
+              minify: options.mode === 'production',
+              dev: options.mode !== 'production',
+            });
+
+            let content = await getStaticContent(location);
+
+            //TODO: Not this -- disable injection some other way
+            if (options.mode !== 'production') {
+              // Add scripts for rehydration
+              // TODO: bundle split
+              content = content.replace(
+                '</body>',
+                [`<script src="${options.getWebBundleUrl()}" defer></script>`].join('\n') +
+                  '</body>'
+              );
+            }
+
+            res.setHeader('Content-Type', 'text/html');
+            res.end(content);
+            return;
+          } catch (error: any) {
+            console.error(error);
+            res.setHeader('Content-Type', 'text/html');
+            res.end(getErrorResult(error));
+          }
+
+          return;
+        }
+
+        functionFilePath = route.file;
+        break;
+      }
+    }
+
+    if (!functionFilePath) {
       return next();
     }
 
@@ -264,7 +327,7 @@ function createRouteHandlerMiddleware(
     try {
       resolved = await resolveAsync(
         // TODO: Document this format of +api
-        node._route.contextKey,
+        functionFilePath,
         {
           extensions: ['.js', '.jsx', '.ts', '.tsx'],
           basedir: appDir,
@@ -299,6 +362,11 @@ function createRouteHandlerMiddleware(
 
     // Interop default
     const func = middleware[req.method];
+
+    if (!func) {
+      res.statusCode = 405;
+      return res.end('Method not allowed');
+    }
 
     try {
       // 4. Execute.
@@ -457,13 +525,18 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       installGlobals();
 
       // Middleware for hosting middleware
-      middleware.use(createRouteHandlerMiddleware(this.projectRoot, options));
+      middleware.use(
+        createRouteHandlerMiddleware(this.projectRoot, {
+          ...options,
+          getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
+        })
+      );
     }
 
     if (this.isTargetingWeb()) {
       const devServerUrl = `http://localhost:${options.port}`;
 
-      if (env.EXPO_USE_STATIC) {
+      if (false && env.EXPO_USE_STATIC) {
         middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
           if (!req?.url) {
             return next();

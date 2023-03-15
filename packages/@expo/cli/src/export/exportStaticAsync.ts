@@ -142,14 +142,18 @@ export async function getFilesToExportFromServerAsync({
 
       // Segment is a directory.
       if (typeof segment !== 'string') {
-        const cleanSegment = sanitizeName(segment.path);
-        return Promise.all(
-          fetchScreens(segment.screens, [additionPath, cleanSegment].filter(Boolean).join('/'))
-        );
+        if (Object.keys(segment.screens).length) {
+          const cleanSegment = sanitizeName(segment.path);
+          return Promise.all(
+            fetchScreens(segment.screens, [additionPath, cleanSegment].filter(Boolean).join('/'))
+          );
+        } else {
+          segment = segment.path;
+        }
       }
 
       // TODO: handle dynamic routes
-      if (segment !== '*') {
+      if (!segment.startsWith('*')) {
         await fetchScreenAsync({ segment, filename });
       }
       return null;

@@ -52,6 +52,7 @@ async function handleRouteHandlerAsync(
   }
 }
 
+// TODO: Reuse this for dev as well
 export function createRequestHandler(distFolder: string) {
   const statics = path.join(distFolder, 'static');
 
@@ -67,7 +68,7 @@ export function createRequestHandler(distFolder: string) {
   const serveStatic = new ServeStaticMiddleware('/', statics).getHandler();
 
   console.log('start', routesManifest);
-  return function handler(
+  return async function handler(
     request: ServerRequest,
     response: ServerResponse,
     // TODO
@@ -87,6 +88,10 @@ export function createRequestHandler(distFolder: string) {
     // ensure end slash
     // remove start slash
     const sanitizedPathname = url.pathname.replace(/^\/+/, '').replace(/\/+$/, '') + '/';
+
+    await new Promise((res, rej) =>
+      serveStatic(request, response, (err) => (err ? rej(err) : res()))
+    );
 
     for (const route of routesManifest) {
       if (route.regex.test(sanitizedPathname)) {
