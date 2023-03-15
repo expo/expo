@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Migrated to Expo Modules API.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
