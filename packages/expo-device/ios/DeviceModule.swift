@@ -19,6 +19,7 @@ public class DeviceModule: Module {
       "osBuildId": osBuildId(),
       "osInternalBuildId": osBuildId(),
       "deviceName": UIDevice.current.name,
+      "deviceType": getDeviceType(),
       "supportedCpuArchitectures": cpuArchitectures()
     ])
 

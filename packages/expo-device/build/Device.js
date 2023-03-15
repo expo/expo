@@ -73,6 +73,19 @@ export const designName = ExpoDevice ? ExpoDevice.designName || null : null;
  */
 export const productName = ExpoDevice ? ExpoDevice.productName || null : null;
 /**
+ * The type of the device as a [`DeviceType`](#devicetype) enum value.
+ *
+ * On Android, for devices other than TVs, the device type is determined by the screen resolution (screen diagonal size), so the result may not be completely accurate.
+ * If the screen diagonal length is between 3" and 6.9", the method returns `DeviceType.PHONE`. For lengths between 7" and 18", the method returns `DeviceType.TABLET`.
+ * Otherwise, the method returns `DeviceType.UNKNOWN`.
+ *
+ * @example
+ * ```js
+ * Device.deviceType; // UNKNOWN, PHONE, TABLET, TV, DESKTOP
+ * ```
+ */
+export const deviceType = ExpoDevice ? ExpoDevice.deviceType : null;
+/**
  * The [device year class](https://github.com/facebook/device-year-class) of this device. On web, this value is always `null`.
  */
 export const deviceYearClass = ExpoDevice ? ExpoDevice.deviceYearClass : null;
