@@ -6,7 +6,6 @@ description: A guide on installing and configuring Sentry for crash reporting.
 
 import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { Callout } from '~/ui/components/Callout';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
@@ -164,11 +163,7 @@ Add `expo.hooks` property to your project's **app.json** or **app.config.js** fi
 
 To upload the source map to Sentry, you must create a [Sentry auth token](https://docs.sentry.io/product/cli/configuration/). After creating your Sentry auth token [here](https://sentry.io/settings/account/api/), you can configure this token through the `SENTRY_AUTH_TOKEN` environment variable in [EAS Build](/build-reference/variables/#using-secrets-in-environment-variables).
 
-<Callout type="warning">
-
-Never commit secrets to your repository. Keep the Sentry auth token in a safe place, outside your repository and use the environment variable instead.
-
-</Callout>
+> **warning** Never commit secrets to your repository. Keep the Sentry auth token in a safe place, outside your repository and use the environment variable instead.
 
 Besides the auth token, you can also configure the following options through environment variables:
 
