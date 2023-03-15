@@ -71,14 +71,14 @@ internal final class UpdatesDatabaseInitialization {
     CREATE INDEX "index_json_data_scope_key" ON "json_data" ("scope_key");
   """
 
-  public static func initializeDatabaseWithLatestSchema(inDirectory directory: URL) throws -> OpaquePointer {
+  static func initializeDatabaseWithLatestSchema(inDirectory directory: URL) throws -> OpaquePointer {
     return try initializeDatabaseWithLatestSchema(
       inDirectory: directory,
       migrations: UpdatesDatabaseMigrationRegistry.migrations()
     )
   }
 
-  public static func initializeDatabaseWithLatestSchema(inDirectory directory: URL, migrations: [UpdatesDatabaseMigration]) throws -> OpaquePointer {
+  static func initializeDatabaseWithLatestSchema(inDirectory directory: URL, migrations: [UpdatesDatabaseMigration]) throws -> OpaquePointer {
     return try initializeDatabase(
       withSchema: LatestSchema,
       filename: LatestFilename,
@@ -88,7 +88,7 @@ internal final class UpdatesDatabaseInitialization {
     )
   }
 
-  public static func initializeDatabase(
+  static func initializeDatabase(
     withSchema schema: String,
     filename: String,
     inDirectory directory: URL,

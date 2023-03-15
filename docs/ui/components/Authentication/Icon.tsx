@@ -1,5 +1,4 @@
 import { css } from '@emotion/react';
-import { spacing, theme } from '@expo/styleguide';
 
 type IconProps = {
   title: string;
@@ -9,20 +8,12 @@ type IconProps = {
 
 export const Icon = ({ title, image, size = 64 }: IconProps) => (
   <img
-    css={[
-      iconStyle,
-      css({
-        width: size,
-        height: size,
-      }),
-    ]}
+    className="rounded-full p-1 bg-element"
+    css={css({
+      width: size,
+      height: size,
+    })}
     alt={title}
     src={image}
   />
 );
-
-const iconStyle = css({
-  background: theme.background.element,
-  borderRadius: '100%',
-  padding: spacing[1],
-});

@@ -269,6 +269,11 @@ export async function withMetroMultiPlatformAsync(
   process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot);
   process.env.EXPO_PROJECT_ROOT = process.env.EXPO_PROJECT_ROOT ?? projectRoot;
 
+  if (env.EXPO_USE_STATIC) {
+    // Enable static rendering in runtime space.
+    process.env.EXPO_PUBLIC_USE_STATIC = '1';
+  }
+
   if (platformBundlers.web === 'metro') {
     await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
   } else if (!env.EXPO_USE_PATH_ALIASES) {

@@ -134,7 +134,7 @@ export class WebpackBundlerDevServer extends BundlerDevServer {
 
     const middleware = await this.getManifestMiddlewareAsync(options);
 
-    nativeMiddleware.middleware.use(middleware);
+    nativeMiddleware.middleware.use(middleware.getHandler());
 
     return nativeMiddleware;
   }

@@ -1,8 +1,11 @@
 import { loadMetroConfigAsync } from '../../start/server/metro/instantiateMetro';
 import { importCliBuildBundleWithConfigFromProject } from '../../start/server/metro/resolveFromProject';
+import { setNodeEnv } from '../../utils/nodeEnv';
 import { Options } from './resolveOptions';
 
 export async function exportEmbedAsync(projectRoot: string, options: Options) {
+  setNodeEnv(options.dev ? 'development' : 'production');
+
   const { config } = await loadMetroConfigAsync(projectRoot, {
     maxWorkers: options.maxWorkers,
     resetCache: options.resetCache,

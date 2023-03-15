@@ -1,14 +1,10 @@
 import { css } from '@emotion/react';
-import { StatusWaitingIcon, theme } from '@expo/styleguide';
+import { StatusWaitingIcon } from '@expo/styleguide-icons';
 
 import { ElementType } from '~/types/common';
 import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
 import { Cell, HeaderCell, Row, Table, TableHead, TableLayout } from '~/ui/components/Table';
 import { A, H4 } from '~/ui/components/Text';
-
-const STYLES_TITLE = css`
-  margin-bottom: 1rem;
-`;
 
 const STYLES_LINK = css`
   display: grid;
@@ -37,7 +33,7 @@ function getInfo(isSupported: IsSupported, { title }: Platform) {
     return {
       children: (
         <A css={STYLES_LINK} href={isSupported.pending}>
-          <StatusWaitingIcon color={theme.icon.info} /> Pending
+          <StatusWaitingIcon className="icon-md text-icon-info" /> Pending
         </A>
       ),
       title: `${title} support is pending`,
@@ -63,7 +59,7 @@ type PlatformProps = Omit<Props, 'title'>;
 
 const PlatformsSection = (props: Props) => (
   <>
-    <H4 css={STYLES_TITLE}>{props.title || 'Platform Compatibility'}</H4>
+    <H4 className="mb-1">{props.title || 'Platform Compatibility'}</H4>
     <Table layout={TableLayout.Fixed}>
       <TableHead>
         <Row>

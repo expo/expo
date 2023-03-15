@@ -27,14 +27,14 @@ Most of the methods and constants in this module can only be used or tested in r
 
 ### Using expo-updates with a custom server
 
-Every custom updates server must implement the [Expo Updates protocol](https://docs.expo.dev/technical-specs/expo-updates-0/).
+Every custom updates server must implement the [Expo Updates protocol](https://docs.expo.dev/technical-specs/expo-updates-1/).
 
 You can find an example implementation of a custom server and an app using that server in the [custom-expo-updates-server](https://github.com/expo/custom-expo-updates-server) repository.
 
 
 ### Configuration options
 
-There are build-time configuration options that control the behavior of `expo-updates`. 
+There are build-time configuration options that control the behavior of `expo-updates`.
 
 On Android, these options are set as `meta-data` tags adjacent to the tags added during installation in the **AndroidManifest.xml** file. You can also define these options at runtime by passing a `Map` as the second parameter of `UpdatesController.initialize()`, and the provided values will override any value specified in **AndroidManifest.xml**.
 

@@ -40,7 +40,7 @@ data class SourceMap(
   fun isBlurhash() = parsedUri?.scheme?.startsWith("blurhash") ?: false
 
   internal fun createGlideModel(context: Context): GlideModel? {
-    if (uri == null) {
+    if (uri.isNullOrBlank()) {
       return null
     }
 
