@@ -5,31 +5,6 @@ import { resolveEntryPoint } from '../paths';
 jest.mock('fs');
 jest.mock('resolve-from');
 
-const packageJsonAndroid = JSON.stringify(
-  {
-    name: 'testing123android',
-    version: '0.1.0',
-    main: 'index.android.js',
-  },
-  null,
-  2
-);
-
-const packageJsonIos = JSON.stringify(
-  {
-    name: 'testing123ios',
-    version: '0.1.0',
-    main: 'index.ios.js',
-  },
-  null,
-  2
-);
-
-const packageJsonNoMain = JSON.stringify({
-  name: 'testing456',
-  version: '0.2.0',
-});
-
 describe(resolveEntryPoint, () => {
   afterEach(() => vol.reset());
 

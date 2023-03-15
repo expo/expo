@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Rewrite `resolveEntryPoint` from `@expo/config/paths`.
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
