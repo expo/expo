@@ -9,19 +9,23 @@ import { prependMiddleware } from '@expo/dev-server';
 import assert from 'assert';
 import chalk from 'chalk';
 import fs from 'fs';
+import { sync as globSync } from 'glob';
 import path from 'path';
-import { promisify } from 'util';
 import resolve from 'resolve';
+import resolveFrom from 'resolve-from';
+import { promisify } from 'util';
 
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
+import { memoize } from '../../../utils/fn';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import {
-  getStaticRenderFunctions,
   getStaticPageContentsAsync,
+  getStaticRenderFunctions,
+  requireFileContentsWithMetro,
   requireWithMetro,
 } from '../getStaticRenderFunctions';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
@@ -34,6 +38,7 @@ import {
 } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
+import { ExpoResponse, installGlobals } from './installGlobals';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { waitForMetroToObserveTypeScriptFile } from './waitForMetroToObserveTypeScriptFile';
 
@@ -50,14 +55,286 @@ const EXPO_GO_METRO_PORT = 19000;
 /** Default port to use for apps that run in standard React Native projects or Expo Dev Clients. */
 const DEV_CLIENT_METRO_PORT = 8081;
 
-import { ExpoResponse, installGlobals } from './installGlobals';
-import resolveFrom from 'resolve-from';
-
-if (env.EXPO_USE_API_ROUTES) {
-  installGlobals();
+async function getExpoRouteMatchBuilderAsync(
+  projectRoot: string,
+  {
+    devServerUrl,
+    minify,
+    dev,
+  }: {
+    devServerUrl: string;
+    minify: boolean;
+    dev: boolean;
+  }
+) {
+  const matchNodePath = path.join(
+    resolveFrom(projectRoot, 'expo-router/package.json'),
+    '../match-node.ts'
+  );
+  const { buildMatcher } = await requireWithMetro<{
+    buildMatcher: (files: string[]) => (url: string) => any;
+  }>(projectRoot, devServerUrl, matchNodePath, {
+    minify,
+    dev,
+  });
+  return buildMatcher;
+}
+async function getExpoRouteManifestBuilderAsync(
+  projectRoot: string,
+  {
+    devServerUrl,
+    minify,
+    dev,
+  }: {
+    devServerUrl: string;
+    minify: boolean;
+    dev: boolean;
+  }
+) {
+  const matchNodePath = path.join(
+    resolveFrom(projectRoot, 'expo-router/package.json'),
+    '../routes-manifest.ts'
+  );
+  const { createRoutesManifest } = await requireWithMetro<{
+    createRoutesManifest: (files: string[]) => any;
+  }>(projectRoot, devServerUrl, matchNodePath, {
+    minify,
+    dev,
+  });
+  return createRoutesManifest;
 }
 
-import { sync as globSync } from 'glob';
+const getMatcherMemoized = memoize(getExpoRouteMatchBuilderAsync);
+
+export async function exportRouteHandlersAsync(
+  projectRoot: string,
+  options: { mode?: string; port?: number }
+) {
+  const devServerUrl = `http://localhost:${options.port}`;
+
+  const appDir = path.join(
+    projectRoot,
+    // TODO: Support other directories via app.json
+    'app'
+  );
+  function getRouteFiles() {
+    // TODO: Cache this
+    return globSync('**/*+api.@(ts|tsx|js|jsx)', {
+      cwd: appDir,
+      absolute: true,
+    });
+  }
+
+  const files = getRouteFiles();
+
+  const output: Record<string, string> = {};
+
+  const getManifest = await getExpoRouteManifestBuilderAsync(projectRoot, {
+    devServerUrl,
+    minify: options.mode === 'production',
+    dev: options.mode !== 'production',
+  });
+
+  for (const file of files) {
+    console.log('file', devServerUrl, file);
+    const middleware = await requireFileContentsWithMetro(projectRoot, devServerUrl, file, {
+      minify: options.mode === 'production',
+      dev: options.mode !== 'production',
+    });
+    // const unwrapped = middleware.replace('module.exports = __r', 'const middleware = __r');
+    // const unwrapped = middleware.replace('module.exports = __r', 'const middleware = __r');
+    // output[path.relative(appDir, file)] = ;
+    output[path.relative(appDir, file)] = middleware;
+  }
+
+  const manifest = getManifest(
+    globSync('**/*.@(ts|tsx|js|jsx)', {
+      // globSync('**/*+api.@(ts|tsx|js|jsx)', {
+      cwd: appDir,
+      absolute: false,
+    }).map((path) => './' + path)
+  );
+
+  return [manifest, output];
+}
+
+// export async function getRoutesManifest(
+//   projectRoot: string,
+//   options: { mode?: string; port?: number }
+// ) {
+//   const devServerUrl = `http://localhost:${options.port}`;
+
+//   const appDir = path.join(
+//     projectRoot,
+//     // TODO: Support other directories via app.json
+//     'app'
+//   );
+//   function getRouteFiles() {
+//     // TODO: Cache this
+//     return globSync('**/*+api.@(ts|tsx|js|jsx)', {
+//       cwd: appDir,
+//       absolute: true,
+//     });
+//   }
+
+//   const files = getRouteFiles();
+
+//   const output: Record<string, string> = {};
+
+//   const getManifest = await getExpoRouteManifestBuilderAsync(projectRoot, {
+//     devServerUrl,
+//     minify: options.mode === 'production',
+//     dev: options.mode !== 'production',
+//   });
+
+//   for (const file of files) {
+//     console.log('file', devServerUrl, file);
+//     const middleware = await requireFileContentsWithMetro(projectRoot, devServerUrl, file, {
+//       minify: options.mode === 'production',
+//       dev: options.mode !== 'production',
+//     });
+//     // const unwrapped = middleware.replace('module.exports = __r', 'const middleware = __r');
+//     // const unwrapped = middleware.replace('module.exports = __r', 'const middleware = __r');
+//     // output[path.relative(appDir, file)] = ;
+//     output[path.relative(appDir, file)] = middleware;
+//   }
+
+//   const manifest = getManifest(
+//     globSync('**/*+api.@(ts|tsx|js|jsx)', {
+//       cwd: appDir,
+//       absolute: false,
+//     }).map((path) => './' + path)
+//   );
+
+//   console.log('.manifest', manifest);
+
+//   return [manifest, output];
+// }
+
+function createRouteHandlerMiddleware(
+  projectRoot: string,
+  options: { mode?: string; port?: number }
+) {
+  const devServerUrl = `http://localhost:${options.port}`;
+
+  const appDir = path.join(
+    projectRoot,
+    // TODO: Support other directories via app.json
+    'app'
+  );
+  function getRouteFiles() {
+    // TODO: Cache this
+    return globSync('**/*+api.@(ts|tsx|js|jsx)', {
+      cwd: appDir,
+      absolute: false,
+    }).map((path) => './' + path);
+  }
+
+  return async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
+    if (!req?.url || !req.method) {
+      return next();
+    }
+
+    const location = new URL(req.url, 'https://example.dev');
+
+    // 1. Get pathname, e.g. `/thing`
+    const pathname = location.pathname?.replace(/\/$/, '');
+
+    if (!pathname) {
+      return next();
+    }
+
+    // TODO: use manifest for matching
+
+    const buildMatcher = await getMatcherMemoized(projectRoot, {
+      devServerUrl,
+      minify: options.mode === 'production',
+      dev: options.mode !== 'production',
+    });
+
+    const matcher = buildMatcher(getRouteFiles());
+
+    const node = await matcher(pathname);
+
+    if (!node?._route?.contextKey.match(/\+api\.[ts]x?/)) {
+      return next();
+    }
+
+    let resolved: string | null = null;
+    try {
+      resolved = await resolveAsync(
+        // TODO: Document this format of +api
+        node._route.contextKey,
+        {
+          extensions: ['.js', '.jsx', '.ts', '.tsx'],
+          basedir: appDir,
+        }
+      );
+    } catch {
+      return next();
+    }
+
+    debug('Check API route:', resolved, path.join(projectRoot, 'app'), pathname);
+
+    if (!resolved) {
+      return next();
+    }
+
+    // 3. Import middleware file
+    // TODO: Bundle with Metro to support esmodules -- needs externals to work correctly...
+
+    const middleware = await requireWithMetro<Record<string, any>>(
+      projectRoot,
+      devServerUrl,
+      resolved,
+      {
+        minify: options.mode === 'production',
+        dev: options.mode !== 'production',
+      }
+    );
+
+    // const middleware = fresh(resolved);
+
+    debug(`Supported methods (API route exports):`, Object.keys(middleware), ' -> ', req.method);
+
+    // Interop default
+    const func = middleware[req.method];
+
+    try {
+      // 4. Execute.
+      const response = (await func?.(req, res, next)) as ExpoResponse | undefined;
+
+      // 5. Respond
+      if (response) {
+        if (response.headers) {
+          for (const [key, value] of Object.entries(response.headers)) {
+            res.setHeader(key, value);
+          }
+        }
+
+        if (response.status) {
+          res.statusCode = response.status;
+        }
+
+        if (response.body) {
+          res.end(response.body);
+        } else {
+          res.end();
+        }
+      } else {
+        // TODO: Not sure what to do here yet
+        res.statusCode = 404;
+        res.end();
+      }
+    } catch (error) {
+      // TODO: Symbolicate error stack
+      console.error(error);
+      res.statusCode = 500;
+      res.end();
+    }
+  };
+}
+
 export class MetroBundlerDevServer extends BundlerDevServer {
   private metro: import('metro').Server | null = null;
 
@@ -84,7 +361,14 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const url = this.getDevServerUrl();
     assert(url, 'Dev server must be started');
     const { getManifest } = await getStaticRenderFunctions(this.projectRoot, url);
-    return getManifest({ fetchData: true });
+    return getManifest({ preserveApiRoutes: false });
+  }
+
+  async getFunctionsAsync({ mode }: { mode: 'development' | 'production' }) {
+    return await exportRouteHandlersAsync(this.projectRoot, {
+      port: this.getInstance()?.location.port,
+      mode,
+    });
   }
 
   async getStaticPageAsync(
@@ -167,145 +451,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
     }
 
-    if (env.EXPO_USE_API_ROUTES) {
+    if (env.EXPO_USE_ROUTE_HANDLERS) {
+      // Ensure the global environment is configured as expected.
+      // TODO: Inject this side-effect using Metro to ensure it's available in production bundles.
+      installGlobals();
+
       // Middleware for hosting middleware
-      middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-        if (!req?.url || !req.method) {
-          return next();
-        }
-
-        const location = new URL(req.url, 'https://example.dev');
-
-        // 1. Get pathname, e.g. `/thing`
-        const pathname = location.pathname?.replace(/\/$/, '');
-
-        if (!pathname) {
-          return next();
-        }
-
-        const devServerUrl = `http://localhost:${options.port}`;
-
-        const allFiles = await globSync('**/*+api.@(ts|tsx|js|jsx)', {
-          cwd: path.join(this.projectRoot, 'app'),
-          absolute: false,
-        }).map((path) => './' + path);
-
-        const matchNodePath = path.join(
-          resolveFrom(this.projectRoot, 'expo-router/package.json'),
-          '../match-node.ts'
-        );
-        const { buildMatcher } = await requireWithMetro<Record<string, any>>(
-          this.projectRoot,
-          devServerUrl,
-          matchNodePath,
-          {
-            minify: options.mode === 'production',
-            dev: options.mode !== 'production',
-          }
-        );
-
-        const matcher = buildMatcher(allFiles);
-
-        const node = await matcher(pathname);
-
-        if (!node?._route?.contextKey.match(/\+api\.[ts]x?/)) {
-          return next();
-        }
-
-        let resolved: string | null = null;
-        try {
-          resolved = await resolveAsync(
-            // TODO: Document this format of +api
-            node._route.contextKey,
-            {
-              extensions: ['.js', '.jsx', '.ts', '.tsx'],
-              basedir: path.join(
-                this.projectRoot,
-                // TODO: Support other directories via app.json
-                'app'
-              ),
-            }
-          );
-        } catch (error) {
-          return next();
-        }
-
-        // 2. Check if it's a middleware, e.g. `./app/thing+api.js` exists
-        // TODO: Search through group syntax
-        // const resolved = resolveFrom.silent(
-        //   path.join(
-        //     this.projectRoot,
-        //     // TODO: Support other directories via app.json
-        //     'app'
-        //   ),
-        //   // TODO: Document this format of +api
-        //   '.' + pathname + '+api'
-        // );
-
-        debug('Check API route:', resolved, path.join(this.projectRoot, 'app'), pathname);
-
-        if (!resolved || !fs.existsSync(resolved)) {
-          return next();
-        }
-
-        // 3. Import middleware file
-        // TODO: Bundle with Metro to support esmodules -- needs externals to work correctly...
-
-        const middleware = await requireWithMetro<Record<string, any>>(
-          this.projectRoot,
-          devServerUrl,
-          resolved,
-          {
-            minify: options.mode === 'production',
-            dev: options.mode !== 'production',
-          }
-        );
-
-        // const middleware = fresh(resolved);
-
-        debug(
-          `Supported methods (API route exports):`,
-          Object.keys(middleware),
-          ' -> ',
-          req.method
-        );
-
-        // Interop default
-        const func = middleware[req.method];
-
-        try {
-          // 4. Execute.
-          const response = (await func?.(req, res, next)) as ExpoResponse | undefined;
-
-          // 5. Respond
-          if (response) {
-            if (response.headers) {
-              for (const [key, value] of Object.entries(response.headers)) {
-                res.setHeader(key, value);
-              }
-            }
-
-            if (response.status) {
-              res.statusCode = response.status;
-            }
-
-            if (response.body) {
-              res.end(response.body);
-            } else {
-              res.end();
-            }
-          } else {
-            // TODO: Not sure what to do here yet
-            res.statusCode = 404;
-            res.end();
-          }
-        } catch (error) {
-          // TODO: Symbolicate error stack
-          console.error(error);
-          res.statusCode = 500;
-          res.end();
-        }
-      });
+      middleware.use(createRouteHandlerMiddleware(this.projectRoot, options));
     }
 
     if (this.isTargetingWeb()) {

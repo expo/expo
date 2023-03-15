@@ -13,7 +13,10 @@ import { inspect } from 'util';
 
 import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
-import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
+import {
+  exportRouteHandlersAsync,
+  MetroBundlerDevServer,
+} from '../start/server/metro/MetroBundlerDevServer';
 import { stripAnsi } from '../utils/ansi';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
@@ -102,11 +105,11 @@ export async function getFilesToExportFromServerAsync({
       try {
         const data = await renderAsync(pathname);
 
-        if (data.fetchData) {
-          // console.log('ssr:', pathname);
-        } else {
-          files.set(outputPath, appendScriptsToHtml(data.renderAsync(), scripts));
-        }
+        // if (data.fetchData) {
+        //   // console.log('ssr:', pathname);
+        // } else {
+        files.set(outputPath, appendScriptsToHtml(data.renderAsync(), scripts));
+        // }
       } catch (e: any) {
         // TODO: Format Metro error message better...
         Log.error('Failed to statically render route:', pathname);
@@ -164,9 +167,10 @@ export async function exportFromServerAsync(
   { outputDir, scripts }: Options
 ): Promise<void> {
   const devServer = devServerManager.getDefaultDevServer();
+  assert(devServer instanceof MetroBundlerDevServer);
 
   const manifest = await getExpoRoutesAsync(devServerManager);
-
+  console.log('manifest', manifest);
   debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
 
   const files = await getFilesToExportFromServerAsync({
@@ -178,7 +182,34 @@ export async function exportFromServerAsync(
     },
   });
 
-  fs.mkdirSync(path.join(outputDir), { recursive: true });
+  const [routesManifest, middleware] = await devServer.getFunctionsAsync({ mode: 'production' });
+
+  console.log('middleware', middleware);
+
+  const staticDir = path.join(outputDir, 'static');
+  fs.mkdirSync(path.join(staticDir), { recursive: true });
+
+  const funcDir = path.join(outputDir, 'functions');
+  fs.mkdirSync(path.join(funcDir), { recursive: true });
+
+  console.log('>>', routesManifest);
+  await fs.promises.writeFile(
+    path.join(outputDir, 'routes-manifest.json'),
+    JSON.stringify(routesManifest, null, 2),
+    'utf-8'
+  );
+
+  await Promise.all(
+    Object.entries(middleware)
+      .sort(([a], [b]) => a.localeCompare(b))
+      .map(async ([file, contents]) => {
+        const length = Buffer.byteLength(contents, 'utf8');
+        Log.log(file, chalk.gray`(${prettyBytes(length)})`);
+        const outputPath = path.join(funcDir, file);
+        await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
+        await fs.promises.writeFile(outputPath.replace(/\.[tj]sx?$/, '.js'), contents);
+      })
+  );
 
   Log.log(`Exporting ${files.size} files:`);
   await Promise.all(
@@ -187,7 +218,7 @@ export async function exportFromServerAsync(
       .map(async ([file, contents]) => {
         const length = Buffer.byteLength(contents, 'utf8');
         Log.log(file, chalk.gray`(${prettyBytes(length)})`);
-        const outputPath = path.join(outputDir, file);
+        const outputPath = path.join(staticDir, file);
         await fs.promises.mkdir(path.dirname(outputPath), { recursive: true });
         await fs.promises.writeFile(outputPath, contents);
       })

@@ -145,10 +145,10 @@ class Env {
   }
 
   /**
-   * **Experimental:** Enable universal API Routes functionality in Expo Router projects.
+   * **Experimental:** Enable universal Routes Handlers (serverless functions) in Expo Router projects.
    */
-  get EXPO_USE_API_ROUTES(): boolean {
-    return boolish('EXPO_USE_API_ROUTES', false);
+  get EXPO_USE_ROUTE_HANDLERS(): boolean {
+    return boolish('EXPO_USE_ROUTE_HANDLERS', false);
   }
 
   /** **Experimental:** Prevent Metro from using the `compilerOptions.paths` feature from `tsconfig.json` (or `jsconfig.json`) to enable import aliases. */
