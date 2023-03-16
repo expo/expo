@@ -215,7 +215,41 @@ export async function exportRouteHandlersAsync(
 //   return [manifest, output];
 // }
 
-const routeCache = new Map<string, string>();
+const manifestOperation = new Map<string, Promise<any>>();
+
+async function refetchManifest(projectRoot: string, options: { mode?: string; port?: number }) {
+  manifestOperation.delete('manifest');
+  return fetchManifest(projectRoot, options);
+}
+
+async function fetchManifest(projectRoot: string, options: { mode?: string; port?: number }) {
+  if (manifestOperation.has('manifest')) {
+    return manifestOperation.get('manifest');
+  }
+
+  const devServerUrl = `http://localhost:${options.port}`;
+
+  async function bundleAsync() {
+    // TODO: Update eagerly when files change
+    const getManifest = await getExpoRouteManifestBuilderAsync(projectRoot, {
+      devServerUrl,
+      minify: options.mode === 'production',
+      dev: options.mode !== 'production',
+    });
+
+    const manifest = getManifest([]).map((value: any) => {
+      return {
+        ...value,
+        regex: new RegExp(value.regex),
+      };
+    });
+    console.log('manifest', manifest);
+    return manifest;
+  }
+
+  manifestOperation.set('manifest', bundleAsync());
+}
+
 const pendingRouteOperations = new Map<string, Promise<string>>();
 
 async function rebundleApiRoute(
@@ -245,8 +279,6 @@ async function bundleApiRoute(
         minify: options.mode === 'production',
         dev: options.mode !== 'production',
       });
-
-      routeCache.set(filepath, middleware);
 
       return middleware;
     } finally {
@@ -284,6 +316,7 @@ function createRouteHandlerMiddleware(
 ) {
   // don't await
   eagerBundleApiRoutes(projectRoot, options);
+  refetchManifest(projectRoot, options);
 
   const devServerUrl = `http://localhost:${options.port}`;
 
@@ -310,19 +343,7 @@ function createRouteHandlerMiddleware(
     // 1. Get pathname, e.g. `/thing`
     const pathname = location.pathname?.replace(/\/$/, '');
 
-    // TODO: Update eagerly when files change
-    const getManifest = await getExpoRouteManifestBuilderAsync(projectRoot, {
-      devServerUrl,
-      minify: options.mode === 'production',
-      dev: options.mode !== 'production',
-    });
-
-    const manifest = getManifest([]).map((value: any) => {
-      return {
-        ...value,
-        regex: new RegExp(value.regex),
-      };
-    });
+    const manifest = await fetchManifest(projectRoot, options);
 
     const sanitizedPathname = pathname.replace(/^\/+/, '').replace(/\/+$/, '') + '/';
 
@@ -346,7 +367,6 @@ function createRouteHandlerMiddleware(
             route.generated &&
             route.file.match(/^\.\/\[\.\.\.404]\.[jt]sx?$/)
           ) {
-            console.log('Skipping 404 page:', functionFilePath);
             if (functionFilePath) {
               continue;
             }
@@ -569,13 +589,26 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           server,
         },
         async (filepath, op) => {
-          console.log(`[expo-cli] ${op} ${filepath}`);
-          if (op === 'change' || op === 'add') {
-            rebundleApiRoute(this.projectRoot, filepath, options);
+          const isApiRoute = filepath.match(/\+api\.[tj]sx?$/);
+          if (op === 'delete') {
+            // update manifest
+            console.log('update manifest');
+            await refetchManifest(this.projectRoot, options);
+          } else if (op === 'add' || (op === 'change' && !isApiRoute)) {
+            console.log('invalidate manifest');
+            // The manifest won't be fresh instantly so we should just clear it to ensure the next request will get the latest.
+            manifestOperation.delete('manifest');
           }
 
-          if (op === 'delete') {
-            // TODO: Cancel the bundling of the deleted route.
+          if (isApiRoute) {
+            console.log(`[expo-cli] ${op} ${filepath}`);
+            if (op === 'change' || op === 'add') {
+              rebundleApiRoute(this.projectRoot, filepath, options);
+            }
+
+            if (op === 'delete') {
+              // TODO: Cancel the bundling of the deleted route.
+            }
           }
         }
       );
@@ -686,17 +719,4 @@ export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
       ...getDevClientProperties(projectRoot, exp),
     });
   };
-}
-
-function fresh(file: string) {
-  file = require.resolve(file);
-
-  const tmp = require.cache[file];
-  delete require.cache[file];
-
-  const mod = require(file);
-
-  require.cache[file] = tmp;
-
-  return mod;
 }

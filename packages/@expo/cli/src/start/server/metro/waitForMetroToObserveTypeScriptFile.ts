@@ -98,8 +98,7 @@ export function observeApiRouteChanges(
         // event.metadata?.type !== 'd' &&
         // We need to ignore node_modules because Metro will add all of the files in node_modules to the watcher.
         !/node_modules/.test(event.filePath) &&
-        event.filePath.startsWith(appDir) &&
-        event.filePath.match(/\+api\.[tj]sx?$/)
+        event.filePath.startsWith(appDir)
       ) {
         const { filePath } = event;
         callback(filePath, event.type);
