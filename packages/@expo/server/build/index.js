@@ -12,7 +12,7 @@ require("source-map-support/register");
 (0, environment_1.installGlobals)();
 // TODO: Reuse this for dev as well
 function createRequestHandler(distFolder) {
-    const routesManifest = JSON.parse(fs_1.default.readFileSync(path_1.default.join(distFolder, '.expo/routes.json'), 'utf-8')).map((value) => {
+    const routesManifest = JSON.parse(fs_1.default.readFileSync(path_1.default.join(distFolder, '_expo/routes.json'), 'utf-8')).map((value) => {
         return {
             ...value,
             regex: new RegExp(value.regex),

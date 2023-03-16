@@ -187,11 +187,11 @@ export async function exportFromServerAsync(
   const staticDir = path.join(outputDir);
   fs.mkdirSync(path.join(staticDir), { recursive: true });
 
-  const funcDir = path.join(outputDir, '.expo/functions');
+  const funcDir = path.join(outputDir, '_expo/functions');
   fs.mkdirSync(path.join(funcDir), { recursive: true });
 
   await fs.promises.writeFile(
-    path.join(outputDir, '.expo/routes.json'),
+    path.join(outputDir, '_expo/routes.json'),
     JSON.stringify(routesManifest, null, 2),
     'utf-8'
   );
