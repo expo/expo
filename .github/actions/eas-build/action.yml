@@ -37,7 +37,7 @@ runs:
           COMMIT_MESSAGE=$(git log -1 --pretty=oneline | head -c1000)
         fi
         MESSAGE="${MESSAGE:-$COMMIT_MESSAGE}"
-        BUILD_ID=$(eas build -p $PLATFORM --profile $EAS_BUILD_PROFILE --message "$MESSAGE" --non-interactive --json --no-wait | jq -r ".[0].id")
+        BUILD_ID=$(EXPO_DEBUG=1 eas build -p $PLATFORM --profile $EAS_BUILD_PROFILE --message "$MESSAGE" --non-interactive --json --no-wait | jq -r ".[0].id")
         echo build_id="$BUILD_ID" >> $GITHUB_OUTPUT
       working-directory: ${{ inputs.projectRoot }}
       env:
