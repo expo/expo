@@ -4,7 +4,7 @@ import { URL } from 'url';
 
 import { ExpoResponse, installGlobals } from './environment';
 import { ServerNext, ServerRequest, ServerResponse } from './server.types';
-import { getStaticMiddleware } from './static';
+import { getStaticMiddleware } from './statics';
 
 // Given build dir
 // parse path
@@ -15,40 +15,44 @@ installGlobals();
 async function handleRouteHandlerAsync(
   func: any,
   req: ServerRequest,
-  res: ServerResponse,
+  res: ExpoResponse,
   next: ServerNext
 ) {
   try {
     // 4. Execute.
-    const response = (await func?.(req, res, next)) as ExpoResponse | undefined;
+    return (await func?.(req, res, next)) as ExpoResponse | undefined;
 
-    // 5. Respond
-    if (response) {
-      if (response.headers) {
-        for (const [key, value] of Object.entries(response.headers)) {
-          res.setHeader(key, value);
-        }
-      }
+    // // 5. Respond
+    // if (response) {
+    //   if (response.headers) {
+    //     for (const [key, value] of Object.entries(response.headers)) {
+    //       res.setHeader(key, value);
+    //     }
+    //   }
 
-      if (response.status) {
-        res.statusCode = response.status;
-      }
+    //   if (response.status) {
+    //     res.statusCode = response.status;
+    //   }
 
-      if (response.body) {
-        res.end(response.body);
-      } else {
-        res.end();
-      }
-    } else {
-      // TODO: Not sure what to do here yet
-      res.statusCode = 404;
-      res.end();
-    }
+    //   return response;
+    // //   if (response.body) {
+
+    // //     res.end(response.body);
+
+    // //   } else {
+    // //     res.end();
+    // //   }
+    // } else {
+    //   // TODO: Not sure what to do here yet
+    //   res.statusCode = 404;
+    //   res.end();
+    // }
   } catch (error) {
     // TODO: Symbolicate error stack
     console.error(error);
-    res.statusCode = 500;
-    res.end();
+    // res.st = 500;
+    // res.end();
+    return ExpoResponse.error();
   }
 }
 
@@ -69,13 +73,14 @@ export function createRequestHandler(distFolder: string) {
 
   return async function handler(
     request: ServerRequest,
-    response: ServerResponse,
+    response: ExpoResponse,
     // TODO
     next: ServerNext = function (err) {
       console.error(err);
-      response.statusCode = 404;
-
-      return response.end('Not found');
+      response.status = 404;
+      response.statusText = 'Not found';
+      return response;
+      //   return response.end('Not found');
     }
   ) {
     if (!request.url || !request.method) {
@@ -101,14 +106,16 @@ export function createRequestHandler(distFolder: string) {
         if (func[request.method]) {
           return handleRouteHandlerAsync(func[request.method], request, response, next);
         } else {
-          response.statusCode = 405;
-          return response.end('Method not allowed');
+          response.status = 405;
+          response.statusText = 'Method not allowed';
+          return response;
         }
       }
     }
 
     // 404
-    response.statusCode = 404;
-    return response.end('Not found');
+    response.status = 404;
+    response.statusText = 'Not found';
+    return response;
   };
 }

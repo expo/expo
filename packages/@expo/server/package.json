@@ -30,7 +30,11 @@
   ],
   "dependencies": {
     "send": "^0.18.0",
-    "node-fetch": "^2"
+    "node-fetch": "^2",
+    "abort-controller": "^3.0.0"
+  },
+  "devDependencies": {
+    "@netlify/functions": "^1.4.0"
   },
   "publishConfig": {
     "access": "public"

@@ -1,0 +1,175 @@
+"use strict";
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.isBinaryType = exports.convertRequest = exports.createHeaders = exports.convertNodeResponseToNetlifyResponse = exports.createRequestHandler = void 0;
+const abort_controller_1 = require("abort-controller");
+const node_fetch_1 = require("node-fetch");
+const __1 = require("..");
+const environment_1 = require("../environment");
+const stream_1 = require("../stream");
+function createRequestHandler({ build, mode = process.env.NODE_ENV, }) {
+    const handleRequest = (0, __1.createRequestHandler)(build);
+    return async (event, context) => {
+        let request = convertRequest(event);
+        // let loadContext = getLoadContext?.(event, context);
+        let response = (await handleRequest(request, new node_fetch_1.Response()));
+        return convertNodeResponseToNetlifyResponse(response);
+    };
+}
+exports.createRequestHandler = createRequestHandler;
+async function convertNodeResponseToNetlifyResponse(nodeResponse) {
+    let contentType = nodeResponse.headers.get('Content-Type');
+    let body;
+    let isBase64Encoded = isBinaryType(contentType);
+    if (nodeResponse.body) {
+        if (isBase64Encoded) {
+            body = await (0, stream_1.readableStreamToString)(
+            // @ts-expect-error
+            nodeResponse.body, 'base64');
+        }
+        else {
+            body = await nodeResponse.text();
+        }
+    }
+    let multiValueHeaders = nodeResponse.headers.raw();
+    return {
+        statusCode: nodeResponse.status,
+        multiValueHeaders,
+        body,
+        isBase64Encoded,
+    };
+}
+exports.convertNodeResponseToNetlifyResponse = convertNodeResponseToNetlifyResponse;
+function createHeaders(requestHeaders) {
+    let headers = new node_fetch_1.Headers();
+    for (let [key, values] of Object.entries(requestHeaders)) {
+        if (values) {
+            for (let value of values) {
+                headers.append(key, value);
+            }
+        }
+    }
+    return headers;
+}
+exports.createHeaders = createHeaders;
+// `netlify dev` doesn't return the full url in the event.rawUrl, so we need to create it ourselves
+function getRawPath(event) {
+    let rawPath = event.path;
+    let searchParams = new URLSearchParams();
+    if (!event.multiValueQueryStringParameters) {
+        return rawPath;
+    }
+    let paramKeys = Object.keys(event.multiValueQueryStringParameters);
+    for (let key of paramKeys) {
+        let values = event.multiValueQueryStringParameters[key];
+        if (!values)
+            continue;
+        for (let val of values) {
+            searchParams.append(key, val);
+        }
+    }
+    let rawParams = searchParams.toString();
+    if (rawParams)
+        rawPath += `?${rawParams}`;
+    return rawPath;
+}
+function convertRequest(event) {
+    let url;
+    if (process.env.NODE_ENV !== 'development') {
+        url = new URL(event.rawUrl);
+    }
+    else {
+        let origin = event.headers.host;
+        let rawPath = getRawPath(event);
+        url = new URL(`http://${origin}${rawPath}`);
+    }
+    // Note: No current way to abort these for Netlify, but our router expects
+    // requests to contain a signal so it can detect aborted requests
+    let controller = new abort_controller_1.AbortController();
+    let init = {
+        method: event.httpMethod,
+        headers: createHeaders(event.multiValueHeaders),
+        // Cast until reason/throwIfAborted added
+        // https://github.com/mysticatea/abort-controller/issues/36
+        signal: controller.signal,
+    };
+    if (event.httpMethod !== 'GET' && event.httpMethod !== 'HEAD' && event.body) {
+        let isFormData = event.headers['content-type']?.includes('multipart/form-data');
+        init.body = event.isBase64Encoded
+            ? isFormData
+                ? Buffer.from(event.body, 'base64')
+                : Buffer.from(event.body, 'base64').toString()
+            : event.body;
+    }
+    return new environment_1.ExpoRequest(url.href, init);
+}
+exports.convertRequest = convertRequest;
+/**
+ * Common binary MIME types
+ * @see https://github.com/architect/functions/blob/45254fc1936a1794c185aac07e9889b241a2e5c6/src/http/helpers/binary-types.js
+ */
+const binaryTypes = [
+    'application/octet-stream',
+    // Docs
+    'application/epub+zip',
+    'application/msword',
+    'application/pdf',
+    'application/rtf',
+    'application/vnd.amazon.ebook',
+    'application/vnd.ms-excel',
+    'application/vnd.ms-powerpoint',
+    'application/vnd.openxmlformats-officedocument.presentationml.presentation',
+    'application/vnd.openxmlformats-officedocument.spreadsheetml.sheet',
+    'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
+    // Fonts
+    'font/otf',
+    'font/woff',
+    'font/woff2',
+    // Images
+    'image/avif',
+    'image/bmp',
+    'image/gif',
+    'image/jpeg',
+    'image/png',
+    'image/tiff',
+    'image/vnd.microsoft.icon',
+    'image/webp',
+    // Audio
+    'audio/3gpp',
+    'audio/aac',
+    'audio/basic',
+    'audio/mpeg',
+    'audio/ogg',
+    'audio/wav',
+    'audio/webm',
+    'audio/x-aiff',
+    'audio/x-midi',
+    'audio/x-wav',
+    // Video
+    'video/3gpp',
+    'video/mp2t',
+    'video/mpeg',
+    'video/ogg',
+    'video/quicktime',
+    'video/webm',
+    'video/x-msvideo',
+    // Archives
+    'application/java-archive',
+    'application/vnd.apple.installer+xml',
+    'application/x-7z-compressed',
+    'application/x-apple-diskimage',
+    'application/x-bzip',
+    'application/x-bzip2',
+    'application/x-gzip',
+    'application/x-java-archive',
+    'application/x-rar-compressed',
+    'application/x-tar',
+    'application/x-zip',
+    'application/zip',
+];
+function isBinaryType(contentType) {
+    if (!contentType)
+        return false;
+    let [test] = contentType.split(';');
+    return binaryTypes.includes(test);
+}
+exports.isBinaryType = isBinaryType;

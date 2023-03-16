@@ -54,3 +54,5 @@ export class ExpoResponse extends Response {
     });
   }
 }
+
+export class ExpoRequest extends Request {}

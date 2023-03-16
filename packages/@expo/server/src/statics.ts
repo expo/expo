@@ -1,9 +1,10 @@
 import send from 'send';
 import { URL } from 'url';
+import { ExpoResponse } from './environment';
 
 import { ServerRequest, ServerResponse } from './server.types';
 
-const debug = require('debug')('expo:server:static') as typeof console.log;
+const debug = console.log; //require('debug')('expo:server:static') as typeof console.log;
 
 export function getStaticMiddleware(root: string) {
   debug(`hosting:`, root);
@@ -11,7 +12,7 @@ export function getStaticMiddleware(root: string) {
     root,
     extensions: ['html'],
   };
-  return (req: ServerRequest, res: ServerResponse, next: any) => {
+  return (req: ServerRequest, res: ExpoResponse, next: any) => {
     if (!req?.url || (req.method !== 'GET' && req.method !== 'HEAD')) {
       return next();
     }

@@ -8,6 +8,7 @@ const handler = createRequestHandler(path.join(process.cwd(), 'dist'));
 
 // Start a basic server on port 3000
 const server = http.createServer();
+
 server.listen(3000, () => {
   console.log('Server listening on port 3000');
 });
