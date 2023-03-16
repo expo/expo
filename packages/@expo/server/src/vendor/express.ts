@@ -84,11 +84,7 @@ export async function respond(res: express.Response, expoRes: ExpoResponse): Pro
   }
 
   if (expoRes.body) {
-    await writeReadableStreamToWritable(
-      // @ts-expect-error: TODO
-      expoRes.body,
-      res
-    );
+    await writeReadableStreamToWritable(expoRes.body, res);
   } else {
     res.end();
   }

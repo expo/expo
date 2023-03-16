@@ -20,9 +20,7 @@ async function toNetlifyResponse(res) {
     const isBase64Encoded = isBinaryType(contentType);
     if (res.body) {
         if (isBase64Encoded) {
-            body = await (0, stream_1.readableStreamToString)(
-            // @ts-expect-error
-            res.body, 'base64');
+            body = await (0, stream_1.readableStreamToString)(res.body, 'base64');
         }
         else {
             body = await res.text();

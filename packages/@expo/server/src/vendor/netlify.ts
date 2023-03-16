@@ -23,11 +23,7 @@ export async function toNetlifyResponse(res: ExpoResponse): Promise<HandlerRespo
 
   if (res.body) {
     if (isBase64Encoded) {
-      body = await readableStreamToString(
-        // @ts-expect-error
-        res.body,
-        'base64'
-      );
+      body = await readableStreamToString(res.body, 'base64');
     } else {
       body = await res.text();
     }

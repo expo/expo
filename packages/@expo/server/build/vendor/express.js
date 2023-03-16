@@ -69,9 +69,7 @@ async function respond(res, expoRes) {
         }
     }
     if (expoRes.body) {
-        await (0, stream_1.writeReadableStreamToWritable)(
-        // @ts-expect-error: TODO
-        expoRes.body, res);
+        await (0, stream_1.writeReadableStreamToWritable)(expoRes.body, res);
     }
     else {
         res.end();
