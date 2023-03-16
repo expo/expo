@@ -190,12 +190,11 @@ export async function exportFromServerAsync(
   const staticDir = path.join(outputDir);
   fs.mkdirSync(path.join(staticDir), { recursive: true });
 
-  const funcDir = path.join(outputDir, 'functions');
+  const funcDir = path.join(outputDir, '.expo/functions');
   fs.mkdirSync(path.join(funcDir), { recursive: true });
 
-  console.log('>>', routesManifest);
   await fs.promises.writeFile(
-    path.join(outputDir, 'routes-manifest.json'),
+    path.join(outputDir, '.expo/routes.json'),
     JSON.stringify(routesManifest, null, 2),
     'utf-8'
   );

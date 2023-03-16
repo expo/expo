@@ -531,56 +531,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     }
 
     if (this.isTargetingWeb()) {
-      const devServerUrl = `http://localhost:${options.port}`;
-
-      if (false && env.EXPO_USE_STATIC) {
-        middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
-          if (!req?.url) {
-            return next();
-          }
-
-          // TODO: Formal manifest for allowed paths
-          if (req.url.endsWith('.ico')) {
-            return next();
-          }
-
-          const location = new URL(req.url, devServerUrl);
-
-          try {
-            const { getStaticContent } = await getStaticRenderFunctions(
-              this.projectRoot,
-              devServerUrl,
-              {
-                minify: options.mode === 'production',
-                dev: options.mode !== 'production',
-              }
-            );
-
-            let content = await getStaticContent(location);
-
-            //TODO: Not this -- disable injection some other way
-            if (options.mode !== 'production') {
-              // Add scripts for rehydration
-              // TODO: bundle split
-              content = content.replace(
-                '</body>',
-                [`<script src="${manifestMiddleware.getWebBundleUrl()}" defer></script>`].join(
-                  '\n'
-                ) + '</body>'
-              );
-            }
-
-            res.setHeader('Content-Type', 'text/html');
-            res.end(content);
-            return;
-          } catch (error: any) {
-            console.error(error);
-            res.setHeader('Content-Type', 'text/html');
-            res.end(getErrorResult(error));
-          }
-        });
-      }
-
       // This MUST run last since it's the fallback.
       if (!env.EXPO_USE_STATIC) {
         middleware.use(

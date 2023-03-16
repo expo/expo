@@ -141,14 +141,14 @@ class Env {
    * **Experimental:** Use static generation for Metro web projects. This only works with Expo Router.
    */
   get EXPO_USE_STATIC(): boolean {
-    return boolish('EXPO_USE_STATIC', false);
+    return boolish('EXPO_USE_STATIC', true);
   }
 
   /**
    * **Experimental:** Enable universal Routes Handlers (serverless functions) in Expo Router projects.
    */
   get EXPO_USE_ROUTE_HANDLERS(): boolean {
-    return boolish('EXPO_USE_ROUTE_HANDLERS', false);
+    return boolish('EXPO_USE_ROUTE_HANDLERS', true);
   }
 
   /** **Experimental:** Prevent Metro from using the `compilerOptions.paths` feature from `tsconfig.json` (or `jsconfig.json`) to enable import aliases. */

@@ -12,7 +12,7 @@ installGlobals();
 // TODO: Reuse this for dev as well
 export function createRequestHandler(distFolder: string) {
   const routesManifest = JSON.parse(
-    fs.readFileSync(path.join(distFolder, 'routes-manifest.json'), 'utf-8')
+    fs.readFileSync(path.join(distFolder, '.expo/routes.json'), 'utf-8')
   ).map((value: any) => {
     return {
       ...value,
