@@ -6,11 +6,13 @@
  */
 import { getConfig } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
+import { ExpoResponse, installGlobals } from '@expo/server/build/environment';
+import { convertRequest, respond } from '@expo/server/build/vendor/http';
 import assert from 'assert';
 import chalk from 'chalk';
-import fs from 'fs';
 import { sync as globSync } from 'glob';
 import path from 'path';
+import requireString from 'require-from-string';
 import resolve from 'resolve';
 import resolveFrom from 'resolve-from';
 import { promisify } from 'util';
@@ -36,15 +38,13 @@ import {
   DeepLinkHandler,
   RuntimeRedirectMiddleware,
 } from '../middleware/RuntimeRedirectMiddleware';
-import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
-import { ExpoResponse, installGlobals } from '@expo/server/build/environment';
+import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { instantiateMetroAsync } from './instantiateMetro';
 import {
   observeApiRouteChanges,
   waitForMetroToObserveTypeScriptFile,
 } from './waitForMetroToObserveTypeScriptFile';
-import { convertRequest, respond } from '@expo/server/build/vendor/http';
 
 const resolveAsync = promisify(resolve) as any as (
   id: string,
@@ -59,30 +59,6 @@ const EXPO_GO_METRO_PORT = 19000;
 /** Default port to use for apps that run in standard React Native projects or Expo Dev Clients. */
 const DEV_CLIENT_METRO_PORT = 8081;
 
-async function getExpoRouteMatchBuilderAsync(
-  projectRoot: string,
-  {
-    devServerUrl,
-    minify,
-    dev,
-  }: {
-    devServerUrl: string;
-    minify: boolean;
-    dev: boolean;
-  }
-) {
-  const matchNodePath = path.join(
-    resolveFrom(projectRoot, 'expo-router/package.json'),
-    '../match-node.ts'
-  );
-  const { buildMatcher } = await requireWithMetro<{
-    buildMatcher: (files: string[]) => (url: string) => any;
-  }>(projectRoot, devServerUrl, matchNodePath, {
-    minify,
-    dev,
-  });
-  return buildMatcher;
-}
 async function getExpoRouteManifestBuilderAsync(
   projectRoot: string,
   {
@@ -100,15 +76,13 @@ async function getExpoRouteManifestBuilderAsync(
     '../routes-manifest.ts'
   );
   const { createRoutesManifest } = await requireWithMetro<{
-    createRoutesManifest: (files: string[]) => any;
+    createRoutesManifest: () => any;
   }>(projectRoot, devServerUrl, matchNodePath, {
     minify,
     dev,
   });
   return createRoutesManifest;
 }
-
-const getMatcherMemoized = memoize(getExpoRouteMatchBuilderAsync);
 
 export async function exportRouteHandlersAsync(
   projectRoot: string,
@@ -121,6 +95,7 @@ export async function exportRouteHandlersAsync(
     // TODO: Support other directories via app.json
     'app'
   );
+
   function getRouteFiles() {
     // TODO: Cache this
     return globSync('**/*+api.@(ts|tsx|js|jsx)', {
@@ -145,75 +120,13 @@ export async function exportRouteHandlersAsync(
       minify: options.mode === 'production',
       dev: options.mode !== 'production',
     });
-    // const unwrapped = middleware.replace('module.exports = __r', 'const middleware = __r');
-    // const unwrapped = middleware.replace('module.exports = __r', 'const middleware = __r');
-    // output[path.relative(appDir, file)] = ;
     output[path.relative(appDir, file)] = middleware;
   }
 
-  const manifest = getManifest(
-    globSync('**/*.@(ts|tsx|js|jsx)', {
-      // globSync('**/*+api.@(ts|tsx|js|jsx)', {
-      cwd: appDir,
-      absolute: false,
-    }).map((path) => './' + path)
-  );
+  const manifest = getManifest();
 
   return [manifest, output];
 }
-
-// export async function getRoutesManifest(
-//   projectRoot: string,
-//   options: { mode?: string; port?: number }
-// ) {
-//   const devServerUrl = `http://localhost:${options.port}`;
-
-//   const appDir = path.join(
-//     projectRoot,
-//     // TODO: Support other directories via app.json
-//     'app'
-//   );
-//   function getRouteFiles() {
-//     // TODO: Cache this
-//     return globSync('**/*+api.@(ts|tsx|js|jsx)', {
-//       cwd: appDir,
-//       absolute: true,
-//     });
-//   }
-
-//   const files = getRouteFiles();
-
-//   const output: Record<string, string> = {};
-
-//   const getManifest = await getExpoRouteManifestBuilderAsync(projectRoot, {
-//     devServerUrl,
-//     minify: options.mode === 'production',
-//     dev: options.mode !== 'production',
-//   });
-
-//   for (const file of files) {
-//     console.log('file', devServerUrl, file);
-//     const middleware = await requireFileContentsWithMetro(projectRoot, devServerUrl, file, {
-//       minify: options.mode === 'production',
-//       dev: options.mode !== 'production',
-//     });
-//     // const unwrapped = middleware.replace('module.exports = __r', 'const middleware = __r');
-//     // const unwrapped = middleware.replace('module.exports = __r', 'const middleware = __r');
-//     // output[path.relative(appDir, file)] = ;
-//     output[path.relative(appDir, file)] = middleware;
-//   }
-
-//   const manifest = getManifest(
-//     globSync('**/*+api.@(ts|tsx|js|jsx)', {
-//       cwd: appDir,
-//       absolute: false,
-//     }).map((path) => './' + path)
-//   );
-
-//   console.log('.manifest', manifest);
-
-//   return [manifest, output];
-// }
 
 const manifestOperation = new Map<string, Promise<any>>();
 
@@ -237,7 +150,7 @@ async function fetchManifest(projectRoot: string, options: { mode?: string; port
       dev: options.mode !== 'production',
     });
 
-    const manifest = getManifest([]).map((value: any) => {
+    const manifest = getManifest().map((value: any) => {
       return {
         ...value,
         regex: new RegExp(value.regex),
@@ -308,8 +221,6 @@ async function eagerBundleApiRoutes(
 
   await Promise.all(promises);
 }
-import requireString from 'require-from-string';
-
 function createRouteHandlerMiddleware(
   projectRoot: string,
   options: { mode?: string; port?: number; getWebBundleUrl: () => string }

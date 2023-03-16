@@ -171,7 +171,6 @@ export async function exportFromServerAsync(
   assert(devServer instanceof MetroBundlerDevServer);
 
   const manifest = await getExpoRoutesAsync(devServerManager);
-  console.log('manifest', manifest);
   debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
 
   const files = await getFilesToExportFromServerAsync({
@@ -184,8 +183,6 @@ export async function exportFromServerAsync(
   });
 
   const [routesManifest, middleware] = await devServer.getFunctionsAsync({ mode: 'production' });
-
-  console.log('middleware', middleware);
 
   const staticDir = path.join(outputDir);
   fs.mkdirSync(path.join(staticDir), { recursive: true });
