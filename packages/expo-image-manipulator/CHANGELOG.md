@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Handle images with an unsupported color space ([#21757](https://github.com/expo/expo/pull/21757) by [@mmmulani](https://github.com/mmmulani))
+
 ### 💡 Others
 
 ## 11.1.1 — 2023-02-09
