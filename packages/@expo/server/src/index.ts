@@ -38,14 +38,12 @@ export function createRequestHandler(distFolder: string) {
       if (route.type === 'static') {
         // serve a static file
         const filePath = path.join(distFolder, route.file.replace(/\.[tj]sx?$/, '.html'));
-        const response = new ExpoResponse(fs.readFileSync(filePath, 'utf-8'), {
+        return new ExpoResponse(fs.readFileSync(filePath, 'utf-8'), {
           status: 200,
           headers: {
             'Content-Type': 'text/html',
           },
         });
-
-        return response;
       }
 
       const func = require(path.join(distFolder, route.src));
