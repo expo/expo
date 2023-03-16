@@ -1,10 +1,9 @@
 import { HandlerEvent, HandlerResponse } from '@netlify/functions';
+import { Headers, readableStreamToString, RequestInit } from '@remix-run/node';
 import { AbortController } from 'abort-controller';
-import { Headers, RequestInit } from 'node-fetch';
 
 import { createRequestHandler as createExpoHandler } from '..';
 import { ExpoRequest, ExpoResponse } from '../environment';
-import { readableStreamToString } from '../stream';
 
 export function createRequestHandler({ build }: { build: string }) {
   const handleRequest = createExpoHandler(build);
@@ -12,11 +11,11 @@ export function createRequestHandler({ build }: { build: string }) {
   return async (event: HandlerEvent) => {
     const response = await handleRequest(convertRequest(event));
 
-    return toNetlifyResponse(response);
+    return respond(response);
   };
 }
 
-export async function toNetlifyResponse(res: ExpoResponse): Promise<HandlerResponse> {
+export async function respond(res: ExpoResponse): Promise<HandlerResponse> {
   const contentType = res.headers.get('Content-Type');
   let body: string | undefined;
   const isBase64Encoded = isBinaryType(contentType);

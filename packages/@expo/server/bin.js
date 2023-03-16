@@ -16,6 +16,8 @@ app.use(compression());
 // http://expressjs.com/en/advanced/best-practice-security.html#at-a-minimum-disable-x-powered-by-header
 app.disable('x-powered-by');
 
+process.env.NODE_ENV = 'production';
+
 if (process.env.NODE_ENV === 'production') {
   app.use(express.static(BUILD_DIR, { maxAge: '1h' }));
 } else {

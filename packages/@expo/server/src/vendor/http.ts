@@ -1,6 +1,7 @@
+import { writeReadableStreamToWritable } from '@remix-run/node';
 import * as http from 'http';
+
 import { ExpoRequest, ExpoResponse } from '../environment';
-import { writeReadableStreamToWritable } from '../stream';
 
 // Convert an http request to an expo request
 export function convertRequest(req: http.IncomingMessage, res: http.ServerResponse): ExpoRequest {

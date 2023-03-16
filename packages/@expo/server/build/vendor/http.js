@@ -1,8 +1,8 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.respond = exports.convertHeaders = exports.convertRequest = void 0;
+const node_1 = require("@remix-run/node");
 const environment_1 = require("../environment");
-const stream_1 = require("../stream");
 // Convert an http request to an expo request
 function convertRequest(req, res) {
     const url = new URL(req.url, `http://${req.headers.host}`);
@@ -49,7 +49,7 @@ async function respond(res, expoRes) {
         }
     }
     if (expoRes.body) {
-        await (0, stream_1.writeReadableStreamToWritable)(expoRes.body, res);
+        await (0, node_1.writeReadableStreamToWritable)(expoRes.body, res);
     }
     else {
         res.end();

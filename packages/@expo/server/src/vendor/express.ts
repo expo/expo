@@ -1,10 +1,14 @@
-import { AbortController } from 'abort-controller';
+import {
+  Headers,
+  writeReadableStreamToWritable,
+  RequestInit,
+  Response,
+  AbortController,
+} from '@remix-run/node';
 import type * as express from 'express';
-import { Headers, RequestInit } from 'node-fetch';
 
 import { createRequestHandler as createExpoHandler } from '..';
-import { ExpoRequest, ExpoResponse } from '../environment';
-import { writeReadableStreamToWritable } from '../stream';
+import { ExpoRequest } from '../environment';
 
 export type RequestHandler = (
   req: express.Request,
@@ -73,7 +77,7 @@ export function convertRequest(req: express.Request, res: express.Response): Exp
   return new ExpoRequest(url.href, init);
 }
 
-export async function respond(res: express.Response, expoRes: ExpoResponse): Promise<void> {
+export async function respond(res: express.Response, expoRes: Response): Promise<void> {
   res.statusMessage = expoRes.statusText;
   res.status(expoRes.status);
 

@@ -1,11 +1,9 @@
 "use strict";
 Object.defineProperty(exports, "__esModule", { value: true });
 exports.respond = exports.convertRequest = exports.convertHeaders = exports.createRequestHandler = void 0;
-const abort_controller_1 = require("abort-controller");
-const node_fetch_1 = require("node-fetch");
+const node_1 = require("@remix-run/node");
 const __1 = require("..");
 const environment_1 = require("../environment");
-const stream_1 = require("../stream");
 /**
  * Returns a request handler for Express that serves the response using Remix.
  */
@@ -26,7 +24,7 @@ function createRequestHandler({ build }) {
 }
 exports.createRequestHandler = createRequestHandler;
 function convertHeaders(requestHeaders) {
-    const headers = new node_fetch_1.Headers();
+    const headers = new node_1.Headers();
     for (const [key, values] of Object.entries(requestHeaders)) {
         if (values) {
             if (Array.isArray(values)) {
@@ -45,7 +43,7 @@ exports.convertHeaders = convertHeaders;
 function convertRequest(req, res) {
     const url = new URL(`${req.protocol}://${req.get('host')}${req.url}`);
     // Abort action/loaders once we can no longer write a response
-    const controller = new abort_controller_1.AbortController();
+    const controller = new node_1.AbortController();
     res.on('close', () => controller.abort());
     const init = {
         method: req.method,
@@ -69,7 +67,7 @@ async function respond(res, expoRes) {
         }
     }
     if (expoRes.body) {
-        await (0, stream_1.writeReadableStreamToWritable)(expoRes.body, res);
+        await (0, node_1.writeReadableStreamToWritable)(expoRes.body, res);
     }
     else {
         res.end();

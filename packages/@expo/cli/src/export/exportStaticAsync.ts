@@ -150,9 +150,9 @@ export async function getFilesToExportFromServerAsync({
       }
 
       // TODO: handle dynamic routes
-      if (!segment.startsWith('*')) {
-        await fetchScreenAsync({ segment, filename });
-      }
+      // if (!segment.startsWith('*')) {
+      await fetchScreenAsync({ segment, filename });
+      // }
       return null;
     });
   };
