@@ -1,35 +1,13 @@
-import fetch, {
-  Blob,
-  Body,
-  BodyInit,
-  HeaderInit,
-  Headers,
-  HeadersInit,
-  Request,
-  Response,
-} from 'node-fetch';
+import { installGlobals as installRemixGlobals, Response, Request } from '@remix-run/node';
 
 // Ensure these are available for the API Routes.
 export function installGlobals() {
-  // @ts-expect-error
-  global.fetch = fetch;
-  // @ts-expect-error
-  global.Blob = Blob;
-  // @ts-expect-error
-  global.Body = Body;
-  // @ts-expect-error
-  global.Headers = Headers;
+  installRemixGlobals();
 
   // @ts-expect-error
-  global.HeaderInit = HeaderInit;
-  // @ts-expect-error
-  global.HeadersInit = HeadersInit;
-  // @ts-expect-error
-  global.Request = Request;
+  global.Request = ExpoRequest;
   // @ts-expect-error
   global.Response = ExpoResponse;
-  // @ts-expect-error
-  global.BodyInit = BodyInit;
 }
 
 export class ExpoResponse extends Response {
@@ -41,7 +19,6 @@ export class ExpoResponse extends Response {
       throw new TypeError('data is not JSON serializable');
     }
 
-    // @ts-expect-error
     const headers = new Headers(init?.headers);
 
     if (!headers.has('content-type')) {

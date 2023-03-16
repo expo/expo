@@ -51,7 +51,8 @@ export async function exportAppAsync(
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
 
   const outputPath = path.resolve(projectRoot, outputDir);
-  const staticFolder = path.join(outputPath, 'static');
+  const staticFolder = outputPath;
+  // const staticFolder = path.join(outputPath, 'static');
   const assetsPath = path.join(staticFolder, 'assets');
   const bundlesPath = path.join(staticFolder, 'bundles');
 

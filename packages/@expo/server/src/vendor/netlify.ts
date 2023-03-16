@@ -1,53 +1,42 @@
-import { HandlerContext, HandlerEvent, HandlerResponse } from '@netlify/functions';
+import { HandlerEvent, HandlerResponse } from '@netlify/functions';
 import { AbortController } from 'abort-controller';
-import { Headers, RequestInit, Response } from 'node-fetch';
+import { Headers, RequestInit } from 'node-fetch';
 
 import { createRequestHandler as createExpoHandler } from '..';
 import { ExpoRequest, ExpoResponse } from '../environment';
 import { readableStreamToString } from '../stream';
 
-export function createRequestHandler({
-  build,
-  mode = process.env.NODE_ENV,
-}: {
-  build: string;
-  mode?: string;
-}) {
+export function createRequestHandler({ build }: { build: string }) {
   const handleRequest = createExpoHandler(build);
 
-  return async (event: HandlerEvent, context: HandlerContext) => {
-    let request = convertRequest(event);
-    // let loadContext = getLoadContext?.(event, context);
+  return async (event: HandlerEvent) => {
+    const response = await handleRequest(convertRequest(event));
 
-    let response = (await handleRequest(request, new Response())) as ExpoResponse;
-
-    return convertNodeResponseToNetlifyResponse(response);
+    return toNetlifyResponse(response);
   };
 }
 
-export async function convertNodeResponseToNetlifyResponse(
-  nodeResponse: ExpoResponse
-): Promise<HandlerResponse> {
-  let contentType = nodeResponse.headers.get('Content-Type');
+export async function toNetlifyResponse(res: ExpoResponse): Promise<HandlerResponse> {
+  const contentType = res.headers.get('Content-Type');
   let body: string | undefined;
-  let isBase64Encoded = isBinaryType(contentType);
+  const isBase64Encoded = isBinaryType(contentType);
 
-  if (nodeResponse.body) {
+  if (res.body) {
     if (isBase64Encoded) {
       body = await readableStreamToString(
         // @ts-expect-error
-        nodeResponse.body,
+        res.body,
         'base64'
       );
     } else {
-      body = await nodeResponse.text();
+      body = await res.text();
     }
   }
 
-  let multiValueHeaders = nodeResponse.headers.raw();
+  const multiValueHeaders = res.headers.raw();
 
   return {
-    statusCode: nodeResponse.status,
+    statusCode: res.status,
     multiValueHeaders,
     body,
     isBase64Encoded,
@@ -55,11 +44,11 @@ export async function convertNodeResponseToNetlifyResponse(
 }
 
 export function createHeaders(requestHeaders: HandlerEvent['multiValueHeaders']): Headers {
-  let headers = new Headers();
+  const headers = new Headers();
 
-  for (let [key, values] of Object.entries(requestHeaders)) {
+  for (const [key, values] of Object.entries(requestHeaders)) {
     if (values) {
-      for (let value of values) {
+      for (const value of values) {
         headers.append(key, value);
       }
     }
@@ -71,22 +60,22 @@ export function createHeaders(requestHeaders: HandlerEvent['multiValueHeaders'])
 // `netlify dev` doesn't return the full url in the event.rawUrl, so we need to create it ourselves
 function getRawPath(event: HandlerEvent): string {
   let rawPath = event.path;
-  let searchParams = new URLSearchParams();
+  const searchParams = new URLSearchParams();
 
   if (!event.multiValueQueryStringParameters) {
     return rawPath;
   }
 
-  let paramKeys = Object.keys(event.multiValueQueryStringParameters);
-  for (let key of paramKeys) {
-    let values = event.multiValueQueryStringParameters[key];
+  const paramKeys = Object.keys(event.multiValueQueryStringParameters);
+  for (const key of paramKeys) {
+    const values = event.multiValueQueryStringParameters[key];
     if (!values) continue;
-    for (let val of values) {
+    for (const val of values) {
       searchParams.append(key, val);
     }
   }
 
-  let rawParams = searchParams.toString();
+  const rawParams = searchParams.toString();
 
   if (rawParams) rawPath += `?${rawParams}`;
 
@@ -99,16 +88,16 @@ export function convertRequest(event: HandlerEvent): ExpoRequest {
   if (process.env.NODE_ENV !== 'development') {
     url = new URL(event.rawUrl);
   } else {
-    let origin = event.headers.host;
-    let rawPath = getRawPath(event);
+    const origin = event.headers.host;
+    const rawPath = getRawPath(event);
     url = new URL(`http://${origin}${rawPath}`);
   }
 
   // Note: No current way to abort these for Netlify, but our router expects
   // requests to contain a signal so it can detect aborted requests
-  let controller = new AbortController();
+  const controller = new AbortController();
 
-  let init: RequestInit = {
+  const init: RequestInit = {
     method: event.httpMethod,
     headers: createHeaders(event.multiValueHeaders),
     // Cast until reason/throwIfAborted added

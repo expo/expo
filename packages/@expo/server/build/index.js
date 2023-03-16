@@ -8,7 +8,6 @@ const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const url_1 = require("url");
 const environment_1 = require("./environment");
-const statics_1 = require("./statics");
 require("source-map-support/register");
 // Given build dir
 // parse path
@@ -16,7 +15,7 @@ require("source-map-support/register");
 (0, environment_1.installGlobals)();
 // TODO: Reuse this for dev as well
 function createRequestHandler(distFolder) {
-    const statics = path_1.default.join(distFolder, 'static');
+    //   const statics = path.join(distFolder, 'static');
     const routesManifest = JSON.parse(fs_1.default.readFileSync(path_1.default.join(distFolder, 'routes-manifest.json'), 'utf-8')).map((value) => {
         return {
             ...value,
@@ -24,14 +23,14 @@ function createRequestHandler(distFolder) {
         };
     });
     const dynamicManifest = routesManifest.filter((route) => route.type === 'dynamic');
-    const serveStatic = (0, statics_1.getStaticMiddleware)(statics);
+    //   const serveStatic = getStaticMiddleware(statics);
     return async function handler(request) {
         const url = new url_1.URL(request.url, 'http://acme.dev');
         // Statics first
-        const staticResponse = await serveStatic(url, request);
-        if (staticResponse) {
-            return staticResponse;
-        }
+        // const staticResponse = await serveStatic(url, request);
+        // if (staticResponse) {
+        //   return staticResponse;
+        // }
         const sanitizedPathname = url.pathname.replace(/^\/+/, '').replace(/\/+$/, '') + '/';
         for (const route of dynamicManifest) {
             if (!route.regex.test(sanitizedPathname)) {
@@ -46,6 +45,7 @@ function createRequestHandler(distFolder) {
                 return response;
             }
             try {
+                // TODO: Handle undefined
                 return (await routeHandler(request));
             }
             catch (error) {

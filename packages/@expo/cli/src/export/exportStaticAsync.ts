@@ -13,10 +13,7 @@ import { inspect } from 'util';
 
 import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
-import {
-  exportRouteHandlersAsync,
-  MetroBundlerDevServer,
-} from '../start/server/metro/MetroBundlerDevServer';
+import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { stripAnsi } from '../utils/ansi';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
@@ -190,7 +187,7 @@ export async function exportFromServerAsync(
 
   console.log('middleware', middleware);
 
-  const staticDir = path.join(outputDir, 'static');
+  const staticDir = path.join(outputDir);
   fs.mkdirSync(path.join(staticDir), { recursive: true });
 
   const funcDir = path.join(outputDir, 'functions');

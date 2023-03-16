@@ -14,7 +14,7 @@ installGlobals();
 
 // TODO: Reuse this for dev as well
 export function createRequestHandler(distFolder: string) {
-  const statics = path.join(distFolder, 'static');
+  //   const statics = path.join(distFolder, 'static');
 
   const routesManifest = JSON.parse(
     fs.readFileSync(path.join(distFolder, 'routes-manifest.json'), 'utf-8')
@@ -27,16 +27,16 @@ export function createRequestHandler(distFolder: string) {
 
   const dynamicManifest = routesManifest.filter((route: any) => route.type === 'dynamic');
 
-  const serveStatic = getStaticMiddleware(statics);
+  //   const serveStatic = getStaticMiddleware(statics);
 
-  return async function handler(request: ExpoRequest) {
+  return async function handler(request: ExpoRequest): Promise<ExpoResponse> {
     const url = new URL(request.url, 'http://acme.dev');
 
     // Statics first
-    const staticResponse = await serveStatic(url, request);
-    if (staticResponse) {
-      return staticResponse;
-    }
+    // const staticResponse = await serveStatic(url, request);
+    // if (staticResponse) {
+    //   return staticResponse;
+    // }
 
     const sanitizedPathname = url.pathname.replace(/^\/+/, '').replace(/\/+$/, '') + '/';
 
@@ -55,7 +55,8 @@ export function createRequestHandler(distFolder: string) {
       }
 
       try {
-        return (await routeHandler(request)) as ExpoResponse | undefined;
+        // TODO: Handle undefined
+        return (await routeHandler(request)) as ExpoResponse;
       } catch (error) {
         // TODO: Symbolicate error stack
         console.error(error);
