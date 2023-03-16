@@ -11,15 +11,24 @@ import fetch, {
 
 // Ensure these are available for the API Routes.
 export function installGlobals() {
+  // @ts-expect-error
   global.fetch = fetch;
+  // @ts-expect-error
   global.Blob = Blob;
+  // @ts-expect-error
   global.Body = Body;
+  // @ts-expect-error
   global.Headers = Headers;
 
+  // @ts-expect-error
   global.HeaderInit = HeaderInit;
+  // @ts-expect-error
   global.HeadersInit = HeadersInit;
+  // @ts-expect-error
   global.Request = Request;
+  // @ts-expect-error
   global.Response = ExpoResponse;
+  // @ts-expect-error
   global.BodyInit = BodyInit;
 }
 

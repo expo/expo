@@ -86,8 +86,8 @@ export function createRequestHandler(distFolder: string) {
 
     const sanitizedPathname = url.pathname.replace(/^\/+/, '').replace(/\/+$/, '') + '/';
 
-    await new Promise((res, rej) =>
-      serveStatic(request, response, (err) => (err ? rej(err) : res()))
+    await new Promise<void>((res, rej) =>
+      serveStatic(request, response, (err: any) => (err ? rej(err) : res()))
     );
 
     for (const route of routesManifest) {
