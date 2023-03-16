@@ -40,6 +40,7 @@ type StaticRenderOptions = {
   dev?: boolean;
   minify?: boolean;
   platform?: string;
+  externals?: string[];
 };
 
 const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredModuleId: string) => {
@@ -95,16 +96,20 @@ export async function requireFileContentsWithMetro(
   projectRoot: string,
   devServerUrl: string,
   absoluteFilePath: string,
-  { dev = false, platform = 'web', minify = false }: StaticRenderOptions = {}
+  { dev = false, platform = 'web', minify = false, externals }: StaticRenderOptions = {}
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
   const safeOtherFile = await ensureFileInRootDirectory(projectRoot, absoluteFilePath);
   const serverPath = path.relative(root, safeOtherFile).replace(/\.[jt]sx?$/, '.bundle');
   debug('fetching from Metro:', root, serverPath);
 
-  const res = await fetch(
-    `${devServerUrl}/${serverPath}?platform=${platform}&dev=${dev}&minify=${minify}`
-  );
+  let url = `${devServerUrl}/${serverPath}?platform=${platform}&dev=${dev}&minify=${minify}`;
+
+  if (externals) {
+    url += `&resolver.externals=${externals.join(',')}`;
+  }
+
+  const res = await fetch(url);
 
   // TODO: Improve error handling
   if (res.status === 500) {
