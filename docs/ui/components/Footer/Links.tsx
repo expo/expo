@@ -15,7 +15,7 @@ export const IssuesLink = ({ title, repositoryUrl }: { title: string; repository
         repositoryUrl ? `${repositoryUrl}/issues` : `https://github.com/expo/expo/labels/${title}`
       }>
       <span className="flex items-center mr-2.5">
-        <GithubIcon className="icon-sm" />
+        <GithubIcon className="text-icon-secondary" />
       </span>
       View open bug reports for {title}
     </A>
@@ -27,7 +27,7 @@ export const ForumsLink = ({ isAPIPage, title }: { isAPIPage: boolean; title: st
     <LI>
       <A css={linkStyle} openInNewTab href={`https://forums.expo.dev/tag/${title}`}>
         <span className="flex items-center mr-2.5">
-          <MessageDotsSquareIcon className="icon-sm" />
+          <MessageDotsSquareIcon className="text-icon-secondary" />
         </span>
         Ask a question on the forums about {title}
       </A>
@@ -36,7 +36,7 @@ export const ForumsLink = ({ isAPIPage, title }: { isAPIPage: boolean; title: st
     <LI>
       <A css={linkStyle} openInNewTab href="https://forums.expo.dev/">
         <span className="flex items-center mr-2.5">
-          <MessageDotsSquareIcon className="icon-sm" />
+          <MessageDotsSquareIcon className="text-icon-secondary" />
         </span>
         Ask a question on the forums
       </A>
@@ -47,7 +47,7 @@ export const EditPageLink = ({ pathname }: { pathname: string }) => (
   <LI>
     <A css={linkStyle} openInNewTab href={githubUrl(pathname)}>
       <span className="flex items-center mr-2.5">
-        <Edit05Icon className="icon-sm" />
+        <Edit05Icon className="text-icon-secondary" />
       </span>
       Edit this page
     </A>
