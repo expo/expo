@@ -38,9 +38,10 @@ import {
 } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
-import { ExpoResponse, installGlobals } from './installGlobals';
+import { ExpoResponse, installGlobals } from '@expo/server/build/environment';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { waitForMetroToObserveTypeScriptFile } from './waitForMetroToObserveTypeScriptFile';
+import { convertRequest, respond } from '@expo/server/build/vendor/http';
 
 const resolveAsync = promisify(resolve) as any as (
   id: string,
@@ -262,13 +263,7 @@ function createRouteHandlerMiddleware(
       dev: options.mode !== 'production',
     });
 
-    const manifest = getManifest(
-      globSync('**/*.@(ts|tsx|js|jsx)', {
-        // globSync('**/*+api.@(ts|tsx|js|jsx)', {
-        cwd: appDir,
-        absolute: false,
-      }).map((path) => './' + path)
-    ).map((value: any) => {
+    const manifest = getManifest([]).map((value: any) => {
       return {
         ...value,
         regex: new RegExp(value.regex),
@@ -279,10 +274,32 @@ function createRouteHandlerMiddleware(
 
     console.log('manifest', manifest, sanitizedPathname);
     let functionFilePath: string | null = null;
-    for (const route of manifest) {
+
+    const staticManifest = manifest.filter((route) => route.type === 'static');
+    const dynamicManifest = manifest.filter((route) => route.type === 'dynamic');
+
+    for (const route of dynamicManifest) {
       if (route.regex.test(sanitizedPathname)) {
-        console.log('Using:', route.src, sanitizedPathname, route.regex);
-        if (route.type === 'static') {
+        functionFilePath = route.file;
+        break;
+      }
+    }
+
+    if (req.method === 'GET' || req.method === 'HEAD') {
+      for (const route of staticManifest) {
+        if (route.regex.test(sanitizedPathname)) {
+          if (
+            // Skip the 404 page if there's a function
+            route.generated &&
+            route.file.match(/^\.\/\[\.\.\.404]\.[jt]sx?$/)
+          ) {
+            console.log('Skipping 404 page:', functionFilePath);
+            if (functionFilePath) {
+              continue;
+            }
+          }
+
+          console.log('Using:', route.src, sanitizedPathname, route.regex);
           try {
             const { getStaticContent } = await getStaticRenderFunctions(projectRoot, devServerUrl, {
               minify: options.mode === 'production',
@@ -310,12 +327,8 @@ function createRouteHandlerMiddleware(
             res.setHeader('Content-Type', 'text/html');
             res.end(getErrorResult(error));
           }
-
           return;
         }
-
-        functionFilePath = route.file;
-        break;
       }
     }
 
@@ -325,14 +338,10 @@ function createRouteHandlerMiddleware(
 
     let resolved: string | null = null;
     try {
-      resolved = await resolveAsync(
-        // TODO: Document this format of +api
-        functionFilePath,
-        {
-          extensions: ['.js', '.jsx', '.ts', '.tsx'],
-          basedir: appDir,
-        }
-      );
+      resolved = await resolveAsync(functionFilePath, {
+        extensions: ['.js', '.jsx', '.ts', '.tsx'],
+        basedir: appDir,
+      });
     } catch {
       return next();
     }
@@ -368,30 +377,18 @@ function createRouteHandlerMiddleware(
       return res.end('Method not allowed');
     }
 
+    const expoRequest = convertRequest(req, res);
+
     try {
       // 4. Execute.
-      const response = (await func?.(req, res, next)) as ExpoResponse | undefined;
+      const response = (await func?.(expoRequest)) as ExpoResponse;
 
       // 5. Respond
       if (response) {
-        if (response.headers) {
-          for (const [key, value] of Object.entries(response.headers)) {
-            res.setHeader(key, value);
-          }
-        }
-
-        if (response.status) {
-          res.statusCode = response.status;
-        }
-
-        if (response.body) {
-          res.end(response.body);
-        } else {
-          res.end();
-        }
+        await respond(res, response);
       } else {
         // TODO: Not sure what to do here yet
-        res.statusCode = 404;
+        res.statusCode = 500;
         res.end();
       }
     } catch (error) {
