@@ -40,7 +40,10 @@ import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { ExpoResponse, installGlobals } from '@expo/server/build/environment';
 import { instantiateMetroAsync } from './instantiateMetro';
-import { waitForMetroToObserveTypeScriptFile } from './waitForMetroToObserveTypeScriptFile';
+import {
+  observeApiRouteChanges,
+  waitForMetroToObserveTypeScriptFile,
+} from './waitForMetroToObserveTypeScriptFile';
 import { convertRequest, respond } from '@expo/server/build/vendor/http';
 
 const resolveAsync = promisify(resolve) as any as (
@@ -212,10 +215,76 @@ export async function exportRouteHandlersAsync(
 //   return [manifest, output];
 // }
 
+const routeCache = new Map<string, string>();
+const pendingRouteOperations = new Map<string, Promise<string>>();
+
+async function rebundleApiRoute(
+  projectRoot: string,
+  filepath: string,
+  options: { mode?: string; port?: number }
+) {
+  pendingRouteOperations.delete(filepath);
+  return bundleApiRoute(projectRoot, filepath, options);
+}
+async function bundleApiRoute(
+  projectRoot: string,
+  filepath: string,
+  options: { mode?: string; port?: number }
+) {
+  if (pendingRouteOperations.has(filepath)) {
+    return pendingRouteOperations.get(filepath);
+  }
+
+  const devServerUrl = `http://localhost:${options.port}`;
+
+  async function bundleAsync() {
+    try {
+      debug('Check API route:', path.join(projectRoot, 'app'), filepath);
+
+      const middleware = await requireFileContentsWithMetro(projectRoot, devServerUrl, filepath, {
+        minify: options.mode === 'production',
+        dev: options.mode !== 'production',
+      });
+
+      routeCache.set(filepath, middleware);
+
+      return middleware;
+    } finally {
+      // pendingRouteOperations.delete(filepath);
+    }
+  }
+
+  pendingRouteOperations.set(filepath, bundleAsync());
+}
+
+async function eagerBundleApiRoutes(
+  projectRoot: string,
+  options: { mode?: string; port?: number }
+) {
+  const appDir = path.join(
+    projectRoot,
+    // TODO: Support other directories via app.json
+    'app'
+  );
+
+  const routes = globSync('**/*+api.@(ts|tsx|js|jsx)', {
+    cwd: appDir,
+    absolute: true,
+  });
+
+  const promises = routes.map(async (filepath) => bundleApiRoute(projectRoot, filepath, options));
+
+  await Promise.all(promises);
+}
+import requireString from 'require-from-string';
+
 function createRouteHandlerMiddleware(
   projectRoot: string,
   options: { mode?: string; port?: number; getWebBundleUrl: () => string }
 ) {
+  // don't await
+  eagerBundleApiRoutes(projectRoot, options);
+
   const devServerUrl = `http://localhost:${options.port}`;
 
   const appDir = path.join(
@@ -319,37 +388,17 @@ function createRouteHandlerMiddleware(
     if (!functionFilePath) {
       return next();
     }
+    functionFilePath = await resolveAsync(functionFilePath, {
+      extensions: ['.js', '.jsx', '.ts', '.tsx'],
+      basedir: appDir,
+    })!;
 
-    let resolved: string | null = null;
-    try {
-      resolved = await resolveAsync(functionFilePath, {
-        extensions: ['.js', '.jsx', '.ts', '.tsx'],
-        basedir: appDir,
-      });
-    } catch {
+    const middlewareContents = await bundleApiRoute(projectRoot, functionFilePath!, options);
+    if (!middlewareContents) {
       return next();
     }
 
-    debug('Check API route:', resolved, path.join(projectRoot, 'app'), pathname);
-
-    if (!resolved) {
-      return next();
-    }
-
-    // 3. Import middleware file
-    // TODO: Bundle with Metro to support esmodules -- needs externals to work correctly...
-
-    const middleware = await requireWithMetro<Record<string, any>>(
-      projectRoot,
-      devServerUrl,
-      resolved,
-      {
-        minify: options.mode === 'production',
-        dev: options.mode !== 'production',
-      }
-    );
-
-    // const middleware = fresh(resolved);
+    const middleware = requireString(middlewareContents);
 
     debug(`Supported methods (API route exports):`, Object.keys(middleware), ' -> ', req.method);
 
@@ -511,6 +560,24 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           ...options,
           getWebBundleUrl: manifestMiddleware.getWebBundleUrl.bind(manifestMiddleware),
         })
+      );
+
+      observeApiRouteChanges(
+        this.projectRoot,
+        {
+          metro,
+          server,
+        },
+        async (filepath, op) => {
+          console.log(`[expo-cli] ${op} ${filepath}`);
+          if (op === 'change' || op === 'add') {
+            rebundleApiRoute(this.projectRoot, filepath, options);
+          }
+
+          if (op === 'delete') {
+            // TODO: Cancel the bundling of the deleted route.
+          }
+        }
       );
     }
 
