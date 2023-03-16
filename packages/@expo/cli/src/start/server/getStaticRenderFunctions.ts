@@ -106,7 +106,7 @@ export async function requireFileContentsWithMetro(
   let url = `${devServerUrl}/${serverPath}?platform=${platform}&dev=${dev}&minify=${minify}`;
 
   if (externals) {
-    url += `&resolver.externals=${externals.join(',')}`;
+    url += `&resolver.externals=${encodeURIComponent(externals.join(','))}`;
   }
 
   const res = await fetch(url);
