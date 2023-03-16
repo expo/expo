@@ -22,7 +22,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix production imports of static files.
+- Fix production imports of static files. ([#21735](https://github.com/expo/expo/pull/21735) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
