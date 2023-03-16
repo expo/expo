@@ -22,6 +22,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix production imports of static files.
+
 ### 💡 Others
 
 - Update fixtures. ([#21397](https://github.com/expo/expo/pull/21397) by [@EvanBacon](https://github.com/EvanBacon))

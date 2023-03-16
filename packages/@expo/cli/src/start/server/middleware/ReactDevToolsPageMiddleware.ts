@@ -15,7 +15,7 @@ export class ReactDevToolsPageMiddleware extends ExpoMiddleware {
   async handleRequestAsync(req: ServerRequest, res: ServerResponse): Promise<void> {
     const templatePath =
       // Production: This will resolve when installed in the project.
-      resolveFrom.silent(this.projectRoot, 'expo/static/react-devtools-page/index.html') ??
+      resolveFrom.silent(this.projectRoot, '@expo/cli/static/react-devtools-page/index.html') ??
       // Development: This will resolve when testing locally.
       path.resolve(__dirname, '../../../../../static/react-devtools-page/index.html');
     const content = (await readFile(templatePath)).toString('utf-8');

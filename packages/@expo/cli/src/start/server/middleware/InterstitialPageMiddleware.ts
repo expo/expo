@@ -43,7 +43,7 @@ export class InterstitialPageMiddleware extends ExpoMiddleware {
   }): Promise<string> {
     const templatePath =
       // Production: This will resolve when installed in the project.
-      resolveFrom.silent(this.projectRoot, 'expo/static/loading-page/index.html') ??
+      resolveFrom.silent(this.projectRoot, '@expo/cli/static/loading-page/index.html') ??
       // Development: This will resolve when testing locally.
       path.resolve(__dirname, '../../../../../static/loading-page/index.html');
     let content = (await readFile(templatePath)).toString('utf-8');
