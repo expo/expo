@@ -1,10 +1,9 @@
 import send from 'send';
 import { URL } from 'url';
-import { ExpoResponse } from './environment';
 
-import { ServerRequest, ServerResponse } from './server.types';
+import { ExpoRequest, ExpoResponse } from './environment';
 
-const debug = console.log; //require('debug')('expo:server:static') as typeof console.log;
+const debug = require('debug')('expo:server:static') as typeof console.log;
 
 export function getStaticMiddleware(root: string) {
   debug(`hosting:`, root);
@@ -12,10 +11,12 @@ export function getStaticMiddleware(root: string) {
     root,
     extensions: ['html'],
   };
-  return (req: ServerRequest, res: ExpoResponse, next: any) => {
-    if (!req?.url || (req.method !== 'GET' && req.method !== 'HEAD')) {
-      return next();
+  return (url: URL, req: ExpoRequest) => {
+    if (req.method !== 'GET' && req.method !== 'HEAD') {
+      return null;
     }
+
+    // TODO: Use this as the rsc endpoint on native requests
 
     // const platform = parsePlatformHeader(req);
     // Currently this is web-only
@@ -23,9 +24,9 @@ export function getStaticMiddleware(root: string) {
     //   return next();
     // }
 
-    const pathname = new URL(req.url, 'https://acme.dev').pathname;
+    const pathname = url.pathname;
     if (!pathname) {
-      return next();
+      return null;
     }
 
     debug(`stream:`, pathname);
@@ -38,17 +39,21 @@ export function getStaticMiddleware(root: string) {
       forwardError = true;
     });
 
-    // forward errors
-    stream.on('error', function error(err: any) {
-      if (forwardError || !(err.statusCode < 500)) {
-        next(err);
-        return;
-      }
+    return new Promise<ExpoResponse>((resolve, reject) => {
+      // forward errors
+      stream.on('error', function error(err: any) {
+        if (forwardError || !(err.statusCode < 500)) {
+          reject(err);
+          return;
+        }
 
-      next();
+        resolve(res);
+      });
+
+      const res = new ExpoResponse();
+
+      // pipe
+      stream.pipe(res);
     });
-
-    // pipe
-    stream.pipe(res);
   };
 }

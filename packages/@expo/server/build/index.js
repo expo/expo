@@ -9,44 +9,11 @@ const path_1 = __importDefault(require("path"));
 const url_1 = require("url");
 const environment_1 = require("./environment");
 const statics_1 = require("./statics");
+require("source-map-support/register");
 // Given build dir
 // parse path
 // import middleware function
 (0, environment_1.installGlobals)();
-async function handleRouteHandlerAsync(func, req, res, next) {
-    try {
-        // 4. Execute.
-        return (await func?.(req, res, next));
-        // // 5. Respond
-        // if (response) {
-        //   if (response.headers) {
-        //     for (const [key, value] of Object.entries(response.headers)) {
-        //       res.setHeader(key, value);
-        //     }
-        //   }
-        //   if (response.status) {
-        //     res.statusCode = response.status;
-        //   }
-        //   return response;
-        // //   if (response.body) {
-        // //     res.end(response.body);
-        // //   } else {
-        // //     res.end();
-        // //   }
-        // } else {
-        //   // TODO: Not sure what to do here yet
-        //   res.statusCode = 404;
-        //   res.end();
-        // }
-    }
-    catch (error) {
-        // TODO: Symbolicate error stack
-        console.error(error);
-        // res.st = 500;
-        // res.end();
-        return environment_1.ExpoResponse.error();
-    }
-}
 // TODO: Reuse this for dev as well
 function createRequestHandler(distFolder) {
     const statics = path_1.default.join(distFolder, 'static');
@@ -56,40 +23,41 @@ function createRequestHandler(distFolder) {
             regex: new RegExp(value.regex),
         };
     });
+    const dynamicManifest = routesManifest.filter((route) => route.type === 'dynamic');
     const serveStatic = (0, statics_1.getStaticMiddleware)(statics);
-    return async function handler(request, response, 
-    // TODO
-    next = function (err) {
-        console.error(err);
-        response.status = 404;
-        response.statusText = 'Not found';
-        return response;
-        //   return response.end('Not found');
-    }) {
-        if (!request.url || !request.method) {
-            return next();
-        }
+    return async function handler(request) {
         const url = new url_1.URL(request.url, 'http://acme.dev');
+        // Statics first
+        const staticResponse = await serveStatic(url, request);
+        if (staticResponse) {
+            return staticResponse;
+        }
         const sanitizedPathname = url.pathname.replace(/^\/+/, '').replace(/\/+$/, '') + '/';
-        await new Promise((res, rej) => serveStatic(request, response, (err) => (err ? rej(err) : res())));
-        for (const route of routesManifest) {
-            if (route.regex.test(sanitizedPathname)) {
-                // console.log('Using:', route.src, sanitizedPathname, route.regex);
-                if (route.src.startsWith('./static/')) {
-                    return serveStatic(request, response, next);
-                }
-                const func = require(path_1.default.join(distFolder, route.src));
-                if (func[request.method]) {
-                    return handleRouteHandlerAsync(func[request.method], request, response, next);
-                }
-                else {
-                    response.status = 405;
-                    response.statusText = 'Method not allowed';
-                    return response;
-                }
+        for (const route of dynamicManifest) {
+            if (!route.regex.test(sanitizedPathname)) {
+                continue;
+            }
+            const func = require(path_1.default.join(distFolder, route.src));
+            const routeHandler = func[request.method];
+            if (!routeHandler) {
+                const response = environment_1.ExpoResponse.error();
+                response.status = 405;
+                response.statusText = 'Method not allowed';
+                return response;
+            }
+            try {
+                return (await routeHandler(request));
+            }
+            catch (error) {
+                // TODO: Symbolicate error stack
+                console.error(error);
+                const res = environment_1.ExpoResponse.error();
+                res.status = 500;
+                return res;
             }
         }
         // 404
+        const response = environment_1.ExpoResponse.error();
         response.status = 404;
         response.statusText = 'Not found';
         return response;

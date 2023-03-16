@@ -29,6 +29,7 @@
     "build"
   ],
   "dependencies": {
+    "source-map-support": "0.5.21",
     "send": "^0.18.0",
     "node-fetch": "^2",
     "abort-controller": "^3.0.0"

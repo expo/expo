@@ -1,3 +1,3 @@
-import { ExpoResponse } from './environment';
-import { ServerRequest } from './server.types';
-export declare function getStaticMiddleware(root: string): (req: ServerRequest, res: ExpoResponse, next: any) => any;
+import { URL } from 'url';
+import { ExpoRequest, ExpoResponse } from './environment';
+export declare function getStaticMiddleware(root: string): (url: URL, req: ExpoRequest) => Promise<ExpoResponse> | null;

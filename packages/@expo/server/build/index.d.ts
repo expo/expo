@@ -1,3 +1,3 @@
-import { ExpoResponse } from './environment';
-import { ServerNext, ServerRequest } from './server.types';
-export declare function createRequestHandler(distFolder: string): (request: ServerRequest, response: ExpoResponse, next?: ServerNext) => Promise<any>;
+import { ExpoRequest } from './environment';
+import 'source-map-support/register';
+export declare function createRequestHandler(distFolder: string): (request: ExpoRequest) => Promise<import("node-fetch").Response | undefined>;
