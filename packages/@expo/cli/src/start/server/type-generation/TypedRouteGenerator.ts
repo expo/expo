@@ -63,39 +63,44 @@ export async function typedRouteGenerator({
     const isDynamic = dynamicParams.size > 0;
 
     if (isDynamic) {
-      const _route = `\`${route
-        .replaceAll(CATCH_ALL, '${CatchAllSlug<T>}')
-        .replaceAll(SLUG, '${SafeSlug<T>}')}\``;
-      dynamicRoutes.add(_route);
-      routesParams.set(_route, dynamicParams);
+      routesParams.set(route, dynamicParams);
+
+      dynamicRoutes.add(
+        route.replaceAll(CATCH_ALL, '${CatchAllSlug<T>}').replaceAll(SLUG, '${SafeSlug<T>}')
+      );
     } else {
-      staticRoutes.add(`'${route}'`);
+      staticRoutes.add(route);
     }
 
     // Does this route have a group? eg /(group)
     if (route.includes('/(')) {
       const routeWithoutGroups = route.replace(/\/\(.+?\)/g, '');
+
       if (isDynamic) {
-        const route = `\`${routeWithoutGroups
-          .replaceAll(CATCH_ALL, '${CatchAllSlug<T>}')
-          .replaceAll(SLUG, '${SafeSlug<T>}')}\``;
-        dynamicRoutes.add(route);
-        routesParams.set(route, dynamicParams);
+        routesParams.set(routeWithoutGroups, dynamicParams);
+
+        dynamicRoutes.add(
+          routeWithoutGroups
+            .replaceAll(CATCH_ALL, '${CatchAllSlug<T>}')
+            .replaceAll(SLUG, '${SafeSlug<T>}')
+        );
       } else {
-        staticRoutes.add(`'${routeWithoutGroups}'`);
+        staticRoutes.add(routeWithoutGroups);
       }
 
       // If there are multiple groups, we need to expand them
       // eg /(test1,test2)/page => /test1/page & /test2/page
       for (const groupRoute of expandGroupRoutes(route)) {
         if (isDynamic) {
-          const route = `\`${groupRoute
-            .replaceAll(CATCH_ALL, '${CatchAllSlug<T>}')
-            .replaceAll(SLUG, '${SafeSlug<T>}')}\``;
-          dynamicRoutes.add(route);
-          routesParams.set(route, dynamicParams);
+          routesParams.set(groupRoute, dynamicParams);
+
+          dynamicRoutes.add(
+            groupRoute
+              .replaceAll(CATCH_ALL, '${CatchAllSlug<T>}')
+              .replaceAll(SLUG, '${SafeSlug<T>}')
+          );
         } else {
-          staticRoutes.add(`'${groupRoute}'`);
+          staticRoutes.add(groupRoute);
         }
       }
     }
@@ -132,26 +137,53 @@ export async function typedRouteGenerator({
 const regenerateRouterDotTS = debounce(
   (
     typesDir: string,
-    staticRouteSet: Set<string>,
-    dynamicRouteSet: Set<string>,
+    staticRoutes: Set<string>,
+    dynamicRoutes: Set<string>,
     routesParams: Map<string, Set<string>>
   ) => {
-    const staticRoutes = [...staticRouteSet].join(' | ') || 'never';
-    const dynamicRoutes = [...dynamicRouteSet.keys()].join(' | ') || 'never';
-    const dynamicRouteParams = [...routesParams]
-      .map(([route, paramNames]) => {
-        const params = [...paramNames].map((name) => `${name}: string`).join(';');
-        return `[${route}, { ${params} }]`;
-      })
-      .join(' | ');
+    // const dynamicRouteParams = [...routesParams]
+    //   .map(([route, paramNames]) => {
+    //     const params = [...paramNames].map((name) => `${name}: string`).join(';');
+    //     return `[\`${route}\`, { ${params} }]`;
+    //   })
+    //   .join(' | ');
 
     fs.writeFile(
       path.resolve(typesDir, './router.d.ts'),
-      routerDotTSTemplate({ staticRoutes, dynamicRoutes, dynamicRouteParams })
+      routerDotTSTemplate({
+        staticRoutes: setToType(staticRoutes),
+        dynamicRoutes: setToType(dynamicRoutes),
+        dynamicRouteParams: mapToType(routesParams),
+      })
     );
   },
   100
 );
+
+/**
+ * Convert a set to a string type.
+ * @example setToType(new Set(['a', 'b'])) => 'a | b'
+ * @example setToType() => 'never'
+ */
+const setToType = <T>(set: Set<T>) =>
+  set.size > 0 ? [...set].map((s) => `\`${s}\``).join(' | ') : 'never';
+
+/**
+ * Convert a map to a Record type.
+ * @example setToType(new Set(['a', 'b'])) => 'a | b'
+ * @example setToType() => 'never'
+ */
+const mapToType = <K, V>(map: Map<K, Set<V>>) => {
+  if (map.size === 0) return 'never';
+
+  const inner = [...map]
+    .map(([key, value]) => {
+      return `    '${key}': ${setToType(value)}`;
+    })
+    .join(';\n');
+
+  return `{\n${inner}\n  }`;
+};
 
 /**
  * Recursively walk a directory and call the callback with the file path.
@@ -209,33 +241,39 @@ const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
     ? never
     : S extends ""
     ? never
+    : S extends \`[\${string}]\`
+    ? never
     : S;
 
   type CatchAllSlug<S extends string> = S extends \`\${string}\${SearchOrHash}\`
     ? never
     : S extends ""
     ? never
+    : S extends \`[\${string}]\`
+    ? never
     : S;
 
   type StaticRoutes = ${'staticRoutes'}
   type DynamicRoutes<T extends string> = ${'dynamicRoutes'}
-  type DynamicRouteParams<T extends string> = ${'dynamicRouteParams'} 
+  type DynamicRouteParams = ${'dynamicRouteParams'} 
 
-  type Route<T> = 
-    | StaticRoutes
-    | \`\${StaticRoutes}\${Suffix}\`
-    | (T extends \`\${DynamicRoutes<infer _>}\${Suffix}\` ? T : never)
-
-  type RouteParams<T extends string> = T extends StaticRoutes ? never : Extract<DynamicRouteParams<T>, [T, any]>[1]
+  type Route<T> = T extends keyof DynamicRouteParams
+    ? never
+    : StaticRoutes
+      | \`\${StaticRoutes}\${Suffix}\`
+      | (T extends \`\${DynamicRoutes<infer _>}\${Suffix}\` ? T : never)
 
   export type Href<T extends string> = Route<T> | HrefObject<T>;
 
-  export type HrefObject<T extends string> = {
-    /** Path representing the selected route \`/[id]\`. */
-    pathname: Route<T>;
-    /** Query parameters for the path. */
-    params?: RouteParams<T>
-  }
+  export type HrefObject<T> = {
+    pathname: Route<T> | keyof DynamicRouteParams;
+  } & HrefObjectParams<T>;
+
+  type HrefObjectParams<T> = T extends { pathname: infer I }
+    ? I extends keyof DynamicRouteParams
+      ? { params: Record<DynamicRouteParams[I], string> }
+      : unknown
+    : unknown;
 
   export interface LinkProps<T extends string = ""> extends OriginalLinkProps {
     href: Href<T>;
