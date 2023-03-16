@@ -1,5 +1,5 @@
 import { Button } from '@expo/styleguide';
-import { ThumbsDownSolidIcon, ThumbsUpSolidIcon } from '@expo/styleguide-icons';
+import { ThumbsDownIcon, ThumbsUpIcon } from '@expo/styleguide-icons';
 import { useState } from 'react';
 
 import { CALLOUT } from '../Text';
@@ -25,7 +25,7 @@ export const PageVote = () => {
               size="xs"
               aria-label="Vote up"
               className="mx-1 min-w-[40px] text-center"
-              leftSlot={<ThumbsUpSolidIcon className="icon-sm" />}
+              leftSlot={<ThumbsUpIcon className="icon-sm" />}
               onClick={() => {
                 reportPageVote({ status: true });
                 setUserVoted(true);
@@ -36,7 +36,7 @@ export const PageVote = () => {
               size="xs"
               aria-label="Vote down"
               className="mx-1 min-w-[40px] text-center"
-              leftSlot={<ThumbsDownSolidIcon className="icon-sm" />}
+              leftSlot={<ThumbsDownIcon className="icon-sm" />}
               onClick={() => {
                 reportPageVote({ status: false });
                 setUserVoted(true);
