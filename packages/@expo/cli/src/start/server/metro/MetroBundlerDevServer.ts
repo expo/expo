@@ -241,22 +241,7 @@ function createRouteHandlerMiddleware(
     // 1. Get pathname, e.g. `/thing`
     const pathname = location.pathname?.replace(/\/$/, '');
 
-    // if (!pathname) {
-    //   return next();
-    // }
-
-    // TODO: use manifest for matching
-
-    // const buildMatcher = await getMatcherMemoized(projectRoot, {
-    //   devServerUrl,
-    //   minify: options.mode === 'production',
-    //   dev: options.mode !== 'production',
-    // });
-
-    // const matcher = buildMatcher(getRouteFiles());
-
-    // const node = await matcher(pathname);
-
+    // TODO: Update eagerly when files change
     const getManifest = await getExpoRouteManifestBuilderAsync(projectRoot, {
       devServerUrl,
       minify: options.mode === 'production',
@@ -272,7 +257,6 @@ function createRouteHandlerMiddleware(
 
     const sanitizedPathname = pathname.replace(/^\/+/, '').replace(/\/+$/, '') + '/';
 
-    console.log('manifest', manifest, sanitizedPathname);
     let functionFilePath: string | null = null;
 
     const staticManifest = manifest.filter((route) => route.type === 'static');

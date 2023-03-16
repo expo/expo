@@ -26,11 +26,11 @@ export class ServeStaticMiddleware {
         return next();
       }
 
-      // const platform = parsePlatformHeader(req);
+      const platform = parsePlatformHeader(req);
       // Currently this is web-only
-      // if (platform && platform !== 'web') {
-      //   return next();
-      // }
+      if (platform && platform !== 'web') {
+        return next();
+      }
 
       const pathname = parse(req.url).pathname;
       if (!pathname) {
