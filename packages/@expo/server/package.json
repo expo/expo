@@ -1,0 +1,38 @@
+{
+  "name": "@expo/server",
+  "version": "0.0.0",
+  "description": "Server API for Expo Router projects",
+  "main": "build/index.js",
+  "scripts": {
+    "watch": "tsc --watch --preserveWatchOutput",
+    "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
+    "prepare": "yarn run clean && yarn build",
+    "clean": "rimraf build ./tsconfig.tsbuildinfo",
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/server"
+  },
+  "keywords": [
+    "expo",
+    "react"
+  ],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/server#readme",
+  "files": [
+    "build"
+  ],
+  "dependencies": {
+    "send": "^0.18.0",
+    "node-fetch": "^2"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}
