@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- [iOS] Introduced native functions on the native component instances.
+- [iOS] Introduced native functions on the native component instances. ([#21746](https://github.com/expo/expo/pull/21746) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
