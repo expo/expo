@@ -9,7 +9,6 @@ import eightbitlab.com.blurview.RenderScriptBlur
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.views.ExpoView
 
-
 class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
   private var blurReduction = 3.5f
   private var blurRadius = 3f

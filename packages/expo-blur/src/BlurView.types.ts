@@ -23,7 +23,7 @@ export type BlurViewProps = {
    * more closely with iOS.
    * @default 4
    * @platform android
-   * 
+   *
    */
   blurReductionFactor?: number;
 } & ViewProps;
