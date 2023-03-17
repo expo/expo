@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add Android support for `BlurView`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

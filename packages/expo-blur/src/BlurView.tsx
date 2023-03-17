@@ -3,6 +3,7 @@ import React from 'react';
 import { View, StyleSheet, findNodeHandle } from 'react-native';
 
 import { BlurViewProps } from './BlurView.types';
+import { getAndroidTintColor } from './getBackgroundColor';
 
 type BlurViewForwardedRefProp = {
   forwardedRef: React.ForwardedRef<View>;
@@ -53,6 +54,7 @@ class BlurView extends React.Component<BlurViewProps & BlurViewForwardedRefProp>
     const {
       tint = 'default',
       intensity = 50,
+      blurReductionFactor = 4,
       style,
       children,
       forwardedRef,
@@ -63,7 +65,10 @@ class BlurView extends React.Component<BlurViewProps & BlurViewForwardedRefProp>
         <NativeBlurView
           ref={this.blurViewRef}
           tint={tint}
+          // Android uses this prop instead of the `tint`
+          tintColor={getAndroidTintColor(intensity, tint)}
           intensity={intensity}
+          blurReductionFactor={blurReductionFactor}
           style={StyleSheet.absoluteFill}
         />
         {children}

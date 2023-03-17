@@ -1,6 +1,7 @@
 import { requireNativeModule, requireNativeViewManager } from 'expo-modules-core';
 import React from 'react';
 import { View, StyleSheet, findNodeHandle } from 'react-native';
+import { getAndroidTintColor } from './getBackgroundColor';
 class BlurView extends React.Component {
     blurViewRef = React.createRef();
     /**
@@ -38,9 +39,11 @@ class BlurView extends React.Component {
         }
     };
     render() {
-        const { tint = 'default', intensity = 50, style, children, forwardedRef, ...props } = this.props;
+        const { tint = 'default', intensity = 50, blurReductionFactor = 4, style, children, forwardedRef, ...props } = this.props;
         return (React.createElement(View, { ...props, ref: this.onRefChange, style: [styles.container, style] },
-            React.createElement(NativeBlurView, { ref: this.blurViewRef, tint: tint, intensity: intensity, style: StyleSheet.absoluteFill }),
+            React.createElement(NativeBlurView, { ref: this.blurViewRef, tint: tint, 
+                // Android uses this prop instead of the `tint`
+                tintColor: getAndroidTintColor(intensity, tint), intensity: intensity, blurReductionFactor: blurReductionFactor, style: StyleSheet.absoluteFill }),
             children));
     }
 }
