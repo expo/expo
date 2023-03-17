@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add Android support for `BlurView`.
+- Add Android support for `BlurView`. ([#21744](https://github.com/expo/expo/pull/21744) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
