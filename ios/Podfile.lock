@@ -2116,7 +2116,7 @@ PODS:
     - EXJSONUtils
   - EXManifests/Tests (0.5.2):
     - EXJSONUtils
-  - EXMediaLibrary (15.2.2):
+  - EXMediaLibrary (15.2.3):
     - ExpoModulesCore
     - React-Core
   - EXNotifications (0.18.1):
@@ -4709,7 +4709,7 @@ SPEC CHECKSUMS:
   AppAuth: 8fca6b5563a5baef2c04bee27538025e4ceb2add
   ASN1Decoder: 6110fdeacfdb41559b1481457a1645be716610aa
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
-  Branch: 23b6b9351d5574377e7a764841cfb13a70c2799b
+  Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: 950674e1098ebc09c4c2cf064a61e42e84d9d4c6
@@ -4730,7 +4730,7 @@ SPEC CHECKSUMS:
   EXJSONUtils: 48b1e764ac35160e6f54d21ab60d7d9501f3e473
   EXLocation: 74a0ba446f54fd585ea6cfcd19a25644bf22c30d
   EXManifests: 500666d48e8dd7ca5a482c9e729e4a7a6c34081b
-  EXMediaLibrary: 792fe9b828b5bfa2c5a8b629730f175af2938285
+  EXMediaLibrary: 587cd8aad27a6fc8d7c38b950bc75bc1845a7480
   EXNotifications: dd628737af60fc8cc62dccebacd326b0fbbc0dcb
   EXPermissions: 2291c6736a823b4c680d5bf8e12d3c1c5d11da35
   Expo: 707f9b0039eacc6a1dce90c08c9e37b9c417bba2
