@@ -26,6 +26,7 @@ index fd8ec88..73cbea8 100644
 +import android.content.res.Configuration;
 +import expo.modules.ApplicationLifecycleDispatcher;
 +import expo.modules.ReactNativeHostWrapper;
++import expo.modules.BuildConfig;
  
  import android.app.Application;
  import android.content.Context;
