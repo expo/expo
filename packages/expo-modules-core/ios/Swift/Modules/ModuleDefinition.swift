@@ -68,6 +68,12 @@ public final class ModuleDefinition: ObjectDefinition {
   public override func build(inRuntime runtime: JavaScriptRuntime) -> JavaScriptObject {
     let object = super.build(inRuntime: runtime)
 
+    if let viewManager {
+      let reactComponentPrototype = runtime.createObject()
+      viewManager.decorateWithFunctions(runtime: runtime, object: reactComponentPrototype)
+      object.setProperty("ViewPrototype", value: reactComponentPrototype)
+    }
+
     // Give the module object a name. It's used for compatibility reasons, see `EventEmitter.ts`.
     object.defineProperty("__expo_module_name__", value: name, options: [])
 

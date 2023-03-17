@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- [iOS] Introduced native functions on the native component instances.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

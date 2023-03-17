@@ -1,5 +1,6 @@
 import React from 'react';
-import { NativeModules, requireNativeComponent } from 'react-native';
+import { findNodeHandle, NativeModules, requireNativeComponent } from 'react-native';
+import { requireNativeModule } from './requireNativeModule';
 /**
  * A map that caches registered native components.
  */
@@ -33,14 +34,33 @@ export function requireNativeViewManager(viewName) {
     const reactNativeViewName = `ViewManagerAdapter_${viewName}`;
     const ReactNativeComponent = requireCachedNativeComponent(reactNativeViewName);
     const proxiedPropsNames = viewManagerConfig?.propsNames ?? [];
-    // Define a component for universal-module authors to access their native view manager
-    const NativeComponentAdapter = React.forwardRef((props, ref) => {
-        const nativeProps = omit(props, proxiedPropsNames);
-        const proxiedProps = pick(props, proxiedPropsNames);
-        return React.createElement(ReactNativeComponent, { ...nativeProps, proxiedProperties: proxiedProps, ref: ref });
-    });
-    NativeComponentAdapter.displayName = `Adapter<${viewName}>`;
-    return NativeComponentAdapter;
+    class NativeComponent extends React.PureComponent {
+        displayName = viewName;
+        // This will be accessed from native when the prototype functions are called,
+        // in order to find the associated native view.
+        nativeTag = null;
+        componentDidMount() {
+            this.nativeTag = findNodeHandle(this);
+        }
+        render() {
+            const nativeProps = omit(this.props, proxiedPropsNames);
+            const proxiedProps = pick(this.props, proxiedPropsNames);
+            return React.createElement(ReactNativeComponent, { ...nativeProps, proxiedProperties: proxiedProps });
+        }
+    }
+    const nativeModule = requireNativeModule(viewName);
+    const nativeViewPrototype = nativeModule.ViewPrototype;
+    if (nativeViewPrototype) {
+        // Temporarily each function is wrapped to pass the native tag as the argument.
+        // In the future, native will automatically get the tag from `this` and then we can simply use
+        // `Object.assign(NativeComponent.prototype, nativeViewPrototype)` instead.
+        for (const key of Object.getOwnPropertyNames(nativeViewPrototype)) {
+            NativeComponent.prototype[key] = function (...args) {
+                return nativeViewPrototype[key].call(this, this.nativeTag, ...args);
+            };
+        }
+    }
+    return NativeComponent;
 }
 function omit(props, propNames) {
     const copied = { ...props };
