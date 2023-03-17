@@ -8,12 +8,14 @@ import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import android.print.PrintDocumentAdapter
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.functions.Coroutine
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.suspendCancellableCoroutine
 import kotlinx.coroutines.withContext
 import java.io.File
 import java.io.IOException
+import java.lang.ref.WeakReference
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resume
 import kotlin.coroutines.resumeWithException
@@ -43,10 +45,10 @@ class PrintModule : Module() {
   }
 
   val context: Context
-    get() = requireNotNull(appContext.reactContext) { "React Application Context is null" }
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
   private val currentActivity
-    get() = appContext.activityProvider?.currentActivity ?: throw MissingCurrentActivityException()
+    get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
 
   private suspend fun print(options: PrintOptions) {
     withContext(Dispatchers.Main) {
@@ -61,16 +63,16 @@ class PrintModule : Module() {
               createPrintCallbacks(options, continuation)
             )
           } catch (e: Exception) {
-            continuation.resumeWithException(GenericPrintException("There was an error while trying to print HTML ", e))
+            continuation.resumeWithException(UnexpectedPrintException("There was an error while trying to print HTML ", e))
           }
         } else {
           // Prints from given URI (file path or base64 data URI starting with `data:*;base64,`)
           try {
-            val pda = PrintDocumentAdapter(context, continuation, options.uri)
+            val pda = PrintDocumentAdapter(WeakReference(context), continuation, options.uri)
             printDocumentToPrinter(pda, options)
             continuation.resume(null)
           } catch (e: Exception) {
-            continuation.resumeWithException(GenericPrintException("There was an error while trying to print file ", e))
+            continuation.resumeWithException(UnexpectedPrintException("There was an error while trying to print file ", e))
           }
         }
       }
@@ -87,7 +89,7 @@ class PrintModule : Module() {
       try {
         filePath = FileUtils.generateFilePath(context)
       } catch (e: IOException) {
-        throw GenericPrintException("An unknown I/O exception occurred ", e)
+        throw UnexpectedPrintException("An unknown I/O exception occurred ", e)
       }
       try {
         outputFile = File(filePath)

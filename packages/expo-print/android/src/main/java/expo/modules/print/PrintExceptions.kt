@@ -2,20 +2,17 @@ package expo.modules.print
 
 import expo.modules.kotlin.exception.CodedException
 
-internal class MissingCurrentActivityException :
-  CodedException("Activity which was provided during module initialization is no longer available")
-
 internal class Base64EncodingFailedException(cause: Throwable? = null) :
   CodedException("An error occurred while encoding PDF file to base64 string: ", cause)
 
-internal class GenericPrintException(message: String, cause: Throwable? = null) :
+internal class UnexpectedPrintException(message: String, cause: Throwable? = null) :
   CodedException(message, cause)
 
-internal class CannotLoadUriException(cause: Throwable? = null) :
-  CodedException("An error occurred while trying to load given data URI: ", cause)
+internal class CannotLoadUriException(uri: String? = "null", cause: Throwable? = null) :
+  CodedException("An error occurred while trying to load the following data URI: $uri", cause)
 
-internal class InvalidUriException :
-  CodedException("Given URI is not valid")
+internal class InvalidUriException(uri: String? = "null") :
+  CodedException("Given URI: $uri is not valid")
 
 internal class NullUriException :
   CodedException("Given URI is null")

@@ -11,11 +11,12 @@ import android.print.PrintDocumentAdapter
 import android.print.PrintDocumentInfo
 import android.webkit.URLUtil
 import java.io.IOException
+import java.lang.ref.WeakReference
 import java.net.URL
 import kotlin.coroutines.Continuation
 import kotlin.coroutines.resumeWithException
 
-class PrintDocumentAdapter(private val context: Context, private val continuation: Continuation<Unit>, private val uri: String?) : PrintDocumentAdapter() {
+class PrintDocumentAdapter(private val context: WeakReference<Context>, private val continuation: Continuation<Unit>, private val uri: String?) : PrintDocumentAdapter() {
   private val jobName = "Printing"
 
   override fun onWrite(pages: Array<PageRange>, destination: ParcelFileDescriptor, cancellationSignal: CancellationSignal, callback: WriteResultCallback) {
@@ -29,7 +30,7 @@ class PrintDocumentAdapter(private val context: Context, private val continuatio
         try {
           val inputStream = if (URLUtil.isContentUrl(uri)) {
             // URI starting with content://
-            context.contentResolver.openInputStream(Uri.parse(uri))
+            context.get()?.contentResolver?.openInputStream(Uri.parse(uri))
           } else {
             // other URIs, like file://
             URL(uri).openStream()
@@ -39,7 +40,7 @@ class PrintDocumentAdapter(private val context: Context, private val continuatio
           }
         } catch (e: Exception) {
           e.printStackTrace()
-          printFailed(callback, CannotLoadUriException(e), continuation)
+          printFailed(callback, CannotLoadUriException(uri, e), continuation)
         }
       }.start()
     } else if (uri.startsWith("data:") && uri.contains(";base64,")) {
@@ -48,7 +49,7 @@ class PrintDocumentAdapter(private val context: Context, private val continuatio
           FileUtils.copyToOutputStream(destination, callback, it)
         }
       } catch (e: IOException) {
-        printFailed(callback, CannotLoadUriException(e), continuation)
+        printFailed(callback, CannotLoadUriException(uri, e), continuation)
       }
     } else {
       printFailed(callback, InvalidUriException(), continuation)
