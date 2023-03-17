@@ -151,6 +151,9 @@ class Env {
   get EXPO_ROUTER_TYPED_ROUTES() {
     return boolish('EXPO_ROUTER_TYPED_ROUTES', false);
   }
+  get EXPO_ROUTER_APP_ROOT() {
+    return string('EXPO_ROUTER_APP_ROOT', '../../app');
+  }
 }
 
 export const env = new Env();

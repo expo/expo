@@ -5,7 +5,6 @@ import path from 'path';
 
 import { env } from '../../../utils/env';
 import { unsafeTemplate } from '../../../utils/template';
-import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import { ServerLike } from '../BundlerDevServer';
 import { metroWatchTypeScriptFiles } from '../metro/metroWatchTypeScriptFiles';
 
@@ -16,31 +15,14 @@ const CATCH_ALL = /\[\.\.\..+?\]/g;
 // /[param1] - Match [param1]
 const SLUG = /\[.+?\]/g;
 
-export interface TypedRouteGeneratorOptions {
+export interface SetupTypedRoutesOptions {
   server: ServerLike;
-  metro: Server | null;
-  projectRoot: string;
+  metro: Server;
+  typesDirectory: string;
 }
 
-export async function typedRouteGenerator({
-  server,
-  metro,
-  projectRoot,
-}: TypedRouteGeneratorOptions) {
-  if (!env.EXPO_ROUTER_TYPED_ROUTES) {
-    return;
-  }
-
-  if (!metro) {
-    return;
-  }
-
-  const dotExpoDir = ensureDotExpoProjectDirectoryInitialized(projectRoot);
-  const typesDir = path.resolve(dotExpoDir, './types');
-  const appDir = path.resolve(projectRoot, 'app');
-
-  // Ensure the types directory exists.
-  await fs.mkdir(typesDir, { recursive: true });
+export async function setupTypedRoutes({ server, metro, typesDirectory }: SetupTypedRoutesOptions) {
+  const appRoot = env.EXPO_ROUTER_APP_ROOT;
 
   const staticRoutes = new Set<string>();
   const dynamicRoutes = new Set<string>();
@@ -53,7 +35,7 @@ export async function typedRouteGenerator({
 
     // Remove the appDir prefix, extentions and index routes
     const route = filePath
-      .replace(appDir, '')
+      .replace(appRoot, '')
       .replace(/index.[jt]sx?/, '')
       .replace(/\.[jt]sx?$/, '');
 
@@ -108,7 +90,7 @@ export async function typedRouteGenerator({
 
   // Setup out watcher first
   metroWatchTypeScriptFiles(
-    appDir,
+    appRoot,
     {
       server,
       metro,
@@ -119,15 +101,15 @@ export async function typedRouteGenerator({
       }
 
       addFilePath(filePath);
-      regenerateRouterDotTS(typesDir, staticRoutes, dynamicRoutes, routesParams);
+      regenerateRouterDotTS(typesDirectory, staticRoutes, dynamicRoutes, routesParams);
     }
   );
 
   // Do we need to walk the entire tree on startup?
   // Idea: Store the list of files in the last write, then simply check Git for what files have changed
-  await walk(appDir, addFilePath);
+  await walk(appRoot, addFilePath);
 
-  regenerateRouterDotTS(typesDir, staticRoutes, dynamicRoutes, routesParams);
+  regenerateRouterDotTS(typesDirectory, staticRoutes, dynamicRoutes, routesParams);
 }
 
 /**
@@ -280,9 +262,9 @@ const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
   }
 
   export interface LinkComponent {
-    <T>(props: React.PropsWithChildren<LinkProps<T>>): JSX.Element;
+    <T extends string>(props: React.PropsWithChildren<LinkProps<T>>): JSX.Element;
     /** Helper method to resolve an Href object into a string. */
-    resolveHref: <T>(href: Href<T>) => string;
+    resolveHref: <T extends string>(href: Href<T>) => string;
   }
 
   export const Link: LinkComponent;
@@ -295,9 +277,9 @@ const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
     /** Go back in the history. */
     back: () => void;
     /** Update the current route query params. */
-    setParams: (params?: T extends string ? RouteParams<T> : Record<string, string>) => void;
+    setParams: <T extends keyof DynamicRouteParams = keyof DynamicRouteParams>(params?: DynamicRouteParams[T]) => void;
   };
 
-  export declare function useRouter<T extends string>(): Router<T>
+  export function useRouter<T extends string>(): Router<T>
 }
 `;

@@ -16,7 +16,7 @@ import {
   RuntimeRedirectMiddleware,
 } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
-import { typedRouteGenerator } from '../type-generation/TypedRouteGenerator';
+import { typescriptTypeGeneration } from '../type-generation';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 
@@ -181,7 +181,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   public async startTypeScriptServices() {
-    typedRouteGenerator({
+    typescriptTypeGeneration({
       server: this.instance!.server,
       metro: this.metro,
       projectRoot: this.projectRoot,
