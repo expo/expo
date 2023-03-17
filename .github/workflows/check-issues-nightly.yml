@@ -1,6 +1,7 @@
 name: Check issues with pending validation labels
 
 on:
+  workflow_dispatch: {}
   schedule:
     - cron: '0 8 * * *' # 8:00 AM UTC time every day
 
