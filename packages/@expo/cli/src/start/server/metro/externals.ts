@@ -20,13 +20,6 @@ import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/l
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
 import { PlatformBundlers } from '../platformBundlers';
-import {
-  EXTERNAL_REQUIRE_NATIVE_POLYFILL,
-  EXTERNAL_REQUIRE_POLYFILL,
-  getNodeExternalModuleId,
-  isNodeExternal,
-  setupNodeExternals,
-} from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { importMetroResolverFromProject } from './resolveFromProject';
 import { getAppRouterRelativeEntryPath } from './router';
@@ -48,9 +41,7 @@ function withWebPolyfills(config: ConfigT, projectRoot: string): ConfigT {
       ];
     }
     // Generally uses `rn-get-polyfills`
-    const polyfills = originalGetPolyfills(ctx);
-
-    return [...polyfills, EXTERNAL_REQUIRE_NATIVE_POLYFILL];
+    return originalGetPolyfills(ctx);
   };
 
   return {
@@ -65,6 +56,40 @@ function withWebPolyfills(config: ConfigT, projectRoot: string): ConfigT {
 function normalizeSlashes(p: string) {
   return p.replace(/\\/g, '/');
 }
+
+// A list of the Node.js standard library modules.
+const NODE_STDLIB_MODULES = [
+  'assert',
+  'async_hooks',
+  'buffer',
+  'child_process',
+  'cluster',
+  'crypto',
+  'dgram',
+  'dns',
+  'domain',
+  'events',
+  'fs',
+  'fs/promises',
+  'http',
+  'https',
+  'net',
+  'os',
+  'path',
+  'punycode',
+  'querystring',
+  'readline',
+  'repl',
+  'stream',
+  'string_decoder',
+  'tls',
+  'tty',
+  'url',
+  'util',
+  'v8',
+  'vm',
+  'zlib',
+];
 
 /**
  * Apply custom resolvers to do the following:
@@ -159,16 +184,18 @@ export function withExtendedResolver(
         ...immutableContext,
       } as ResolutionContext & { mainFields: string[] };
 
-      // // @ts-expect-error
-      // const environment = context.customResolverOptions?.environment;
+      // const preset = context.customResolverOptions?.preset;
 
       // TODO: We need to prevent the require.context from including API routes as these use externals.
       // Should be fine after async routes lands.
-      // if (environment === 'node') {
-      const moduleId = isNodeExternal(moduleName);
-      if (moduleId) {
-        moduleName = getNodeExternalModuleId(context.originModulePath, moduleId);
-        debug(`Redirecting Node.js external "${moduleId}" to "${moduleName}"`);
+      // if (preset === 'node') {
+      const moduleId = moduleName.replace(/^node:/, '');
+      if (NODE_STDLIB_MODULES.includes(moduleId)) {
+        moduleName = path.relative(
+          path.dirname(context.originModulePath),
+          path.join(METRO_EXTERNALS_FOLDER, moduleId, 'index.js')
+        );
+        console.log('node preset:', context.originModulePath, moduleName, moduleId);
       }
       // }
 
@@ -268,78 +295,59 @@ export function withExtendedResolver(
   ]);
 }
 
-/** @returns `true` if the incoming resolution should be swapped on web. */
-export function shouldAliasAssetRegistryForWeb(
-  platform: string | null,
-  result: Resolution
-): boolean {
-  return (
-    platform === 'web' &&
-    result?.type === 'sourceFile' &&
-    typeof result?.filePath === 'string' &&
-    normalizeSlashes(result.filePath).endsWith(
-      'react-native-web/dist/modules/AssetRegistry/index.js'
-    )
+export const EXTERNAL_REQUIRE_POLYFILL = '.expo/metro/polyfill.js';
+export const EXTERNAL_REQUIRE_NATIVE_POLYFILL = '.expo/metro/polyfill.native.js';
+export const METRO_EXTERNALS_FOLDER = '.expo/metro/externals';
+
+export function getNodeExternalModuleId(fromModule: string, moduleId: string) {
+  return path.relative(
+    path.dirname(fromModule),
+    path.join(METRO_EXTERNALS_FOLDER, moduleId, 'index.js')
   );
 }
 
-/** Add support for `react-native-web` and the Web platform. */
-export async function withMetroMultiPlatformAsync(
-  projectRoot: string,
-  config: ConfigT,
-  platformBundlers: PlatformBundlers
-) {
-  // Auto pick App entry: this is injected with Babel.
-  process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot);
-  process.env.EXPO_PROJECT_ROOT = process.env.EXPO_PROJECT_ROOT ?? projectRoot;
-
-  if (env.EXPO_USE_STATIC) {
-    // Enable static rendering in runtime space.
-    process.env.EXPO_PUBLIC_USE_STATIC = '1';
-  }
-
-  if (platformBundlers.web === 'metro') {
-    await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
-  } else if (!env.EXPO_USE_PATH_ALIASES) {
-    // Bail out early for performance enhancements if no special features are enabled.
-    return config;
-  }
-
-  let tsconfig: null | TsConfigPaths = null;
-
-  if (env.EXPO_USE_PATH_ALIASES) {
-    Log.warn(
-      chalk.yellow`Experimental path aliases feature is enabled. ` +
-        learnMore('https://docs.expo.dev/guides/typescript/#path-aliases')
-    );
-    tsconfig = await loadTsConfigPathsAsync(projectRoot);
-  }
-
-  await setupNodeExternals(projectRoot);
-
-  return withMetroMultiPlatform(projectRoot, config, platformBundlers, tsconfig);
+export async function setupNodeExternals(projectRoot: string) {
+  await tapExternalRequirePolyfill(projectRoot);
+  await tapNodeShims(projectRoot);
 }
 
-function withMetroMultiPlatform(
-  projectRoot: string,
-  config: ConfigT,
-  platformBundlers: PlatformBundlers,
-  jsconfig: TsConfigPaths | null
-) {
-  let expoConfigPlatforms = Object.entries(platformBundlers)
-    .filter(([, bundler]) => bundler === 'metro')
-    .map(([platform]) => platform);
+export async function tapExternalRequirePolyfill(projectRoot: string) {
+  await fs.promises.mkdir(path.join(projectRoot, path.dirname(EXTERNAL_REQUIRE_POLYFILL)), {
+    recursive: true,
+  });
+  await fs.promises.writeFile(
+    path.join(projectRoot, EXTERNAL_REQUIRE_POLYFILL),
+    'global.require_x = typeof window === "undefined" ? require : () => null;'
+  );
+  await fs.promises.writeFile(
+    path.join(projectRoot, EXTERNAL_REQUIRE_NATIVE_POLYFILL),
+    'global.require_x = (moduleId) => {throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);}'
+  );
+}
 
-  if (Array.isArray(config.resolver.platforms)) {
-    expoConfigPlatforms = [...new Set(expoConfigPlatforms.concat(config.resolver.platforms))];
+export function isNodeExternal(moduleName: string): string | null {
+  const moduleId = moduleName.replace(/^node:/, '');
+  if (NODE_STDLIB_MODULES.includes(moduleId)) {
+    return moduleId;
   }
+  return null;
+}
 
-  // @ts-expect-error: typed as `readonly`.
-  config.resolver.platforms = expoConfigPlatforms;
+function tapNodeShimContents(moduleId) {
+  return `module.exports = require_x('node:${moduleId}');`;
+}
 
-  if (expoConfigPlatforms.includes('web')) {
-    config = withWebPolyfills(config, projectRoot);
+// Ensure Node.js shims which require using `require_x` are available inside the project.
+export async function tapNodeShims(projectRoot: string) {
+  const externals = {};
+  for (const moduleId of NODE_STDLIB_MODULES) {
+    const shimDir = path.join(projectRoot, METRO_EXTERNALS_FOLDER, moduleId);
+    const shimPath = path.join(shimDir, 'index.js');
+    externals[moduleId] = shimPath;
+
+    if (!fs.existsSync(shimPath)) {
+      await fs.promises.mkdir(shimDir, { recursive: true });
+      await fs.promises.writeFile(shimPath, tapNodeShimContents(moduleId));
+    }
   }
-
-  return withExtendedResolver(config, projectRoot, jsconfig, expoConfigPlatforms);
 }

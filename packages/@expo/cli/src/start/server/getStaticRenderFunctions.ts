@@ -40,7 +40,7 @@ type StaticRenderOptions = {
   dev?: boolean;
   minify?: boolean;
   platform?: string;
-  externals?: string[];
+  environment?: string;
 };
 
 const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredModuleId: string) => {
@@ -96,7 +96,7 @@ export async function requireFileContentsWithMetro(
   projectRoot: string,
   devServerUrl: string,
   absoluteFilePath: string,
-  { dev = false, platform = 'web', minify = false, externals }: StaticRenderOptions = {}
+  { dev = false, platform = 'web', minify = false, environment }: StaticRenderOptions = {}
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
   const safeOtherFile = await ensureFileInRootDirectory(projectRoot, absoluteFilePath);
@@ -105,8 +105,8 @@ export async function requireFileContentsWithMetro(
 
   let url = `${devServerUrl}/${serverPath}?platform=${platform}&dev=${dev}&minify=${minify}`;
 
-  if (externals) {
-    url += `&resolver.externals=${encodeURIComponent(externals.join(','))}`;
+  if (environment) {
+    url += `&resolver.environment=${environment}`;
   }
 
   const res = await fetch(url);

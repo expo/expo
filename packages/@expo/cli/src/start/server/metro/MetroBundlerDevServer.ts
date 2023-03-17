@@ -21,7 +21,6 @@ import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
-import { memoize } from '../../../utils/fn';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import {
@@ -38,8 +37,8 @@ import {
   DeepLinkHandler,
   RuntimeRedirectMiddleware,
 } from '../middleware/RuntimeRedirectMiddleware';
-import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
+import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { instantiateMetroAsync } from './instantiateMetro';
 import {
   observeApiRouteChanges,
@@ -191,6 +190,8 @@ async function bundleApiRoute(
       const middleware = await requireFileContentsWithMetro(projectRoot, devServerUrl, filepath, {
         minify: options.mode === 'production',
         dev: options.mode !== 'production',
+        // Ensure Node.js
+        environment: 'node',
       });
 
       return middleware;
