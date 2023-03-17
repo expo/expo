@@ -6,7 +6,7 @@ const abort_controller_1 = require("abort-controller");
 const __1 = require("..");
 const environment_1 = require("../environment");
 function createRequestHandler({ build }) {
-    const handleRequest = (0, __1.createRequestHandler)(build);
+    const handleRequest = __1.createRequestHandler(build);
     return async (event) => {
         const response = await handleRequest(convertRequest(event));
         return respond(response);
@@ -19,7 +19,7 @@ async function respond(res) {
     const isBase64Encoded = isBinaryType(contentType);
     if (res.body) {
         if (isBase64Encoded) {
-            body = await (0, node_1.readableStreamToString)(res.body, 'base64');
+            body = await node_1.readableStreamToString(res.body, 'base64');
         }
         else {
             body = await res.text();

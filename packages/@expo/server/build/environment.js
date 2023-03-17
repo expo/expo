@@ -4,7 +4,7 @@ exports.ExpoRequest = exports.ExpoResponse = exports.installGlobals = void 0;
 const node_1 = require("@remix-run/node");
 // Ensure these are available for the API Routes.
 function installGlobals() {
-    (0, node_1.installGlobals)();
+    node_1.installGlobals();
     // @ts-expect-error
     global.Request = ExpoRequest;
     // @ts-expect-error

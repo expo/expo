@@ -49,7 +49,7 @@ async function respond(res, expoRes) {
         }
     }
     if (expoRes.body) {
-        await (0, node_1.writeReadableStreamToWritable)(expoRes.body, res);
+        await node_1.writeReadableStreamToWritable(expoRes.body, res);
     }
     else {
         res.end();

@@ -8,7 +8,7 @@ const __1 = require("..");
  * response using Expo.
  */
 function createRequestHandler({ build }) {
-    const handleRequest = (0, __1.createRequestHandler)(build);
+    const handleRequest = __1.createRequestHandler(build);
     return async (req, res) => {
         const request = convertRequest(req, res);
         const response = (await handleRequest(request));
@@ -59,7 +59,7 @@ async function respond(res, nodeResponse) {
     const multiValueHeaders = nodeResponse.headers.raw();
     res.writeHead(nodeResponse.status, nodeResponse.statusText, multiValueHeaders);
     if (nodeResponse.body) {
-        await (0, node_1.writeReadableStreamToWritable)(nodeResponse.body, res);
+        await node_1.writeReadableStreamToWritable(nodeResponse.body, res);
     }
     else {
         res.end();

@@ -8,8 +8,8 @@ import type { AppLoadContext, Response as NodeResponse } from '@remix-run/node';
  * You can think of this as an escape hatch that allows you to pass
  * environment/platform-specific values through to your loader/action.
  */
-export type GetLoadContextFunction = (req: VercelRequest, res: VercelResponse) => AppLoadContext;
-export type RequestHandler = (req: VercelRequest, res: VercelResponse) => Promise<void>;
+export declare type GetLoadContextFunction = (req: VercelRequest, res: VercelResponse) => AppLoadContext;
+export declare type RequestHandler = (req: VercelRequest, res: VercelResponse) => Promise<void>;
 /**
  * Returns a request handler for Vercel's Node.js runtime that serves the
  * response using Expo.

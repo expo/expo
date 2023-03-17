@@ -1,7 +1,7 @@
 import { Headers, Response } from '@remix-run/node';
 import type * as express from 'express';
 import { ExpoRequest } from '../environment';
-export type RequestHandler = (req: express.Request, res: express.Response, next: express.NextFunction) => Promise<void>;
+export declare type RequestHandler = (req: express.Request, res: express.Response, next: express.NextFunction) => Promise<void>;
 /**
  * Returns a request handler for Express that serves the response using Remix.
  */

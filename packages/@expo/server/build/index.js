@@ -9,7 +9,7 @@ const path_1 = __importDefault(require("path"));
 const url_1 = require("url");
 const environment_1 = require("./environment");
 require("source-map-support/register");
-(0, environment_1.installGlobals)();
+environment_1.installGlobals();
 // TODO: Reuse this for dev as well
 function createRequestHandler(distFolder) {
     const routesManifest = JSON.parse(fs_1.default.readFileSync(path_1.default.join(distFolder, '_expo/routes.json'), 'utf-8')).map((value) => {
@@ -30,13 +30,12 @@ function createRequestHandler(distFolder) {
             if (route.type === 'static') {
                 // serve a static file
                 const filePath = path_1.default.join(distFolder, route.file.replace(/\.[tj]sx?$/, '.html'));
-                const response = new environment_1.ExpoResponse(fs_1.default.readFileSync(filePath, 'utf-8'), {
+                return new environment_1.ExpoResponse(fs_1.default.readFileSync(filePath, 'utf-8'), {
                     status: 200,
                     headers: {
                         'Content-Type': 'text/html',
                     },
                 });
-                return response;
             }
             const func = require(path_1.default.join(distFolder, route.src));
             const routeHandler = func[request.method];

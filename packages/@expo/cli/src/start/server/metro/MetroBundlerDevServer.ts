@@ -159,7 +159,9 @@ async function fetchManifest(projectRoot: string, options: { mode?: string; port
     return manifest;
   }
 
-  manifestOperation.set('manifest', bundleAsync());
+  const manifest = bundleAsync();
+  manifestOperation.set('manifest', manifest);
+  return manifest;
 }
 
 const pendingRouteOperations = new Map<string, Promise<string>>();
@@ -199,8 +201,9 @@ async function bundleApiRoute(
       // pendingRouteOperations.delete(filepath);
     }
   }
-
-  pendingRouteOperations.set(filepath, bundleAsync());
+  const route = bundleAsync();
+  pendingRouteOperations.set(filepath, route);
+  return route;
 }
 
 async function eagerBundleApiRoutes(
