@@ -1,11 +1,12 @@
 ---
 title: Delaying Your Code To Run Later
-sidebar_title: Delaying Your Code
+sidebar_title: Delaying your code
+description: Learn about different techniques to delay running the code when the app is in the foreground or the background.
 ---
 
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-import { SnackInline} from '~/ui/components/Snippet';
+import { SnackInline } from '~/ui/components/Snippet';
 
 When building an application, much of your code will run in response to events like component lifecycle events and user interactions. Sometimes you'll need to delay when your code runs instead of running it immediately after an event. Responsive applications need to respond quickly to user interactions and render smooth animations, but the code for your user interface (such as React components that update the UI) shares a JS thread with other event-handling code. Therefore, you should be careful to schedule work in small increments and at times that won't impact your users' experience to deliver a great experience to your users.
 

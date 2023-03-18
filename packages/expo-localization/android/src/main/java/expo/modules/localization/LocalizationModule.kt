@@ -18,6 +18,8 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import java.text.DecimalFormatSymbols
 import java.util.*
 
+// EXPO_VERSIONING_NEEDS_EXPOVIEW_R
+
 // must be kept in sync with https://github.com/facebook/react-native/blob/main/ReactAndroid/src/main/java/com/facebook/react/modules/i18nmanager/I18nUtil.java
 private const val SHARED_PREFS_NAME = "com.facebook.react.modules.i18nmanager.I18nUtil"
 private const val KEY_FOR_PREFS_ALLOWRTL = "RCTI18nUtil_allowRTL"

@@ -3,7 +3,7 @@ import { Point, PatternItem } from './Common.types';
 /**
  * Props of Polyline component of Expo Maps library.
  */
-export declare type PolylineProps = {
+export type PolylineProps = {
     /**
      * Array of polygon's vertices.
      *
@@ -79,7 +79,7 @@ export declare type PolylineProps = {
  *
  * See `PolylineProps` for more detail.
  */
-export declare type PolylineObject = PolylineProps & {
+export type PolylineObject = PolylineProps & {
     type: 'polyline';
 };
 /**

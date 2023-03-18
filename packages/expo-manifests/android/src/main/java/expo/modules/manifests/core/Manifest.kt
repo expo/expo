@@ -169,8 +169,14 @@ abstract class Manifest(protected val json: JSONObject) {
 
   val jsEngine: String by lazy {
     val expoClientConfig = getExpoClientConfigRootObject()
-    expoClientConfig
-      ?.getNullable<JSONObject>("android")?.getNullable<String>("jsEngine") ?: expoClientConfig?.getNullable<String>("jsEngine") ?: "jsc"
+    var result = expoClientConfig
+      ?.getNullable<JSONObject>("android")?.getNullable<String>("jsEngine") ?: expoClientConfig?.getNullable<String>("jsEngine")
+    if (result == null) {
+      val sdkVersionComponents = getSDKVersion()?.split(".")
+      val sdkMajorVersion = if (sdkVersionComponents?.size == 3) sdkVersionComponents[0].toIntOrNull() else 0
+      result = if (sdkMajorVersion in 1..47) "jsc" else "hermes"
+    }
+    result
   }
 
   fun getIconUrl(): String? {

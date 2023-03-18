@@ -2,13 +2,14 @@ import Debug from 'debug';
 import fs from 'fs';
 import path from 'path';
 
+import { Log } from '../../../log';
 import { XcodeDeveloperDiskImagePrerequisite } from '../../../start/doctor/apple/XcodeDeveloperDiskImagePrerequisite';
 import { delayAsync } from '../../../utils/delay';
 import { CommandError } from '../../../utils/errors';
 import { installExitHooks } from '../../../utils/exit';
 import { ClientManager } from './ClientManager';
 import { IPLookupResult, OnInstallProgressCallback } from './client/InstallationProxyClient';
-import { DeviceValues, LockdowndClient } from './client/LockdowndClient';
+import { LockdowndClient } from './client/LockdowndClient';
 import { UsbmuxdClient } from './client/UsbmuxdClient';
 import { AFC_STATUS, AFCError } from './protocol/AFCProtocol';
 
@@ -24,38 +25,36 @@ export interface ConnectedDevice {
   model: string;
   /** @example `device` */
   deviceType: 'device' | 'catalyst';
+  /** @example `USB` */
+  connectionType: 'USB' | 'Network';
   /** @example `15.4.1` */
   osVersion: string;
 }
 
+/** @returns a list of connected Apple devices. */
 export async function getConnectedDevicesAsync(): Promise<ConnectedDevice[]> {
-  const results = await getConnectedDeviceValuesAsync();
-  // TODO: Add support for osType (ipad, watchos, etc)
-  return results.map((device) => ({
-    // TODO: Better name
-    name: device.DeviceName ?? device.ProductType ?? 'unknown ios device',
-    model: device.ProductType,
-    osVersion: device.ProductVersion,
-    deviceType: 'device',
-    udid: device.UniqueDeviceID,
-  }));
-}
-
-/** @returns a list of physically connected Apple devices. */
-export async function getConnectedDeviceValuesAsync(): Promise<DeviceValues[]> {
   const client = new UsbmuxdClient(UsbmuxdClient.connectUsbmuxdSocket());
   const devices = await client.getDevices();
   client.socket.end();
 
   return Promise.all(
-    devices.map(async (device): Promise<DeviceValues> => {
+    devices.map(async (device): Promise<ConnectedDevice> => {
       const socket = await new UsbmuxdClient(UsbmuxdClient.connectUsbmuxdSocket()).connect(
         device,
         62078
       );
-      const deviceValue = await new LockdowndClient(socket).getAllValues();
+      const deviceValues = await new LockdowndClient(socket).getAllValues();
       socket.end();
-      return deviceValue;
+      // TODO(EvanBacon): Add support for osType (ipad, watchos, etc)
+      return {
+        // TODO(EvanBacon): Better name
+        name: deviceValues.DeviceName ?? deviceValues.ProductType ?? 'unknown iOS device',
+        model: deviceValues.ProductType,
+        osVersion: deviceValues.ProductVersion,
+        deviceType: 'device',
+        connectionType: device.Properties.ConnectionType,
+        udid: device.Properties.SerialNumber,
+      };
     })
   );
 }
@@ -115,25 +114,33 @@ export async function runOnDevice({
       onProgress
     );
 
-    const { [bundleId]: appInfo } = await installer.lookupApp([bundleId]);
-    // launch fails with EBusy or ENotFound if you try to launch immediately after install
-    await delayAsync(200);
-    const debugServerClient = await launchApp(clientManager, { appInfo, detach: !waitForApp });
-    if (waitForApp) {
-      installExitHooks(async () => {
-        // causes continue() to return
-        debugServerClient.halt();
-        // give continue() time to return response
-        await delayAsync(64);
-      });
+    const {
+      // TODO(EvanBacon): This can be undefined when querying App Clips.
+      [bundleId]: appInfo,
+    } = await installer.lookupApp([bundleId]);
 
-      debug(`Waiting for app to close...\n`);
-      const result = await debugServerClient.continue();
-      // TODO: I have no idea what this packet means yet (successful close?)
-      // if not a close (ie, most likely due to halt from onBeforeExit), then kill the app
-      if (result !== 'W00') {
-        await debugServerClient.kill();
+    if (appInfo) {
+      // launch fails with EBusy or ENotFound if you try to launch immediately after install
+      await delayAsync(200);
+      const debugServerClient = await launchApp(clientManager, { appInfo, detach: !waitForApp });
+      if (waitForApp) {
+        installExitHooks(async () => {
+          // causes continue() to return
+          debugServerClient.halt();
+          // give continue() time to return response
+          await delayAsync(64);
+        });
+
+        debug(`Waiting for app to close...\n`);
+        const result = await debugServerClient.continue();
+        // TODO: I have no idea what this packet means yet (successful close?)
+        // if not a close (ie, most likely due to halt from onBeforeExit), then kill the app
+        if (result !== 'W00') {
+          await debugServerClient.kill();
+        }
       }
+    } else {
+      Log.warn(`App "${bundleId}" installed but couldn't be launched. Open on device manually.`);
     }
   } finally {
     clientManager.end();

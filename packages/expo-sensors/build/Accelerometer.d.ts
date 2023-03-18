@@ -5,7 +5,7 @@ import DeviceSensor from './DeviceSensor';
  *
  * A `g` is a unit of gravitational force equal to that exerted by the earth’s gravitational field (`9.81 m/s^2`).
  */
-export declare type AccelerometerMeasurement = {
+export type AccelerometerMeasurement = {
     /**
      * Value of `g`s device reported in X axis.
      */

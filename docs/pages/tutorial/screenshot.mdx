@@ -4,19 +4,29 @@ title: Take screenshot
 
 import { SnackInline, Terminal } from '~/ui/components/Snippet';
 import Video from '~/components/plugins/Video';
-import { LinkBase } from '~/ui/components/Text';
+import { A } from '~/ui/components/Text';
+import { Step } from '~/ui/components/Step';
 
-In this chapter, we will learn how to take a screenshot using a third-party library and save it on the device's media library. We'll use the following libraries <LinkBase href="https://github.com/gre/react-native-view-shot" openInNewTab> `react-native-view-shot`</LinkBase> that allows taking a screenshot, and <LinkBase href="/versions/latest/sdk/media-library/" openInNewTab>`expo-media-library`</LinkBase> that allows accessing a device's media library to save an image.
+In this chapter, we will learn how to take a screenshot using a third-party library and save it on the device's media library.
+We'll use the following libraries [`react-native-view-shot`](https://github.com/gre/react-native-view-shot) that allows taking a screenshot,
+and <A href="/versions/latest/sdk/media-library/" openInNewTab>`expo-media-library`</A> that allows accessing a device's media library to save an image.
 
-> So far, we have been using some third-party libraries such as `react-native-gesture-handler`, `react-native-reanimated`, and now `react-native-view-shot`. We can find hundreds of other third-party libraries on [React Native Directory](https://reactnative.directory/).
+> So far, we have been using some third-party libraries such as `react-native-gesture-handler`, `react-native-reanimated`, and now `react-native-view-shot`.
+> We can find hundreds of other third-party libraries on [React Native Directory](https://reactnative.directory/).
 
-## Step 1: Install libraries
+<Step label="1">
+
+## Install libraries
 
 To install both libraries, run the following commands:
 
 <Terminal cmd={['$ npx expo install react-native-view-shot expo-media-library']} />
 
-## Step 2: Prompt for permissions
+</Step>
+
+<Step label="2">
+
+## Prompt for permissions
 
 When creating an app that requires access to potentially sensitive information, such as access to the media library, we must first request the user's permission.
 
@@ -45,9 +55,13 @@ export default function App() {
 }
 ```
 
-Once the permission is given, the value of the `status` changes to `granted`.
+Once permission is given, the value of the `status` changes to `granted`.
 
-## Step 3: Picking a library to take screenshots
+</Step>
+
+<Step label="3">
+
+## Picking a library to take screenshots
 
 To allow the user to take a screenshot within the app, we'll use [`react-native-view-shot`](https://github.com/gre/react-native-view-shot). It allows capturing a `<View>` as an image.
 
@@ -57,7 +71,11 @@ Let's import it into **App.js** file:
 import { captureRef } from 'react-native-view-shot';
 ```
 
-## Step 4: Create a ref to save the current view
+</Step>
+
+<Step label="4">
+
+## Create a ref to save the current view
 
 The `react-native-view-shot` library provides a method called `captureRef()` that captures a screenshot of a `<View>` in the app and returns the URI of the screenshot image file.
 
@@ -88,13 +106,22 @@ export default function App() {
 }
 ```
 
-The `collapsible` prop is set to `false` in the above snippet because this `<View>` component is used to take a screenshot of the background image and the emoji sticker. The rest of the contents of the app screen (such as buttons) are not part of the screenshot.
+The `collapsable` prop is set to `false` in the above snippet because this `<View>` component is used to take a screenshot of the background image and the emoji sticker.
+The rest of the contents of the app screen (such as buttons) are not part of the screenshot.
 
-## Step 5: Capture a screenshot and save it
+</Step>
 
-Now we can capture a screenshot of the view by calling the `captureRef()` method from `react-native-view-shot` inside the `onSaveImageAsync()` function. `captureRef()` accepts an optional argument where we can pass the `width` and `height` of the area we'd like to capture a screenshot for. We can read more about available options in <LinkBase href="https://github.com/gre/react-native-view-shot#capturerefview-options-lower-level-imperative-api" openInNewTab>the library's documentation</LinkBase>.
+<Step label="5">
 
-The `captureRef()` method returns a promise that fulfills with the URI of the captured screenshot. We will pass this URI as a parameter to <LinkBase href="/versions/latest/sdk/media-library/#medialibrarysavetolibraryasynclocaluri" openInNewTab>`MediaLibrary.saveToLibraryAsync()`</LinkBase>, which will save the screenshot to the device's media library.
+## Capture a screenshot and save it
+
+Now we can capture a screenshot of the view by calling the `captureRef()` method from `react-native-view-shot` inside the `onSaveImageAsync()` function.
+`captureRef()` accepts an optional argument where we can pass the `width` and `height` of the area we'd like to capture a screenshot for.
+We can read more about available options in [the library's documentation](https://github.com/gre/react-native-view-shot#capturerefview-options-lower-level-imperative-api).
+
+The `captureRef()` method returns a promise that fulfills with the URI of the captured screenshot.
+We will pass this URI as a parameter to <A href="/versions/latest/sdk/media-library/#medialibrarysavetolibraryasynclocaluri" openInNewTab>`MediaLibrary.saveToLibraryAsync()`</A>,
+which will save the screenshot to the device's media library.
 
 Update the `onSaveImageAsync()` function with the following code:
 
@@ -125,12 +152,12 @@ export default function App() {
   /* @info Replace the comment with the code to capture the screenshot and save the image. */
   const onSaveImageAsync = async () => {
     try {
-      const localUri = await captureRef(imageRef, {        
+      const localUri = await captureRef(imageRef, {
         height: 440,
         quality: 1,
       });
 
-      await MediaLibrary.saveToLibraryAsync(localUri);      
+      await MediaLibrary.saveToLibraryAsync(localUri);
       if (localUri) {
         alert("Saved!");
       }
@@ -149,7 +176,9 @@ Now, choose a photo and add a sticker. Then tap the “Save” button. We should
 
 <Video file="tutorial/saving-screenshot.mp4" />
 
-## Up next
+</Step>
+
+## Next steps
 
 The `react-native-view-shot` and `expo-media-library` work only on Android and iOS, but we'd like our app to work on web as well.
 

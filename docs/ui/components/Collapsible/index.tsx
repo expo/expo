@@ -1,16 +1,10 @@
 import { css } from '@emotion/react';
-import {
-  borderRadius,
-  iconSize,
-  shadows,
-  spacing,
-  theme,
-  typography,
-  TriangleDownIcon,
-} from '@expo/styleguide';
-import React, { PropsWithChildren, ReactNode } from 'react';
+import { shadows, theme } from '@expo/styleguide';
+import { borderRadius, spacing } from '@expo/styleguide-base';
+import { TriangleDownIcon } from '@expo/styleguide-icons';
+import type { PropsWithChildren, ReactNode } from 'react';
 
-import { HEADLINE } from '~/ui/components/Text';
+import { DEMI } from '~/ui/components/Text';
 
 type CollapsibleProps = PropsWithChildren<{
   /**
@@ -29,9 +23,9 @@ export function Collapsible({ summary, open, testID, children }: CollapsibleProp
     <details css={detailsStyle} open={open} data-testid={testID}>
       <summary css={summaryStyle}>
         <div css={markerWrapperStyle}>
-          <TriangleDownIcon css={markerStyle} size={iconSize.small} />
+          <TriangleDownIcon className="icon-sm text-icon-default" css={markerStyle} />
         </div>
-        <HEADLINE tag="span">{summary}</HEADLINE>
+        <DEMI>{summary}</DEMI>
       </summary>
       <div css={contentStyle}>{children}</div>
     </details>
@@ -42,15 +36,15 @@ const detailsStyle = css({
   overflow: 'hidden',
   background: theme.background.default,
   border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.medium,
+  borderRadius: borderRadius.md,
   padding: 0,
   marginBottom: spacing[3],
 
   '&[open]': {
-    boxShadow: shadows.micro,
+    boxShadow: shadows.xs,
   },
 
-  'h4 + &, li > &': {
+  'h4 + &, p + &, li > &': {
     marginTop: spacing[3],
   },
 });
@@ -61,7 +55,7 @@ const summaryStyle = css({
   alignItems: 'center',
   userSelect: 'none',
   listStyle: 'none',
-  backgroundColor: theme.background.secondary,
+  backgroundColor: theme.background.subtle,
   padding: spacing[1.5],
   paddingRight: spacing[3],
   margin: 0,
@@ -79,6 +73,12 @@ const summaryStyle = css({
     marginTop: 0,
     marginBottom: 0,
   },
+
+  code: {
+    backgroundColor: theme.background.element,
+    display: 'inline',
+    fontSize: '90%',
+  },
 });
 
 const markerWrapperStyle = css({
@@ -95,7 +95,7 @@ const markerStyle = css({
   'details[open] &': { transform: 'rotate(0)' },
 });
 
-const contentStyle = css(typography.body.paragraph, {
+const contentStyle = css({
   padding: `${spacing[4]}px ${spacing[5]}px 0`,
 
   p: {

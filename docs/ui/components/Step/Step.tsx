@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { spacing, theme } from '@expo/styleguide';
+import { theme } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
 import { PropsWithChildren } from 'react';
 
 import { HEADLINE } from '~/ui/components/Text';
@@ -32,7 +33,7 @@ const stepLabelStyle = css({
   margin: `${spacing[1]}px auto`,
   width: spacing[7],
   height: spacing[7],
-  background: theme.background.tertiary,
+  background: theme.background.element,
   borderRadius: '100%',
 });
 
@@ -40,11 +41,11 @@ const stepContentStyle = css({
   paddingTop: spacing[1],
 
   'h2:first-child': {
-    marginTop: -spacing[1],
+    marginTop: `${-spacing[1]}px !important`,
   },
 
   'h3:first-child, h4:first-child': {
-    marginTop: -spacing[0.5],
+    marginTop: `0 !important`,
   },
 
   'ul, ol': {

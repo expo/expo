@@ -1,13 +1,14 @@
 ---
 title: Tools, workflows and extensions
 sidebar_title: Tools, workflows and extensions
+description: Learn more about different tools, workflows and extensions available when working with development builds.
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 
-Development builds allow you to iterate quickly. However, you can extend the capabilities of your development build to provide a better developer experience when working in teams or customize the build to suite your needs.
+Development builds allow you to iterate quickly. However, you can extend the capabilities of your development build to provide a better developer experience when working in teams or customize the build to suit your needs.
 
 ## Tools
 
@@ -41,7 +42,7 @@ You can load your app on a device that has a compatible build of your custom cli
 | parameter     | value                                                                                                                                      |
 | ------------- | ------------------------------------------------------------------------------------------------------------------------------------------ |
 | `scheme`      | URL scheme of your client (defaults to `exp+{slug}` where [`slug`](/versions/latest/config/app/#slug) is the value set in the Expo config) |
-| `manifestUrl` | URL-encoded URL of a update manifest to load. The URL will be `https://u.expo.dev/[your-project-id]?channel-name=[channel-name]`           |
+| `manifestUrl` | URL-encoded URL of an update manifest to load. The URL will be `https://u.expo.dev/[your-project-id]?channel-name=[channel-name]`          |
 
 Example:
 
@@ -60,7 +61,7 @@ Requests send to `https://qr.expo.dev/development-client` when supplied the quer
 | parameter   | value                                                                                                                                                                     |
 | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------- |
 | `appScheme` | URL-encoded deeplinking scheme of your development build (defaults to `exp+{slug}` where [`slug`](/versions/latest/config/app/#slug) is the value set in the Expo config) |
-| `url`       | URL-encoded URL of a update manifest to load. The URL will be `https://u.expo.dev/[your-project-id]?channel-name=[channel-name]`                                          |
+| `url`       | URL-encoded URL of an update manifest to load. The URL will be `https://u.expo.dev/[your-project-id]?channel-name=[channel-name]`                                         |
 
 Example:
 
@@ -78,7 +79,7 @@ These are a few examples of workflows to help your team get the most out of your
 
 Developers on your team with expertise working with Xcode and Android Studio can update, review, and test changes to the native portion of your app and release them to your team periodically. The rest of your team can install these builds on their devices and simulators and quickly iterate on the JavaScript portion of your app without needing to understand and maintain the tooling required to create a new build.
 
-### Side by side installation
+### Side-by-side installation
 
 If you need to look at release builds of your project, it is convenient not to overwrite the development build of your app every time you do so. You can accomplish this by using [**app.config.js**](/workflow/configuration) to set the bundle identifier or package name based on an environment variable. When changing the ID of your project, be aware that some modules will expect you to perform installation steps for each bundle identifier or package name you use. For more information, see [how to use this pattern on EAS Build with build variants](/build-reference/variants).
 

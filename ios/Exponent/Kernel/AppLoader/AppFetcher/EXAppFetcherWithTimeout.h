@@ -1,7 +1,8 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import "EXAppFetcher+Private.h"
-#import <EXManifests/EXManifestsManifest.h>
+
+@class EXManifestsManifest;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -15,7 +16,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @property (nonatomic, weak) id<EXAppFetcherWithTimeoutDelegate> withTimeoutDelegate;
 
-- (instancetype)initWithAppLoader:(EXAppLoader *)appLoader timeout:(NSTimeInterval)timeout;
+- (instancetype)initWithAppLoader:(EXAbstractLoader *)appLoader timeout:(NSTimeInterval)timeout;
 
 @end
 

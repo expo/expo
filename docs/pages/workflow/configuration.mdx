@@ -1,5 +1,6 @@
 ---
-title: Configuration with app.json / app.config.js
+title: Configuration with app.json/app.config.js
+description: Learn about what is Expo config and how you can dynamically use it by customizing it.
 ---
 
 import PossibleRedirectNotification from '~/components/plugins/PossibleRedirectNotification';
@@ -68,12 +69,6 @@ import Constants from 'expo-constants';
 
 Constants.expoConfig.extra.fact === 'kittens are cool';
 ```
-
-<Collapsible summary="Using SDK 45 or below?">
-
-The `extra` property is available on the `Constants.manifest` property.
-
-</Collapsible>
 
 You can access and modify incoming config values by exporting a function that returns an object. This is useful if your project also has an **app.json**. By default, Expo CLI will read the **app.json** first and send the normalized results to the **app.config.js**. This functionality is disabled when the `--config` is used to specify a custom config.
 

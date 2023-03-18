@@ -1,35 +1,35 @@
 ---
-title: Configuring the Status Bar
+title: Configuring the status bar
+description: Learn how to configure the status bar using expo-status-bar library.
 ---
 
-import { InlineCode } from '~/components/base/code';
+import { CODE } from '~/ui/components/Text';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { APIBox } from '~/components/plugins/APIBox';
 
-The status bar configuration often feels like a small detail to a developer, but it can make a big difference on the overall feel and perceived level of polish of your app by users.
-When you have a white status bar on a white background, you just know something isn't going quite right.
+The status bar is a small detail that can make a big difference in the overall feel and perceived level of polish of your app by users. When you have a white status bar on the white background, you know something isn't going quite right.
 
-This guide is intended to help you know what tools are at your disposal to configure the status bar for your iOS and Android apps.
+This guide provides the tools to configure the status bar for your Android and iOS apps.
 
 <ImageSpotlight
-  src="/static/images/status-bar-style-comparison.png"
+  src="/static/images/status-bar-style-comparison.jpg"
   alt="A comparison of good and bad status bar styling"
 />
 
-> Notice how bad the contrast is between the status bar text and the background in the second image. This is what we want to try to avoid.
+> Notice how bad the contrast is between the status bar text and the background in the second image. This is what you want to try to avoid.
 
-## Configuring the status bar while app is loading (Android only)
+## Configure the status bar while app is loading (Android only)
 
 > This type of configuration is currently only available on Android. On iOS, it is not possible in the Expo Go app to customize the status bar before the app has loaded, while the splash screen is presented.
 
-The configuration for configuring the status bar while the splash screen is visible on Android is available through the `androidStatusBar` object in **app.json**. The options available are similar to those provided by [`expo-status-bar`](../versions/latest/sdk/status-bar.mdx).
+To configure the status bar while the splash screen is visible on Android is available through the `androidStatusBar` object in the [Expo config](/workflow/configuration). The options available are similar to those provided by [`expo-status-bar`](/versions/latest/sdk/status-bar).
 
 <Collapsible summary="See the full list of options available to configure the status bar statically on Android">
 
 <APIBox header="androidStatusBar.barStyle" platforms={["android"]}>
 
-This option can be used to specify whether the status bar content (icons and text in the status bar) is light, or dark. Usually a status bar with a light background has dark content, and a status bar with a dark background has light content.
+This option can be used to specify whether the status bar content (icons and text in the status bar) is light, or dark. Usually, a status bar with a light background has dark content, and a status bar with a dark background has light content.
 
 The valid values are:
 
@@ -74,51 +74,46 @@ Defaults to `false`.
 
 </Collapsible>
 
-## Updating the status bar while app is running
+## Update the status bar while app is running
 
-The `StatusBar` component provided by [`expo-status-bar`](../versions/latest/sdk/status-bar.mdx) allows you to control the appearance of the status bar while your app is running.
+The `StatusBar` component provided by [`expo-status-bar`](/versions/latest/sdk/status-bar) allows you to control the appearance of the status bar while your app is running.
 `expo-status-bar` also provides imperative methods such as `setStatusBarStyle(style)` to control the style through function calls rather than the `StatusBar` component, if you find that to be helpful for your use case.
 
 To fix the contrast issue from the screenshot at the top of this guide, we could use the following code:
 
-```tsx
+```jsx
 import { StatusBar } from 'expo-status-bar';
 
 export default function Playlists() {
   return (
     <>
-      {/* other code here to show the screen */}
-
-      {/* use light text instead of dark text in the status bar to provide more contrast with a dark background */}
+      {/* @hide ...*/} {/* @end */}
+      {/* Use light text instead of dark text in the status bar to provide more contrast with a dark background. */}
       <StatusBar style="light" />
     </>
   );
 }
 ```
 
-<Collapsible summary={<span>How is <InlineCode>expo-status-bar</InlineCode> different from the StatusBar component included in React Native?</span>}>
+<Collapsible summary={<span>How is <CODE>expo-status-bar</CODE> different from the StatusBar component included in React Native?</span>}>
 
-`expo-status-bar` builds on top of the `StatusBar` component that React Native provides in order to give you better defaults when you're building an app with Expo tools.
-For example, the `translucent` property of `expo-status-bar` defaults to `true` or, if you have changed that property in `androidStatusBar`, it will use that value instead.
-The default in React Native for `translucent` is always `false`, which can be confusing when in projects created using Expo tools, because the default is `true` for consistency with iOS.
+`expo-status-bar` builds on top of the `StatusBar` component that React Native provides to give you better defaults when you're building an app with Expo tools. For example, the `translucent` property of `expo-status-bar` defaults to `true` or, if you have changed that property in `androidStatusBar`, it will use that value instead. The default in React Native for `translucent` is always `false`, which can be confusing because when a project is created using Expo tools, the default is `true` for consistency with iOS.
 
 </Collapsible>
 
 ## Themes and status bar styles
 
 If you use `expo-status-bar` to control your status bar style, the `style="auto"` configuration will automatically pick the appropriate default style depending on the color scheme currently used by the app
-(this is the default behavior, if you leave out the style prop entirely then `auto` will be used). Please note that if you provide a way for users to toggle between color schemes rather than using the operating system theme,
-this will not have the intended behavior, and you should use `style="light"` and `style="dark"` as needed depending on the selected color scheme.
+(this is the default behavior if you leave out the style prop entirely then `auto` will be used). Note that if you provide a way for users to toggle between color schemes rather than using the operating system theme, this will not have the intended behavior, and you should use `style="light"` and `style="dark"` as needed depending on the selected color scheme.
 
-## Factoring the status bar in with your layout
+## Render the status bar in with your layout
 
-When you have a translucent status bar, it's important to remember that content can be rendered underneath it (if it couldn't, what would be the point of it being translucent? there would be nothing for you to see through it!).
+When you have a translucent status bar, it's important to remember that content can be rendered underneath it.
 
-Libraries like [React Navigation](/guides/routing-and-navigation.mdx) will handle this for you when the UI that they provide overlap with the status bar.
-You are likely to encounter cases where you will need to manually adjust your layout to prevent some content (such as text) from being rendered underneath it.
-To do this, we recommend using [`react-native-safe-area-context`](../versions/latest/sdk/safe-area-context.mdx) to find the safe area insets and add padding or margins to your layout accordingly.
+Libraries like [React Navigation](/guides/routing-and-navigation) will handle this for you when the UI they provide overlaps with the status bar. You are likely to encounter cases where you will need to manually adjust your layout to prevent some content (such as text) from being rendered underneath it.
+To do this, it is recommended to use [`react-native-safe-area-context`](/versions/latest/sdk/safe-area-context) to find the safe area insets and add padding or margins to your layout accordingly.
 
-## Working with misbehaving 3rd-party Libraries
+## Work with misbehaving third-party Libraries
 
 Projects initialized with Expo tools make the status bar `translucent` by default on Android. This is consistent with iOS and more in line with material design.
 Unfortunately, some libraries don't support `translucent` status bars. This is generally bad practice and those libraries should be fixed,
@@ -126,7 +121,7 @@ but if you must use one of them, there are some options available for you to acc
 
 ### Opaque colored background
 
-Setting solely `backgroundColor` to an opaque color will disable the `transparency` of the status bar, but preserve `translucency`.
+Setting solely `backgroundColor` to an opaque color will disable the `transparency` of the status bar, however, preserve `translucency`.
 You need to explicitly set `translucent` to `false` if you want your app's status bar to take up space on the device's screen.
 This is a good option if your status bar color never needs to change, for example:
 
@@ -143,5 +138,4 @@ This is a good option if your status bar color never needs to change, for exampl
 
 ### Empty `View`
 
-You can place an empty `View` on top of your screen with a background color to act as a status bar, or set a top padding.
-You can get the height of the status bar (and notch, if there is one) by using the top inset value provided by [`react-native-safe-area-context`](../versions/latest/sdk/safe-area-context.mdx).
+You can place an empty `View` on top of your screen with a background color to act as a status bar or set top padding. You can get the height of the status bar (and notch, if there is one) by using the top inset value provided by [`react-native-safe-area-context`](/versions/latest/sdk/safe-area-context).

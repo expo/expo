@@ -1,4 +1,5 @@
-import { AndroidIcon, AppleIcon, AtSignIcon, ExpoGoLogo, iconSize, theme } from '@expo/styleguide';
+import { ExpoGoLogo } from '@expo/styleguide';
+import { AndroidIcon, AppleIcon, AtSignIcon } from '@expo/styleguide-icons';
 
 import { PlatformName } from '~/types/common';
 
@@ -7,24 +8,15 @@ export type PlatformIconProps = {
 };
 
 export const PlatformIcon = ({ platform }: PlatformIconProps) => {
-  const size = iconSize.micro;
-
   switch (platform) {
     case 'ios':
-      return <AppleIcon color={theme.palette.blue['900']} size={size} />;
+      return <AppleIcon className="icon-xs text-palette-blue12" />;
     case 'android':
-      return <AndroidIcon color={theme.palette.green['900']} size={size} />;
+      return <AndroidIcon className="icon-xs text-palette-green12" />;
     case 'web':
-      return <AtSignIcon color={theme.palette.orange['900']} size={size} />;
+      return <AtSignIcon className="icon-xs text-palette-orange12" />;
     case 'expo':
-      return (
-        <ExpoGoLogo
-          width={iconSize.micro}
-          height={iconSize.micro}
-          color={theme.palette.purple['900']}
-          size={size}
-        />
-      );
+      return <ExpoGoLogo className="icon-xs text-palette-purple12" />;
     default:
       return null;
   }

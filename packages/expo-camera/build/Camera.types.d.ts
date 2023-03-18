@@ -1,5 +1,5 @@
 import { PermissionResponse, PermissionStatus, PermissionExpiration, PermissionHookOptions } from 'expo-modules-core';
-import { ViewProps } from 'react-native';
+import type { ViewProps } from 'react-native';
 export declare enum CameraType {
     front = "front",
     back = "back"
@@ -90,36 +90,56 @@ export declare enum VideoQuality {
     '480p' = "480p",
     '4:3' = "4:3"
 }
-export declare type ImageParameters = {
-    imageType: ImageType;
-    quality: number | null;
-};
-export declare type ImageSize = {
+/**
+ * @hidden We do not expose related web methods in docs.
+ * @platform web
+ */
+export type ImageSize = {
     width: number;
     height: number;
 };
-export declare type WebCameraSettings = Partial<{
-    autoFocus: string;
-    flashMode: string;
-    whiteBalance: string;
-    exposureCompensation: number;
-    colorTemperature: number;
-    iso: number;
-    brightness: number;
-    contrast: number;
-    saturation: number;
-    sharpness: number;
-    focusDistance: number;
-    zoom: number;
-}>;
-export declare type CameraCapturedPicture = {
+/**
+ * @hidden We do not expose related web methods in docs.
+ * @platform web
+ */
+export type WebCameraSettings = {
+    autoFocus?: string;
+    flashMode?: string;
+    whiteBalance?: string;
+    exposureCompensation?: number;
+    colorTemperature?: number;
+    iso?: number;
+    brightness?: number;
+    contrast?: number;
+    saturation?: number;
+    sharpness?: number;
+    focusDistance?: number;
+    zoom?: number;
+};
+export type CameraCapturedPicture = {
+    /**
+     * Captured image width.
+     */
     width: number;
+    /**
+     * Captured image height.
+     */
     height: number;
+    /**
+     * On web, the value of `uri` is the same as `base64` because file system URLs are not supported in the browser.
+     */
     uri: string;
+    /**
+     * A Base64 representation of the image.
+     */
     base64?: string;
+    /**
+     * On Android and iOS this object may include various fields based on the device and operating system.
+     * On web, it is a partial representation of the [`MediaTrackSettings`](https://developer.mozilla.org/en-US/docs/Web/API/MediaTrackSettings) dictionary.
+     */
     exif?: Partial<MediaTrackSettings> | any;
 };
-export declare type CameraPictureOptions = {
+export type CameraPictureOptions = {
     /**
      * Specify the quality of compression, from 0 to 1. 0 means compress for small size, 1 means compress for maximum quality.
      */
@@ -183,7 +203,7 @@ export declare type CameraPictureOptions = {
      */
     maxDownsampling?: number;
 };
-export declare type CameraRecordingOptions = {
+export type CameraRecordingOptions = {
     /**
      * Maximum video duration in seconds.
      */
@@ -219,24 +239,33 @@ export declare type CameraRecordingOptions = {
      */
     codec?: VideoCodec;
 };
-export declare type PictureSavedListener = (event: {
+/**
+ * @hidden
+ */
+export type PictureSavedListener = (event: {
     nativeEvent: {
         data: CameraCapturedPicture;
         id: number;
     };
 }) => void;
-export declare type CameraReadyListener = () => void;
-export declare type MountErrorListener = (event: {
+/**
+ * @hidden
+ */
+export type CameraReadyListener = () => void;
+/**
+ * @hidden
+ */
+export type MountErrorListener = (event: {
     nativeEvent: CameraMountError;
 }) => void;
-export declare type CameraMountError = {
+export type CameraMountError = {
     message: string;
 };
-export declare type Point = {
+export type Point = {
     x: number;
     y: number;
 };
-export declare type BarCodeSize = {
+export type BarCodeSize = {
     /**
      * The height value.
      */
@@ -250,8 +279,8 @@ export declare type BarCodeSize = {
  * These coordinates are represented in the coordinate space of the camera source (e.g. when you
  * are using the camera view, these values are adjusted to the dimensions of the view).
  */
-export declare type BarCodePoint = Point;
-export declare type BarCodeBounds = {
+export type BarCodePoint = Point;
+export type BarCodeBounds = {
     /**
      * The origin point of the bounding box.
      */
@@ -261,7 +290,7 @@ export declare type BarCodeBounds = {
      */
     size: BarCodeSize;
 };
-export declare type BarCodeScanningResult = {
+export type BarCodeScanningResult = {
     /**
      * The barcode type.
      */
@@ -284,35 +313,17 @@ export declare type BarCodeScanningResult = {
      */
     bounds: BarCodeBounds;
 };
-export declare type Face = {
-    faceID: number;
-    bounds: {
-        origin: Point;
-        size: {
-            height: number;
-            width: number;
-        };
-    };
-    rollAngle: number;
-    yawAngle: number;
-    smilingProbability: number;
-    leftEarPosition: Point;
-    rightEarPosition: Point;
-    leftEyePosition: Point;
-    leftEyeOpenProbability: number;
-    rightEyePosition: Point;
-    rightEyeOpenProbability: number;
-    leftCheekPosition: Point;
-    rightCheekPosition: Point;
-    mouthPosition: Point;
-    leftMouthPosition: Point;
-    rightMouthPosition: Point;
-    noseBasePosition: Point;
+export type FaceDetectionResult = {
+    /**
+     * Array of objects representing results of face detection.
+     * See [`FaceFeature`](facedetector/#facefeature) in FaceDetector documentation for more details.
+     */
+    faces: object[];
 };
-export declare type FaceDetectionResult = {
-    faces: Face[];
-};
-export declare type ConstantsType = {
+/**
+ * @hidden
+ */
+export type ConstantsType = {
     Type: CameraType;
     FlashMode: FlashMode;
     AutoFocus: AutoFocus;
@@ -321,7 +332,7 @@ export declare type ConstantsType = {
     VideoStabilization: VideoStabilization;
     VideoCodec: VideoCodec;
 };
-export declare type CameraProps = ViewProps & {
+export type CameraProps = ViewProps & {
     /**
      * Camera facing. Use one of `CameraType`. When `CameraType.front`, use the front-facing camera.
      * When `CameraType.back`, use the back-facing camera.
@@ -417,7 +428,8 @@ export declare type CameraProps = ViewProps & {
      */
     faceDetectorSettings?: object;
     /**
-     * Callback invoked with results of face detection on the preview. See [FaceDetector documentation](facedetector/#detectionresult) for details.
+     * Callback invoked with results of face detection on the preview.
+     * See [`DetectionResult`](facedetector/#detectionresult) in FaceDetector documentation for more details.
      * @param faces
      */
     onFacesDetected?: (faces: FaceDetectionResult) => void;
@@ -427,7 +439,10 @@ export declare type CameraProps = ViewProps & {
      */
     poster?: string;
 };
-export declare type CameraNativeProps = {
+/**
+ * @hidden
+ */
+export type CameraNativeProps = {
     pointerEvents?: any;
     style?: any;
     ref?: Function;
@@ -458,7 +473,7 @@ export declare type CameraNativeProps = {
     useCamera2Api?: boolean;
     poster?: string;
 };
-export declare type BarCodeSettings = {
+export type BarCodeSettings = {
     barCodeTypes: string[];
     interval?: number;
 };

@@ -1,11 +1,12 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
-#import "EXAppLoader+Updates.h"
-#import <EXUpdates/EXUpdatesAppLoaderTask.h>
+#import "EXAbstractLoader+Updates.h"
+
+@protocol EXUpdatesAppLoaderTaskDelegate;
 
 NS_ASSUME_NONNULL_BEGIN
 
-@interface EXAppLoaderExpoUpdates : EXAppLoader <EXUpdatesAppLoaderTaskDelegate>
+@interface EXAppLoaderExpoUpdates : EXAbstractLoader <EXUpdatesAppLoaderTaskDelegate>
 
 @end
 

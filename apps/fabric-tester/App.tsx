@@ -1,11 +1,12 @@
+import * as AppleAuthentication from 'expo-apple-authentication';
 import { Video } from 'expo-av';
 import { BlurView } from 'expo-blur';
 import { Camera, CameraType } from 'expo-camera';
+import { Image } from 'expo-image';
 import { LinearGradient } from 'expo-linear-gradient';
 import React, { useCallback, useRef, useState } from 'react';
 import {
   Button,
-  Image,
   SafeAreaView,
   StatusBar,
   StyleSheet,
@@ -14,6 +15,7 @@ import {
   ScrollView,
   TouchableOpacity,
   Platform,
+  Alert,
 } from 'react-native';
 
 function randomColor() {
@@ -31,14 +33,26 @@ export default class App extends React.PureComponent {
             isFabricEnabled: {isFabricEnabled + ''}
           </Text>
 
+          <ImageExample />
           <LinearGradientExample />
           {Platform.OS === 'ios' && <BlurExample />}
           <VideoExample />
           <CameraExample />
+          <AppleAuthenticationExample />
         </ScrollView>
       </SafeAreaView>
     );
   }
+}
+
+export function ImageExample() {
+  const [seed] = useState(100 + Math.round(Math.random() * 100));
+
+  return (
+    <View style={styles.exampleContainer}>
+      <Image style={styles.image} source={{ uri: `https://picsum.photos/id/${seed}/1000/1000` }} />
+    </View>
+  );
 }
 
 export function LinearGradientExample() {
@@ -171,6 +185,36 @@ export function CameraExample() {
   );
 }
 
+export function AppleAuthenticationExample() {
+  const signIn = useCallback(async () => {
+    try {
+      await AppleAuthentication.signInAsync({
+        requestedScopes: [
+          AppleAuthentication.AppleAuthenticationScope.FULL_NAME,
+          AppleAuthentication.AppleAuthenticationScope.EMAIL,
+        ],
+        state: 'this-is-a-test',
+      });
+    } catch (error) {
+      Alert.alert(error.code, error.message);
+    }
+  }, []);
+
+  return (
+    <View style={styles.exampleContainer}>
+      <View style={{ flex: 1, alignItems: 'center' }}>
+        <AppleAuthentication.AppleAuthenticationButton
+          buttonStyle={AppleAuthentication.AppleAuthenticationButtonStyle.BLACK}
+          buttonType={AppleAuthentication.AppleAuthenticationButtonType.CONTINUE}
+          cornerRadius={10}
+          onPress={signIn}
+          style={{ width: 250, height: 44, margin: 15 }}
+        />
+      </View>
+    </View>
+  );
+}
+
 const styles = StyleSheet.create({
   container: {
     flex: 1,
@@ -187,6 +231,10 @@ const styles = StyleSheet.create({
     borderStyle: 'solid',
     borderColor: '#242c39',
   },
+  image: {
+    flex: 1,
+    height: 200,
+  },
   gradient: {
     height: 200,
   },
@@ -194,7 +242,6 @@ const styles = StyleSheet.create({
     height: 200,
   },
   blurImage: {
-    resizeMode: 'cover',
     ...StyleSheet.absoluteFillObject,
   },
   blurContainer: {

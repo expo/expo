@@ -1,14 +1,16 @@
 ---
 title: Using Sentry
 maxHeadingDepth: 4
+description: A guide on installing and configuring Sentry for crash reporting.
 ---
 
-import { ConfigReactNative, ConfigClassic } from '~/components/plugins/ConfigSection';
+import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tab, Tabs } from '~/ui/components/Tabs';
+import { CODE } from '~/ui/components/Text';
 
 [Sentry](http://getsentry.com/) is a crash reporting platform that provides you with "real-time insight into production deployments with info to reproduce and fix crashes".
 
@@ -23,17 +25,19 @@ It notifies you of exceptions or errors that your users run into while using you
 - It is free for up to 5,000 events per month.
 - It streamlines your error-reporting code across iOS, Android, and web
 
-> Native crash reporting is not available with the classic build system (`expo build:[ios|android]`), but is available via EAS Build.
+> Native crash reporting is not available in Expo Go, it is only available in standalone builds or development builds.
 
 <PlatformsSection title="Platform compatibility" android emulator ios simulator web />
 
 ## Installing and configuring Sentry
 
-### Step 1: Sign up for a Sentry account and create a project
+<Step label="1">
+
+### Sign up for a Sentry account and create a project
 
 Before getting real-time updates on errors and making your app generally incredible, you'll need to make sure you've created a Sentry project. Here's how to do that:
 
-<Step label="1">
+<Step label="1.1">
   [Sign up for Sentry](https://sentry.io/signup/) (it's free), and create a project in your
   Dashboard. Take note of your **organization name**, **project name**, and **`DSN`**; you'll need
   them later. - **organization name** is available in your `Organization settings` tab - **project
@@ -42,7 +46,7 @@ Before getting real-time updates on errors and making your app generally incredi
   (DSN)` tab
 </Step>
 
-<Step label="2">
+<Step label="1.2">
   Go to the [Sentry API section](https://sentry.io/settings/account/api/auth-tokens/), and create an
   **auth token**. The token requires the scopes: `org:read`, `project:releases`, and
   `project:write`. Save this, too.
@@ -50,7 +54,11 @@ Before getting real-time updates on errors and making your app generally incredi
 
 Once you have each of these: organization name, project name, DSN, and auth token, you're all set!
 
-### Step 2: Installation
+</Step>
+
+<Step label="2">
+
+### Installation
 
 In your project directory, run:
 
@@ -64,7 +72,11 @@ In your project directory, run:
   ]}
 />
 
-### Step 3: Code
+</Step>
+
+<Step label="3">
+
+### Code
 
 #### Initialization
 
@@ -102,15 +114,13 @@ try {
 }
 ```
 
-### Step 4: App Configuration
+</Step>
+
+<Step label="4">
+
+### App Configuration
 
 Configuring sentry-expo is done through the config plugin in your **app.json** or **app.config.js**.
-
-<ConfigClassic>
-
-The instructions below will still apply, with the exception of the `plugin` configuration. Config plugins have no effect when using the classic build system.
-
-</ConfigClassic>
 
 <ConfigReactNative>
 
@@ -130,7 +140,7 @@ to your root project file (usually **App.js**), so make sure you remove it (but 
 
 #### Configure a `postPublish` hook
 
-Add `expo.hooks` to your project's `app.json` (or `app.config.js`) file:
+Add `expo.hooks` property to your project's **app.json** or **app.config.js** file:
 
 ```json app.json
 {
@@ -141,9 +151,8 @@ Add `expo.hooks` to your project's `app.json` (or `app.config.js`) file:
         {
           "file": "sentry-expo/upload-sourcemaps",
           "config": {
-            "organization": "your sentry organization slug here",
-            "project": "your sentry project name here",
-            "authToken": "your auth token here"
+            "organization": "sentry org slug, or use the `SENTRY_ORG` environment variable",
+            "project": "sentry project name, or use the `SENTRY_PROJECT` environment variable"
           }
         }
       ]
@@ -152,17 +161,14 @@ Add `expo.hooks` to your project's `app.json` (or `app.config.js`) file:
 }
 ```
 
-The `authToken` value can be generated from the [Sentry API page](https://sentry.io/settings/account/api/).
+To upload the source map to Sentry, you must create a [Sentry auth token](https://docs.sentry.io/product/cli/configuration/). After creating your Sentry auth token [here](https://sentry.io/settings/account/api/), you can configure this token through the `SENTRY_AUTH_TOKEN` environment variable in [EAS Build](/build-reference/variables/#using-secrets-in-environment-variables).
 
-<Collapsible summary="Prefer to use environment variables instead of storing values in app.json?">
+> **warning** Never commit secrets to your repository. Keep the Sentry auth token in a safe place, outside your repository and use the environment variable instead.
 
-You can also use environment variables for your config, if you prefer:
+Besides the auth token, you can also configure the following options through environment variables:
 
 - organization → `SENTRY_ORG`
 - project → `SENTRY_PROJECT`
-- authToken → `SENTRY_AUTH_TOKEN`
-
-</Collapsible>
 
 <Collapsible summary="Additional configuration options">
 
@@ -186,76 +192,81 @@ In addition to the required config fields above, you can also provide these **op
 
 #### Add the Config Plugin
 
-Add `expo.plugins` to your project's **app.json** (or **app.config.js**) file:
+Add `expo.plugins` to your project's **app.json** or **app.config.js** file:
 
+{/* prettier-ignore */}
 ```json app.json
 {
   "expo": {
-    /* @hide ... your existing configuration */ /* @end */
     "plugins": ["sentry-expo"]
+    /* @hide ... your existing configuration */ /* @end */
   }
 }
 ```
 
-## Sourcemaps
+</Step>
+
+## Source Maps
 
 {/* TODO: Drop `expo publish` mention */}
 
-With the `postPublish` hook in place, now all you need to do is run `expo publish` and the sourcemaps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in **app.json** and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release.
+With the `postPublish` hook in place, now all you need to do is run `expo publish` and the source maps will be uploaded automatically. We automatically assign a unique release version for Sentry each time you hit publish, based on the version you specify in **app.json** and a release id on our backend -- this means that if you forget to update the version but hit publish, you will still get a unique Sentry release.
 
 > This hook can also be used as a `postExport` hook if you're [self-hosting your updates](../distribution/custom-updates-server.mdx).
 
-### Uploading sourcemaps at build time
+### Uploading source maps at build time
 
-> Note: Disregard the following if you're using the classic build system (`expo build:[android|ios]`).
-
-With `expo-updates`, release builds of both iOS and Android apps will create and embed a new update from your JavaScript source at build-time. **This new update will not be published automatically** and will exist only in the binary with which it was bundled. Since it isn't published, the sourcemaps aren't uploaded in the usual way like they are when you run `expo publish` (actually, we are relying on Sentry's native scripts to handle that). Because of this you have some extra things to be aware of:
+With `expo-updates`, release builds of both iOS and Android apps will create and embed a new update from your JavaScript source at build-time. **This new update will not be published automatically** and will exist only in the binary with which it was bundled. Since it isn't published, the source maps aren't uploaded in the usual way like they are when you run `expo publish` (actually, we are relying on Sentry's native scripts to handle that). Because of this you have some extra things to be aware of:
 
 - Your `release` will automatically be set to Sentry's expected value- `${bundleIdentifier}@${version}+${buildNumber}` (iOS) or `${androidPackage}@${version}+${versionCode}` (Android).
 - Your `dist` will automatically be set to Sentry's expected value: `${buildNumber}` (iOS) or `${versionCode}` (Android).
-- The configuration for build time sourcemaps comes from the **android/sentry.properties** and **ios/sentry.properties** files. For more information, see [Sentry's documentation](https://docs.sentry.io/clients/java/config/#configuration-via-properties-file). Manual configuration is only required for bare projects, the [sentry-expo config plugin handles it otherwise](#add-the-config-plugin).
+- The configuration for build time source maps comes from the **android/sentry.properties** and **ios/sentry.properties** files. For more information, see [Sentry's documentation](https://docs.sentry.io/clients/java/config/#configuration-via-properties-file). Manual configuration is only required for bare projects, the [sentry-expo config plugin handles it otherwise](#add-the-config-plugin).
 - Configuration for `expo publish` and `npx expo export` for projects is done via **app.json**, whether using bare workflow or not.
 
-Skipping or misconfiguring either of these can lead to invalid sourcemaps, and you won't see human-readable stacktraces in your errors.
+Skipping or misconfiguring either of these can lead to invalid source maps, and you won't see human-readable stacktraces in your errors.
 
-### Uploading sourcemaps for updates
+### Uploading source maps for updates
 
 > This requires SDK 47, with `sentry-expo@6.0.0` or above and `expo-updates@0.15.5` or above.
 
-If you're using EAS Update, or if you're self-hosting your updates (this means you run `npx expo export` manually), you need to take the following steps to upload the sourcemaps for your update to Sentry:
+If you're using EAS Update, or if you're self-hosting your updates (this means you run `npx expo export` manually), you need to take the following steps to upload the source maps for your update to Sentry:
 
-- Run `eas update`. This will generate a **dist** folder in your project root, which contains your JavaScript bundles and sourcemaps. This command will also output the 'Android update ID' and 'iOS update ID' that we'll need in the next step.
+- Run `eas update`. This will generate a **dist** folder in your project root, which contains your JavaScript bundles and source maps. This command will also output the 'Android update ID' and 'iOS update ID' that we'll need in the next step.
 - Copy or rename the bundle names in the **dist/bundles** folder to match **index.android.bundle** (Android) or **main.jsbundle** (iOS).
-- Next, you can use the Sentry CLI to upload your bundles and sourcemaps:
+- Next, you can use the Sentry CLI to upload your bundles and source maps:
   - `release name` should be set to `${bundleIdentifier}@${version}+${buildNumber}` (iOS) or `${androidPackage}@${version}+${versionCode}` (Android), so for example `com.domain.myapp@1.0.0+1`.
   - `dist` should be set to the Update ID that `eas update` generated.
 
 <Tabs>
-<Tab label="Android">
-<Terminal cmd={[
-  "$ node_modules/@sentry/cli/bin/sentry-cli releases \\",
-  "    files <release name> \\",
-  "    upload-sourcemaps \\",
-  "    --dist <Android Update ID> \\",
-  "    --rewrite \\",
-  "    dist/bundles/index.android.bundle dist/bundles/android-<hash>.map",
-]} />
-</Tab>
-<Tab label="iOS">
-<Terminal cmd={[
-  "$ node_modules/@sentry/cli/bin/sentry-cli releases \\",
-  "    files <release name> \\",
-  "    upload-sourcemaps \\",
-  "    --dist <iOS Update ID> \\",
-  "    --rewrite \\",
-  "    dist/bundles/main.jsbundle dist/bundles/ios-<hash>.map",
-]} />
-</Tab>
+  <Tab label="Android">
+    <Terminal
+      cmd={[
+        '$ node_modules/@sentry/cli/bin/sentry-cli releases \\',
+        '    files <release name> \\',
+        '    upload-sourcemaps \\',
+        '    --dist <Android Update ID> \\',
+        '    --rewrite \\',
+        '    dist/bundles/index.android.bundle dist/bundles/android-<hash>.map',
+      ]}
+    />
+  </Tab>
+  <Tab label="iOS">
+    <Terminal
+      cmd={[
+        '$ node_modules/@sentry/cli/bin/sentry-cli releases \\',
+        '    files <release name> \\',
+        '    upload-sourcemaps \\',
+        '    --dist <iOS Update ID> \\',
+        '    --rewrite \\',
+        '    dist/bundles/main.jsbundle dist/bundles/ios-<hash>.map',
+      ]}
+    />
+  </Tab>
 </Tabs>
 
-For more information, see Sentry's [instructions for uploading the bundle and sourcemaps](https://docs.sentry.io/platforms/react-native/sourcemaps/#3-upload-the-bundle-and-source-maps).
+For more information, see Sentry's [instructions for uploading the bundle and source maps](https://docs.sentry.io/platforms/react-native/sourcemaps/#3-upload-the-bundle-and-source-maps).
 
-The steps above define a new 'dist' on Sentry, under the same release as your full app build, and associate the sourcemaps with this new dist. If you want to customize this behavior, you can pass in your own values for `release` and `dist` when you initialize Sentry in your code. For example:
+The steps above define a new 'dist' on Sentry, under the same release as your full app build, and associate the source maps with this new dist. If you want to customize this behavior, you can pass in your own values for `release` and `dist` when you initialize Sentry in your code. For example:
 
 ```js
 import * as Sentry from 'sentry-expo';
@@ -264,20 +275,19 @@ import * as Updates from 'expo-updates';
 Sentry.init({
   dsn: 'YOUR DSN',
   release: 'my release name',
-  dist: 'my dist'
+  dist: 'my dist',
 });
 ```
 
-These values should match the values you pass to the `sentry-cli` when uploading your sourcemaps.
-
+These values should match the values you pass to the `sentry-cli` when uploading your source maps.
 
 ### Testing Sentry
 
 When building tests for your application, you want to assert that the right flow-tracking or error is being sent to Sentry, but without really sending it to Sentry servers. This way you won't swamp Sentry with false reports during test running and other CI operations.
 
-[`sentry-testkit`](https://wix.github.io/sentry-testkit) enables Sentry to work natively in your application, and by overriding the default Sentry transport mechanism, the report is not really sent but rather logged locally into memory. In this way, the logged reports can be fetched later for your own usage, verification, or any other use you may have in your local developing/testing environment.
+[`sentry-testkit`](https://zivl.github.io/sentry-testkit) enables Sentry to work natively in your application, and by overriding the default Sentry transport mechanism, the report is not really sent but rather logged locally into memory. In this way, the logged reports can be fetched later for your own usage, verification, or any other use you may have in your local developing/testing environment.
 
-See how to get started with `sentry-testkit` in their [documentation site here](https://wix.github.io/sentry-testkit/)
+For more information on how to get started, see [`sentry-testkit` documentation](https://zivl.github.io/sentry-testkit/).
 
 > If you're using `jest`, make sure to add `@sentry/.*` and `sentry-expo` to your `transformIgnorePatterns`.
 
@@ -288,6 +298,44 @@ In order to ensure that errors are reported reliably, Sentry defers reporting th
 ## Disabled by default in dev
 
 Unless `enableInExpoDevelopment: true` is set, all your dev/local errors will be ignored and only app releases will report errors to Sentry. You can call methods like `Sentry.Native.captureException(new Error('Oops!'))` but these methods will be no-op.
+
+## Troubleshooting
+
+<Collapsible summary={<>I'm seeing <CODE>error: project not found</CODE> in my build logs</>}>
+
+This error is caused by the script that tries to upload source maps during build.
+
+Make sure your `organization`, `project` and `authToken` properties are set correctly.
+
+</Collapsible>
+
+<Collapsible summary={<><CODE>expo-dev-client</CODE> transactions never finish</>}>
+
+This error is caused by the HTTP request tracking, which creates spans for log requests to the development server. To fix this, stop creating spans by adding the following code snippet:
+
+```js
+import * as Sentry from 'sentry-expo';
+import * as Network from 'expo-network';
+
+const devServerPort = 8081;
+let devServerIpAddress: string | null = null;
+Network.getIpAddressAsync().then(ip => {
+  devServerIpAddress = ip;
+});
+
+Sentry.init({
+  tracesSampleRate: 1.0,
+  integrations: [
+    new Sentry.Native.ReactNativeTracing({
+      shouldCreateSpanForRequest: url => {
+        return !__DEV__ || !url.startsWith(`http://${devServerIpAddress}:${devServerPort}/logs`);
+      },
+    }),
+  ],
+});
+```
+
+</Collapsible>
 
 ## Learn more about Sentry
 

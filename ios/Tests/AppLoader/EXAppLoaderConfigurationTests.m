@@ -31,7 +31,7 @@
 - (void)testIsDefaultUpdatesConfigUsed
 {
   NSDictionary *manifest = @{};
-  EXAppLoader *appLoader = [[EXAppLoader alloc] initWithManifestUrl:[NSURL URLWithString:@"exp://exp.host/@esamelson/test-fetch-update"]];
+  EXHomeLoader *appLoader = [[EXHomeLoader alloc] initWithManifestUrl:[NSURL URLWithString:@"exp://exp.host/@esamelson/test-fetch-update"]];
   [appLoader _fetchBundleWithManifest:manifest];
   XCTAssert([appLoader.appFetcher isKindOfClass:[EXAppFetcherWithTimeout class]], @"AppLoader should choose to use AppFetcherWithTimeout when fetching remotely");
   XCTAssert([(EXAppFetcherWithTimeout *)appLoader.appFetcher timeout] == kEXAppLoaderDefaultTimeout, @"AppFetcherWithTimeout should have the correct user-specified timeout length");
@@ -44,7 +44,7 @@
       @"fallbackToCacheTimeout": @1000,
     }
   };
-  EXAppLoader *appLoader = [[EXAppLoader alloc] initWithManifestUrl:[NSURL URLWithString:@"exp://exp.host/@esamelson/test-fetch-update"]];
+  EXHomeLoader *appLoader = [[EXHomeLoader alloc] initWithManifestUrl:[NSURL URLWithString:@"exp://exp.host/@esamelson/test-fetch-update"]];
   [appLoader _fetchBundleWithManifest:manifest];
   XCTAssert([appLoader.appFetcher isKindOfClass:[EXAppFetcherWithTimeout class]], @"AppLoader should choose to use AppFetcherWithTimeout when fetching remotely");
   XCTAssert([(EXAppFetcherWithTimeout *)appLoader.appFetcher timeout] == 1.0f, @"AppFetcherWithTimeout should have the correct user-specified timeout length");
@@ -57,7 +57,7 @@
       @"checkAutomatically": @"ON_ERROR_RECOVERY"
     }
   };
-  EXAppLoader *appLoader = [[EXAppLoader alloc] initWithManifestUrl:[NSURL URLWithString:@"exp://exp.host/@esamelson/test-fetch-update"]];
+  EXHomeLoader *appLoader = [[EXHomeLoader alloc] initWithManifestUrl:[NSURL URLWithString:@"exp://exp.host/@esamelson/test-fetch-update"]];
   [appLoader _fetchBundleWithManifest:manifest];
   XCTAssert([appLoader.appFetcher isKindOfClass:[EXAppFetcherWithTimeout class]], @"AppLoader should ignore ON_ERROR_RECOVERY in Expo Go");
 }

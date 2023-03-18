@@ -3,7 +3,7 @@ import { Point } from './Common.types';
 /**
  * Overlay specific props.
  */
-export declare type OverlayProps = {
+export type OverlayProps = {
     /**
      * South west, and north east corners of the image.
      */
@@ -22,7 +22,7 @@ export declare type OverlayProps = {
      */
     icon: string;
 };
-export declare type OverlayObject = {
+export type OverlayObject = {
     type: 'overlay';
 } & OverlayProps;
 /**

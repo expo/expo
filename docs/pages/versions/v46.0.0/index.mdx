@@ -6,7 +6,7 @@ hideTOC: true
 import VersionedRedirectNotification from '~/components/plugins/VersionedRedirectNotification';
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { InlineCode } from '~/components/base/code';
+import { CODE } from '~/ui/components/Text';
 
 <VersionedRedirectNotification />
 
@@ -38,7 +38,7 @@ The easiest way to create a bare React Native app with support for the Expo SDK 
   href="/bare/installing-expo-modules"
   description={
     <>
-      Projects that were created with <InlineCode>npx react-native init</InlineCode> require
+      Projects that were created with <CODE>npx react-native init</CODE> require
       additional setup to use the Expo SDK.
     </>
   }
@@ -64,3 +64,14 @@ Every quarter there is a new Expo SDK release that typically updates to the late
 ### Support for other React Native versions
 
 Packages in the Expo SDK are intended to support the target React Native version for that SDK. Typically, they will not support older versions of React Native, but they may. When a new version of React Native is released, the latest versions of the Expo SDK packages are typically updated to support it. However, this may take weeks or more, depending on the extent of the changes in the release.
+
+## Support for Android and iOS versions
+
+Each version of Expo SDK supports a minimum OS version of Android and iOS. For Android, the `compileSdkVersion` is defined which tells the [Gradle](https://developer.android.com/studio/build) which Android SDK version to use to compile the app. This also means that you can use the Android API features included in that SDK version and from the previous versions.
+
+| Expo SDK version | Android version | `compileSdkVersion` | iOS version |
+| ---------------- | --------------- | ------------------- | ----------- |
+| 46.0.0           | 5+              | 31                  | 12.4+       |
+| 45.0.0           | 5+              | 31                  | 12+         |
+| 44.0.0           | 5+              | 30                  | 12+         |
+| 43.0.0           | 5+              | 30                  | 12+         |

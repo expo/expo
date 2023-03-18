@@ -6,7 +6,7 @@ packageName: '@stripe/stripe-react-native'
 
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { SnackInline} from '~/ui/components/Snippet';
+import { SnackInline } from '~/ui/components/Snippet';
 
 Expo includes support for [`@stripe/stripe-react-native`](https://github.com/stripe/stripe-react-native), which allows you to build delightful payment experiences in your native Android and iOS apps using React Native & Expo. This library provides powerful and customizable UI screens and elements that can be used out-of-the-box to collect your users' payment details.
 
@@ -18,7 +18,7 @@ If you're looking for a quick example, check out [this Snack](https://snack.expo
 
 ## Installation
 
-Each Expo SDK version requires a specific `@stripe/stripe-react-native` version. See the [Stripe CHANGELOG](https://github.com/stripe/stripe-react-native/blob/master/CHANGELOG.mdx) for a mapping of versions. To automatically install the correct version for your Expo SDK version, run:
+Each Expo SDK version requires a specific `@stripe/stripe-react-native` version. See the [Stripe CHANGELOG](https://github.com/stripe/stripe-react-native/blob/master/CHANGELOG.md) for a mapping of versions. To automatically install the correct version for your Expo SDK version, run:
 
 <APIInstallSection href="https://github.com/stripe/stripe-react-native" />
 
@@ -82,16 +82,12 @@ urlScheme:
 
 ### Standalone apps
 
-`@stripe/stripe-react-native` is supported in Expo Go on Android and iOS out of the box, **however**, for iOS, it is only available for standalone apps built with [EAS Build][eas-build], and not for apps built on the classic build system- `expo build:ios`. Android apps built with `expo build:android` _will_ have access to the `@stripe/stripe-react-native` library.
+`@stripe/stripe-react-native` is supported in Expo Go on Android and iOS out of the box, **however**, for iOS, it is only available for standalone apps built with [EAS Build](/build/introduction), and not for apps built on the classic build system- `expo build:ios`. Android apps built with `expo build:android` _will_ have access to the `@stripe/stripe-react-native` library.
 
 ### Apple Pay
 
-Apple Pay **is not** supported in [Expo Go][expo-go]. To use Apple Pay, you must create a [development build][dev-build]. This can be done with [EAS Build][eas-build], or locally by running `npx expo run:ios`.
+Apple Pay **is not** supported in [Expo Go](https://expo.dev/expo-go). To use Apple Pay, you must create a [development build](/development/create-development-builds). This can be done with [EAS Build](/build/introduction), or locally by running `npx expo run:ios`.
 
 ### Google Pay
 
-Google Pay **is not** supported in [Expo Go][expo-go]. To use Google Pay, you must create a [development build][dev-build]. This can be done with [EAS Build][eas-build], or locally by running `npx expo run:android`.
-
-[eas-build]: /build/introduction
-[expo-go]: https://expo.dev/expo-go
-[dev-build]: /development/getting-started.mdx#creating-and-installing-your-first-development-build
+Google Pay **is not** supported in [Expo Go](https://expo.dev/expo-go). To use Google Pay, you must create a [development build](/development/create-development-builds). This can be done with [EAS Build](/build/introduction), or locally by running `npx expo run:android`.

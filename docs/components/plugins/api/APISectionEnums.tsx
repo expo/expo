@@ -1,9 +1,7 @@
 import { css } from '@emotion/react';
-import { spacing, theme } from '@expo/styleguide';
-import React from 'react';
+import { theme } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
 
-import { InlineCode } from '~/components/base/code';
-import { H2, H3Code, H4Code } from '~/components/plugins/Headings';
 import { EnumDefinitionData, EnumValueData } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
@@ -11,43 +9,46 @@ import {
   CommentTextBlock,
   getTagNamesList,
   STYLES_APIBOX,
+  STYLES_APIBOX_NESTED,
+  H3Code,
 } from '~/components/plugins/api/APISectionUtils';
+import { H2, H4, CODE, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionEnumsProps = {
   data: EnumDefinitionData[];
 };
 
 const sortByValue = (a: EnumValueData, b: EnumValueData) => {
-  if (a.defaultValue && b.defaultValue) {
-    if (a.defaultValue.includes(`'`) && b.defaultValue.includes(`'`)) {
-      return a.defaultValue.localeCompare(b.defaultValue);
-    } else {
-      return parseInt(a.defaultValue, 10) - parseInt(b.defaultValue, 10);
+  if (a.type && a.type.value !== undefined && b.type && b.type.value !== undefined) {
+    if (typeof a.type.value === 'string' && typeof b.type.value === 'string') {
+      return a.type.value.localeCompare(b.type.value);
+    } else if (typeof a.type.value === 'number' && typeof b.type.value === 'number') {
+      return (a.type.value ?? Number.MIN_VALUE) - (b.type.value ?? Number.MIN_VALUE);
     }
   }
   return 0;
 };
+
+const renderEnumValue = (value: any) => (typeof value === 'string' ? `"${value}"` : value);
 
 const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Element => (
   <div key={`enum-definition-${name}`} css={[STYLES_APIBOX, enumContentStyles]}>
     <APISectionDeprecationNote comment={comment} />
     <APISectionPlatformTags comment={comment} prefix="Only for:" />
     <H3Code tags={getTagNamesList(comment)}>
-      <InlineCode>{name}</InlineCode>
+      <MONOSPACE weight="medium">{name}</MONOSPACE>
     </H3Code>
     <CommentTextBlock comment={comment} includePlatforms={false} />
     {children.sort(sortByValue).map((enumValue: EnumValueData) => (
-      <div css={[STYLES_APIBOX, enumContainerStyle]} key={enumValue.name}>
+      <div css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]} key={enumValue.name}>
+        <APISectionDeprecationNote comment={enumValue.comment} />
         <APISectionPlatformTags comment={enumValue.comment} prefix="Only for:" />
-        <div css={enumValueNameStyle}>
-          <H4Code>
-            <InlineCode>{enumValue.name}</InlineCode>
-          </H4Code>
-        </div>
-        <InlineCode css={enumValueStyles}>
-          {name}.{enumValue.name}
-          {enumValue?.defaultValue ? ` ＝ ${enumValue?.defaultValue}` : ''}
-        </InlineCode>
+        <H4 css={enumValueNameStyle}>
+          <CODE>{enumValue.name}</CODE>
+        </H4>
+        <CODE css={enumValueStyles}>
+          {`${name}.${enumValue.name} ＝ ${renderEnumValue(enumValue.type.value)}`}
+        </CODE>
         <CommentTextBlock comment={enumValue.comment} includePlatforms={false} />
       </div>
     ))}
@@ -61,11 +62,6 @@ const APISectionEnums = ({ data }: APISectionEnumsProps) =>
       {data.map(renderEnum)}
     </>
   ) : null;
-
-const enumContainerStyle = css({
-  boxShadow: 'none',
-  marginBottom: spacing[3],
-});
 
 const enumValueNameStyle = css({
   h4: {
@@ -82,9 +78,7 @@ const enumValueStyles = css({
 });
 
 const enumContentStyles = css({
-  '& ul': {
-    marginBottom: 0,
-  },
+  paddingBottom: 0,
 });
 
 export default APISectionEnums;

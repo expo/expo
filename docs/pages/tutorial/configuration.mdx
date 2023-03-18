@@ -5,14 +5,18 @@ title: Configure status bar, splash screen and app icon
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import Video from '~/components/plugins/Video';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { LinkBase } from '~/ui/components/Text';
+import { A } from '~/ui/components/Text';
 import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
 
 Before considering the app fully launchable, we have to configure the status bar, add a splash screen, and add an app icon. In this chapter, we will learn how to do all of that.
 
-## Step 1: Configure the status bar
+<Step label="1">
 
-The <LinkBase href="/versions/latest/sdk/status-bar/" openInNewTab>`expo-status-bar`</LinkBase> library comes pre-installed in every project created using `create-expo-app`. This library provides a `<StatusBar>` component that allows configuring the app's status bar to change the text color, background color, make it translucent, and so on.
+## Configure the status bar
+
+The <A href="/versions/latest/sdk/status-bar/" openInNewTab>`expo-status-bar`</A> library comes pre-installed in every project created using `create-expo-app`.
+This library provides a `<StatusBar>` component that allows configuring the app's status bar to change the text color, background color, make it translucent, and so on.
 
 The `<StatusBar>` component is already imported in the **App.js**:
 
@@ -26,7 +30,9 @@ It's also mounted in the `<App>` component.
 <StatusBar style="auto" />
 ```
 
-Currently, the `style` value is `auto`. It means that the status bar will automatically pick the text color based on the app's color scheme. However, we do not have different color schemes in the tutorial app. There is only one active color scheme, which has a dark background. To make the status bar light, change the `style` value to `light`.
+Currently, the `style` value is `auto`. It means that the status bar will automatically pick the text color based on the app's color scheme.
+However, we do not have different color schemes in the tutorial app. There is only one active color scheme, which has a dark background.
+To make the status bar light, change the `style` value to `light`.
 
 ```jsx App.js
 <StatusBar style="light" />
@@ -38,11 +44,16 @@ Currently, the `style` value is `auto`. It means that the status bar will automa
   style={{ maxWidth: 480 }}
 />
 
-## Step 2: Splash screen
+</Step>
+
+<Step label="2">
+
+## Splash screen
 
 A splash screen is a screen that is visible before the contents of the app has had a chance to load. It hides once the app is ready for use and the content is ready to be displayed.
 
-The splash screen is configured by defining a path to the `"splash.image"` property in the <LinkBase href="/workflow/configuration/" openInNewTab>**app.json** file</LinkBase>. It has a current value of `"./assets/splash.png"` path. This is already done by default when a new Expo project is created.
+The splash screen is configured by defining a path to the `"splash.image"` property in the <A href="/workflow/configuration/" openInNewTab>**app.json** file</A>.
+It has a current value of `"./assets/splash.png"` path. This is already done by default when a new Expo project is created.
 
 We already have **splash.png** in the **assets** directory. It looks as shown below:
 
@@ -79,7 +90,11 @@ Don't forget to remove this code when you are done testing your splash screen!
 
 Notice that there is a white bar on the edges of the Android device in the above demo. Depending on the resolution of the device, it might not be visible. To resolve this, we need to set the `backgroundColor` for the splash screen. The background color is applied to any screen area that isn't covered by the splash image.
 
-## Step 3: Configure the splash screen background color
+</Step>
+
+<Step label="3">
+
+## Configure the splash screen background color
 
 We can configure the splash screen's background color in **app.json** file. Open it and make the following change in `"splash"`:
 
@@ -97,11 +112,15 @@ We can configure the splash screen's background color in **app.json** file. Open
 
 The `backgroundColor` value in the above snippet matches the background of the splash screen image.
 
-Let's take a look at our app now on Android, and iOS:
+Let's take a look at our app now on Android and iOS:
 
 <Video file={'tutorial/splash-fixed.mp4'} />
 
-## Step 4: App icon
+</Step>
+
+<Step label="4">
+
+## App icon
 
 Inside the project, there's an **icon.png** file inside **assets** directory. This is our app icon. It's a 1024px by 1024px image and looks as shown below:
 
@@ -120,8 +139,10 @@ You can see the icon in various places in Expo Go. Here is an example of the app
   containerStyle={{ marginBottom: 0 }}
 />
 
+</Step>
+
 ## We have completed the app!
 
 Well done! We built an app that runs on Android, iOS, and the web from the same codebase.
 
-The next section of the tutorial will guide us towards resources to learn more about concepts we've covered here and others we have only mentioned in passing. [Continue to find out how you can learn more](/tutorial/follow-up).
+The next section of the tutorial will guide you toward resources to learn more about concepts we've covered here and others we have mentioned briefly. [Continue to find out how you can learn more](/tutorial/follow-up).

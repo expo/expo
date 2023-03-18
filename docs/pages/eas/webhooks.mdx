@@ -1,22 +1,11 @@
 ---
 title: Webhooks
+description: Learn how to configure webhooks to get alerts on EAS Build and EAS submit completion.
 ---
 
-import { ConfigClassic } from '~/components/plugins/ConfigSection';
 import { Collapsible } from '~/ui/components/Collapsible';
 
 EAS can alert you as soon as your build or submission has completed via a webhook. Webhooks need to be configured per-project, so if you want to be alerted for both `@johndoe/awesomeApp` and `@johndoe/coolApp`, you need to run `eas webhook:create` in each directory.
-
-<ConfigClassic>
-
-Webhooks function almost exactly the same for both EAS Build and the classic `expo build` system, _except_ that for `expo build` webhooks, you'll use `expo-cli` to interact with them, and **not** `eas-cli`. For `expo build` webhooks, you'll use:
-
-- `expo webhooks [path]`: List all webhooks for a project
-- `expo webhooks:add [path]`: Add a webhook to a project
-- `expo webhooks:remove [path]`: Delete a webhook
-- `expo webhooks:update [path]`: Update an existing webhook
-
-</ConfigClassic>
 
 After running `eas webhook:create`, you'll be prompted to choose the webhook event type (unless you provide the `--event BUILD|SUBMIT` parameter). Next, provide the webhook URL (or specify it with the `--url` flag) that handles HTTP POST requests. Additionally, you'll have to input a webhook signing secret, if you have not already provided it with the `--secret` flag. It must be at least 16 characters long, and it will be used to calculate the signature of the request body which we send as the value of the `expo-signature` HTTP header. You can use the signature to verify a webhook request is genuine (example code below).
 
@@ -37,6 +26,9 @@ The build webhook payload looks something like this:
 ```json
 {
   "id": "147a3212-49fd-446f-b4e3-a6519acf264a",
+  "accountName": "dsokal",
+  "projectName": "example",
+  "buildDetailsPageUrl": "https://expo.dev/accounts/dsokal/projects/example/builds/147a3212-49fd-446f-b4e3-a6519acf264a",
   "parentBuildId": "75ac0be7-0d90-46d5-80ec-9423fa0aaa6b", // available for build retries
   "appId": "bc0a82de-65a5-4497-ad86-54ff1f53edf7",
   "initiatingUserId": "d1041496-1a59-423a-8caf-479bb978203a",
@@ -118,6 +110,9 @@ The submit webhook payload looks something like this:
 ```json
 {
   "id": "0374430d-7776-44ad-be7d-8513629adc54",
+  "accountName": "dsokal",
+  "projectName": "example",
+  "submissionDetailsPageUrl": "https://expo.dev/accounts/dsokal/projects/example/builds/0374430d-7776-44ad-be7d-8513629adc54",
   "parentSubmissionId": "75ac0be7-0d90-46d5-80ec-9423fa0aaa6b", // available for submission retries
   "appId": "23c0e405-d282-4399-b280-5689c3e1ea85",
   "archiveUrl": "http://archive.url/abc.apk",

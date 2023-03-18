@@ -1,8 +1,7 @@
 ---
 title: Runtime Versions
+description: Learn how to set the runtime version for an app.
 ---
-
-> **warning** Custom runtime versions are not supported on the classic build system (`expo build`); these apps will always use the SDK version as the basis for determining runtime compatibility.
 
 Every update targets one compatible runtime. Each time you build a binary for your app it includes the native code present at the time of the build and only that code, and this unique combination and configuration of the build is what is represented by the runtime version.
 
@@ -14,7 +13,7 @@ The runtime version string must conform to [this format](/versions/latest/config
 
 Updates published with the runtime version set in **app.json** will be delivered to builds running the same runtime version, and only to those builds.
 
-```json
+```json app.json
 {
   "expo": {
     "runtimeVersion": "2.718"
@@ -26,9 +25,9 @@ Updates published with the runtime version set in **app.json** will be delivered
 
 ### Configuration for the managed workflow
 
-If you are using the [managed workflow](../introduction/managed-vs-bare/#managed-workflow), `runtimeVersion` is specified in **app.json**:
+If you are using the [managed workflow](/introduction/managed-vs-bare/#managed-workflow), `runtimeVersion` is specified in **app.json**:
 
-```json
+```json app.json
 {
   "expo": {
     "runtimeVersion": "2.718"
@@ -38,7 +37,7 @@ If you are using the [managed workflow](../introduction/managed-vs-bare/#managed
 
 ### Configuration for the bare workflow
 
-If you are using the [bare workflow](/introduction/managed-vs-bare.mdx#bare-workflow), set the runtime version in **Expo.plist** on iOS and **AndroidManifest.xml** on Android.
+If you are using the [bare workflow](/introduction/managed-vs-bare#bare-workflow), set the runtime version in **AndroidManifest.xml** on Android **Expo.plist** on iOS.
 
 For an iOS build, add an entry to the **Expo.plist** with the key `EXUpdatesRuntimeVersion`. The value is a string that represents the runtime version.
 
@@ -55,15 +54,15 @@ For an Android build, add a `<meta-data>` element to the **AndroidManifest.xml**
 
 ## FAQ
 
-### Can I have a different runtime version on iOS and Android?
+### Can I have a different runtime version on Android and iOS?
 
 Yes, if you want to be able to control the runtime version on a platform level, you can:
 
-1. Have platform specific channels: `ios-production`, `android-production`.
-2. Have platform specific runtime versions: `ios-1.0.0`, `android-1.0.0`.
+1. Have platform-specific channels: `android-production`, `ios-production`.
+2. Have platform-specific runtime versions: `android-1.0.0`, `ios-1.0.0`.
 
-However, you cannot set a platform specific configuration field such as `ios.runtimeVersion` or `android.runtimeVersion`
+However, you cannot set a platform-specific configuration field such as `android.runtimeVersion` or `ios.runtimeVersion`
 
 ### Can I test updates with a custom runtime version on Expo Go?
 
-Expo Go is meant for updates targeting an Expo SDK. If you want to test an update targeting a custom runtime version, you should use a [development build](/development/introduction.mdx).
+Expo Go is meant for updates targeting an Expo SDK. If you want to test an update targeting a custom runtime version, you should use a [development build](/development/introduction).

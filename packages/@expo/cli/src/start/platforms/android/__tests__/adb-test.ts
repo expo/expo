@@ -13,6 +13,7 @@ import {
   launchActivityAsync,
   openAppIdAsync,
   sanitizeAdbDeviceName,
+  openUrlAsync,
 } from '../adb';
 
 jest.mock('../ADBServer', () => ({
@@ -25,6 +26,24 @@ jest.mock('../ADBServer', () => ({
 const asDevice = (device: Partial<Device>): Device => device as Device;
 
 const device = asDevice({ name: 'Pixel 5', pid: '123' });
+
+describe(openUrlAsync, () => {
+  it(`escapes & in the url`, async () => {
+    await openUrlAsync(device, { url: 'acme://foo?bar=1&baz=2' });
+    expect(getServer().runAsync).toBeCalledWith([
+      '-s',
+      '123',
+      'shell',
+      'am',
+      'start',
+      '-a',
+      'android.intent.action.VIEW',
+      '-d',
+      // Ensure this is escaped
+      'acme://foo?bar=1\\&baz=2',
+    ]);
+  });
+});
 
 describe(launchActivityAsync, () => {
   it(`asserts that the launch activity does not exist`, async () => {

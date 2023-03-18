@@ -7,6 +7,7 @@ import android.net.Uri
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import expo.modules.annotation.Config
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.MissingTypeConverter
 import expo.modules.kotlin.jni.CppType
@@ -69,6 +70,7 @@ fun convert(value: Dynamic, type: KType): Any? {
 object TypeConverterProviderImpl : TypeConverterProvider {
   private val cachedConverters = createCashedConverters(false) + createCashedConverters(true)
   private val cachedRecordConverters = mutableMapOf<KClass<*>, TypeConverter<*>>()
+  private val cachedCustomConverters = mutableMapOf<KType, TypeConverter<*>>()
 
   override fun obtainTypeConverter(type: KType): TypeConverter<*> {
     cachedConverters[type]?.let {
@@ -113,7 +115,9 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       return converter
     }
 
-    return handelEither(type, kClass) ?: throw MissingTypeConverter(type)
+    return handelEither(type, kClass)
+      ?: handelCustomConverter(type, kClass)
+      ?: throw MissingTypeConverter(type)
   }
 
   @OptIn(EitherType::class)
@@ -131,10 +135,36 @@ object TypeConverterProviderImpl : TypeConverterProvider {
     return null
   }
 
+  private fun handelCustomConverter(type: KType, kClass: KClass<*>): TypeConverter<*>? {
+    val cachedConverter = cachedCustomConverters[type]
+    if (cachedConverter != null) {
+      return cachedConverter
+    }
+
+    val typeName = kClass.java.canonicalName ?: return null
+
+    val converterProviderName = "${Config.packageNamePrefix}$typeName${Config.classNameSuffix}"
+    return try {
+      val converterClazz = Class.forName(converterProviderName)
+      val converterProvider = converterClazz.newInstance()
+      val method = converterProvider.javaClass.getMethod(Config.converterProviderFunctionName, KType::class.java)
+
+      (method.invoke(converterProvider, type) as TypeConverter<*>)
+        .also {
+          cachedCustomConverters[type] = it
+        }
+    } catch (e: Throwable) {
+      null
+    }
+  }
+
   private fun createCashedConverters(isOptional: Boolean): Map<KType, TypeConverter<*>> {
     val intTypeConverter = createTrivialTypeConverter(
       isOptional, ExpectedType(CppType.INT)
     ) { it.asDouble().toInt() }
+    val longTypeConverter = createTrivialTypeConverter(
+      isOptional, ExpectedType(CppType.LONG)
+    ) { it.asDouble().toLong() }
     val doubleTypeConverter = createTrivialTypeConverter(
       isOptional, ExpectedType(CppType.DOUBLE)
     ) { it.asDouble() }
@@ -148,6 +178,9 @@ object TypeConverterProviderImpl : TypeConverterProvider {
     val converters = mapOf(
       Int::class.createType(nullable = isOptional) to intTypeConverter,
       java.lang.Integer::class.createType(nullable = isOptional) to intTypeConverter,
+
+      Long::class.createType(nullable = isOptional) to longTypeConverter,
+      java.lang.Long::class.createType(nullable = isOptional) to longTypeConverter,
 
       Double::class.createType(nullable = isOptional) to doubleTypeConverter,
       java.lang.Double::class.createType(nullable = isOptional) to doubleTypeConverter,

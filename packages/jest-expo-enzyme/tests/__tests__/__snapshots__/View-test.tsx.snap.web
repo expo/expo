@@ -1,3 +1,0 @@
-// Jest Snapshot v1, https://goo.gl/fbAQLP
-
-exports[`renders a view with a custom background 1`] = `"rgba(0,0,0,0.50)"`;

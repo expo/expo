@@ -8,9 +8,21 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.18.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 0.18.0 — 2023-02-03
+
+### 🐛 Bug fixes
+
 - Fixed `No native splash screen registered for given view controller. Call 'SplashScreen.show' for given view controller first.` warning being displayed on iOS when app is started in background. ([#20064](https://github.com/expo/expo/pull/20064) by [@grigorigoldman](https://github.com/grigorigoldman))
 
 ### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
 
 ## 0.17.4 - 2022-11-08
 

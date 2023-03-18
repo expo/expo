@@ -3,7 +3,7 @@ import type { Listener, Subscription } from './DeviceSensor';
 /**
  * Each of these keys represents the rotation along that particular axis measured in degrees per second (°/s).
  */
-export declare type GyroscopeMeasurement = {
+export type GyroscopeMeasurement = {
     /**
      * Value of rotation in degrees per second device reported in X axis.
      */

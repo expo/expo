@@ -93,9 +93,6 @@ dependencies {
 
   testImplementation 'junit:junit:4.12'
 
-
-  api("com.facebook.fbjni:fbjni-java-only:0.2.2")
-
   implementation project(":expoview")
 
   // WHEN_DISTRIBUTING_REMOVE_TO_HERE
@@ -106,7 +103,7 @@ dependencies {
   api("androidx.autofill:autofill:${reactProperties.getProperty('ANDROIDX_AUTOFILL_VERSION')}")
   api("androidx.swiperefreshlayout:swiperefreshlayout:${reactProperties.getProperty('SWIPEREFRESH_LAYOUT_VERSION')}")
 
-  api("com.facebook.fbjni:fbjni-java-only:${reactProperties.getProperty('FBJNI_VERSION')}")
+  api("com.facebook.fbjni:fbjni:${reactProperties.getProperty('FBJNI_VERSION')}")
   api("com.facebook.fresco:fresco:${reactProperties.getProperty('FRESCO_VERSION')}")
   api("com.facebook.fresco:imagepipeline-okhttp3:${reactProperties.getProperty('FRESCO_VERSION')}")
   api("com.facebook.fresco:ui-common:${reactProperties.getProperty('FRESCO_VERSION')}")
@@ -200,8 +197,8 @@ dependencies {
   api 'com.github.troZee:ViewPager2:v1.0.6'
 
   // stripe-react-native
-  implementation('com.stripe:stripe-android:20.12.+')
-  implementation('com.stripe:financial-connections:20.12.+')
+  implementation('com.stripe:stripe-android:20.19.+')
+  implementation('com.stripe:financial-connections:20.19.+')
   compileOnly 'com.stripe:stripe-android-issuing-push-provisioning:1.1.0'
   implementation 'org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0'
   implementation "androidx.lifecycle:lifecycle-runtime-ktx:2.3.1"

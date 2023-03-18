@@ -1,7 +1,5 @@
 import ReactMarkdown from 'react-markdown';
 
-import { InlineCode } from '~/components/base/code';
-import { H2, H2Nested, H3Code, H4 } from '~/components/plugins/Headings';
 import {
   ClassDefinitionData,
   GeneratedData,
@@ -15,9 +13,12 @@ import {
   getTagNamesList,
   mdComponents,
   STYLES_APIBOX,
-  STYLES_NESTED_SECTION_HEADER,
   TypeDocKind,
+  H3Code,
+  getCommentContent,
+  BoxSectionHeader,
 } from '~/components/plugins/api/APISectionUtils';
+import { H2, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionNamespacesProps = {
   data: GeneratedData[];
@@ -32,7 +33,6 @@ const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
 
 const renderNamespace = (namespace: ClassDefinitionData, exposeInSidebar: boolean): JSX.Element => {
   const { name, comment, children } = namespace;
-  const Header = exposeInSidebar ? H2Nested : H4;
 
   const methods = children
     ?.filter(child => isMethod(child))
@@ -43,22 +43,20 @@ const renderNamespace = (namespace: ClassDefinitionData, exposeInSidebar: boolea
     <div key={`class-definition-${name}`} css={STYLES_APIBOX}>
       <APISectionDeprecationNote comment={comment} />
       <H3Code tags={getTagNamesList(comment)}>
-        <InlineCode>{name}</InlineCode>
+        <MONOSPACE weight="medium">{name}</MONOSPACE>
       </H3Code>
       <CommentTextBlock comment={comment} />
       {returnComment && (
         <>
-          <div css={STYLES_NESTED_SECTION_HEADER}>
-            <H4>Returns</H4>
-          </div>
-          <ReactMarkdown components={mdComponents}>{returnComment.text}</ReactMarkdown>
+          <BoxSectionHeader text="Returns" />
+          <ReactMarkdown components={mdComponents}>
+            {getCommentContent(returnComment.content)}
+          </ReactMarkdown>
         </>
       )}
       {methods?.length ? (
         <>
-          <div css={STYLES_NESTED_SECTION_HEADER}>
-            <Header>{name} Methods</Header>
-          </div>
+          <BoxSectionHeader text={`${name} Methods`} exposeInSidebar={exposeInSidebar} />
           {methods.map(method => renderMethod(method, { exposeInSidebar }))}
         </>
       ) : undefined}

@@ -140,7 +140,9 @@ describeManifestTypes(
 
   it(`lets us call AuthSession.startAsync after param validation throws`, async () => {
     const { startAsync } = require('../AuthSession');
-    startAsync({ authUrl: null as any });
+    try {
+      await startAsync({ authUrl: null as any });
+    } catch {}
 
     const emitLinkingEvent = mockLinking();
     const authUrl = 'http://example.io';

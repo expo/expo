@@ -1,6 +1,6 @@
 ---
-title: Using Custom Fonts
-sidebar_title: Using Custom Fonts
+title: Custom fonts
+description: Learn about using custom fonts, supported font formats for each platform and loading them.
 ---
 
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
@@ -8,23 +8,23 @@ import { Terminal } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { SnackInline } from '~/ui/components/Snippet';
 
-Both iOS and Android and most desktop operating systems come with their own set of platform fonts but if you want to inject some more brand personality into your app, a well-picked font can go a long way.
+Both Android and iOS and most desktop operating systems come with their own set of platform fonts but if you want to inject some more brand personality into your app, a well-picked font can go a long way.
 
-As each operating system has its own set of platform fonts, if you want to produce an experience that is consistent for all users, you will want to use your own fonts in your project. This documentation covers the aspects of getting a custom font, loading it in your project and what are some of the best practices to use when the font is being loaded in your project.
+As each operating system has its own set of platform fonts, if you want to produce an experience that is consistent for all users, you will want to use your fonts in your project. This documentation covers the aspects of getting a custom font, loading it in your project and what are some of the best practices to use when the font is being loaded in your project.
 
 ## Getting a font
 
-The first thing you need is a font file. For the purpose of a working example, we are going to use Inter Black from the free and open source [Inter font family](https://rsms.me/inter/) by Rasmus Anderson. A common convention in React Native apps is to put your fonts in an **./assets/fonts** directory, but you can put them anywhere you like.
+The first thing you need is a font file. For a working example, we are going to use Inter Black from the free and open source [Inter font family](https://rsms.me/inter/) by Rasmus Anderson. A common convention in React Native apps is to put your fonts in an **./assets/fonts** directory, but you can put them anywhere you like.
 
 ### Supported font formats
 
-The two officially supported font formats that work consistently in the Expo SDK across, web, Android and iOS are OTF and TTF. If your font is in another format, you will require to set up an [advanced configuration](#beyond-otf-and-ttf) for your project.
+The two officially supported font formats that work consistently in the Expo SDK across Android, iOS and the web, are OTF and TTF. If your font is in another format, you will require to set up an [advanced configuration](#beyond-otf-and-ttf) for your project.
 
 If you have both OTF and TTF versions of a font, prefer OTF. OTF is a newer format and **.otf** files are often smaller than **.ttf** files. Sometimes OTF files render slightly better in certain contexts. In general, both formats are very similar and perfectly acceptable.
 
 ### Beyond OTF and TTF
 
-If your font is in another format, you may need to [customize the Metro bundler configuration](/guides/customizing-metro#adding-more-file-extensions-to-assetexts) to get anything other than TTF and OTF to work. In general, just don't do that unless you are really sure you want to. In some cases, trying to render a font format that a platform doesn't support may cause your app to crash.
+If your font is in another format, you may need to [customize the Metro bundler configuration](/guides/customizing-metro#adding-more-file-extensions-to-assetexts) to get anything other than TTF and OTF to work. In general, just don't do that unless you are sure you want to. In some cases, trying to render a font format that a platform doesn't support may cause your app to crash.
 
 For reference, the following table provides what formats work on which platforms:
 
@@ -69,7 +69,7 @@ Then, you can use the font on the `Text` component by using `fontFamily` style p
 <Text style={{ fontFamily: 'Inter-Black', fontSize: 30 }}>Inter Black</Text>
 ```
 
-Alternatively, you can use [`Fonts.loadAsync`](#using--fontloadasync--instead-of-the) to load the fonts in your app.
+Alternatively, you can use [`Font.loadAsync`](#using-fontloadasync-instead-of-the-usefonts-hook) to load the fonts in your app.
 
 ### A minimal working example
 
@@ -143,9 +143,9 @@ To create a new project including this example, run in your terminal:
 
 ## Platform built-in fonts
 
-If you don't want to use a custom font, your best bet is to use the platform default font by not specifying a font family. Each platform has a different set of fonts available by default, so there's no good way to specify one that will work everywhere without supplying your own custom font.
+If you don't want to use a custom font, your best bet is to use the platform's default font by not specifying a font family. Each platform has a different set of fonts available by default, so there's no good way to specify one that will work everywhere without supplying your custom font.
 
-On web, there are several generic font families that you can specify. Different browsers and operating systems are configured to use different fonts for each of these font family specifications. For example, Safari on an iPhone uses San Francisco as its default for `sans-serif` while Microsoft Edge on Windows uses Arial. Similarly, Chrome on Android uses Roboto, though OnePlus phones often use Slate, and so on.
+On the web, there are several generic font families that you can specify. Different browsers and operating systems are configured to use different fonts for each of these font family specifications. For example, Safari on an iPhone uses San Francisco as its default for `sans-serif` while Microsoft Edge on Windows uses Arial. Similarly, Chrome on Android uses Roboto, though OnePlus phones often use Slate, and so on.
 
 - `sans-serif`
 - `serif`

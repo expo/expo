@@ -10,10 +10,4 @@ class RotateAction(private val rotation: Int) : Action {
 
   private val rotationMatrix: Matrix
     get() = Matrix().apply { postRotate(rotation.toFloat()) }
-
-  companion object {
-    fun fromObject(rotation: Int): RotateAction {
-      return RotateAction(rotation)
-    }
-  }
 }

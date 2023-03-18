@@ -19,20 +19,12 @@ public class DeviceModule: Module {
       "osBuildId": osBuildId(),
       "osInternalBuildId": osBuildId(),
       "deviceName": UIDevice.current.name,
+      "deviceType": getDeviceType(),
       "supportedCpuArchitectures": cpuArchitectures()
     ])
 
     AsyncFunction("getDeviceTypeAsync") { () -> Int in
-      switch UIDevice.current.userInterfaceIdiom {
-      case UIUserInterfaceIdiom.phone:
-        return DeviceType.phone.rawValue
-      case UIUserInterfaceIdiom.pad:
-        return DeviceType.tablet.rawValue
-      case UIUserInterfaceIdiom.tv:
-        return DeviceType.tv.rawValue
-      default:
-        return DeviceType.unknown.rawValue
-      }
+      return getDeviceType()
     }
 
     AsyncFunction("getUptimeAsync") { () -> Double in
@@ -44,6 +36,31 @@ public class DeviceModule: Module {
     AsyncFunction("isRootedExperimentalAsync") { () -> Bool in
       return UIDevice.current.isJailbroken
     }
+  }
+}
+
+func getDeviceType() -> Int {
+  // if it's a macOS Catalyst app
+  if ProcessInfo.processInfo.isMacCatalystApp {
+    return DeviceType.desktop.rawValue
+  }
+
+  // if it's built for iPad running on a Mac
+  if #available(iOS 14.0, *) {
+    if ProcessInfo.processInfo.isiOSAppOnMac {
+      return DeviceType.desktop.rawValue
+    }
+  }
+
+  switch UIDevice.current.userInterfaceIdiom {
+  case UIUserInterfaceIdiom.phone:
+    return DeviceType.phone.rawValue
+  case UIUserInterfaceIdiom.pad:
+    return DeviceType.tablet.rawValue
+  case UIUserInterfaceIdiom.tv:
+    return DeviceType.tv.rawValue
+  default:
+    return DeviceType.unknown.rawValue
   }
 }
 

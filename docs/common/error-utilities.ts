@@ -142,9 +142,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/guides/genymotion/': '/workflow/android-studio-emulator/',
   '/workflow/upgrading-expo/': '/workflow/upgrading-expo-sdk-walkthrough/',
   '/workflow/create-react-native-app/': '/workflow/glossary-of-terms/#create-react-native-app',
-  '/expokit/': '/expokit/overview/',
-  '/guides/detach/': '/expokit/eject/',
-  '/expokit/detach/': '/expokit/eject/',
+  '/expokit/': '/archive/glossary/#expokit/',
 
   // Development builds redirects
   '/development/build/': '/development/create-development-builds/',
@@ -159,7 +157,7 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Lots of old links pointing to guides when they have moved elsewhere
   '/guides/configuration/': '/workflow/configuration/',
-  '/guides/expokit/': '/expokit/overview/',
+  '/guides/expokit/': '/archive/glossary/#expokit/',
   '/guides/publishing/': '/archive/classic-updates/publishing/',
   '/workflow/publishing/': '/archive/classic-updates/publishing/',
   '/guides/linking/': '/workflow/linking/',
@@ -188,19 +186,22 @@ const RENAMED_PAGES: Record<string, string> = {
   // Errors and debugging is better suited for getting started than tutorial
   '/tutorial/errors/': '/get-started/errors/',
 
-  // Additional redirects based on Sentry (04/28/2020)
-  '/next-steps/installation/': '/get-started/installation/',
-  '/guides/release-channels/': '/archive/classic-updates/release-channels/',
-
   // Redirects based on Next 9 upgrade (09/11/2020)
   '/api/': '/versions/latest/',
 
   // Redirect to expand Expo Accounts and permissions
   '/guides/account-permissions/': '/accounts/personal/',
 
-  // Redirects based on Sentry (11/26/2020)
+  // Redirects based on Sentry reports
+  '/next-steps/installation/': '/get-started/installation/',
+  '/guides/release-channels/': '/archive/classic-updates/release-channels/',
   '/guides/push-notifications/': '/push-notifications/overview/',
   '/guides/using-fcm/': '/push-notifications/using-fcm/',
+  '/push-notifications/': '/push-notifications/overview/',
+  '/distribution/hosting-your-app/': '/distribution/publishing-websites/',
+  '/build-reference/how-tos/': '/build-reference/private-npm-packages/',
+  '/get-started/': '/get-started/installation/',
+  '/guides/detach/': '/archive/glossary/#detach',
 
   // Renaming a submit section
   '/submit/submit-ios': '/submit/ios/',
@@ -208,8 +209,8 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Fundamentals had too many things
   '/workflow/linking/': '/guides/linking/',
-  '/workflow/how-expo-works/': '/guides/how-expo-works/',
-  '/guides/how-expo-works/': '/workflow/expo-go/',
+  '/workflow/how-expo-works/': '/workflow/already-used-react-native/#how-does-expo-work',
+  '/guides/how-expo-works/': '/workflow/already-used-react-native/#how-does-expo-work',
 
   // Archive unused pages
   '/guides/notification-channels/': '/archived/notification-channels/',
@@ -247,6 +248,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/worfkflow/publishing/': '/archive/classic-updates/publishing/',
   '/classic/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
   '/classic/turtle-cli/': '/archive/classic-updates/turtle-cli/',
+  '/archive/classic-updates/getting-started/': '/eas-update/getting-started/',
 
   // Redirect bare guides to unified workflow guides
   '/bare/using-libraries/': '/workflow/using-libraries/',
@@ -264,11 +266,19 @@ const RENAMED_PAGES: Record<string, string> = {
 
   // Deleted or removed guides
   '/guides/setup-native-firebase/': '/guides/using-firebase/',
+  '/guides/using-clojurescript/': '/',
 
   // Redirects from old to new tutorial
   '/tutorial/planning/': '/tutorial/introduction/',
   '/tutorial/sharing/': '/tutorial/introduction/',
   '/tutorial/text/': '/tutorial/introduction/',
+
+  // Redirects for removed /archived pages
+  '/archived/': '/archive/',
+  '/versions/latest/expokit/eject/': '/archive/glossary/#eject',
+  '/expokit/eject/': '/archive/glossary/#eject',
+  '/expokit/expokit/': '/archive/glossary/#expokit',
+  '/submit/classic-builds/': '/submit/introduction/',
 
   // Redirects for removed API docs based on Sentry
   '/versions/latest/sdk/facebook/': '/guides/authentication/',
@@ -281,4 +291,13 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/sdk/branch/':
     'https://github.com/expo/config-plugins/tree/main/packages/react-native-branch',
   '/versions/latest/sdk/appstate/': '/versions/latest/react-native/appstate/',
+  '/versions/latest/sdk/google/': '/guides/authentication/',
+  '/versions/latest/sdk/firebase-core/': '/guides/using-firebase/',
+  '/versions/latest/sdk/firebase-analytics/': '/guides/using-firebase/',
+  '/versions/latest/sdk/firebase-recaptcha/': '/guides/using-firebase/',
+  '/versions/latest/sdk/amplitude/': '/guides/using-analytics/',
+  '/versions/latest/sdk/util/': '/versions/latest/',
+  // Push notifications
+  '/push-notifications/using-fcm/': '/push-notifications/push-notifications-setup',
+  '/config/app/': '/workflow/configuration/',
 };

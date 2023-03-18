@@ -6,17 +6,32 @@
 
 ### 🎉 New features
 
-- Migrated Android implementation to Expo Modules API. ([#20112](https://github.com/expo/expo/pull/20112) by [@alanhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 11.2.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 11.2.0 — 2023-02-03
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 11.1.0 — 2022-12-30
+
+### 🎉 New features
+
+- Migrated Android implementation to Expo Modules API. ([#20112](https://github.com/expo/expo/pull/20112) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 11.0.1 — 2022-10-27
 
 ### 🐛 Bug fixes
 
 - On iOS, dismiss share sheet after sharing to an app is canceled, so the file doesn't fail to attach when trying to share again ([#19656](https://github.com/expo/expo/pull/19656) by [@keith-kurak](https://github.com/keith-kurak))
+- Fixed `shareAsync` not resolving on Android. ([#21432](https://github.com/expo/expo/pull/21432) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 11.0.0 — 2022-10-25
 

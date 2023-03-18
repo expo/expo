@@ -131,11 +131,12 @@ redirects[development/extensions]=development/development-workflows/
 redirects[development/develop-your-project]=development/use-development-builds/
 
 # Guides that have been deleted
-redirects[guides/using-gatsby]=guides/
+redirects[guides/using-gatsby]=/
 redirects[guides/testing-on-devices]=workflow/run-on-device
 redirects[distribution/uploading-apps]=submit/introduction
-redirects[distribution/uploading-apps]=submit/introduction
 redirects[guides/setup-native-firebase/]=guides/using-firebase
+redirects[guides/using-clojurescript/]=/
+redirects[distribution/hosting-your-app/]=distribution/publishing-websites/
 
 # We should change this redirect to a more general EAS guide later
 redirects[guides/setting-up-continuous-integration]=build/building-on-ci
@@ -152,12 +153,17 @@ redirects[eas-update/bare-react-native]=bare/updating-your-app
 redirects[worfkflow/publishing]=archive/classic-updates/publishing
 redirects[classic/building-standalone-apps/]=archive/classic-updates/building-standalone-apps/
 redirects[classic/turtle-cli/]=archive/classic-updates/turtle-cli/
+redirects[archive/classic-updates/getting-started/]=eas-update/getting-started/
+redirects[archived/]=archive/
 
 # Old tutorial pages
 redirects[introduction/walkthrough]=tutorial/introduction/
 redirects[tutorial/planning]=tutorial/introduction/
 redirects[tutorial/sharing]=tutorial/introduction/
 redirects[tutorial/text]=tutorial/introduction/
+
+# Push notifications
+redirects[push-notifications/using-fcm/]=push-notifications/push-notifications-setup/
 
 # Removed API reference docs
 redirects[versions/latest/sdk/facebook]=guides/authentication/
@@ -166,7 +172,16 @@ redirects[versions/latest/sdk/videothumbnails]=versions/latest/sdk/video-thumbna
 redirects[versions/latest/sdk/appearance]=versions/latest/react-native/appearance/
 redirects[versions/latest/sdk/app-loading]=versions/latest/sdk/splash-screen/
 redirects[versions/latest/sdk/app-auth]=guides/authentication/
+redirects[versions/latest/sdk/firebase-core]=guides/using-firebase/
+redirects[versions/latest/sdk/firebase-analytics]=guides/using-firebase/
+redirects[versions/latest/sdk/firebase-recaptcha]=guides/using-firebase/
 redirects[versions/latest/sdk/google-sign-in]=guides/authentication/
+redirects[versions/latest/sdk/google]=guides/authentication/
+redirects[versions/latest/sdk/amplitude/]=guides/using-analytics/
+redirects[versions/latest/sdk/util/]=versions/latest/
+
+# Redirects based on Sentry reports
+redirects[push-notifications]=push-notifications/overview/
 
 echo "::group::[5/6] Add custom redirects"
 for i in "${!redirects[@]}" # iterate over keys

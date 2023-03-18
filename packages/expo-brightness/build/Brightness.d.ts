@@ -14,7 +14,7 @@ export declare enum BrightnessMode {
      */
     MANUAL = 2
 }
-export declare type BrightnessEvent = {
+export type BrightnessEvent = {
     /**
      * A number between `0` and `1`, inclusive, representing the current screen brightness.
      */

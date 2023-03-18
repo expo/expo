@@ -1,12 +1,11 @@
 import { css } from '@emotion/react';
-import React from 'react';
+import { useMemo } from 'react';
 
 import { androidPermissions, AndroidPermission, PermissionReference } from './data';
 
-import Permalink from '~/components/Permalink';
-import { InlineCode } from '~/components/base/code';
 import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
+import { CODE, P, createPermalinkedComponent } from '~/ui/components/Text';
 
 // TODO(cedric): all commented code is related to the "granter" column.
 // This column defines if the permission is granted by the system or user (requires notification).
@@ -19,7 +18,7 @@ type AndroidPermissionsProps = {
 // const grantedByInfo = 'Some permissions are granted by the system without user approval';
 
 export function AndroidPermissions({ permissions }: AndroidPermissionsProps) {
-  const list = React.useMemo(() => getPermissions(permissions), [permissions]);
+  const list = useMemo(() => getPermissions(permissions), [permissions]);
 
   return (
     <Table>
@@ -43,6 +42,10 @@ export function AndroidPermissions({ permissions }: AndroidPermissionsProps) {
   );
 }
 
+const PermissionPermalink = createPermalinkedComponent(P, {
+  baseNestingLevel: 4,
+});
+
 function AndroidPermissionRow({
   name,
   description,
@@ -53,18 +56,16 @@ function AndroidPermissionRow({
   return (
     <Row subtle={!!apiDeprecated}>
       <Cell>
-        <Permalink id={`permission-${name.toLowerCase()}`}>
-          <span>
-            <InlineCode>{name}</InlineCode>
-          </span>
-        </Permalink>
+        <PermissionPermalink id={`permission-${name.toLowerCase()}`}>
+          <CODE>{name}</CODE>
+        </PermissionPermalink>
       </Cell>
       {/* <Cell>
         <i>{getPermissionGranter(permission)}</i>
       </Cell> */}
       <Cell>
         {!!description && (
-          <p css={(warning || explanation) && descriptionSpaceStyle}>{description}</p>
+          <P css={(warning || explanation) && descriptionSpaceStyle}>{description}</P>
         )}
         {!!warning && (
           <Callout css={quoteStyle} type="warning">

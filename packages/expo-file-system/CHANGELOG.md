@@ -8,10 +8,28 @@
 
 ### 🐛 Bug fixes
 
+- Add UTF-8 URI support on iOS. ([#21196](https://github.com/expo/expo/pull/21196) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 💡 Others
+
+## 15.2.2 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 15.2.1 — 2023-02-09
+
+### 🐛 Bug fixes
+
+- Add utf-8 uri support on iOS. ([#21098](https://github.com/expo/expo/pull/21098) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 15.2.0 — 2023-02-03
+
 ### 💡 Others
 
 - Extract nested object definitions to the separate types, which adds: `DeletingOptions`, `InfoOptions`, `RelocatingOptions` and `MakeDirectoryOptions` types. ([#20103](https://github.com/expo/expo/pull/20103) by [@Simek](https://github.com/Simek))
 - Simplify the way in which types are exported from the package. ([#20103](https://github.com/expo/expo/pull/20103) by [@Simek](https://github.com/Simek))
+- Rename `UploadProgressData` `totalByteSent` field to `totalBytesSent`. ([#20804](https://github.com/expo/expo/pull/20804) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
 
 ## 15.1.1 — 2022-10-28
 

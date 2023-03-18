@@ -8,9 +8,35 @@
 
 ### 🐛 Bug fixes
 
-- Fix import issue on case-sensitive file systems ([#20141](https://github.com/expo/expo/pull/20141) by [@hirbod](https://github.com/hirbod))
+### 💡 Others
+
+## 12.3.2 - 2023-03-03
+
+### 🐛 Bug fixes
+
+- Fixed Android property name of BarCodeScannedEvent from boundingBox to bounds to match TypeScript definitions ([#21384](https://github.com/expo/expo/pull/21384) by [@frw](https://github.com/frw))
+
+## 12.3.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 12.3.0 — 2023-02-03
 
 ### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 12.2.0 — 2022-12-30
+
+### 🎉 New features
+
+- Native module for barcode scanner view is now written in Swift and Kotlin using the new API. ([#20441](https://github.com/expo/expo/pull/20441) and ([#20668](https://github.com/expo/expo/pull/20668) by [@alanhughes](https://github.com/alanjhughes))
+
+## 12.1.0 - 2022-11-23
+
+### 🐛 Bug fixes
+
+- Fix import issue on case-sensitive file systems ([#20141](https://github.com/expo/expo/pull/20141) by [@hirbod](https://github.com/hirbod))
 
 ## 12.0.0 — 2022-10-25
 

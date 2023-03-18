@@ -4,8 +4,9 @@ title: Build a screen
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { SnackInline, Terminal } from '~/ui/components/Snippet';
-import { LinkBase } from '~/ui/components/Text';
+import { A } from '~/ui/components/Text';
 import Video from '~/components/plugins/Video';
+import { Step } from '~/ui/components/Step';
 
 In this chapter, we will create the first screen of the StickerSmash app.
 
@@ -20,7 +21,9 @@ The screen above displays an image and two buttons. The app user can select an i
 
 Once the user selects an image, they'll be able to select and add a sticker to the image. So, let's get started creating this screen.
 
-## Step 1: Break down the screen
+<Step label="1">
+
+## Break down the screen
 
 Before we build this screen by writing code, let's break it down into some essential elements. Most of these elements directly correspond to the built-in [Core Components](https://reactnative.dev/docs/components-and-apis) from React Native.
 
@@ -50,7 +53,11 @@ In React Native, styling (such as the yellow border) is done using JavaScript as
 
 Now that we've broken down the UI into smaller chunks, we're ready to start coding.
 
-## Step 2: Style the background
+</Step>
+
+<Step label="2">
+
+## Style the background
 
 Let's change the background color. This value is defined in the `styles` object in the **App.js** file.
 
@@ -84,7 +91,11 @@ const styles = StyleSheet.create({
 
 > React Native uses the same color format as the web. It supports hex triplets (this is what `#fff` is), `rgba`, `hsl`, and a set of named colors like `red`, `green`, `blue`, `peru`, and `papayawhip`. For more information, see [Colors in React Native](https://reactnative.dev/docs/colors).
 
-## Step 3: Change the text color
+</Step>
+
+<Step label="3">
+
+## Change the text color
 
 The background is dark, so the text is difficult to read. The `<Text>` component uses `#000` (black) as its default color. Let's add a style to the `<Text>` component to change the text color to `#fff` (white) in **App.js**.
 
@@ -120,7 +131,11 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-## Step 4: Display the image
+</Step>
+
+<Step label="4">
+
+## Display the image
 
 We can use React Native's `<Image>` component to display the image in the app. The `<Image>` component requires a source of an image. This source can be a [static asset](https://reactnative.dev/docs/images#static-image-resources) or a URL. For example, the source can be required from the app's **./assets/images** directory, or the source can come from the [Network](https://reactnative.dev/docs/images#network-images) in the form of a `uri` property.
 
@@ -169,7 +184,7 @@ const styles = StyleSheet.create({
   /* @info Add styles for the image. */
   imageContainer: {
     flex: 1,
-    paddingTop: 58,    
+    paddingTop: 58,
   },
   image: {
     width: 320,
@@ -184,7 +199,11 @@ const styles = StyleSheet.create({
 
 The `PlaceholderImage` variable references the **./assets/images/background-image.png** and is used as the `source` prop on the `<Image>` component.
 
-## Step 5: Dividing components into files
+</Step>
+
+<Step label="5">
+
+## Dividing components into files
 
 As we add more components to this screen, let's divide the code into multiple files:
 
@@ -197,12 +216,12 @@ As we add more components to this screen, let's divide the code into multiple fi
 import { StyleSheet, Image } from 'react-native';
 
 export default function ImageViewer({ placeholderImageSource }) {
-  return (    
+  return (
     <Image source={placeholderImageSource} style={styles.image} />
   );
 }
 
-const styles = StyleSheet.create({  
+const styles = StyleSheet.create({
   image: {
     width: 320,
     height: 440,
@@ -244,15 +263,19 @@ const styles = StyleSheet.create({
   },
   imageContainer: {
     flex: 1,
-    paddingTop: 58,    
+    paddingTop: 58,
   },
 });
 /* @end */
 ```
 
-## Step 6: Create buttons using Pressable
+</Step>
 
-React Native provides various components to handle touch events on native platforms. For this tutorial, we'll use the <LinkBase href="https://reactnative.dev/docs/pressable" openInNewTab>`<Pressable>`</LinkBase> component. It is a core component wrapper that can detect various stages of interactions, from basic single-tap events to advanced events such as a long press.
+<Step label="6">
+
+## Create buttons using Pressable
+
+React Native provides various components to handle touch events on native platforms. For this tutorial, we'll use the [`<Pressable>`](https://reactnative.dev/docs/pressable) component. It is a core component wrapper that can detect various stages of interactions, from basic single-tap events to advanced events such as a long press.
 
 In the design, there are two buttons we need to implement. Each has different styles and labels. Let's start by creating a component that can be reused to create the two buttons.
 
@@ -315,9 +338,9 @@ const PlaceholderImage = require("./assets/images/background-image.png");
 
 export default function App() {
   return (
-    <View style={styles.container}>      
-      <View style={styles.imageContainer}>        
-        <ImageViewer placeholderImageSource={PlaceholderImage} />        
+    <View style={styles.container}>
+      <View style={styles.imageContainer}>
+        <ImageViewer placeholderImageSource={PlaceholderImage} />
       </View>
       /* @info Use the reusable Button component to create two buttons and encapsulate them inside a View component. */
       <View style={styles.footerContainer}>
@@ -332,21 +355,21 @@ export default function App() {
 
 const styles = StyleSheet.create({
   /* @hide // Styles that are unchanged from previous step are hidden for brevity. */
-  container: {    
+  container: {
     flex: 1,
     backgroundColor: '#25292e',
-    alignItems: 'center',    
+    alignItems: 'center',
   },
   imageContainer: {
     flex: 1,
-    paddingTop: 58,    
+    paddingTop: 58,
   },
   /* @end */
   /* @info Add the styles the following styles. */
   footerContainer: {
     flex: 1 / 3,
     alignItems: 'center',
-  },  
+  },
   /* @end */
 });
 ```
@@ -362,15 +385,20 @@ Let's take a look at our app on iOS, Android and the web:
 
 The second button with the label "Use this photo" resembles the actual button from the design. However, the first button needs more styling to match the design.
 
-## Step 7: Enhance the reusable button component
+</Step>
 
-The "Choose a photo" button requires different styling than the "Use this photo" button, so we will add a new button theme prop that will allow us to apply a `primary` theme. This button also has an icon before the label. We will use an icon from the <LinkBase href="/guides/icons/#expovector-icons" openInNewTab>`@expo/vector-icons` library</LinkBase> that icons from popular icon sets.
+<Step label="7">
+
+## Enhance the reusable button component
+
+The "Choose a photo" button requires different styling than the "Use this photo" button, so we will add a new button theme prop that will allow us to apply a `primary` theme.
+This button also has an icon before the label. We will use an icon from the <A href="/guides/icons/#expovector-icons" openInNewTab>`@expo/vector-icons`</A> library that includes icons from popular icon sets.
 
 Stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>c</kbd> in the terminal. Then, install the `@expo/vector-icons` library:
 
 <Terminal cmd={['$ npx expo install @expo/vector-icons']} />
 
-The <LinkBase href="/workflow/expo-cli/#install" openInNewTab>`npx expo install`</LinkBase> command will install the library and add it to the project's dependencies in **package.json**.
+The <A href="/workflow/expo-cli/#install" openInNewTab>`npx expo install`</A> command will install the library and add it to the project's dependencies in **package.json**.
 
 After installing the library, restart the development server by running the `npx expo start` command.
 
@@ -400,7 +428,7 @@ export default function Button({ label, /* @info The prop theme to detect the bu
           />
           <Text style={[styles.buttonLabel, { color: "#25292e" }]}>{label}</Text>
         </Pressable>
-    </View>      
+    </View>
     );
   }
  /* @end */
@@ -437,16 +465,16 @@ Now, modify the **App.js** file to use the `theme="primary"` prop on the first b
 ```jsx
 export default function App() {
   return (
-    <View style={styles.container}>      
-      <View style={styles.imageContainer}>              
-        <Image source={PlaceholderImage} style={styles.image} />        
-      </View>      
+    <View style={styles.container}>
+      <View style={styles.imageContainer}>
+        <ImageViewer placeholderImageSource={PlaceholderImage} />
+      </View>
       <View style={styles.footerContainer}>
         /* @info Add primary theme on the first button */
         <Button theme="primary" label="Choose a photo" />
         /* @end */
         <Button label="Use this photo" />
-      </View>      
+      </View>
       <StatusBar style="auto" />
     </View>
   );
@@ -459,6 +487,8 @@ Let's take a look at our app on iOS, Android and the web:
 
 <Video file="tutorial/02-complete-layout.mp4" />
 
-## Up next
+</Step>
+
+## Next steps
 
 We implemented the initial design. In the next chapter, we'll add the functionality to [pick an image from the device's media library](/tutorial/image-picker).

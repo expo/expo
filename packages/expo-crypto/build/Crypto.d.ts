@@ -21,7 +21,7 @@ export declare function getRandomBytesAsync(byteCount: number): Promise<Uint8Arr
  * A digest is a short fixed-length value derived from some variable-length input. **Cryptographic digests** should exhibit _collision-resistance_,
  * meaning that it's very difficult to generate multiple inputs that have equal digest values.
  * You can specify the returned string format as one of `CryptoEncoding`. By default, the resolved value will be formatted as a `HEX` string.
- * On web, this method can only be called from a secure origin (https) otherwise an error will be thrown.
+ * On web, this method can only be called from a secure origin (HTTPS) otherwise, an error will be thrown.
  *
  * @param algorithm The cryptographic hash function to use to transform a block of data into a fixed-size output.
  * @param data The value that will be used to generate a digest.
@@ -51,4 +51,33 @@ export declare function digestStringAsync(algorithm: CryptoDigestAlgorithm, data
  * ```
  */
 export declare function getRandomValues<T extends IntBasedTypedArray | UintBasedTypedArray>(typedArray: T): T;
+/**
+ * The `randomUUID()` method returns a unique identifier based on the V4 UUID spec (RFC4122).
+ * It uses cryptographically secure random values to generate the UUID.
+ *
+ * @return A string containing a newly generated UUIDv4 identifier
+ * @example
+ * ```ts
+ * const UUID = Crypto.randomUUID();
+ * console.log('Your UUID: ' + UUID);
+ * ```
+ */
+export declare function randomUUID(): string;
+/**
+ * The `digest()` method of `Crypto` generates a digest of the supplied `TypedArray` of bytes `data` with the provided digest `algorithm`.
+ * A digest is a short fixed-length value derived from some variable-length input. **Cryptographic digests** should exhibit _collision-resistance_,
+ * meaning that it's very difficult to generate multiple inputs that have equal digest values.
+ * On web, this method can only be called from a secure origin (HTTPS) otherwise, an error will be thrown.
+ *
+ * @param algorithm The cryptographic hash function to use to transform a block of data into a fixed-size output.
+ * @param data The value that will be used to generate a digest.
+ * @return A Promise which fulfills with an ArrayBuffer representing the hashed input.
+ * @example
+ * ```ts
+ * const array = new Uint8Array([1, 2, 3, 4, 5]);
+ * const digest = await Crypto.digest(Crypto.CryptoDigestAlgorithm.SHA512, array);
+ * console.log('Your digest: ' + digest);
+ * ```
+ */
+export declare function digest(algorithm: CryptoDigestAlgorithm, data: BufferSource): Promise<ArrayBuffer>;
 //# sourceMappingURL=Crypto.d.ts.map

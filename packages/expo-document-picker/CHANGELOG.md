@@ -6,11 +6,31 @@
 
 ### 🎉 New features
 
-- Migrated to Expo Modules API. ([#20336](https://github.com/expo/expo/pull/20336) by [@alanhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
 
+- Fixed cancellation type not being marked as a `Record` on Android. ([#21588](https://github.com/expo/expo/pull/21588) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
+
+## 11.2.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 11.2.0 — 2023-02-03
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 11.1.0 — 2022-12-30
+
+### 🎉 New features
+
+- Migrated to Expo Modules API. ([#20336](https://github.com/expo/expo/pull/20336) by [@alanhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Avoid dependency on `uuid`. ([#20477](https://github.com/expo/expo/pull/20477) by [@LinusU](https://github.com/LinusU))
 
 ## 11.0.1 — 2022-10-28
 
@@ -58,6 +78,7 @@ _This version does not introduce any user-facing changes._
 
 - Fix `Plugin with id 'maven' not found` build error from Android Gradle 7. ([#16080](https://github.com/expo/expo/pull/16080) by [@kudo](https://github.com/kudo))
 - Handle nil MIME type. ([#16156](https://github.com/expo/expo/pull/16156) by [@brentvatne](https://github.com/brentvatne))
+- Fix incorrectly allowing multiple document selection ([#20363](https://github.com/expo/expo/pull/20363)) by [@alanhughes](https://github.com/alanjhughes)
 
 ## 10.1.1 - 2022-01-26
 

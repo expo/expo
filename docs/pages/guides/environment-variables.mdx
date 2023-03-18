@@ -1,6 +1,7 @@
 ---
 title: Environment variables in Expo
 sidebar_title: Environment variables
+description: Learn about different ways to use environment variables in an Expo project.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -52,12 +53,6 @@ function Post() {
   return <Button onPress={onPress} title="Post" />;
 }
 ```
-
-<Collapsible summary="Using SDK 45 or below?">
-
-The `extra` property is available on the `Constants.manifest` property.
-
-</Collapsible>
 
 ## Using Babel to inline environment variables during build time
 

@@ -13,13 +13,34 @@ import CoreGraphics
 
 extension URL: Convertible {
   public static func convert(from value: Any?) throws -> Self {
-    if let uri = value as? String, let url = URL(string: uri) {
-      // `URL(string:)` is an optional init but it doesn't imply it's a valid URL,
-      // so here we don't check for the correctness of the URL.
-      // If it has no scheme, we assume it was the file path.
-      return url.scheme != nil ? url : URL(fileURLWithPath: uri)
+    guard let value = value as? String else {
+      throw Conversions.ConvertingException<URL>(value)
     }
-    throw Conversions.ConvertingException<URL>(value)
+
+    // Try to construct the URL object from the string as it came in.
+    if let url = URL(string: value) {
+      // If it has no scheme, we assume it was the file path which needs to be recreated to be recognized as the file url.
+      return url.scheme != nil ? url : URL(fileURLWithPath: value)
+    }
+
+    // File path doesn't need to be percent-encoded.
+    if isFileUrlPath(value) {
+      return URL(fileURLWithPath: value)
+    }
+
+    // If we get here, the string is not the file url and may require percent-encoding characters that are not URL-safe according to RFC 3986.
+    if let encodedValue = percentEncodeUrlString(value), let url = URL(string: encodedValue) {
+      return url.scheme != nil ? url : URL(fileURLWithPath: value)
+    }
+
+    // If it still fails to create the URL object, the string possibly contains characters that must be explicitly percent-encoded beforehand.
+    throw UrlContainsInvalidCharactersException()
+  }
+}
+
+internal class UrlContainsInvalidCharactersException: Exception {
+  override var reason: String {
+    return "Unable to create a URL object from the given string, make sure to percent-encode these characters: \(urlAllowedCharacters)"
   }
 }
 

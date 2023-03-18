@@ -1,12 +1,9 @@
-import * as React from 'react';
 import ReactMarkdown from 'react-markdown';
 
-import { createPermalinkedComponent } from '~/common/create-permalinked-component';
 import { HeadingType } from '~/common/headingManager';
-import { InlineCode } from '~/components/base/code';
-import { PDIV } from '~/components/base/paragraph';
-import { mdInlineComponentsNoValidation } from '~/components/plugins/api/APISectionUtils';
+import { mdComponentsNoValidation } from '~/components/plugins/api/APISectionUtils';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
+import { P, CODE, createPermalinkedComponent } from '~/ui/components/Text';
 
 export type Property = {
   description?: string[];
@@ -22,14 +19,18 @@ type FormattedProperty = {
   nestingLevel: number;
 };
 
-const Anchor = createPermalinkedComponent(PDIV, {
+type Props = {
+  schema: Property[];
+};
+
+const Anchor = createPermalinkedComponent(P, {
   baseNestingLevel: 3,
   sidebarType: HeadingType.InlineCode,
 });
 
 const PropertyName = ({ name, nestingLevel }: Pick<FormattedProperty, 'name' | 'nestingLevel'>) => (
   <Anchor level={nestingLevel}>
-    <InlineCode>{name}</InlineCode>
+    <CODE>{name}</CODE>
   </Anchor>
 );
 
@@ -83,46 +84,40 @@ export function createDescription(property: Property) {
   return propertyDescription;
 }
 
-export default class EasJsonPropertiesTable extends React.Component<{
-  schema: Property[];
-}> {
-  render() {
-    const formattedSchema = formatSchema(this.props.schema);
+export const EasJsonPropertiesTable = ({ schema }: Props) => {
+  const formattedSchema = formatSchema(schema);
 
-    return (
-      <Table>
-        <TableHead>
-          <Row>
-            <HeaderCell>Property</HeaderCell>
-            <HeaderCell>Description</HeaderCell>
+  return (
+    <Table>
+      <TableHead>
+        <Row>
+          <HeaderCell>Property</HeaderCell>
+          <HeaderCell>Description</HeaderCell>
+        </Row>
+      </TableHead>
+      <tbody>
+        {formattedSchema.map((property, index) => (
+          <Row key={index}>
+            <Cell fitContent>
+              <div
+                data-testid={property.name}
+                style={{
+                  marginLeft: `${property.nestingLevel * 32}px`,
+                  display: property.nestingLevel ? 'list-item' : 'block',
+                  listStyleType: property.nestingLevel % 2 ? 'default' : 'circle',
+                  overflowX: 'visible',
+                }}>
+                <PropertyName name={property.name} nestingLevel={property.nestingLevel} />
+              </div>
+            </Cell>
+            <Cell>
+              <ReactMarkdown components={mdComponentsNoValidation}>
+                {property.description}
+              </ReactMarkdown>
+            </Cell>
           </Row>
-        </TableHead>
-        <tbody>
-          {formattedSchema.map((property, index) => {
-            return (
-              <Row key={index}>
-                <Cell fitContent>
-                  <div
-                    data-testid={property.name}
-                    style={{
-                      marginLeft: `${property.nestingLevel * 32}px`,
-                      display: property.nestingLevel ? 'list-item' : 'block',
-                      listStyleType: property.nestingLevel % 2 ? 'default' : 'circle',
-                      overflowX: 'visible',
-                    }}>
-                    <PropertyName name={property.name} nestingLevel={property.nestingLevel} />
-                  </div>
-                </Cell>
-                <Cell>
-                  <ReactMarkdown components={mdInlineComponentsNoValidation}>
-                    {property.description}
-                  </ReactMarkdown>
-                </Cell>
-              </Row>
-            );
-          })}
-        </tbody>
-      </Table>
-    );
-  }
-}
+        ))}
+      </tbody>
+    </Table>
+  );
+};

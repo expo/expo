@@ -35,14 +35,9 @@ public:
     void appendInt(const char* owner, const char* name, int value);
     void appendFloat(const char* owner, const char* name, float value);
     void appendName(const char* owner, const char* attrName, const char* value);
-    void appendString(const char* owner, const char* attrName, const char* value);
     void appendFloatArray(const char* owner,
                           const char* name,
                           const std::vector<float>& value);
-    // Deprecated.
-    void appendStringArray(const char* owner,
-                           const char* attrName,
-                           const std::vector<SkString>& values);
     void appendNodeIdArray(const char* owner,
                            const char* attrName,
                            const std::vector<int>& nodeIds);

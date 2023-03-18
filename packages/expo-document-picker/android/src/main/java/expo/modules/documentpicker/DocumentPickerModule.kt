@@ -36,10 +36,8 @@ class DocumentPickerModule : Module() {
       copyToCacheDirectory = options.copyToCacheDirectory
       val intent = Intent(Intent.ACTION_OPEN_DOCUMENT).apply {
         addCategory(Intent.CATEGORY_OPENABLE)
-        putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
         type = if (options.type.size > 1) {
           putExtra(Intent.EXTRA_MIME_TYPES, options.type.toTypedArray())
-
           "*/*"
         } else {
           options.type[0]
@@ -54,6 +52,7 @@ class DocumentPickerModule : Module() {
       }
 
       val promise = pendingPromise!!
+      pendingPromise = null
 
       if (resultCode == Activity.RESULT_OK) {
         intent?.data?.let { uri ->
@@ -81,7 +80,6 @@ class DocumentPickerModule : Module() {
           DocumentPickerCancelled(type = "cancel")
         )
       }
-      pendingPromise = null
     }
   }
 

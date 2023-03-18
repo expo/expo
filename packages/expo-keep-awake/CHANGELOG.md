@@ -10,6 +10,27 @@
 
 ### 💡 Others
 
+## 12.0.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 12.0.0 — 2023-02-03
+
+### 🛠 Breaking changes
+
+- `KeepAwake.activateKeepAwake` has been deprecated in favor of `KeepAwake.activateKeepAwakeAsync`. ([#15826](https://github.com/expo/expo/pull/15826) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🎉 New features
+
+- Added web support. ([#15826](https://github.com/expo/expo/pull/15826) by [@EvanBacon](https://github.com/EvanBacon))
+- Added `KeepAwake.isAvailableAsync` which returns false on certain web browsers. ([#15826](https://github.com/expo/expo/pull/15826) by [@EvanBacon](https://github.com/EvanBacon))
+- Added `KeepAwake.addListener` to observe state changes on web. ([#15826](https://github.com/expo/expo/pull/15826) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 💡 Others
+
+- Define `KeepAwakeOptions` type, update the doc comments. ([#20489](https://github.com/expo/expo/pull/20489) by [@Simek](https://github.com/Simek))
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
 ## 11.0.1 — 2022-10-28
 
 _This version does not introduce any user-facing changes._

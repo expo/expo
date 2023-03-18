@@ -30,7 +30,6 @@
 #import <React/RCTLocalAssetImageLoader.h>
 #import <React/RCTGIFImageDecoder.h>
 #import <React/RCTImageLoader.h>
-#import <React/RCTAsyncLocalStorage.h>
 #import <React/RCTJSIExecutorRuntimeInstaller.h>
 #import <React/RCTInspectorDevServerHelper.h>
 
@@ -43,14 +42,13 @@
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <EXMediaLibrary/EXMediaLibraryImageLoader.h>
 #import <EXFileSystem/EXFileSystem.h>
-#import "EXScopedModuleRegistry.h"
-#import "EXScopedModuleRegistryAdapter.h"
-#import "EXScopedModuleRegistryDelegate.h"
+#import <EXManifests/EXManifests-Swift.h>
 
 #import <RNReanimated/REAModule.h>
 #import <RNReanimated/REAEventDispatcher.h>
 #import <RNReanimated/REAUIManager.h>
 #import <RNReanimated/NativeProxy.h>
+#import <RNReanimated/ReanimatedVersion.h>
 
 #import <React/RCTCxxBridgeDelegate.h>
 #import <React/CoreModulesPlugins.h>
@@ -60,7 +58,12 @@
 #import <strings.h>
 
 // Import 3rd party modules that need to be scoped.
+#import <RNCAsyncStorage/RNCAsyncStorage.h>
 #import "RNCWebViewManager.h"
+
+#import "EXScopedModuleRegistry.h"
+#import "EXScopedModuleRegistryAdapter.h"
+#import "EXScopedModuleRegistryDelegate.h"
 
 RCT_EXTERN NSDictionary<NSString *, NSDictionary *> *EXGetScopedModuleClasses(void);
 RCT_EXTERN void EXRegisterScopedModule(Class, ...);
@@ -417,7 +420,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     }
     [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"DevMenu"]]];
     [extraModules addObject:[self getModuleInstanceFromClass:[self getModuleClassFromName:"RedBox"]]];
-    [extraModules addObject:[self getModuleInstanceFromClass:RCTAsyncLocalStorageCls()]];
+    [extraModules addObject:[self getModuleInstanceFromClass:RNCAsyncStorage.class]];
   }
 
   return extraModules;
@@ -526,7 +529,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
     } else {
       RCTLogWarn(@"No exceptions manager provided when building extra modules for bridge.");
     }
-  } else if (moduleClass == RCTAsyncLocalStorageCls()) {
+  } else if (moduleClass == RNCAsyncStorage.class) {
     NSString *documentDirectory;
     if (_params[@"fileSystemDirectories"]) {
       documentDirectory = _params[@"fileSystemDirectories"][@"documentDirectory"];
@@ -591,6 +594,10 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
         runtime,
         "_WORKLET_RUNTIME",
         workletRuntimeValue);
+    runtime.global().setProperty(
+        runtime,
+        "_REANIMATED_VERSION_CPP",
+        reanimated::getReanimatedVersionString(runtime));
 
     runtime.global().setProperty(
          runtime,

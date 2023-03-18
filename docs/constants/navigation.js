@@ -61,7 +61,6 @@ const general = [
         [
           makePage('introduction/expo.mdx'),
           makePage('introduction/managed-vs-bare.mdx'),
-          // makePage('introduction/walkthrough.mdx'),
           makePage('introduction/why-not-expo.mdx'),
           makePage('introduction/faq.mdx'),
         ],
@@ -79,11 +78,11 @@ const general = [
     makePage('workflow/expo-cli.mdx'),
     makePage('workflow/expo-go.mdx'),
     makePage('workflow/using-libraries.mdx'),
-    makePage('workflow/logging.mdx'),
     makePage('workflow/development-mode.mdx'),
+    makePage('workflow/logging.mdx'),
     makePage('workflow/prebuild.mdx'),
-    makePage('workflow/ios-simulator.mdx'),
     makePage('workflow/android-studio-emulator.mdx'),
+    makePage('workflow/ios-simulator.mdx'),
     makePage('workflow/run-on-device.mdx'),
     makePage('workflow/debugging.mdx'),
     makePage('workflow/configuration.mdx'),
@@ -115,6 +114,7 @@ const general = [
     makePage('modules/get-started.mdx'),
     makePage('modules/native-module-tutorial.mdx'),
     makePage('modules/native-view-tutorial.mdx'),
+    makePage('modules/config-plugin-and-native-module-tutorial.mdx'),
     makePage('modules/existing-library.mdx'),
     makePage('modules/module-api.mdx'),
     makePage('modules/android-lifecycle-listeners.mdx'),
@@ -132,6 +132,8 @@ const general = [
     makePage('guides/typescript.mdx'),
     makePage('guides/using-flipper.mdx'),
     makePage('guides/using-analytics.mdx'),
+    makePage('guides/facebook-authentication.mdx'),
+    makePage('guides/google-authentication.mdx'),
   ]),
   makeSection('Assorted guides', [
     makePage('guides/routing-and-navigation.mdx'),
@@ -156,6 +158,7 @@ const general = [
     makePage('guides/adopting-prebuild.mdx'),
     makePage('guides/ios-developer-mode.mdx'),
     makePage('guides/localization.mdx'),
+    makePage('guides/configuring-js-engines.mdx'),
   ]),
   makeSection('Expo accounts', [
     makePage('accounts/account-types.mdx'),
@@ -175,9 +178,8 @@ const general = [
     makePage('push-notifications/overview.mdx'),
     makePage('push-notifications/push-notifications-setup.mdx'),
     makePage('push-notifications/sending-notifications.mdx'),
-    makePage('push-notifications/sending-notifications-custom.mdx'),
     makePage('push-notifications/receiving-notifications.mdx'),
-    makePage('push-notifications/using-fcm.mdx'),
+    makePage('push-notifications/sending-notifications-custom.mdx'),
     makePage('push-notifications/faq.mdx'),
   ]),
   makeSection('UI programming', [
@@ -198,18 +200,8 @@ const general = [
   ]),
   makeSection('Regulatory compliance', sortAlphabetical(pagesFromDir('regulatory-compliance')), {}),
   makeSection('Technical specs', [
-    makePage('technical-specs/expo-updates-0.mdx'),
+    makePage('technical-specs/expo-updates-1.mdx'),
     makePage('technical-specs/expo-sfv-0.mdx'),
-  ]),
-  makeSection('Deprecated', [
-    makeGroup('ExpoKit', [
-      makePage('expokit/overview.mdx'),
-      makePage('expokit/eject.mdx'),
-      makePage('expokit/expokit.mdx'),
-      makePage('expokit/advanced-expokit-topics.mdx'),
-      makePage('expokit/universal-modules-and-expokit.mdx'),
-    ]),
-    makeGroup('Archived', sortAlphabetical(pagesFromDir('archived'))),
   ]),
 ];
 
@@ -239,8 +231,10 @@ const eas = [
         makePage('build-reference/eas-json.mdx'),
         makePage('build-reference/migrating.mdx'),
         makePage('build-reference/npm-hooks.mdx'),
-        makePage('build-reference/how-tos.mdx'),
         makePage('build-reference/private-npm-packages.mdx'),
+        makePage('build-reference/git-submodules.mdx'),
+        makePage('build-reference/npm-cache-with-yarn.mdx'),
+        makePage('build-reference/build-with-monorepos.mdx'),
         makePage('build-reference/variables.mdx'),
         makePage('build-reference/apk.mdx'),
         makePage('build-reference/simulators.mdx'),
@@ -268,7 +262,6 @@ const eas = [
       makePage('submit/eas-json.mdx'),
       makePage('submit/android.mdx'),
       makePage('submit/ios.mdx'),
-      makePage('submit/classic-builds.mdx'),
     ],
     { expanded: true }
   ),
@@ -283,6 +276,7 @@ const eas = [
         makePage('eas-update/how-eas-update-works.mdx'),
         makePage('eas-update/deployment-patterns.mdx'),
         makePage('eas-update/debug-updates.mdx'),
+        makePage('eas-update/eas-update-with-local-build.mdx'),
         makePage('eas-update/eas-update-and-eas-cli.mdx'),
         makePage('eas-update/optimize-assets.mdx'),
         makePage('eas-update/migrate-to-eas-update.mdx'),
@@ -319,9 +313,13 @@ const preview = [
 ];
 
 const archive = [
-  makeSection('Archive', [makeGroup('Archive', [makePage('archive/index.mdx')])], {
-    expanded: true,
-  }),
+  makeGroup('Archive', [makePage('archive/index.mdx')]),
+  makeGroup('Miscellaneous', [
+    makePage('archive/adhoc-builds.mdx'),
+    makePage('archive/expo-cli.mdx'),
+    makePage('archive/notification-channels.mdx'),
+    makePage('archive/glossary.mdx'),
+  ]),
   makeSection(
     'Classic Updates',
     [
@@ -348,6 +346,7 @@ const archive = [
       expanded: true,
     }
   ),
+  makeGroup('Technical Specs', [makePage('archive/technical-specs/expo-updates-0.mdx')]),
 ];
 
 const featurePreview = [];

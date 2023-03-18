@@ -1,8 +1,8 @@
 import { css } from '@emotion/react';
-import { borderRadius, shadows, spacing, theme, typography } from '@expo/styleguide';
+import { Button, shadows, theme } from '@expo/styleguide';
+import { borderRadius, spacing } from '@expo/styleguide-base';
 import { useState } from 'react';
 
-import { Button } from '../Button';
 import { A, CALLOUT, FOOTNOTE } from '../Text';
 
 export const NewsletterSignUp = () => {
@@ -24,8 +24,8 @@ export const NewsletterSignUp = () => {
           disabled={userSignedUp}
         />
         <Button
-          size="mini"
-          theme={userSignedUp ? 'ghost' : 'secondary'}
+          size="xs"
+          theme={userSignedUp ? 'quaternary' : 'secondary'}
           css={sendButtonStyle}
           disabled={userSignedUp || !email.length}
           onClick={() => {
@@ -58,12 +58,11 @@ const inputWrapperStyle = css({
 const buttonMinWidth = spacing[16] + spacing[1];
 
 const inputStyle = css({
-  fontFamily: typography.fontFaces.regular,
   display: 'block',
   boxSizing: 'border-box',
-  boxShadow: shadows.input,
+  boxShadow: shadows.xs,
   border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.small,
+  borderRadius: borderRadius.sm,
   color: theme.text.default,
   background: theme.background.default,
   height: 48,
@@ -81,6 +80,6 @@ const sendButtonStyle = css({
   position: 'absolute',
   outline: 'none',
   right: 10,
-  top: 10,
+  top: 8,
   minWidth: buttonMinWidth,
 });

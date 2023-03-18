@@ -2,6 +2,8 @@
 
 #include "JavaReferencesCache.h"
 
+#include <vector>
+
 namespace expo {
 std::shared_ptr<JavaReferencesCache> JavaReferencesCache::instance() {
   static std::shared_ptr<JavaReferencesCache> singleton{new JavaReferencesCache};
@@ -19,6 +21,10 @@ void JavaReferencesCache::loadJClasses(JNIEnv *env) {
 
   loadJClass(env, "java/lang/Integer", {
     {"<init>", "(I)V"}
+  });
+
+  loadJClass(env, "java/lang/Long", {
+    {"<init>", "(J)V"}
   });
 
   loadJClass(env, "java/lang/Float", {

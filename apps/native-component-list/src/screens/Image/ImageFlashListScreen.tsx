@@ -1,34 +1,42 @@
 import { FlashList, ListRenderItemInfo } from '@shopify/flash-list';
 import { Image } from 'expo-image';
-import { StyleSheet, View } from 'react-native';
+import { Dimensions, StyleSheet, View } from 'react-native';
 
 const DATA: number[] = Array(1000).fill(0);
+const WINDOW_SIZE = Dimensions.get('window');
+const COLUMNS_COUNT = 4;
+const IMAGE_SIZE = Math.ceil(WINDOW_SIZE.width / COLUMNS_COUNT);
+const IMAGE_PIXEL_SIZE = Math.ceil(IMAGE_SIZE * WINDOW_SIZE.scale);
 
 function renderItem({ index }: ListRenderItemInfo<number>) {
   function renderImage(_: any, column: number) {
-    return (
-      <Image
-        key={column}
-        style={styles.image}
-        source={{ uri: `https://source.unsplash.com/random/${index + column}` }}
-      />
-    );
+    // The uri has an offset because the first images are almost the same, it doesn't look well.
+    const uri = `https://picsum.photos/id/${10 + index + column}/${IMAGE_PIXEL_SIZE}`;
+
+    return <Image key={column} style={styles.image} source={{ uri }} recyclingKey={uri} />;
   }
-  return <View style={styles.row}>{Array(4).fill(0).map(renderImage)}</View>;
+
+  return <View style={styles.row}>{Array(COLUMNS_COUNT).fill(0).map(renderImage)}</View>;
 }
 
 export default function ImageFlashListScreen() {
-  return <FlashList data={DATA} renderItem={renderItem} estimatedItemSize={100} />;
+  return (
+    <FlashList
+      data={DATA}
+      renderItem={renderItem}
+      keyExtractor={(_, index: number) => String(index)}
+      estimatedItemSize={IMAGE_SIZE}
+    />
+  );
 }
 
 const styles = StyleSheet.create({
   row: {
     flex: 1,
     flexDirection: 'row',
-    justifyContent: 'space-evenly',
   },
   image: {
-    width: 100,
-    height: 100,
+    width: IMAGE_SIZE,
+    height: IMAGE_SIZE,
   },
 });

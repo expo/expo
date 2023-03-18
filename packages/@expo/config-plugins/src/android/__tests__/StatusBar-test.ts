@@ -35,12 +35,12 @@ describe('e2e: write statusbar color and style to files correctly', () => {
     const styles = setStatusBarStyles(config, { resources: {} });
     const colors = setStatusBarColors(config, { resources: {} });
 
-    const group = getStylesGroupAsObject(styles, getAppThemeLightNoActionBarGroup());
+    const group = getStylesGroupAsObject(styles, getAppThemeLightNoActionBarGroup())!;
     expect(group.colorPrimaryDark).toBe('@color/colorPrimaryDark');
     expect(group['android:windowLightStatusBar']).toBe('true');
     // Ensure the version guard is added
-    expect(styles.resources.style[0].item[0].$['tools:targetApi']).toBe('23');
-    expect(getColorsAsObject(colors).colorPrimaryDark).toBe('#654321');
+    expect(styles.resources.style![0].item[0].$['tools:targetApi']).toBe('23');
+    expect(getColorsAsObject(colors)!.colorPrimaryDark).toBe('#654321');
   });
 
   it(`skips setting the status bar to translucent if no 'androidStatusBar.backgroundColor' is given`, async () => {

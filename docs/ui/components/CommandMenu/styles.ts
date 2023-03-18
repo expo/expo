@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { theme, shadows, borderRadius, spacing, breakpoints, typography } from '@expo/styleguide';
+import { theme, shadows, typography } from '@expo/styleguide';
+import { borderRadius, spacing, breakpoints } from '@expo/styleguide-base';
 
 export const commandMenuStyles = css`
   #__next[aria-hidden] {
@@ -28,8 +29,8 @@ export const commandMenuStyles = css`
     min-height: 75vh;
     max-height: 75vh;
     background: ${theme.background.default};
-    border-radius: ${borderRadius.large}px;
-    box-shadow: ${shadows.popover};
+    border-radius: ${borderRadius.lg}px;
+    box-shadow: ${shadows.sm};
     width: 40vw;
     min-width: 680px;
     border: 1px solid ${theme.border.default};
@@ -56,17 +57,13 @@ export const commandMenuStyles = css`
     padding: ${spacing[3]}px ${spacing[11]}px;
     margin: ${spacing[4]}px ${spacing[4]}px 0;
     border: 1px solid ${theme.border.default};
-    border-radius: ${borderRadius.medium}px;
+    border-radius: ${borderRadius.md}px;
     width: calc(100% - ${spacing[8]}px);
     box-sizing: border-box;
-    box-shadow: ${shadows.input};
+    box-shadow: ${shadows.xs};
 
     &::placeholder {
       color: ${theme.icon.secondary};
-    }
-
-    &::selection {
-      color: ${theme.palette.white};
     }
   }
 
@@ -74,7 +71,7 @@ export const commandMenuStyles = css`
     content-visibility: auto;
     cursor: pointer;
     min-height: 52px;
-    border-radius: ${borderRadius.medium}px;
+    border-radius: ${borderRadius.md}px;
     display: flex;
     flex-direction: column;
     justify-content: center;
@@ -87,11 +84,11 @@ export const commandMenuStyles = css`
 
     &[aria-selected='true'],
     &:active {
-      background: ${theme.background.tertiary};
+      background: ${theme.background.element};
       color: ${theme.text.default};
 
       mark {
-        background: ${theme.palette.primary[200]};
+        background: ${theme.palette.blue5};
       }
     }
 
@@ -105,8 +102,8 @@ export const commandMenuStyles = css`
     }
 
     mark {
-      color: ${theme.palette.primary[900]};
-      background: ${theme.palette.primary[100]};
+      color: ${theme.palette.blue12};
+      background: ${theme.palette.blue4};
       border-radius: 2px;
     }
   }
@@ -153,12 +150,12 @@ export const commandMenuStyles = css`
     padding: ${spacing[8]}px 0;
   }
 
-  html[data-expo-theme='dark'] {
+  html.dark-theme {
     [cmdk-item] mark {
-      background: ${theme.palette.primary[200]};
+      background: ${theme.palette.blue5};
 
       &[aria-selected='true'] {
-        background: ${theme.palette.primary[300]};
+        background: ${theme.palette.blue7};
       }
     }
   }
@@ -177,9 +174,9 @@ export const closeIconStyle = css({
   right: 25,
   cursor: 'pointer',
   padding: spacing[1],
-  borderRadius: borderRadius.small,
+  borderRadius: borderRadius.sm,
 
   '&:hover': {
-    background: theme.background.tertiary,
+    background: theme.background.element,
   },
 });

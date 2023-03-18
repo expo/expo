@@ -75,6 +75,7 @@ export class WebSupportProjectPrerequisite extends ProjectPrerequisite {
       return await ensureDependenciesAsync(this.projectRoot, {
         // This never seems to work when prompting, installing, and running -- instead just inform the user to run the install command and try again.
         skipPrompt: true,
+        isProjectMutable: false,
         exp,
         installMessage: `It looks like you're trying to use web support but don't have the required dependencies installed.`,
         warningMessage: chalk`If you're not using web, please ensure you remove the {bold "web"} string from the platforms array in the project Expo config.`,

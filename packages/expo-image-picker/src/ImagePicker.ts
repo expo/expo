@@ -13,18 +13,8 @@ import {
   CameraPermissionResponse,
   MediaLibraryPermissionResponse,
   ImagePickerResult,
-  ImagePickerAsset,
   ImagePickerErrorResult,
-  MediaTypeOptions,
   ImagePickerOptions,
-  VideoExportPreset,
-  ExpandImagePickerResult,
-  ImageInfo,
-  ImagePickerMultipleResult,
-  ImagePickerCancelledResult,
-  OpenFileBrowserOptions,
-  UIImagePickerControllerQualityType,
-  UIImagePickerPresentationStyle,
 } from './ImagePicker.types';
 
 function validateOptions(options: ImagePickerOptions) {
@@ -71,7 +61,7 @@ const DEPRECATED_RESULT_KEYS = [
   'fileSize',
 ];
 function mergeDeprecatedResult(result: ImagePickerResult): ImagePickerResult {
-  const firstAsset = result.assets?.[0];
+  const firstAsset = result?.assets?.[0];
   const deprecatedResult = {
     ...result,
     get cancelled() {
@@ -257,24 +247,6 @@ export async function launchImageLibraryAsync(
   return mergeDeprecatedResult(result);
 }
 
-export {
-  MediaTypeOptions,
-  ImagePickerOptions,
-  ImagePickerResult,
-  ImagePickerErrorResult,
-  ImagePickerAsset,
-  VideoExportPreset,
-  CameraPermissionResponse,
-  MediaLibraryPermissionResponse,
-  PermissionStatus,
-  PermissionExpiration,
-  PermissionHookOptions,
-  PermissionResponse,
-  ImageInfo, // deprecated
-  ImagePickerMultipleResult, // deprecated
-  ImagePickerCancelledResult, // deprecated
-  OpenFileBrowserOptions,
-  ExpandImagePickerResult, // deprecated
-  UIImagePickerControllerQualityType,
-  UIImagePickerPresentationStyle,
-};
+export * from './ImagePicker.types';
+
+export { PermissionStatus, PermissionExpiration, PermissionHookOptions, PermissionResponse };

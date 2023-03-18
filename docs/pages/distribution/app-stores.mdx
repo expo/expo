@@ -1,13 +1,12 @@
 ---
-title: App Store Best Practices
-sidebar_title: Best Practices
+title: App stores best practices
+description: Learn about the best practices when submitting an app to the app stores.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
-import { ConfigClassic } from '~/components/plugins/ConfigSection';
 import { BoxLink } from '~/ui/components/BoxLink';
 
-This guide offers best practices for submitting your app to the app stores. To learn how to generate native binaries for submission, refer to ["Creating your first build"](/build/setup/).
+This guide offers best practices for submitting your app to the app stores. To learn how to generate native binaries for submission, see [Creating your first build](/build/setup/).
 
 > **warning** **Disclaimer:** Review guidelines and rules are updated frequently, and enforcement of various rules can sometimes be inconsistent. There is no guarantee that your particular project will be accepted by either platform, and you are ultimately responsible for your app's behavior. That said, you can re-submit your app as needed to address feedback from reviews.
 
@@ -62,25 +61,10 @@ Try your app on tablets in addition to handsets. Even if you have `ios.supportsT
 
 ## Privacy Policy
 
-- Starting October 3, 2018, all new iOS apps and app updates will be required to have a privacy policy in order to pass the App Store Review Guidelines.
-- Additionally, a number of developers have reported warnings from Google if their app does not have a privacy policy, since by default all apps built with the classic build service contain code for requesting the Android Advertising ID. Though this code may not be executed depending on which native APIs you use, we still recommend that all apps on the Google Play Store include a privacy policy as well.
+Starting October 3, 2018, all new iOS apps and app updates will be required to have a privacy policy in order to pass the App Store Review Guidelines.
 
 ### App privacy questions
 
 Beginning December 8, 2020, new app submissions and updates are required to provide information about their privacy practices in App Store Connect. See [App privacy details on the App Store](https://developer.apple.com/app-store/app-privacy-details/) for more information.
 
 Apple will ask you a series of questions when you submit the app. Depending on which libraries you use, your answers may vary. For example, if you use `expo-updates`, you will need to say **Yes, we collect data from this app** and then you will want to select **Crash Data**.
-
-<ConfigClassic>
-
-- Select **Yes, we collect data from this app**. Click **Next**.
-- Select **Device ID**
-  - Managed standalone apps using the Classic Build system include the Facebook, Facebook Ads, and Google AdMob SDKs, which still access the IDFA.
-- If you use `expo-facebook`, select **Other Usage Data**
-- If you use `expo-updates`, select **Crash Data**
-  - Errors that occur when launching an update are collected when a new update is requested.
-- If you use Facebook Ads and/or Google AdMob SDKs, select **Advertising Data**
-
-> Supplement the above guidance with additional disclosures based on the data your particular app and the third-party services you use collect.
-
-</ConfigClassic>

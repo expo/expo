@@ -16,6 +16,79 @@ class ConvertiblesSpec: ExpoSpec {
         expect(url.absoluteString) == remoteUrlString
       }
 
+      it("converts from url with unencoded query") {
+        let query = "param=🥓"
+        let urlString = "https://expo.dev/?\(query)"
+        let url = try URL.convert(from: urlString)
+
+        if #available(iOS 16.0, *) {
+          expect(url.query(percentEncoded: true)) == "param=%F0%9F%A5%93"
+          expect(url.query(percentEncoded: false)) == query
+        }
+        expect(url.query) == "param=%F0%9F%A5%93"
+        expect(url.absoluteString) == "https://expo.dev/?param=%F0%9F%A5%93"
+        expect(url.absoluteString.removingPercentEncoding) == urlString
+      }
+
+      it("converts from url with encoded query") {
+        let query = "param=%F0%9F%A5%93"
+        let urlString = "https://expo.dev/?\(query)"
+        let url = try URL.convert(from: urlString)
+
+        if #available(iOS 16.0, *) {
+          expect(url.query(percentEncoded: true)) == query
+          expect(url.query(percentEncoded: false)) == "param=🥓"
+        }
+        expect(url.query) == query
+        expect(url.absoluteString) == urlString
+        expect(url.absoluteString.removingPercentEncoding) == "https://expo.dev/?param=🥓"
+      }
+      
+      it("converts from url with encoded query containg the anchor") {
+        let query = "color=%230000ff"
+        let urlString = "https://expo.dev/?\(query)#anchor"
+        let url = try URL.convert(from: urlString)
+
+        expect(url.query) == query
+        expect(url.absoluteString) == urlString
+        expect(url.absoluteString.removingPercentEncoding) == "https://expo.dev/?color=#0000ff#anchor"
+        expect(url.fragment) == "anchor"
+      }
+
+      it("converts from url with encoded path") {
+        let path = "/expo/%2F%25%3F%5E%26/test" // -> /expo//%?^&/test
+        let urlString = "https://expo.dev\(path)"
+        let url = try URL.convert(from: urlString)
+
+        expect(url.absoluteString) == urlString
+        expect(url.path) == path.removingPercentEncoding
+
+        if #available(iOS 16.0, *) {
+          expect(url.path(percentEncoded: true)) == path
+          expect(url.path(percentEncoded: false)) == path.removingPercentEncoding
+        }
+      }
+
+      it("throws when url contains percent alone") {
+        // The percent character alone must be percent-encoded to `%25` beforehand, otherwise it should throw an exception.
+        let urlString = "https://expo.dev/?param=%"
+
+        expect({ try URL.convert(from: urlString) }).to(throwError(errorType: UrlContainsInvalidCharactersException.self))
+      }
+
+      it("converts from url containing the anchor") {
+        // The hash is not allowed in the query (requires percent-encoding),
+        // but we want it to be recognized as the beginning of the fragment,
+        // thus it cannot be percent-encoded.
+        let query = "param=#expo"
+        let urlString = "https://expo.dev/?\(query)"
+        let url = try URL.convert(from: urlString)
+
+        expect(url.query) == "param="
+        expect(url.fragment) == "expo"
+        expect(url.absoluteString) == urlString
+      }
+
       it("converts from file url") {
         let fileUrlString = "file:///expo/tmp"
         let url = try URL.convert(from: fileUrlString)
@@ -29,8 +102,27 @@ class ConvertiblesSpec: ExpoSpec {
         let filePath = "/expo/image.png"
         let url = try URL.convert(from: filePath)
 
+        expect(url.scheme) == "file"
         expect(url.path) == filePath
         expect(url.absoluteString) == "file://\(filePath)"
+        expect(url.isFileURL) == true
+      }
+
+      it("converts from file path with UTF8 characters") {
+        let filePath = "/中文ÅÄÖąÓśĆñ.gif"
+        let url = try URL.convert(from: filePath)
+
+        expect(url.scheme) == "file"
+        expect(url.path) == filePath
+        expect(url.isFileURL) == true
+      }
+
+      it("converts from file path containing percent character") {
+        let filePath = "/%.png"
+        let url = try URL.convert(from: filePath)
+
+        expect(url.scheme) == "file"
+        expect(url.path) == filePath
         expect(url.isFileURL) == true
       }
 

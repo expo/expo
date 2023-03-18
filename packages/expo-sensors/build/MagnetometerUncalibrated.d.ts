@@ -2,7 +2,7 @@ import DeviceSensor from './DeviceSensor';
 /**
  * Each of these keys represents the uncalibrated strength of magnetic field along that particular axis measured in microteslas (`μT`).
  */
-export declare type MagnetometerUncalibratedMeasurement = {
+export type MagnetometerUncalibratedMeasurement = {
     /**
      * Value representing uncalibrated strength of magnetic field recorded in X axis.
      */

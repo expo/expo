@@ -81,11 +81,13 @@ abstract class SensorBlock<Measurement> extends React.Component<object, State<Me
 
   renderData() {
     return (
-      <Text>
-        {Object.entries(this.state.data)
-          .map(([key, value]) => `${key}: ${round(value)}`)
-          .join(' ')}
-      </Text>
+      this.state.data && (
+        <Text>
+          {Object.entries(this.state.data)
+            .map(([key, value]) => `${key}: ${typeof value === 'number' ? round(value) : 0}`)
+            .join(' ')}
+        </Text>
+      )
     );
   }
 

@@ -1,5 +1,6 @@
 ---
 title: Getting started
+description: Learn how to get started with EAS Update and use in your project.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -7,24 +8,17 @@ import { Step } from '~/ui/components/Step';
 
 Setting up EAS Update allows you to push critical bug fixes and improvements that your users need right away.
 
-## Prerequisites
-
-EAS Update requires the following versions or greater:
-
-- EAS CLI >= 0.50.0
-- Expo SDK >= 45.0.0
-- expo-updates >= 0.13.0
-
 <Step label="1">
 ## Install the latest EAS CLI
 
-EAS CLI is the command-line app that you will use to interact with EAS services from your terminal. To install it, run the command:
+EAS CLI is the command line app you will use to interact with EAS services from your terminal. To install it, run the command:
 
 <Terminal cmd={['$ npm install --global eas-cli']} />
 
 You can also use the above command to check if a new version of EAS CLI is available. We encourage you to always stay up to date with the latest version.
 
-> We recommend using `npm` instead of `yarn` for global package installations. You may alternatively use `npx eas-cli`, just remember to use that instead of `eas` whenever it's called for in the documentation.
+> We recommend using `npm` instead of `yarn` for global package installations. You may alternatively use `npx eas-cli`; remember to use that instead of `eas` whenever it's called for in the documentation.
+
 </Step>
 
 <Step label="2">
@@ -73,37 +67,36 @@ Inside the `preview` and `production` build profiles in **eas.json**, add a `cha
 }
 ```
 
-The `channel` allows you to point updates at builds. For example, if we set up a GitHub Action to publish changes on merge, it will make it so that we can merge code into the "production" Git branch. Then, each commit will trigger a GitHub Action that will publish an update that will be available to builds with the channel "production".
+The `channel` allows you to point updates at builds of that profile. For example, if we set up a GitHub Action to publish changes on merge, it will make it so that we can merge code into the "production" Git branch. Then, each commit will trigger a GitHub Action that will publish an update which will be available to builds with the channel "production".
 
 > **Optional**: If your project is a bare React Native project, see [Updating bare app](/bare/updating-your-app) for any additional configuration.
+
 </Step>
 
 <Step label="4">
 ## Create a build for the project
 
-Next, we'll need to create a build for Android or iOS. [Learn more](/build/setup).
+You need to create a build for Android or iOS. We recommend creating a build with the `preview` build profile first. See [Creating your first build](https://docs.expo.dev/build/setup/) on how to get started and set up [Internal distribution](https://docs.expo.dev/build/internal-distribution/#setting-up-internal-distribution) for your device or simulator.
 
-We recommend creating a build with the `preview` build profile first. [Learn more](/build/internal-distribution) about setting up your devices for internal distribution.
+Once you have a build running on your device or a simulator, you are ready to send an update.
 
-Once you have a build running on your device or in a simulator, we'll be ready to send it an update.
 </Step>
 
 <Step label="5">
 ## Make changes locally
 
-Once we've created a build, we're ready to iterate on our project. Start a local development server with:
+After creating the build, you are ready to iterate on the project. Start a local development server with the following command:
 
 <Terminal cmd={['$ npx expo start']} />
 
 Then, make any desired changes to your project's JavaScript, styling, or image assets.
+
 </Step>
 
 <Step label="6">
 ## Publish an update
 
-Now we're ready to publish an update to the build created in the previous step.
-
-Then publish an update with the following command:
+To publish an update to the build, run the following command:
 
 <Terminal
   cmd={[
@@ -116,8 +109,9 @@ Then publish an update with the following command:
 />
 
 Once the update is built and uploaded to EAS and the command completes, force close and reopen your app up to two times to download and view the update.
+
 </Step>
 
 ## Next steps
 
-You can publish updates continuously with GitHub Actions. Learn more: [Using GitHub Actions with EAS Update](/eas-update/github-actions)
+You can publish updates continuously with GitHub Actions. See [Using GitHub Actions with EAS Update](/eas-update/github-actions) for more information.

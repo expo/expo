@@ -1,7 +1,7 @@
 {
   "name": "expo-template-blank-typescript",
   "description": "The Blank project template includes the minimum dependencies to run and an empty root component.",
-  "version": "47.0.9",
+  "version": "48.0.3",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
@@ -10,17 +10,14 @@
     "web": "expo start --web"
   },
   "dependencies": {
-    "expo": "~47.0.0",
-    "expo-status-bar": "~1.4.2",
-    "react": "18.1.0",
-    "react-dom": "18.1.0",
-    "react-native": "0.70.5",
-    "react-native-web": "~0.18.9"
+    "expo": "~48.0.0-beta.2",
+    "expo-status-bar": "~1.4.4",
+    "react": "18.2.0",
+    "react-native": "0.71.3"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9",
+    "@babel/core": "^7.20.0",
     "@types/react": "~18.0.14",
-    "@types/react-native": "~0.69.1",
-    "typescript": "^4.6.3"
+    "typescript": "^4.9.4"
   }
 }

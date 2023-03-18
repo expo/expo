@@ -1,17 +1,18 @@
 ---
-title: Installing expo-updates
+title: Add expo-updates to an existing project
+description: Learn how to add expo-updates to an existing React Native project.
 ---
 
 import { DiffBlock, Terminal } from '~/ui/components/Snippet';
 import { Collapsible } from '~/ui/components/Collapsible';
 
-The `expo-updates` library fetches and manages updates received from a remote server. It supports [EAS Update](/eas-update/introduction), a hosted service that serves updates for projects using the expo-updates library.
+The `expo-updates` library fetches and manages updates received from a remote server. It supports [EAS Update](/eas-update/introduction), a hosted service that serves updates for projects using the `expo-updates` library.
 
-> If you are creating a new project, we recommend using `npx create-react-native-app` instead of `npx react-native init` because it will handle the following configuration for you automatically. It includes the expo-updates [config plugin](/guides/config-plugins.mdx), which will handle the following steps for you.
+> If you are creating a new project, we recommend using `npx create-react-native-app` instead of `npx react-native init` because it will handle the following configuration for you automatically. It includes the `expo-updates` [config plugin](/guides/config-plugins), which will handle the following steps for you.
 
 ## Installation
 
-The `expo-updates` library requires that your project already has [Expo modules configured](/bare/installing-expo-modules.mdx). Be sure to install it before continuing.
+The `expo-updates` library requires that your project already has [Expo modules configured](/bare/installing-expo-modules). Be sure to install it before continuing.
 
 To get started, install `expo-updates`:
 
@@ -27,7 +28,7 @@ Once installation is complete, apply the changes from the following diffs to con
 
 You'll need to modify **index.js** to import `expo-asset` early in your app, to be able to update assets with updates.
 
-```diff app.json
+```diff index.js
 + import 'expo-asset';
 import { registerRootComponent } from 'expo';
 
@@ -270,7 +271,7 @@ There are multiple changes to apply to your project's **MainApplication.java**
 
 ## Usage
 
-See more information about usage in the [expo-updates README](https://github.com/expo/expo/tree/main/packages/expo-updates/README.md).
+See more information about usage in the [`expo-updates` README](https://github.com/expo/expo/tree/main/packages/expo-updates/README.md).
 
 ## FAQ
 

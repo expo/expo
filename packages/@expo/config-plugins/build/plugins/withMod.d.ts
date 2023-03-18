@@ -1,5 +1,5 @@
 import { ExportedConfig, Mod, ModPlatform } from '../Plugin.types';
-export declare type BaseModOptions = {
+export type BaseModOptions = {
     platform: ModPlatform;
     mod: string;
     isProvider?: boolean;

@@ -2,7 +2,7 @@ import React from 'react';
 /**
  * KML specific props.
  */
-export declare type KMLProps = {
+export type KMLProps = {
     /**
      * The value of require('path/to/file.kml') for the .kml asset
      */
@@ -13,7 +13,7 @@ export declare type KMLProps = {
  *
  * See {@link KMLProps} for more detail.
  */
-export declare type KMLObject = {
+export type KMLObject = {
     type: 'kml';
 } & KMLProps;
 /**

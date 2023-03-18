@@ -20,27 +20,21 @@ buildscript {
     if (ext.has("kotlinVersion")) {
       ext.kotlinVersion()
     } else {
-      ext.safeExtGet("kotlinVersion", "1.6.10")
+      ext.safeExtGet("kotlinVersion", "1.8.10")
     }
   }
 
-  // The Android Gradle plugin is only required when opening the android folder stand-alone.
-  // This avoids unnecessary downloads and potential conflicts when the library is included as a
-  // module dependency in an application project.
-  // ref: https://docs.gradle.org/current/userguide/tutorial_using_tasks.html#sec:build_script_external_dependencies
-  if (project == rootProject) {
-    repositories {
-      google()
-    }
-    dependencies {
-      classpath 'com.android.tools.build:gradle:4.2.2'
-      classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
-    }
+  repositories {
+    mavenCentral()
+  }
+
+  dependencies {
+    classpath("org.jetbrains.kotlin:kotlin-gradle-plugin:${getKotlinVersion()}")
   }
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
   compileOptions {
     sourceCompatibility JavaVersion.VERSION_11
@@ -53,22 +47,18 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 31)
+    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 1
-    versionName "0.2.3"
+    versionName "1.0.0"
   }
   lintOptions {
     abortOnError false
   }
-  sourceSets {
-    main {
-      java {
-        if (safeExtGet("excludeAppGlideModule", false)) {
-          srcDir "src"
-          exclude "**/ExpoImageAppGlideModule.java"
-        }
-      }
-    }
+}
+
+if (safeExtGet("excludeAppGlideModule", false)) {
+  tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile) {
+    exclude("**/ExpoImageAppGlideModule.kt")
   }
 }
 

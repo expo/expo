@@ -1,17 +1,17 @@
 ---
-title: Already used React Native?
+title: Already used React Native
+description: If you are familiar with React Native, this guide will help you understand the key differences between Expo and React Native.
 ---
 
-import { ConfigClassic } from '~/components/plugins/ConfigSection';
 import { Terminal } from '~/ui/components/Snippet';
 
-This guide is intended to give developers who have already used React Native a quick outline on some of the key concepts, resources, and differences they will encounter when using Expo.
+This guide is intended to give developers who have already used React Native a quick outline of some of the key concepts, resources, and differences they will encounter when using Expo.
 
-You can use just about every part of the [Expo SDK](/versions/latest/) in any vanilla React Native app - we call using the Expo tools in this context the "bare" workflow. See more about that [here](../bare/hello-world.mdx). It's basically no different than using libraries in your React Native app, we just offer a lot of well-tested, consistent, and increasingly comprehensive libraries that give you access to the underlying native APIs.
+You can use just about every part of the [Expo SDK](/versions/latest/) in any vanilla React Native app - we call using the Expo tools in this context the ["bare" workflow](/bare/hello-world). It's no different than using libraries in your React Native app, we just offer a lot of well-tested, consistent, and increasingly comprehensive libraries that give you access to the underlying native APIs.
 
 ## Expo managed workflow
 
-The Expo managed workflow provides a _shared native runtime_ so you don't write native code, you focus on writing your React app in JavaScript. You don't have to worry about iOS or Android specific settings, or even opening up Xcode. Managed Expo projects have their own workflow including Expo CLI (a command line interface) to make developing and deploying easy.
+The Expo managed workflow provides a _shared native runtime_ so you don't write native code, you focus on writing your React app in JavaScript. You don't have to worry about Android or iOS specific settings, or even opening up Xcode. Managed Expo projects have their own workflow including Expo CLI (a command line interface) to make developing and deploying easy.
 
 - If you've ever upgraded React Native or a native module you'll appreciate Expo's ability to seamlessly do this for you by only changing the version number.
 
@@ -27,10 +27,6 @@ Expo offers a shared configuration file we call a _manifest_.
 
 - Configuration that you would typically do inside your Xcode / plist files or Android studio / xml files is handled through **app.json**. For example, if you want to lock the orientation, change your icon, customize your splash screen, add/remove permissions and entitlements (in standalone apps), configure keys for Google Maps and other services, you set this in **app.json** and it will apply to both iOS and Android. [See the guide here](/workflow/configuration.mdx).
 
-In the managed workflow, you can share your app with anyone, anywhere in the world while you're working through the Expo Go app [(available on the App / Play Store)](https://expo.dev). Scan a QR code, or enter a phone number and we'll send you a link that will instantly load your app on your device.
-
-- Instead of having to sign up several external testers through App Store Connect, you can easily have them download the Expo Go app and immediately have a working version on their phone.
-
 We talk about permissions we set within **app.json**, but there's also the [Permissions API](../versions/latest/sdk/permissions.mdx). Permissions inside **app.json** are meant to be used by Android standalone apps for things like camera access, geolocation, fingerprint, etc. The Permissions API on the other hand, is used to request and verify access at runtime. It offers an easy API for asking your users for push notifications, location, camera, audio recording and contacts.
 
 ## How does Expo work?
@@ -39,25 +35,17 @@ Since you write your code in JavaScript, we bundle it up and serve it from S3. E
 
 ## Developing in Expo
 
-Apps are served from Expo CLI through a tunnel service by default (we currently use [ngrok](https://ngrok.com) for this) -- this means that you don't have to have your device connected to your computer, or to even be in the same room or country (or planet? I guess it should work from space) as the development machine and you can still live reload, use hot module reloading, enable remote JS debugging, and all of those things you can do normally with React Native. One caveat to this is that using a tunnel is a bit slower than using your LAN address or localhost, so if you can, you should use LAN or localhost. [See how to configure this in Expo CLI](/workflow/expo-cli.mdx#develop).
+Apps are served from Expo CLI through a tunnel service by default (we currently use [ngrok](https://ngrok.com) for this) -- this means that you don't have to have your device connected to your computer, or to even be in the same room or country (or planet? I guess it should work from space) as the development machine and you can still live reload, use hot module reloading, enable remote JS debugging, and all of those things you can do normally with React Native. One caveat to this is that using a tunnel is a bit slower than using your LAN address or localhost, so if you can, you should use LAN or localhost. [See how to configure this in Expo CLI](/workflow/expo-cli#develop).
 
 - Expo streams your device logs to Expo CLI so you don't need to run `adb logcat` or the iOS equivalent -- the `console.log / warn /error` messages from any device that is connected to your app will show up automatically in your terminal.
 
 ## What Expo can't do
 
-- See [Why not Expo?](../introduction/why-not-expo.mdx) for more information.
+- See [Why not Expo?](/introduction/why-not-expo) for more information.
 
-## Deploying to the App / Play Store
+## Deploying to the Play/App Store
 
-When you're ready, you can run `eas build --auto-submit` using EAS CLI to both build your app and automatically upload the binary for distribution on the Apple App Store and Google Play Store.
-
-<ConfigClassic>
-
-If you are using the classic build system, you can run `expo build:ios` or `expo build:android` and Expo will build your app and output a link to the binary required for you to submit. Then you can use something like [Transporter](https://apps.apple.com/app/transporter/id1450874784) for iOS, or directly upload an APK for Android.
-
-If you prefer to build your app on your own machine, you can [follow these steps](https://github.com/expo/expo#standalone-apps).
-
-</ConfigClassic>
+When you're ready, you can run `eas build --auto-submit` using EAS CLI to both build your app and automatically upload the binary for distribution on the Google Play Store and Apple App Store.
 
 ## Helpful Tools & Resources
 

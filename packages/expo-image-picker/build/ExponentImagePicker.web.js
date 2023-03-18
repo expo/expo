@@ -1,5 +1,4 @@
 import { PermissionStatus, Platform } from 'expo-modules-core';
-import { v4 } from 'uuid';
 import { MediaTypeOptions, } from './ImagePicker.types';
 const MediaTypeInput = {
     [MediaTypeOptions.All]: 'video/mp4,video/quicktime,video/x-m4v,video/*,image/*',
@@ -67,7 +66,7 @@ function openFileBrowserAsync({ mediaTypes, capture = false, allowsMultipleSelec
     input.style.display = 'none';
     input.setAttribute('type', 'file');
     input.setAttribute('accept', mediaTypeFormat);
-    input.setAttribute('id', v4());
+    input.setAttribute('id', String(Math.random()));
     if (allowsMultipleSelection) {
         input.setAttribute('multiple', 'multiple');
     }

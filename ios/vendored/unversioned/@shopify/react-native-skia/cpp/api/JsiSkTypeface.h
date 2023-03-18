@@ -11,14 +11,14 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
-#include <SkFont.h>
-#include <SkTypeface.h>
+#include "SkFont.h"
+#include "SkTypeface.h"
 
 #pragma clang diagnostic pop
 
 namespace RNSkia {
 
-using namespace facebook;
+namespace jsi = facebook::jsi;
 
 class JsiSkTypeface : public JsiSkWrappingSkPtrHostObject<SkTypeface> {
 public:
@@ -31,7 +31,7 @@ public:
 
   JsiSkTypeface(std::shared_ptr<RNSkPlatformContext> context,
                 sk_sp<SkTypeface> typeface)
-      : JsiSkWrappingSkPtrHostObject(std::move(context), std::move(typeface)){}
+      : JsiSkWrappingSkPtrHostObject(std::move(context), std::move(typeface)) {}
 
   /**
     Returns the underlying object from a host object of this type
@@ -47,10 +47,11 @@ public:
    Returns the jsi object from a host object of this type
   */
   static jsi::Value toValue(jsi::Runtime &runtime,
-                              std::shared_ptr<RNSkPlatformContext> context,
-                              sk_sp<SkTypeface> tf) {
+                            std::shared_ptr<RNSkPlatformContext> context,
+                            sk_sp<SkTypeface> tf) {
     return jsi::Object::createFromHostObject(
-              runtime, std::make_shared<JsiSkTypeface>(std::move(context), std::move(tf)));
+        runtime,
+        std::make_shared<JsiSkTypeface>(std::move(context), std::move(tf)));
   }
 };
 

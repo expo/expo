@@ -49,7 +49,7 @@ const withJsEngineGradleProps = createBuildGradlePropsConfigPlugin([{
   propName: 'expo.jsEngine',
   propValueGetter: config => {
     var _ref, _config$android$jsEng, _config$android;
-    return (_ref = (_config$android$jsEng = (_config$android = config.android) === null || _config$android === void 0 ? void 0 : _config$android.jsEngine) !== null && _config$android$jsEng !== void 0 ? _config$android$jsEng : config.jsEngine) !== null && _ref !== void 0 ? _ref : 'jsc';
+    return (_ref = (_config$android$jsEng = (_config$android = config.android) === null || _config$android === void 0 ? void 0 : _config$android.jsEngine) !== null && _config$android$jsEng !== void 0 ? _config$android$jsEng : config.jsEngine) !== null && _ref !== void 0 ? _ref : 'hermes';
   }
 }], 'withJsEngineGradleProps');
 exports.withJsEngineGradleProps = withJsEngineGradleProps;

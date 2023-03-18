@@ -1,5 +1,6 @@
 ---
 title: Creating your first build
+description: Learn how to create a build for your app with EAS Build.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -7,9 +8,9 @@ import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { Tabs, Tab } from '~/ui/components/Tabs';
 
-EAS Build allows you to build a ready-to-submit binary of your app for the Apple App Store or Google Play Store. In this guide, let's learn how to do that.
+EAS Build allows you to build a ready-to-submit binary of your app for the Google Play Store or Apple App Store. In this guide, let's learn how to do that.
 
-Alternatively, if you prefer to install the app directly to your Android device/emulator or install it in the iOS Simulator, we will point you towards resources that explain how to do that.
+Alternatively, if you prefer to install the app directly to your Android device/emulator or install it in the iOS Simulator, we will point you toward resources that explain how to do that.
 
 For a small app, builds for Android and iOS platforms trigger within a few minutes. If you encounter any issues along the way, you can reach out on the [Expo forums](https://forums.expo.dev/) or [Discord](https://chat.expo.dev/).
 
@@ -78,7 +79,7 @@ Additional configuration may be required for some scenarios:
 
 - Are you migrating an Expo managed app from `"expo build"`? [Learn about the differences](/build-reference/migrating).
 - Does your app code depend on environment variables? [Add them to your build configuration](/build-reference/variables).
-- Is your project inside of a monorepo? [Follow these instructions](/build-reference/how-tos#how-to-set-up-eas-build-with).
+- Is your project inside of a monorepo? [Follow these instructions](/build-reference/build-with-monorepos).
 - Do you use private npm packages? [Add your npm token](/build-reference/private-npm-packages).
 - Does your app depend on specific versions of tools like Node, Yarn, npm, CocoaPods, or Xcode? [Specify these versions in your build configuration](/build/eas-json).
 
@@ -97,19 +98,19 @@ Before the build process can start for app stores, you will need to have a store
 
 Whether you have experience with generating app signing credentials or not, EAS CLI does the heavy lifting. You can opt-in for EAS CLI to handle the app signing credentials process. Check out the steps for [Android app signing credentials](#android-app-signing-credentials) or [iOS app signing credentials](#ios-app-signing-credentials) process below for more information.
 
-<Collapsible summary="Apple Developer Program membership is required to build for the Apple App Store.">
-
-If you are going to use EAS Build to create release builds for the Apple App Store, you need access to an account with a $99 USD [Apple Developer Program](https://developer.apple.com/programs) membership.
-
-</Collapsible>
-
 <Collapsible summary="Google Play Developer membership is required to distribute to the Google Play Store.">
 
 You can build and sign your app using EAS Build, but you can't upload it to the Google Play Store unless you have a membership, a one-time $25 USD fee.
 
 </Collapsible>
 
-After you have confirmed that you have an Apple App Store or a Google Play Store account and decided whether or not EAS CLI should handle app signing credentials, you can proceed with the following set of commands to build for the platform's store:
+<Collapsible summary="Apple Developer Program membership is required to build for the Apple App Store.">
+
+If you are going to use EAS Build to create release builds for the Apple App Store, you need access to an account with a $99 USD [Apple Developer Program](https://developer.apple.com/programs) membership.
+
+</Collapsible>
+
+After you have confirmed that you have a Google Play Store or Apple App Store account and decided whether or not EAS CLI should handle app signing credentials, you can proceed with the following set of commands to build for the platform's store:
 
 <Tabs tabs={['Android', 'iOS']}>
   <Tab>
@@ -176,7 +177,7 @@ To learn how to install the app directly to your Android device/iOS Simulator, n
 
 We walked you through the steps for creating your first build with EAS Build without going into too much depth on any particular part of the process.
 
-When you are ready to learn more, we recommend proceeding through the "Start Building" section of this documentation to learn about topics such as:
+When you are ready to learn more, we recommend proceeding through the **Start Building** section of this documentation to learn about topics such as:
 
 - [Configuration with eas.json](/build/eas-json)
 - [Internal distribution](/build/internal-distribution)

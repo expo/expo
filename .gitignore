@@ -64,6 +64,7 @@ xcuserdata
 /android/versioned-react-native/sdks
 ReactAndroid-temp.aar
 /android/prebuiltHermes
+/android/versioned-abis/**/*.aar
 
 # Tools
 jarjar-rules.txt
@@ -95,6 +96,7 @@ templates/**/android/app/build
 templates/**/Pods/**
 templates/**/Podfile.lock
 templates/**/yarn.lock
+templates/**/*.tgz
 
 # EYW template
 /packages/expo-yarn-workspaces/workspace-template/yarn.lock
@@ -131,6 +133,9 @@ shellAppWorkspaces
 .env.test.local
 .env.production.local
 apps/bare-expo/deploy-url.txt
+
+# Temporary files created by Metro to check the health of the file watcher
+.metro-health-check*
 
 # Expo Doc merging
 docs/pages/versions/*/react-native/ADDED_*.md

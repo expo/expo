@@ -2,11 +2,11 @@ import { PermissionResponse } from 'expo-modules-core';
 /**
  * Alias for `PermissionResponse` type exported by `expo-modules-core`.
  */
-export declare type CameraPermissionResponse = PermissionResponse;
+export type CameraPermissionResponse = PermissionResponse;
 /**
- * Extends `PermissionResponse` type exported by `expo-modules-core` and contains additional iOS-specific field.
+ * Extends `PermissionResponse` type exported by `expo-modules-core`, containing additional iOS-specific field.
  */
-export declare type MediaLibraryPermissionResponse = PermissionResponse & {
+export type MediaLibraryPermissionResponse = PermissionResponse & {
     /**
      * @platform ios
      */
@@ -160,49 +160,17 @@ export declare enum UIImagePickerPresentationStyle {
      *
      * @platform ios 13+
      */
-    AUTOMATIC = "automatic",
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.FULL_SCREEN` instead.
-     */
-    FullScreen = "fullScreen",
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.PAGE_SHEET` instead.
-     */
-    PageSheet = "pageSheet",
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.FORM_SHEET` instead.
-     */
-    FormSheet = "formSheet",
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.CURRENT_CONTEXT` instead.
-     */
-    CurrentContext = "currentContext",
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.OVER_FULL_SCREEN` instead.
-     */
-    OverFullScreen = "overFullScreen",
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.OVER_CURRENT_CONTEXT` instead.
-     */
-    OverCurrentContext = "overCurrentContext",
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.POPOVER` instead.
-     */
-    Popover = "popover",
-    /**
-     * @deprecated Use `UIImagePickerPresentationStyle.AUTOMATIC` instead.
-     */
-    Automatic = "automatic"
+    AUTOMATIC = "automatic"
 }
 /**
  * @hidden
  * @deprecated Use `ImagePickerAsset` instead
  */
-export declare type ImageInfo = ImagePickerAsset;
+export type ImageInfo = ImagePickerAsset;
 /**
  * Represents an asset (image or video) returned by the image picker or camera.
  */
-export declare type ImagePickerAsset = {
+export type ImagePickerAsset = {
     /**
      * URI to the local image or video file (usable as the source of an `Image` element, in the case of
      * an image) and `width` and `height` specify the dimensions of the media.
@@ -267,7 +235,7 @@ export declare type ImagePickerAsset = {
      */
     duration?: number | null;
 };
-export declare type ImagePickerErrorResult = {
+export type ImagePickerErrorResult = {
     /**
      * The error code.
      */
@@ -281,96 +249,54 @@ export declare type ImagePickerErrorResult = {
      */
     exception?: string;
 };
-export declare type ImagePickerResult = {
-    /**
-     * An array of picked assets or `null` when the request was canceled.
-     */
-    assets: ImagePickerAsset[] | null;
-    /**
-     * Boolean flag which shows if request was canceled. If asset data have been returned this should
-     * always be `false`.
-     */
-    canceled: boolean;
-    /**
-     * @deprecated Use `canceled` instead.
-     */
-    cancelled?: boolean;
-    /**
-     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
-     */
-    selected?: ImagePickerAsset[];
-    /**
-     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
-     */
-    uri?: string;
-    /**
-     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
-     */
-    assetId?: string | null;
-    /**
-     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
-     */
-    width?: number;
-    /**
-     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
-     */
-    height?: number;
-    /**
-     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
-     */
-    type?: 'image' | 'video';
-    /**
-     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
-     */
-    fileName?: string | null;
-    /**
-     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
-     */
-    fileSize?: number;
-    /**
-     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
-     */
-    exif?: Record<string, any> | null;
-    /**
-     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
-     */
-    base64?: string | null;
-    /**
-     * @deprecated This field is deprecated and will be removed in SDK 48, you can access selected assets through the `assets` array instead.
-     */
-    duration?: number | null;
-} & (ImagePickerSuccessResult | ImagePickerCanceledResult);
 /**
- * @hidden
+ * Type representing successful and canceled pick result.
  */
-export declare type ImagePickerSuccessResult = {
+export type ImagePickerResult = ImagePickerSuccessResult | ImagePickerCanceledResult;
+/**
+ * Type representing successful pick result.
+ */
+export type ImagePickerSuccessResult = {
+    /**
+     * Boolean flag set to `false` showing that the request was successful.
+     */
     canceled: false;
+    /**
+     * An array of picked assets.
+     */
     assets: ImagePickerAsset[];
 };
 /**
- * @hidden
+ * Type representing canceled pick result.
  */
-export declare type ImagePickerCanceledResult = {
+export type ImagePickerCanceledResult = {
+    /**
+     * Boolean flag set to `true` showing that the request was canceled.
+     */
     canceled: true;
+    /**
+     * `null` signifying that the request was canceled.
+     */
     assets: null;
 };
 /**
  * @hidden
  * @deprecated Use `ImagePickerResult` instead.
  */
-export declare type ImagePickerCancelledResult = ImagePickerCanceledResult;
+export type ImagePickerCancelledResult = ImagePickerCanceledResult;
 /**
  * @hidden
  * @deprecated `ImagePickerMultipleResult` has been deprecated in favor of `ImagePickerResult`.
  */
-export declare type ImagePickerMultipleResult = ImagePickerResult;
-export declare type ImagePickerOptions = {
+export type ImagePickerMultipleResult = ImagePickerResult;
+export type ImagePickerOptions = {
     /**
      * Whether to show a UI to edit the image after it is picked. On Android the user can crop and
      * rotate the image and on iOS simply crop it.
      *
-     * > Cropping multiple images is not supported - this option is mutually exclusive with `allowsMultipleSelection`.
-     * > On iOS, this option is ignored if `allowsMultipleSelection` is enabled.
+     * > - Cropping multiple images is not supported - this option is mutually exclusive with `allowsMultipleSelection`.
+     * > - On iOS, this option is ignored if `allowsMultipleSelection` is enabled.
+     * > - On iOS cropping a `.bmp` image will convert it to `.png`.
      *
      * @default false
      * @platform ios
@@ -472,7 +398,7 @@ export declare type ImagePickerOptions = {
      */
     presentationStyle?: UIImagePickerPresentationStyle;
 };
-export declare type OpenFileBrowserOptions = {
+export type OpenFileBrowserOptions = {
     /**
      * Choose what type of media to pick.
      * @default ImagePicker.MediaTypeOptions.Images
@@ -493,7 +419,7 @@ export declare type OpenFileBrowserOptions = {
  * @hidden
  * @deprecated Use `ImagePickerResult` or `OpenFileBrowserOptions` instead.
  */
-export declare type ExpandImagePickerResult<T extends ImagePickerOptions | OpenFileBrowserOptions> = T extends {
+export type ExpandImagePickerResult<T extends ImagePickerOptions | OpenFileBrowserOptions> = T extends {
     allowsMultipleSelection: true;
 } ? ImagePickerResult : ImagePickerResult;
 //# sourceMappingURL=ImagePicker.types.d.ts.map

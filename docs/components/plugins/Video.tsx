@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { borderRadius, breakpoints } from '@expo/styleguide';
+import { borderRadius, breakpoints } from '@expo/styleguide-base';
 import React, { useState } from 'react';
 import ReactPlayer from 'react-player';
 import VisibilitySensor from 'react-visibility-sensor';
@@ -86,7 +86,7 @@ const videoWrapperStyle = css({
 const playerStyle = css({
   outline: 'none',
   backgroundColor: '#000',
-  borderRadius: borderRadius.medium,
+  borderRadius: borderRadius.md,
 });
 
 const dimmerStyle = css({

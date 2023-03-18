@@ -1,5 +1,4 @@
 import { PermissionResponse, PermissionStatus, Platform } from 'expo-modules-core';
-import { v4 } from 'uuid';
 
 import {
   ImagePickerAsset,
@@ -95,7 +94,7 @@ function openFileBrowserAsync({
   input.style.display = 'none';
   input.setAttribute('type', 'file');
   input.setAttribute('accept', mediaTypeFormat);
-  input.setAttribute('id', v4());
+  input.setAttribute('id', String(Math.random()));
   if (allowsMultipleSelection) {
     input.setAttribute('multiple', 'multiple');
   }

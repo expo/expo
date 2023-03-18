@@ -18,6 +18,11 @@ export function isEnableHermesManaged(expoConfig: ExpoConfig, platform: Platform
         // Hermes on Android is supported after SDK 42.
         return false;
       }
+      if (gteSdkVersion(expoConfig, '48.0.0')) {
+        // Hermes on Android is enabled by default after SDK 48.
+        return (expoConfig.android?.jsEngine ?? expoConfig.jsEngine) !== 'jsc';
+      }
+
       return (expoConfig.android?.jsEngine ?? expoConfig.jsEngine) === 'hermes';
     }
     case 'ios': {
@@ -25,6 +30,11 @@ export function isEnableHermesManaged(expoConfig: ExpoConfig, platform: Platform
         // Hermes on iOS is supported after SDK 43.
         return false;
       }
+      if (gteSdkVersion(expoConfig, '48.0.0')) {
+        // Hermes on iOS is enabled by default after SDK 48.
+        return (expoConfig.ios?.jsEngine ?? expoConfig.jsEngine) !== 'jsc';
+      }
+
       return (expoConfig.ios?.jsEngine ?? expoConfig.jsEngine) === 'hermes';
     }
     default:
@@ -147,9 +157,10 @@ export async function maybeInconsistentEngineAndroidAsync(
     const content = await fs.readFile(appBuildGradlePath, 'utf8');
     const isPropsReference =
       content.search(
-        /^\s*enableHermes:\s*\(findProperty\('expo.jsEngine'\) \?: "jsc"\) == "hermes",?\s+/m
+        /^\s*(enableHermes:|hermesEnabled\s*=)\s*\(findProperty\('expo.jsEngine'\) \?: "(jsc|hermes)"\) == "hermes",?\s+/m
       ) >= 0;
-    const isHermesBare = content.search(/^\s*enableHermes:\s*true,?\s+/m) >= 0;
+    const isHermesBare = content.search(/^\s*(enableHermes:|hermesEnabled\s*=)\s*true,?\s+/m) >= 0;
+
     if (!isPropsReference && isHermesManaged !== isHermesBare) {
       return true;
     }
@@ -183,6 +194,8 @@ export async function maybeInconsistentEngineIosAsync(
       /^\s*:hermes_enabled\s*=>\s*flags\[:hermes_enabled\]\s*\|\|\s*podfile_properties\['expo.jsEngine'\]\s*==\s*'hermes',?/m,
       // <= sdk 44
       /^\s*:hermes_enabled\s*=>\s*podfile_properties\['expo.jsEngine'\] == 'hermes',?\s+/m,
+      // sdk 48
+      /^\s*:hermes_enabled\s*=>\s*podfile_properties\['expo.jsEngine'\]\s*==\s*nil\s*\|\|\s*podfile_properties\['expo.jsEngine'\]\s*==\s*'hermes',?/m,
     ];
     const isPropsReference = hermesPropReferences.reduce(
       (prev, curr) => prev || content.search(curr) >= 0,

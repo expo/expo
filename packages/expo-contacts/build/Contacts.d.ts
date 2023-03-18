@@ -1,9 +1,9 @@
 import { PermissionResponse, PermissionStatus } from 'expo-modules-core';
-export declare type CalendarFormatType = CalendarFormats | `${CalendarFormats}`;
-export declare type ContainerType = ContainerTypes | `${ContainerTypes}`;
-export declare type ContactType = ContactTypes | `${ContactTypes}`;
-export declare type FieldType = Fields | `${Fields}`;
-export declare type Date = {
+export type CalendarFormatType = CalendarFormats | `${CalendarFormats}`;
+export type ContainerType = ContainerTypes | `${ContainerTypes}`;
+export type ContactType = ContactTypes | `${ContactTypes}`;
+export type FieldType = Fields | `${Fields}`;
+export type Date = {
     /**
      * Day.
      */
@@ -29,7 +29,7 @@ export declare type Date = {
      */
     format?: CalendarFormatType;
 };
-export declare type Relationship = {
+export type Relationship = {
     /**
      * Localized display name.
      */
@@ -43,7 +43,7 @@ export declare type Relationship = {
      */
     id: string;
 };
-export declare type Email = {
+export type Email = {
     /**
      * Email address.
      */
@@ -61,7 +61,7 @@ export declare type Email = {
      */
     id: string;
 };
-export declare type PhoneNumber = {
+export type PhoneNumber = {
     /**
      * Phone number.
      */
@@ -89,7 +89,7 @@ export declare type PhoneNumber = {
      */
     id: string;
 };
-export declare type Address = {
+export type Address = {
     /**
      * Street name.
      */
@@ -134,7 +134,7 @@ export declare type Address = {
 /**
  * @platform ios
  */
-export declare type SocialProfile = {
+export type SocialProfile = {
     /**
      * Name of social app.
      */
@@ -164,7 +164,7 @@ export declare type SocialProfile = {
      */
     id: string;
 };
-export declare type InstantMessageAddress = {
+export type InstantMessageAddress = {
     /**
      * Name of instant messaging app.
      */
@@ -186,7 +186,7 @@ export declare type InstantMessageAddress = {
      */
     id: string;
 };
-export declare type UrlAddress = {
+export type UrlAddress = {
     /**
      * Localized display name.
      */
@@ -204,7 +204,7 @@ export declare type UrlAddress = {
  * Information regarding thumbnail images.
  * > On Android you can get dimensions using [`Image.getSize`](https://reactnative.dev/docs/image#getsize) method.
  */
-export declare type Image = {
+export type Image = {
     uri?: string;
     /**
      * Image width.
@@ -224,7 +224,7 @@ export declare type Image = {
 /**
  * A set of fields that define information about a single contact entity.
  */
-export declare type Contact = {
+export type Contact = {
     /**
      * Immutable identifier used for querying and indexing.
      */
@@ -354,7 +354,7 @@ export declare type Contact = {
 /**
  * The return value for queried contact operations like `getContactsAsync`.
  */
-export declare type ContactResponse = {
+export type ContactResponse = {
     /**
      * An array of contacts that match a particular query.
      */
@@ -368,11 +368,11 @@ export declare type ContactResponse = {
      */
     hasPreviousPage: boolean;
 };
-export declare type ContactSort = `${SortTypes}`;
+export type ContactSort = `${SortTypes}`;
 /**
  * Used to query contacts from the user's device.
  */
-export declare type ContactQuery = {
+export type ContactQuery = {
     /**
      * The max number of contacts to return. If skipped or set to `0` all contacts will be returned.
      */
@@ -417,7 +417,7 @@ export declare type ContactQuery = {
 /**
  * Denotes the functionality of a native contact form.
  */
-export declare type FormOptions = {
+export type FormOptions = {
     /**
      * The properties that will be displayed. On iOS those properties does nothing while in editing mode.
      */
@@ -463,7 +463,7 @@ export declare type FormOptions = {
  * Used to query native contact groups.
  * @platform ios
  */
-export declare type GroupQuery = {
+export type GroupQuery = {
     /**
      * Query the group with a matching ID.
      */
@@ -484,7 +484,7 @@ export declare type GroupQuery = {
  * - Groups Named: `getContainersAsync({ groupName })`
  * @platform ios
  */
-export declare type Group = {
+export type Group = {
     /**
      * Immutable id representing the group.
      */
@@ -498,7 +498,7 @@ export declare type Group = {
  * Used to query native contact containers.
  * @platform ios
  */
-export declare type ContainerQuery = {
+export type ContainerQuery = {
     /**
      * Query all the containers that parent a contact.
      */
@@ -512,7 +512,7 @@ export declare type ContainerQuery = {
      */
     containerId?: string | string[];
 };
-export declare type Container = {
+export type Container = {
     name: string;
     id: string;
     type: ContainerType;

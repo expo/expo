@@ -1,6 +1,6 @@
 {
   "name": "expo-permissions",
-  "version": "14.0.0",
+  "version": "14.1.1",
   "description": "Allows you prompt for various permissions to access device sensors, personal data, etc.",
   "main": "build/index.js",
   "types": "build/index.d.ts",

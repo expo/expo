@@ -1,6 +1,6 @@
 {
   "name": "expo-document-picker",
-  "version": "11.0.1",
+  "version": "11.2.1",
   "description": "Provides access to the system's UI for selecting documents from the available providers on the user's device.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
@@ -33,9 +33,6 @@
   "homepage": "https://docs.expo.dev/versions/latest/sdk/document-picker/",
   "jest": {
     "preset": "expo-module-scripts"
-  },
-  "dependencies": {
-    "uuid": "^3.3.2"
   },
   "devDependencies": {
     "expo-module-scripts": "^3.0.0"

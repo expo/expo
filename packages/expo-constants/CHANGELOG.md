@@ -6,13 +6,29 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 14.2.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 14.2.0 — 2023-02-03
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 14.1.0 — 2022-12-30
+
+### 🎉 New features
+
 - Migrated Android implementation to Expo Modules API. ([#19974](https://github.com/expo/expo/pull/19974) by [@alanhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
 
 - Fix the list of platform keys in expo-module.config.json ([#20017](https://github.com/expo/expo/pull/20017) by [@alanjhughes](https://github.com/alanjhughes))
-
-### 💡 Others
 
 ## 14.0.2 — 2022-10-30
 

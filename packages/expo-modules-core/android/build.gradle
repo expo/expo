@@ -6,7 +6,7 @@ apply plugin: 'maven-publish'
 apply plugin: "de.undercouch.download"
 
 group = 'host.exp.exponent'
-version = '1.0.0'
+version = '1.2.2'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -25,7 +25,7 @@ buildscript {
     if (ext.has("kotlinVersion")) {
       ext.kotlinVersion()
     } else {
-      ext.safeExtGet("kotlinVersion", "1.6.10")
+      ext.safeExtGet("kotlinVersion", "1.8.10")
     }
   }
 
@@ -59,20 +59,17 @@ def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
   : new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
 def REACT_NATIVE_SO_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
   ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
-  : "${buildDir}/react-native.aar/jni"
+  : "${buildDir}/react/jni"
 
 def reactProperties = new Properties()
 file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
 
-def FOLLY_VERSION = reactProperties.getProperty("FOLLY_VERSION")
 def BOOST_VERSION = reactProperties.getProperty("BOOST_VERSION")
-def DOUBLE_CONVERSION_VERSION = reactProperties.getProperty("DOUBLE_CONVERSION_VERSION")
 def REACT_NATIVE_VERSION = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")
 def REACT_NATIVE_TARGET_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
 
 def reactNativeThirdParty = new File("$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/third-party")
 
-def reactNativeIsNightly = reactProperties.getProperty("VERSION_NAME").startsWith("0.0.0-")
 def reactNativeArchitectures() {
   def value = project.getProperties().get("reactNativeArchitectures")
   return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
@@ -127,7 +124,6 @@ if (USE_HERMES) {
 }
 // END HERMES
 
-
 def isNewArchitectureEnabled = findProperty("newArchEnabled") == "true"
 
 // Creating sources with comments
@@ -154,24 +150,13 @@ afterEvaluate {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
-  if (REACT_NATIVE_BUILD_FROM_SOURCE) {
-    if (rootProject.hasProperty("ndkPath")) {
-      ndkPath rootProject.ext.ndkPath
-    }
-    if (rootProject.hasProperty("ndkVersion")) {
-      ndkVersion rootProject.ext.ndkVersion
-    }
-  } else {
-    // This ndkVersion should align to prebuilt react-native building ndkVersion.
-    // Because the unwind library is different before NDK r23 and after,
-    // if we build this library with newer NDK, C++ exceptions are incompatible between these libraries.
-    // For example, C++ exceptions throwing from hermes are not catchable from this library.
-    // Ref: https://android.googlesource.com/platform/ndk/+/master/docs/BuildSystemMaintainers.md#unwinding
-    //
-    // TODO: Revisit this version when upgrade react-native 0.71 (Expo SDK 48)
-    ndkVersion = "21.4.7075529"
+  if (rootProject.hasProperty("ndkPath")) {
+    ndkPath rootProject.ext.ndkPath
+  }
+  if (rootProject.hasProperty("ndkVersion")) {
+    ndkVersion rootProject.ext.ndkVersion
   }
 
   compileOptions {
@@ -185,10 +170,10 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 31)
+    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     consumerProguardFiles 'proguard-rules.pro'
     versionCode 1
-    versionName "1.0.0"
+    versionName "1.2.2"
     buildConfigField "boolean", "IS_NEW_ARCHITECTURE_ENABLED", isNewArchitectureEnabled.toString()
 
     testInstrumentationRunner "expo.modules.TestRunner"
@@ -214,7 +199,11 @@ android {
 
   externalNativeBuild {
     cmake {
-      path "CMakeLists.txt"
+      if (REACT_NATIVE_TARGET_VERSION >= 71) {
+        path "CMakeLists.txt"
+      } else {
+        path "legacy/CMakeLists.txt"
+      }
     }
   }
 
@@ -257,11 +246,6 @@ android {
     }
   }
 
-  configurations {
-    extractHeaders
-    extractJNI
-  }
-
   lintOptions {
     abortOnError false
   }
@@ -290,6 +274,7 @@ dependencies {
   api "org.jetbrains.kotlinx:kotlinx-coroutines-core:1.6.0"
   api "org.jetbrains.kotlinx:kotlinx-coroutines-android:1.6.0"
   api "androidx.core:core-ktx:1.6.0"
+  api project(':expo-modules-core$android-annotation')
 
   /**
    * ReactActivity (the base activity for every React Native application) is subclassing AndroidX classes.
@@ -305,9 +290,7 @@ dependencies {
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
 
-  compileOnly 'com.facebook.fbjni:fbjni:0.2.2'
-  extractHeaders 'com.facebook.fbjni:fbjni:0.2.2:headers'
-  extractJNI 'com.facebook.fbjni:fbjni:0.2.2'
+  compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
 
   testImplementation 'androidx.test:core:1.4.0'
   testImplementation 'junit:junit:4.13.1'
@@ -341,165 +324,12 @@ tasks.withType(org.jetbrains.kotlin.gradle.tasks.KotlinCompile).all {
   kotlinOptions.freeCompilerArgs += "-Xopt-in=kotlin.RequiresOptIn"
 }
 
-// UTILS
-task createNativeDepsDirectories() {
+def createNativeDepsDirectories = project.tasks.findByName('createNativeDepsDirectories') ?: project.tasks.register('createNativeDepsDirectories') {
   downloadsDir.mkdirs()
   thirdPartyNdkDir.mkdirs()
 }
-// END UTILS
 
-// JNI
-def downloadReactNativeNightlyAAR = { buildType, version, downloadFile ->
-  def classifier = buildType == 'Debug' ? 'debug' : 'release'
-  download.run {
-    src("https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.facebook.react&a=react-native&c=${classifier}&e=aar&v=${version}-SNAPSHOT")
-    onlyIfNewer(true)
-    overwrite(false)
-    dest(downloadFile)
-  }
-}
-
-def extractReactNativeAAR = { buildType ->
-  def suffix = buildType == 'Debug' ? '-debug' : '-release'
-  def rnAAR
-  if (reactNativeIsNightly) {
-    def downloadFile = file("${downloadsDir}/react-native-nightly.aar")
-    downloadReactNativeNightlyAAR(buildType, reactProperties.getProperty("VERSION_NAME"), downloadFile)
-    rnAAR = downloadFile
-  } else {
-    def rnAARs = fileTree(REACT_NATIVE_DIR).matching { include "**/react-native/**/*${suffix}.aar" }
-    if (rnAARs.isEmpty()) {
-      rnAARs = fileTree(REACT_NATIVE_DIR).matching { include "**/react-native/**/*.aar" }
-    }
-    if (rnAARs.any()) {
-      // node_modules/react-native has a .aar, extract headers
-      if (rnAARs.size() > 1) {
-        logger.error("More than one React Native AAR file has been found:")
-        rnAARs.each {println(it) }
-        throw new GradleException("Multiple React Native AARs found:\n${rnAARs.join("\n")}" +
-            "\nRemove the old ones and try again")
-      }
-    }
-    rnAAR = rnAARs.singleFile
-  }
-  def file = rnAAR.absoluteFile
-  def packageName = file.name.tokenize('-')[0]
-  copy {
-    from zipTree(file)
-    into "$buildDir/react-native.aar"
-    include "jni/**/*"
-  }
-}
-
-task extractReactNativeAARRelease {
-  doLast {
-    extractReactNativeAAR('Release')
-  }
-}
-
-task extractReactNativeAARDebug {
-  doLast {
-    extractReactNativeAAR('Debug')
-  }
-}
-
-
-task extractAARHeaders {
-  doLast {
-    configurations.extractHeaders.files.each {
-      def file = it.absoluteFile
-      copy {
-        from zipTree(file)
-        into "$buildDir/$file.name"
-        include "**/*.h"
-      }
-    }
-  }
-}
-
-task extractJNIFiles {
-  doLast {
-    configurations.extractJNI.files.each {
-      def file = it.absoluteFile
-      copy {
-        from zipTree(file)
-        into "$buildDir/$file.name"
-        include "jni/**/*"
-      }
-    }
-  }
-}
-// END JNI
-
-// BOOST
-task downloadBoost(dependsOn: createNativeDepsDirectories, type: Download) {
-  def srcUrl = REACT_NATIVE_TARGET_VERSION >= 69
-    ? "https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION.replace("_", ".")}/source/boost_${BOOST_VERSION}.tar.gz"
-    : "https://github.com/react-native-community/boost-for-react-native/releases/download/v${BOOST_VERSION.replace("_", ".")}-0/boost_${BOOST_VERSION}.tar.gz"
-  src(srcUrl)
-  onlyIfNewer(true)
-  overwrite(false)
-  dest(new File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz"))
-}
-
-task prepareBoost(dependsOn: [downloadBoost], type: Copy) {
-  from(tarTree(resources.gzip(downloadBoost.dest)))
-  from("$reactNativeThirdParty/boost/Android.mk")
-  include("Android.mk", "boost_${BOOST_VERSION}/boost/**/*.hpp", "boost/boost/**/*.hpp")
-  includeEmptyDirs = false
-  into("$thirdPartyNdkDir/boost")
-  doLast {
-    file("$thirdPartyNdkDir/boost/boost").renameTo("$thirdPartyNdkDir/boost/boost_${BOOST_VERSION}")
-  }
-}
-// END BOOST
-
-// DOUBLE CONVERSION
-task downloadDoubleConversion(dependsOn: createNativeDepsDirectories, type: Download) {
-  src("https://github.com/google/double-conversion/archive/v${DOUBLE_CONVERSION_VERSION}.tar.gz")
-  onlyIfNewer(true)
-  overwrite(false)
-  dest(new File(downloadsDir, "double-conversion-${DOUBLE_CONVERSION_VERSION}.tar.gz"))
-}
-
-task prepareDoubleConversion(dependsOn: [downloadDoubleConversion], type: Copy) {
-  from(tarTree(downloadDoubleConversion.dest))
-  from("$reactNativeThirdParty/double-conversion/Android.mk")
-  include("double-conversion-${DOUBLE_CONVERSION_VERSION}/src/**/*", "Android.mk")
-  filesMatching("*/src/**/*", { fname -> fname.path = "double-conversion/${fname.name}" })
-  includeEmptyDirs = false
-  into("$thirdPartyNdkDir/double-conversion")
-}
-// END DOUBLE CONVERSION
-
-// FOLLY
-task downloadFolly(dependsOn: createNativeDepsDirectories, type: Download) {
-  src("https://github.com/facebook/folly/archive/v${FOLLY_VERSION}.tar.gz")
-  onlyIfNewer(true)
-  overwrite(false)
-  dest(new File(downloadsDir, "folly-${FOLLY_VERSION}.tar.gz"))
-}
-
-task prepareFolly(dependsOn: [downloadFolly], type: Copy) {
-  from(tarTree(downloadFolly.dest))
-  from("$reactNativeThirdParty/folly/Android.mk")
-  include("folly-${FOLLY_VERSION}/folly/**/*", "Android.mk")
-  eachFile { fname -> fname.path = (fname.path - "folly-${FOLLY_VERSION}/") }
-  // Fixes problem with Folly failing to build on certain systems. See
-  // https://github.com/software-mansion/react-native-reanimated/issues/1024
-  def follyReplaceContent = '''
-  ssize_t r;
-  do {
-    r = open(name, flags, mode);
-  } while (r == -1 && errno == EINTR);
-    return r;
-  '''
-  filter { line -> line.replaceAll("return int\\(wrapNoInt\\(open, name, flags, mode\\)\\);", follyReplaceContent) }
-  includeEmptyDirs = false
-  into("$thirdPartyNdkDir/folly")
-}
-// END FOLLY
-
+// TODO: Remove all these hermes code when we update our repo to react-native 0.71 by using prefab
 task downloadHermes(type: Download) {
   def hermesVersion = currentHermesVersion ?: "main"
   src("https://github.com/facebook/hermes/tarball/${hermesVersion}")
@@ -521,10 +351,11 @@ task unzipHermes(dependsOn: downloadHermes, type: Copy) {
   into(hermesDir)
 }
 
-task prepareHermes(dependsOn: createNativeDepsDirectories) {
+task prepareHermes() {
   if (!USE_HERMES) {
     return
   }
+  dependsOn(createNativeDepsDirectories)
   if (NEED_DOWNLOAD_HERMES) {
     dependsOn(unzipHermes)
   }
@@ -540,61 +371,60 @@ task prepareHermes(dependsOn: createNativeDepsDirectories) {
   }
 }
 
-task prepareThirdPartyNdkHeaders(dependsOn: [prepareBoost, prepareDoubleConversion, prepareFolly]) {}
-
-def packageReactNdkDebugLibs = tasks.register("packageReactNdkDebugLibs", Copy) {
-  dependsOn(":ReactAndroid:packageReactNdkDebugLibsForBuck")
-  from("$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/prebuilt/lib")
-  into("$buildDir/react-ndk/exported")
+def downloadBoost = tasks.create('downloadBoost', Download) {
+  dependsOn(createNativeDepsDirectories)
+  def srcUrl = REACT_NATIVE_TARGET_VERSION >= 69
+    ? "https://boostorg.jfrog.io/artifactory/main/release/${BOOST_VERSION.replace("_", ".")}/source/boost_${BOOST_VERSION}.tar.gz"
+    : "https://github.com/react-native-community/boost-for-react-native/releases/download/v${BOOST_VERSION.replace("_", ".")}-0/boost_${BOOST_VERSION}.tar.gz"
+  src(srcUrl)
+  onlyIfNewer(true)
+  overwrite(false)
+  dest(new File(downloadsDir, "boost_${BOOST_VERSION}.tar.gz"))
 }
-def packageReactNdkReleaseLibs = tasks.register("packageReactNdkReleaseLibs", Copy) {
-  dependsOn(":ReactAndroid:packageReactNdkReleaseLibsForBuck")
-  from("$REACT_NATIVE_DIR/ReactAndroid/src/main/jni/prebuilt/lib")
-  into("$buildDir/react-ndk/exported")
+
+def prepareBoost = tasks.register('prepareBoost', Copy) {
+  dependsOn(downloadBoost)
+  from(tarTree(resources.gzip(downloadBoost.dest)))
+  from("$reactNativeThirdParty/boost/Android.mk")
+  include("Android.mk", "boost_${BOOST_VERSION}/boost/**/*.hpp", "boost/boost/**/*.hpp")
+  includeEmptyDirs = false
+  into("$thirdPartyNdkDir/boost")
+  doLast {
+    new File("$thirdPartyNdkDir/boost/boost").renameTo("$thirdPartyNdkDir/boost/boost_${BOOST_VERSION}")
+  }
+}
+
+void nativeBuildDependsOn(project, dependsOnTask, buildTypesIncludes) {
+  def buildTasks = project.tasks.findAll { task ->
+    def taskName = task.name
+    if (taskName.contains("Clean")) { return false }
+    if (taskName.contains("externalNative") || taskName.contains("CMake") || taskName.contains("generateJsonModel")) {
+      if (buildTypesIncludes == null) { return true }
+      for (buildType in buildTypesIncludes) {
+        if (taskName.contains(buildType)) { return true }
+      }
+    }
+    return false
+  }
+  buildTasks.forEach { task -> task.dependsOn(dependsOnTask) }
 }
 
 afterEvaluate {
-  extractAARHeaders.dependsOn(prepareThirdPartyNdkHeaders)
-  extractJNIFiles.dependsOn(prepareThirdPartyNdkHeaders)
+  if (REACT_NATIVE_TARGET_VERSION < 71) {
+    nativeBuildDependsOn(project, prepareBoost, null)
+  }
   if (USE_HERMES) {
-    prepareThirdPartyNdkHeaders.dependsOn(prepareHermes)
+    nativeBuildDependsOn(project, prepareHermes, null)
     if (hasHermesProject && !prebuiltHermesCacheHit) {
       prepareHermes.dependsOn(":ReactAndroid:hermes-engine:assembleDebug")
     }
   }
-
-  if (isNewArchitectureEnabled) {
-    preDebugBuild.dependsOn(packageReactNdkDebugLibs)
-    preReleaseBuild.dependsOn(packageReactNdkReleaseLibs)
-
-    // Due to a bug inside AGP, we have to explicitly set a dependency
-    // between configureCMake* tasks and the preBuild tasks.
-    // This can be removed once this is solved: https://issuetracker.google.com/issues/207403732
-    configureCMakeDebug.dependsOn(preDebugBuild)
-    configureCMakeRelWithDebInfo.dependsOn(preReleaseBuild)
-    reactNativeArchitectures().each { architecture ->
-      tasks.findByName("configureCMakeDebug[${architecture}]")?.configure {
-        dependsOn("preDebugBuild")
-      }
-      tasks.findByName("configureCMakeRelWithDebInfo[${architecture}]")?.configure {
-        dependsOn("preReleaseBuild")
-      }
-    }
-  }
 }
 
-tasks.whenTaskAdded { task ->
-  if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake') || task.name.startsWith('buildCMake'))) {
-    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
-    task.dependsOn(extractAARHeaders)
-    task.dependsOn(extractJNIFiles)
-    if (REACT_NATIVE_BUILD_FROM_SOURCE) {
-      task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
-    } else {
-      task.dependsOn("extractReactNativeAAR${buildType}")
-    }
-  } else if (task.name.startsWith('generateJsonModel') && REACT_NATIVE_BUILD_FROM_SOURCE) {
-    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
-    task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
-  }
+if (REACT_NATIVE_TARGET_VERSION < 71) {
+  project.ext.extraLegacyReactNativeLibs = [
+    'prepareDoubleConversion',
+    'prepareFolly',
+  ]
+  applyLegacyReactNativeLibsExtractionPlugin()
 }

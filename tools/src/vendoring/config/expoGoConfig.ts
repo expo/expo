@@ -5,6 +5,7 @@ import path from 'path';
 import { Podspec } from '../../CocoaPods';
 import { EXPO_DIR, EXPOTOOLS_DIR, REACT_NATIVE_SUBMODULE_DIR } from '../../Constants';
 import logger from '../../Logger';
+import { transformFileAsync } from '../../Transforms';
 import { applyPatchAsync } from '../../Utils';
 import { VendoringTargetConfig } from '../types';
 
@@ -133,6 +134,18 @@ const config: VendoringTargetConfig = {
         ],
         async postCopyFilesHookAsync(sourceDirectory: string, targetDirectory: string) {
           await fs.copy(path.join(sourceDirectory, 'Common'), path.join(targetDirectory, 'Common'));
+          const reanimatedVersion = require(path.join(sourceDirectory, 'package.json')).version;
+          await transformFileAsync(path.join(targetDirectory, 'android', 'build.gradle'), [
+            // set reanimated version
+            {
+              find: 'def REANIMATED_VERSION = getReanimatedVersion()',
+              replaceWith: `def REANIMATED_VERSION = "${reanimatedVersion}"`,
+            },
+            {
+              find: 'def REANIMATED_MAJOR_VERSION = getReanimatedMajorVersion()',
+              replaceWith: `def REANIMATED_MAJOR_VERSION = ${reanimatedVersion.split('.')[0]}`,
+            },
+          ]);
         },
         transforms: {
           content: [
@@ -161,33 +174,11 @@ const config: VendoringTargetConfig = {
               replaceWith: '',
             },
             {
-              // add prefab support, setup task dependencies and hermes-engine dependencies
+              // compileOnly hermes-engine
               paths: 'build.gradle',
-              transform: (text: string) =>
-                text +
-                '\n\n' +
-                `tasks.whenTaskAdded { task ->\n` +
-                `  def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'\n` +
-                `  if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake') || task.name.startsWith('buildCMake') || task.name.startsWith('generateJsonModel'))) {\n` +
-                `    task.dependsOn(":ReactAndroid:copy\${buildType}JniLibsProjectOnly")\n` +
-                `  }\n` +
-                `}\n` +
-                `\n` +
-                `android {\n` +
-                `  buildFeatures {\n` +
-                `    prefab true\n` +
-                `  }\n` +
-                `}\n` +
-                `\n` +
-                `dependencies {\n` +
-                `  compileOnly(project(":ReactAndroid:hermes-engine"))\n` +
-                `}\n`,
-            },
-            {
-              // sets the major version of the package
-              paths: 'build.gradle',
-              find: /def REANIMATED_MAJOR_VERSION = getReanimatedVersion\(\)/,
-              replaceWith: 'def REANIMATED_MAJOR_VERSION = 2',
+              find: /implementation "com\.facebook\.react:hermes-android:?"\s*\/\/ version substituted by RNGP/g,
+              replaceWith:
+                'compileOnly "com.facebook.react:hermes-android:${REACT_NATIVE_VERSION}"',
             },
             {
               // find rn libs in ReactAndroid build output
@@ -207,6 +198,12 @@ const config: VendoringTargetConfig = {
               paths: 'CMakeLists.txt',
               find: /"\$\{BUILD_DIR\}\/.+\/libhermes\.so"/g,
               replaceWith: `hermes-engine::libhermes`,
+            },
+            {
+              // expose `ReanimatedUIManagerFactory.create` publicly
+              paths: 'ReanimatedUIManagerFactory.java',
+              find: /((?<!public )static UIManagerModule create\()/g,
+              replaceWith: 'public $1',
             },
           ],
         },
@@ -376,6 +373,9 @@ const config: VendoringTargetConfig = {
     'react-native-pager-view': {
       source: 'https://github.com/callstack/react-native-viewpager',
       ios: {},
+      android: {
+        excludeFiles: ['android/gradle{/**,**}', 'android/settings.gradle'],
+      },
     },
     'react-native-shared-element': {
       source: 'https://github.com/IjzerenHein/react-native-shared-element',
@@ -389,7 +389,7 @@ const config: VendoringTargetConfig = {
     },
     '@react-native-community/slider': {
       source: 'https://github.com/callstack/react-native-slider',
-      rootDir: 'src',
+      rootDir: 'package',
       ios: {},
       android: {
         includeFiles: 'android/**',
@@ -486,6 +486,55 @@ const config: VendoringTargetConfig = {
       ios: {},
       android: {
         excludeFiles: ['**/src/test/**'],
+      },
+    },
+    '@react-native-async-storage/async-storage': {
+      source: 'https://github.com/react-native-async-storage/async-storage.git',
+      ios: {
+        excludeFiles: 'example/**/*',
+        async mutatePodspec(podspec: Podspec, sourceDirectory: string, targetDirectory: string) {
+          // patch for scoped async storage
+          const patchFile = path.join(
+            EXPOTOOLS_DIR,
+            'src/vendoring/config/react-native-async-storage-scoped-storage-ios.patch'
+          );
+          const patchContent = await fs.readFile(patchFile, 'utf8');
+          try {
+            await applyPatchAsync({
+              patchContent,
+              cwd: targetDirectory,
+              stripPrefixNum: 0,
+            });
+          } catch (e) {
+            logger.error(
+              `Failed to apply patch: \`patch -p0 -d '${targetDirectory}' < ${patchFile}\``
+            );
+            throw e;
+          }
+        },
+      },
+      android: {
+        excludeFiles: 'example/**/*',
+        async postCopyFilesHookAsync(sourceDirectory, targetDirectory) {
+          // patch for scoped async storage
+          const patchFile = path.join(
+            EXPOTOOLS_DIR,
+            'src/vendoring/config/react-native-async-storage-scoped-storage-android.patch'
+          );
+          const patchContent = await fs.readFile(patchFile, 'utf8');
+          try {
+            await applyPatchAsync({
+              patchContent,
+              cwd: targetDirectory,
+              stripPrefixNum: 0,
+            });
+          } catch (e) {
+            logger.error(
+              `Failed to apply patch: \`patch -p0 -d '${targetDirectory}' < ${patchFile}\``
+            );
+            throw e;
+          }
+        },
       },
     },
   },

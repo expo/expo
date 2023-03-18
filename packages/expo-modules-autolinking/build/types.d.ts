@@ -1,5 +1,5 @@
 import { ExpoModuleConfig } from './ExpoModuleConfig';
-export declare type SupportedPlatform = 'ios' | 'android' | 'web';
+export type SupportedPlatform = 'ios' | 'android' | 'web';
 export interface SearchOptions {
     searchPaths: string[];
     ignorePaths?: string[] | null;
@@ -21,22 +21,27 @@ export interface PatchReactImportsOptions {
     podsRoot: string;
     dryRun: boolean;
 }
-export declare type PackageRevision = {
+export type PackageRevision = {
     path: string;
     version: string;
     config?: ExpoModuleConfig;
     duplicates?: PackageRevision[];
 };
-export declare type SearchResults = {
+export type SearchResults = {
     [moduleName: string]: PackageRevision;
 };
 export interface ModuleAndroidProjectInfo {
     name: string;
     sourceDir: string;
 }
+export interface ModuleAndroidPluginInfo {
+    id: string;
+    sourceDir: string;
+}
 export interface ModuleDescriptorAndroid {
     packageName: string;
     projects: ModuleAndroidProjectInfo[];
+    plugins?: ModuleAndroidPluginInfo[];
     modules: string[];
 }
 export interface ModuleIosPodspecInfo {
@@ -53,7 +58,21 @@ export interface ModuleDescriptorIos {
     reactDelegateHandlers: string[];
     debugOnly: boolean;
 }
-export declare type ModuleDescriptor = ModuleDescriptorAndroid | ModuleDescriptorIos;
+export type ModuleDescriptor = ModuleDescriptorAndroid | ModuleDescriptorIos;
+export interface AndroidGradlePluginDescriptor {
+    /**
+     * Gradle plugin ID
+     */
+    id: string;
+    /**
+     * Artifact group
+     */
+    group: string;
+    /**
+     * Relative path to the gradle plugin directory
+     */
+    sourceDir: string;
+}
 /**
  * Represents a raw config from `expo-module.json`.
  */
@@ -117,5 +136,9 @@ export interface RawExpoModuleConfig {
          * To have multiple build.gradle projects, string array type is also supported.
          */
         gradlePath?: string | string[];
+        /**
+         * Gradle plugins.
+         */
+        gradlePlugins?: AndroidGradlePluginDescriptor[];
     };
 }

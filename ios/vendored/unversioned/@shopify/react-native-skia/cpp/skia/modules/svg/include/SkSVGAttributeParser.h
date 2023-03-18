@@ -141,7 +141,7 @@ private:
 
     template <typename T, typename TArray>
     bool parseEnumMap(const TArray& arr, T* result) {
-        for (size_t i = 0; i < SK_ARRAY_COUNT(arr); ++i) {
+        for (size_t i = 0; i < std::size(arr); ++i) {
             if (this->parseExpectedStringToken(std::get<0>(arr[i]))) {
                 *result = std::get<1>(arr[i]);
                 return true;

@@ -1,7 +1,8 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
 #import "EXUpdatesDatabaseManager.h"
-#import <EXUpdates/EXUpdatesUtils.h>
+
+@import EXUpdates;
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -29,7 +30,7 @@ NS_ASSUME_NONNULL_BEGIN
 {
   if (!_updatesDirectory) {
     NSError *fsError;
-    _updatesDirectory = [EXUpdatesUtils initializeUpdatesDirectoryWithError:&fsError];
+    _updatesDirectory = [EXUpdatesUtils initializeUpdatesDirectoryAndReturnError:&fsError];
     if (fsError) {
       _error = fsError;
     }
@@ -46,7 +47,7 @@ NS_ASSUME_NONNULL_BEGIN
   __block BOOL success = NO;
   __block NSError *dbError;
   dispatch_sync(self.database.databaseQueue, ^{
-    success = [self.database openDatabaseInDirectory:self.updatesDirectory withError:&dbError];
+    success = [self.database openDatabaseInDirectory:self.updatesDirectory error:&dbError];
   });
 
   if (dbError) {

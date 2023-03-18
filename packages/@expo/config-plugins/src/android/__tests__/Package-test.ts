@@ -18,7 +18,8 @@ const EXAMPLE_BUILD_GRADLE = `
   android {
       compileSdkVersion rootProject.ext.compileSdkVersion
       buildToolsVersion rootProject.ext.buildToolsVersion
-  
+
+      namespace "com.helloworld"
       defaultConfig {
           applicationId "com.helloworld"
           minSdkVersion rootProject.ext.minSdkVersion
@@ -45,13 +46,19 @@ describe('package', () => {
     const projectRoot = '/';
     vol.fromJSON(rnFixture, projectRoot);
 
-    expect(getApplicationIdAsync(projectRoot)).resolves.toBe('com.bacon.mydevicefamilyproject');
+    expect(getApplicationIdAsync(projectRoot)).resolves.toBe('com.helloworld');
   });
 
   it(`sets the applicationId in build.gradle if package is given`, () => {
     expect(
       setPackageInBuildGradle({ android: { package: 'my.new.app' } }, EXAMPLE_BUILD_GRADLE)
     ).toMatch("applicationId 'my.new.app'");
+  });
+
+  it(`sets the namespace in build.gradle if package is given`, () => {
+    expect(
+      setPackageInBuildGradle({ android: { package: 'my.new.app' } }, EXAMPLE_BUILD_GRADLE)
+    ).toMatch("namespace 'my.new.app'");
   });
 
   it('adds package to android manifest', async () => {
@@ -80,7 +87,7 @@ describe(renamePackageOnDiskForType, () => {
 
     // Ensure the path that will be deleted exists before we
     // delete it, this helps prevent the test from accidentally breaking.
-    const originalPath = '/android/app/src/main/java/com/reactnativeproject/MainActivity.java';
+    const originalPath = '/android/app/src/main/java/com/helloworld/MainActivity.java';
 
     expect(vol.toJSON()[originalPath]).toBeDefined();
     await renamePackageOnDiskForType({
@@ -96,7 +103,7 @@ describe(renamePackageOnDiskForType, () => {
     );
     expect(results[originalPath]).toBeUndefined();
     // Ensure the BUCK file is rewritten
-    expect(results['/android/app/BUCK']).toMatch(/package = "com.bacon.foobar"/);
+    // expect(results['/android/app/BUCK']).toMatch(/package = "com.bacon.foobar"/);
   });
   it(`refactors a debug project`, async () => {
     const projectRoot = '/';
@@ -121,7 +128,6 @@ describe(renameJniOnDiskForType, () => {
   it(`refactors a main project`, async () => {
     const projectRoot = '/';
     vol.fromJSON(rnFixture, projectRoot);
-
     await renameJniOnDiskForType({
       projectRoot,
       type: 'main',

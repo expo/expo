@@ -1,15 +1,5 @@
-declare type PackagerAsset = {
-    __packager_asset: boolean;
-    fileSystemLocation: string;
-    httpServerLocation: string;
-    width?: number;
-    height?: number;
-    scales: number[];
-    hash: string;
-    name: string;
-    type: string;
-};
-export declare type ResolvedAssetSource = {
+import { PackagerAsset } from 'react-native/Libraries/Image/AssetRegistry';
+export type ResolvedAssetSource = {
     __packager_asset: boolean;
     width?: number;
     height?: number;
@@ -17,20 +7,18 @@ export declare type ResolvedAssetSource = {
     scale: number;
 };
 export default class AssetSourceResolver {
-    serverUrl?: string | null;
+    serverUrl: string;
     jsbundleUrl?: string | null;
     asset: PackagerAsset;
     constructor(serverUrl: string | undefined | null, jsbundleUrl: string | undefined | null, asset: PackagerAsset);
     isLoadedFromServer(): boolean;
     isLoadedFromFileSystem(): boolean;
     defaultAsset(): ResolvedAssetSource;
+    /**
+     * @returns absolute remote URL for the hosted asset.
+     */
     assetServerURL(): ResolvedAssetSource;
-    scaledAssetPath(): ResolvedAssetSource;
-    scaledAssetURLNearBundle(): ResolvedAssetSource;
-    resourceIdentifierWithoutScale(): ResolvedAssetSource;
-    drawableFolderInBundle(): ResolvedAssetSource;
     fromSource(source: string): ResolvedAssetSource;
     static pickScale(scales: number[], deviceScale: number): number;
 }
-export {};
 //# sourceMappingURL=AssetSourceResolver.web.d.ts.map

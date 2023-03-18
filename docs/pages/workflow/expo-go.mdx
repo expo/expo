@@ -1,14 +1,15 @@
 ---
 title: Expo Go
+description: Learn about Expo Go, the free, open-source client for developing and testing React Native apps on Android and iOS.
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
 
-Expo Go is a free, [open-source](https://github.com/expo/expo/tree/main/home) client for running React Native apps on Android and iOS without needing to build anything locally. It is available on the [App Store](https://apps.apple.com/app/apple-store/id982107779) and [Google Play](https://play.google.com/store/apps/details?id=host.exp.exponent&referrer=www).
+Expo Go is a free, [open-source](https://github.com/expo/expo/tree/main/home) client for testing React Native apps on Android and iOS without needing to build anything locally. It is available on the [App Store](https://apps.apple.com/app/apple-store/id982107779) and [Google Play](https://play.google.com/store/apps/details?id=host.exp.exponent&referrer=www).
 
-With Expo Go, you can run your projects on your own device faster than ever, and share those projects across your whole team without the need for addition code signing.
+With Expo Go, you can test your projects on your device faster than ever, and share those projects with your whole team without the need for additional code signing.
 
 ## How it works
 
@@ -54,9 +55,9 @@ We release a new SDK version approximately every quarter. Find out which [versio
 
 ## Custom native code
 
-Each version of the Expo Go app contains 3-4 versions of React Native and the Expo SDK. This enables you to get up and running fast without performing a native build. However, if you need to use custom native code, you will need to use a custom client. For more information, see [development builds](/development/introduction).
+Each version of the Expo Go app supports [three to four versions](/versions/latest/#each-expo-sdk-version-depends-on-a) of React Native and the Expo SDK. This enables you to get up and running fast without performing a native build. However, if you need to use custom native code, you will need to use a custom client. For more information, see [development builds](/development/introduction).
 
-Projects with custom native code can still partially use Expo Go by [following this guide](/bare/using-expo-client).
+Projects with custom native code can still [partially use Expo Go](/bare/using-expo-client).
 
 ## Implementation
 
@@ -65,17 +66,3 @@ Expo Go is a React Native app that uses Expo SDK, CLI, EAS Build, and EAS Update
 You can view the source code for the [Android](https://github.com/expo/expo/tree/main/android), [iOS](https://github.com/expo/expo/tree/main/ios), and [JavaScript](https://github.com/expo/expo/tree/main/home) on GitHub.
 
 You can create your own Expo Go-type app by using the [`expo-dev-client`](/development/introduction) package. This package allows you to create a native client with any custom native code or configuration.
-
-## Next
-
-<BoxLink
-  title="CLI"
-  description="Learn about the Expo CLI and how to use it to develop your app."
-  href="/workflow/expo-cli"
-/>
-
-<BoxLink
-  title="App config"
-  description="Configure the Expo CLI and Expo Go with the app.json."
-  href="/workflow/configuration"
-/>

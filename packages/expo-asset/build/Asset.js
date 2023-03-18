@@ -1,5 +1,5 @@
 import { Platform } from 'expo-modules-core';
-import { getAssetByID } from './AssetRegistry';
+import { getAssetByID } from 'react-native/Libraries/Image/AssetRegistry';
 import { selectAssetSource } from './AssetSources';
 import * as AssetUris from './AssetUris';
 import * as ImageAssets from './ImageAssets';

@@ -17,26 +17,52 @@ import { ResponseError, ServiceClient } from './ServiceClient';
 const debug = Debug('expo:apple-device:client:usbmuxd');
 
 export interface UsbmuxdDeviceProperties {
-  /** 480000000 */
-  ConnectionSpeed: number;
-  /** 'USB' */
-  ConnectionType: 'USB';
-  /** 7 */
+  /** @example 'USB' */
+  ConnectionType: 'USB' | 'Network';
+  /** @example 7 */
   DeviceID: number;
-  /** 339738624 */
-  LocationID: number;
-  /** 4776 */
-  ProductID: number;
-  /** '00008101-001964A22629003A' */
+  /** @example 339738624 */
+  LocationID?: number;
+  /** @example '00008101-001964A22629003A' */
   SerialNumber: string;
-  /** '00008101-001964A22629003A' */
-  UDID: string;
-  /** '00008101001964A22629003A' */
-  USBSerialNumber: string;
+  /**
+   * Only available for USB connection.
+   * @example 480000000
+   */
+  ConnectionSpeed?: number;
+  /**
+   * Only available for USB connection.
+   * @example 4776
+   */
+  ProductID?: number;
+  /**
+   * Only available for USB connection.
+   * @example '00008101-001964A22629003A'
+   */
+  UDID?: string;
+  /**
+   * Only available for USB connection.
+   * @example '00008101001964A22629003A'
+   */
+  USBSerialNumber?: string;
+  /**
+   * Only available for Network connection.
+   * @example '08:c7:29:05:f2:30@fe80::ac7:29ff:fe05:f230-supportsRP._apple-mobdev2._tcp.local.'
+   */
+  EscapedFullServiceName?: string;
+  /**
+   * Only available for Network connection.
+   * @example 5
+   */
+  InterfaceIndex?: number;
+  /**
+   * Only available for Network connection.
+   */
+  NetworkAddress?: Buffer;
 }
 
 export interface UsbmuxdDevice {
-  /** 7 */
+  /** @example 7 */
   DeviceID: number;
   MessageType: 'Attached'; // TODO: what else?
   Properties: UsbmuxdDeviceProperties;

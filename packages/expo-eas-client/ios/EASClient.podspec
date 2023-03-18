@@ -33,6 +33,9 @@ Pod::Spec.new do |s|
   end
 
   s.test_spec 'Tests' do |test_spec|
+    # ExpoModulesCore requires React-hermes or React-jsc in tests, add ExpoModulesTestCore for the underlying dependencies
+    test_spec.dependency 'ExpoModulesTestCore'
+
     test_spec.source_files = 'Tests/*.{h,m,swift}'
   end
 end

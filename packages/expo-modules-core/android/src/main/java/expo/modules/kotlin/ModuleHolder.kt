@@ -85,12 +85,8 @@ class ModuleHolder(val module: Module) {
   fun registerContracts() {
     definition.registerContracts?.let {
       module.appContext.mainQueue.launch {
-        it.invoke(module.appContext)
+        it.invoke(module.appContext.appContextActivityResultCaller)
       }
     }
-  }
-
-  fun cleanUp() {
-    module.cleanUp()
   }
 }

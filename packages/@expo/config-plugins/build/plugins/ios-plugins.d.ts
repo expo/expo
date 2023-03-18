@@ -4,7 +4,7 @@ import type { XcodeProject } from 'xcode';
 import type { ConfigPlugin, Mod } from '../Plugin.types';
 import type { ExpoPlist, InfoPlist } from '../ios/IosConfig.types';
 import type { AppDelegateProjectFile } from '../ios/Paths';
-declare type MutateInfoPlistAction = (expo: ExpoConfig, infoPlist: InfoPlist) => Promise<InfoPlist> | InfoPlist;
+type MutateInfoPlistAction = (expo: ExpoConfig, infoPlist: InfoPlist) => Promise<InfoPlist> | InfoPlist;
 /**
  * Helper method for creating mods from existing config functions.
  *
@@ -16,7 +16,7 @@ export declare function createInfoPlistPluginWithPropertyGuard(action: MutateInf
     expoConfigProperty: string;
     expoPropertyGetter?: (config: ExpoConfig) => string;
 }, name?: string): ConfigPlugin;
-declare type MutateEntitlementsPlistAction = (expo: ExpoConfig, entitlements: JSONObject) => JSONObject;
+type MutateEntitlementsPlistAction = (expo: ExpoConfig, entitlements: JSONObject) => JSONObject;
 /**
  * Helper method for creating mods from existing config functions.
  *

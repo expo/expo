@@ -51,17 +51,17 @@ public class ExpoFabricView: ExpoFabricViewObjC {
 
   // MARK: - ExpoFabricViewInterface
 
-  public override func updateProp(_ propName: String, withValue value: Any) {
-    guard let view = contentView else {
+  public override func updateProps(_ props: [String: Any]) {
+    guard let view = contentView, let propsDict = viewManagerPropDict else {
       return
     }
-    if let _ = moduleHolder, let prop = viewManagerPropDict?[propName] {
+    for (key, prop) in propsDict {
+      let newValue = props[key] as Any
+
       // TODO: @tsapeta: Figure out better way to rethrow errors from here.
       // Adding `throws` keyword to the function results in different
       // method signature in Objective-C. Maybe just call `RCTLogError`?
-      try? prop.set(value: value, onView: view)
-    } else if let _ = legacyViewManager {
-      legacyViewManager?.updateProp(propName, withValue: value, on: view)
+      try? prop.set(value: Conversions.fromNSObject(newValue), onView: view)
     }
   }
 

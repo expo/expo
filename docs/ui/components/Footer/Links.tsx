@@ -1,15 +1,7 @@
 import { css } from '@emotion/react';
-import {
-  BuildIcon,
-  CodeIcon,
-  EditIcon,
-  GithubIcon,
-  iconSize,
-  MessageIcon,
-  spacing,
-  theme,
-  typography,
-} from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
+import { Edit05Icon, GithubIcon, MessageDotsSquareIcon } from '@expo/styleguide-icons';
 
 import { A, LI } from '../Text';
 import { githubUrl } from './utils';
@@ -22,8 +14,8 @@ export const IssuesLink = ({ title, repositoryUrl }: { title: string; repository
       href={
         repositoryUrl ? `${repositoryUrl}/issues` : `https://github.com/expo/expo/labels/${title}`
       }>
-      <span css={iconStyle}>
-        <GithubIcon size={iconSize.small} />
+      <span className="flex items-center mr-2.5">
+        <GithubIcon className="text-icon-secondary" />
       </span>
       View open bug reports for {title}
     </A>
@@ -34,8 +26,8 @@ export const ForumsLink = ({ isAPIPage, title }: { isAPIPage: boolean; title: st
   isAPIPage ? (
     <LI>
       <A css={linkStyle} openInNewTab href={`https://forums.expo.dev/tag/${title}`}>
-        <span css={iconStyle}>
-          <MessageIcon size={iconSize.small} />
+        <span className="flex items-center mr-2.5">
+          <MessageDotsSquareIcon className="text-icon-secondary" />
         </span>
         Ask a question on the forums about {title}
       </A>
@@ -43,49 +35,21 @@ export const ForumsLink = ({ isAPIPage, title }: { isAPIPage: boolean; title: st
   ) : (
     <LI>
       <A css={linkStyle} openInNewTab href="https://forums.expo.dev/">
-        <span css={iconStyle}>
-          <MessageIcon size={iconSize.small} />
+        <span className="flex items-center mr-2.5">
+          <MessageDotsSquareIcon className="text-icon-secondary" />
         </span>
         Ask a question on the forums
       </A>
     </LI>
   );
 
-export const SourceCodeLink = ({
-  title,
-  sourceCodeUrl,
-}: {
-  title: string;
-  sourceCodeUrl: string;
-}) => (
-  <LI>
-    <A css={linkStyle} openInNewTab href={sourceCodeUrl}>
-      <span css={iconStyle}>
-        <CodeIcon size={iconSize.small} />
-      </span>
-      View source code for {title}
-    </A>
-  </LI>
-);
-
-export const GitHubLink = ({ pathname }: { pathname: string }) => (
+export const EditPageLink = ({ pathname }: { pathname: string }) => (
   <LI>
     <A css={linkStyle} openInNewTab href={githubUrl(pathname)}>
-      <span css={iconStyle}>
-        <EditIcon size={iconSize.small} />
+      <span className="flex items-center mr-2.5">
+        <Edit05Icon className="text-icon-secondary" />
       </span>
       Edit this page
-    </A>
-  </LI>
-);
-
-export const NpmLink = ({ packageName }: { packageName: string }) => (
-  <LI>
-    <A css={linkStyle} openInNewTab href={`https://www.npmjs.com/package/${packageName}`}>
-      <span css={iconStyle}>
-        <BuildIcon size={iconSize.small} />
-      </span>
-      View package in npm Registry
     </A>
   </LI>
 );
@@ -97,10 +61,8 @@ const linkStyle = css({
   display: 'inline-flex',
   alignItems: 'center',
   marginBottom: spacing[1],
-});
 
-const iconStyle = css({
-  display: 'flex',
-  alignItems: 'center',
-  marginRight: spacing[2.5],
+  ':visited': {
+    color: theme.text.secondary,
+  },
 });

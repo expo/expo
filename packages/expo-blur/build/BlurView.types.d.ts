@@ -1,5 +1,5 @@
 import { ViewProps } from 'react-native';
-export declare type BlurViewProps = {
+export type BlurViewProps = {
     /**
      * A tint mode which will be applied to the view.
      * @default 'default'
@@ -15,5 +15,5 @@ export declare type BlurViewProps = {
      */
     intensity?: number;
 } & ViewProps;
-export declare type BlurTint = 'light' | 'dark' | 'default';
+export type BlurTint = 'light' | 'dark' | 'default';
 //# sourceMappingURL=BlurView.types.d.ts.map

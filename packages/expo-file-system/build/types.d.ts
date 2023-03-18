@@ -1,4 +1,4 @@
-declare type PlatformMethod = (...args: any[]) => Promise<any>;
+type PlatformMethod = (...args: any[]) => Promise<any>;
 export interface ExponentFileSystemModule {
     readonly name: 'ExponentFileSystem';
     readonly documentDirectory: string | null;

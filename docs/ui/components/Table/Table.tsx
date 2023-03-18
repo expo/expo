@@ -1,6 +1,7 @@
 import { css } from '@emotion/react';
-import { theme, borderRadius, typography, spacing, shadows } from '@expo/styleguide';
-import React, { PropsWithChildren } from 'react';
+import { theme, typography, shadows } from '@expo/styleguide';
+import { borderRadius, spacing } from '@expo/styleguide-base';
+import type { PropsWithChildren } from 'react';
 
 import { TableHeaders } from './TableHeaders';
 import { TableLayout, TextAlign } from './types';
@@ -33,11 +34,11 @@ export const Table = ({
 
 export const tableWrapperStyle = css({
   border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.medium,
+  borderRadius: borderRadius.md,
   overflowY: 'hidden',
   overflowX: 'auto',
   marginBottom: spacing[4],
-  boxShadow: shadows.micro,
+  boxShadow: shadows.xs,
 
   '::-webkit-scrollbar': {
     height: 6,
@@ -45,16 +46,16 @@ export const tableWrapperStyle = css({
 
   '::-webkit-scrollbar-track': {
     background: theme.background.default,
-    borderBottomLeftRadius: borderRadius.medium,
-    borderBottomRightRadius: borderRadius.medium,
+    borderBottomLeftRadius: borderRadius.md,
+    borderBottomRightRadius: borderRadius.md,
   },
 
   '::-webkit-scrollbar-thumb': {
-    background: theme.background.tertiary,
-    borderRadius: borderRadius.medium,
+    background: theme.background.element,
+    borderRadius: borderRadius.md,
 
     ':hover': {
-      background: theme.background.quaternary,
+      background: theme.background.hover,
     },
   },
 });
@@ -68,7 +69,11 @@ const tableStyle = css({
   borderCollapse: 'collapse',
   color: theme.text.default,
 
-  'blockquote div, li, p': {
+  'blockquote div, li, p, strong': {
     ...typography.fontSizes[14],
+  },
+
+  'blockquote code': {
+    padding: `0 ${spacing[1]}px`,
   },
 });

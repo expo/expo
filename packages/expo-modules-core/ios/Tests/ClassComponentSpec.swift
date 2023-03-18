@@ -169,6 +169,17 @@ class ClassComponentSpec: ExpoSpec {
         expect(newValue.kind) == .number
         expect(newValue.getInt()) == value + incrementBy
       }
+
+      it("gets value from the dynamic property") {
+        let initialValue = Int.random(in: 1..<100)
+        let value = try runtime!.eval([
+          "object = new expo.modules.TestModule.Counter(\(initialValue))",
+          "object.currentValue"
+        ])
+
+        expect(value.kind) == .number
+        expect(value.getInt()) == initialValue
+      }
     }
   }
 }
@@ -188,6 +199,10 @@ fileprivate final class ModuleWithCounterClass: Module {
         counter.increment(by: value)
       }
       Function("getValue") { counter in
+        return counter.currentValue
+      }
+
+      Property("currentValue") { counter in
         return counter.currentValue
       }
     }

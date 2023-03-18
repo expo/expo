@@ -119,6 +119,7 @@ public:
         GrGLFunction<GrGLCompileShaderFn> fCompileShader;
         GrGLFunction<GrGLCompressedTexImage2DFn> fCompressedTexImage2D;
         GrGLFunction<GrGLCompressedTexSubImage2DFn> fCompressedTexSubImage2D;
+        GrGLFunction<GrGLCopyBufferSubDataFn> fCopyBufferSubData;
         GrGLFunction<GrGLCopyTexSubImage2DFn> fCopyTexSubImage2D;
         GrGLFunction<GrGLCreateProgramFn> fCreateProgram;
         GrGLFunction<GrGLCreateShaderFn> fCreateShader;

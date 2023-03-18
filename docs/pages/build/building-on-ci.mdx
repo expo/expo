@@ -1,12 +1,11 @@
 ---
 title: Triggering builds from CI
+description: Learn how to trigger builds on EAS for your app from a CI environment such as GitHub Action and more.
 ---
 
-import { ConfigClassic } from '~/components/plugins/ConfigSection';
-import { InlineCode } from '~/components/base/code';
 import { Collapsible } from '~/ui/components/Collapsible';
 
-This document outlines how to trigger builds on EAS for your app from a CI environment such as GitHub Actions.
+This document outlines how to trigger builds on EAS for your app from a CI environment such as GitHub Actions, Travis CI, and more.
 
 Before building with EAS on CI, we need to install and configure `eas-cli`. Then, we can trigger new builds with the `eas build` command.
 
@@ -19,12 +18,6 @@ To trigger EAS builds from a CI environment, we first need to configure our app 
 If you have run `eas build -p [all|ios|android]` successfully before, then you can continue.
 
 If you haven't done this yet, please refer to the [Creating your first build](setup.mdx) guide and return here when you're ready.
-
-<ConfigClassic>
-
-Learn how to [build standalone apps on your CI with our classic build service](/archive/classic-updates/turtle-cli.mdx).
-
-</ConfigClassic>
 
 ## Configure your app for CI
 
@@ -82,7 +75,9 @@ This will trigger a new build on EAS and print the URLs for the built files afte
 
 <Collapsible summary="Travis CI">
 
-```yaml
+Add the following code snippet in **.travis.yml** at the root of your project repository.
+
+```yaml travis.yml
 ---
 language: node_js
 node_js:
@@ -103,13 +98,13 @@ jobs:
         - npx eas-cli build --platform all --non-interactive
 ```
 
-> Put this into `.travis.yml` in the root of your repository.
-
 </Collapsible>
 
 <Collapsible summary="GitLab CI">
 
-```yaml
+Add the following code snippet in **.gitlab-ci.yml** at the root of your project repository.
+
+```yaml .gitlab-ci.yml
 image: node:alpine
 
 cache:
@@ -134,13 +129,13 @@ eas-build:
     - npx eas-cli build --platform all --non-interactive
 ```
 
-> Put this into `.gitlab-ci.yml` in the root of your repository.
-
 </Collapsible>
 
 <Collapsible summary="Bitbucket Pipelines">
 
-```yaml
+Add the following code snippet in **bitbucket-pipelines.yml** at the root of your project repository.
+
+```yaml bitbucket-pipelines.yml
 image: node:alpine
 
 definitions:
@@ -160,13 +155,13 @@ pipelines:
           - npx eas-cli build --platform all --non-interactive
 ```
 
-> Put this into `bitbucket-pipelines.yml` in the root of your repository.
-
 </Collapsible>
 
 <Collapsible summary="CircleCI">
 
-```yaml
+Add the following code snippet in **circleci/config.yml** at the root of your project repository.
+
+```yaml .circleci/config.yml
 version: 2.1
 
 executors:
@@ -196,33 +191,32 @@ workflows:
               only: master
 ```
 
-> Put this into `.circleci/config.yml` in the root of your repository.
-
 </Collapsible>
 
 <Collapsible summary="GitHub Actions">
 
-```yaml
+Add the following code snippet in **.github/workflows/eas-build.yml** at the root of your project repository.
+
+```yaml .github/workflows/eas-build.yml
 name: EAS Build
 on:
   workflow_dispatch:
   push:
     branches:
-      - master
+      - main
 jobs:
   build:
     name: Install and build
     runs-on: ubuntu-latest
     steps:
-      - uses: actions/checkout@v2
-      - uses: actions/setup-node@v2
+      - uses: actions/checkout@v3
+      - uses: actions/setup-node@v3
         with:
-          node-version: 16.x
+          node-version: 18.x
           cache: npm
       - name: Setup Expo and EAS
-        uses: expo/expo-github-action@v7
+        uses: expo/expo-github-action@v8
         with:
-          expo-version: 5.x
           eas-version: latest
           token: ${{ secrets.EXPO_TOKEN }}
       - name: Install dependencies
@@ -230,7 +224,5 @@ jobs:
       - name: Build on EAS
         run: eas build --platform all --non-interactive
 ```
-
-> Put this into `.github/workflows/eas-build.yml` in the root of your repository.
 
 </Collapsible>

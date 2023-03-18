@@ -1,6 +1,6 @@
 import * as React from 'react';
 import { ViewProps } from 'react-native';
-declare type ContainerProps = ViewProps & {
+type ContainerProps = ViewProps & {
     labelTop?: string;
     labelBottom?: string;
     children?: React.ReactNode;

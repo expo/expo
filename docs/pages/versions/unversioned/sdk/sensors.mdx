@@ -2,11 +2,14 @@
 title: Sensors
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-sensors'
 packageName: 'expo-sensors'
+iconUrl: '/static/images/packages/expo-sensors.png'
 ---
 
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { BoxLink } from '~/ui/components/BoxLink';
+import { AndroidPermissions, IOSPermissions } from '~/components/plugins/permissions';
+import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 
 `expo-sensors` provides various APIs for accessing device sensors to measure motion, orientation, pressure, magnetic fields, ambient light, and step count.
 
@@ -15,14 +18,6 @@ import { BoxLink } from '~/ui/components/BoxLink';
 ## Installation
 
 <APIInstallSection />
-
-### Configuration for Android
-
-Starting in Android 12 (API level 31), the system has a 200ms limit for each sensor updates.
-
-If you need an update interval less than 200ms, you should:
-* add `android.permission.HIGH_SAMPLING_RATE_SENSORS` to [**app.json** `permissions` field](/versions/latest/config/app/#permissions)
-* or if you are using bare workflow, add `<uses-permission android:name="android.permission.HIGH_SAMPLING_RATE_SENSORS"/>` to **AndroidManifest.xml**.
 
 ## API
 
@@ -40,6 +35,22 @@ import {
   Pedometer,
 } from 'expo-sensors';
 ```
+
+## Permissions
+
+### Android
+
+Starting in Android 12 (API level 31), the system has a 200ms limit for each sensor updates.
+
+If you need an update interval of less than 200ms, you must add the following permissions to your **app.json** inside the [`expo.android.permissions`](/versions/latest/config/app/#permissions) array.
+
+<AndroidPermissions permissions={['HIGH_SAMPLING_RATE_SENSORS']} />
+
+<ConfigReactNative>
+
+Learn how to configure the native projects in the [installation instructions in the `expo-sensors` repository](https://github.com/expo/expo/tree/main/packages/expo-sensors#installation-in-bare-react-native-projects).
+
+</ConfigReactNative>
 
 ## Available sensors
 

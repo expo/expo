@@ -1,12 +1,13 @@
 ---
 title: Environment variables and secrets
+description: Learn how to use environment variables and secrets in an EAS Build.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 
-The ["Environment variables in Expo"](/guides/environment-variables.mdx) guide presents several options for how you can access system environment variables to your app JavaScript code. This can be a useful way to inject values in your code, but [these values should not be secrets](/guides/environment-variables.mdx#security-considerations), and so the value it provides can be summarized as a convenience for accommodating certain development workflows.
+The [Environment variables in Expo](/guides/environment-variables) guide presents several options for accessing system environment variables in your app's JavaScript code. This can be a useful way to inject values in your code, but [these values should not be secrets](/guides/environment-variables#security-considerations), and so the value it provides can be summarized as a convenience for accommodating certain development workflows.
 
 Using the techniques described in the environment variables document above, environment variables are inlined (the `process.env.X` text is replaced with its evaluated result) in your app's JavaScript code _at the time that the app is built_, and included in the app bundle. This means that the substitution would occur on EAS Build servers and not on your development machine, so if you tried to run a build on EAS Build without explicitly providing values or fallbacks for the environment variables, then you are likely to encounter either a build-time or runtime error.
 
@@ -28,7 +29,7 @@ You can specify environment variables for specific build jobs using **eas.json**
 }
 ```
 
-You can access these variables in your application using the techniques described in the ["Environment variables in Expo"](/guides/environment-variables.mdx) guide. You can also share common configurations between different build profiles using the `"extends"` property, if both profiles have an `env` object defined, content will be merged.
+You can access these variables in your application using the techniques described in the ["Environment variables in Expo"](/guides/environment-variables) guide. You can also share common configurations between different build profiles using the `"extends"` property, if both profiles have an `env` object defined, the content will be merged.
 
 ```json eas.json
 {
@@ -46,11 +47,11 @@ You can access these variables in your application using the techniques describe
 }
 ```
 
-See the [eas.json reference](/build/eas-json.mdx) for more information.
+See the [eas.json reference](/build/eas-json) for more information.
 
 ## Environment variables and app.config.js
 
-Environment variables used in your build profile will also be used to evaluate **app.config.js** when you run `eas build`. This is important in order to ensure that the result of evaluating **app.config.js** is the same when it's done locally while initiating the build (in order to gather metadata for the build job) and when it occurs on the remote build worker, for example to configure the project during `npx expo prebuild` or to embed the configuration data in the app.
+Environment variables used in your build profile will also be used to evaluate **app.config.js** when you run `eas build`. This is important to ensure that the result of evaluating **app.config.js** is the same when it's done locally while initiating the build (to gather metadata for the build job) and when it occurs on the remote build worker, for example, to configure the project during `npx expo prebuild` or to embed the configuration data in the app.
 
 ## Built-in environment variables
 
@@ -77,9 +78,9 @@ A secret is made up of a name and a value. The name can only contain alphanumeri
 
 The value can be either a file or a string value. For a file, its contents are saved to a temporary file on EAS Build servers. The file path is available via the environment variable. For example, if you created a file secret named `SECRET_FILE`, EAS Build will create a file at `/Users/expo/workingdir/environment-secrets/__UNIQUE_RANDOM_UUID__`, and `SECRET_FILE` will be set to that path.
 
-The secret values are encrypted at rest and in transit, and are only decrypted in a secure environment by EAS servers.
+The secret values are encrypted at rest and in transit and are only decrypted in a secure environment by EAS servers.
 
-You can create up to 100 account-wide secrets for each Expo account and 100 app-specific secrets for each app. Account-wide secrets will be exposed to every build environment across all of your apps. App-specific secrets only apply to the app they're defined for, and will override any account-wide secrets with the same name.
+You can create up to 100 account-wide secrets for each Expo account and 100 app-specific secrets for each app. Account-wide secrets will be exposed to every build environment across all of your apps. App-specific secrets only apply to the app they're defined for and will override any account-wide secrets with the same name.
 
 You can manage secrets through the Expo website and EAS CLI.
 
@@ -140,7 +141,7 @@ If you're using a **.env** file for storing your secrets locally, you can use th
   ]}
 />
 
-Beware that EAS CLI will fail if some of the secrets defined in the dotenv file already exist on the server. To force overriding those secrets, pass the `--force` flag to the command.
+Beware that EAS CLI will fail if some of the secrets defined in the dotenv file already exist on the server. To force override those secrets, pass the `--force` flag to the command.
 
 #### Doppler integration
 
@@ -158,7 +159,7 @@ After creating a secret, you can read it on subsequent EAS Build jobs with `proc
 
 ## Common questions
 
-Environment variables can be tricky to use if you don't have the correct mental model for how they work. In this section we're going to clarify common sources of confusion, oriented around use cases.
+Environment variables can be tricky to use if you don't have the correct mental model for how they work. In this section, clarify common sources of confusion oriented around use cases are addressed below.
 
 ### Can I share environment variables defined in eas.json with `expo start` and `eas update`?
 
@@ -290,7 +291,7 @@ export default {
 
 A secret created on the Expo website or with `eas secret:create` will take precedence over an environment variable of the same name that is set through the `env` field in **eas.json**.
 
-For example, if you create a secret with name `MY_TOKEN` and value `secret` and also set `"env": { "MY_TOKEN": "public" }` in your **eas.json**, then `process.env.MY_TOKEN` on EAS Build will evaluate to `secret`.
+For example, if you create a secret with the name `MY_TOKEN` and value `secret` and also set `"env": { "MY_TOKEN": "public" }` in your **eas.json**, then `process.env.MY_TOKEN` on EAS Build will evaluate to `secret`.
 
 ### How do environment variables work for my Expo Development Client builds?
 
@@ -298,13 +299,13 @@ Environment variables set in your build profile that impact **app.config.js** wi
 
 ### Can I just set my environment variables on a CI provider?
 
-Environment variables must be defined in **eas.json** in order to be made available to EAS Build workers. If you are [triggering builds from CI](/build/building-on-ci.mdx) this same rule applies, and you should be careful to not confuse setting environment variables on GitHub Actions (or the provider of your choice) with setting environment variables and secrets in **eas.json**.
+Environment variables must be defined in **eas.json** to be made available to EAS Build workers. If you are [triggering builds from CI](/build/building-on-ci) this same rule applies, and you should be careful to not confuse setting environment variables on GitHub Actions (or the provider of your choice) with setting environment variables and secrets in **eas.json**.
 
 ### How to upload a secret file and use it in my app config?
 
-A common use case for uploading file secrets to EAS is when you want to supply your build with the **google-services.json** and **GoogleService-Info.plist** files. Usually, those files should not be checked in to the repository.
+A common use case for uploading file secrets to EAS is when you want to supply your build with the **google-services.json** and **GoogleService-Info.plist** files. Usually, those files should not be checked into the repository.
 
-Here's an example how to upload **google-services.json** to EAS and use it in your app config:
+Here's an example of how to upload **google-services.json** to EAS and use it in your app config:
 
 <Step label="1">
 

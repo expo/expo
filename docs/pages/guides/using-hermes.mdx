@@ -1,6 +1,7 @@
 ---
 title: Using Hermes Engine
 sidebar_title: Using Hermes
+description: A guide on configuring Hermes for both Android and iOS in an Expo project.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
@@ -10,16 +11,16 @@ import { Terminal } from '~/ui/components/Snippet';
 
 ## Support
 
-The Hermes engine is fully supported across all Expo tooling. See the table below to check if your project is using a compatible version:
+The Hermes engine is the default JavaScript engine used by Expo and it is fully supported across all Expo tooling. See the table below to check if your project is using a compatible version:
 
-| Platform | Expo Go | [Development Builds](/development/introduction.mdx) |
-| -------- | ------- | --------------------------------------------------- |
-| Android  | SDK 42  | SDK 42                                              |
-| iOS      | SDK 47  | SDK 43                                              |
+| Platform | Expo Go | [Development Builds](/development/introduction) |
+| -------- | ------- | ----------------------------------------------- |
+| Android  | SDK 42  | SDK 42                                          |
+| iOS      | SDK 47  | SDK 43                                          |
 
-## Setup
+<Collapsible summary="Using SDK 47 or lower?">
 
-To get started, open your **app.json** and add the `jsEngine` field:
+For SDK 47 and lower, JSC is the default JavaScript engine and to use Hermes you need to add the `jsEngine` field in [Expo config](/workflow/configuration):
 
 {/* prettier-ignore */}
 ```js
@@ -33,6 +34,8 @@ To get started, open your **app.json** and add the `jsEngine` field:
 ```
 
 Development builds will need to be recompiled with `eas build`.
+
+</Collapsible>
 
 ### Switch JavaScript engine on a specific platform
 
@@ -60,7 +63,7 @@ Please note that the Hermes bytecode format may change between different Hermes 
 
 ## JavaScript debugger
 
-To debug JavaScript code running with Hermes, you can start your project with `npx expo start` then press <kbd>j</kbd> to open the debugger in Google Chrome or Microsoft Edge. The developer menu of Expo Go or development builds also has the **Open JS Debugger** option to do the same.
+To debug JavaScript code running with Hermes, you can start your project with `npx expo start` then press <kbd>j</kbd> to open the debugger in Google Chrome or Microsoft Edge. The developer menu of development builds and Expo Go also have the **Open JS Debugger** option to do the same.
 
 Alternatively, you can use the JavaScript inspector from the following tools:
 
@@ -76,7 +79,7 @@ Alternatively, you can use the JavaScript inspector from the following tools:
 - Internally, the app will establish a WebSocket connection, make sure your app is connected to the development server.
 
   - Try to reload the app by pressing <kbd>r</kbd> in the Expo CLI Terminal UI.
-  - Test debugging availability by running the command: `curl http://127.0.0.1:19000/json/list` (adjust the `127.0.0.1:19000` to match your dev server URL). The HTTP response should not be an empty array, but rather something like this:
+  - Test debugging availability by running the command: `curl http://127.0.0.1:19000/json/list` (adjust the `127.0.0.1:19000` to match your dev server URL). The HTTP response should be an array, as shown below. If it is an empty response, add either the `--localhost` or `--tunnel` flag to the `npx expo start` command.
 
   ```json
   [

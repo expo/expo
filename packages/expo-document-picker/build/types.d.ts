@@ -1,4 +1,4 @@
-export declare type DocumentPickerOptions = {
+export type DocumentPickerOptions = {
     /**
      * The [MIME type(s)](https://en.wikipedia.org/wiki/Media_type) of the documents that are available
      * to be picked. Is also supports wildcards like `'image/*'` to choose any image. To allow any type
@@ -21,9 +21,19 @@ export declare type DocumentPickerOptions = {
      */
     multiple?: boolean;
 };
-export declare type DocumentResult = {
+/**
+ * First object represents the result when the document pick has been cancelled.
+ * The second one represents the successful document pick result.
+ */
+export type DocumentResult = {
+    /**
+     * Field indicating that the document pick has been cancelled.
+     */
     type: 'cancel';
 } | {
+    /**
+     * Field indicating that the document pick has been successful.
+     */
     type: 'success';
     /**
      * Document original name.
@@ -45,7 +55,15 @@ export declare type DocumentResult = {
      * Timestamp of last document modification.
      */
     lastModified?: number;
+    /**
+     * `File` object for the parity with web File API.
+     * @platform web
+     */
     file?: File;
+    /**
+     * `FileList` object for the parity with web File API.
+     * @platform web
+     */
     output?: FileList | null;
 };
 //# sourceMappingURL=types.d.ts.map

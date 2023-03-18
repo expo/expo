@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { breakpoints, spacing } from '@expo/styleguide';
+import { breakpoints, spacing } from '@expo/styleguide-base';
 import { PropsWithChildren } from 'react';
 
 import { Snippet } from '~/ui/components/Snippet/Snippet';

@@ -1,4 +1,11 @@
-# expo-blur
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/blur-view/">
+    <img
+      src="../../.github/resources/expo-blur.svg"
+      alt="expo-blur"
+      height="64" />
+  </a>
+</p>
 
 A component that renders a native blur view on iOS and falls back to a semi-transparent view on Android. A common usage of this is for navigation bars, tab bars, and modals.
 

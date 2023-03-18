@@ -1,40 +1,41 @@
 ---
 title: Progressive Web Apps
+desscription: Learn how to build a progressive web app with Expo.
 ---
 
-import { InlineCode } from '~/components/base/code';
+import { CODE } from '~/ui/components/Text';
 
-A progressive web app (or PWA for short) is a website that can be installed on the user's device and used offline. If you build your native app with Expo, then Expo CLI can generate a lot of the PWA automatically based on how the native app works. Ex: icons, splash screens, orientation, etc. Just [add service workers](https://expo.fyi/enabling-web-service-workers) to get a complete PWA.
+A progressive web app (or PWA for short) is a website that can be installed on the user's device and used offline. If you build your native app with Expo, then Expo CLI can generate a lot of the PWA automatically based on how the native app works. Ex: icons, splash screens, orientation, and so on. [Add service workers](https://expo.fyi/enabling-web-service-workers) to get a complete PWA.
 
 ## Usage
 
 Expo web projects generate PWA assets and manifests by default, you only need to [add offline web support](https://expo.fyi/enabling-web-service-workers) to get a full PWA.
 
-When you run `npx expo export:web` (`expo build:web` for SDK 45 and lower) the webpack config reads your **app.config.js** (or **app.json**) and generates a PWA from it.
+When you run `npx expo export:web` the webpack config reads your **app.config.js** (or **app.json**) and generates a PWA from it.
 
 The following properties can be used to customize your PWA:
 
-| **app.config.js**                                           | **manifest.json**             | **index.html**                                          |
-| ----------------------------------------------------------- | ----------------------------- | ------------------------------------------------------- |
-| `web.backgroundColor`                                       | `background_color`            |                                                         |
-| <InlineCode>web.description \| description</InlineCode>     | `description`                 | `<meta name="description" />`                           |
-| `web.dir`                                                   | `dir`                         |                                                         |
-| `web.display`                                               | `display`                     |                                                         |
-| `web.lang`                                                  | `lang`                        | `<html lang="">`                                        |
-| <InlineCode>web.name \| name</InlineCode>                   | `name`                        | `<title />`                                             |
-| <InlineCode>web.orientation \| orientation</InlineCode>     | `orientation`                 |                                                         |
-| `web.scope`                                                 | `scope`                       |                                                         |
-| <InlineCode>web.shortName \| web.name</InlineCode>          | `short_name`                  | `<meta name="apple-mobile-web-app-title"/>`             |
-| `web.startUrl`                                              | `start_url`                   |                                                         |
-| <InlineCode>web.themeColor \| primaryColor</InlineCode>     | `theme_color`                 | `<meta name="theme-color" />`                           |
-| `web.crossorigin`                                           | `crossorigin`                 |                                                         |
-| `web.relatedApplications`                                   | `related_applications`        |                                                         |
-| `web.preferRelatedApplications`                             | `prefer_related_applications` |                                                         |
-| <InlineCode>android.icon \| icon</InlineCode>               | `icons`                       |                                                         |
-| <InlineCode>ios.icon \| icon</InlineCode>                   |                               | `<link rel="apple-touch-icon" >`                        |
-| <InlineCode>web.favicon \| icon</InlineCode>                |                               | `<link rel="shortcut icon" >`                           |
-| `web.barStyle`                                              |                               | `<meta name="apple-mobile-web-app-status-bar-style" />` |
-| <InlineCode>web.splash \| ios.splash \| splash</InlineCode> |                               | `<link rel="apple-touch-startup-image" >`               |
+| **app.config.js**                               | **manifest.json**             | **index.html**                                          |
+| ----------------------------------------------- | ----------------------------- | ------------------------------------------------------- |
+| `web.backgroundColor`                           | `background_color`            |                                                         |
+| <CODE>web.description \| description</CODE>     | `description`                 | `<meta name="description" />`                           |
+| `web.dir`                                       | `dir`                         |                                                         |
+| `web.display`                                   | `display`                     |                                                         |
+| `web.lang`                                      | `lang`                        | `<html lang="">`                                        |
+| <CODE>web.name \| name</CODE>                   | `name`                        | `<title />`                                             |
+| <CODE>web.orientation \| orientation</CODE>     | `orientation`                 |                                                         |
+| `web.scope`                                     | `scope`                       |                                                         |
+| <CODE>web.shortName \| web.name</CODE>          | `short_name`                  | `<meta name="apple-mobile-web-app-title"/>`             |
+| `web.startUrl`                                  | `start_url`                   |                                                         |
+| <CODE>web.themeColor \| primaryColor</CODE>     | `theme_color`                 | `<meta name="theme-color" />`                           |
+| `web.crossorigin`                               | `crossorigin`                 |                                                         |
+| `web.relatedApplications`                       | `related_applications`        |                                                         |
+| `web.preferRelatedApplications`                 | `prefer_related_applications` |                                                         |
+| <CODE>android.icon \| icon</CODE>               | `icons`                       |                                                         |
+| <CODE>ios.icon \| icon</CODE>                   |                               | `<link rel="apple-touch-icon" >`                        |
+| <CODE>web.favicon \| icon</CODE>                |                               | `<link rel="shortcut icon" >`                           |
+| `web.barStyle`                                  |                               | `<meta name="apple-mobile-web-app-status-bar-style" />` |
+| <CODE>web.splash \| ios.splash \| splash</CODE> |                               | `<link rel="apple-touch-startup-image" >`               |
 
 If you need finer control on how the PWA is generated, you should generate the **web/index.html** with `npx expo customize` and add it manually.
 

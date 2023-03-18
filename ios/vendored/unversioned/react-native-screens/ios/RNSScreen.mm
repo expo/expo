@@ -57,7 +57,7 @@
 
   return self;
 }
-#endif
+#endif // RN_FABRIC_ENABLED
 
 - (instancetype)initWithBridge:(RCTBridge *)bridge
 {
@@ -146,6 +146,7 @@
       // ignored, we only need to keep in mind not to set presentation delegate
       break;
   }
+
   // There is a bug in UIKit which causes retain loop when presentationController is accessed for a
   // controller that is not going to be presented modally. We therefore need to avoid setting the
   // delegate for screens presented using push. This also means that when controller is updated from
@@ -612,7 +613,7 @@
   if (newScreenProps.homeIndicatorHidden != oldScreenProps.homeIndicatorHidden) {
     [self setHomeIndicatorHidden:newScreenProps.homeIndicatorHidden];
   }
-#endif
+#endif // !TARGET_OS_TV
 
   // Notice that we compare against _stackPresentation, not oldScreenProps.stackPresentation.
   // See comment in prepareForRecycle method for explanation.
@@ -1198,9 +1199,40 @@ RCT_EXPORT_VIEW_PROPERTY(statusBarStyle, RNSStatusBarStyle)
 RCT_EXPORT_VIEW_PROPERTY(homeIndicatorHidden, BOOL)
 #endif
 
+#if !TARGET_OS_TV
+// See:
+// 1. https://github.com/software-mansion/react-native-screens/pull/1543
+// 2. https://github.com/software-mansion/react-native-screens/pull/1596
+// This class is instatiated from React Native's internals during application startup
+- (instancetype)init
+{
+  if (self = [super init]) {
+    dispatch_async(dispatch_get_main_queue(), ^{
+      [[UIDevice currentDevice] beginGeneratingDeviceOrientationNotifications];
+    });
+  }
+  return self;
+}
+
+- (void)dealloc
+{
+  dispatch_sync(dispatch_get_main_queue(), ^{
+    [[UIDevice currentDevice] endGeneratingDeviceOrientationNotifications];
+  });
+}
+#endif // !TARGET_OS_TV
+
 - (UIView *)view
 {
   return [[RNSScreenView alloc] initWithBridge:self.bridge];
+}
+
++ (BOOL)requiresMainQueueSetup
+{
+  // Returning NO here despite the fact some initialization in -init method dispatches tasks
+  // on main queue, because the comments in RN source code states that modules which return YES
+  // here will be constructed ahead-of-time -- and this is not required in our case.
+  return NO;
 }
 
 @end

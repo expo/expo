@@ -16,13 +16,17 @@ import android.os.Bundle
 import android.os.Handler
 import android.util.Log
 import android.widget.Toast
+import com.facebook.hermes.reactexecutor.HermesExecutorFactory
 import com.facebook.proguard.annotations.DoNotStrip
 import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactRootView
 import com.facebook.react.bridge.Arguments
+import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.bridge.ReadableMap
 import com.facebook.react.common.LifecycleState
+import com.facebook.react.jscexecutor.JSCExecutorFactory
 import com.facebook.react.modules.network.ReactCookieJarContainer
+import com.facebook.react.modules.systeminfo.AndroidInfoHelpers
 import com.facebook.react.shell.MainReactPackage
 import com.facebook.soloader.SoLoader
 import de.greenrobot.event.EventBus
@@ -258,6 +262,7 @@ class Kernel : KernelInterface() {
             .setApplication(applicationContext)
             .setCurrentActivity(activityContext)
             .setJSBundleFile(localBundlePath)
+            .setJavaScriptExecutorFactory(jsExecutorFactory)
             .addPackage(MainReactPackage())
             .addPackage(
               ExponentPackage.kernelExponentPackage(
@@ -334,7 +339,7 @@ class Kernel : KernelInterface() {
 
   val reactRootView: ReactRootView
     get() {
-      val reactRootView: ReactRootView = ReactUnthemedRootView(context)
+      val reactRootView: ReactRootView = ReactUnthemedRootView(activityContext)
       reactRootView.startReactApplication(
         reactInstanceManager,
         KernelConstants.HOME_MODULE_NAME,
@@ -360,6 +365,18 @@ class Kernel : KernelInterface() {
         throw Error("JSONObject failed to be converted to Bundle", e)
       }
       return bundle
+    }
+  private val jsExecutorFactory: JavaScriptExecutorFactory
+    get() {
+      val manifest = exponentManifest.getKernelManifest()
+      val appName = manifest.getName() ?: ""
+      val deviceName = AndroidInfoHelpers.getFriendlyDeviceName()
+
+      val jsEngineFromManifest = manifest.jsEngine
+      return if (jsEngineFromManifest == "hermes") HermesExecutorFactory() else JSCExecutorFactory(
+        appName,
+        deviceName
+      )
     }
 
   fun hasOptionsForManifestUrl(manifestUrl: String?): Boolean {

@@ -16,6 +16,10 @@
 #include "include/gpu/graphite/mtl/MtlTypes.h"
 #endif
 
+#ifdef SK_VULKAN
+#include "include/private/gpu/vk/SkiaVulkan.h"
+#endif
+
 namespace skgpu::graphite {
 
 class BackendTexture {
@@ -54,6 +58,9 @@ private:
     union {
 #ifdef SK_METAL
         MtlHandle fMtlTexture;
+#endif
+#ifdef SK_VULKAN
+        VkImage fVkImage;
 #endif
     };
 };

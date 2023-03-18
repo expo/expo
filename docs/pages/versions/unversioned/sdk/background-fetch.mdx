@@ -7,20 +7,32 @@ packageName: 'expo-background-fetch'
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import APISection from '~/components/plugins/APISection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { SnackInline} from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { SnackInline } from '~/ui/components/Snippet';
+import { PlatformTags } from '~/ui/components/Tag';
+import { ConfigReactNative } from '~/components/plugins/ConfigSection';
+import { AndroidPermissions } from '~/components/plugins/permissions';
 
-**`expo-background-fetch`** provides an API to perform [background fetch](https://developer.apple.com/documentation/uikit/core_app/managing_your_app_s_life_cycle/preparing_your_app_to_run_in_the_background/updating_your_app_with_background_app_refresh) tasks, allowing you to run specific code periodically in the background to update your app. This module uses [TaskManager](task-manager.mdx) Native API under the hood.
+`expo-background-fetch` provides an API to perform [background fetch](https://developer.apple.com/documentation/uikit/core_app/managing_your_app_s_life_cycle/preparing_your_app_to_run_in_the_background/updating_your_app_with_background_app_refresh) tasks, allowing you to run specific code periodically in the background to update your app. This module uses [TaskManager](task-manager.mdx) Native API under the hood.
 
 <PlatformsSection android emulator ios simulator />
 
-## Known issues
+#### Known issues&ensp;<PlatformTags platforms={['ios']} />
 
-**iOS only**: BackgroundFetch only works when the app is backgrounded, not if the app was terminated or upon device reboot. [Here is the relevant GitHub issue](https://github.com/expo/expo/issues/3582)
+`BackgroundFetch` only works when the app is backgrounded, not if the app was terminated or upon device reboot.
+You can check out [the relevant GitHub issue](https://github.com/expo/expo/issues/3582) for more details.
 
 ## Installation
 
 <APIInstallSection />
+
+## Configuration
+
+<ConfigReactNative>
+
+Learn how to configure the native projects in the [installation instructions in the `expo-background-fetch` repository](https://github.com/expo/expo/tree/main/packages/expo-background-fetch#installation-in-bare-react-native-projects).
+
+</ConfigReactNative>
 
 ## Usage
 
@@ -161,12 +173,6 @@ async function registerBackgroundFetchAsync() {
 }
 ```
 
-## Configuration
-
-In order to use `BackgroundFetch` API in standalone, bare apps on iOS, your app has to include background mode in the **Info.plist** file. See [background tasks configuration guide](task-manager.mdx#configuration-for-standalone-apps) for more details.
-
-On Android, this module might listen when the device is starting up. It's necessary to continue working on tasks started with `startOnBoot`. It also keeps devices "awake" that are going idle and asleep fast, to improve reliability of the tasks. Because of this both the `RECEIVE_BOOT_COMPLETED` and `WAKE_LOCK` permissions are added automatically.
-
 ## API
 
 ```js
@@ -174,3 +180,15 @@ import * as BackgroundFetch from 'expo-background-fetch';
 ```
 
 <APISection packageName="expo-background-fetch" apiName="BackgroundFetch" />
+
+## Permissions
+
+### Android
+
+On Android, this module might listen when the device is starting up. It's necessary to continue working on tasks started with `startOnBoot`. It also keeps devices "awake" that are going idle and asleep fast, to improve reliability of the tasks. Because of this both the `RECEIVE_BOOT_COMPLETED` and `WAKE_LOCK` permissions are added automatically.
+
+<AndroidPermissions permissions={['RECEIVE_BOOT_COMPLETED', 'WAKE_LOCK']} />
+
+### iOS
+
+To use `BackgroundFetch` API in standalone apps on iOS, your app has to include background mode in the **Info.plist** file. See [background tasks configuration guide](task-manager.mdx#configuration-for-standalone-apps) for more details.

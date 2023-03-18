@@ -1,6 +1,6 @@
 # expo-checkbox
 
-`expo-checkbox` provides a material design styled checkbox on Android and web.
+`expo-checkbox` provides a basic `boolean` input element for Android, iOS and web.
 
 ## API documentation
 

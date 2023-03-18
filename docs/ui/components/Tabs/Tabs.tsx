@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { borderRadius, shadows, spacing, theme } from '@expo/styleguide';
+import { shadows, theme } from '@expo/styleguide';
+import { borderRadius, spacing } from '@expo/styleguide-base';
 import { TabList, TabPanels, Tabs as ReachTabs, TabsProps } from '@reach/tabs';
 import * as React from 'react';
 
@@ -35,8 +36,8 @@ export const Tabs = ({ children, tabs }: Props) => {
 
 const tabsWrapperStyle = css({
   border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.small,
-  boxShadow: shadows.micro,
+  borderRadius: borderRadius.sm,
+  boxShadow: shadows.xs,
   margin: `${spacing[4]}px 0`,
 });
 

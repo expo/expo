@@ -1,12 +1,15 @@
 import { css } from '@emotion/react';
-import { spacing } from '@expo/styleguide';
-import React from 'react';
+import { spacing } from '@expo/styleguide-base';
 import ReactMarkdown from 'react-markdown';
 
-import { B } from '~/components/base/paragraph';
 import { CommentData } from '~/components/plugins/api/APIDataTypes';
-import { getTagData, mdInlineComponents } from '~/components/plugins/api/APISectionUtils';
+import {
+  getCommentContent,
+  getTagData,
+  mdComponents,
+} from '~/components/plugins/api/APISectionUtils';
 import { Callout } from '~/ui/components/Callout';
+import { BOLD } from '~/ui/components/Text';
 
 type Props = {
   comment?: CommentData;
@@ -14,18 +17,23 @@ type Props = {
 
 export const APISectionDeprecationNote = ({ comment }: Props) => {
   const deprecation = getTagData('deprecated', comment);
-  return deprecation ? (
+
+  if (!deprecation) {
+    return null;
+  }
+
+  const content = getCommentContent(deprecation.content);
+  return (
     <div css={deprecationNoticeStyle}>
       <Callout type="warning" key="deprecation-note">
-        {deprecation.text.trim().length ? (
-          <ReactMarkdown
-            components={mdInlineComponents}>{`**Deprecated.** ${deprecation.text}`}</ReactMarkdown>
+        {content.length ? (
+          <ReactMarkdown components={mdComponents}>{`**Deprecated.** ${content}`}</ReactMarkdown>
         ) : (
-          <B>Deprecated</B>
+          <BOLD>Deprecated</BOLD>
         )}
       </Callout>
     </div>
-  ) : null;
+  );
 };
 
 const deprecationNoticeStyle = css({

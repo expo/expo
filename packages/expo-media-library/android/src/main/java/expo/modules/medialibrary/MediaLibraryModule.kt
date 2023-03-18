@@ -2,6 +2,9 @@ package expo.modules.medialibrary
 
 import android.Manifest.permission.ACCESS_MEDIA_LOCATION
 import android.Manifest.permission.READ_EXTERNAL_STORAGE
+import android.Manifest.permission.READ_MEDIA_AUDIO
+import android.Manifest.permission.READ_MEDIA_IMAGES
+import android.Manifest.permission.READ_MEDIA_VIDEO
 import android.Manifest.permission.WRITE_EXTERNAL_STORAGE
 import android.annotation.SuppressLint
 import android.app.Activity
@@ -24,7 +27,6 @@ import expo.modules.interfaces.permissions.Permissions.getPermissionsWithPermiss
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.medialibrary.MediaLibraryModule.Action
@@ -248,7 +250,7 @@ class MediaLibraryModule : Module() {
       runActionWithPermissions(needsToCheckPermissions, action)
     }
 
-    AsyncFunction("albumNeedsMigrationAsync") Coroutine { albumId: String, promise: Promise ->
+    AsyncFunction("albumNeedsMigrationAsync") { albumId: String, promise: Promise ->
       throwUnlessPermissionsGranted {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
           moduleCoroutineScope.launch {
@@ -330,14 +332,10 @@ class MediaLibraryModule : Module() {
   }
 
   private val isMissingPermissions: Boolean
-    get() = appContext.permissions
-      ?.hasGrantedPermissions(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)
-      ?.not() ?: false
+    get() = hasReadPermissions()
 
   private val isMissingWritePermission: Boolean
-    get() = appContext.permissions
-      ?.hasGrantedPermissions(WRITE_EXTERNAL_STORAGE)
-      ?.not() ?: false
+    get() = hasWritePermissions()
 
   @SuppressLint("InlinedApi")
   private fun getManifestPermissions(writeOnly: Boolean): Array<String> {
@@ -346,10 +344,30 @@ class MediaLibraryModule : Module() {
       Build.VERSION.SDK_INT >= Build.VERSION_CODES.Q &&
         MediaLibraryUtils.hasManifestPermission(context, ACCESS_MEDIA_LOCATION)
 
+    val shouldAddWriteExternalStorage =
+      Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU &&
+        MediaLibraryUtils.hasManifestPermission(context, WRITE_EXTERNAL_STORAGE)
+
+    val shouldAddGranularPermissions =
+      Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU &&
+        listOf(READ_MEDIA_AUDIO, READ_MEDIA_VIDEO, READ_MEDIA_IMAGES)
+          .all { MediaLibraryUtils.hasManifestPermission(context, it) }
+
     return listOfNotNull(
-      WRITE_EXTERNAL_STORAGE,
-      READ_EXTERNAL_STORAGE.takeIf { !writeOnly },
-      ACCESS_MEDIA_LOCATION.takeIf { shouldAddMediaLocationAccess }
+      WRITE_EXTERNAL_STORAGE.takeIf { shouldAddWriteExternalStorage },
+      READ_EXTERNAL_STORAGE.takeIf { !writeOnly && !shouldAddGranularPermissions },
+      ACCESS_MEDIA_LOCATION.takeIf { shouldAddMediaLocationAccess },
+      *getGranularPermissions(writeOnly, shouldAddGranularPermissions)
+    ).toTypedArray()
+  }
+
+  @SuppressLint("InlinedApi")
+  private fun getGranularPermissions(writeOnly: Boolean, shouldAdd: Boolean): Array<String> {
+    val addPermission = !writeOnly && shouldAdd
+    return listOfNotNull(
+      READ_MEDIA_IMAGES.takeIf { addPermission },
+      READ_MEDIA_VIDEO.takeIf { addPermission },
+      READ_MEDIA_AUDIO.takeIf { addPermission }
     ).toTypedArray()
   }
 
@@ -364,6 +382,26 @@ class MediaLibraryModule : Module() {
 
   private fun interface Action {
     fun runWithPermissions(permissionsWereGranted: Boolean)
+  }
+
+  private fun hasReadPermissions(): Boolean {
+    val permissions = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+      arrayOf(READ_MEDIA_IMAGES, READ_MEDIA_AUDIO, READ_MEDIA_VIDEO)
+    } else {
+      arrayOf(READ_EXTERNAL_STORAGE, WRITE_EXTERNAL_STORAGE)
+    }
+
+    return appContext.permissions
+      ?.hasGrantedPermissions(*permissions)
+      ?.not() ?: false
+  }
+
+  private fun hasWritePermissions() = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+    false
+  } else {
+    appContext.permissions
+      ?.hasGrantedPermissions(WRITE_EXTERNAL_STORAGE)
+      ?.not() ?: false
   }
 
   private fun runActionWithPermissions(assetsId: List<String>, action: Action) {

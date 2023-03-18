@@ -5,8 +5,8 @@ import android.view.LayoutInflater
 import android.view.View
 import android.view.ViewGroup
 import android.widget.FrameLayout
-import androidx.appcompat.app.AppCompatActivity
 import androidx.fragment.app.Fragment
+import androidx.fragment.app.FragmentActivity
 import com.facebook.react.bridge.*
 import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.*
 import versioned.host.exp.exponent.modules.api.components.reactnativestripesdk.utils.createError
@@ -69,7 +69,7 @@ class FinancialConnectionsSheetFragment : Fragment() {
       }
       is FinancialConnectionsSheetForTokenResult.Completed -> {
         promise.resolve(createTokenResult(result))
-        (context.currentActivity as? AppCompatActivity)?.supportFragmentManager?.beginTransaction()?.remove(this)?.commitAllowingStateLoss()
+        (context.currentActivity as? FragmentActivity)?.supportFragmentManager?.beginTransaction()?.remove(this)?.commitAllowingStateLoss()
       }
     }
   }
@@ -92,7 +92,7 @@ class FinancialConnectionsSheetFragment : Fragment() {
               it.putMap("session", mapFromSession(result.financialConnectionsSession))
             }
         )
-        (context.currentActivity as? AppCompatActivity)?.supportFragmentManager?.beginTransaction()?.remove(this)?.commitAllowingStateLoss()
+        (context.currentActivity as? FragmentActivity)?.supportFragmentManager?.beginTransaction()?.remove(this)?.commitAllowingStateLoss()
       }
     }
   }
@@ -107,7 +107,7 @@ class FinancialConnectionsSheetFragment : Fragment() {
       stripeAccountId = stripeAccountId,
     )
 
-    (context.currentActivity as? AppCompatActivity)?.let {
+    (context.currentActivity as? FragmentActivity)?.let {
       attemptToCleanupPreviousFragment(it)
       commitFragmentAndStartFlow(it)
     } ?: run {
@@ -116,16 +116,16 @@ class FinancialConnectionsSheetFragment : Fragment() {
     }
   }
 
-  private fun attemptToCleanupPreviousFragment(currentActivity: AppCompatActivity) {
+  private fun attemptToCleanupPreviousFragment(currentActivity: FragmentActivity) {
     currentActivity.supportFragmentManager.beginTransaction()
       .remove(this)
       .commitAllowingStateLoss()
   }
 
-  private fun commitFragmentAndStartFlow(currentActivity: AppCompatActivity) {
+  private fun commitFragmentAndStartFlow(currentActivity: FragmentActivity) {
     try {
       currentActivity.supportFragmentManager.beginTransaction()
-        .add(this, "financial_connections_sheet_launch_fragment")
+        .add(this, TAG)
         .commit()
     } catch (error: IllegalStateException) {
       promise.resolve(createError(ErrorType.Failed.toString(), error.message))
@@ -133,6 +133,8 @@ class FinancialConnectionsSheetFragment : Fragment() {
   }
 
   companion object {
+    internal const val TAG = "financial_connections_sheet_launch_fragment"
+
     private fun createTokenResult(result: FinancialConnectionsSheetForTokenResult.Completed): WritableMap {
       return WritableNativeMap().also {
         it.putMap("session", mapFromSession(result.financialConnectionsSession))
@@ -237,7 +239,9 @@ class FinancialConnectionsSheetFragment : Fragment() {
         FinancialConnectionsAccount.Permissions.BALANCES -> "balances"
         FinancialConnectionsAccount.Permissions.OWNERSHIP -> "ownership"
         FinancialConnectionsAccount.Permissions.TRANSACTIONS -> "transactions"
+        FinancialConnectionsAccount.Permissions.ACCOUNT_NUMBERS -> "accountNumbers"
         FinancialConnectionsAccount.Permissions.UNKNOWN -> "unparsable"
+        FinancialConnectionsAccount.Permissions.ACCOUNT_NUMBERS -> "accountNumbers"
       }
     }
 

@@ -1,7 +1,7 @@
 import { ClassAttributes, ComponentProps, ComponentType } from 'react';
 import { AccessibilityRole, StyleProp, Text as NativeText, TextStyle as NativeTextStyle } from 'react-native';
 import { WebViewStyle } from './View';
-declare type NativeTextProps = ComponentProps<typeof NativeText> & ClassAttributes<typeof NativeText>;
+type NativeTextProps = ComponentProps<typeof NativeText> & ClassAttributes<typeof NativeText>;
 export interface WebTextStyle {
     /** string is only available on web */
     fontSize?: NativeTextStyle['fontSize'] | string;
@@ -22,8 +22,8 @@ export interface WebTextStyle {
     /** @platform web */
     wordWrap?: string;
 }
-export declare type TextStyle = Omit<NativeTextStyle, 'position' | 'fontSize' | 'lineHeight'> & WebTextStyle & WebViewStyle;
-export declare type WebTextProps = {
+export type TextStyle = Omit<NativeTextStyle, 'position' | 'fontSize' | 'lineHeight'> & WebTextStyle & WebViewStyle;
+export type WebTextProps = {
     style?: StyleProp<TextStyle>;
     /** @platform web */
     tabIndex?: number;
@@ -46,7 +46,7 @@ export declare type WebTextProps = {
     /** @platform web */
     lang?: string;
 };
-export declare type TextProps = Omit<NativeTextProps, 'style' | 'accessibilityRole'> & WebTextProps;
-declare const Text: ComponentType<TextProps>;
-export default Text;
+export type TextProps = Omit<NativeTextProps, 'style' | 'accessibilityRole'> & WebTextProps;
+declare const _default: ComponentType<TextProps>;
+export default _default;
 //# sourceMappingURL=Text.d.ts.map

@@ -26,7 +26,7 @@ export declare enum FileSystemUploadType {
      */
     MULTIPART = 1
 }
-export declare type DownloadOptions = {
+export type DownloadOptions = {
     /**
      * If `true`, include the MD5 hash of the file in the returned object. Provided for convenience since it is common to check the integrity of a file immediately after downloading.
      * @default false
@@ -44,7 +44,7 @@ export declare type DownloadOptions = {
      */
     sessionType?: FileSystemSessionType;
 };
-export declare type FileSystemHttpResult = {
+export type FileSystemHttpResult = {
     /**
      * An object containing all the HTTP response header fields and their values for the download network request.
      * The keys and values of the object are the header names and values respectively.
@@ -56,7 +56,7 @@ export declare type FileSystemHttpResult = {
     status: number;
     mimeType: string | null;
 };
-export declare type FileSystemDownloadResult = FileSystemHttpResult & {
+export type FileSystemDownloadResult = FileSystemHttpResult & {
     /**
      * A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
      */
@@ -69,8 +69,8 @@ export declare type FileSystemDownloadResult = FileSystemHttpResult & {
 /**
  * @deprecated Use `FileSystemDownloadResult` instead.
  */
-export declare type DownloadResult = FileSystemDownloadResult;
-export declare type FileSystemUploadOptions = (UploadOptionsBinary | UploadOptionsMultipart) & {
+export type DownloadResult = FileSystemDownloadResult;
+export type FileSystemUploadOptions = (UploadOptionsBinary | UploadOptionsMultipart) & {
     /**
      * An object containing all the HTTP header fields and their values for the upload network request.
      * The keys and values of the object are the header names and values respectively.
@@ -91,7 +91,7 @@ export declare type FileSystemUploadOptions = (UploadOptionsBinary | UploadOptio
 /**
  * Upload options when upload type is set to binary.
  */
-export declare type UploadOptionsBinary = {
+export type UploadOptionsBinary = {
     /**
      * Upload type determines how the file will be sent to the server.
      * Value will be `FileSystemUploadType.BINARY_CONTENT`.
@@ -101,7 +101,7 @@ export declare type UploadOptionsBinary = {
 /**
  * Upload options when upload type is set to multipart.
  */
-export declare type UploadOptionsMultipart = {
+export type UploadOptionsMultipart = {
     /**
      * Upload type determines how the file will be sent to the server.
      * Value will be `FileSystemUploadType.MULTIPART`.
@@ -120,18 +120,18 @@ export declare type UploadOptionsMultipart = {
      */
     parameters?: Record<string, string>;
 };
-export declare type FileSystemUploadResult = FileSystemHttpResult & {
+export type FileSystemUploadResult = FileSystemHttpResult & {
     /**
      * The body of the server response.
      */
     body: string;
 };
-export declare type FileSystemNetworkTaskProgressCallback<T extends DownloadProgressData | UploadProgressData> = (data: T) => void;
+export type FileSystemNetworkTaskProgressCallback<T extends DownloadProgressData | UploadProgressData> = (data: T) => void;
 /**
  * @deprecated use `FileSystemNetworkTaskProgressCallback<DownloadProgressData>` instead.
  */
-export declare type DownloadProgressCallback = FileSystemNetworkTaskProgressCallback<DownloadProgressData>;
-export declare type DownloadProgressData = {
+export type DownloadProgressCallback = FileSystemNetworkTaskProgressCallback<DownloadProgressData>;
+export type DownloadProgressData = {
     /**
      * The total bytes written by the download operation.
      */
@@ -142,9 +142,13 @@ export declare type DownloadProgressData = {
      */
     totalBytesExpectedToWrite: number;
 };
-export declare type UploadProgressData = {
+export type UploadProgressData = {
     /**
      * The total bytes sent by the upload operation.
+     */
+    totalBytesSent: number;
+    /**
+     * @deprecated Use `totalBytesSent` instead.
      */
     totalByteSent: number;
     /**
@@ -152,7 +156,7 @@ export declare type UploadProgressData = {
      */
     totalBytesExpectedToSend: number;
 };
-export declare type DownloadPauseState = {
+export type DownloadPauseState = {
     /**
      * The remote URI to download from.
      */
@@ -170,7 +174,7 @@ export declare type DownloadPauseState = {
      */
     resumeData?: string;
 };
-export declare type FileInfo = 
+export type FileInfo = 
 /**
  * Object returned when file exist.
  */
@@ -221,8 +225,8 @@ export declare enum EncodingType {
      */
     Base64 = "base64"
 }
-export declare type FileSystemAcceptedUploadHttpMethod = 'POST' | 'PUT' | 'PATCH';
-export declare type ReadingOptions = {
+export type FileSystemAcceptedUploadHttpMethod = 'POST' | 'PUT' | 'PATCH';
+export type ReadingOptions = {
     /**
      * The encoding format to use when reading the file.
      * @default EncodingType.UTF8
@@ -237,21 +241,21 @@ export declare type ReadingOptions = {
      */
     length?: number;
 };
-export declare type WritingOptions = {
+export type WritingOptions = {
     /**
      * The encoding format to use when writing the file.
      * @default FileSystem.EncodingType.UTF8
      */
     encoding?: EncodingType | 'utf8' | 'base64';
 };
-export declare type DeletingOptions = {
+export type DeletingOptions = {
     /**
      * If `true`, don't throw an error if there is no file or directory at this URI.
      * @default false
      */
     idempotent?: boolean;
 };
-export declare type InfoOptions = {
+export type InfoOptions = {
     /**
      * Whether to return the MD5 hash of the file.
      * @default false
@@ -263,7 +267,7 @@ export declare type InfoOptions = {
      */
     size?: boolean;
 };
-export declare type RelocatingOptions = {
+export type RelocatingOptions = {
     /**
      * URI or [SAF](#saf-uri) URI to the asset, file, or directory. See [supported URI schemes](#supported-uri-schemes-1).
      */
@@ -273,18 +277,18 @@ export declare type RelocatingOptions = {
      */
     to: string;
 };
-export declare type MakeDirectoryOptions = {
+export type MakeDirectoryOptions = {
     /**
      * If `true`, don't throw an error if there is no file or directory at this URI.
      * @default false
      */
     intermediates?: boolean;
 };
-export declare type ProgressEvent<T> = {
+export type ProgressEvent<T> = {
     uuid: string;
     data: T;
 };
-export declare type FileSystemRequestDirectoryPermissionsResult = 
+export type FileSystemRequestDirectoryPermissionsResult = 
 /**
  * If the permissions were not granted.
  */

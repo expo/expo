@@ -13,6 +13,20 @@ require File.join(File.dirname(`node --print "require.resolve('expo/package.json
 
 require 'json'
 podfile_properties = JSON.parse(File.read('./Podfile.properties.json')) rescue {}
+ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = '1' if podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR'] == true
+
+prepare_react_native_project!
+
+# If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
+# because `react-native-flipper` depends on (FlipperKit,...) that will be excluded
+#
+# To fix this you can also exclude `react-native-flipper` using a `react-native.config.js`
+# ```js
+# module.exports = {
+#   dependencies: {
+#     ...(process.env.NO_FLIPPER ? { 'react-native-flipper': { platforms: { ios: null } } } : {}),
+# ```
+flipper_config = ENV['NO_FLIPPER'] == "1" || ENV['CI'] ? FlipperConfiguration.disabled : FlipperConfiguration.enabled
 
 abstract_target 'BareExpoMain' do
   pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
@@ -23,6 +37,9 @@ abstract_target 'BareExpoMain' do
       'expo-dev-launcher',
     ],
   )
+
+  use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
+  use_frameworks! :linkage => ENV['USE_FRAMEWORKS'].to_sym if ENV['USE_FRAMEWORKS']
 
   # Flags change depending on the env values.
   flags = get_default_flags()
@@ -35,6 +52,7 @@ abstract_target 'BareExpoMain' do
     if installer.pods_project
       react_native_post_install(
         installer,
+        config[:reactNativePath],
         # Set `mac_catalyst_enabled` to `true` in order to apply patches
         # necessary for Mac Catalyst builds
         :mac_catalyst_enabled => false
@@ -71,21 +89,21 @@ abstract_target 'BareExpoMain' do
   target 'BareExpo' do
     use_react_native!(
       :path => config[:reactNativePath],
-      :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes',
+      :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
       :fabric_enabled => flags[:fabric_enabled],
       # An absolute path to your application root.
       :app_path => "#{Pod::Config.instance.installation_root}/..",
       #
       # Uncomment to opt-in to using Flipper
       # Note that if you have use_frameworks! enabled, Flipper will not work
-      # :flipper_configuration => !ENV['CI'] ? FlipperConfiguration.enabled : FlipperConfiguration.disabled,
+      # :flipper_configuration => flipper_config,
     )
   end
 
   target 'BareExpoDetox' do
     use_react_native!(
       :path => config[:reactNativePath],
-      :hermes_enabled => podfile_properties['expo.jsEngine'] == 'hermes',
+      :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
       :fabric_enabled => flags[:fabric_enabled],
       # An absolute path to your application root.
       :app_path => "#{Pod::Config.instance.installation_root}/..",
@@ -94,8 +112,16 @@ abstract_target 'BareExpoMain' do
   end
 
   target 'BareExpoTests' do
-    inherit! :search_paths
+    use_react_native!(
+      :path => config[:reactNativePath],
+      :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
+      :fabric_enabled => flags[:fabric_enabled],
+      # An absolute path to your application root.
+      :app_path => "#{Pod::Config.instance.installation_root}/..",
+      :flipper_configuration => FlipperConfiguration.disabled,
+    )
 
+    pod 'ExpoModulesTestCore', :path => "../../../packages/expo-modules-test-core/ios"
     pod 'Nimble', :podspec => './../../../ios/Nimble.podspec'
   end
 end

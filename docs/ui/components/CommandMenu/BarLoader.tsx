@@ -14,7 +14,7 @@ const lineAnimation = keyframes({
 });
 
 const loaderStyle = css({
-  background: theme.link.default,
+  background: theme.text.link,
   height: '2px',
   position: 'absolute',
   marginTop: 11,

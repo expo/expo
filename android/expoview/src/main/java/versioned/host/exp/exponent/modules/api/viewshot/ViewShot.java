@@ -368,8 +368,6 @@ public class ViewShot implements UIBlock, LifecycleEventListener {
      */
     private Point captureView(@NonNull final View view, @NonNull final OutputStream os) throws IOException {
         try {
-            DebugViews.longDebug(TAG, DebugViews.logViewHierarchy(this.currentActivity));
-
             return captureViewImpl(view, os);
         } finally {
             os.close();

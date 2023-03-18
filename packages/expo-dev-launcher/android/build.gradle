@@ -21,7 +21,7 @@ buildscript {
     if (ext.has("kotlinVersion")) {
       ext.kotlinVersion()
     } else {
-      ext.safeExtGet("kotlinVersion", "1.6.10")
+      ext.safeExtGet("kotlinVersion", "1.8.10")
     }
   }
 
@@ -35,12 +35,12 @@ buildscript {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion safeExtGet("compileSdkVersion", 33)
   defaultConfig {
     minSdkVersion safeExtGet('minSdkVersion', 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 31)
+    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 9
-    versionName "2.0.2"
+    versionName "2.1.4"
   }
 
   lintOptions {
@@ -78,7 +78,9 @@ android {
         }
 
         def rnVersion = getRNVersion()
-        if (rnVersion >= versionToNumber(0, 69, 0)) {
+        if (rnVersion >= versionToNumber(0, 72, 0)) {
+          srcDirs += "src/react-native-72"
+        } else if (rnVersion >= versionToNumber(0, 69, 0)) {
           srcDirs += "src/react-native-69"
         } else if (rnVersion >= versionToNumber(0, 67, 0)) {
           srcDirs += "src/react-native-67"
@@ -168,7 +170,7 @@ configurations.all {
   resolutionStrategy.eachDependency { DependencyResolveDetails details ->
     def requested = details.requested
     if (requested.group == 'org.jetbrains.kotlin') {
-      details.useVersion safeExtGet('kotlinVersion', '1.6.10')
+      details.useVersion safeExtGet('kotlinVersion', '1.8.10')
     }
   }
 }

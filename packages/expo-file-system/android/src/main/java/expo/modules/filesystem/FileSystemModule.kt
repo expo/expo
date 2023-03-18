@@ -852,7 +852,7 @@ open class FileSystemModule(
         // Make sure to send the last event when we're at 100%.
         if (currentTime > mLastUpdate + MIN_EVENT_DT_MS || bytesWritten == contentLength) {
           mLastUpdate = currentTime
-          uploadProgressData.putDouble("totalByteSent", bytesWritten.toDouble())
+          uploadProgressData.putDouble("totalBytesSent", bytesWritten.toDouble())
           uploadProgressData.putDouble("totalBytesExpectedToSend", contentLength.toDouble())
           uploadProgress.putString("uuid", uuid)
           uploadProgress.putBundle("data", uploadProgressData)

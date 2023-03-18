@@ -6,7 +6,7 @@ import type { ExpoConfig } from '@expo/config-types';
  * ```ts
  * {
  *   propName: 'expo.jsEngine',
- *   propValueGetter: (config) => config.android?.jsEngine ?? config.jsEngine ?? 'jsc',
+ *   propValueGetter: (config) => config.android?.jsEngine ?? config.jsEngine ?? 'hermes',
  * }
  * ```
  * Will lookup a value through the `propValueGetter` and update to `android/gradle.properties` / `ios/Podfile.properties.json`
@@ -16,7 +16,7 @@ import type { ExpoConfig } from '@expo/config-types';
 /**
  * Source config can be either expo config or generic config
  */
-export declare type BuildPropertiesConfig = ExpoConfig | Record<string, any>;
+export type BuildPropertiesConfig = ExpoConfig | Record<string, any>;
 export interface ConfigToPropertyRuleType<SourceConfigType extends BuildPropertiesConfig> {
     /** Property name in `android/gradle.properties` or `ios/Podfile.properties.json` */
     propName: string;

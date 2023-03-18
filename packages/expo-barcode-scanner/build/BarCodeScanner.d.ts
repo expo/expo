@@ -5,7 +5,7 @@ import { ViewProps } from 'react-native';
  * Those coordinates are represented in the coordinate space of the barcode source (e.g. when you
  * are using the barcode scanner view, these values are adjusted to the dimensions of the view).
  */
-export declare type BarCodePoint = {
+export type BarCodePoint = {
     /**
      * The `x` coordinate value.
      */
@@ -15,7 +15,7 @@ export declare type BarCodePoint = {
      */
     y: number;
 };
-export declare type BarCodeSize = {
+export type BarCodeSize = {
     /**
      * The height value.
      */
@@ -25,7 +25,7 @@ export declare type BarCodeSize = {
      */
     width: number;
 };
-export declare type BarCodeBounds = {
+export type BarCodeBounds = {
     /**
      * The origin point of the bounding box.
      */
@@ -35,7 +35,7 @@ export declare type BarCodeBounds = {
      */
     size: BarCodeSize;
 };
-export declare type BarCodeScannerResult = {
+export type BarCodeScannerResult = {
     /**
      * The barcode type.
      */
@@ -58,14 +58,14 @@ export declare type BarCodeScannerResult = {
      */
     cornerPoints: BarCodePoint[];
 };
-export declare type BarCodeEvent = BarCodeScannerResult & {
+export type BarCodeEvent = BarCodeScannerResult & {
     target?: number;
 };
-export declare type BarCodeEventCallbackArguments = {
+export type BarCodeEventCallbackArguments = {
     nativeEvent: BarCodeEvent;
 };
-export declare type BarCodeScannedCallback = (params: BarCodeEvent) => void;
-export declare type BarCodeScannerProps = ViewProps & {
+export type BarCodeScannedCallback = (params: BarCodeEvent) => void;
+export type BarCodeScannerProps = ViewProps & {
     /**
      * Camera facing. Use one of `BarCodeScanner.Constants.Type`. Use either `Type.front` or `Type.back`.
      * Same as `Camera.Constants.Type`.
@@ -145,7 +145,7 @@ export declare class BarCodeScanner extends React.Component<BarCodeScannerProps>
     /**
      * @hidden
      */
-    onObjectDetected: (callback?: BarCodeScannedCallback | undefined) => ({ nativeEvent }: BarCodeEventCallbackArguments) => void;
+    onObjectDetected: (callback?: BarCodeScannedCallback) => ({ nativeEvent }: BarCodeEventCallbackArguments) => void;
     /**
      * @hidden
      */

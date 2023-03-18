@@ -1,5 +1,5 @@
 import { ConfigPlugin } from 'expo/config-plugins';
-export declare type NotificationsPluginProps = {
+export type NotificationsPluginProps = {
     /**
      * Local path to an image to use as the icon for push notifications.
      * 96x96 all-white png with transparency. We recommend following

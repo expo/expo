@@ -4,11 +4,33 @@
 
 ### 🛠 Breaking changes
 
-- Drop support for `.expo.*` extensions (deprecated in SDK 41). ([#19910](https://github.com/expo/expo/pull/19910) by [@EvanBacon](https://github.com/EvanBacon))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 48.0.2 - 2023-03-08
+
+### 🐛 Bug fixes
+
+- Use the mocked `globalThis` rather than `global`. ([#21581](https://github.com/expo/expo/pull/21581) by [@kudo](https://github.com/kudo))
+
+## 48.0.1 - 2023-02-21
+
+### 🎉 New features
+
+- Updated mocks for Expo SDK 48. ([#21308](https://github.com/expo/expo/pull/21308) by [@aleqsio](https://github.com/aleqsio))
+
+## 48.0.0 — 2023-02-03
+
+### 🛠 Breaking changes
+
+- Drop support for `.expo.*` extensions (deprecated in SDK 41). ([#19910](https://github.com/expo/expo/pull/19910) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 🐛 Bug fixes
+
+- Added support for React Native 0.71.x. ([#20799](https://github.com/expo/expo/pull/20799) [#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

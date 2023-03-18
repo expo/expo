@@ -5,7 +5,7 @@
 #import "EXAppViewController.h"
 #import "EXBuildConstants.h"
 #import "EXKernel.h"
-#import "EXAppLoader.h"
+#import "EXAbstractLoader.h"
 #import "EXKernelAppRecord.h"
 #import "EXKernelLinkingManager.h"
 #import "EXLinkingManager.h"

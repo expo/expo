@@ -1,4 +1,4 @@
-import { Image, ImageContentFit, ImagePriority } from 'expo-image';
+import { Image, ImageProps } from 'expo-image';
 import { useState } from 'react';
 import { StyleSheet, View, Text } from 'react-native';
 
@@ -8,9 +8,10 @@ import { Colors } from '../../constants';
 export default function ImagePriorityScreen() {
   const [id, setId] = useState(0);
 
-  const defaultProps = {
+  const defaultProps: Partial<ImageProps> = {
     style: styles.image,
-    contentFit: ImageContentFit.COVER,
+    contentFit: 'cover',
+    cachePolicy: 'none',
   };
   return (
     <View style={styles.container}>
@@ -19,7 +20,7 @@ export default function ImagePriorityScreen() {
           <Image
             source={{ uri: `https://picsum.photos/id/${id + 1}/1000/2000` }}
             {...defaultProps}
-            priority={ImagePriority.LOW}
+            priority="low"
           />
           <Text style={styles.label}>LOW</Text>
         </View>
@@ -27,7 +28,7 @@ export default function ImagePriorityScreen() {
           <Image
             source={{ uri: `https://picsum.photos/id/${id + 2}/1000/2000` }}
             {...defaultProps}
-            priority={ImagePriority.NORMAL}
+            priority="normal"
           />
           <Text style={styles.label}>NORMAL</Text>
         </View>
@@ -35,7 +36,7 @@ export default function ImagePriorityScreen() {
           <Image
             source={{ uri: `https://picsum.photos/id/${id + 3}/1000/2000` }}
             {...defaultProps}
-            priority={ImagePriority.HIGH}
+            priority="high"
           />
           <Text style={styles.label}>HIGH</Text>
         </View>

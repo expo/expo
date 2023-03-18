@@ -11,7 +11,7 @@ data class ImageSource(
 ) : Record
 
 data class ImageLoadEvent(
-  @Field val cacheType: Int,
+  @Field val cacheType: String,
   @Field val source: ImageSource
 ) : Record
 

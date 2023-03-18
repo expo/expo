@@ -1,25 +1,25 @@
-export declare type IBBoolean = 'YES' | 'NO' | boolean;
-export declare type IBItem<H extends Record<string, any>, B extends Record<string, any[]> = {
+export type IBBoolean = 'YES' | 'NO' | boolean;
+export type IBItem<H extends Record<string, any>, B extends Record<string, any[]> = {
     [key: string]: any;
 }> = {
     $: H;
 } & B;
-export declare type Rect = {
+export type Rect = {
     key: string;
     x: number;
     y: number;
     width: number;
     height: number;
 };
-export declare type IBRect = IBItem<Rect>;
-export declare type IBAutoresizingMask = IBItem<{
+export type IBRect = IBItem<Rect>;
+export type IBAutoresizingMask = IBItem<{
     /** @example `autoresizingMask` */
     key: string;
     flexibleMaxX: IBBoolean;
     flexibleMaxY: IBBoolean;
 }>;
 /** @example `<color key="textColor" systemColor="linkColor"/>` */
-export declare type IBColor = IBItem<{
+export type IBColor = IBItem<{
     /** @example `textColor` */
     key: string;
 } & (/** Custom color */ {
@@ -38,7 +38,7 @@ export declare type IBColor = IBItem<{
  | {
     systemColor: 'linkColor' | string;
 })>;
-export declare type IBFontDescription = IBItem<{
+export type IBFontDescription = IBItem<{
     /** @example `fontDescription` */
     key: string;
     /** Font size */
@@ -49,9 +49,9 @@ export declare type IBFontDescription = IBItem<{
     /** Built-in font */
     type?: 'system' | 'boldSystem' | 'UICTFontTextStyleCallout' | 'UICTFontTextStyleBody' | string;
 }>;
-export declare type ImageContentMode = 'scaleAspectFit' | 'scaleAspectFill';
-export declare type ConstraintAttribute = 'top' | 'bottom' | 'trailing' | 'leading';
-export declare type IBImageView = IBItem<{
+export type ImageContentMode = 'scaleAspectFit' | 'scaleAspectFill';
+export type ConstraintAttribute = 'top' | 'bottom' | 'trailing' | 'leading';
+export type IBImageView = IBItem<{
     id: string;
     userLabel: string;
     image: string;
@@ -65,7 +65,7 @@ export declare type IBImageView = IBItem<{
 }, {
     rect: IBRect[];
 }>;
-export declare type IBLabel = IBItem<{
+export type IBLabel = IBItem<{
     id: string;
     /** The main value. */
     text: string;
@@ -94,9 +94,9 @@ export declare type IBLabel = IBItem<{
         key: string;
     }>[];
 }>;
-export declare type IBTextAlignment = 'left' | 'center' | 'right' | 'justified' | 'natural';
-export declare type IBContentMode = string | 'left' | 'scaleAspectFill';
-export declare type IBConstraint = IBItem<{
+export type IBTextAlignment = 'left' | 'center' | 'right' | 'justified' | 'natural';
+export type IBContentMode = string | 'left' | 'scaleAspectFill';
+export type IBConstraint = IBItem<{
     firstItem: string;
     firstAttribute: ConstraintAttribute;
     secondItem: string;
@@ -104,7 +104,7 @@ export declare type IBConstraint = IBItem<{
     constant?: number;
     id: string;
 }>;
-export declare type IBViewController = IBItem<{
+export type IBViewController = IBItem<{
     id: string;
     placeholderIdentifier?: string;
     userLabel: string;
@@ -141,12 +141,12 @@ export declare type IBViewController = IBItem<{
         }>[];
     }>[];
 }>;
-export declare type IBPoint = IBItem<{
+export type IBPoint = IBItem<{
     key: string | 'canvasLocation';
     x: number;
     y: number;
 }>;
-export declare type IBScene = IBItem<{
+export type IBScene = IBItem<{
     sceneID: string;
 }, {
     objects: {
@@ -160,17 +160,17 @@ export declare type IBScene = IBItem<{
     }[];
     point: IBPoint[];
 }>;
-export declare type IBResourceImage = IBItem<{
+export type IBResourceImage = IBItem<{
     name: string;
     width: number;
     height: number;
 }>;
-export declare type IBDevice = IBItem<{
+export type IBDevice = IBItem<{
     id: string;
     orientation: string | 'portrait';
     appearance: string | 'light';
 }>;
-export declare type IBSplashScreenDocument = {
+export type IBSplashScreenDocument = {
     document: IBItem<{
         type: 'com.apple.InterfaceBuilder3.CocoaTouch.Storyboard.XIB' | string;
         version: '3.0' | string;

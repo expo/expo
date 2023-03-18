@@ -40,6 +40,12 @@ export default {
   getRandomValues(typedArray: TypedArray) {
     return getCrypto().getRandomValues(typedArray);
   },
+  randomUUID() {
+    return getCrypto().randomUUID();
+  },
+  digestAsync(algorithm: AlgorithmIdentifier, data: ArrayBuffer): Promise<ArrayBuffer> {
+    return getCrypto().subtle.digest(algorithm, data);
+  },
 };
 
 function hexString(buffer: ArrayBuffer): string {
