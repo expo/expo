@@ -16,5 +16,11 @@ module.exports = {
         patterns: ['fbjs/*', 'fbjs'],
       },
     ],
+    'prettier/prettier': [
+      'warn',
+      {
+        endOfLine: 'auto',
+      },
+    ],
   },
 };
