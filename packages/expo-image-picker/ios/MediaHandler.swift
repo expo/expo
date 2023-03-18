@@ -616,8 +616,12 @@ private struct VideoUtils {
 
   static func readSizeFrom(url: URL) -> CGSize? {
     let asset = AVURLAsset(url: url)
-    let size: CGSize? = asset.tracks(withMediaType: .video).first?.naturalSize
-    return size
+    guard let assetTrack = asset.tracks(withMediaType: .video).first else {
+      return nil
+    }
+    // The video could be rotated and the resulting transform can result in a negative width/height.
+    let size = assetTrack.naturalSize.applying(assetTrack.preferredTransform)
+    return CGSize(width: abs(size.width), height: abs(size.height))
   }
 
   static func readVideoUrlFrom(mediaInfo: MediaInfo) -> URL? {
