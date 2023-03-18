@@ -23,8 +23,6 @@ PODS:
     - ExpoModulesCore
   - EXContacts (12.0.1):
     - ExpoModulesCore
-  - EXDocumentPicker (11.2.1):
-    - ExpoModulesCore
   - EXFaceDetector (12.1.1):
     - ExpoModulesCore
     - GoogleMLKit/FaceDetection (= 2.6.0)
@@ -120,6 +118,8 @@ PODS:
   - ExpoCrypto (12.2.1):
     - ExpoModulesCore
   - ExpoDevice (5.2.1):
+    - ExpoModulesCore
+  - ExpoDocumentPicker (11.2.1):
     - ExpoModulesCore
   - ExpoGL (12.4.0):
     - ExpoModulesCore
@@ -728,8 +728,6 @@ DEPENDENCIES:
   - EXCamera (from `../../../packages/expo-camera/ios`)
   - EXConstants (from `../../../packages/expo-constants/ios`)
   - EXContacts (from `../../../packages/expo-contacts/ios`)
-  - EXDocumentPicker (from `../../../packages/expo-document-picker/ios`)
-  - EXErrorRecovery (from `../../../packages/expo-error-recovery/ios`)
   - EXFaceDetector (from `../../../packages/expo-face-detector/ios`)
   - EXFileSystem (from `../../../packages/expo-file-system/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
@@ -906,12 +904,6 @@ EXTERNAL SOURCES:
   EXContacts:
     inhibit_warnings: false
     :path: "../../../packages/expo-contacts/ios"
-  EXDocumentPicker:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-document-picker/ios"
-  EXErrorRecovery:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-error-recovery/ios"
   EXFaceDetector:
     inhibit_warnings: false
     :path: "../../../packages/expo-face-detector/ios"
@@ -1191,7 +1183,6 @@ EXTERNAL SOURCES:
 SPEC CHECKSUMS:
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
-<<<<<<< HEAD
   EASClient: 950674e1098ebc09c4c2cf064a61e42e84d9d4c6
   EXApplication: d8f53a7eee90a870a75656280e8d4b85726ea903
   EXAV: f1f69397ecdcf44cfacd4ff5d338cd1b96891e87
@@ -1201,7 +1192,6 @@ SPEC CHECKSUMS:
   EXCamera: a323a5942b5e7fc8349e17d728e91c18840ad561
   EXConstants: f348da07e21b23d2b085e270d7b74f282df1a7d9
   EXContacts: 44ced67015dab45ca8ae1eb8950738d60de0af64
-  EXDocumentPicker: 909609253c185cc6d802f408c7eaf7a4daca793b
   EXFaceDetector: 16c5311521334ba7818c28cde44997d6757c2dd0
   EXFileSystem: a736b6854370a36e4daee79b1f2b5bbc9df18bf4
   EXFont: 6ea3800df746be7233208d80fe379b8ed74f4272
@@ -1226,6 +1216,7 @@ SPEC CHECKSUMS:
   ExpoClipboard: 8a36a8376ab93df9050c14577e9e0fcb805e9114
   ExpoCrypto: 477dfe89c81527b376f2c344ca1d2a01244b243c
   ExpoDevice: e0bebf68f978b3d353377ce42e73c20c0a070215
+  ExpoDocumentPicker: 98d6f7987c4e13d79a6b937c8bb26f9002b9cf8d
   ExpoGL: 8f8e40e494a462f33c1f513cf101bf7d6abe767e
   ExpoHaptics: 5156bc5160d8e04c170dd6e645a71154951a2ad9
   ExpoImage: b6a65c4aa891cdf00bfba0da46df14b27ae09cc7
@@ -1261,76 +1252,6 @@ SPEC CHECKSUMS:
   EXUpdatesInterface: 353553ad3df1507f0d9e814a3dd79c7053606acd
   FBLazyVector: 60195509584153283780abdac5569feffb8f08cc
   FBReactNativeSpec: b422511e23a82412c257e34bef96b07d2ff26bd9
-=======
-  EASClient: 19efe9e8ef9b3917c5f3dcb3ed82319de4d8c0bd
-  EXApplication: 034b1c40a8e9fe1bff76a1e511ee90dff64ad834
-  EXAV: 766516466675fc5fdd7c500acced5934e8b00de2
-  EXBackgroundFetch: 186248a00a38fc4d22d60ec30e4e751449e785ee
-  EXBarCodeScanner: 25f8a6a43c817a94afe54d07a1b9fe25550ea0fe
-  EXBrightness: 1725afacfdaeb4724bb949c44384cff0ef0d7d18
-  EXCalendar: 1234457cffa88adfbfbe7f8937e21963f7b0f5b6
-  EXCamera: d7e91d5857faee493ca3cf8dafd42572db61849e
-  EXConstants: d9bff28e1d37cd1c05133e6955e9ba8f2a702947
-  EXContacts: ef197934926d31c2a58092e081ca9e7c402f13fd
-  EXErrorRecovery: ae43433feb0608a64dc5b1c8363b3e7769a9ea24
-  EXFaceDetector: 0bb666598a78ae4a787689a45a58ddb68e3bd86e
-  EXFileSystem: ed61548927905e157b95b3b49bd83a26ff24e1ce
-  EXFont: 319606bfe48c33b5b5063fb0994afdc496befe80
-  EXImageLoader: 84b65e6bd9d3345d6fbb3ab936a546c54496a64d
-  EXInAppPurchases: b88582167dde6a7da6253c5f2b7a56edf24d76e1
-  EXJSONUtils: 09aef2c1fba1a116ca8c73a2c8299aac00d96b43
-  EXLocation: ea8c1a5b5b3c3ac47f1f3a7cfd54d311ec920a37
-  EXManifests: 347f49430b63444579aa013f0ad057d16b8d1cc8
-  EXMediaLibrary: 458ae40e652df90ad46d38a5c588b05d59401d3c
-  EXNetwork: c16feb0dc85dacaf11fef55721e0b8ead2a8038f
-  EXNotifications: 2bda232eb900aa6d602e40cad363879ae827d672
-  EXPermissions: a2007c82e5d3ffeb2e2dbc78ef65ae464dd1ee57
-  Expo: 8ee43334b657268299454a67f30f60e5a8ca89d9
-  expo-dev-client: d723d52ccfbe2eb47ee24d1ac0cf5b39001589c2
-  expo-dev-launcher: 953f564f7d006f1af50b119cacb48cafcad40c73
-  expo-dev-menu: 330211ba6e93b8195b43aa9e84555ec861131af4
-  expo-dev-menu-interface: c8ad2dc7bb9513c6668c0b0fdf2391727a3d19a7
-  ExpoBattery: 41fab48a6bad4aacff2e7d3108f6a3f636e73d3c
-  ExpoBlur: d200843e33d6f0230ddb6b412d6c67baa0dc2c88
-  ExpoCellular: 851660eb7a461d5b11889e537e3a8be4b20fc088
-  ExpoClipboard: 334921ae215b4be261e393e6fdd9050025008a20
-  ExpoCrypto: 51e7662c7f5bfeab25b7909b8a5d545ec15d4877
-  ExpoDevice: f3c8baaea11ae02095ecb474dcfd48d80ee5bf8f
-  ExpoDocumentPicker: 0376a8dab4d2797f3f58216c3a048494531cfac2
-  ExpoGL: 1f734be738a52713e6ec7abe4fd970f0946a2a0b
-  ExpoHaptics: 5a56d30a87ea213dd00b09566dc4b441a4dff97f
-  ExpoImage: 81a614a20ece8e5f23f987c3d4060d3915ead413
-  ExpoImageManipulator: 5f3c1ab8dd81de11491b5051bb925abc91fe57e4
-  ExpoImagePicker: 735000e53b06c327a4e8b1146f06a8765be244c3
-  ExpoKeepAwake: 69b59d0a8d2b24de9f82759c39b3821fec030318
-  ExpoLinearGradient: b40c2133ad57ae105b1b12a319e314463c817f6b
-  ExpoLocalAuthentication: b33ed1e2e572c6e2a09a081b1aef4fe22cdff706
-  ExpoLocalization: e202d1e2a4950df17ac8d0889d65a1ffd7532d7e
-  ExpoMailComposer: 5bd9a732104eb1721a5aa4744903673787d1410c
-  ExpoMaps: da84a66611924dd53beaa2d2801cbd677758796a
-  ExpoModulesCore: e47e5d3e3f8fbc03b6c41cfc1d54421381201dd5
-  ExpoRandom: 58b7e0a5fe1adf1cb6dc1cbe503a6fe9524f36ce
-  ExpoSMS: 9cd247733eb868bb39f25a8ba0d37167c632468a
-  ExpoStoreReview: ff6d631f2949eb7e4b2d14146ef6af25a16d770d
-  ExpoSystemUI: c844dec5e49e677bcd6bfe15cc305b02127b1124
-  ExpoTrackingTransparency: 8d02327d4414009f03a43e6b2dbad52265996936
-  ExpoVideoThumbnails: 73bded4379da9a3581d611ec618abb837dd2d347
-  ExpoWebBrowser: 073e50f16669d498fb49063b9b7fe780b24f7fda
-  EXPrint: d0c207c654fcfefcbfca061998593a023014f84b
-  EXScreenCapture: d9f1ec31042dfef109290d06c2b4789b7444d16d
-  EXScreenOrientation: 07e5aeff07bce09a2b214981e612d87fd7719997
-  EXSecureStore: daec0117c922a67c658cb229152a9e252e5c1750
-  EXSensors: 535beac36b78487d53c630eb627d7528bcc610b3
-  EXSharing: e4c5ebc5b36828f1e0dff1415b2b28b23dc770b8
-  EXSpeech: b1e02f7d9d4e9731133da25ee4b26cc0740707ed
-  EXSplashScreen: 20052670daff7650fa01140a178d0af1a914584b
-  EXSQLite: 13c91c389b3c6241ddcf5c47eaa43289721193fe
-  EXStructuredHeaders: fb774e45eac2e5d62ba40b28176bfbfba61b843e
-  EXTaskManager: 0afcc6fd813dec5dee98aa5ec4f22c2a840dd4a7
-  EXUpdatesInterface: bffd1ead18f0bab04fa784ca159c115607b8a23c
-  FBLazyVector: affa4ba1bfdaac110a789192f4d452b053a86624
-  FBReactNativeSpec: 66021a87c048a44770ab649c06afa57c9ff5789a
->>>>>>> 366cd92e92 ([modules][document-picker] migrate ios to new api. Add multi document support)
   fmt: ff9d55029c625d3757ed641535fd4a75fedc7ce9
   glog: 04b94705f318337d7ead9e6d17c019bd9b1f6b1b
   GoogleDataTransport: 1c8145da7117bd68bbbed00cf304edb6a24de00f

@@ -24,8 +24,3 @@ data class DocumentInfo(
   @Field
   val size: Int?
 ) : Record
-
-data class DocumentPickerCancelled(
-  @Field
-  val type: String
-) : Record

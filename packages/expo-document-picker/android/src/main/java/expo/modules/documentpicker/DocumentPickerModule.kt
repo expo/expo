@@ -54,7 +54,6 @@ class DocumentPickerModule : Module() {
       }
 
       val promise = pendingPromise!!
-      pendingPromise = null
 
       if (resultCode == Activity.RESULT_OK) {
         try {
@@ -71,6 +70,8 @@ class DocumentPickerModule : Module() {
           DocumentPickerResult(canceled = true)
         )
       }
+
+      pendingPromise = null
     }
   }
 
