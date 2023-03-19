@@ -8,7 +8,7 @@ export class MagnetometerSensor extends DeviceSensor {
     /**
      * > **info** You should always check the sensor availability before attempting to use it.
      *
-     * Check the availability of the device barometer. Requires at least Android 2.3 (API Level 9) and iOS 8.
+     * Check the availability of the device magnetometer. Requires at least Android 2.3 (API Level 9) and iOS 8.
      * @return A promise that resolves to a `boolean` denoting the availability of the sensor.
      */
     async isAvailableAsync() {
