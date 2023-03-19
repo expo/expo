@@ -6,6 +6,7 @@ hideFromSearch: true
 
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { GithubIcon } from '@expo/styleguide-icons';
 
@@ -117,6 +118,11 @@ To test the workflow, run the following command:
 <Terminal cmd={['$ eas build -p android -e test']} />
 
 After the build is complete, you can verify that the `npm test` script was executed by checking the logs on the **build details** page.
+
+<ImageSpotlight
+  alt="Example of a build config running tests on EAS Build."
+  src="/static/images/eas-build/custom-build.png"
+/>
 
 </Step>
 
