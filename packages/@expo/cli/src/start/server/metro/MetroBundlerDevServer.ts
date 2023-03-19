@@ -394,14 +394,16 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const url = this.getDevServerUrl();
     assert(url, 'Dev server must be started');
     const { getManifest } = await getStaticRenderFunctions(this.projectRoot, url);
-    return getManifest({ preserveApiRoutes: false });
+    return getManifest({ preserveApiRoutes: false, loadData: true });
   }
 
   async getFunctionsAsync({ mode }: { mode: 'development' | 'production' }) {
-    return await exportRouteHandlersAsync(this.projectRoot, {
+    const routeHandlers = await exportRouteHandlersAsync(this.projectRoot, {
       port: this.getInstance()?.location.port,
       mode,
     });
+
+    return routeHandlers;
   }
 
   async getStaticPageAsync(

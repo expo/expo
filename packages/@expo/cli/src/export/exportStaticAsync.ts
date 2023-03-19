@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { ExpoConfig, getConfig } from '@expo/config';
 import assert from 'assert';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -37,9 +38,22 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
     },
   ]);
 
-  await exportFromServerAsync(devServerManager, options);
+  await exportFromServerAsync(projectRoot, devServerManager, options);
 
   await devServerManager.stopAsync();
+}
+
+type Rewrite = {
+  source: string;
+  destination: string;
+};
+
+function getRewrites(exp: ExpoConfig) {
+  const rewrites = (exp.web?.router?.rewrites ?? (exp.router?.rewrites || [])) as Rewrite[];
+
+  // TODO: validate
+
+  return rewrites;
 }
 
 async function getExpoRoutesAsync(devServerManager: DevServerManager) {
@@ -164,6 +178,7 @@ export async function getFilesToExportFromServerAsync({
 
 /** Perform all fs commits */
 export async function exportFromServerAsync(
+  projectRoot: string,
   devServerManager: DevServerManager,
   { outputDir, scripts }: Options
 ): Promise<void> {
@@ -171,8 +186,9 @@ export async function exportFromServerAsync(
   assert(devServer instanceof MetroBundlerDevServer);
 
   const manifest = await getExpoRoutesAsync(devServerManager);
+  // console.log('Routes:\n', inspect(manifest, { colors: true, depth: null }));
   debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
-
+  // process.exit(0);
   const files = await getFilesToExportFromServerAsync({
     manifest,
     scripts,
@@ -185,7 +201,7 @@ export async function exportFromServerAsync(
   const [routesManifest, middleware] = await devServer.getFunctionsAsync({ mode: 'production' });
 
   const staticDir = path.join(outputDir);
-  fs.mkdirSync(path.join(staticDir), { recursive: true });
+  // fs.mkdirSync(path.join(staticDir), { recursive: true });
 
   const funcDir = path.join(outputDir, '_expo/functions');
   fs.mkdirSync(path.join(funcDir), { recursive: true });
@@ -195,6 +211,12 @@ export async function exportFromServerAsync(
     JSON.stringify(routesManifest, null, 2),
     'utf-8'
   );
+
+  // await fs.promises.writeFile(
+  //   path.join(outputDir, '_expo/rewrites.json'),
+  //   JSON.stringify(getRewrites(getConfig(projectRoot).exp), null, 2),
+  //   'utf-8'
+  // );
 
   await Promise.all(
     Object.entries(middleware)
