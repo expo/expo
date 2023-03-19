@@ -15,6 +15,7 @@ export const expoPrebuild: Command = async (argv) => {
       '--yarn': Boolean,
       '--no-install': Boolean,
       '--template': String,
+      '--example': String,
       '--platform': String,
       '--skip-dependency-update': String,
       // Aliases
@@ -37,6 +38,7 @@ export const expoPrebuild: Command = async (argv) => {
         chalk`--yarn                                   Use Yarn to install dependencies. {dim Default when yarn.lock exists}`,
         chalk`--pnpm                                   Use pnpm to install dependencies. {dim Default when pnpm-lock.yaml exists}`,
         `--template <template>                    Project template to clone from. File path pointing to a local tar file or a github repo`,
+        `--example <example>                      Example project to use as a starter. Valid examples are the folder names in the root of https://github.com/expo/examples`,
         chalk`-p, --platform <all|android|ios>         Platforms to sync: ios, android, all. {dim Default: all}`,
         `--skip-dependency-update <dependencies>  Preserves versions of listed packages in package.json (comma separated list)`,
         `-h, --help                               Usage info`,
