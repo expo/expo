@@ -94,6 +94,21 @@ export async function getFilesToExportFromServerAsync({
     // Strip group names from the segment
     return segment
       .split('/')
+      .map((s) => {
+        const d = s.match(/^:(.*)/);
+        // if (d) s = ''
+        if (d) s = `[${d[1]}]`;
+        s = matchGroupName(s) ? '' : s;
+        return s;
+      })
+      .filter(Boolean)
+      .join('/');
+  };
+
+  const nameWithoutGroups = (segment: string) => {
+    // Strip group names from the segment
+    return segment
+      .split('/')
       .map((s) => (matchGroupName(s) ? '' : s))
       .filter(Boolean)
       .join('/');
@@ -134,41 +149,42 @@ export async function getFilesToExportFromServerAsync({
       // Strip group names from the segment
       const cleanSegment = sanitizeName(segment);
 
-      if (cleanSegment !== segment) {
+      if (nameWithoutGroups(segment) !== segment) {
         // has groups, should request multiple screens.
-        await fetchScreenExactAsync(
-          [additionPath, segment].filter(Boolean).join('/'),
-          [additionPath, filename].filter(Boolean).join('/').replace(/^\//, '')
-        );
+        await fetchScreenExactAsync([additionPath, segment].filter(Boolean).join('/'), filename);
       }
 
       await fetchScreenExactAsync(
         [additionPath, cleanSegment].filter(Boolean).join('/'),
-        [additionPath, sanitizeName(filename)].filter(Boolean).join('/').replace(/^\//, '')
+        sanitizeName(filename)
       );
     }
 
-    return Object.entries(screens).map(async ([name, segment]) => {
-      const filename = name + '.html';
+    return Object.entries(screens)
+      .map(async ([name, segment]) => {
+        const filename = name + '.html';
 
-      // Segment is a directory.
-      if (typeof segment !== 'string') {
-        if (Object.keys(segment.screens).length) {
-          const cleanSegment = sanitizeName(segment.path);
-          return Promise.all(
-            fetchScreens(segment.screens, [additionPath, cleanSegment].filter(Boolean).join('/'))
-          );
-        } else {
-          segment = segment.path;
+        // Segment is a directory.
+        if (typeof segment !== 'string') {
+          if (Object.keys(segment.screens).length) {
+            const cleanSegment = sanitizeName(segment.path);
+
+            return Promise.all(
+              fetchScreens(segment.screens, [additionPath, cleanSegment].filter(Boolean).join('/'))
+            );
+          } else {
+            // skip when extranrous `screens` object exists
+            segment = segment.path;
+          }
         }
-      }
 
-      // TODO: handle dynamic routes
-      // if (!segment.startsWith('*')) {
-      await fetchScreenAsync({ segment, filename });
-      // }
-      return null;
-    });
+        // TODO: handle dynamic routes
+        // if (!segment.startsWith('*')) {
+        await fetchScreenAsync({ segment, filename });
+        // }
+        return null;
+      })
+      .filter(Boolean);
   };
 
   await Promise.all(fetchScreens(manifest.screens));
@@ -186,8 +202,8 @@ export async function exportFromServerAsync(
   assert(devServer instanceof MetroBundlerDevServer);
 
   const manifest = await getExpoRoutesAsync(devServerManager);
-  // console.log('Routes:\n', inspect(manifest, { colors: true, depth: null }));
-  debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
+  console.log('Routes:\n', inspect(manifest, { colors: true, depth: null }));
+  // debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
   // process.exit(0);
   const files = await getFilesToExportFromServerAsync({
     manifest,

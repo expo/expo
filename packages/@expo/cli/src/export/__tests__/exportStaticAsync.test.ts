@@ -13,6 +13,12 @@ describe(getFilesToExportFromServerAsync, () => {
         manifest: {
           initialRouteName: undefined,
           screens: {
+            // TODO: deep dynamic nested with children
+            '[shape]': {
+              path: ':shape',
+              screens: { '[color]': { path: ':color', screens: {} } },
+              initialRouteName: undefined,
+            },
             '(app)': {
               path: '(app)',
               screens: { compose: 'compose', index: '', 'note/[note]': 'note/:note' },
@@ -28,6 +34,7 @@ describe(getFilesToExportFromServerAsync, () => {
       })
     ).toEqual(
       new Map([
+        ['[shape]/[color].html', ''],
         ['(auth)/sign-in.html', ''],
         ['sign-in.html', ''],
         ['[...404].html', ''],
