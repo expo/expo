@@ -1,11 +1,16 @@
 import fs from 'fs-extra';
+import minimatch from 'minimatch';
 import path from 'path';
 
-import { EXPO_DIR } from '../../Constants';
+import { ANDROID_VENDORED_DIR, EXPO_DIR, IOS_VENDORED_DIR } from '../../Constants';
+import { GitFileDiff } from '../../Git';
 import logger from '../../Logger';
 import { getListOfPackagesAsync, Package } from '../../Packages';
 import { filterAsync } from '../../Utils';
 import { ReviewInput, ReviewOutput, ReviewStatus } from '../types';
+
+// glob patterns for paths where changes are negligible
+const IGNORED_PATHS = ['**/expo/bundledNativeModules.json'];
 
 export default async function ({ pullRequest, diff }: ReviewInput): Promise<ReviewOutput | null> {
   if (!pullRequest.head) {
@@ -15,7 +20,12 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
 
   const allPackages = await getListOfPackagesAsync();
   const modifiedPackages = allPackages.filter((pkg) => {
-    return diff.some((fileDiff) => !path.relative(pkg.path, fileDiff.path).startsWith('../'));
+    return diff.some((fileDiff) => {
+      return (
+        isPathWithin(fileDiff.path, pkg.path) &&
+        !IGNORED_PATHS.some((pattern) => minimatch(fileDiff.path, pattern))
+      );
+    });
   });
 
   const pkgsWithoutChangelogChanges = await filterAsync(modifiedPackages, async (pkg) => {
@@ -31,13 +41,25 @@ export default async function ({ pullRequest, diff }: ReviewInput): Promise<Revi
     .map((pkg) => `- ${relativeChangelogPath(pullRequest.head, pkg)}`)
     .join('\n');
 
-  if (globalChangelogHasChanges) {
+  if (globalChangelogHasChanges && !isModifyingVendoredModules(diff)) {
     return globalChangelogEntriesOutput(changelogLinks);
   } else if (pkgsWithoutChangelogChanges.length > 0) {
     return missingChangelogOutput(changelogLinks);
   }
 
   return null;
+}
+
+function isModifyingVendoredModules(diff: GitFileDiff[]): boolean {
+  return diff.some(
+    (fileDiff) =>
+      isPathWithin(fileDiff.path, IOS_VENDORED_DIR) ||
+      isPathWithin(fileDiff.path, ANDROID_VENDORED_DIR)
+  );
+}
+
+function isPathWithin(subpath: string, parent: string): boolean {
+  return !path.relative(parent, subpath).startsWith('..');
 }
 
 function relativeChangelogPath(head: ReviewInput['pullRequest']['head'], pkg: Package): string {
