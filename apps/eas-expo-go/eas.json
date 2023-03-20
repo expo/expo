@@ -24,11 +24,9 @@
         "cache": {
           "key": "sdk48-0.71.3",
           "cacheDefaultPaths": false,
-          "customPaths": [
-            "../../ios/Pods"
-          ]
+          "customPaths": ["../../ios/Pods"]
         },
-        "resourceClass": "m1-medium",
+        "resourceClass": "m-medium",
         "env": {
           "EAS_BUILD_PLATFORM": "ios",
           "EXPO_ROOT_DIR": "/Users/expo/workingdir/build"
