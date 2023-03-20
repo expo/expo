@@ -3,7 +3,7 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.util.GradleVersion
 
-def expoUpdatesDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-updates/package.json')));"].execute([], projectDir).text.trim()
+def expoUpdatesDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-updates/package.json')));"].execute(null, projectDir).text.trim()
 
 def ex_updates_native_debug = System.getenv("EX_UPDATES_NATIVE_DEBUG") == "1"
 
