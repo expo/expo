@@ -19,6 +19,16 @@ describe(getFilesToExportFromServerAsync, () => {
               screens: { '[color]': { path: ':color', screens: {} } },
               initialRouteName: undefined,
             },
+            'blog/[post]': {
+              path: 'blog/:post',
+              screens: {},
+              initialRouteName: undefined,
+            },
+            'blog/123': {
+              path: 'blog/123',
+              screens: {},
+              initialRouteName: undefined,
+            },
             '(app)': {
               path: '(app)',
               screens: { compose: 'compose', index: '', 'note/[note]': 'note/:note' },
@@ -36,6 +46,8 @@ describe(getFilesToExportFromServerAsync, () => {
       new Map([
         ['[shape]/[color].html', ''],
         ['(auth)/sign-in.html', ''],
+        ['blog/[post].html', ''],
+        ['blog/123.html', ''],
         ['sign-in.html', ''],
         ['[...404].html', ''],
         ['_sitemap.html', ''],

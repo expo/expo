@@ -149,7 +149,7 @@ async function fetchManifest(projectRoot: string, options: { mode?: string; port
       dev: options.mode !== 'production',
     });
 
-    const manifest = getManifest().map((value: any) => {
+    const manifest = getManifest()?.map((value: any) => {
       return {
         ...value,
         regex: new RegExp(value.regex),
@@ -264,8 +264,13 @@ function createRouteHandlerMiddleware(
 
     let functionFilePath: string | null = null;
 
-    const staticManifest = manifest.filter((route) => route.type === 'static');
-    const dynamicManifest = manifest.filter((route) => route.type === 'dynamic');
+    // NOTE: no app dir
+    if (!manifest) {
+      return next();
+    }
+
+    const staticManifest = manifest?.filter((route) => route.type === 'static');
+    const dynamicManifest = manifest?.filter((route) => route.type === 'dynamic');
 
     for (const route of dynamicManifest) {
       if (route.regex.test(sanitizedPathname)) {
