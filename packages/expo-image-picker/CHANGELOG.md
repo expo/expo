@@ -10,6 +10,7 @@
 
 - Fix images unexpectedly being converted to `.png` when opening `.bmp` files and selecting any quality in `ImagePickerOptions`. ([#21361](https://github.com/expo/expo/pull/21361) by [@behenate](https://github.com/behenate))
 - Fix issue where the array of permissions could end up empty causing an exception. ([#21589](https://github.com/expo/expo/pull/21589) by [@alanhughes](https://github.com/alanjhughes))
+- Fix rotated videos returning incorrect width/height. [#12573](https://github.com/expo/expo/issues/12573) ([#21758](https://github.com/expo/expo/pull/21758) by [@mmmulani](https://github.com/mmmulani))
 
 ### 💡 Others
 
