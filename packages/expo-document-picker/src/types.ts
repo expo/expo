@@ -44,7 +44,15 @@ export type DocumentPickerAsset = {
    * Timestamp of last document modification.
    */
   lastModified?: number;
+  /**
+   * `File` object for the parity with web File API.
+   * @platform web
+   */
   file?: File;
+  /**
+   * `FileList` object for the parity with web File API.
+   * @platform web
+   */
   output?: FileList | null;
 };
 
