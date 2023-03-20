@@ -20,6 +20,7 @@ import expo.modules.crypto.CryptoModule
 import expo.modules.device.DeviceModule
 import expo.modules.documentpicker.DocumentPickerModule
 import expo.modules.easclient.EASClientModule
+import expo.modules.print.PrintModule
 import expo.modules.facedetector.FaceDetectorPackage
 import expo.modules.filesystem.FileSystemPackage
 import expo.modules.font.FontLoaderPackage
@@ -45,7 +46,6 @@ import expo.modules.navigationbar.NavigationBarPackage
 import expo.modules.network.NetworkModule
 import expo.modules.notifications.NotificationsPackage
 import expo.modules.permissions.PermissionsPackage
-import expo.modules.print.PrintPackage
 import expo.modules.random.RandomModule
 import expo.modules.screencapture.ScreenCapturePackage
 import expo.modules.screenorientation.ScreenOrientationPackage
@@ -86,7 +86,6 @@ object ExperiencePackagePicker : ModulesProvider {
     NavigationBarPackage(),
     NotificationsPackage(),
     PermissionsPackage(),
-    PrintPackage(),
     SQLitePackage(),
     ScreenCapturePackage(),
     ScreenOrientationPackage(),
@@ -124,6 +123,7 @@ object ExperiencePackagePicker : ModulesProvider {
     DeviceModule::class.java,
     DocumentPickerModule::class.java,
     EASClientModule::class.java,
+    PrintModule::class.java,
     GLViewModule::class.java,
     HapticsModule::class.java,
     ImagePickerModule::class.java,

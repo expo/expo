@@ -1,6 +1,5 @@
-import { requireNativeModule, NativeModulesProxy, Platform } from 'expo-modules-core';
+import { requireNativeModule } from 'expo-modules-core';
 
-const printModule =
-  Platform.OS === 'ios' ? requireNativeModule('ExpoPrint') : NativeModulesProxy.ExponentPrint;
+const printModule = requireNativeModule('ExpoPrint');
 
 export default printModule;
