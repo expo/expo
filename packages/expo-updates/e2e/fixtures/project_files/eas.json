@@ -24,7 +24,7 @@
       },
       "ios": {
         "simulator": true,
-        "resourceClass": "m1-medium",
+        "resourceClass": "m-medium",
         "buildConfiguration": "Debug",
         "cache": {
           "cacheDefaultPaths": false

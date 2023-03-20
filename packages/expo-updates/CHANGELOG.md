@@ -14,6 +14,7 @@
 
 - iOS: Fix odd nullability issue in expo module. ([#21655](https://github.com/expo/expo/pull/21655) by [@wschurman](https://github.com/wschurman))
 - iOS: Fix legacy update bundled asset parsing. ([#21691](https://github.com/expo/expo/pull/21691) by [@wschurman](https://github.com/wschurman))
+- Change arg in gradle `.execute()` call to null to inherit env variables from user's env ([#21712](https://github.com/expo/expo/pull/21712) by [@phoenixiguess](https://github.com/phoenixiguess))
 
 ### 💡 Others
 
