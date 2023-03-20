@@ -33,7 +33,7 @@ export default [
   },
   {
     name: 'resourceClass',
-    enum: ['default', 'medium', 'm1-medium', 'intel-medium'],
+    enum: ['default', 'medium', 'm-medium', 'intel-medium'],
     description: [
       'The iOS-specific resource class that will be used to run this build. [Learn more](../../build-reference/infrastructure#ios-build-server-configurations)',
       '- `default` maps to `intel-medium`',
