@@ -14,7 +14,6 @@
 @property NSMapTable<Protocol *, NSMutableArray<id<EXInternalModule>> *> *internalModulesPreResolution;
 @property NSMapTable<Class, EXExportedModule *> *exportedModulesByClass;
 @property NSMutableDictionary<const NSString *, EXExportedModule *> *exportedModules;
-@property NSMutableDictionary<const NSString *, EXViewManager *> *viewManagerModules;
 @property NSMutableDictionary<const NSString *, id> *singletonModules;
 
 @property NSPointerArray *registryConsumers;
@@ -31,7 +30,6 @@
     _internalModulesPreResolution = [NSMapTable weakToStrongObjectsMapTable];
     _exportedModulesByClass = [NSMapTable weakToWeakObjectsMapTable];
     _exportedModules = [NSMutableDictionary dictionary];
-    _viewManagerModules = [NSMutableDictionary dictionary];
     _singletonModules = [NSMutableDictionary dictionary];
     _registryConsumers = [NSPointerArray weakObjectsPointerArray];
   }
@@ -40,7 +38,6 @@
 
 - (instancetype)initWithInternalModules:(NSSet<id<EXInternalModule>> *)internalModules
                         exportedModules:(NSSet<EXExportedModule *> *)exportedModules
-                           viewManagers:(NSSet<EXViewManager *> *)viewManagers
                        singletonModules:(NSSet *)singletonModules
 {
   if (self = [self init]) {
@@ -50,10 +47,6 @@
     
     for (EXExportedModule *exportedModule in exportedModules) {
       [self registerExportedModule:exportedModule];
-    }
-
-    for (EXViewManager *viewManager in viewManagers) {
-      [self registerViewManager:viewManager];
     }
 
     for (id singletonModule in singletonModules) {
@@ -140,17 +133,6 @@
   [self maybeAddRegistryConsumer:exportedModule];
 }
 
-- (void)registerViewManager:(EXViewManager *)viewManager
-{
-  const NSString *exportedModuleName = [[viewManager class] exportedModuleName];
-  if (_viewManagerModules[exportedModuleName]) {
-    EXLogInfo(@"View manager %@ overrides %@ as the module exported as %@.", viewManager, _viewManagerModules[exportedModuleName], exportedModuleName);
-  }
-
-  _viewManagerModules[exportedModuleName] = viewManager;
-  [self maybeAddRegistryConsumer:viewManager];
-}
-
 - (void)registerSingletonModule:(id)singletonModule
 {
   if ([[singletonModule class] respondsToSelector:@selector(name)]) {
@@ -214,11 +196,6 @@
 - (NSArray<EXExportedModule *> *)getAllExportedModules
 {
   return [_exportedModules allValues];
-}
-
-- (NSArray<EXViewManager *> *)getAllViewManagers
-{
-  return [_viewManagerModules allValues];
 }
 
 - (NSArray *)getAllSingletonModules
