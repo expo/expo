@@ -16,13 +16,13 @@ export async function forceUpdateTSConfig(projectRoot: string, dotExpoDir: strin
 
   const generatedDeclarationFiles = path.relative(
     path.dirname(tsConfigPath),
-    path.join(dotExpoDir, 'types/*')
+    path.join(dotExpoDir, '/*')
   );
 
   const updates = new Set<string>();
 
   if (!tsConfig.include) {
-    tsConfig.include = ['./*', generatedDeclarationFiles];
+    tsConfig.include = ['*', generatedDeclarationFiles];
     updates.add('include');
   } else if (!tsConfig.include.includes(generatedDeclarationFiles)) {
     tsConfig.include = [...tsConfig.include, generatedDeclarationFiles];

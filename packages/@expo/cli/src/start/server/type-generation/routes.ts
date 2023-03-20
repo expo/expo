@@ -26,7 +26,7 @@ export async function setupTypedRoutes({ server, metro, typesDirectory }: SetupT
 
   const staticRoutes = new Set<string>();
   const dynamicRoutes = new Set<string>();
-  const routesParams = new Map<string, Set<string>>();
+  const dynamicRouteTemplates = new Set<string>();
 
   const addFilePath = (filePath: string) => {
     if (filePath.includes('_layout')) {
@@ -45,7 +45,7 @@ export async function setupTypedRoutes({ server, metro, typesDirectory }: SetupT
     const isDynamic = dynamicParams.size > 0;
 
     if (isDynamic) {
-      routesParams.set(route, dynamicParams);
+      dynamicRouteTemplates.add(route);
 
       dynamicRoutes.add(
         route.replaceAll(CATCH_ALL, '${CatchAllSlug<T>}').replaceAll(SLUG, '${SafeSlug<T>}')
@@ -59,7 +59,7 @@ export async function setupTypedRoutes({ server, metro, typesDirectory }: SetupT
       const routeWithoutGroups = route.replace(/\/\(.+?\)/g, '');
 
       if (isDynamic) {
-        routesParams.set(routeWithoutGroups, dynamicParams);
+        dynamicRouteTemplates.add(routeWithoutGroups);
 
         dynamicRoutes.add(
           routeWithoutGroups
@@ -72,17 +72,17 @@ export async function setupTypedRoutes({ server, metro, typesDirectory }: SetupT
 
       // If there are multiple groups, we need to expand them
       // eg /(test1,test2)/page => /test1/page & /test2/page
-      for (const groupRoute of expandGroupRoutes(route)) {
+      for (const routeWithSingleGroup of expandGroupRoutes(route)) {
         if (isDynamic) {
-          routesParams.set(groupRoute, dynamicParams);
+          dynamicRouteTemplates.add(routeWithSingleGroup);
 
           dynamicRoutes.add(
-            groupRoute
+            routeWithSingleGroup
               .replaceAll(CATCH_ALL, '${CatchAllSlug<T>}')
               .replaceAll(SLUG, '${SafeSlug<T>}')
           );
         } else {
-          staticRoutes.add(groupRoute);
+          staticRoutes.add(routeWithSingleGroup);
         }
       }
     }
@@ -101,7 +101,7 @@ export async function setupTypedRoutes({ server, metro, typesDirectory }: SetupT
       }
 
       addFilePath(filePath);
-      regenerateRouterDotTS(typesDirectory, staticRoutes, dynamicRoutes, routesParams);
+      regenerateRouterDotTS(typesDirectory, staticRoutes, dynamicRoutes, dynamicRouteTemplates);
     }
   );
 
@@ -109,7 +109,7 @@ export async function setupTypedRoutes({ server, metro, typesDirectory }: SetupT
   // Idea: Store the list of files in the last write, then simply check Git for what files have changed
   await walk(appRoot, addFilePath);
 
-  regenerateRouterDotTS(typesDirectory, staticRoutes, dynamicRoutes, routesParams);
+  regenerateRouterDotTS(typesDirectory, staticRoutes, dynamicRoutes, dynamicRouteTemplates);
 }
 
 /**
@@ -121,21 +121,14 @@ const regenerateRouterDotTS = debounce(
     typesDir: string,
     staticRoutes: Set<string>,
     dynamicRoutes: Set<string>,
-    routesParams: Map<string, Set<string>>
+    dynamicRouteTemplates: Set<string>
   ) => {
-    // const dynamicRouteParams = [...routesParams]
-    //   .map(([route, paramNames]) => {
-    //     const params = [...paramNames].map((name) => `${name}: string`).join(';');
-    //     return `[\`${route}\`, { ${params} }]`;
-    //   })
-    //   .join(' | ');
-
     fs.writeFile(
       path.resolve(typesDir, './router.d.ts'),
       routerDotTSTemplate({
         staticRoutes: setToType(staticRoutes),
         dynamicRoutes: setToType(dynamicRoutes),
-        dynamicRouteParams: mapToType(routesParams),
+        dynamicRouteParams: setToType(dynamicRouteTemplates),
       })
     );
   },
@@ -149,23 +142,6 @@ const regenerateRouterDotTS = debounce(
  */
 const setToType = <T>(set: Set<T>) =>
   set.size > 0 ? [...set].map((s) => `\`${s}\``).join(' | ') : 'never';
-
-/**
- * Convert a map to a Record type.
- * @example setToType(new Set(['a', 'b'])) => 'a | b'
- * @example setToType() => 'never'
- */
-const mapToType = <K, V>(map: Map<K, Set<V>>) => {
-  if (map.size === 0) return 'never';
-
-  const inner = [...map]
-    .map(([key, value]) => {
-      return `    '${key}': ${setToType(value)}`;
-    })
-    .join(';\n');
-
-  return `{\n${inner}\n  }`;
-};
 
 /**
  * Recursively walk a directory and call the callback with the file path.
@@ -210,10 +186,13 @@ const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
   import type { LinkProps as OriginalLinkProps } from "expo-router/build/link/Link";
   export * from "expo-router/build";
 
+  type StaticRoutes = ${'staticRoutes'}
+  type DynamicRoutes<T extends string> = ${'dynamicRoutes'}
+  type DynamicRouteTemplate = ${'dynamicRouteParams'} 
+
   type SearchOrHash = \`?\${string}\` | \`#\${string}\`;
 
-
-  type PathString = \`./\${string}\` | \`/\${string}\`;
+  type RelativePathString = \`./\${string}\` | \`../\${string}\`;
 
   type Suffix = "" | SearchOrHash;
 
@@ -223,53 +202,65 @@ const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
     ? never
     : S extends ""
     ? never
-    : S extends \`[\${string}]\`
-    ? never
     : S;
 
   type CatchAllSlug<S extends string> = S extends \`\${string}\${SearchOrHash}\`
     ? never
     : S extends ""
     ? never
-    : S extends \`[\${string}]\`
-    ? never
     : S;
 
-  type StaticRoutes = ${'staticRoutes'}
-  type DynamicRoutes<T extends string> = ${'dynamicRoutes'}
-  type DynamicRouteParams = ${'dynamicRouteParams'} 
+  type InvaildPartialSlug = | \`\${string | never}\${'[' | ']'}\${string | never}\`
 
-  type Route<T> = T extends keyof DynamicRouteParams
+  type IsParameter<Part> = Part extends \`[\${infer ParamName}]\`
+    ? ParamName
+    : never;
+
+  type FilteredParts<Path> = Path extends \`\${infer PartA}/\${infer PartB}\`
+    ? IsParameter<PartA> | FilteredParts<PartB>
+    : IsParameter<Path>;
+
+  type RouteParams<Path> = {
+    [Key in FilteredParts<Path> as Key extends \`...\${infer Name}\` ? Name : Key]: 
+      Key extends \`...\${string}\` ? string[] : string;
+  };
+
+  type Route<T> = T extends DynamicRouteTemplate
     ? never
-    : StaticRoutes
-      | \`\${StaticRoutes}\${Suffix}\`
-      | (T extends \`\${DynamicRoutes<infer _>}\${Suffix}\` ? T : never)
+    :
+        | StaticRoutes
+        | \`\${StaticRoutes}\${Suffix}\`
+        | (T extends \`\${DynamicRoutes<infer P>}\${Suffix}\`
+            ? P extends InvaildPartialSlug
+              ? never
+              : T
+            : never);
 
-  export type Href<T extends string> = Route<T> | HrefObject<T>;
+  export type Href<T> = Route<T> | HrefObject<T>;
 
   export type HrefObject<T> = {
-    pathname: Route<T> | keyof DynamicRouteParams;
+    pathname: Route<T> | DynamicRouteTemplate | RelativePathString;
   } & HrefObjectParams<T>;
 
-  type HrefObjectParams<T> = T extends { pathname: infer I }
-    ? I extends keyof DynamicRouteParams
-      ? { params: Record<DynamicRouteParams[I], string> }
-      : unknown
+  type HrefObjectParams<T> = T extends RelativePathString
+    ? { params?: Record<string, string> }
+    : T extends { pathname: DynamicRouteTemplate & infer I }
+    ? { params: RouteParams<I> }
     : unknown;
 
-  export interface LinkProps<T extends string = ""> extends OriginalLinkProps {
+  export interface LinkProps<T> extends OriginalLinkProps {
     href: Href<T>;
   }
 
   export interface LinkComponent {
-    <T extends string>(props: React.PropsWithChildren<LinkProps<T>>): JSX.Element;
+    <T>(props: React.PropsWithChildren<LinkProps<T>>): JSX.Element;
     /** Helper method to resolve an Href object into a string. */
-    resolveHref: <T extends string>(href: Href<T>) => string;
+    resolveHref: <T>(href: Href<T>) => string;
   }
 
   export const Link: LinkComponent;
 
-  export type Router<T extends string = never> = {
+  export type Router<T> = {
     /** Navigate to the provided href. */
     push: (href: Href<T>) => void;
     /** Navigate to route without appending to the history. */
@@ -277,9 +268,9 @@ const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
     /** Go back in the history. */
     back: () => void;
     /** Update the current route query params. */
-    setParams: <T extends keyof DynamicRouteParams = keyof DynamicRouteParams>(params?: DynamicRouteParams[T]) => void;
+    setParams: <T extends string = ''>(params?: T extends '' ? Record<string, string> : RouteParams<T>) => void;
   };
 
-  export function useRouter<T extends string>(): Router<T>
+  export function useRouter<T>(): Router<T>
 }
 `;
