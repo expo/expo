@@ -6,6 +6,7 @@ class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
   private static let REQUEST_ID = "EXDevLauncherRequestLoggerProtocol.requestId"
   private static let REDIRECT_RESPONSE = "EXDevLauncherRequestLoggerProtocol.redirectResponse"
   private static let MAX_BODY_SIZE = 1_048_576
+  private static var requestIdProvider = RequestIdProvider()
   private lazy var urlSession = URLSession(
     configuration: URLSessionConfiguration.default,
     delegate: self,
@@ -45,7 +46,7 @@ class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
       forKey: EXDevLauncherRequestLoggerProtocol.REDIRECT_RESPONSE,
       in: request
     ) as? RedirectResponse
-    let requestId = redirectResponse?.requestId ?? UUID().uuidString
+    let requestId = redirectResponse?.requestId ?? EXDevLauncherRequestLoggerProtocol.requestIdProvider.create()
     URLProtocol.setProperty(
       requestId,
       forKey: EXDevLauncherRequestLoggerProtocol.REQUEST_ID,
@@ -151,8 +152,25 @@ class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
     completionHandler(redirectRequest)
   }
 
+  /**
+   Data structure to save the response for redirection
+   */
   private struct RedirectResponse {
     let requestId: String
     let redirectResponse: HTTPURLResponse
+  }
+
+  /**
+   A helper class to create a unique request ID
+   */
+  private struct RequestIdProvider {
+    private var value: UInt64 = 0
+
+    mutating func create() -> String {
+      // We could ensure the increment thread safety,
+      // because we access this function from the same thread (com.apple.CFNetwork.CustomProtocols).
+      value += 1
+      return String(value)
+    }
   }
 }
