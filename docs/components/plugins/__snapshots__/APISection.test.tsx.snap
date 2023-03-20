@@ -4396,7 +4396,7 @@ OAuth 2.0 protocol
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         AppleAuthenticationButtonStyle.WHITE ＝ 0
@@ -4464,7 +4464,7 @@ OAuth 2.0 protocol
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         AppleAuthenticationButtonStyle.WHITE_OUTLINE ＝ 1
@@ -4532,7 +4532,7 @@ OAuth 2.0 protocol
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         AppleAuthenticationButtonStyle.BLACK ＝ 2
@@ -4674,7 +4674,7 @@ OAuth 2.0 protocol
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         AppleAuthenticationButtonType.SIGN_IN ＝ 0
@@ -4742,7 +4742,7 @@ OAuth 2.0 protocol
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         AppleAuthenticationButtonType.CONTINUE ＝ 1
@@ -4843,7 +4843,7 @@ OAuth 2.0 protocol
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         AppleAuthenticationButtonType.SIGN_UP ＝ 2
@@ -5038,7 +5038,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         AppleAuthenticationCredentialState.REVOKED ＝ 0
@@ -5100,7 +5100,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         AppleAuthenticationCredentialState.AUTHORIZED ＝ 1
@@ -5162,7 +5162,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         AppleAuthenticationCredentialState.NOT_FOUND ＝ 2
@@ -5224,7 +5224,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         AppleAuthenticationCredentialState.TRANSFERRED ＝ 3
@@ -5342,7 +5342,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         AppleAuthenticationOperation.IMPLICIT ＝ 0
@@ -5410,7 +5410,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         AppleAuthenticationOperation.LOGIN ＝ 1
@@ -5472,7 +5472,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         AppleAuthenticationOperation.REFRESH ＝ 2
@@ -5534,7 +5534,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         AppleAuthenticationOperation.LOGOUT ＝ 3
@@ -5767,7 +5767,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         AppleAuthenticationScope.FULL_NAME ＝ 0
@@ -5829,7 +5829,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         AppleAuthenticationScope.EMAIL ＝ 1
@@ -6006,7 +6006,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         AppleAuthenticationUserDetectionStatus.UNSUPPORTED ＝ 0
@@ -6074,7 +6074,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         AppleAuthenticationUserDetectionStatus.UNKNOWN ＝ 1
@@ -6142,7 +6142,7 @@ for more details.
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         AppleAuthenticationUserDetectionStatus.LIKELY_REAL ＝ 2
@@ -9578,7 +9578,7 @@ you don't get this value.
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         PermissionStatus.DENIED ＝ "denied"
@@ -9646,7 +9646,7 @@ you don't get this value.
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         PermissionStatus.GRANTED ＝ "granted"
@@ -9714,7 +9714,7 @@ you don't get this value.
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         PermissionStatus.UNDETERMINED ＝ "undetermined"
@@ -11642,7 +11642,7 @@ in order to enable/disable the permission.
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         PermissionStatus.DENIED ＝ "denied"
@@ -11710,7 +11710,7 @@ in order to enable/disable the permission.
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         PermissionStatus.GRANTED ＝ "granted"
@@ -11778,7 +11778,7 @@ in order to enable/disable the permission.
         </a>
       </h4>
       <code
-        class="css-1s1f2t0-TextComponent"
+        class="mb-4 css-172xos-TextComponent"
         data-text="true"
       >
         PermissionStatus.UNDETERMINED ＝ "undetermined"

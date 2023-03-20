@@ -51,7 +51,7 @@ const Home = () => {
   return (
     <ScreenClassProvider>
       <DocumentationPage tocVisible={false} hideFromSearch>
-        <div css={imageMasksContainerStyle}>
+        <div className="h-0">
           <DevicesImageMasks />
           <CodecademyImageMasks />
         </div>
@@ -255,7 +255,6 @@ export function JoinTheCommunity() {
             description="View our SDK, submit a PR, or report an issue."
             link="https://github.com/expo/expo"
             icon={<GithubIcon className="icon-lg text-palette-white" />}
-            css={communityCellStyle}
           />
           <CommunityGridCell
             title="Discord"
@@ -263,7 +262,6 @@ export function JoinTheCommunity() {
             link="https://chat.expo.dev"
             icon={<DiscordIcon className="icon-lg text-palette-white" />}
             iconBackground="#3131E8"
-            css={communityCellStyle}
           />
         </Row>
         <Row>
@@ -273,14 +271,12 @@ export function JoinTheCommunity() {
             link="https://twitter.com/expo"
             icon={<TwitterIcon className="icon-lg text-palette-white" />}
             iconBackground="#1E8EF0"
-            css={communityCellStyle}
           />
           <CommunityGridCell
             title="Forums"
             description="Ask or answer a question on the forums."
             link="https://forums.expo.dev/"
             icon={<DiscourseIcon className="icon-lg text-palette-white" />}
-            css={communityCellStyle}
           />
         </Row>
         <Row>
@@ -290,7 +286,6 @@ export function JoinTheCommunity() {
             link="https://www.reddit.com/r/expo"
             icon={<RedditIcon className="icon-lg text-palette-white" />}
             iconBackground="#FC471E"
-            css={communityCellStyle}
           />
         </Row>
       </CellContainer>
@@ -336,14 +331,6 @@ const tutorialCellStyle = css({
   [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
     minHeight: 200,
   },
-});
-
-const imageMasksContainerStyle = css({
-  height: 0,
-});
-
-const communityCellStyle = css({
-  minHeight: 'unset',
 });
 
 export default Home;

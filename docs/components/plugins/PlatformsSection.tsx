@@ -1,16 +1,9 @@
-import { css } from '@emotion/react';
 import { StatusWaitingIcon } from '@expo/styleguide-icons';
 
 import { ElementType } from '~/types/common';
 import { NoIcon, YesIcon } from '~/ui/components/DocIcons';
 import { Cell, HeaderCell, Row, Table, TableHead, TableLayout } from '~/ui/components/Table';
 import { A, H4 } from '~/ui/components/Text';
-
-const STYLES_LINK = css`
-  display: grid;
-  grid-template-columns: 20px auto;
-  grid-gap: 8px;
-`;
 
 const platforms = [
   { title: 'Android Device', propName: 'android' },
@@ -32,7 +25,7 @@ function getInfo(isSupported: IsSupported, { title }: Platform) {
   } else if (typeof isSupported === 'object') {
     return {
       children: (
-        <A css={STYLES_LINK} href={isSupported.pending}>
+        <A className="grid gap-2 grid-cols-[20px_auto]" href={isSupported.pending}>
           <StatusWaitingIcon className="icon-md text-icon-info" /> Pending
         </A>
       ),
