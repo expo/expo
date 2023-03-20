@@ -509,4 +509,30 @@ class JSIFunctionsTest {
     Truth.assertThat(result2).isEqualTo("expo")
     Truth.assertThat(result3).isEqualTo("expo")
   }
+
+  @Test
+  fun complex_types_should_be_convertible() {
+    @Suppress("EqualsOrHashCode")
+    data class InlineRecord(@Field var name: String = "") : Record
+
+    withJSIInterop(
+      inlineModule {
+        Name("TestModule")
+        Function("list") { listOfRecords: List<InlineRecord> ->
+          Truth.assertThat(listOfRecords).contains(InlineRecord("expo"))
+          Truth.assertThat(listOfRecords).contains(InlineRecord("is"))
+          Truth.assertThat(listOfRecords).contains(InlineRecord("awesome"))
+          Truth.assertThat(listOfRecords).hasSize(3)
+        }
+        Function("map") { mapOfRecords: Map<String, InlineRecord> ->
+          Truth.assertThat(mapOfRecords).containsEntry("k1", InlineRecord("k1"))
+          Truth.assertThat(mapOfRecords).containsEntry("k2", InlineRecord("k2"))
+          Truth.assertThat(mapOfRecords).hasSize(2)
+        }
+      }
+    ) {
+      evaluateScript("expo.modules.TestModule.list([{ name: 'expo' }, { name: 'is' }, { name: 'awesome' }])")
+      evaluateScript("expo.modules.TestModule.map({ k1: { name: 'k1' }, k2: { name: 'k2' }})")
+    }
+  }
 }
