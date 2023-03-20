@@ -46,6 +46,8 @@ class EitherTypeConverter<FirstType : Any, SecondType : Any>(
   }
 
   override fun getCppRequiredTypes(): ExpectedType = firstType + secondType
+
+  override fun isTrivial(): Boolean = false
 }
 
 @EitherType
