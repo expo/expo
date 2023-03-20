@@ -21,6 +21,16 @@ To use AuthSession API, you'll need to install the following packages in your pr
 
 <Terminal cmd={['$ npx expo install expo-auth-session expo-crypto expo-web-browser']} />
 
+<Collapsible summary="Using SDK 47 or below?">
+
+If you are using SDK 47 or below, you'll need to install `expo-random` instead of `expo-crypto` package:
+
+<Terminal cmd={['$ npx expo install expo-auth-session expo-random expo-web-browser']} />
+
+`expo-random` is deprecated from SDK 48 and above and is replaced by `expo-crypto`.
+
+</Collapsible>
+
 </Step>
 
 <Step label="2">
