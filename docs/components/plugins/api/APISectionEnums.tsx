@@ -1,6 +1,4 @@
 import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
-import { spacing } from '@expo/styleguide-base';
 
 import { EnumDefinitionData, EnumValueData } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
@@ -46,7 +44,7 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
         <H4 css={enumValueNameStyle}>
           <CODE>{enumValue.name}</CODE>
         </H4>
-        <CODE css={enumValueStyles}>
+        <CODE theme="secondary" className="mb-4">
           {`${name}.${enumValue.name} ＝ ${renderEnumValue(enumValue.type.value)}`}
         </CODE>
         <CommentTextBlock comment={enumValue.comment} includePlatforms={false} />
@@ -67,14 +65,6 @@ const enumValueNameStyle = css({
   h4: {
     marginTop: 0,
   },
-});
-
-const enumValueStyles = css({
-  display: 'inline-block',
-  padding: `0 ${spacing[2]}px`,
-  color: theme.text.secondary,
-  fontSize: '75%',
-  marginBottom: spacing[4],
 });
 
 const enumContentStyles = css({
