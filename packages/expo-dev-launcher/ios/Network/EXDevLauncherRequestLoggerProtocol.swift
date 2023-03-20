@@ -4,6 +4,7 @@
 @objc
 class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
   private static let REQUEST_ID = "EXDevLauncherRequestLoggerProtocol.requestId"
+  private static let REDIRECT_RESPONSE = "EXDevLauncherRequestLoggerProtocol.redirectResponse"
   private static let MAX_BODY_SIZE = 1_048_576
   private lazy var urlSession = URLSession(
     configuration: URLSessionConfiguration.default,
@@ -40,7 +41,11 @@ class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
     // swiftlint:disable force_cast
     let mutableRequest = request as! MutableURLRequest
     // swiftlint:enable force_cast
-    let requestId = UUID().uuidString
+    let redirectResponse = URLProtocol.property(
+      forKey: EXDevLauncherRequestLoggerProtocol.REDIRECT_RESPONSE,
+      in: request
+    ) as? RedirectResponse
+    let requestId = redirectResponse?.requestId ?? UUID().uuidString
     URLProtocol.setProperty(
       requestId,
       forKey: EXDevLauncherRequestLoggerProtocol.REQUEST_ID,
@@ -48,7 +53,8 @@ class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
     )
     EXDevLauncherNetworkLogger.shared.emitNetworkWillBeSent(
       request: mutableRequest as URLRequest,
-      requestId: requestId
+      requestId: requestId,
+      redirectResponse: redirectResponse?.redirectResponse
     )
     dataTask_ = urlSession.dataTask(with: mutableRequest as URLRequest)
   }
@@ -125,7 +131,7 @@ class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
     completionHandler: @escaping (URLRequest?) -> Void
   ) {
     let redirectRequest: URLRequest
-    if URLProtocol.property(forKey: EXDevLauncherRequestLoggerProtocol.REQUEST_ID, in: request) != nil {
+    if let requestId = URLProtocol.property(forKey: EXDevLauncherRequestLoggerProtocol.REQUEST_ID, in: request) as? String {
       // swiftlint:disable force_cast
       let mutableRequest = request as! MutableURLRequest
       // swiftlint:enable force_cast
@@ -133,11 +139,20 @@ class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
         forKey: EXDevLauncherRequestLoggerProtocol.REQUEST_ID,
         in: mutableRequest
       )
+      URLProtocol.setProperty(
+        RedirectResponse(requestId: requestId, redirectResponse: response),
+        forKey: EXDevLauncherRequestLoggerProtocol.REDIRECT_RESPONSE,
+        in: mutableRequest
+      )
       redirectRequest = mutableRequest as URLRequest
     } else {
       redirectRequest = request
     }
     completionHandler(redirectRequest)
-    client?.urlProtocol(self, wasRedirectedTo: redirectRequest, redirectResponse: response)
+  }
+
+  private struct RedirectResponse {
+    let requestId: String
+    let redirectResponse: HTTPURLResponse
   }
 }
