@@ -2,6 +2,7 @@ import { requireNativeModule, requireNativeViewManager } from 'expo-modules-core
 import React from 'react';
 import { View, StyleSheet, findNodeHandle } from 'react-native';
 import { getAndroidTintColor } from './getBackgroundColor';
+const ExpoBlurView = requireNativeModule('ExpoBlurView');
 class BlurView extends React.Component {
     blurViewRef = React.createRef();
     /**
@@ -22,13 +23,12 @@ class BlurView extends React.Component {
         // Save the reference to the original method already bound to the proper calling context
         const originalSetNativeProps = view.setNativeProps.bind(view);
         // Override `setNativeProps` (https://reactnative.dev/docs/animations#setnativeprops)
-        view.setNativeProps = ({ tint, intensity, ...nativeProps }) => {
-            const ExpoBlurView = requireNativeModule('ExpoBlurView');
+        view.setNativeProps = ({ tint, intensity, blurReductionFactor, ...nativeProps }) => {
             // Call the original method with all View-based props
             view && originalSetNativeProps(nativeProps);
             // Invoke `setNativeProps` native expo method defined by `ExpoBlurView` module
             this.blurViewRef.current &&
-                ExpoBlurView.setNativeProps({ tint, intensity }, findNodeHandle(this.blurViewRef.current));
+                ExpoBlurView.setNativeProps({ tint, intensity, blurReductionFactor }, findNodeHandle(this.blurViewRef.current));
         };
         // mimic `forwardedRef` logic
         if (typeof this.props.forwardedRef === 'function') {

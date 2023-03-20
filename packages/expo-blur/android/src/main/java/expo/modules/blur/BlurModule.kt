@@ -1,5 +1,7 @@
 package expo.modules.blur
 
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 
@@ -8,8 +10,6 @@ class BlurModule : Module() {
     Name("ExpoBlurView")
 
     View(ExpoBlurView::class) {
-
-      // Defines a setter for the `name` prop.
       Prop("intensity") { view: ExpoBlurView, intensity: Float ->
         view.setBlurRadius(intensity)
       }
@@ -22,5 +22,20 @@ class BlurModule : Module() {
         view.applyBlurReduction(blurReductionFactor)
       }
     }
+
+    AsyncFunction("setNativeProps") { props: BlurModuleOptions, viewTag: Int ->
+      val view = appContext.findView<ExpoBlurView>(viewTag)
+        ?: throw Exceptions.ViewNotFound(ExpoBlurView::class, viewTag)
+
+      props.blurReductionFactor?.let {
+        view.applyBlurReduction(it)
+      }
+      props.intensity?.let {
+        view.setBlurRadius(it)
+      }
+      props.tintColor?.let {
+        view.setTint(it)
+      }
+    }.runOnQueue(Queues.MAIN)
   }
 }
