@@ -1,6 +1,6 @@
 {
   "name": "expo-dev-menu",
-  "version": "2.1.3",
+  "version": "2.1.4",
   "description": "Expo/React Native module with the developer menu.",
   "main": "build/DevMenu.js",
   "types": "build/DevMenu.d.ts",

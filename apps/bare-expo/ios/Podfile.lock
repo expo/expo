@@ -45,30 +45,30 @@ PODS:
     - ExpoModulesCore
   - EXManifests (0.5.2):
     - EXJSONUtils
-  - EXMediaLibrary (15.2.2):
+  - EXMediaLibrary (15.2.3):
     - ExpoModulesCore
     - React-Core
   - EXNotifications (0.18.1):
     - ExpoModulesCore
   - EXPermissions (14.1.1):
     - ExpoModulesCore
-  - Expo (48.0.6):
+  - Expo (48.0.7):
     - ExpoModulesCore
-  - expo-dev-client (2.1.5):
+  - expo-dev-client (2.1.6):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (2.1.5):
+  - expo-dev-launcher (2.1.6):
     - EXManifests
-    - expo-dev-launcher/Main (= 2.1.5)
+    - expo-dev-launcher/Main (= 2.1.6)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Main (2.1.5):
+  - expo-dev-launcher/Main (2.1.6):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -76,24 +76,24 @@ PODS:
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Unsafe (2.1.5):
+  - expo-dev-launcher/Unsafe (2.1.6):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-menu (2.1.3):
-    - expo-dev-menu/Main (= 2.1.3)
+  - expo-dev-menu (2.1.4):
+    - expo-dev-menu/Main (= 2.1.4)
   - expo-dev-menu-interface (1.1.1)
-  - expo-dev-menu/GestureHandler (2.1.3)
-  - expo-dev-menu/Main (2.1.3):
+  - expo-dev-menu/GestureHandler (2.1.4)
+  - expo-dev-menu/Main (2.1.4):
     - EXManifests
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - ExpoModulesCore
     - React-Core
-  - expo-dev-menu/Reanimated (2.1.3):
+  - expo-dev-menu/Reanimated (2.1.4):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -121,16 +121,16 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/SafeAreaView (2.1.3)
-  - expo-dev-menu/Tests (2.1.3):
+  - expo-dev-menu/SafeAreaView (2.1.4)
+  - expo-dev-menu/Tests (2.1.4):
     - ExpoModulesTestCore
     - Nimble
     - Quick
     - React-CoreModules
-  - expo-dev-menu/UITests (2.1.3):
+  - expo-dev-menu/UITests (2.1.4):
     - React
     - React-CoreModules
-  - expo-dev-menu/Vendored (2.1.3):
+  - expo-dev-menu/Vendored (2.1.4):
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/Reanimated
     - expo-dev-menu/SafeAreaView
@@ -180,7 +180,7 @@ PODS:
     - ExpoModulesCore
     - GoogleMaps (= 7.1.0)
     - GooglePlaces (= 7.1.0)
-  - ExpoModulesCore (1.2.4):
+  - ExpoModulesCore (1.2.5):
     - React-Core
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
@@ -1230,13 +1230,13 @@ SPEC CHECKSUMS:
   EXJSONUtils: 48b1e764ac35160e6f54d21ab60d7d9501f3e473
   EXLocation: 74a0ba446f54fd585ea6cfcd19a25644bf22c30d
   EXManifests: 500666d48e8dd7ca5a482c9e729e4a7a6c34081b
-  EXMediaLibrary: 792fe9b828b5bfa2c5a8b629730f175af2938285
+  EXMediaLibrary: 587cd8aad27a6fc8d7c38b950bc75bc1845a7480
   EXNotifications: dd628737af60fc8cc62dccebacd326b0fbbc0dcb
   EXPermissions: 2291c6736a823b4c680d5bf8e12d3c1c5d11da35
-  Expo: 04ba1ddde0be07aff4306ae636a1804810679145
-  expo-dev-client: 7c1ef51516853465f4d448c14ddf365167d20361
-  expo-dev-launcher: 90de99d9e5d1a883d81355ca10e87c2f3c81d46e
-  expo-dev-menu: 326f4f788c76c2c61eb750f36a66d6b08c7447d0
+  Expo: 707f9b0039eacc6a1dce90c08c9e37b9c417bba2
+  expo-dev-client: 84792ce20d34fa5c882cdc3ca338ea1b2cde5013
+  expo-dev-launcher: c50f1b78ea294f5762902b768952898d17739983
+  expo-dev-menu: 4deda3fc9488eb820f7dada1068da6b8381918db
   expo-dev-menu-interface: 6c82ae323c4b8724dead4763ce3ff24a2108bdb1
   ExpoAppleAuthentication: 7bd5e4150d59e8df37aa80b425850ae88adf9e65
   ExpoBattery: 678d2b710a8fc398c30258c4dc22c12340ee5411
@@ -1257,7 +1257,7 @@ SPEC CHECKSUMS:
   ExpoLocalization: f26cd431ad9ea3533c5b08c4fabd879176a794bb
   ExpoMailComposer: 0085b258d00ba40664f7acb40d96042b29a1da7d
   ExpoMaps: be6983038f20ab7d6c953cda7aa48f81713896d3
-  ExpoModulesCore: 1667335d4f4c9b7801990930e6f0eea42c916a21
+  ExpoModulesCore: 397fc99e9d6c9dcc010f36d5802097c17b90424c
   ExpoModulesTestCore: faf43ba18dd6809d2e91567260e132b385a5842e
   ExpoNetwork: 242fe1bd68bfe744a2f69fccfe4bfe1d89d1e790
   ExpoRandom: 7ee07d62e7003b74d0536e0495e3a653fe1b2a74
