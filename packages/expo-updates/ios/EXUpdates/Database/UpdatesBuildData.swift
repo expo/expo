@@ -26,7 +26,7 @@ import Foundation
  *   EXUpdatesRequestHeaders
  */
 internal final class UpdatesBuildData {
-  public static func ensureBuildDataIsConsistentAsync(database: UpdatesDatabase, config: UpdatesConfig) {
+  static func ensureBuildDataIsConsistentAsync(database: UpdatesDatabase, config: UpdatesConfig) {
     database.databaseQueue.async {
       guard let scopeKey = config.scopeKey else {
         NSException(
@@ -62,7 +62,7 @@ internal final class UpdatesBuildData {
     }
   }
 
-  public static func getBuildDataFromConfig(_ config: UpdatesConfig) -> [String: Any] {
+  static func getBuildDataFromConfig(_ config: UpdatesConfig) -> [String: Any] {
     return [
       "EXUpdatesURL": config.updateUrl.require("Must supply updateUrl in config").absoluteString,
       "EXUpdatesReleaseChannel": config.releaseChannel,
@@ -70,7 +70,7 @@ internal final class UpdatesBuildData {
     ]
   }
 
-  public static func clearAllUpdatesAndSetStaticBuildData(database: UpdatesDatabase, config: UpdatesConfig, scopeKey: String) {
+  static func clearAllUpdatesAndSetStaticBuildData(database: UpdatesDatabase, config: UpdatesConfig, scopeKey: String) {
     let allUpdates: [Update]
     do {
       allUpdates = try database.allUpdates(withConfig: config)

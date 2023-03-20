@@ -11,10 +11,10 @@ internal final class RemoteAppLoader: AppLoader {
   private static let ErrorDomain = "EXUpdatesRemoteAppLoader"
 
   private let downloader: FileDownloader
-  private var remoteUpdate: Update?
+  private var remoteUpdateResponse: UpdateResponse?
   private let completionQueue: DispatchQueue
 
-  public required init(
+  required init(
     config: UpdatesConfig,
     database: UpdatesDatabase,
     directory: URL,
@@ -26,35 +26,37 @@ internal final class RemoteAppLoader: AppLoader {
     super.init(config: config, database: database, directory: directory, launchedUpdate: launchedUpdate, completionQueue: completionQueue)
   }
 
-  override public func loadUpdate(
+  override func loadUpdate(
     fromURL url: URL,
-    onManifest manifestBlockArg: @escaping AppLoaderManifestBlock,
+    onUpdateResponse updateResponseBlockArg: @escaping AppLoaderUpdateResponseBlock,
     asset assetBlockArg: @escaping AppLoaderAssetBlock,
     success successBlockArg: @escaping AppLoaderSuccessBlock,
     error errorBlockArg: @escaping AppLoaderErrorBlock
   ) {
-    self.manifestBlock = manifestBlockArg
+    self.updateResponseBlock = updateResponseBlockArg
     self.assetBlock = assetBlockArg
     self.errorBlock = errorBlockArg
 
-    self.successBlock = { [weak self] (update: Update?) in
+    self.successBlock = { [weak self] (updateResponse: UpdateResponse?) in
       guard let strongSelf = self else {
         return
       }
       // even if update is nil (meaning we didn't load a new update),
-      // we want to persist the header data from _remoteUpdate
-      if let remoteUpdate = strongSelf.remoteUpdate {
+      // we want to persist the header data from remoteUpdateResponse
+      if let remoteUpdateResponse = strongSelf.remoteUpdateResponse,
+        let responseHeaderData = remoteUpdateResponse.responseHeaderData {
         strongSelf.database.databaseQueue.async {
           do {
-            try strongSelf.database.setMetadata(withManifest: remoteUpdate)
-            successBlockArg(update)
+            // swiftlint:disable:next force_unwrapping
+            try strongSelf.database.setMetadata(withResponseHeaderData: responseHeaderData, scopeKey: strongSelf.config.scopeKey!)
+            successBlockArg(updateResponse)
           } catch {
             NSLog("Error persisting header data to disk: %@", error.localizedDescription)
             errorBlockArg(error)
           }
         }
       } else {
-        successBlockArg(update)
+        successBlockArg(updateResponse)
       }
     }
 
@@ -66,13 +68,13 @@ internal final class RemoteAppLoader: AppLoader {
         launchedUpdate: self.launchedUpdate,
         embeddedUpdate: embeddedUpdate
       )
-      self.downloader.downloadManifest(
+      self.downloader.downloadRemoteUpdate(
         fromURL: url,
         withDatabase: self.database,
         extraHeaders: extraHeaders
-      ) { update in
-        self.remoteUpdate = update
-        self.startLoading(fromManifest: update)
+      ) { updateResponse in
+        self.remoteUpdateResponse = updateResponse
+        self.startLoading(fromUpdateResponse: updateResponse)
       } errorBlock: { error in
         self.errorBlock.let { it in
           it(error)
@@ -81,7 +83,7 @@ internal final class RemoteAppLoader: AppLoader {
     }
   }
 
-  override public func downloadAsset(_ asset: UpdateAsset) {
+  override func downloadAsset(_ asset: UpdateAsset) {
     let urlOnDisk = self.directory.appendingPathComponent(asset.filename)
 
     FileDownloader.assetFilesQueue.async {

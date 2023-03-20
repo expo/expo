@@ -60,7 +60,7 @@ export const selectPackagesToPublish = new Task<TaskArgs>(
           const dependencies = await createParcelsForDependenciesOf(dependents);
 
           // The dependencies must precede the dependents to select them first.
-          return new Set<Parcel>([...dependencies, ...parcels]);
+          return new Set<Parcel>([...dependencies, ...dependents]);
         },
         'Collected changes in the dependent packages'
       );

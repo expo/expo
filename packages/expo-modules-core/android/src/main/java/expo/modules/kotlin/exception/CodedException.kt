@@ -7,6 +7,12 @@ import kotlin.reflect.KClass
 import kotlin.reflect.KProperty1
 import kotlin.reflect.KType
 
+@Suppress("NOTHING_TO_INLINE")
+inline fun Throwable.toCodedException() = when (this) {
+  is CodedException -> this
+  else -> UnexpectedException(this)
+}
+
 /**
  * A class for errors specifying its `code` and providing the `description`.
  */
@@ -145,10 +151,18 @@ internal class PropSetException(
   cause,
 )
 
+internal class OnViewDidUpdatePropsException(
+  viewType: KClass<*>,
+  cause: CodedException
+) : DecoratedException(
+  message = "Error occurred when invoking 'onViewDidUpdateProps' on '${viewType.simpleName}'",
+  cause
+)
+
 internal class ArgumentCastException(
   argDesiredType: KType,
   argIndex: Int,
-  providedType: ReadableType,
+  providedType: String,
   cause: CodedException,
 ) : DecoratedException(
   message = "The ${formatOrdinalNumber(argIndex + 1)} argument cannot be cast to type $argDesiredType (received $providedType)",
