@@ -34,8 +34,8 @@ declare global {
  */
 export function requireNativeModule<ModuleType = any>(moduleName: string): ModuleType {
   const nativeModule: ModuleType =
-    global.expo?.modules?.[moduleName] ??
-    global.ExpoModules?.[moduleName] ??
+    globalThis.expo?.modules?.[moduleName] ??
+    globalThis.ExpoModules?.[moduleName] ??
     NativeModulesProxy[moduleName];
 
   if (!nativeModule) {
