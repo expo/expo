@@ -170,11 +170,9 @@ module.exports = {
     },
     'android.release': {
       type: 'android.apk',
-      /* @info This is project-specific, replace eastestsexample with correct value */
       build:
         'cd android && ./gradlew :app:assembleRelease :app:assembleAndroidTest -DtestBuildType=release && cd ..',
       binaryPath: 'android/app/build/outputs/apk/release/app-release.apk',
-      /* @end */
     },
   },
   devices: {
@@ -402,7 +400,7 @@ When an E2E test case fails, it can be helpful to see the screenshot of the appl
 
 #### Take screenshots for failed tests
 
-Detox supports taking in-test screenshots of the device. The **detox.config.js** sample above includes a line to configure Detox to take screenshots of failed tests.
+Detox supports taking in-test screenshots of the device. The [**detox.config.js** sample](/build-reference/e2e-tests/#configure-detox) above includes a line to configure Detox to take screenshots of failed tests.
 
 #### Configure EAS Build for screenshots upload
 
