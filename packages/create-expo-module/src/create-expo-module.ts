@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import { Command } from 'commander';
 import downloadTarball from 'download-tarball';
 import ejs from 'ejs';
+import { sync } from 'find-up';
 import fs from 'fs-extra';
 import { boolish } from 'getenv';
 import path from 'path';
@@ -23,7 +24,7 @@ import {
 } from './resolvePackageManager';
 import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './telemetry';
 import { CommandOptions, LocalSubstitutionData, SubstitutionData } from './types';
-import { findPackageJson, newStep } from './utils';
+import { newStep } from './utils';
 
 const debug = require('debug')('create-expo-module:main') as typeof console.log;
 const packageJson = require('../package.json');
@@ -49,7 +50,7 @@ const IGNORES_PATHS = [
 const DOCS_URL = 'https://docs.expo.dev/modules';
 
 const getCorrectLocalDirectory = (targetOrSlug: string) => {
-  const packageJsonPath = findPackageJson(CWD);
+  const packageJsonPath = sync('package.json', { cwd: CWD });
   if (!packageJsonPath) {
     console.log(
       chalk.red.bold(

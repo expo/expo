@@ -3,13 +3,11 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.findPackageJson = exports.guessRepoUrl = exports.findGitHubProfileUrl = exports.findGitHubEmail = exports.findMyName = exports.newStep = void 0;
+exports.guessRepoUrl = exports.findGitHubProfileUrl = exports.findGitHubEmail = exports.findMyName = exports.newStep = void 0;
 const chalk_1 = __importDefault(require("chalk"));
 const cross_spawn_1 = __importDefault(require("cross-spawn"));
-const fs_extra_1 = __importDefault(require("fs-extra"));
 const github_username_1 = __importDefault(require("github-username"));
 const ora_1 = __importDefault(require("ora"));
-const path_1 = __importDefault(require("path"));
 async function newStep(title, action, options = {}) {
     const disabled = process.env.CI || process.env.EXPO_DEBUG;
     const step = (0, ora_1.default)({
@@ -77,17 +75,4 @@ async function guessRepoUrl(authorUrl, slug) {
     return '';
 }
 exports.guessRepoUrl = guessRepoUrl;
-function findPackageJson(startDir) {
-    let dir = path_1.default.resolve(startDir || process.cwd());
-    do {
-        const pkgfile = path_1.default.join(dir, 'package.json');
-        if (!fs_extra_1.default.existsSync(pkgfile)) {
-            dir = path_1.default.join(dir, '..');
-            continue;
-        }
-        return pkgfile;
-    } while (dir !== path_1.default.resolve(dir, '..'));
-    return null;
-}
-exports.findPackageJson = findPackageJson;
 //# sourceMappingURL=utils.js.map

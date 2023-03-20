@@ -1,9 +1,8 @@
 import chalk from 'chalk';
 import spawn from 'cross-spawn';
-import fs from 'fs-extra';
 import githubUsername from 'github-username';
 import ora from 'ora';
-import path from 'path';
+
 export type StepOptions = ora.Options;
 
 export async function newStep<Result>(
@@ -73,19 +72,4 @@ export async function guessRepoUrl(authorUrl: string, slug: string) {
     return `${authorUrl}/${normalizedSlug}`;
   }
   return '';
-}
-
-export function findPackageJson(startDir) {
-  let dir = path.resolve(startDir || process.cwd());
-
-  do {
-    const pkgfile = path.join(dir, 'package.json');
-
-    if (!fs.existsSync(pkgfile)) {
-      dir = path.join(dir, '..');
-      continue;
-    }
-    return pkgfile;
-  } while (dir !== path.resolve(dir, '..'));
-  return null;
 }
