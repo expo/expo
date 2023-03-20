@@ -1,5 +1,5 @@
 ---
-title: Custom EAS Build configs
+title: EAS Build custom builds
 description: Learn how to create and use custom workflows with EAS Build by creating custom build configs.
 hideFromSearch: true
 ---
@@ -10,9 +10,9 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { GithubIcon } from '@expo/styleguide-icons';
 
-Custom workflows allow running tests on the cloud, adding instructions for native platforms, resigning a build to share with your team or multiple test devices, and so on. With EAS Build, you can create build configs to customize the process for adding your workflows. It helps saving time especially when working teams.
+Custom workflows allow running tests on the cloud, adding instructions for native platforms, resigning a build to share with your team or multiple test devices, and so on. With EAS Build, you can create build configs to customize the process for adding your workflows. It helps saving time especially when working in teams.
 
-This guide shows how to create and use a custom build config with EAS. It follows a scenario where you create a custom config to run tests on EAS Build. You can also use the defined steps in other scenarios.
+This guide shows how to create and use a custom build config with EAS. It follows a scenario where you create a custom workflow to run tests on EAS Build. You can also use the defined steps in other scenarios.
 
 <Step label="1">
 
@@ -63,9 +63,9 @@ describe('<App />', () => {
 
 ## Create a workflow
 
-You must add a build config file in your project to create a workflow. Create a directory path **.eas/build** at your project's root. Both path and name of both directories are important for EAS Build to identify that a project contains a custom build config.
+You must add a build config file in your project to create a workflow. Create a directory path **.eas/build** at the same level as **eas.json**. For example, if the **eas.json** file is at the root of your project, create the directory at that level. Both path and name of both directories are important for EAS Build to identify that a project contains a custom build config.
 
-Inside it, you can create a new file called **test.yml**. This file contains the workflow steps that you want to run. The file's name is unimportant; you can name it whatever you want. The only requirement is that the file extension uses **.yml**.
+Inside it, you can create a new file called **test.yml**. This file contains the workflow config that you want to run. The filename is unimportant; you can name it whatever you want. The only requirement is that the file extension uses **.yml**.
 
 This file will contain steps to run tests on the EAS Build service. It'll install all the required dependencies from the **package.json** file of your project and execute the `npm test` script.
 
@@ -91,7 +91,7 @@ build:
 
 ## Add `config` property in eas.json
 
-To use the custom build config, you must add the `config` property in **eas.json**. It contains the build config file's name as the value you want to run on the EAS.
+To use the custom build config, you must add the `config` property in **eas.json**. It contains the build config filename as the value you want to run on the EAS.
 
 Let's create a new [build profile](/build/eas-json/#build-profiles) called `test` under `build` to run the custom config from the **test.yml** file:
 
@@ -133,7 +133,7 @@ After the build is complete, you can verify that the `npm test` script was execu
 - If an existing project already has credentials (keystore and distribution certificate), they remain unchanged.
 - If your regular builds have [EAS secrets](/build-reference/variables/#adding-secrets-with-eas-cli), they are also available for custom builds.
 
-Also, check out the **example repository** for a more detailed example:
+Also, check out the **example repository** for more detailed examples:
 
 <BoxLink
   title="Custom build example repository"
