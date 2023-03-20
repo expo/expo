@@ -46,11 +46,37 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
     return object;
   }
 
-  auto hostObject = std::make_shared<JavaScriptModuleObject::HostObject>(this);
-  auto object = std::make_shared<jsi::Object>(
-    jsi::Object::createFromHostObject(runtime, hostObject));
-  jsiObject = object;
-  return object;
+  auto moduleObject = std::make_shared<jsi::Object>(runtime);
+
+  for (const auto &[name, value]: constants) {
+    moduleObject->setProperty(
+      runtime,
+      jsi::String::createFromUtf8(runtime, name),
+      jsi::valueFromDynamic(runtime, value)
+    );
+  }
+
+  for (auto &[name, property]: properties) {
+    auto &[getter, setter] = property;
+
+    auto descriptor = JavaScriptObject::preparePropertyDescriptor(runtime, 1 << 1 /* enumerable */);
+    descriptor.setProperty(runtime, "get", jsi::Value(runtime, *getter.toJSFunction(runtime,
+                                                                                    jsiInteropModuleRegistry)));
+    descriptor.setProperty(runtime, "set", jsi::Value(runtime, *setter.toJSFunction(runtime,
+                                                                                    jsiInteropModuleRegistry)));
+    JavaScriptObject::defineProperty(runtime, moduleObject, name, std::move(descriptor));
+  }
+
+  for (auto &[name, method]: methodsMetadata) {
+    moduleObject->setProperty(
+      runtime,
+      jsi::String::createFromUtf8(runtime, name),
+      jsi::Value(runtime, *method.toJSFunction(runtime, jsiInteropModuleRegistry))
+    );
+  }
+
+  jsiObject = moduleObject;
+  return moduleObject;
 }
 
 void JavaScriptModuleObject::exportConstants(
@@ -136,101 +162,6 @@ void JavaScriptModuleObject::registerProperty(
   );
 
   properties.insert({cName, std::move(functions)});
-}
-
-JavaScriptModuleObject::HostObject::HostObject(
-  JavaScriptModuleObject *jsModule) : jsModule(jsModule) {}
-
-/**
- * Clears all the JSI references held by the `JavaScriptModuleObject`.
- */
-JavaScriptModuleObject::HostObject::~HostObject() {
-  jObjectRef.reset();
-  jsModule->jsiObject.reset();
-  jsModule->methodsMetadata.clear();
-  jsModule->constants.clear();
-  jsModule->properties.clear();
-  jsModule->longLivedObjectCollection_->clear();
-}
-
-jsi::Value JavaScriptModuleObject::HostObject::get(jsi::Runtime &runtime,
-                                                   const jsi::PropNameID &name) {
-  auto cName = name.utf8(runtime);
-
-  auto constantsRecord = jsModule->constants.find(cName);
-  if (constantsRecord != jsModule->constants.end()) {
-    auto dynamic = constantsRecord->second;
-    return jsi::valueFromDynamic(runtime, dynamic);
-  }
-
-  auto propertyRecord = jsModule->properties.find(cName);
-  if (propertyRecord != jsModule->properties.end()) {
-    auto&[getter, _] = propertyRecord->second;
-    return getter.callSync(runtime, jsModule->jsiInteropModuleRegistry, nullptr, 0);
-  }
-
-  auto metadataRecord = jsModule->methodsMetadata.find(cName);
-  if (metadataRecord == jsModule->methodsMetadata.end()) {
-    return jsi::Value::undefined();
-  }
-  auto &metadata = metadataRecord->second;
-  return jsi::Value(runtime, *metadata.toJSFunction(runtime, jsModule->jsiInteropModuleRegistry));
-}
-
-void JavaScriptModuleObject::HostObject::set(
-  jsi::Runtime &runtime,
-  const jsi::PropNameID &name,
-  const jsi::Value &value
-) {
-  auto cName = name.utf8(runtime);
-  auto propertyRecord = jsModule->properties.find(cName);
-  if (propertyRecord != jsModule->properties.end()) {
-    auto&[_, setter] = propertyRecord->second;
-    setter.callSync(runtime, jsModule->jsiInteropModuleRegistry, &value, 1);
-    return;
-  }
-
-  throw jsi::JSError(
-    runtime,
-    "RuntimeError: Cannot override the host object for expo module '" + name.utf8(runtime) + "'"
-  );
-}
-
-std::vector<jsi::PropNameID> JavaScriptModuleObject::HostObject::getPropertyNames(
-  jsi::Runtime &rt
-) {
-  auto &metadata = jsModule->methodsMetadata;
-  std::vector<jsi::PropNameID> result;
-  std::transform(
-    metadata.begin(),
-    metadata.end(),
-    std::back_inserter(result),
-    [&rt](const auto &kv) {
-      return jsi::PropNameID::forUtf8(rt, kv.first);
-    }
-  );
-
-  auto &constants = jsModule->constants;
-  std::transform(
-    constants.begin(),
-    constants.end(),
-    std::back_inserter(result),
-    [&rt](const auto &kv) {
-      return jsi::PropNameID::forUtf8(rt, kv.first);
-    }
-  );
-
-  auto &properties = jsModule->properties;
-  std::transform(
-    properties.begin(),
-    properties.end(),
-    std::back_inserter(result),
-    [&rt](const auto &kv) {
-      return jsi::PropNameID::forUtf8(rt, kv.first);
-    }
-  );
-
-  return result;
 }
 
 JavaScriptModuleObject::JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis)

@@ -56,6 +56,8 @@ public:
    */
   jni::local_ref<JavaScriptModuleObject::javaobject> getModule(const std::string &moduleName) const;
 
+  bool hasModule(const std::string &moduleName) const;
+
   /**
    * Gets names of all available modules.
    */
@@ -95,5 +97,7 @@ private:
   callGetJavaScriptModuleObjectMethod(const std::string &moduleName) const;
 
   inline jni::local_ref<jni::JArrayClass<jni::JString>> callGetJavaScriptModulesNames() const;
+
+  inline bool callHasModule(const std::string &moduleName) const;
 };
 } // namespace expo
