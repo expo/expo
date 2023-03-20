@@ -46,9 +46,9 @@ class DevLauncherNetworkLogger private constructor() {
   /**
    * Emits CDP `Network.requestWillBeSent` event
    */
-  fun emitNetworkWillBeSent(request: Request, requestId: String) {
+  fun emitNetworkWillBeSent(request: Request, requestId: String, redirectResponse: Response?) {
     val now = BigDecimal(System.currentTimeMillis() / 1000.0).setScale(3, RoundingMode.CEILING)
-    val params = mapOf(
+    var params = mutableMapOf(
       "requestId" to requestId,
       "loaderId" to "",
       "documentURL" to "mobile",
@@ -64,6 +64,14 @@ class DevLauncherNetworkLogger private constructor() {
       "timestamp" to now,
       "wallTime" to now,
     )
+    if (redirectResponse != null) {
+      params["redirectResponse"] = mapOf(
+        "url" to redirectResponse.request().url().toString(),
+        "status" to redirectResponse.code(),
+        "statusText" to redirectResponse.message(),
+        "headers" to redirectResponse.headers().toSingleMap(),
+      )
+    }
     val data = JSONObject(mapOf(
       "method" to "Network.requestWillBeSent",
       "params" to params,
