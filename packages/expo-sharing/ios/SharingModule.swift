@@ -24,7 +24,7 @@ public final class SharingModule: Module, OnDocumentInteractionResult {
       }
 
       let grantedPermissions = filePermissions.getPathPermissions(url.absoluteString)
-      guard grantedPermissions.rawValue <= EXFileSystemPermissionFlags.read.rawValue else {
+      guard grantedPermissions.rawValue >= EXFileSystemPermissionFlags.read.rawValue else {
         throw FilePermissionException()
       }
 
@@ -52,7 +52,7 @@ public final class SharingModule: Module, OnDocumentInteractionResult {
 
   func didDismissOpenInMenu() {
     guard let promise = self.sharingContext?.pendingPromise else {
-      log.error("Sharing context lost")
+      log.error("SharingModule: sharing context has been lost")
       return
     }
 

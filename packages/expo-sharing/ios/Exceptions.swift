@@ -26,6 +26,6 @@ internal class UnsupportedTypeException: Exception {
 
 internal class FilePermissionModuleException: Exception {
   override var reason: String {
-    "EXFilePermissionModuleInterface not found"
+    "File permission module not found"
   }
 }
