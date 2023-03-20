@@ -110,7 +110,6 @@ void (^EXinitializeGlobalSingletonModulesSet)(void) = ^{
 {
   NSMutableSet<id<EXInternalModule>> *internalModules = [NSMutableSet set];
   NSMutableSet<EXExportedModule *> *exportedModules = [NSMutableSet set];
-  NSMutableSet<EXViewManager *> *viewManagerModules = [NSMutableSet set];
 
   for (Class klass in [self.class getModulesClasses]) {
     if (![klass conformsToProtocol:@protocol(EXInternalModule)]) {
@@ -127,15 +126,10 @@ void (^EXinitializeGlobalSingletonModulesSet)(void) = ^{
     if ([instance isKindOfClass:[EXExportedModule class]]) {
       [exportedModules addObject:(EXExportedModule *)instance];
     }
-
-    if ([instance isKindOfClass:[EXViewManager class]]) {
-      [viewManagerModules addObject:(EXViewManager *)instance];
-    }
   }
 
   EXModuleRegistry *moduleRegistry = [[EXModuleRegistry alloc] initWithInternalModules:internalModules
                                                                        exportedModules:exportedModules
-                                                                          viewManagers:viewManagerModules
                                                                       singletonModules:_singletonModules];
   [moduleRegistry setDelegate:_moduleRegistryDelegate];
   return moduleRegistry;

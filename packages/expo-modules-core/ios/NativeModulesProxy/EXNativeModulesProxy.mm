@@ -16,9 +16,6 @@
 
 #import <ExpoModulesCore/EXNativeModulesProxy.h>
 #import <ExpoModulesCore/EXEventEmitter.h>
-#import <ExpoModulesCore/EXViewManager.h>
-#import <ExpoModulesCore/EXViewManagerAdapter.h>
-#import <ExpoModulesCore/EXViewManagerAdapterClassesRegistry.h>
 #import <ExpoModulesCore/EXModuleRegistryProvider.h>
 #import <ExpoModulesCore/EXReactNativeEventEmitter.h>
 #import <ExpoModulesCore/EXJSIInstaller.h>
@@ -178,19 +175,9 @@ RCT_EXPORT_MODULE(NativeUnimoduleProxy)
     [self assignExportedMethodsKeys:exportedMethodsNamesAccumulator[exportedModuleName] forModuleName:exportedModuleName];
   }
   
-  // Also, add `viewManagersMetadata` for sanity check and testing purposes -- with names we know what managers to mock on UIManager
-  NSArray<EXViewManager *> *viewManagers = [_exModuleRegistry getAllViewManagers];
-  NSMutableDictionary<NSString *, NSDictionary *> *viewManagersMetadata = [[NSMutableDictionary alloc] initWithCapacity:[viewManagers count]];
-
-  for (EXViewManager *viewManager in viewManagers) {
-    viewManagersMetadata[viewManager.viewName] = @{
-      @"propsNames": [[viewManager getPropsNames] allKeys]
-    };
-  }
-  
   EXModulesProxyConfig *config = [[EXModulesProxyConfig alloc] initWithConstants:exportedModulesConstants
                                                                      methodNames:exportedMethodsNamesAccumulator
-                                                                    viewManagers:viewManagersMetadata];
+                                                                    viewManagers:[NSMutableDictionary new]];
   // decorate legacy config with sweet expo-modules config
   [config addEntriesFromConfig:[_appContext expoModulesConfig]];
   
@@ -289,23 +276,6 @@ RCT_EXPORT_METHOD(callMethod:(NSString *)moduleName methodNameOrKey:(id)methodNa
 
   // Add modules from legacy module registry only when the NativeModulesProxy owns the registry.
   if (ownsModuleRegistry) {
-    // Add dynamic wrappers for the classic view managers.
-    for (EXViewManager *viewManager in [_exModuleRegistry getAllViewManagers]) {
-      if (![visitedSweetModules containsObject:viewManager.viewName]) {
-        Class viewManagerWrapperClass = [EXViewManagerAdapterClassesRegistry createViewManagerAdapterClassForViewManager:viewManager];
-        [additionalModuleClasses addObject:viewManagerWrapperClass];
-        [self registerLegacyComponentData:viewManagerWrapperClass inBridge:bridge];
-      }
-    }
-
-    // View manager wrappers don't have their own prop configs, so we must register
-    // their base view managers that provides common props such as `proxiedProperties`.
-    // Otherwise, React Native may treat these props as invalid in subclassing views.
-    [additionalModuleClasses addObject:[EXViewManagerAdapter class]];
-    // Also, we have to register component data for the View Adapter.
-    // Otherwise, it won't be recognized by the UIManager.
-    [self registerLegacyComponentData:[EXViewManagerAdapter class] inBridge:bridge];
-
     // Some modules might need access to the bridge.
     for (id module in [_exModuleRegistry getAllInternalModules]) {
       if ([module conformsToProtocol:@protocol(RCTBridgeModule)]) {
