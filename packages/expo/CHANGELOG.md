@@ -12,6 +12,10 @@
 
 ### 💡 Others
 
+### 📚 3rd party library updates
+
+- Update `react-native@0.71.4`. ([#21781](https://github.com/expo/expo/pull/21781) by [@kudo](https://github.com/kudo))
+
 ## 48.0.7 — 2023-03-14
 
 _This version does not introduce any user-facing changes._
