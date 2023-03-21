@@ -49,8 +49,8 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
     return { uri: resolveUri(uri), hash };
   }
 
-  // Check if the assetUrl was overridden in the manifest
-  const assetUrlOverride = getManifest().assetUrlOverride;
+  // Check if the assetUrl was overridden in the manifest & manifest2
+  const assetUrlOverride = getManifest().assetUrlOverride || getManifest2().assetUrlOverride;
   if (assetUrlOverride) {
     const uri = path.join(assetUrlOverride, hash);
     return { uri: resolveUri(uri), hash };
