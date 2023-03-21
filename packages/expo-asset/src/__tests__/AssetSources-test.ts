@@ -73,6 +73,21 @@ describe('selectAssetSource', () => {
       );
       expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
     });
+    it(`returns a URI using the assetUrlOverride`, () => {
+      _mockConstants({
+        __unsafeNoWarnManifest2: {
+          assetUrlOverride: "https://example.com/assets"
+        },
+      });
+
+      const AssetSources = require('../AssetSources');
+      const source = AssetSources.selectAssetSource(mockFontMetadata);
+
+      expect(source.uri).toBe(
+        `https://example.com/assets/cafecafecafecafecafecafecafecafe`
+      );
+      expect(source.hash).toBe('cafecafecafecafecafecafecafecafe');
+    });
   }
 
   it(`returns a file URI from the asset metadata if specified`, () => {
