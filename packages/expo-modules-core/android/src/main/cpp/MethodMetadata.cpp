@@ -332,7 +332,7 @@ jsi::Value MethodMetadata::callSync(
 
     auto descriptor = JavaScriptObject::preparePropertyDescriptor(rt, 0);
     descriptor.setProperty(rt, "value", jsi::Object::createFromHostObject(rt, deallocator));
-    JavaScriptObject::defineProperty(rt, jsiObject, "__expo_object_deallocator__", std::move(descriptor));
+    JavaScriptObject::defineProperty(rt, jsiObject.get(), "__expo_object_deallocator__", std::move(descriptor));
 
     return jsi::Value(rt, *jsiObject);
   }

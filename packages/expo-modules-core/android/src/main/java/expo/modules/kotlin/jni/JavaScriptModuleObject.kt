@@ -1,8 +1,11 @@
 package expo.modules.kotlin.jni
 
 import com.facebook.jni.HybridData
+import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.NativeMap
 import expo.modules.core.interfaces.DoNotStrip
+import expo.modules.kotlin.AppContext
+import expo.modules.kotlin.objects.ObjectDefinitionData
 
 /**
  * A class to communicate with CPP part of the [expo.modules.kotlin.modules.Module] class.
@@ -19,6 +22,24 @@ class JavaScriptModuleObject(val name: String) {
   private val mHybridData = initHybrid()
 
   private external fun initHybrid(): HybridData
+
+  fun initUsingObjectDefinition(appContext: AppContext, definition: ObjectDefinitionData) = apply {
+    val constants = definition.constantsProvider()
+    val convertedConstants = Arguments.makeNativeMap(constants)
+    exportConstants(convertedConstants)
+
+    definition
+      .functions
+      .forEach { function ->
+        function.attachToJSObject(appContext, this)
+      }
+
+    definition
+      .properties
+      .forEach { (_, prop) ->
+        prop.attachToJSObject(this)
+      }
+  }
 
   /**
    * Exports constants
@@ -38,6 +59,8 @@ class JavaScriptModuleObject(val name: String) {
   external fun registerAsyncFunction(name: String, args: Int, desiredTypes: Array<ExpectedType>, body: JNIAsyncFunctionBody)
 
   external fun registerProperty(name: String, desiredType: ExpectedType, getter: JNIFunctionBody?, setter: JNIFunctionBody?)
+
+  external fun registerClass(name: String, classModule: JavaScriptModuleObject)
 
   @Throws(Throwable::class)
   protected fun finalize() {
