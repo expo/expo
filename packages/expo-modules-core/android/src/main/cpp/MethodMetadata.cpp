@@ -8,6 +8,7 @@
 #include "JavaCallback.h"
 
 #include <utility>
+#include <functional>
 
 #include <react/jni/ReadableNativeMap.h>
 #include <react/jni/ReadableNativeArray.h>
@@ -20,6 +21,20 @@ namespace jsi = facebook::jsi;
 namespace react = facebook::react;
 
 namespace expo {
+
+class JSI_EXPORT ObjectDeallocator : public jsi::HostObject {
+public:
+  typedef std::function<void()> ObjectDeallocatorType;
+
+  ObjectDeallocator(ObjectDeallocatorType deallocator) : deallocator(deallocator) {};
+
+  virtual ~ObjectDeallocator() {
+    deallocator();
+  }
+
+  const ObjectDeallocatorType deallocator;
+
+}; // class ObjectDeallocator
 
 // Modified version of the RN implementation
 // https://github.com/facebook/react-native/blob/7dceb9b63c0bfd5b13bf6d26f9530729506e9097/ReactCommon/react/nativemodule/core/platform/android/ReactCommon/JavaTurboModule.cpp#L57
@@ -307,9 +322,19 @@ jsi::Value MethodMetadata::callSync(
     auto anonymousObject = jni::static_ref_cast<JavaScriptModuleObject::javaobject>(result)
       ->cthis();
     anonymousObject->jsiInteropModuleRegistry = moduleRegistry;
-    auto hostObject = std::make_shared<JavaScriptModuleObject::HostObject>(anonymousObject);
-    hostObject->jObjectRef = jni::make_global(result);
-    return jsi::Object::createFromHostObject(rt, hostObject);
+    auto jsiObject = anonymousObject->getJSIObject(rt);
+
+    jni::global_ref<jobject> globalRef = jni::make_global(result);
+    std::shared_ptr<expo::ObjectDeallocator> deallocator = std::make_shared<ObjectDeallocator>(
+      [globalRef = globalRef]() mutable {
+        globalRef.reset();
+      });
+
+    auto descriptor = JavaScriptObject::preparePropertyDescriptor(rt, 0);
+    descriptor.setProperty(rt, "value", jsi::Object::createFromHostObject(rt, deallocator));
+    JavaScriptObject::defineProperty(rt, jsiObject, "__expo_object_deallocator__", std::move(descriptor));
+
+    return jsi::Value(rt, *jsiObject);
   }
 
   return jsi::Value::undefined();

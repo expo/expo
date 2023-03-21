@@ -124,4 +124,25 @@ jsi::Object JavaScriptObject::preparePropertyDescriptor(
   descriptor.setProperty(jsRuntime, "writable", (bool) ((1 << 2) & options));
   return descriptor;
 }
+
+void JavaScriptObject::defineProperty(
+  jsi::Runtime &runtime,
+  std::shared_ptr<jsi::Object> &jsthis,
+  const std::string &name,
+  jsi::Object descriptor
+) {
+  jsi::Object global = runtime.global();
+  jsi::Object objectClass = global.getPropertyAsObject(runtime, "Object");
+  jsi::Function definePropertyFunction = objectClass.getPropertyAsFunction(
+    runtime,
+    "defineProperty"
+  );
+
+  // This call is basically the same as `Object.defineProperty(object, name, descriptor)` in JS
+  definePropertyFunction.callWithThis(runtime, objectClass, {
+    jsi::Value(runtime, *jsthis),
+    jsi::String::createFromUtf8(runtime, name),
+    std::move(descriptor),
+  });
+}
 } // namespace expo
