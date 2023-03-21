@@ -132,9 +132,15 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
   JSIInteropModuleRegistry *moduleRegistry,
   JNIEnv *env,
   jsi::Runtime &rt,
+  const jsi::Value &thisValue,
   const jsi::Value *args,
   size_t count
 ) {
+  // This function takes the owner, so the args number is higher because we have access to the thisValue.
+  if (takesOwner) {
+    count++;
+  }
+
   auto argumentArray = env->NewObjectArray(
     count,
     JavaReferencesCache::instance()->getJClass("java/lang/Object").clazz,
@@ -143,8 +149,20 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
 
   std::vector<jobject> result(count);
 
-  for (unsigned int argIndex = 0; argIndex < count; argIndex++) {
-    const jsi::Value &arg = args[argIndex];
+  const auto getCurrentArg = [&thisValue, args, takesOwner = takesOwner](
+    size_t index) -> const jsi::Value & {
+    if (!takesOwner) {
+      return args[index];
+    } else {
+      if (index != 0) {
+        return args[index - 1];
+      }
+      return thisValue;
+    }
+  };
+
+  for (size_t argIndex = 0; argIndex < count; argIndex++) {
+    const jsi::Value &arg = getCurrentArg(argIndex);
     auto &type = argTypes[argIndex];
     if (arg.isNull() || arg.isUndefined()) {
       // If value is null or undefined, we just passes a null
@@ -171,11 +189,13 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
 MethodMetadata::MethodMetadata(
   std::weak_ptr<react::LongLivedObjectCollection> longLivedObjectCollection,
   std::string name,
+  bool takesOwner,
   int args,
   bool isAsync,
   jni::local_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::global_ref<jobject> &&jBodyReference
 ) : name(std::move(name)),
+    takesOwner(takesOwner),
     args(args),
     isAsync(isAsync),
     jBodyReference(std::move(jBodyReference)),
@@ -192,11 +212,13 @@ MethodMetadata::MethodMetadata(
 MethodMetadata::MethodMetadata(
   std::weak_ptr<react::LongLivedObjectCollection> longLivedObjectCollection,
   std::string name,
+  bool takesOwner,
   int args,
   bool isAsync,
   std::vector<std::unique_ptr<AnyType>> &&expectedArgTypes,
   jni::global_ref<jobject> &&jBodyReference
 ) : name(std::move(name)),
+    takesOwner(takesOwner),
     args(args),
     isAsync(isAsync),
     argTypes(std::move(expectedArgTypes)),
@@ -237,6 +259,7 @@ jsi::Function MethodMetadata::toSyncFunction(
         return this->callSync(
           rt,
           moduleRegistry,
+          thisValue,
           args,
           count
         );
@@ -249,6 +272,7 @@ jsi::Function MethodMetadata::toSyncFunction(
 jsi::Value MethodMetadata::callSync(
   jsi::Runtime &rt,
   JSIInteropModuleRegistry *moduleRegistry,
+  const jsi::Value &thisValue,
   const jsi::Value *args,
   size_t count
 ) {
@@ -265,7 +289,7 @@ jsi::Value MethodMetadata::callSync(
    */
   jni::JniLocalScope scope(env, (int) count);
 
-  auto convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, args, count);
+  auto convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, thisValue, args, count);
 
   // Cast in this place is safe, cause we know that this function is promise-less.
   auto syncFunction = jni::static_ref_cast<JNIFunctionBody>(this->jBodyReference);
@@ -332,7 +356,8 @@ jsi::Value MethodMetadata::callSync(
 
     auto descriptor = JavaScriptObject::preparePropertyDescriptor(rt, 0);
     descriptor.setProperty(rt, "value", jsi::Object::createFromHostObject(rt, deallocator));
-    JavaScriptObject::defineProperty(rt, jsiObject.get(), "__expo_object_deallocator__", std::move(descriptor));
+    JavaScriptObject::defineProperty(rt, jsiObject.get(), "__expo_object_deallocator__",
+                                     std::move(descriptor));
 
     return jsi::Value(rt, *jsiObject);
   }
@@ -368,7 +393,7 @@ jsi::Function MethodMetadata::toAsyncFunction(
       );
 
       try {
-        auto convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, args, count);
+        auto convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, thisValue, args, count);
         auto globalConvertedArgs = (jobjectArray) env->NewGlobalRef(convertedArgs);
         env->DeleteLocalRef(convertedArgs);
 

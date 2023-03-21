@@ -198,6 +198,7 @@ void JavaScriptModuleObject::exportConstants(
 
 void JavaScriptModuleObject::registerSyncFunction(
   jni::alias_ref<jstring> name,
+  jboolean takesOwner,
   jint args,
   jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::alias_ref<JNIFunctionBody::javaobject> body
@@ -208,6 +209,7 @@ void JavaScriptModuleObject::registerSyncFunction(
     cName,
     longLivedObjectCollection_,
     cName,
+    takesOwner,
     args,
     false,
     jni::make_local(expectedArgTypes),
@@ -217,6 +219,7 @@ void JavaScriptModuleObject::registerSyncFunction(
 
 void JavaScriptModuleObject::registerAsyncFunction(
   jni::alias_ref<jstring> name,
+  jboolean takesOwner,
   jint args,
   jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
@@ -227,6 +230,7 @@ void JavaScriptModuleObject::registerAsyncFunction(
     cName,
     longLivedObjectCollection_,
     cName,
+    takesOwner,
     args,
     true,
     jni::make_local(expectedArgTypes),
@@ -253,6 +257,7 @@ void JavaScriptModuleObject::registerProperty(
   auto getterMetadata = MethodMetadata(
     longLivedObjectCollection_,
     cName,
+    false,
     0,
     false,
     std::vector<std::unique_ptr<AnyType>>(),
@@ -264,6 +269,7 @@ void JavaScriptModuleObject::registerProperty(
   auto setterMetadata = MethodMetadata(
     longLivedObjectCollection_,
     cName,
+    false,
     1,
     false,
     std::move(types),

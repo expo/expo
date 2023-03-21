@@ -52,4 +52,22 @@ class JavaScriptClassTest {
     Truth.assertThat(jsObject.getPropertyNames()).asList().containsExactly("foo")
     Truth.assertThat(jsObject.getProperty("foo").getString()).isEqualTo("bar")
   }
+
+  @Test
+  fun should_be_able_to_receive_owner() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Class("MyClass") {
+        Function("f") { owner: JavaScriptObject ->
+          return@Function owner.getProperty("foo").getString()
+        }
+        Property("foo") {
+          "bar"
+        }
+      }
+    }
+  ) {
+    val foo = evaluateScript("(new expo.modules.TestModule.MyClass().f())").getString()
+    Truth.assertThat(foo).isEqualTo("bar")
+  }
 }
