@@ -12,6 +12,13 @@
 
 ### 💡 Others
 
+
+## 11.2.2 — 2023-02-13
+
+### 💡 Others
+
+- Types on expo-document-picker now exports each `DocumentResult` case. ([#21190](https://github.com/expo/expo/pull/21190) by [@fmcalado](https://github.com/fmcalado))
+
 ## 11.2.1 — 2023-02-09
 
 _This version does not introduce any user-facing changes._
