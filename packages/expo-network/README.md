@@ -6,7 +6,6 @@
       height="64" />
   </a>
 </p>
-
 Gets device's network information such as ip address, mac address and check for airplane mode.
 
 See [Expo Network docs](https://docs.expo.dev/versions/latest/sdk/network/) for documentation of this universal module's API.
