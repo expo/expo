@@ -7,6 +7,7 @@
 #import <ABI48_0_0EXUpdates/ABI48_0_0EXUpdatesRemoteAppLoader.h>
 #import <ABI48_0_0EXUpdates/ABI48_0_0EXUpdatesService.h>
 #import <ABI48_0_0EXUpdates/ABI48_0_0EXUpdatesUpdate.h>
+#import <ABI48_0_0EXUpdates/ABI48_0_0EXUpdatesUtils.h>
 
 #if __has_include(<ABI48_0_0EXUpdates/ABI48_0_0EXUpdates-Swift.h>)
 #import <ABI48_0_0EXUpdates/ABI48_0_0EXUpdates-Swift.h>
@@ -81,7 +82,8 @@ ABI48_0_0EX_EXPORT_MODULE(ExpoUpdates);
     @"releaseChannel": releaseChannel,
     @"runtimeVersion": runtimeVersion,
     @"channel": channel,
-    @"commitTime": @(commitTime)
+    @"commitTime": @(commitTime),
+    @"nativeDebug": @([ABI48_0_0EXUpdatesUtils isNativeDebuggingEnabled])
   };
 }
 

@@ -71,7 +71,7 @@ class BarCodeScannerView(
         data = barCode.value,
         type = barCode.type,
         cornerPoints = cornerPoints,
-        boundingBox = boundingBox
+        bounds = boundingBox
       )
     )
   }

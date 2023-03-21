@@ -9,6 +9,7 @@ import android.graphics.RectF;
 import android.graphics.Shader;
 import android.util.TypedValue;
 import android.view.View;
+import abi48_0_0.expo.modules.core.interfaces.DoNotStrip;
 
 public class LinearGradientView extends View {
   private final Paint mPaint = new Paint(Paint.ANTI_ALIAS_FLAG);
@@ -22,6 +23,8 @@ public class LinearGradientView extends View {
   private int[] mSize = {0, 0};
   private float[] mBorderRadii = {0, 0, 0, 0, 0, 0, 0, 0};
 
+  // Keeps this primary constructor from Proguard/R8 for ViewDefinitionBuilder
+  @DoNotStrip
   public LinearGradientView(Context context) {
     super(context);
   }
