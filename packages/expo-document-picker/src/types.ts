@@ -18,56 +18,100 @@ export type DocumentPickerOptions = {
   /**
    * Allows multiple files to be selected from the system UI.
    * @default false
-   * @platform web
+   *
    */
   multiple?: boolean;
 };
 
+export type DocumentPickerAsset = {
+  /**
+   * Document original name.
+   */
+  name: string;
+  /**
+   * Document size in bytes.
+   */
+  size?: number;
+  /**
+   * An URI to the local document file.
+   */
+  uri: string;
+  /**
+   * Document MIME type.
+   */
+  mimeType?: string;
+  /**
+   * Timestamp of last document modification.
+   */
+  lastModified?: number;
+  /**
+   * `File` object for the parity with web File API.
+   * @platform web
+   */
+  file?: File;
+  /**
+   * `FileList` object for the parity with web File API.
+   * @platform web
+   */
+  output?: FileList | null;
+};
+
 // @needsAudit @docsMissing
+export type DocumentPickerResult = {
+  /**
+   * Boolean flag which shows if request was canceled. If asset data have been returned this should
+   * always be `false`.
+   */
+  canceled: boolean;
+  type?: string;
+  /**
+   * Document original name.
+   */
+  name?: string;
+  /**
+   * Document size in bytes.
+   */
+  size?: number;
+  /**
+   * An array of picked assets or `null` when the request was canceled.
+   */
+  assets: DocumentPickerAsset[] | null;
+  /**
+   * An URI to the local document file.
+   */
+  uri?: string;
+  /**
+   * Document MIME type.
+   */
+  mimeType?: string;
+  /**
+   * Timestamp of last document modification.
+   */
+  lastModified?: number;
+  /**
+   * `File` object for the parity with web File API.
+   * @platform web
+   */
+  file?: File;
+  /**
+   * `FileList` object for the parity with web File API.
+   * @platform web
+   */
+  output?: FileList | null;
+} & (DocumentPickerSuccessResult | DocumentPickerCanceledResult);
+
 /**
- * First object represents the result when the document pick has been cancelled.
- * The second one represents the successful document pick result.
+ * @hidden
  */
-export type DocumentResult =
-  | {
-      /**
-       * Field indicating that the document pick has been cancelled.
-       */
-      type: 'cancel';
-    }
-  | {
-      /**
-       * Field indicating that the document pick has been successful.
-       */
-      type: 'success';
-      /**
-       * Document original name.
-       */
-      name: string;
-      /**
-       * Document size in bytes.
-       */
-      size?: number;
-      /**
-       * An URI to the local document file.
-       */
-      uri: string;
-      /**
-       * Document MIME type.
-       */
-      mimeType?: string;
-      /**
-       * Timestamp of last document modification.
-       */
-      lastModified?: number;
-      /**
-       * `File` object for the parity with web File API.
-       * @platform web
-       */
-      file?: File;
-      /**
-       * `FileList` object for the parity with web File API.
-       * @platform web
-       */
-      output?: FileList | null;
-    };
+export type DocumentPickerSuccessResult = {
+  canceled: false;
+  assets: DocumentPickerAsset[];
+};
+
+/**
+ * @hidden
+ */
+export type DocumentPickerCanceledResult = {
+  canceled: true;
+  assets: null;
+};

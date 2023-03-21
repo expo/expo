@@ -6,6 +6,9 @@
 
 ### 🎉 New features
 
+- Migrated to Expo Modules API. ([#20336](https://github.com/expo/expo/pull/20336) by [@alanhughes](https://github.com/alanjhughes))
+- Added support for picking multiple documents. ([#20365](https://github.com/expo/expo/pull/20365) by [@alanhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 - Fixed cancellation type not being marked as a `Record` on Android. ([#21588](https://github.com/expo/expo/pull/21588) by [@alanjhughes](https://github.com/alanjhughes))
