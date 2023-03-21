@@ -11,7 +11,10 @@
     "noEmit": true,
     "resolveJsonModule": true,
     "skipLibCheck": true,
-    "target": "ESNext"
+    "target": "ESNext",
+    "paths": {
+      "*": ["./modules/*"]
+    }
   },
 
   "exclude": ["node_modules", "babel.config.js", "metro.config.js", "jest.config.js"]
