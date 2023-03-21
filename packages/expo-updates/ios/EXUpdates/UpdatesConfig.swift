@@ -32,7 +32,7 @@ public enum UpdatesConfigError: Int, Error {
 @objc(EXUpdatesConfig)
 @objcMembers
 public final class UpdatesConfig: NSObject {
-  public static let EXUpdatesConfigPlistName = "Expo"
+  public static let PlistName = "Expo"
 
   public static let EXUpdatesConfigEnableAutoSetupKey = "EXUpdatesAutoSetup"
   public static let EXUpdatesConfigEnabledKey = "EXUpdatesEnabled"
@@ -112,11 +112,15 @@ public final class UpdatesConfig: NSObject {
   }
 
   public static func configWithExpoPlist(mergingOtherDictionary: [String: Any]?) throws -> UpdatesConfig {
-    let configPath = Bundle.main.path(forResource: EXUpdatesConfigPlistName, ofType: "plist")
-    guard let configPath = configPath,
-      // Would rather not risk breaking plist parsing by switching to PropertyListDecoder. Can do in follow-up.
-      // swiftlint:disable:next legacy_objc_type
-      let configNSDictionary = NSDictionary(contentsOfFile: configPath) as? [String: Any] else {
+    guard let configPath = Bundle.main.path(forResource: PlistName, ofType: "plist") else {
+      throw UpdatesConfigError.ExpoUpdatesConfigPlistError
+    }
+    return try configWithExpoPlist(configPlistPath: configPath, mergingOtherDictionary: mergingOtherDictionary)
+  }
+
+  public static func configWithExpoPlist(configPlistPath: String, mergingOtherDictionary: [String: Any]?) throws -> UpdatesConfig {
+    // swiftlint:disable:next legacy_objc_type
+    guard let configNSDictionary = NSDictionary(contentsOfFile: configPlistPath) as? [String: Any] else {
       throw UpdatesConfigError.ExpoUpdatesConfigPlistError
     }
 
@@ -125,7 +129,7 @@ public final class UpdatesConfig: NSObject {
       dictionary = dictionary.merging(mergingOtherDictionary, uniquingKeysWith: { _, new in new })
     }
 
-    return UpdatesConfig.config(fromDictionary: configNSDictionary)
+    return UpdatesConfig.config(fromDictionary: dictionary)
   }
 
   public static func config(fromDictionary config: [String: Any]) -> UpdatesConfig {

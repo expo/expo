@@ -22,7 +22,7 @@ public extension Dictionary where Key == String {
     if !(value is T) {
       let exception = NSException(
         name: NSExceptionName.internalInconsistencyException,
-        reason: "Value for (key = %@) has incorrect type",
+        reason: "Value for (key = \(forKey)) has incorrect type",
         userInfo: ["key": forKey]
       )
       exception.raise()
@@ -36,7 +36,7 @@ public extension Dictionary where Key == String {
     if value == nil {
       let exception = NSException(
         name: NSExceptionName.internalInconsistencyException,
-        reason: "Value for (key = %@) is null",
+        reason: "Value for (key = \(forKey)) is null",
         userInfo: ["key": forKey]
       )
       exception.raise()
@@ -45,7 +45,7 @@ public extension Dictionary where Key == String {
     if !(value is T) {
       let exception = NSException(
         name: NSExceptionName.internalInconsistencyException,
-        reason: "Value for (key = %@) has incorrect type",
+        reason: "Value for (key = \(forKey)) has incorrect type",
         userInfo: ["key": forKey]
       )
       exception.raise()
