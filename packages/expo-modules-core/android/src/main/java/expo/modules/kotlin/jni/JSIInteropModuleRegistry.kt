@@ -68,6 +68,12 @@ class JSIInteropModuleRegistry(appContext: AppContext) {
     return appContextHolder.get()?.registry?.getModuleHolder(name)?.jsObject
   }
 
+  @Suppress("unused")
+  @DoNotStrip
+  fun hasModule(name: String): Boolean {
+    return appContextHolder.get()?.registry?.hasModule(name) ?: false
+  }
+
   /**
    * Returns an array that contains names of available modules.
    */

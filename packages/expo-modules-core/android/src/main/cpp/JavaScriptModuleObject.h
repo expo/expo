@@ -90,41 +90,13 @@ public:
     jni::alias_ref<JNIFunctionBody::javaobject> setter
   );
 
-  /**
-   * An inner class of the `JavaScriptModuleObject` that is exported to the JS.
-   * It's an additional communication layer between JS and Kotlin.
-   * So the high-level view on accessing the exported function will look like this:
-   * `JS` --get function--> `JavaScriptModuleObject::HostObject` --access module metadata--> `JavaScriptModuleObject`
-   *  --create JSI function--> `MethodMetadata`
-   *
-   * This abstraction wasn't necessary. However, it makes the management of ownership much easier -
-   * `JavaScriptModuleObject` is held by the ModuleHolder and `JavaScriptModuleObject::HostObject` is stored in the JS runtime.
-   * Without this distinction the `JavaScriptModuleObject` would have to turn into `HostObject` and `HybridObject` at the same time.
-   */
-  class HostObject : public jsi::HostObject {
-  public:
-    HostObject(JavaScriptModuleObject *);
-
-    ~HostObject() override;
-
-    jsi::Value get(jsi::Runtime &, const jsi::PropNameID &name) override;
-
-    void set(jsi::Runtime &, const jsi::PropNameID &name, const jsi::Value &value) override;
-
-    std::vector<jsi::PropNameID> getPropertyNames(jsi::Runtime &rt) override;
-
-    jni::global_ref<jobject> jObjectRef;
-  private:
-    JavaScriptModuleObject *jsModule;
-  };
-
 private:
   explicit JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis);
 
 private:
   friend HybridBase;
   /**
-   * A reference to the `JavaScriptModuleObject::HostObject`.
+   * A reference to the `jsi::Object`.
    * Simple we cached that value to return the same object each time.
    * It's a weak reference because the JS runtime holds the actual object. 
    * Doing that allows the runtime to deallocate jsi::Object if it's not needed anymore.
