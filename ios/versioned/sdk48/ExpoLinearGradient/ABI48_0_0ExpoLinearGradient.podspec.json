@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0ExpoLinearGradient",
-  "version": "12.1.1",
+  "version": "12.1.2",
   "summary": "Provides a React component that renders a gradient view.",
   "description": "Provides a React component that renders a gradient view.",
   "license": "MIT",

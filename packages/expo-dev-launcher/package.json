@@ -49,7 +49,7 @@
     "graphql": "^16.0.1",
     "graphql-request": "^3.6.1",
     "react": "18.2.0",
-    "react-native": "0.71.3",
+    "react-native": "0.71.4",
     "react-query": "^3.34.16",
     "url": "^0.11.0"
   },
