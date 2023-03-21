@@ -14,14 +14,8 @@ class DevLauncherOkHttpNetworkInterceptor : Interceptor {
     }
     val request = chain.request()
     val redirectResponse = request.tag(RedirectResponse::class.java)
-    var requestId: String
-    if (redirectResponse?.requestId != null) {
-      requestId = redirectResponse.requestId!!
-      DevLauncherNetworkLogger.instance.emitNetworkWillBeSent(request, requestId, redirectResponse.priorResponse)
-    } else {
-      requestId = request.hashCode().toString()
-      DevLauncherNetworkLogger.instance.emitNetworkWillBeSent(request, requestId, null)
-    }
+    val requestId = redirectResponse?.requestId ?: request.hashCode().toString()
+    DevLauncherNetworkLogger.instance.emitNetworkWillBeSent(request, requestId, redirectResponse?.priorResponse)
 
     val response = chain.proceed(request)
 
