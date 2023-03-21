@@ -85,6 +85,7 @@ export type Manifest = {
     assets: ManifestAsset[];
     metadata: object;
     extra?: ManifestExtra;
+    assetUrlOverride?: string;
 };
 export type ManifestExtra = ClientScopingConfig & {
     expoClient?: ExpoConfig & {
