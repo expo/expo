@@ -102,7 +102,7 @@ The number of milliseconds `expo-updates` should delay the app launch and stay o
 
 If `codeSigningCertificate` is present, `expo-updates` will enforce manifest code signing using the certificate and any metadata associated with it.
 - `codeSigningCertificate` must be a valid PEM formatted X.509 certificate with code signing extended key usage.
-- `codeSigningMetadata` (optional) must be a JSON object containing:
+- `codeSigningMetadata` (optional) On iOS this is specified as a plist dictionary. On Android this is JSON object string. It must be a JSON object containing:
     - `alg` - Algorithm used to generate manifest signature. Only `rsa-v1_5-sha256` is currently supported.
     - `keyid` - Identifier for the key in `codeSigningCertificate`. Used to instruct signing mechanisms when signing or verifying signatures.
 - `codeSigningIncludeManifestResponseCertificateChain` (optional) instructs `expo-updates` to evaluate certificates included in a multipart manifest response (under the `certificate_chain` multipart part) as part of the code signing certificate chain with the embedded `codeSigningCertificate` as the implicitly trusted root certificate of the chain. The leaf certificate in the chain must be valid for code signing.
