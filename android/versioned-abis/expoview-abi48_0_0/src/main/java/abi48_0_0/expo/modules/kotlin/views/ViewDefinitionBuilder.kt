@@ -4,9 +4,12 @@
 package abi48_0_0.expo.modules.kotlin.views
 
 import android.content.Context
+import android.util.Log
 import android.view.View
 import android.view.ViewGroup
 import abi48_0_0.expo.modules.kotlin.AppContext
+import abi48_0_0.expo.modules.kotlin.exception.CodedException
+import abi48_0_0.expo.modules.kotlin.exception.UnexpectedException
 import abi48_0_0.expo.modules.kotlin.modules.DefinitionMarker
 import abi48_0_0.expo.modules.kotlin.types.toAnyType
 import kotlin.reflect.KClass
@@ -147,7 +150,11 @@ class ViewDefinitionBuilder<T : View>(@PublishedApi internal val viewType: KClas
 
     // Backward compatibility
     if (args.size == 1) {
-      return@viewFactory primaryConstructor.call(context)
+      return@viewFactory try {
+        primaryConstructor.call(context)
+      } catch (e: Throwable) {
+        handleFailureDuringViewCreation(context, appContext, e)
+      }
     }
 
     val secondArgType = args[1].type
@@ -159,7 +166,24 @@ class ViewDefinitionBuilder<T : View>(@PublishedApi internal val viewType: KClas
       throw IllegalStateException("Android view has more constructor arguments than expected.")
     }
 
-    return@viewFactory primaryConstructor.call(context, appContext)
+    return@viewFactory try {
+      primaryConstructor.call(context, appContext)
+    } catch (e: Throwable) {
+      handleFailureDuringViewCreation(context, appContext, e)
+    }
+  }
+
+  private fun handleFailureDuringViewCreation(context: Context, appContext: AppContext, e: Throwable): View {
+    Log.e("ExpoModulesCore", "Couldn't create view of type $viewType", e)
+
+    appContext.errorManager?.reportExceptionToLogBox(
+      if (e is CodedException) {
+        e
+      } else {
+        UnexpectedException(e)
+      }
+    )
+    return View(context)
   }
 
   private fun getPrimaryConstructor(): KFunction<T>? {

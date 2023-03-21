@@ -158,6 +158,10 @@ class ExpoImageModule : Module() {
         view.cachePolicy = cachePolicy ?: CachePolicy.DISK
       }
 
+      Prop("recyclingKey") { view: ExpoImageViewWrapper, recyclingKey: String? ->
+        view.recyclingKey = recyclingKey
+      }
+
       OnViewDidUpdateProps { view: ExpoImageViewWrapper ->
         view.rerenderIfNeeded()
       }

@@ -16,11 +16,11 @@ import abi48_0_0.com.facebook.react.module.model.ReactModuleInfoProvider
 import abi48_0_0.com.facebook.react.modules.intent.IntentModule
 import abi48_0_0.com.facebook.react.turbomodule.core.interfaces.TurboModule
 import abi48_0_0.com.facebook.react.uimanager.ReanimatedUIManager
-import abi48_0_0.com.swmansion.reanimated.ReanimatedUIManagerFactory
 import abi48_0_0.com.facebook.react.uimanager.UIManagerModule
 import abi48_0_0.com.facebook.react.uimanager.ViewManager
 import abi48_0_0.com.facebook.systrace.Systrace
 import abi48_0_0.com.swmansion.reanimated.ReanimatedModule
+import abi48_0_0.com.swmansion.reanimated.ReanimatedUIManagerFactory
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.experience.ReactNativeActivity
 import host.exp.exponent.kernel.KernelConstants

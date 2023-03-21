@@ -1,5 +1,0 @@
-[submodule "react-native-lab/react-native"]
-  path = react-native-lab/react-native
-  url = git@github.com:expo/react-native.git
-  branch = exp-latest
-  update = checkout
