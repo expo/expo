@@ -107,10 +107,12 @@ export default function AnimationManager({
   children: renderFunction,
   initial,
   transition,
+  recyclingKey = '',
 }: {
   children: AnimationManagerNode;
   initial: AnimationManagerNode | null;
   transition: ImageTransition | null | undefined;
+  recyclingKey?: string | null | undefined;
 }) {
   const animation = getAnimatorFromTransition(transition);
 
@@ -119,6 +121,12 @@ export default function AnimationManager({
   const [nodes, setNodes] = React.useState<MountedAnimationNode[]>(
     initialNode ? [initialNode] : []
   );
+
+  const [prevRecyclingKey, setPrevRecyclingKey] = React.useState<string>(recyclingKey ?? '');
+  if (prevRecyclingKey != recyclingKey) {
+    setPrevRecyclingKey(recyclingKey ?? '');
+    setNodes(initialNode ? [initialNode] : []);
+  }
 
   const removeAllNodesOfKeyExceptShowing = (key?: string) => {
     setNodes((n) =>

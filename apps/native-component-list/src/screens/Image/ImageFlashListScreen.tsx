@@ -21,12 +21,20 @@ function renderItem({ index }: ListRenderItemInfo<number>) {
 
 export default function ImageFlashListScreen() {
   return (
-    <FlashList
-      data={DATA}
-      renderItem={renderItem}
-      keyExtractor={(_, index: number) => String(index)}
-      estimatedItemSize={IMAGE_SIZE}
-    />
+    <View
+      style={{
+        display: 'flex',
+        flex: 1,
+        flexBasis: 0,
+        flexShrink: 1,
+      }}>
+      <FlashList
+        data={DATA}
+        renderItem={renderItem}
+        keyExtractor={(_, index: number) => String(index)}
+        estimatedItemSize={IMAGE_SIZE}
+      />
+    </View>
   );
 }
 

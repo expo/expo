@@ -29,7 +29,7 @@ const setCssVariables = (element, size) => {
     element?.style.setProperty('--expo-image-width', `${size.width}px`);
     element?.style.setProperty('--expo-image-height', `${size.height}px`);
 };
-export default function ExpoImage({ source, placeholder, contentFit, contentPosition, placeholderContentFit, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, blurRadius, ...props }) {
+export default function ExpoImage({ source, placeholder, contentFit, contentPosition, placeholderContentFit, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, blurRadius, recyclingKey, ...props }) {
     const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
     const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
     const blurhashStyle = {
@@ -45,9 +45,9 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
             overflow: 'hidden',
             position: 'relative',
         } },
-        React.createElement(AnimationManager, { transition: transition, initial: placeholder?.[0]?.uri
+        React.createElement(AnimationManager, { transition: transition, recyclingKey: recyclingKey, initial: placeholder?.[0]?.uri
                 ? [
-                    placeholder?.[0]?.uri || '',
+                    `${recyclingKey ?? ''}-${placeholder?.[0]?.uri ?? ''}`,
                     ({ onAnimationFinished }) => (className, style) => (React.createElement(ImageWrapper, { source: placeholder?.[0], style: {
                             objectFit: imagePlaceholderContentFit,
                             ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
@@ -57,7 +57,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                         }, contentPosition: { left: '50%', top: '50%' }, blurhashContentPosition: contentPosition, blurhashStyle: blurhashStyle })),
                 ]
                 : null },
-            selectedSource?.uri || placeholder?.[0]?.uri,
+            `${recyclingKey ?? ''}-${selectedSource?.uri ?? placeholder?.[0]?.uri}`,
             ({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) => (className, style) => (React.createElement(ImageWrapper, { source: selectedSource || placeholder?.[0], events: {
                     onError: [onErrorAdapter(onError), onLoadEnd, onErrorInner],
                     onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],

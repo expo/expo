@@ -27,10 +27,11 @@ export declare function getAnimatorFromTransition(transition: ImageTransition | 
     animationClass: "cross-dissolve" | "flip-from-top" | "flip-from-right" | "flip-from-bottom" | "flip-from-left" | "curl-up" | "curl-down";
     duration: number;
 } | null;
-export default function AnimationManager({ children: renderFunction, initial, transition, }: {
+export default function AnimationManager({ children: renderFunction, initial, transition, recyclingKey, }: {
     children: AnimationManagerNode;
     initial: AnimationManagerNode | null;
     transition: ImageTransition | null | undefined;
+    recyclingKey?: string | null | undefined;
 }): JSX.Element;
 export {};
 //# sourceMappingURL=AnimationManager.d.ts.map

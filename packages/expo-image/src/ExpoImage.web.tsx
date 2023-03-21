@@ -49,6 +49,7 @@ export default function ExpoImage({
   onLoadEnd,
   priority,
   blurRadius,
+  recyclingKey,
   ...props
 }: ImageNativeProps) {
   const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
@@ -77,10 +78,11 @@ export default function ExpoImage({
       }}>
       <AnimationManager
         transition={transition}
+        recyclingKey={recyclingKey}
         initial={
           placeholder?.[0]?.uri
             ? [
-                placeholder?.[0]?.uri || '',
+                `${recyclingKey ?? ''}-${placeholder?.[0]?.uri ?? ''}`,
                 ({ onAnimationFinished }) =>
                   (className, style) =>
                     (
@@ -103,7 +105,7 @@ export default function ExpoImage({
               ]
             : null
         }>
-        {(selectedSource as any)?.uri || placeholder?.[0]?.uri}
+        {`${recyclingKey ?? ''}-${(selectedSource as any)?.uri ?? placeholder?.[0]?.uri}`}
         {({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) =>
           (className, style) =>
             (
