@@ -14,8 +14,8 @@ class BlurModule : Module() {
         view.setBlurRadius(intensity)
       }
 
-      Prop("tintColor") { view: ExpoBlurView, tintColor: Int ->
-        view.setTint(tintColor)
+      Prop("tint") { view: ExpoBlurView, tint: Int ->
+        view.setTint(tint)
       }
 
       Prop("blurReductionFactor") { view: ExpoBlurView, blurReductionFactor: Float ->
@@ -33,7 +33,7 @@ class BlurModule : Module() {
       props.intensity?.let {
         view.setBlurRadius(it)
       }
-      props.tintColor?.let {
+      props.tint?.let {
         view.setTint(it)
       }
     }.runOnQueue(Queues.MAIN)

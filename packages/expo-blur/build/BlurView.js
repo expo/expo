@@ -1,6 +1,6 @@
 import { requireNativeModule, requireNativeViewManager } from 'expo-modules-core';
 import React from 'react';
-import { View, StyleSheet, findNodeHandle } from 'react-native';
+import { Platform, View, StyleSheet, findNodeHandle } from 'react-native';
 import { getAndroidTintColor } from './getBackgroundColor';
 const ExpoBlurView = requireNativeModule('ExpoBlurView');
 class BlurView extends React.Component {
@@ -26,9 +26,10 @@ class BlurView extends React.Component {
         view.setNativeProps = ({ tint, intensity, blurReductionFactor, ...nativeProps }) => {
             // Call the original method with all View-based props
             view && originalSetNativeProps(nativeProps);
+            const androidTint = intensity && tint && getAndroidTintColor(intensity, tint);
             // Invoke `setNativeProps` native expo method defined by `ExpoBlurView` module
             this.blurViewRef.current &&
-                ExpoBlurView.setNativeProps({ tint, intensity, blurReductionFactor }, findNodeHandle(this.blurViewRef.current));
+                ExpoBlurView.setNativeProps({ tint: Platform.OS === 'android' ? androidTint : tint, intensity, blurReductionFactor }, findNodeHandle(this.blurViewRef.current));
         };
         // mimic `forwardedRef` logic
         if (typeof this.props.forwardedRef === 'function') {
@@ -41,9 +42,9 @@ class BlurView extends React.Component {
     render() {
         const { tint = 'default', intensity = 50, blurReductionFactor = 4, style, children, forwardedRef, ...props } = this.props;
         return (React.createElement(View, { ...props, ref: this.onRefChange, style: [styles.container, style] },
-            React.createElement(NativeBlurView, { ref: this.blurViewRef, tint: tint, 
+            React.createElement(NativeBlurView, { ref: this.blurViewRef, tint: Platform.OS === 'android' ? getAndroidTintColor(intensity, tint) : tint, 
                 // Android uses this prop instead of the `tint`
-                tintColor: getAndroidTintColor(intensity, tint), intensity: intensity, blurReductionFactor: blurReductionFactor, style: StyleSheet.absoluteFill }),
+                intensity: intensity, blurReductionFactor: blurReductionFactor, style: StyleSheet.absoluteFill }),
             children));
     }
 }

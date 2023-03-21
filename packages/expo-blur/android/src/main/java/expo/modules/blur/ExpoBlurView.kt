@@ -11,8 +11,8 @@ import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.views.ExpoView
 
 class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
-  private var blurReduction = 3.5f
-  private var blurRadius = 3f
+  private var blurReduction = 4f
+  private var blurRadius = 50f
 
   private val blurView = BlurView(context).also {
     it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
@@ -32,10 +32,8 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
   fun setBlurRadius(radius: Float) {
     // When setting a blur directly to 0 a "nativePtr is null" exception is thrown
     // https://issuetracker.google.com/issues/241546169
-    if (radius == 0f) {
-      blurView.setBlurEnabled(false)
-    } else {
-      blurView.setBlurEnabled(true)
+    blurView.setBlurEnabled(radius != 0f)
+    if (radius > 0f) {
       blurView.setBlurRadius(radius / blurReduction)
       blurView.invalidate()
     }
@@ -47,8 +45,8 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
     blurView.invalidate()
   }
 
-  fun applyBlurReduction(factor: Float) {
-    blurReduction = factor
+  fun applyBlurReduction(reductionFactor: Float) {
+    blurReduction = reductionFactor
     setBlurRadius(blurRadius)
   }
 }

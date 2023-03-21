@@ -5,6 +5,6 @@ import expo.modules.kotlin.records.Record
 
 internal class BlurModuleOptions(
   @Field var intensity: Float?,
-  @Field var tintColor: Int?,
+  @Field var tint: Int?,
   @Field var blurReductionFactor: Float?
 ) : Record
