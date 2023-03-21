@@ -46,24 +46,32 @@ class DevLauncherNetworkLogger private constructor() {
   /**
    * Emits CDP `Network.requestWillBeSent` event
    */
-  fun emitNetworkWillBeSent(request: Request, requestId: String) {
+  fun emitNetworkWillBeSent(request: Request, requestId: String, redirectResponse: Response?) {
     val now = BigDecimal(System.currentTimeMillis() / 1000.0).setScale(3, RoundingMode.CEILING)
-    val params = mapOf(
-      "requestId" to requestId,
-      "loaderId" to "",
-      "documentURL" to "mobile",
-      "initiator" to mapOf("type" to "script"),
-      "redirectHasExtraInfo" to false,
-      "request" to mapOf(
+    var params = buildMap<String, Any> {
+      put("requestId", requestId)
+      put("loaderId", "")
+      put("documentURL", "mobile")
+      put("initiator", mapOf("type" to "script"))
+      put("redirectHasExtraInfo", false)
+      put("request", mapOf(
         "url" to request.url().toString(),
         "method" to request.method(),
         "headers" to request.headers().toSingleMap(),
-      ),
-      "referrerPolicy" to "no-referrer",
-      "type" to "Fetch",
-      "timestamp" to now,
-      "wallTime" to now,
-    )
+      ))
+      put("referrerPolicy", "no-referrer")
+      put("type", "Fetch")
+      put("timestamp", now)
+      put("wallTime", now)
+      if (redirectResponse != null) {
+        put("redirectResponse", mapOf(
+          "url" to redirectResponse.request().url().toString(),
+          "status" to redirectResponse.code(),
+          "statusText" to redirectResponse.message(),
+          "headers" to redirectResponse.headers().toSingleMap(),
+        ))
+      }
+    }
     val data = JSONObject(mapOf(
       "method" to "Network.requestWillBeSent",
       "params" to params,
