@@ -100,7 +100,7 @@ public final class SQLiteModule: Module {
     var error: String?
 
     if sqlite3_prepare_v2(db, sql, -1, &statement, nil) != SQLITE_OK {
-      return [converSqlLiteErrorToString(db: db)]
+      return [convertSqlLiteErrorToString(db: db)]
     }
 
     let queryIsReadOnly = sqlite3_stmt_readonly(statement) > 0
@@ -148,7 +148,7 @@ public final class SQLiteModule: Module {
       case SQLITE_DONE:
         hasMore = false
       default:
-        error = converSqlLiteErrorToString(db: db)
+        error = convertSqlLiteErrorToString(db: db)
         hasMore = false
       }
     }
@@ -172,7 +172,7 @@ public final class SQLiteModule: Module {
   private func bindStatement(statement: OpaquePointer?, with arg: NSObject, at index: Int32) {
     if arg == NSNull() {
       sqlite3_bind_null(statement, index)
-    } else if arg is Double {
+    } else if arg is NSInteger {
       sqlite3_bind_double(statement, index, arg as? Double ?? 0.0)
     } else {
       var stringArg: NSString
@@ -183,8 +183,10 @@ public final class SQLiteModule: Module {
         stringArg = arg.description as NSString
       }
 
+      let SQLITE_TRANSIENT = unsafeBitCast(OpaquePointer(bitPattern: -1), to: sqlite3_destructor_type.self)
+      
       let data = stringArg.data(using: NSUTF8StringEncoding)
-      sqlite3_bind_text(statement, index, stringArg.utf8String, -1, nil)
+      sqlite3_bind_text(statement, index, stringArg.utf8String, Int32(data?.count ?? 0), SQLITE_TRANSIENT)
     }
   }
 
@@ -201,7 +203,7 @@ public final class SQLiteModule: Module {
     }
   }
 
-  private func converSqlLiteErrorToString(db: OpaquePointer?) -> String {
+  private func convertSqlLiteErrorToString(db: OpaquePointer?) -> String {
     let code = sqlite3_errcode(db)
     let message = NSString(utf8String: sqlite3_errmsg(db)) ?? ""
     return NSString(format: "Error code %i: %@", code, message) as String
