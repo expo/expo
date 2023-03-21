@@ -34,9 +34,9 @@ public class EXDevLauncherNetworkLogger: NSObject {
   /**
    Emits CDP `Network.requestWillBeSent` event
    */
-  func emitNetworkWillBeSent(request: URLRequest, requestId: String) {
+  func emitNetworkWillBeSent(request: URLRequest, requestId: String, redirectResponse: HTTPURLResponse?) {
     let now = Date().timeIntervalSince1970
-    let params = [
+    var params = [
       "requestId": requestId,
       "loaderId": "",
       "documentURL": "mobile",
@@ -52,6 +52,14 @@ public class EXDevLauncherNetworkLogger: NSObject {
       "timestamp": now,
       "wallTime": now
     ] as [String: Any]
+    if let redirectResponse {
+      params["redirectResponse"] = [
+        "url": redirectResponse.url?.absoluteString,
+        "status": redirectResponse.statusCode,
+        "statusText": "",
+        "headers": redirectResponse.allHeaderFields
+      ]
+    }
     if let data = try? JSONSerialization.data(
       withJSONObject: ["method": "Network.requestWillBeSent", "params": params],
       options: []
@@ -194,7 +202,7 @@ public class EXDevLauncherNetworkLogger: NSObject {
     // no-op when running on release build where RCTInspector classes not exported
   }
 
-  func emitNetworkWillBeSent(request: URLRequest, requestId: String) {
+  func emitNetworkWillBeSent(request: URLRequest, requestId: String, redirectResponse: HTTPURLResponse?) {
   }
 
   func emitNetworkResponse(request: URLRequest, requestId: String, response: HTTPURLResponse) {

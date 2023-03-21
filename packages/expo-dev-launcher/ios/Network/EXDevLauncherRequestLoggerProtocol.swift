@@ -4,7 +4,9 @@
 @objc
 class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
   private static let REQUEST_ID = "EXDevLauncherRequestLoggerProtocol.requestId"
+  private static let REDIRECT_RESPONSE = "EXDevLauncherRequestLoggerProtocol.redirectResponse"
   private static let MAX_BODY_SIZE = 1_048_576
+  private static var requestIdProvider = RequestIdProvider()
   private lazy var urlSession = URLSession(
     configuration: URLSessionConfiguration.default,
     delegate: self,
@@ -40,7 +42,11 @@ class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
     // swiftlint:disable force_cast
     let mutableRequest = request as! MutableURLRequest
     // swiftlint:enable force_cast
-    let requestId = UUID().uuidString
+    let redirectResponse = URLProtocol.property(
+      forKey: EXDevLauncherRequestLoggerProtocol.REDIRECT_RESPONSE,
+      in: request
+    ) as? RedirectResponse
+    let requestId = redirectResponse?.requestId ?? EXDevLauncherRequestLoggerProtocol.requestIdProvider.create()
     URLProtocol.setProperty(
       requestId,
       forKey: EXDevLauncherRequestLoggerProtocol.REQUEST_ID,
@@ -48,7 +54,8 @@ class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
     )
     EXDevLauncherNetworkLogger.shared.emitNetworkWillBeSent(
       request: mutableRequest as URLRequest,
-      requestId: requestId
+      requestId: requestId,
+      redirectResponse: redirectResponse?.redirectResponse
     )
     dataTask_ = urlSession.dataTask(with: mutableRequest as URLRequest)
   }
@@ -125,7 +132,7 @@ class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
     completionHandler: @escaping (URLRequest?) -> Void
   ) {
     let redirectRequest: URLRequest
-    if URLProtocol.property(forKey: EXDevLauncherRequestLoggerProtocol.REQUEST_ID, in: request) != nil {
+    if let requestId = URLProtocol.property(forKey: EXDevLauncherRequestLoggerProtocol.REQUEST_ID, in: request) as? String {
       // swiftlint:disable force_cast
       let mutableRequest = request as! MutableURLRequest
       // swiftlint:enable force_cast
@@ -133,11 +140,37 @@ class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
         forKey: EXDevLauncherRequestLoggerProtocol.REQUEST_ID,
         in: mutableRequest
       )
+      URLProtocol.setProperty(
+        RedirectResponse(requestId: requestId, redirectResponse: response),
+        forKey: EXDevLauncherRequestLoggerProtocol.REDIRECT_RESPONSE,
+        in: mutableRequest
+      )
       redirectRequest = mutableRequest as URLRequest
     } else {
       redirectRequest = request
     }
     completionHandler(redirectRequest)
-    client?.urlProtocol(self, wasRedirectedTo: redirectRequest, redirectResponse: response)
+  }
+
+  /**
+   Data structure to save the response for redirection
+   */
+  private struct RedirectResponse {
+    let requestId: String
+    let redirectResponse: HTTPURLResponse
+  }
+
+  /**
+   A helper class to create a unique request ID
+   */
+  private struct RequestIdProvider {
+    private var value: UInt64 = 0
+
+    mutating func create() -> String {
+      // We could ensure the increment thread safety,
+      // because we access this function from the same thread (com.apple.CFNetwork.CustomProtocols).
+      value += 1
+      return String(value)
+    }
   }
 }
