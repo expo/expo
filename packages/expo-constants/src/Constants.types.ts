@@ -100,6 +100,7 @@ export type Manifest = {
   assets: ManifestAsset[];
   metadata: object;
   extra?: ManifestExtra;
+  assetUrlOverride?: string;
 };
 
 // @docsMissing
