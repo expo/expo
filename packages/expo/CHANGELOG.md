@@ -8,13 +8,17 @@
 
 ### 🐛 Bug fixes
 
-- Change arg in gradle `.execute()` call to null to inherit env variables from user's env ([#21712](https://github.com/expo/expo/pull/21712) by [@phoenixiguess](https://github.com/phoenixiguess))
-
 ### 💡 Others
 
 ### 📚 3rd party library updates
 
 - Update `react-native@0.71.4`. ([#21781](https://github.com/expo/expo/pull/21781) by [@kudo](https://github.com/kudo))
+
+## 48.0.8 — 2023-03-20
+
+### 🐛 Bug fixes
+
+- Change arg in gradle `.execute()` call to null to inherit env variables from user's env ([#21712](https://github.com/expo/expo/pull/21712) by [@phoenixiguess](https://github.com/phoenixiguess))
 
 ## 48.0.7 — 2023-03-14
 
