@@ -35,7 +35,7 @@ export function requireNativeViewManager(viewName) {
     const ReactNativeComponent = requireCachedNativeComponent(reactNativeViewName);
     const proxiedPropsNames = viewManagerConfig?.propsNames ?? [];
     class NativeComponent extends React.PureComponent {
-        displayName = viewName;
+        static displayName = viewName;
         // This will be accessed from native when the prototype functions are called,
         // in order to find the associated native view.
         nativeTag = null;
@@ -48,17 +48,26 @@ export function requireNativeViewManager(viewName) {
             return React.createElement(ReactNativeComponent, { ...nativeProps, proxiedProperties: proxiedProps });
         }
     }
-    const nativeModule = requireNativeModule(viewName);
-    const nativeViewPrototype = nativeModule.ViewPrototype;
-    if (nativeViewPrototype) {
-        // Temporarily each function is wrapped to pass the native tag as the argument.
-        // In the future, native will automatically get the tag from `this` and then we can simply use
-        // `Object.assign(NativeComponent.prototype, nativeViewPrototype)` instead.
-        for (const key of Object.getOwnPropertyNames(nativeViewPrototype)) {
-            NativeComponent.prototype[key] = function (...args) {
-                return nativeViewPrototype[key].call(this, this.nativeTag, ...args);
-            };
+    try {
+        const nativeModule = requireNativeModule(viewName);
+        const nativeViewPrototype = nativeModule.ViewPrototype;
+        if (nativeViewPrototype) {
+            // Temporarily each function is wrapped to pass the native tag as the argument.
+            // In the future, native will automatically get the tag from `this` and then we can simply use
+            // `Object.assign(NativeComponent.prototype, nativeViewPrototype)` instead.
+            for (const key of Object.getOwnPropertyNames(nativeViewPrototype)) {
+                NativeComponent.prototype[key] = function (...args) {
+                    return nativeViewPrototype[key].call(this, this.nativeTag, ...args);
+                };
+            }
         }
+    }
+    catch {
+        // `requireNativeModule` may throw an error when the native module cannot be found.
+        // In some tests we don't mock the entire modules, but we do want to mock native views. For now,
+        // until we still have to support the legacy modules proxy and don't have better ways to mock,
+        // let's just gracefully skip assigning the prototype functions.
+        // See: https://github.com/expo/expo/blob/main/packages/expo-modules-core/src/__tests__/NativeViewManagerAdapter-test.native.tsx
     }
     return NativeComponent;
 }
