@@ -40,6 +40,9 @@ plugins {
 }
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE
 
+def reactProperties = new Properties()
+file("${project(':ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
+
 allprojects {
   repositories {
     // For non-detach
@@ -100,6 +103,13 @@ allprojects {
         .because("Building React Native from source")
     }
     // WHEN_DISTRIBUTING_REMOVE_TO_HERE
+
+    resolutionStrategy.force(
+      "com.facebook.fresco:fbcore:${reactProperties.getProperty('FRESCO_VERSION')}",
+      "com.facebook.fresco:fresco:${reactProperties.getProperty('FRESCO_VERSION')}",
+      "com.facebook.fresco:imagepipeline-okhttp3:${reactProperties.getProperty('FRESCO_VERSION')}",
+      "com.facebook.fresco:ui-common:${reactProperties.getProperty('FRESCO_VERSION')}",
+    )
   }
 }
 
