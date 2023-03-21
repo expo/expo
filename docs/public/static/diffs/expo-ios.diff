@@ -2,16 +2,15 @@ diff --git a/ios/MyApp/AppDelegate.h b/ios/MyApp/AppDelegate.h
 index ef1de86..d3d75b0 100644
 --- a/ios/MyApp/AppDelegate.h
 +++ b/ios/MyApp/AppDelegate.h
-@@ -1,7 +1,8 @@
- #import <React/RCTBridgeDelegate.h>
+@@ -1,6 +1,7 @@
+ #import <RCTAppDelegate.h>
 +#import <Expo/Expo.h>
  #import <UIKit/UIKit.h>
- 
--@interface AppDelegate : UIResponder <UIApplicationDelegate, RCTBridgeDelegate>
-+@interface AppDelegate : EXAppDelegateWrapper <UIApplicationDelegate, RCTBridgeDelegate>
- 
- @property (nonatomic, strong) UIWindow *window;
- 
+
+-@interface AppDelegate : RCTAppDelegate
++@interface AppDelegate : EXAppDelegateWrapper
+
+ @end
 diff --git a/ios/MyApp/AppDelegate.mm b/ios/MyApp/AppDelegate.mm
 index da9f60a..0164063 100644
 --- a/ios/MyApp/AppDelegate.mm
@@ -19,15 +18,15 @@ index da9f60a..0164063 100644
 @@ -31,7 +31,7 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
  {
    RCTAppSetupPrepareApp(application);
- 
+
 -  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
 +  RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
- 
+
  #if RCT_NEW_ARCH_ENABLED
    _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
 @@ -50,10 +50,11 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
    }
- 
+
 -  UIView *rootView = RCTAppSetupDefaultRootView(bridge, @"main", nil);
 +  UIView *rootView = [self.reactDelegate createRootViewWithBridge:bridge moduleName:@"main" initialProperties:nil];
 
@@ -46,15 +45,20 @@ diff --git a/ios/Podfile b/ios/Podfile
 index 99b1b8d..71524e2 100644
 --- a/ios/Podfile
 +++ b/ios/Podfile
-@@ -1,9 +1,18 @@
+@@ -1,7 +1,8 @@
 +require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
  require_relative '../node_modules/react-native/scripts/react_native_pods'
  require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
--platform :ios, '11.0'
-+platform :ios, '12.0'
+-platform :ios, min_ios_version_supported
++platform :ios, '13.0'
+ prepare_react_native_project!
 
- target 'ModuleDiff' do
+ # If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
+@@ -22,6 +23,14 @@ if linkage != nil
+ end
+
+ target 'MyApp' do
 +  use_expo_modules!
 +  post_integrate do |installer|
 +    begin
@@ -64,3 +68,170 @@ index 99b1b8d..71524e2 100644
 +    end
 +  end
    config = use_native_modules!
+diff --git a/ios/MyApp.xcodeproj/project.pbxproj b/ios/MyApp.xcodeproj/project.pbxproj
+index df60006..e5ee03a 100644
+--- a/ios/MyApp.xcodeproj/project.pbxproj
++++ b/ios/MyApp.xcodeproj/project.pbxproj
+@@ -12,6 +12,8 @@
+ 		13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB01A68108700A75B9A /* AppDelegate.mm */; };
+ 		13B07FBF1A68108700A75B9A /* Images.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = 13B07FB51A68108700A75B9A /* Images.xcassets */; };
+ 		13B07FC11A68108700A75B9A /* main.m in Sources */ = {isa = PBXBuildFile; fileRef = 13B07FB71A68108700A75B9A /* main.m */; };
++		1876D0335D4D8BF739293668 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = F16C6900E080BF5D9ADA2752 /* ExpoModulesProvider.swift */; };
++		450FFA626F93BE745B6B7E66 /* ExpoModulesProvider.swift in Sources */ = {isa = PBXBuildFile; fileRef = 9BFC5DD2981C00AF2EB5A347 /* ExpoModulesProvider.swift */; };
+ 		7699B88040F8A987B510C191 /* libPods-MyApp-MyAppTests.a in Frameworks */ = {isa = PBXBuildFile; fileRef = 19F6CBCC0A4E27FBF8BF4A61 /* libPods-MyApp-MyAppTests.a */; };
+ 		81AB9BB82411601600AC10FF /* LaunchScreen.storyboard in Resources */ = {isa = PBXBuildFile; fileRef = 81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */; };
+ /* End PBXBuildFile section */
+@@ -43,7 +45,9 @@
+ 		5DCACB8F33CDC322A6C60F78 /* libPods-MyApp.a */ = {isa = PBXFileReference; explicitFileType = archive.ar; includeInIndex = 0; path = "libPods-MyApp.a"; sourceTree = BUILT_PRODUCTS_DIR; };
+ 		81AB9BB72411601600AC10FF /* LaunchScreen.storyboard */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = file.storyboard; name = LaunchScreen.storyboard; path = MyApp/LaunchScreen.storyboard; sourceTree = "<group>"; };
+ 		89C6BE57DB24E9ADA2F236DE /* Pods-MyApp-MyAppTests.release.xcconfig */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = text.xcconfig; name = "Pods-MyApp-MyAppTests.release.xcconfig"; path = "Target Support Files/Pods-MyApp-MyAppTests/Pods-MyApp-MyAppTests.release.xcconfig"; sourceTree = "<group>"; };
++		9BFC5DD2981C00AF2EB5A347 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-MyApp-MyAppTests/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+ 		ED297162215061F000B7C4FE /* JavaScriptCore.framework */ = {isa = PBXFileReference; lastKnownFileType = wrapper.framework; name = JavaScriptCore.framework; path = System/Library/Frameworks/JavaScriptCore.framework; sourceTree = SDKROOT; };
++		F16C6900E080BF5D9ADA2752 /* ExpoModulesProvider.swift */ = {isa = PBXFileReference; includeInIndex = 1; lastKnownFileType = sourcecode.swift; name = ExpoModulesProvider.swift; path = "Pods/Target Support Files/Pods-MyApp/ExpoModulesProvider.swift"; sourceTree = "<group>"; };
+ /* End PBXFileReference section */
+
+ /* Begin PBXFrameworksBuildPhase section */
+@@ -122,6 +126,7 @@
+ 				83CBBA001A601CBA00E9B192 /* Products */,
+ 				2D16E6871FA4F8E400B85C8A /* Frameworks */,
+ 				BBD78D7AC51CEA395F1C20DB /* Pods */,
++				B41E76F702DB3BEDA92C60DA /* ExpoModulesProviders */,
+ 			);
+ 			indentWidth = 2;
+ 			sourceTree = "<group>";
+@@ -137,6 +142,23 @@
+ 			name = Products;
+ 			sourceTree = "<group>";
+ 		};
++		B1D29681F7F714BE9A50B2B6 /* MyApp */ = {
++			isa = PBXGroup;
++			children = (
++				F16C6900E080BF5D9ADA2752 /* ExpoModulesProvider.swift */,
++			);
++			name = MyApp;
++			sourceTree = "<group>";
++		};
++		B41E76F702DB3BEDA92C60DA /* ExpoModulesProviders */ = {
++			isa = PBXGroup;
++			children = (
++				B1D29681F7F714BE9A50B2B6 /* MyApp */,
++				DE79EC706E98CA0D82E71926 /* MyAppTests */,
++			);
++			name = ExpoModulesProviders;
++			sourceTree = "<group>";
++		};
+ 		BBD78D7AC51CEA395F1C20DB /* Pods */ = {
+ 			isa = PBXGroup;
+ 			children = (
+@@ -148,6 +170,14 @@
+ 			path = Pods;
+ 			sourceTree = "<group>";
+ 		};
++		DE79EC706E98CA0D82E71926 /* MyAppTests */ = {
++			isa = PBXGroup;
++			children = (
++				9BFC5DD2981C00AF2EB5A347 /* ExpoModulesProvider.swift */,
++			);
++			name = MyAppTests;
++			sourceTree = "<group>";
++		};
+ /* End PBXGroup section */
+
+ /* Begin PBXNativeTarget section */
+@@ -405,6 +435,7 @@
+ 			buildActionMask = 2147483647;
+ 			files = (
+ 				00E356F31AD99517003FC87E /* MyAppTests.m in Sources */,
++				450FFA626F93BE745B6B7E66 /* ExpoModulesProvider.swift in Sources */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -414,6 +445,7 @@
+ 			files = (
+ 				13B07FBC1A68108700A75B9A /* AppDelegate.mm in Sources */,
+ 				13B07FC11A68108700A75B9A /* main.m in Sources */,
++				1876D0335D4D8BF739293668 /* ExpoModulesProvider.swift in Sources */,
+ 			);
+ 			runOnlyForDeploymentPostprocessing = 0;
+ 		};
+@@ -438,7 +470,7 @@
+ 					"$(inherited)",
+ 				);
+ 				INFOPLIST_FILE = MyAppTests/Info.plist;
+-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
++				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					"$(inherited)",
+ 					"@executable_path/Frameworks",
+@@ -449,6 +481,7 @@
+ 					"-lc++",
+ 					"$(inherited)",
+ 				);
++				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
+ 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MyApp.app/MyApp";
+@@ -462,7 +495,7 @@
+ 				BUNDLE_LOADER = "$(TEST_HOST)";
+ 				COPY_PHASE_STRIP = NO;
+ 				INFOPLIST_FILE = MyAppTests/Info.plist;
+-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
++				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					"$(inherited)",
+ 					"@executable_path/Frameworks",
+@@ -473,6 +506,7 @@
+ 					"-lc++",
+ 					"$(inherited)",
+ 				);
++				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
+ 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+ 				PRODUCT_NAME = "$(TARGET_NAME)";
+ 				TEST_HOST = "$(BUILT_PRODUCTS_DIR)/MyApp.app/MyApp";
+@@ -498,6 +532,7 @@
+ 					"-ObjC",
+ 					"-lc++",
+ 				);
++				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
+ 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+ 				PRODUCT_NAME = MyApp;
+ 				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+@@ -524,6 +559,7 @@
+ 					"-ObjC",
+ 					"-lc++",
+ 				);
++				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
+ 				PRODUCT_BUNDLE_IDENTIFIER = "org.reactjs.native.example.$(PRODUCT_NAME:rfc1034identifier)";
+ 				PRODUCT_NAME = MyApp;
+ 				SWIFT_VERSION = 5.0;
+@@ -580,7 +616,7 @@
+ 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+ 				GCC_WARN_UNUSED_FUNCTION = YES;
+ 				GCC_WARN_UNUSED_VARIABLE = YES;
+-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
++				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					/usr/lib/swift,
+ 					"$(inherited)",
+@@ -645,7 +681,7 @@
+ 				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+ 				GCC_WARN_UNUSED_FUNCTION = YES;
+ 				GCC_WARN_UNUSED_VARIABLE = YES;
+-				IPHONEOS_DEPLOYMENT_TARGET = 12.4;
++				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
+ 				LD_RUNPATH_SEARCH_PATHS = (
+ 					/usr/lib/swift,
+ 					"$(inherited)",
+diff --git a/ios/MyApp/AppDelegate.h b/ios/MyApp/AppDelegate.h
+index 5d28082..a7ebb51 100644
+--- a/ios/MyApp/AppDelegate.h
++++ b/ios/MyApp/AppDelegate.h
+@@ -1,6 +1,7 @@
+ #import <RCTAppDelegate.h>
++#import <Expo/Expo.h>
+ #import <UIKit/UIKit.h>
+
+-@interface AppDelegate : RCTAppDelegate
++@interface AppDelegate : EXAppDelegateWrapper
+
+ @end
