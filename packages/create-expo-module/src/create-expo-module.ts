@@ -3,7 +3,7 @@ import chalk from 'chalk';
 import { Command } from 'commander';
 import downloadTarball from 'download-tarball';
 import ejs from 'ejs';
-import { sync } from 'find-up';
+import findUp from 'find-up';
 import fs from 'fs-extra';
 import { boolish } from 'getenv';
 import path from 'path';
@@ -49,8 +49,8 @@ const IGNORES_PATHS = [
 // Url to the documentation on Expo Modules
 const DOCS_URL = 'https://docs.expo.dev/modules';
 
-const getCorrectLocalDirectory = (targetOrSlug: string) => {
-  const packageJsonPath = sync('package.json', { cwd: CWD });
+async function getCorrectLocalDirectory(targetOrSlug: string) {
+  const packageJsonPath = await findUp('package.json', { cwd: CWD });
   if (!packageJsonPath) {
     console.log(
       chalk.red.bold(
@@ -65,7 +65,7 @@ const getCorrectLocalDirectory = (targetOrSlug: string) => {
     return null;
   }
   return path.join(packageJsonPath, '..', 'modules', targetOrSlug);
-};
+}
 
 /**
  * The main function of the command.
@@ -76,7 +76,7 @@ const getCorrectLocalDirectory = (targetOrSlug: string) => {
 async function main(target: string | undefined, options: CommandOptions) {
   const slug = await askForPackageSlugAsync(target, options.local);
   const targetDir = options.local
-    ? getCorrectLocalDirectory(target || slug)
+    ? await getCorrectLocalDirectory(target || slug)
     : path.join(CWD, target || slug);
 
   if (!targetDir) {
