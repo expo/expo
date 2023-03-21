@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Rewrite `resolveEntryPoint` from `@expo/config/paths`.
+- Rewrite `resolveEntryPoint` from `@expo/config/paths`. ([#21725](https://github.com/expo/expo/pull/21725) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 

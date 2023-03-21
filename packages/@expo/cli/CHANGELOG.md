@@ -26,7 +26,7 @@
 
 - Update fixtures. ([#21397](https://github.com/expo/expo/pull/21397) by [@EvanBacon](https://github.com/EvanBacon))
 - Upgrade e2e tests to SDK 47. ([#21335](https://github.com/expo/expo/pull/21335) by [@EvanBacon](https://github.com/EvanBacon))
-- Simplify entry file resolution function.
+- Simplify entry file resolution function. ([#21725](https://github.com/expo/expo/pull/21725) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.6.1 — 2023-02-15
 
