@@ -52,6 +52,7 @@
 /packages/expo-media-library                    @tsapeta @lukmccall
 /packages/expo-module-scripts                   @ide
 /packages/expo-module-template                  @tsapeta @EvanBacon
+/packages/expo-module-template-local            @aleqsio @tsapeta
 /packages/expo-modules-autolinking              @tsapeta @kudo @lukmccall
 /packages/expo-modules-core                     @tsapeta @kudo @lukmccall
 /packages/expo-navigation-bar                   @EvanBacon

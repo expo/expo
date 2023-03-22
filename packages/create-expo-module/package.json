@@ -43,6 +43,7 @@
     "debug": "^4.3.4",
     "download-tarball": "^2.0.0",
     "ejs": "^3.1.7",
+    "find-up": "^5.0.0",
     "fs-extra": "^10.0.0",
     "getenv": "^1.0.0",
     "github-username": "^6.0.0",
@@ -53,6 +54,7 @@
   "devDependencies": {
     "@tsconfig/node14": "^1.0.3",
     "@types/ejs": "^3.1.0",
+    "@types/find-up": "^4.0.0",
     "@types/prompts": "^2.0.14",
     "expo-module-scripts": "^3.0.0"
   }
