@@ -5,7 +5,7 @@
 class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
   private static let REQUEST_ID = "EXDevLauncherRequestLoggerProtocol.requestId"
   private static let REDIRECT_RESPONSE = "EXDevLauncherRequestLoggerProtocol.redirectResponse"
-  private static let MAX_BODY_SIZE = 1_048_576
+  static let MAX_BODY_SIZE = 1_048_576
   private static var requestIdProvider = RequestIdProvider()
   private lazy var urlSession = URLSession(
     configuration: URLSessionConfiguration.default,
@@ -172,5 +172,46 @@ class EXDevLauncherRequestLoggerProtocol: URLProtocol, URLSessionDataDelegate {
       value += 1
       return String(value)
     }
+  }
+}
+
+/**
+ `URLRequest.httpBodyData()` extension to read the underlying `httpBodyStream` as Data.
+ Only read at maximum `EXDevLauncherRequestLoggerProtocol.MAX_BODY_SIZE` bytes.
+ */
+extension URLRequest {
+  func httpBodyData() -> Data? {
+    if let httpBody = self.httpBody {
+      return httpBody
+    }
+
+    if let contentLength = self.allHTTPHeaderFields?["Content-Length"],
+      let contentLengthInt = Int(contentLength),
+      contentLengthInt > EXDevLauncherRequestLoggerProtocol.MAX_BODY_SIZE {
+      return nil
+    }
+    guard let stream = self.httpBodyStream else {
+      return nil
+    }
+
+    let bufferSize: Int = 8192
+    let buffer = UnsafeMutablePointer<UInt8>.allocate(capacity: bufferSize)
+
+    stream.open()
+    defer {
+      buffer.deallocate()
+      stream.close()
+    }
+
+    var data = Data()
+    while stream.hasBytesAvailable {
+      let chunkSize = stream.read(buffer, maxLength: bufferSize)
+      if data.count + chunkSize > EXDevLauncherRequestLoggerProtocol.MAX_BODY_SIZE {
+        return nil
+      }
+      data.append(buffer, count: chunkSize)
+    }
+
+    return data
   }
 }

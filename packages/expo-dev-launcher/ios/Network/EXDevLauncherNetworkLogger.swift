@@ -36,17 +36,21 @@ public class EXDevLauncherNetworkLogger: NSObject {
    */
   func emitNetworkWillBeSent(request: URLRequest, requestId: String, redirectResponse: HTTPURLResponse?) {
     let now = Date().timeIntervalSince1970
+    var requestParams: [String: Any] = [
+      "url": request.url?.absoluteString,
+      "method": request.httpMethod,
+      "headers": request.allHTTPHeaderFields
+    ]
+    if let httpBody = request.httpBodyData() {
+      requestParams["postData"] = String(data: httpBody, encoding: .utf8)
+    }
     var params = [
       "requestId": requestId,
       "loaderId": "",
       "documentURL": "mobile",
       "initiator": ["type": "script"],
       "redirectHasExtraInfo": false,
-      "request": [
-        "url": request.url?.absoluteString,
-        "method": request.httpMethod,
-        "headers": request.allHTTPHeaderFields
-      ],
+      "request": requestParams,
       "referrerPolicy": "no-referrer",
       "type": "Fetch",
       "timestamp": now,
