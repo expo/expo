@@ -48,6 +48,7 @@ class SuspendFunctionComponent(
   override fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject) {
     jsObject.registerAsyncFunction(
       name,
+      takesOwner,
       argsCount,
       desiredArgsTypes.map { it.getCppRequiredTypes() }.toTypedArray()
     ) { args, bridgePromise ->

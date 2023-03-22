@@ -9,8 +9,11 @@ import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.iterator
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.JavaScriptModuleObject
+import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.recycle
 import expo.modules.kotlin.types.AnyType
+import kotlin.reflect.full.isSubtypeOf
+import kotlin.reflect.typeOf
 
 /**
  * Base class of all exported functions
@@ -20,6 +23,11 @@ abstract class AnyFunction(
   protected val desiredArgsTypes: Array<AnyType>
 ) {
   internal val argsCount get() = desiredArgsTypes.size
+
+  internal var canTakeOwner: Boolean = false
+
+  internal val takesOwner: Boolean
+    get() = canTakeOwner && desiredArgsTypes.firstOrNull()?.kType?.isSubtypeOf(typeOf<JavaScriptObject>()) == true
 
   /**
    * A minimum number of arguments the functions needs which equals to `argumentsCount` reduced by the number of trailing optional arguments.
