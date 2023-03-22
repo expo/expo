@@ -8,6 +8,7 @@ export type CommandOptions = {
     withReadme: boolean;
     withChangelog: boolean;
     example: boolean;
+    local: boolean;
 };
 /**
  * Represents an object that is passed to `ejs` when rendering the template.
@@ -25,6 +26,17 @@ export type SubstitutionData = {
     author: string;
     license: string;
     repo: string;
+    type: 'remote';
+};
+export type LocalSubstitutionData = {
+    project: {
+        slug: string;
+        name: string;
+        package: string;
+        moduleName: string;
+        viewName: string;
+    };
+    type: 'local';
 };
 export type CustomPromptObject = PromptObject & {
     name: string;
