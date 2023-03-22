@@ -32,7 +32,7 @@ class JavaScriptViewModule {
     inlineModule {
       Name("TestModule")
       View(android.view.View::class) {
-        AsyncFunction("viewFunction") {  ->
+        AsyncFunction("viewFunction") { ->
           123
         }
       }
