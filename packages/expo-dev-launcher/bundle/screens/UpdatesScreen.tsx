@@ -13,8 +13,7 @@ import {
   scale,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Animated, Linking } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { Animated, Linking, ScrollView } from 'react-native';
 
 import { BasicButton } from '../components/BasicButton';
 import { EASUpdateRow } from '../components/EASUpdatesRows';

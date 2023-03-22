@@ -8,7 +8,6 @@ import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.shell.MainReactPackage
-import devmenu.com.swmansion.gesturehandler.react.RNGestureHandlerPackage
 import devmenu.com.th3rdwave.safeareacontext.SafeAreaContextPackage
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.DevLauncherPackage
@@ -44,7 +43,6 @@ class DevLauncherClientHost(
     return listOf(
       MainReactPackage(null),
       DevLauncherPackage(),
-      RNGestureHandlerPackage(),
       SafeAreaContextPackage(),
     ) +
       devMenuRelatedPackages +

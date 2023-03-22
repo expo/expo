@@ -12,8 +12,7 @@ import {
   Heading,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Linking, RefreshControl } from 'react-native';
-import { ScrollView } from 'react-native-gesture-handler';
+import { Linking, RefreshControl, ScrollView } from 'react-native';
 
 import { ActivityIndicator } from '../components/ActivityIndicator';
 import { AppHeader } from '../components/AppHeader';

@@ -12,7 +12,6 @@ import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.shell.MainReactPackage
-import devmenu.com.swmansion.gesturehandler.react.RNGestureHandlerPackage
 import devmenu.com.th3rdwave.safeareacontext.SafeAreaContextPackage
 import expo.modules.devmenu.react.DevMenuReactInternalSettings
 import expo.modules.devmenu.react.createNonDebuggableJavaScriptExecutorFactory
@@ -29,7 +28,6 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
     val packages = mutableListOf(
       MainReactPackage(null),
       DevMenuPackage(),
-      RNGestureHandlerPackage(),
       SafeAreaContextPackage()
     )
 

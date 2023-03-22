@@ -7,11 +7,6 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Weverything"
 
-
-#if __has_include("DevMenuRNGestureHandlerModule.h")
-#import "DevMenuRNGestureHandlerModule.h"
-#endif
-
 #if __has_include("DevMenuRNCSafeAreaProviderManager.h")
 #import "DevMenuRNCSafeAreaProviderManager.h"
 #endif
@@ -27,10 +22,6 @@
 + (NSArray<id<RCTBridgeModule>>*)vendoredModules:(RCTBridge *)bridge
 {
   NSMutableArray<id<RCTBridgeModule>> *modules = [NSMutableArray new];
-#if __has_include("DevMenuRNGestureHandlerModule.h")
-  [modules addObject:[DevMenuRNGestureHandlerModule new]];
-  [modules addObject:[DevMenuRNGestureHandlerButtonManager new]];
-#endif
 #if __has_include("DevMenuRNCSafeAreaProviderManager.h")
   [modules addObject:[DevMenuRNCSafeAreaProviderManager new]];
   [modules addObject:[DevMenuRNCSafeAreaViewManager new]];

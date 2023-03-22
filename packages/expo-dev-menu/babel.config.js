@@ -15,21 +15,11 @@ module.exports = function (api) {
       presets: ['babel-preset-expo'],
     };
   } else {
-    const gestureHandler = tryResolveModule('./vendored/react-native-gesture-handler/src/index.ts');
-    const gestureHandlerJest = tryResolveModule(
-      './vendored/react-native-gesture-handler/jestSetup.js'
-    );
     const safeAreaContext = tryResolveModule(
       './vendored/react-native-safe-area-context/src/index.tsx'
     );
 
     const alias = {};
-    if (gestureHandler) {
-      alias['react-native-gesture-handler/jestSetup'] = gestureHandlerJest;
-      alias['react-native-gesture-handler'] = gestureHandler;
-    }
-
-
     if (safeAreaContext) {
       alias['react-native-safe-area-context'] = safeAreaContext;
     }

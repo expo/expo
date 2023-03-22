@@ -17,7 +17,9 @@ const Extensions = createStackNavigator<ExtensionsStackParamList>();
 
 export function ExtensionsStack() {
   return (
-    <Extensions.Navigator screenOptions={{ headerMode: 'float' }} detachInactiveScreens={false}>
+    <Extensions.Navigator
+      screenOptions={{ headerMode: 'float', gestureEnabled: false }}
+      detachInactiveScreens={false}>
       <Extensions.Screen
         name="Extensions"
         component={ExtensionsScreen}

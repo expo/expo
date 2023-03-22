@@ -34,19 +34,6 @@ Pod::Spec.new do |s|
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
 
-  s.subspec 'GestureHandler' do |handler|
-    if File.exist?("vendored/react-native-gesture-handler/DevMenuRNGestureHandler.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
-      handler.source_files = "vendored/react-native-gesture-handler/**/*.{h}"
-      handler.vendored_frameworks = "vendored/react-native-gesture-handler/DevMenuRNGestureHandler.xcframework"
-      handler.private_header_files = 'vendored/react-native-gesture-handler/**/*.h'
-    else
-      handler.source_files = 'vendored/react-native-gesture-handler/**/*.{h,m}'
-      handler.private_header_files = 'vendored/react-native-gesture-handler/**/*.h'
-
-      handler.compiler_flags = '-w -Xanalyzer -analyzer-disable-all-checks'
-    end
-  end
-
   s.subspec 'SafeAreaView' do |safearea|
     if File.exist?("vendored/react-native-safe-area-context/dev-menu-react-native-safe-area-context.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
       safearea.source_files = "vendored/react-native-safe-area-context/**/*.{h}"
@@ -61,7 +48,6 @@ Pod::Spec.new do |s|
   end
 
   s.subspec 'Vendored' do |vendored|
-    vendored.dependency "expo-dev-menu/GestureHandler"
     vendored.dependency "expo-dev-menu/SafeAreaView"
   end
 
