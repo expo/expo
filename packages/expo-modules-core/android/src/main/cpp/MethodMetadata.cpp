@@ -150,7 +150,8 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
   std::vector<jobject> result(count);
 
   const auto getCurrentArg = [&thisValue, args, takesOwner = takesOwner](
-    size_t index) -> const jsi::Value & {
+    size_t index
+  ) -> const jsi::Value & {
     if (!takesOwner) {
       return args[index];
     } else {
