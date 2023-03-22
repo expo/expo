@@ -244,10 +244,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return;
     }
 
-    const off = metroWatchTypeScriptFiles(
-      this.projectRoot,
-      { server: this.instance!.server, metro: this.metro, tsconfig: true },
-      async () => {
+    const off = metroWatchTypeScriptFiles({
+      projectRoot: this.projectRoot,
+      server: this.instance!.server,
+      metro: this.metro,
+      tsconfig: true,
+      callback: async () => {
         // Run once, this prevents the TypeScript project prerequisite from running on every file change.
         off();
         const { TypeScriptProjectPrerequisite } = await import(
@@ -267,8 +269,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           );
           Log.exception(error);
         }
-      }
-    );
+      },
+    });
   }
 
   public async startTypeScriptServices() {

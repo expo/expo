@@ -24,92 +24,112 @@ export interface SetupTypedRoutesOptions {
 export async function setupTypedRoutes({ server, metro, typesDirectory }: SetupTypedRoutesOptions) {
   const appRoot = path.resolve(env.EXPO_ROUTER_APP_ROOT);
 
-  const staticRoutes = new Set<string>();
-  const dynamicRoutes = new Set<string>();
-  const dynamicRouteTemplates = new Set<string>();
+  const staticRoutes = new Map<string, string[]>();
+  const dynamicRoutes = new Map<string, string[]>();
 
-  const addFilePath = (filePath: string) => {
-    if (filePath.includes('_layout')) {
-      return;
-    }
-
-    // Remove the appDir prefix, extentions and index routes
-    const route = filePath
+  const filePathToRoute = (filePath: string) => {
+    return filePath
       .replace(appRoot, '')
       .replace(/index.[jt]sx?/, '')
       .replace(/\.[jt]sx?$/, '');
+  };
+
+  const addFilePath = (filePath: string): boolean => {
+    if (filePath.includes('_layout')) {
+      return false;
+    }
+
+    const route = filePathToRoute(filePath);
+
+    // We have already processed this file
+    if (staticRoutes.has(route) || dynamicRoutes.has(route)) {
+      return false;
+    }
 
     const dynamicParams = new Set(
       [...route.matchAll(CAPTURE_DYNAMIC_PARAMS)].map((match) => match[1])
     );
     const isDynamic = dynamicParams.size > 0;
 
-    if (isDynamic) {
-      dynamicRouteTemplates.add(route);
+    const addRoute = (originalRoute: string, route: string) => {
+      if (isDynamic) {
+        let set = dynamicRoutes.get(originalRoute);
 
-      dynamicRoutes.add(
-        route.replaceAll(CATCH_ALL, '${CatchAllSlug<T>}').replaceAll(SLUG, '${SafeSlug<T>}')
-      );
-    } else {
-      staticRoutes.add(route);
-    }
+        if (!set) {
+          set = [];
+          dynamicRoutes.set(originalRoute, set);
+        }
+
+        set.push(
+          route.replaceAll(CATCH_ALL, '${CatchAllSlug<T>}').replaceAll(SLUG, '${SafeSlug<T>}')
+        );
+      } else {
+        let set = staticRoutes.get(originalRoute);
+
+        if (!set) {
+          set = [];
+          staticRoutes.set(originalRoute, set);
+        }
+
+        set.push(route);
+      }
+    };
+
+    addRoute(route, route);
 
     // Does this route have a group? eg /(group)
     if (route.includes('/(')) {
       const routeWithoutGroups = route.replace(/\/\(.+?\)/g, '');
-
-      if (isDynamic) {
-        dynamicRouteTemplates.add(routeWithoutGroups);
-
-        dynamicRoutes.add(
-          routeWithoutGroups
-            .replaceAll(CATCH_ALL, '${CatchAllSlug<T>}')
-            .replaceAll(SLUG, '${SafeSlug<T>}')
-        );
-      } else {
-        staticRoutes.add(routeWithoutGroups);
-      }
+      addRoute(route, routeWithoutGroups);
 
       // If there are multiple groups, we need to expand them
       // eg /(test1,test2)/page => /test1/page & /test2/page
       for (const routeWithSingleGroup of expandGroupRoutes(route)) {
-        if (isDynamic) {
-          dynamicRouteTemplates.add(routeWithSingleGroup);
-
-          dynamicRoutes.add(
-            routeWithSingleGroup
-              .replaceAll(CATCH_ALL, '${CatchAllSlug<T>}')
-              .replaceAll(SLUG, '${SafeSlug<T>}')
-          );
-        } else {
-          staticRoutes.add(routeWithSingleGroup);
-        }
+        addRoute(route, routeWithSingleGroup);
       }
     }
+
+    return true;
   };
 
   // Setup out watcher first
-  metroWatchTypeScriptFiles(
-    appRoot,
-    {
-      server,
-      metro,
-    },
-    async (filePath: string) => {
-      if (staticRoutes.has(filePath) || staticRoutes.has(filePath)) {
-        return;
+  metroWatchTypeScriptFiles({
+    projectRoot: appRoot,
+    server,
+    metro,
+    eventTypes: ['add', 'delete', 'change'],
+    async callback({ filePath, type }) {
+      let shouldRegenerate = false;
+      if (type === 'delete') {
+        const route = filePathToRoute(filePath);
+        staticRoutes.delete(route);
+        dynamicRoutes.delete(route);
+        shouldRegenerate = true;
+      } else {
+        shouldRegenerate = addFilePath(filePath);
       }
 
-      addFilePath(filePath);
-      regenerateRouterDotTS(typesDirectory, staticRoutes, dynamicRoutes, dynamicRouteTemplates);
-    }
-  );
+      if (shouldRegenerate) {
+        regenerateRouterDotTS(
+          typesDirectory,
+          new Set([...staticRoutes.values()].flat()),
+          new Set(dynamicRoutes.keys()),
+          new Set([...dynamicRoutes.values()].flat())
+        );
+      }
+    },
+  });
 
   // Do we need to walk the entire tree on startup?
   // Idea: Store the list of files in the last write, then simply check Git for what files have changed
   await walk(appRoot, addFilePath);
 
-  regenerateRouterDotTS(typesDirectory, staticRoutes, dynamicRoutes, dynamicRouteTemplates);
+  regenerateRouterDotTS(
+    typesDirectory,
+    new Set([...staticRoutes.values()].flat()),
+    new Set(dynamicRoutes.keys()),
+    new Set([...dynamicRoutes.values()].flat())
+  );
 }
 
 /**

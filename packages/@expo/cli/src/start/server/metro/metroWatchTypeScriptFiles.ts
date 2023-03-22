@@ -4,40 +4,48 @@ import type { ServerLike } from '../BundlerDevServer';
 
 const debug = require('debug')('expo:start:server:metro:waitForTypescript') as typeof console.log;
 
+export interface MetroWatchTypeScriptFilesOptions {
+  projectRoot: string;
+  metro: import('metro').Server;
+  server: ServerLike;
+  tsconfig?: boolean;
+  callback: (event: WatchEvent) => void;
+  eventTypes?: string[];
+}
+
+interface WatchEvent {
+  filePath: string;
+  metadata?: {
+    type: 'f' | 'd' | 'l'; // Regular file / Directory / Symlink
+  } | null;
+  type: string;
+}
+
 /**
  * Use the native file watcher / Metro ruleset to detect if a
  * TypeScript file is added to the project during development.
  */
-export function metroWatchTypeScriptFiles(
-  projectRoot: string,
-  runner: {
-    metro: import('metro').Server;
-    server: ServerLike;
-    tsconfig?: boolean;
-  },
-  callback: (filePath: string) => void
-): () => void {
-  const watcher = runner.metro.getBundler().getBundler().getWatcher();
+export function metroWatchTypeScriptFiles({
+  metro,
+  server,
+  projectRoot,
+  tsconfig,
+  callback,
+  eventTypes = ['add'],
+}: MetroWatchTypeScriptFilesOptions): () => void {
+  const watcher = metro.getBundler().getBundler().getWatcher();
 
   const tsconfigPath = path.join(projectRoot, 'tsconfig.json');
 
-  const listener = ({
-    eventsQueue,
-  }: {
-    eventsQueue: {
-      filePath: string;
-      metadata?: {
-        type: 'f' | 'd' | 'l'; // Regular file / Directory / Symlink
-      } | null;
-      type: string;
-    }[];
-  }) => {
+  const listener = ({ eventsQueue }: { eventsQueue: WatchEvent[] }) => {
     for (const event of eventsQueue) {
       if (
-        event.type === 'add' &&
+        eventTypes.includes(event.type) &&
         event.metadata?.type !== 'd' &&
         // We need to ignore node_modules because Metro will add all of the files in node_modules to the watcher.
-        !/node_modules/.test(event.filePath)
+        !/node_modules/.test(event.filePath) &&
+        // Ignore declaration files
+        !/\.d\.ts$/.test(event.filePath)
       ) {
         const { filePath } = event;
         // Is TypeScript?
@@ -45,10 +53,10 @@ export function metroWatchTypeScriptFiles(
           // If the user adds a TypeScript file to the observable files in their project.
           /\.tsx?$/.test(filePath) ||
           // Or if the user adds a tsconfig.json file to the project root.
-          (runner.tsconfig && filePath === tsconfigPath)
+          (tsconfig && filePath === tsconfigPath)
         ) {
           debug('Detected TypeScript file changed in the project: ', filePath);
-          callback(filePath);
+          callback(event);
           return;
         }
       }
@@ -62,6 +70,6 @@ export function metroWatchTypeScriptFiles(
     watcher.removeListener('change', listener);
   };
 
-  runner.server.addListener?.('close', off);
+  server.addListener?.('close', off);
   return off;
 }
