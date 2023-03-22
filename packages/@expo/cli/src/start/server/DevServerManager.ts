@@ -169,7 +169,11 @@ export class DevServerManager {
     }
 
     if (!typescriptPrerequisite) {
-      server.waitForTypeScriptAsync();
+      server.waitForTypeScriptAsync().then(async (success) => {
+        if (success) {
+          await server.startTypeScriptServices();
+        }
+      });
     } else {
       server.startTypeScriptServices();
     }

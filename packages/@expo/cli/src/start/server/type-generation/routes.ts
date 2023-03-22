@@ -7,13 +7,18 @@ import { env } from '../../../utils/env';
 import { unsafeTemplate } from '../../../utils/template';
 import { ServerLike } from '../BundlerDevServer';
 import { metroWatchTypeScriptFiles } from '../metro/metroWatchTypeScriptFiles';
+import { setToUnionType } from './utils';
 
-// /test/[...param1]/[param2]/[param3] - Will match ["param1", "param2", "param3"]
-const CAPTURE_DYNAMIC_PARAMS = /\/\[(?:\.{3})?(\w*?)[\]$]/g;
+// /test/[...param1]/[param2]/[param3] - captures ["param1", "param2", "param3"]
+export const CAPTURE_DYNAMIC_PARAMS = /\[(?:\.{3})?(\w*?)[\]$]/g;
 // /[...param1]/ - Match [...param1]
-const CATCH_ALL = /\[\.\.\..+?\]/g;
+export const CATCH_ALL = /\[\.\.\..+?\]/g;
 // /[param1] - Match [param1]
-const SLUG = /\[.+?\]/g;
+export const SLUG = /\[.+?\]/g;
+// /(group1,group2,group3)/test - match (group1,group2,group3)
+export const ARRAY_GROUP_REGEX = /\(\w+?,.*?\)/g;
+// /(group1,group2,group3)/test - captures ["group1", "group2", "group3"]
+export const CAPTURE_GROUP_REGEX = /[\\(,](\w+?)(?=[,\\)])/g;
 
 export interface SetupTypedRoutesOptions {
   server: ServerLike;
@@ -24,8 +29,80 @@ export interface SetupTypedRoutesOptions {
 export async function setupTypedRoutes({ server, metro, typesDirectory }: SetupTypedRoutesOptions) {
   const appRoot = path.resolve(env.EXPO_ROUTER_APP_ROOT);
 
-  const staticRoutes = new Map<string, string[]>();
-  const dynamicRoutes = new Map<string, string[]>();
+  const { filePathToRoute, staticRoutes, dynamicRoutes, addFilePath } =
+    getTypedRoutesUtils(appRoot);
+
+  // Setup out watcher first
+  metroWatchTypeScriptFiles({
+    projectRoot: appRoot,
+    server,
+    metro,
+    eventTypes: ['add', 'delete', 'change'],
+    async callback({ filePath, type }) {
+      let shouldRegenerate = false;
+      if (type === 'delete') {
+        const route = filePathToRoute(filePath);
+        staticRoutes.delete(route);
+        dynamicRoutes.delete(route);
+        shouldRegenerate = true;
+      } else {
+        shouldRegenerate = addFilePath(filePath);
+      }
+
+      if (shouldRegenerate) {
+        regenerateRouterDotTS(
+          typesDirectory,
+          new Set([...staticRoutes.values()].flatMap<string>(Array.from)),
+          new Set(dynamicRoutes.keys()),
+          new Set([...dynamicRoutes.values()].flatMap<string>(Array.from))
+        );
+      }
+    },
+  });
+
+  // Do we need to walk the entire tree on startup?
+  // Idea: Store the list of files in the last write, then simply check Git for what files have changed
+  await walk(appRoot, addFilePath);
+
+  regenerateRouterDotTS(
+    typesDirectory,
+    new Set([...staticRoutes.values()].flatMap<string>(Array.from)),
+    new Set(dynamicRoutes.keys()),
+    new Set([...dynamicRoutes.values()].flatMap<string>(Array.from))
+  );
+}
+
+/**
+ * Generate a router.d.ts file that contains all of the routes in the project.
+ * Should be debounced as its very common for developers to make changes to multiple files at once (eg Save All)
+ */
+const regenerateRouterDotTS = debounce(
+  (
+    typesDir: string,
+    staticRoutes: Set<string>,
+    dynamicRoutes: Set<string>,
+    dynamicRouteTemplates: Set<string>
+  ) => {
+    fs.writeFile(
+      path.resolve(typesDir, './router.d.ts'),
+      routerDotTSTemplate({
+        staticRoutes: setToUnionType(staticRoutes),
+        dynamicRoutes: setToUnionType(dynamicRoutes),
+        dynamicRouteParams: setToUnionType(dynamicRouteTemplates),
+      })
+    );
+  },
+  100
+);
+
+/**
+ * Utility functions for typed routes
+ *
+ * These are extracted for easier testing
+ */
+export function getTypedRoutesUtils(appRoot: string) {
+  const staticRoutes = new Map<string, Set<string>>();
+  const dynamicRoutes = new Map<string, Set<string>>();
 
   const filePathToRoute = (filePath: string) => {
     return filePath
@@ -56,22 +133,22 @@ export async function setupTypedRoutes({ server, metro, typesDirectory }: SetupT
         let set = dynamicRoutes.get(originalRoute);
 
         if (!set) {
-          set = [];
+          set = new Set();
           dynamicRoutes.set(originalRoute, set);
         }
 
-        set.push(
+        set.add(
           route.replaceAll(CATCH_ALL, '${CatchAllSlug<T>}').replaceAll(SLUG, '${SafeSlug<T>}')
         );
       } else {
         let set = staticRoutes.get(originalRoute);
 
         if (!set) {
-          set = [];
+          set = new Set();
           staticRoutes.set(originalRoute, set);
         }
 
-        set.push(route);
+        set.add(route);
       }
     };
 
@@ -84,7 +161,7 @@ export async function setupTypedRoutes({ server, metro, typesDirectory }: SetupT
 
       // If there are multiple groups, we need to expand them
       // eg /(test1,test2)/page => /test1/page & /test2/page
-      for (const routeWithSingleGroup of expandGroupRoutes(route)) {
+      for (const routeWithSingleGroup of extrapolateGroupRoutes(route)) {
         addRoute(route, routeWithSingleGroup);
       }
     }
@@ -92,76 +169,13 @@ export async function setupTypedRoutes({ server, metro, typesDirectory }: SetupT
     return true;
   };
 
-  // Setup out watcher first
-  metroWatchTypeScriptFiles({
-    projectRoot: appRoot,
-    server,
-    metro,
-    eventTypes: ['add', 'delete', 'change'],
-    async callback({ filePath, type }) {
-      let shouldRegenerate = false;
-      if (type === 'delete') {
-        const route = filePathToRoute(filePath);
-        staticRoutes.delete(route);
-        dynamicRoutes.delete(route);
-        shouldRegenerate = true;
-      } else {
-        shouldRegenerate = addFilePath(filePath);
-      }
-
-      if (shouldRegenerate) {
-        regenerateRouterDotTS(
-          typesDirectory,
-          new Set([...staticRoutes.values()].flat()),
-          new Set(dynamicRoutes.keys()),
-          new Set([...dynamicRoutes.values()].flat())
-        );
-      }
-    },
-  });
-
-  // Do we need to walk the entire tree on startup?
-  // Idea: Store the list of files in the last write, then simply check Git for what files have changed
-  await walk(appRoot, addFilePath);
-
-  regenerateRouterDotTS(
-    typesDirectory,
-    new Set([...staticRoutes.values()].flat()),
-    new Set(dynamicRoutes.keys()),
-    new Set([...dynamicRoutes.values()].flat())
-  );
+  return {
+    staticRoutes,
+    dynamicRoutes,
+    filePathToRoute,
+    addFilePath,
+  };
 }
-
-/**
- * Generate a router.d.ts file that contains all of the routes in the project.
- * Should be debounced as its very common for developers to make changes to multiple files at once (eg Save All)
- */
-const regenerateRouterDotTS = debounce(
-  (
-    typesDir: string,
-    staticRoutes: Set<string>,
-    dynamicRoutes: Set<string>,
-    dynamicRouteTemplates: Set<string>
-  ) => {
-    fs.writeFile(
-      path.resolve(typesDir, './router.d.ts'),
-      routerDotTSTemplate({
-        staticRoutes: setToType(staticRoutes),
-        dynamicRoutes: setToType(dynamicRoutes),
-        dynamicRouteParams: setToType(dynamicRouteTemplates),
-      })
-    );
-  },
-  100
-);
-
-/**
- * Convert a set to a string type.
- * @example setToType(new Set(['a', 'b'])) => 'a | b'
- * @example setToType() => 'never'
- */
-const setToType = <T>(set: Set<T>) =>
-  set.size > 0 ? [...set].map((s) => `\`${s}\``).join(' | ') : 'never';
 
 /**
  * Recursively walk a directory and call the callback with the file path.
@@ -180,28 +194,37 @@ async function walk(directory: string, callback: (filePath: string) => void) {
   }
 }
 
-function expandGroupRoutes(route: string, routes: Set<string> = new Set()): Set<string> {
-  const match = route.match(/\/\(\w+?,\w+?\)\//);
+/**
+ * Given a route, return all possible routes that could be generated from it.
+ */
+export function extrapolateGroupRoutes(
+  route: string,
+  routes: Set<string> = new Set()
+): Set<string> {
+  // Create a version with no groups. We will then need to cleanup double and/or trailing slashes
+  routes.add(route.replaceAll(ARRAY_GROUP_REGEX, '').replaceAll(/\/+/g, '/').replace(/\/$/, ''));
 
-  routes.add(route.replace(/\/\(\w+?,\w+?\)/, ''));
+  const match = route.match(ARRAY_GROUP_REGEX);
 
   if (!match) {
     routes.add(route);
     return routes;
   }
 
-  // Will be '/(test,test2)/' - Note the surrounding slashs
   const groupsMatch = match[0];
-  const groups = groupsMatch.slice(2, groupsMatch.length - 2).split(',');
 
-  for (const group of groups) {
-    const groupRoute = route.replace(groupsMatch, `/(${group})/`);
-    expandGroupRoutes(groupRoute, routes);
+  for (const group of groupsMatch.matchAll(CAPTURE_GROUP_REGEX)) {
+    extrapolateGroupRoutes(route.replace(groupsMatch, `(${group[1]})`), routes);
   }
 
   return routes;
 }
 
+/**
+ * NOTE: This code refers to a specific version of `expo-router` and is therefore unsafe to
+ * mix with arbitrary versions.
+ * TODO: Version this code with `expo-router` or version expo-router with `@expo/cli`.
+ */
 const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
   import type { LinkProps as OriginalLinkProps } from "expo-router/build/link/Link";
   export * from "expo-router/build";

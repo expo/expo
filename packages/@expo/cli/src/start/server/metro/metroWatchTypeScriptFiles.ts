@@ -8,9 +8,14 @@ export interface MetroWatchTypeScriptFilesOptions {
   projectRoot: string;
   metro: import('metro').Server;
   server: ServerLike;
+  /* Include tsconfig.json in the watcher */
   tsconfig?: boolean;
   callback: (event: WatchEvent) => void;
+  /* Array of eventTypes to watch. Defaults to all events */
   eventTypes?: string[];
+  /* Throlle the callback. When true and  a group of events are recieved, callback it will only be called with the
+   * first event */
+  throttle?: boolean;
 }
 
 interface WatchEvent {
@@ -29,9 +34,10 @@ export function metroWatchTypeScriptFiles({
   metro,
   server,
   projectRoot,
-  tsconfig,
   callback,
-  eventTypes = ['add'],
+  tsconfig = false,
+  throttle = false,
+  eventTypes = ['add', 'change', 'delete'],
 }: MetroWatchTypeScriptFilesOptions): () => void {
   const watcher = metro.getBundler().getBundler().getWatcher();
 
@@ -57,7 +63,10 @@ export function metroWatchTypeScriptFiles({
         ) {
           debug('Detected TypeScript file changed in the project: ', filePath);
           callback(event);
-          return;
+
+          if (throttle) {
+            return;
+          }
         }
       }
     }
@@ -65,9 +74,11 @@ export function metroWatchTypeScriptFiles({
 
   debug('Waiting for TypeScript files to be added to the project...');
   watcher.addListener('change', listener);
+  watcher.addListener('add', listener);
 
   const off = () => {
     watcher.removeListener('change', listener);
+    watcher.removeListener('add', listener);
   };
 
   server.addListener?.('close', off);

@@ -155,11 +155,11 @@ class Env {
   }
 
   /** Enable Expo Router typed router generation */
-  get EXPO_ROUTER_TYPED_ROUTES() {
-    return boolish('EXPO_ROUTER_TYPED_ROUTES', false);
+  get EXPO_USE_TYPED_ROUTES() {
+    return boolish('EXPO_USE_TYPED_ROUTES', false);
   }
   get EXPO_ROUTER_APP_ROOT() {
-    return string('EXPO_ROUTER_APP_ROOT', '../../app');
+    return string('EXPO_ROUTER_APP_ROOT');
   }
 }
 

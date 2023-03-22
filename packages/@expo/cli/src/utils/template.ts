@@ -6,18 +6,18 @@
  * @see https://developer.mozilla.org/en-US/docs/Web/JavaScript/Reference/Template_literals#tagged_templates
  *
  * @example
- * const t1Closure = template`${0}${1}${0}!`;
- * // const t1Closure = template(["","","","!"],0,1,0);
+ * const t1Closure = unsafeTemplate`${0}${1}${0}!`;
+ * // const t1Closure = unsafeTemplate(["","","","!"],0,1,0);
  * t1Closure("Y", "A"); // "YAY!"
  *
  * @example
- * const t2Closure = template`${0} ${"foo"}!`;
- * // const t2Closure = template([""," ","!"],0,"foo");
+ * const t2Closure = unsafeTemplate`${0} ${"foo"}!`;
+ * // const t2Closure = unsafeTemplate([""," ","!"],0,"foo");
  * t2Closure("Hello", { foo: "World" }); // "Hello World!"
  *
  * @example
- * const t3Closure = template`I'm ${"name"}. I'm almost ${"age"} years old.`;
- * // const t3Closure = template(["I'm ", ". I'm almost ", " years old."], "name", "age");
+ * const t3Closure = unsafeTemplate`I'm ${"name"}. I'm almost ${"age"} years old.`;
+ * // const t3Closure = unsafeTemplate(["I'm ", ". I'm almost ", " years old."], "name", "age");
  * t3Closure("foo", { name: "MDN", age: 30 }); // "I'm MDN. I'm almost 30 years old."
  * t3Closure({ name: "MDN", age: 30 }); // "I'm MDN. I'm almost 30 years old."
  */

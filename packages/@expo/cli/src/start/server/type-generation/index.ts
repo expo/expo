@@ -19,7 +19,7 @@ export async function typescriptTypeGeneration({
   projectRoot,
   server,
 }: TypeScriptTypeGenerationOptions) {
-  if (!env.EXPO_ROUTER_TYPED_ROUTES) {
+  if (!env.EXPO_USE_TYPED_ROUTES) {
     return;
   }
 
@@ -33,6 +33,6 @@ export async function typescriptTypeGeneration({
   // Ensure the types directory exists.
   await fs.mkdir(typesDirectory, { recursive: true });
 
-  await forceUpdateTSConfig(projectRoot, dotExpoDir);
+  await forceUpdateTSConfig(projectRoot);
   await setupTypedRoutes({ metro, server, typesDirectory });
 }
