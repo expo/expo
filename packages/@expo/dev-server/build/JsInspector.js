@@ -34,7 +34,7 @@ async function openJsInspector(app) {
 
   const urlBase = `https://chrome-devtools-frontend.appspot.com/serve_rev/@${devtoolsFrontendRev}/devtools_app.html`;
   const ws = app.webSocketDebuggerUrl.replace(/^ws:\/\//, '');
-  const url = `${urlBase}?panel=sources&ws=${encodeURIComponent(ws)}`;
+  const url = `${urlBase}?panel=console&ws=${encodeURIComponent(ws)}`;
   await closeJsInspector();
   openingBrowserInstance = await (0, _LaunchBrowser().launchBrowserAsync)(url);
 }
