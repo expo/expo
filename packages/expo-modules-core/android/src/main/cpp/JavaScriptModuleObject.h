@@ -106,6 +106,10 @@ public:
     jni::alias_ref<JavaScriptModuleObject::javaobject> classObject
   );
 
+  void registerViewPrototype(
+    jni::alias_ref<JavaScriptModuleObject::javaobject> viewPrototype
+  );
+
   /**
    * Registers a property
    * @param name of the property
@@ -178,5 +182,7 @@ private:
   std::shared_ptr<react::LongLivedObjectCollection> longLivedObjectCollection_;
 
   std::map<std::string, jni::global_ref<JavaScriptModuleObject::javaobject>> classes;
+
+  jni::global_ref<JavaScriptModuleObject::javaobject> viewPrototype;
 };
 } // namespace expo
