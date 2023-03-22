@@ -21,6 +21,29 @@ namespace react = facebook::react;
 namespace expo {
 class JSIInteropModuleRegistry;
 
+class JavaScriptModuleObject;
+
+void decorateObjectWithFunctions(
+  jsi::Runtime &runtime,
+  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+  jsi::Object *jsObject,
+  JavaScriptModuleObject *objectData
+);
+
+void decorateObjectWithProperties(
+  jsi::Runtime &runtime,
+  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+  jsi::Object *jsObject,
+  JavaScriptModuleObject *objectData
+);
+
+void decorateObjectWithConstants(
+  jsi::Runtime &runtime,
+  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+  jsi::Object *jsObject,
+  JavaScriptModuleObject *objectData
+);
+
 /**
  * A CPP part of the module.
  *
@@ -60,6 +83,7 @@ public:
    */
   void registerSyncFunction(
     jni::alias_ref<jstring> name,
+    jboolean takesOwner,
     jint args,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIFunctionBody::javaobject> body
@@ -71,9 +95,15 @@ public:
    */
   void registerAsyncFunction(
     jni::alias_ref<jstring> name,
+    jboolean takesOwner,
     jint args,
     jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
     jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
+  );
+
+  void registerClass(
+    jni::alias_ref<jstring> name,
+    jni::alias_ref<JavaScriptModuleObject::javaobject> classObject
   );
 
   /**
@@ -95,6 +125,28 @@ private:
 
 private:
   friend HybridBase;
+
+  friend void decorateObjectWithFunctions(
+    jsi::Runtime &runtime,
+    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+    jsi::Object *jsObject,
+    JavaScriptModuleObject *objectData
+  );
+
+  friend void decorateObjectWithProperties(
+    jsi::Runtime &runtime,
+    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+    jsi::Object *jsObject,
+    JavaScriptModuleObject *objectData
+  );
+
+  friend void decorateObjectWithConstants(
+    jsi::Runtime &runtime,
+    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+    jsi::Object *jsObject,
+    JavaScriptModuleObject *objectData
+  );
+
   /**
    * A reference to the `jsi::Object`.
    * Simple we cached that value to return the same object each time.
@@ -124,5 +176,7 @@ private:
    * The `LongLivedObjectCollection` to hold `LongLivedObject` (callbacks or promises) for this module.
    */
   std::shared_ptr<react::LongLivedObjectCollection> longLivedObjectCollection_;
+
+  std::map<std::string, jni::global_ref<JavaScriptModuleObject::javaobject>> classes;
 };
 } // namespace expo

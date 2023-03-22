@@ -26,6 +26,7 @@ class SyncFunctionComponent(
   override fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject) {
     jsObject.registerSyncFunction(
       name,
+      takesOwner,
       argsCount,
       getCppRequiredTypes().toTypedArray()
     ) { args ->
