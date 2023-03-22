@@ -2,59 +2,33 @@ diff --git a/ios/MyApp/AppDelegate.h b/ios/MyApp/AppDelegate.h
 index ef1de86..d3d75b0 100644
 --- a/ios/MyApp/AppDelegate.h
 +++ b/ios/MyApp/AppDelegate.h
-@@ -1,7 +1,8 @@
- #import <React/RCTBridgeDelegate.h>
+@@ -1,6 +1,7 @@
+ #import <RCTAppDelegate.h>
 +#import <Expo/Expo.h>
  #import <UIKit/UIKit.h>
- 
--@interface AppDelegate : UIResponder <UIApplicationDelegate, RCTBridgeDelegate>
-+@interface AppDelegate : EXAppDelegateWrapper <UIApplicationDelegate, RCTBridgeDelegate>
- 
- @property (nonatomic, strong) UIWindow *window;
- 
-diff --git a/ios/MyApp/AppDelegate.mm b/ios/MyApp/AppDelegate.mm
-index da9f60a..0164063 100644
---- a/ios/MyApp/AppDelegate.mm
-+++ b/ios/MyApp/AppDelegate.mm
-@@ -31,7 +31,7 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
- {
-   RCTAppSetupPrepareApp(application);
- 
--  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-+  RCTBridge *bridge = [self.reactDelegate createBridgeWithDelegate:self launchOptions:launchOptions];
- 
- #if RCT_NEW_ARCH_ENABLED
-   _contextContainer = std::make_shared<facebook::react::ContextContainer const>();
-@@ -50,10 +50,11 @@ - (BOOL)application:(UIApplication *)application didFinishLaunchingWithOptions:(
-   }
- 
--  UIView *rootView = RCTAppSetupDefaultRootView(bridge, @"main", nil);
-+  UIView *rootView = [self.reactDelegate createRootViewWithBridge:bridge moduleName:@"main" initialProperties:nil];
 
-   rootView.backgroundColor = [UIColor whiteColor];
-   self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
--  UIViewController *rootViewController = [UIViewController new];
-+  UIViewController *rootViewController = [self.reactDelegate createRootViewController];
-   rootViewController.view = rootView;
-   self.window.rootViewController = rootViewController;
-   [self.window makeKeyAndVisible];
-+  [super application:application didFinishLaunchingWithOptions:launchOptions];
-   return YES;
- }
+-@interface AppDelegate : RCTAppDelegate
++@interface AppDelegate : EXAppDelegateWrapper
 
+ @end
 diff --git a/ios/Podfile b/ios/Podfile
 index 99b1b8d..71524e2 100644
 --- a/ios/Podfile
 +++ b/ios/Podfile
-@@ -1,9 +1,18 @@
+@@ -1,7 +1,8 @@
 +require File.join(File.dirname(`node --print "require.resolve('expo/package.json')"`), "scripts/autolinking")
  require_relative '../node_modules/react-native/scripts/react_native_pods'
  require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
 
--platform :ios, '11.0'
-+platform :ios, '12.0'
+-platform :ios, min_ios_version_supported
++platform :ios, '13.0'
+ prepare_react_native_project!
 
- target 'ModuleDiff' do
+ # If you are using a `react-native-flipper` your iOS build will fail when `NO_FLIPPER=1` is set.
+@@ -22,6 +23,14 @@ if linkage != nil
+ end
+
+ target 'MyApp' do
 +  use_expo_modules!
 +  post_integrate do |installer|
 +    begin
