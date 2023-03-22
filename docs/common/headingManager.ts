@@ -25,7 +25,7 @@ export const BASE_HEADING_LEVEL = 2;
  * How deeply nested headings to display
  * 0 - means only root headings
  *
- * Can be overriden in `.md` pages by setting
+ * Can be overridden in `.md` pages by setting
  * `maxHeadingDepth` attribute
  */
 const DEFAULT_NESTING_LIMIT = 1;
