@@ -1,6 +1,5 @@
 package expo.modules.kotlin
 
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListenerWithPayload
@@ -22,24 +21,16 @@ class ModuleHolder(val module: Module) {
    * Cached instance of HybridObject used by CPP to interact with underlying [expo.modules.kotlin.modules.Module] object.
    */
   val jsObject by lazy {
-    JavaScriptModuleObject(name)
-      .apply {
-        val constants = definition.constantsProvider()
-        val convertedConstants = Arguments.makeNativeMap(constants)
-        exportConstants(convertedConstants)
+    JavaScriptModuleObject(name).apply {
+      initUsingObjectDefinition(module.appContext, definition.objectDefinition)
 
-        definition
-          .functions
-          .forEach { function ->
-            function.attachToJSObject(module.appContext, this)
-          }
+      definition.classData.forEach { clazz ->
+        val clazzModuleObject = JavaScriptModuleObject(clazz.name)
+          .initUsingObjectDefinition(module.appContext, clazz.objectDefinition)
 
-        definition
-          .properties
-          .forEach { (_, prop) ->
-            prop.attachToJSObject(this)
-          }
+        registerClass(clazz.name, clazzModuleObject)
       }
+    }
   }
 
   /**

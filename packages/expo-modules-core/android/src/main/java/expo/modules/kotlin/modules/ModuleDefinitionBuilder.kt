@@ -6,6 +6,8 @@ import android.app.Activity
 import android.content.Intent
 import android.view.View
 import expo.modules.kotlin.activityresult.AppContextActivityResultCaller
+import expo.modules.kotlin.classcomponent.ClassComponentBuilder
+import expo.modules.kotlin.classcomponent.ClassDefinitionData
 import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListener
 import expo.modules.kotlin.events.EventListenerWithPayload
@@ -30,6 +32,9 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   @PublishedApi
   internal var registerContracts: (suspend AppContextActivityResultCaller.() -> Unit)? = null
 
+  @PublishedApi
+  internal var classData = mutableListOf<ClassDefinitionData>()
+
   fun buildModule(): ModuleDefinitionData {
     val moduleName = name ?: module?.javaClass?.simpleName
 
@@ -38,7 +43,8 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
       buildObject(),
       viewManagerDefinition,
       eventListeners,
-      registerContracts
+      registerContracts,
+      classData
     )
   }
 
@@ -115,5 +121,11 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
   inline fun OnActivityResult(crossinline body: (Activity, OnActivityResultPayload) -> Unit) {
     eventListeners[EventName.ON_ACTIVITY_RESULT] =
       EventListenerWithSenderAndPayload<Activity, OnActivityResultPayload>(EventName.ON_ACTIVITY_RESULT) { sender, payload -> body(sender, payload) }
+  }
+
+  inline fun Class(name: String, body: ClassComponentBuilder.() -> Unit = {}) {
+    val clazzBuilder = ClassComponentBuilder(name)
+    body.invoke(clazzBuilder)
+    classData.add(clazzBuilder.buildClass())
   }
 }
