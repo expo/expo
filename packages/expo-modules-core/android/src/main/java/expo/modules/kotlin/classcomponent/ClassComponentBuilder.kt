@@ -12,6 +12,7 @@ class ClassComponentBuilder(val name: String) : ObjectDefinitionBuilder() {
 
   fun buildClass(): ClassDefinitionData {
     val objectData = buildObject()
+    objectData.functions.forEach { it.canTakeOwner = true }
     return ClassDefinitionData(
       name,
       constructor ?: SyncFunctionComponent("constructor", arrayOf()) {},

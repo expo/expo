@@ -50,13 +50,13 @@ class JavaScriptModuleObject(val name: String) {
    * Register a promise-less function on the CPP module representation.
    * After calling this function, user can access the exported function in the JS code.
    */
-  external fun registerSyncFunction(name: String, args: Int, desiredTypes: Array<ExpectedType>, body: JNIFunctionBody)
+  external fun registerSyncFunction(name: String, takesOwner: Boolean, args: Int, desiredTypes: Array<ExpectedType>, body: JNIFunctionBody)
 
   /**
    * Register a promise function on the CPP module representation.
    * After calling this function, user can access the exported function in the JS code.
    */
-  external fun registerAsyncFunction(name: String, args: Int, desiredTypes: Array<ExpectedType>, body: JNIAsyncFunctionBody)
+  external fun registerAsyncFunction(name: String, takesOwner: Boolean, args: Int, desiredTypes: Array<ExpectedType>, body: JNIAsyncFunctionBody)
 
   external fun registerProperty(name: String, desiredType: ExpectedType, getter: JNIFunctionBody?, setter: JNIFunctionBody?)
 
