@@ -5,6 +5,7 @@ Pod::Spec.new do |s|
   s.description    = 'A sample project description'
   s.author         = ''
   s.homepage       = 'https://docs.expo.dev/modules/'
+  s.platform       = :ios, '13.0'
   s.source         = { git: '' }
   s.static_framework = true
 
