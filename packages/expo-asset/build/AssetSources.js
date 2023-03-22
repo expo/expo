@@ -30,7 +30,10 @@ export function selectAssetSource(meta) {
     // Check if the assetUrl was overridden in the manifest & manifest2.extra
     const assetUrlOverride = getManifest().assetUrlOverride || getManifest2()?.extra?.assetUrlOverride;
     if (assetUrlOverride) {
-        const uri = path.join(assetUrlOverride, hash);
+        const baseUrl = new URL(assetUrlOverride);
+        const resolvedPath = path.join(baseUrl.pathname, hash);
+        baseUrl.set('pathname', resolvedPath);
+        const uri = baseUrl.href;
         return { uri: resolveUri(uri), hash };
     }
     const fileScale = scale === 1 ? '' : `@${scale}x`;
