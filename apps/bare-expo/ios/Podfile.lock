@@ -169,6 +169,7 @@ PODS:
   - ExpoSMS (11.2.1):
     - ExpoModulesCore
   - ExpoSQLite (11.1.1):
+  - ExpoSpeech (11.1.1):
     - ExpoModulesCore
   - ExpoStoreReview (6.2.1):
     - ExpoModulesCore
@@ -188,8 +189,6 @@ PODS:
   - EXSensors (12.1.1):
     - ExpoModulesCore
   - EXSharing (11.2.1):
-    - ExpoModulesCore
-  - EXSpeech (11.1.1):
     - ExpoModulesCore
   - EXSplashScreen (0.18.1):
     - ExpoModulesCore
@@ -771,7 +770,11 @@ DEPENDENCIES:
   - ExpoRandom (from `../../../packages/expo-random/ios`)
   - ExpoSecureStore (from `../../../packages/expo-secure-store/ios`)
   - ExpoSMS (from `../../../packages/expo-sms/ios`)
+<<<<<<< HEAD
   - ExpoSQLite (from `../../../packages/expo-sqlite/ios`)
+=======
+  - ExpoSpeech (from `../../../packages/expo-speech/ios`)
+>>>>>>> 3f4dfe3521 ([ios][speech] Migrate to Expo Modules)
   - ExpoStoreReview (from `../../../packages/expo-store-review/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
@@ -781,7 +784,6 @@ DEPENDENCIES:
   - EXScreenOrientation (from `../../../packages/expo-screen-orientation/ios`)
   - EXSensors (from `../../../packages/expo-sensors/ios`)
   - EXSharing (from `../../../packages/expo-sharing/ios`)
-  - EXSpeech (from `../../../packages/expo-speech/ios`)
   - EXSplashScreen (from `../../../packages/expo-splash-screen/ios`)
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
   - EXTaskManager (from `../../../packages/expo-task-manager/ios`)
@@ -1029,9 +1031,15 @@ EXTERNAL SOURCES:
   ExpoSMS:
     inhibit_warnings: false
     :path: "../../../packages/expo-sms/ios"
+<<<<<<< HEAD
   ExpoSQLite:
     inhibit_warnings: false
     :path: "../../../packages/expo-sqlite/ios"
+=======
+  ExpoSpeech:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-speech/ios"
+>>>>>>> 3f4dfe3521 ([ios][speech] Migrate to Expo Modules)
   ExpoStoreReview:
     inhibit_warnings: false
     :path: "../../../packages/expo-store-review/ios"
@@ -1059,9 +1067,6 @@ EXTERNAL SOURCES:
   EXSharing:
     inhibit_warnings: false
     :path: "../../../packages/expo-sharing/ios"
-  EXSpeech:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-speech/ios"
   EXSplashScreen:
     inhibit_warnings: false
     :path: "../../../packages/expo-splash-screen/ios"
@@ -1233,7 +1238,11 @@ SPEC CHECKSUMS:
   ExpoRandom: 7ee07d62e7003b74d0536e0495e3a653fe1b2a74
   ExpoSecureStore: 22b2088cf8cb9d5a276d7a143fdd5b26f83cc601
   ExpoSMS: e4f3901fdb30ab239ee1172005dbe6634f2d6138
+<<<<<<< HEAD
   ExpoSQLite: 510412d853e6758df616d7d6168d39596efe5b61
+=======
+  ExpoSpeech: ed7dda8073aedbb3f0b0e79d16257534fddff516
+>>>>>>> 3f4dfe3521 ([ios][speech] Migrate to Expo Modules)
   ExpoStoreReview: d057dcca4b9c95f3c9db11bd2e168dab9cba59f3
   ExpoSystemUI: 0be5173ee2a7c01e9abc44f56d879a1eaaa16527
   ExpoTrackingTransparency: a789bcac0228947730a27bb4bc163d7501475345
@@ -1243,7 +1252,6 @@ SPEC CHECKSUMS:
   EXScreenOrientation: 52220f8f2477ed25a37e3b2cdbbaa8635d250256
   EXSensors: 29448aedea6ac26f1f11f349c038dbe8698d41e6
   EXSharing: 5a28af9de0884c255f401e1f1f0bea269e9c9bb9
-  EXSpeech: a8da505f08d539364dbcbb2804ac3e63e7bec22b
   EXSplashScreen: cd7fb052dff5ba8311d5c2455ecbebffe1b7a8ca
   EXStructuredHeaders: b1a48d732562e2cc81f11771bcfd29534f5d9254
   EXTaskManager: f8257faa4c20acfc3f31e21ab82a62544d70db85
