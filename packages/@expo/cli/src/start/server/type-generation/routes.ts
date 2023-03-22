@@ -22,7 +22,7 @@ export interface SetupTypedRoutesOptions {
 }
 
 export async function setupTypedRoutes({ server, metro, typesDirectory }: SetupTypedRoutesOptions) {
-  const appRoot = env.EXPO_ROUTER_APP_ROOT;
+  const appRoot = path.resolve(env.EXPO_ROUTER_APP_ROOT);
 
   const staticRoutes = new Set<string>();
   const dynamicRoutes = new Set<string>();
@@ -192,7 +192,7 @@ const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
 
   type SearchOrHash = \`?\${string}\` | \`#\${string}\`;
 
-  type RelativePathString = \`./\${string}\` | \`../\${string}\`;
+  type RelativePathString = \`./\${string}\` | \`../\${string}\` | '..';
 
   type Suffix = "" | SearchOrHash;
 
@@ -229,6 +229,7 @@ const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
     ? never
     :
         | StaticRoutes
+        | RelativePathString
         | \`\${StaticRoutes}\${Suffix}\`
         | (T extends \`\${DynamicRoutes<infer P>}\${Suffix}\`
             ? P extends InvaildPartialSlug
@@ -236,10 +237,10 @@ const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
               : T
             : never);
 
-  export type Href<T> = Route<T> | HrefObject<T>;
+  export type Href<T> = Route<T> | HrefObject<T> | DynamicRouteTemplate
 
   export type HrefObject<T> = {
-    pathname: Route<T> | DynamicRouteTemplate | RelativePathString;
+    pathname: Route<T> | DynamicRouteTemplate
   } & HrefObjectParams<T>;
 
   type HrefObjectParams<T> = T extends RelativePathString
@@ -249,7 +250,7 @@ const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
     : unknown;
 
   export interface LinkProps<T> extends OriginalLinkProps {
-    href: Href<T>;
+    href: T extends DynamicRouteTemplate ? HrefObject<T> : Href<T>;
   }
 
   export interface LinkComponent {
@@ -262,9 +263,9 @@ const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
 
   export type Router<T> = {
     /** Navigate to the provided href. */
-    push: (href: Href<T>) => void;
+    push: <T>(href: Href<T>) => void;
     /** Navigate to route without appending to the history. */
-    replace: (href: Href<T>) => void;
+    replace: <T>(href: Href<T>) => void;
     /** Go back in the history. */
     back: () => void;
     /** Update the current route query params. */
