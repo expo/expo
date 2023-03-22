@@ -9,7 +9,7 @@ EAS can alert you as soon as your build or submission has completed via a webhoo
 
 After running `eas webhook:create`, you'll be prompted to choose the webhook event type (unless you provide the `--event BUILD|SUBMIT` parameter). Next, provide the webhook URL (or specify it with the `--url` flag) that handles HTTP POST requests. Additionally, you'll have to input a webhook signing secret, if you have not already provided it with the `--secret` flag. It must be at least 16 characters long, and it will be used to calculate the signature of the request body which we send as the value of the `expo-signature` HTTP header. You can use the signature to verify a webhook request is genuine (example code below).
 
-EAS calls your webhook using an HTTP POST request. All the data is passed in the request body. EAS sends the data as a JSON object. If the webhook receives an HTTP response code outside of the range 200 - 399, the webhook will retry the delivery a more few times.
+EAS calls your webhook using an HTTP POST request. All the data is passed in the request body. EAS sends the data as a JSON object. If the webhook receives an HTTP response code outside of the range 200 - 399, webhook delivery will be attempted a few more times with epxonential back-off.
 
 Additionally, we send an `expo-signature` HTTP header with the hash signature of the payload. You can use this signature to verify the authenticity of the request. The signature is a hex-encoded HMAC-SHA1 digest of the request body, using your webhook secret as the HMAC key. 
 
