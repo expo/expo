@@ -29,7 +29,6 @@ exports[`renders a native blur view 1`] = `
         "top": 0,
       }
     }
-    tintColor={33159673}
   />
 </View>
 `;
