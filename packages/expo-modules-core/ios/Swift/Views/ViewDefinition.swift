@@ -52,13 +52,32 @@ public final class ViewDefinition<ViewType: UIView>: ViewManagerDefinition {
     public static func buildExpression(_ element: ViewLifecycleMethod<ViewType>) -> AnyViewDefinitionElement {
       return element
     }
+
+    /**
+     Accepts functions as a view definition elements.
+     */
+    public static func buildExpression(_ element: ViewDefinitionFunctionElement) -> AnyViewDefinitionElement {
+      // Enforce async functions to run on the main queue
+      if let function = element as? AnyAsyncFunctionComponent {
+        function.runOnQueue(.main)
+      }
+      return element
+    }
   }
 }
+
+// MARK: - AnyViewDefinitionElement
 
 public protocol AnyViewDefinitionElement: AnyDefinition {}
 extension ConcreteViewProp: AnyViewDefinitionElement {}
 extension EventsDefinition: AnyViewDefinitionElement {}
 extension ViewLifecycleMethod: AnyViewDefinitionElement {}
+
+// MARK: - ViewDefinitionFunctionElement
+
+public protocol ViewDefinitionFunctionElement: AnyViewDefinitionElement {}
+extension AsyncFunctionComponent: ViewDefinitionFunctionElement {}
+extension ConcurrentFunctionDefinition: ViewDefinitionFunctionElement {}
 
 /**
  Creates a view definition describing the native view exported to React.
