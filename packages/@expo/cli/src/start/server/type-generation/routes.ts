@@ -52,9 +52,9 @@ export async function setupTypedRoutes({ server, metro, typesDirectory }: SetupT
       if (shouldRegenerate) {
         regenerateRouterDotTS(
           typesDirectory,
-          new Set([...staticRoutes.values()].flatMap<string>(Array.from)),
+          new Set([...staticRoutes.values()].flatMap((v) => Array.from(v))),
           new Set(dynamicRoutes.keys()),
-          new Set([...dynamicRoutes.values()].flatMap<string>(Array.from))
+          new Set([...dynamicRoutes.values()].flatMap((v) => Array.from(v)))
         );
       }
     },
@@ -66,9 +66,9 @@ export async function setupTypedRoutes({ server, metro, typesDirectory }: SetupT
 
   regenerateRouterDotTS(
     typesDirectory,
-    new Set([...staticRoutes.values()].flatMap<string>(Array.from)),
+    new Set([...staticRoutes.values()].flatMap((v) => Array.from(v))),
     new Set(dynamicRoutes.keys()),
-    new Set([...dynamicRoutes.values()].flatMap<string>(Array.from))
+    new Set([...dynamicRoutes.values()].flatMap((v) => Array.from(v)))
   );
 }
 
