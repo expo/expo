@@ -6,7 +6,7 @@ type Callbacks = {
     onMount?: (() => void) | null;
     onError?: (() => void) | null;
 };
-type AnimationManagerNode = [
+export type AnimationManagerNode = [
     key: string,
     renderFunction: (renderProps: NonNullable<Callbacks>) => (className: string, style: React.CSSProperties) => React.ReactElement
 ];

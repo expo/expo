@@ -21,13 +21,7 @@ function renderItem({ index }: ListRenderItemInfo<number>) {
 
 export default function ImageFlashListScreen() {
   return (
-    <View
-      style={{
-        display: 'flex',
-        flex: 1,
-        flexBasis: 0,
-        flexShrink: 1,
-      }}>
+    <View style={styles.root}>
       <FlashList
         data={DATA}
         renderItem={renderItem}
@@ -39,6 +33,12 @@ export default function ImageFlashListScreen() {
 }
 
 const styles = StyleSheet.create({
+  root: {
+    display: 'flex',
+    flex: 1,
+    flexBasis: 0,
+    flexShrink: 1,
+  },
   row: {
     flex: 1,
     flexDirection: 'row',

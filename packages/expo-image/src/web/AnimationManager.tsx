@@ -9,7 +9,7 @@ type Callbacks = {
   onError?: (() => void) | null;
 };
 
-type AnimationManagerNode = [
+export type AnimationManagerNode = [
   key: string,
   renderFunction: (
     renderProps: NonNullable<Callbacks>
@@ -107,7 +107,7 @@ export default function AnimationManager({
   children: renderFunction,
   initial,
   transition,
-  recyclingKey = '',
+  recyclingKey,
 }: {
   children: AnimationManagerNode;
   initial: AnimationManagerNode | null;
@@ -123,7 +123,7 @@ export default function AnimationManager({
   );
 
   const [prevRecyclingKey, setPrevRecyclingKey] = React.useState<string>(recyclingKey ?? '');
-  if (prevRecyclingKey != recyclingKey) {
+  if (prevRecyclingKey !== (recyclingKey ?? '')) {
     setPrevRecyclingKey(recyclingKey ?? '');
     setNodes(initialNode ? [initialNode] : []);
   }
