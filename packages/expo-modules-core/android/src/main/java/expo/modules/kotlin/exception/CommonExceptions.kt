@@ -15,6 +15,11 @@ class Exceptions {
   ) : CodedException(message = "Unable to find the $viewType view with tag $viewTag")
 
   /**
+   * The app context is no longer available.
+   */
+  class AppContextLost : CodedException(message = "The app context has been lost")
+
+  /**
    * The react app context is no longer available.
    */
   class ReactContextLost : CodedException(message = "The react context has been lost")
@@ -43,4 +48,14 @@ class Exceptions {
    * An exception to throw when the current Android activity is not longer available.
    */
   class MissingActivity : CodedException(message = "The current activity is no longer available")
+
+  /**
+   * An exception to throw when function was called on the incorrect thread.
+   */
+  class IncorrectThreadException(
+    currentThreadName: String,
+    expectedThreadName: String
+  ) : CodedException(
+    message = "Expected to run on $expectedThreadName thread, but was run on $currentThreadName"
+  )
 }

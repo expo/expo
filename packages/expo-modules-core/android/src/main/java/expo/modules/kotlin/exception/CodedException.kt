@@ -91,6 +91,7 @@ internal class MissingTypeConverter(
   message = "Cannot find type converter for '$forType'.",
 )
 
+@DoNotStrip
 internal class InvalidArgsNumberException(received: Int, expected: Int, required: Int = expected) :
   CodedException(
     message = if (required < expected) {
