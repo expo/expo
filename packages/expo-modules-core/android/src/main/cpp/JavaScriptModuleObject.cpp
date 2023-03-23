@@ -94,7 +94,9 @@ void JavaScriptModuleObject::registerNatives() {
                    makeNativeMethod("registerProperty",
                                     JavaScriptModuleObject::registerProperty),
                    makeNativeMethod("registerClass",
-                                    JavaScriptModuleObject::registerClass)
+                                    JavaScriptModuleObject::registerClass),
+                   makeNativeMethod("registerViewPrototype",
+                                    JavaScriptModuleObject::registerViewPrototype)
                  });
 }
 
@@ -124,9 +126,21 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
     this
   );
 
+  if (viewPrototype) {
+    auto viewPrototypeObject = viewPrototype->cthis();
+    viewPrototypeObject->jsiInteropModuleRegistry = jsiInteropModuleRegistry;
+    auto viewPrototypeJSIObject = viewPrototypeObject->getJSIObject(runtime);
+    moduleObject->setProperty(
+      runtime,
+      "ViewPrototype",
+      jsi::Value(runtime, *viewPrototypeJSIObject)
+    );
+  }
+
   for (auto &[name, classRef]: classes) {
     auto classObject = jni::static_ref_cast<JavaScriptModuleObject::javaobject>(
       jni::make_local(classRef))->cthis();
+    classObject->jsiInteropModuleRegistry = jsiInteropModuleRegistry;
 
     std::string nativeConstructorKey("__native_constructor__");
 
@@ -244,6 +258,12 @@ void JavaScriptModuleObject::registerClass(
 ) {
   std::string cName = name->toStdString();
   classes[cName] = jni::make_global(classObject);
+}
+
+void JavaScriptModuleObject::registerViewPrototype(
+  jni::alias_ref<JavaScriptModuleObject::javaobject> viewPrototype
+) {
+  this->viewPrototype = jni::make_global(viewPrototype);
 }
 
 void JavaScriptModuleObject::registerProperty(

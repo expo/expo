@@ -21,8 +21,20 @@ class ModuleHolder(val module: Module) {
    * Cached instance of HybridObject used by CPP to interact with underlying [expo.modules.kotlin.modules.Module] object.
    */
   val jsObject by lazy {
+    val appContext = module.appContext
+
     JavaScriptModuleObject(name).apply {
-      initUsingObjectDefinition(module.appContext, definition.objectDefinition)
+      initUsingObjectDefinition(appContext, definition.objectDefinition)
+
+      val viewFunctions = definition.viewManagerDefinition?.asyncFunctions
+      if (viewFunctions?.isNotEmpty() == true) {
+        val viewPrototype = JavaScriptModuleObject("${name}_${definition.viewManagerDefinition?.viewType?.name}")
+        viewFunctions.forEach { function ->
+          function.attachToJSObject(appContext, viewPrototype)
+        }
+
+        registerViewPrototype(viewPrototype)
+      }
 
       definition.classData.forEach { clazz ->
         val clazzModuleObject = JavaScriptModuleObject(clazz.name)

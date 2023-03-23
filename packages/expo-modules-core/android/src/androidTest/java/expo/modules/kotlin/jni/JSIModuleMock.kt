@@ -30,6 +30,7 @@ internal inline fun withJSIInterop(
   }
   every { appContextMock.registry } answers { registry }
   every { appContextMock.modulesQueue } answers { methodQueue }
+  every { appContextMock.mainQueue } answers { methodQueue }
 
   val jsiIterop = JSIInteropModuleRegistry(appContextMock).apply {
     installJSIForTests()
