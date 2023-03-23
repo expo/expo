@@ -131,7 +131,8 @@ internal class ExpoSpeechUtterance: AVSpeechUtterance {
     super.init(string: text)
   }
 
+  @available(*, unavailable)
   required init?(coder: NSCoder) {
-    fatalError()
+    fatalError("Not implemented")
   }
 }
