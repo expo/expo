@@ -69,6 +69,7 @@ def setupClosure = {
         name: "copy${targetName}ExpoManifest",
         type: Copy) {
       description = "expo-updates: Copy manifest into ${targetName}."
+      duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
       into ("${appProject.buildDir}/intermediates")
       into ("assets/${targetPath}") {
@@ -87,6 +88,11 @@ def setupClosure = {
 
       // Workaround for Android Gradle Plugin 7.1+ asset directory
       into ("assets/${variant.name}/merge${targetName}Assets") {
+        from(assetsDir)
+      }
+
+      // Workaround for Android Gradle Plugin 7.5+ asset directory (including flavor variants)
+      into ("assets/${variant.name}") {
         from(assetsDir)
       }
 
