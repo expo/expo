@@ -168,8 +168,9 @@ PODS:
     - ExpoModulesCore
   - ExpoSMS (11.2.1):
     - ExpoModulesCore
-  - ExpoSQLite (11.1.1):
   - ExpoSpeech (11.1.1):
+    - ExpoModulesCore
+  - ExpoSQLite (11.1.1):
     - ExpoModulesCore
   - ExpoStoreReview (6.2.1):
     - ExpoModulesCore
@@ -770,11 +771,8 @@ DEPENDENCIES:
   - ExpoRandom (from `../../../packages/expo-random/ios`)
   - ExpoSecureStore (from `../../../packages/expo-secure-store/ios`)
   - ExpoSMS (from `../../../packages/expo-sms/ios`)
-<<<<<<< HEAD
-  - ExpoSQLite (from `../../../packages/expo-sqlite/ios`)
-=======
   - ExpoSpeech (from `../../../packages/expo-speech/ios`)
->>>>>>> 3f4dfe3521 ([ios][speech] Migrate to Expo Modules)
+  - ExpoSQLite (from `../../../packages/expo-sqlite/ios`)
   - ExpoStoreReview (from `../../../packages/expo-store-review/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
@@ -1031,15 +1029,12 @@ EXTERNAL SOURCES:
   ExpoSMS:
     inhibit_warnings: false
     :path: "../../../packages/expo-sms/ios"
-<<<<<<< HEAD
-  ExpoSQLite:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-sqlite/ios"
-=======
   ExpoSpeech:
     inhibit_warnings: false
     :path: "../../../packages/expo-speech/ios"
->>>>>>> 3f4dfe3521 ([ios][speech] Migrate to Expo Modules)
+  ExpoSQLite:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-sqlite/ios"
   ExpoStoreReview:
     inhibit_warnings: false
     :path: "../../../packages/expo-store-review/ios"
@@ -1238,11 +1233,8 @@ SPEC CHECKSUMS:
   ExpoRandom: 7ee07d62e7003b74d0536e0495e3a653fe1b2a74
   ExpoSecureStore: 22b2088cf8cb9d5a276d7a143fdd5b26f83cc601
   ExpoSMS: e4f3901fdb30ab239ee1172005dbe6634f2d6138
-<<<<<<< HEAD
-  ExpoSQLite: 510412d853e6758df616d7d6168d39596efe5b61
-=======
   ExpoSpeech: ed7dda8073aedbb3f0b0e79d16257534fddff516
->>>>>>> 3f4dfe3521 ([ios][speech] Migrate to Expo Modules)
+  ExpoSQLite: 510412d853e6758df616d7d6168d39596efe5b61
   ExpoStoreReview: d057dcca4b9c95f3c9db11bd2e168dab9cba59f3
   ExpoSystemUI: 0be5173ee2a7c01e9abc44f56d879a1eaaa16527
   ExpoTrackingTransparency: a789bcac0228947730a27bb4bc163d7501475345
