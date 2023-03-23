@@ -11,7 +11,7 @@ After running `eas webhook:create`, you'll be prompted to choose the webhook eve
 
 EAS calls your webhook using an HTTP POST request. All the data is passed in the request body. EAS sends the data as a JSON object. If the webhook responds with an HTTP status code outside of the range 200-399, delivery will be attempted a few more times with exponential back-off.
 
-Additionally, we send an `expo-signature` HTTP header with the hash signature of the payload. You can use this signature to verify the authenticity of the request. The signature is a hex-encoded HMAC-SHA1 digest of the request body, using your webhook secret as the HMAC key. 
+Additionally, we send an `expo-signature` HTTP header with the hash signature of the payload. You can use this signature to verify the authenticity of the request. The signature is a hex-encoded HMAC-SHA1 digest of the request body, using your webhook secret as the HMAC key.
 
 > If you want to test the above webhook locally, you have to use a service like [ngrok](https://ngrok.com/docs) to forward `localhost:8080` via a tunnel and make it publicly accessible with the URL `ngrok` gives you.
 
