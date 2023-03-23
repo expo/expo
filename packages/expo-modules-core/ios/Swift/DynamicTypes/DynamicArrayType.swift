@@ -21,13 +21,13 @@ internal struct DynamicArrayType: AnyDynamicType {
     return false
   }
 
-  func cast<ValueType>(_ value: ValueType) throws -> Any {
+  func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
     if let value = value as? [Any] {
-      return try value.map { try elementType.cast($0) }
+      return try value.map { try elementType.cast($0, appContext: appContext) }
     }
     // We should probably throw an error if we get here. On the other side, the array type
     // requirement can be more loosen so we can try to arrayize values that are not arrays.
-    return [try elementType.cast(value)]
+    return [try elementType.cast(value, appContext: appContext)]
   }
 
   var description: String {

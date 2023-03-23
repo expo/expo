@@ -4,9 +4,11 @@ import ExpoModulesTestCore
 
 class RecordSpec: ExpoSpec {
   override func spec() {
+    let appContext = AppContext.create()
+
     it("initializes with empty dictionary") {
       struct TestRecord: Record { }
-      _ = try TestRecord(from: [:])
+      _ = try TestRecord(from: [:], appContext: appContext)
     }
 
     it("works back and forth with a field") {
@@ -14,7 +16,7 @@ class RecordSpec: ExpoSpec {
         @Field var a: String?
       }
       let dict = ["a": "b"]
-      let record = try TestRecord(from: dict)
+      let record = try TestRecord(from: dict, appContext: appContext)
 
       expect(record.a).to(be(dict["a"]))
       expect(record.toDictionary()["a"]).to(be(dict["a"]))
@@ -25,7 +27,7 @@ class RecordSpec: ExpoSpec {
         @Field("key") var a: String?
       }
       let dict = ["key": "b"]
-      let record = try TestRecord(from: dict)
+      let record = try TestRecord(from: dict, appContext: appContext)
 
       expect(record.a).to(be(dict["key"]))
       expect(record.toDictionary()["key"]).to(be(dict["key"]))
@@ -36,7 +38,7 @@ class RecordSpec: ExpoSpec {
         @Field(.required) var a: Int
       }
 
-      expect { try TestRecord(from: [:]) }.to(throwError { error in
+      expect { try TestRecord(from: [:], appContext: appContext) }.to(throwError { error in
         expect(error).to(beAKindOf(FieldRequiredException.self))
       })
     }
@@ -47,7 +49,7 @@ class RecordSpec: ExpoSpec {
       }
       let dict = ["a": "try with String instead of Int"]
 
-      expect { try TestRecord(from: dict) }.to(throwError { error in
+      expect { try TestRecord(from: dict, appContext: appContext) }.to(throwError { error in
         expect(error).to(beAKindOf(FieldInvalidTypeException.self))
       })
     }
