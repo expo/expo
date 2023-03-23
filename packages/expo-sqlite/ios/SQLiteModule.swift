@@ -172,7 +172,7 @@ public final class SQLiteModule: Module {
   private func bindStatement(statement: OpaquePointer?, with arg: NSObject, at index: Int32) {
     if arg == NSNull() {
       sqlite3_bind_null(statement, index)
-    } else if arg is NSInteger {
+    } else if arg is Double {
       sqlite3_bind_double(statement, index, arg as? Double ?? 0.0)
     } else {
       var stringArg: NSString
