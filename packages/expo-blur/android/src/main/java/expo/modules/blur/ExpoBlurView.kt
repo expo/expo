@@ -13,6 +13,7 @@ import expo.modules.kotlin.views.ExpoView
 class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context, appContext) {
   private var blurReduction = 4f
   private var blurRadius = 50f
+  internal var tint = "default"
 
   private val blurView = BlurView(context).also {
     it.layoutParams = LayoutParams(LayoutParams.MATCH_PARENT, LayoutParams.MATCH_PARENT)
@@ -40,13 +41,13 @@ class ExpoBlurView(context: Context, appContext: AppContext) : ExpoView(context,
     blurRadius = radius
   }
 
-  fun setTint(color: Int) {
-    blurView.setOverlayColor(color)
-    blurView.invalidate()
-  }
-
   fun applyBlurReduction(reductionFactor: Float) {
     blurReduction = reductionFactor
     setBlurRadius(blurRadius)
+  }
+
+  fun applyTint() {
+    blurView.setOverlayColor(tint.toColorInt(blurRadius))
+    blurView.invalidate()
   }
 }

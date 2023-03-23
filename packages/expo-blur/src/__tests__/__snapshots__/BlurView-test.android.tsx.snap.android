@@ -17,7 +17,7 @@ exports[`renders a native blur view 1`] = `
     proxiedProperties={
       {
         "intensity": 0.65,
-        "tint": 33159673,
+        "tint": "light",
       }
     }
     style={
