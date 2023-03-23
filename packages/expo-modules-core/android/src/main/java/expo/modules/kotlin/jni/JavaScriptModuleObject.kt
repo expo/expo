@@ -62,6 +62,8 @@ class JavaScriptModuleObject(val name: String) {
 
   external fun registerClass(name: String, classModule: JavaScriptModuleObject)
 
+  external fun registerViewPrototype(viewPrototype: JavaScriptModuleObject)
+
   @Throws(Throwable::class)
   protected fun finalize() {
     mHybridData.resetNative()
