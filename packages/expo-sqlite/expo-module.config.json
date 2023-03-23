@@ -1,0 +1,7 @@
+{
+  "name": "expo-sqlite",
+  "platforms": ["ios", "android"],
+  "ios": {
+    "modules": ["SQLiteModule"]
+  }
+}

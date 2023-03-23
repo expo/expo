@@ -1,8 +1,8 @@
 import './polyfillNextTick';
 import customOpenDatabase from '@expo/websql/custom';
-import { NativeModulesProxy } from 'expo-modules-core';
+import { requireNativeModule } from 'expo-modules-core';
 import { Platform } from 'react-native';
-const { ExponentSQLite } = NativeModulesProxy;
+const ExpoSQLite = requireNativeModule('ExpoSQLite');
 function zipObject(keys, values) {
     const result = {};
     for (let i = 0; i < keys.length; i++) {
@@ -20,7 +20,7 @@ class SQLiteDatabase {
         if (this._closed) {
             throw new Error(`The SQLite database is closed`);
         }
-        ExponentSQLite.exec(this._name, queries.map(_serializeQuery), readOnly).then((nativeResultSets) => {
+        ExpoSQLite.exec(this._name, queries.map(_serializeQuery), readOnly).then((nativeResultSets) => {
             callback(null, nativeResultSets.map(_deserializeResultSet));
         }, (error) => {
             // TODO: make the native API consistently reject with an error, not a string or other type
@@ -29,13 +29,13 @@ class SQLiteDatabase {
     }
     close() {
         this._closed = true;
-        return ExponentSQLite.close(this._name);
+        return ExpoSQLite.close(this._name);
     }
     deleteAsync() {
         if (!this._closed) {
             throw new Error(`Unable to delete '${this._name}' database that is currently open. Close it prior to deletion.`);
         }
-        return ExponentSQLite.deleteAsync(this._name);
+        return ExpoSQLite.deleteAsync(this._name);
     }
 }
 function _serializeQuery(query) {

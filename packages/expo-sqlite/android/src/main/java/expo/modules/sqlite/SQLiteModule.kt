@@ -19,7 +19,7 @@ private val DATABASES: MutableMap<String, SQLiteDatabase?> = HashMap()
 
 class SQLiteModule(private val mContext: Context) : ExportedModule(mContext) {
   override fun getName(): String {
-    return "ExponentSQLite"
+    return "ExpoSQLite"
   }
 
   @ExpoMethod
