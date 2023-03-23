@@ -151,7 +151,6 @@ class ViewDefinitionBuilder<T : View>(@PublishedApi internal val viewType: KClas
     viewGroupDefinition = groupViewDefinitionBuilder.build()
   }
 
-
   @JvmName("AsyncFunctionWithoutArgs")
   inline fun AsyncFunction(
     name: String,
