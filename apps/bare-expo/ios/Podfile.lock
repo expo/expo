@@ -168,6 +168,8 @@ PODS:
     - ExpoModulesCore
   - ExpoSMS (11.2.1):
     - ExpoModulesCore
+  - ExpoSQLite (11.1.1):
+    - ExpoModulesCore
   - ExpoStoreReview (6.2.1):
     - ExpoModulesCore
   - ExpoSystemUI (2.2.1):
@@ -192,8 +194,6 @@ PODS:
   - EXSplashScreen (0.18.1):
     - ExpoModulesCore
     - React-Core
-  - EXSQLite (11.1.1):
-    - ExpoModulesCore
   - EXStructuredHeaders (3.1.1)
   - EXTaskManager (11.1.1):
     - ExpoModulesCore
@@ -771,6 +771,7 @@ DEPENDENCIES:
   - ExpoRandom (from `../../../packages/expo-random/ios`)
   - ExpoSecureStore (from `../../../packages/expo-secure-store/ios`)
   - ExpoSMS (from `../../../packages/expo-sms/ios`)
+  - ExpoSQLite (from `../../../packages/expo-sqlite/ios`)
   - ExpoStoreReview (from `../../../packages/expo-store-review/ios`)
   - ExpoSystemUI (from `../../../packages/expo-system-ui/ios`)
   - ExpoTrackingTransparency (from `../../../packages/expo-tracking-transparency/ios`)
@@ -782,7 +783,6 @@ DEPENDENCIES:
   - EXSharing (from `../../../packages/expo-sharing/ios`)
   - EXSpeech (from `../../../packages/expo-speech/ios`)
   - EXSplashScreen (from `../../../packages/expo-splash-screen/ios`)
-  - EXSQLite (from `../../../packages/expo-sqlite/ios`)
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
   - EXTaskManager (from `../../../packages/expo-task-manager/ios`)
   - EXUpdatesInterface (from `../../../packages/expo-updates-interface/ios`)
@@ -1029,6 +1029,9 @@ EXTERNAL SOURCES:
   ExpoSMS:
     inhibit_warnings: false
     :path: "../../../packages/expo-sms/ios"
+  ExpoSQLite:
+    inhibit_warnings: false
+    :path: "../../../packages/expo-sqlite/ios"
   ExpoStoreReview:
     inhibit_warnings: false
     :path: "../../../packages/expo-store-review/ios"
@@ -1062,9 +1065,6 @@ EXTERNAL SOURCES:
   EXSplashScreen:
     inhibit_warnings: false
     :path: "../../../packages/expo-splash-screen/ios"
-  EXSQLite:
-    inhibit_warnings: false
-    :path: "../../../packages/expo-sqlite/ios"
   EXStructuredHeaders:
     inhibit_warnings: false
     :path: "../../../packages/expo-structured-headers/ios"
@@ -1233,6 +1233,7 @@ SPEC CHECKSUMS:
   ExpoRandom: 7ee07d62e7003b74d0536e0495e3a653fe1b2a74
   ExpoSecureStore: 22b2088cf8cb9d5a276d7a143fdd5b26f83cc601
   ExpoSMS: e4f3901fdb30ab239ee1172005dbe6634f2d6138
+  ExpoSQLite: 510412d853e6758df616d7d6168d39596efe5b61
   ExpoStoreReview: d057dcca4b9c95f3c9db11bd2e168dab9cba59f3
   ExpoSystemUI: 0be5173ee2a7c01e9abc44f56d879a1eaaa16527
   ExpoTrackingTransparency: a789bcac0228947730a27bb4bc163d7501475345
@@ -1244,7 +1245,6 @@ SPEC CHECKSUMS:
   EXSharing: 5a28af9de0884c255f401e1f1f0bea269e9c9bb9
   EXSpeech: a8da505f08d539364dbcbb2804ac3e63e7bec22b
   EXSplashScreen: cd7fb052dff5ba8311d5c2455ecbebffe1b7a8ca
-  EXSQLite: 848167441b14cb6cdd6ae46c8d62289161a79550
   EXStructuredHeaders: b1a48d732562e2cc81f11771bcfd29534f5d9254
   EXTaskManager: f8257faa4c20acfc3f31e21ab82a62544d70db85
   EXUpdatesInterface: 353553ad3df1507f0d9e814a3dd79c7053606acd
