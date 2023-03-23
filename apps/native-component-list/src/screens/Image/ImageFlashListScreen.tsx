@@ -21,16 +21,24 @@ function renderItem({ index }: ListRenderItemInfo<number>) {
 
 export default function ImageFlashListScreen() {
   return (
-    <FlashList
-      data={DATA}
-      renderItem={renderItem}
-      keyExtractor={(_, index: number) => String(index)}
-      estimatedItemSize={IMAGE_SIZE}
-    />
+    <View style={styles.root}>
+      <FlashList
+        data={DATA}
+        renderItem={renderItem}
+        keyExtractor={(_, index: number) => String(index)}
+        estimatedItemSize={IMAGE_SIZE}
+      />
+    </View>
   );
 }
 
 const styles = StyleSheet.create({
+  root: {
+    display: 'flex',
+    flex: 1,
+    flexBasis: 0,
+    flexShrink: 1,
+  },
   row: {
     flex: 1,
     flexDirection: 'row',
