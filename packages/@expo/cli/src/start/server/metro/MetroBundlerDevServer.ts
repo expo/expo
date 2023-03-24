@@ -6,7 +6,7 @@
  */
 import { getConfig } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
-import { ExpoResponse } from '@expo/server';
+// import { ExpoResponse } from '@expo/server';
 
 import assert from 'assert';
 import chalk from 'chalk';
@@ -358,7 +358,7 @@ function createRouteHandlerMiddleware(
 
     try {
       // 4. Execute.
-      const response = (await func?.(expoRequest)) as ExpoResponse;
+      const response = await func?.(expoRequest);
 
       // 5. Respond
       if (response) {
