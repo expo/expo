@@ -58,6 +58,7 @@ public final class UpdatesDatabase: NSObject {
   private static let ManifestFiltersKey = "manifestFilters"
   private static let ServerDefinedHeadersKey = "serverDefinedHeaders"
   private static let StaticBuildDataKey = "staticBuildData"
+  private static let ExtraParmasKey = "extraParams"
 
   public let databaseQueue: DispatchQueue
   private var db: OpaquePointer?
@@ -525,6 +526,10 @@ public final class UpdatesDatabase: NSObject {
     return try jsonData(withKey: UpdatesDatabase.StaticBuildDataKey, scopeKey: scopeKey)
   }
 
+  public func extraParams(withScopeKey scopeKey: String) throws -> [String: String]? {
+    return try jsonData(withKey: UpdatesDatabase.ExtraParmasKey, scopeKey: scopeKey) as? [String: String]
+  }
+
   public func setServerDefinedHeaders(_ serverDefinedHeaders: [String: Any], withScopeKey scopeKey: String) throws {
     return try setJsonData(serverDefinedHeaders, withKey: UpdatesDatabase.ServerDefinedHeadersKey, scopeKey: scopeKey, isInTransaction: false)
   }
@@ -535,6 +540,21 @@ public final class UpdatesDatabase: NSObject {
 
   public func setStaticBuildData(_ staticBuildData: [String: Any], withScopeKey scopeKey: String) throws {
     return try setJsonData(staticBuildData, withKey: UpdatesDatabase.StaticBuildDataKey, scopeKey: scopeKey, isInTransaction: false)
+  }
+
+  public func setExtraParam(key: String, value: String?, withScopeKey scopeKey: String) throws {
+    var extraParamsToWrite = try extraParams(withScopeKey: scopeKey) ?? [:]
+    if let value = value {
+      extraParamsToWrite[key] = value
+    } else {
+      extraParamsToWrite.removeValue(forKey: key)
+    }
+
+    // ensure that this can be serialized to a structured-header dictionary
+    // this will throw for invalid values
+    _ = try StringStringDictionarySerializer.serialize(dictionary: extraParamsToWrite)
+
+    return try setJsonData(extraParamsToWrite, withKey: UpdatesDatabase.ExtraParmasKey, scopeKey: scopeKey, isInTransaction: false)
   }
 
   internal func setMetadata(withResponseHeaderData responseHeaderData: ResponseHeaderData, scopeKey: String) throws {
