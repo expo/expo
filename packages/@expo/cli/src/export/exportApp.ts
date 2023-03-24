@@ -9,7 +9,7 @@ import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { createBundlesAsync } from './createBundles';
 import { exportAssetsAsync } from './exportAssets';
-import { unstable_exportStaticAsync } from './exportStaticAsync';
+import { ExportFeature, unstable_exportStaticAsync } from './exportStaticAsync';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { printBundleSizes } from './printBundleSizes';
 import { Options } from './resolveOptions';
@@ -46,15 +46,15 @@ export async function exportAppAsync(
 ): Promise<void> {
   setNodeEnv(dev ? 'development' : 'production');
 
-  await unstable_exportStaticAsync(projectRoot, {
-    outputDir: path.resolve(projectRoot, outputDir),
-    scripts: [`/bundles/${'foobar.js'}`],
-    // scripts: [`/bundles/${fileNames.web}`],
-    // TODO: Expose
-    minify: true,
-    features: ['handlers', 'html'],
-  });
-  process.exit(0);
+  // await unstable_exportStaticAsync(projectRoot, {
+  //   outputDir: path.resolve(projectRoot, outputDir),
+  //   scripts: [`/bundles/${'foobar.js'}`],
+  //   // scripts: [`/bundles/${fileNames.web}`],
+  //   // TODO: Expose
+  //   minify: true,
+  //   features: ['handlers', 'html'],
+  // });
+  // process.exit(0);
 
   const exp = await getPublicExpoManifestAsync(projectRoot);
 
@@ -106,18 +106,28 @@ export async function exportAppAsync(
 
   Log.log('Finished saving JS Bundles');
 
+  const features: ExportFeature[] = [];
+
+  if (env.EXPO_USE_ROUTE_HANDLERS) {
+    features.push('handlers');
+  }
+
+  if (env.EXPO_USE_STATIC && fileNames.web) {
+    features.push('html');
+  }
+
+  if (features.length) {
+    await unstable_exportStaticAsync(projectRoot, {
+      outputDir: outputPath,
+      scripts: [`/bundles/${fileNames.web}`],
+      // TODO: Expose
+      minify: true,
+      features,
+    });
+  }
+
   if (fileNames.web) {
-    if (env.EXPO_USE_STATIC) {
-      await unstable_exportStaticAsync(projectRoot, {
-        outputDir: outputPath,
-        scripts: [`/bundles/${fileNames.web}`],
-        // TODO: Expose
-        minify: true,
-        features: ['handlers', 'html'],
-      });
-      process.exit(0);
-      Log.log('Finished saving static files');
-    } else {
+    if (!env.EXPO_USE_STATIC) {
       // Generate SPA-styled HTML file.
       // If web exists, then write the template HTML file.
       await fs.promises.writeFile(
@@ -128,6 +138,7 @@ export async function exportAppAsync(
       );
     }
 
+    // TODO: Get rid of this
     // Save assets like a typical bundler, preserving the file paths on web.
     const saveAssets = importCliSaveAssetsFromProject(projectRoot);
     await Promise.all(

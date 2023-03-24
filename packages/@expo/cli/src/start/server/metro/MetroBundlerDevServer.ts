@@ -86,56 +86,6 @@ async function getExpoRouteManifestBuilderAsync(
   return createRoutesManifest;
 }
 
-export async function exportRouteHandlersAsync(
-  projectRoot: string,
-  options: { mode?: string; port?: number }
-) {
-  const devServerUrl = `http://localhost:${options.port}`;
-
-  const appDir = path.join(
-    projectRoot,
-    // TODO: Support other directories via app.json
-    'app'
-  );
-
-  function getRouteFiles() {
-    // TODO: Cache this
-    return globSync('**/*+api.@(ts|tsx|js|jsx)', {
-      cwd: appDir,
-      absolute: true,
-    });
-  }
-
-  const files = getRouteFiles();
-
-  const output: Record<string, string> = {};
-
-  // const getManifest = await fetchManifest(projectRoot, {
-  //   port: options.port,
-  //   minify: options.mode === 'production',
-  //   dev: options.mode !== 'production',
-  // });
-
-  const getManifest = await getExpoRouteManifestBuilderAsync(projectRoot, {
-    devServerUrl,
-    minify: options.mode === 'production',
-    dev: options.mode !== 'production',
-  });
-
-  const manifest = await getManifest();
-
-  for (const file of files) {
-    console.log('file', devServerUrl, file);
-    const middleware = await requireFileContentsWithMetro(projectRoot, devServerUrl, file, {
-      minify: options.mode === 'production',
-      dev: options.mode !== 'production',
-    });
-    output[path.relative(appDir, file)] = middleware;
-  }
-
-  return [manifest, output];
-}
-
 const manifestOperation = new Map<string, Promise<any>>();
 
 async function refetchManifest(projectRoot: string, options: { mode?: string; port?: number }) {
@@ -448,12 +398,45 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 
   async getFunctionsAsync({ mode }: { mode: 'development' | 'production' }) {
-    const routeHandlers = await exportRouteHandlersAsync(this.projectRoot, {
-      port: this.getInstance()?.location.port,
-      mode,
+    const devServerUrl = `http://localhost:${this.getInstance()?.location.port}`;
+
+    const appDir = path.join(
+      this.projectRoot,
+      // TODO: Support other directories via app.json
+      'app'
+    );
+
+    function getRouteFiles() {
+      // TODO: Cache this
+      return globSync('**/*+api.@(ts|tsx|js|jsx)', {
+        cwd: appDir,
+        absolute: true,
+      });
+    }
+
+    const files = getRouteFiles();
+
+    const output: Record<string, string> = {};
+
+    const getManifest = await getExpoRouteManifestBuilderAsync(this.projectRoot, {
+      devServerUrl,
+      minify: mode === 'production',
+      dev: mode !== 'production',
     });
 
-    return routeHandlers;
+    const manifest = await getManifest();
+
+    for (const file of files) {
+      console.log('file', devServerUrl, file);
+      const middleware = await requireFileContentsWithMetro(this.projectRoot, devServerUrl, file, {
+        minify: mode === 'production',
+        dev: mode !== 'production',
+        environment: 'node',
+      });
+      output[path.relative(appDir, file)] = middleware;
+    }
+
+    return [manifest, output];
   }
 
   async getStaticPageAsync(
