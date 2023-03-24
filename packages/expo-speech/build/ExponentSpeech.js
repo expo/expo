@@ -1,3 +1,3 @@
-import { NativeModulesProxy } from 'expo-modules-core';
-export default NativeModulesProxy.ExponentSpeech;
+import { requireNativeModule } from 'expo-modules-core';
+export default requireNativeModule('ExpoSpeech');
 //# sourceMappingURL=ExponentSpeech.js.map
