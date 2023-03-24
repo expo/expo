@@ -7,6 +7,7 @@ import type WS from 'ws';
 
 import { CdpMessage, DebuggerRequest, DebuggerResponse, InspectorHandler } from './types';
 
+// TODO(cedric): remove this custom handler when fully switching over to `metro@>=0.75.1`
 export class DebuggerScriptSourceHandler implements InspectorHandler {
   constructor(private readonly device: MetroDevice) {}
 
