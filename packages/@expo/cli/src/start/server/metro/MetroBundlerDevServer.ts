@@ -6,8 +6,8 @@
  */
 import { getConfig } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
-import { ExpoResponse, installGlobals } from '@expo/server/build/environment';
-import { convertRequest, respond } from '@expo/server/build/vendor/http';
+import { ExpoResponse } from '@expo/server';
+
 import assert from 'assert';
 import chalk from 'chalk';
 import { sync as globSync } from 'glob';
@@ -229,6 +229,10 @@ function createRouteHandlerMiddleware(
   projectRoot: string,
   options: { mode?: string; port?: number; getWebBundleUrl: () => string }
 ) {
+  const { convertRequest, respond } = require(resolveFrom(
+    projectRoot,
+    '@expo/server/build/vendor/http'
+  ));
   // don't await
   eagerBundleApiRoutes(projectRoot, options);
   refetchManifest(projectRoot, options);
@@ -492,10 +496,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     }
 
     if (env.EXPO_USE_ROUTE_HANDLERS) {
-      // Ensure the global environment is configured as expected.
-      // TODO: Inject this side-effect using Metro to ensure it's available in production bundles.
-      installGlobals();
-
       // Middleware for hosting middleware
       middleware.use(
         createRouteHandlerMiddleware(this.projectRoot, {
