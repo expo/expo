@@ -92,7 +92,6 @@ class DevLauncherNetworkLogger private constructor() {
    */
   fun emitNetworkResponse(request: Request, requestId: String, response: Response) {
     val now = BigDecimal(System.currentTimeMillis() / 1000.0).setScale(3, RoundingMode.CEILING)
-    val contentType = response.headers().get("Content-Type")
     var params = mapOf(
       "requestId" to requestId,
       "loaderId" to "",
@@ -102,7 +101,7 @@ class DevLauncherNetworkLogger private constructor() {
         "status" to response.code(),
         "statusText" to response.message(),
         "headers" to response.headers().toSingleMap(),
-        "mimeType" to (contentType ?: ""),
+        "mimeType" to response.header("Content-Type", ""),
       ),
       "referrerPolicy" to "no-referrer",
       "type" to "Fetch",

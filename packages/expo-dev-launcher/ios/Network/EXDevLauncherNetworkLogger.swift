@@ -77,7 +77,6 @@ public class EXDevLauncherNetworkLogger: NSObject {
    */
   func emitNetworkResponse(request: URLRequest, requestId: String, response: HTTPURLResponse) {
     let now = Date().timeIntervalSince1970
-    let contentType = response.value(forHTTPHeaderField: "Content-Type")
 
     var params = [
       "requestId": requestId,
@@ -88,7 +87,7 @@ public class EXDevLauncherNetworkLogger: NSObject {
         "status": response.statusCode,
         "statusText": "",
         "headers": response.allHeaderFields,
-        "mimeType": contentType ?? ""
+        "mimeType": response.value(forHTTPHeaderField: "Content-Type") ?? ""
       ],
       "referrerPolicy": "no-referrer",
       "type": "Fetch",
