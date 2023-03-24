@@ -2,6 +2,7 @@ import type { Protocol } from 'devtools-protocol';
 import type { DebuggerInfo } from 'metro-inspector-proxy';
 
 import { CdpMessage, DebuggerRequest, DeviceResponse, InspectorHandler } from './types';
+import { respond } from './utils';
 
 export class VscodeCompatHandler implements InspectorHandler {
   /** Keep track of `Runtime.getProperties` responses to intercept, by request id */
@@ -17,11 +18,7 @@ export class VscodeCompatHandler implements InspectorHandler {
     // Hermes doesn't seem to handle this request, but `locations` have to be returned.
     // Respond with an empty location to make it "spec compliant" with Chrome DevTools.
     if (message.method === 'Debugger.getPossibleBreakpoints') {
-      const response: DeviceResponse<DebuggerGetPossibleBreakpoints> = {
-        id: message.id,
-        result: { locations: [] },
-      };
-      socket.send(JSON.stringify(response));
+      respond(socket, message, { locations: [] });
       return true;
     }
 

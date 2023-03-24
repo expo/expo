@@ -7,8 +7,8 @@ import {
   DeviceRequest,
   DebuggerRequest,
   DebuggerResponse,
-  DeviceResponse,
 } from './types';
+import { respond } from './utils';
 
 export class NetworkResponseHandler implements InspectorHandler {
   /** All known responses, mapped by request id */
@@ -32,12 +32,7 @@ export class NetworkResponseHandler implements InspectorHandler {
       message.method === 'Network.getResponseBody' &&
       this.storage.has(message.params.requestId)
     ) {
-      const response: DeviceResponse<NetworkGetResponseBody> = {
-        id: message.id,
-        result: this.storage.get(message.params.requestId)!,
-      };
-
-      socket.send(JSON.stringify(response));
+      respond(socket, message, this.storage.get(message.params.requestId)!);
       return true;
     }
 

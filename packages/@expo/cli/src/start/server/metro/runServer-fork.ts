@@ -68,7 +68,7 @@ export const runServer = async (
 
   let inspectorProxy: InspectorProxy | ExpoInspectorProxy | null = null;
   if (config.server.runInspectorProxy && env.EXPO_USE_CUSTOM_INSPECTOR_PROXY) {
-    inspectorProxy = createInspectorProxy(config.projectRoot);
+    inspectorProxy = createInspectorProxy(metroServer, config.projectRoot);
   } else if (config.server.runInspectorProxy) {
     inspectorProxy = new InspectorProxy(config.projectRoot);
   }
