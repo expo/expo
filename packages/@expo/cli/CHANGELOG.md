@@ -22,6 +22,8 @@
 
 ### 🐛 Bug fixes
 
+- Respond to `Debugger.getScriptSource` CDP messages when using lan or tunnel. ([#21825](https://github.com/expo/expo/pull/21825) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 - Update fixtures. ([#21397](https://github.com/expo/expo/pull/21397) by [@EvanBacon](https://github.com/EvanBacon))
