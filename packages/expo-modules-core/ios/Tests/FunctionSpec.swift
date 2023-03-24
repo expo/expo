@@ -222,7 +222,8 @@ class FunctionSpec: ExpoSpec {
             switch result {
             case .failure(let error):
               expect(error).notTo(beNil())
-              expect(error).to(beAKindOf(ArgumentCastException.self))
+              expect(error).to(beAKindOf(FunctionCallException.self))
+              expect(error.isCausedBy(ArgumentCastException.self)) == true
               expect(error.isCausedBy(Conversions.CastingException<String>.self)) == true
             case .success(_):
               fail()
@@ -232,7 +233,7 @@ class FunctionSpec: ExpoSpec {
         }
       }
     }
-    
+
     context("JavaScript") {
       let runtime = try! appContext.runtime
 
@@ -241,11 +242,11 @@ class FunctionSpec: ExpoSpec {
           Name("TestModule")
 
           Function("returnPi") { Double.pi }
-          
+
           Function("returnNull") { () -> Double? in
             return nil
           }
-          
+
           Function("isArgNull") { (arg: Double?) -> Bool in
             return arg == nil
           }
