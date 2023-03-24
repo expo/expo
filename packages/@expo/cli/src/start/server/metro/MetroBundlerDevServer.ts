@@ -79,6 +79,9 @@ async function getExpoRouteManifestBuilderAsync(
   }>(projectRoot, devServerUrl, matchNodePath, {
     minify,
     dev,
+
+    // Ensure the API Routes are included
+    environment: 'node',
   });
   return createRoutesManifest;
 }
@@ -140,7 +143,30 @@ async function refetchManifest(projectRoot: string, options: { mode?: string; po
   return fetchManifest(projectRoot, options);
 }
 
-async function fetchManifest(projectRoot: string, options: { mode?: string; port?: number }) {
+type ExpoRouterServerManifestV1 = {
+  staticHtmlPaths: string[];
+  staticHtml: {
+    dynamic: any;
+    generated: boolean;
+    type: 'static';
+    file: string;
+    regex: RegExp;
+    src: string;
+  }[];
+  functions: {
+    dynamic: any;
+    generated: boolean;
+    type: 'dynamic';
+    file: string;
+    regex: RegExp;
+    src: string;
+  }[];
+};
+
+async function fetchManifest(
+  projectRoot: string,
+  options: { mode?: string; port?: number }
+): Promise<ExpoRouterServerManifestV1> {
   if (manifestOperation.has('manifest')) {
     return manifestOperation.get('manifest');
   }
@@ -154,15 +180,23 @@ async function fetchManifest(projectRoot: string, options: { mode?: string; port
       minify: options.mode === 'production',
       dev: options.mode !== 'production',
     });
+    // Get the serialized manifest
+    const results = await getManifest();
 
-    const manifest = (await getManifest())?.map((value: any) => {
+    results.staticHtml = results.staticHtml.map((value: any) => {
       return {
         ...value,
         regex: new RegExp(value.regex),
       };
     });
-    console.log('manifest', manifest);
-    return manifest;
+    results.functions = results.functions.map((value: any) => {
+      return {
+        ...value,
+        regex: new RegExp(value.regex),
+      };
+    });
+    console.log('manifest', results);
+    return results;
   }
 
   const manifest = bundleAsync();
@@ -231,14 +265,19 @@ async function eagerBundleApiRoutes(
 
   await Promise.all(promises);
 }
+
 function createRouteHandlerMiddleware(
   projectRoot: string,
   options: { mode?: string; port?: number; getWebBundleUrl: () => string }
 ) {
+  // Install Node.js browser polyfills and source map support
+  require(resolveFrom(projectRoot, '@expo/server/install'));
+
   const { convertRequest, respond } = require(resolveFrom(
     projectRoot,
     '@expo/server/build/vendor/http'
   ));
+
   // don't await
   eagerBundleApiRoutes(projectRoot, options);
   refetchManifest(projectRoot, options);
@@ -250,13 +289,6 @@ function createRouteHandlerMiddleware(
     // TODO: Support other directories via app.json
     'app'
   );
-  // function getRouteFiles() {
-  //   // TODO: Cache this
-  //   return globSync('**/*+api.@(ts|tsx|js|jsx)', {
-  //     cwd: appDir,
-  //     absolute: false,
-  //   }).map((path) => './' + path);
-  // }
 
   return async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
     if (!req?.url || !req.method) {
@@ -279,8 +311,8 @@ function createRouteHandlerMiddleware(
       return next();
     }
 
-    const staticManifest = manifest?.filter((route) => route.type === 'static');
-    const dynamicManifest = manifest?.filter((route) => route.type === 'dynamic');
+    const staticManifest = manifest?.staticHtml;
+    const dynamicManifest = manifest?.functions;
 
     for (const route of dynamicManifest) {
       if (route.regex.test(sanitizedPathname)) {
@@ -406,17 +438,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
   /** Get routes from Expo Router. */
   async getRoutesAsync() {
-    // TODO: Combine the HTML manifest with the routes manifest and export all at once.
-    // const url = this.getDevServerUrl();
-    // assert(url, 'Dev server must be started');
-    // // const { getManifest } = await getStaticRenderFunctions(this.projectRoot, url);
-    // const getManifest = await getExpoRouteManifestBuilderAsync(this.projectRoot, {
-    //   devServerUrl: `http://localhost:${this.getInstance()?.location.port}`,
-    //   dev: false,
-    //   minify
-    //   mode: 'production',
-    // });
-    // return getManifest({ preserveApiRoutes: false, loadData: true });
+    const getManifest = await getExpoRouteManifestBuilderAsync(this.projectRoot, {
+      devServerUrl: `http://localhost:${this.getInstance()?.location.port}`,
+      dev: false,
+      minify: false,
+    });
+
+    return getManifest();
   }
 
   async getFunctionsAsync({ mode }: { mode: 'development' | 'production' }) {

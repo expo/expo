@@ -159,9 +159,10 @@ export function withExtendedResolver(
         ...immutableContext,
       } as ResolutionContext & { mainFields: string[] };
 
-      // // @ts-expect-error
-      // const environment = context.customResolverOptions?.environment;
+      // @ts-expect-error
+      const environment = context.customResolverOptions?.environment;
 
+      const isNode = environment === 'node';
       // TODO: We need to prevent the require.context from including API routes as these use externals.
       // Should be fine after async routes lands.
       // if (environment === 'node') {
@@ -199,11 +200,15 @@ export function withExtendedResolver(
         };
       }
 
-      const mainFields = env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE
+      let mainFields = env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE
         ? context.mainFields
         : platform && platform in preferredMainFields
         ? preferredMainFields[platform]
         : context.mainFields;
+
+      if (isNode) {
+        mainFields = ['main'];
+      }
 
       function doResolve(moduleName: string): Resolution | null {
         return resolve(
@@ -212,7 +217,9 @@ export function withExtendedResolver(
             preferNativePlatform: platform !== 'web',
             resolveRequest: undefined,
 
-            // Passing `mainFields` directly won't be considered
+            // @ts-expect-error
+            mainFields,
+            // Passing `mainFields` directly won't be considered (in certain version of Metro)
             // we need to extend the `getPackageMainPath` directly to
             // use platform specific `mainFields`.
             getPackageMainPath(packageJsonPath) {

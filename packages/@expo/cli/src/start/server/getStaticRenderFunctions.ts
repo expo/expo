@@ -40,7 +40,7 @@ type StaticRenderOptions = {
   dev?: boolean;
   minify?: boolean;
   platform?: string;
-  environment?: string;
+  environment?: 'node';
 };
 
 const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredModuleId: string) => {
@@ -106,7 +106,7 @@ export async function requireFileContentsWithMetro(
   let url = `${devServerUrl}/${serverPath}?platform=${platform}&dev=${dev}&minify=${minify}`;
 
   if (environment) {
-    url += `&resolver.environment=${environment}`;
+    url += `&resolver.environment=${environment}&transform.environment=${environment}`;
   }
 
   const res = await fetch(url);
@@ -141,6 +141,7 @@ export async function requireWithMetro<T>(
     absoluteFilePath,
     options
   );
+
   return profile(requireString, 'eval-metro-bundle')(content);
 }
 

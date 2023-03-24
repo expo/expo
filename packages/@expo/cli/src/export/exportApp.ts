@@ -46,6 +46,16 @@ export async function exportAppAsync(
 ): Promise<void> {
   setNodeEnv(dev ? 'development' : 'production');
 
+  await unstable_exportStaticAsync(projectRoot, {
+    outputDir: path.resolve(projectRoot, outputDir),
+    scripts: [`/bundles/${'foobar.js'}`],
+    // scripts: [`/bundles/${fileNames.web}`],
+    // TODO: Expose
+    minify: true,
+    features: ['handlers', 'html'],
+  });
+  process.exit(0);
+
   const exp = await getPublicExpoManifestAsync(projectRoot);
 
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
@@ -103,7 +113,9 @@ export async function exportAppAsync(
         scripts: [`/bundles/${fileNames.web}`],
         // TODO: Expose
         minify: true,
+        features: ['handlers', 'html'],
       });
+      process.exit(0);
       Log.log('Finished saving static files');
     } else {
       // Generate SPA-styled HTML file.
