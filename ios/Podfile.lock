@@ -2198,6 +2198,10 @@ PODS:
     - ExpoModulesCore
   - ExpoSMS (11.2.1):
     - ExpoModulesCore
+  - ExpoSpeech (11.1.1):
+    - ExpoModulesCore
+  - ExpoSQLite (11.1.1):
+    - ExpoModulesCore
   - ExpoStoreReview (6.2.1):
     - ExpoModulesCore
   - ExpoSystemUI (2.2.1):
@@ -2217,13 +2221,9 @@ PODS:
     - ExpoModulesCore
   - EXSharing (11.2.1):
     - ExpoModulesCore
-  - EXSpeech (11.1.1):
-    - ExpoModulesCore
   - EXSplashScreen (0.18.1):
     - ExpoModulesCore
     - React-Core
-  - EXSQLite (11.1.1):
-    - ExpoModulesCore
   - EXStructuredHeaders (3.1.1)
   - EXStructuredHeaders/Tests (3.1.1)
   - EXTaskManager (11.1.1):
@@ -3348,6 +3348,8 @@ DEPENDENCIES:
   - ExpoRandom (from `../packages/expo-random/ios`)
   - ExpoSecureStore (from `../packages/expo-secure-store/ios`)
   - ExpoSMS (from `../packages/expo-sms/ios`)
+  - ExpoSpeech (from `../packages/expo-speech/ios`)
+  - ExpoSQLite (from `../packages/expo-sqlite/ios`)
   - ExpoStoreReview (from `../packages/expo-store-review/ios`)
   - ExpoSystemUI (from `../packages/expo-system-ui/ios`)
   - ExpoTrackingTransparency (from `../packages/expo-tracking-transparency/ios`)
@@ -3357,9 +3359,7 @@ DEPENDENCIES:
   - EXScreenOrientation (from `../packages/expo-screen-orientation/ios`)
   - EXSensors (from `../packages/expo-sensors/ios`)
   - EXSharing (from `../packages/expo-sharing/ios`)
-  - EXSpeech (from `../packages/expo-speech/ios`)
   - EXSplashScreen (from `../packages/expo-splash-screen/ios`)
-  - EXSQLite (from `../packages/expo-sqlite/ios`)
   - EXStructuredHeaders (from `../packages/expo-structured-headers/ios`)
   - EXStructuredHeaders/Tests (from `../packages/expo-structured-headers/ios`)
   - EXTaskManager (from `../packages/expo-task-manager/ios`)
@@ -4243,6 +4243,10 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-secure-store/ios"
   ExpoSMS:
     :path: "../packages/expo-sms/ios"
+  ExpoSpeech:
+    :path: "../packages/expo-speech/ios"
+  ExpoSQLite:
+    :path: "../packages/expo-sqlite/ios"
   ExpoStoreReview:
     :path: "../packages/expo-store-review/ios"
   ExpoSystemUI:
@@ -4261,12 +4265,8 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-sensors/ios"
   EXSharing:
     :path: "../packages/expo-sharing/ios"
-  EXSpeech:
-    :path: "../packages/expo-speech/ios"
   EXSplashScreen:
     :path: "../packages/expo-splash-screen/ios"
-  EXSQLite:
-    :path: "../packages/expo-sqlite/ios"
   EXStructuredHeaders:
     :path: "../packages/expo-structured-headers/ios"
   EXTaskManager:
@@ -4762,6 +4762,8 @@ SPEC CHECKSUMS:
   ExpoRandom: 7ee07d62e7003b74d0536e0495e3a653fe1b2a74
   ExpoSecureStore: 22b2088cf8cb9d5a276d7a143fdd5b26f83cc601
   ExpoSMS: e4f3901fdb30ab239ee1172005dbe6634f2d6138
+  ExpoSpeech: ed7dda8073aedbb3f0b0e79d16257534fddff516
+  ExpoSQLite: 510412d853e6758df616d7d6168d39596efe5b61
   ExpoStoreReview: d057dcca4b9c95f3c9db11bd2e168dab9cba59f3
   ExpoSystemUI: 0be5173ee2a7c01e9abc44f56d879a1eaaa16527
   ExpoTrackingTransparency: a789bcac0228947730a27bb4bc163d7501475345
@@ -4771,12 +4773,10 @@ SPEC CHECKSUMS:
   EXScreenOrientation: 52220f8f2477ed25a37e3b2cdbbaa8635d250256
   EXSensors: 29448aedea6ac26f1f11f349c038dbe8698d41e6
   EXSharing: 5a28af9de0884c255f401e1f1f0bea269e9c9bb9
-  EXSpeech: a8da505f08d539364dbcbb2804ac3e63e7bec22b
   EXSplashScreen: cd7fb052dff5ba8311d5c2455ecbebffe1b7a8ca
-  EXSQLite: 848167441b14cb6cdd6ae46c8d62289161a79550
   EXStructuredHeaders: b1a48d732562e2cc81f11771bcfd29534f5d9254
   EXTaskManager: f8257faa4c20acfc3f31e21ab82a62544d70db85
-  EXUpdates: a762f7342744eddc9d7292a9588e5d3420e893e6
+  EXUpdates: ff2a383321dc018a91fa3fa132e4077f576c6fc3
   EXUpdatesInterface: 353553ad3df1507f0d9e814a3dd79c7053606acd
   FBAEMKit: c7f82b5145d446bcbbcd50485c032689032fc6a2
   FBAudienceNetwork: e0fcc9091fced34910ed0b6da06f129db46ac9e6
@@ -4884,6 +4884,6 @@ SPEC CHECKSUMS:
   Yoga: 79dd7410de6f8ad73a77c868d3d368843f0c93e0
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 6bb5b123ef65907681848e92e63a6f9535528e03
+PODFILE CHECKSUM: dc45619fd52e09f0d0b5a03d966526483049cedf
 
 COCOAPODS: 1.11.2
