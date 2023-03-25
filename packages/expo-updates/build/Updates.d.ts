@@ -149,4 +149,13 @@ export declare function clearUpdateCacheExperimentalAsync(_sdkVersion?: string):
  * listener.
  */
 export declare function addListener(listener: (event: UpdateEvent) => void): EventSubscription;
+/**
+ * Extracts any custom properties in the `extra` part of the Expo config.  The `eas` property
+ * is excluded (reserved for Expo internal use).
+ * @param manifest The manifest to check
+ * @return Object containing any properties found. If no extra properties found, returns an empty object.
+ */
+export declare function extraPropertiesFromManifest(manifest: Partial<Manifest>): {
+    [key: string]: any;
+};
 //# sourceMappingURL=Updates.d.ts.map

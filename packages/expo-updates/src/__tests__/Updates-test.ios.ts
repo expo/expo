@@ -1,10 +1,22 @@
 import ExpoUpdates from '../ExpoUpdates';
 import * as Updates from '../Updates';
-import { UpdatesLogEntryCode, UpdatesLogEntryLevel } from '../Updates.types';
+import { Manifest, UpdatesLogEntryCode, UpdatesLogEntryLevel } from '../Updates.types';
 
 const fakeManifest = {
   id: '@jester/test-app',
   sdkVersion: '36.0.0',
+};
+
+const mockDate = new Date();
+const mockManifest: Manifest = {
+  id: '0000-2222',
+  createdAt: mockDate.toISOString(),
+  runtimeVersion: '1.0.0',
+  launchAsset: {
+    url: 'testUrl',
+  },
+  assets: [],
+  metadata: {},
 };
 
 let old__DEV__;
@@ -94,4 +106,37 @@ it('returns the proper object when logs returned from readLogEntriesAsync', asyn
   expect(actual[0].updateId).toBeUndefined();
   expect(actual[1].code).toEqual('JSRuntimeError');
   expect(actual[1].stacktrace?.length).toEqual(3);
+});
+
+it('extraPropertiesFromManifest() when properties exist', () => {
+  const manifestWithExtra: Partial<Manifest> = {
+    ...mockManifest,
+    extra: {
+      expoClient: {
+        extra: {
+          eas: {
+            projectId: '0000-xxxx',
+          },
+          stringProp: 'message',
+          booleanProp: true,
+          nullProp: null,
+          numberProp: 1000,
+        },
+      },
+    },
+  };
+  const result = Updates.extraPropertiesFromManifest(manifestWithExtra);
+  // Only the properties added to 'extra' should be present
+  expect(Object.keys(result)).toHaveLength(4);
+  expect(result['stringProp']).toEqual('message');
+  expect(result['booleanProp']).toBe(true);
+  expect(result['nullProp']).toBeNull();
+  expect(result['numberProp']).toEqual(1000);
+  // 'eas' property should be excluded
+  expect(result['eas']).toBeUndefined();
+});
+
+it('extraPropertiesFromManifest() with no extras in manifest', () => {
+  const result = Updates.extraPropertiesFromManifest(mockManifest);
+  expect(Object.keys(result)).toHaveLength(0);
 });

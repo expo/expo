@@ -289,3 +289,19 @@ export function addListener(listener: (event: UpdateEvent) => void): EventSubscr
   const emitter = _getEmitter();
   return emitter.addListener('Expo.updatesEvent', listener);
 }
+
+/**
+ * Extracts any custom properties in the `extra` part of the Expo config.  The `eas` property
+ * is excluded (reserved for Expo internal use).
+ * @param manifest The manifest to check
+ * @return Object containing any properties found. If no extra properties found, returns an empty object.
+ */
+export function extraPropertiesFromManifest(manifest: Partial<Manifest>): { [key: string]: any } {
+  const result: { [key: string]: any } = {};
+  for (const key in manifest?.extra?.expoClient?.extra) {
+    if (key !== 'eas') {
+      result[key] = manifest?.extra?.expoClient?.extra[key];
+    }
+  }
+  return result;
+}
