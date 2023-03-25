@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `mimeType` when emitting network responses. ([#21676](https://github.com/expo/expo/pull/21676) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 ## 2.1.6 — 2023-03-20
