@@ -337,10 +337,10 @@ async function generateMonochromeImageAsync(
 ) {
   await iterateDpiValues(projectRoot, async ({ dpiFolder, scale }) => {
     const monochromeIcon = await generateIconAsync(projectRoot, {
-        cacheType: imageCacheFolder,
-        src: icon,
-        scale,
-        backgroundColor: "transparent",
+      cacheType: imageCacheFolder,
+      src: icon,
+      scale,
+      backgroundColor: 'transparent',
     });
     await fs.ensureDir(dpiFolder);
     await fs.writeFile(path.resolve(dpiFolder, outputImageFileName), monochromeIcon);
