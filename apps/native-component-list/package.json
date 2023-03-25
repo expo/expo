@@ -86,7 +86,7 @@
     "expo-font": "~11.1.0",
     "expo-gl": "~12.4.0",
     "expo-haptics": "~12.2.0",
-    "expo-image": "~1.0.0-alpha.1",
+    "expo-image": "~1.1.0",
     "expo-image-loader": "^4.0.0",
     "expo-image-manipulator": "~11.1.0",
     "expo-image-picker": "~14.1.0",
