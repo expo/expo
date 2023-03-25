@@ -134,7 +134,7 @@ public final class ImageView: ExpoView {
       context[.originalStoreCacheType] = sdCacheType
     } else {
       context[.originalQueryCacheType] = SDImageCacheType.none.rawValue
-      context[.originalQueryCacheType] = SDImageCacheType.none.rawValue
+      context[.originalStoreCacheType] = SDImageCacheType.none.rawValue
     }
     // Set which cache can be used to query and store the downloaded image.
     // We want to store only original images (without transformations).
