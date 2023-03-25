@@ -10,6 +10,7 @@ import expo.modules.devlauncher.DevLauncherController
 import okhttp3.Headers
 import okhttp3.Request
 import okhttp3.Response
+import okio.Buffer
 import org.json.JSONObject
 import java.lang.ref.WeakReference
 import java.lang.reflect.Field
@@ -46,24 +47,39 @@ class DevLauncherNetworkLogger private constructor() {
   /**
    * Emits CDP `Network.requestWillBeSent` event
    */
-  fun emitNetworkWillBeSent(request: Request, requestId: String) {
+  fun emitNetworkWillBeSent(request: Request, requestId: String, redirectResponse: Response?) {
     val now = BigDecimal(System.currentTimeMillis() / 1000.0).setScale(3, RoundingMode.CEILING)
-    val params = mapOf(
-      "requestId" to requestId,
-      "loaderId" to "",
-      "documentURL" to "mobile",
-      "initiator" to mapOf("type" to "script"),
-      "redirectHasExtraInfo" to false,
-      "request" to mapOf(
-        "url" to request.url().toString(),
-        "method" to request.method(),
-        "headers" to request.headers().toSingleMap(),
-      ),
-      "referrerPolicy" to "no-referrer",
-      "type" to "Fetch",
-      "timestamp" to now,
-      "wallTime" to now,
-    )
+    var requestParams = buildMap<String, Any> {
+      put("url", request.url().toString())
+      put("method", request.method())
+      put("headers", request.headers().toSingleMap())
+      val body = request.body()
+      if (body != null && body.contentLength() < MAX_BODY_SIZE) {
+        val buffer = Buffer()
+        body.writeTo(buffer)
+        put("postData", buffer.readUtf8(buffer.size.coerceAtMost(MAX_BODY_SIZE)))
+      }
+    }
+    var params = buildMap<String, Any> {
+      put("requestId", requestId)
+      put("loaderId", "")
+      put("documentURL", "mobile")
+      put("initiator", mapOf("type" to "script"))
+      put("redirectHasExtraInfo", false)
+      put("request", requestParams)
+      put("referrerPolicy", "no-referrer")
+      put("type", "Fetch")
+      put("timestamp", now)
+      put("wallTime", now)
+      if (redirectResponse != null) {
+        put("redirectResponse", mapOf(
+          "url" to redirectResponse.request().url().toString(),
+          "status" to redirectResponse.code(),
+          "statusText" to redirectResponse.message(),
+          "headers" to redirectResponse.headers().toSingleMap(),
+        ))
+      }
+    }
     val data = JSONObject(mapOf(
       "method" to "Network.requestWillBeSent",
       "params" to params,

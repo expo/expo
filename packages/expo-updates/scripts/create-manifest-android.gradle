@@ -3,7 +3,7 @@
 import org.apache.tools.ant.taskdefs.condition.Os
 import org.gradle.util.GradleVersion
 
-def expoUpdatesDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-updates/package.json')));"].execute([], projectDir).text.trim()
+def expoUpdatesDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-updates/package.json')));"].execute(null, projectDir).text.trim()
 
 def ex_updates_native_debug = System.getenv("EX_UPDATES_NATIVE_DEBUG") == "1"
 
@@ -69,6 +69,7 @@ def setupClosure = {
         name: "copy${targetName}ExpoManifest",
         type: Copy) {
       description = "expo-updates: Copy manifest into ${targetName}."
+      duplicatesStrategy = DuplicatesStrategy.INCLUDE
 
       into ("${appProject.buildDir}/intermediates")
       into ("assets/${targetPath}") {
@@ -87,6 +88,11 @@ def setupClosure = {
 
       // Workaround for Android Gradle Plugin 7.1+ asset directory
       into ("assets/${variant.name}/merge${targetName}Assets") {
+        from(assetsDir)
+      }
+
+      // Workaround for Android Gradle Plugin 7.5+ asset directory (including flavor variants)
+      into ("assets/${variant.name}") {
         from(assetsDir)
       }
 

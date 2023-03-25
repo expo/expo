@@ -39,7 +39,8 @@
         "expo-ads-facebook",
         "expo-ads-admob",
         "expo-updates",
-        "expo-module-template"
+        "expo-module-template",
+        "expo-module-template-local"
       ],
       "ios": {
         "flags": {
@@ -78,7 +79,7 @@
     "native-component-list": "*",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.71.3",
+    "react-native": "0.71.4",
     "react-native-gesture-handler": "~2.9.0",
     "react-native-pager-view": "6.1.2",
     "react-native-reanimated": "~2.14.4",

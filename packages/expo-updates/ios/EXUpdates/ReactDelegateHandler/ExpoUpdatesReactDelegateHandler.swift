@@ -22,7 +22,7 @@ public final class ExpoUpdatesReactDelegateHandler: ExpoReactDelegateHandler, Ap
     }
     // if Expo.plist not found or its content is invalid, disable the auto setup
     guard
-      let configPath = Bundle.main.path(forResource: UpdatesConfig.EXUpdatesConfigPlistName, ofType: "plist"),
+      let configPath = Bundle.main.path(forResource: UpdatesConfig.PlistName, ofType: "plist"),
       let config = NSDictionary(contentsOfFile: configPath)
     else {
       return false

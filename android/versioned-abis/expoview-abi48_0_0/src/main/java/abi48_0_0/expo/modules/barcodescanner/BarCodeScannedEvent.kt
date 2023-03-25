@@ -9,5 +9,5 @@ data class BarCodeScannedEvent(
   @Field val data: String,
   @Field val type: Int,
   @Field val cornerPoints: ArrayList<Bundle>,
-  @Field val boundingBox: Bundle
+  @Field val bounds: Bundle
 ) : Record

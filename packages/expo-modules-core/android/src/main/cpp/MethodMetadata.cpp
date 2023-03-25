@@ -8,6 +8,7 @@
 #include "JavaCallback.h"
 
 #include <utility>
+#include <functional>
 
 #include <react/jni/ReadableNativeMap.h>
 #include <react/jni/ReadableNativeArray.h>
@@ -20,6 +21,20 @@ namespace jsi = facebook::jsi;
 namespace react = facebook::react;
 
 namespace expo {
+
+class JSI_EXPORT ObjectDeallocator : public jsi::HostObject {
+public:
+  typedef std::function<void()> ObjectDeallocatorType;
+
+  ObjectDeallocator(ObjectDeallocatorType deallocator) : deallocator(deallocator) {};
+
+  virtual ~ObjectDeallocator() {
+    deallocator();
+  }
+
+  const ObjectDeallocatorType deallocator;
+
+}; // class ObjectDeallocator
 
 // Modified version of the RN implementation
 // https://github.com/facebook/react-native/blob/7dceb9b63c0bfd5b13bf6d26f9530729506e9097/ReactCommon/react/nativemodule/core/platform/android/ReactCommon/JavaTurboModule.cpp#L57
@@ -117,9 +132,15 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
   JSIInteropModuleRegistry *moduleRegistry,
   JNIEnv *env,
   jsi::Runtime &rt,
+  const jsi::Value &thisValue,
   const jsi::Value *args,
   size_t count
 ) {
+  // This function takes the owner, so the args number is higher because we have access to the thisValue.
+  if (takesOwner) {
+    count++;
+  }
+
   auto argumentArray = env->NewObjectArray(
     count,
     JavaReferencesCache::instance()->getJClass("java/lang/Object").clazz,
@@ -128,8 +149,21 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
 
   std::vector<jobject> result(count);
 
-  for (unsigned int argIndex = 0; argIndex < count; argIndex++) {
-    const jsi::Value &arg = args[argIndex];
+  const auto getCurrentArg = [&thisValue, args, takesOwner = takesOwner](
+    size_t index
+  ) -> const jsi::Value & {
+    if (!takesOwner) {
+      return args[index];
+    } else {
+      if (index != 0) {
+        return args[index - 1];
+      }
+      return thisValue;
+    }
+  };
+
+  for (size_t argIndex = 0; argIndex < count; argIndex++) {
+    const jsi::Value &arg = getCurrentArg(argIndex);
     auto &type = argTypes[argIndex];
     if (arg.isNull() || arg.isUndefined()) {
       // If value is null or undefined, we just passes a null
@@ -156,11 +190,13 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
 MethodMetadata::MethodMetadata(
   std::weak_ptr<react::LongLivedObjectCollection> longLivedObjectCollection,
   std::string name,
+  bool takesOwner,
   int args,
   bool isAsync,
   jni::local_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::global_ref<jobject> &&jBodyReference
 ) : name(std::move(name)),
+    takesOwner(takesOwner),
     args(args),
     isAsync(isAsync),
     jBodyReference(std::move(jBodyReference)),
@@ -177,11 +213,13 @@ MethodMetadata::MethodMetadata(
 MethodMetadata::MethodMetadata(
   std::weak_ptr<react::LongLivedObjectCollection> longLivedObjectCollection,
   std::string name,
+  bool takesOwner,
   int args,
   bool isAsync,
   std::vector<std::unique_ptr<AnyType>> &&expectedArgTypes,
   jni::global_ref<jobject> &&jBodyReference
 ) : name(std::move(name)),
+    takesOwner(takesOwner),
     args(args),
     isAsync(isAsync),
     argTypes(std::move(expectedArgTypes)),
@@ -222,6 +260,7 @@ jsi::Function MethodMetadata::toSyncFunction(
         return this->callSync(
           rt,
           moduleRegistry,
+          thisValue,
           args,
           count
         );
@@ -234,6 +273,7 @@ jsi::Function MethodMetadata::toSyncFunction(
 jsi::Value MethodMetadata::callSync(
   jsi::Runtime &rt,
   JSIInteropModuleRegistry *moduleRegistry,
+  const jsi::Value &thisValue,
   const jsi::Value *args,
   size_t count
 ) {
@@ -250,7 +290,7 @@ jsi::Value MethodMetadata::callSync(
    */
   jni::JniLocalScope scope(env, (int) count);
 
-  auto convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, args, count);
+  auto convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, thisValue, args, count);
 
   // Cast in this place is safe, cause we know that this function is promise-less.
   auto syncFunction = jni::static_ref_cast<JNIFunctionBody>(this->jBodyReference);
@@ -307,9 +347,20 @@ jsi::Value MethodMetadata::callSync(
     auto anonymousObject = jni::static_ref_cast<JavaScriptModuleObject::javaobject>(result)
       ->cthis();
     anonymousObject->jsiInteropModuleRegistry = moduleRegistry;
-    auto hostObject = std::make_shared<JavaScriptModuleObject::HostObject>(anonymousObject);
-    hostObject->jObjectRef = jni::make_global(result);
-    return jsi::Object::createFromHostObject(rt, hostObject);
+    auto jsiObject = anonymousObject->getJSIObject(rt);
+
+    jni::global_ref<jobject> globalRef = jni::make_global(result);
+    std::shared_ptr<expo::ObjectDeallocator> deallocator = std::make_shared<ObjectDeallocator>(
+      [globalRef = globalRef]() mutable {
+        globalRef.reset();
+      });
+
+    auto descriptor = JavaScriptObject::preparePropertyDescriptor(rt, 0);
+    descriptor.setProperty(rt, "value", jsi::Object::createFromHostObject(rt, deallocator));
+    JavaScriptObject::defineProperty(rt, jsiObject.get(), "__expo_object_deallocator__",
+                                     std::move(descriptor));
+
+    return jsi::Value(rt, *jsiObject);
   }
 
   return jsi::Value::undefined();
@@ -343,7 +394,7 @@ jsi::Function MethodMetadata::toAsyncFunction(
       );
 
       try {
-        auto convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, args, count);
+        auto convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, thisValue, args, count);
         auto globalConvertedArgs = (jobjectArray) env->NewGlobalRef(convertedArgs);
         env->DeleteLocalRef(convertedArgs);
 

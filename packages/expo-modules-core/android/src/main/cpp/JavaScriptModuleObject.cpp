@@ -16,12 +16,67 @@
 #include <utility>
 #include <tuple>
 #include <algorithm>
+#include <sstream>
 
 namespace jni = facebook::jni;
 namespace jsi = facebook::jsi;
 namespace react = facebook::react;
 
 namespace expo {
+
+void decorateObjectWithFunctions(
+  jsi::Runtime &runtime,
+  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+  jsi::Object *jsObject,
+  JavaScriptModuleObject *objectData) {
+  for (auto &[name, method]: objectData->methodsMetadata) {
+    jsObject->setProperty(
+      runtime,
+      jsi::String::createFromUtf8(runtime, name),
+      jsi::Value(runtime, *method.toJSFunction(runtime, jsiInteropModuleRegistry))
+    );
+  }
+}
+
+void decorateObjectWithProperties(
+  jsi::Runtime &runtime,
+  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+  jsi::Object *jsObject,
+  JavaScriptModuleObject *objectData) {
+  for (auto &[name, property]: objectData->properties) {
+    auto &[getter, setter] = property;
+
+    auto descriptor = JavaScriptObject::preparePropertyDescriptor(runtime,
+                                                                  1 << 1 /* enumerable */);
+    descriptor.setProperty(
+      runtime,
+      "get",
+      jsi::Value(runtime, *getter.toJSFunction(runtime,
+                                               jsiInteropModuleRegistry))
+    );
+    descriptor.setProperty(
+      runtime,
+      "set",
+      jsi::Value(runtime, *setter.toJSFunction(runtime,
+                                               jsiInteropModuleRegistry))
+    );
+    JavaScriptObject::defineProperty(runtime, jsObject, name, std::move(descriptor));
+  }
+}
+
+void decorateObjectWithConstants(
+  jsi::Runtime &runtime,
+  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+  jsi::Object *jsObject,
+  JavaScriptModuleObject *objectData) {
+  for (const auto &[name, value]: objectData->constants) {
+    jsObject->setProperty(
+      runtime,
+      jsi::String::createFromUtf8(runtime, name),
+      jsi::valueFromDynamic(runtime, value)
+    );
+  }
+}
 
 jni::local_ref<jni::HybridClass<JavaScriptModuleObject>::jhybriddata>
 JavaScriptModuleObject::initHybrid(jni::alias_ref<jhybridobject> jThis) {
@@ -38,6 +93,10 @@ void JavaScriptModuleObject::registerNatives() {
                                     JavaScriptModuleObject::registerAsyncFunction),
                    makeNativeMethod("registerProperty",
                                     JavaScriptModuleObject::registerProperty),
+                   makeNativeMethod("registerClass",
+                                    JavaScriptModuleObject::registerClass),
+                   makeNativeMethod("registerViewPrototype",
+                                    JavaScriptModuleObject::registerViewPrototype)
                  });
 }
 
@@ -46,11 +105,98 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
     return object;
   }
 
-  auto hostObject = std::make_shared<JavaScriptModuleObject::HostObject>(this);
-  auto object = std::make_shared<jsi::Object>(
-    jsi::Object::createFromHostObject(runtime, hostObject));
-  jsiObject = object;
-  return object;
+  auto moduleObject = std::make_shared<jsi::Object>(runtime);
+
+  decorateObjectWithConstants(
+    runtime,
+    jsiInteropModuleRegistry,
+    moduleObject.get(),
+    this
+  );
+  decorateObjectWithProperties(
+    runtime,
+    jsiInteropModuleRegistry,
+    moduleObject.get(),
+    this
+  );
+  decorateObjectWithFunctions(
+    runtime,
+    jsiInteropModuleRegistry,
+    moduleObject.get(),
+    this
+  );
+
+  if (viewPrototype) {
+    auto viewPrototypeObject = viewPrototype->cthis();
+    viewPrototypeObject->jsiInteropModuleRegistry = jsiInteropModuleRegistry;
+    auto viewPrototypeJSIObject = viewPrototypeObject->getJSIObject(runtime);
+    moduleObject->setProperty(
+      runtime,
+      "ViewPrototype",
+      jsi::Value(runtime, *viewPrototypeJSIObject)
+    );
+  }
+
+  for (auto &[name, classRef]: classes) {
+    auto classObject = jni::static_ref_cast<JavaScriptModuleObject::javaobject>(
+      jni::make_local(classRef))->cthis();
+    classObject->jsiInteropModuleRegistry = jsiInteropModuleRegistry;
+
+    std::string nativeConstructorKey("__native_constructor__");
+
+    // Create a string buffer of the source code to evaluate.
+    std::stringstream source;
+    source << "(function " << name << "(...args) { this." << nativeConstructorKey
+           << "(...args); return this; })";
+    std::shared_ptr<jsi::StringBuffer> sourceBuffer = std::make_shared<jsi::StringBuffer>(
+      source.str());
+
+    // Evaluate the code and obtain returned value (the constructor function).
+    jsi::Object klass = runtime.evaluateJavaScript(sourceBuffer, "").asObject(runtime);
+
+    // Set the native constructor in the prototype.
+    jsi::Object prototype = klass.getPropertyAsObject(runtime, "prototype");
+    jsi::PropNameID nativeConstructorPropId = jsi::PropNameID::forAscii(runtime,
+                                                                        nativeConstructorKey);
+    jsi::Function nativeConstructor = jsi::Function::createFromHostFunction(
+      runtime,
+      nativeConstructorPropId,
+      // The paramCount is not obligatory to match, it only affects the `length` property of the function.
+      0,
+      [classObject, jsiInteropModuleRegistry = jsiInteropModuleRegistry](
+        jsi::Runtime &runtime,
+        const jsi::Value &thisValue,
+        const jsi::Value *args,
+        size_t count
+      ) -> jsi::Value {
+        auto thisObject = thisValue.asObject(runtime);
+        decorateObjectWithProperties(runtime, jsiInteropModuleRegistry, &thisObject, classObject);
+        // TODO(@lukmccall): call the constructor from the class definition
+        return jsi::Value::undefined();
+      });
+
+    auto descriptor = JavaScriptObject::preparePropertyDescriptor(runtime, 0);
+    descriptor.setProperty(runtime, "value", jsi::Value(runtime, nativeConstructor));
+
+    JavaScriptObject::defineProperty(runtime, &prototype, nativeConstructorKey,
+                                     std::move(descriptor));
+
+    moduleObject->setProperty(
+      runtime,
+      jsi::String::createFromUtf8(runtime, name),
+      jsi::Value(runtime, klass.asFunction(runtime))
+    );
+
+    decorateObjectWithFunctions(
+      runtime,
+      jsiInteropModuleRegistry,
+      &prototype,
+      classObject
+    );
+  }
+
+  jsiObject = moduleObject;
+  return moduleObject;
 }
 
 void JavaScriptModuleObject::exportConstants(
@@ -66,6 +212,7 @@ void JavaScriptModuleObject::exportConstants(
 
 void JavaScriptModuleObject::registerSyncFunction(
   jni::alias_ref<jstring> name,
+  jboolean takesOwner,
   jint args,
   jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::alias_ref<JNIFunctionBody::javaobject> body
@@ -76,6 +223,7 @@ void JavaScriptModuleObject::registerSyncFunction(
     cName,
     longLivedObjectCollection_,
     cName,
+    takesOwner,
     args,
     false,
     jni::make_local(expectedArgTypes),
@@ -85,6 +233,7 @@ void JavaScriptModuleObject::registerSyncFunction(
 
 void JavaScriptModuleObject::registerAsyncFunction(
   jni::alias_ref<jstring> name,
+  jboolean takesOwner,
   jint args,
   jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
   jni::alias_ref<JNIAsyncFunctionBody::javaobject> body
@@ -95,11 +244,26 @@ void JavaScriptModuleObject::registerAsyncFunction(
     cName,
     longLivedObjectCollection_,
     cName,
+    takesOwner,
     args,
     true,
     jni::make_local(expectedArgTypes),
     jni::make_global(body)
   );
+}
+
+void JavaScriptModuleObject::registerClass(
+  jni::alias_ref<jstring> name,
+  jni::alias_ref<JavaScriptModuleObject::javaobject> classObject
+) {
+  std::string cName = name->toStdString();
+  classes[cName] = jni::make_global(classObject);
+}
+
+void JavaScriptModuleObject::registerViewPrototype(
+  jni::alias_ref<JavaScriptModuleObject::javaobject> viewPrototype
+) {
+  this->viewPrototype = jni::make_global(viewPrototype);
 }
 
 void JavaScriptModuleObject::registerProperty(
@@ -113,6 +277,7 @@ void JavaScriptModuleObject::registerProperty(
   auto getterMetadata = MethodMetadata(
     longLivedObjectCollection_,
     cName,
+    false,
     0,
     false,
     std::vector<std::unique_ptr<AnyType>>(),
@@ -124,6 +289,7 @@ void JavaScriptModuleObject::registerProperty(
   auto setterMetadata = MethodMetadata(
     longLivedObjectCollection_,
     cName,
+    false,
     1,
     false,
     std::move(types),
@@ -136,101 +302,6 @@ void JavaScriptModuleObject::registerProperty(
   );
 
   properties.insert({cName, std::move(functions)});
-}
-
-JavaScriptModuleObject::HostObject::HostObject(
-  JavaScriptModuleObject *jsModule) : jsModule(jsModule) {}
-
-/**
- * Clears all the JSI references held by the `JavaScriptModuleObject`.
- */
-JavaScriptModuleObject::HostObject::~HostObject() {
-  jObjectRef.reset();
-  jsModule->jsiObject.reset();
-  jsModule->methodsMetadata.clear();
-  jsModule->constants.clear();
-  jsModule->properties.clear();
-  jsModule->longLivedObjectCollection_->clear();
-}
-
-jsi::Value JavaScriptModuleObject::HostObject::get(jsi::Runtime &runtime,
-                                                   const jsi::PropNameID &name) {
-  auto cName = name.utf8(runtime);
-
-  auto constantsRecord = jsModule->constants.find(cName);
-  if (constantsRecord != jsModule->constants.end()) {
-    auto dynamic = constantsRecord->second;
-    return jsi::valueFromDynamic(runtime, dynamic);
-  }
-
-  auto propertyRecord = jsModule->properties.find(cName);
-  if (propertyRecord != jsModule->properties.end()) {
-    auto&[getter, _] = propertyRecord->second;
-    return getter.callSync(runtime, jsModule->jsiInteropModuleRegistry, nullptr, 0);
-  }
-
-  auto metadataRecord = jsModule->methodsMetadata.find(cName);
-  if (metadataRecord == jsModule->methodsMetadata.end()) {
-    return jsi::Value::undefined();
-  }
-  auto &metadata = metadataRecord->second;
-  return jsi::Value(runtime, *metadata.toJSFunction(runtime, jsModule->jsiInteropModuleRegistry));
-}
-
-void JavaScriptModuleObject::HostObject::set(
-  jsi::Runtime &runtime,
-  const jsi::PropNameID &name,
-  const jsi::Value &value
-) {
-  auto cName = name.utf8(runtime);
-  auto propertyRecord = jsModule->properties.find(cName);
-  if (propertyRecord != jsModule->properties.end()) {
-    auto&[_, setter] = propertyRecord->second;
-    setter.callSync(runtime, jsModule->jsiInteropModuleRegistry, &value, 1);
-    return;
-  }
-
-  throw jsi::JSError(
-    runtime,
-    "RuntimeError: Cannot override the host object for expo module '" + name.utf8(runtime) + "'"
-  );
-}
-
-std::vector<jsi::PropNameID> JavaScriptModuleObject::HostObject::getPropertyNames(
-  jsi::Runtime &rt
-) {
-  auto &metadata = jsModule->methodsMetadata;
-  std::vector<jsi::PropNameID> result;
-  std::transform(
-    metadata.begin(),
-    metadata.end(),
-    std::back_inserter(result),
-    [&rt](const auto &kv) {
-      return jsi::PropNameID::forUtf8(rt, kv.first);
-    }
-  );
-
-  auto &constants = jsModule->constants;
-  std::transform(
-    constants.begin(),
-    constants.end(),
-    std::back_inserter(result),
-    [&rt](const auto &kv) {
-      return jsi::PropNameID::forUtf8(rt, kv.first);
-    }
-  );
-
-  auto &properties = jsModule->properties;
-  std::transform(
-    properties.begin(),
-    properties.end(),
-    std::back_inserter(result),
-    [&rt](const auto &kv) {
-      return jsi::PropNameID::forUtf8(rt, kv.first);
-    }
-  );
-
-  return result;
 }
 
 JavaScriptModuleObject::JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis)
