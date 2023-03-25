@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.1.0 — 2023-03-25
+
+### 🎉 New features
+
 - [Android] Add automatic asset downscaling to improve performance. ([#21628](https://github.com/expo/expo/pull/21628) by [@lukmccall](https://github.com/lukmccall))
 
 ### 🐛 Bug fixes
@@ -15,8 +23,6 @@
 - Fixed crashes caused by empty placeholder or source on Android. ([#21695](https://github.com/expo/expo/pull/21695) by [@lukmccall](https://github.com/lukmccall))
 - Fixes `shouldDownscale` don't respect the scale factor on iOS. ([#21839](https://github.com/expo/expo/pull/21839) by [@ouabing](https://github.com/ouabing))
 - Fixes cache policy not being correctly applied when set to `none` on iOS. ([#21840](https://github.com/expo/expo/pull/21840) by [@ouabing](https://github.com/ouabing))
-
-### 💡 Others
 
 ## 1.0.0 — 2023-02-21
 
