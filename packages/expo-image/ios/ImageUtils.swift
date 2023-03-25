@@ -87,7 +87,7 @@ func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double) -> Bool
     return false
   }
   let imageSize = image.size * image.scale
-  return imageSize.width > size.width && imageSize.height > size.height
+  return imageSize.width > (size.width * scale) && imageSize.height > (size.height * scale)
 }
 
 /**
