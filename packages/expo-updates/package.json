@@ -36,7 +36,10 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/updates/",
   "jest": {
-    "preset": "expo-module-scripts"
+    "preset": "expo-module-scripts",
+    "setupFilesAfterEnv": [
+      "@testing-library/jest-native/extend-expect"
+    ]
   },
   "dependencies": {
     "@expo/code-signing-certificates": "0.0.5",
@@ -52,6 +55,9 @@
     "resolve-from": "^5.0.0"
   },
   "devDependencies": {
+    "@testing-library/jest-native": "^4.0.4",
+    "@testing-library/react": "^13.4.0",
+    "@testing-library/react-native": "^11.3.0",
     "@types/jest": "^29.2.1",
     "@types/node": "^17.0.15",
     "@types/node-forge": "^1.0.0",
