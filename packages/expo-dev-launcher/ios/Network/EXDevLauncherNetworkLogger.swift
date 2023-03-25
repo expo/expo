@@ -86,7 +86,8 @@ public class EXDevLauncherNetworkLogger: NSObject {
         "url": request.url?.absoluteString,
         "status": response.statusCode,
         "statusText": "",
-        "headers": response.allHeaderFields
+        "headers": response.allHeaderFields,
+        "mimeType": response.value(forHTTPHeaderField: "Content-Type") ?? ""
       ],
       "referrerPolicy": "no-referrer",
       "type": "Fetch",

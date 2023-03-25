@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `mimeType` when emitting network responses. ([#21676](https://github.com/expo/expo/pull/21676) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 - Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
