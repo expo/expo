@@ -101,6 +101,7 @@ class DevLauncherNetworkLogger private constructor() {
         "status" to response.code(),
         "statusText" to response.message(),
         "headers" to response.headers().toSingleMap(),
+        "mimeType" to response.header("Content-Type", ""),
       ),
       "referrerPolicy" to "no-referrer",
       "type" to "Fetch",
