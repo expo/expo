@@ -205,6 +205,18 @@ public:
   bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
 };
 
+class ViewTagFrontendConverter : public FrontendConverter {
+public:
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
+    JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+};
+
 /**
  * Converter that always fails.
  * Used to not fail when the function is created.

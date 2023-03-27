@@ -60,6 +60,17 @@ public:
   );
 };
 
+class InvalidArgsNumberException
+: public jni::JavaClass<InvalidArgsNumberException, CodedException> {
+public:
+  static auto constexpr kJavaDescriptor = "Lexpo/modules/kotlin/exception/InvalidArgsNumberException;";
+
+  static jni::local_ref<InvalidArgsNumberException> create(
+    int received,
+    int expected
+  );
+};
+
 /**
  * Tries to rethrow an jni::JniException as a js version of the CodedException
  */
