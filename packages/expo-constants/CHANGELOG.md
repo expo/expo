@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- New method extraPropertiesFromExpoConfig. ([#21869](https://github.com/expo/expo/pull/21869) by [@douglowder](https://github.com/douglowder))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
