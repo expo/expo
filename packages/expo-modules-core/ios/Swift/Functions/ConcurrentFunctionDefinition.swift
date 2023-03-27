@@ -28,14 +28,15 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
 
   var takesOwner: Bool = false
 
-  func call(by owner: AnyObject?, withArguments args: [Any], callback: @escaping (FunctionCallResult) -> Void) {
+  func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> Void) {
     let arguments: [Any]
 
     do {
       arguments = concat(
-        arguments: try cast(arguments: args, forFunction: self),
+        arguments: try cast(arguments: args, forFunction: self, appContext: appContext),
         withOwner: owner,
-        forFunction: self
+        forFunction: self,
+        appContext: appContext
       )
     } catch let error as Exception {
       callback(.failure(error))
@@ -68,13 +69,13 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
 
   // MARK: - JavaScriptObjectBuilder
 
-  func build(inRuntime runtime: JavaScriptRuntime) -> JavaScriptObject {
-    return runtime.createAsyncFunction(name, argsCount: argumentsCount) { [weak self, name] this, args, resolve, reject in
+  func build(appContext: AppContext) throws -> JavaScriptObject {
+    return try appContext.runtime.createAsyncFunction(name, argsCount: argumentsCount) { [weak self, name] this, args, resolve, reject in
       guard let self = self else {
         let exception = NativeFunctionUnavailableException(name)
         return reject(exception.code, exception.description, nil)
       }
-      self.call(by: this, withArguments: args) { result in
+      self.call(by: this, withArguments: args, appContext: appContext) { result in
         switch result {
         case .failure(let error):
           reject(error.code, error.description, nil)

@@ -46,7 +46,7 @@ public final class ExpoBridgeModule: NSObject, RCTBridgeModule {
         guard let self = self, let bridge = self.appContext.reactBridge else {
           return
         }
-        self.appContext.runtime = EXJavaScriptRuntimeManager.runtime(fromBridge: bridge)
+        self.appContext._runtime = EXJavaScriptRuntimeManager.runtime(fromBridge: bridge)
       }
 
       if bridge.responds(to: Selector(("runtime"))) {

@@ -12,5 +12,5 @@ public protocol AnyViewProp: ViewManagerDefinitionComponent {
   /**
    Function that sets the underlying prop value for given view.
    */
-  func set(value: Any, onView: UIView) throws
+  func set(value: Any, onView: UIView, appContext: AppContext) throws
 }

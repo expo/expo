@@ -10,12 +10,12 @@
  - Returns: A new value converted according to the dynamic type.
  - Throws: Rethrows various exceptions that could be thrown by the dynamic types.
  */
-internal func cast(_ value: Any, toType type: AnyDynamicType) throws -> Any {
+internal func cast(_ value: Any, toType type: AnyDynamicType, appContext: AppContext) throws -> Any {
   // TODO: Accept JavaScriptValue and JavaScriptObject as argument types.
   if !(type is DynamicTypedArrayType), let value = value as? JavaScriptValue {
-    return try type.cast(value.getRaw())
+    return try type.cast(value.getRaw(), appContext: appContext)
   }
-  return try type.cast(value)
+  return try type.cast(value, appContext: appContext)
 }
 
 /**
@@ -23,11 +23,12 @@ internal func cast(_ value: Any, toType type: AnyDynamicType) throws -> Any {
  - Parameters:
    - arguments: An array of arguments to be cast.
    - function: A function for which to cast the arguments.
+   - appContext: A context of the app.
  - Returns: An array of arguments after casting. Its size is the same as the input arrays.
  - Throws: `InvalidArgsNumberException` when the number of arguments is not equal to the actual number
  of function's arguments (without an owner and promise). Rethrows exceptions thrown by `cast(_:toType:)`.
  */
-internal func cast(arguments: [Any], forFunction function: AnyFunction) throws -> [Any] {
+internal func cast(arguments: [Any], forFunction function: AnyFunction, appContext: AppContext) throws -> [Any] {
   let requiredArgumentsCount = function.requiredArgumentsCount
   let argumentTypeOffset = function.takesOwner ? 1 : 0
 
@@ -42,7 +43,7 @@ internal func cast(arguments: [Any], forFunction function: AnyFunction) throws -
     let argumentType = function.dynamicArgumentTypes[index + argumentTypeOffset]
 
     do {
-      return try cast(argument, toType: argumentType)
+      return try cast(argument, toType: argumentType, appContext: appContext)
     } catch {
       throw ArgumentCastException((index: index, type: argumentType)).causedBy(error)
     }
@@ -54,10 +55,10 @@ internal func cast(arguments: [Any], forFunction function: AnyFunction) throws -
  - If the function takes the owner, it's added to the beginning.
  - If the array is still too small, missing arguments are very likely to be optional so it puts `nil` in their place.
  */
-internal func concat(arguments: [Any], withOwner owner: AnyObject?, forFunction function: AnyFunction) -> [Any] {
+internal func concat(arguments: [Any], withOwner owner: AnyObject?, forFunction function: AnyFunction, appContext: AppContext) -> [Any] {
   var result = arguments
 
-  if function.takesOwner, let owner = try? function.dynamicArgumentTypes.first?.cast(owner) {
+  if function.takesOwner, let owner = try? function.dynamicArgumentTypes.first?.cast(owner, appContext: appContext) {
     result = [owner] + arguments
   }
   if arguments.count < function.argumentsCount {

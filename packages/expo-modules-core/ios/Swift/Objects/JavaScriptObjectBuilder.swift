@@ -7,7 +7,7 @@ internal protocol JavaScriptObjectDecorator {
   /**
    Decorates an existing `JavaScriptObject`.
    */
-  func decorate(object: JavaScriptObject, inRuntime runtime: JavaScriptRuntime)
+  func decorate(object: JavaScriptObject, appContext: AppContext) throws
 }
 
 /**
@@ -15,23 +15,23 @@ internal protocol JavaScriptObjectDecorator {
  */
 internal protocol JavaScriptObjectBuilder: JavaScriptObjectDecorator {
   /**
-   Creates a decorated `JavaScriptObject` in the given runtime.
+   Creates a decorated `JavaScriptObject` in the given app context.
    */
-  func build(inRuntime runtime: JavaScriptRuntime) -> JavaScriptObject
+  func build(appContext: AppContext) throws -> JavaScriptObject
 }
 
 /**
  Provides the default behavior of `JavaScriptObjectBuilder`.
- The `build(inRuntime:)` creates a plain object and uses `decorate(object:)` for decoration.
+ The `build(appContext:)` creates a plain object and uses `decorate(object:appContext:)` for decoration.
  */
 extension JavaScriptObjectBuilder {
-  func build(inRuntime runtime: JavaScriptRuntime) -> JavaScriptObject {
-    let object = runtime.createObject()
-    decorate(object: object, inRuntime: runtime)
+  func build(appContext: AppContext) throws -> JavaScriptObject {
+    let object = try appContext.runtime.createObject()
+    try decorate(object: object, appContext: appContext)
     return object
   }
 
-  func decorate(object: JavaScriptObject, inRuntime runtime: JavaScriptRuntime) {
+  func decorate(object: JavaScriptObject, appContext: AppContext) throws {
     // no-op by default
   }
 }

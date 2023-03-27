@@ -32,13 +32,13 @@ public final class ConcreteViewProp<ViewType: UIView, PropType: AnyArgument>: An
   /**
    Function that sets the underlying prop value for given view.
    */
-  public func set(value: Any, onView view: UIView) throws {
+  public func set(value: Any, onView view: UIView, appContext: AppContext) throws {
     // Method's signature must be type-erased to conform to `AnyViewProp` protocol.
     // Given view must be castable to the generic `ViewType` type.
     guard let view = view as? ViewType else {
       throw IncompatibleViewException((propName: name, viewType: ViewType.self))
     }
-    guard let value = try propType.cast(value) as? PropType else {
+    guard let value = try propType.cast(value, appContext: appContext) as? PropType else {
       throw Conversions.CastingException<PropType>(value)
     }
     setter(view, value)

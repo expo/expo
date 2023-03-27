@@ -14,7 +14,7 @@ internal struct DynamicTypedArrayType: AnyDynamicType {
     return false
   }
 
-  func cast<ValueType>(_ value: ValueType) throws -> Any {
+  func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
     // It must be a JavaScript typed array.
     guard let value = value as? JavaScriptValue, let jsTypedArray = value.getTypedArray() else {
       throw NotTypedArrayException(innerType)

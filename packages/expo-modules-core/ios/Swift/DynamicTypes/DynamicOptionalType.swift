@@ -21,11 +21,11 @@ internal struct DynamicOptionalType: AnyDynamicType {
     return false
   }
 
-  func cast<ValueType>(_ value: ValueType) throws -> Any {
+  func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
     if Optional.isNil(value) || value is NSNull {
       return Optional<Any>.none as Any
     }
-    return try wrappedType.cast(value)
+    return try wrappedType.cast(value, appContext: appContext)
   }
 
   var description: String {

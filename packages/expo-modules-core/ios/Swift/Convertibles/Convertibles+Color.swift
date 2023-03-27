@@ -1,7 +1,7 @@
 // Copyright 2022-present 650 Industries. All rights reserved.
 
 extension UIColor: Convertible {
-  public static func convert(from value: Any?) throws -> Self {
+  public static func convert(from value: Any?, appContext: AppContext) throws -> Self {
     // swiftlint:disable force_cast
     if let value = value as? String {
       if let namedColorComponents = namedColors[value] {
@@ -21,10 +21,10 @@ extension UIColor: Convertible {
 }
 
 extension CGColor: Convertible {
-  public static func convert(from value: Any?) throws -> Self {
+  public static func convert(from value: Any?, appContext: AppContext) throws -> Self {
     // swiftlint:disable force_cast
     do {
-      return try UIColor.convert(from: value).cgColor as! Self
+      return try UIColor.convert(from: value, appContext: appContext).cgColor as! Self
     } catch _ as Conversions.ConvertingException<UIColor> {
       // Rethrow `ConvertingError` with proper type
       throw Conversions.ConvertingException<CGColor>(value)
