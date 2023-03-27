@@ -55,6 +55,10 @@ jobs:
         uses: actions/setup-node@v3
         with:
           node-version: 16
+      - name: 🔧 Setup EAS
+        uses: expo/expo-github-action@v8
+        with:
+          eas-cli: latest
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(yarn global bin)" >> $GITHUB_PATH
       - name: ♻️ Restore caches
@@ -71,8 +75,6 @@ jobs:
       - name: Build expo-updates CLI
         working-directory: packages/expo-updates
         run: yarn build:cli
-      - name: 🔧 Install eas-cli
-        run: yarn global add eas-cli
       - name: 🌳 Add EXPO_REPO_ROOT to environment
         run: echo "EXPO_REPO_ROOT=$GITHUB_WORKSPACE" >> $GITHUB_ENV
       - name: 🌐 Set updates host
