@@ -118,7 +118,7 @@ describe('ExpoInspectorDevice', () => {
 
 /** Create a test device instance without extending the Metro device */
 function createTestDevice() {
-  const metroBundler = { broadcastMessage: jest.fn() };
+  const metroBundler: any = { broadcastMessage: jest.fn() };
   class MetroDevice {
     _processMessageFromDevice() {}
     _interceptMessageFromDebugger() {}
@@ -131,5 +131,5 @@ function createTestDevice() {
   const ExpoDevice = createInspectorDeviceClass(metroBundler, MetroDevice);
   const device = new ExpoDevice();
 
-  return { ExpoDevice, MetroDevice, device };
+  return { ExpoDevice, MetroDevice, device, metroBundler };
 }
