@@ -9,6 +9,7 @@
 ### 🎉 New features
 
 - Add rollback to embedded update directive. ([#21007](https://github.com/expo/expo/pull/21007), [#21652](https://github.com/expo/expo/pull/21652) by [@wschurman](https://github.com/wschurman))
+- New method extraPropertiesFromManifest(). ([#21854](https://github.com/expo/expo/pull/21854) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
