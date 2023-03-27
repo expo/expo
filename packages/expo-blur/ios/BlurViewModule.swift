@@ -14,6 +14,10 @@ public final class BlurViewModule: Module {
       Prop("intensity") { (view, intensity: Double) in
         view.setIntensity(intensity / 100)
       }
+      
+      Prop("vibrancy") { (view, vibrancy: String) in
+        view.setVibrancy(vibrancy)
+      }
     }
 
     AsyncFunction("setNativeProps") { (props: [String: Any], viewTag: Int) in
@@ -25,6 +29,9 @@ public final class BlurViewModule: Module {
       }
       if let intensity = props["intensity"] as? Double {
         view.setIntensity(intensity / 100)
+      }                              
+      if let vibrancy = props["vibrancy"] as? String {
+        view.setVibrancy(vibrancy)
       }
     }
     .runOnQueue(.main)
