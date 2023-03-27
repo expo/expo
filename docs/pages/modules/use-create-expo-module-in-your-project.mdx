@@ -1,22 +1,22 @@
 ---
 title: How to use a module created with create-expo-module in your project
-sidebar_title: Use a create-expo-module in your project
+sidebar_title: Use a module created with create-expo-module
 description: Learn how to use a module created with create-expo-module in your project.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
 
-There are two main ways to use a module created with `create-expo-module` inside an existing project: configuring a monorepo or publishing the module to npm. In this guide, we will walk you through both alternatives.
+There are two main ways to use a module created with `create-expo-module` inside an existing project: configuring a monorepo or publishing the module to npm. This guide walkthroughs both methods.
 
 ## Using a monorepo
 
 For this guide, we assume that you have the following project structure:
 
 - **apps/** - Contains multiple projects, including React Native apps.
-- **packages/** - Contains different packages used by our apps.
-- **package.json** - Root package file, containing yarn workspaces config.
+- **packages/** - Contains different packages used by your apps.
+- **package.json** - Root package file containing Yarn workspaces config.
 
-If you're not familiar with how to configure your project as a monorepo, check the **[Working with monorepos](/guides/monorepos/)** guide.
+If you need to familiarize yourself with configuring your project as a monorepo, see [**Working with monorepos**](/guides/monorepos/) guide.
 
 ### 1. Initialize a new module
 
@@ -26,11 +26,11 @@ Once you have set up the basic monorepo structure, create a new module using `cr
 
 ### 2. Set up our workspace
 
-We won't need the **example** folder included by `create-expo-module`. Let's clean up the default module with the following command:
+You don't need the **example** folder included by `create-expo-module`. Let's clean up the default module with the following command:
 
 <Terminal cmd={['$ rm -rf packages/expo-settings/example']} />
 
-Now, let's configure `autolinking` so all of our apps can use the newly created module. Add the following block to the **package.json** file of each app under the **apps** folder:
+Now, let's configure `autolinking` so all your apps can use the newly created module. Add the following block to the **package.json** file of each app under the **apps** directory:
 
 ```json package.json
 "expo": {
@@ -40,7 +40,7 @@ Now, let's configure `autolinking` so all of our apps can use the newly created 
 }
 ```
 
-### 3. Running your module
+### 3. Run the module
 
 Now let's run an app to ensure everything is working. Start the TypeScript compiler inside **packages/expo-settings** to watch for changes and rebuild the module JavaScript.
 
@@ -49,7 +49,7 @@ Now let's run an app to ensure everything is working. Start the TypeScript compi
   cmd={['$ cd packages/expo-settings', '$ npm run build']}
 />
 
-In another terminal window, choose one of your apps under the **apps** folder and run the `prebuild` command. You will need to do this in all apps inside your monorepo in order to use the new module.
+Open another terminal window, choose one of your apps under the **apps** folder, and run the `prebuild` command. You'll have to repeat these steps for all apps inside your monorepo to use the new module.
 
 <Terminal cmd={['$ npx expo prebuild --clean']} />
 
@@ -65,10 +65,9 @@ Compile and run the app with the following command:
   ]}
 />
 
-You should now be able to use the module inside your app. To test this, let's edit the **App.js**
-file in the app and render the `hello` text from our `expo-settings` module:
+You can now use the module inside your app. To test this, let's edit the **App.js** file in the app and render the a text message from the `expo-settings` module:
 
-```javascript App.js
+```jsx App.js
 import * as Settings from 'expo-settings';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
@@ -84,7 +83,7 @@ export default function App() {
 }
 ```
 
-If you've configured everything correctly you should see a text saying "Hello world! 👋” in your app.
+If you've configured everything correctly, you'll see a text saying "Hello world! 👋" in the app.
 
 ## Publishing your module
 
@@ -92,13 +91,13 @@ If you don't want to go through the process of setting up a monorepo, you can al
 
 ### 1. Initialize a new module
 
-First, start by creating a new module using `create-expo-module`. Pay attention to each prompt as we're going to publish this library, so make sure to choose a unique name for your npm package.
+Start by creating a new module using `create-expo-module`. Pay attention to each prompt as you'll publish this library, and choose a unique name for your npm package.
 
 <Terminal cmd={['$ npx create-expo-module expo-settings']} />
 
-### **2. Run the example project**
+### 2. Run the example project
 
-Now let's run the example project to make sure everything is working. Start the TypeScript compiler to watch for changes and rebuild the module JavaScript.
+Run the example project to make sure everything is working. Then, start the TypeScript compiler to watch for changes and rebuild the JavaScript module.
 
 <Terminal
   cmd={[
@@ -107,7 +106,7 @@ Now let's run the example project to make sure everything is working. Start the 
   ]}
 />
 
-In another terminal window, compile and run the example app:
+Open another terminal window, compile and run the example app:
 
 <Terminal
   cmdCopy="cd example && npx expo run:ios"
@@ -122,7 +121,7 @@ In another terminal window, compile and run the example app:
 
 ### 3. Publish your package to npm
 
-In order to publish your package to npm, you need to have an npm account. If you don't have one, first register through [the npm website](https://www.npmjs.com/signup). Once you have an account, log in using the following command:
+To publish your package to npm, you need to have an npm account. If you don't have one, create it on [the npm website](https://www.npmjs.com/signup). Once you have an account, log in using the following command:
 
 <Terminal cmd={['$ npm login']} />
 
@@ -130,7 +129,7 @@ Then, navigate to the root of your module and publish your module running:
 
 <Terminal cmd={['$ npm publish']} />
 
-Your module is now published to npm and can be installed in other projects using `npm install`.
+Your module will now be published to npm and can be installed in other projects using `npm install`.
 
 Apart from publishing your module to npm, there are other ways to use it in your project. One way is to create a tarball of your module using `npm pack` and install it directly in your project by running `npm install /path/to/tarball`. This is useful if you want to test your module locally before publishing it to npm or if you want to share it with others who don't have access to the npm registry. Another way is to run a local npm registry and install your module from there.
 
@@ -138,16 +137,16 @@ If you want to publish a private private package or use a private registry with 
 
 ### 4. Test the published module
 
-To test the published module in a new project, create a new app and add the module as a dependency:
+To test the published module in a new project, create a new app and install the module as a dependency:
 
 <Terminal
   cmdCopy="npx create-expo-app my-app && cd my-app && npx expo install expo-settings"
   cmd={['$ npx create-expo-app my-app', '$ cd my-app', '$ npx expo install expo-settings']}
 />
 
-You should now be able to use the module inside your app! To test this, let's edit the **App.js** in the app and render the `hello` text from our **expo-settings**.
+You should now be able to use the module inside your app! To test it, edit the **App.js** in the app and render the text message from **expo-settings**.
 
-```javascript App.js
+```jsx App.js
 import * as Settings from 'expo-settings';
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
@@ -163,7 +162,7 @@ export default function App() {
 }
 ```
 
-To run your app locally first run the `prebuild` command and then compile the app.
+To run your app locally, run the `prebuild` command and then compile the app.
 
 <Terminal
   cmdCopy="npx expo prebuild --clean && npx expo run:ios"
@@ -177,4 +176,4 @@ To run your app locally first run the `prebuild` command and then compile the ap
   ]}
 />
 
-If you've configured everything correctly you should see a text saying "Hello world! 👋” in your app.
+If you've configured everything correctly, you'll see a text saying "Hello world! 👋" in the app.
