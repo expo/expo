@@ -17,6 +17,8 @@ import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.jni.JavaScriptValue
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.RecordTypeConverter
+import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.kotlin.sharedobjects.SharedObjectTypeConverter
 import expo.modules.kotlin.typedarray.BigInt64Array
 import expo.modules.kotlin.typedarray.BigUint64Array
 import expo.modules.kotlin.typedarray.Float32Array
@@ -119,6 +121,10 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
     if (kClass.isSubclassOf(View::class)) {
       return ViewTypeConverter<View>(type)
+    }
+
+    if (kClass.isSubclassOf(SharedObject::class)) {
+      return SharedObjectTypeConverter<SharedObject>(type)
     }
 
     return handelEither(type, kClass)

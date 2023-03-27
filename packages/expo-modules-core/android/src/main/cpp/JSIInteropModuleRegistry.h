@@ -78,6 +78,8 @@ public:
    */
   jni::local_ref<JavaScriptObject::javaobject> createObject();
 
+  void registerSharedObject(jni::local_ref<jobject> native, jni::local_ref<JavaScriptObject::javaobject> js);
+
   /**
    * Exposes a `JavaScriptRuntime::drainJSEventLoop` function to Kotlin
    */

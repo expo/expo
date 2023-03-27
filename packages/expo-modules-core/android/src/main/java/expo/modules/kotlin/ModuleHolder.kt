@@ -40,7 +40,15 @@ class ModuleHolder(val module: Module) {
         val clazzModuleObject = JavaScriptModuleObject(clazz.name)
           .initUsingObjectDefinition(module.appContext, clazz.objectDefinition)
 
-        registerClass(clazz.name, clazzModuleObject)
+        val constructor = clazz.constructor
+        registerClass(
+          clazz.name,
+          clazzModuleObject,
+          constructor.takesOwner,
+          constructor.argsCount,
+          constructor.getCppRequiredTypes().toTypedArray(),
+          constructor.getJNIFunctionBody(clazz.name, appContext)
+        )
       }
     }
   }

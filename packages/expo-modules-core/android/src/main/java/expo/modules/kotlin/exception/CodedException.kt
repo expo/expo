@@ -180,6 +180,12 @@ internal class ArgumentCastException(
   }
 }
 
+internal class InvalidSharedObjectException(
+  sharedType: KType,
+) : CodedException(
+  message = "Cannot converter provided JavaScriptObject to the '$sharedType', because it doesn't contain valid id"
+)
+
 internal class FieldCastException(
   fieldName: String,
   fieldType: KType,

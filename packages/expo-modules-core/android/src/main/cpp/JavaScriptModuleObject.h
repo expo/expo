@@ -103,7 +103,11 @@ public:
 
   void registerClass(
     jni::alias_ref<jstring> name,
-    jni::alias_ref<JavaScriptModuleObject::javaobject> classObject
+    jni::alias_ref<JavaScriptModuleObject::javaobject> classObject,
+    jboolean takesOwner,
+    jint args,
+    jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
+    jni::alias_ref<JNIFunctionBody::javaobject> body
   );
 
   void registerViewPrototype(
@@ -181,7 +185,10 @@ private:
    */
   std::shared_ptr<react::LongLivedObjectCollection> longLivedObjectCollection_;
 
-  std::map<std::string, jni::global_ref<JavaScriptModuleObject::javaobject>> classes;
+  std::map<
+    std::string,
+    std::pair<jni::global_ref<JavaScriptModuleObject::javaobject>, MethodMetadata>
+  > classes;
 
   jni::global_ref<JavaScriptModuleObject::javaobject> viewPrototype;
 };

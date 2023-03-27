@@ -205,7 +205,25 @@ public:
   bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
 };
 
+/**
+ * Converter from js view object to int.
+ */
 class ViewTagFrontendConverter : public FrontendConverter {
+public:
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
+    JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+};
+
+/**
+ * Converter from js shared object to int.
+ */
+class SharedObjectIdConverter : public FrontendConverter {
 public:
   jobject convert(
     jsi::Runtime &rt,
