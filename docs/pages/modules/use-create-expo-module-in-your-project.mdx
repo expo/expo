@@ -34,10 +34,10 @@ Now, let's configure `autolinking` so all of our apps can use the newly created 
 
 ```json package.json
 "expo": {
-    "autolinking": {
-      "nativeModulesDir": "../../packages"
-    }
+  "autolinking": {
+    "nativeModulesDir": "../../packages"
   }
+}
 ```
 
 ### 3. Running your module
@@ -49,7 +49,7 @@ Now let's run an app to ensure everything is working. Start the TypeScript compi
   cmd={['$ cd packages/expo-settings', '$ npm run build']}
 />
 
-In another terminal window, chose one of your apps under the **apps** folder and run the `prebuild` command. You will need to do this in all apps inside your monorepo in order to use the new module.
+In another terminal window, choose one of your apps under the **apps** folder and run the `prebuild` command. You will need to do this in all apps inside your monorepo in order to use the new module.
 
 <Terminal cmd={['$ npx expo prebuild --clean']} />
 
@@ -58,9 +58,9 @@ Compile and run the app with the following command:
 <Terminal
   cmdCopy="npx expo run:ios"
   cmd={[
-    '# Run the example app on Android',
+    '# Run the app on Android',
     '$ npx expo run:android',
-    '# Run the example app on iOS',
+    '# Run the app on iOS',
     '$ npx expo run:ios',
   ]}
 />
