@@ -20,15 +20,11 @@ If you need to familiarize yourself with configuring your project as a monorepo,
 
 ### 1. Initialize a new module
 
-Once you have set up the basic monorepo structure, create a new module using `create-expo-module`:
+Once you have set up the basic monorepo structure, create a new module using `create-expo-module` with the flag `no-example` to skip creating the example app:
 
-<Terminal cmd={['$ npx create-expo-module packages/expo-settings']} />
+<Terminal cmd={['$ npx create-expo-module packages/expo-settings --no-example']} />
 
 ### 2. Set up our workspace
-
-You don't need the **example** folder included by `create-expo-module`. Let's clean up the default module with the following command:
-
-<Terminal cmd={['$ rm -rf packages/expo-settings/example']} />
 
 Now, let's configure `autolinking` so all your apps can use the newly created module. Add the following block to the **package.json** file of each app under the **apps** directory:
 
