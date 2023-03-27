@@ -29,6 +29,22 @@ export {
   WebManifest,
 };
 
+/**
+ * Helper method that extracts any custom properties in the `extra` part of the Expo config.
+ * The `eas` property is excluded (reserved for Expo internal use).
+ * @param config The config from which to extract properties.
+ * @return Object containing any properties found. If no extra properties found, returns an empty object.
+ */
+export const customPropertiesFromExpoConfig = (config: ExpoConfig) => {
+  const result: { [key: string]: any } = {};
+  for (const key in config.extra) {
+    if (key !== 'eas') {
+      result[key] = config.extra[key];
+    }
+  }
+  return result;
+};
+
 if (!ExponentConstants) {
   console.warn(
     "No native ExponentConstants module found, are you sure the expo-constants's module is linked properly?"

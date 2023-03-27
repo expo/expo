@@ -1,6 +1,7 @@
+import { ExpoConfig } from '@expo/config-types';
 import { Platform } from 'react-native';
 
-import Constants, { ExecutionEnvironment } from '../Constants';
+import Constants, { customPropertiesFromExpoConfig, ExecutionEnvironment } from '../Constants';
 import { AppManifest, Manifest } from '../Constants.types';
 
 it(`defines a manifest`, () => {
@@ -218,4 +219,39 @@ describe(`manifest`, () => {
       });
     });
   }
+});
+
+describe('customPropertiesFromExpoConfig', () => {
+  const mockConfig: ExpoConfig = {
+    name: 'Test',
+    slug: '0000',
+  };
+  it('Get expected results when extra properties exist', () => {
+    const configWithExtra: ExpoConfig = {
+      ...mockConfig,
+      extra: {
+        eas: {
+          projectId: '0000-xxxx',
+        },
+        stringProp: 'message',
+        booleanProp: true,
+        nullProp: null,
+        numberProp: 1000,
+      },
+    };
+    const result = customPropertiesFromExpoConfig(configWithExtra);
+    // Only the properties added to 'extra' should be present
+    expect(Object.keys(result)).toHaveLength(4);
+    expect(result['stringProp']).toEqual('message');
+    expect(result['booleanProp']).toBe(true);
+    expect(result['nullProp']).toBeNull();
+    expect(result['numberProp']).toEqual(1000);
+    // 'eas' property should be excluded
+    expect(result['eas']).toBeUndefined();
+  });
+
+  it('Get expected results when no extras in manifest', () => {
+    const result = customPropertiesFromExpoConfig(mockConfig);
+    expect(Object.keys(result)).toHaveLength(0);
+  });
 });
