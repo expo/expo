@@ -1,17 +1,17 @@
 {
-  "name": "expo-module-template",
-  "version": "10.7.16",
+  "name": "expo-module-template-local",
+  "version": "1.0.0",
   "description": "ExpoModuleTemplate standalone module",
   "scripts": {},
   "keywords": [
     "react-native",
     "expo",
-    "expo-module-template"
+    "expo-module-template-local"
   ],
   "repository": {
     "type": "git",
     "url": "https://github.com/expo/expo.git",
-    "directory": "packages/expo-module-template"
+    "directory": "packages/expo-module-template-local"
   },
   "bugs": {
     "url": "https://github.com/expo/expo/issues"
