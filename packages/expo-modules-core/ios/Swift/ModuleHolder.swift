@@ -62,24 +62,28 @@ public final class ModuleHolder {
   // MARK: Calling functions
 
   func call(function functionName: String, args: [Any], _ callback: @escaping (FunctionCallResult) -> () = { _ in }) {
+    guard let appContext else {
+      callback(.failure(Exceptions.AppContextLost()))
+      return
+    }
     guard let function = definition.functions[functionName] else {
       callback(.failure(FunctionNotFoundException((functionName: functionName, moduleName: self.name))))
       return
     }
-    function.call(by: self, withArguments: args, callback: callback)
+    function.call(by: self, withArguments: args, appContext: appContext, callback: callback)
   }
 
   @discardableResult
   func callSync(function functionName: String, args: [Any]) -> Any? {
-    guard let function = definition.functions[functionName] as? AnySyncFunctionComponent else {
+    guard let appContext, let function = definition.functions[functionName] as? AnySyncFunctionComponent else {
       return nil
     }
     do {
-      let arguments = try cast(arguments: args, forFunction: function)
-      let result = try function.call(by: self, withArguments: arguments)
+      let arguments = try cast(arguments: args, forFunction: function, appContext: appContext)
+      let result = try function.call(by: self, withArguments: arguments, appContext: appContext)
 
       if let result = result as? SharedObject {
-        let jsObject = SharedObjectRegistry.ensureSharedJavaScriptObject(runtime: appContext!.runtime!, nativeObject: result)
+        let jsObject = SharedObjectRegistry.ensureSharedJavaScriptObject(runtime: try appContext.runtime, nativeObject: result)
         return jsObject
       }
       return result
@@ -98,11 +102,16 @@ public final class ModuleHolder {
    */
   private func createJavaScriptModuleObject() -> JavaScriptObject? {
     // It might be impossible to create any object at the moment (e.g. remote debugging, app context destroyed)
-    guard let runtime = appContext?.runtime else {
+    guard let appContext else {
       return nil
     }
-    log.info("Creating JS object for module '\(name)'")
-    return definition.build(inRuntime: runtime)
+    do {
+      log.info("Creating JS object for module '\(name)'")
+      return try definition.build(appContext: appContext)
+    } catch {
+      log.error("Building the module object failed: \(error)")
+      return nil
+    }
   }
 
   // MARK: Listening to native events
@@ -131,10 +140,13 @@ public final class ModuleHolder {
    Modifies module's listeners count and calls `onStartObserving` or `onStopObserving` accordingly.
    */
   func modifyListenersCount(_ count: Int) {
+    guard let appContext else {
+      return
+    }
     if count > 0 && listenersCount == 0 {
-      definition.functions["startObserving"]?.call(withArguments: [])
+      definition.functions["startObserving"]?.call(withArguments: [], appContext: appContext)
     } else if count < 0 && listenersCount + count <= 0 {
-      definition.functions["stopObserving"]?.call(withArguments: [])
+      definition.functions["stopObserving"]?.call(withArguments: [], appContext: appContext)
     }
     listenersCount = max(0, listenersCount + count)
   }

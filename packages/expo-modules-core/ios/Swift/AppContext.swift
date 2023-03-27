@@ -8,7 +8,7 @@ public final class AppContext: NSObject {
   internal static func create() -> AppContext {
     let appContext = AppContext()
 
-    appContext.runtime = JavaScriptRuntime()
+    appContext._runtime = JavaScriptRuntime()
     return appContext
   }
 
@@ -41,21 +41,33 @@ public final class AppContext: NSObject {
   public internal(set) weak var reactBridge: RCTBridge?
 
   /**
-   JSI runtime of the running app.
+   Underlying JSI runtime of the running app.
    */
   @objc
-  public var runtime: JavaScriptRuntime? {
+  public var _runtime: JavaScriptRuntime? {
     didSet {
-      if runtime == nil {
+      if _runtime == nil {
         // When the runtime is unpinned from the context (e.g. deallocated),
         // we should make sure to release all JS objects from the memory.
         // Otherwise the JSCRuntime asserts may fail on deallocation.
         releaseRuntimeObjects()
-      } else if runtime != oldValue {
+      } else if _runtime != oldValue {
         // Try to install ExpoModules host object automatically when the runtime changes.
         // TODO: Should we uninstall in the old runtime? (@tsapeta)
         try? installExpoModulesHostObject()
       }
+    }
+  }
+
+  /**
+   JSI runtime of the running app.
+   */
+  public var runtime: JavaScriptRuntime {
+    get throws {
+      if let runtime = _runtime {
+        return runtime
+      }
+      throw Exceptions.RuntimeLost()
     }
   }
 
@@ -308,7 +320,7 @@ public final class AppContext: NSObject {
   // MARK: - Runtime
 
   internal func installExpoModulesHostObject() throws {
-    guard runtime != nil else {
+    guard _runtime != nil else {
       throw RuntimeLostException()
     }
     EXJavaScriptRuntimeManager.installExpoModulesHostObject(self)

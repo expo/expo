@@ -15,7 +15,7 @@ public protocol Record: Convertible {
   /**
    Initializes a record from given dictionary. Only members wrapped by `@Field` will be set in the object.
    */
-  init(from: Dict) throws
+  init(from: Dict, appContext: AppContext) throws
 
   /**
    Converts the record back to the dictionary. Only members wrapped by `@Field` will be set in the dictionary.
@@ -27,14 +27,14 @@ public protocol Record: Convertible {
  Provides the default implementation of `Record` protocol.
  */
 public extension Record {
-  static func convert(from value: Any?) throws -> Self {
+  static func convert(from value: Any?, appContext: AppContext) throws -> Self {
     if let value = value as? Dict {
-      return try Self(from: value)
+      return try Self(from: value, appContext: appContext)
     }
     throw Conversions.ConvertingException<Self>(value)
   }
 
-  init(from dict: Dict) throws {
+  init(from dict: Dict, appContext: AppContext) throws {
     self.init()
 
     let dictKeys = dict.keys
@@ -45,7 +45,7 @@ public extension Record {
         return
       }
       if dictKeys.contains(key) || field.isRequired {
-        try field.set(dict[key])
+        try field.set(dict[key], appContext: appContext)
       }
     }
   }

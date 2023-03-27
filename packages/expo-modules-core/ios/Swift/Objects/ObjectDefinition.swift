@@ -61,43 +61,45 @@ public class ObjectDefinition: AnyDefinition, JavaScriptObjectBuilder {
 
   // MARK: - JavaScriptObjectBuilder
 
-  public func build(inRuntime runtime: JavaScriptRuntime) -> JavaScriptObject {
-    let object = runtime.createObject()
-    decorate(object: object, inRuntime: runtime)
+  public func build(appContext: AppContext) throws -> JavaScriptObject {
+    let object = try appContext.runtime.createObject()
+    try decorate(object: object, appContext: appContext)
     return object
   }
 
-  public func decorate(object: JavaScriptObject, inRuntime runtime: JavaScriptRuntime) {
-    decorateWithConstants(runtime: runtime, object: object)
-    decorateWithFunctions(runtime: runtime, object: object)
-    decorateWithProperties(runtime: runtime, object: object)
-    decorateWithClasses(runtime: runtime, object: object)
+  public func decorate(object: JavaScriptObject, appContext: AppContext) throws {
+    let runtime = try appContext.runtime
+
+    decorateWithConstants(object: object)
+    try decorateWithFunctions(object: object, appContext: appContext)
+    try decorateWithProperties(object: object, appContext: appContext)
+    try decorateWithClasses(object: object, appContext: appContext)
   }
 
   // MARK: - Internals
 
-  internal func decorateWithConstants(runtime: JavaScriptRuntime, object: JavaScriptObject) {
+  internal func decorateWithConstants(object: JavaScriptObject) {
     for (key, value) in getConstants() {
       object.setProperty(key, value: value)
     }
   }
 
-  internal func decorateWithFunctions(runtime: JavaScriptRuntime, object: JavaScriptObject) {
+  internal func decorateWithFunctions(object: JavaScriptObject, appContext: AppContext) throws {
     for fn in functions.values {
-      object.setProperty(fn.name, value: fn.build(inRuntime: runtime))
+      object.setProperty(fn.name, value: try fn.build(appContext: appContext))
     }
   }
 
-  internal func decorateWithProperties(runtime: JavaScriptRuntime, object: JavaScriptObject) {
+  internal func decorateWithProperties(object: JavaScriptObject, appContext: AppContext) throws {
     for property in properties.values {
-      let descriptor = property.buildDescriptor(inRuntime: runtime)
+      let descriptor = try property.buildDescriptor(appContext: appContext)
       object.defineProperty(property.name, descriptor: descriptor)
     }
   }
 
-  internal func decorateWithClasses(runtime: JavaScriptRuntime, object: JavaScriptObject) {
+  internal func decorateWithClasses(object: JavaScriptObject, appContext: AppContext) throws {
     for klass in classes.values {
-      object.setProperty(klass.name, value: klass.build(inRuntime: runtime))
+      object.setProperty(klass.name, value: try klass.build(appContext: appContext))
     }
   }
 }

@@ -35,7 +35,7 @@ static NSString *modulesHostObjectLegacyPropertyName = @"ExpoModules";
 
 + (BOOL)installExpoModulesHostObject:(nonnull EXAppContext *)appContext
 {
-  EXJavaScriptRuntime *runtime = [appContext runtime];
+  EXJavaScriptRuntime *runtime = [appContext _runtime];
 
   // The runtime may be unavailable, e.g. remote debugger is enabled or it hasn't been set yet.
   if (!runtime) {

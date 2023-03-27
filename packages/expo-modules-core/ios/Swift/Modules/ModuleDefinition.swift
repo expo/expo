@@ -65,12 +65,12 @@ public final class ModuleDefinition: ObjectDefinition {
     return self
   }
 
-  public override func build(inRuntime runtime: JavaScriptRuntime) -> JavaScriptObject {
-    let object = super.build(inRuntime: runtime)
+  public override func build(appContext: AppContext) throws -> JavaScriptObject {
+    let object = try super.build(appContext: appContext)
 
     if let viewManager {
-      let reactComponentPrototype = runtime.createObject()
-      viewManager.decorateWithFunctions(runtime: runtime, object: reactComponentPrototype)
+      let reactComponentPrototype = try appContext.runtime.createObject()
+      try viewManager.decorateWithFunctions(object: reactComponentPrototype, appContext: appContext)
       object.setProperty("ViewPrototype", value: reactComponentPrototype)
     }
 

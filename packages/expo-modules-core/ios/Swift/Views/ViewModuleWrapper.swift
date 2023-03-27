@@ -104,7 +104,9 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    */
   @objc
   public func set_proxiedProperties(_ json: Any, forView view: UIView, withDefaultView defaultView: UIView) {
-    guard let json = json as? [String: Any], let viewManager = wrappedModuleHolder.definition.viewManager else {
+    guard let json = json as? [String: Any],
+          let viewManager = wrappedModuleHolder.definition.viewManager,
+          let appContext = wrappedModuleHolder.appContext else {
       return
     }
     let props = viewManager.propsDict()
@@ -115,7 +117,7 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
       // TODO: @tsapeta: Figure out better way to rethrow errors from here.
       // Adding `throws` keyword to the function results in different
       // method signature in Objective-C. Maybe just call `RCTLogError`?
-      try? prop.set(value: Conversions.fromNSObject(newValue), onView: view)
+      try? prop.set(value: Conversions.fromNSObject(newValue), onView: view, appContext: appContext)
     }
     viewManager.callLifecycleMethods(withType: .didUpdateProps, forView: view)
   }
