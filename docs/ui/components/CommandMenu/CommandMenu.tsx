@@ -75,7 +75,7 @@ export const CommandMenu = ({ version, open, setOpen }: Props) => {
       <div css={closeIconStyle}>
         <XIcon className="text-icon-secondary" onClick={() => setOpen(false)} />
       </div>
-      <Command.Input value={query} onValueChange={setQuery} placeholder="search anything…" />
+      <Command.Input value={query} onValueChange={setQuery} placeholder="Search…" />
       <BarLoader isLoading={loading} />
       <Command.List>
         {initialized && (
