@@ -304,7 +304,7 @@ final class DynamicTypeSpec: ExpoSpec {
 
           // `DynamicSharedObjectType` only supports casting
           // from `JavaScriptValue`, but not from `JavaScriptObject`.
-          expect(try (~TestSharedObject.self).cast(jsObjectValue, appContext: appContext) as? TestSharedObject) === nativeObject
+          expect(try (~TestSharedObject.self).cast(jsValue: jsObjectValue, appContext: appContext) as? TestSharedObject) === nativeObject
         }
         it("throws NativeSharedObjectNotFoundException") {
           expect { try (~TestSharedObject.self).cast("a string", appContext: appContext) as? TestSharedObject }.to(

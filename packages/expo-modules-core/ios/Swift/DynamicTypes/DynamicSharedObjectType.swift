@@ -22,7 +22,11 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
       // Given value is a shared object already
       return value
     }
-    if let jsObject = try (value as? JavaScriptValue)?.asObject(),
+    throw NativeSharedObjectNotFoundException()
+  }
+
+  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+    if let jsObject = try? jsValue.asObject(),
        let nativeSharedObject = SharedObjectRegistry.toNativeObject(jsObject) {
       return nativeSharedObject
     }
