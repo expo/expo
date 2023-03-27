@@ -53,8 +53,8 @@ export async function setupTypedRoutes({ server, metro, typesDirectory }: SetupT
         regenerateRouterDotTS(
           typesDirectory,
           new Set([...staticRoutes.values()].flatMap((v) => Array.from(v))),
-          new Set(dynamicRoutes.keys()),
-          new Set([...dynamicRoutes.values()].flatMap((v) => Array.from(v)))
+          new Set([...dynamicRoutes.values()].flatMap((v) => Array.from(v))),
+          new Set(dynamicRoutes.keys())
         );
       }
     },
@@ -67,8 +67,8 @@ export async function setupTypedRoutes({ server, metro, typesDirectory }: SetupT
   regenerateRouterDotTS(
     typesDirectory,
     new Set([...staticRoutes.values()].flatMap((v) => Array.from(v))),
-    new Set(dynamicRoutes.keys()),
-    new Set([...dynamicRoutes.values()].flatMap((v) => Array.from(v)))
+    new Set([...dynamicRoutes.values()].flatMap((v) => Array.from(v))),
+    new Set(dynamicRoutes.keys())
   );
 }
 
@@ -101,7 +101,7 @@ const regenerateRouterDotTS = debounce(
  * These are extracted for easier testing
  */
 export function getTypedRoutesUtils(appRoot: string) {
-  const staticRoutes = new Map<string, Set<string>>();
+  const staticRoutes = new Map<string, Set<string>>([['/', new Set('/')]]);
   const dynamicRoutes = new Map<string, Set<string>>();
 
   const filePathToRoute = (filePath: string) => {
