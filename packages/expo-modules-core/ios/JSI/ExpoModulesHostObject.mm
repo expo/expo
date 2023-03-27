@@ -11,7 +11,7 @@ ExpoModulesHostObject::ExpoModulesHostObject(EXAppContext *appContext) : appCont
 
 ExpoModulesHostObject::~ExpoModulesHostObject() {
   modulesCache.clear();
-  [appContext setRuntime:nil];
+  appContext._runtime = nil;
 }
 
 jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropNameID &name) {

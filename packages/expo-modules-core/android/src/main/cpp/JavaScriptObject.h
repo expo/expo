@@ -63,7 +63,7 @@ public:
 
   static void defineProperty(
     jsi::Runtime &runtime,
-    std::shared_ptr<jsi::Object> &jsthis,
+    jsi::Object *jsthis,
     const std::string &name,
     jsi::Object descriptor
   );
@@ -123,7 +123,7 @@ private:
     auto cName = name->toStdString();
     jsi::Object descriptor = preparePropertyDescriptor(jsRuntime, options);
     descriptor.setProperty(jsRuntime, "value", jsi_type_converter<T>::convert(jsRuntime, value));
-    JavaScriptObject::defineProperty(jsRuntime, jsObject, cName, std::move(descriptor));
+    JavaScriptObject::defineProperty(jsRuntime, jsObject.get(), cName, std::move(descriptor));
   }
 };
 } // namespace expo

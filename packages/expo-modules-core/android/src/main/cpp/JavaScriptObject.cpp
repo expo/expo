@@ -121,13 +121,15 @@ jsi::Object JavaScriptObject::preparePropertyDescriptor(
   jsi::Object descriptor(jsRuntime);
   descriptor.setProperty(jsRuntime, "configurable", (bool) ((1 << 0) & options));
   descriptor.setProperty(jsRuntime, "enumerable", (bool) ((1 << 1) & options));
-  descriptor.setProperty(jsRuntime, "writable", (bool) ((1 << 2) & options));
+  if ((bool) (1 << 2 & options)) {
+    descriptor.setProperty(jsRuntime, "writable", true);
+  }
   return descriptor;
 }
 
 void JavaScriptObject::defineProperty(
   jsi::Runtime &runtime,
-  std::shared_ptr<jsi::Object> &jsthis,
+  jsi::Object *jsthis,
   const std::string &name,
   jsi::Object descriptor
 ) {

@@ -3,6 +3,7 @@ import chalk from 'chalk';
 import { Command } from 'commander';
 import downloadTarball from 'download-tarball';
 import ejs from 'ejs';
+import findUp from 'find-up';
 import fs from 'fs-extra';
 import { boolish } from 'getenv';
 import path from 'path';
@@ -10,14 +11,19 @@ import prompts from 'prompts';
 
 import { createExampleApp } from './createExampleApp';
 import { installDependencies } from './packageManager';
-import { getSlugPrompt, getSubstitutionDataPrompts } from './prompts';
+import {
+  getLocalFolderNamePrompt,
+  getLocalSubstitutionDataPrompts,
+  getSlugPrompt,
+  getSubstitutionDataPrompts,
+} from './prompts';
 import {
   formatRunCommand,
   PackageManagerName,
   resolvePackageManager,
 } from './resolvePackageManager';
 import { eventCreateExpoModule, getTelemetryClient, logEventAsync } from './telemetry';
-import { CommandOptions, SubstitutionData } from './types';
+import { CommandOptions, LocalSubstitutionData, SubstitutionData } from './types';
 import { newStep } from './utils';
 
 const debug = require('debug')('create-expo-module:main') as typeof console.log;
@@ -43,6 +49,24 @@ const IGNORES_PATHS = [
 // Url to the documentation on Expo Modules
 const DOCS_URL = 'https://docs.expo.dev/modules';
 
+async function getCorrectLocalDirectory(targetOrSlug: string) {
+  const packageJsonPath = await findUp('package.json', { cwd: CWD });
+  if (!packageJsonPath) {
+    console.log(
+      chalk.red.bold(
+        '⚠️ This command should  be run inside your Expo project when run with the --local flag.'
+      )
+    );
+    console.log(
+      chalk.red(
+        'For native modules to autolink correctly, you need to place them in the `modules` directory in the root of the project.'
+      )
+    );
+    return null;
+  }
+  return path.join(packageJsonPath, '..', 'modules', targetOrSlug);
+}
+
 /**
  * The main function of the command.
  *
@@ -50,15 +74,20 @@ const DOCS_URL = 'https://docs.expo.dev/modules';
  * @param command An object from `commander`.
  */
 async function main(target: string | undefined, options: CommandOptions) {
-  const slug = await askForPackageSlugAsync(target);
-  const targetDir = path.join(CWD, target || slug);
+  const slug = await askForPackageSlugAsync(target, options.local);
+  const targetDir = options.local
+    ? await getCorrectLocalDirectory(target || slug)
+    : path.join(CWD, target || slug);
 
+  if (!targetDir) {
+    return;
+  }
   await fs.ensureDir(targetDir);
   await confirmTargetDirAsync(targetDir);
 
   options.target = targetDir;
 
-  const data = await askForSubstitutionDataAsync(slug);
+  const data = await askForSubstitutionDataAsync(slug, options.local);
 
   // Make one line break between prompts and progress logs
   console.log();
@@ -66,7 +95,7 @@ async function main(target: string | undefined, options: CommandOptions) {
   const packageManager = await resolvePackageManager();
   const packagePath = options.source
     ? path.join(CWD, options.source)
-    : await downloadPackageAsync(targetDir);
+    : await downloadPackageAsync(targetDir, options.local);
 
   logEventAsync(eventCreateExpoModule(packageManager, options));
 
@@ -74,55 +103,62 @@ async function main(target: string | undefined, options: CommandOptions) {
     await createModuleFromTemplate(packagePath, targetDir, data);
     step.succeed('Created the module from template files');
   });
-
-  await newStep('Installing module dependencies', async (step) => {
-    await installDependencies(packageManager, targetDir);
-    step.succeed('Installed module dependencies');
-  });
-
-  await newStep('Compiling TypeScript files', async (step) => {
-    await spawnAsync(packageManager, ['run', 'build'], {
-      cwd: targetDir,
-      stdio: 'ignore',
+  if (!options.local) {
+    await newStep('Installing module dependencies', async (step) => {
+      await installDependencies(packageManager, targetDir);
+      step.succeed('Installed module dependencies');
     });
-    step.succeed('Compiled TypeScript files');
-  });
+    await newStep('Compiling TypeScript files', async (step) => {
+      await spawnAsync(packageManager, ['run', 'build'], {
+        cwd: targetDir,
+        stdio: 'ignore',
+      });
+      step.succeed('Compiled TypeScript files');
+    });
+  }
 
   if (!options.source) {
     // Files in the downloaded tarball are wrapped in `package` dir.
     // We should remove it after all.
     await fs.remove(packagePath);
   }
-  if (!options.withReadme) {
-    await fs.remove(path.join(targetDir, 'README.md'));
-  }
-  if (!options.withChangelog) {
-    await fs.remove(path.join(targetDir, 'CHANGELOG.md'));
-  }
-  if (options.example) {
-    // Create "example" folder
-    await createExampleApp(data, targetDir, packageManager);
-  }
-
-  await newStep('Creating an empty Git repository', async (step) => {
-    try {
-      const result = await createGitRepositoryAsync(targetDir);
-      if (result) {
-        step.succeed('Created an empty Git repository');
-      } else if (result === null) {
-        step.succeed('Skipped creating an empty Git repository, already within a Git repository');
-      } else if (result === false) {
-        step.warn('Could not create an empty Git repository, see debug logs with EXPO_DEBUG=true');
-      }
-    } catch (e: any) {
-      step.fail(e.toString());
+  if (!options.local && data.type !== 'local') {
+    if (!options.withReadme) {
+      await fs.remove(path.join(targetDir, 'README.md'));
     }
-  });
+    if (!options.withChangelog) {
+      await fs.remove(path.join(targetDir, 'CHANGELOG.md'));
+    }
+    if (options.example) {
+      // Create "example" folder
+      await createExampleApp(data, targetDir, packageManager);
+    }
+
+    await newStep('Creating an empty Git repository', async (step) => {
+      try {
+        const result = await createGitRepositoryAsync(targetDir);
+        if (result) {
+          step.succeed('Created an empty Git repository');
+        } else if (result === null) {
+          step.succeed('Skipped creating an empty Git repository, already within a Git repository');
+        } else if (result === false) {
+          step.warn(
+            'Could not create an empty Git repository, see debug logs with EXPO_DEBUG=true'
+          );
+        }
+      } catch (e: any) {
+        step.fail(e.toString());
+      }
+    });
+  }
 
   console.log();
   console.log('✅ Successfully created Expo module');
-
-  printFurtherInstructions(targetDir, packageManager, options.example);
+  if (options.local) {
+    printFurtherLocalInstructions(slug, data.project.moduleName);
+  } else {
+    printFurtherInstructions(targetDir, packageManager, options.example);
+  }
 }
 
 /**
@@ -163,10 +199,10 @@ async function getNpmTarballUrl(packageName: string, version: string = 'latest')
 /**
  * Downloads the template from NPM registry.
  */
-async function downloadPackageAsync(targetDir: string): Promise<string> {
+async function downloadPackageAsync(targetDir: string, isLocal = false): Promise<string> {
   return await newStep('Downloading module template from npm', async (step) => {
     const tarballUrl = await getNpmTarballUrl(
-      'expo-module-template',
+      isLocal ? 'expo-module-template-local' : 'expo-module-template',
       EXPO_BETA ? 'next' : 'latest'
     );
 
@@ -194,7 +230,7 @@ function handleSuffix(name: string, suffix: string): string {
 async function createModuleFromTemplate(
   templatePath: string,
   targetPath: string,
-  data: SubstitutionData
+  data: SubstitutionData | LocalSubstitutionData
 ) {
   const files = await getFilesAsync(templatePath);
 
@@ -247,10 +283,13 @@ async function createGitRepositoryAsync(targetDir: string) {
 /**
  * Asks the user for the package slug (npm package name).
  */
-async function askForPackageSlugAsync(customTargetPath?: string): Promise<string> {
-  const { slug } = await prompts(getSlugPrompt(customTargetPath), {
-    onCancel: () => process.exit(0),
-  });
+async function askForPackageSlugAsync(customTargetPath?: string, isLocal = false): Promise<string> {
+  const { slug } = await prompts(
+    (isLocal ? getLocalFolderNamePrompt : getSlugPrompt)(customTargetPath),
+    {
+      onCancel: () => process.exit(0),
+    }
+  );
   return slug;
 }
 
@@ -258,8 +297,13 @@ async function askForPackageSlugAsync(customTargetPath?: string): Promise<string
  * Asks the user for some data necessary to render the template.
  * Some values may already be provided by command options, the prompt is skipped in that case.
  */
-async function askForSubstitutionDataAsync(slug: string): Promise<SubstitutionData> {
-  const promptQueries = await getSubstitutionDataPrompts(slug);
+async function askForSubstitutionDataAsync(
+  slug: string,
+  isLocal = false
+): Promise<SubstitutionData | LocalSubstitutionData> {
+  const promptQueries = await (isLocal
+    ? getLocalSubstitutionDataPrompts
+    : getSubstitutionDataPrompts)(slug);
 
   // Stop the process when the user cancels/exits the prompt.
   const onCancel = () => {
@@ -276,6 +320,19 @@ async function askForSubstitutionDataAsync(slug: string): Promise<SubstitutionDa
     repo,
   } = await prompts(promptQueries, { onCancel });
 
+  if (isLocal) {
+    return {
+      project: {
+        slug,
+        name,
+        package: projectPackage,
+        moduleName: handleSuffix(name, 'Module'),
+        viewName: handleSuffix(name, 'View'),
+      },
+      type: 'local',
+    };
+  }
+
   return {
     project: {
       slug,
@@ -289,6 +346,7 @@ async function askForSubstitutionDataAsync(slug: string): Promise<SubstitutionDa
     author: `${authorName} <${authorEmail}> (${authorUrl})`,
     license: 'MIT',
     repo,
+    type: 'remote',
   };
 }
 
@@ -344,6 +402,19 @@ function printFurtherInstructions(
   console.log(`Visit ${chalk.blue.bold(DOCS_URL)} for the documentation on Expo Modules APIs`);
 }
 
+function printFurtherLocalInstructions(slug: string, name: string) {
+  console.log(`You can now import this module inside your application:`);
+  console.log();
+  console.log(chalk.blue(`import { hello } from '${slug}';`));
+  console.log();
+  console.log(`Visit ${chalk.blue.bold(DOCS_URL)} for the documentation on Expo Modules APIs`);
+  console.log(
+    chalk.yellow(
+      `Remember you need to rebuild your development client or reinstall pods to see the changes.`
+    )
+  );
+}
+
 const program = new Command();
 
 program
@@ -358,6 +429,11 @@ program
   .option('--with-readme', 'Whether to include README.md file.', false)
   .option('--with-changelog', 'Whether to include CHANGELOG.md file.', false)
   .option('--no-example', 'Whether to skip creating the example app.', false)
+  .option(
+    '--local',
+    'Whether to create a local module in the current project, skipping installing node_modules and creating the example directory.',
+    false
+  )
   .action(main);
 
 program

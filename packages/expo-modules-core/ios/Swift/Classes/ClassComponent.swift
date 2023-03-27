@@ -37,35 +37,36 @@ public final class ClassComponent: ObjectDefinition {
 
   // MARK: - JavaScriptObjectBuilder
 
-  public override func build(inRuntime runtime: JavaScriptRuntime) -> JavaScriptObject {
-    let klass = runtime.createClass(name) { [weak self, weak runtime] this, arguments in
-      guard let self = self, let runtime = runtime else {
+  public override func build(appContext: AppContext) throws -> JavaScriptObject {
+    let klass = try appContext.runtime.createClass(name) { [weak self, weak appContext] this, arguments in
+      guard let self = self, let appContext else {
         // TODO: Throw an exception? (@tsapeta)
         return
       }
       // The properties can't go into the prototype as they would be shared across all instances.
       // Instead, we decorate the instance object on initialization.
-      self.decorateWithProperties(runtime: runtime, object: this)
+      try? self.decorateWithProperties(object: this, appContext: appContext)
 
       // Call the native constructor when defined.
-      let result = try? self.constructor?.call(by: this, withArguments: arguments)
+      let result = try? self.constructor?.call(by: this, withArguments: arguments, appContext: appContext)
 
       // Register the shared object if returned by the constructor.
       if let result = result as? SharedObject {
         SharedObjectRegistry.add(native: result, javaScript: this)
       }
     }
-    decorate(object: klass, inRuntime: runtime)
+    try decorate(object: klass, appContext: appContext)
     return klass
   }
 
-  public override func decorate(object: JavaScriptObject, inRuntime runtime: JavaScriptRuntime) {
+  public override func decorate(object: JavaScriptObject, appContext: AppContext) throws {
     // Here we actually don't decorate the input object (constructor) but its prototype.
     // Properties are intentionally skipped here — they have to decorate an instance instead of the prototype.
     let prototype = object.getProperty("prototype").getObject()
-    decorateWithConstants(runtime: runtime, object: prototype)
-    decorateWithFunctions(runtime: runtime, object: prototype)
-    decorateWithClasses(runtime: runtime, object: prototype)
+
+    decorateWithConstants(object: prototype)
+    try decorateWithFunctions(object: prototype, appContext: appContext)
+    try decorateWithClasses(object: prototype, appContext: appContext)
   }
 }
 

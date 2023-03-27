@@ -10,6 +10,7 @@ import expo.modules.devlauncher.DevLauncherController
 import okhttp3.Headers
 import okhttp3.Request
 import okhttp3.Response
+import okio.Buffer
 import org.json.JSONObject
 import java.lang.ref.WeakReference
 import java.lang.reflect.Field
@@ -48,17 +49,24 @@ class DevLauncherNetworkLogger private constructor() {
    */
   fun emitNetworkWillBeSent(request: Request, requestId: String, redirectResponse: Response?) {
     val now = BigDecimal(System.currentTimeMillis() / 1000.0).setScale(3, RoundingMode.CEILING)
+    var requestParams = buildMap<String, Any> {
+      put("url", request.url().toString())
+      put("method", request.method())
+      put("headers", request.headers().toSingleMap())
+      val body = request.body()
+      if (body != null && body.contentLength() < MAX_BODY_SIZE) {
+        val buffer = Buffer()
+        body.writeTo(buffer)
+        put("postData", buffer.readUtf8(buffer.size.coerceAtMost(MAX_BODY_SIZE)))
+      }
+    }
     var params = buildMap<String, Any> {
       put("requestId", requestId)
       put("loaderId", "")
       put("documentURL", "mobile")
       put("initiator", mapOf("type" to "script"))
       put("redirectHasExtraInfo", false)
-      put("request", mapOf(
-        "url" to request.url().toString(),
-        "method" to request.method(),
-        "headers" to request.headers().toSingleMap(),
-      ))
+      put("request", requestParams)
       put("referrerPolicy", "no-referrer")
       put("type", "Fetch")
       put("timestamp", now)
@@ -93,6 +101,7 @@ class DevLauncherNetworkLogger private constructor() {
         "status" to response.code(),
         "statusText" to response.message(),
         "headers" to response.headers().toSingleMap(),
+        "mimeType" to response.header("Content-Type", ""),
       ),
       "referrerPolicy" to "no-referrer",
       "type" to "Fetch",

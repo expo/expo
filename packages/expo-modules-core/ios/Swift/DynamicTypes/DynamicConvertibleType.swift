@@ -17,8 +17,8 @@ internal struct DynamicConvertibleType: AnyDynamicType {
     return false
   }
 
-  func cast<ValueType>(_ value: ValueType) throws -> Any {
-    return try innerType.convert(from: value)
+  func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
+    return try innerType.convert(from: value, appContext: appContext)
   }
 
   var description: String {

@@ -4,6 +4,7 @@ package expo.modules.kotlin.types
 
 import android.graphics.Color
 import android.net.Uri
+import android.view.View
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
@@ -33,6 +34,7 @@ import expo.modules.kotlin.types.io.PathTypeConverter
 import expo.modules.kotlin.types.net.JavaURITypeConverter
 import expo.modules.kotlin.types.net.URLTypConverter
 import expo.modules.kotlin.types.net.UriTypeConverter
+import expo.modules.kotlin.views.ViewTypeConverter
 import java.io.File
 import java.net.URI
 import java.net.URL
@@ -113,6 +115,10 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       val converter = RecordTypeConverter<Record>(this, type)
       cachedRecordConverters[kClass] = converter
       return converter
+    }
+
+    if (kClass.isSubclassOf(View::class)) {
+      return ViewTypeConverter<View>(type)
     }
 
     return handelEither(type, kClass)
