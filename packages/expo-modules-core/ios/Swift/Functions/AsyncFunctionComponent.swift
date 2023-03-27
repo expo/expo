@@ -46,10 +46,8 @@ public final class AsyncFunctionComponent<Args, FirstArgType, ReturnType>: AnyAs
   ) {
     self.name = name
     self.takesPromise = dynamicArgumentTypes.last?.wraps(Promise.self) ?? false
+    self.dynamicArgumentTypes = dynamicArgumentTypes
     self.body = body
-
-    // Drop the last argument type if it's the `Promise`.
-    self.dynamicArgumentTypes = takesPromise ? dynamicArgumentTypes.dropLast(1) : dynamicArgumentTypes
   }
 
   // MARK: - AnyFunction
@@ -59,7 +57,7 @@ public final class AsyncFunctionComponent<Args, FirstArgType, ReturnType>: AnyAs
   let dynamicArgumentTypes: [AnyDynamicType]
 
   var argumentsCount: Int {
-    return dynamicArgumentTypes.count - (takesOwner ? 1 : 0)
+    return dynamicArgumentTypes.count - (takesOwner ? 1 : 0) - (takesPromise ? 1 : 0)
   }
 
   var takesOwner: Bool = false
@@ -70,15 +68,19 @@ public final class AsyncFunctionComponent<Args, FirstArgType, ReturnType>: AnyAs
     } rejecter: { exception in
       callback(.failure(exception))
     }
-    var arguments: [Any] = []
+    var arguments: [Any] = concat(
+      arguments: args,
+      withOwner: owner,
+      withPromise: takesPromise ? promise : nil,
+      forFunction: self,
+      appContext: appContext
+    )
 
     do {
-      arguments = concat(
-        arguments: try cast(arguments: args, forFunction: self, appContext: appContext),
-        withOwner: owner,
-        forFunction: self,
-        appContext: appContext
-      )
+      try validateArgumentsNumber(function: self, received: args.count)
+
+      // All `JavaScriptValue` args must be preliminarly converted on the JS thread, so before we jump to the function's queue.
+      arguments = try cast(jsValues: arguments, forFunction: self, appContext: appContext)
     } catch let error as Exception {
       callback(.failure(error))
       return
@@ -87,18 +89,18 @@ public final class AsyncFunctionComponent<Args, FirstArgType, ReturnType>: AnyAs
       return
     }
 
-    // Add promise to the array of arguments if necessary.
-    if takesPromise {
-      arguments.append(promise)
-    }
-
     let queue = queue ?? defaultQueue
 
     queue.async { [body, name] in
       let returnedValue: ReturnType?
 
       do {
+        // Convert arguments to the types desired by the function.
+        arguments = try cast(arguments: arguments, forFunction: self, appContext: appContext)
+
+        // swiftlint:disable:next force_cast
         let argumentsTuple = try Conversions.toTuple(arguments) as! Args
+
         returnedValue = try body(argumentsTuple)
       } catch let error as Exception {
         promise.reject(FunctionCallException(name).causedBy(error))

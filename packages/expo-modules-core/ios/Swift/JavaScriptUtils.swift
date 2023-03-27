@@ -29,18 +29,8 @@ internal func cast(_ value: Any, toType type: AnyDynamicType, appContext: AppCon
  of function's arguments (without an owner and promise). Rethrows exceptions thrown by `cast(_:toType:)`.
  */
 internal func cast(arguments: [Any], forFunction function: AnyFunction, appContext: AppContext) throws -> [Any] {
-  let requiredArgumentsCount = function.requiredArgumentsCount
-  let argumentTypeOffset = function.takesOwner ? 1 : 0
-
-  if arguments.count < requiredArgumentsCount || arguments.count > function.argumentsCount {
-    throw InvalidArgsNumberException((
-      received: arguments.count,
-      expected: function.argumentsCount,
-      required: requiredArgumentsCount
-    ))
-  }
   return try arguments.enumerated().map { index, argument in
-    let argumentType = function.dynamicArgumentTypes[index + argumentTypeOffset]
+    let argumentType = function.dynamicArgumentTypes[index]
 
     do {
       return try cast(argument, toType: argumentType, appContext: appContext)
@@ -51,18 +41,66 @@ internal func cast(arguments: [Any], forFunction function: AnyFunction, appConte
 }
 
 /**
+ Casts an array of JavaScript values to non-JavaScript types.
+ */
+internal func cast(jsValues: [Any], forFunction function: AnyFunction, appContext: AppContext) throws -> [Any] {
+  // TODO: Replace `[Any]` with `[JavaScriptValue]` once we make sure only JS values are passed here
+  return try jsValues.enumerated().map { index, jsValue in
+    let type = function.dynamicArgumentTypes[index]
+
+    do {
+      // Temporarily some values might already be cast to primitive types, so make sure we cast only `JavaScriptValue` and leave the others as they are.
+      if let jsValue = jsValue as? JavaScriptValue {
+        return try type.cast(jsValue: jsValue, appContext: appContext)
+      } else {
+        return jsValue
+      }
+    } catch {
+      throw ArgumentCastException((index: index, type: type)).causedBy(error)
+    }
+  }
+}
+
+/**
+ Validates whether the number of received arguments is enough to call the given function.
+ Throws `InvalidArgsNumberException` otherwise.
+ */
+internal func validateArgumentsNumber(function: AnyFunction, received: Int) throws {
+  let argumentsCount = function.argumentsCount
+  let requiredArgumentsCount = function.requiredArgumentsCount
+
+  if received < requiredArgumentsCount || received > argumentsCount {
+    throw InvalidArgsNumberException((
+      received: received,
+      expected: argumentsCount,
+      required: requiredArgumentsCount
+    ))
+  }
+}
+
+/**
  Ensures the provided array of arguments matches the number of arguments expected by the function.
  - If the function takes the owner, it's added to the beginning.
  - If the array is still too small, missing arguments are very likely to be optional so it puts `nil` in their place.
  */
-internal func concat(arguments: [Any], withOwner owner: AnyObject?, forFunction function: AnyFunction, appContext: AppContext) -> [Any] {
+internal func concat(
+  arguments: [Any],
+  withOwner owner: AnyObject?,
+  withPromise promise: Promise?,
+  forFunction function: AnyFunction,
+  appContext: AppContext
+) -> [Any] {
   var result = arguments
 
-  if function.takesOwner, let owner = try? function.dynamicArgumentTypes.first?.cast(owner, appContext: appContext) {
+  if function.takesOwner {
     result = [owner] + arguments
   }
   if arguments.count < function.argumentsCount {
     result += Array(repeating: Any?.none as Any, count: function.argumentsCount - arguments.count)
+  }
+  // Add promise to the array of arguments if necessary.
+  if let promise {
+    result += [promise]
   }
   return result
 }

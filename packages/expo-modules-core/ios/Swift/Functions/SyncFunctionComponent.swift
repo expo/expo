@@ -65,12 +65,22 @@ public final class SyncFunctionComponent<Args, FirstArgType, ReturnType>: AnySyn
 
   func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext) throws -> Any {
     do {
-      let arguments = concat(
-        arguments: try cast(arguments: args, forFunction: self, appContext: appContext),
+      try validateArgumentsNumber(function: self, received: args.count)
+
+      var arguments = concat(
+        arguments: args,
         withOwner: owner,
+        withPromise: nil,
         forFunction: self,
         appContext: appContext
       )
+
+      // Convert JS values to non-JS native types.
+      arguments = try cast(jsValues: arguments, forFunction: self, appContext: appContext)
+
+      // Convert arguments to the types desired by the function.
+      arguments = try cast(arguments: arguments, forFunction: self, appContext: appContext)
+
       let argumentsTuple = try Conversions.toTuple(arguments) as! Args
       let result = try body(argumentsTuple)
       return Conversions.convertFunctionResult(result, appContext: appContext)
