@@ -45,7 +45,7 @@ Run one of the apps to ensure everything is working. Then, start the TypeScript 
   cmd={['$ cd packages/expo-settings', '$ npm run build']}
 />
 
-Open another terminal window, choose one of your apps under the **apps** folder, and run the `prebuild` command. You'll have to repeat these steps for all apps inside your monorepo to use the new module.
+Open another terminal window, choose an app from the **apps** directory, and run the `prebuild` command. You'll have to repeat these steps for all apps inside your monorepo to use the new module.
 
 <Terminal cmd={['$ npx expo prebuild --clean']} />
 
@@ -127,7 +127,11 @@ Then, navigate to the root of your module and publish your module running:
 
 Your module will now be published to npm and can be installed in other projects using `npm install`.
 
-Apart from publishing your module to npm, there are other ways to use it in your project. One way is to create a tarball of your module using `npm pack` and install it directly in your project by running `npm install /path/to/tarball`. This is useful if you want to test your module locally before publishing it to npm or if you want to share it with others who don't have access to the npm registry. Another way is to run a local npm registry and install your module from there.
+Apart from publishing your module to npm, there are other ways to use it in your project:
+
+- Creating a tarball of of your module using `npm pack` and install it directly in your project by running `npm install /path/to/tarball`. It's useful to test your module locally before publishing it to npm or if you want to share it with others who don't have access to the npm registry.
+- Running a local npm registry, such as [Verdaccio](https://verdaccio.org/), and installing your module from there. This is useful for cases where you want to host your own private npm registry to manage internal packages within a company or organization.
+- If you want to [publish a private package or use a private registry with EAS Builds](https://docs.expo.dev/build-reference/private-npm-packages/).
 
 If you want to publish a private private package or use a private registry with EAS Builds you can read how to configure it [here](https://docs.expo.dev/build-reference/private-npm-packages/).
 
