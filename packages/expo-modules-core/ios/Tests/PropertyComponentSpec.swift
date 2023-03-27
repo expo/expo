@@ -5,9 +5,12 @@ import ExpoModulesTestCore
 class PropertyComponentSpec: ExpoSpec {
   override func spec() {
     describe("property") {
+      let appContext = AppContext.create()
+      let runtime = try! appContext.runtime
+
       it("gets the value") {
         let property = Property("test") { return "expo" }
-        expect(try property.getValue()) == "expo"
+        expect(try property.getValue(appContext: appContext)) == "expo"
       }
 
       it("sets the value") {
@@ -19,39 +22,39 @@ class PropertyComponentSpec: ExpoSpec {
           }
 
         let newValue = Int.random(in: 0..<100)
-        property.setValue(newValue)
+        property.setValue(newValue, appContext: appContext)
 
-        expect(try property.getValue()) == value
+        expect(try property.getValue(appContext: appContext)) == value
         expect(value) == newValue
       }
     }
 
     describe("module property") {
       let appContext = AppContext.create()
-      let runtime = appContext.runtime
+      let runtime = try! appContext.runtime
 
       beforeSuite {
         appContext.moduleRegistry.register(moduleType: PropertyTestModule.self)
       }
 
       it("gets read-only property") {
-        let value = try runtime?.eval("expo.modules.PropertyTest.readOnly")
-        expect(value?.getString()) == "foo"
+        let value = try runtime.eval("expo.modules.PropertyTest.readOnly")
+        expect(value.getString()) == "foo"
       }
 
       it("gets writable property") {
-        let value = try runtime?.eval("expo.modules.PropertyTest.writable")
-        expect(value?.getInt()) == 444
+        let value = try runtime.eval("expo.modules.PropertyTest.writable")
+        expect(value.getInt()) == 444
       }
 
       it("sets writable property") {
-        try runtime?.eval("expo.modules.PropertyTest.writable = 777")
-        let value = try runtime?.eval("expo.modules.PropertyTest.writable")
-        expect(value?.getInt()) == 777
+        try runtime.eval("expo.modules.PropertyTest.writable = 777")
+        let value = try runtime.eval("expo.modules.PropertyTest.writable")
+        expect(value.getInt()) == 777
       }
 
       it("is enumerable") {
-        let keys = try runtime?.eval("Object.keys(expo.modules.PropertyTest)").getArray().map { $0.getString() } ?? []
+        let keys = try runtime.eval("Object.keys(expo.modules.PropertyTest)").getArray().map { $0.getString() } ?? []
         expect(keys).to(contain("readOnly", "writable", "undefined"))
       }
 
@@ -62,73 +65,73 @@ class PropertyComponentSpec: ExpoSpec {
 //      }
 
       it("returns undefined when getter is not specified") {
-        let value = try runtime?.eval("expo.modules.PropertyTest.undefined")
-        expect(value?.isUndefined()) == true
+        let value = try runtime.eval("expo.modules.PropertyTest.undefined")
+        expect(value.isUndefined()) == true
       }
     }
 
     describe("class property") {
       let appContext = AppContext.create()
-      let runtime = appContext.runtime
+      let runtime = try! appContext.runtime
 
       beforeSuite {
         appContext.moduleRegistry.register(moduleType: PropertyTestModule.self)
       }
 
       it("gets the value") {
-        let value = try runtime?.eval("new expo.modules.PropertyTest.TestClass().someValue")
+        let value = try runtime.eval("new expo.modules.PropertyTest.TestClass().someValue")
 
-        expect(value?.kind) == .number
-        expect(value?.getInt()) == TestClass.constantValue
+        expect(value.kind) == .number
+        expect(value.getInt()) == TestClass.constantValue
       }
 
       it("sets the value") {
         let newValue = Int.random(in: 1..<100)
-        let value = try runtime?.eval([
+        let value = try runtime.eval([
           "object = new expo.modules.PropertyTest.TestClass()",
           "object.someValue = \(newValue)",
           "object.someValue"
         ])
 
-        expect(value?.kind) == .number
-        expect(value?.getInt()) == newValue
+        expect(value.kind) == .number
+        expect(value.getInt()) == newValue
       }
 
       // Tests for accessing shared object properties through KeyPath and ReferenceWritableKeyPath
       describe("key path") {
         it("gets immutable property") {
-          let value = try runtime?.eval([
+          let value = try runtime.eval([
             "object = new expo.modules.PropertyTest.TestClass()",
             "object.immutableKeyPathProperty"
           ])
 
-          expect(value?.kind) == .number
-          expect(value?.getInt()) == TestClass.constantValue
+          expect(value.kind) == .number
+          expect(value.getInt()) == TestClass.constantValue
         }
 
         it("cannot set immutable property") {
           let newValue = Int.random(in: 100..<200)
-          let value = try runtime?.eval([
+          let value = try runtime.eval([
             "object = new expo.modules.PropertyTest.TestClass()",
             "object.immutableKeyPathProperty = \(newValue)",
             "object.immutableKeyPathProperty"
           ])
 
           // Returned value didn't change, it doesn't equal to `newValue`
-          expect(value?.kind) == .number
-          expect(value?.getInt()) == TestClass.constantValue
+          expect(value.kind) == .number
+          expect(value.getInt()) == TestClass.constantValue
         }
 
         it("sets mutable property") {
           let newValue = Int.random(in: 100..<200)
-          let value = try runtime?.eval([
+          let value = try runtime.eval([
             "object = new expo.modules.PropertyTest.TestClass()",
             "object.mutableKeyPathProperty = \(newValue)",
             "object.mutableKeyPathProperty"
           ])
 
-          expect(value?.kind) == .number
-          expect(value?.getInt()) == newValue
+          expect(value.kind) == .number
+          expect(value.getInt()) == newValue
         }
       }
     }
