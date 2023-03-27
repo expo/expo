@@ -20,11 +20,15 @@ import expo.modules.kotlin.modules.DefinitionMarker
 import expo.modules.kotlin.types.toAnyType
 import kotlin.reflect.KClass
 import kotlin.reflect.KFunction
+import kotlin.reflect.KType
 import kotlin.reflect.full.primaryConstructor
 import kotlin.reflect.typeOf
 
 @DefinitionMarker
-class ViewDefinitionBuilder<T : View>(@PublishedApi internal val viewType: KClass<T>) {
+class ViewDefinitionBuilder<T : View>(
+  @PublishedApi internal val viewClass: KClass<T>,
+  @PublishedApi internal val viewType: KType
+) {
   @PublishedApi
   internal var props = mutableMapOf<String, AnyViewProp>()
 
@@ -45,11 +49,14 @@ class ViewDefinitionBuilder<T : View>(@PublishedApi internal val viewType: KClas
 
   fun build(): ViewManagerDefinition {
     val asyncFunctions = asyncFunctions + functionBuilders.mapValues { (_, value) -> value.build() }
-    asyncFunctions.forEach { (_, function) -> function.runOnQueue(Queues.MAIN) }
+    asyncFunctions.forEach { (_, function) ->
+      function.runOnQueue(Queues.MAIN)
+      function.ownerType = viewType
+    }
 
     return ViewManagerDefinition(
       viewFactory = createViewFactory(),
-      viewType = viewType.java,
+      viewType = viewClass.java,
       props = props,
       onViewDestroys = onViewDestroys,
       callbacksDefinition = callbacksDefinition,
@@ -143,7 +150,7 @@ class ViewDefinitionBuilder<T : View>(@PublishedApi internal val viewType: KClas
    * Creates the group view definition that scopes group view-related definitions.
    */
   inline fun <reified ParentType : ViewGroup> GroupView(body: ViewGroupDefinitionBuilder<ParentType>.() -> Unit) {
-    assert(viewType == ParentType::class) { "Provided type and view type have to be the same." }
+    assert(viewClass == ParentType::class) { "Provided type and view type have to be the same." }
     require(viewGroupDefinition == null) { "The viewManager definition may have exported only one groupView definition." }
 
     val groupViewDefinitionBuilder = ViewGroupDefinitionBuilder<ParentType>()
@@ -179,6 +186,7 @@ class ViewDefinitionBuilder<T : View>(@PublishedApi internal val viewType: KClas
     } else {
       AsyncFunctionComponent(name, arrayOf(typeOf<P0>().toAnyType())) { body(it[0] as P0) }
     }.also {
+      it.ownerType = viewType
       asyncFunctions[name] = it
     }
   }
@@ -279,7 +287,7 @@ class ViewDefinitionBuilder<T : View>(@PublishedApi internal val viewType: KClas
   ) = AsyncFunctionBuilder(name).also { functionBuilders[name] = it }
 
   private fun createViewFactory(): (Context, AppContext) -> View = viewFactory@{ context: Context, appContext: AppContext ->
-    val primaryConstructor = requireNotNull(getPrimaryConstructor()) { "$viewType doesn't have a primary constructor" }
+    val primaryConstructor = requireNotNull(getPrimaryConstructor()) { "$viewClass doesn't have a primary constructor" }
     val args = primaryConstructor.parameters
 
     if (args.isEmpty()) {
@@ -317,7 +325,7 @@ class ViewDefinitionBuilder<T : View>(@PublishedApi internal val viewType: KClas
   }
 
   private fun handleFailureDuringViewCreation(context: Context, appContext: AppContext, e: Throwable): View {
-    Log.e("ExpoModulesCore", "Couldn't create view of type $viewType", e)
+    Log.e("ExpoModulesCore", "Couldn't create view of type $viewClass", e)
 
     appContext.errorManager?.reportExceptionToLogBox(
       if (e is CodedException) {
@@ -330,12 +338,12 @@ class ViewDefinitionBuilder<T : View>(@PublishedApi internal val viewType: KClas
   }
 
   private fun getPrimaryConstructor(): KFunction<T>? {
-    val kotlinContractor = viewType.primaryConstructor
+    val kotlinContractor = viewClass.primaryConstructor
     if (kotlinContractor != null) {
       return kotlinContractor
     }
 
     // Add compatibility with Java
-    return viewType.constructors.firstOrNull()
+    return viewClass.constructors.firstOrNull()
   }
 }

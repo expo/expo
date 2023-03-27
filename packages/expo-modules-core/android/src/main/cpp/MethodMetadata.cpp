@@ -141,6 +141,16 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
     count++;
   }
 
+  // The `count < this->args` case is handled by the Kotlin part
+  if (count > this->args) {
+    throwNewJavaException(
+      InvalidArgsNumberException::create(
+        count,
+        this->args
+      ).get()
+    );
+  }
+
   auto argumentArray = env->NewObjectArray(
     count,
     JavaReferencesCache::instance()->getJClass("java/lang/Object").clazz,

@@ -46,6 +46,14 @@ jni::local_ref<UnexpectedException> UnexpectedException::create(const std::strin
   );
 }
 
+jni::local_ref<InvalidArgsNumberException> InvalidArgsNumberException::create(int received, int expected) {
+  return InvalidArgsNumberException::newInstance(
+    received,
+    expected,
+    expected // number of required arguments
+  );
+}
+
 jsi::Value makeCodedError(
   jsi::Runtime &rt,
   jsi::String code,

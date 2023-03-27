@@ -1,6 +1,7 @@
 package expo.modules.kotlin.types
 
 import com.facebook.react.bridge.Dynamic
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.NullArgumentException
 import expo.modules.kotlin.exception.UnsupportedClass
 import expo.modules.kotlin.jni.ExpectedType
@@ -13,7 +14,7 @@ abstract class TypeConverter<Type : Any> {
   /**
    * Tries to convert from [Any]? (can be also [Dynamic]) to the desired type.
    */
-  abstract fun convert(value: Any?): Type?
+  abstract fun convert(value: Any?, context: AppContext? = null): Type?
 
   /**
    * Returns a list of [ExpectedType] types that can be converted to the desired type.
@@ -37,21 +38,21 @@ abstract class NullAwareTypeConverter<Type : Any>(
    */
   private val isOptional: Boolean
 ) : TypeConverter<Type>() {
-  override fun convert(value: Any?): Type? {
+  override fun convert(value: Any?, context: AppContext?): Type? {
     if (value == null || value is Dynamic && value.isNull) {
       if (isOptional) {
         return null
       }
       throw NullArgumentException()
     }
-    return convertNonOptional(value)
+    return convertNonOptional(value, context)
   }
 
   /**
    * Tries to convert from [Any] to the desired type.
    * We know in that place that we're not dealing with `null`.
    */
-  abstract fun convertNonOptional(value: Any): Type
+  abstract fun convertNonOptional(value: Any, context: AppContext?): Type
 }
 
 /**
@@ -60,7 +61,7 @@ abstract class NullAwareTypeConverter<Type : Any>(
  * stop using the bridge to pass data between JS and Kotlin.
  */
 abstract class DynamicAwareTypeConverters<T : Any>(isOptional: Boolean) : NullAwareTypeConverter<T>(isOptional) {
-  override fun convertNonOptional(value: Any): T =
+  override fun convertNonOptional(value: Any, context: AppContext?): T =
     if (value is Dynamic) {
       convertFromDynamic(value)
     } else {
