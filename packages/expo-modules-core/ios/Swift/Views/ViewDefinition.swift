@@ -56,10 +56,22 @@ public final class ViewDefinition<ViewType: UIView>: ViewManagerDefinition {
     /**
      Accepts functions as a view definition elements.
      */
-    public static func buildExpression(_ element: ViewDefinitionFunctionElement) -> AnyViewDefinitionElement {
+    public static func buildExpression<ElementType: ViewDefinitionFunctionElement>(
+      _ element: ElementType
+    ) -> AnyViewDefinitionElement {
+      return element
+    }
+
+    /**
+     Accepts functions that take the owner as a view definition elements.
+     */
+    public static func buildExpression<ElementType: ViewDefinitionFunctionElement>(
+      _ element: ElementType
+    ) -> AnyViewDefinitionElement where ElementType.ViewType == ViewType {
       // Enforce async functions to run on the main queue
-      if let function = element as? AnyAsyncFunctionComponent {
+      if var function = element as? AnyAsyncFunctionComponent {
         function.runOnQueue(.main)
+        function.takesOwner = true
       }
       return element
     }
@@ -75,9 +87,17 @@ extension ViewLifecycleMethod: AnyViewDefinitionElement {}
 
 // MARK: - ViewDefinitionFunctionElement
 
-public protocol ViewDefinitionFunctionElement: AnyViewDefinitionElement {}
-extension AsyncFunctionComponent: ViewDefinitionFunctionElement {}
-extension ConcurrentFunctionDefinition: ViewDefinitionFunctionElement {}
+public protocol ViewDefinitionFunctionElement: AnyViewDefinitionElement {
+  associatedtype ViewType
+}
+extension AsyncFunctionComponent: ViewDefinitionFunctionElement {
+  public typealias ViewType = FirstArgType
+}
+extension ConcurrentFunctionDefinition: ViewDefinitionFunctionElement {
+  public typealias ViewType = FirstArgType
+}
+
+extension UIView: AnyArgument {}
 
 /**
  Creates a view definition describing the native view exported to React.
