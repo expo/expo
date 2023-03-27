@@ -1,22 +1,31 @@
 import resolveAssetSource from './resolveAssetSource';
-import resolveBlurhashString from './resolveBlurhashString';
+import { resolveBlurhashString, resolveThumbhashString } from './resolveHashString';
 export function isBlurhashString(str) {
     return /^(blurhash:\/)?[\w#$%*+,\-.:;=?@[\]^_{}|~]+(\/[\d.]+)*$/.test(str);
+}
+export function isThumbhashString(str) {
+    return /^(thumbhash:\/)?[\w#$%*+,\-.:;=?@[\]^_{}|~]+(\/[\d.]+)*$/.test(str);
 }
 function resolveSource(source) {
     if (typeof source === 'string') {
         if (isBlurhashString(source)) {
             return resolveBlurhashString(source);
         }
+        else if (isThumbhashString(source)) {
+            return resolveThumbhashString(source);
+        }
         return { uri: source };
     }
     if (typeof source === 'number') {
         return resolveAssetSource(source);
     }
-    if (typeof source === 'object' && source?.blurhash) {
-        const { blurhash, ...restSource } = source;
+    if (typeof source === 'object' && (source?.blurhash || source?.thumbhash)) {
+        const { blurhash, thumbhash, ...restSource } = source;
+        const resolved = thumbhash
+            ? resolveThumbhashString(thumbhash)
+            : resolveBlurhashString(blurhash);
         return {
-            ...resolveBlurhashString(blurhash),
+            ...resolved,
             ...restSource,
         };
     }
