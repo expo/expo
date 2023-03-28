@@ -27,6 +27,10 @@ export const SnippetAction = (props: SnippetActionProps) => {
       leftSlot={styledIcon}
       rightSlot={iconRight}
       css={[!alwaysDark && snippetActionStyle, alwaysDark && alwaysDarkStyle]}
+      className={mergeClasses(
+        !alwaysDark && 'border-0 rounded-none border-l border-l-default h-10 leading-10 px-4',
+        alwaysDark && 'border-transparent bg-[transparent]'
+      )}
       {...rest}>
       <FOOTNOTE className={mergeClasses(alwaysDark && '!text-palette-white')}>{children}</FOOTNOTE>
     </Button>
@@ -34,13 +38,6 @@ export const SnippetAction = (props: SnippetActionProps) => {
 };
 
 const snippetActionStyle = css({
-  border: 0,
-  borderRadius: 0,
-  borderLeft: `1px solid ${theme.border.default}`,
-  height: 42,
-  lineHeight: 42,
-  padding: `0 16px`,
-
   ':hover': {
     backgroundColor: theme.background.subtle,
     boxShadow: 'none',
@@ -48,9 +45,6 @@ const snippetActionStyle = css({
 });
 
 const alwaysDarkStyle = css({
-  borderColor: 'transparent',
-  background: 'transparent',
-
   ':hover': {
     borderColor: palette.dark.gray9,
     background: palette.dark.gray5,
