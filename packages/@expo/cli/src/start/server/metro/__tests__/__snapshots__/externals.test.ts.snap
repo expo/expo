@@ -1,0 +1,38 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`setupNodeExternals should create the correct files 1`] = `
+{
+  "/.expo/metro/externals/assert/index.js": "module.exports = require_x('node:assert');",
+  "/.expo/metro/externals/async_hooks/index.js": "module.exports = require_x('node:async_hooks');",
+  "/.expo/metro/externals/buffer/index.js": "module.exports = require_x('node:buffer');",
+  "/.expo/metro/externals/child_process/index.js": "module.exports = require_x('node:child_process');",
+  "/.expo/metro/externals/cluster/index.js": "module.exports = require_x('node:cluster');",
+  "/.expo/metro/externals/crypto/index.js": "module.exports = require_x('node:crypto');",
+  "/.expo/metro/externals/dgram/index.js": "module.exports = require_x('node:dgram');",
+  "/.expo/metro/externals/dns/index.js": "module.exports = require_x('node:dns');",
+  "/.expo/metro/externals/domain/index.js": "module.exports = require_x('node:domain');",
+  "/.expo/metro/externals/events/index.js": "module.exports = require_x('node:events');",
+  "/.expo/metro/externals/fs/index.js": "module.exports = require_x('node:fs');",
+  "/.expo/metro/externals/fs/promises/index.js": "module.exports = require_x('node:fs/promises');",
+  "/.expo/metro/externals/http/index.js": "module.exports = require_x('node:http');",
+  "/.expo/metro/externals/https/index.js": "module.exports = require_x('node:https');",
+  "/.expo/metro/externals/net/index.js": "module.exports = require_x('node:net');",
+  "/.expo/metro/externals/os/index.js": "module.exports = require_x('node:os');",
+  "/.expo/metro/externals/path/index.js": "module.exports = require_x('node:path');",
+  "/.expo/metro/externals/punycode/index.js": "module.exports = require_x('node:punycode');",
+  "/.expo/metro/externals/querystring/index.js": "module.exports = require_x('node:querystring');",
+  "/.expo/metro/externals/readline/index.js": "module.exports = require_x('node:readline');",
+  "/.expo/metro/externals/repl/index.js": "module.exports = require_x('node:repl');",
+  "/.expo/metro/externals/stream/index.js": "module.exports = require_x('node:stream');",
+  "/.expo/metro/externals/string_decoder/index.js": "module.exports = require_x('node:string_decoder');",
+  "/.expo/metro/externals/tls/index.js": "module.exports = require_x('node:tls');",
+  "/.expo/metro/externals/tty/index.js": "module.exports = require_x('node:tty');",
+  "/.expo/metro/externals/url/index.js": "module.exports = require_x('node:url');",
+  "/.expo/metro/externals/util/index.js": "module.exports = require_x('node:util');",
+  "/.expo/metro/externals/v8/index.js": "module.exports = require_x('node:v8');",
+  "/.expo/metro/externals/vm/index.js": "module.exports = require_x('node:vm');",
+  "/.expo/metro/externals/zlib/index.js": "module.exports = require_x('node:zlib');",
+  "/.expo/metro/polyfill.js": "global.require_x = typeof window === "undefined" ? require : () => null;",
+  "/.expo/metro/polyfill.native.js": "global.require_x = (moduleId) => {throw new Error(\`Node.js standard library module \${moduleId} is not available in this JavaScript environment\`);}",
+}
+`;

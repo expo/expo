@@ -84,7 +84,7 @@ function tapNodeShimContents(moduleId: string): string {
 }
 
 // Ensure Node.js shims which require using `require_x` are available inside the project.
-export async function tapNodeShims(projectRoot: string) {
+async function tapNodeShims(projectRoot: string) {
   const externals: Record<string, string> = {};
   for (const moduleId of NODE_STDLIB_MODULES) {
     const shimDir = path.join(projectRoot, METRO_EXTERNALS_FOLDER, moduleId);
