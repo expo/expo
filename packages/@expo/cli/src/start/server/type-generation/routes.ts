@@ -288,9 +288,11 @@ const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
 
   type HrefObjectParams<T> = T extends RelativePathString
     ? { params?: Record<string, string> }
-    : T extends { pathname: DynamicRouteTemplate & infer I }
-    ? { params: RouteParams<I> }
+    : T extends { pathname: DynamicRouteTemplate }
+    ? { params: RouteParams<InferPathName<T>> }
     : unknown;
+
+  type InferPathName<T> = T extends { pathname: infer P } ? P : never;
 
   export interface LinkProps<T> extends OriginalLinkProps {
     href: T extends DynamicRouteTemplate ? HrefObject<T> : Href<T>;
