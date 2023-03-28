@@ -3,9 +3,9 @@ import { Terminal } from 'metro-core';
 import path from 'path';
 
 import { learnMore } from '../../../utils/link';
-import { NODE_STDLIB_MODULES } from './externals';
 import { logWarning, TerminalReporter } from './TerminalReporter';
 import { BuildPhase, BundleDetails, BundleProgress, SnippetError } from './TerminalReporter.types';
+import { NODE_STDLIB_MODULES } from './externals';
 
 const MAX_PROGRESS_BAR_CHAR_WIDTH = 16;
 const DARK_BLOCK_CHAR = '\u2593';
