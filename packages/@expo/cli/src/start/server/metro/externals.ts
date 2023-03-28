@@ -63,11 +63,11 @@ async function tapExternalRequirePolyfill(projectRoot: string) {
   });
   await fs.promises.writeFile(
     path.join(projectRoot, EXTERNAL_REQUIRE_POLYFILL),
-    'global.require_x = typeof window === "undefined" ? require : () => null;'
+    'global.$$require_external = typeof window === "undefined" ? require : () => null;'
   );
   await fs.promises.writeFile(
     path.join(projectRoot, EXTERNAL_REQUIRE_NATIVE_POLYFILL),
-    'global.require_x = (moduleId) => {throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);}'
+    'global.$$require_external = (moduleId) => {throw new Error(`Node.js standard library module ${moduleId} is not available in this JavaScript environment`);}'
   );
 }
 
@@ -80,10 +80,10 @@ export function isNodeExternal(moduleName: string): string | null {
 }
 
 function tapNodeShimContents(moduleId: string): string {
-  return `module.exports = require_x('node:${moduleId}');`;
+  return `module.exports = $$require_external('node:${moduleId}');`;
 }
 
-// Ensure Node.js shims which require using `require_x` are available inside the project.
+// Ensure Node.js shims which require using `$$require_external` are available inside the project.
 async function tapNodeShims(projectRoot: string) {
   const externals: Record<string, string> = {};
   for (const moduleId of NODE_STDLIB_MODULES) {
