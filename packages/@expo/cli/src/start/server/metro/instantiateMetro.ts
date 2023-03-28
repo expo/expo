@@ -12,6 +12,7 @@ import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
+import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { importExpoMetroConfigFromProject, importMetroFromProject } from './resolveFromProject';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
@@ -23,13 +24,15 @@ type MessageSocket = {
 
 /** The most generic possible setup for Metro bundler. */
 export async function instantiateMetroAsync(
-  projectRoot: string,
+  metroBundler: MetroBundlerDevServer,
   options: Omit<MetroDevServerOptions, 'logger'>
 ): Promise<{
   server: http.Server;
   middleware: any;
   messageSocket: MessageSocket;
 }> {
+  const projectRoot = metroBundler.projectRoot;
+
   let reportEvent: ((event: any) => void) | undefined;
 
   const Metro = importMetroFromProject(projectRoot);

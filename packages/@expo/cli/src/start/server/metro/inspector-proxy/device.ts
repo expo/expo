@@ -2,17 +2,23 @@ import type { DebuggerInfo, Device as MetroDevice } from 'metro-inspector-proxy'
 import fetch from 'node-fetch';
 import type WS from 'ws';
 
+import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import { DebuggerScriptSourceHandler } from './handlers/DebuggerScriptSource';
 import { NetworkResponseHandler } from './handlers/NetworkResponse';
+import { PageReloadHandler } from './handlers/PageReload';
 import { VscodeCompatHandler } from './handlers/VscodeCompat';
 import { DeviceRequest, InspectorHandler, DebuggerRequest } from './handlers/types';
 
-export function createInspectorDeviceClass(MetroDeviceClass: typeof MetroDevice) {
+export function createInspectorDeviceClass(
+  metroBundler: MetroBundlerDevServer,
+  MetroDeviceClass: typeof MetroDevice
+) {
   return class ExpoInspectorDevice extends MetroDeviceClass implements InspectorHandler {
     /** All handlers that should be used to intercept or reply to CDP events */
     public handlers: InspectorHandler[] = [
       new NetworkResponseHandler(),
       new DebuggerScriptSourceHandler(this),
+      new PageReloadHandler(metroBundler),
       new VscodeCompatHandler(),
     ];
 
