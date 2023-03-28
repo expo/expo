@@ -3,6 +3,25 @@ title: Rollouts
 hideTOC: true
 ---
 
-EAS Update does not support percentage-based rollouts. With that said, we built EAS Update with percentage-based rollouts in mind. We plan to work on rollouts in 2023. With this feature, you'll be able to incrementally roll out one update over another to a percentage of your end-users.
+Rollouts allow us to deploy a new branch to a specific channel incrementally. With rollouts, we can roll out Branch B over Branch A by percentage. This is useful when we want to test a new feature to minimize the risk of introducing bugs or other issues to our production environment.
 
-To deploy updates safely, check out our guide on [deployment patterns](/eas-update/deployment-patterns). By testing changes before updating end-users, we can significantly reduce the chance of shipping breaking changes. With that said, stay tuned to our [blog](https://blog.expo.dev) and to our [Twitter](https://twitter.com/expo) for updates on rollouts.
+To initiate a rollout, we can use the following command:
+
+```bash
+eas channel:rollout [channel]
+```
+
+The interactive prompts will guide us through choosing a channel, a branch to begin rolling out, and the percentage of our users to rollout to. To increase or decrease the rollout amount, we can run the `eas channel:rollout [channel]` command again to adjust the rollout percentage.
+
+Once we feel confident in our new branch, or if we want to revert to our original branch, we can end the rollout with the `--end` flag:
+
+```bash
+eas channel:rollout [channel] --end
+```
+
+Here are a variety of facts that will help us when working with rollouts:
+- We can only have one branch rolling out on a channel at once.
+- We can see the state of the rollout with `eas channel:view [channel]`.
+- When a rollout is in progress, we can still publish updates to both branches, by running `eas update --branch [branch]`, for example.
+- We cannot use `eas update --channel [channel]` when a rollout is in progress, since we cannot know which branch to associate the update with.
+
