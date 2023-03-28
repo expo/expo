@@ -1,27 +1,20 @@
-name: iOS Client - EAS Build
+name: iOS Client - add label to trigger EAS Build
 
 on:
-  workflow_dispatch:
-    inputs:
-      buildType:
-        required: true
-        type: 'choice'
-        description: 'buildType'
-        options:
-          - versioned-client
-          - unversioned-client
-          - versioned-client-add-sdk
-  schedule:
-    # 5:20 AM UTC time on every Monday, Wednesday and Friday
-    # Build a versioned client
-    - cron: '20 5 * * 1,3,5'
-    # 5:20 AM UTC time on every Monday
-    # Run versioning process for the next sdk and build a versioned client
-    - cron: '20 5 * * 1'
   pull_request:
     paths:
       - .github/workflows/client-ios-eas.yml
       - apps/eas-expo-go/**
+      - ios/**
+      - tools/src/dynamic-macros/**
+      - tools/src/commands/IosGenerateDynamicMacros.ts
+      - tools/src/client-build/**
+      - tools/src/commands/ClientBuild.ts
+      - secrets/**
+      - fastlane/**
+      - Gemfile.lock
+      - .ruby-version
+      - yarn.lock
   push:
     branches: [main, sdk-*]
     paths:
@@ -49,25 +42,6 @@ jobs:
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
-        with:
-          submodules: true
-      - name: 🔓 Decrypt secrets if possible
-        uses: ./.github/actions/expo-git-decrypt
-        with:
-          key: ${{ secrets.GIT_CRYPT_KEY_BASE64 }}
-      - name: ➕ Add `bin` to GITHUB_PATH
-        run: echo "$(pwd)/bin" >> $GITHUB_PATH
-      - name: ♻️ Restore caches
-        uses: ./.github/actions/expo-caches
-        id: expo-caches
-        with:
-          yarn-workspace: 'true'
-          yarn-tools: 'true'
-      - name: 🧶 Yarn install
-        if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
-        run: yarn install --frozen-lockfile
-      - name: Install eas-cli
-        run: npm install -g eas-cli
       - name: 🔎 Check which flavor to build
         id: flavor
         uses: dorny/paths-filter@v2
@@ -94,20 +68,12 @@ jobs:
           else
             echo "profile=unversioned-client" >> $GITHUB_OUTPUT
           fi
-      - name: Build
-        uses: ./.github/actions/eas-build
-        id: build
+      - uses: actions/github-script@v6
         with:
-          platform: 'ios'
-          profile: ${{ steps.profile.outputs.profile  }}
-          projectRoot: './apps/eas-expo-go'
-          expoToken: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
-          noWait: ${{ github.event.schedule }}
-          message: ${{ github.event.pull_request.title }}
-      - name: On workflow canceled
-        if: ${{ cancelled() && steps.build.outputs.build_id }}
-        run: eas build:cancel ${{ steps.build.outputs.build_id }}
-        working-directory: ./apps/eas-expo-go
-        env:
-          EXPO_TOKEN: ${{ secrets.EAS_BUILD_BOT_TOKEN }}
-          EAS_BUILD_PROFILE: ${{ steps.profile.outputs.profile  }}
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["eas-build-ios-${{ steps.profile.outputs.profile  }}"]
+            })

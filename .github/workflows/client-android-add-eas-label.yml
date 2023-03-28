@@ -1,0 +1,58 @@
+name: Android Client - add label to trigger EAS Build
+
+on:
+  pull_request:
+    paths:
+      - .github/workflows/client-android-eas.yml
+      - apps/eas-expo-go/**
+
+
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event_name }}-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-20.04
+    if: ${{ github.actor != 'dependabot[bot]' }}
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
+      - name: 🔎 Check which flavor to build
+        id: flavor
+        uses: dorny/paths-filter@v2
+        with:
+          # this action fails when base is not set on schedule event
+          base: ${{ github.ref }}
+          filters: |
+            versioned:
+              - android/versioned-abis/**
+              - android/versioned-react-native/**
+              - android/expoview/src/versioned/**
+              - android/expoview/src/main/java/versioned/**
+              - android/**/*.gradle
+      - name: Resolve profile
+        id: profile
+        run: |
+          DISPATCH_PROFILE="${{ github.event.inputs.buildType }}"
+          IS_VERSIONED="${{ steps.flavor.outputs.versioned }}"
+          if [[ ! -z "$DISPATCH_PROFILE" ]]; then
+            echo "profile=$DISPATCH_PROFILE" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.schedule }}" == "20 5 * * 1,3,5" ]]; then
+            echo "profile=versioned-client" >> $GITHUB_OUTPUT
+          elif [[ "${{ github.event.schedule }}" == "20 5 * * 1" ]]; then
+            echo "profile=versioned-client-add-sdk" >> $GITHUB_OUTPUT
+          elif [[ "$IS_VERSIONED" == "true" ]]; then
+            echo "profile=versioned-client" >> $GITHUB_OUTPUT
+          else
+            echo "profile=unversioned-client" >> $GITHUB_OUTPUT
+          fi
+      - uses: actions/github-script@v6
+        with:
+          script: |
+            github.rest.issues.addLabels({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              labels: ["eas-build-android-${{ steps.profile.outputs.profile  }}"]
+            })

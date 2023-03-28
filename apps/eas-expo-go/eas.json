@@ -11,7 +11,7 @@
       "android": {
         "image": "ubuntu-20.04-jdk-11-ndk-r21e",
         "cache": {
-          "customPaths": [
+          "paths": [
             "../../android/prebuiltHermes"
           ]
         },
@@ -23,12 +23,6 @@
         }
       },
       "ios": {
-        "cache": {
-          "key": "sdk48-0.71.3",
-          "customPaths": [
-            "../../ios/Pods"
-          ]
-        },
         "resourceClass": "m-medium",
         "env": {
           "EAS_BUILD_PLATFORM": "ios",
