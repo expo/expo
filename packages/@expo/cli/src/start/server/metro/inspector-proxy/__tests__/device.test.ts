@@ -1,6 +1,7 @@
 import { createInspectorDeviceClass } from '../device';
 import { DebuggerScriptSourceHandler } from '../handlers/DebuggerScriptSource';
 import { NetworkResponseHandler } from '../handlers/NetworkResponse';
+import { PageReloadHandler } from '../handlers/PageReload';
 import { VscodeCompatHandler } from '../handlers/VscodeCompat';
 import { InspectorHandler } from '../handlers/types';
 
@@ -14,6 +15,7 @@ describe('ExpoInspectorDevice', () => {
 
     expect(findHandler(DebuggerScriptSourceHandler)).toBeInstanceOf(DebuggerScriptSourceHandler);
     expect(findHandler(NetworkResponseHandler)).toBeInstanceOf(NetworkResponseHandler);
+    expect(findHandler(PageReloadHandler)).toBeInstanceOf(PageReloadHandler);
     expect(findHandler(VscodeCompatHandler)).toBeInstanceOf(VscodeCompatHandler);
   });
 
@@ -116,6 +118,7 @@ describe('ExpoInspectorDevice', () => {
 
 /** Create a test device instance without extending the Metro device */
 function createTestDevice() {
+  const metroBundler: any = { broadcastMessage: jest.fn() };
   class MetroDevice {
     _processMessageFromDevice() {}
     _interceptMessageFromDebugger() {}
@@ -125,8 +128,8 @@ function createTestDevice() {
   MetroDevice.prototype._processMessageFromDevice = jest.fn();
   MetroDevice.prototype._interceptMessageFromDebugger = jest.fn();
 
-  const ExpoDevice = createInspectorDeviceClass(MetroDevice);
+  const ExpoDevice = createInspectorDeviceClass(metroBundler, MetroDevice);
   const device = new ExpoDevice();
 
-  return { ExpoDevice, MetroDevice, device };
+  return { ExpoDevice, MetroDevice, device, metroBundler };
 }

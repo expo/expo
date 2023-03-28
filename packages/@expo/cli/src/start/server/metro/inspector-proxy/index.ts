@@ -1,3 +1,4 @@
+import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import {
   importMetroInspectorDeviceFromProject,
   importMetroInspectorProxyFromProject,
@@ -9,7 +10,7 @@ export { ExpoInspectorProxy } from './proxy';
 
 const debug = require('debug')('expo:metro:inspector-proxy') as typeof console.log;
 
-export function createInspectorProxy(projectRoot: string) {
+export function createInspectorProxy(metroBundler: MetroBundlerDevServer, projectRoot: string) {
   debug('Experimental inspector proxy enabled');
 
   // Import the installed `metro-inspector-proxy` from the project
@@ -17,6 +18,7 @@ export function createInspectorProxy(projectRoot: string) {
   const { InspectorProxy: MetroInspectorProxy } = importMetroInspectorProxyFromProject(projectRoot);
   // The device is slightly more complicated, we need to extend that class
   const ExpoInspectorDevice = createInspectorDeviceClass(
+    metroBundler,
     importMetroInspectorDeviceFromProject(projectRoot)
   );
 

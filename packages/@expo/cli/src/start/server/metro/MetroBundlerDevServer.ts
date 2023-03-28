@@ -101,7 +101,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
 
     const { metro, server, middleware, messageSocket } = await instantiateMetroAsync(
-      this.projectRoot,
+      this,
       parsedOptions
     );
 
