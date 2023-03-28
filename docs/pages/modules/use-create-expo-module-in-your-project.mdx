@@ -8,7 +8,7 @@ import { Terminal } from '~/ui/components/Snippet';
 
 There are two main ways to use a module created with `create-expo-module` inside an existing project: configuring a monorepo or publishing the module to npm. This guide walkthroughs both methods.
 
-## Using a monorepo
+## Use a monorepo
 
 For this guide, we assume that you have the following project structure:
 
@@ -24,7 +24,7 @@ Once you have set up the basic monorepo structure, create a new module using `cr
 
 <Terminal cmd={['$ npx create-expo-module packages/expo-settings --no-example']} />
 
-### 2. Set up our workspace
+### 2. Set up workspace
 
 Now, let's configure `autolinking` so all your apps can use the newly created module. Add the following block to the **package.json** file of each app under the **apps** directory:
 
@@ -79,7 +79,7 @@ export default function App() {
 }
 ```
 
-If you've configured everything correctly, you'll see a text saying "Hello world! 👋" in the app.
+After this configuration, you'll see a text that says "Hello world! 👋" in the app.
 
 ## Publish the module to npm
 
@@ -115,7 +115,7 @@ Open another terminal window, compile and run the example app:
   ]}
 />
 
-### 3. Publish your package to npm
+### 3. Publish the package to npm
 
 To publish your package to npm, you need to have an npm account. If you don't have one, create it on [the npm website](https://www.npmjs.com/signup). Once you have an account, log in using the following command:
 
@@ -129,9 +129,9 @@ Your module will now be published to npm and can be installed in other projects 
 
 Apart from publishing your module to npm, there are other ways to use it in your project:
 
-- Creating a tarball of of your module using `npm pack` and install it directly in your project by running `npm install /path/to/tarball`. It's useful to test your module locally before publishing it to npm or if you want to share it with others who don't have access to the npm registry.
-- Running a local npm registry, such as [Verdaccio](https://verdaccio.org/), and installing your module from there. This is useful for cases where you want to host your own private npm registry to manage internal packages within a company or organization.
-- If you want to [publish a private package or use a private registry with EAS Builds](https://docs.expo.dev/build-reference/private-npm-packages/).
+- Create a tarball of your module using `npm pack` and install it directly in your project by running `npm install /path/to/tarball`. It's useful to test your module locally before publishing it to npm or if you want to share it with others who don't have access to the npm registry.
+- Run a local npm registry, such as [Verdaccio](https://verdaccio.org/), and install your module from there. This is useful for cases where you want to host your private npm registry to manage internal packages within a company or organization.
+- [Publish a private package or use a private registry with EAS Builds](https://docs.expo.dev/build-reference/private-npm-packages/).
 
 If you want to publish a private private package or use a private registry with EAS Builds you can read how to configure it [here](https://docs.expo.dev/build-reference/private-npm-packages/).
 
@@ -176,4 +176,4 @@ To run your app locally, run the `prebuild` command and then compile the app.
   ]}
 />
 
-If you've configured everything correctly, you'll see a text saying "Hello world! 👋" in the app.
+After this configuration, you'll see a text that says "Hello world! 👋" in the app.
