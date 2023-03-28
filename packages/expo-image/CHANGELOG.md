@@ -7,8 +7,8 @@
 ### 🎉 New features
 
 - [Web] Add support for `require()` assets. ([#21798](https://github.com/expo/expo/pull/21798) by [@aleqsio](https://github.com/aleqsio))
-- Add `alt` prop as an alias to `accessibilityLabel`.
-- [Web] Add `accessibilityLabel` support on web.
+- Add `alt` prop as an alias to `accessibilityLabel`. ([#21884](https://github.com/expo/expo/pull/21884) by [@EvanBacon](https://github.com/EvanBacon))
+- [Web] Add `accessibilityLabel` support on web. ([#21884](https://github.com/expo/expo/pull/21884) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
