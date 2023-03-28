@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Prevent breaking in static rendering environments.
+
 ### 💡 Others
 
 ## 1.1.0 — 2023-03-25
