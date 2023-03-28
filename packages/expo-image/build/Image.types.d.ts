@@ -210,12 +210,23 @@ export interface ImageProps extends ViewProps {
      */
     accessible?: boolean;
     /**
-     * The text that's read by the screen reader when the user interacts with the image.
+     * The text that's read by the screen reader when the user interacts with the image. Sets the the `alt` tag on web which is used for web crawlers and link traversal.
      * @default undefined
      * @platform android
      * @platform ios
+     * @platform web
      */
     accessibilityLabel?: string;
+    /**
+     * The text that's read by the screen reader when the user interacts with the image. Sets the the `alt` tag on web which is used for web crawlers and link traversal.
+     *
+     * @alias accessibilityLabel
+     * @default undefined
+     * @platform android
+     * @platform ios
+     * @platform web
+     */
+    alt?: string;
     /**
      * Enables Live Text interaction with the image. Check official [Apple documentation](https://developer.apple.com/documentation/visionkit/enabling_live_text_interactions_with_images) for more details.
      * @default false
