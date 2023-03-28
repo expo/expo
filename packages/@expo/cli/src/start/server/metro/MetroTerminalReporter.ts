@@ -3,6 +3,7 @@ import { Terminal } from 'metro-core';
 import path from 'path';
 
 import { learnMore } from '../../../utils/link';
+import { NODE_STDLIB_MODULES } from './externals';
 import { logWarning, TerminalReporter } from './TerminalReporter';
 import { BuildPhase, BundleDetails, BundleProgress, SnippetError } from './TerminalReporter.types';
 
@@ -207,37 +208,3 @@ function getPlatformTagForBuildDetails(bundleDetails?: BundleDetails | null): st
 
   return '';
 }
-
-// A list of the Node.js standard library modules.
-const NODE_STDLIB_MODULES = [
-  'assert',
-  'async_hooks',
-  'buffer',
-  'child_process',
-  'cluster',
-  'crypto',
-  'dgram',
-  'dns',
-  'domain',
-  'events',
-  'fs',
-  'fs/promises',
-  'http',
-  'https',
-  'net',
-  'os',
-  'path',
-  'punycode',
-  'querystring',
-  'readline',
-  'repl',
-  'stream',
-  'string_decoder',
-  'tls',
-  'tty',
-  'url',
-  'util',
-  'v8',
-  'vm',
-  'zlib',
-];
