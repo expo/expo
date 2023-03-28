@@ -14,6 +14,7 @@ import { env } from '../../../utils/env';
 import { getMetroServerRoot } from '../middleware/ManifestMiddleware';
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
+import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
 import { importExpoMetroConfigFromProject } from './resolveFromProject';
 import { runServer } from './runServer-fork';
@@ -65,7 +66,7 @@ export async function loadMetroConfigAsync(
 
 /** The most generic possible setup for Metro bundler. */
 export async function instantiateMetroAsync(
-  projectRoot: string,
+  metroBundler: MetroBundlerDevServer,
   options: Omit<MetroDevServerOptions, 'logger'>
 ): Promise<{
   metro: Metro.Server;
@@ -73,6 +74,8 @@ export async function instantiateMetroAsync(
   middleware: any;
   messageSocket: MessageSocket;
 }> {
+  const projectRoot = metroBundler.projectRoot;
+
   // TODO: When we bring expo/metro-config into the expo/expo repo, then we can upstream this.
   const { exp } = getConfig(projectRoot, {
     skipSDKVersionRequirement: true,
@@ -102,7 +105,7 @@ export async function instantiateMetroAsync(
 
   middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
 
-  const { server, metro } = await runServer(projectRoot, metroConfig, {
+  const { server, metro } = await runServer(metroBundler, metroConfig, {
     hmrEnabled: true,
     websocketEndpoints,
     watch: isWatchEnabled(),

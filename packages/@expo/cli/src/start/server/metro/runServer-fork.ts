@@ -11,6 +11,7 @@ import { InspectorProxy } from 'metro-inspector-proxy';
 import { parse } from 'url';
 
 import { env } from '../../../utils/env';
+import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { createInspectorProxy, ExpoInspectorProxy } from './inspector-proxy';
 import {
   importMetroCreateWebsocketServerFromProject,
@@ -20,7 +21,7 @@ import {
 } from './resolveFromProject';
 
 export const runServer = async (
-  projectRoot: string,
+  metroBundler: MetroBundlerDevServer,
   config: ConfigT,
   {
     hasReducedPerformance = false,
@@ -33,6 +34,8 @@ export const runServer = async (
     watch,
   }: RunServerOptions
 ): Promise<{ server: http.Server | https.Server; metro: Server }> => {
+  const projectRoot = metroBundler.projectRoot;
+
   const Metro = importMetroFromProject(projectRoot);
 
   const createWebsocketServer = importMetroCreateWebsocketServerFromProject(projectRoot);
@@ -68,7 +71,7 @@ export const runServer = async (
 
   let inspectorProxy: InspectorProxy | ExpoInspectorProxy | null = null;
   if (config.server.runInspectorProxy && env.EXPO_USE_CUSTOM_INSPECTOR_PROXY) {
-    inspectorProxy = createInspectorProxy(config.projectRoot);
+    inspectorProxy = createInspectorProxy(metroBundler, config.projectRoot);
   } else if (config.server.runInspectorProxy) {
     inspectorProxy = new InspectorProxy(config.projectRoot);
   }
