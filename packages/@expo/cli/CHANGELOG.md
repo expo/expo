@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Respond to `Debugger.getScriptSource` CDP messages when using lan or tunnel. ([#21825](https://github.com/expo/expo/pull/21825) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 - Update migration map to suggest standalone npx expo doctor instead of expo-cli doctor. ([#18548](https://github.com/expo/expo/pull/21931) by [@keith-kurak](https://github.com/keith-kurak))
 
