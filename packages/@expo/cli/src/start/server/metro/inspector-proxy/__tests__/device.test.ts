@@ -1,10 +1,20 @@
 import { createInspectorDeviceClass } from '../device';
+import { DebuggerScriptSourceHandler } from '../handlers/DebuggerScriptSource';
+import { NetworkResponseHandler } from '../handlers/NetworkResponse';
+import { VscodeCompatHandler } from '../handlers/VscodeCompat';
 import { InspectorHandler } from '../handlers/types';
 
 describe('ExpoInspectorDevice', () => {
   it('initializes with default handlers', () => {
     const { device } = createTestDevice();
-    expect(device.handlers).toHaveLength(2);
+
+    function findHandler<T extends Function>(type: T) {
+      return device.handlers.find((handler) => handler instanceof type);
+    }
+
+    expect(findHandler(DebuggerScriptSourceHandler)).toBeInstanceOf(DebuggerScriptSourceHandler);
+    expect(findHandler(NetworkResponseHandler)).toBeInstanceOf(NetworkResponseHandler);
+    expect(findHandler(VscodeCompatHandler)).toBeInstanceOf(VscodeCompatHandler);
   });
 
   describe('device', () => {
