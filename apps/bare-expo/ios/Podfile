@@ -32,10 +32,7 @@ abstract_target 'BareExpoMain' do
   pod 'expo-dev-menu', path: '../../../packages/expo-dev-menu', :testspecs => ['Tests', 'UITests']
 
   use_expo_modules!(
-    tests: [
-      'expo-dev-menu-interface',
-      'expo-dev-launcher',
-    ],
+    includeTests: true,
   )
 
   use_frameworks! :linkage => podfile_properties['ios.useFrameworks'].to_sym if podfile_properties['ios.useFrameworks']
