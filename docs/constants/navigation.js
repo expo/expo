@@ -61,7 +61,6 @@ const general = [
         [
           makePage('introduction/expo.mdx'),
           makePage('introduction/managed-vs-bare.mdx'),
-          makePage('introduction/why-not-expo.mdx'),
           makePage('introduction/faq.mdx'),
         ],
         { expanded: true }
