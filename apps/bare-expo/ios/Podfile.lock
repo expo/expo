@@ -23,7 +23,7 @@ PODS:
     - ExpoModulesCore
   - EXContacts (12.0.1):
     - ExpoModulesCore
-  - EXDocumentPicker (11.2.1):
+  - EXDocumentPicker (11.2.2):
     - ExpoModulesCore
   - EXFaceDetector (12.1.1):
     - ExpoModulesCore
@@ -1221,7 +1221,7 @@ SPEC CHECKSUMS:
   EXCamera: a323a5942b5e7fc8349e17d728e91c18840ad561
   EXConstants: f348da07e21b23d2b085e270d7b74f282df1a7d9
   EXContacts: 44ced67015dab45ca8ae1eb8950738d60de0af64
-  EXDocumentPicker: 909609253c185cc6d802f408c7eaf7a4daca793b
+  EXDocumentPicker: a2e52acbb3204af80b6e3ffd3deb2cb25d052593
   EXFaceDetector: 16c5311521334ba7818c28cde44997d6757c2dd0
   EXFileSystem: 844e86ca9b5375486ecc4ef06d3838d5597d895d
   EXFont: 6ea3800df746be7233208d80fe379b8ed74f4272
