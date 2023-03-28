@@ -16,7 +16,7 @@ import { createDevServerMiddleware } from '../middleware/createDevServerMiddlewa
 import { getPlatformBundlers } from '../platformBundlers';
 import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
-import { importExpoMetroConfigFromProject } from './resolveFromProject';
+import { importExpoMetroConfig } from './resolveFromProject';
 import { runServer } from './runServer-fork';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 
@@ -47,8 +47,7 @@ export async function loadMetroConfigAsync(
     },
   };
 
-  const ExpoMetroConfig = importExpoMetroConfigFromProject(projectRoot);
-
+  const ExpoMetroConfig = importExpoMetroConfig(projectRoot);
   let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
 
   const bundlerPlatforms = getPlatformBundlers(exp);

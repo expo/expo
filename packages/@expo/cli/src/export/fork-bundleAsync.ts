@@ -8,7 +8,7 @@ import {
   importMetroFromProject,
   importMetroServerFromProject,
 } from '@expo/dev-server/build/metro/importMetroFromProject';
-import { LoadOptions } from '@expo/metro-config';
+import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import Metro from 'metro';
 

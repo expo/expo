@@ -27,7 +27,7 @@ const nativePlatforms = ['ios', 'android'];
 
 export function resolveEntryPoint(
   projectRoot: string,
-  { platform, projectConfig }: { platform: string; projectConfig?: ProjectConfig }
+  { platform, projectConfig }: { platform: string; projectConfig?: Partial<ProjectConfig> }
 ) {
   const platforms = nativePlatforms.includes(platform) ? [platform, 'native'] : [platform];
   return getEntryPoint(projectRoot, ['./index'], platforms, projectConfig);
@@ -37,7 +37,7 @@ export function getEntryPoint(
   projectRoot: string,
   entryFiles: string[],
   platforms: string[],
-  projectConfig?: ProjectConfig
+  projectConfig?: Partial<ProjectConfig>
 ): string | null {
   const extensions = getBareExtensions(platforms);
   return getEntryPointWithExtensions(projectRoot, entryFiles, extensions, projectConfig);
@@ -48,7 +48,7 @@ export function getEntryPointWithExtensions(
   projectRoot: string,
   entryFiles: string[],
   extensions: string[],
-  projectConfig?: ProjectConfig
+  projectConfig?: Partial<ProjectConfig>
 ): string {
   if (!projectConfig) {
     // drop all logging abilities
