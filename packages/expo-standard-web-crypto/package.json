@@ -31,14 +31,15 @@
   "license": "MIT",
   "devDependencies": {
     "expo-module-scripts": "^3.0.0",
-    "expo-random": "~13.1.0"
+    "expo-crypto": "^12.2.1"
   },
   "peerDependencies": {
-    "expo-random": "13.1.1"
+    "expo-crypto": "^12.2.1"
   },
   "peerDependenciesMeta": {
     "expo-random": {
       "optional": true
     }
-  }
+  },
+  "dependencies": {}
 }
