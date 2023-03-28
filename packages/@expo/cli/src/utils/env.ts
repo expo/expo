@@ -154,7 +154,7 @@ class Env {
     return boolish('EXPO_USE_CUSTOM_INSPECTOR_PROXY', false);
   }
 
-  /** Enable Expo Router typed router generation */
+  /** **Experimental:** Enable automatic TypeScript types for Expo Router projects (SDK +49). */
   get EXPO_USE_TYPED_ROUTES() {
     return boolish('EXPO_USE_TYPED_ROUTES', false);
   }
