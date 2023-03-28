@@ -220,7 +220,8 @@ Remove`EXUpdatesAppControllerDelegate` as a protocol of your `AppDelegate`.
 ...
 
  #ifdef DEBUG
-   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
+-   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
++   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry" fallbackResource:nil];
  #else
 -  return [[EXUpdatesAppController sharedInstance] launchAssetUrl];
 +  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
@@ -249,7 +250,8 @@ Remove`EXUpdatesAppControllerDelegate` as a protocol of your `AppDelegate`.
 ...
 
      protected String getJSMainModuleName() {
-       return "index";
+-       return "index";
++       return ".expo/.virtual-metro-entry";
      }
 -
 -    @Override

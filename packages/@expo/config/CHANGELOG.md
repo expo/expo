@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Make `exp` type optional in `resolveEntryPoint`. ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 8.0.1 — 2023-02-09

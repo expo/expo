@@ -1,4 +1,9 @@
+import { vol } from 'memfs';
+import path from 'path';
+
 import { createExoticTransformer } from '../createExoticTransformer';
+
+const projectRoot = '/';
 
 jest.mock('../createMultiRuleTransformer', () => {
   const all = jest.requireActual('../createMultiRuleTransformer');
@@ -21,7 +26,29 @@ jest.mock('../createMultiRuleTransformer', () => {
   };
 });
 
+function mockProject() {
+  vol.fromJSON(
+    {
+      [path.join(__dirname, '../getCacheKey.ts')]: '',
+      'package.json': JSON.stringify({
+        name: 'hello-world',
+        private: true,
+      }),
+      'node_modules/expo-asset/tools/hashAssetFiles.js': '',
+      'node_modules/react-native/package.json': '',
+      'node_modules/babel-preset-fbjs/package.json': '',
+      'node_modules/metro-react-native-babel-transformer/package.json': '',
+    },
+    projectRoot
+  );
+}
 describe(createExoticTransformer, () => {
+  beforeEach(() => {
+    mockProject();
+  });
+  afterEach(() => {
+    vol.reset();
+  });
   const projectRoot = '/';
   it(`adds support for custom node_modules`, () => {
     const { transform } = createExoticTransformer({

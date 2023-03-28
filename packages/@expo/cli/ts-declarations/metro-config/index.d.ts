@@ -131,6 +131,7 @@ declare module 'metro-config' {
   }
 
   interface ServerConfigT {
+    rewriteRequestUrl: (url: string) => string;
     enhanceMiddleware: (middleware: Middleware, server: Server) => Middleware;
     useGlobalHotkey: boolean;
     port: number;

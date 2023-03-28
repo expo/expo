@@ -1,6 +1,8 @@
 import findWorkspaceRoot from 'find-yarn-workspace-root';
 import path from 'path';
 
+import { env } from './env';
+
 /** Wraps `findWorkspaceRoot` and guards against having an empty `package.json` file in an upper directory. */
 export function getWorkspaceRoot(projectRoot: string): string | null {
   try {
@@ -25,4 +27,10 @@ export function getModulesPaths(projectRoot: string): string[] {
   }
 
   return paths;
+}
+
+export function getServerRoot(projectRoot: string) {
+  return env.EXPO_USE_METRO_WORKSPACE_ROOT
+    ? getWorkspaceRoot(projectRoot) ?? projectRoot
+    : projectRoot;
 }

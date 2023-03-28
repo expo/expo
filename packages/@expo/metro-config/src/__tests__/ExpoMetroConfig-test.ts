@@ -1,15 +1,36 @@
-import path from 'path';
+import { vol } from 'memfs';
 
 import { getDefaultConfig, loadAsync } from '../ExpoMetroConfig';
 
-const projectRoot = path.join(__dirname, '__fixtures__', 'hello-world');
+const projectRoot = '/';
 const consoleError = console.error;
 
 beforeEach(() => {
   delete process.env.EXPO_USE_EXOTIC;
 });
 
+function mockProject() {
+  vol.fromJSON(
+    {
+      'package.json': JSON.stringify({
+        name: 'hello-world',
+        private: true,
+      }),
+      'node_modules/expo-asset/tools/hashAssetFiles.js': '',
+      'node_modules/react-native/package.json': '',
+      'node_modules/babel-preset-fbjs/package.json': '',
+      'node_modules/metro-react-native-babel-transformer/package.json': '',
+    },
+    projectRoot
+  );
+}
 describe(getDefaultConfig, () => {
+  beforeEach(() => {
+    mockProject();
+  });
+  afterEach(() => {
+    vol.reset();
+  });
   afterAll(() => {
     console.error = consoleError;
   });
@@ -49,6 +70,12 @@ describe(getDefaultConfig, () => {
 });
 
 describe(loadAsync, () => {
+  beforeEach(() => {
+    mockProject();
+  });
+  afterEach(() => {
+    vol.reset();
+  });
   it('adds runtime options to the default configuration', async () => {
     const options = {
       maxWorkers: 10,

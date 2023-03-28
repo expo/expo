@@ -4,6 +4,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 exports.getModulesPaths = getModulesPaths;
+exports.getServerRoot = getServerRoot;
 exports.getWorkspaceRoot = getWorkspaceRoot;
 function _findYarnWorkspaceRoot() {
   const data = _interopRequireDefault(require("find-yarn-workspace-root"));
@@ -15,6 +16,13 @@ function _findYarnWorkspaceRoot() {
 function _path() {
   const data = _interopRequireDefault(require("path"));
   _path = function () {
+    return data;
+  };
+  return data;
+}
+function _env() {
+  const data = require("./env");
+  _env = function () {
     return data;
   };
   return data;
@@ -42,5 +50,9 @@ function getModulesPaths(projectRoot) {
     paths.push(_path().default.resolve(workspaceRoot, 'node_modules'));
   }
   return paths;
+}
+function getServerRoot(projectRoot) {
+  var _getWorkspaceRoot;
+  return _env().env.EXPO_USE_METRO_WORKSPACE_ROOT ? (_getWorkspaceRoot = getWorkspaceRoot(projectRoot)) !== null && _getWorkspaceRoot !== void 0 ? _getWorkspaceRoot : projectRoot : projectRoot;
 }
 //# sourceMappingURL=getModulesPaths.js.map

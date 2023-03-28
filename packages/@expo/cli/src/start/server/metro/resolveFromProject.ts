@@ -1,5 +1,7 @@
 import resolveFrom from 'resolve-from';
 
+const debug = require('debug')('expo:metro:import');
+
 // These resolvers enable us to test the CLI in older projects.
 // We may be able to get rid of this in the future.
 // TODO: Maybe combine with AsyncResolver?
@@ -41,11 +43,28 @@ export function importMetroHmrServerFromProject(
   return importFromProject(projectRoot, 'metro/src/HmrServer');
 }
 
-/** Import `@expo/metro-config` from the project. */
-export function importExpoMetroConfigFromProject(
-  projectRoot: string
-): typeof import('@expo/metro-config') {
-  return importFromProject(projectRoot, '@expo/metro-config');
+export function importExpoMetroConfig(projectRoot: string) {
+  return importFromProjectOrFallback<typeof import('@expo/metro-config')>(
+    projectRoot,
+    '@expo/metro-config'
+  );
+}
+
+/**
+ * Attempt to use the local version of a module or fallback on the CLI version.
+ * This should only ever happen when testing Expo CLI in development.
+ */
+export function importFromProjectOrFallback<TModule>(
+  projectRoot: string,
+  moduleId: string
+): TModule {
+  const resolvedPath = resolveFrom.silent(projectRoot, moduleId);
+  if (!resolvedPath) {
+    debug(`requiring "${moduleId}" relative to the CLI`);
+    return require(require.resolve(moduleId));
+  }
+  debug(`requiring "${moduleId}" from the project:`, resolvedPath);
+  return require(resolvedPath);
 }
 
 /** Import `metro-resolver` from the project. */

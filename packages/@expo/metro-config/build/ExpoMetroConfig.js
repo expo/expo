@@ -81,6 +81,13 @@ function _getWatchFolders() {
   };
   return data;
 }
+function _rewriteRequestUrl() {
+  const data = require("./rewriteRequestUrl");
+  _rewriteRequestUrl = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 
@@ -96,7 +103,6 @@ function getAssetPlugins(projectRoot) {
 }
 let hasWarnedAboutExotic = false;
 function getDefaultConfig(projectRoot, options = {}) {
-  var _getWorkspaceRoot;
   const isExotic = options.mode === 'exotic' || _env().env.EXPO_USE_EXOTIC;
   if (isExotic && !hasWarnedAboutExotic) {
     hasWarnedAboutExotic = true;
@@ -178,11 +184,12 @@ function getDefaultConfig(projectRoot, options = {}) {
       getPolyfills: () => require(_path().default.join(reactNativePath, 'rn-get-polyfills'))()
     },
     server: {
+      rewriteRequestUrl: (0, _rewriteRequestUrl().getRewriteRequestUrl)(projectRoot),
       port: Number(_env().env.RCT_METRO_PORT) || 8081,
       // NOTE(EvanBacon): Moves the server root down to the monorepo root.
       // This enables proper monorepo support for web.
       // @ts-expect-error: not on type
-      unstable_serverRoot: _env().env.EXPO_USE_METRO_WORKSPACE_ROOT ? (_getWorkspaceRoot = (0, _getModulesPaths().getWorkspaceRoot)(projectRoot)) !== null && _getWorkspaceRoot !== void 0 ? _getWorkspaceRoot : projectRoot : projectRoot
+      unstable_serverRoot: (0, _getModulesPaths().getServerRoot)(projectRoot)
     },
     symbolicator: {
       customizeFrame: (0, _customizeFrame().getDefaultCustomizeFrame)()
