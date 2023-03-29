@@ -5,6 +5,7 @@ import path from 'path';
 import { learnMore } from '../../../utils/link';
 import { logWarning, TerminalReporter } from './TerminalReporter';
 import { BuildPhase, BundleDetails, BundleProgress, SnippetError } from './TerminalReporter.types';
+import { NODE_STDLIB_MODULES } from './externals';
 
 const MAX_PROGRESS_BAR_CHAR_WIDTH = 16;
 const DARK_BLOCK_CHAR = '\u2593';
@@ -207,37 +208,3 @@ function getPlatformTagForBuildDetails(bundleDetails?: BundleDetails | null): st
 
   return '';
 }
-
-// A list of the Node.js standard library modules.
-const NODE_STDLIB_MODULES = [
-  'assert',
-  'async_hooks',
-  'buffer',
-  'child_process',
-  'cluster',
-  'crypto',
-  'dgram',
-  'dns',
-  'domain',
-  'events',
-  'fs',
-  'fs/promises',
-  'http',
-  'https',
-  'net',
-  'os',
-  'path',
-  'punycode',
-  'querystring',
-  'readline',
-  'repl',
-  'stream',
-  'string_decoder',
-  'tls',
-  'tty',
-  'url',
-  'util',
-  'v8',
-  'vm',
-  'zlib',
-];
