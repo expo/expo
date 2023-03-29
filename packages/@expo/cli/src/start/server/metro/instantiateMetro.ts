@@ -55,8 +55,7 @@ export async function loadMetroConfigAsync(
   config = await withMetroMultiPlatformAsync(projectRoot, {
     config,
     platformBundlers,
-    // @ts-expect-error: TODO -- Not on type yet
-    isTsconfigPathsEnabled: exp.experiments.tsconfigPaths,
+    isTsconfigPathsEnabled: !!exp.experiments?.tsconfigPaths,
   });
 
   logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));
