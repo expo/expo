@@ -2,26 +2,24 @@
 title: Rollouts
 hideTOC: true
 ---
+import { Terminal } from '~/ui/components/Snippet';
 
-Rollouts allow us to deploy a new branch to a specific channel incrementally. With rollouts, we can roll out Branch B over Branch A by percentage. This is useful when we want to test a new feature to minimize the risk of introducing bugs or other issues to our production environment.
 
-To initiate a rollout, we can use the following command:
+Rollouts allow deploying a new branch to a specific channel incrementally. With rollouts, we can roll out one branch to a percentage of end users and leave the remaining percentage of users on the current branch. This is useful when testing a new feature to minimize the risk of introducing bugs or other issues to your production environment.
 
-```bash
-eas channel:rollout [channel]
-```
+To initiate a rollout, use the following command:
 
-The interactive prompts will guide us through choosing a channel, a branch to begin rolling out, and the percentage of our users to rollout to. To increase or decrease the rollout amount, we can run the `eas channel:rollout [channel]` command again to adjust the rollout percentage.
+<Terminal cmd={["eas channel:rollout [channel]"]} />
 
-Once we feel confident in our new branch, or if we want to revert to our original branch, we can end the rollout with the `--end` flag:
+The interactive prompts will guide you through choosing a channel, a branch to begin rolling out, and the percentage of your users to rollout to. To increase or decrease the rollout amount, run the `eas channel:rollout [channel]` command again to adjust the rollout percentage.
 
-```bash
-eas channel:rollout [channel] --end
-```
+Once you feel confident with your new branch, or if you want to revert to your original branch, you can end the rollout with the `--end` flag:
 
-Here are a variety of facts that will help us when working with rollouts:
-- We can only have one branch rolling out on a channel at once.
-- We can see the state of the rollout with `eas channel:view [channel]`.
-- When a rollout is in progress, we can still publish updates to both branches, by running `eas update --branch [branch]`, for example.
-- We cannot use `eas update --channel [channel]` when a rollout is in progress, since we cannot know which branch to associate the update with.
+<Terminal cmd={["eas channel:rollout [channel] --end"]} />
+
+Facts that will help you when working with rollouts:
+- You can only have one branch rolling out on a channel at a single time.
+- To see the state of the rollout, use the `eas channel:view [channel]` command.
+- When a rollout is in progress, you can publish updates to both branches by running `eas update --branch [branch]`, for example.
+- You cannot use `eas update --channel [channel]` when a rollout is in progress, since it cannot know which branch to associate the update with.
 
