@@ -10,6 +10,8 @@
 
 ### 🐛 Bug fixes
 
+- [Web] Prevent breaking in static rendering environments. ([#21883](https://github.com/expo/expo/pull/21883) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 1.1.0 — 2023-03-25
