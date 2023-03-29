@@ -15,7 +15,7 @@ class JavaScriptViewModule {
     inlineModule {
       Name("TestModule")
       View(android.view.View::class) {
-        AsyncFunction("viewFunction") { viewTag: Int -> }
+        AsyncFunction("viewFunction") { _: Int -> }
         AsyncFunction("anotherViewFunction") { -> 20 }
       }
     }
