@@ -1,1 +1,1 @@
-{"version":3,"file":"BlurView.d.ts","sourceRoot":"","sources":["../src/BlurView.tsx"],"names":[],"mappings":"AACA,OAAO,KAAK,MAAM,OAAO,CAAC;AAC1B,OAAO,EAAE,IAAI,EAA8B,MAAM,cAAc,CAAC;AAgFhE;;GAEG;AACH,QAAA,MAAM,wBAAwB;;;iEAI7B,CAAC;AAEF,eAAe,wBAAwB,CAAC"}
+{"version":3,"file":"BlurView.d.ts","sourceRoot":"","sources":["../src/BlurView.tsx"],"names":[],"mappings":"AACA,OAAO,KAAK,MAAM,OAAO,CAAC;AAC1B,OAAO,EAAE,IAAI,EAAc,MAAM,cAAc,CAAC;AAsDhD;;GAEG;AACH,QAAA,MAAM,wBAAwB;;;;iEAI7B,CAAC;AAEF,eAAe,wBAAwB,CAAC"}
