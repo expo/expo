@@ -78,7 +78,15 @@ public:
    */
   jni::local_ref<JavaScriptObject::javaobject> createObject();
 
-  void registerSharedObject(jni::local_ref<jobject> native, jni::local_ref<JavaScriptObject::javaobject> js);
+  /**
+   * Adds a shared object to the internal registry
+   * @param native part of the shared object
+   * @param js part of the shared object
+   */
+  void registerSharedObject(
+    jni::local_ref<jobject> native,
+    jni::local_ref<JavaScriptObject::javaobject> js
+  );
 
   /**
    * Exposes a `JavaScriptRuntime::drainJSEventLoop` function to Kotlin
