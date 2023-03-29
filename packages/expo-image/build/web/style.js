@@ -127,8 +127,10 @@ const style = `
 }
 `;
 export default function loadStyle() {
-    const styleTag = document.createElement('style');
-    styleTag.innerHTML = style;
-    document.head.appendChild(styleTag);
+    if (typeof document !== 'undefined') {
+        const styleTag = document.createElement('style');
+        styleTag.innerHTML = style;
+        document.head.appendChild(styleTag);
+    }
 }
 //# sourceMappingURL=style.js.map
