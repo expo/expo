@@ -10,7 +10,7 @@
 
 - Add `expo/scripts/launchPackager.command` script for launching Expo CLI when building iOS apps for development in Xcode. ([#21397](https://github.com/expo/expo/pull/21397) by [@EvanBacon](https://github.com/EvanBacon))
 - Added internal `export:embed` command for use in Xcode and Android Studio builds. ([#21396](https://github.com/expo/expo/pull/21396) by [@EvanBacon](https://github.com/EvanBacon))
-- Export TypeScript types for `expo/metro-config`.
+- Export TypeScript types for `expo/metro-config`. ([#21898](https://github.com/expo/expo/pull/21898) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
