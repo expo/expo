@@ -119,6 +119,7 @@ export default function ExpoImage({
             contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
             blurhashContentPosition={contentPosition}
             blurhashStyle={blurhashStyle}
+            accessibilityLabel={props.accessibilityLabel}
           />
         ),
   ];

@@ -63,6 +63,7 @@ const ImageWrapper = React.forwardRef(
       style,
       blurhashStyle,
       className,
+      accessibilityLabel,
     }: {
       source?: ImageSource | null;
       events?: {
@@ -77,6 +78,7 @@ const ImageWrapper = React.forwardRef(
       style: CSSProperties;
       blurhashStyle?: CSSProperties;
       className?: string;
+      accessibilityLabel?: string;
     },
     ref: Ref<HTMLImageElement>
   ) => {
@@ -93,6 +95,7 @@ const ImageWrapper = React.forwardRef(
     return (
       <img
         ref={ref}
+        alt={accessibilityLabel}
         className={className}
         src={uri || undefined}
         key={source?.uri}

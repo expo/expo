@@ -16,6 +16,7 @@ declare const ImageWrapper: React.ForwardRefExoticComponent<{
     style: CSSProperties;
     blurhashStyle?: React.CSSProperties | undefined;
     className?: string | undefined;
+    accessibilityLabel?: string | undefined;
 } & React.RefAttributes<HTMLImageElement>>;
 export default ImageWrapper;
 //# sourceMappingURL=ImageWrapper.d.ts.map
