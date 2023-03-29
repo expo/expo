@@ -27,7 +27,7 @@
 
 ### 💡 Others
 
-- Switch `EXPO_USE_PATH_ALIASES` to `expo.experiments.tsconfigPaths`.
+- Switch `EXPO_USE_PATH_ALIASES` to `expo.experiments.tsconfigPaths`. ([#21897](https://github.com/expo/expo/pull/21897) by [@EvanBacon](https://github.com/EvanBacon))
 - Fallback on latest `@expo/metro-config` when local version isn't available (effects testing locally). ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))
 - Update fixtures. ([#21397](https://github.com/expo/expo/pull/21397) by [@EvanBacon](https://github.com/EvanBacon))
 - Upgrade e2e tests to SDK 47. ([#21335](https://github.com/expo/expo/pull/21335) by [@EvanBacon](https://github.com/EvanBacon))
