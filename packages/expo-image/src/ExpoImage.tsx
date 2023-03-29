@@ -51,7 +51,7 @@ class ExpoImage extends React.PureComponent<ImageNativeProps> {
   };
 
   render() {
-    const { style, ...props } = this.props;
+    const { style, accessibilityLabel, alt, ...props } = this.props;
     const resolvedStyle = StyleSheet.flatten(style);
 
     // Shadows behave different on iOS, Android & Web.
@@ -95,6 +95,7 @@ class ExpoImage extends React.PureComponent<ImageNativeProps> {
       <NativeExpoImage
         {...props}
         {...resolvedStyle}
+        accessibilityLabel={accessibilityLabel ?? alt}
         style={resolvedStyle}
         onLoadStart={this.onLoadStart}
         onLoad={this.onLoad}

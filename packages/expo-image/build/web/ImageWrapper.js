@@ -31,7 +31,7 @@ function getObjectPositionFromContentPositionObject(contentPosition) {
 function getFetchPriorityFromImagePriority(priority = 'normal') {
     return priority && ['low', 'high'].includes(priority) ? priority : 'auto';
 }
-const ImageWrapper = React.forwardRef(({ source, events, contentPosition, blurhashContentPosition, priority, style, blurhashStyle, className, }, ref) => {
+const ImageWrapper = React.forwardRef(({ source, events, contentPosition, blurhashContentPosition, priority, style, blurhashStyle, className, accessibilityLabel, }, ref) => {
     useEffect(() => {
         events?.onMount?.forEach((e) => e?.());
     }, []);
@@ -41,7 +41,7 @@ const ImageWrapper = React.forwardRef(({ source, events, contentPosition, blurha
     const uri = isBlurhash ? blurhashUri : source?.uri;
     if (!uri)
         return null;
-    return (React.createElement("img", { ref: ref, className: className, src: uri || undefined, key: source?.uri, style: {
+    return (React.createElement("img", { ref: ref, alt: accessibilityLabel, className: className, src: uri || undefined, key: source?.uri, style: {
             width: '100%',
             height: '100%',
             position: 'absolute',

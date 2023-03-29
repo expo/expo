@@ -63,7 +63,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                 objectFit: selectedSource ? contentFit : imagePlaceholderContentFit,
                 ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
                 ...style,
-            }, className: className, priority: priority, contentPosition: selectedSource ? contentPosition : { top: '50%', left: '50%' }, blurhashContentPosition: contentPosition, blurhashStyle: blurhashStyle })),
+            }, className: className, priority: priority, contentPosition: selectedSource ? contentPosition : { top: '50%', left: '50%' }, blurhashContentPosition: contentPosition, blurhashStyle: blurhashStyle, accessibilityLabel: props.accessibilityLabel })),
     ];
     return (React.createElement("div", { ref: containerRef, className: "expo-image-container", style: {
             aspectRatio: String(aspectRatio),
