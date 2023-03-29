@@ -3,6 +3,9 @@ PODS:
   - DoubleConversion (1.1.6)
   - EASClient (0.5.1):
     - ExpoModulesCore
+  - EASClient/Tests (0.5.1):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - EXApplication (5.1.1):
     - ExpoModulesCore
   - EXAV (13.2.1):
@@ -31,6 +34,9 @@ PODS:
     - MLKitVision (= 3.0.0)
   - EXFileSystem (15.2.2):
     - ExpoModulesCore
+  - EXFileSystem/Tests (15.2.2):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - EXFont (11.1.1):
     - ExpoModulesCore
   - EXImageLoader (4.1.1):
@@ -39,10 +45,14 @@ PODS:
   - EXInAppPurchases (14.1.1):
     - ExpoModulesCore
   - EXJSONUtils (0.5.1)
+  - EXJSONUtils/Tests (0.5.1)
   - EXLocation (15.1.1):
     - ExpoModulesCore
   - EXManifests (0.5.1):
     - ExpoModulesCore
+  - EXManifests/Tests (0.5.1):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - EXMediaLibrary (15.2.1):
     - ExpoModulesCore
     - React-Core
@@ -74,6 +84,18 @@ PODS:
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
+  - expo-dev-launcher/Tests (2.1.4):
+    - EXManifests
+    - expo-dev-menu
+    - expo-dev-menu-interface
+    - ExpoModulesCore
+    - ExpoModulesTestCore
+    - EXUpdatesInterface
+    - Nimble
+    - OHHTTPStubs
+    - Quick
+    - React-Core
+    - React-CoreModules
   - expo-dev-launcher/Unsafe (2.1.4):
     - EXManifests
     - expo-dev-menu
@@ -84,6 +106,9 @@ PODS:
   - expo-dev-menu (2.1.3):
     - expo-dev-menu/Main (= 2.1.3)
   - expo-dev-menu-interface (1.1.1)
+  - expo-dev-menu-interface/Tests (1.1.1):
+    - Nimble
+    - Quick
   - expo-dev-menu/Main (2.1.3):
     - EXManifests
     - expo-dev-menu-interface
@@ -113,6 +138,9 @@ PODS:
     - ExpoModulesCore
   - ExpoClipboard (4.1.1):
     - ExpoModulesCore
+  - ExpoClipboard/Tests (4.1.1):
+    - ExpoModulesCore
+    - ExpoModulesTestCore
   - ExpoCrypto (12.2.1):
     - ExpoModulesCore
   - ExpoDevice (5.2.1):
@@ -124,7 +152,7 @@ PODS:
     - ReactCommon/turbomodule/core
   - ExpoHaptics (12.2.1):
     - ExpoModulesCore
-  - ExpoImage (1.0.0):
+  - ExpoImage (1.1.0):
     - ExpoModulesCore
     - SDWebImage (~> 5.15.0)
     - SDWebImageAVIFCoder (~> 0.9.4)
@@ -150,6 +178,11 @@ PODS:
     - GoogleMaps (= 7.1.0)
     - GooglePlaces (= 7.1.0)
   - ExpoModulesCore (1.2.2):
+    - React-Core
+    - React-RCTAppDelegate
+    - ReactCommon/turbomodule/core
+  - ExpoModulesCore/Tests (1.2.2):
+    - ExpoModulesTestCore
     - React-Core
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
@@ -195,6 +228,7 @@ PODS:
     - ExpoModulesCore
     - React-Core
   - EXStructuredHeaders (3.1.1)
+  - EXStructuredHeaders/Tests (3.1.1)
   - EXTaskManager (11.1.1):
     - ExpoModulesCore
     - UMAppLoader
@@ -293,6 +327,19 @@ PODS:
   - nanopb/decode (2.30909.0)
   - nanopb/encode (2.30909.0)
   - Nimble (9.2.1)
+  - OHHTTPStubs (9.1.0):
+    - OHHTTPStubs/Default (= 9.1.0)
+  - OHHTTPStubs/Core (9.1.0)
+  - OHHTTPStubs/Default (9.1.0):
+    - OHHTTPStubs/Core
+    - OHHTTPStubs/JSON
+    - OHHTTPStubs/NSURLSession
+    - OHHTTPStubs/OHPathHelpers
+  - OHHTTPStubs/JSON (9.1.0):
+    - OHHTTPStubs/Core
+  - OHHTTPStubs/NSURLSession (9.1.0):
+    - OHHTTPStubs/Core
+  - OHHTTPStubs/OHPathHelpers (9.1.0)
   - PromisesObjC (2.1.1)
   - Protobuf (3.21.7)
   - Quick (5.0.1)
@@ -718,6 +765,7 @@ DEPENDENCIES:
   - boost (from `../node_modules/react-native/third-party-podspecs/boost.podspec`)
   - DoubleConversion (from `../node_modules/react-native/third-party-podspecs/DoubleConversion.podspec`)
   - EASClient (from `../../../packages/expo-eas-client/ios`)
+  - EASClient/Tests (from `../../../packages/expo-eas-client/ios`)
   - EXApplication (from `../../../packages/expo-application/ios`)
   - EXAV (from `../../../packages/expo-av/ios`)
   - EXBackgroundFetch (from `../../../packages/expo-background-fetch/ios`)
@@ -728,20 +776,25 @@ DEPENDENCIES:
   - EXContacts (from `../../../packages/expo-contacts/ios`)
   - EXFaceDetector (from `../../../packages/expo-face-detector/ios`)
   - EXFileSystem (from `../../../packages/expo-file-system/ios`)
+  - EXFileSystem/Tests (from `../../../packages/expo-file-system/ios`)
   - EXFont (from `../../../packages/expo-font/ios`)
   - EXImageLoader (from `../../../packages/expo-image-loader/ios`)
   - EXInAppPurchases (from `../../../packages/expo-in-app-purchases/ios`)
   - EXJSONUtils (from `../../../packages/expo-json-utils/ios`)
+  - EXJSONUtils/Tests (from `../../../packages/expo-json-utils/ios`)
   - EXLocation (from `../../../packages/expo-location/ios`)
   - EXManifests (from `../../../packages/expo-manifests/ios`)
+  - EXManifests/Tests (from `../../../packages/expo-manifests/ios`)
   - EXMediaLibrary (from `../../../packages/expo-media-library/ios`)
   - EXNotifications (from `../../../packages/expo-notifications/ios`)
   - EXPermissions (from `../../../packages/expo-permissions/ios`)
   - Expo (from `../../../packages/expo`)
   - expo-dev-client (from `../../../packages/expo-dev-client/ios`)
   - expo-dev-launcher (from `../../../packages/expo-dev-launcher`)
+  - expo-dev-launcher/Tests (from `../../../packages/expo-dev-launcher`)
   - expo-dev-menu (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu-interface (from `../../../packages/expo-dev-menu-interface/ios`)
+  - expo-dev-menu-interface/Tests (from `../../../packages/expo-dev-menu-interface/ios`)
   - expo-dev-menu/Tests (from `../../../packages/expo-dev-menu`)
   - expo-dev-menu/UITests (from `../../../packages/expo-dev-menu`)
   - ExpoAppleAuthentication (from `../../../packages/expo-apple-authentication/ios`)
@@ -750,6 +803,7 @@ DEPENDENCIES:
   - ExpoBrightness (from `../../../packages/expo-brightness/ios`)
   - ExpoCellular (from `../../../packages/expo-cellular/ios`)
   - ExpoClipboard (from `../../../packages/expo-clipboard/ios`)
+  - ExpoClipboard/Tests (from `../../../packages/expo-clipboard/ios`)
   - ExpoCrypto (from `../../../packages/expo-crypto/ios`)
   - ExpoDevice (from `../../../packages/expo-device/ios`)
   - ExpoDocumentPicker (from `../../../packages/expo-document-picker/ios`)
@@ -765,6 +819,7 @@ DEPENDENCIES:
   - ExpoMailComposer (from `../../../packages/expo-mail-composer/ios`)
   - ExpoMaps (from `../../../packages/expo-maps/ios`)
   - ExpoModulesCore (from `../../../packages/expo-modules-core`)
+  - ExpoModulesCore/Tests (from `../../../packages/expo-modules-core`)
   - ExpoModulesTestCore (from `../../../packages/expo-modules-test-core/ios`)
   - ExpoNetwork (from `../../../packages/expo-network/ios`)
   - ExpoPrint (from `../../../packages/expo-print/ios`)
@@ -784,6 +839,7 @@ DEPENDENCIES:
   - EXSharing (from `../../../packages/expo-sharing/ios`)
   - EXSplashScreen (from `../../../packages/expo-splash-screen/ios`)
   - EXStructuredHeaders (from `../../../packages/expo-structured-headers/ios`)
+  - EXStructuredHeaders/Tests (from `../../../packages/expo-structured-headers/ios`)
   - EXTaskManager (from `../../../packages/expo-task-manager/ios`)
   - EXUpdatesInterface (from `../../../packages/expo-updates-interface/ios`)
   - FBLazyVector (from `../node_modules/react-native/Libraries/FBLazyVector`)
@@ -861,6 +917,7 @@ SPEC REPOS:
     - MLKitFaceDetection
     - MLKitVision
     - nanopb
+    - OHHTTPStubs
     - PromisesObjC
     - Protobuf
     - Quick
@@ -1217,7 +1274,7 @@ SPEC CHECKSUMS:
   ExpoDocumentPicker: 98d6f7987c4e13d79a6b937c8bb26f9002b9cf8d
   ExpoGL: 8f8e40e494a462f33c1f513cf101bf7d6abe767e
   ExpoHaptics: 5156bc5160d8e04c170dd6e645a71154951a2ad9
-  ExpoImage: b6a65c4aa891cdf00bfba0da46df14b27ae09cc7
+  ExpoImage: 80221ee353e8e7f1afee71fdbc8099ae61f394f2
   ExpoImageManipulator: 85ab87e9641b9d83108f8d603e0418c12fc19e2d
   ExpoImagePicker: 270dea232b3a072d981dd564e2cafc63a864edb1
   ExpoKeepAwake: 69f5f627670d62318410392d03e0b5db0f85759a
@@ -1272,6 +1329,7 @@ SPEC CHECKSUMS:
   MLKitVision: e87dc3f2e456a6ab32361ebd985e078dd2746143
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   Nimble: d954d0accfd082f2225e62d71008440493e318f4
+  OHHTTPStubs: 90eac6d8f2c18317baeca36698523dc67c513831
   PromisesObjC: ab77feca74fa2823e7af4249b8326368e61014cb
   Protobuf: f4128517d7a42302e106cc3afe614ee3a7513e94
   Quick: 749aa754fd1e7d984f2000fe051e18a3a9809179
@@ -1327,6 +1385,6 @@ SPEC CHECKSUMS:
   Yoga: 79dd7410de6f8ad73a77c868d3d368843f0c93e0
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 221d96cc63183a5dfbb774316e11def3300ac02d
+PODFILE CHECKSUM: 5bba4c3827d65f2e3d5fad357a06e1da2bc8aafd
 
 COCOAPODS: 1.11.2

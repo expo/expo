@@ -7,6 +7,21 @@ import { PackageJSONConfig } from '../Config.types';
 import { ConfigError } from '../Errors';
 import { getBareExtensions } from './extensions';
 
+export function ensureSlash(inputPath: string, needsSlash: boolean): string {
+  const hasSlash = inputPath.endsWith('/');
+  if (hasSlash && !needsSlash) {
+    return inputPath.substr(0, inputPath.length - 1);
+  } else if (!hasSlash && needsSlash) {
+    return `${inputPath}/`;
+  } else {
+    return inputPath;
+  }
+}
+
+export function getPossibleProjectRoot(): string {
+  return fs.realpathSync(process.cwd());
+}
+
 /** @returns the absolute entry file for an Expo project. */
 export function resolveEntryPoint(
   projectRoot: string,

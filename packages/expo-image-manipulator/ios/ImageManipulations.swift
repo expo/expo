@@ -124,9 +124,12 @@ internal func fixImageOrientation(_ image: UIImage) throws -> UIImage {
   guard let cgImage = image.cgImage else {
     throw ImageNotFoundException()
   }
-  guard let colorSpace = cgImage.colorSpace else {
+  guard var colorSpace = cgImage.colorSpace else {
     // That should never happen as `colorSpace` is empty only when the image is a mask.
     throw ImageColorSpaceNotFoundException()
+  }
+  if !colorSpace.supportsOutput {
+    colorSpace = CGColorSpaceCreateDeviceRGB()
   }
 
   var transform = CGAffineTransform.identity

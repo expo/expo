@@ -141,6 +141,16 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
     count++;
   }
 
+  // The `count < this->args` case is handled by the Kotlin part
+  if (count > this->args) {
+    throwNewJavaException(
+      InvalidArgsNumberException::create(
+        count,
+        this->args
+      ).get()
+    );
+  }
+
   auto argumentArray = env->NewObjectArray(
     count,
     JavaReferencesCache::instance()->getJClass("java/lang/Object").clazz,
@@ -270,7 +280,8 @@ jsi::Function MethodMetadata::toSyncFunction(
     });
 }
 
-jsi::Value MethodMetadata::callSync(
+jni::local_ref<jobject> MethodMetadata::callJNISync(
+  JNIEnv *env,
   jsi::Runtime &rt,
   JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &thisValue,
@@ -278,17 +289,8 @@ jsi::Value MethodMetadata::callSync(
   size_t count
 ) {
   if (this->jBodyReference == nullptr) {
-    return jsi::Value::undefined();
+    return nullptr;
   }
-
-  JNIEnv *env = jni::Environment::current();
-
-  /**
-   * This will push a new JNI stack frame for the LocalReferences in this
-   * function call. When the stack frame for this lambda is popped,
-   * all LocalReferences are deleted.
-   */
-  jni::JniLocalScope scope(env, (int) count);
 
   auto convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, thisValue, args, count);
 
@@ -299,6 +301,26 @@ jsi::Value MethodMetadata::callSync(
   );
 
   env->DeleteLocalRef(convertedArgs);
+  return result;
+}
+
+jsi::Value MethodMetadata::callSync(
+  jsi::Runtime &rt,
+  JSIInteropModuleRegistry *moduleRegistry,
+  const jsi::Value &thisValue,
+  const jsi::Value *args,
+  size_t count
+) {
+  JNIEnv *env = jni::Environment::current();
+  /**
+  * This will push a new JNI stack frame for the LocalReferences in this
+  * function call. When the stack frame for this lambda is popped,
+  * all LocalReferences are deleted.
+  */
+  jni::JniLocalScope scope(env, (int) count);
+
+  auto result = this->callJNISync(env, rt, moduleRegistry, thisValue, args, count);
+
   if (result == nullptr) {
     return jsi::Value::undefined();
   }

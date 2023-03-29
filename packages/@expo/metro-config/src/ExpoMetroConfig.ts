@@ -14,8 +14,9 @@ import resolveFrom from 'resolve-from';
 
 import { getDefaultCustomizeFrame, INTERNAL_CALLSITES_REGEX } from './customizeFrame';
 import { env } from './env';
-import { getModulesPaths, getWorkspaceRoot } from './getModulesPaths';
+import { getModulesPaths, getServerRoot } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
+import { getRewriteRequestUrl } from './rewriteRequestUrl';
 
 export interface LoadOptions {
   config?: string;
@@ -145,13 +146,12 @@ export function getDefaultConfig(
       getPolyfills: () => require(path.join(reactNativePath, 'rn-get-polyfills'))(),
     },
     server: {
+      rewriteRequestUrl: getRewriteRequestUrl(projectRoot),
       port: Number(env.RCT_METRO_PORT) || 8081,
       // NOTE(EvanBacon): Moves the server root down to the monorepo root.
       // This enables proper monorepo support for web.
       // @ts-expect-error: not on type
-      unstable_serverRoot: env.EXPO_USE_METRO_WORKSPACE_ROOT
-        ? getWorkspaceRoot(projectRoot) ?? projectRoot
-        : projectRoot,
+      unstable_serverRoot: getServerRoot(projectRoot),
     },
     symbolicator: {
       customizeFrame: getDefaultCustomizeFrame(),

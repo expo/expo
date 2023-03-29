@@ -21,6 +21,9 @@ internal func DynamicType<T>(_ type: T.Type) -> AnyDynamicType {
   if let EnumType = T.self as? any Enumerable.Type {
     return DynamicEnumType(innerType: EnumType)
   }
+  if let ViewType = T.self as? UIView.Type {
+    return DynamicViewType(innerType: ViewType)
+  }
   if let SharedObjectType = T.self as? SharedObject.Type {
     return DynamicSharedObjectType(innerType: SharedObjectType)
   }

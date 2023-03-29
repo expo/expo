@@ -12,7 +12,7 @@ import CoreGraphics
 // MARK: - Foundation
 
 extension URL: Convertible {
-  public static func convert(from value: Any?) throws -> Self {
+  public static func convert(from value: Any?, appContext: AppContext) throws -> Self {
     guard let value = value as? String else {
       throw Conversions.ConvertingException<URL>(value)
     }
@@ -47,7 +47,7 @@ internal class UrlContainsInvalidCharactersException: Exception {
 // MARK: - CoreGraphics
 
 extension CGPoint: Convertible {
-  public static func convert(from value: Any?) throws -> CGPoint {
+  public static func convert(from value: Any?, appContext: AppContext) throws -> CGPoint {
     if let value = value as? [Double], value.count == 2 {
       return CGPoint(x: value[0], y: value[1])
     }
@@ -60,7 +60,7 @@ extension CGPoint: Convertible {
 }
 
 extension CGSize: Convertible {
-  public static func convert(from value: Any?) throws -> CGSize {
+  public static func convert(from value: Any?, appContext: AppContext) throws -> CGSize {
     if let value = value as? [Double], value.count == 2 {
       return CGSize(width: value[0], height: value[1])
     }
@@ -73,7 +73,7 @@ extension CGSize: Convertible {
 }
 
 extension CGVector: Convertible {
-  public static func convert(from value: Any?) throws -> CGVector {
+  public static func convert(from value: Any?, appContext: AppContext) throws -> CGVector {
     if let value = value as? [Double], value.count == 2 {
       return CGVector(dx: value[0], dy: value[1])
     }
@@ -86,7 +86,7 @@ extension CGVector: Convertible {
 }
 
 extension CGRect: Convertible {
-  public static func convert(from value: Any?) throws -> CGRect {
+  public static func convert(from value: Any?, appContext: AppContext) throws -> CGRect {
     if let value = value as? [Double], value.count == 4 {
       return CGRect(x: value[0], y: value[1], width: value[2], height: value[3])
     }
