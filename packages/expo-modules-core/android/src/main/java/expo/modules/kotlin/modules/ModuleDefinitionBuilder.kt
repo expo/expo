@@ -15,6 +15,7 @@ import expo.modules.kotlin.events.EventListenerWithSenderAndPayload
 import expo.modules.kotlin.events.EventName
 import expo.modules.kotlin.events.OnActivityResultPayload
 import expo.modules.kotlin.objects.ObjectDefinitionBuilder
+import expo.modules.kotlin.sharedobjects.SharedObject
 import expo.modules.kotlin.views.ViewDefinitionBuilder
 import expo.modules.kotlin.views.ViewManagerDefinition
 import kotlin.reflect.KClass
@@ -124,8 +125,17 @@ class ModuleDefinitionBuilder(@PublishedApi internal val module: Module? = null)
       EventListenerWithSenderAndPayload<Activity, OnActivityResultPayload>(EventName.ON_ACTIVITY_RESULT) { sender, payload -> body(sender, payload) }
   }
 
-  inline fun Class(name: String, body: ClassComponentBuilder.() -> Unit = {}) {
-    val clazzBuilder = ClassComponentBuilder(name)
+  inline fun Class(name: String, body: ClassComponentBuilder<Unit>.() -> Unit = {}) {
+    val clazzBuilder = ClassComponentBuilder(name, Unit::class, typeOf<Unit>())
+    body.invoke(clazzBuilder)
+    classData.add(clazzBuilder.buildClass())
+  }
+
+  inline fun <reified SharedObjectType : SharedObject> Class(
+    sharedObjectClass: KClass<SharedObjectType>,
+    body: ClassComponentBuilder<SharedObjectType>.() -> Unit = {}
+  ) {
+    val clazzBuilder = ClassComponentBuilder(sharedObjectClass.java.simpleName, sharedObjectClass, typeOf<SharedObjectType>())
     body.invoke(clazzBuilder)
     classData.add(clazzBuilder.buildClass())
   }
