@@ -1,29 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`server runs \`npx expo export -p web\` for static rendering 1`] = `
-"<!DOCTYPE html><html  lang="en" style="height:100%"><head><title data-rh="true">About | Website</title><meta data-rh="true" name="fake" content="bar"/><meta data-rh="true" name="description" content="About page"/><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1.00001,viewport-fit=cover"/><style id="expo-reset">
-html, body, #root {
-  -webkit-overflow-scrolling: touch;
-}
-#root {
-  display: flex;
-  flex-direction: column;
-  height: 100%;
-}
-html {
-  scroll-behavior: smooth;
-  -webkit-text-size-adjust: 100%;
-}
-body {
-  /* Allows you to scroll below the viewport; default value is visible */
-  overflow-y: auto;
-  overscroll-behavior-y: none;
-  text-rendering: optimizeLegibility;
-  -webkit-font-smoothing: antialiased;
-  -moz-osx-font-smoothing: grayscale;
-  -ms-overflow-style: scrollbar;
-}
-</style><style id="react-native-stylesheet">[stylesheet-group="0"]{}
+"<!DOCTYPE html><html  lang="en"><head><title data-rh="true">About | Website</title><meta data-rh="true" name="fake" content="bar"/><meta data-rh="true" name="description" content="About page"/><meta charSet="utf-8"/><meta http-equiv="X-UA-Compatible" content="IE=edge"/><meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1.00001,viewport-fit=cover"/><style id="expo-reset">#root,body,html{height:100%}body{overflow:hidden}#root{display:flex}</style><style id="react-native-stylesheet">[stylesheet-group="0"]{}
 body{margin:0;}
 button::-moz-focus-inner,input::-moz-focus-inner{border:0;padding:0;}
 html{-ms-text-size-adjust:100%;-webkit-text-size-adjust:100%;-webkit-tap-highlight-color:rgba(0,0,0,0);}
@@ -257,5 +235,5 @@ input::-webkit-search-cancel-button,input::-webkit-search-decoration,input::-web
 @keyframes r-9p3sdl{0%{transform:rotate(0deg);}100%{transform:rotate(360deg);}}
 @keyframes r-imtty0{0%{opacity:0;}100%{opacity:1;}}
 @keyframes r-ndfo3d{0%{transform:translateY(0%);}100%{transform:translateY(100%);}}
-@keyframes r-t2lo5v{0%{opacity:1;}100%{opacity:0;}}</style></head><body  style="height:100%;overflow:hidden"><div id="root"><div class="css-175oi2r" style="flex:1"><div class="css-175oi2r r-13awgt0"><div class="css-175oi2r r-13awgt0"><div class="css-175oi2r r-13awgt0"><div class="css-175oi2r r-13awgt0 r-1d5kdc7 r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af" style="background-color:rgba(242,242,242,1.00);display:flex"><div class="css-175oi2r r-13awgt0"><div class="css-175oi2r r-13awgt0"><div dir="auto" class="css-1rynq56" data-testid="content">About</div></div></div><div class="css-175oi2r"><div class="css-175oi2r r-12vffkv" style="position:absolute;left:0px;right:0px;top:0px;bottom:0px;z-index:0"><div class="css-175oi2r" style="flex:1;border-bottom-width:1px;background-color:rgba(255,255,255,1.00);border-bottom-color:rgba(216,216,216,1.00);box-shadow:0px 0px 0px rgba(216,216,216,1.00)"></div></div><div class="css-175oi2r r-12vffkv" style="height:64px"><div class="css-175oi2r r-633pao" style="height:0px"></div><div class="css-175oi2r r-1oszu61 r-13awgt0 r-18u37iz r-12vffkv"><div class="css-175oi2r r-12vffkv" style="justify-content:center;align-items:flex-start;margin-left:0px"></div><div class="css-175oi2r r-12vffkv" style="margin-right:16px;margin-left:16px;justify-content:center;max-width:-32px"><h1 dir="auto" role="heading" class="css-1rynq56 r-dnmrzs r-1udh08x r-1udbk01 r-3s2u2q r-1iln25a" style="font-size:18px;font-weight:500;color:rgba(28,28,30,1.00)">about</h1></div><div class="css-175oi2r r-12vffkv" style="justify-content:center;align-items:flex-end;flex-grow:1;flex-basis:0px;margin-right:0px"></div></div></div></div></div></div></div>;</div></div></div><script src="/bundles/[mock].js" defer></script></body></html>"
+@keyframes r-t2lo5v{0%{opacity:1;}100%{opacity:0;}}</style></head><body><div id="root"><div class="css-175oi2r" style="flex:1"><div class="css-175oi2r r-13awgt0"><div class="css-175oi2r r-13awgt0"><div class="css-175oi2r r-13awgt0"><div class="css-175oi2r r-13awgt0 r-1d5kdc7 r-1p0dtai r-1d2f490 r-u8s1d r-zchlnj r-ipm5af" style="background-color:rgba(242,242,242,1.00);display:flex"><div class="css-175oi2r r-13awgt0"><div class="css-175oi2r r-13awgt0"><div dir="auto" class="css-1rynq56" data-testid="content">About</div></div></div><div class="css-175oi2r"><div class="css-175oi2r r-12vffkv" style="position:absolute;left:0px;right:0px;top:0px;bottom:0px;z-index:0"><div class="css-175oi2r" style="flex:1;border-bottom-width:1px;background-color:rgba(255,255,255,1.00);border-bottom-color:rgba(216,216,216,1.00);box-shadow:0px 0px 0px rgba(216,216,216,1.00)"></div></div><div class="css-175oi2r r-12vffkv" style="height:64px"><div class="css-175oi2r r-633pao" style="height:0px"></div><div class="css-175oi2r r-1oszu61 r-13awgt0 r-18u37iz r-12vffkv"><div class="css-175oi2r r-12vffkv" style="justify-content:center;align-items:flex-start;margin-left:0px"></div><div class="css-175oi2r r-12vffkv" style="margin-right:16px;margin-left:16px;justify-content:center;max-width:-32px"><h1 dir="auto" role="heading" class="css-1rynq56 r-dnmrzs r-1udh08x r-1udbk01 r-3s2u2q r-1iln25a" style="font-size:18px;font-weight:500;color:rgba(28,28,30,1.00)">about</h1></div><div class="css-175oi2r r-12vffkv" style="justify-content:center;align-items:flex-end;flex-grow:1;flex-basis:0px;margin-right:0px"></div></div></div></div></div></div></div>;</div></div></div><script src="/bundles/[mock].js" defer></script></body></html>"
 `;
