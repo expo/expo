@@ -20,6 +20,13 @@ import { loadTsConfigPathsAsync, TsConfigPaths } from '../../../utils/tsconfig/l
 import { resolveWithTsConfigPaths } from '../../../utils/tsconfig/resolveWithTsConfigPaths';
 import { WebSupportProjectPrerequisite } from '../../doctor/web/WebSupportProjectPrerequisite';
 import { PlatformBundlers } from '../platformBundlers';
+import {
+  EXTERNAL_REQUIRE_NATIVE_POLYFILL,
+  EXTERNAL_REQUIRE_POLYFILL,
+  getNodeExternalModuleId,
+  isNodeExternal,
+  setupNodeExternals,
+} from './externals';
 import { isFailedToResolveNameError, isFailedToResolvePathError } from './metroErrors';
 import { importMetroResolverFromProject } from './resolveFromProject';
 import { getAppRouterRelativeEntryPath } from './router';
@@ -27,7 +34,7 @@ import { withMetroResolvers } from './withMetroResolvers';
 
 const debug = require('debug')('expo:start:server:metro:multi-platform') as typeof console.log;
 
-function withWebPolyfills(config: ConfigT): ConfigT {
+function withWebPolyfills(config: ConfigT, projectRoot: string): ConfigT {
   const originalGetPolyfills = config.serializer.getPolyfills
     ? config.serializer.getPolyfills.bind(config.serializer)
     : () => [];
@@ -35,11 +42,15 @@ function withWebPolyfills(config: ConfigT): ConfigT {
   const getPolyfills = (ctx: { platform: string | null | undefined }): readonly string[] => {
     if (ctx.platform === 'web') {
       return [
+        // NOTE: We might need this for all platforms
+        path.join(projectRoot, EXTERNAL_REQUIRE_POLYFILL),
         // TODO: runtime polyfills, i.e. Fast Refresh, error overlay, React Dev Tools...
       ];
     }
     // Generally uses `rn-get-polyfills`
-    return originalGetPolyfills(ctx);
+    const polyfills = originalGetPolyfills(ctx);
+
+    return [...polyfills, EXTERNAL_REQUIRE_NATIVE_POLYFILL];
   };
 
   return {
@@ -153,7 +164,23 @@ export function withExtendedResolver(
     (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
       let context = {
         ...immutableContext,
-      } as ResolutionContext & { mainFields: string[] };
+      } as ResolutionContext & {
+        mainFields: string[];
+        customResolverOptions?: Record<string, string>;
+      };
+
+      const environment = context.customResolverOptions?.environment;
+      const isNode = environment === 'node';
+
+      // TODO: We need to prevent the require.context from including API routes as these use externals.
+      // Should be fine after async routes lands.
+      if (isNode) {
+        const moduleId = isNodeExternal(moduleName);
+        if (moduleId) {
+          moduleName = getNodeExternalModuleId(context.originModulePath, moduleId);
+          debug(`Redirecting Node.js external "${moduleId}" to "${moduleName}"`);
+        }
+      }
 
       // Conditionally remap `react-native` to `react-native-web` on web in
       // a way that doesn't require Babel to resolve the alias.
@@ -182,11 +209,17 @@ export function withExtendedResolver(
         };
       }
 
-      const mainFields = env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE
-        ? context.mainFields
-        : platform && platform in preferredMainFields
-        ? preferredMainFields[platform]
-        : context.mainFields;
+      let mainFields: string[] = context.mainFields;
+
+      if (isNode) {
+        // Node.js runtimes should only be importing main at the moment.
+        // This is a temporary fix until we can support the package.json exports.
+        mainFields = ['main'];
+      } else if (!env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE) {
+        mainFields = context.mainFields;
+      } else if (platform && platform in preferredMainFields) {
+        mainFields = preferredMainFields[platform];
+      }
 
       function doResolve(moduleName: string): Resolution | null {
         return resolve(
@@ -195,7 +228,9 @@ export function withExtendedResolver(
             preferNativePlatform: platform !== 'web',
             resolveRequest: undefined,
 
-            // Passing `mainFields` directly won't be considered
+            // @ts-expect-error
+            mainFields,
+            // Passing `mainFields` directly won't be considered (in certain version of Metro)
             // we need to extend the `getPackageMainPath` directly to
             // use platform specific `mainFields`.
             getPackageMainPath(packageJsonPath) {
@@ -305,6 +340,8 @@ export async function withMetroMultiPlatformAsync(
     tsconfig = await loadTsConfigPathsAsync(projectRoot);
   }
 
+  await setupNodeExternals(projectRoot);
+
   return withMetroMultiPlatform(projectRoot, {
     config,
     platformBundlers,
@@ -339,7 +376,7 @@ function withMetroMultiPlatform(
   config.resolver.platforms = expoConfigPlatforms;
 
   if (expoConfigPlatforms.includes('web')) {
-    config = withWebPolyfills(config);
+    config = withWebPolyfills(config, projectRoot);
   }
 
   return withExtendedResolver(config, {
