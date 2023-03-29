@@ -1,34 +1,36 @@
-import { Image } from 'expo-image';
 import * as React from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { useState } from 'react';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
 
+import Button from '../../components/Button';
+import ComparisonRow from '../../components/HashPlaceholdersDemo/ComparisonRow';
+import { comparisonImages } from '../../components/HashPlaceholdersDemo/comparisonImages';
 import { Colors } from '../../constants';
 
-// A blurhash of https://picsum.photos/seed/175/300/200 with 6x4 components
-const blurhash = 'WgF}G?az0fs.x[jat7xFRjNHt6s.4;oe-:RkVtkCi^Nbo|xZRjWB';
-const thumbhash = '1EgOHYQImHiZZ4iCe3eWeAinolA8';
-
 export default function ImageHashPlaceholdersScreen() {
+  const [showRealImage, setShowRealImage] = useState(false);
   return (
     <View style={styles.container}>
-      <Text style={styles.text}>BlurHash: </Text>
-      <Image
-        style={styles.image}
-        source={{ uri: 'https://picsum.photos/seed/175/3000/2000' }}
-        placeholder={{ blurhash, width: 18, height: 12 }}
-        transition={1000}
-        contentFit="cover"
-        cachePolicy="none"
-      />
-
-      <Text style={styles.text}>ThumbHash: </Text>
-      <Image
-        style={styles.image}
-        source={{ uri: 'https://picsum.photos/seed/175/3000/2000' }}
-        placeholder={{ thumbhash }}
-        transition={1000}
-        contentFit="cover"
-        cachePolicy="none"
+      <View style={styles.rowContainer}>
+        <Text style={styles.text}>Original</Text>
+        <Text style={styles.text}>BlurHash</Text>
+        <Text style={styles.text}>ThumbHash</Text>
+      </View>
+      <ScrollView>
+        {comparisonImages.map((item) => (
+          <ComparisonRow
+            source={item.source}
+            blurhash={item.blurhash}
+            thumbhash={item.thumbhash}
+            showGrid={item.showGrid}
+            showRealImage={showRealImage}
+          />
+        ))}
+      </ScrollView>
+      <Button
+        title="Transition"
+        onPress={() => setShowRealImage(!showRealImage)}
+        style={styles.button}
       />
     </View>
   );
@@ -39,17 +41,30 @@ const styles = StyleSheet.create({
     flex: 1,
     padding: 20,
   },
+  rowContainer: {
+    flexDirection: 'row',
+    justifyContent: 'space-around',
+  },
   image: {
-    height: 200,
+    width: 110,
+    height: 150,
+  },
+  imageContainer: {
+    width: 110,
+    height: 150,
+    margin: 5,
     borderWidth: 1,
     borderColor: Colors.border,
-    marginBottom: 20,
   },
   text: {
     color: 'rgb(28,28,28)',
-    fontSize: 20,
+    fontSize: 15,
     textAlign: 'center',
     margin: 10,
+    width: 100,
     fontWeight: '600',
+  },
+  button: {
+    paddingTop: 15,
   },
 });
