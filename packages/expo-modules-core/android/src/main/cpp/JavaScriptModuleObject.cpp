@@ -137,9 +137,9 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
     );
   }
 
-  for (auto &[name, classRef]: classes) {
-    auto classObject = jni::static_ref_cast<JavaScriptModuleObject::javaobject>(
-      jni::make_local(classRef))->cthis();
+  for (auto &[name, classInfo]: classes) {
+    auto &[classRef, constructor] = classInfo;
+    auto classObject = classRef->cthis();
     classObject->jsiInteropModuleRegistry = jsiInteropModuleRegistry;
 
     std::string nativeConstructorKey("__native_constructor__");
@@ -163,15 +163,50 @@ std::shared_ptr<jsi::Object> JavaScriptModuleObject::getJSIObject(jsi::Runtime &
       nativeConstructorPropId,
       // The paramCount is not obligatory to match, it only affects the `length` property of the function.
       0,
-      [classObject, jsiInteropModuleRegistry = jsiInteropModuleRegistry](
+      [classObject, &constructor = constructor, jsiInteropModuleRegistry = jsiInteropModuleRegistry](
         jsi::Runtime &runtime,
         const jsi::Value &thisValue,
         const jsi::Value *args,
         size_t count
       ) -> jsi::Value {
-        auto thisObject = thisValue.asObject(runtime);
-        decorateObjectWithProperties(runtime, jsiInteropModuleRegistry, &thisObject, classObject);
-        // TODO(@lukmccall): call the constructor from the class definition
+        auto thisObject = std::make_shared<jsi::Object>(thisValue.asObject(runtime));
+        decorateObjectWithProperties(runtime, jsiInteropModuleRegistry, thisObject.get(),
+                                     classObject);
+        try {
+          JNIEnv *env = jni::Environment::current();
+          /**
+          * This will push a new JNI stack frame for the LocalReferences in this
+          * function call. When the stack frame for this lambda is popped,
+          * all LocalReferences are deleted.
+          */
+          jni::JniLocalScope scope(env, (int) count);
+          auto result = constructor.callJNISync(
+            env,
+            runtime,
+            jsiInteropModuleRegistry,
+            thisValue,
+            args,
+            count
+          );
+          if (result == nullptr) {
+            return jsi::Value::undefined();
+          }
+          jobject unpackedResult = result.get();
+          jclass resultClass = env->GetObjectClass(unpackedResult);
+          if (env->IsAssignableFrom(
+            resultClass,
+            JavaReferencesCache::instance()->getJClass(
+              "expo/modules/kotlin/sharedobjects/SharedObject").clazz
+          )) {
+            auto jsThisObject = JavaScriptObject::newObjectCxxArgs(
+              jsiInteropModuleRegistry->runtimeHolder,
+              thisObject
+            );
+            jsiInteropModuleRegistry->registerSharedObject(result, jsThisObject);
+          }
+        } catch (jni::JniException &jniException) {
+          rethrowAsCodedError(runtime, jniException);
+        }
         return jsi::Value::undefined();
       });
 
@@ -254,10 +289,29 @@ void JavaScriptModuleObject::registerAsyncFunction(
 
 void JavaScriptModuleObject::registerClass(
   jni::alias_ref<jstring> name,
-  jni::alias_ref<JavaScriptModuleObject::javaobject> classObject
+  jni::alias_ref<JavaScriptModuleObject::javaobject> classObject,
+  jboolean takesOwner,
+  jint args,
+  jni::alias_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
+  jni::alias_ref<JNIFunctionBody::javaobject> body
 ) {
   std::string cName = name->toStdString();
-  classes[cName] = jni::make_global(classObject);
+  MethodMetadata constructor(
+    longLivedObjectCollection_,
+    "constructor",
+    takesOwner,
+    args,
+    false,
+    jni::make_local(expectedArgTypes),
+    jni::make_global(body)
+  );
+
+  auto pair = std::make_pair(jni::make_global(classObject), std::move(constructor));
+
+  classes.try_emplace(
+    cName,
+    std::move(pair)
+  );
 }
 
 void JavaScriptModuleObject::registerViewPrototype(

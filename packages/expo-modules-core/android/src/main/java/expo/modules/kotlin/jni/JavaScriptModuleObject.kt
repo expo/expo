@@ -60,7 +60,7 @@ class JavaScriptModuleObject(val name: String) {
 
   external fun registerProperty(name: String, desiredType: ExpectedType, getter: JNIFunctionBody?, setter: JNIFunctionBody?)
 
-  external fun registerClass(name: String, classModule: JavaScriptModuleObject)
+  external fun registerClass(name: String, classModule: JavaScriptModuleObject, takesOwner: Boolean, args: Int, desiredTypes: Array<ExpectedType>, body: JNIFunctionBody)
 
   external fun registerViewPrototype(viewPrototype: JavaScriptModuleObject)
 

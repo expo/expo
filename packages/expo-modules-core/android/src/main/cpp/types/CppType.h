@@ -24,5 +24,6 @@ enum CppType {
   LIST = 1 << 12,
   MAP = 1 << 13,
   VIEW_TAG = 1 << 14,
+  SHARED_OBJECT_ID = 1 << 15
 };
 } // namespace expo

@@ -7,6 +7,7 @@ import expo.modules.kotlin.exception.CodedException
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import expo.modules.kotlin.modules.ModuleDefinitionBuilder
+import expo.modules.kotlin.sharedobjects.SharedObjectRegistry
 import io.mockk.every
 import io.mockk.mockk
 import kotlinx.coroutines.ExperimentalCoroutinesApi
@@ -28,9 +29,11 @@ internal inline fun withJSIInterop(
       register(it)
     }
   }
+  val sharedObjectRegistry = SharedObjectRegistry()
   every { appContextMock.registry } answers { registry }
   every { appContextMock.modulesQueue } answers { methodQueue }
   every { appContextMock.mainQueue } answers { methodQueue }
+  every { appContextMock.sharedObjectRegistry } answers { sharedObjectRegistry }
 
   val jsiIterop = JSIInteropModuleRegistry(appContextMock).apply {
     installJSIForTests()

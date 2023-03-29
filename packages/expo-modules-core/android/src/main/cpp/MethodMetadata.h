@@ -107,6 +107,15 @@ public:
     size_t count
   );
 
+  jni::local_ref<jobject> callJNISync(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value &thisValue,
+    const jsi::Value *args,
+    size_t count
+  );
+
 private:
   /**
    * Reference to one of two java objects - `JNIFunctionBody` or `JNIAsyncFunctionBody`.
