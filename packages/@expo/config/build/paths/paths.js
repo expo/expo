@@ -3,7 +3,9 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.ensureSlash = ensureSlash;
 exports.getFileWithExtensions = getFileWithExtensions;
+exports.getPossibleProjectRoot = getPossibleProjectRoot;
 exports.resolveEntryPoint = resolveEntryPoint;
 function _fs() {
   const data = _interopRequireDefault(require("fs"));
@@ -48,6 +50,20 @@ function _extensions() {
   return data;
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function ensureSlash(inputPath, needsSlash) {
+  const hasSlash = inputPath.endsWith('/');
+  if (hasSlash && !needsSlash) {
+    return inputPath.substr(0, inputPath.length - 1);
+  } else if (!hasSlash && needsSlash) {
+    return `${inputPath}/`;
+  } else {
+    return inputPath;
+  }
+}
+function getPossibleProjectRoot() {
+  return _fs().default.realpathSync(process.cwd());
+}
+
 /** @returns the absolute entry file for an Expo project. */
 function resolveEntryPoint(projectRoot, {
   platform,
