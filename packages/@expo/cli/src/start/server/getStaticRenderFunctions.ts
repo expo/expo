@@ -134,6 +134,7 @@ export async function requireFileContentsWithMetro(
 
   let bun = wrapBundle(content);
 
+  // This exposes the entire environment to the bundle.
   if (environment === 'node') {
     bun = stripProcess(bun);
   }
