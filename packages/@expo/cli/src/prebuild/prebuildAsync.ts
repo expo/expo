@@ -100,7 +100,9 @@ export async function prebuildAsync(
     }
 
     await installAsync([], {
-      ...options.packageManager,
+      npm: !!options.packageManager?.npm,
+      yarn: !!options.packageManager?.yarn,
+      pnpm: !!options.packageManager?.pnpm,
       silent: !env.EXPO_DEBUG,
     });
   }

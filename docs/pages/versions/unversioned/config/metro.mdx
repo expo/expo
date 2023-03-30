@@ -9,7 +9,11 @@ See more information about **metro.config.js** in the [customizing Metro guide](
 > This guide is versioned and will need to be revisited when upgrading/downgrading Expo. Alternatively, use [Expo Prebuild](/workflow/prebuild) for fully automated setup.
 
 Projects that don't use [Expo Prebuild](/workflow/prebuild) must configure native files to ensure the Expo Metro config is always used to bundle the project.
+
+{/* 
 If this isn't done, then features like [aliases](/guides/typescript#path-aliases), [absolute imports](/guides/typescript#absolute-imports), asset hashing, and more will not work.
+*/}
+
 These modifications are meant to replace `npx react-native bundle` and `npx react-native start` with `npx expo export:embed` and `npx expo start --dev-client` respectively.
 
 ### `metro.config.js`
