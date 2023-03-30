@@ -7,7 +7,7 @@ import MobileCoreServices
 
 class ClipboardModuleSpec: ExpoSpec {
   override func spec() {
-    let appContext = AppContext()
+    let appContext = AppContext.create()
     let holder = ModuleHolder(appContext: appContext, module: ClipboardModule(appContext: appContext))
 
     func testModuleFunction<T>(_ functionName: String, args: [Any], _ block: @escaping (T?) -> Void) {

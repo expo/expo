@@ -8,6 +8,7 @@ import com.google.common.truth.Truth
 import expo.modules.PromiseMock
 import expo.modules.PromiseState
 import expo.modules.assertThrows
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.ArgumentCastException
 import expo.modules.kotlin.exception.InvalidArgsNumberException
@@ -26,7 +27,7 @@ class AnyFunctionTest {
       throw NullPointerException()
     }
 
-    override fun callUserImplementation(args: Array<Any?>, promise: Promise) {
+    override fun callUserImplementation(args: Array<Any?>, promise: Promise, appContext: AppContext) {
       error("Not implemented.")
     }
   }

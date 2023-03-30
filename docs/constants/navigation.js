@@ -115,6 +115,7 @@ const general = [
     makePage('modules/native-module-tutorial.mdx'),
     makePage('modules/native-view-tutorial.mdx'),
     makePage('modules/config-plugin-and-native-module-tutorial.mdx'),
+    makePage('modules/use-create-expo-module-in-your-project.mdx'),
     makePage('modules/existing-library.mdx'),
     makePage('modules/module-api.mdx'),
     makePage('modules/android-lifecycle-listeners.mdx'),
@@ -200,8 +201,7 @@ const general = [
   ]),
   makeSection('Regulatory compliance', sortAlphabetical(pagesFromDir('regulatory-compliance')), {}),
   makeSection('Technical specs', [
-    makePage('technical-specs/expo-updates-0.mdx'),
-    makePage('technical-specs/expo-updates-1-draft.mdx'),
+    makePage('technical-specs/expo-updates-1.mdx'),
     makePage('technical-specs/expo-sfv-0.mdx'),
   ]),
 ];
@@ -347,6 +347,7 @@ const archive = [
       expanded: true,
     }
   ),
+  makeGroup('Technical Specs', [makePage('archive/technical-specs/expo-updates-0.mdx')]),
 ];
 
 const featurePreview = [];

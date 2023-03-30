@@ -119,6 +119,59 @@ class LegacyUpdateSpec : ExpoSpec {
         )
         expect(LegacyUpdate.update(withLegacyManifest: manifest, config: self.config, database: self.database)).notTo(beNil())
       }
+
+      it("manifest with bundled assets") {
+        let manifest = LegacyManifest(
+          rawManifestJSON: [
+            "sdkVersion": "39.0.0",
+            "releaseId": "0eef8214-4833-4089-9dff-b4138a14f196",
+            "commitTime": "2020-11-11T00:17:54.797Z",
+            "bundleUrl": "https://url.to/bundle.js",
+            "bundledAssets": [
+              // extension
+              "asset_3a2ba31570920eeb9b1d217dabe58315.ttf",
+              "asset_8b12b3e16d591abd926165fa8f760e3b.json",
+              // no extension
+              "asset_744de60078d17d86006dd0edabdd59a7",
+            ]
+          ]
+        )
+        let update = LegacyUpdate.update(withLegacyManifest: manifest, config: self.config, database: self.database)
+        expect(update.assets()).to(haveCount(4)) // 3 bundled + 1 launch
+
+        let launchAssets = update.assets()?.filter { asset in
+          asset.isLaunchAsset
+        }
+        expect(launchAssets).to(haveCount(1))
+        let launchAsset = launchAssets?.first!
+        expect(launchAsset?.url?.absoluteString) == "https://url.to/bundle.js"
+        expect(launchAsset?.type) == "bundle"
+        expect(launchAsset?.mainBundleFilename) == "app"
+
+        let assetWithExtension = update.assets()?.first(where: { asset in
+          asset.key == "3a2ba31570920eeb9b1d217dabe58315"
+        })
+        expect(assetWithExtension?.filename) == "3a2ba31570920eeb9b1d217dabe58315.ttf"
+        expect(assetWithExtension?.type) == "ttf"
+        expect(assetWithExtension?.url?.absoluteString) == "https://classic-assets.eascdn.net/~assets/3a2ba31570920eeb9b1d217dabe58315"
+        expect(assetWithExtension?.mainBundleFilename) == "asset_3a2ba31570920eeb9b1d217dabe58315"
+
+        let assetWithExtension2 = update.assets()?.first(where: { asset in
+          asset.key == "8b12b3e16d591abd926165fa8f760e3b"
+        })
+        expect(assetWithExtension2?.filename) == "8b12b3e16d591abd926165fa8f760e3b.json"
+        expect(assetWithExtension2?.type) == "json"
+        expect(assetWithExtension2?.url?.absoluteString) == "https://classic-assets.eascdn.net/~assets/8b12b3e16d591abd926165fa8f760e3b"
+        expect(assetWithExtension2?.mainBundleFilename) == "asset_8b12b3e16d591abd926165fa8f760e3b"
+
+        let assetWithoutExtension = update.assets()?.first(where: { asset in
+          asset.key == "744de60078d17d86006dd0edabdd59a7"
+        })
+        expect(assetWithoutExtension?.filename) == "744de60078d17d86006dd0edabdd59a7."
+        expect(assetWithoutExtension?.type) == ""
+        expect(assetWithoutExtension?.url?.absoluteString) == "https://classic-assets.eascdn.net/~assets/744de60078d17d86006dd0edabdd59a7"
+        expect(assetWithoutExtension?.mainBundleFilename) == "asset_744de60078d17d86006dd0edabdd59a7"
+      }
       
       it("production no sdk version") {
         let manifest = LegacyManifest(

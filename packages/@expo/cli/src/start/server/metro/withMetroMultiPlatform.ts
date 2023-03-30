@@ -75,9 +75,17 @@ function normalizeSlashes(p: string) {
  */
 export function withExtendedResolver(
   config: ConfigT,
-  projectRoot: string,
-  tsconfig: TsConfigPaths | null,
-  platforms: string[]
+  {
+    projectRoot,
+    tsconfig,
+    platforms,
+    isTsconfigPathsEnabled,
+  }: {
+    projectRoot: string;
+    tsconfig: TsConfigPaths | null;
+    platforms: string[];
+    isTsconfigPathsEnabled?: boolean;
+  }
 ) {
   // Get the `transformer.assetRegistryPath`
   // this needs to be unified since you can't dynamically
@@ -115,15 +123,14 @@ export function withExtendedResolver(
     web: ['browser', 'module', 'main'],
   };
 
-  let tsConfigResolve =
-    tsconfig?.paths && env.EXPO_USE_PATH_ALIASES
-      ? resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
-          paths: tsconfig.paths ?? {},
-          baseUrl: tsconfig.baseUrl,
-        })
-      : null;
+  let tsConfigResolve = tsconfig?.paths
+    ? resolveWithTsConfigPaths.bind(resolveWithTsConfigPaths, {
+        paths: tsconfig.paths ?? {},
+        baseUrl: tsconfig.baseUrl,
+      })
+    : null;
 
-  if (env.EXPO_USE_PATH_ALIASES && !env.CI) {
+  if (isTsconfigPathsEnabled && !env.CI) {
     // TODO: We should track all the files that used imports and invalidate them
     // currently the user will need to save all the files that use imports to
     // use the new aliases.
@@ -157,21 +164,23 @@ export function withExtendedResolver(
     (immutableContext: ResolutionContext, moduleName: string, platform: string | null) => {
       let context = {
         ...immutableContext,
-      } as ResolutionContext & { mainFields: string[] };
+      } as ResolutionContext & {
+        mainFields: string[];
+        customResolverOptions?: Record<string, string>;
+      };
 
-      // @ts-expect-error
       const environment = context.customResolverOptions?.environment;
-
       const isNode = environment === 'node';
+
       // TODO: We need to prevent the require.context from including API routes as these use externals.
       // Should be fine after async routes lands.
-      // if (environment === 'node') {
-      const moduleId = isNodeExternal(moduleName);
-      if (moduleId) {
-        moduleName = getNodeExternalModuleId(context.originModulePath, moduleId);
-        debug(`Redirecting Node.js external "${moduleId}" to "${moduleName}"`);
+      if (isNode) {
+        const moduleId = isNodeExternal(moduleName);
+        if (moduleId) {
+          moduleName = getNodeExternalModuleId(context.originModulePath, moduleId);
+          debug(`Redirecting Node.js external "${moduleId}" to "${moduleName}"`);
+        }
       }
-      // }
 
       // Conditionally remap `react-native` to `react-native-web` on web in
       // a way that doesn't require Babel to resolve the alias.
@@ -189,7 +198,7 @@ export function withExtendedResolver(
         };
       }
 
-      if (tsconfig?.baseUrl && env.EXPO_USE_PATH_ALIASES) {
+      if (tsconfig?.baseUrl && isTsconfigPathsEnabled) {
         context = {
           ...context,
           nodeModulesPaths: [
@@ -200,11 +209,17 @@ export function withExtendedResolver(
         };
       }
 
-      let mainFields = env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE
-        ? context.mainFields
-        : platform && platform in preferredMainFields
-        ? preferredMainFields[platform]
-        : context.mainFields;
+      let mainFields: string[] = context.mainFields;
+
+      if (isNode) {
+        // Node.js runtimes should only be importing main at the moment.
+        // This is a temporary fix until we can support the package.json exports.
+        mainFields = ['main'];
+      } else if (!env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE) {
+        mainFields = context.mainFields;
+      } else if (platform && platform in preferredMainFields) {
+        mainFields = preferredMainFields[platform];
+      }
 
       if (isNode) {
         mainFields = ['main'];
@@ -293,8 +308,15 @@ export function shouldAliasAssetRegistryForWeb(
 /** Add support for `react-native-web` and the Web platform. */
 export async function withMetroMultiPlatformAsync(
   projectRoot: string,
-  config: ConfigT,
-  platformBundlers: PlatformBundlers
+  {
+    config,
+    platformBundlers,
+    isTsconfigPathsEnabled,
+  }: {
+    config: ConfigT;
+    isTsconfigPathsEnabled: boolean;
+    platformBundlers: PlatformBundlers;
+  }
 ) {
   // Auto pick App entry: this is injected with Babel.
   process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot);
@@ -307,14 +329,14 @@ export async function withMetroMultiPlatformAsync(
 
   if (platformBundlers.web === 'metro') {
     await new WebSupportProjectPrerequisite(projectRoot).assertAsync();
-  } else if (!env.EXPO_USE_PATH_ALIASES) {
+  } else if (!isTsconfigPathsEnabled) {
     // Bail out early for performance enhancements if no special features are enabled.
     return config;
   }
 
   let tsconfig: null | TsConfigPaths = null;
 
-  if (env.EXPO_USE_PATH_ALIASES) {
+  if (isTsconfigPathsEnabled) {
     Log.warn(
       chalk.yellow`Experimental path aliases feature is enabled. ` +
         learnMore('https://docs.expo.dev/guides/typescript/#path-aliases')
@@ -324,14 +346,27 @@ export async function withMetroMultiPlatformAsync(
 
   await setupNodeExternals(projectRoot);
 
-  return withMetroMultiPlatform(projectRoot, config, platformBundlers, tsconfig);
+  return withMetroMultiPlatform(projectRoot, {
+    config,
+    platformBundlers,
+    tsconfig,
+    isTsconfigPathsEnabled,
+  });
 }
 
 function withMetroMultiPlatform(
   projectRoot: string,
-  config: ConfigT,
-  platformBundlers: PlatformBundlers,
-  jsconfig: TsConfigPaths | null
+  {
+    config,
+    platformBundlers,
+    isTsconfigPathsEnabled,
+    tsconfig,
+  }: {
+    config: ConfigT;
+    isTsconfigPathsEnabled: boolean;
+    platformBundlers: PlatformBundlers;
+    tsconfig: TsConfigPaths | null;
+  }
 ) {
   let expoConfigPlatforms = Object.entries(platformBundlers)
     .filter(([, bundler]) => bundler === 'metro')
@@ -348,5 +383,10 @@ function withMetroMultiPlatform(
     config = withWebPolyfills(config, projectRoot);
   }
 
-  return withExtendedResolver(config, projectRoot, jsconfig, expoConfigPlatforms);
+  return withExtendedResolver(config, {
+    projectRoot,
+    tsconfig,
+    isTsconfigPathsEnabled,
+    platforms: expoConfigPlatforms,
+  });
 }

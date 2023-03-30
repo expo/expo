@@ -6,12 +6,13 @@ import com.facebook.soloader.SoLoader
 import expo.modules.core.interfaces.DoNotStrip
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.JavaScriptEvaluateException
+import expo.modules.kotlin.sharedobjects.SharedObject
 import java.lang.ref.WeakReference
 
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
 class JSIInteropModuleRegistry(appContext: AppContext) {
-  private val appContextHolder = WeakReference(appContext)
+  internal val appContextHolder = WeakReference(appContext)
 
   // Has to be called "mHybridData" - fbjni uses it via reflection
   @DoNotStrip
@@ -68,6 +69,12 @@ class JSIInteropModuleRegistry(appContext: AppContext) {
     return appContextHolder.get()?.registry?.getModuleHolder(name)?.jsObject
   }
 
+  @Suppress("unused")
+  @DoNotStrip
+  fun hasModule(name: String): Boolean {
+    return appContextHolder.get()?.registry?.hasModule(name) ?: false
+  }
+
   /**
    * Returns an array that contains names of available modules.
    */
@@ -75,6 +82,15 @@ class JSIInteropModuleRegistry(appContext: AppContext) {
   @DoNotStrip
   fun getJavaScriptModulesName(): Array<String> {
     return appContextHolder.get()?.registry?.registry?.keys?.toTypedArray() ?: emptyArray()
+  }
+
+  @Suppress("unused")
+  @DoNotStrip
+  fun registerSharedObject(native: Any, js: JavaScriptObject) {
+    appContextHolder
+      .get()
+      ?.sharedObjectRegistry
+      ?.add(native as SharedObject, js)
   }
 
   @Throws(Throwable::class)

@@ -8,7 +8,7 @@ export type HeadingEntry = {
 /**
  * Retrieve all headings matching the selector within the document.
  * This will search for all elements matching the heading tags, and generate a selector string.
- * The string can be used to properly intialize the intersection observer.
+ * The string can be used to properly initialize the intersection observer.
  * Currently, only headings with either an `[id="<id>"]` or `[data-id="<id>"]` are supported.
  */
 export function useHeadingsObserver(tags = 'h2,h3') {

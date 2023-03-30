@@ -289,6 +289,8 @@ function createRouteHandlerMiddleware(
             const { getStaticContent } = await getStaticRenderFunctions(projectRoot, devServerUrl, {
               minify: options.mode === 'production',
               dev: options.mode !== 'production',
+              // Ensure the API Routes are included
+              environment: 'node',
             });
 
             let content = await getStaticContent(location);
@@ -452,6 +454,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const load = await getStaticPageContentsAsync(this.projectRoot, this.getDevServerUrl()!, {
       minify: mode === 'production',
       dev: mode !== 'production',
+      // Ensure the API Routes are included
+      environment: 'node',
     });
 
     return await load(location);
@@ -474,7 +478,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
 
     const { metro, server, middleware, messageSocket } = await instantiateMetroAsync(
-      this.projectRoot,
+      this,
       parsedOptions
     );
 

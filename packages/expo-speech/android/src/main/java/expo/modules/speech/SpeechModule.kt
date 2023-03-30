@@ -27,7 +27,7 @@ class SpeechModule(
   private val delayedUtterances: Queue<Utterance> = ArrayDeque()
 
   // Module basic definitions
-  override fun getName() = "ExponentSpeech"
+  override fun getName() = "ExpoSpeech"
   override fun getConstants() = mapOf(
     "maxSpeechInputLength" to TextToSpeech.getMaxSpeechInputLength()
   )

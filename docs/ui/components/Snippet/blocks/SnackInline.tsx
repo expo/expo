@@ -1,6 +1,5 @@
 import { css } from '@emotion/react';
 import { SnackLogo } from '@expo/styleguide';
-import { spacing } from '@expo/styleguide-base';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons';
 import { useEffect, useRef, useState, PropsWithChildren } from 'react';
 
@@ -74,7 +73,7 @@ export const SnackInline = ({
   };
 
   return (
-    <Snippet css={inlineSnackWrapperStyle}>
+    <Snippet css={inlineSnackWrapperStyle} className="flex flex-col mb-3">
       <SnippetHeader title={label || 'Example'}>
         <form action={SNACK_URL} method="POST" target="_blank">
           <input type="hidden" name="platform" value={defaultPlatform || DEFAULT_PLATFORM} />
@@ -115,10 +114,6 @@ export const SnackInline = ({
 };
 
 const inlineSnackWrapperStyle = css({
-  display: 'flex',
-  flexDirection: 'column',
-  marginBottom: spacing[3],
-
   pre: {
     margin: 0,
     border: 0,

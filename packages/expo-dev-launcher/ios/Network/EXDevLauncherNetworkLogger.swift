@@ -34,24 +34,36 @@ public class EXDevLauncherNetworkLogger: NSObject {
   /**
    Emits CDP `Network.requestWillBeSent` event
    */
-  func emitNetworkWillBeSent(request: URLRequest, requestId: String) {
+  func emitNetworkWillBeSent(request: URLRequest, requestId: String, redirectResponse: HTTPURLResponse?) {
     let now = Date().timeIntervalSince1970
-    let params = [
+    var requestParams: [String: Any] = [
+      "url": request.url?.absoluteString,
+      "method": request.httpMethod,
+      "headers": request.allHTTPHeaderFields
+    ]
+    if let httpBody = request.httpBodyData() {
+      requestParams["postData"] = String(data: httpBody, encoding: .utf8)
+    }
+    var params = [
       "requestId": requestId,
       "loaderId": "",
       "documentURL": "mobile",
       "initiator": ["type": "script"],
       "redirectHasExtraInfo": false,
-      "request": [
-        "url": request.url?.absoluteString,
-        "method": request.httpMethod,
-        "headers": request.allHTTPHeaderFields
-      ],
+      "request": requestParams,
       "referrerPolicy": "no-referrer",
       "type": "Fetch",
       "timestamp": now,
       "wallTime": now
     ] as [String: Any]
+    if let redirectResponse {
+      params["redirectResponse"] = [
+        "url": redirectResponse.url?.absoluteString,
+        "status": redirectResponse.statusCode,
+        "statusText": "",
+        "headers": redirectResponse.allHeaderFields
+      ]
+    }
     if let data = try? JSONSerialization.data(
       withJSONObject: ["method": "Network.requestWillBeSent", "params": params],
       options: []
@@ -74,7 +86,8 @@ public class EXDevLauncherNetworkLogger: NSObject {
         "url": request.url?.absoluteString,
         "status": response.statusCode,
         "statusText": "",
-        "headers": response.allHeaderFields
+        "headers": response.allHeaderFields,
+        "mimeType": response.value(forHTTPHeaderField: "Content-Type") ?? ""
       ],
       "referrerPolicy": "no-referrer",
       "type": "Fetch",
@@ -194,7 +207,7 @@ public class EXDevLauncherNetworkLogger: NSObject {
     // no-op when running on release build where RCTInspector classes not exported
   }
 
-  func emitNetworkWillBeSent(request: URLRequest, requestId: String) {
+  func emitNetworkWillBeSent(request: URLRequest, requestId: String, redirectResponse: HTTPURLResponse?) {
   }
 
   func emitNetworkResponse(request: URLRequest, requestId: String, response: HTTPURLResponse) {

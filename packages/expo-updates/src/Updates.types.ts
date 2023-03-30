@@ -37,6 +37,14 @@ export type Manifest = ClassicManifest | typeof Constants.manifest2;
 
 type UpdateCheckResultRollBackToEmbedded = {
   /**
+   * This property is false for a roll back update.
+   */
+  isAvailable: false;
+  /**
+   * No manifest, since this is a roll back update.
+   */
+  manifest: undefined;
+  /**
    * Signifies that a roll back update is available.
    */
   isRollBackToEmbedded: true;
@@ -54,6 +62,10 @@ type UpdateCheckResultSuccess = {
    * The manifest of the available update.
    */
   manifest: Manifest;
+  /**
+   * This property is false for a new update.
+   */
+  isRollBackToEmbedded: false;
 };
 
 /**
@@ -68,6 +80,10 @@ type UpdateCheckResultFailure = {
    * No manifest, since the app is already running the latest available version.
    */
   manifest: undefined;
+  /**
+   * Signifies that no roll back update is available.
+   */
+  isRollBackToEmbedded: false;
 };
 
 /**

@@ -1,9 +1,9 @@
-import * as Random from 'expo-random';
+import * as Crypto from 'expo-crypto';
 
 import getRandomValues, { getRandomValuesInsecure } from '../getRandomValues';
 
 afterEach(() => {
-  (Random.getRandomBytes as jest.Mock).mockClear();
+  (Crypto.getRandomValues as jest.Mock).mockClear();
 });
 
 test.each([
@@ -20,8 +20,8 @@ test.each([
   const result = getRandomValues(array);
   expect(result).toBe(array);
 
-  expect(Random.getRandomBytes).toHaveBeenCalledTimes(1);
-  expect(Random.getRandomBytes).toHaveBeenCalledWith(valueCount * TypedArray.BYTES_PER_ELEMENT);
+  expect(Crypto.getRandomValues).toHaveBeenCalledTimes(1);
+  expect(Crypto.getRandomValues).toHaveBeenCalledWith(array);
 
   // There is an ignorably infinitesimal chance the array is randomly all zeros
   const zeros = new TypedArray(valueCount);

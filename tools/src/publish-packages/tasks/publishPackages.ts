@@ -24,6 +24,10 @@ export const publishPackages = new Task<TaskArgs>(
 
     const gitHead = await Git.getHeadCommitHashAsync();
 
+    // check if two factor auth is required for publishing
+    const npmProfile = await Npm.getProfileAsync();
+    const requiresOTP = npmProfile?.tfa?.mode === 'auth-and-writes';
+
     for (const { pkg, state } of parcels) {
       const packageJsonPath = path.join(pkg.path, 'package.json');
 
@@ -37,7 +41,9 @@ export const publishPackages = new Task<TaskArgs>(
       await JsonFile.setAsync(packageJsonPath, 'gitHead', gitHead);
 
       // Publish the package.
-      await Npm.publishPackageAsync(pkg.path, options.tag, options.dry);
+      await Npm.publishPackageAsync(pkg.path, options.tag, options.dry, {
+        stdio: requiresOTP ? 'inherit' : undefined,
+      });
 
       // Delete `gitHead` from `package.json` – no need to clutter it.
       await JsonFile.deleteKeyAsync(packageJsonPath, 'gitHead');

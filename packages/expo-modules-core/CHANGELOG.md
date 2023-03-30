@@ -6,14 +6,35 @@
 
 ### 🎉 New features
 
-### 🐛 Bug fixes
+- [iOS] Introduced native functions on the native component instances. ([#21746](https://github.com/expo/expo/pull/21746) by [@tsapeta](https://github.com/tsapeta))
+- View tag and React component ref can now be converted to an instance of the native view when used as a function's argument. ([#21816](https://github.com/expo/expo/pull/21816) by [@lukmccall](https://github.com/lukmccall), [#21829](https://github.com/expo/expo/pull/21829) by [@tsapeta](https://github.com/tsapeta))
 
-- [iOS] Fixed jsc import when using use_frameworks ([#21479](https://github.com/expo/expo/pull/21479) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- [Android] Fixed coroutine functions crashing when invoked with more than 1 argument. ([#21635](https://github.com/expo/expo/pull/21635) by [@lukmccall](https://github.com/lukmccall))
+### 🐛 Bug fixes
 
 ### 💡 Others
 
 - [Android] Made `fallbackCallback` optional in the `registerForActivityResult` method. ([#21661](https://github.com/expo/expo/pull/21661) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Removed the legacy implementation of view managers. ([#21760](https://github.com/expo/expo/pull/21760) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Passed the app context instance down to dynamic types, object builders and convertibles. ([#21819](https://github.com/expo/expo/pull/21819) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.2.6 - 2023-03-20
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `ReadableNativeMap` cannot be cast to the `Record`. ([#21773](https://github.com/expo/expo/pull/21773) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.2.5 - 2023-03-14
+
+### 🐛 Bug fixes
+
+- [Android] Fixed coroutine functions crashing when invoked with more than 1 argument. ([#21635](https://github.com/expo/expo/pull/21635) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Fix automatic percent-encoding when converting to the `URL` object. ([#21569](https://github.com/expo/expo/pull/21569) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.2.4 - 2023-03-03
+
+### 🐛 Bug fixes
+
+- [iOS] Fixed jsc import when using use_frameworks ([#21479](https://github.com/expo/expo/pull/21479) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 1.2.3 - 2023-02-21
 

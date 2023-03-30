@@ -151,11 +151,6 @@ class Env {
     return boolish('EXPO_USE_ROUTE_HANDLERS', true);
   }
 
-  /** **Experimental:** Prevent Metro from using the `compilerOptions.paths` feature from `tsconfig.json` (or `jsconfig.json`) to enable import aliases. */
-  get EXPO_USE_PATH_ALIASES(): boolean {
-    return boolish('EXPO_USE_PATH_ALIASES', false);
-  }
-
   /** **Experimental:** Use the network inspector by overriding the metro inspector proxy with a custom version */
   get EXPO_USE_CUSTOM_INSPECTOR_PROXY(): boolean {
     return boolish('EXPO_USE_CUSTOM_INSPECTOR_PROXY', false);
