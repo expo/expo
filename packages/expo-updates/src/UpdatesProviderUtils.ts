@@ -1,16 +1,16 @@
 import * as Updates from './Updates';
 import type { Manifest, UpdateEvent } from './Updates.types';
-import { UpdatesProviderEventType, currentlyRunning } from './UpdatesProvider.constants';
 import type {
   AvailableUpdateInfo,
   UpdatesInfo,
   UpdatesProviderEvent,
 } from './UpdatesProvider.types';
+import { UpdatesProviderEventType, currentlyRunning } from './UpdatesProviderConstants';
 
 /////// Internal functions ////////
 
 // Constructs the availableUpdate from the update manifest
-export const availableUpdateFromManifest = (manifest: Partial<Manifest> | undefined) => {
+export const availableUpdateFromManifest = (manifest: Manifest | undefined) => {
   return manifest
     ? {
         updateId: manifest?.id ? manifest?.id : null,
@@ -26,20 +26,20 @@ export const updatesInfoFromEvent = (event: UpdateEvent): UpdatesInfo => {
   if (event.type === Updates.UpdateEventType.NO_UPDATE_AVAILABLE) {
     return {
       currentlyRunning,
-      lastCheckForUpdateTime,
+      lastCheckForUpdateTimeSinceRestart: lastCheckForUpdateTime,
     };
   } else if (event.type === Updates.UpdateEventType.UPDATE_AVAILABLE) {
     return {
       currentlyRunning,
       availableUpdate: availableUpdateFromManifest(event.manifest),
-      lastCheckForUpdateTime,
+      lastCheckForUpdateTimeSinceRestart: lastCheckForUpdateTime,
     };
   } else {
     // event type === ERROR
     return {
       currentlyRunning,
       error: new Error(event.message),
-      lastCheckForUpdateTime,
+      lastCheckForUpdateTimeSinceRestart: lastCheckForUpdateTime,
     };
   }
 };

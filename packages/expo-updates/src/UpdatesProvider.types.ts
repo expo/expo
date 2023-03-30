@@ -1,5 +1,5 @@
 import type { Manifest, UpdatesLogEntry } from './Updates.types';
-import type { UpdatesProviderEventType } from './UpdatesProvider.constants';
+import type { UpdatesProviderEventType } from './UpdatesProviderConstants';
 
 /**
  * An event passed into the optional `providerEventHandler` parameter of [`useUpdates()`](#useupdatesprovidereventhandler).
@@ -89,7 +89,7 @@ export type AvailableUpdateInfo = {
   /**
    * The manifest for this update.
    */
-  manifest: Partial<Manifest>;
+  manifest: Manifest;
 };
 
 /**
@@ -113,9 +113,10 @@ export type UpdatesInfo = {
   error?: Error;
   /**
    * A `Date` object representing the last time this client checked for an available update,
-   * or undefined if no check has yet occurred since the app started.
+   * or undefined if no check has yet occurred since the app started. Does not persist across
+   * app reloads or restarts.
    */
-  lastCheckForUpdateTime?: Date;
+  lastCheckForUpdateTimeSinceRestart?: Date;
   /**
    * If present, contains expo-updates log entries returned by the `getLogEntries()` method (see [`useUpdates()`](#useupdatesprovidereventhandler).)
    */

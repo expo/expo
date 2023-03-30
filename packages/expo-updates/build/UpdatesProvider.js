@@ -1,8 +1,8 @@
 import React, { createContext, useContext, useState } from 'react';
 import * as Updates from './Updates';
 import { useUpdateEvents } from './UpdatesHooks';
-import { currentlyRunning } from './UpdatesProvider.constants';
-import { checkForUpdateAndReturnAvailableAsync, downloadUpdateAsync, downloadAndRunUpdateAsync, runUpdateAsync, updatesInfoFromEvent, } from './UpdatesProvider.utils';
+import { currentlyRunning } from './UpdatesProviderConstants';
+import { checkForUpdateAndReturnAvailableAsync, downloadUpdateAsync, downloadAndRunUpdateAsync, runUpdateAsync, updatesInfoFromEvent, } from './UpdatesProviderUtils';
 // The context provided to the app
 const UpdatesContext = createContext({
     updatesInfo: {
@@ -134,50 +134,59 @@ const UpdatesProvider = (props) => {
 const useUpdates = (providerEventHandler) => {
     // Get updates info value and setter from provider
     const { updatesInfo, setUpdatesInfo } = useContext(UpdatesContext);
+    const checkForUpdate = () => {
+        checkForUpdateAndReturnAvailableAsync(providerEventHandler)
+            .then((availableUpdate) => setUpdatesInfo((updatesInfo) => ({
+            ...updatesInfo,
+            lastCheckForUpdateTimeSinceRestart: new Date(),
+            availableUpdate,
+        })))
+            .catch((error) => setUpdatesInfo((updatesInfo) => ({
+            ...updatesInfo,
+            lastCheckForUpdateTimeSinceRestart: new Date(),
+            error,
+        })));
+    };
+    const downloadAndRunUpdate = () => {
+        downloadAndRunUpdateAsync(providerEventHandler).catch((error) => {
+            setUpdatesInfo((updatesInfo) => ({
+                ...updatesInfo,
+                error,
+            }));
+        });
+    };
+    const downloadUpdate = () => {
+        downloadUpdateAsync(providerEventHandler).catch((error) => {
+            setUpdatesInfo((updatesInfo) => ({
+                ...updatesInfo,
+                error,
+            }));
+        });
+    };
+    const runUpdate = () => {
+        runUpdateAsync(providerEventHandler).catch((error) => {
+            setUpdatesInfo((updatesInfo) => ({
+                ...updatesInfo,
+                error,
+            }));
+        });
+    };
+    const readLogEntries = (maxAge = 3600000) => {
+        Updates.readLogEntriesAsync(maxAge)
+            .then((logEntries) => setUpdatesInfo((updatesInfo) => ({
+            ...updatesInfo,
+            logEntries,
+        })))
+            .catch((error) => setUpdatesInfo((updatesInfo) => ({ ...updatesInfo, error })));
+    };
     // Return the updates info and the user facing functions
     return {
         updatesInfo,
-        checkForUpdate: () => {
-            checkForUpdateAndReturnAvailableAsync(providerEventHandler)
-                .then((availableUpdate) => setUpdatesInfo({
-                ...updatesInfo,
-                lastCheckForUpdateTime: new Date(),
-                availableUpdate,
-            }))
-                .catch((error) => setUpdatesInfo({ ...updatesInfo, lastCheckForUpdateTime: new Date(), error }));
-        },
-        downloadAndRunUpdate: () => {
-            downloadAndRunUpdateAsync(providerEventHandler).catch((error) => {
-                setUpdatesInfo({
-                    ...updatesInfo,
-                    error,
-                });
-            });
-        },
-        downloadUpdate: () => {
-            downloadUpdateAsync(providerEventHandler).catch((error) => {
-                setUpdatesInfo({
-                    ...updatesInfo,
-                    error,
-                });
-            });
-        },
-        runUpdate: () => {
-            runUpdateAsync(providerEventHandler).catch((error) => {
-                setUpdatesInfo({
-                    ...updatesInfo,
-                    error,
-                });
-            });
-        },
-        readLogEntries: (maxAge = 3600000) => {
-            Updates.readLogEntriesAsync(maxAge)
-                .then((logEntries) => setUpdatesInfo({
-                ...updatesInfo,
-                logEntries,
-            }))
-                .catch((error) => setUpdatesInfo({ ...updatesInfo, error }));
-        },
+        checkForUpdate,
+        downloadAndRunUpdate,
+        downloadUpdate,
+        runUpdate,
+        readLogEntries,
     };
 };
 export { UpdatesProvider, useUpdates, checkForUpdate, downloadUpdate, downloadAndRunUpdate, runUpdate, readLogEntries, };

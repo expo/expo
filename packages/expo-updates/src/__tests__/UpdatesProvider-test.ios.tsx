@@ -12,7 +12,7 @@ import {
   runUpdate,
   readLogEntries,
 } from '../UpdatesProvider';
-import { availableUpdateFromManifest, updatesInfoFromEvent } from '../UpdatesProvider.utils';
+import { availableUpdateFromManifest, updatesInfoFromEvent } from '../UpdatesProviderUtils';
 import { UpdatesProviderTestApp } from './UpdatesProviderTestApp';
 
 const { UpdatesLogEntryCode, UpdatesLogEntryLevel, UpdateEventType } = Updates;

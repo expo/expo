@@ -22,7 +22,7 @@ export const UpdatesProviderTestApp = (props: {
       </Text>
       {/* Last time there was a check for update */}
       <Text testID="lastCheckForUpdateTime">
-        {updatesInfo?.lastCheckForUpdateTime?.toISOString().substring(0, 19) || ''}
+        {updatesInfo?.lastCheckForUpdateTimeSinceRestart?.toISOString().substring(0, 19) || ''}
       </Text>
       {/* Available update, if one is present */}
       <Text testID="availableUpdate_updateId">{updatesInfo.availableUpdate?.updateId || ''}</Text>
