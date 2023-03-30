@@ -6,9 +6,6 @@
  */
 import { getConfig } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
-// import { ExpoResponse } from '@expo/server';
-
-import assert from 'assert';
 import chalk from 'chalk';
 import { sync as globSync } from 'glob';
 import path from 'path';
