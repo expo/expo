@@ -1,5 +1,5 @@
 import * as Updates from './Updates';
-import { UpdatesProviderEventType, currentlyRunning } from './UpdatesProviderConstants';
+import { currentlyRunning } from './UpdatesProviderConstants';
 /////// Internal functions ////////
 // Constructs the availableUpdate from the update manifest
 export const availableUpdateFromManifest = (manifest) => {
@@ -37,11 +37,11 @@ export const updatesInfoFromEvent = (event) => {
     }
 };
 // Implementation of checkForUpdate
-export const checkForUpdateAndReturnAvailableAsync = async (providerEventHandler) => {
+export const checkForUpdateAndReturnAvailableAsync = async (callbacks) => {
     try {
-        providerEventHandler && providerEventHandler({ type: UpdatesProviderEventType.CHECK_START });
+        callbacks?.onCheckForUpdateStart && callbacks?.onCheckForUpdateStart();
         const checkResult = await Updates.checkForUpdateAsync();
-        providerEventHandler && providerEventHandler({ type: UpdatesProviderEventType.CHECK_COMPLETE });
+        callbacks?.onCheckForUpdateComplete && callbacks?.onCheckForUpdateComplete();
         if (checkResult.isAvailable) {
             return availableUpdateFromManifest(checkResult.manifest);
         }
@@ -50,40 +50,36 @@ export const checkForUpdateAndReturnAvailableAsync = async (providerEventHandler
         }
     }
     catch (error) {
-        providerEventHandler &&
-            providerEventHandler({ type: UpdatesProviderEventType.CHECK_ERROR, error });
+        callbacks?.onCheckForUpdateError && callbacks?.onCheckForUpdateError(error);
         throw error;
     }
 };
 // Implementation of downloadUpdate
-export const downloadUpdateAsync = async (providerEventHandler) => {
+export const downloadUpdateAsync = async (callbacks) => {
     try {
-        providerEventHandler && providerEventHandler({ type: UpdatesProviderEventType.DOWNLOAD_START });
+        callbacks?.onDownloadUpdateStart && callbacks?.onDownloadUpdateStart();
         await Updates.fetchUpdateAsync();
-        providerEventHandler &&
-            providerEventHandler({ type: UpdatesProviderEventType.DOWNLOAD_COMPLETE });
+        callbacks?.onDownloadUpdateComplete && callbacks?.onDownloadUpdateComplete();
     }
     catch (error) {
-        providerEventHandler &&
-            providerEventHandler({ type: UpdatesProviderEventType.DOWNLOAD_ERROR, error });
+        callbacks?.onDownloadUpdateError && callbacks?.onDownloadUpdateError(error);
         throw error;
     }
 };
 // Implementation of runUpdate
-export const runUpdateAsync = async (providerEventHandler) => {
+export const runUpdateAsync = async (callbacks) => {
     try {
-        providerEventHandler && providerEventHandler({ type: UpdatesProviderEventType.RUN_START });
+        callbacks?.onRunUpdateStart && callbacks?.onRunUpdateStart();
         await Updates.reloadAsync();
     }
     catch (error) {
-        providerEventHandler &&
-            providerEventHandler({ type: UpdatesProviderEventType.RUN_ERROR, error });
+        callbacks?.onRunUpdateError && callbacks?.onRunUpdateError();
         throw error;
     }
 };
 // Implementation of downloadAndRunUpdate
-export const downloadAndRunUpdateAsync = async (providerEventHandler) => {
-    await downloadUpdateAsync(providerEventHandler);
-    await runUpdateAsync(providerEventHandler);
+export const downloadAndRunUpdateAsync = async (callbacks) => {
+    await downloadUpdateAsync(callbacks);
+    await runUpdateAsync(callbacks);
 };
 //# sourceMappingURL=UpdatesProviderUtils.js.map

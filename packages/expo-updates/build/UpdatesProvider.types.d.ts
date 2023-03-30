@@ -1,19 +1,17 @@
 import type { Manifest, UpdatesLogEntry } from './Updates.types';
-import type { UpdatesProviderEventType } from './UpdatesProviderConstants';
 /**
- * An event passed into the optional `providerEventHandler` parameter of [`useUpdates()`](#useupdatesprovidereventhandler).
- * Updates.Provider methods [`checkForUpdate()`](#checkforupdate), [`downloadUpdate()`](#downloadupdate),
- * or [`downloadAndRunUpdate()`](#downloadandrunupdate), all make calls to the event handler.
+ * Callbacks that will be called when Updates.Provider methods [`checkForUpdate()`](#checkforupdate), [`downloadUpdate()`](#downloadupdate),
+ * or [`downloadAndRunUpdate()`](#downloadandrunupdate) start, complete, or have errors.
  */
-export type UpdatesProviderEvent = {
-    /**
-     * One of the possible provider event types.
-     */
-    type: UpdatesProviderEventType;
-    /**
-     * For event types associated with errors, this will contain the error object that caused the event.
-     */
-    error?: Error;
+export type UpdatesProviderCallbacksType = {
+    onCheckForUpdateStart?: () => void;
+    onCheckForUpdateComplete?: () => void;
+    onCheckForUpdateError?: (error?: Error) => void;
+    onDownloadUpdateStart?: () => void;
+    onDownloadUpdateComplete?: () => void;
+    onDownloadUpdateError?: (error?: Error) => void;
+    onRunUpdateStart?: () => void;
+    onRunUpdateError?: (error?: Error) => void;
 };
 /**
  * Structure encapsulating information on the currently running app

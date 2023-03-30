@@ -2,7 +2,7 @@ import React, { createContext, useContext, useState } from 'react';
 
 import * as Updates from './Updates';
 import { useUpdateEvents } from './UpdatesHooks';
-import type { UpdatesInfo, UpdatesProviderEvent } from './UpdatesProvider.types';
+import type { UpdatesInfo, UpdatesProviderCallbacksType } from './UpdatesProvider.types';
 import { currentlyRunning } from './UpdatesProviderConstants';
 import {
   checkForUpdateAndReturnAvailableAsync,
@@ -89,7 +89,7 @@ const readLogEntries = (maxAge?: number) => {
  * that will set the context automatically, if automatic updates are enabled and a new
  * update is available. This is required if application code uses the [`useUpdates`](#useupdatesprovidereventhandler) hook.
  * @param props Context will be provided to `props.children`
- * @returns the provider.
+ * @return the provider.
  * @example
  * ```jsx App.tsx
  * import * as Updates from 'expo-updates';
@@ -127,13 +127,8 @@ const UpdatesProvider = (props: { children: any }) => {
 /**
  * Hook that obtains the Updates info structure and functions.
  * Requires that application code be inside an [`UpdatesProvider`](#updatesproviderprops).
- * @param providerEventHandler Optional handler. If present, the handler will be called on
- * start, completion, and error in checkForUpdate, downloadUpdate, and downloadAndRunUpdate methods.
- * download starts, and again when download completes (successfully or not).
- * @returns the [`UpdatesInfo`](#updatesinfo) structure and associated methods. When using the provider,
- * the methods returned by this hook should be used instead of [`checkForUpdateAsync`](#updatescheckforupdateasync),
- * [`fetchUpdateAsync`](#updatesfetchupdateasync), [`readLogEntriesAsync`](#updatesreadlogentriesasync),
- * and [`reloadAsync`](#updatesreloadasync).
+ * @param callbacks Optional set of callbacks that will be called when Updates.Provider methods [`checkForUpdate()`](#checkforupdate), [`downloadUpdate()`](#downloadupdate), [`runUpdate()](#runupdate), or [`downloadAndRunUpdate()`](#downloadandrunupdate) start, complete, or have errors.
+ * @return the [`UpdatesInfo`](#updatesinfo) structure and associated methods. When using the provider, the methods returned by this hook should be used instead of [`checkForUpdateAsync`](#updatescheckforupdateasync), [`fetchUpdateAsync`](#updatesfetchupdateasync), [`readLogEntriesAsync`](#updatesreadlogentriesasync), and [`reloadAsync`](#updatesreloadasync).
  * @example
  * ```jsx UpdatesDemo.tsx
  * import { StatusBar } from 'expo-status-bar';
@@ -169,12 +164,12 @@ const UpdatesProvider = (props: { children: any }) => {
  *   );
  * }
  */
-const useUpdates = (providerEventHandler?: (event: UpdatesProviderEvent) => void) => {
+const useUpdates = (callbacks?: UpdatesProviderCallbacksType) => {
   // Get updates info value and setter from provider
   const { updatesInfo, setUpdatesInfo } = useContext(UpdatesContext);
 
   const checkForUpdate = () => {
-    checkForUpdateAndReturnAvailableAsync(providerEventHandler)
+    checkForUpdateAndReturnAvailableAsync(callbacks)
       .then((availableUpdate) =>
         setUpdatesInfo((updatesInfo: UpdatesInfo) => ({
           ...updatesInfo,
@@ -191,7 +186,7 @@ const useUpdates = (providerEventHandler?: (event: UpdatesProviderEvent) => void
       );
   };
   const downloadAndRunUpdate = () => {
-    downloadAndRunUpdateAsync(providerEventHandler).catch((error) => {
+    downloadAndRunUpdateAsync(callbacks).catch((error) => {
       setUpdatesInfo((updatesInfo: UpdatesInfo) => ({
         ...updatesInfo,
         error,
@@ -199,7 +194,7 @@ const useUpdates = (providerEventHandler?: (event: UpdatesProviderEvent) => void
     });
   };
   const downloadUpdate = () => {
-    downloadUpdateAsync(providerEventHandler).catch((error) => {
+    downloadUpdateAsync(callbacks).catch((error) => {
       setUpdatesInfo((updatesInfo: UpdatesInfo) => ({
         ...updatesInfo,
         error,
@@ -207,7 +202,7 @@ const useUpdates = (providerEventHandler?: (event: UpdatesProviderEvent) => void
     });
   };
   const runUpdate = () => {
-    runUpdateAsync(providerEventHandler).catch((error) => {
+    runUpdateAsync(callbacks).catch((error) => {
       setUpdatesInfo((updatesInfo: UpdatesInfo) => ({
         ...updatesInfo,
         error,

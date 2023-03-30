@@ -2,14 +2,13 @@ import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 
 import * as Updates from '..';
+import { UpdatesProviderCallbacksType } from '..';
 
 const { useUpdates } = Updates.Provider;
 
-export const UpdatesProviderTestApp = (props: {
-  providerEventHandler?: (event: Updates.UpdatesProviderEvent) => void;
-}) => {
+export const UpdatesProviderTestApp = (props: { callbacks?: UpdatesProviderCallbacksType }) => {
   const { updatesInfo, checkForUpdate, downloadUpdate, downloadAndRunUpdate, readLogEntries } =
-    useUpdates(props.providerEventHandler);
+    useUpdates(props.callbacks);
   return (
     <View>
       {/* Currently running info */}

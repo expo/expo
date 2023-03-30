@@ -1,4 +1,4 @@
-import type { UpdatesInfo, UpdatesProviderEvent } from './UpdatesProvider.types';
+import type { UpdatesInfo, UpdatesProviderCallbacksType } from './UpdatesProvider.types';
 /**
  * Downloads and runs an update, if one is available.
  * Provided to application code from the [`useUpdates`](#useupdatesprovidereventhandler) hook.
@@ -33,7 +33,7 @@ declare const readLogEntries: (maxAge?: number) => never;
  * that will set the context automatically, if automatic updates are enabled and a new
  * update is available. This is required if application code uses the [`useUpdates`](#useupdatesprovidereventhandler) hook.
  * @param props Context will be provided to `props.children`
- * @returns the provider.
+ * @return the provider.
  * @example
  * ```jsx App.tsx
  * import * as Updates from 'expo-updates';
@@ -57,13 +57,8 @@ declare const UpdatesProvider: (props: {
 /**
  * Hook that obtains the Updates info structure and functions.
  * Requires that application code be inside an [`UpdatesProvider`](#updatesproviderprops).
- * @param providerEventHandler Optional handler. If present, the handler will be called on
- * start, completion, and error in checkForUpdate, downloadUpdate, and downloadAndRunUpdate methods.
- * download starts, and again when download completes (successfully or not).
- * @returns the [`UpdatesInfo`](#updatesinfo) structure and associated methods. When using the provider,
- * the methods returned by this hook should be used instead of [`checkForUpdateAsync`](#updatescheckforupdateasync),
- * [`fetchUpdateAsync`](#updatesfetchupdateasync), [`readLogEntriesAsync`](#updatesreadlogentriesasync),
- * and [`reloadAsync`](#updatesreloadasync).
+ * @param callbacks Optional set of callbacks that will be called when Updates.Provider methods [`checkForUpdate()`](#checkforupdate), [`downloadUpdate()`](#downloadupdate), [`runUpdate()](#runupdate), or [`downloadAndRunUpdate()`](#downloadandrunupdate) start, complete, or have errors.
+ * @return the [`UpdatesInfo`](#updatesinfo) structure and associated methods. When using the provider, the methods returned by this hook should be used instead of [`checkForUpdateAsync`](#updatescheckforupdateasync), [`fetchUpdateAsync`](#updatesfetchupdateasync), [`readLogEntriesAsync`](#updatesreadlogentriesasync), and [`reloadAsync`](#updatesreloadasync).
  * @example
  * ```jsx UpdatesDemo.tsx
  * import { StatusBar } from 'expo-status-bar';
@@ -99,7 +94,7 @@ declare const UpdatesProvider: (props: {
  *   );
  * }
  */
-declare const useUpdates: (providerEventHandler?: ((event: UpdatesProviderEvent) => void) | undefined) => {
+declare const useUpdates: (callbacks?: UpdatesProviderCallbacksType) => {
     updatesInfo: UpdatesInfo;
     checkForUpdate: () => void;
     downloadAndRunUpdate: () => void;

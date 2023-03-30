@@ -3,7 +3,7 @@ import '@testing-library/jest-native/extend-expect';
 import React from 'react';
 
 import * as Updates from '..';
-import type { Manifest, UpdateEvent } from '..';
+import type { Manifest, UpdateEvent, UpdatesProviderCallbacksType } from '..';
 import ExpoUpdates from '../ExpoUpdates';
 import {
   checkForUpdate,
@@ -17,6 +17,19 @@ import { UpdatesProviderTestApp } from './UpdatesProviderTestApp';
 
 const { UpdatesLogEntryCode, UpdatesLogEntryLevel, UpdateEventType } = Updates;
 const { UpdatesProvider } = Updates.Provider;
+
+const getCallbacks: () => UpdatesProviderCallbacksType = () => {
+  return {
+    onCheckForUpdateComplete: jest.fn(),
+    onCheckForUpdateError: jest.fn(),
+    onCheckForUpdateStart: jest.fn(),
+    onDownloadUpdateComplete: jest.fn(),
+    onDownloadUpdateError: jest.fn(),
+    onDownloadUpdateStart: jest.fn(),
+    onRunUpdateError: jest.fn(),
+    onRunUpdateStart: jest.fn(),
+  };
+};
 
 jest.mock('../ExpoUpdates', () => {
   return {
@@ -48,10 +61,10 @@ describe('Updates provider and hook tests', () => {
     });
 
     it('App with provider shows available update after running checkForUpdate()', async () => {
-      const providerEventHandler = jest.fn();
+      const callbacks = getCallbacks();
       render(
         <UpdatesProvider>
-          <UpdatesProviderTestApp providerEventHandler={providerEventHandler} />
+          <UpdatesProviderTestApp callbacks={callbacks} />
         </UpdatesProvider>
       );
       const mockDate = new Date();
@@ -81,20 +94,16 @@ describe('Updates provider and hook tests', () => {
         // truncate the fractional part of the seconds value in the time
         lastCheckForUpdateTime.toISOString().substring(0, 19)
       );
-      expect(providerEventHandler).toHaveBeenCalledTimes(2);
-      expect(providerEventHandler).toHaveBeenCalledWith({
-        type: Updates.UpdatesProviderEventType.CHECK_START,
-      });
-      expect(providerEventHandler).toHaveBeenCalledWith({
-        type: Updates.UpdatesProviderEventType.CHECK_COMPLETE,
-      });
+      expect(callbacks.onCheckForUpdateStart).toHaveBeenCalledTimes(1);
+      expect(callbacks.onCheckForUpdateComplete).toHaveBeenCalledTimes(1);
+      expect(callbacks.onCheckForUpdateError).not.toHaveBeenCalled();
     });
 
     it('App with provider shows no available update after running checkForUpdate()', async () => {
-      const providerEventHandler = jest.fn();
+      const callbacks = getCallbacks();
       render(
         <UpdatesProvider>
-          <UpdatesProviderTestApp providerEventHandler={providerEventHandler} />
+          <UpdatesProviderTestApp callbacks={callbacks} />
         </UpdatesProvider>
       );
       ExpoUpdates.checkForUpdateAsync.mockReturnValueOnce({
@@ -113,20 +122,16 @@ describe('Updates provider and hook tests', () => {
         // truncate the fractional part of the seconds value in the time
         lastCheckForUpdateTime.toISOString().substring(0, 19)
       );
-      expect(providerEventHandler).toHaveBeenCalledTimes(2);
-      expect(providerEventHandler).toHaveBeenCalledWith({
-        type: Updates.UpdatesProviderEventType.CHECK_START,
-      });
-      expect(providerEventHandler).toHaveBeenCalledWith({
-        type: Updates.UpdatesProviderEventType.CHECK_COMPLETE,
-      });
+      expect(callbacks.onCheckForUpdateStart).toHaveBeenCalledTimes(1);
+      expect(callbacks.onCheckForUpdateComplete).toHaveBeenCalledTimes(1);
+      expect(callbacks.onCheckForUpdateError).not.toHaveBeenCalled();
     });
 
     it('App with provider handles error in checkForUpdate()', async () => {
-      const providerEventHandler = jest.fn();
+      const callbacks = getCallbacks();
       render(
         <UpdatesProvider>
-          <UpdatesProviderTestApp providerEventHandler={providerEventHandler} />
+          <UpdatesProviderTestApp callbacks={callbacks} />
         </UpdatesProvider>
       );
       const mockError = { code: 'ERR_TEST', message: 'test message' };
@@ -137,21 +142,16 @@ describe('Updates provider and hook tests', () => {
       });
       const errorView = await screen.findByTestId('error');
       expect(errorView).toHaveTextContent('{"code":"ERR_TEST","message":"test message"}');
-      expect(providerEventHandler).toHaveBeenCalledTimes(2);
-      expect(providerEventHandler).toHaveBeenCalledWith({
-        type: Updates.UpdatesProviderEventType.CHECK_START,
-      });
-      expect(providerEventHandler).toHaveBeenCalledWith({
-        type: Updates.UpdatesProviderEventType.CHECK_ERROR,
-        error: mockError,
-      });
+      expect(callbacks.onCheckForUpdateStart).toHaveBeenCalledTimes(1);
+      expect(callbacks.onCheckForUpdateComplete).not.toHaveBeenCalled();
+      expect(callbacks.onCheckForUpdateError).toHaveBeenCalledWith(mockError);
     });
 
-    it('App with provider calls handler during downloadUpdate()', async () => {
-      const providerEventHandler = jest.fn();
+    it('App with provider calls callbacks during downloadUpdate()', async () => {
+      const callbacks = getCallbacks();
       render(
         <UpdatesProvider>
-          <UpdatesProviderTestApp providerEventHandler={providerEventHandler} />
+          <UpdatesProviderTestApp callbacks={callbacks} />
         </UpdatesProvider>
       );
       ExpoUpdates.fetchUpdateAsync.mockReturnValueOnce({
@@ -162,20 +162,16 @@ describe('Updates provider and hook tests', () => {
       await act(async () => {
         fireEvent(buttonView, 'press');
       });
-      expect(providerEventHandler).toHaveBeenCalledTimes(2);
-      expect(providerEventHandler).toHaveBeenCalledWith({
-        type: Updates.UpdatesProviderEventType.DOWNLOAD_START,
-      });
-      expect(providerEventHandler).toHaveBeenCalledWith({
-        type: Updates.UpdatesProviderEventType.DOWNLOAD_COMPLETE,
-      });
+      expect(callbacks.onDownloadUpdateStart).toHaveBeenCalledTimes(1);
+      expect(callbacks.onDownloadUpdateComplete).toHaveBeenCalledTimes(1);
+      expect(callbacks.onDownloadUpdateError).not.toHaveBeenCalled();
     });
 
     it('App with provider handles error during downloadUpdate()', async () => {
-      const providerEventHandler = jest.fn();
+      const callbacks = getCallbacks();
       render(
         <UpdatesProvider>
-          <UpdatesProviderTestApp providerEventHandler={providerEventHandler} />
+          <UpdatesProviderTestApp callbacks={callbacks} />
         </UpdatesProvider>
       );
       const mockError = { code: 'ERR_TEST', message: 'test message' };
@@ -186,21 +182,16 @@ describe('Updates provider and hook tests', () => {
       });
       const errorView = await screen.findByTestId('error');
       expect(errorView).toHaveTextContent('{"code":"ERR_TEST","message":"test message"}');
-      expect(providerEventHandler).toHaveBeenCalledTimes(2);
-      expect(providerEventHandler).toHaveBeenCalledWith({
-        type: Updates.UpdatesProviderEventType.DOWNLOAD_START,
-      });
-      expect(providerEventHandler).toHaveBeenCalledWith({
-        type: Updates.UpdatesProviderEventType.DOWNLOAD_ERROR,
-        error: mockError,
-      });
+      expect(callbacks.onDownloadUpdateStart).toHaveBeenCalledTimes(1);
+      expect(callbacks.onDownloadUpdateComplete).not.toHaveBeenCalled();
+      expect(callbacks.onDownloadUpdateError).toHaveBeenCalledWith(mockError);
     });
 
-    it('App with provider calls handler during downloadAndRunUpdate()', async () => {
-      const providerEventHandler = jest.fn();
+    it('App with provider calls callbacks during downloadAndRunUpdate()', async () => {
+      const callbacks = getCallbacks();
       render(
         <UpdatesProvider>
-          <UpdatesProviderTestApp providerEventHandler={providerEventHandler} />
+          <UpdatesProviderTestApp callbacks={callbacks} />
         </UpdatesProvider>
       );
       ExpoUpdates.fetchUpdateAsync.mockReturnValueOnce({
@@ -212,16 +203,11 @@ describe('Updates provider and hook tests', () => {
       await act(async () => {
         fireEvent(buttonView, 'press');
       });
-      expect(providerEventHandler).toHaveBeenCalledTimes(3);
-      expect(providerEventHandler).toHaveBeenCalledWith({
-        type: Updates.UpdatesProviderEventType.DOWNLOAD_START,
-      });
-      expect(providerEventHandler).toHaveBeenCalledWith({
-        type: Updates.UpdatesProviderEventType.DOWNLOAD_COMPLETE,
-      });
-      expect(providerEventHandler).toHaveBeenCalledWith({
-        type: Updates.UpdatesProviderEventType.RUN_START,
-      });
+      expect(callbacks.onDownloadUpdateStart).toHaveBeenCalledTimes(1);
+      expect(callbacks.onDownloadUpdateComplete).toHaveBeenCalledTimes(1);
+      expect(callbacks.onDownloadUpdateError).not.toHaveBeenCalled();
+      expect(callbacks.onRunUpdateStart).toHaveBeenCalledTimes(1);
+      expect(callbacks.onRunUpdateError).not.toHaveBeenCalled();
     });
 
     it('App with provider shows log entries after running readLogEntries()', async () => {
