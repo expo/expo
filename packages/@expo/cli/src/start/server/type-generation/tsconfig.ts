@@ -32,6 +32,20 @@ export function getTSConfigUpdates(tsConfig: JSONObject) {
     }
   }
 
+  if (!tsConfig.plugins) {
+    tsConfig.plugins = [{ name: '@expo/typescript-plugin' }];
+    updates.add('plugins');
+  } else if (Array.isArray(tsConfig.plugins)) {
+    if (
+      !tsConfig.plugins.find(
+        (p) => (p as Record<string, unknown>).name === '@expo/typescript-plugin'
+      )
+    ) {
+      tsConfig.plugins = [...tsConfig.plugins, { name: '@expo/typescript-plugin' }];
+      updates.add('plugins');
+    }
+  }
+
   return { tsConfig, updates };
 }
 
@@ -53,6 +67,16 @@ export function getTSConfigRemoveUpdates(tsConfig: JSONObject) {
   if (Array.isArray(tsConfig.include) && tsConfig.include.includes('.expo/types/**/*.ts')) {
     tsConfig.include = tsConfig.include.filter((i) => (i as string) !== '.expo/types/**/*.ts');
     updates.add('include');
+  }
+
+  if (
+    Array.isArray(tsConfig.plugins) &&
+    tsConfig.plugins.find((p) => (p as Record<string, unknown>).name === '@expo/typescript-plugin')
+  ) {
+    tsConfig.plugins = tsConfig.plugins.filter(
+      (p) => (p as Record<string, unknown>).name !== '@expo/typescript-plugin'
+    );
+    updates.add('plugins');
   }
 
   return { tsConfig, updates };
