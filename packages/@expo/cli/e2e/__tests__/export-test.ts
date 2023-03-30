@@ -21,14 +21,14 @@ beforeAll(async () => {
   await fs.mkdir(projectRoot, { recursive: true });
   process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
-  process.env.EXPO_USE_PATH_ALIASES = '1';
+  process.env._EXPO_E2E_USE_PATH_ALIASES = '1';
   delete process.env.EXPO_USE_STATIC;
 });
 
 afterAll(() => {
   process.env.FORCE_COLOR = originalForceColor;
   process.env.CI = originalCI;
-  delete process.env.EXPO_USE_PATH_ALIASES;
+  delete process.env._EXPO_E2E_USE_PATH_ALIASES;
 });
 
 it('loads expected modules by default', async () => {

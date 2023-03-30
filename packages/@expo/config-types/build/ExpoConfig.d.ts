@@ -158,10 +158,6 @@ export interface ExpoConfig {
      */
     scheme?: string;
     /**
-     * @deprecated Use a `main` field in the project `package.json` instead.
-     */
-    entryPoint?: string;
-    /**
      * Any extra fields you want to pass to your experience. Values are accessible via `Expo.Constants.manifest.extra` ([Learn more](https://docs.expo.dev/versions/latest/sdk/constants/#constantsmanifest))
      */
     extra?: {
@@ -262,6 +258,10 @@ export interface ExpoConfig {
      * Enable experimental features that may be unstable, unsupported, or removed without deprecation notices.
      */
     experiments?: {
+        /**
+         * Enable tsconfig/jsconfig `compilerOptions.paths` and `compilerOptions.baseUrl` support for import aliases in Metro.
+         */
+        tsconfigPaths?: boolean;
         /**
          * Enables Turbo Modules, which are a type of native modules that use a different way of communicating between JS and platform code. When installing a Turbo Module you will need to enable this experimental option (the library still needs to be a part of Expo SDK already, like react-native-reanimated v2). Turbo Modules do not support remote debugging and enabling this option will disable remote debugging.
          */
