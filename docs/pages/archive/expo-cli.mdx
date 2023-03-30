@@ -733,7 +733,7 @@ In Expo SDK 46, we migrated to a new suite of tooling that is versioned in the `
 | `expo send`                   | Removed                         |
 | `expo client:install:ios`     | Unimplemented                   |
 | `expo client:install:android` | Unimplemented                   |
-| `expo doctor`                 | Undecided                       |
+| `expo doctor`                 | Moved to `npx expo-doctor`      |
 | `expo upgrade`                | Undecided                       |
 
 ### Services
@@ -782,7 +782,8 @@ In Expo SDK 46, we migrated to a new suite of tooling that is versioned in the `
   - Dropped warning about clearing `dist` folder that is shown between runs, this is akin to all other bundler commands across web tooling.
   - Dropped all merging code because experimental bundle does not support index files so we don't need to support merging index files.
   - Dropped the quiet flag as this appears to do nothing anymore.
-- Parts of `expo upgrade` and `expo doctor` have been merged into `npx expo install` via the `--fix` and `--check` flags. [PR](https://github.com/expo/expo/pull/17048).
+- Parts of `expo upgrade` have been merged into `npx expo install` via the `--fix` and `--check` flags. [PR](https://github.com/expo/expo/pull/17048).
+- `expo doctor` has been deprecated in favor of `npx expo-doctor` for projects using SDK 46 and higher.
 - Dropped unused generated `.exprc`, `.expo/packager-info.json` files.
 - Dropped all deprecated support for `*.expo.js` files.
 - Reduced usage of `.expo/settings.json` to provide a more sandboxed state between processes.
