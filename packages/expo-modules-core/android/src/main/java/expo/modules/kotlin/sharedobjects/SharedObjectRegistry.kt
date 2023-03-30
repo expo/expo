@@ -26,7 +26,9 @@ class SharedObjectRegistry {
     native.sharedObjectId = id
     js.defineProperty(sharedObjectIdPropertyName, id.value)
 
-    // TODO(@lukmccall): add deallocator to remove js object
+    js.defineDeallocator {
+      delete(id)
+    }
 
     pairs[id] = native to js
     return id
@@ -35,7 +37,9 @@ class SharedObjectRegistry {
   internal fun delete(id: SharedObjectId) {
     pairs.remove(id)?.let { (native, js) ->
       native.sharedObjectId = SharedObjectId(0)
-      js.defineProperty(sharedObjectIdPropertyName, 0)
+      if (js.isValid()) {
+        js.defineProperty(sharedObjectIdPropertyName, 0)
+      }
     }
   }
 

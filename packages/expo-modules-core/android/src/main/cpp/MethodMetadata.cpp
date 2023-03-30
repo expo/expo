@@ -6,6 +6,7 @@
 #include "JavaReferencesCache.h"
 #include "Exceptions.h"
 #include "JavaCallback.h"
+#include "ObjectDeallocator.h"
 
 #include <utility>
 #include <functional>
@@ -21,20 +22,6 @@ namespace jsi = facebook::jsi;
 namespace react = facebook::react;
 
 namespace expo {
-
-class JSI_EXPORT ObjectDeallocator : public jsi::HostObject {
-public:
-  typedef std::function<void()> ObjectDeallocatorType;
-
-  ObjectDeallocator(ObjectDeallocatorType deallocator) : deallocator(deallocator) {};
-
-  virtual ~ObjectDeallocator() {
-    deallocator();
-  }
-
-  const ObjectDeallocatorType deallocator;
-
-}; // class ObjectDeallocator
 
 // Modified version of the RN implementation
 // https://github.com/facebook/react-native/blob/7dceb9b63c0bfd5b13bf6d26f9530729506e9097/ReactCommon/react/nativemodule/core/platform/android/ReactCommon/JavaTurboModule.cpp#L57
@@ -373,7 +360,7 @@ jsi::Value MethodMetadata::callSync(
 
     jni::global_ref<jobject> globalRef = jni::make_global(result);
     std::shared_ptr<expo::ObjectDeallocator> deallocator = std::make_shared<ObjectDeallocator>(
-      [globalRef = globalRef]() mutable {
+      [globalRef = std::move(globalRef)]() mutable {
         globalRef.reset();
       });
 
