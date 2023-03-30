@@ -20,7 +20,7 @@ export async function typescriptTypeGeneration({
   server,
 }: TypeScriptTypeGenerationOptions) {
   if (!env.EXPO_USE_TYPED_ROUTES) {
-    return;
+    return forceRemovalTSConfig(projectRoot);
   }
 
   if (!metro) {
@@ -34,5 +34,5 @@ export async function typescriptTypeGeneration({
   await fs.mkdir(typesDirectory, { recursive: true });
 
   await forceUpdateTSConfig(projectRoot);
-  await setupTypedRoutes({ metro, server, typesDirectory });
+  await setupTypedRoutes({ metro, server, typesDirectory, projectRoot });
 }

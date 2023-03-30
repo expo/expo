@@ -7,6 +7,7 @@ import { env } from '../../../utils/env';
 import { unsafeTemplate } from '../../../utils/template';
 import { ServerLike } from '../BundlerDevServer';
 import { metroWatchTypeScriptFiles } from '../metro/metroWatchTypeScriptFiles';
+import { getExpoRouterRootDirectory } from '../metro/router';
 import { setToUnionType } from './utils';
 
 // /test/[...param1]/[param2]/[param3] - captures ["param1", "param2", "param3"]
@@ -24,10 +25,16 @@ export interface SetupTypedRoutesOptions {
   server: ServerLike;
   metro: Server;
   typesDirectory: string;
+  projectRoot: string;
 }
 
-export async function setupTypedRoutes({ server, metro, typesDirectory }: SetupTypedRoutesOptions) {
-  const appRoot = path.resolve(env.EXPO_ROUTER_APP_ROOT);
+export async function setupTypedRoutes({
+  server,
+  metro,
+  typesDirectory,
+  projectRoot,
+}: SetupTypedRoutesOptions) {
+  const appRoot = getExpoRouterRootDirectory(projectRoot);
 
   const { filePathToRoute, staticRoutes, dynamicRoutes, addFilePath } =
     getTypedRoutesUtils(appRoot);
@@ -112,7 +119,7 @@ export function getTypedRoutesUtils(appRoot: string) {
   };
 
   const addFilePath = (filePath: string): boolean => {
-    if (filePath.includes('_layout')) {
+    if (filePath.match(/_layout\.[tj]sx?$/)) {
       return false;
     }
 
@@ -306,7 +313,7 @@ const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
 
   export const Link: LinkComponent;
 
-  export type Router<T> = {
+  export type Router = {
     /** Navigate to the provided href. */
     push: <T>(href: Href<T>) => void;
     /** Navigate to route without appending to the history. */
