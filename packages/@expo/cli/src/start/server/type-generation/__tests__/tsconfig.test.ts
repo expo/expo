@@ -1,6 +1,6 @@
 import { getTSConfigRemoveUpdates, getTSConfigUpdates } from '../tsconfig';
 
-describe(`${getTSConfigUpdates}`, () => {
+describe(getTSConfigUpdates, () => {
   it('add to a new tsconfig', () => {
     const { tsConfig, updates } = getTSConfigUpdates({});
 
@@ -26,7 +26,7 @@ describe(`${getTSConfigUpdates}`, () => {
   });
 });
 
-describe(`${getTSConfigRemoveUpdates}`, () => {
+describe(getTSConfigRemoveUpdates, () => {
   it('can remove the expo types from include', () => {
     const { tsConfig, updates } = getTSConfigRemoveUpdates({
       include: ['**/*.ts', '**/*.tsx', '.expo/types/**/*.ts'],
