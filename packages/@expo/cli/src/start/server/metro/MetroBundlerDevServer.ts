@@ -63,7 +63,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   async getRoutesAsync() {
     const url = this.getDevServerUrl();
     assert(url, 'Dev server must be started');
-    const { getManifest } = await getStaticRenderFunctions(this.projectRoot, url);
+    const { getManifest } = await getStaticRenderFunctions(this.projectRoot, url, {
+      // Ensure the API Routes are included
+      environment: 'node',
+    });
     return getManifest({ fetchData: true });
   }
 
@@ -80,6 +83,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const load = await getStaticPageContentsAsync(this.projectRoot, this.getDevServerUrl()!, {
       minify: mode === 'production',
       dev: mode !== 'production',
+      // Ensure the API Routes are included
+      environment: 'node',
     });
 
     return await load(location);
@@ -102,7 +107,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
 
     const { metro, server, middleware, messageSocket } = await instantiateMetroAsync(
-      this.projectRoot,
+      this,
       parsedOptions
     );
 
@@ -168,6 +173,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               {
                 minify: options.mode === 'production',
                 dev: options.mode !== 'production',
+                // Ensure the API Routes are included
+                environment: 'node',
               }
             );
 

@@ -20,13 +20,19 @@
 - Set node env for metro config in `expo export:embed`. ([#21644](https://github.com/expo/expo/pull/21644) by [@EvanBacon](https://github.com/EvanBacon))
 - Add inspector proxy workarounds for known issues with vscode debugger and Hermes CDP messages. ([#21560](https://github.com/expo/expo/pull/21560) by [@byCedric](https://github.com/byCedric))
 - Add EXPO_ROUTER_TYPED_ROUTES flag to enable experimental support for type generation ([#21560](https://github.com/expo/expo/pull/21651) by [@marklawlor](https://github.com/marklawlor))
+- Add inspector support for `Page.reload` CDP message. ([#21827](https://github.com/expo/expo/pull/21827) by [@byCedric](https://github.com/byCedric))
+- Add Node.js rendering to Metro bundler and Node.js external imports. ([#21886](https://github.com/expo/expo/pull/21886) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
+- Respond to `Debugger.getScriptSource` CDP messages when using lan or tunnel. ([#21825](https://github.com/expo/expo/pull/21825) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
+- Fallback on latest `@expo/metro-config` when local version isn't available (effects testing locally). ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))
 - Update fixtures. ([#21397](https://github.com/expo/expo/pull/21397) by [@EvanBacon](https://github.com/EvanBacon))
 - Upgrade e2e tests to SDK 47. ([#21335](https://github.com/expo/expo/pull/21335) by [@EvanBacon](https://github.com/EvanBacon))
+- Update `metro.config.js` template file to match new template. ([#21898](https://github.com/expo/expo/pull/21898) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 0.6.1 — 2023-02-15
 

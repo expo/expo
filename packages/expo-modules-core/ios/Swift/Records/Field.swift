@@ -74,12 +74,12 @@ public final class Field<Type>: AnyFieldInternal {
   /**
    Sets the wrapped value with a value of `Any` type.
    */
-  internal func set(_ newValue: Any?) throws {
+  internal func set(_ newValue: Any?, appContext: AppContext) throws {
     if newValue == nil && (!isOptional || isRequired) {
       throw FieldRequiredException(key!)
     }
     do {
-      if let value = try fieldType.cast(newValue) as? Type {
+      if let value = try fieldType.cast(newValue, appContext: appContext) as? Type {
         wrappedValue = value
       }
     } catch {

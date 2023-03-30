@@ -121,7 +121,30 @@ jsi::Object JavaScriptObject::preparePropertyDescriptor(
   jsi::Object descriptor(jsRuntime);
   descriptor.setProperty(jsRuntime, "configurable", (bool) ((1 << 0) & options));
   descriptor.setProperty(jsRuntime, "enumerable", (bool) ((1 << 1) & options));
-  descriptor.setProperty(jsRuntime, "writable", (bool) ((1 << 2) & options));
+  if ((bool) (1 << 2 & options)) {
+    descriptor.setProperty(jsRuntime, "writable", true);
+  }
   return descriptor;
+}
+
+void JavaScriptObject::defineProperty(
+  jsi::Runtime &runtime,
+  jsi::Object *jsthis,
+  const std::string &name,
+  jsi::Object descriptor
+) {
+  jsi::Object global = runtime.global();
+  jsi::Object objectClass = global.getPropertyAsObject(runtime, "Object");
+  jsi::Function definePropertyFunction = objectClass.getPropertyAsFunction(
+    runtime,
+    "defineProperty"
+  );
+
+  // This call is basically the same as `Object.defineProperty(object, name, descriptor)` in JS
+  definePropertyFunction.callWithThis(runtime, objectClass, {
+    jsi::Value(runtime, *jsthis),
+    jsi::String::createFromUtf8(runtime, name),
+    std::move(descriptor),
+  });
 }
 } // namespace expo

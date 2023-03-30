@@ -28,15 +28,22 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
 
   var takesOwner: Bool = false
 
-  func call(by owner: AnyObject?, withArguments args: [Any], callback: @escaping (FunctionCallResult) -> Void) {
-    let arguments: [Any]
+  func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> Void) {
+    var arguments: [Any]
 
     do {
+      try validateArgumentsNumber(function: self, received: args.count)
+
       arguments = concat(
-        arguments: try cast(arguments: args, forFunction: self),
+        arguments: args,
         withOwner: owner,
-        forFunction: self
+        withPromise: nil,
+        forFunction: self,
+        appContext: appContext
       )
+
+      // All `JavaScriptValue` args must be preliminarly converted on the JS thread, before we jump to the function's queue.
+      arguments = try cast(jsValues: args, forFunction: self, appContext: appContext)
     } catch let error as Exception {
       callback(.failure(error))
       return
@@ -50,9 +57,12 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
       let result: Result<Any, Exception>
 
       do {
+        // Convert arguments to the types desired by the function.
+        let finalArguments = try cast(arguments: arguments, forFunction: self, appContext: appContext)
+
         // TODO: Right now we force cast the tuple in all types of functions, but we should throw another exception here.
         // swiftlint:disable force_cast
-        let argumentsTuple = try Conversions.toTuple(arguments) as! Args
+        let argumentsTuple = try Conversions.toTuple(finalArguments) as! Args
         let returnValue = try await body(argumentsTuple)
 
         result = .success(returnValue)
@@ -68,18 +78,24 @@ public final class ConcurrentFunctionDefinition<Args, FirstArgType, ReturnType>:
 
   // MARK: - JavaScriptObjectBuilder
 
-  func build(inRuntime runtime: JavaScriptRuntime) -> JavaScriptObject {
-    return runtime.createAsyncFunction(name, argsCount: argumentsCount) { [weak self, name] this, args, resolve, reject in
-      guard let self = self else {
+  func build(appContext: AppContext) throws -> JavaScriptObject {
+    return try appContext.runtime.createAsyncFunction(name, argsCount: argumentsCount) {
+      [weak appContext, weak self, name] this, args, resolve, reject in
+
+      guard let appContext else {
+        let exception = Exceptions.AppContextLost()
+        return reject(exception.code, exception.description, nil)
+      }
+      guard let self else {
         let exception = NativeFunctionUnavailableException(name)
         return reject(exception.code, exception.description, nil)
       }
-      self.call(by: this, withArguments: args) { result in
+      self.call(by: this, withArguments: args, appContext: appContext) { result in
         switch result {
-        case .failure(let error):
-          reject(error.code, error.description, nil)
-        case .success(let value):
-          resolve(value)
+          case .failure(let error):
+            reject(error.code, error.description, nil)
+          case .success(let value):
+            resolve(value)
         }
       }
     }

@@ -7,6 +7,9 @@
 #elif __has_include(<ABI48_0_0React-jsc/ABI48_0_0JSCRuntime.h>)
 // react-native@>=0.71 has a specific ABI48_0_0React-jsc pod
 #import <ABI48_0_0React-jsc/ABI48_0_0JSCRuntime.h>
+// use_frameworks! transforms the dash to underscore
+#elif __has_include(<ABI48_0_0React_jsc/ABI48_0_0JSCRuntime.h>)
+#import <ABI48_0_0React_jsc/ABI48_0_0JSCRuntime.h>
 #else
 #import <ABI48_0_0jsi/ABI48_0_0JSCRuntime.h>
 #endif
@@ -176,7 +179,7 @@ static NSString *mainObjectPropertyName = @"expo";
     }];
   } catch (jsi::JSIException &error) {
     NSString *reason = [NSString stringWithUTF8String:error.what()];
-    
+
     @throw [NSException exceptionWithName:@"ScriptEvaluationException" reason:reason userInfo:@{
       @"message": reason
     }];

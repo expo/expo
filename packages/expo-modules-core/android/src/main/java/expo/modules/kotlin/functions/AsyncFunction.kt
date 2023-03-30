@@ -48,11 +48,12 @@ abstract class AsyncFunction(
   @Throws(CodedException::class)
   internal abstract fun callUserImplementation(args: ReadableArray, promise: Promise)
 
-  internal abstract fun callUserImplementation(args: Array<Any?>, promise: Promise)
+  internal abstract fun callUserImplementation(args: Array<Any?>, promise: Promise, appContext: AppContext)
 
   override fun attachToJSObject(appContext: AppContext, jsObject: JavaScriptModuleObject) {
     jsObject.registerAsyncFunction(
       name,
+      takesOwner,
       argsCount,
       desiredArgsTypes.map { it.getCppRequiredTypes() }.toTypedArray()
     ) { args, bridgePromise ->
@@ -66,7 +67,7 @@ abstract class AsyncFunction(
           exceptionDecorator({
             FunctionCallException(name, jsObject.name, it)
           }) {
-            callUserImplementation(args, bridgePromise)
+            callUserImplementation(args, bridgePromise, appContext)
           }
         } catch (e: CodedException) {
           bridgePromise.reject(e)

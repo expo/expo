@@ -10,9 +10,17 @@
 
 ### 🐛 Bug fixes
 
+- Add missing `mimeType` when emitting network responses. ([#21676](https://github.com/expo/expo/pull/21676) by [@byCedric](https://github.com/byCedric))
+
 ### 💡 Others
 
 - Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
+
+## 2.1.6 - 2023-03-20
+
+### 🐛 Bug fixes
+
+- Change arg in gradle `.execute()` call to null to inherit env variables from user's env ([#21712](https://github.com/expo/expo/pull/21712) by [@phoenixiguess](https://github.com/phoenixiguess))
 
 ## 2.1.5 - 2023-03-03
 

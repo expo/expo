@@ -20,8 +20,7 @@ import {
   scale,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { Platform, ScrollView } from 'react-native';
-import { Switch } from 'react-native-gesture-handler';
+import { Platform, ScrollView, Switch } from 'react-native';
 
 import { useAppInfo } from '../hooks/useAppInfo';
 import { useClipboard } from '../hooks/useClipboard';

@@ -63,7 +63,7 @@ public final class UpdatesModule: Module {
       ]
     }
 
-    AsyncFunction("reloadAsync") { (promise: Promise) in
+    AsyncFunction("reload") { (promise: Promise) in
       guard let updatesService = updatesService, let config = updatesService.config, config.isEnabled else {
         throw UpdatesDisabledException()
       }
