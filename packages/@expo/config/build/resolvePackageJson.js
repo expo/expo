@@ -25,16 +25,9 @@ function _Errors() {
   };
   return data;
 }
-function fileExists(file) {
-  try {
-    return (0, _fs().statSync)(file).isFile();
-  } catch {
-    return false;
-  }
-}
 function getRootPackageJsonPath(projectRoot) {
   const packageJsonPath = (0, _path().join)(projectRoot, 'package.json');
-  if (!fileExists(packageJsonPath)) {
+  if (!(0, _fs().existsSync)(packageJsonPath)) {
     throw new (_Errors().ConfigError)(`The expected package.json path: ${packageJsonPath} does not exist`, 'MODULE_NOT_FOUND');
   }
   return packageJsonPath;

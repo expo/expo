@@ -12,6 +12,7 @@ void FrontendConverterProvider::createConverters() {
 #define RegisterConverter(type, clazz)  simpleConverters.insert({type, std::make_shared<clazz>()})
   RegisterConverter(CppType::NONE, UnknownFrontendConverter);
   RegisterConverter(CppType::INT, IntegerFrontendConverter);
+  RegisterConverter(CppType::LONG, LongFrontendConverter);
   RegisterConverter(CppType::FLOAT, FloatFrontendConverter);
   RegisterConverter(CppType::DOUBLE, DoubleFrontendConverter);
   RegisterConverter(CppType::BOOLEAN, BooleanFrontendConverter);
@@ -21,6 +22,8 @@ void FrontendConverterProvider::createConverters() {
   RegisterConverter(CppType::STRING, StringFrontendConverter);
   RegisterConverter(CppType::READABLE_MAP, ReadableNativeMapArrayFrontendConverter);
   RegisterConverter(CppType::READABLE_ARRAY, ReadableNativeArrayFrontendConverter);
+  RegisterConverter(CppType::VIEW_TAG, ViewTagFrontendConverter);
+  RegisterConverter(CppType::SHARED_OBJECT_ID, SharedObjectIdConverter);
 #undef RegisterConverter
 
   auto registerPolyConverter = [this](const std::vector<CppType> &types) {

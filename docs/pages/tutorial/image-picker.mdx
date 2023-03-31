@@ -5,6 +5,7 @@ title: Use an image picker
 import { SnackInline, Terminal } from '~/ui/components/Snippet';
 import Video from '~/components/plugins/Video';
 import { A } from '~/ui/components/Text';
+import { Step } from '~/ui/components/Step';
 
 React Native provides built-in components that are standard building blocks used by every application, such as `<View>`, `<Text>`, and `<Pressable>`.
 We want to build a feature that isn't possible with these core components and API: selecting an image from the device's media library. For that, we will need a library.
@@ -13,7 +14,9 @@ To achieve this, we'll use an Expo SDK library called <A href="/versions/latest/
 
 > `expo-image-picker` provides access to the system's UI to select images and videos from the phone's library or take a photo with the camera.
 
-## Step 1: Install expo-image-picker
+<Step label="1">
+
+## Install expo-image-picker
 
 To install the library, run the following command:
 
@@ -22,7 +25,11 @@ To install the library, run the following command:
 > **Tip:** Any time we install a new library in our project, we must stop the development server by pressing <kbd>Ctrl</kbd> + <kbd>c</kbd> in the terminal and then running the installation command.
 > After the installation, we can start the development server again by running `npx expo start` from the same terminal window.
 
-## Step 2: Pick an image from the device's media library
+</Step>
+
+<Step label="2">
+
+## Pick an image from the device's media library
 
 `expo-image-picker` provides the `launchImageLibraryAsync()` method that displays the system UI for choosing an image or a video from the device's media library.
 
@@ -67,7 +74,11 @@ Let's learn what the above code does.
   We can pass the object to specify different options when invoking the method.
 - When `allowsEditing` is set to `true`, the user can crop the image during the selection process on Android and iOS but not on the web.
 
-## Step 3: Update the button component
+</Step>
+
+<Step label="3">
+
+## Update the button component
 
 When the primary button gets pressed, we need to call the `pickImageAsync()` function.
 To call it, update the `onPress` property of the `<Button>` component in **components/Button.js**:
@@ -131,14 +142,18 @@ To demonstrate what properties the `result` object contains, here is an example 
 }
 ```
 
-## Step 4: Use the selected image
+</Step>
+
+<Step label="4">
+
+## Use the selected image
 
 The `result` object provides the `assets` array, which contains the `uri` of the selected image.
 Let's take this value from the image picker and use it to show the selected image in the app.
 
 Modify the **App.js** file in the following steps:
 
-- Declare a state variable called `selectedImage` using the <A href="https://reactjs.org/docs/hooks-state.html" openInNewTab>`useState`</A> hook from React.
+- Declare a state variable called `selectedImage` using the <A href="https://react.dev/learn/state-a-components-memory#adding-a-state-variable" openInNewTab>`useState`</A> hook from React.
   We'll use this state variable to hold the URI of the selected image.
 - Update the `pickImageAsync()` function to save the image URI in the `selectedImage` state variable.
 - Then, pass the `selectedImage` as a prop to the `ImageViewer` component.
@@ -223,6 +238,8 @@ Let's take a look at our app now:
 <Video file="tutorial/03-image-picker-demo.mp4" />
 
 > The images used for the demo in this tutorial were picked from [Unsplash](https://unsplash.com).
+
+</Step>
 
 ## Next steps
 

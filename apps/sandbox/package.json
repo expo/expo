@@ -10,12 +10,12 @@
     "postinstall": "expo-yarn-workspaces postinstall"
   },
   "dependencies": {
-    "expo": "~47.0.0-alpha.1",
-    "react": "18.1.0",
-    "react-native": "0.70.5"
+    "expo": "~48.0.0-beta.0",
+    "react": "18.2.0",
+    "react-native": "0.71.4"
   },
   "devDependencies": {
-    "babel-preset-expo": "~9.2.0",
+    "babel-preset-expo": "~9.3.0",
     "expo-yarn-workspaces": "^2.0.0"
   },
   "private": true

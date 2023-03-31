@@ -89,6 +89,11 @@ class Env {
     return string('EXPO_EDITOR', '');
   }
 
+  /** Enable auto server root detection for Metro. This will change the server root to the workspace root. */
+  get EXPO_USE_METRO_WORKSPACE_ROOT(): boolean {
+    return boolish('EXPO_USE_METRO_WORKSPACE_ROOT', false);
+  }
+
   /**
    * Overwrite the dev server URL, disregarding the `--port`, `--host`, `--tunnel`, `--lan`, `--localhost` arguments.
    * This is useful for browser editors that require custom proxy URLs.
@@ -137,6 +142,18 @@ class Env {
    */
   get EXPO_NO_APPLE_APP_SITE_ASSOCIATION(): boolean {
     return boolish('EXPO_NO_APPLE_APP_SITE_ASSOCIATION', false);
+  }
+
+  /**
+   * **Experimental:** Use static generation for Metro web projects. This only works with Expo Router.
+   */
+  get EXPO_USE_STATIC(): boolean {
+    return boolish('EXPO_USE_STATIC', false);
+  }
+
+  /** **Experimental:** Use the network inspector by overriding the metro inspector proxy with a custom version */
+  get EXPO_USE_CUSTOM_INSPECTOR_PROXY(): boolean {
+    return boolish('EXPO_USE_CUSTOM_INSPECTOR_PROXY', false);
   }
 }
 

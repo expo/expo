@@ -283,9 +283,9 @@ public:
     static void Rewind(sk_sp<SkPathRef>* pathRef);
 
     ~SkPathRef();
-    int countPoints() const { return fPoints.count(); }
-    int countVerbs() const { return fVerbs.count(); }
-    int countWeights() const { return fConicWeights.count(); }
+    int countPoints() const { return fPoints.size(); }
+    int countVerbs() const { return fVerbs.size(); }
+    int countWeights() const { return fConicWeights.size(); }
 
     size_t approximateBytesUsed() const;
 
@@ -397,8 +397,8 @@ private:
     /** Makes additional room but does not change the counts or change the genID */
     void incReserve(int additionalVerbs, int additionalPoints) {
         SkDEBUGCODE(this->validate();)
-        fPoints.setReserve(fPoints.count() + additionalPoints);
-        fVerbs.setReserve(fVerbs.count() + additionalVerbs);
+        fPoints.reserve(fPoints.size() + additionalPoints);
+        fVerbs.reserve(fVerbs.size() + additionalVerbs);
         SkDEBUGCODE(this->validate();)
     }
 
@@ -415,11 +415,11 @@ private:
         fIsOval = false;
         fIsRRect = false;
 
-        fPoints.setReserve(pointCount + reservePoints);
-        fPoints.setCount(pointCount);
-        fVerbs.setReserve(verbCount + reserveVerbs);
-        fVerbs.setCount(verbCount);
-        fConicWeights.setCount(conicCount);
+        fPoints.reserve(pointCount + reservePoints);
+        fPoints.resize(pointCount);
+        fVerbs.reserve(verbCount + reserveVerbs);
+        fVerbs.resize(verbCount);
+        fConicWeights.resize(conicCount);
         SkDEBUGCODE(this->validate();)
     }
 

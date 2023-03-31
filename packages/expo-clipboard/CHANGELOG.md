@@ -8,9 +8,29 @@
 
 ### 🐛 Bug fixes
 
-- Fixed the `ImageFormat` or the `StringFormat` not working in the release builds on Android. ([#20155](https://github.com/expo/expo/pull/20155) by [@lukmccall](https://github.com/lukmccall))
+### 💡 Others
+
+## 4.1.2 - 2023-03-03
+
+### 🐛 Bug fixes
+
+- Fixed crash in clipboard listener on Android SDK <26 ([#21383](https://github.com/expo/expo/pull/21383) by [@frw](https://github.com/frw))
+
+## 4.1.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 4.1.0 — 2023-02-03
 
 ### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
+## 4.0.2 — 2022-12-30
+
+### 🐛 Bug fixes
+
+- Fixed the `ImageFormat` or the `StringFormat` not working in the release builds on Android. ([#20155](https://github.com/expo/expo/pull/20155) by [@lukmccall](https://github.com/lukmccall))
 
 ## 4.0.1 — 2022-10-30
 

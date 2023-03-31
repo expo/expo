@@ -23,6 +23,7 @@ const debug = require('debug')('expo:start:server:devServer') as typeof console.
 
 export type ServerLike = {
   close(callback?: (err?: Error) => void): void;
+  addListener?(event: string, listener: (...args: any[]) => void): unknown;
 };
 
 export type DevServerInstance = {
@@ -105,6 +106,8 @@ export abstract class BundlerDevServer {
   /** Manages the creation of dev server URLs. */
   protected urlCreator?: UrlCreator | null = null;
 
+  private notifier: FileNotifier | null = null;
+
   constructor(
     /** Project root folder. */
     public projectRoot: string,
@@ -137,7 +140,7 @@ export abstract class BundlerDevServer {
       isNativeWebpack: this.name === 'webpack' && this.isTargetingNative(),
       privateKeyPath: options.privateKeyPath,
     });
-    return middleware.getHandler();
+    return middleware;
   }
 
   /** Start the dev server using settings defined in the start command. */
@@ -160,6 +163,10 @@ export abstract class BundlerDevServer {
     options: BundlerStartOptions
   ): Promise<DevServerInstance>;
 
+  public async waitForTypeScriptAsync(): Promise<void> {
+    // noop -- We've only implemented this functionality in Metro.
+  }
+
   /**
    * Creates a mock server representation that can be used to estimate URLs for a server started in another process.
    * This is used for the run commands where you can reuse the server from a previous run.
@@ -175,6 +182,7 @@ export abstract class BundlerDevServer {
         close: () => {
           this.instance = null;
         },
+        addListener() {},
       },
       location: {
         // The port is the main thing we want to send back.
@@ -215,8 +223,9 @@ export abstract class BundlerDevServer {
   protected abstract getConfigModuleIds(): string[];
 
   protected watchConfig() {
-    const notifier = new FileNotifier(this.projectRoot, this.getConfigModuleIds());
-    notifier.startObserving();
+    this.notifier?.stopObserving();
+    this.notifier = new FileNotifier(this.projectRoot, this.getConfigModuleIds());
+    this.notifier.startObserving();
   }
 
   /** Create ngrok instance and start the tunnel server. Exposed for testing. */
@@ -232,11 +241,7 @@ export abstract class BundlerDevServer {
   protected async startDevSessionAsync() {
     // This is used to make Expo Go open the project in either Expo Go, or the web browser.
     // Must come after ngrok (`startTunnelAsync`) setup.
-
-    if (this.devSession) {
-      this.devSession.stopNotifying();
-    }
-
+    this.devSession?.stopNotifying?.();
     this.devSession = new DevelopmentSession(
       this.projectRoot,
       // This URL will be used on external devices so the computer IP won't be relevant.
@@ -293,6 +298,9 @@ export abstract class BundlerDevServer {
 
   /** Stop the running dev server instance. */
   async stopAsync() {
+    // Stop file watching.
+    this.notifier?.stopObserving();
+
     // Stop the dev session timer and tell Expo API to remove dev session.
     await this.devSession?.closeAsync();
 
@@ -442,6 +450,13 @@ export abstract class BundlerDevServer {
         platform === 'emulator' ? 'android' : platform === 'simulator' ? 'ios' : null
       ) ?? null
     );
+  }
+
+  public getReactDevToolsUrl(): string {
+    return new URL(
+      '_expo/react-devtools',
+      this.getUrlCreator().constructUrl({ scheme: 'http' })
+    ).toString();
   }
 
   protected async getPlatformManagerAsync(platform: keyof typeof PLATFORM_MANAGERS) {

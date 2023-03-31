@@ -5,8 +5,7 @@ import Foundation
 /**
  Error codes for expo-updates logs
  */
-@objc(EXUpdatesErrorCode)
-public enum UpdatesErrorCode: Int {
+internal enum UpdatesErrorCode: Int {
   case none = 0
   case noUpdatesAvailable = 1
   case updateAssetsNotAvailable = 2
@@ -22,7 +21,7 @@ public enum UpdatesErrorCode: Int {
   // the usual "\(UpdatesErrorCode.NoUpdatesAvailable)"
   // string representation will not work as expected,
   // so we add this representation here
-  public var asString: String {
+  var asString: String {
     switch self {
     case .none:
       return "None"

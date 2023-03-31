@@ -1,6 +1,6 @@
 /* eslint-env jest */
 import JsonFile from '@expo/json-file';
-import execa from 'execa';
+import execa, { ExecaError } from 'execa';
 import fs from 'fs/promises';
 import klawSync from 'klaw-sync';
 import path from 'path';
@@ -29,8 +29,8 @@ afterAll(() => {
 it('loads expected modules by default', async () => {
   const modules = await getLoadedModulesAsync(`require('../../build/src/install').expoInstall`);
   expect(modules).toStrictEqual([
-    '../node_modules/ansi-styles/index.js',
     '../node_modules/arg/index.js',
+    '../node_modules/chalk/node_modules/ansi-styles/index.js',
     '../node_modules/chalk/source/index.js',
     '../node_modules/chalk/source/util.js',
     '../node_modules/has-flag/index.js',
@@ -88,13 +88,14 @@ it(
     const pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
     // Added expected package
-    expect(pkg.dependencies['expo-sms']).toBe('~10.2.0');
+    const pkgDependencies = pkg.dependencies as Record<string, string>;
+    expect(pkgDependencies['expo-sms']).toBe('~11.0.0');
     expect(pkg.devDependencies).toEqual({
       '@babel/core': '^7.12.9',
     });
 
     // Added new packages
-    expect(Object.keys(pkg.dependencies).sort()).toStrictEqual([
+    expect(Object.keys(pkg.dependencies ?? {}).sort()).toStrictEqual([
       'expo',
       'expo-sms',
       'react',
@@ -115,27 +116,28 @@ it(
 
     let pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
     // Added expected package
-    expect(pkg.dependencies['expo-sms']).toBe('1.0.0');
+    let pkgDependencies = pkg.dependencies as Record<string, string>;
+    expect(pkgDependencies['expo-sms']).toBe('1.0.0');
 
     try {
       await execa('node', [bin, 'install', '--check'], { cwd: projectRoot });
       throw new Error('SHOULD NOT HAPPEN');
-    } catch (error) {
+    } catch (e) {
+      const error = e as ExecaError;
       expect(error.stderr).toMatch(/expo-auth-session@1\.0\.0 - expected version: ~3\.\d\.\d/);
-      expect(error.stderr).toMatch(/expo-sms@1\.0\.0 - expected version: ~10\.\d\.\d/);
-      expect(error.stderr).toMatch(
-        /npx expo install expo-auth-session@~3\.\d\.\d expo-sms@~10\.\d\.\d/
-      );
+      expect(error.stderr).toMatch(/expo-sms@1\.0\.0 - expected version: ~11\.\d\.\d/);
+      expect(error.stderr).toMatch(/npx expo install --fix/);
     }
 
     await expect(
       execa('node', [bin, 'install', 'expo-sms', '--check'], { cwd: projectRoot })
-    ).rejects.toThrowError(/expo-sms@1\.0\.0 - expected version: ~10\.\d\.\d/);
+    ).rejects.toThrowError(/expo-sms@1\.0\.0 - expected version: ~11\.\d\.\d/);
 
     // Check doesn't fix packages
     pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
     // Added expected package
-    expect(pkg.dependencies['expo-sms']).toBe('1.0.0');
+    pkgDependencies = pkg.dependencies as Record<string, string>;
+    expect(pkgDependencies['expo-sms']).toBe('1.0.0');
   },
   // Could take 45s depending on how fast npm installs
   60 * 1000
@@ -157,10 +159,11 @@ it(
     // Check doesn't fix packages
     let pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
     // Added expected package
-    expect(pkg.dependencies['expo-sms']).toBe('~10.2.0');
+    let pkgDependencies = pkg.dependencies as Record<string, string>;
+    expect(pkgDependencies['expo-sms']).toBe('~11.0.0');
 
     // Didn't fix expo-auth-session since we didn't pass it in
-    expect(pkg.dependencies['expo-auth-session']).toBe('1.0.0');
+    expect(pkgDependencies['expo-auth-session']).toBe('1.0.0');
 
     // Fix all versions
     await execa('node', [bin, 'install', '--fix'], { cwd: projectRoot });
@@ -169,7 +172,8 @@ it(
     pkg = await JsonFile.readAsync(path.resolve(projectRoot, 'package.json'));
 
     // Didn't fix expo-auth-session since we didn't pass it in
-    expect(pkg.dependencies['expo-auth-session']).toBe('~3.6.1');
+    pkgDependencies = pkg.dependencies as Record<string, string>;
+    expect(pkgDependencies['expo-auth-session']).toBe('~3.8.0');
   },
   // Could take 45s depending on how fast npm installs
   60 * 1000

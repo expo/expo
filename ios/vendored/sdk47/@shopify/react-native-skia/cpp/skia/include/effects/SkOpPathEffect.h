@@ -8,10 +8,14 @@
 #ifndef SkOpPathEffect_DEFINED
 #define SkOpPathEffect_DEFINED
 
-#include "include/core/SkMatrix.h"
 #include "include/core/SkPaint.h"
-#include "include/core/SkPathEffect.h"
+#include "include/core/SkRefCnt.h"
+#include "include/core/SkScalar.h"
+#include "include/core/SkTypes.h"
 #include "include/pathops/SkPathOps.h"
+
+class SkMatrix;
+class SkPathEffect;
 
 class SK_API SkMergePathEffect {
 public:

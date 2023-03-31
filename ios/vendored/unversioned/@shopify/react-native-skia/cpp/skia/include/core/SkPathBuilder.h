@@ -242,7 +242,7 @@ private:
     int fIsAStart = -1;     // tracks direction iff fIsA is not unknown
     bool fIsACCW  = false;  // tracks direction iff fIsA is not unknown
 
-    int countVerbs() const { return fVerbs.count(); }
+    int countVerbs() const { return fVerbs.size(); }
 
     // called right before we add a (non-move) verb
     void ensureMove() {

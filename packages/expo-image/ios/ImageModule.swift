@@ -37,6 +37,10 @@ public final class ImageModule: Module {
         view.contentFit = contentFit ?? .cover
       }
 
+      Prop("placeholderContentFit") { (view, placeholderContentFit: ContentFit?) in
+        view.placeholderContentFit = placeholderContentFit ?? .scaleDown
+      }
+
       Prop("contentPosition") { (view, contentPosition: ContentPosition?) in
         view.contentPosition = contentPosition ?? .center
       }
@@ -65,6 +69,22 @@ public final class ImageModule: Module {
         view.cachePolicy = cachePolicy ?? .disk
       }
 
+      Prop("enableLiveTextInteraction") { (view, enableLiveTextInteraction: Bool?) in
+        view.enableLiveTextInteraction = enableLiveTextInteraction ?? false
+      }
+
+      Prop("accessible") { (view, accessible: Bool?) in
+        view.sdImageView.isAccessibilityElement = accessible ?? false
+      }
+
+      Prop("accessibilityLabel") { (view, label: String?) in
+        view.sdImageView.accessibilityLabel = label
+      }
+
+      Prop("recyclingKey") { (view, key: String?) in
+        view.recyclingKey = key
+      }
+
       OnViewDidUpdateProps { view in
         view.reload()
       }
@@ -87,7 +107,13 @@ public final class ImageModule: Module {
   }
 
   static func registerCoders() {
-    SDImageCodersManager.shared.addCoder(SDImageWebPCoder.shared)
+    if #available(iOS 14.0, *) {
+      // By default Animated WebP is not supported
+      SDImageCodersManager.shared.addCoder(SDImageAWebPCoder.shared)
+    } else {
+      // This coder is much slower, but it's the only one that works in iOS 13
+      SDImageCodersManager.shared.addCoder(SDImageWebPCoder.shared)
+    }
     SDImageCodersManager.shared.addCoder(SDImageAVIFCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageSVGCoder.shared)
     SDImageCodersManager.shared.addCoder(SDImageHEICCoder.shared)
@@ -95,5 +121,6 @@ public final class ImageModule: Module {
 
   static func registerLoaders() {
     SDImageLoadersManager.shared.addLoader(BlurhashLoader())
+    SDImageLoadersManager.shared.addLoader(PhotoLibraryAssetLoader())
   }
 }

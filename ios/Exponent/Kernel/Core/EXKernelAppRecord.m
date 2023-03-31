@@ -7,6 +7,8 @@
 
 #import <React/RCTUtils.h>
 
+@import EXManifests;
+
 NSString *kEXKernelBridgeDidForegroundNotification = @"EXKernelBridgeDidForegroundNotification";
 NSString *kEXKernelBridgeDidBackgroundNotification = @"EXKernelBridgeDidBackgroundNotification";
 
@@ -23,7 +25,7 @@ NSString *kEXKernelBridgeDidBackgroundNotification = @"EXKernelBridgeDidBackgrou
   return self;
 }
 
-- (instancetype)initWithAppLoader:(EXAppLoader *)customAppLoader appManager:(EXReactAppManager *)customAppManager
+- (instancetype)initWithAppLoader:(EXAbstractLoader *)customAppLoader appManager:(EXReactAppManager *)customAppManager
 {
   if (self = [super init]) {
     _appManager = customAppManager;

@@ -2,12 +2,14 @@
 title: Audio
 sourceCodeUrl: 'https://github.com/expo/expo/tree/main/packages/expo-av'
 packageName: 'expo-av'
+iconUrl: '/static/images/packages/expo-av.png'
 ---
 
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { SnackInline} from '~/ui/components/Snippet';
 import APISection from '~/components/plugins/APISection';
+import { PlatformTags } from '~/ui/components/Tag';
 
 **`expo-av`** allows you to implement audio playback and recording in your app.
 
@@ -26,11 +28,12 @@ Try the [playlist example app](https://expo.dev/@documentation/playlist-example)
 ### Playing sounds
 
 <SnackInline
-label='Playing sounds'
-dependencies={['expo-av', 'expo-asset']}
-files={{
+  label='Playing sounds'
+  dependencies={['expo-av', 'expo-asset']}
+  files={{
     'assets/Hello.mp3': 'https://snack-code-uploads.s3.us-west-1.amazonaws.com/~asset/c9c43b458d6daa9771a7287cae9f5b47'
-  }}>
+  }}
+>
 
 ```jsx
 import * as React from 'react';
@@ -148,7 +151,7 @@ const styles = StyleSheet.create({
 
 </SnackInline>
 
-### Playing or recording audio in background (iOS)
+### Playing or recording audio in background&ensp;<PlatformTags platforms={['ios']} />
 
 On iOS, audio playback and recording in background is only available in standalone apps, and it requires some extra configuration.
 On iOS, each background feature requires a special key in `UIBackgroundModes` array in your **Info.plist** file.

@@ -2,8 +2,8 @@
 
 #include <exception>
 #include <functional>
-#include <mutex>
 #include <memory>
+#include <mutex>
 #include <string>
 #include <thread>
 #include <unordered_map>
@@ -14,7 +14,7 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
-#include <SkStream.h>
+#include "SkStream.h"
 
 #pragma clang diagnostic pop
 
@@ -24,31 +24,31 @@
 
 namespace RNSkia {
 
-using namespace facebook;
+namespace jsi = facebook::jsi;
+namespace react = facebook::react;
 
 class RNSkPlatformContext {
 public:
   /**
    * Constructor
    */
-  RNSkPlatformContext(
-      jsi::Runtime *runtime, std::shared_ptr<react::CallInvoker> callInvoker,
-      float pixelDensity)
+  RNSkPlatformContext(jsi::Runtime *runtime,
+                      std::shared_ptr<react::CallInvoker> callInvoker,
+                      float pixelDensity)
       : _pixelDensity(pixelDensity), _jsRuntime(runtime),
         _callInvoker(callInvoker),
-        _dispatchQueue(std::make_unique<RNSkDispatchQueue>("skia-render-thread")) {
-          _jsThreadId = std::this_thread::get_id();
-        }
+        _dispatchQueue(
+            std::make_unique<RNSkDispatchQueue>("skia-render-thread")) {
+    _jsThreadId = std::this_thread::get_id();
+  }
 
   /**
    * Destructor
    */
-  virtual ~RNSkPlatformContext() {
-    invalidate();
-  }
-  
+  virtual ~RNSkPlatformContext() { invalidate(); }
+
   void invalidate() {
-    if(!_isValid) {
+    if (!_isValid) {
       return;
     }
     // Stop the refresh loop
@@ -58,20 +58,22 @@ public:
     notifyDrawLoop(true);
     _isValid = false;
   }
-  
+
   /*
    Returns true if the current execution context is the javascript thread.
    */
   bool isOnJavascriptThread() {
     return _jsThreadId == std::this_thread::get_id();
-  };
-  
+  }
+
   /**
    * Schedules the function to be run on the javascript thread async
    * @param func Function to run
    */
   void runOnJavascriptThread(std::function<void()> func) {
-    if(!_isValid) { return; }
+    if (!_isValid) {
+      return;
+    }
     _callInvoker->invokeAsync(std::move(func));
   }
 
@@ -79,7 +81,9 @@ public:
    Runs the function on the render thread
    */
   void runOnRenderThread(std::function<void()> func) {
-    if(!_isValid) { return; }
+    if (!_isValid) {
+      return;
+    }
     _dispatchQueue->dispatch(std::move(func));
   }
 
@@ -96,7 +100,7 @@ public:
   virtual void performStreamOperation(
       const std::string &sourceUri,
       const std::function<void(std::unique_ptr<SkStreamAsset>)> &op) = 0;
-  
+
   /**
    * Raises an exception on the platform. This function does not necessarily
    * throw an exception and stop execution, so it is important to stop execution
@@ -118,7 +122,7 @@ public:
   /**
    * @return Current scale factor for pixels
    */
-  float getPixelDensity() { return _pixelDensity; };
+  float getPixelDensity() { return _pixelDensity; }
 
   /**
    * Starts (if not started) a loop that will call back on display sync
@@ -126,7 +130,9 @@ public:
    * @returns Identifier of the draw loop entry
    */
   size_t beginDrawLoop(size_t nativeId, std::function<void(bool)> callback) {
-    if(!_isValid) { return 0; }
+    if (!_isValid) {
+      return 0;
+    }
     auto shouldStart = false;
     {
       std::lock_guard<std::mutex> lock(_drawCallbacksLock);
@@ -146,7 +152,9 @@ public:
    * @param nativeId Identifier of view to end
    */
   void endDrawLoop(size_t nativeId) {
-    if(!_isValid) { return; }
+    if (!_isValid) {
+      return;
+    }
     auto shouldStop = false;
     {
       std::lock_guard<std::mutex> lock(_drawCallbacksLock);
@@ -162,27 +170,28 @@ public:
 
   /**
    * Notifies all drawing callbacks
-   * @param invalidated True if the context was invalidated, otherwise false. This
-   * can be used to receive a notification that we have stopped the main drawloop
+   * @param invalidated True if the context was invalidated, otherwise false.
+   * This can be used to receive a notification that we have stopped the main
+   * drawloop
    */
   void notifyDrawLoop(bool invalidated) {
-    if(!_isValid) { return; }
-    std::unordered_map<size_t, std::function<void(bool)>> tmp;
-    {
-      std::lock_guard<std::mutex> lock(_drawCallbacksLock);
-      tmp.insert(_drawCallbacks.cbegin(), _drawCallbacks.cend());      
+    if (!_isValid) {
+      return;
     }
-    for (auto it = tmp.begin(); it != tmp.end(); it++) {
+    std::lock_guard<std::mutex> lock(_drawCallbacksLock);
+    for (auto it = _drawCallbacks.begin(); it != _drawCallbacks.end(); it++) {
       it->second(invalidated);
-    }    
+    }
   }
 
-  virtual void startDrawLoop() = 0;
-  virtual void stopDrawLoop() = 0;
+  // default implementation does nothing, so it can be called from virtual
+  // destructor.
+  virtual void startDrawLoop() {}
+  virtual void stopDrawLoop() {}
 
 private:
   float _pixelDensity;
-  
+
   std::thread::id _jsThreadId;
 
   jsi::Runtime *_jsRuntime;

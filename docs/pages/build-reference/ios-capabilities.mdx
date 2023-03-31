@@ -1,8 +1,10 @@
 ---
 title: iOS Capabilities
+description: Learn about built-in iOS capabilities supported in EAS Build and how to enable or disable them.
 ---
 
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
+import { Terminal } from '~/ui/components/Snippet';
 
 When you make a change to your iOS entitlements, this change needs to be updated remotely on Apple's servers before making a production build. EAS Build automatically synchronizes capabilities on the Apple Developer Console with your local entitlements configuration when you run `eas build`. Capabilities are web services provided by Apple, think of them like AWS or Firebase services.
 
@@ -10,9 +12,9 @@ When you make a change to your iOS entitlements, this change needs to be updated
 
 ## Entitlements
 
-In bare workflow apps, the entitlements are read from your `ios/**/*.entitlements` file.
+In bare workflow apps, the entitlements are read from your __ios/**/*.entitlements__ file.
 
-In managed workflow, the entitlements are read from the introspected Expo config. You can see what your introspected config looks like by running `npx expo config --type introspect` in your project, then look for the `ios.entitlements` object for the results.
+In the managed workflow, the entitlements are read from the introspected Expo config. You can see what your introspected config looks like by running `npx expo config --type introspect` in your project, then look for the `ios.entitlements` object for the results.
 
 ## Enabling
 
@@ -89,7 +91,7 @@ The unsupported capabilities either don't support iOS, or they don't have a corr
 
 Merchant IDs, App Groups, and CloudKit Containers can all be automatically registered and assigned to your app. These assignments require Apple cookies authentication (running locally) as the official App Store Connect API does not support these operations.
 
-## Debugging
+## Debugging iOS capabilities
 
 You can run `EXPO_DEBUG=1 eas build` to get more detailed logs regarding the capability syncing.
 
@@ -103,21 +105,21 @@ There are two ways to manually enable Apple capabilities, both systems will requ
 
 ### Xcode
 
-> Preferred method for bare workflow or projects that do **not** using [Expo Prebuild](/workflow/prebuild) to continuously generate the native `ios` and `android` directories.
+> Preferred method for bare workflow or projects that do **not** use [Expo Prebuild](/workflow/prebuild) to continuously generate the native **android** and **ios** directories.
 
-1. Open the `ios/` directory in Xcode with `xed ios`. If you don't have an `ios/` directory, run `npx expo prebuild -p ios` to generate one.
-2. Then follow [this guide][apple-enable-capability].
+1. Open the **ios** directory in Xcode with `xed ios`. If you don't have an `ios/` directory, run `npx expo prebuild -p ios` to generate one.
+2. Then follow the steps mentioned in [Add a capability][apple-enable-capability].
 
 ### Apple Developer Console
 
-First step is to add the respective key/value pairs to your `ios/[app]/[app].entitlements` (or more specific entitlements file for multi-target apps). You can refer to [Supported Capabilities](#supported-capabilities) to determine which entitlements keys should be added.
+First step is to add the respective key/value pairs to your **ios/[app]/[app].entitlements** (or more specific entitlements file for multi-target apps). You can refer to [Supported Capabilities](#supported-capabilities) to determine which entitlements keys should be added.
 
 1. Log into [Apple Developer Console][apple-dev-console]. Click on "Certificates, IDs & Profiles", then navigate to "Identifiers" page.
 2. Choose the bundle identifier that matches your app's bundle identifier.
 3. Scroll down and enable a capability, some capabilities may require extra setup.
-4. Scroll to the top and press "Save". You will see a dialog that says "Modify App Capabilities", press "Confirm" to continue. You will need to regenerate any provisioning profiles that use this bundle identifier before they'll be valid for building a code signed production ipa.
+4. Scroll to the top and press "Save". You will see a dialog that says "Modify App Capabilities", press "Confirm" to continue. You will need to regenerate any provisioning profiles that use this bundle identifier before they'll be valid for building a code signed production **.ipa**.
 
-If adding capabilities process has not been done correctly then your iOS native build will fail with an error that looks something like:
+If adding capabilities process has not been done correctly then your iOS native build will fail with an error similar to:
 
 ```
 ❌  error: Provisioning profile "*[expo] app.bacon.hello AppStore ..." doesn't support the Associated Domains capability.

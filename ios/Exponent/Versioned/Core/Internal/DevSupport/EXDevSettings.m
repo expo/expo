@@ -30,4 +30,15 @@ NSString *const kRCTDevSettingHotLoadingEnabled = @"hotLoadingEnabled";
   return [super supportedEvents];
 }
 
+- (BOOL)isRemoteDebuggingAvailable
+{
+  NSString *bridgeDescription = [self.bridge valueForKey:@"_bridgeDescription"];
+  BOOL isHermesRuntime = [bridgeDescription containsString:@"HermesRuntime"];
+  if (isHermesRuntime) {
+    // Disable remote debugging when running on Hermes
+    return NO;
+  }
+  return [super isRemoteDebuggingAvailable];
+}
+
 @end

@@ -87,17 +87,17 @@ func shouldDownscale(image: UIImage, toSize size: CGSize, scale: Double) -> Bool
     return false
   }
   let imageSize = image.size * image.scale
-  return imageSize.width > size.width && imageSize.height > size.height
+  return imageSize.width > (size.width * scale) && imageSize.height > (size.height * scale)
 }
 
 /**
  Resizes the animated image to fit in the given size and scale.
  */
-func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) -> UIImage {
+func resize(animatedImage image: UIImage, toSize size: CGSize, scale: Double) async -> UIImage {
   // For animated images, the `images` member is non-nil and represents an array of animation frames.
   if let images = image.images {
     // Resize each animation frame separately.
-    let resizedImages = images.map { image in
+    let resizedImages = await concurrentMap(images) { image in
       return resize(image: image, toSize: size, scale: scale)
     }
 
@@ -151,6 +151,18 @@ func getBestSource(from sources: [ImageSource]?, forSize size: CGSize, scale: Do
   return bestSource
 }
 
+/**
+ Creates the cache key filter that returns the specific string.
+ */
+func createCacheKeyFilter(_ cacheKey: String?) -> SDWebImageCacheKeyFilter? {
+  guard let cacheKey = cacheKey else {
+    return nil
+  }
+  return SDWebImageCacheKeyFilter { _ in
+    return cacheKey
+  }
+}
+
 extension CGSize {
   /**
    Multiplies a size with a scalar.
@@ -171,5 +183,45 @@ extension CGSize {
    */
   func rounded(_ rule: FloatingPointRoundingRule) -> CGSize {
     return CGSize(width: width.rounded(rule), height: height.rounded(rule))
+  }
+}
+
+func makeNSError(description: String) -> NSError {
+  let userInfo = [NSLocalizedDescriptionKey: description]
+  return NSError(domain: "expo.modules.image", code: 0, userInfo: userInfo)
+}
+
+// MARK: - Async helpers
+// TODO: Add helpers like these to the modules core eventually
+
+/**
+ Asynchronously maps the given sequence (sequentially).
+ */
+func asyncMap<ItemsType: Sequence, ResultType>(
+  _ items: ItemsType,
+  _ transform: (ItemsType.Element) async throws -> ResultType
+) async rethrows -> [ResultType] {
+  var values = [ResultType]()
+
+  for item in items {
+    try await values.append(transform(item))
+  }
+  return values
+}
+
+/**
+ Concurrently maps the given sequence.
+ */
+func concurrentMap<ItemsType: Sequence, ResultType>(
+  _ items: ItemsType,
+  _ transform: @escaping (ItemsType.Element) async throws -> ResultType
+) async rethrows -> [ResultType] {
+  let tasks = items.map { item in
+    Task {
+      try await transform(item)
+    }
+  }
+  return try await asyncMap(tasks) { task in
+    try await task.value
   }
 }

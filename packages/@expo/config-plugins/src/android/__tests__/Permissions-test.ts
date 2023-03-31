@@ -1,7 +1,7 @@
-import { resolve } from 'path';
-
+import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import { format } from '../../utils/XML';
-import { readAndroidManifestAsync } from '../Manifest';
+import * as XML from '../../utils/XML';
+import { AndroidManifest } from '../Manifest';
 import {
   addBlockedPermissions,
   ensurePermission,
@@ -13,11 +13,18 @@ import {
   withInternalBlockedPermissions,
 } from '../Permissions';
 
-const fixturesPath = resolve(__dirname, 'fixtures');
-const sampleManifestPath = resolve(fixturesPath, 'react-native-AndroidManifest.xml');
+async function getFixtureManifestAsync() {
+  const manifest = (await XML.parseXMLAsync(
+    rnFixture['android/app/src/main/AndroidManifest.xml']
+  )) as AndroidManifest;
 
-function getMockAndroidManifest() {
-  return readAndroidManifestAsync(sampleManifestPath);
+  removePermissions(manifest, [
+    'android.permission.SYSTEM_ALERT_WINDOW',
+    'android.permission.VIBRATE',
+    'android.permission.READ_EXTERNAL_STORAGE',
+    'android.permission.WRITE_EXTERNAL_STORAGE',
+  ]);
+  return manifest;
 }
 
 describe(withInternalBlockedPermissions, () => {
@@ -32,14 +39,13 @@ describe(withInternalBlockedPermissions, () => {
 
     const { modResults } = await (config as any).mods.android.manifest({
       modRequest: {},
-      modResults: await getMockAndroidManifest(),
+      modResults: await getFixtureManifestAsync(),
     });
 
     expect(modResults).toEqual({
       manifest: {
         $: {
           'xmlns:android': expect.any(String),
-          package: expect.any(String),
           // Added tools
           'xmlns:tools': 'http://schemas.android.com/tools',
         },
@@ -90,19 +96,19 @@ describe(withInternalBlockedPermissions, () => {
 
     const { modResults } = await (config as any).mods.android.manifest({
       modRequest: {},
-      modResults: await getMockAndroidManifest(),
+      modResults: await getFixtureManifestAsync(),
     });
 
     expect(modResults).toEqual({
       manifest: {
         $: {
           'xmlns:android': expect.any(String),
-          package: expect.any(String),
           // Added tools
           'xmlns:tools': 'http://schemas.android.com/tools',
         },
         'uses-permission': [
           expect.anything(),
+
           // Added two blocked permissions
           {
             $: {
@@ -129,14 +135,13 @@ describe(withInternalBlockedPermissions, () => {
 
     const { modResults } = await (config as any).mods.android.manifest({
       modRequest: {},
-      modResults: await getMockAndroidManifest(),
+      modResults: await getFixtureManifestAsync(),
     });
 
     expect(modResults).toEqual({
       manifest: {
         $: {
           'xmlns:android': expect.any(String),
-          package: expect.any(String),
           // Added tools
           'xmlns:tools': 'http://schemas.android.com/tools',
         },
@@ -226,19 +231,20 @@ describe('Android permissions', () => {
       'com.android.launcher.permission.INSTALL_SHORTCUT',
       'com.android.launcher.permission.INSTALL_SHORTCUT',
     ];
-    let androidManifestJson = await readAndroidManifestAsync(sampleManifestPath);
+    let androidManifestJson = await getFixtureManifestAsync();
     androidManifestJson = await setAndroidPermissions(
       { android: { permissions: givenPermissions } },
       androidManifestJson
     );
 
     const manifestPermissionsJSON = androidManifestJson.manifest['uses-permission'];
-    const manifestPermissions = manifestPermissionsJSON.map((e) => e.$['android:name']);
+    const manifestPermissions = manifestPermissionsJSON!.map((e) => e.$['android:name']);
 
     // Account for INTERNET permission in fixture
     // No duplicates
     expect(manifestPermissions).toStrictEqual([
       'android.permission.INTERNET',
+
       'android.permission.READ_CONTACTS',
       'com.android.launcher.permission.INSTALL_SHORTCUT',
     ]);
@@ -250,7 +256,7 @@ describe('Android permissions', () => {
 
 describe('Permissions', () => {
   it(`adds a new permission`, async () => {
-    const manifest = await readAndroidManifestAsync(sampleManifestPath);
+    const manifest = await getFixtureManifestAsync();
     const didAdd = ensurePermission(manifest, 'EXPO_TEST_PERMISSION');
     const permissions = getPermissions(manifest);
     expect(didAdd).toBe(true);
@@ -259,7 +265,7 @@ describe('Permissions', () => {
   });
 
   it(`prevents adding a duplicate permission`, async () => {
-    const manifest = await readAndroidManifestAsync(sampleManifestPath);
+    const manifest = await getFixtureManifestAsync();
     const didAdd = ensurePermission(manifest, 'INTERNET');
     const permissions = getPermissions(manifest);
     expect(didAdd).toBe(false);
@@ -268,7 +274,7 @@ describe('Permissions', () => {
   });
 
   it(`ensures multiple permissions`, async () => {
-    const manifest = await readAndroidManifestAsync(sampleManifestPath);
+    const manifest = await getFixtureManifestAsync();
     const permissionsToAdd = ['VALUE_1', 'VALUE_2'];
     const results = ensurePermissions(manifest, permissionsToAdd);
     expect(results).toMatchSnapshot();
@@ -278,7 +284,7 @@ describe('Permissions', () => {
   });
 
   it(`removes permissions by name`, async () => {
-    const manifest = await readAndroidManifestAsync(sampleManifestPath);
+    const manifest = await getFixtureManifestAsync();
     expect(ensurePermission(manifest, 'VALUE_TO_REMOVE_1')).toBe(true);
     expect(ensurePermission(manifest, 'VALUE_TO_REMOVE_2')).toBe(true);
     expect(getPermissions(manifest).length).toBe(3);
@@ -288,7 +294,7 @@ describe('Permissions', () => {
   });
 
   it(`removes all permissions`, async () => {
-    const manifest = await readAndroidManifestAsync(sampleManifestPath);
+    const manifest = await getFixtureManifestAsync();
     expect(ensurePermission(manifest, 'VALUE_TO_REMOVE_1')).toBe(true);
     expect(ensurePermission(manifest, 'VALUE_TO_REMOVE_2')).toBe(true);
     expect(getPermissions(manifest).length).toBe(3);
@@ -299,7 +305,7 @@ describe('Permissions', () => {
   });
 
   it(`can write with a pretty format`, async () => {
-    const manifest = await readAndroidManifestAsync(sampleManifestPath);
+    const manifest = await getFixtureManifestAsync();
     expect(ensurePermission(manifest, 'NEW_PERMISSION_1')).toBe(true);
     expect(ensurePermission(manifest, 'NEW_PERMISSION_2')).toBe(true);
     expect(getPermissions(manifest).length).toBe(3);

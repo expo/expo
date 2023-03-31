@@ -108,7 +108,6 @@ export default function ScrollViewScreen() {
           disabled={Platform.OS !== 'web'}
           onPress={() => {
             if (scrollView.current) {
-              // @ts-ignore: web-only
               scrollView.current.flashScrollIndicators();
             }
           }}

@@ -1,7 +1,10 @@
 ---
 title: Submitting to the Google Play Store
 sidebar_title: Submitting to Google
+description: Learn how to submit your app to the Google Play Store from your computer and CI.
 ---
+
+import { Terminal } from '~/ui/components/Snippet';
 
 This guide outlines how to submit your app to the Google Play Store from your own computer and from CI.
 
@@ -14,13 +17,13 @@ This guide outlines how to submit your app to the Google Play Store from your ow
 
 ### Creating a Google Service Account
 
-See [expo.fyi/creating-google-service-account](https://expo.fyi/creating-google-service-account) to learn more.
+For more information, see [expo.fyi/creating-google-service-account](https://expo.fyi/creating-google-service-account).
 
 ### Manually uploading your app for the first time
 
 Before using `eas submit -p android` for uploading your builds, you have to upload your app manually at least once. This is a limitation of the Google Play Store API.
 
-See [expo.fyi/first-android-submission](https://expo.fyi/first-android-submission) to learn more.
+For more information, see [expo.fyi/first-android-submission](https://expo.fyi/first-android-submission).
 
 ## 1. Build a standalone app
 
@@ -53,15 +56,13 @@ The command will perform the following steps:
 
 ## Submitting your app using CI
 
-The `eas submit` command is able to perform submissions from a CI environment. All you have to do is ensure that all required information is provided with **eas.json** and environment variables. Mainly, providing the archive source (`--latest`, `--id`, `--path`, or `--url`) is essential. Also, make sure that the Android package name is present in your [app config file](/workflow/configuration.mdx).
+The `eas submit` command can perform submissions from a CI environment. All you have to do is ensure that all required information is provided with **eas.json** and environment variables. Mainly, providing the archive source (`--latest`, `--id`, `--path`, or `--url`) is essential. Also, make sure that the Android package name is present in your [app config file](/workflow/configuration.mdx).
 
 For Android submissions, you must provide the path to your Google Services JSON key using the `serviceAccountKeyPath` key in **eas.json**. You may also find the `track` and `releaseStatus` parameters useful.
 
 Example usage:
 
-```sh
-eas submit -p android --profile foobar
-```
+<Terminal cmd={['$ eas submit -p android --profile foobar']} />
 
 ## Automating submissions
 

@@ -1,6 +1,6 @@
 {
   "name": "expo-device",
-  "version": "5.0.0",
+  "version": "5.2.1",
   "description": "A universal module that gets physical information about the device running the application",
   "main": "build/Device.js",
   "types": "build/Device.d.ts",
@@ -33,7 +33,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev/versions/latest/sdk/device/",
   "dependencies": {
-    "ua-parser-js": "^0.7.19"
+    "ua-parser-js": "^0.7.33"
   },
   "devDependencies": {
     "expo-module-scripts": "^3.0.0"

@@ -4,11 +4,76 @@
 
 ### 🛠 Breaking changes
 
+- drop `EXPO_USE_LOCAL_CLI` in favor of using `expo` for the local CLI and `expo-cli` for the global CLI. ([#21388](https://github.com/expo/expo/pull/21388) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
+
+- Add `expo/scripts/launchPackager.command` script for launching Expo CLI when building iOS apps for development in Xcode. ([#21397](https://github.com/expo/expo/pull/21397) by [@EvanBacon](https://github.com/EvanBacon))
+- Added internal `export:embed` command for use in Xcode and Android Studio builds. ([#21396](https://github.com/expo/expo/pull/21396) by [@EvanBacon](https://github.com/EvanBacon))
+- Export TypeScript types for `expo/metro-config`. ([#21898](https://github.com/expo/expo/pull/21898) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 48.0.8 - 2023-03-20
+
+### 🐛 Bug fixes
+
+- Change arg in gradle `.execute()` call to null to inherit env variables from user's env ([#21712](https://github.com/expo/expo/pull/21712) by [@phoenixiguess](https://github.com/phoenixiguess))
+
+## 48.0.7 - 2023-03-14
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.6 - 2023-03-08
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.5 - 2023-03-03
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.4 - 2023-02-23
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.3 - 2023-02-21
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.2 - 2023-02-21
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.1 — 2023-02-15
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.0 — 2023-02-14
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.0-beta.2 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.0-beta.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.0-beta.0 — 2023-02-03
+
+### 🐛 Bug fixes
+
+- Use React 18 mounting pattern on web to avoid web warning. ([#20965](https://github.com/expo/expo/pull/20965) by [@EvanBacon](https://github.com/EvanBacon))
+- Skip mounting root component when DOM is not available. ([#20916](https://github.com/expo/expo/pull/20916) by [@EvanBacon](https://github.com/EvanBacon))
+- Use position `fixed` to float fast refresh indicator to the bottom on web. ([#20966](https://github.com/expo/expo/pull/20966) by [@EvanBacon](https://github.com/EvanBacon))
+- Added support for React Native 0.71.x. ([#20799](https://github.com/expo/expo/pull/20799) [#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
 
 ## 47.0.1 — 2022-11-03
 

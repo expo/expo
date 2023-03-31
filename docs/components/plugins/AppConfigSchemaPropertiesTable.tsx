@@ -1,13 +1,14 @@
 import { css } from '@emotion/react';
-import { borderRadius, breakpoints, spacing, theme, typography } from '@expo/styleguide';
+import { theme, typography } from '@expo/styleguide';
+import { borderRadius, breakpoints, spacing } from '@expo/styleguide-base';
 import ReactMarkdown from 'react-markdown';
 
-import { createPermalinkedComponent } from '~/common/create-permalinked-component';
 import { HeadingType } from '~/common/headingManager';
 import { APIBox } from '~/components/plugins/APIBox';
-import { mdComponents, mdInlineComponents } from '~/components/plugins/api/APISectionUtils';
+import { mdComponents } from '~/components/plugins/api/APISectionUtils';
+import { Callout } from '~/ui/components/Callout';
 import { Collapsible } from '~/ui/components/Collapsible';
-import { P, CALLOUT, CODE } from '~/ui/components/Text';
+import { P, CALLOUT, CODE, createPermalinkedComponent, BOLD } from '~/ui/components/Text';
 
 type PropertyMeta = {
   regexHuman?: string;
@@ -164,7 +165,7 @@ const AppConfigProperty = ({
 }: FormattedProperty & { nestingLevel: number }) => (
   <APIBox css={boxStyle}>
     <PropertyName name={name} nestingLevel={nestingLevel} />
-    <CALLOUT theme="secondary" data-text="true">
+    <CALLOUT theme="secondary" data-text="true" css={typeRow}>
       Type: <CODE>{type || 'undefined'}</CODE>
       {nestingLevel > 0 && (
         <>
@@ -175,7 +176,6 @@ const AppConfigProperty = ({
         </>
       )}
     </CALLOUT>
-    <br />
     <ReactMarkdown components={mdComponents}>{description}</ReactMarkdown>
     {expoKit && (
       <Collapsible summary="ExpoKit">
@@ -187,7 +187,12 @@ const AppConfigProperty = ({
         <ReactMarkdown components={mdComponents}>{bareWorkflow}</ReactMarkdown>
       </Collapsible>
     )}
-    {example && <ReactMarkdown components={mdInlineComponents}>{`> ${example}`}</ReactMarkdown>}
+    {example && (
+      <Callout>
+        <BOLD>Example</BOLD>
+        <ReactMarkdown components={mdComponents}>{example}</ReactMarkdown>
+      </Callout>
+    )}
     <div>
       {subproperties.length > 0 &&
         subproperties.map((formattedProperty, index) => (
@@ -206,15 +211,16 @@ const boxStyle = css({
   marginBottom: 0,
   borderRadius: 0,
   borderBottomWidth: 0,
+  paddingBottom: 0,
 
   '&:first-of-type': {
-    borderTopLeftRadius: borderRadius.medium,
-    borderTopRightRadius: borderRadius.medium,
+    borderTopLeftRadius: borderRadius.md,
+    borderTopRightRadius: borderRadius.md,
   },
 
   '&:last-of-type': {
-    borderBottomLeftRadius: borderRadius.medium,
-    borderBottomRightRadius: borderRadius.medium,
+    borderBottomLeftRadius: borderRadius.md,
+    borderBottomRightRadius: borderRadius.md,
     marginBottom: spacing[4],
     borderBottomWidth: 1,
   },
@@ -225,10 +231,13 @@ const boxStyle = css({
 });
 
 const secondaryCodeLineStyle = css({
-  fontFamily: typography.fontStacks.mono,
   color: theme.text.secondary,
   padding: `0 ${spacing[1]}px`,
   wordBreak: 'break-word',
+});
+
+const typeRow = css({
+  margin: `${spacing[3]}px 0`,
 });
 
 export default AppConfigSchemaPropertiesTable;

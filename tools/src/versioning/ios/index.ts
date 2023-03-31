@@ -217,7 +217,6 @@ async function generateVersionedReactNativeAsync(versionName: string): Promise<v
     'React-Core.podspec',
     'ReactCommon/ReactCommon.podspec',
     'ReactCommon/React-Fabric.podspec',
-    'ReactCommon/React-bridging.podspec',
     'ReactCommon/hermes/React-hermes.podspec',
     'sdks/hermes-engine/hermes-engine.podspec',
     'package.json',
@@ -250,6 +249,16 @@ async function generateVersionedReactNativeAsync(versionName: string): Promise<v
     jsSrcsDir: path.join(EXPO_DIR, RELATIVE_RN_PATH, 'Libraries'),
     keepIntermediateSchema: true,
   });
+  console.log(`Removing unused generated FBReactNativeSpecJSI files for 0.71`);
+  await Promise.all(
+    [
+      `${versionName}FBReactNativeSpecJSI.h`,
+      `${versionName}FBReactNativeSpecJSI-generated.cpp`,
+    ].map((file) => {
+      const filePath = path.join(versionedReactNativePath, 'codegen', 'ios', file);
+      return fs.remove(filePath);
+    })
+  );
 
   console.log(
     `Copying cpp libraries from ${chalk.magenta(path.join(RELATIVE_RN_PATH, 'ReactCommon'))} ...`
@@ -327,13 +336,16 @@ async function generateReactNativePodScriptAsync(
     'React-Core',
     'React-jsi',
     'ReactCommon/turbomodule/core',
+    'ReactCommon/turbomodule/bridging',
     'React-graphics',
     'React-rncore',
+    'hermes-engine',
+    'React-jsc',
   ];
 
   const reactNativePodScriptTransforms: StringTransform[] = [
     {
-      find: /\b(def (use_react_native|use_react_native_codegen))!/g,
+      find: /\b(def (use_react_native|use_react_native_codegen|setup_jsc))!/g,
       replaceWith: `$1_${versionName}!`,
     },
     {
@@ -374,21 +386,20 @@ async function generateReactNativePodScriptAsync(
     { find: /\b(React-Codegen)\b/g, replaceWith: `${versionName}$1` },
     { find: /(\$\(PODS_ROOT\)\/Headers\/Private\/)React-/g, replaceWith: `$1${versionName}React-` },
     {
-      find: new RegExp(
-        `["'](${reactCodegenDependencies.join('|')})["']:(\\s*\\[version\\],?)`,
-        'g'
-      ),
-      replaceWith: `"${versionName}$1":$2`,
+      find: /^\s+CodegenUtils\.clean_up_build_folder\(.+$/gm,
+      replaceWith: '',
     },
-    // hermes
+  ];
+
+  const hermesTransforms: StringTransform[] = [
     { find: /^\s+prepare_hermes[.\s\S]*abort unless prep_status == 0\n$/gm, replaceWith: '' },
     {
       find: new RegExp(
-        `^\\s*pod '${versionName}hermes-engine', :podspec => "#\\{react_native_path\\}\\/sdks\\/hermes\\/hermes-engine.podspec"`,
+        `^\\s*pod '${versionName}hermes-engine', :podspec => "#\\{react_native_path\\}\\/sdks\\/hermes-engine\\/hermes-engine.podspec"`,
         'gm'
       ),
       replaceWith: `
-    if File.exists?("#{react_native_path}/sdks/hermes-engine/destroot")
+    if File.exist?("#{react_native_path}/sdks/hermes-engine/destroot")
       pod '${versionName}hermes-engine', :path => "#{react_native_path}/sdks/hermes-engine", :project_name => '${versionName}'
     else
       pod '${versionName}hermes-engine', :podspec => "#{react_native_path}/sdks/hermes-engine/${versionName}hermes-engine.podspec", :project_name => '${versionName}'
@@ -397,15 +408,39 @@ async function generateReactNativePodScriptAsync(
     { find: new RegExp(`\\b${versionName}(libevent)\\b`, 'g'), replaceWith: '$1' },
   ];
 
+  const commonMethodTransforms = [
+    'get_script_phases_with_codegen_discovery',
+    'get_script_phases_no_codegen_discovery',
+    'get_script_template',
+    'setup_jsc',
+    'setup_hermes',
+    'run_codegen',
+  ];
+
   const transforms: FileTransforms = {
     content: [
       ...reactNativePodScriptTransforms.map((stringTransform) => ({
         path: 'react_native_pods.rb',
         ...stringTransform,
       })),
+      ...hermesTransforms.map((stringTransform) => ({
+        paths: 'jsengine.rb',
+        ...stringTransform,
+      })),
       {
-        paths: ['react_native_pods.rb', 'script_phases.rb'],
-        find: /\b(get_script_phases_with_codegen_discovery|get_script_phases_no_codegen_discovery|get_script_template)\b/g,
+        paths: 'codegen_utils.rb',
+        find: new RegExp(`["'](${reactCodegenDependencies.join('|')})["']:(\\s*\\[\\],?)`, 'g'),
+        replaceWith: `"${versionName}$1":$2`,
+      },
+      {
+        paths: [
+          'react_native_pods.rb',
+          'script_phases.rb',
+          'jsengine.rb',
+          'codegen.rb',
+          'codegen_utils.rb',
+        ],
+        find: new RegExp(`\\b(${commonMethodTransforms.join('|')})\\b`, 'g'),
         replaceWith: `$1_${versionName}`,
       },
     ],
@@ -423,6 +458,11 @@ async function generateReactNativePodScriptAsync(
         keepFileMode: true,
       });
     })
+  );
+
+  await fs.copy(
+    path.join(EXPO_DIR, RELATIVE_RN_PATH, 'sdks', 'hermes-engine', 'hermes-utils.rb'),
+    path.join(versionedReactNativePath, 'sdks', 'hermes-engine', 'hermes-utils.rb')
   );
 }
 
@@ -707,6 +747,10 @@ use_react_native_${versionName}!(
   :hermes_enabled => true,
   :fabric_enabled => false,
 )
+setup_jsc_${versionName}!(
+  :react_native_path => './${relativeReactNativePath}',
+  :fabric_enabled => false,
+)
 
 pod '${getVersionedExpoKitPodName(versionName)}',
   :path => './${relativeExpoKitPath}',
@@ -958,6 +1002,12 @@ function getCppLibrariesToVersion() {
     },
     {
       libName: 'hermes',
+    },
+    {
+      libName: 'jsc',
+    },
+    {
+      libName: 'butter',
     },
   ];
 }
@@ -1326,6 +1376,12 @@ function _getReactNativeTransformRules(versionPrefix, reactPodName) {
     {
       flags: '-Ei',
       pattern: `s/(#import |__has_include\\()<(Expo|RNReanimated)/\\1<${versionPrefix}\\2/g`,
+    },
+    {
+      // Unprefix jsc dirname in JSCExecutorFactory.mm
+      paths: 'CxxBridge',
+      flags: '-Ei',
+      pattern: `s/(#import )<${versionPrefix}jsc\\/${versionPrefix}JSCRuntime\.h>/\\1<jsc\\/${versionPrefix}JSCRuntime.h>/g`,
     },
   ];
 }

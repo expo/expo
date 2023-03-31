@@ -47,20 +47,19 @@ export function podspecTransforms(versionName: string): TransformPipeline {
         with: '$1 "DEFINES_MODULE" => "YES",',
       },
       {
+        // DEFINES_MODULE for swift integration
+        // Learn more: `packages/expo-modules-autolinking/scripts/ios/cocoapods/sandbox.rb`
+        paths: 'React-RCTAppDelegate.podspec',
+        replace: /("CLANG_CXX_LANGUAGE_STANDARD" => "c\+\+17")/g,
+        with: '$1, "DEFINES_MODULE" => "YES",',
+      },
+      {
         // Fixes HEADER_SEARCH_PATHS
         paths: ['React-Core.podspec', 'ReactCommon.podspec'],
         replace:
           /(Headers\/Private\/|Headers\/Public\/|_BUILD_DIR\)\/)(React-Core|React-bridging|React-hermes|hermes-engine)/g,
         with: `$1${versionName}$2`,
       },
-
-      // React-bridging
-      {
-        paths: 'React-bridging.podspec',
-        replace: /\bheader_mappings_dir\s*=\s*"."/,
-        with: 'header_mappings_dir    = "react/bridging"',
-      },
-
       // React-cxxreact
       {
         // Fixes excluding SampleCxxModule.* files
@@ -68,7 +67,17 @@ export function podspecTransforms(versionName: string): TransformPipeline {
         replace: /\.exclude_files(\s*=\s*["'])(SampleCxxModule\.\*)(["'])/g,
         with: `.exclude_files$1${versionName}$2$3`,
       },
-
+      {
+        // using jsc to expose jsi.h
+        paths: 'React-jsi.podspec',
+        replace: /^(\s+Pod::Spec.new do \|s\|.*)$/gm,
+        with: '\n# using jsc to expose jsi.h\njs_engine = :jsc$1',
+      },
+      {
+        paths: 'React-jsc.podspec',
+        replace: /\b(JSCRuntime\.)/g,
+        with: `${versionName}$1`,
+      },
       // Yoga
       {
         // Unprefixes inner directory for source_files
@@ -93,10 +102,9 @@ export function podspecTransforms(versionName: string): TransformPipeline {
       },
       {
         paths: 'hermes-engine.podspec',
-        replace:
-          '  source[:http] = "https://github.com/facebook/react-native/releases/download/v#{version}/hermes-runtime-darwin-v#{version}.tar.gz"',
+        replace: /  source\[:http\]\s*=\s*"http[^"]+"/,
         with: `\
-  if File.exists?(File.join(__dir__, "destroot"))
+  if File.exist?(File.join(__dir__, "destroot"))
     source[:path] = '.'
   else
     source[:http] = 'https://github.com/expo/react-native/releases/download/sdk-${versionName

@@ -43,7 +43,8 @@ static YGSize RNDateTimePickerShadowViewMeasure(YGNodeRef node, float width, YGM
     if (@available(iOS 14.0, *)) {
       [shadowPickerView.picker setPreferredDatePickerStyle:shadowPickerView.displayIOS];
     }
-    size = [shadowPickerView.picker sizeThatFits:UILayoutFittingCompressedSize];
+	size = [shadowPickerView.picker sizeThatFits:UILayoutFittingCompressedSize];
+	size.width += 10;
   });
   
   return (YGSize){

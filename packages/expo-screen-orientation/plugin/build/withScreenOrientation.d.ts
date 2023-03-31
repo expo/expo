@@ -11,7 +11,7 @@ declare const OrientationLock: {
     LANDSCAPE_LEFT: string;
     LANDSCAPE_RIGHT: string;
 };
-declare type OrientationMasks = keyof typeof OrientationLock;
+type OrientationMasks = keyof typeof OrientationLock;
 interface ExpoConfigWithInitialOrientation extends ExpoConfig {
     initialOrientation?: OrientationMasks;
 }

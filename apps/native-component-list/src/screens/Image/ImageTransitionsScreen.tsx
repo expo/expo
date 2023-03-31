@@ -1,11 +1,4 @@
-import {
-  Image,
-  ImageCachePolicy,
-  ImageSource,
-  ImageTransition,
-  ImageTransitionEffect,
-  ImageTransitionTiming,
-} from 'expo-image';
+import { Image, ImageSource, ImageTransition } from 'expo-image';
 import { useCallback, useState } from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -29,27 +22,27 @@ const parameters: FunctionParameter[] = [
   {
     name: 'Effect',
     type: 'enum',
-    platforms: ['ios'],
+    platforms: ['ios', 'web'],
     values: [
-      { name: 'crossDissolve (default)', value: ImageTransitionEffect.CROSS_DISOLVE },
-      { name: 'flipFromLeft', value: ImageTransitionEffect.FLIP_FROM_LEFT },
-      { name: 'flipFromRight', value: ImageTransitionEffect.FLIP_FROM_RIGHT },
-      { name: 'flipFromTop', value: ImageTransitionEffect.FLIP_FROM_TOP },
-      { name: 'flipFromBottom', value: ImageTransitionEffect.FLIP_FROM_BOTTOM },
-      { name: 'curlUp', value: ImageTransitionEffect.CURL_UP },
-      { name: 'curlDown', value: ImageTransitionEffect.CURL_DOWN },
-      { name: 'none', value: ImageTransitionEffect.NONE },
+      { name: 'cross-dissolve (default)', value: 'cross-dissolve' },
+      { name: 'flip-from-left', value: 'flip-from-left' },
+      { name: 'flip-from-right', value: 'flip-from-right' },
+      { name: 'flip-from-top', value: 'flip-from-top' },
+      { name: 'flip-from-bottom', value: 'flip-from-bottom' },
+      { name: 'curl-up', value: 'curl-up' },
+      { name: 'curl-down', value: 'curl-down' },
+      { name: 'none', value: null },
     ],
   },
   {
     name: 'Timing',
     type: 'enum',
-    platforms: ['ios'],
+    platforms: ['ios', 'web'],
     values: [
-      { name: 'easeInOut (default)', value: ImageTransitionTiming.EASE_IN_OUT },
-      { name: 'easeIn', value: ImageTransitionTiming.EASE_IN },
-      { name: 'easeOut', value: ImageTransitionTiming.EASE_OUT },
-      { name: 'linear', value: ImageTransitionTiming.LINEAR },
+      { name: 'ease-in-out (default)', value: 'ease-in-out' },
+      { name: 'ease-in', value: 'ease-in' },
+      { name: 'ease-out', value: 'ease-out' },
+      { name: 'linear', value: 'linear' },
     ],
   },
   {
@@ -82,7 +75,7 @@ export default function ImageTransitionsScreen() {
         source={source ?? []}
         transition={transition}
         fadeDuration={duration}
-        cachePolicy={ImageCachePolicy.NONE}
+        cachePolicy="none"
       />
 
       <View style={styles.configurator}>

@@ -1,69 +1,79 @@
 import React from 'react';
-import { resolveContentFit, resolveContentPosition } from './utils';
-function resolveAssetSource(source) {
-    if (source == null)
-        return null;
-    if (typeof source === 'string') {
-        return { uri: source };
-    }
-    if (typeof source === 'number') {
-        return { uri: String(source) };
-    }
-    return source;
+import AnimationManager from './web/AnimationManager';
+import ImageWrapper from './web/ImageWrapper';
+import loadStyle from './web/style';
+import useSourceSelection from './web/useSourceSelection';
+loadStyle();
+function onLoadAdapter(onLoad) {
+    return (event) => {
+        const target = event.target;
+        onLoad?.({
+            source: {
+                url: target.currentSrc,
+                width: target.naturalWidth,
+                height: target.naturalHeight,
+                mediaType: null,
+            },
+            cacheType: 'none',
+        });
+    };
 }
-function ensureUnit(value) {
-    const trimmedValue = String(value).trim();
-    if (trimmedValue.endsWith('%')) {
-        return trimmedValue;
-    }
-    return `${trimmedValue}px`;
+function onErrorAdapter(onError) {
+    return ({ source }) => {
+        onError?.({
+            error: `Failed to load image from url: ${source?.uri}`,
+        });
+    };
 }
-function getObjectPositionFromContentPosition(contentPosition) {
-    const resolvedPosition = (typeof contentPosition === 'string' ? resolveContentPosition(contentPosition) : contentPosition);
-    if (!resolvedPosition) {
-        return null;
-    }
-    if (resolvedPosition.top == null || resolvedPosition.bottom == null) {
-        resolvedPosition.top = '50%';
-    }
-    if (resolvedPosition.left == null || resolvedPosition.right == null) {
-        resolvedPosition.left = '50%';
-    }
-    return ['top', 'bottom', 'left', 'right']
-        .map((key) => {
-        if (key in resolvedPosition) {
-            return `${key} ${ensureUnit(resolvedPosition[key])}`;
-        }
-        return '';
-    })
-        .join(' ');
-}
-const ensureIsArray = (source) => {
-    if (Array.isArray(source)) {
-        return source;
-    }
-    if (source == null) {
-        return [];
-    }
-    return [source];
+const setCssVariables = (element, size) => {
+    element?.style.setProperty('--expo-image-width', `${size.width}px`);
+    element?.style.setProperty('--expo-image-height', `${size.height}px`);
 };
-export default function ExpoImage({ source, defaultSource, loadingIndicatorSource, contentPosition, onLoad, onLoadStart, onLoadEnd, onError, ...props }) {
+export default function ExpoImage({ source, placeholder, contentFit, contentPosition, placeholderContentFit, onLoad, transition, onError, responsivePolicy, onLoadEnd, priority, blurRadius, recyclingKey, ...props }) {
     const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
-    const resolvedSources = ensureIsArray(source).map(resolveAssetSource);
-    return (React.createElement(React.Fragment, null,
-        React.createElement("picture", { style: {
-                overflow: 'hidden',
+    const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
+    const blurhashStyle = {
+        objectFit: placeholderContentFit || contentFit,
+    };
+    const { containerRef, source: selectedSource } = useSourceSelection(source, responsivePolicy, setCssVariables);
+    const initialNodeAnimationKey = (recyclingKey ? `${recyclingKey}-${placeholder?.[0]?.uri}` : placeholder?.[0]?.uri) ?? '';
+    const initialNode = placeholder?.[0]?.uri
+        ? [
+            initialNodeAnimationKey,
+            ({ onAnimationFinished }) => (className, style) => (React.createElement(ImageWrapper, { source: placeholder?.[0], style: {
+                    objectFit: imagePlaceholderContentFit,
+                    ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
+                    ...style,
+                }, className: className, events: {
+                    onTransitionEnd: [onAnimationFinished],
+                }, contentPosition: { left: '50%', top: '50%' }, blurhashContentPosition: contentPosition, blurhashStyle: blurhashStyle })),
+        ]
+        : null;
+    const currentNodeAnimationKey = (recyclingKey
+        ? `${recyclingKey}-${selectedSource?.uri ?? placeholder?.[0]?.uri}`
+        : selectedSource?.uri ?? placeholder?.[0]?.uri) ?? '';
+    const currentNode = [
+        currentNodeAnimationKey,
+        ({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) => (className, style) => (React.createElement(ImageWrapper, { source: selectedSource || placeholder?.[0], events: {
+                onError: [onErrorAdapter(onError), onLoadEnd, onErrorInner],
+                onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
+                onMount: [onMount],
+                onTransitionEnd: [onAnimationFinished],
+            }, style: {
+                objectFit: selectedSource ? contentFit : imagePlaceholderContentFit,
+                ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
                 ...style,
-            } },
-            React.createElement("img", { src: resolvedSources.at(0)?.uri, style: {
-                    width: '100%',
-                    height: '100%',
-                    aspectRatio: String(aspectRatio),
-                    backgroundColor: backgroundColor?.toString(),
-                    transform: transform?.toString(),
-                    borderColor: borderColor?.toString(),
-                    objectFit: resolveContentFit(props.contentFit, props.resizeMode),
-                    objectPosition: getObjectPositionFromContentPosition(contentPosition) || undefined,
-                } }))));
+            }, className: className, priority: priority, contentPosition: selectedSource ? contentPosition : { top: '50%', left: '50%' }, blurhashContentPosition: contentPosition, blurhashStyle: blurhashStyle, accessibilityLabel: props.accessibilityLabel })),
+    ];
+    return (React.createElement("div", { ref: containerRef, className: "expo-image-container", style: {
+            aspectRatio: String(aspectRatio),
+            backgroundColor: backgroundColor?.toString(),
+            transform: transform?.toString(),
+            borderColor: borderColor?.toString(),
+            ...style,
+            overflow: 'hidden',
+            position: 'relative',
+        } },
+        React.createElement(AnimationManager, { transition: transition, recyclingKey: recyclingKey, initial: initialNode }, currentNode)));
 }
 //# sourceMappingURL=ExpoImage.web.js.map

@@ -27,7 +27,7 @@ class SpeechModule(
   private val delayedUtterances: Queue<Utterance> = ArrayDeque()
 
   // Module basic definitions
-  override fun getName() = "ExponentSpeech"
+  override fun getName() = "ExpoSpeech"
   override fun getConstants() = mapOf(
     "maxSpeechInputLength" to TextToSpeech.getMaxSpeechInputLength()
   )
@@ -139,6 +139,15 @@ class SpeechModule(
 
             override fun onStart(utteranceId: String) {
               emitter.emit("Exponent.speakingStarted", idToMap(utteranceId))
+            }
+
+            override fun onRangeStart(utteranceId: String, start: Int, end: Int, frame: Int) {
+              var map = Bundle().apply {
+                putString("id", utteranceId)
+                putInt("charIndex", start)
+                putInt("charLength", end - start)
+              }
+              emitter.emit("Exponent.speakingWillSayNextString", map)
             }
 
             override fun onDone(utteranceId: String) {

@@ -6,9 +6,38 @@
 
 ### 🎉 New features
 
+- Generating `ExpoModulesProvider.swift` in the build phase script instead of only `pod install`. ([#21108](https://github.com/expo/expo/pull/21108) by [@tsapeta](https://github.com/tsapeta))
+- Added Gradle plugin autolinking support for Android. ([#21377](https://github.com/expo/expo/pull/21377) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.1.2 — 2023-02-14
+
+### 💡 Others
+
+- Suppress node warnings about deprecated exports mapping in 3rd-party dependencies. ([#21222](https://github.com/expo/expo/pull/21222) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.1.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 1.1.0 — 2023-02-03
+
+_This version does not introduce any user-facing changes._
+
+## 1.0.2 — 2023-01-10
+
+### 🐛 Bug fixes
+
+- Replace deprecated `File.exists?` with `File.exist?` to fix usage with `ruby@3.2`. ([#20470](https://github.com/expo/expo/pull/20757) by [@KiwiKilian](https://github.com/kiwikilian))
+
+## 1.0.1 — 2022-12-30
+
+### 🐛 Bug fixes
+
+- Added React Native 0.71 support. ([#20470](https://github.com/expo/expo/pull/20470) by [@kudo](https://github.com/kudo))
 
 ## 1.0.0 — 2022-11-03
 

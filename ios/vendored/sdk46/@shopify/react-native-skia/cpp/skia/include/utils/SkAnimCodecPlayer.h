@@ -13,7 +13,7 @@
 #include "include/core/SkRefCnt.h"
 #include "include/core/SkSize.h"
 
-#include <stdint.h>
+#include <cstdint>
 #include <memory>
 #include <vector>
 

@@ -9,27 +9,27 @@
 /packages/expo-apple-authentication             @tsapeta
 /packages/expo-application                      @ide
 /packages/expo-asset                            @tsapeta @wschurman
-/packages/expo-av                               @barthap @kudo
+/packages/expo-av                               @lukmccall @kudo
 /packages/expo-background-fetch                 @tsapeta @kudo
 /packages/expo-barcode-scanner                  @lukmccall
 /packages/expo-battery                          @tsapeta
 /packages/expo-blur                             @tsapeta
 /packages/expo-brightness                       @tsapeta
+/packages/expo-build-properties                 @kudo @gabrieldonadel
 /packages/expo-calendar                         @lukmccall
 /packages/expo-camera                           @lukmccall
 /packages/expo-cellular                         @ide @tsapeta
 /packages/expo-checkbox                         @bycedric
-/packages/expo-clipboard                        @tsapeta @barthap
+/packages/expo-clipboard                        @tsapeta
 /packages/expo-constants                        @wschurman @brentvatne
 /packages/expo-contacts                         @EvanBacon
-/packages/expo-crypto                           @EvanBacon
+/packages/expo-crypto                           @EvanBacon @aleqsio
 /packages/expo-dev-client                       @lukmccall @douglowder
 /packages/expo-dev-launcher                     @lukmccall @douglowder
 /packages/expo-dev-menu                         @lukmccall @douglowder
 /packages/expo-dev-menu-interface               @lukmccall @douglowder
 /packages/expo-device                           @ide @tsapeta
-/packages/expo-document-picker                  @barthap
-/packages/expo-error-recovery                   @lukmccall
+/packages/expo-document-picker                  @lukmccall
 /packages/expo-face-detector                    @kudo
 /packages/expo-file-system                      @brentvatne @kudo @ide @tsapeta
 /packages/expo-firebase-core                    @brentvatne
@@ -37,21 +37,22 @@
 /packages/expo-firebase-recaptcha               @brentvatne
 /packages/expo-font                             @tsapeta
 /packages/expo-gl                               @tsapeta @wkozyra95
-/packages/expo-haptics                          @barthap
-/packages/expo-image                            @lukmccall @tsapeta
-/packages/expo-image-manipulator                @barthap
-/packages/expo-image-picker                     @barthap @lukmccall
+/packages/expo-haptics                          @lukmccall
+/packages/expo-image                            @lukmccall @tsapeta @aleqsio
+/packages/expo-image-manipulator                @lukmccall
+/packages/expo-image-picker                     @lukmccall
 /packages/expo-in-app-purchases                 @ide
 /packages/expo-intent-launcher                  @kudo
 /packages/expo-keep-awake                       @brentvatne
 /packages/expo-linear-gradient                  @brentvatne
 /packages/expo-local-authentication             @bycedric @lukmccall
-/packages/expo-localization                     @EvanBacon
+/packages/expo-localization                     @EvanBacon @aleqsio
 /packages/expo-location                         @bycedric @lukmccall
 /packages/expo-mail-composer                    @brentvatne
 /packages/expo-media-library                    @tsapeta @lukmccall
 /packages/expo-module-scripts                   @ide
 /packages/expo-module-template                  @tsapeta @EvanBacon
+/packages/expo-module-template-local            @aleqsio @tsapeta
 /packages/expo-modules-autolinking              @tsapeta @kudo @lukmccall
 /packages/expo-modules-core                     @tsapeta @kudo @lukmccall
 /packages/expo-navigation-bar                   @EvanBacon
@@ -64,10 +65,10 @@
 /packages/expo-screen-capture                   @tsapeta
 /packages/expo-screen-orientation               @lukmccall
 /packages/expo-secure-store                     @kudo
-/packages/expo-sensors                          @barthap
+/packages/expo-sensors                          @lukmccall
 /packages/expo-sharing                          @brentvatne
 /packages/expo-sms                              @brentvatne
-/packages/expo-speech                           @barthap
+/packages/expo-speech                           @lukmccall
 /packages/expo-splash-screen                    @kudo @EvanBacon
 /packages/expo-sqlite                           @kudo
 /packages/expo-standard-web-crypto              @EvanBacon
@@ -81,7 +82,7 @@
 /packages/expo-updates                          @wschurman @douglowder
 /packages/expo-updates-interface                @wschurman @douglowder
 /packages/expo-video-thumbnails                 @tsapeta
-/packages/expo-web-browser                      @tsapeta @barthap
+/packages/expo-web-browser                      @tsapeta
 /packages/expo-yarn-workspaces                  @ide
 /packages/expo                                  @ide @tsapeta @brentvatne
 /packages/jest-expo-enzyme                      @ide @EvanBacon

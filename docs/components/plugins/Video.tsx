@@ -1,6 +1,6 @@
 import { css } from '@emotion/react';
-import { borderRadius, breakpoints } from '@expo/styleguide';
-import React, { useState } from 'react';
+import { borderRadius, breakpoints } from '@expo/styleguide-base';
+import { PropsWithChildren, useState } from 'react';
 import ReactPlayer from 'react-player';
 import VisibilitySensor from 'react-visibility-sensor';
 
@@ -8,7 +8,7 @@ const PLAYER_WIDTH = '100%' as const;
 const PLAYER_HEIGHT = 400 as const;
 const YOUTUBE_DOMAINS = ['youtube.com', 'youtu.be'] as const;
 
-type VideoProps = React.PropsWithChildren<{
+type VideoProps = PropsWithChildren<{
   controls?: any;
   spaceAfter?: boolean | number;
   url?: string;
@@ -86,7 +86,7 @@ const videoWrapperStyle = css({
 const playerStyle = css({
   outline: 'none',
   backgroundColor: '#000',
-  borderRadius: borderRadius.medium,
+  borderRadius: borderRadius.md,
 });
 
 const dimmerStyle = css({

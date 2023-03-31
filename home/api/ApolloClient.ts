@@ -1,6 +1,7 @@
 import { ApolloClient, InMemoryCache } from '@apollo/client';
 import { setContext } from '@apollo/client/link/context';
 import { HttpLink } from '@apollo/client/link/http';
+import { offsetLimitPagination } from '@apollo/client/utilities';
 
 import Store from '../redux/Store';
 import Config from './Config';
@@ -46,6 +47,17 @@ const cache = new InMemoryCache({
         app: {
           merge: false,
         },
+      },
+    },
+    Account: {
+      fields: {
+        apps: offsetLimitPagination(),
+        snacks: offsetLimitPagination(),
+      },
+    },
+    App: {
+      fields: {
+        updateBranches: offsetLimitPagination(),
       },
     },
   },

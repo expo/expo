@@ -7,7 +7,7 @@ import android.view.ViewGroup
 import expo.modules.kotlin.modules.DefinitionMarker
 
 @DefinitionMarker
-class ViewGroupDefinitionBuilder {
+class ViewGroupDefinitionBuilder<ParentType : ViewGroup> {
   @PublishedApi
   internal var addViewAction: AddViewAction? = null
 
@@ -31,43 +31,48 @@ class ViewGroupDefinitionBuilder {
     removeViewAtAction
   )
 
-  inline fun <reified ParentViewType : ViewGroup, reified ChildViewType : View> AddChildView(
-    noinline body: (parent: ParentViewType, child: ChildViewType, index: Int) -> Unit
+  @Suppress("UNCHECKED_CAST")
+  inline fun <reified ChildViewType : View> AddChildView(
+    crossinline body: (parent: ParentType, child: ChildViewType, index: Int) -> Unit
   ) {
     addViewAction = { parent, child, index ->
-      body(parent as ParentViewType, child as ChildViewType, index)
+      body(parent as ParentType, child as ChildViewType, index)
     }
   }
 
-  inline fun <reified ParentViewType : ViewGroup> GetChildCount(
-    noinline body: (view: ParentViewType) -> Int
+  @Suppress("UNCHECKED_CAST")
+  inline fun GetChildCount(
+    crossinline body: (view: ParentType) -> Int
   ) {
     getChildCountAction = { view ->
-      body(view as ParentViewType)
+      body(view as ParentType)
     }
   }
 
-  inline fun <reified ParentViewType : ViewGroup, reified ChildViewType : View> GetChildViewAt(
-    noinline body: (view: ParentViewType, index: Int) -> ChildViewType?
+  @Suppress("UNCHECKED_CAST")
+  inline fun <reified ChildViewType : View> GetChildViewAt(
+    crossinline body: (view: ParentType, index: Int) -> ChildViewType?
   ) {
     getChildAtAction = { view, index ->
-      body(view as ParentViewType, index)
+      body(view as ParentType, index)
     }
   }
 
-  inline fun <reified ParentViewType : ViewGroup> RemoveChildViewAt(
-    noinline body: (view: ParentViewType, index: Int) -> Unit
+  @Suppress("UNCHECKED_CAST")
+  inline fun RemoveChildViewAt(
+    crossinline body: (view: ParentType, index: Int) -> Unit
   ) {
     removeViewAtAction = { view, index ->
-      body(view as ParentViewType, index)
+      body(view as ParentType, index)
     }
   }
 
-  inline fun <reified ParentViewType : ViewGroup, reified ChildViewType : View> RemoveChildView(
-    noinline body: (parent: ParentViewType, child: ChildViewType) -> Unit
+  @Suppress("UNCHECKED_CAST")
+  inline fun <reified ChildViewType : View> RemoveChildView(
+    noinline body: (parent: ParentType, child: ChildViewType) -> Unit
   ) {
     removeViewAction = { view, child ->
-      body(view as ParentViewType, child as ChildViewType)
+      body(view as ParentType, child as ChildViewType)
     }
   }
 }

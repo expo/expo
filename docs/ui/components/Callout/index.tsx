@@ -1,22 +1,19 @@
 import { css } from '@emotion/react';
+import { mergeClasses, theme, typography } from '@expo/styleguide';
+import { borderRadius, spacing } from '@expo/styleguide-base';
 import {
-  borderRadius,
-  iconSize,
-  theme,
-  typography,
-  spacing,
-  ErrorIcon,
-  InfoIcon,
-  WarningIcon,
-} from '@expo/styleguide';
-import { IconProps } from '@expo/styleguide/dist/types';
-import { Children, ComponentType, PropsWithChildren, isValidElement, ReactNode } from 'react';
+  XSquareSolidIcon,
+  InfoCircleSolidIcon,
+  AlertTriangleSolidIcon,
+} from '@expo/styleguide-icons';
+import { Children, HTMLAttributes, isValidElement } from 'react';
+import type { PropsWithChildren, ReactNode, ComponentType } from 'react';
 
 type CalloutType = 'default' | 'warning' | 'error' | 'info';
 
 type CalloutProps = PropsWithChildren<{
   type?: CalloutType;
-  icon?: ComponentType<IconProps> | string;
+  icon?: ComponentType<any> | string;
 }>;
 
 const extractType = (childrenArray: ReactNode[]) => {
@@ -48,7 +45,7 @@ export const Callout = ({ type = 'default', icon, children }: CalloutProps) => {
         {typeof icon === 'string' ? (
           icon
         ) : (
-          <Icon size={iconSize.small} color={getCalloutIconColor(finalType)} />
+          <Icon className={mergeClasses('icon-sm', getCalloutIconColor(finalType))} />
         )}
       </div>
       <div css={contentStyle}>
@@ -71,35 +68,36 @@ function getCalloutColor(type: CalloutType) {
   }
 }
 
-function getCalloutIcon(type: CalloutType) {
+function getCalloutIcon(type: CalloutType): (props: HTMLAttributes<SVGSVGElement>) => JSX.Element {
   switch (type) {
     case 'warning':
-      return WarningIcon;
+      return AlertTriangleSolidIcon;
     case 'error':
-      return ErrorIcon;
+      return XSquareSolidIcon;
     default:
-      return InfoIcon;
+      return InfoCircleSolidIcon;
   }
 }
 
 function getCalloutIconColor(type: CalloutType) {
   switch (type) {
     case 'warning':
-      return theme.text.warning;
+      return 'text-warning';
     case 'error':
-      return theme.text.error;
+      return 'text-danger';
     case 'info':
-      return theme.text.info;
+      return 'text-info';
     default:
-      return theme.icon.default;
+      return 'text-icon-default';
   }
 }
 
 const containerStyle = css({
-  backgroundColor: theme.background.secondary,
+  backgroundColor: theme.background.subtle,
   border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.medium,
+  borderRadius: borderRadius.md,
   display: 'flex',
+  gap: spacing[2],
   padding: `${spacing[3]}px ${spacing[4]}px`,
   marginBottom: spacing[4],
 
@@ -110,7 +108,7 @@ const containerStyle = css({
   },
 
   code: {
-    backgroundColor: theme.background.tertiary,
+    backgroundColor: theme.background.element,
   },
 
   // TODO(simek): remove after migration to new components is completed
@@ -121,13 +119,16 @@ const containerStyle = css({
 
 const iconStyle = css({
   fontStyle: 'normal',
-  marginRight: spacing[2],
-  marginTop: spacing[1],
+  marginTop: 5,
   userSelect: 'none',
+
+  'table &': {
+    marginTop: 3,
+  },
 });
 
 const contentStyle = css({
-  ...typography.body.paragraph,
+  ...typography.fontSizes[16],
   color: theme.text.default,
 
   '*:last-child': {
@@ -140,27 +141,23 @@ const warningColorStyle = css({
   borderColor: theme.border.warning,
 
   code: {
-    backgroundColor: theme.palette.yellow['000'],
-    borderColor: theme.palette.yellow[300],
+    backgroundColor: theme.palette.yellow4,
+    borderColor: theme.palette.yellow6,
   },
 
-  '[data-expo-theme="dark"] & code': {
-    backgroundColor: theme.palette.yellow[100],
-    borderColor: theme.palette.yellow[200],
+  '.dark-theme & code': {
+    backgroundColor: theme.palette.yellow5,
+    borderColor: theme.palette.yellow7,
   },
 });
 
 const errorColorStyle = css({
-  backgroundColor: theme.background.error,
-  borderColor: theme.border.error,
+  backgroundColor: theme.background.danger,
+  borderColor: theme.border.danger,
 
   code: {
-    backgroundColor: theme.palette.red['000'],
-    borderColor: theme.palette.red[200],
-  },
-
-  '[data-expo-theme="dark"] & code': {
-    backgroundColor: theme.palette.red[100],
+    backgroundColor: theme.palette.red5,
+    borderColor: theme.palette.red7,
   },
 });
 
@@ -169,11 +166,7 @@ const infoColorStyle = css({
   borderColor: theme.border.info,
 
   code: {
-    backgroundColor: theme.palette.blue['000'],
-    borderColor: theme.palette.blue[200],
-  },
-
-  '[data-expo-theme="dark"] & code': {
-    backgroundColor: theme.palette.blue[100],
+    backgroundColor: theme.palette.blue4,
+    borderColor: theme.palette.blue6,
   },
 });

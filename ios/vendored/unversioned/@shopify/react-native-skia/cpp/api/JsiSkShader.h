@@ -10,20 +10,21 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
-#include <SkGradientShader.h>
-#include <SkShader.h>
+#include "SkGradientShader.h"
+#include "SkShader.h"
 
 #pragma clang diagnostic pop
 
 namespace RNSkia {
 
-using namespace facebook;
+namespace jsi = facebook::jsi;
 
 class JsiSkShader : public JsiSkWrappingSkPtrHostObject<SkShader> {
 public:
   JsiSkShader(std::shared_ptr<RNSkPlatformContext> context,
               sk_sp<SkShader> shader)
-      : JsiSkWrappingSkPtrHostObject<SkShader>(std::move(context), std::move(shader)) {}
+      : JsiSkWrappingSkPtrHostObject<SkShader>(std::move(context),
+                                               std::move(shader)) {}
 
   // TODO: declare in JsiSkWrappingSkPtrHostObject via extra template parameter?
   JSI_PROPERTY_GET(__typename__) {

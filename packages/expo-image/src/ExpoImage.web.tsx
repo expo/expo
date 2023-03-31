@@ -1,106 +1,145 @@
 import React from 'react';
 
-import {
-  ImageContentPosition,
-  ImageContentPositionObject,
-  ImageProps,
-  ImageSource,
-  PositionValue,
-} from './Image.types';
-import { resolveContentFit, resolveContentPosition } from './utils';
+import { ImageNativeProps, ImageSource, ImageLoadEventData } from './Image.types';
+import AnimationManager, { AnimationManagerNode } from './web/AnimationManager';
+import ImageWrapper from './web/ImageWrapper';
+import loadStyle from './web/style';
+import useSourceSelection from './web/useSourceSelection';
 
-function resolveAssetSource(source?: ImageSource | string | number | null) {
-  if (source == null) return null;
+loadStyle();
 
-  if (typeof source === 'string') {
-    return { uri: source };
-  }
-  if (typeof source === 'number') {
-    return { uri: String(source) };
-  }
-
-  return source;
+function onLoadAdapter(onLoad?: (event: ImageLoadEventData) => void) {
+  return (event: React.SyntheticEvent<HTMLImageElement, Event>) => {
+    const target = event.target as HTMLImageElement;
+    onLoad?.({
+      source: {
+        url: target.currentSrc,
+        width: target.naturalWidth,
+        height: target.naturalHeight,
+        mediaType: null,
+      },
+      cacheType: 'none',
+    });
+  };
 }
 
-function ensureUnit(value: string | number) {
-  const trimmedValue = String(value).trim();
-  if (trimmedValue.endsWith('%')) {
-    return trimmedValue;
-  }
-  return `${trimmedValue}px`;
+function onErrorAdapter(onError?: { (event: { error: string }): void }) {
+  return ({ source }: { source?: ImageSource | null }) => {
+    onError?.({
+      error: `Failed to load image from url: ${source?.uri}`,
+    });
+  };
 }
 
-type KeysOfUnion<T> = T extends T ? keyof T : never;
-
-function getObjectPositionFromContentPosition(contentPosition?: ImageContentPosition) {
-  const resolvedPosition = (
-    typeof contentPosition === 'string' ? resolveContentPosition(contentPosition) : contentPosition
-  ) as Record<KeysOfUnion<ImageContentPositionObject>, PositionValue>;
-
-  if (!resolvedPosition) {
-    return null;
-  }
-  if (resolvedPosition.top == null || resolvedPosition.bottom == null) {
-    resolvedPosition.top = '50%';
-  }
-  if (resolvedPosition.left == null || resolvedPosition.right == null) {
-    resolvedPosition.left = '50%';
-  }
-
-  return ['top', 'bottom', 'left', 'right']
-    .map((key) => {
-      if (key in resolvedPosition) {
-        return `${key} ${ensureUnit(resolvedPosition[key])}`;
-      }
-      return '';
-    })
-    .join(' ');
-}
-
-const ensureIsArray = <T extends any>(source: T | T[] | undefined) => {
-  if (Array.isArray(source)) {
-    return source;
-  }
-  if (source == null) {
-    return [];
-  }
-  return [source];
+const setCssVariables = (element: HTMLElement, size: DOMRect) => {
+  element?.style.setProperty('--expo-image-width', `${size.width}px`);
+  element?.style.setProperty('--expo-image-height', `${size.height}px`);
 };
 
 export default function ExpoImage({
   source,
-  defaultSource,
-  loadingIndicatorSource,
+  placeholder,
+  contentFit,
   contentPosition,
+  placeholderContentFit,
   onLoad,
-  onLoadStart,
-  onLoadEnd,
+  transition,
   onError,
+  responsivePolicy,
+  onLoadEnd,
+  priority,
+  blurRadius,
+  recyclingKey,
   ...props
-}: ImageProps) {
+}: ImageNativeProps) {
   const { aspectRatio, backgroundColor, transform, borderColor, ...style } = props.style ?? {};
-  const resolvedSources = ensureIsArray(source).map(resolveAssetSource);
+  const imagePlaceholderContentFit = placeholderContentFit || 'scale-down';
+  const blurhashStyle = {
+    objectFit: placeholderContentFit || contentFit,
+  };
+  const { containerRef, source: selectedSource } = useSourceSelection(
+    source,
+    responsivePolicy,
+    setCssVariables
+  );
+
+  const initialNodeAnimationKey =
+    (recyclingKey ? `${recyclingKey}-${placeholder?.[0]?.uri}` : placeholder?.[0]?.uri) ?? '';
+
+  const initialNode: AnimationManagerNode | null = placeholder?.[0]?.uri
+    ? [
+        initialNodeAnimationKey,
+        ({ onAnimationFinished }) =>
+          (className, style) =>
+            (
+              <ImageWrapper
+                source={placeholder?.[0]}
+                style={{
+                  objectFit: imagePlaceholderContentFit,
+                  ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
+                  ...style,
+                }}
+                className={className}
+                events={{
+                  onTransitionEnd: [onAnimationFinished],
+                }}
+                contentPosition={{ left: '50%', top: '50%' }}
+                blurhashContentPosition={contentPosition}
+                blurhashStyle={blurhashStyle}
+              />
+            ),
+      ]
+    : null;
+
+  const currentNodeAnimationKey =
+    (recyclingKey
+      ? `${recyclingKey}-${selectedSource?.uri ?? placeholder?.[0]?.uri}`
+      : selectedSource?.uri ?? placeholder?.[0]?.uri) ?? '';
+
+  const currentNode: AnimationManagerNode = [
+    currentNodeAnimationKey,
+    ({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) =>
+      (className, style) =>
+        (
+          <ImageWrapper
+            source={selectedSource || placeholder?.[0]}
+            events={{
+              onError: [onErrorAdapter(onError), onLoadEnd, onErrorInner],
+              onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
+              onMount: [onMount],
+              onTransitionEnd: [onAnimationFinished],
+            }}
+            style={{
+              objectFit: selectedSource ? contentFit : imagePlaceholderContentFit,
+              ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
+              ...style,
+            }}
+            className={className}
+            priority={priority}
+            contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
+            blurhashContentPosition={contentPosition}
+            blurhashStyle={blurhashStyle}
+            accessibilityLabel={props.accessibilityLabel}
+          />
+        ),
+  ];
+
   return (
-    <>
-      <picture
-        style={{
-          overflow: 'hidden',
-          ...style,
-        }}>
-        <img
-          src={resolvedSources.at(0)?.uri}
-          style={{
-            width: '100%',
-            height: '100%',
-            aspectRatio: String(aspectRatio),
-            backgroundColor: backgroundColor?.toString(),
-            transform: transform?.toString(),
-            borderColor: borderColor?.toString(),
-            objectFit: resolveContentFit(props.contentFit, props.resizeMode),
-            objectPosition: getObjectPositionFromContentPosition(contentPosition) || undefined,
-          }}
-        />
-      </picture>
-    </>
+    <div
+      ref={containerRef}
+      className="expo-image-container"
+      style={{
+        aspectRatio: String(aspectRatio),
+        backgroundColor: backgroundColor?.toString(),
+        transform: transform?.toString(),
+        borderColor: borderColor?.toString(),
+        ...style,
+        overflow: 'hidden',
+        position: 'relative',
+      }}>
+      <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>
+        {currentNode}
+      </AnimationManager>
+    </div>
   );
 }

@@ -156,6 +156,10 @@ export function dismissBrowser() {
  * # On iOS:
  * Opens the url with Safari in a modal using `ASWebAuthenticationSession`. The user will be asked
  * whether to allow the app to authenticate using the given url.
+ * To handle redirection back to the mobile application, the redirect URI set in the authentication server
+ * has to use the protocol provided as the scheme in **app.json** [`expo.scheme`](./../config/app/#scheme)
+ * e.g. `demo://` not `https://` protocol.
+ * Using `Linking.addEventListener` is not needed and can have side effects.
  *
  * # On Android:
  * This will be done using a "custom Chrome tabs" browser, [AppState](../react-native/appstate/),

@@ -3,6 +3,7 @@ import { ModPlatform } from '@expo/config-plugins';
 
 import { installAsync } from '../install/installAsync';
 import { env } from '../utils/env';
+import { setNodeEnv } from '../utils/nodeEnv';
 import { clearNodeModulesAsync } from '../utils/nodeModules';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
@@ -57,6 +58,8 @@ export async function prebuildAsync(
     skipDependencyUpdate?: string[];
   }
 ): Promise<PrebuildResults | null> {
+  setNodeEnv('development');
+
   if (options.clean) {
     const { maybeBailOnGitStatusAsync } = await import('../utils/git');
     // Clean the project folders...
@@ -97,7 +100,9 @@ export async function prebuildAsync(
     }
 
     await installAsync([], {
-      ...options.packageManager,
+      npm: !!options.packageManager?.npm,
+      yarn: !!options.packageManager?.yarn,
+      pnpm: !!options.packageManager?.pnpm,
       silent: !env.EXPO_DEBUG,
     });
   }

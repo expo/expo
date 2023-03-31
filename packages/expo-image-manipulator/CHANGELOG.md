@@ -8,13 +8,26 @@
 
 ### 🐛 Bug fixes
 
+- Handle images with an unsupported color space ([#21757](https://github.com/expo/expo/pull/21757) by [@mmmulani](https://github.com/mmmulani))
+
 ### 💡 Others
+
+## 11.1.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 11.1.0 — 2023-02-03
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
 
 ## 11.0.0 — 2022-10-25
 
 ### 🛠 Breaking changes
 
 - Bumped iOS deployment target to 13.0 and deprecated support for iOS 12. ([#18873](https://github.com/expo/expo/pull/18873) by [@tsapeta](https://github.com/tsapeta))
+- Migrated Android codebase to use the new Expo modules API. ([#20683](https://github.com/expo/expo/pull/20683) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 10.4.0 — 2022-07-07
 

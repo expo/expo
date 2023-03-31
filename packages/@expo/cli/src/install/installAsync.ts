@@ -3,8 +3,14 @@ import * as PackageManager from '@expo/package-manager';
 import chalk from 'chalk';
 
 import * as Log from '../log';
-import { getVersionedPackagesAsync } from '../start/doctor/dependencies/getVersionedPackages';
+import {
+  getOperationLog,
+  getVersionedPackagesAsync,
+} from '../start/doctor/dependencies/getVersionedPackages';
+import { getVersionedDependenciesAsync } from '../start/doctor/dependencies/validateDependenciesVersions';
+import { groupBy } from '../utils/array';
 import { findUpProjectRootOrAssert } from '../utils/findUp';
+import { setNodeEnv } from '../utils/nodeEnv';
 import { checkPackagesAsync } from './checkPackages';
 import { Options } from './resolveOptions';
 
@@ -13,6 +19,7 @@ export async function installAsync(
   options: Options & { projectRoot?: string },
   packageManagerArguments: string[] = []
 ) {
+  setNodeEnv('development');
   // Locate the project root based on the process current working directory.
   // This enables users to run `npx expo install` from a subdirectory of the project.
   const projectRoot = options.projectRoot ?? findUpProjectRootOrAssert(process.cwd());
@@ -22,8 +29,8 @@ export async function installAsync(
     npm: options.npm,
     yarn: options.yarn,
     pnpm: options.pnpm,
-    log: Log.log,
     silent: options.silent,
+    log: Log.log,
   });
 
   if (options.check || options.fix) {
@@ -61,15 +68,12 @@ export async function installPackagesAsync(
     packageManagerArguments,
   }: {
     /**
-     * List of packages to version
+     * List of packages to version, grouped by the type of dependency.
      * @example ['uuid', 'react-native-reanimated@latest']
      */
     packages: string[];
     /** Package manager to use when installing the versioned packages. */
-    packageManager:
-      | PackageManager.NpmPackageManager
-      | PackageManager.YarnPackageManager
-      | PackageManager.PnpmPackageManager;
+    packageManager: PackageManager.NodePackageManager;
     /**
      * SDK to version `packages` for.
      * @example '44.0.0'
@@ -94,9 +98,67 @@ export async function installPackagesAsync(
     }using {bold ${packageManager.name}}`
   );
 
-  await packageManager.addWithParametersAsync(versioning.packages, packageManagerArguments);
+  await packageManager.addAsync([...packageManagerArguments, ...versioning.packages]);
 
   await applyPluginsAsync(projectRoot, versioning.packages);
+}
+
+export async function fixPackagesAsync(
+  projectRoot: string,
+  {
+    packages,
+    packageManager,
+    sdkVersion,
+    packageManagerArguments,
+  }: {
+    packages: Awaited<ReturnType<typeof getVersionedDependenciesAsync>>;
+    /** Package manager to use when installing the versioned packages. */
+    packageManager: PackageManager.NodePackageManager;
+    /**
+     * SDK to version `packages` for.
+     * @example '44.0.0'
+     */
+    sdkVersion: string;
+    /**
+     * Extra parameters to pass to the `packageManager` when installing versioned packages.
+     * @example ['--no-save']
+     */
+    packageManagerArguments: string[];
+  }
+): Promise<void> {
+  if (!packages.length) {
+    return;
+  }
+
+  const { dependencies = [], devDependencies = [] } = groupBy(packages, (dep) => dep.packageType);
+  const versioningMessages = getOperationLog({
+    othersCount: 0, // All fixable packages are versioned
+    nativeModulesCount: packages.length,
+    sdkVersion,
+  });
+
+  Log.log(
+    chalk`\u203A Installing ${
+      versioningMessages.length ? versioningMessages.join(' and ') + ' ' : ''
+    }using {bold ${packageManager.name}}`
+  );
+
+  if (dependencies.length) {
+    const versionedPackages = dependencies.map(
+      (dep) => `${dep.packageName}@${dep.expectedVersionOrRange}`
+    );
+
+    await packageManager.addAsync([...packageManagerArguments, ...versionedPackages]);
+
+    await applyPluginsAsync(projectRoot, versionedPackages);
+  }
+
+  if (devDependencies.length) {
+    await packageManager.addDevAsync([
+      ...packageManagerArguments,
+      ...devDependencies.map((dep) => `${dep.packageName}@${dep.expectedVersionOrRange}`),
+    ]);
+  }
 }
 
 /**

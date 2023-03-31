@@ -1,4 +1,4 @@
-import { Image, ImageCachePolicy, ImageContentFit } from 'expo-image';
+import { Image } from 'expo-image';
 import * as React from 'react';
 import { StyleSheet, View } from 'react-native';
 
@@ -13,12 +13,10 @@ export default function ImageBlurhashScreen() {
       <Image
         style={styles.image}
         source={{ uri: 'https://picsum.photos/seed/175/3000/2000' }}
-        placeholder={{
-          uri: encodeURI(`blurhash:/${blurhash}/18/12`).replace(/#/g, '%23').replace(/\?/g, '%3F'),
-        }}
+        placeholder={{ blurhash, width: 18, height: 12 }}
         transition={1000}
-        contentFit={ImageContentFit.COVER}
-        cachePolicy={ImageCachePolicy.NONE}
+        contentFit="cover"
+        cachePolicy="none"
       />
     </View>
   );

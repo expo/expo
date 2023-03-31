@@ -3,16 +3,13 @@
 exports[`renders HR 1`] = `
 <View
   style={
-    Array [
-      Object {
-        "borderBottomColor": "#EEEEEE",
-        "borderBottomWidth": 0.5,
-        "borderTopColor": "#9A9A9A",
-        "borderTopWidth": 0.5,
-        "marginVertical": 8,
-      },
-      undefined,
-    ]
+    {
+      "borderBottomColor": "#EEEEEE",
+      "borderBottomWidth": 0.5,
+      "borderTopColor": "#9A9A9A",
+      "borderTopWidth": 0.5,
+      "marginVertical": 8,
+    }
   }
 />
 `;

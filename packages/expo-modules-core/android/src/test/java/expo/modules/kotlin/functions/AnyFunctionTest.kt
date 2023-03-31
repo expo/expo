@@ -8,6 +8,7 @@ import com.google.common.truth.Truth
 import expo.modules.PromiseMock
 import expo.modules.PromiseState
 import expo.modules.assertThrows
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.ArgumentCastException
 import expo.modules.kotlin.exception.InvalidArgsNumberException
@@ -26,7 +27,7 @@ class AnyFunctionTest {
       throw NullPointerException()
     }
 
-    override fun callUserImplementation(args: Array<Any?>, promise: Promise) {
+    override fun callUserImplementation(args: Array<Any?>, promise: Promise, appContext: AppContext) {
       error("Not implemented.")
     }
   }
@@ -36,7 +37,7 @@ class AnyFunctionTest {
     val method = MockedAnyFunction(arrayOf(typeOf<Int>()))
     val promise = PromiseMock()
 
-    assertThrows<InvalidArgsNumberException>("Received 2 arguments, but 1 was expected.") {
+    assertThrows<InvalidArgsNumberException>("Received 2 arguments, but 1 was expected") {
       method.call(
         mockk(),
         JavaOnlyArray().apply {
@@ -55,7 +56,7 @@ class AnyFunctionTest {
     val method = MockedAnyFunction(arrayOf(typeOf<Int>(), typeOf<Int>()))
     val promise = PromiseMock()
 
-    assertThrows<InvalidArgsNumberException>("Received 1 arguments, but 2 was expected.") {
+    assertThrows<InvalidArgsNumberException>("Received 1 arguments, but 2 was expected") {
       method.call(
         mockk(),
         JavaOnlyArray().apply {

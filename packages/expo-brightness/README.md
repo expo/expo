@@ -1,4 +1,11 @@
-# expo-brightness
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/brightness/">
+    <img
+      src="../../.github/resources/expo-brightness.svg"
+      alt="expo-brightness"
+      height="64" />
+  </a>
+</p>
 
 Provides an API to get and set screen brightness.
 

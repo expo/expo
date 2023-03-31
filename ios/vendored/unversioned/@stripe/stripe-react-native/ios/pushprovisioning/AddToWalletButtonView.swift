@@ -19,18 +19,8 @@ class AddToWalletButtonView: UIView {
     @objc var ephemeralKey: NSDictionary?
     @objc var onCompleteAction: RCTDirectEventBlock?
 
-    override init(frame: CGRect) {
-        super.init(frame: frame)
-    }
-
     required init?(coder: NSCoder) {
         fatalError("init(coder:) has not been implemented")
-    }
-
-    override func layoutSubviews() {
-        if let addToWalletButton = self.addToWalletButton {
-            addToWalletButton.frame = self.bounds
-        }
     }
 
     override func didSetProps(_ changedProps: [String]!) {
@@ -95,6 +85,16 @@ class AddToWalletButtonView: UIView {
 
         let vc = findViewControllerPresenter(from: UIApplication.shared.delegate?.window??.rootViewController ?? UIViewController())
         vc.present(controller!, animated: true, completion: nil)
+    }
+    
+    override init(frame: CGRect) {
+        super.init(frame: frame)
+    }
+    
+    override func layoutSubviews() {
+        if let addToWalletButton = self.addToWalletButton {
+            addToWalletButton.frame = self.bounds
+        }
     }
 }
 

@@ -121,6 +121,11 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
           find: new RegExp(`${prefix}(REACT_NATIVE_MINOR_VERSION)`, 'g'),
           replaceWith: '$1',
         },
+        {
+          paths: 'RNReanimated.podspec.json',
+          find: /(REANIMATED_VERSION)/g,
+          replaceWith: `${prefix}$1`,
+        },
       ],
     },
     'react-native-gesture-handler': {
@@ -170,7 +175,7 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
     '@shopify/react-native-skia': {
       path: [
         {
-          find: /\b(DisplayLink|PlatformContext|SkiaDrawView|SkiaDrawViewManager|SkiaManager|SkiaUIView|SkiaPictureViewManager)/g,
+          find: /\b(DisplayLink|PlatformContext|SkiaDrawView|SkiaDrawViewManager|SkiaManager|SkiaUIView|SkiaPictureViewManager|SkiaDomViewManager)/g,
           replaceWith: `${prefix}$1`,
         },
       ],
@@ -181,12 +186,16 @@ export default function vendoredModulesTransformsFactory(prefix: string): Config
           replaceWith: `ReactCommon/${prefix}`,
         },
         {
-          find: /\b(DisplayLink|PlatformContext|SkiaDrawView|SkiaDrawViewManager|SkiaManager|RNJsi|SkiaUIView|SkiaPictureViewManager)/g,
+          find: /\b(DisplayLink|PlatformContext|SkiaDrawView|SkiaDrawViewManager|SkiaManager|RNJsi|SkiaUIView|SkiaPictureViewManager|SkiaDomViewManager)/g,
           replaceWith: `${prefix}$1`,
         },
         {
+          find: /RCT_EXPORT_MODULE\((SkiaDomView)\)/g,
+          replaceWith: `RCT_EXPORT_MODULE(${prefix}$1)`,
+        },
+        {
           // The module name in bridge should be unversioned `RNSkia`
-          paths: 'SkiaDrawViewManager.mm',
+          paths: '*.mm',
           find: new RegExp(`(\\smoduleForName:@")${prefix}(RNSkia")`, 'g'),
           replaceWith: '$1$2',
         },

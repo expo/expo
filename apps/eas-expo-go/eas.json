@@ -13,6 +13,7 @@
             "../../android/prebuiltHermes"
           ]
         },
+        "resourceClass": "large",
         "env": {
           "EAS_BUILD_PLATFORM": "android",
           "EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID": "host.exp.exponent",
@@ -21,11 +22,11 @@
       },
       "ios": {
         "cache": {
-          "key": "sdk47-0.70.4",
-          "customPaths": [
-            "../../ios/Pods"
-          ]
+          "key": "sdk48-0.71.3",
+          "cacheDefaultPaths": false,
+          "customPaths": ["../../ios/Pods"]
         },
+        "resourceClass": "m-medium",
         "env": {
           "EAS_BUILD_PLATFORM": "ios",
           "EXPO_ROOT_DIR": "/Users/expo/workingdir/build"

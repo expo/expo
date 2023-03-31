@@ -4,6 +4,8 @@
 #import "EXVersions.h"
 #import "EXKernelUtil.h"
 
+@import EXManifests;
+
 @interface EXVersions ()
 
 - (void)_loadVersions;

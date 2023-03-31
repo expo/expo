@@ -11,16 +11,16 @@ import { Terminal } from '~/ui/components/Snippet';
 
 ## Support
 
-The Hermes engine is fully supported across all Expo tooling. See the table below to check if your project is using a compatible version:
+The Hermes engine is the default JavaScript engine used by Expo and it is fully supported across all Expo tooling. See the table below to check if your project is using a compatible version:
 
 | Platform | Expo Go | [Development Builds](/development/introduction) |
 | -------- | ------- | ----------------------------------------------- |
 | Android  | SDK 42  | SDK 42                                          |
 | iOS      | SDK 47  | SDK 43                                          |
 
-## Setup
+<Collapsible summary="Using SDK 47 or lower?">
 
-To get started, open your **app.json** and add the `jsEngine` field:
+For SDK 47 and lower, JSC is the default JavaScript engine and to use Hermes you need to add the `jsEngine` field in [Expo config](/workflow/configuration):
 
 {/* prettier-ignore */}
 ```js
@@ -34,6 +34,8 @@ To get started, open your **app.json** and add the `jsEngine` field:
 ```
 
 Development builds will need to be recompiled with `eas build`.
+
+</Collapsible>
 
 ### Switch JavaScript engine on a specific platform
 
@@ -77,7 +79,7 @@ Alternatively, you can use the JavaScript inspector from the following tools:
 - Internally, the app will establish a WebSocket connection, make sure your app is connected to the development server.
 
   - Try to reload the app by pressing <kbd>r</kbd> in the Expo CLI Terminal UI.
-  - Test debugging availability by running the command: `curl http://127.0.0.1:19000/json/list` (adjust the `127.0.0.1:19000` to match your dev server URL). The HTTP response should not be an empty array, but rather something like this:
+  - Test debugging availability by running the command: `curl http://127.0.0.1:19000/json/list` (adjust the `127.0.0.1:19000` to match your dev server URL). The HTTP response should be an array, as shown below. If it is an empty response, add either the `--localhost` or `--tunnel` flag to the `npx expo start` command.
 
   ```json
   [
@@ -85,7 +87,7 @@ Alternatively, you can use the JavaScript inspector from the following tools:
       "id": "0-2",
       "description": "host.exp.Exponent",
       "title": "Hermes ABI47_0_0React Native",
-      "faviconUrl": "https://reactjs.org/favicon.ico",
+      "faviconUrl": "https://react.dev/favicon.ico",
       "devtoolsFrontendUrl": "devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&ws=%5B%3A%3A1%5D%3A19000%2Finspector%2Fdebug%3Fdevice%3D0%26page%3D2",
       "type": "node",
       "webSocketDebuggerUrl": "ws://[::1]:19000/inspector/debug?device=0&page=2",
@@ -95,7 +97,7 @@ Alternatively, you can use the JavaScript inspector from the following tools:
       "id": "0--1",
       "description": "host.exp.Exponent",
       "title": "React Native Experimental (Improved Chrome Reloads)",
-      "faviconUrl": "https://reactjs.org/favicon.ico",
+      "faviconUrl": "https://react.dev/favicon.ico",
       "devtoolsFrontendUrl": "devtools://devtools/bundled/js_app.html?experiments=true&v8only=true&ws=%5B%3A%3A1%5D%3A19000%2Finspector%2Fdebug%3Fdevice%3D0%26page%3D-1",
       "type": "node",
       "webSocketDebuggerUrl": "ws://[::1]:19000/inspector/debug?device=0&page=-1",

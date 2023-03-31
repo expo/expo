@@ -2,9 +2,8 @@ import { useMemo } from 'react';
 
 import { IOSPermission, iosPermissions, PermissionReference } from './data';
 
-import { createPermalinkedComponent } from '~/common/create-permalinked-component';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
-import { P, CODE } from '~/ui/components/Text';
+import { P, CODE, createPermalinkedComponent } from '~/ui/components/Text';
 
 type IOSPermissionsProps = {
   permissions: PermissionReference<IOSPermission>[];

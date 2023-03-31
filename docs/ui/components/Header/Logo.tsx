@@ -1,28 +1,37 @@
 import { css } from '@emotion/react';
-import {
-  breakpoints,
-  theme,
-  spacing,
-  typography,
-  ChevronRightIcon,
-  Logo as LogoIcon,
-  WordMarkLogo,
-} from '@expo/styleguide';
-import React from 'react';
+import { theme, typography, Logo as LogoIcon, WordMarkLogo, LinkBase } from '@expo/styleguide';
+import { breakpoints, spacing, borderRadius } from '@expo/styleguide-base';
+import { ChevronRightIcon } from '@expo/styleguide-icons';
 
-import { LinkBase } from '~/ui/components/Text';
+import { DocumentationIcon } from '~/ui/components/Sidebar/icons/Documentation';
 
-export const Logo = () => (
-  <>
+type Props = {
+  subgroup?: string;
+};
+
+export const Logo = ({ subgroup }: Props) => (
+  <div className="flex items-center gap-4">
     <LinkBase css={linkStyle} href="https://expo.dev">
-      <WordMarkLogo color={theme.text.default} css={[logoStyle, hideOnMobile]} title="Expo" />
-      <LogoIcon color={theme.text.default} css={[logoStyle, showOnMobile]} title="Expo" />
+      <WordMarkLogo
+        className="w-[72px] mt-[1px] h-5 text-default"
+        css={hideOnMobile}
+        title="Expo"
+      />
+      <LogoIcon className="icon-lg mt-[1px] text-default" css={showOnMobile} title="Expo" />
     </LinkBase>
-    <ChevronRightIcon css={chevronStyle} color={theme.icon.secondary} title="" />
     <LinkBase css={linkStyle} href="/">
+      <div css={iconContainer}>
+        <DocumentationIcon className="icon-sm" />
+      </div>
       <span css={subtitleStyle}>Docs</span>
     </LinkBase>
-  </>
+    {subgroup && (
+      <>
+        <ChevronRightIcon className="text-icon-secondary" css={[chevronStyle, hideOnMobile]} />
+        <span css={[subtitleStyle, hideOnMobile]}>{subgroup}</span>
+      </>
+    )}
+  </div>
 );
 
 const linkStyle = css`
@@ -31,15 +40,11 @@ const linkStyle = css`
   align-items: center;
   text-decoration: none;
   user-select: none;
-`;
-
-const logoStyle = css`
-  height: 20px;
-  margin-top: 1px;
+  gap: ${spacing[2]}px;
 `;
 
 const chevronStyle = css`
-  margin: 0 ${spacing[2]}px;
+  margin: 0 ${-spacing[2]}px;
 
   @media screen and (max-width: ${breakpoints.medium}px) {
     margin-left: ${spacing[0.5]}px;
@@ -64,5 +69,17 @@ const showOnMobile = css`
 
 const subtitleStyle = css`
   color: ${theme.text.default};
+  font-weight: 500;
+  user-select: none;
   ${typography.fontSizes[18]}
 `;
+
+const iconContainer = css({
+  display: 'flex',
+  alignItems: 'center',
+  justifyContent: 'center',
+  backgroundColor: theme.palette.blue4,
+  borderRadius: borderRadius.sm,
+  height: 24,
+  width: 24,
+});

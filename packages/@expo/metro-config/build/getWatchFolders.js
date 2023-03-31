@@ -6,16 +6,16 @@ Object.defineProperty(exports, "__esModule", {
 exports.getWatchFolders = getWatchFolders;
 exports.globAllPackageJsonPaths = globAllPackageJsonPaths;
 exports.resolveAllWorkspacePackageJsonPaths = resolveAllWorkspacePackageJsonPaths;
-function _jsonFile() {
-  const data = _interopRequireDefault(require("@expo/json-file"));
-  _jsonFile = function () {
+function _assert() {
+  const data = _interopRequireDefault(require("assert"));
+  _assert = function () {
     return data;
   };
   return data;
 }
-function _assert() {
-  const data = _interopRequireDefault(require("assert"));
-  _assert = function () {
+function _fs() {
+  const data = _interopRequireDefault(require("fs"));
+  _fs = function () {
     return data;
   };
   return data;
@@ -42,6 +42,22 @@ function _getModulesPaths() {
   return data;
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
+function readJsonFile(filePath) {
+  // Read with fs
+  const file = _fs().default.readFileSync(filePath, 'utf8');
+  // Parse with JSON.parse
+  return JSON.parse(file);
+}
+function isValidJsonFile(filePath) {
+  try {
+    // Throws if invalid or unable to read.
+    readJsonFile(filePath);
+    return true;
+  } catch {
+    return false;
+  }
+}
+
 /**
  * @param workspaceProjectRoot Root file path for the yarn workspace
  * @param linkedPackages List of folders that contain linked node modules, ex: `['packages/*', 'apps/*']`
@@ -54,13 +70,7 @@ function globAllPackageJsonPaths(workspaceProjectRoot, linkedPackages) {
       absolute: true,
       ignore: ['**/@(Carthage|Pods|node_modules)/**']
     }).map(pkgPath => {
-      try {
-        _jsonFile().default.read(pkgPath);
-        return pkgPath;
-      } catch {
-        // Skip adding path if the package.json is invalid or cannot be read.
-      }
-      return null;
+      return isValidJsonFile(pkgPath) ? pkgPath : null;
     });
   }).flat().filter(Boolean).map(p => _path().default.join(p));
 }
@@ -82,7 +92,7 @@ function resolveAllWorkspacePackageJsonPaths(workspaceProjectRoot) {
   try {
     const rootPackageJsonFilePath = _path().default.join(workspaceProjectRoot, 'package.json');
     // Could throw if package.json is invalid.
-    const rootPackageJson = _jsonFile().default.read(rootPackageJsonFilePath);
+    const rootPackageJson = readJsonFile(rootPackageJsonFilePath);
 
     // Extract the "packages" array or use "workspaces" as packages array (yarn workspaces spec).
     const packages = getWorkspacePackagesArray(rootPackageJson);

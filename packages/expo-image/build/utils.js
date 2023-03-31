@@ -1,4 +1,3 @@
-import { ImageContentFit, ImageResizeMode, } from './Image.types';
 let loggedResizeModeDeprecationWarning = false;
 let loggedRepeatDeprecationWarning = false;
 let loggedFadeDurationDeprecationWarning = false;
@@ -16,22 +15,21 @@ export function resolveContentFit(contentFit, resizeMode) {
             loggedResizeModeDeprecationWarning = true;
         }
         switch (resizeMode) {
-            case ImageResizeMode.CONTAIN:
-                return ImageContentFit.CONTAIN;
-            case ImageResizeMode.COVER:
-                return ImageContentFit.COVER;
-            case ImageResizeMode.STRETCH:
-                return ImageContentFit.FILL;
-            case ImageResizeMode.CENTER:
-                return ImageContentFit.SCALE_DOWN;
-            case ImageResizeMode.REPEAT:
+            case 'contain':
+            case 'cover':
+                return resizeMode;
+            case 'stretch':
+                return 'fill';
+            case 'center':
+                return 'scale-down';
+            case 'repeat':
                 if (!loggedRepeatDeprecationWarning) {
                     console.log('[expo-image]: Resize mode "repeat" is no longer supported');
                     loggedRepeatDeprecationWarning = true;
                 }
         }
     }
-    return ImageContentFit.CONTAIN;
+    return 'cover';
 }
 /**
  * It resolves a stringified form of the `contentPosition` prop to an object,
@@ -65,7 +63,7 @@ export function resolveContentPosition(contentPosition) {
         }
         return contentPositionObject;
     }
-    return contentPosition;
+    return contentPosition ?? { top: '50%', left: '50%' };
 }
 /**
  * If `transition` or `fadeDuration` is a number, it's resolved to a cross dissolve transition with the given duration.
@@ -82,6 +80,6 @@ export function resolveTransition(transition, fadeDuration) {
         }
         return { duration: fadeDuration };
     }
-    return transition;
+    return transition ?? null;
 }
 //# sourceMappingURL=utils.js.map

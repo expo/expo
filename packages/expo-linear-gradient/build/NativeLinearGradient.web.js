@@ -2,8 +2,10 @@ import * as React from 'react';
 import { View } from 'react-native';
 import { normalizeColor } from './normalizeColor';
 export default function NativeLinearGradient({ colors, locations, startPoint, endPoint, ...props }) {
-    const [layout, setLayout] = React.useState(null);
-    const { width = 1, height = 1 } = layout ?? {};
+    const [{ height, width }, setLayout] = React.useState({
+        height: 1,
+        width: 1,
+    });
     // TODO(Bacon): In the future we could consider adding `backgroundRepeat: "no-repeat"`. For more
     // browser support.
     const linearGradientBackgroundImage = React.useMemo(() => {
@@ -14,15 +16,14 @@ export default function NativeLinearGradient({ colors, locations, startPoint, en
             // @ts-ignore: [ts] Property 'backgroundImage' does not exist on type 'ViewStyle'.
             { backgroundImage: linearGradientBackgroundImage },
         ], onLayout: (event) => {
-            const { x, y, width, height } = event.nativeEvent.layout;
-            const oldLayout = layout ?? { x: 0, y: 0, width: 1, height: 1 };
-            // don't set new layout state unless the layout has actually changed
-            if (x !== oldLayout.x ||
-                y !== oldLayout.y ||
-                width !== oldLayout.width ||
-                height !== oldLayout.height) {
-                setLayout({ x, y, width, height });
-            }
+            const { width, height } = event.nativeEvent.layout;
+            setLayout((oldLayout) => {
+                // don't set new layout state unless the layout has actually changed
+                if (width !== oldLayout.width || height !== oldLayout.height) {
+                    return { height, width };
+                }
+                return oldLayout;
+            });
             if (props.onLayout) {
                 props.onLayout(event);
             }
@@ -65,13 +66,12 @@ function calculatePseudoAngle(width, height, startPoint, endPoint) {
 }
 function calculateGradientColors(colors, locations) {
     return colors.map((color, index) => {
-        const hexColor = normalizeColor(color);
-        let output = hexColor;
+        const output = normalizeColor(color);
         if (locations && locations[index]) {
             const location = Math.max(0, Math.min(1, locations[index]));
             // Convert 0...1 to 0...100
             const percentage = location * 100;
-            output += ` ${percentage}%`;
+            return `${output} ${percentage}%`;
         }
         return output;
     });

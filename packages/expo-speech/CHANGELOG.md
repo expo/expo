@@ -6,9 +6,25 @@
 
 ### 🎉 New features
 
+- Migrated iOS codebase to use Expo modules API. ([#21814](https://github.com/expo/expo/pull/21814) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 11.1.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 11.1.0 — 2023-02-03
+
+### 🎉 New features
+
+- Added utterance word tracking support for iOS and Android. This allows the ability to highlight each word in an utterance. ([#20726](https://github.com/expo/expo/pull/20726) by [@gabrieljoelc](https://github.com/gabrieljoelc))
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
 
 ## 11.0.0 — 2022-10-25
 

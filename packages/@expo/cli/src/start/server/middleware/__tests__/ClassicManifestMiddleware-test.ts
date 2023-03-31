@@ -34,6 +34,9 @@ jest.mock('@expo/config', () => ({
 }));
 jest.mock('../resolveEntryPoint', () => ({
   resolveEntryPoint: jest.fn(() => './index.js'),
+  resolveAbsoluteEntryPoint: jest.fn((projectRoot: string) =>
+    require('path').join(projectRoot, './index.js')
+  ),
 }));
 
 const asReq = (req: Partial<ServerRequest>) => req as ServerRequest;
@@ -213,6 +216,30 @@ describe('_fetchComputedManifestStringAsync', () => {
     // Should log a new error...
     expect(Log.warn).toBeCalledTimes(3);
     expect(Log.warn).toHaveBeenNthCalledWith(3, expect.stringMatching(/@other-bacon/));
+  });
+});
+
+describe('_getManifestResponseAsync', () => {
+  // Regression
+  it('returns Exponent-Server header as json string', async () => {
+    const middleware = new ClassicManifestMiddleware('/', {
+      constructUrl: (options) => options?.hostname || 'localhost',
+    });
+
+    middleware._getManifestStringAsync = jest.fn(async () => {
+      return 'signed-manifest-lol';
+    });
+
+    const response = await middleware._getManifestResponseAsync({
+      acceptSignature: true,
+      hostname: 'localhost',
+      platform: 'android',
+    });
+
+    const header = response.headers.get('Exponent-Server');
+
+    expect(typeof header).toBe('string');
+    expect(() => JSON.parse(header as string)).not.toThrow();
   });
 });
 

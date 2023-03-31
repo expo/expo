@@ -2,11 +2,15 @@
 
 import SDWebImage
 import ExpoModulesCore
+import VisionKit
 
-private typealias SDWebImageContext = [SDWebImageContextOption: Any]
+typealias SDWebImageContext = [SDWebImageContextOption: Any]
 
 // swiftlint:disable:next type_body_length
 public final class ImageView: ExpoView {
+  static let contextSourceKey = SDWebImageContextOption(rawValue: "source")
+  static let screenScaleKey = SDWebImageContextOption(rawValue: "screenScale")
+
   let sdImageView = SDAnimatedImageView(frame: .zero)
 
   // Custom image manager doesn't use shared loaders managers by default,
@@ -37,6 +41,14 @@ public final class ImageView: ExpoView {
 
   var cachePolicy: ImageCachePolicy = .disk
 
+  var recyclingKey: String? {
+    didSet {
+      if recyclingKey != oldValue {
+        sdImageView.image = nil
+      }
+    }
+  }
+
   // MARK: - Events
 
   let onLoadStart = EventDispatcher()
@@ -62,7 +74,7 @@ public final class ImageView: ExpoView {
     super.init(appContext: appContext)
 
     clipsToBounds = true
-    sdImageView.contentMode = .scaleAspectFill
+    sdImageView.contentMode = contentFit.toContentMode()
     sdImageView.autoresizingMask = [.flexibleWidth, .flexibleHeight]
     sdImageView.layer.masksToBounds = false
 
@@ -95,6 +107,9 @@ public final class ImageView: ExpoView {
       displayPlaceholderIfNecessary()
       return
     }
+    if sdImageView.image == nil {
+      sdImageView.contentMode = contentFit.toContentMode()
+    }
     var context = SDWebImageContext()
 
     // Cancel currently running load requests.
@@ -105,21 +120,30 @@ public final class ImageView: ExpoView {
       context[SDWebImageContextOption.downloadRequestModifier] = SDWebImageDownloaderRequestModifier(headers: headers)
     }
 
-    context[SDWebImageContextOption.imageTransformer] = createTransformPipeline()
+    context[.cacheKeyFilter] = createCacheKeyFilter(source.cacheKey)
+    context[.imageTransformer] = createTransformPipeline()
 
     // Assets from the bundler have `scale` prop which needs to be passed to the context,
     // otherwise they would be saved in cache with scale = 1.0 which may result in
     // incorrectly rendered images for resize modes that don't scale (`center` and `repeat`).
     context[.imageScaleFactor] = source.scale
 
+    if source.isCachingAllowed {
+      let sdCacheType = cachePolicy.toSdCacheType().rawValue
+      context[.originalQueryCacheType] = sdCacheType
+      context[.originalStoreCacheType] = sdCacheType
+    } else {
+      context[.originalQueryCacheType] = SDImageCacheType.none.rawValue
+      context[.originalStoreCacheType] = SDImageCacheType.none.rawValue
+    }
     // Set which cache can be used to query and store the downloaded image.
     // We want to store only original images (without transformations).
-    // TODO: Don't cache non-network requests (e.g. data URIs, local files)
-    let sdCacheType = cachePolicy.toSdCacheType().rawValue
-    context[.originalQueryCacheType] = sdCacheType
-    context[.originalStoreCacheType] = sdCacheType
     context[.queryCacheType] = SDImageCacheType.none.rawValue
     context[.storeCacheType] = SDImageCacheType.none.rawValue
+
+    // Some loaders (e.g. blurhash) need access to the source and the screen scale.
+    context[ImageView.contextSourceKey] = source
+    context[ImageView.screenScaleKey] = screenScale
 
     onLoadStart([:])
 
@@ -135,9 +159,19 @@ public final class ImageView: ExpoView {
   // MARK: - Loading
 
   private func imageLoadProgress(_ receivedSize: Int, _ expectedSize: Int, _ imageUrl: URL?) {
+    // Don't send the event when the expected size is unknown (it's usually -1 or 0 when called for the first time).
+    if expectedSize <= 0 {
+      return
+    }
+
+    // Photos library requester emits the progress as a double `0...1` that we map to `0...100` int in `PhotosLoader`.
+    // When that loader is used, we don't have any information about the sizes in bytes, so we only send the `progress` param.
+    let isPhotoLibraryAsset = isPhotoLibraryAssetUrl(imageUrl)
+
     onProgress([
-      "loaded": receivedSize,
-      "total": expectedSize
+      "loaded": isPhotoLibraryAsset ? nil : receivedSize,
+      "total": isPhotoLibraryAsset ? nil : expectedSize,
+      "progress": Double(receivedSize) / Double(expectedSize)
     ])
   }
 
@@ -176,10 +210,13 @@ public final class ImageView: ExpoView {
         scale: scale,
         contentFit: contentFit
       ).rounded(.up)
-      let image = processImage(image, idealSize: idealSize, scale: scale)
 
-      applyContentPosition(contentSize: idealSize, containerSize: frame.size)
-      renderImage(image)
+      Task {
+        let image = await processImage(image, idealSize: idealSize, scale: scale)
+
+        applyContentPosition(contentSize: idealSize, containerSize: frame.size)
+        renderImage(image)
+      }
     } else {
       displayPlaceholderIfNecessary()
     }
@@ -205,9 +242,8 @@ public final class ImageView: ExpoView {
    Content fit for the placeholder. `scale-down` seems to be the best choice for spinners
    and that the placeholders are usually smaller than the proper image, but it doesn't
    apply to blurhash that by default could use the same fitting as the proper image.
-   - ToDo: Add `placeholderContentFit` prop to control this.
    */
-  var placeholderContentFit: ContentFit?
+  var placeholderContentFit: ContentFit = .scaleDown
 
   /**
    Same as `bestSource`, but for placeholders.
@@ -232,6 +268,7 @@ public final class ImageView: ExpoView {
     let isBlurhash = placeholder.isBlurhash
 
     context[.imageScaleFactor] = placeholder.scale
+    context[.cacheKeyFilter] = createCacheKeyFilter(placeholder.cacheKey)
 
     // Cache placeholders on the disk. Should we let the user choose whether
     // to cache them or apply the same policy as with the proper image?
@@ -240,12 +277,15 @@ public final class ImageView: ExpoView {
     context[.queryCacheType] = SDImageCacheType.disk.rawValue
     context[.storeCacheType] = SDImageCacheType.disk.rawValue
 
+    // Some loaders (e.g. blurhash) need access to the source.
+    context[ImageView.contextSourceKey] = placeholder
+
     imageManager.loadImage(with: placeholder.uri, context: context, progress: nil) { [weak self] placeholder, _, _, _, finished, _ in
       guard let self = self, let placeholder = placeholder, finished else {
         return
       }
       self.placeholderImage = placeholder
-      self.placeholderContentFit = isBlurhash ? self.contentFit : .scaleDown
+      self.placeholderContentFit = isBlurhash ? self.contentFit : self.placeholderContentFit
       self.displayPlaceholderIfNecessary()
     }
   }
@@ -257,7 +297,7 @@ public final class ImageView: ExpoView {
     guard isViewEmpty || !hasAnySource, let placeholder = placeholderImage else {
       return
     }
-    setImage(placeholder, contentFit: placeholderContentFit ?? .scaleDown)
+    setImage(placeholder, contentFit: placeholderContentFit)
   }
 
   // MARK: - Processing
@@ -270,13 +310,13 @@ public final class ImageView: ExpoView {
     return SDImagePipelineTransformer(transformers: transformers)
   }
 
-  private func processImage(_ image: UIImage?, idealSize: CGSize, scale: Double) -> UIImage? {
+  private func processImage(_ image: UIImage?, idealSize: CGSize, scale: Double) async -> UIImage? {
     guard let image = image, !bounds.isEmpty else {
       return nil
     }
     // Downscale the image only when necessary
     if shouldDownscale(image: image, toSize: idealSize, scale: scale) {
-      return resize(animatedImage: image, toSize: idealSize, scale: scale)
+      return await resize(animatedImage: image, toSize: idealSize, scale: scale)
     }
     return image
   }
@@ -309,6 +349,10 @@ public final class ImageView: ExpoView {
   private func setImage(_ image: UIImage?, contentFit: ContentFit) {
     sdImageView.contentMode = contentFit.toContentMode()
     sdImageView.image = image
+
+    if enableLiveTextInteraction {
+      analyzeImage()
+    }
   }
 
   // MARK: - Helpers
@@ -345,5 +389,57 @@ public final class ImageView: ExpoView {
    */
   var hasAnySource: Bool {
     return sources?.isEmpty == false
+  }
+
+  // MARK: - Live Text Interaction
+
+  @available(iOS 16.0, *)
+  static let imageAnalyzer = ImageAnalyzer.isSupported ? ImageAnalyzer() : nil
+
+  var enableLiveTextInteraction: Bool = false {
+    didSet {
+      guard #available(iOS 16.0, *), oldValue != enableLiveTextInteraction, ImageAnalyzer.isSupported else {
+        return
+      }
+      if enableLiveTextInteraction {
+        let imageAnalysisInteraction = ImageAnalysisInteraction()
+        sdImageView.addInteraction(imageAnalysisInteraction)
+      } else if let interaction = findImageAnalysisInteraction() {
+        sdImageView.removeInteraction(interaction)
+      }
+    }
+  }
+
+  private func analyzeImage() {
+    guard #available(iOS 16.0, *), ImageAnalyzer.isSupported, let image = sdImageView.image else {
+      return
+    }
+
+    Task {
+      guard let imageAnalyzer = Self.imageAnalyzer, let imageAnalysisInteraction = findImageAnalysisInteraction() else {
+        return
+      }
+      let configuration = ImageAnalyzer.Configuration([.text, .machineReadableCode])
+
+      do {
+        let imageAnalysis = try await imageAnalyzer.analyze(image, configuration: configuration)
+
+        // Make sure the image haven't changed in the meantime.
+        if image == sdImageView.image {
+          imageAnalysisInteraction.analysis = imageAnalysis
+          imageAnalysisInteraction.preferredInteractionTypes = .automatic
+        }
+      } catch {
+        log.error(error)
+      }
+    }
+  }
+
+  @available(iOS 16.0, *)
+  private func findImageAnalysisInteraction() -> ImageAnalysisInteraction? {
+    let interaction = sdImageView.interactions.first {
+      return $0 is ImageAnalysisInteraction
+    }
+    return interaction as? ImageAnalysisInteraction
   }
 }

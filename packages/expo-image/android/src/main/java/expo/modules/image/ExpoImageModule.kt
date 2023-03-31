@@ -11,6 +11,7 @@ import expo.modules.image.enums.ContentFit
 import expo.modules.image.enums.Priority
 import expo.modules.image.records.CachePolicy
 import expo.modules.image.records.ContentPosition
+import expo.modules.image.records.ImageTransition
 import expo.modules.image.records.SourceMap
 import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
@@ -55,23 +56,27 @@ class ExpoImageModule : Module() {
       )
 
       Prop("source") { view: ExpoImageViewWrapper, sources: List<SourceMap>? ->
-        view.imageView.sources = sources ?: emptyList()
+        view.sources = sources ?: emptyList()
       }
 
       Prop("contentFit") { view: ExpoImageViewWrapper, contentFit: ContentFit? ->
-        view.imageView.contentFit = contentFit ?: ContentFit.Cover
+        view.contentFit = contentFit ?: ContentFit.Cover
+      }
+
+      Prop("placeholderContentFit") { view: ExpoImageViewWrapper, placeholderContentFit: ContentFit? ->
+        view.placeholderContentFit = placeholderContentFit ?: ContentFit.ScaleDown
       }
 
       Prop("contentPosition") { view: ExpoImageViewWrapper, contentPosition: ContentPosition? ->
-        view.imageView.contentPosition = contentPosition ?: ContentPosition.center
+        view.contentPosition = contentPosition ?: ContentPosition.center
       }
 
-      Prop("blurRadius") { view: ExpoImageViewWrapper, blurRadius: Int ->
-        view.imageView.blurRadius = blurRadius
+      Prop("blurRadius") { view: ExpoImageViewWrapper, blurRadius: Int? ->
+        view.blurRadius = blurRadius?.takeIf { it > 0 }
       }
 
-      Prop("fadeDuration") { view: ExpoImageViewWrapper, fadeDuration: Int ->
-        view.imageView.fadeDuration = fadeDuration
+      Prop("transition") { view: ExpoImageViewWrapper, transition: ImageTransition? ->
+        view.transition = transition
       }
 
       PropGroup(
@@ -86,7 +91,7 @@ class ExpoImageModule : Module() {
         ViewProps.BORDER_BOTTOM_END_RADIUS to 8
       ) { view: ExpoImageViewWrapper, index: Int, borderRadius: Float? ->
         val radius = makeYogaUndefinedIfNegative(borderRadius ?: YogaConstants.UNDEFINED)
-        view.imageView.setBorderRadius(index, radius)
+        view.setBorderRadius(index, radius)
       }
 
       PropGroup(
@@ -100,7 +105,7 @@ class ExpoImageModule : Module() {
       ) { view: ExpoImageViewWrapper, index: Int, width: Float? ->
         val pixelWidth = makeYogaUndefinedIfNegative(width ?: YogaConstants.UNDEFINED)
           .ifYogaDefinedUse(PixelUtil::toPixelFromDIP)
-        view.imageView.setBorderWidth(index, pixelWidth)
+        view.setBorderWidth(index, pixelWidth)
       }
 
       PropGroup(
@@ -114,43 +119,59 @@ class ExpoImageModule : Module() {
       ) { view: ExpoImageViewWrapper, index: Int, color: Int? ->
         val rgbComponent = if (color == null) YogaConstants.UNDEFINED else (color and 0x00FFFFFF).toFloat()
         val alphaComponent = if (color == null) YogaConstants.UNDEFINED else (color ushr 24).toFloat()
-        view.imageView.setBorderColor(index, rgbComponent, alphaComponent)
+        view.setBorderColor(index, rgbComponent, alphaComponent)
       }
 
       Prop("borderStyle") { view: ExpoImageViewWrapper, borderStyle: String? ->
-        view.imageView.setBorderStyle(borderStyle)
+        view.borderStyle = borderStyle
       }
 
       Prop("backgroundColor") { view: ExpoImageViewWrapper, color: Int? ->
-        view.imageView.setBackgroundColor(color)
+        view.backgroundColor = color
       }
 
       Prop("tintColor") { view: ExpoImageViewWrapper, color: Int? ->
-        view.imageView.setTintColor(color)
+        view.tintColor = color
       }
 
       Prop("placeholder") { view: ExpoImageViewWrapper, placeholder: List<SourceMap>? ->
-        view.imageView.placeholders = placeholder ?: emptyList()
+        view.placeholders = placeholder ?: emptyList()
       }
 
-      Prop("accessible") { view: ExpoImageViewWrapper, accessible: Boolean ->
-        view.imageView.isFocusable = accessible
+      Prop("accessible") { view: ExpoImageViewWrapper, accessible: Boolean? ->
+        view.accessible = accessible ?: false
+      }
+
+      Prop("accessibilityLabel") { view: ExpoImageViewWrapper, accessibilityLabel: String? ->
+        view.accessibilityLabel = accessibilityLabel
+      }
+
+      Prop("focusable") { view: ExpoImageViewWrapper, isFocusable: Boolean? ->
+        view.isFocusableProp = isFocusable ?: false
       }
 
       Prop("priority") { view: ExpoImageViewWrapper, priority: Priority? ->
-        view.imageView.priority = priority ?: Priority.NORMAL
+        view.priority = priority ?: Priority.NORMAL
       }
 
       Prop("cachePolicy") { view: ExpoImageViewWrapper, cachePolicy: CachePolicy? ->
-        view.imageView.cachePolicy = cachePolicy ?: CachePolicy.DISK
+        view.cachePolicy = cachePolicy ?: CachePolicy.DISK
+      }
+
+      Prop("recyclingKey") { view: ExpoImageViewWrapper, recyclingKey: String? ->
+        view.recyclingKey = recyclingKey
+      }
+
+      Prop("allowDownscaling") { view: ExpoImageViewWrapper, allowDownscaling: Boolean? ->
+        view.allowDownscaling = allowDownscaling ?: true
       }
 
       OnViewDidUpdateProps { view: ExpoImageViewWrapper ->
-        view.imageView.onAfterUpdateTransaction()
+        view.rerenderIfNeeded()
       }
 
       OnViewDestroys { view: ExpoImageViewWrapper ->
-        view.imageView.onDrop()
+        view.onViewDestroys()
       }
     }
   }

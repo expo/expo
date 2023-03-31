@@ -4,7 +4,7 @@
  A dynamic type representing an enum that conforms to `Enumerable`.
  */
 internal struct DynamicEnumType: AnyDynamicType {
-  let innerType: Enumerable.Type
+  let innerType: any Enumerable.Type
 
   func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
     return innerType == InnerType.self
@@ -17,7 +17,7 @@ internal struct DynamicEnumType: AnyDynamicType {
     return false
   }
 
-  func cast<ValueType>(_ value: ValueType) throws -> Any {
+  func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
     return try innerType.create(fromRawValue: value)
   }
 

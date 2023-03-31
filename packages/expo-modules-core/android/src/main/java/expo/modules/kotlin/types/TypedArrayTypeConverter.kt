@@ -1,5 +1,6 @@
 package expo.modules.kotlin.types
 
+import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.JavaScriptTypedArray
@@ -16,8 +17,8 @@ import expo.modules.kotlin.typedarray.Uint32Array
 import expo.modules.kotlin.typedarray.Uint8Array
 import expo.modules.kotlin.typedarray.Uint8ClampedArray
 
-abstract class BaseTypeArrayConverter<T : TypedArray>(isOptional: Boolean) : TypeConverter<T>(isOptional) {
-  override fun convertNonOptional(value: Any): T = wrapJavaScriptTypedArray(value as JavaScriptTypedArray)
+abstract class BaseTypeArrayConverter<T : TypedArray>(isOptional: Boolean) : NullAwareTypeConverter<T>(isOptional) {
+  override fun convertNonOptional(value: Any, context: AppContext?): T = wrapJavaScriptTypedArray(value as JavaScriptTypedArray)
   override fun getCppRequiredTypes(): ExpectedType = ExpectedType(CppType.TYPED_ARRAY)
   override fun isTrivial() = false
 

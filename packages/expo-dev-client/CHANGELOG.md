@@ -10,6 +10,30 @@
 
 ### 💡 Others
 
+- Update e2e tests to use custom entry file system. ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))
+
+## 2.1.4 — 2023-02-28
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.3 — 2023-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.2 — 2023-02-17
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.0 — 2023-02-03
+
+### 💡 Others
+
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+
 ## 2.0.1 — 2022-11-21
 
 _This version does not introduce any user-facing changes._

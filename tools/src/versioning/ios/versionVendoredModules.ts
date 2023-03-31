@@ -4,14 +4,12 @@ import fs from 'fs-extra';
 import glob from 'glob-promise';
 import path from 'path';
 
-import { IOS_DIR } from '../../Constants';
+import { IOS_VENDORED_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { copyFileWithTransformsAsync } from '../../Transforms';
 import { FileTransforms } from '../../Transforms.types';
 import { searchFilesAsync } from '../../Utils';
 import vendoredModulesTransforms from './transforms/vendoredModulesTransforms';
-
-const IOS_VENDORED_DIR = path.join(IOS_DIR, 'vendored');
 
 /**
  * Versions iOS vendored modules.
@@ -125,6 +123,12 @@ function baseTransformsFactory(prefix: string): Required<FileTransforms> {
         replaceWith: (_, p1) => {
           return `namespace ${prefix}${p1 === 'react' ? 'React' : p1}`;
         },
+      },
+      {
+        // namespace ABI48_0_0React = ABI48_0_0facebook::react -> namespace ABI48_0_0React = ABI48_0_0facebook::ABI48_0_0React
+        // using namespace ABI48_0_0facebook::react -> using namespace ABI48_0_0facebook::ABI48_0_0React
+        find: /namespace ([\w\s=]+facebook)::react/g,
+        replaceWith: `namespace $1::${prefix}React`,
       },
       {
         // Objective-C only, see the comment in the rule below.

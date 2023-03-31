@@ -1,5 +1,3 @@
-import { mocked } from 'ts-jest/utils';
-
 import * as DevicePushTokenAutoRegistration from '../DevicePushTokenAutoRegistration.fx';
 import { DevicePushToken } from '../Tokens.types';
 import getDevicePushTokenAsync from '../getDevicePushTokenAsync';
@@ -44,7 +42,9 @@ describe('__handlePersistedRegistrationInfoAsync', () => {
       data: 'i-want-to-be-sent-to-server',
       type: 'ios',
     };
-    mocked(getDevicePushTokenAsync).mockResolvedValue(mockPendingDevicePushToken);
+    (
+      getDevicePushTokenAsync as jest.MockedFunction<typeof getDevicePushTokenAsync>
+    ).mockResolvedValue(mockPendingDevicePushToken);
     await DevicePushTokenAutoRegistration.__handlePersistedRegistrationInfoAsync(
       JSON.stringify(ENABLED_REGISTRATION_FIXTURE)
     );

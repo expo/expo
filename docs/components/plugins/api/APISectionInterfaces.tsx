@@ -1,6 +1,5 @@
 import { renderMethod } from './APISectionMethods';
 
-import { H2, H3Code, H4 } from '~/components/plugins/Headings';
 import { APIDataType } from '~/components/plugins/api/APIDataType';
 import {
   CommentData,
@@ -13,7 +12,6 @@ import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatf
 import {
   CommentTextBlock,
   getTagData,
-  mdComponents,
   parseCommentContent,
   renderFlags,
   renderParamRow,
@@ -21,13 +19,15 @@ import {
   resolveTypeName,
   renderDefaultValue,
   STYLES_APIBOX,
-  STYLES_NESTED_SECTION_HEADER,
   getTagNamesList,
   STYLES_APIBOX_NESTED,
-  STYLES_ELEMENT_SPACING,
+  ELEMENT_SPACING,
+  H3Code,
+  getCommentContent,
+  BoxSectionHeader,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
-import { BOLD, P, CODE } from '~/ui/components/Text';
+import { H2, BOLD, P, CODE, DEMI, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionInterfacesProps = {
   data: InterfaceDefinitionData[];
@@ -40,19 +40,21 @@ const renderInterfaceComment = (
 ) => {
   if (signatures && signatures.length) {
     const { type, parameters, comment: signatureComment } = signatures[0];
-    const initValue = defaultValue || getTagData('default', signatureComment)?.text;
+    const defaultTag = getTagData('default', signatureComment);
+    const initValue =
+      defaultValue || (defaultTag ? getCommentContent(defaultTag.content) : undefined);
     return (
       <>
         {parameters?.length ? parameters.map(param => renderParamRow(param)) : null}
-        <BOLD>Returns: </BOLD>
+        <DEMI>Returns</DEMI>
         <CODE>{resolveTypeName(type)}</CODE>
         {signatureComment && (
           <>
             <br />
             <APISectionDeprecationNote comment={comment} />
             <CommentTextBlock
+              inlineHeaders
               comment={signatureComment}
-              components={mdComponents}
               afterContent={renderDefaultValue(initValue)}
             />
           </>
@@ -60,13 +62,14 @@ const renderInterfaceComment = (
       </>
     );
   } else {
-    const initValue = defaultValue || getTagData('default', comment)?.text;
+    const defaultTag = getTagData('default', comment);
+    const initValue =
+      defaultValue || (defaultTag ? getCommentContent(defaultTag.content) : undefined);
     return (
       <>
         <APISectionDeprecationNote comment={comment} />
         <CommentTextBlock
           comment={comment}
-          components={mdComponents}
           afterContent={renderDefaultValue(initValue)}
           emptyCommentFallback="-"
         />
@@ -83,7 +86,10 @@ const renderInterfacePropertyRow = ({
   signatures,
   defaultValue,
 }: PropData): JSX.Element => {
-  const initValue = parseCommentContent(defaultValue || getTagData('default', comment)?.text);
+  const defaultTag = getTagData('default', comment);
+  const initValue = parseCommentContent(
+    defaultValue || (defaultTag ? getCommentContent(defaultTag.content) : '')
+  );
   return (
     <Row key={name}>
       <Cell fitContent>
@@ -116,11 +122,11 @@ const renderInterface = ({
       <APISectionDeprecationNote comment={comment} />
       <APISectionPlatformTags comment={comment} prefix="Only for:" />
       <H3Code tags={getTagNamesList(comment)}>
-        <CODE>{name}</CODE>
+        <MONOSPACE weight="medium">{name}</MONOSPACE>
       </H3Code>
       {extendedTypes?.length ? (
-        <P css={STYLES_ELEMENT_SPACING}>
-          <BOLD>Extends: </BOLD>
+        <P className={ELEMENT_SPACING}>
+          <DEMI>Extends: </DEMI>
           {extendedTypes.map(extendedType => (
             <CODE key={`extend-${extendedType.name}`}>{resolveTypeName(extendedType)}</CODE>
           ))}
@@ -129,21 +135,18 @@ const renderInterface = ({
       <CommentTextBlock comment={comment} includePlatforms={false} />
       {interfaceMethods.length ? (
         <>
-          <div css={STYLES_NESTED_SECTION_HEADER}>
-            <H4>{name} Methods</H4>
-          </div>
+          <BoxSectionHeader text={`${name} Methods`} />
           {interfaceMethods.map(method => renderMethod(method, { exposeInSidebar: false }))}
         </>
       ) : undefined}
       {interfaceFields.length ? (
         <>
-          <div css={STYLES_NESTED_SECTION_HEADER}>
-            <H4>{name} Properties</H4>
-          </div>
+          <BoxSectionHeader text={`${name} Properties`} />
           <Table>
             <ParamsTableHeadRow />
             <tbody>{interfaceFields.map(renderInterfacePropertyRow)}</tbody>
           </Table>
+          <br />
         </>
       ) : undefined}
     </div>

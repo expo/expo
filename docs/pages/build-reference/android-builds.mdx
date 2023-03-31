@@ -1,12 +1,13 @@
 ---
 title: Android build process
+description: Learn how an Android project is built on EAS Build.
 ---
 
 This page describes the process of building Android projects with EAS Build. You may want to read this if you are interested in the implementation details of the build service.
 
 ## Build Process
 
-Let's take a closer look at the steps for building Android projects with EAS Build. We'll first run some steps on your local machine to prepare the project, and then we'll actually build the project on a remote service.
+Let's take a closer look at the steps for building Android projects with EAS Build. We'll first run some steps on your local machine to prepare the project, and then we'll build the project on a remote service.
 
 ### Local Steps
 
@@ -17,7 +18,7 @@ The first phase happens on your computer. EAS CLI is in charge of completing the
 
    - Depending on the value of `builds.android.PROFILE_NAME.credentialsSource`, the credentials are obtained from either the local **credentials.json** file or from the EAS servers. If the `remote` mode is selected but no credentials exist yet, you're prompted to generate a new keystore.
 
-1. Create a tarball containing a copy of the repository. Actual behavior depends on the VCS workflow you are using. [Learn more here](https://expo.fyi/eas-vcs-workflow).
+1. Create a tarball containing a copy of the repository. Actual behavior depends on the [VCS workflow](https://expo.fyi/eas-vcs-workflow) you are using.
 1. Upload the project tarball to a private AWS S3 bucket and send the build request to EAS Build.
 
 ### Remote Steps
@@ -29,21 +30,21 @@ Next, this is what happens when EAS Build picks up your request:
    - Every build gets its own fresh container with all build tools installed there (Java JDK, Android SDK, NDK, and so on).
 
 1. Download the project tarball from a private AWS S3 bucket and unpack it.
-1. Create `.npmrc` if `NPM_TOKEN` is set. ([Learn more](/build-reference/private-npm-packages).)
+1. [Create **.npmrc**](/build-reference/private-npm-packages) if `NPM_TOKEN` is set.
 1. Run the `eas-build-pre-install` script from **package.json** if defined.
 1. Run `npm install` in the project root (or `yarn install` if `yarn.lock` exists).
-1. Run `expo doctor` to diagnose potential issues with your project configuration.
-1. Additional step for **managed** projects: Run `expo prebuild` to convert the project to a bare one. This step will use the versioned Expo CLI for projects that use Expo SDK 46+. You can still choose to use the (deprecated) global Expo CLI installation by setting `EXPO_USE_LOCAL_CLI=0` in the build profile.
-1. Restore a previously saved cache identified by the `cache.key` value in the build profile. ([Learn more](../build/eas-json/).)
+1. Run `npx expo-doctor` to diagnose potential issues with your project configuration.
+1. Additional step for **managed** projects: Run `expo prebuild` to convert the project to a bare one. This step will use the versioned Expo CLI for projects that use Expo SDK 46+. In SDK 48 and lower, you can still choose to use the (deprecated) global Expo CLI installation by setting `EXPO_USE_LOCAL_CLI=0` in the build profile.
+1. Restore a previously saved cache identified by the `cache.key` value in the [build profile](/build/eas-json).
 1. Run the `eas-build-post-install` script from **package.json** if defined.
 1. Restore the keystore (if it was included in the build request).
-1. Inject the signing configuration into **build.gradle**. [Learn more](#configuring-gradle).
+1. Inject the signing [configuration into **build.gradle**](#configuring-gradle).
 1. Run `./gradlew COMMAND` in the **android** directory inside your project.
 
    - `COMMAND` is the command defined in your **eas.json** at `builds.android.PROFILE_NAME.gradleCommand`. It defaults to `:app:bundleRelease` which produces the AAB (Android App Bundle).
 
 1. **Deprecated:** Run the `eas-build-pre-upload-artifacts` script from **package.json** if defined.
-1. Store a cache of files and directories defined in the build profile. Subsequent builds will restore this cache. ([Learn more](../build/eas-json/).)
+1. Store a cache of files and directories defined in the [build profile](/build/eas-json/). Subsequent builds will restore this cache.
 1. Upload the application archive to AWS S3.
 
    - The artifact path can be configured in **eas.json** at `builds.android.PROFILE_NAME.applicationArchivePath`. It defaults to `android/app/build/outputs/**/*.{apk,aab}`. We're using the [fast-glob](https://github.com/mrmlnc/fast-glob#pattern-syntax) package for pattern matching.

@@ -3,13 +3,17 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidBuildProperties = void 0;
+exports.updateAndroidProguardRules = exports.withAndroidPurgeProguardRulesOnce = exports.withAndroidProguardRules = exports.withAndroidFlipper = exports.withAndroidBuildProperties = void 0;
 const config_plugins_1 = require("expo/config-plugins");
 const fs_1 = __importDefault(require("fs"));
 const path_1 = __importDefault(require("path"));
 const fileContentsUtils_1 = require("./fileContentsUtils");
 const { createBuildGradlePropsConfigPlugin } = config_plugins_1.AndroidConfig.BuildProperties;
 exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
+    {
+        propName: 'newArchEnabled',
+        propValueGetter: (config) => config.android?.newArchEnabled?.toString(),
+    },
     {
         propName: 'android.minSdkVersion',
         propValueGetter: (config) => config.android?.minSdkVersion?.toString(),
@@ -51,6 +55,31 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
         propValueGetter: (config) => config.android?.enableProguardInReleaseBuilds?.toString(),
     },
 ], 'withAndroidBuildProperties');
+const withAndroidFlipper = (config, props) => {
+    const ANDROID_FLIPPER_KEY = 'FLIPPER_VERSION';
+    const FLIPPER_FALLBACK = '0.125.0';
+    // when not set, make no changes
+    if (props.android?.flipper === undefined) {
+        return config;
+    }
+    return (0, config_plugins_1.withGradleProperties)(config, (c) => {
+        // check for Flipper version in package. If set, use that
+        let existing;
+        const found = c.modResults.find((item) => item.type === 'property' && item.key === ANDROID_FLIPPER_KEY);
+        if (found && found.type === 'property') {
+            existing = found.value;
+        }
+        // strip key and re-add based on setting
+        c.modResults = c.modResults.filter((item) => !(item.type === 'property' && item.key === ANDROID_FLIPPER_KEY));
+        c.modResults.push({
+            type: 'property',
+            key: ANDROID_FLIPPER_KEY,
+            value: (props.android?.flipper ?? existing ?? FLIPPER_FALLBACK),
+        });
+        return c;
+    });
+};
+exports.withAndroidFlipper = withAndroidFlipper;
 /**
  * Appends `props.android.extraProguardRules` content into `android/app/proguard-rules.pro`
  */

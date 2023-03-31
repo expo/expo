@@ -1,6 +1,7 @@
 import PassKit
 import Stripe
 import StripeFinancialConnections
+import StripePaymentSheet
 
 @objc(ABI47_0_0StripeSdk)
 class StripeSdk: ABI47_0_0RCTEventEmitter, STPApplePayContextDelegate, STPBankSelectionViewControllerDelegate, UIAdaptivePresentationControllerDelegate {

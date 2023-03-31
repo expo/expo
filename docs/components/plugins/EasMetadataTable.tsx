@@ -1,5 +1,4 @@
-import { css } from '@emotion/react';
-import { spacing } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
 import assert from 'assert';
 import { ComponentType, Fragment, ReactNode, useId } from 'react';
 
@@ -30,7 +29,7 @@ export function MetadataTable(props: MetadataTableProps) {
   const { headers = ['Property', 'Type', 'Description'], children = [] } = props;
 
   return (
-    <div css={$container}>
+    <div className="mb-2 mt-1">
       <Table headers={headers}>
         {children.map(property => (
           <TableRow key={`${id}-${property.name}`}>
@@ -144,19 +143,9 @@ export function MetadataSubcategories({ children }: { children: string[] }) {
     <>
       {children.map(category => (
         <Fragment key={`${id}-${category}`}>
-          <CODE css={$subcategoryName}>{category}</CODE>{' '}
+          <CODE className="my-1">{category}</CODE>{' '}
         </Fragment>
       ))}
     </>
   );
 }
-
-const $container = css({
-  marginBottom: '1ch',
-  marginTop: '0.5ch',
-});
-
-const $subcategoryName = {
-  marginTop: spacing[0.5],
-  marginBottom: spacing[0.5],
-};

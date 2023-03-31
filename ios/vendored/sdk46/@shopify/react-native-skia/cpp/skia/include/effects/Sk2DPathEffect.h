@@ -8,10 +8,13 @@
 #ifndef Sk2DPathEffect_DEFINED
 #define Sk2DPathEffect_DEFINED
 
-#include "include/core/SkPathEffect.h"
+#include "include/core/SkRefCnt.h"
+#include "include/core/SkScalar.h"
+#include "include/core/SkTypes.h"
 
 class SkMatrix;
 class SkPath;
+class SkPathEffect;
 
 class SK_API SkLine2DPathEffect {
 public:

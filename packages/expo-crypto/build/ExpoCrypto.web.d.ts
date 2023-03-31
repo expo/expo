@@ -7,6 +7,7 @@ declare const _default: {
     getRandomBytesAsync(length: number): Promise<Uint8Array>;
     getRandomValues(typedArray: TypedArray): TypedArray;
     randomUUID(): string;
+    digestAsync(algorithm: AlgorithmIdentifier, data: ArrayBuffer): Promise<ArrayBuffer>;
 };
 export default _default;
 //# sourceMappingURL=ExpoCrypto.web.d.ts.map

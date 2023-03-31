@@ -40,6 +40,23 @@ bool IntegerFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &va
   return value.isNumber();
 }
 
+jobject LongFrontendConverter::convert(
+  jsi::Runtime &rt,
+  JNIEnv *env,
+  JSIInteropModuleRegistry *moduleRegistry,
+  const jsi::Value &value
+) const {
+  auto &longClass = JavaReferencesCache::instance()
+    ->getJClass("java/lang/Long");
+  jmethodID longConstructor = longClass.getMethod("<init>", "(J)V");
+  return env->NewObject(longClass.clazz, longConstructor,
+                        static_cast<jlong>(value.getNumber()));
+}
+
+bool LongFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
+  return value.isNumber();
+}
+
 jobject FloatFrontendConverter::convert(
   jsi::Runtime &rt,
   JNIEnv *env,
@@ -293,6 +310,12 @@ jobject PrimitiveArrayFrontendConverter::convert(
       &JNIEnv::SetIntArrayRegion
     );
   }
+  if (parameterType == CppType::LONG) {
+    return _createPrimitiveArray(
+      &JNIEnv::NewLongArray,
+      &JNIEnv::SetLongArrayRegion
+    );
+  }
   if (parameterType == CppType::DOUBLE) {
     return _createPrimitiveArray(
       &JNIEnv::NewDoubleArray,
@@ -405,5 +428,43 @@ bool MapFrontendConverter::canConvert(
   const jsi::Value &value
 ) const {
   return value.isObject();
+}
+
+jobject ViewTagFrontendConverter::convert(jsi::Runtime &rt, JNIEnv *env,
+                                          JSIInteropModuleRegistry *moduleRegistry,
+                                          const jsi::Value &value) const {
+  auto nativeTag = value.getObject(rt).getProperty(rt, "nativeTag");
+  if (nativeTag.isNull()) {
+    return nullptr;
+  }
+
+  auto viewTag = (int) nativeTag.getNumber();
+  auto &integerClass = JavaReferencesCache::instance()
+    ->getJClass("java/lang/Integer");
+  jmethodID integerConstructor = integerClass.getMethod("<init>", "(I)V");
+  return env->NewObject(integerClass.clazz, integerConstructor, viewTag);
+}
+
+bool ViewTagFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
+  return value.isObject() && value.getObject(rt).hasProperty(rt, "nativeTag");
+}
+
+jobject SharedObjectIdConverter::convert(jsi::Runtime &rt, JNIEnv *env,
+                                          JSIInteropModuleRegistry *moduleRegistry,
+                                          const jsi::Value &value) const {
+  auto objectId = value.getObject(rt).getProperty(rt, "__expo_shared_object_id__");
+  if (objectId.isNull()) {
+    return nullptr;
+  }
+
+  auto viewTag = (int) objectId.getNumber();
+  auto &integerClass = JavaReferencesCache::instance()
+    ->getJClass("java/lang/Integer");
+  jmethodID integerConstructor = integerClass.getMethod("<init>", "(I)V");
+  return env->NewObject(integerClass.clazz, integerConstructor, viewTag);
+}
+
+bool SharedObjectIdConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
+  return value.isObject() && value.getObject(rt).hasProperty(rt, "__expo_shared_object_id__");
 }
 } // namespace expo

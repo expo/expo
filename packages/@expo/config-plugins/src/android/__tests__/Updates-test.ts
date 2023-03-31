@@ -3,13 +3,20 @@ import fs from 'fs';
 import { vol } from 'memfs';
 import path from 'path';
 
+import rnFixture from '../../plugins/__tests__/fixtures/react-native-project';
 import { format } from '../../utils/XML';
-import { getMainApplication, readAndroidManifestAsync } from '../Manifest';
+import * as XML from '../../utils/XML';
+import { AndroidManifest, getMainApplication } from '../Manifest';
 import { readResourcesXMLAsync } from '../Resources';
 import * as Updates from '../Updates';
 
+async function getFixtureManifestAsync() {
+  return (await XML.parseXMLAsync(
+    rnFixture['android/app/src/main/AndroidManifest.xml']
+  )) as AndroidManifest;
+}
+
 const fixturesPath = path.resolve(__dirname, 'fixtures');
-const sampleManifestPath = path.resolve(fixturesPath, 'react-native-AndroidManifest.xml');
 const sampleCodeSigningCertificatePath = path.resolve(fixturesPath, 'codeSigningCertificate.pem');
 
 jest.mock('fs');
@@ -28,13 +35,10 @@ describe('Android Updates config', () => {
 
   it('set correct values in AndroidManifest.xml', async () => {
     vol.fromJSON({
-      '/blah/react-native-AndroidManifest.xml': fsReal.readFileSync(sampleManifestPath, 'utf-8'),
       '/app/hello': fsReal.readFileSync(sampleCodeSigningCertificatePath, 'utf-8'),
     });
 
-    let androidManifestJson = await readAndroidManifestAsync(
-      '/blah/react-native-AndroidManifest.xml'
-    );
+    let androidManifestJson = await getFixtureManifestAsync();
     const config: ExpoConfig = {
       name: 'foo',
       sdkVersion: '37.0.0',
@@ -62,7 +66,11 @@ describe('Android Updates config', () => {
       'user',
       '0.11.0'
     );
-    const mainApplication = getMainApplication(androidManifestJson);
+    const mainApplication = getMainApplication(androidManifestJson)!;
+
+    if (!mainApplication['meta-data']) {
+      throw new Error('No meta-data found in AndroidManifest.xml');
+    }
 
     const updateUrl = mainApplication['meta-data'].filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_UPDATE_URL'
@@ -139,7 +147,7 @@ describe('Android Updates config', () => {
         '/app'
       );
 
-      const contents = await fs.promises.readFile('/app/android/app/build.gradle', 'utf-8');
+      const contents = rnFixture['android/app/build.gradle'];
       const newContents = Updates.ensureBuildGradleContainsConfigurationScript('/app', contents);
       expect(newContents).toMatchSnapshot();
     });
@@ -193,13 +201,10 @@ describe('Android Updates config', () => {
 
     it('Correct metadata written to Android manifest with appVersion policy', async () => {
       vol.fromJSON({
-        '/blah/react-native-AndroidManifest.xml': fsReal.readFileSync(sampleManifestPath, 'utf-8'),
         '/app/hello': fsReal.readFileSync(sampleCodeSigningCertificatePath, 'utf-8'),
       });
 
-      let androidManifestJson = await readAndroidManifestAsync(
-        '/blah/react-native-AndroidManifest.xml'
-      );
+      let androidManifestJson = await getFixtureManifestAsync();
       const config: ExpoConfig = {
         name: 'foo',
         version: '37.0.0',
@@ -218,7 +223,7 @@ describe('Android Updates config', () => {
       );
       const mainApplication = getMainApplication(androidManifestJson);
 
-      const runtimeVersion = mainApplication['meta-data']?.filter(
+      const runtimeVersion = mainApplication!['meta-data']?.filter(
         (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_RUNTIME_VERSION'
       );
       expect(runtimeVersion).toHaveLength(1);

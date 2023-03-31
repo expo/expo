@@ -151,14 +151,17 @@ internal final class Conversions {
   /**
    Converts the function result to the type compatible with JavaScript.
    */
-  static func convertFunctionResult<ValueType>(_ value: ValueType?) -> Any {
+  static func convertFunctionResult<ValueType>(_ value: ValueType?, appContext: AppContext? = nil) -> Any {
     if let value = value as? Record {
       return value.toDictionary()
     }
     if let value = value as? [Record] {
       return value.map { $0.toDictionary() }
     }
-    return value
+    if let appContext, let value = value as? JavaScriptObjectBuilder {
+      return try? value.build(appContext: appContext)
+    }
+    return value as Any
   }
 
   // MARK: - Exceptions

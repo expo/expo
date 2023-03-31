@@ -3,7 +3,7 @@ title: Permissions
 description: Learn about configuring and adding permissions in an Expo config file.
 ---
 
-import { ConfigReactNative, ConfigClassic } from '~/components/plugins/ConfigSection';
+import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 
 When developing a native app that requires access to potentially sensitive information on a user's device, such as their location or contacts, the app must request the user's permission first. For example, to access the user's media library, the app will need to run [`MediaLibrary.requestPermissionsAsync()`](/versions/latest/sdk/media-library#medialibraryrequestpermissionsasync).
 
@@ -47,18 +47,6 @@ Modify **AndroidManifest.xml** to exclude specific permissions: add the `tools:n
 
 </ConfigReactNative>
 
-<ConfigClassic>
-
-By default, apps built with the Classic Build system will include **all** permissions required by any Expo SDK package (with exceptions only for background permissions). This is so that your standalone app will match its behavior in the [Expo Go][expo-go] app and simply "work out of the box" no matter what permissions you ask for, with minimal configuration required by the developer.
-
-There are some drawbacks to this. For example, let's say your To-do list app requests `CAMERA` permission upon installation. Your users may be wary of installing your app since nothing in the app seems to use the camera, so why would it need that permission?
-
-To solve this, add the `android.permissions` key in your **app.json** file and specify which permissions your app will use. Refer to this [list of all Android permissions and configuration](/versions/latest/config/app/#android) for more information.
-
-To use _only_ the minimum necessary permissions that React Native requires to run, set `"permissions" : []`. To use those in addition to `CAMERA` permission, for example, you'd set `"permissions" : ["CAMERA"]`.
-
-</ConfigClassic>
-
 ## iOS
 
 If your iOS app asks for [system permissions](/versions/latest/sdk/permissions) from the user, e.g. to use the device's camera, or access photos, Apple requires an explanation for how your app makes use of that data. Most packages will automatically provide a boilerplate reason for a given permission with [config plugins](/guides/config-plugins). These default messages will most likely need to be tailored to your specific use case in order for your app to be accepted by the App Store.
@@ -97,7 +85,7 @@ Many of these properties are also directly configurable using the [config plugin
 
 - Changes to the **Info.plist** cannot be updated over-the-air, they will only be deployed when you submit a new native binary, eg: with [`eas build`](/build/introduction).
 - Apple's official [permission message recommendations](https://developer.apple.com/design/human-interface-guidelines/ios/app-architecture/requesting-permission/).
-- [All available **Info.plist** properties](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html#//apple_ref/doc/uid/TP40009251-SW1).
+- [All available **Info.plist** properties](https://developer.apple.com/library/archive/documentation/General/Reference/InfoPlistKeyReference/Articles/CocoaKeys.html).
 
 <ConfigReactNative>
 

@@ -1,7 +1,7 @@
 // Jest Snapshot v1, https://goo.gl/fbAQLP
 
 exports[`getBareExtensions creates extensions for iOS 1`] = `
-Array [
+[
   "ios.ts",
   "ios.tsx",
   "ios.mjs",
@@ -22,7 +22,7 @@ Array [
 `;
 
 exports[`getBareExtensions creates extensions for web 1`] = `
-Array [
+[
   "web.ts",
   "web.tsx",
   "web.mjs",

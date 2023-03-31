@@ -6,10 +6,7 @@ apply plugin: 'maven-publish'
 apply plugin: "de.undercouch.download"
 
 group = 'host.exp.exponent'
-version = '12.1.0'
-
-def customDownloadsDir = System.getenv("REACT_NATIVE_DOWNLOADS_DIR")
-def downloadsDir = customDownloadsDir ? new File(customDownloadsDir) : new File("$buildDir/downloads")
+version = '12.4.0'
 
 def REACT_NATIVE_BUILD_FROM_SOURCE = findProject(":ReactAndroid") != null
 def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
@@ -17,11 +14,12 @@ def REACT_NATIVE_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
   : new File(["node", "--print", "require.resolve('react-native/package.json')"].execute(null, rootDir).text.trim()).parent
 def RN_SO_DIR = REACT_NATIVE_BUILD_FROM_SOURCE
   ? Paths.get(findProject(":ReactAndroid").getProjectDir().toString(), "build", "intermediates", "library_*", "*", "jni")
-  : "${buildDir}/react-native.aar/jni"
+  : "${buildDir}/react/jni"
 
 def reactProperties = new Properties()
 file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { reactProperties.load(it) }
-def reactNativeIsNightly = reactProperties.getProperty("VERSION_NAME").startsWith("0.0.0-")
+def REACT_NATIVE_VERSION = System.getenv("REACT_NATIVE_OVERRIDE_VERSION") ?: reactProperties.getProperty("VERSION_NAME")
+def REACT_NATIVE_TARGET_VERSION = REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
 
 def reactNativeArchitectures() {
     def value = project.getProperties().get("reactNativeArchitectures")
@@ -45,7 +43,7 @@ buildscript {
     if (ext.has("kotlinVersion")) {
       ext.kotlinVersion()
     } else {
-      ext.safeExtGet("kotlinVersion", "1.6.10")
+      ext.safeExtGet("kotlinVersion", "1.8.10")
     }
   }
 
@@ -83,7 +81,7 @@ afterEvaluate {
 }
 
 android {
-  compileSdkVersion safeExtGet("compileSdkVersion", 31)
+  compileSdkVersion safeExtGet("compileSdkVersion", 33)
 
   if (rootProject.hasProperty("ndkPath")) {
     ndkPath rootProject.ext.ndkPath
@@ -103,9 +101,9 @@ android {
 
   defaultConfig {
     minSdkVersion safeExtGet("minSdkVersion", 21)
-    targetSdkVersion safeExtGet("targetSdkVersion", 31)
+    targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 31
-    versionName "12.1.0"
+    versionName "12.4.0"
 
     externalNativeBuild {
       cmake {
@@ -119,8 +117,16 @@ android {
 
   externalNativeBuild {
     cmake {
-      path "./CMakeLists.txt"
+      if (REACT_NATIVE_TARGET_VERSION >= 71) {
+        path "CMakeLists.txt"
+      } else {
+        path "legacy/CMakeLists.txt"
+      }
     }
+  }
+
+  buildFeatures {
+    prefab true
   }
 
   packagingOptions {
@@ -150,86 +156,18 @@ dependencies {
   implementation project(':expo-modules-core')
 
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
-}
 
-def downloadReactNativeNightlyAAR = { buildType, version, downloadFile ->
-  def classifier = buildType == 'Debug' ? 'debug' : 'release'
-  download.run {
-    src("https://oss.sonatype.org/service/local/artifact/maven/redirect?r=snapshots&g=com.facebook.react&a=react-native&c=${classifier}&e=aar&v=${version}-SNAPSHOT")
-    onlyIfNewer(true)
-    overwrite(false)
-    dest(downloadFile)
+  // Remove this when we drop SDK 47
+  if (REACT_NATIVE_TARGET_VERSION >= 71) {
+    compileOnly 'com.facebook.react:react-android'
   }
 }
 
-def extractReactNativeAAR = { buildType ->
-  def suffix = buildType == 'Debug' ? '-debug' : '-release'
-  def rnAAR
-  if (reactNativeIsNightly) {
-    def downloadFile = file("${downloadsDir}/react-native-nightly.aar")
-    downloadReactNativeNightlyAAR(buildType, reactProperties.getProperty("VERSION_NAME"), downloadFile)
-    rnAAR = downloadFile
-  } else {
-    def rnAARs = fileTree(REACT_NATIVE_DIR).matching { include "**/react-native/**/*${suffix}.aar" }
-    if (rnAARs.isEmpty()) {
-      rnAARs = fileTree(REACT_NATIVE_DIR).matching { include "**/react-native/**/*.aar" }
-    }
-    if (rnAARs.any()) {
-      // node_modules/react-native has a .aar, extract headers
-      if (rnAARs.size() > 1) {
-        logger.error("More than one React Native AAR file has been found:")
-        rnAARs.each {println(it) }
-        throw new GradleException("Multiple React Native AARs found:\n${rnAARs.join("\n")}" +
-            "\nRemove the old ones and try again")
-      }
-    }
-    rnAAR = rnAARs.singleFile
-  }
-  def file = rnAAR.absoluteFile
-  def packageName = file.name.tokenize('-')[0]
-  copy {
-    from zipTree(file)
-    into "$buildDir/react-native.aar"
-    include "jni/**/*"
-  }
-}
-
-task extractReactNativeAARRelease {
-  doLast {
-    extractReactNativeAAR('Release')
-  }
-}
-
-task extractReactNativeAARDebug {
-  doLast {
-    extractReactNativeAAR('Debug')
-  }
-}
-
-task extractJNIFiles {
-  doLast {
-    configurations.extractJNI.files.each {
-      def file = it.absoluteFile
-      copy {
-        from zipTree(file)
-        into "$buildDir/$file.name"
-        include "jni/**/*"
-      }
-    }
-  }
-}
-
-tasks.whenTaskAdded { task ->
-  if (!task.name.contains("Clean") && (task.name.contains('externalNativeBuild') || task.name.startsWith('configureCMake'))) {
-    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
-    task.dependsOn(extractJNIFiles)
-    if (REACT_NATIVE_BUILD_FROM_SOURCE) {
-      task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
-    } else {
-      task.dependsOn("extractReactNativeAAR${buildType}")
-    }
-  } else if (task.name.startsWith('generateJsonModel') && REACT_NATIVE_BUILD_FROM_SOURCE) {
-    def buildType = task.name.endsWith('Debug') ? 'Debug' : 'Release'
-    task.dependsOn(":ReactAndroid:copy${buildType}JniLibsProjectOnly")
-  }
+// Remove this when we drop SDK 47
+if (REACT_NATIVE_TARGET_VERSION < 71) {
+  project.ext.extraLegacyReactNativeLibs = [
+    'prepareDoubleConversion',
+    'prepareFolly',
+  ]
+  applyLegacyReactNativeLibsExtractionPlugin()
 }

@@ -1,8 +1,14 @@
-# expo-network
-
+<p>
+  <a href="https://docs.expo.dev/versions/latest/sdk/network/">
+    <img
+      src="../../.github/resources/expo-network.svg"
+      alt="expo-network"
+      height="64" />
+  </a>
+</p>
 Gets device's network information such as ip address, mac address and check for airplane mode.
 
-See [<ModuleName> docs](https://docs.expo.dev/versions/latest/sdk/<module-docs-name>) for documentation of this universal module's API.
+See [Expo Network docs](https://docs.expo.dev/versions/latest/sdk/network/) for documentation of this universal module's API.
 
 # API documentation
 

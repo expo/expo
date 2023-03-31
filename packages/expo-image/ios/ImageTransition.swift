@@ -2,17 +2,14 @@
 
 import ExpoModulesCore
 
-enum ImageTransitionTiming: Int, EnumArgument {
-  case none = 0
-  case easeInOut = 1
-  case easeIn = 2
-  case easeOut = 3
-  case linear = 4
+enum ImageTransitionTiming: String, Enumerable {
+  case easeInOut = "ease-in-out"
+  case easeIn = "ease-in"
+  case easeOut = "ease-out"
+  case linear = "linear"
 
   func toAnimationOption() -> UIView.AnimationOptions {
     switch self {
-    case .none:
-      return []
     case .easeInOut:
       return .curveEaseInOut
     case .easeIn:
@@ -25,20 +22,17 @@ enum ImageTransitionTiming: Int, EnumArgument {
   }
 }
 
-enum ImageTransitionEffect: UInt, EnumArgument {
-  case none = 0
-  case crossDissolve = 1
-  case flipFromLeft = 2
-  case flipFromRight = 3
-  case flipFromTop = 4
-  case flipFromBottom = 5
-  case curlUp = 6
-  case curlDown = 7
+enum ImageTransitionEffect: String, Enumerable {
+  case crossDissolve = "cross-dissolve"
+  case flipFromTop = "flip-from-top"
+  case flipFromRight = "flip-from-right"
+  case flipFromBottom = "flip-from-bottom"
+  case flipFromLeft = "flip-from-left"
+  case curlUp = "curl-up"
+  case curlDown = "curl-down"
 
   func toAnimationOption() -> UIView.AnimationOptions {
     switch self {
-    case .none:
-      return []
     case .crossDissolve:
       return .transitionCrossDissolve
     case .flipFromLeft:

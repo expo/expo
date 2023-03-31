@@ -1,9 +1,13 @@
 // Copyright 2020-present 650 Industries. All rights reserved.
 
-#import <EXUpdates/EXUpdatesAppController.h>
-#import <EXUpdates/EXUpdatesEmbeddedAppLoader.h>
 #import <EXUpdates/EXUpdatesService.h>
 #import <ExpoModulesCore/EXUtilities.h>
+
+#if __has_include(<EXUpdates/EXUpdates-Swift.h>)
+#import <EXUpdates/EXUpdates-Swift.h>
+#else
+#import "EXUpdates-Swift.h"
+#endif
 
 NS_ASSUME_NONNULL_BEGIN
 
@@ -27,7 +31,7 @@ EX_REGISTER_MODULE();
   return @[@protocol(EXUpdatesModuleInterface)];
 }
 
-- (EXUpdatesConfig *)config
+- (nullable EXUpdatesConfig *)config
 {
 #if SUPPRESS_EXPO_UPDATES_SERVICE // used in Expo Go
   return nil;
@@ -40,7 +44,7 @@ EX_REGISTER_MODULE();
   return EXUpdatesAppController.sharedInstance.database;
 }
 
-- (EXUpdatesSelectionPolicy *)selectionPolicy
+- (nullable EXUpdatesSelectionPolicy *)selectionPolicy
 {
   return EXUpdatesAppController.sharedInstance.selectionPolicy;
 }

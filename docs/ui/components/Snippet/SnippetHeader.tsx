@@ -1,5 +1,4 @@
-import { css } from '@emotion/react';
-import { borderRadius, theme, darkTheme } from '@expo/styleguide';
+import { mergeClasses } from '@expo/styleguide';
 import { PropsWithChildren } from 'react';
 
 import { LABEL } from '~/ui/components/Text';
@@ -10,37 +9,20 @@ type SnippetHeaderProps = PropsWithChildren<{
 }>;
 
 export const SnippetHeader = ({ title, children, alwaysDark = false }: SnippetHeaderProps) => (
-  <div css={[headerStyle, alwaysDark && headerDarkStyle]}>
-    <LABEL css={[headerTitleStyle, alwaysDark && { color: darkTheme.text.default }]}>{title}</LABEL>
-    {!!children && <div css={headerActionsStyle}>{children}</div>}
+  <div className={mergeClasses(alwaysDark && 'dark-theme')}>
+    <div
+      className={mergeClasses(
+        'flex pl-4 overflow-hidden justify-between bg-default border border-default rounded-t-md border-b-0',
+        alwaysDark && 'pr-2 dark:border-transparent !bg-palette-gray3'
+      )}>
+      <LABEL
+        className={mergeClasses(
+          'h-10 !leading-10 pr-4 select-none font-medium text-ellipsis whitespace-nowrap overflow-hidden',
+          alwaysDark && 'text-palette-white'
+        )}>
+        {title}
+      </LABEL>
+      {!!children && <div className="flex justify-end items-center">{children}</div>}
+    </div>
   </div>
 );
-
-const headerStyle = css`
-  background-color: ${theme.background.default};
-  border: 1px solid ${theme.border.default};
-  border-bottom: none;
-  border-top-left-radius: ${borderRadius.medium}px;
-  border-top-right-radius: ${borderRadius.medium}px;
-  display: flex;
-  padding: 0 0 0 16px;
-  justify-content: space-between;
-  min-height: 42px;
-`;
-
-const headerDarkStyle = css`
-  background-color: ${darkTheme.background.tertiary};
-  border-color: transparent;
-  padding-right: 8px;
-`;
-
-const headerTitleStyle = css`
-  line-height: 42px !important;
-  user-select: none;
-`;
-
-const headerActionsStyle = css`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-`;

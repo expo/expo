@@ -1,16 +1,7 @@
 import { css } from '@emotion/react';
-import {
-  ArrowRightIcon,
-  ArrowUpRightIcon,
-  borderRadius,
-  breakpoints,
-  iconSize,
-  palette,
-  shadows,
-  spacing,
-  theme,
-  typography,
-} from '@expo/styleguide';
+import { shadows, theme, typography } from '@expo/styleguide';
+import { borderRadius, breakpoints, palette, spacing } from '@expo/styleguide-base';
+import { ArrowRightIcon, ArrowUpRightIcon } from '@expo/styleguide-icons';
 import { PropsWithChildren } from 'react';
 import { Col, ColProps } from 'react-grid-system';
 
@@ -62,7 +53,7 @@ export const APIGridCell = ({
       <div css={cellIconWrapperStyle}>{icon}</div>
       <div css={cellTitleWrapperStyle}>
         {title}
-        <ArrowRightIcon color={theme.icon.secondary} />
+        <ArrowRightIcon className="text-icon-secondary" />
       </div>
     </A>
   </CustomCol>
@@ -75,7 +66,7 @@ type CommunityGridCellProps = APIGridCellProps & {
 
 export const CommunityGridCell = ({
   icon,
-  iconBackground = palette.light.gray['800'],
+  iconBackground = palette.light.gray11,
   title,
   link,
   description,
@@ -83,10 +74,11 @@ export const CommunityGridCell = ({
   md = 6,
 }: CommunityGridCellProps) => (
   <CustomCol css={cellWrapperStyle} md={md}>
-    <a
+    <A
       href={link}
       css={[cellStyle, cellCommunityStyle, cellCommunityHoverStyle]}
-      className={className}>
+      className={className}
+      isStyled>
       <div css={[cellCommunityIconWrapperStyle, css({ backgroundColor: iconBackground })]}>
         {icon}
       </div>
@@ -94,8 +86,8 @@ export const CommunityGridCell = ({
         <span css={cellCommunityTitleStyle}>{title}</span>
         <P css={cellCommunityDescriptionStyle}>{description}</P>
       </div>
-      <ArrowUpRightIcon color={theme.icon.secondary} css={cellCommunityLinkIconStyle} />
-    </a>
+      <ArrowUpRightIcon className="text-icon-secondary self-center ml-1.5" />
+    </A>
   </CustomCol>
 );
 
@@ -126,7 +118,7 @@ const cellHoverStyle = css`
   }
 
   &:hover {
-    box-shadow: ${shadows.tiny};
+    box-shadow: ${shadows.sm};
 
     svg {
       transform: scale(1.05);
@@ -147,12 +139,21 @@ const cellStyle = css({
   borderWidth: 1,
   borderStyle: 'solid',
   borderColor: theme.border.default,
-  borderRadius: borderRadius.large,
+  borderRadius: borderRadius.lg,
+
+  h2: {
+    marginTop: 0,
+    marginBottom: 0,
+  },
+
+  h3: {
+    marginTop: 0,
+  },
 });
 
 const cellAPIStyle = css({
   display: 'block',
-  backgroundColor: theme.background.secondary,
+  backgroundColor: theme.background.subtle,
   padding: 0,
   overflow: 'hidden',
   textDecoration: 'none',
@@ -172,7 +173,7 @@ const cellTitleWrapperStyle = css({
   backgroundColor: theme.background.default,
   padding: spacing[4],
   textDecoration: 'none',
-  fontFamily: typography.fontStacks.medium,
+  fontWeight: 500,
   lineHeight: '30px',
   color: theme.text.default,
   alignItems: 'center',
@@ -180,7 +181,7 @@ const cellTitleWrapperStyle = css({
 
 const cellCommunityStyle = css({
   display: 'flex',
-  minHeight: `calc(100% - (2 * ${spacing[3]}px}))`,
+  minHeight: 'unset',
   padding: spacing[4],
   margin: `${spacing[3]}px ${spacing[4]}px`,
   flexDirection: 'row',
@@ -194,7 +195,7 @@ const cellCommunityIconWrapperStyle = css({
   display: 'flex',
   justifyContent: 'center',
   alignItems: 'center',
-  borderRadius: borderRadius.large,
+  borderRadius: borderRadius.lg,
   marginRight: spacing[3],
 });
 
@@ -204,7 +205,7 @@ const cellCommunityContentStyle = css({
 
 const cellCommunityTitleStyle = css({
   ...typography.fontSizes[16],
-  fontFamily: typography.fontStacks.medium,
+  fontWeight: 500,
   color: theme.text.default,
   textDecoration: 'none',
   marginBottom: spacing[2],
@@ -213,12 +214,6 @@ const cellCommunityTitleStyle = css({
 const cellCommunityDescriptionStyle = css({
   ...typography.fontSizes[14],
   color: theme.text.secondary,
-});
-
-const cellCommunityLinkIconStyle = css({
-  marginLeft: spacing[1.5],
-  alignSelf: 'center',
-  minWidth: iconSize.regular,
 });
 
 const cellCommunityHoverStyle = css`
@@ -231,7 +226,7 @@ const cellCommunityHoverStyle = css`
   }
 
   &:hover {
-    box-shadow: ${shadows.tiny};
+    box-shadow: ${shadows.sm};
 
     svg {
       transform: scale(1.075);

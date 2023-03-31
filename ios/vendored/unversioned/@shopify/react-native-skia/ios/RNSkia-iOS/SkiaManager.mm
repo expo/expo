@@ -1,4 +1,4 @@
-#import <SkiaManager.h>
+#import "SkiaManager.h"
 
 #import <Foundation/Foundation.h>
 
@@ -32,16 +32,16 @@
   if (self) {
     RCTCxxBridge *cxxBridge = (RCTCxxBridge *)bridge;
     if (cxxBridge.runtime) {
-      
+
       auto callInvoker = bridge.jsCallInvoker;
       facebook::jsi::Runtime* jsRuntime = (facebook::jsi::Runtime*)cxxBridge.runtime;
-      
+
       // Create platform context
       _platformContext = std::make_shared<RNSkia::RNSkiOSPlatformContext>(jsRuntime, callInvoker);
-            
+
       // Create the RNSkiaManager (cross platform)
       _skManager = std::make_shared<RNSkia::RNSkManager>(jsRuntime, callInvoker, _platformContext);
-          
+
     }
   }
   return self;

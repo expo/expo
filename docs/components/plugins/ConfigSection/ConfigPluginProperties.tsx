@@ -1,9 +1,10 @@
-import React, { PropsWithChildren } from 'react';
+import type { PropsWithChildren } from 'react';
+import ReactMarkdown from 'react-markdown';
 
-import { H3 } from '~/components/plugins/Headings';
 import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
+import { mdComponents } from '~/components/plugins/api/APISectionUtils';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
-import { P, CODE } from '~/ui/components/Text';
+import { P, CODE, H3 } from '~/ui/components/Text';
 
 type Props = PropsWithChildren<{
   properties: PluginProperty[];
@@ -32,10 +33,12 @@ export const ConfigPluginProperties = ({ children, properties }: Props) => (
               {!!property.platform && (
                 <APISectionPlatformTags
                   prefix="Only for:"
-                  platforms={[{ text: property.platform, tag: 'platform' }]}
+                  platforms={[
+                    { content: [{ kind: 'text', text: property.platform }], tag: 'platform' },
+                  ]}
                 />
               )}
-              {property.description}
+              <ReactMarkdown components={mdComponents}>{property.description}</ReactMarkdown>
             </Cell>
           </Row>
         ))}

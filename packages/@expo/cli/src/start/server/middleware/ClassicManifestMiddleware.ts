@@ -66,7 +66,7 @@ export class ClassicManifestMiddleware extends ManifestMiddleware<ClassicManifes
     const hostInfo = await createHostInfoAsync();
 
     const headers = new Map<string, any>();
-    headers.set('Exponent-Server', hostInfo);
+    headers.set('Exponent-Server', JSON.stringify(hostInfo));
 
     // Create the final string
     const body = await this._fetchComputedManifestStringAsync({

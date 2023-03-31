@@ -1,6 +1,5 @@
 import { PermissionStatus, createPermissionHook, UnavailabilityError, CodedError, } from 'expo-modules-core';
 import ExponentImagePicker from './ExponentImagePicker';
-import { MediaTypeOptions, VideoExportPreset, UIImagePickerControllerQualityType, UIImagePickerPresentationStyle, } from './ImagePicker.types';
 function validateOptions(options) {
     const { aspect, quality, videoMaxDuration } = options;
     if (aspect != null) {
@@ -30,7 +29,7 @@ const DEPRECATED_RESULT_KEYS = [
     'fileSize',
 ];
 function mergeDeprecatedResult(result) {
-    const firstAsset = result.assets?.[0];
+    const firstAsset = result?.assets?.[0];
     const deprecatedResult = {
         ...result,
         get cancelled() {
@@ -187,6 +186,6 @@ export async function launchImageLibraryAsync(options) {
     const result = await ExponentImagePicker.launchImageLibraryAsync(options ?? {});
     return mergeDeprecatedResult(result);
 }
-export { MediaTypeOptions, VideoExportPreset, PermissionStatus, // deprecated
-UIImagePickerControllerQualityType, UIImagePickerPresentationStyle, };
+export * from './ImagePicker.types';
+export { PermissionStatus };
 //# sourceMappingURL=ImagePicker.js.map

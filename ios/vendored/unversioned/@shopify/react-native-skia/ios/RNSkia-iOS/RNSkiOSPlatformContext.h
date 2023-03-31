@@ -12,42 +12,43 @@
 #pragma clang diagnostic push
 #pragma clang diagnostic ignored "-Wdocumentation"
 
-#include <SkStream.h>
+#include "SkStream.h"
 
 #pragma clang diagnostic pop
 
 #include <jsi/jsi.h>
 
 namespace facebook {
-  namespace react {
-    class CallInvoker;
-  }
+namespace react {
+class CallInvoker;
 }
+} // namespace facebook
 
 namespace RNSkia {
 
-using namespace facebook;
+namespace jsi = facebook::jsi;
 
-static void handleNotification(CFNotificationCenterRef center, void *observer, CFStringRef name, const void *object, CFDictionaryRef userInfo);
+static void handleNotification(CFNotificationCenterRef center, void *observer,
+                               CFStringRef name, const void *object,
+                               CFDictionaryRef userInfo);
 
 class RNSkiOSPlatformContext : public RNSkPlatformContext {
 public:
   RNSkiOSPlatformContext(jsi::Runtime *runtime,
-                  std::shared_ptr<react::CallInvoker> callInvoker)
-      : RNSkPlatformContext(runtime, callInvoker, [[UIScreen mainScreen] scale]) {
-        // We need to make sure we invalidate when modules are freed
-        CFNotificationCenterAddObserver(
-              CFNotificationCenterGetLocalCenter(),
-              this,
-              &handleNotification,
-              (__bridge CFStringRef)RCTBridgeWillInvalidateModulesNotification,
-              NULL,
-              CFNotificationSuspensionBehaviorDeliverImmediately
-          );
-      }
+                         std::shared_ptr<react::CallInvoker> callInvoker)
+      : RNSkPlatformContext(runtime, callInvoker,
+                            [[UIScreen mainScreen] scale]) {
+    // We need to make sure we invalidate when modules are freed
+    CFNotificationCenterAddObserver(
+        CFNotificationCenterGetLocalCenter(), this, &handleNotification,
+        (__bridge CFStringRef)RCTBridgeWillInvalidateModulesNotification, NULL,
+        CFNotificationSuspensionBehaviorDeliverImmediately);
+  }
 
   ~RNSkiOSPlatformContext() {
-    CFNotificationCenterRemoveEveryObserver(CFNotificationCenterGetLocalCenter(), this);
+    CFNotificationCenterRemoveEveryObserver(
+        CFNotificationCenterGetLocalCenter(), this);
+    stopDrawLoop();
   }
 
   void startDrawLoop() override;
@@ -58,19 +59,20 @@ public:
       const std::function<void(std::unique_ptr<SkStreamAsset>)> &op) override;
 
   void raiseError(const std::exception &err) override;
-  
+
   void willInvalidateModules() {
     // We need to do some house-cleaning here!
     invalidate();
   }
-    
+
 private:
   DisplayLink *_displayLink;
 };
 
-static void handleNotification(CFNotificationCenterRef center, void *observer, CFStringRef name,
-                               const void *object, CFDictionaryRef userInfo) {
-  (static_cast<RNSkiOSPlatformContext*>(observer))->willInvalidateModules();
+static void handleNotification(CFNotificationCenterRef center, void *observer,
+                               CFStringRef name, const void *object,
+                               CFDictionaryRef userInfo) {
+  (static_cast<RNSkiOSPlatformContext *>(observer))->willInvalidateModules();
 }
 
 } // namespace RNSkia

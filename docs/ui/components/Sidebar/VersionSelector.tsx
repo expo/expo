@@ -1,13 +1,7 @@
 import { css } from '@emotion/react';
-import {
-  theme,
-  typography,
-  spacing,
-  iconSize,
-  shadows,
-  ChevronDownIcon,
-  borderRadius,
-} from '@expo/styleguide';
+import { theme, typography, shadows } from '@expo/styleguide';
+import { spacing, borderRadius } from '@expo/styleguide-base';
+import { ChevronDownIcon } from '@expo/styleguide-icons';
 
 import { A } from '../Text';
 
@@ -17,34 +11,22 @@ import versions from '~/public/static/constants/versions.json';
 
 const { VERSIONS, LATEST_VERSION, BETA_VERSION } = versions;
 
-const STYLES_CONTAINER = css({
-  position: 'relative',
-});
-
 const STYLES_SELECT = css({
   ...typography.fontSizes[14],
-  fontFamily: typography.fontFaces.regular,
   color: theme.text.default,
   margin: 0,
   marginTop: spacing[1],
   padding: `${spacing[2]}px ${spacing[3]}px`,
   minHeight: 40,
-  borderRadius: borderRadius.medium,
+  borderRadius: borderRadius.md,
   marginBottom: spacing[4],
   width: '100%',
   backgroundColor: theme.background.default,
   border: `1px solid ${theme.border.default}`,
-  boxShadow: shadows.input,
+  boxShadow: shadows.xs,
   appearance: 'none',
   outline: 'none',
   cursor: 'pointer',
-});
-
-const STYLES_ICON = css({
-  position: 'absolute',
-  right: 12,
-  top: 16,
-  pointerEvents: 'none',
 });
 
 export const VersionSelector = () => {
@@ -55,7 +37,7 @@ export const VersionSelector = () => {
   }
 
   return (
-    <div css={STYLES_CONTAINER}>
+    <div className="relative">
       {
         // Add hidden links to create crawlable references to other SDK versions
         // We can use JS to switch between them, while helping search bots find other SDK versions
@@ -78,7 +60,7 @@ export const VersionSelector = () => {
           </option>
         ))}
       </select>
-      <ChevronDownIcon size={iconSize.small} css={STYLES_ICON} />
+      <ChevronDownIcon className="icon-sm text-icon-secondary absolute right-3 top-4 pointer-events-none" />
     </div>
   );
 };

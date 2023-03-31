@@ -6,11 +6,59 @@
 
 ### 🎉 New features
 
+- Added experimental network inspector. ([#21265](https://github.com/expo/expo/pull/21265), [#21327](https://github.com/expo/expo/pull/21327) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
+
+- Add missing `mimeType` when emitting network responses. ([#21676](https://github.com/expo/expo/pull/21676) by [@byCedric](https://github.com/byCedric))
+
+### 💡 Others
+
+- Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
+
+## 2.1.6 - 2023-03-20
+
+### 🐛 Bug fixes
+
+- Change arg in gradle `.execute()` call to null to inherit env variables from user's env ([#21712](https://github.com/expo/expo/pull/21712) by [@phoenixiguess](https://github.com/phoenixiguess))
+
+## 2.1.5 - 2023-03-03
+
+### 💡 Others
+
+- Update JS bundle to fix dev client not showing logged user and initial data. ([#21510](https://github.com/expo/expo/pull/21510) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 2.1.4 — 2023-02-28
+
+### 🐛 Bug fixes
+
+- Fixed dev client crash when server URL has no scheme. ([#21274](https://github.com/expo/expo/pull/21274) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Fixed dev client not showing logged user and initial data. ([#21425](https://github.com/expo/expo/pull/21425) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 2.1.3 — 2023-02-25
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.2 — 2023-02-17
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.1 — 2023-02-09
+
+_This version does not introduce any user-facing changes._
+
+## 2.1.0 — 2023-02-03
+
+### 🐛 Bug fixes
+
+- Added React Native 0.71 support. ([#20470](https://github.com/expo/expo/pull/20470) by [@kudo](https://github.com/kudo))
+- Added support for React Native 0.71.x. ([#20799](https://github.com/expo/expo/pull/20799) [#20832](https://github.com/expo/expo/pull/20832) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
 - Locked `layoutDirection` to LTR to prevent incorrect rendering when used together with a RTL enabled app. ([#19634](https://github.com/expo/expo/pull/19634) by [@aleqsio](https://github.com/aleqsio))
+- On Android bump `compileSdkVersion` and `targetSdkVersion` to `33`. ([#20721](https://github.com/expo/expo/pull/20721) by [@lukmccall](https://github.com/lukmccall))
+- Update copy for expo start for development builds. ([#20985](https://github.com/expo/expo/pull/20985) by [@kbrandwijk](https://github.com/kbrandwijk))
 
 ## 2.0.2 - 2022-11-21
 

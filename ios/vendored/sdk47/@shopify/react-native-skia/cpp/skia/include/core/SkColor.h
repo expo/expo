@@ -405,6 +405,11 @@ struct SkRGBA4f {
     uint32_t toBytes_RGBA() const;
     static SkRGBA4f FromBytes_RGBA(uint32_t color);
 
+    /**
+      Returns a copy of the SkRGBA4f but with alpha component set to 1.0f.
+
+      @return         opaque color
+    */
     SkRGBA4f makeOpaque() const {
         return { fR, fG, fB, 1.0f };
     }
@@ -420,6 +425,8 @@ using SkColor4f = SkRGBA4f<kUnpremul_SkAlphaType>;
 
 template <> SK_API SkColor4f SkColor4f::FromColor(SkColor);
 template <> SK_API SkColor   SkColor4f::toSkColor() const;
+template <> SK_API uint32_t  SkColor4f::toBytes_RGBA() const;
+template <> SK_API SkColor4f SkColor4f::FromBytes_RGBA(uint32_t color);
 
 namespace SkColors {
 constexpr SkColor4f kTransparent = {0, 0, 0, 0};

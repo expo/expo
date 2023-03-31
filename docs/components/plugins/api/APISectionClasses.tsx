@@ -1,6 +1,5 @@
 import ReactMarkdown from 'react-markdown';
 
-import { H2, H2Nested, H3Code, H4 } from '~/components/plugins/Headings';
 import {
   ClassDefinitionData,
   GeneratedData,
@@ -8,19 +7,22 @@ import {
 } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
 import { renderMethod } from '~/components/plugins/api/APISectionMethods';
+import { APISectionPlatformTags } from '~/components/plugins/api/APISectionPlatformTags';
 import { renderProp } from '~/components/plugins/api/APISectionProps';
 import {
   CommentTextBlock,
+  H3Code,
   getTagData,
   getTagNamesList,
   mdComponents,
   resolveTypeName,
   STYLES_APIBOX,
   STYLES_APIBOX_NESTED,
-  STYLES_NESTED_SECTION_HEADER,
   TypeDocKind,
+  getCommentContent,
+  BoxSectionHeader,
 } from '~/components/plugins/api/APISectionUtils';
-import { BOLD, P, CODE } from '~/ui/components/Text';
+import { H2, BOLD, P, CODE, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionClassesProps = {
   data: GeneratedData[];
@@ -48,7 +50,7 @@ const isMethod = (child: PropData, allowOverwrites: boolean = false) =>
   !child?.implementationOf;
 
 const remapClass = (clx: ClassDefinitionData) => {
-  clx.isSensor = clx.name.endsWith('Sensor');
+  clx.isSensor = !!classNamesMap[clx.name] || Object.values(classNamesMap).includes(clx.name);
   clx.name = classNamesMap[clx.name] ?? clx.name;
 
   if (clx.isSensor && clx.extendedTypes) {
@@ -63,7 +65,6 @@ const remapClass = (clx: ClassDefinitionData) => {
 
 const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.Element => {
   const { name, comment, type, extendedTypes, children, implementedTypes, isSensor } = clx;
-  const Header = exposeInSidebar ? H2Nested : H4;
 
   const properties = children?.filter(isProp);
   const methods = children
@@ -74,11 +75,12 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
   return (
     <div key={`class-definition-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
       <APISectionDeprecationNote comment={comment} />
+      <APISectionPlatformTags comment={comment} prefix="Only for:" />
       <H3Code tags={getTagNamesList(comment)}>
-        <CODE>{name}</CODE>
+        <MONOSPACE weight="medium">{name}</MONOSPACE>
       </H3Code>
       {(extendedTypes?.length || implementedTypes?.length) && (
-        <P>
+        <P className="mb-3">
           <BOLD>Type: </BOLD>
           {type ? <CODE>{resolveTypeName(type)}</CODE> : 'Class'}
           {extendedTypes?.length && (
@@ -101,20 +103,18 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
           )}
         </P>
       )}
-      <CommentTextBlock comment={comment} />
+      <CommentTextBlock comment={comment} includePlatforms={false} />
       {returnComment && (
         <>
-          <div css={STYLES_NESTED_SECTION_HEADER}>
-            <H4>Returns</H4>
-          </div>
-          <ReactMarkdown components={mdComponents}>{returnComment.text}</ReactMarkdown>
+          <BoxSectionHeader text="Returns" />
+          <ReactMarkdown components={mdComponents}>
+            {getCommentContent(returnComment.content)}
+          </ReactMarkdown>
         </>
       )}
       {properties?.length ? (
         <>
-          <div css={STYLES_NESTED_SECTION_HEADER}>
-            <Header>{name} Properties</Header>
-          </div>
+          <BoxSectionHeader text={`${name} Properties`} exposeInSidebar={exposeInSidebar} />
           <div>
             {properties.map(property =>
               renderProp(property, property?.defaultValue, exposeInSidebar)
@@ -122,11 +122,9 @@ const renderClass = (clx: ClassDefinitionData, exposeInSidebar: boolean): JSX.El
           </div>
         </>
       ) : null}
-      {methods?.length && (
+      {methods?.length > 0 && (
         <>
-          <div css={STYLES_NESTED_SECTION_HEADER}>
-            <Header>{name} Methods</Header>
-          </div>
+          <BoxSectionHeader text={`${name} Methods`} exposeInSidebar={exposeInSidebar} />
           {methods.map(method => renderMethod(method, { exposeInSidebar }))}
         </>
       )}

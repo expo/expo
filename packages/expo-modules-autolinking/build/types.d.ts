@@ -34,9 +34,14 @@ export interface ModuleAndroidProjectInfo {
     name: string;
     sourceDir: string;
 }
+export interface ModuleAndroidPluginInfo {
+    id: string;
+    sourceDir: string;
+}
 export interface ModuleDescriptorAndroid {
     packageName: string;
     projects: ModuleAndroidProjectInfo[];
+    plugins?: ModuleAndroidPluginInfo[];
     modules: string[];
 }
 export interface ModuleIosPodspecInfo {
@@ -54,6 +59,20 @@ export interface ModuleDescriptorIos {
     debugOnly: boolean;
 }
 export type ModuleDescriptor = ModuleDescriptorAndroid | ModuleDescriptorIos;
+export interface AndroidGradlePluginDescriptor {
+    /**
+     * Gradle plugin ID
+     */
+    id: string;
+    /**
+     * Artifact group
+     */
+    group: string;
+    /**
+     * Relative path to the gradle plugin directory
+     */
+    sourceDir: string;
+}
 /**
  * Represents a raw config from `expo-module.json`.
  */
@@ -117,5 +136,9 @@ export interface RawExpoModuleConfig {
          * To have multiple build.gradle projects, string array type is also supported.
          */
         gradlePath?: string | string[];
+        /**
+         * Gradle plugins.
+         */
+        gradlePlugins?: AndroidGradlePluginDescriptor[];
     };
 }

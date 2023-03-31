@@ -12,8 +12,9 @@
 
 namespace skgpu::graphite {
 
-// The MtlBackendContext contains all of the base Metal objects needed by the MtlGpu. The assumption
-// is that the client will set these up and pass them to the MtlGpu constructor.
+// The MtlBackendContext contains all of the base Metal objects needed by the graphite Metal
+// backend. The client will create this object and pass it into the Context::MakeMetal factory call
+// when setting up Skia.
 struct SK_API MtlBackendContext {
     sk_cfp<CFTypeRef> fDevice;
     sk_cfp<CFTypeRef> fQueue;

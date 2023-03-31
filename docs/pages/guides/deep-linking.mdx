@@ -7,16 +7,17 @@ import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { Collapsible } from '~/ui/components/Collapsible';
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { CODE } from '~/ui/components/Text';
 
-It is often desirable for regular HTTPS links (without a custom URL scheme) to directly open your app on mobile devices. This allows you to send notification emails with links that work as expected in a web browser on desktop, while opening the content in your app on mobile. iOS refers to this concept as "universal links" while Android calls it "deep links" (but in this section, we are specifically discussing deep links that do not use a custom URL scheme).
+It is often desirable for regular HTTPS links (without a custom URL scheme) to directly open your app on mobile devices. This allows you to send notification emails with links that work as expected in the web browser on a desktop, while opening the content in your app on mobile. Android refers to this concept as "deep links" and iOS refers to it as "universal links". In this section, deep links that do not use a custom URL scheme are specifically discussed.
 
 > Deferred deep links can be implemented with [`react-native-branch`](https://github.com/expo/config-plugins/tree/main/packages/react-native-branch).
 
-### Universal links on iOS
+## Universal links on iOS
 
-#### AASA configuration
+### AASA configuration
 
-To implement universal links on iOS, you must first set up verification that you own your domain. This is done by serving an Apple App Site Association (AASA) file from your webserver.
+To implement universal links on iOS, you must first set up verification that you own your domain. This is done by serving an Apple App Site Association (AASA) file from your web server.
 
 The AASA must be served from `/.well-known/apple-app-site-association` (with no extension). The AASA contains JSON which specifies your Apple app ID and a list of paths on your domain that should be handled by your mobile app. For example, if you want links of the format `https://www.myapp.io/records/123` to be opened by your mobile app, your AASA would have the following contents:
 
@@ -34,16 +35,18 @@ The AASA must be served from `/.well-known/apple-app-site-association` (with no 
 }
 ```
 
-This tells iOS that any links to `https://www.myapp.io/records/*` (with wildcard matching for the record ID) should be opened directly by the app with ID `LKWJEF.io.myapp.example`. See [Apple's documentation](https://developer.apple.com/documentation/bundleresources/applinks) for further details on the format of the AASA. Branch provides an [AASA validator](https://branch.io/resources/aasa-validator/) which can help you confirm that your AASA is correctly deployed and has a valid format.
+This tells iOS that any links to `https://www.myapp.io/records/*` (with wildcard matching for the record ID) should be opened directly by the app with ID `LKWJEF.io.myapp.example`. It is a combination of the Team ID and the app bundle identifier. The Team ID can be found under the membership details in the Apple Developer account.
+
+See [Apple's documentation](https://developer.apple.com/documentation/bundleresources/applinks) for further details on the format of the AASA. Branch provides an [AASA validator](https://branch.io/resources/aasa-validator/) which can help you confirm that your AASA is correctly deployed and has a valid format.
 
 > The `*` wildcard does **not** match domain or path separators (periods and slashes).
 
-As of iOS 13, [a new `details` format is supported](https://developer.apple.com/documentation/xcode/supporting-associated-domains) which allows you to specify
+As of iOS 13, [a new `details` format is supported](https://developer.apple.com/documentation/xcode/supporting-associated-domains) which allows you to specify:
 
 - `appIDs` instead of `appID`, which makes it easier to associate multiple apps with the same configuration
 - an array of `components`, which allows you to specify fragments, exclude specific paths, and add comments
 
-<Collapsible summary="Here's the example AASA json from Apple's documentation">
+<Collapsible summary="Here's an example AASA JSON from Apple's documentation">
 
 ```json
 {
@@ -86,17 +89,15 @@ To support all iOS versions, you can provide both the above formats in your `det
 
 Note that iOS will download your AASA when your app is first installed and when updates are installed from the App Store, but it will not refresh any more frequently. If you wish to change the paths in your AASA for a production app, you will need to issue a full update via the App Store so that all of your users' apps re-fetch your AASA and recognize the new paths.
 
-#### Expo configuration
+### Expo configuration
 
 After deploying your AASA, you must also configure your app to use your associated domain:
 
-Add [`expo.ios.associatedDomains`](/versions/latest/config/app/#associateddomains) to your Expo config (**app.json**, **app.config.js**), and make sure to follow [Apple's specified format](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains). Make sure _not_ to include the protocol (`https`) in your URL, this is a common mistake that will result in your universal links not working.
+Add [`expo.ios.associatedDomains`](/versions/latest/config/app/#associateddomains) to your [Expo config](/workflow/configuration/), and make sure to follow [Apple's specified format](https://developer.apple.com/documentation/bundleresources/entitlements/com_apple_developer_associated-domains). Make sure _not_ to include the protocol (`https`) in your URL, this is a common mistake that will result in your universal links not working.
 
-For example, if my website is `https://expo.dev/`, the app links would look like:
+For example, if a website is `https://expo.dev/`, the app links will be:
 
-`app.json`
-
-```json
+```json app.json
 {
   "expo": {
     "ios": {
@@ -121,13 +122,13 @@ If you enable through the [Apple Developer Console](/build-reference/ios-capabil
 
 </ConfigReactNative>
 
-At this point, opening a link on your mobile device should now open your app! If it doesn't, re-check the previous steps to ensure that your AASA is valid, the path is specified in the AASA, and you have correctly configured your App ID in the [Apple Developer Console](https://developer.apple.com/account/resources/identifiers/list). Once you've got your app opening, move to the [Handling links into your app](#handling-links) section for details on how to handle the inbound link and show the user the content they requested.
+At this point, opening a link on your mobile device should now open your app! If it doesn't, re-check the previous steps to ensure that your AASA is valid, the path is specified in the AASA, and you have correctly configured your App ID in the [Apple Developer Console](https://developer.apple.com/account/resources/identifiers/list). Once you've got your app opening, move to the [Handling links into your app](/guides/linking/#handling-links) section for details on how to handle the inbound link and show the user the content they requested.
 
-### Deep links on Android
+## Deep links on Android
 
-Implementing deep links on Android (without a custom URL scheme) is somewhat simpler than on iOS. You simply need to add `intentFilters` to the [Android section](/versions/latest/config/app/#android) of your Expo config (**app.json**, **app.config.js**). The following basic configuration will cause your app to be presented in the standard Android dialog as an option for handling any record links to `myapp.io`:
+Implementing deep links on Android (without a custom URL scheme) is somewhat simpler than on iOS. You need to add `intentFilters` to the [`android`](/versions/latest/config/app/#android) section of your [Expo config](/workflow/configuration/). The following basic configuration will cause your app to be presented in the standard Android dialog as an option for handling any record links to `myapp.io`:
 
-```json
+```json app.json
 {
   "expo": {
     "android": {
@@ -163,19 +164,21 @@ It may be desirable for links to your domain to always open your app (without pr
 </Step>
 
 <Step label="2">
-  Second, add `"autoVerify": true` to the intent filter in your Expo config (**app.json**,
-  **app.config.js**). This tells Android to check for your **assetlinks.json** on your server and
-  register your app as the automatic handler for the specified paths:
+  Add `"autoVerify": true` to the intent filter in your [Expo config](/workflow/configuration/).
+  This tells Android to check for your **assetlinks.json** on your server and register your app as
+  the automatic handler for the specified paths:
 </Step>
 
-```json
+```json app.json
 {
   "expo": {
     "android": {
       "intentFilters": [
         {
           "action": "VIEW",
+          /* @info Add autoVerify property to the intent filter in Expo config.*/
           "autoVerify": true,
+          /* @end */
           "data": [
             {
               "scheme": "https",
@@ -191,15 +194,15 @@ It may be desirable for links to your domain to always open your app (without pr
 }
 ```
 
-### Handling App Links on Android with expo-dev-client
+<Collapsible summary={<>Handle App Links on Android for <CODE>expo-dev-client</CODE> version 1.2.1 and below</>}>
 
-From Android 12 onwards, there is an issue reported when verifying the App Links with [`expo-dev-client`](/development/getting-started/).
+From Android 12 onwards, there is an issue reported when verifying the App Links with [`expo-dev-client`](/development/create-development-builds) version 1.2.1 and below.
 
-When `expo.android.intentFilters` is used and `"autoVerify"` is set to `true`, the `expo-dev-client` adds a scheme `<data android:scheme="exp+<slug>" />` to the intent filter. This scheme breaks the App Links verification.
+In Expo config, when `expo.android.intentFilters` is used and `"autoVerify"` is set to `true`, the `expo-dev-client` adds a scheme `<data android:scheme="exp+<slug>" />` to the intent filter. This scheme breaks the App Links verification.
 
 An example of the `exp+` scheme breaking the verification process:
 
-```xml
+```xml AndroidManifest.xml
 <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen" android:screenOrientation="portrait">
   <intent-filter>
     <action android:name="android.intent.action.MAIN"/>
@@ -227,11 +230,9 @@ An example of the `exp+` scheme breaking the verification process:
 </activity>
 ```
 
-You can fix this issue by creating a custom [Config Plugin](/guides/config-plugins/) that removes the `exp+` schemes when verifying `intentFilters`.
+You can fix this issue by creating a custom [Config Plugin](/guides/config-plugins/) that removes the `exp+` schemes when verifying `intentFilters`. In your project, create a new file called **withAndroidVerifiedLinksWorkaround.js** with the following code snippet:
 
-Create a new file called **withAndroidVerifiedLinksWorkaround.js** in your project with the following code snippet:
-
-```javascript
+```js withAndroidVerifiedLinksWorkaround.js
 const { createRunOncePlugin, withAndroidManifest } = require('@expo/config-plugins');
 
 /**
@@ -305,9 +306,9 @@ module.exports = createRunOncePlugin(
 );
 ```
 
-Next, in you **app.json**, add this plugin under `expo.plugins`:
+Next, in your **app.json**, add the path to the plugin under `expo.plugins`:
 
-```json
+```json app.json
 {
   "plugins": ["./plugins/withAndroidVerifiedLinksWorkaround"]
 }
@@ -315,18 +316,20 @@ Next, in you **app.json**, add this plugin under `expo.plugins`:
 
 If you are using [EAS Build](/build/introduction/), you will have to create a new build after adding these changes to your project so that they are reflected in your Android app.
 
-## When to _not_ use deep links
+</Collapsible>
 
-This is the easiest way to set up deep links into your app because it requires a minimal amount of configuration.
+## When to not use deep links
+
+This is the easiest way to set up deep links in your app because it requires a minimal amount of configuration.
 
 The main problem is that if the user does not have your app installed and follows a link to your app with its custom scheme, their operating system will indicate that the page couldn't be opened but not give much more information. This is not a great experience. There is no way to work around this in the browser.
 
 Additionally, many messaging apps do not autolink URLs with custom schemes -- for example, `exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]` might just show up as plain text in your browser rather than as a link ([exp://u.expo.dev/[project-id]?channel-name=[channel-name]&runtime-version=[runtime-version]](#)).
 
-An example of this is Gmail which strips the href property from links of most apps, a trick to use is to link to a regular https url instead of your app's custom scheme, this will open the user's web browser. Browsers do not usually strip the href property so you can host a file online that redirects the user to your app's custom schemes.
+An example of this is Gmail which strips the `href` property from the links of most apps, a trick to use is to link to a regular HTTPS URL instead of your app's custom scheme, this will open the user's web browser. Browsers do not usually strip the `href` property so you can host a file online that redirects the user to your app's custom schemes.
 
 Instead of linking to `example://path/into/app`, you could link to `https://example.com/redirect-to-app.html` and `redirect-to-app.html` would contain the following code:
 
-```javascript
+```js
 <script>window.location.replace("example://path/into/app");</script>
 ```

@@ -135,7 +135,7 @@ async function renamePackageOnDisk(config, projectRoot) {
   if (newPackageName === null) {
     return;
   }
-  for (const type of ['main', 'debug']) {
+  for (const type of ['debug', 'main', 'release']) {
     await renameJniOnDiskForType({
       projectRoot,
       type,
@@ -240,6 +240,7 @@ async function renamePackageOnDiskForType({
   })];
   // Only update the BUCK file to match the main package name
   if (type === 'main') {
+    // NOTE(EvanBacon): We dropped this file in SDK 48 but other templates may still use it.
     filesToUpdate.push(_path().default.join(projectRoot, 'android', 'app', 'BUCK'));
   }
   // Replace all occurrences of the path in the project
@@ -269,8 +270,8 @@ function setPackageInBuildGradle(config, buildGradle) {
   if (packageName === null) {
     return buildGradle;
   }
-  const pattern = new RegExp(`applicationId ['"].*['"]`);
-  return buildGradle.replace(pattern, `applicationId '${packageName}'`);
+  const pattern = new RegExp(`(applicationId|namespace) ['"].*['"]`, 'g');
+  return buildGradle.replace(pattern, `$1 '${packageName}'`);
 }
 function setPackageInAndroidManifest(config, androidManifest) {
   const packageName = getPackage(config);

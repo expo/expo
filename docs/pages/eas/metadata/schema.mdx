@@ -2,14 +2,12 @@
 title: Schema for EAS Metadata
 sidebar_title: Metadata schema
 maxHeadingDepth: 4
+description: A reference of store config in EAS Metadata.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
 import { markdownComponents as MD } from '~/ui/components/Markdown';
-import {
-  MetadataTable,
-  MetadataSubcategories,
-} from '~/components/plugins/EasMetadataTable';
+import { MetadataTable, MetadataSubcategories } from '~/components/plugins/EasMetadataTable';
 
 > **warning** EAS Metadata is in beta and subject to breaking changes.
 
@@ -717,6 +715,7 @@ You can release the app automatically after store approval or gradually release 
 
 </Collapsible>
 
+{/* prettier-ignore */}
 <MetadataTable>
   {[
     {
@@ -728,19 +727,17 @@ You can release the app automatically after store approval or gradually release 
         </MD.p>,
         <MD.ul>
           <MD.li>
-            <MD.code>false</MD.code> - Manually release the app after store approval.
-            (default behavior)
+            <MD.code>false</MD.code> - Manually release the app after store approval. (default behavior)
           </MD.li>
           <MD.li>
             <MD.code>true</MD.code> - Automatically release after store approval.
           </MD.li>
           <MD.li>
-            <MD.code>Date</MD.code> - Automatically schedule release on this date after
-            store approval. (using the{' '}
+            <MD.code>Date</MD.code> - Automatically schedule release on this date after store approval (using the{' '}
             <MD.a openInNewTab href="https://www.rfc-editor.org/rfc/rfc3339">
               RFC 3339
             </MD.a>{' '}
-            format)
+            format).
           </MD.li>
         </MD.ul>,
         <MD.p>
@@ -888,9 +885,8 @@ The App Store review team must have all the information to test your app, or you
       description: [
         <MD.p>Additional information about your app that can help during the review process.</MD.p>,
         <MD.p theme="warning">
-          Do not include demo account details in the notes. Use the{' '}
-          <MD.code>demoUsername</MD.code> and{' '}
-          <MD.code>demoPassword</MD.code> properties instead.
+          Do not include demo account details in the notes. Use the <MD.code>demoUsername</MD.code>{' '}
+          and <MD.code>demoPassword</MD.code> properties instead.
         </MD.p>,
       ],
     },

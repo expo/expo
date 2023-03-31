@@ -6,6 +6,7 @@ import { normalizeOptions } from '../Options';
 
 jest.mock('fs');
 jest.mock('fs/promises');
+jest.mock('resolve-from');
 
 describe(diffFingerprintChangesAsync, () => {
   afterEach(() => {
@@ -28,11 +29,11 @@ describe(diffFingerprintChangesAsync, () => {
 
     const diff = await diffFingerprintChangesAsync(fingerprint, '/app', normalizeOptions());
     expect(diff).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "filePath": "app.json",
           "hash": "1fd2d92d50dc1da96b41795046b9ea4e30dd2b48",
-          "reasons": Array [
+          "reasons": [
             "expoConfig",
           ],
           "type": "file",
@@ -60,12 +61,12 @@ describe(diffFingerprintChangesAsync, () => {
     diff = await diffFingerprintChangesAsync(fingerprint, '/app', normalizeOptions());
     jest.dontMock('/app/package.json');
     expect(diff).toMatchInlineSnapshot(`
-      Array [
-        Object {
-          "contents": "{\\"start\\":\\"expo start\\",\\"android\\":\\"expo start --android\\",\\"ios\\":\\"expo start --ios\\",\\"web\\":\\"expo start --web\\",\\"postinstall\\":\\"echo \\\\\\"hello\\\\\\"\\"}",
+      [
+        {
+          "contents": "{"start":"expo start","android":"expo start --android","ios":"expo start --ios","web":"expo start --web","postinstall":"echo \\"hello\\""}",
           "hash": "47f4d7bae018eb17440153f09977113501eace30",
           "id": "packageJson:scripts",
-          "reasons": Array [
+          "reasons": [
             "packageJson:scripts",
           ],
           "type": "contents",
@@ -82,11 +83,11 @@ describe(diffFingerprintChangesAsync, () => {
     vol.writeFileSync('/app/app.json', JSON.stringify(config, null, 2));
     const diff = await diffFingerprintChangesAsync(fingerprint, '/app', normalizeOptions());
     expect(diff).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "filePath": "app.json",
           "hash": "9ff1b51ca9b9435e8b849bcc82e3900d70f0feee",
-          "reasons": Array [
+          "reasons": [
             "expoConfig",
           ],
           "type": "file",
@@ -101,11 +102,11 @@ describe(diffFingerprintChangesAsync, () => {
     vol.writeFileSync('/app/ios/README.md', '# Adding new file in ios dir');
     const diff = await diffFingerprintChangesAsync(fingerprint, '/app', normalizeOptions());
     expect(diff).toMatchInlineSnapshot(`
-      Array [
-        Object {
+      [
+        {
           "filePath": "ios",
-          "hash": "e4190c0af9142fe4add4842777d9aec713213cd4",
-          "reasons": Array [
+          "hash": "a1d299fe057e87bb79dfd0eb6e33cee98d626aa1",
+          "reasons": [
             "bareNativeDir",
           ],
           "type": "dir",

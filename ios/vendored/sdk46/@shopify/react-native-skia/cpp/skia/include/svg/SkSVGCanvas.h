@@ -10,6 +10,7 @@
 
 #include "include/core/SkTypes.h"
 
+#include <cstdint>
 #include <memory>
 
 class SkCanvas;

@@ -7,21 +7,27 @@ import android.view.Surface;
 import android.view.TextureView;
 
 import com.facebook.jni.annotations.DoNotStrip;
+import com.facebook.react.uimanager.PointerEvents;
+import com.facebook.react.views.view.ReactViewGroup;
 
-public abstract class SkiaBaseView extends TextureView implements TextureView.SurfaceTextureListener {
+public abstract class SkiaBaseView extends ReactViewGroup implements TextureView.SurfaceTextureListener {
 
     @DoNotStrip
     private Surface mSurface;
+    private TextureView mTexture;
 
     public SkiaBaseView(Context context) {
         super(context);
-        setSurfaceTextureListener(this);
-        setOpaque(false);
+        mTexture = new TextureView(context);
+        mTexture.setSurfaceTextureListener(this);
+        mTexture.setOpaque(false);
+        addView(mTexture);
     }
 
     @Override
-    public void setBackgroundColor(int color) {
-        // Texture view does not support setting the background color.
+    protected void onLayout(boolean changed, int left, int top, int right, int bottom) {
+        super.onLayout(changed, left, top, right, bottom);
+        mTexture.layout(0, 0, this.getMeasuredWidth(), this.getMeasuredHeight());
     }
 
     @Override

@@ -4,9 +4,11 @@ package expo.modules.kotlin.types
 
 import android.graphics.Color
 import android.net.Uri
+import android.view.View
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
+import expo.modules.annotation.Config
 import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.MissingTypeConverter
 import expo.modules.kotlin.jni.CppType
@@ -15,6 +17,8 @@ import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.jni.JavaScriptValue
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.RecordTypeConverter
+import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.kotlin.sharedobjects.SharedObjectTypeConverter
 import expo.modules.kotlin.typedarray.BigInt64Array
 import expo.modules.kotlin.typedarray.BigUint64Array
 import expo.modules.kotlin.typedarray.Float32Array
@@ -32,6 +36,7 @@ import expo.modules.kotlin.types.io.PathTypeConverter
 import expo.modules.kotlin.types.net.JavaURITypeConverter
 import expo.modules.kotlin.types.net.URLTypConverter
 import expo.modules.kotlin.types.net.UriTypeConverter
+import expo.modules.kotlin.views.ViewTypeConverter
 import java.io.File
 import java.net.URI
 import java.net.URL
@@ -69,6 +74,7 @@ fun convert(value: Dynamic, type: KType): Any? {
 object TypeConverterProviderImpl : TypeConverterProvider {
   private val cachedConverters = createCashedConverters(false) + createCashedConverters(true)
   private val cachedRecordConverters = mutableMapOf<KClass<*>, TypeConverter<*>>()
+  private val cachedCustomConverters = mutableMapOf<KType, TypeConverter<*>>()
 
   override fun obtainTypeConverter(type: KType): TypeConverter<*> {
     cachedConverters[type]?.let {
@@ -113,7 +119,17 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       return converter
     }
 
-    return handelEither(type, kClass) ?: throw MissingTypeConverter(type)
+    if (kClass.isSubclassOf(View::class)) {
+      return ViewTypeConverter<View>(type)
+    }
+
+    if (kClass.isSubclassOf(SharedObject::class)) {
+      return SharedObjectTypeConverter<SharedObject>(type)
+    }
+
+    return handelEither(type, kClass)
+      ?: handelCustomConverter(type, kClass)
+      ?: throw MissingTypeConverter(type)
   }
 
   @OptIn(EitherType::class)
@@ -131,10 +147,36 @@ object TypeConverterProviderImpl : TypeConverterProvider {
     return null
   }
 
+  private fun handelCustomConverter(type: KType, kClass: KClass<*>): TypeConverter<*>? {
+    val cachedConverter = cachedCustomConverters[type]
+    if (cachedConverter != null) {
+      return cachedConverter
+    }
+
+    val typeName = kClass.java.canonicalName ?: return null
+
+    val converterProviderName = "${Config.packageNamePrefix}$typeName${Config.classNameSuffix}"
+    return try {
+      val converterClazz = Class.forName(converterProviderName)
+      val converterProvider = converterClazz.newInstance()
+      val method = converterProvider.javaClass.getMethod(Config.converterProviderFunctionName, KType::class.java)
+
+      (method.invoke(converterProvider, type) as TypeConverter<*>)
+        .also {
+          cachedCustomConverters[type] = it
+        }
+    } catch (e: Throwable) {
+      null
+    }
+  }
+
   private fun createCashedConverters(isOptional: Boolean): Map<KType, TypeConverter<*>> {
     val intTypeConverter = createTrivialTypeConverter(
       isOptional, ExpectedType(CppType.INT)
     ) { it.asDouble().toInt() }
+    val longTypeConverter = createTrivialTypeConverter(
+      isOptional, ExpectedType(CppType.LONG)
+    ) { it.asDouble().toLong() }
     val doubleTypeConverter = createTrivialTypeConverter(
       isOptional, ExpectedType(CppType.DOUBLE)
     ) { it.asDouble() }
@@ -148,6 +190,9 @@ object TypeConverterProviderImpl : TypeConverterProvider {
     val converters = mapOf(
       Int::class.createType(nullable = isOptional) to intTypeConverter,
       java.lang.Integer::class.createType(nullable = isOptional) to intTypeConverter,
+
+      Long::class.createType(nullable = isOptional) to longTypeConverter,
+      java.lang.Long::class.createType(nullable = isOptional) to longTypeConverter,
 
       Double::class.createType(nullable = isOptional) to doubleTypeConverter,
       java.lang.Double::class.createType(nullable = isOptional) to doubleTypeConverter,

@@ -1,63 +1,41 @@
 import { css, CSSObject } from '@emotion/react';
-import { spacing, typography } from '@expo/styleguide';
-import React, { ComponentType, PropsWithChildren } from 'react';
+import { typography } from '@expo/styleguide';
+import type { CSSProperties, ComponentType, PropsWithChildren } from 'react';
 
-import { createPermalinkedComponent } from '~/common/create-permalinked-component';
 import { Code as PrismCodeBlock } from '~/components/base/code';
 import { Callout } from '~/ui/components/Callout';
 import { Cell, HeaderCell, Row, Table, TableHead } from '~/ui/components/Table';
 import { H1, H2, H3, H4, H5, A, CODE, P, BOLD, UL, OL, LI, KBD } from '~/ui/components/Text';
 
 type Config = ConfigStyles & {
-  Component: ComponentType<React.PropsWithChildren<ComponentProps>> | string;
+  Component: ComponentType<PropsWithChildren<ComponentProps>> | string;
 };
 
 type ConfigStyles = {
   css?: CSSObject;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
 };
 
 type ComponentProps = PropsWithChildren<{
   className?: string;
-  style?: React.CSSProperties;
+  style?: CSSProperties;
 }>;
 
 const markdownStyles: Record<string, Config | null> = {
   h1: {
-    Component: createPermalinkedComponent(H1, { baseNestingLevel: 1 }),
-    style: {
-      marginTop: spacing[2],
-      marginBottom: spacing[6],
-      paddingBottom: spacing[4],
-    },
+    Component: H1,
   },
   h2: {
-    Component: createPermalinkedComponent(H2, { baseNestingLevel: 2 }),
-    style: {
-      marginTop: spacing[8],
-      marginBottom: spacing[3],
-    },
+    Component: H2,
   },
   h3: {
-    Component: createPermalinkedComponent(H3, { baseNestingLevel: 3 }),
-    style: {
-      marginTop: spacing[6],
-      marginBottom: spacing[1.5],
-    },
+    Component: H3,
   },
   h4: {
-    Component: createPermalinkedComponent(H4, { baseNestingLevel: 4 }),
-    style: {
-      marginTop: spacing[6],
-      marginBottom: spacing[1],
-    },
+    Component: H4,
   },
   h5: {
-    Component: createPermalinkedComponent(H5, { baseNestingLevel: 5 }),
-    style: {
-      marginTop: spacing[4],
-      marginBottom: spacing[1],
-    },
+    Component: H5,
   },
   p: {
     Component: P,
@@ -68,11 +46,11 @@ const markdownStyles: Record<string, Config | null> = {
   },
   ul: {
     Component: UL,
-    style: { paddingBottom: '0.5ch', paddingLeft: `1ch` },
+    style: { marginBottom: '1.5ch', paddingLeft: `1ch` },
   },
   ol: {
     Component: OL,
-    style: { paddingBottom: '0.5ch', paddingLeft: `1ch` },
+    style: { marginBottom: '1.5ch', paddingLeft: `1ch` },
   },
   li: {
     Component: LI,
@@ -97,7 +75,6 @@ const markdownStyles: Record<string, Config | null> = {
   },
   a: {
     Component: A,
-    css: typography.utility.anchor,
   },
   table: {
     Component: Table,

@@ -1,6 +1,5 @@
 package expo.modules.kotlin
 
-import com.facebook.react.bridge.Arguments
 import com.facebook.react.bridge.ReadableArray
 import expo.modules.kotlin.events.BasicEventListener
 import expo.modules.kotlin.events.EventListenerWithPayload
@@ -22,24 +21,36 @@ class ModuleHolder(val module: Module) {
    * Cached instance of HybridObject used by CPP to interact with underlying [expo.modules.kotlin.modules.Module] object.
    */
   val jsObject by lazy {
-    JavaScriptModuleObject(name)
-      .apply {
-        val constants = definition.constantsProvider()
-        val convertedConstants = Arguments.makeNativeMap(constants)
-        exportConstants(convertedConstants)
+    val appContext = module.appContext
 
-        definition
-          .functions
-          .forEach { function ->
-            function.attachToJSObject(module.appContext, this)
-          }
+    JavaScriptModuleObject(name).apply {
+      initUsingObjectDefinition(appContext, definition.objectDefinition)
 
-        definition
-          .properties
-          .forEach { (_, prop) ->
-            prop.attachToJSObject(this)
-          }
+      val viewFunctions = definition.viewManagerDefinition?.asyncFunctions
+      if (viewFunctions?.isNotEmpty() == true) {
+        val viewPrototype = JavaScriptModuleObject("${name}_${definition.viewManagerDefinition?.viewType?.name}")
+        viewFunctions.forEach { function ->
+          function.attachToJSObject(appContext, viewPrototype)
+        }
+
+        registerViewPrototype(viewPrototype)
       }
+
+      definition.classData.forEach { clazz ->
+        val clazzModuleObject = JavaScriptModuleObject(clazz.name)
+          .initUsingObjectDefinition(module.appContext, clazz.objectDefinition)
+
+        val constructor = clazz.constructor
+        registerClass(
+          clazz.name,
+          clazzModuleObject,
+          constructor.takesOwner,
+          constructor.argsCount,
+          constructor.getCppRequiredTypes().toTypedArray(),
+          constructor.getJNIFunctionBody(clazz.name, appContext)
+        )
+      }
+    }
   }
 
   /**
@@ -85,12 +96,8 @@ class ModuleHolder(val module: Module) {
   fun registerContracts() {
     definition.registerContracts?.let {
       module.appContext.mainQueue.launch {
-        it.invoke(module.appContext)
+        it.invoke(module.appContext.appContextActivityResultCaller)
       }
     }
-  }
-
-  fun cleanUp() {
-    module.cleanUp()
   }
 }

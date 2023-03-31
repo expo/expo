@@ -2,8 +2,6 @@
 
 exports[`Skip valid requires 1`] = `
 "const foo = require('bar');
-
 require('bar');
-
 require.resolve('bar');"
 `;

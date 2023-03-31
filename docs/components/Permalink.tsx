@@ -1,4 +1,5 @@
 import { css } from '@emotion/react';
+import { LinkBase } from '@expo/styleguide';
 import * as React from 'react';
 
 import { AdditionalProps } from '~/common/headingManager';
@@ -6,7 +7,6 @@ import PermalinkIcon from '~/components/icons/Permalink';
 import withHeadingManager, {
   HeadingManagerProps,
 } from '~/components/page-higher-order/withHeadingManager';
-import { LinkBase } from '~/ui/components/Text';
 
 type BaseProps = React.PropsWithChildren<{
   component: any;
@@ -45,10 +45,10 @@ const STYLED_PERMALINK_CONTENT = css`
 
 const STYLES_PERMALINK_ICON = css`
   cursor: pointer;
-  vertical-align: text-top;
+  vertical-align: middle;
   display: inline-block;
   width: 1.2em;
-  height: 1.2em;
+  height: 1em;
   padding: 0 0.2em;
   visibility: hidden;
 
@@ -79,20 +79,21 @@ const Permalink: React.FC<EnhancedProps> = withHeadingManager(
     const component = props.children as JSX.Element;
     const children = component.props.children || '';
 
-    const heading = props.nestingLevel
-      ? props.headingManager.addHeading(
-          children,
-          props.nestingLevel,
-          props.additionalProps,
-          props.id
-        )
-      : undefined;
-    const permalinkKey = props.id ?? heading?.slug;
+    if (!props.nestingLevel) {
+      return children;
+    }
+
+    const heading = props.headingManager.addHeading(
+      children,
+      props.nestingLevel,
+      props.additionalProps,
+      props.id
+    );
 
     return (
       <PermalinkBase component={component} style={props.additionalProps?.style}>
-        <LinkBase css={STYLES_PERMALINK_LINK} href={'#' + permalinkKey} ref={heading?.ref}>
-          <span css={STYLES_PERMALINK_TARGET} id={permalinkKey} />
+        <LinkBase css={STYLES_PERMALINK_LINK} href={'#' + heading.slug} ref={heading.ref}>
+          <span css={STYLES_PERMALINK_TARGET} id={heading.slug} />
           <span css={STYLED_PERMALINK_CONTENT}>{children}</span>
           <span css={STYLES_PERMALINK_ICON}>
             <PermalinkIcon />

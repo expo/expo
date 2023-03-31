@@ -6,7 +6,9 @@ set(CMAKE_VERBOSE_MAKEFILE ON)
 set(CMAKE_CXX_STANDARD 17)
 set(PACKAGE_NAME "expo-modules-core")
 set(BUILD_DIR ${CMAKE_SOURCE_DIR}/build)
-set(ignoreMe "${PROJECT_BUILD_DIR} ${REACT_ANDROID_BUILD_DIR} ${REACT_ANDROID_DIR} ${HERMES_HEADER_DIR}")
+set(ignoreMe "${PROJECT_BUILD_DIR} ${REACT_ANDROID_BUILD_DIR} ${REACT_ANDROID_DIR} ${HERMES_HEADER_DIR} ${BOOST_VERSION}")
+
+string(APPEND CMAKE_CXX_FLAGS " -DREACT_NATIVE_TARGET_VERSION=${REACT_NATIVE_TARGET_VERSION}")
 
 if (${NATIVE_DEBUG})
     set(CMAKE_C_FLAGS_DEBUG "${CMAKE_C_FLAGS_DEBUG} -g")
@@ -72,130 +74,62 @@ if (NOT LIBRN_DIR)
     file(GLOB LIBRN_DIR "${REACT_NATIVE_SO_DIR}")
 endif ()
 
-file(GLOB libfbjni_include_DIRS "${BUILD_DIR}/fbjni-*-headers.jar/")
-
 # tests
 
 if(${UNIT_TEST})
   if(${USE_HERMES})
-    file(GLOB HERMES_SO_DIR "${BUILD_DIR}/third-party-ndk/hermes/jni/${ANDROID_ABI}")
-    find_library(
-        JSEXECUTOR_LIB
-        hermes
-        PATHS ${HERMES_SO_DIR}
-        NO_CMAKE_FIND_ROOT_PATH
-    )
-    set(JSEXECUTOR_INCLUDE ${HERMES_HEADER_DIR} ${HERMES_HEADER_DIR}/API ${HERMES_HEADER_DIR}/public)
+    set(JSEXECUTOR_LIB ReactAndroid::hermes_executor)
   else()
-    find_library(
-        JSEXECUTOR_LIB
-        jscexecutor
-        PATHS ${LIBRN_DIR}
-        NO_CMAKE_FIND_ROOT_PATH
-    )
-    set(JSEXECUTOR_INCLUDE "")
+    set(JSEXECUTOR_LIB ReactAndroid::jscexecutor)
   endif()
 else()
   set(JSEXECUTOR_LIB "")
-  set(JSEXECUTOR_INCLUDE "")
 endif()
-
-
-# includes
-
-target_include_directories(
-        ${PACKAGE_NAME}
-        PRIVATE
-        "${REACT_NATIVE_DIR}/React"
-        "${REACT_NATIVE_DIR}/React/Base"
-        "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni"
-        "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react"
-        "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"
-        "${REACT_NATIVE_DIR}/ReactAndroid/src/main/java/com/facebook/react/turbomodule/core/jni"
-        "${REACT_NATIVE_DIR}/ReactCommon"
-        "${REACT_NATIVE_DIR}/ReactCommon/react/nativemodule/core"
-        "${REACT_NATIVE_DIR}/ReactCommon/callinvoker"
-        "${REACT_NATIVE_DIR}/ReactCommon/jsi"
-        "${BUILD_DIR}/third-party-ndk/boost/boost_${BOOST_VERSION}"
-        "${BUILD_DIR}/third-party-ndk/double-conversion"
-        "${BUILD_DIR}/third-party-ndk/folly"
-        "${libfbjni_include_DIRS}"
-        "${COMMON_DIR}"
-        "${JSEXECUTOR_INCLUDE}"
-        "${SRC_DIR}/fabric"
-)
 
 # find libraries
 
 find_library(LOG_LIB log)
 
-if(${REACT_NATIVE_TARGET_VERSION} LESS 69)
-    find_library(
-        FOLLY_LIB
-        folly_json
-        PATHS ${LIBRN_DIR}
-        NO_CMAKE_FIND_ROOT_PATH
-    )
-else()
-    find_library(
-        FOLLY_LIB
-        folly_runtime
-        PATHS ${LIBRN_DIR}
-        NO_CMAKE_FIND_ROOT_PATH
-    )
-endif()
+find_package(ReactAndroid REQUIRED CONFIG)
 
-find_library(
-        FBJNI_LIB
-        fbjni
-        PATHS ${LIBRN_DIR}
-        NO_CMAKE_FIND_ROOT_PATH
+find_package(fbjni REQUIRED CONFIG)
+
+# includes
+
+get_target_property(INCLUDE_reactnativejni
+        ReactAndroid::reactnativejni
+        INTERFACE_INCLUDE_DIRECTORIES)
+target_include_directories(
+        ${PACKAGE_NAME}
+        PRIVATE
+        ${INCLUDE_reactnativejni}/react
+
+        # header only imports from turbomodule, e.g. CallInvokerHolder.h
+        "${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/react/turbomodule"
+        "${COMMON_DIR}"
+        "${SRC_DIR}/fabric"
 )
-
-find_library(
-        JSI_LIB
-        jsi
-        PATHS ${LIBRN_DIR}
-        NO_CMAKE_FIND_ROOT_PATH
-)
-
-find_library(
-        REACT_NATIVE_JNI_LIB
-        reactnativejni
-        PATHS ${LIBRN_DIR}
-        NO_CMAKE_FIND_ROOT_PATH
-)
-
-find_library(
-        REACT_NATIVE_MODULES_CORE
-        react_nativemodule_core
-        PATHS ${LIBRN_DIR}
-        NO_CMAKE_FIND_ROOT_PATH
-)
-
-#reactnativejni
 
 # linking
 
+include("${REACT_NATIVE_DIR}/ReactAndroid/cmake-utils/folly-flags.cmake")
+
 target_compile_options(
         ${PACKAGE_NAME}
-        PRIVATE -DFOLLY_NO_CONFIG=1
-        -DFOLLY_HAVE_CLOCK_GETTIME=1
-        -DFOLLY_HAVE_MEMRCHR=1
-        -DFOLLY_USE_LIBCPP=1
-        -DFOLLY_MOBILE=1
+        PRIVATE
+        ${folly_FLAGS}
 )
 
 target_link_libraries(
         ${PACKAGE_NAME}
         CommonSettings
         ${LOG_LIB}
-        ${FBJNI_LIB}
-        ${JSI_LIB}
-        ${JSEXECUTOR_LIB}
-        ${REACT_NATIVE_JNI_LIB}
-        ${FOLLY_LIB}
-        ${REACT_NATIVE_MODULES_CORE}
+        fbjni::fbjni
+        ReactAndroid::jsi
+        ReactAndroid::reactnativejni
+        ReactAndroid::folly_runtime
+        ReactAndroid::react_nativemodule_core
         android
+        ${JSEXECUTOR_LIB}
         ${NEW_ARCHITECTURE_DEPENDENCIES}
 )

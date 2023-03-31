@@ -1,8 +1,11 @@
 ---
 title: Using EAS Update
+description: Learn how to use EAS Update with EAS Build.
 ---
 
-EAS Build includes some special affordances for Expo's [`expo-updates`](/versions/latest/sdk/updates.mdx) library. In particular, you can configure the `channel` property in **eas.json** and EAS Build will take care of updating it in your native project at build time. Not sure what a channel is? [Learn more about channels](/eas-update/how-eas-update-works/#distributing-builds). This document covers concerns specific to using `expo-updates` with EAS Build; for more general information about configuring the expo-updates library with EAS Update, refer to the [EAS Update getting started doc](/eas-update/getting-started).
+EAS Build includes some special affordances for Expo's [`expo-updates`](/versions/latest/sdk/updates.mdx) library. In particular, you can configure the [`channel`](/eas-update/how-eas-update-works/#distributing-builds) property in **eas.json** and EAS Build will take care of updating it in your native project at build time.
+
+This document covers concerns specific to using `expo-updates` library with EAS Build. For more general information about configuring the library with EAS Update, see [Getting started with EAS Update ](/eas-update/getting-started).
 
 ## Setting the channel for a build profile
 
@@ -10,7 +13,7 @@ Each [build profile](./eas-json.mdx#build-profiles) can be assigned to a channel
 
 The following example demonstrates how you might use the `"production"` channel for production builds, and the `"staging"` channel for test builds distributed with [internal distribution](internal-distribution.mdx).
 
-```json
+```json eas.json
 {
   "build": {
     "production": {

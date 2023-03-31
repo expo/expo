@@ -21,13 +21,13 @@
     ]
   },
   "resolutions": {
-    "react-native": "0.70.5",
+    "react-native": "0.71.4",
     "**/util": "~0.12.4"
   },
   "dependencies": {
     "eslint": "^8.29.0",
     "expo-yarn-workspaces": "*",
-    "jsc-android": "^250230.2.1",
+    "jsc-android": "^250231.0.0",
     "prettier": "^2.8.1",
     "yarn-deduplicate": "^6.0.0"
   }

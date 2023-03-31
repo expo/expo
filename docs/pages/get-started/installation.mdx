@@ -4,7 +4,7 @@ title: Installation
 
 import { Terminal } from '~/ui/components/Snippet';
 
-To develop applications with Expo, you need two tools. A command-line tool called [Expo CLI](#expo-cli) to serve your project, and a mobile client app called [Expo Go](#expo-go-app-for-android-and-ios) to open the project on Android and iOS platforms. Additionally, you can use any web browser to run the project on the web.
+To develop applications with Expo, you will want to start with two tools: the command-line tool called [Expo CLI](#expo-cli) to serve your project, and a mobile client app called [Expo Go](#expo-go-app-for-android-and-ios) to open the project on Android and iOS platforms. Additionally, you can use any web browser to run the project on the web.
 
 > **info** You don't need macOS to build an iOS app with [EAS](/eas). You only need an iOS device to run [development builds](/development/introduction). Windows, Linux, and macOS are all supported as your development machine.
 
@@ -18,6 +18,7 @@ To use Expo CLI, you need to have the following tools installed on your develope
 
 - [Node.js LTS release](https://nodejs.org/en/) - Only Node.js LTS releases (even-numbered) are recommended.
   As Node.js [officially states](https://nodejs.org/en/about/releases/), "Production applications should only use Active LTS or Maintenance LTS releases".
+  - You can install Node.js using a version management tool (such as `nvm` or `volta` or any other of your choice) to switch between different Node.js versions.
 - [Git](https://git-scm.com)
 - For macOS or Linux users: [Watchman](https://facebook.github.io/watchman/docs/install#buildinstall)
 
@@ -31,7 +32,7 @@ For Windows users we recommend using [PowerShell](https://docs.microsoft.com/en-
 
 ### Using Expo CLI
 
-You can use Expo CLI without installation by leveraging `npx` &mdash; a Node.js package runner.
+Expo CLI is part of the `expo` package, and you can use it by leveraging `npx` &mdash; a Node.js package runner. No installation is required.
 
 For example, to see a list of available commands in Expo CLI, open the terminal on your development machine and run the following command:
 

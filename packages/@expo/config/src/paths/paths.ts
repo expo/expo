@@ -4,6 +4,7 @@ import resolveFrom from 'resolve-from';
 
 import { getConfig } from '../Config';
 import { ProjectConfig } from '../Config.types';
+import { ConfigError } from '../Errors';
 import { getBareExtensions } from './extensions';
 
 // https://github.com/facebook/create-react-app/blob/9750738cce89a967cc71f28390daf5d4311b193c/packages/react-scripts/config/paths.js#L22
@@ -26,7 +27,7 @@ const nativePlatforms = ['ios', 'android'];
 
 export function resolveEntryPoint(
   projectRoot: string,
-  { platform, projectConfig }: { platform: string; projectConfig?: ProjectConfig }
+  { platform, projectConfig }: { platform: string; projectConfig?: Partial<ProjectConfig> }
 ) {
   const platforms = nativePlatforms.includes(platform) ? [platform, 'native'] : [platform];
   return getEntryPoint(projectRoot, ['./index'], platforms, projectConfig);
@@ -36,7 +37,7 @@ export function getEntryPoint(
   projectRoot: string,
   entryFiles: string[],
   platforms: string[],
-  projectConfig?: ProjectConfig
+  projectConfig?: Partial<ProjectConfig>
 ): string | null {
   const extensions = getBareExtensions(platforms);
   return getEntryPointWithExtensions(projectRoot, entryFiles, extensions, projectConfig);
@@ -47,30 +48,30 @@ export function getEntryPointWithExtensions(
   projectRoot: string,
   entryFiles: string[],
   extensions: string[],
-  projectConfig?: ProjectConfig
+  projectConfig?: Partial<ProjectConfig>
 ): string {
-  const { exp, pkg } = projectConfig ?? getConfig(projectRoot, { skipSDKVersionRequirement: true });
-
-  // This will first look in the `app.json`s `expo.entryPoint` field for a potential main file.
-  // We check the Expo config first in case you want your project to start differently with Expo then in a standalone environment.
-  if (exp && exp.entryPoint && typeof exp.entryPoint === 'string') {
-    // If the field exists then we want to test it against every one of the supplied extensions
-    // to ensure the bundler resolves the same way.
-    let entry = getFileWithExtensions(projectRoot, exp.entryPoint, extensions);
-    if (!entry) {
-      // Allow for paths like: `{ "main": "expo/AppEntry" }`
-      entry = resolveFromSilentWithExtensions(projectRoot, exp.entryPoint, extensions);
-
-      // If it doesn't resolve then just return the entryPoint as-is. This makes
-      // it possible for people who have an unconventional setup (eg: multiple
-      // apps in monorepo with metro at root) to customize entry point without
-      // us imposing our assumptions.
-      if (!entry) {
-        return exp.entryPoint;
-      }
+  if (!projectConfig) {
+    // drop all logging abilities
+    const original = process.stdout.write;
+    process.stdout.write = () => true;
+    try {
+      projectConfig = getConfig(projectRoot, { skipSDKVersionRequirement: true });
+    } finally {
+      process.stdout.write = original;
     }
-    return entry;
-  } else if (pkg) {
+  }
+
+  const { exp, pkg } = projectConfig;
+
+  if (typeof exp?.entryPoint === 'string') {
+    // We want to stop reading the app.json for determining the entry file in SDK +49
+    throw new ConfigError(
+      'expo.entryPoint has been removed in favor of the main field in the package.json.',
+      'DEPRECATED'
+    );
+  }
+
+  if (pkg) {
     // If the config doesn't define a custom entry then we want to look at the `package.json`s `main` field, and try again.
     const { main } = pkg;
     if (main && typeof main === 'string') {
@@ -104,7 +105,7 @@ export function getEntryPointWithExtensions(
     return resolveFrom(projectRoot, 'expo/AppEntry');
   } catch {
     throw new Error(
-      `The project entry file could not be resolved. Please either define it in the \`package.json\` (main), \`app.json\` (expo.entryPoint), create an \`index.js\`, or install the \`expo\` package.`
+      `The project entry file could not be resolved. Please define it in the \`main\` field of the \`package.json\`, create an \`index.js\`, or install the \`expo\` package.`
     );
   }
 }

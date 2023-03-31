@@ -1,10 +1,11 @@
 import { css } from '@emotion/react';
-import { theme, iconSize, spacing, ChevronDownIcon, borderRadius, shadows } from '@expo/styleguide';
+import { ButtonBase, theme, shadows } from '@expo/styleguide';
+import { spacing, borderRadius } from '@expo/styleguide-base';
+import { ChevronDownIcon } from '@expo/styleguide-icons';
 import { useRouter } from 'next/router';
 import type { PropsWithChildren } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
-import { ButtonBase } from '../Button';
 import { CALLOUT } from '../Text';
 
 import { stripVersionFromPath } from '~/common/utilities';
@@ -82,8 +83,8 @@ export function SidebarCollapsible(props: Props) {
         {...customDataAttributes}>
         <div css={chevronContainerStyle}>
           <ChevronDownIcon
-            size={iconSize.tiny}
-            css={[chevronStyle, !isOpen && chevronClosedStyle]}
+            className="icon-xs text-icon-secondary transition-transform"
+            css={!isOpen && chevronClosedStyle}
           />
         </div>
         <CALLOUT weight="medium">{info.name}</CALLOUT>
@@ -106,8 +107,8 @@ const titleStyle = css({
 
   ':hover': {
     cursor: 'pointer',
-    backgroundColor: theme.background.tertiary,
-    borderRadius: borderRadius.medium,
+    backgroundColor: theme.background.element,
+    borderRadius: borderRadius.md,
     transition: '100ms',
   },
 });
@@ -115,21 +116,16 @@ const titleStyle = css({
 const chevronContainerStyle = css({
   backgroundColor: theme.background.default,
   border: `1px solid ${theme.border.default}`,
-  borderRadius: borderRadius.small,
+  borderRadius: borderRadius.sm,
   display: 'flex',
   alignItems: 'center',
   justifyContent: 'center',
-  boxShadow: shadows.micro,
+  boxShadow: shadows.xs,
   height: 20,
   width: 20,
   marginRight: spacing[1],
 });
 
-const chevronStyle = css({
-  transition: '100ms ease transform',
-  transform: 'translateX(-0.5px)',
-});
-
 const chevronClosedStyle = css({
-  transform: 'rotate(-90deg)',
+  transform: 'rotate(-90deg) translateY(0.5px)',
 });

@@ -1,18 +1,20 @@
 ---
-title: Building APKs for Android Emulators and devices
+title: Build APKs for Android Emulators and devices
+description: Learn how to configure and install an .apk for Android Emulators and devices when using EAS Build.
 ---
 
-The default file format used when building Android apps with EAS Build is an [Android App Bundle](https://developer.android.com/platform/technology/app-bundle) (AAB/**.aab**). This format is optimized for distribution to the Google Play Store, but AABs can't be installed directly on your device. To install a build directly to your Android device or emulator, you need to build an [Android Package](https://en.wikipedia.org/wiki/Android_application_package) (APK/**.apk**) instead.
+import { Terminal } from '~/ui/components/Snippet';
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+
+The default file format used when building Android apps with EAS Build is an [Android App Bundle](https://developer.android.com/platform/technology/app-bundle) (AAB/**.aab**). This format is optimized for distribution to the Google Play Store. However, AABs can't be installed directly on your device. To install a build directly to your Android device or emulator, you need to build an [Android Package](https://en.wikipedia.org/wiki/Android_application_package) (APK/**.apk**) instead.
 
 ## Configuring a profile to build APKs
 
-### Managed projects
-
-To generate an **.apk**, modify the [**eas.json**](/build/eas-json.mdx) by adding one of the following properties in a build profile:
+To generate an **.apk**, modify the [**eas.json**](/build/eas-json) by adding one of the following properties in a build profile:
 
 - `developmentClient` to `true` (**default**)
-- `buildType` to `apk`
-- `gradleCommand` to `:app:assembleRelease`, `:app:assembleDebug` or any other gradle command that produces **.apk**
+- `android.buildType` to `apk`
+- `android.gradleCommand` to `:app:assembleRelease`, `:app:assembleDebug` or any other gradle command that produces **.apk**
 
 ```json eas.json
 {
@@ -35,7 +37,11 @@ To generate an **.apk**, modify the [**eas.json**](/build/eas-json.mdx) by addin
 }
 ```
 
-Now you can run your build with `eas build -p android --profile preview`. Remember that you can name the profile whatever you like. We named the profile `"preview"`, however, you can call it `"local"`, `"simulator"`, or whatever makes the most sense for you.
+Now you can run your build with the following command:
+
+<Terminal cmd={['$ eas build -p android --profile preview']} />
+
+Remember that you can name the profile whatever you like. We named the profile `preview`. However, you can call it `local`, `emulator`, or whatever makes the most sense for you.
 
 ## Installing your build
 
@@ -43,11 +49,28 @@ Now you can run your build with `eas build -p android --profile preview`. Rememb
 
 > If you haven't installed or run an Android Emulator before, follow the [Android Studio emulator guide](/workflow/android-studio-emulator) before proceeding.
 
-- Once your build is completed, download the APK from the build details page or the link provided when `eas build` is done.
-- Open up your emulator.
-- Drag the APK file into the emulator.
-- The app will be installed in a few seconds. When it's complete, navigate to the app launcher, find the app icon and open it.
-- You can share this build, it will run on any Android Emulator or device.
+Once your build is completed, the CLI will prompt you to automatically download and install it on the Android Emulator. When prompted, press <kbd>Y</kbd> to directly install it on the emulator.
+
+In case you have multiple builds, you can also run the `eas build:run` command at any time to download a specific build and automatically install it on the Android Emulator:
+
+<Terminal cmd={['$ eas build:run -p android']} />
+
+The command also shows a list of available builds of your project. You can select the build to install on the emulator from this list. Each build in the list has a build ID, the time elapsed since the build creation, the build number, the version number, and the git commit information. The list also displays invalid builds if a project has any.
+
+For example, the image below lists the build of a project:
+
+<ImageSpotlight
+  alt="Running eas build:run command shows a list of available builds in a project."
+  src="/static/images/eas-build/eas-build-run-on-android.png"
+/>
+
+When the build's installation is complete, it will appear on the home screen. If it's a development build, open a terminal window and start the development server using `npx expo start --dev-client`.
+
+#### Running the latest build
+
+Pass the `--latest` flag to the `eas build:run` command to download and install the latest build on the Android Emulator:
+
+<Terminal cmd={['$ eas build:run -p android --latest']} />
 
 ### Physical device
 

@@ -1,6 +1,6 @@
 {
   "name": "expo-stories",
-  "version": "1.1.2",
+  "version": "1.1.5",
   "bin": "bin/index.js",
   "types": "build/types/index.d.ts",
   "license": "MIT",
@@ -17,7 +17,7 @@
     "expo-module": "expo-module"
   },
   "devDependencies": {
-    "@babel/core": "^7.12.9",
+    "@babel/core": "^7.20.0",
     "expo-module-scripts": "^3.0.0",
     "typescript": "^4.9.4"
   },
@@ -30,9 +30,9 @@
     "esbuild": "^0.12.15",
     "fs-extra": "^9.1.0",
     "glob": "^7.1.7",
-    "react-native-gesture-handler": "~2.8.0",
-    "react-native-safe-area-context": "4.4.1",
-    "react-native-screens": "~3.18.0",
+    "react-native-gesture-handler": "~2.9.0",
+    "react-native-safe-area-context": "4.5.0",
+    "react-native-screens": "~3.20.0",
     "react-native-svg": "13.4.0",
     "sane": "^5.0.1"
   }

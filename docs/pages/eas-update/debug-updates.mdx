@@ -1,11 +1,12 @@
 ---
-title: Debugging guide
+title: Debugging EAS Update
+description: Learn how to debug EAS Update.
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Terminal } from '~/ui/components/Snippet';
 
-It's important to tell the current state of our app at any given time. We built EAS Update with this in mind. Once we know which updates are running on which builds, we can make changes so that our apps are in the state we expect and desire. This guide sets out to show how we can verify our EAS Update and expo-updates configuration, so that we can find the source of problems like an app not showing a published update.
+It's important to tell the current state of our app at any given time. We built EAS Update with this in mind. Once we know which updates are running on which builds, we can make changes so that our apps are in the state we expect and desire. This guide sets out to show how we can verify our EAS Update and expo-updates configuration so that we can find the source of problems like an app not showing a published update.
 
 ## expo-updates configuration
 
@@ -25,11 +26,11 @@ Finally, make sure that `expo-updates` is included in **package.json**. If it's 
 
 ### Inspecting expo-updates configuration after prebuild
 
-Whenever we run `eas build`, the `npx expo prebuild` command is run on our project on EAS' servers to unpack the **android** and **ios** directories that contain native files. This make it so EAS Build can build any project, whether it includes the native files or not.
+Whenever we run `eas build`, the `npx expo prebuild` command is run on our project on EAS' servers to unpack the **android** and **ios** directories that contain native files. This makes it so EAS Build can build any project, whether it includes the native files or not.
 
 If our project does not have **android** or **ios** directories, we can make commit any existing changes, then run `npx expo prebuild` to inspect the project state that EAS Build will act on. After running this, look for the following files: **android/app/src/main/AndroidManifest.xml** and **ios/your-project-name/Supporting/Expo.plist**.
 
-In each, we expect to see configuration for the EAS Update URL and the runtime version. Here are properties we'd expect to see in each file:
+In each, we expect to see configuration for the EAS Update URL and the runtime version. Here are the properties we'd expect to see in each file:
 
 **AndroidManifest.xml**
 
@@ -65,11 +66,11 @@ Builds have a property named `channel`, which EAS Update uses to link to a branc
 
 To verify that a build has a specific channel, make sure that in **eas.json**, there is a channel property:
 
-```json
+```json eas.json
 {
   "build": {
     "preview": {
-      "distribtuion": "internal",
+      "distribution": "internal",
       "channel": "preview"
     },
     "production": {
@@ -153,15 +154,15 @@ If we've made builds and updates with EAS, we can view the state of our project 
 
 The EAS website has a page that shows the current state of our apps. We can view it at [https://expo.dev/accounts/[account]/projects/[project]/deployments](https://expo.dev/accounts/[account]/projects/[project]/deployments).
 
-## Debugging
+## Debugging EAS Update
 
-After verifying expo-updates and EAS Update configurations, we can move on to debugging how our project is interacting with updates.
+After verifying `expo-updates` and EAS Update configurations, we can move on to debugging how our project is interacting with updates.
 
 ### In-app debugging
 
 The expo-updates library exports a variety of functions to interact with updates once the app is already running. In certain cases, making a call to fetch an update and seeing an error message can help us narrow down the root cause.
 
-We can write the following code then make a simulator build of our project to see if there are errors fetching updates:
+We can write the following code and then make a simulator build of our project to see if there are errors fetching updates:
 
 ```jsx
 import { View, Button } from 'react-native';
@@ -195,7 +196,7 @@ Another way to identify the root cause of an issue is to look at the network req
 
 With either program, we'll need to follow their instructions for installing an SSL certificate, so that the program can decode HTTPS requests. Once that's set up in a simulator or on an actual device, we can open our app and watch requests.
 
-The requests we're interested in are from https://u.expo.dev and from https://assets.eascdn.net. Responses from https://u.expo.dev will contain an update manifest, which specifies which assets the app will need to fetch to run the update. Responses from https://assets.eascdn.net will contain assets, like images, font files, etc that are required for the update to run.
+The requests we're interested in are from https://u.expo.dev and https://assets.eascdn.net. Responses from https://u.expo.dev will contain an update manifest, which specifies which assets the app will need to fetch to run the update. Responses from https://assets.eascdn.net will contain assets, like images, font files, etc that are required for the update to run.
 
 When inspecting the request to https://u.expo.dev, we can look for the following request headers:
 
@@ -269,11 +270,19 @@ By default, we need to make a release build for `expo-updates` to be enabled and
 
 To make it easier to test and debug native code in an environment that is closer to production, follow the steps below to create a debug build of the app with `expo-updates` enabled.
 
+We also provide a [step-by-step guide to try out EAS Update quickly](/pages/eas-update/eas-update-with-local-build) in a local development environment using Android Studio or Xcode, with either release or debug builds of the app.
+
 #### iOS local builds
 
 - Set the debug environment variable: `export EX_UPDATES_NATIVE_DEBUG=1`
 - Reinstall pods with `npx pod-install`. The `expo-updates` podspec now detects this environment variable, and makes changes so that the debug code that would normally load from the Metro packager is bypassed, and the app is built with the EXUpdates bundle and other dependencies needed to load updates from EAS.
 - [Ensure the desired channel is set in your **Expo.plist**](/bare/updating-your-app/#configuring-the-channel-manually)
+- Modify the application Xcode project file to force bundling of the application JavaScript for both release and debug builds:
+
+```
+sed -i '' 's/SKIP_BUNDLING/FORCE_BUNDLING/g;' ios/&lt;project name&gt;.xcodeproj/project.pbxproj
+```
+
 - Execute a [debug build](/workflow/debugging/#native-debugging) of the app with Xcode or from the command line.
 
 #### Android local builds
@@ -286,7 +295,7 @@ To make it easier to test and debug native code in an environment that is closer
 
 Alternatively, we can use EAS to create a debug build where `expo-updates` is enabled. The environment variable is set in **eas.json**, as shown in the example below:
 
-```json
+```json eas.json
 {
   "build": {
     "preview_debug": {
@@ -335,7 +344,7 @@ If "update 2" turned out to be a bad update, we can re-publish "update 1" with a
     '',
     '# Example',
     '$ eas update:republish --group abc1',
-    '$ eas update:republish --branch production'
+    '$ eas update:republish --branch production',
   ]}
 />
 

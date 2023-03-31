@@ -104,20 +104,20 @@ public final class ViewModuleWrapper: RCTViewManager, DynamicModuleWrapperProtoc
    */
   @objc
   public func set_proxiedProperties(_ json: Any, forView view: UIView, withDefaultView defaultView: UIView) {
-    guard let json = json as? [String: Any], let viewManager = wrappedModuleHolder.definition.viewManager else {
+    guard let json = json as? [String: Any],
+          let viewManager = wrappedModuleHolder.definition.viewManager,
+          let appContext = wrappedModuleHolder.appContext else {
       return
     }
     let props = viewManager.propsDict()
 
-    for (key, value) in json {
-      if let prop = props[key] {
-        let value = Conversions.fromNSObject(value)
+    for (key, prop) in props {
+      let newValue = json[key] as Any
 
-        // TODO: @tsapeta: Figure out better way to rethrow errors from here.
-        // Adding `throws` keyword to the function results in different
-        // method signature in Objective-C. Maybe just call `RCTLogError`?
-        try? prop.set(value: value, onView: view)
-      }
+      // TODO: @tsapeta: Figure out better way to rethrow errors from here.
+      // Adding `throws` keyword to the function results in different
+      // method signature in Objective-C. Maybe just call `RCTLogError`?
+      try? prop.set(value: Conversions.fromNSObject(newValue), onView: view, appContext: appContext)
     }
     viewManager.callLifecycleMethods(withType: .didUpdateProps, forView: view)
   }

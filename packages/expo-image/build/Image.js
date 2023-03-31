@@ -1,12 +1,14 @@
 import React from 'react';
 import { StyleSheet } from 'react-native';
 import ExpoImage, { ExpoImageModule } from './ExpoImage';
-import { ImageResizeMode } from './Image.types';
-export class Image extends React.Component {
+import { resolveContentFit, resolveContentPosition, resolveTransition } from './utils';
+import { resolveSources } from './utils/resolveSources';
+let loggedDefaultSourceDeprecationWarning = false;
+export class Image extends React.PureComponent {
     /**
      * Preloads images at the given urls that can be later used in the image view.
      * Preloaded images are always cached on the disk, so make sure to use
-     * `disk` (default) or `memoryAndDisk` cache policy.
+     * `disk` (default) or `memory-disk` cache policy.
      */
     static prefetch(urls) {
         return ExpoImageModule.prefetch(Array.isArray(urls) ? urls : [urls]);
@@ -28,10 +30,14 @@ export class Image extends React.Component {
         return await ExpoImageModule.clearDiskCache();
     }
     render() {
-        const { style, resizeMode: resizeModeProp, ...restProps } = this.props;
-        const { resizeMode: resizeModeStyle, ...restStyle } = StyleSheet.flatten([style]) || {};
-        const resizeMode = resizeModeProp ?? resizeModeStyle ?? ImageResizeMode.COVER;
-        return React.createElement(ExpoImage, { ...restProps, style: restStyle, resizeMode: resizeMode });
+        const { style, source, placeholder, contentFit, contentPosition, transition, fadeDuration, resizeMode: resizeModeProp, defaultSource, loadingIndicatorSource, ...restProps } = this.props;
+        const { resizeMode: resizeModeStyle, ...restStyle } = StyleSheet.flatten(style) || {};
+        const resizeMode = resizeModeProp ?? resizeModeStyle;
+        if ((defaultSource || loadingIndicatorSource) && !loggedDefaultSourceDeprecationWarning) {
+            console.warn('[expo-image]: `defaultSource` and `loadingIndicatorSource` props are deprecated, use `placeholder` instead');
+            loggedDefaultSourceDeprecationWarning = true;
+        }
+        return (React.createElement(ExpoImage, { ...restProps, style: restStyle, source: resolveSources(source), placeholder: resolveSources(placeholder ?? defaultSource ?? loadingIndicatorSource), contentFit: resolveContentFit(contentFit, resizeMode), contentPosition: resolveContentPosition(contentPosition), transition: resolveTransition(transition, fadeDuration) }));
     }
 }
 //# sourceMappingURL=Image.js.map

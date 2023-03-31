@@ -103,6 +103,11 @@ module Expo
       @options.fetch(:providerName, Constants::MODULES_PROVIDER_FILE_NAME)
     end
 
+    # Absolute path to `Pods/Target Support Files/<pods target name>/<modules provider file>` within the project path
+    public def modules_provider_path(target)
+      File.join(target.support_files_dir, modules_provider_name)
+    end
+
     # For now there is no need to generate the modules provider for testing.
     public def should_generate_modules_provider?
       return !@options.fetch(:testsOnly, false)
@@ -126,19 +131,11 @@ module Expo
       end
     end
 
-    private def node_command_args(command_name)
+    public def base_command_args
       search_paths = @options.fetch(:searchPaths, @options.fetch(:modules_paths, nil))
       ignore_paths = @options.fetch(:ignorePaths, nil)
       exclude = @options.fetch(:exclude, [])
-
-      args = [
-        'node',
-        '--eval',
-        'require(\'expo-modules-autolinking\')(process.argv.slice(1))',
-        command_name,
-        '--platform',
-        'ios'
-      ]
+      args = []
 
       if !search_paths.nil? && !search_paths.empty?
         args.concat(search_paths)
@@ -155,11 +152,24 @@ module Expo
       args
     end
 
+    private def node_command_args(command_name)
+      eval_command_args = [
+        'node',
+        '--no-warnings',
+        '--eval',
+        'require(\'expo-modules-autolinking\')(process.argv.slice(1))',
+        command_name,
+        '--platform',
+        'ios'
+      ]
+      return eval_command_args.concat(base_command_args())
+    end
+
     private def resolve_command_args
       node_command_args('resolve').concat(['--json'])
     end
 
-    private def generate_package_list_command_args(target_path)
+    public def generate_package_list_command_args(target_path)
       node_command_args('generate-package-list').concat([
         '--target',
         target_path
@@ -173,11 +183,16 @@ module Expo
 
     private def use_modular_headers_for_dependencies(dependencies)
       dependencies.each { |dependency|
-        unless @target_definition.build_pod_as_module?(dependency.name)
-          UI.info "[Expo] ".blue << "Enabling modular headers for pod #{dependency.name.green}"
+        # The dependency name might be a subspec like `ReactCommon/turbomodule/core`,
+        # but the modular headers need to be enabled for the entire `ReactCommon` spec anyway,
+        # so we're stripping the subspec path from the dependency name.
+        root_spec_name = dependency.name.partition('/').first
+
+        unless @target_definition.build_pod_as_module?(root_spec_name)
+          UI.info "[Expo] ".blue << "Enabling modular headers for pod #{root_spec_name.green}"
 
           # This is an equivalent to setting `:modular_headers => true` for the specific dependency.
-          @target_definition.set_use_modular_headers_for_pod(dependency.name, true)
+          @target_definition.set_use_modular_headers_for_pod(root_spec_name, true)
         end
       }
     end

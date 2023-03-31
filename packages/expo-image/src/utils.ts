@@ -4,7 +4,7 @@ import {
   ImageContentPositionObject,
   ImageContentPositionString,
   ImageProps,
-  ImageResizeMode,
+  ImageTransition,
 } from './Image.types';
 
 let loggedResizeModeDeprecationWarning = false;
@@ -17,7 +17,7 @@ let loggedFadeDurationDeprecationWarning = false;
  */
 export function resolveContentFit(
   contentFit?: ImageContentFit,
-  resizeMode?: ImageResizeMode
+  resizeMode?: ImageProps['resizeMode']
 ): ImageContentFit {
   if (contentFit) {
     return contentFit;
@@ -29,22 +29,21 @@ export function resolveContentFit(
     }
 
     switch (resizeMode) {
-      case ImageResizeMode.CONTAIN:
-        return ImageContentFit.CONTAIN;
-      case ImageResizeMode.COVER:
-        return ImageContentFit.COVER;
-      case ImageResizeMode.STRETCH:
-        return ImageContentFit.FILL;
-      case ImageResizeMode.CENTER:
-        return ImageContentFit.SCALE_DOWN;
-      case ImageResizeMode.REPEAT:
+      case 'contain':
+      case 'cover':
+        return resizeMode;
+      case 'stretch':
+        return 'fill';
+      case 'center':
+        return 'scale-down';
+      case 'repeat':
         if (!loggedRepeatDeprecationWarning) {
           console.log('[expo-image]: Resize mode "repeat" is no longer supported');
           loggedRepeatDeprecationWarning = true;
         }
     }
   }
-  return ImageContentFit.CONTAIN;
+  return 'cover';
 }
 
 /**
@@ -53,7 +52,7 @@ export function resolveContentFit(
  */
 export function resolveContentPosition(
   contentPosition?: ImageContentPosition
-): ImageContentPositionObject | undefined {
+): ImageContentPositionObject {
   if (typeof contentPosition === 'string') {
     const contentPositionStringMappings: Record<
       ImageContentPositionString,
@@ -85,7 +84,7 @@ export function resolveContentPosition(
     }
     return contentPositionObject;
   }
-  return contentPosition;
+  return contentPosition ?? { top: '50%', left: '50%' };
 }
 
 /**
@@ -95,7 +94,7 @@ export function resolveContentPosition(
 export function resolveTransition(
   transition?: ImageProps['transition'],
   fadeDuration?: ImageProps['fadeDuration']
-): ImageProps['transition'] {
+): ImageTransition | null {
   if (typeof transition === 'number') {
     return { duration: transition };
   }
@@ -106,5 +105,5 @@ export function resolveTransition(
     }
     return { duration: fadeDuration };
   }
-  return transition;
+  return transition ?? null;
 }

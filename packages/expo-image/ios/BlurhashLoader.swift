@@ -16,16 +16,20 @@ class BlurhashLoader: NSObject, SDImageLoader {
     completed completedBlock: SDImageLoaderCompletedBlock? = nil
   ) -> SDWebImageOperation? {
     guard let url = url else {
-      let error = error(description: "URL provided to BlurhashLoader is missing")
+      let error = makeNSError(description: "URL provided to BlurhashLoader is missing")
       completedBlock?(nil, nil, error, false)
       return nil
     }
-    // The URI looks like this: blurhash:/WgF}G?az0fs.x[jat7xFRjNHt6s.4;oe-:RkVtkCi^Nbo|xZRjWB/16/16
-    // Which means that the `pathComponents[0]` is `/` and we can skip that.
+    guard let source = context?[ImageView.contextSourceKey] as? ImageSource else {
+      let error = makeNSError(description: "Image source was not provided to the context")
+      completedBlock?(nil, nil, error, false)
+      return nil
+    }
+
+    // The URI looks like this: blurhash:/WgF}G?az0fs.x[jat7xFRjNHt6s.4;oe-:RkVtkCi^Nbo|xZRjWB
+    // Which means that the `pathComponents[0]` is `/` and we need to skip it to get the hash.
     let blurhash = url.pathComponents[1]
-    let width = Int(url.pathComponents[2]) ?? 16
-    let height = Int(url.pathComponents[3]) ?? 16
-    let size = CGSize(width: width, height: height)
+    let size = CGSize(width: source.width, height: source.height)
 
     DispatchQueue.global(qos: .userInitiated).async {
       if let image = image(fromBlurhash: blurhash, size: size) {
@@ -33,7 +37,7 @@ class BlurhashLoader: NSObject, SDImageLoader {
           completedBlock?(UIImage(cgImage: image), nil, nil, true)
         }
       } else {
-        let error = error(description: "Unable to generate an image from the given blurhash")
+        let error = makeNSError(description: "Unable to generate an image from the given blurhash")
         completedBlock?(nil, nil, error, false)
       }
     }
@@ -45,9 +49,4 @@ class BlurhashLoader: NSObject, SDImageLoader {
     // it's not possible that next time it will work :)
     return true
   }
-}
-
-private func error(description: String) -> NSError {
-  let userInfo = [NSLocalizedDescriptionKey: description]
-  return NSError(domain: "expo.modules.image", code: 0, userInfo: userInfo)
 }

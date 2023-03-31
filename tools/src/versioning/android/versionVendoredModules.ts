@@ -5,17 +5,15 @@ import fs from 'fs-extra';
 import glob from 'glob-promise';
 import path from 'path';
 
-import { ANDROID_DIR } from '../../Constants';
+import { ANDROID_DIR, ANDROID_VENDORED_DIR } from '../../Constants';
 import logger from '../../Logger';
-import { copyFileWithTransformsAsync, transformFileAsync } from '../../Transforms';
+import { copyFileWithTransformsAsync, transformFilesAsync } from '../../Transforms';
 import { FileTransforms } from '../../Transforms.types';
 import { searchFilesAsync } from '../../Utils';
 import {
   exponentPackageTransforms,
   vendoredModulesTransforms,
 } from './transforms/vendoredModulesTransforms';
-
-const ANDROID_VENDORED_DIR = path.join(ANDROID_DIR, 'vendored');
 
 /**
  * Versions Android vendored modules.
@@ -65,7 +63,7 @@ export async function versionVendoredModulesAsync(
  * Prebuild shared libraries to jniLibs and cleanup CMakeLists.txt
  */
 async function maybePrebuildSharedLibsAsync(module: string, sdkNumber: number) {
-  const moduleRootDir = path.join(ANDROID_DIR, 'vendored', `sdk${sdkNumber}`, module, 'android');
+  const moduleRootDir = path.join(ANDROID_VENDORED_DIR, `sdk${sdkNumber}`, module, 'android');
   const cmakeFile = path.join(moduleRootDir, 'CMakeLists.txt');
   if (!fs.existsSync(cmakeFile)) {
     return;
@@ -117,13 +115,17 @@ async function maybePrebuildSharedLibsAsync(module: string, sdkNumber: number) {
  */
 async function transformExponentPackageAsync(name: string, prefix: string) {
   const transforms = exponentPackageTransforms(prefix)[name] ?? null;
-  const exponentPackageFile = path.resolve(
-    path.join(
-      ANDROID_DIR,
-      `versioned-abis/expoview-${prefix}/src/main/java/${prefix}/host/exp/exponent/ExponentPackage.kt`
-    )
-  );
-  await transformFileAsync(exponentPackageFile, transforms);
+  const basenames = [
+    'ExponentPackage',
+    'ExponentAsyncStorageModule',
+    'ExponentUnsignedAsyncStorageModule',
+  ];
+  const files = await glob(`**/{${basenames.join(',')}}.kt`, {
+    cwd: path.join(ANDROID_DIR, `versioned-abis/expoview-${prefix}`),
+    nodir: true,
+    absolute: true,
+  });
+  await transformFilesAsync(files, transforms);
 }
 
 /**
@@ -199,7 +201,7 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
       },
       {
         paths: 'build.gradle',
-        find: /\b(compileOnly|implementation|api)\s+['"]com.facebook.react:react-native:.+['"]/gm,
+        find: /\b(compileOnly|implementation|api)\s+['"]com.facebook.react:react-(native|android):?.*['"]/gm,
         replaceWith:
           `implementation 'host.exp:reactandroid-${prefix}:1.0.0'` +
           '\n' +
@@ -207,29 +209,16 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
           `    compileOnly 'com.facebook.fbjni:fbjni:+'\n` +
           `    compileOnly 'com.facebook.yoga:proguard-annotations:+'\n` +
           `    compileOnly 'com.facebook.soloader:soloader:+'\n` +
+          `    compileOnly 'com.facebook.fresco:fbcore:+'\n` +
+          `    compileOnly 'com.facebook.infer.annotation:infer-annotation:+'\n` +
           `    compileOnly 'androidx.annotation:annotation:+'\n` +
           `    compileOnly 'com.google.code.findbugs:jsr305:+'\n` +
           `    compileOnly 'androidx.appcompat:appcompat:+'\n`,
       },
       {
-        paths: 'build.gradle',
-        find: 'buildDir/react-native-0*/jni',
-        replaceWith: 'buildDir/reactandroid-abi*/jni',
-      },
-      {
         paths: ['build.gradle', 'CMakeLists.txt'],
         find: /\/react-native\//g,
         replaceWith: '/versioned-react-native/',
-      },
-      {
-        paths: 'build.gradle',
-        find: /def rnAAR = fileTree.*\*\.aar.*\)/g,
-        replaceWith: `def rnAAR = fileTree("\${rootDir}/versioned-abis").matching({ include "**/reactandroid-${prefix}/**/*.aar" })`,
-      },
-      {
-        paths: 'build.gradle',
-        find: /def rnAAR = fileTree.*rnAarMatcher.*\)/g,
-        replaceWith: `def rnAAR = fileTree("\${rootDir}/versioned-abis").matching({ include "**/reactandroid-${prefix}/**/*.aar" })`,
       },
       {
         paths: 'CMakeLists.txt',
@@ -238,13 +227,8 @@ async function baseTransformsFactoryAsync(prefix: string): Promise<Required<File
       },
       {
         paths: 'CMakeLists.txt',
-        find: /(\bfind_library\(\n?\s*[A-Z_]+\n?\s*)(\w+)/gm,
-        replaceWith(substring, group1, libName) {
-          if (['fbjni', 'log'].includes(libName)) {
-            return substring;
-          }
-          return `${group1}${libName}_${prefix}`;
-        },
+        find: /\b(ReactAndroid::[\w-]+)\b/g,
+        replaceWith: `$1_${prefix}`,
       },
       {
         paths: 'AndroidManifest.xml',

@@ -103,6 +103,7 @@ export async function readAsStringAsync(
  * ```
  * @return Returns a Promise that resolves to a `string` containing a `content://` URI pointing to the file.
  * The URI is the same as the `fileUri` input parameter but in a different format.
+ * @platform android
  */
 export async function getContentUriAsync(fileUri: string): Promise<string> {
   if (Platform.OS === 'android') {
@@ -111,9 +112,7 @@ export async function getContentUriAsync(fileUri: string): Promise<string> {
     }
     return await ExponentFileSystem.getContentUriAsync(fileUri);
   } else {
-    return new Promise(function (resolve, reject) {
-      resolve(fileUri);
-    });
+    return fileUri;
   }
 }
 
@@ -345,6 +344,12 @@ export function createUploadTask(
   return new UploadTask(url, fileUri, options, callback);
 }
 
+function isUploadProgressData(
+  data: DownloadProgressData | UploadProgressData
+): data is UploadProgressData {
+  return 'totalBytesSent' in data;
+}
+
 export abstract class FileSystemCancellableNetworkTask<
   T extends DownloadProgressData | UploadProgressData
 > {
@@ -390,6 +395,19 @@ export abstract class FileSystemCancellableNetworkTask<
       if (event.uuid === this.uuid) {
         const callback = this.getCallback();
         if (callback) {
+          if (isUploadProgressData(event.data)) {
+            const data = {
+              ...event.data,
+              get totalByteSent() {
+                console.warn(
+                  'Key "totalByteSent" in File System UploadProgressData is deprecated and will be removed in SDK 49, use "totalBytesSent" instead'
+                );
+                return this.totalBytesSent;
+              },
+            };
+            return callback(data);
+          }
+
           callback(event.data);
         }
       }

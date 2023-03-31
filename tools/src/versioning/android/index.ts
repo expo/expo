@@ -484,4 +484,27 @@ export async function addVersionAsync(version: string) {
   console.log(' 🛠   9/9: Misc cleanup...');
   await cleanUpAsync(version);
   console.log(' ✅  9/9: Finished');
+
+  const abiVersion = `abi${version.replace(/\./g, '_')}`;
+  const versionedAar = path.join(
+    versionedExpoviewAbiPath(abiVersion),
+    `maven/host/exp/reactandroid-${abiVersion}/1.0.0/reactandroid-${abiVersion}-1.0.0.aar`
+  );
+  console.log(
+    '\n' +
+      chalk.yellow(
+        '################################################################################################################'
+      ) +
+      `\nIf you want to commit the versioned code to git, please also upload the versioned aar at ${chalk.cyan(
+        versionedAar
+      )} to:\n` +
+      chalk.cyan(
+        `https://github.com/expo/react-native/releases/download/sdk-${version}/reactandroid-${abiVersion}-1.0.0.aar`
+      ) +
+      '\n' +
+      chalk.yellow(
+        '################################################################################################################'
+      ) +
+      '\n'
+  );
 }

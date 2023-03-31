@@ -54,13 +54,16 @@ export function logCmdError(error: Error): never {
   } else if (
     error instanceof CommandError ||
     error instanceof AssertionError ||
-    error.name === 'ApiV2Error'
+    error.name === 'ApiV2Error' ||
+    error.name === 'ConfigError'
   ) {
     // Print the stack trace in debug mode only.
     exit(error);
   }
 
-  exit(chalk.red(error.toString()) + '\n' + chalk.gray(error.stack));
+  const errorDetails = error.stack ? '\n' + chalk.gray(error.stack) : '';
+
+  exit(chalk.red(error.toString()) + errorDetails);
 }
 
 /** This should never be thrown in production. */
