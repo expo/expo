@@ -2,6 +2,7 @@
 
 #include "JavaScriptModuleObject.h"
 #include "JSIInteropModuleRegistry.h"
+#include "ObjectDeallocator.h"
 
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>

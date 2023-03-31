@@ -75,16 +75,6 @@ public:
   MethodMetadata(MethodMetadata &&other) = default;
 
   /**
-   * MethodMetadata owns the only reference to the Kotlin function.
-   * We have to clean that, cause it's a `global_ref`.
-   */
-  ~MethodMetadata() {
-    if (jBodyReference != nullptr) {
-      jBodyReference.release();
-    }
-  }
-
-  /**
    * Transforms metadata to a jsi::Function.
    *
    * @param runtime

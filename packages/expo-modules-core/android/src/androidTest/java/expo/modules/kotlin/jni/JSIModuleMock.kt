@@ -40,6 +40,9 @@ internal inline fun withJSIInterop(
   }
 
   block(jsiIterop, methodQueue)
+
+  JNIDeallocator.deallocate()
+  jsiIterop.deallocate()
 }
 
 /**

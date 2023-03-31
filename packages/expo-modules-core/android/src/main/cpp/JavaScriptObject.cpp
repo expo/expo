@@ -4,6 +4,8 @@
 #include "JavaScriptValue.h"
 #include "JavaScriptRuntime.h"
 #include "JSITypeConverter.h"
+#include "ObjectDeallocator.h"
+#include "JavaReferencesCache.h"
 
 namespace expo {
 void JavaScriptObject::registerNatives() {
@@ -29,6 +31,8 @@ void JavaScriptObject::registerNatives() {
                                     JavaScriptObject::defineProperty<jni::alias_ref<JavaScriptValue::javaobject>>),
                    makeNativeMethod("defineJSObjectProperty",
                                     JavaScriptObject::defineProperty<jni::alias_ref<JavaScriptObject::javaobject>>),
+                   makeNativeMethod("defineNativeDeallocator",
+                                    JavaScriptObject::defineNativeDeallocator),
                  });
 }
 
@@ -146,5 +150,25 @@ void JavaScriptObject::defineProperty(
     jsi::String::createFromUtf8(runtime, name),
     std::move(descriptor),
   });
+}
+
+void JavaScriptObject::defineNativeDeallocator(
+  jni::alias_ref<JNIFunctionBody::javaobject> deallocator
+) {
+  auto &rt = runtimeHolder.getJSRuntime();
+  jni::global_ref<JNIFunctionBody::javaobject> globalRef = jni::make_global(deallocator);
+  std::shared_ptr<ObjectDeallocator> nativeDeallocator = std::make_shared<ObjectDeallocator>(
+    [globalRef = std::move(globalRef)]() mutable {
+      auto args = jni::Environment::current()->NewObjectArray(
+        0,
+        JavaReferencesCache::instance()->getJClass("java/lang/Object").clazz,
+        nullptr
+      );
+      globalRef->invoke(args);
+      globalRef.reset();
+    });
+  auto descriptor = JavaScriptObject::preparePropertyDescriptor(rt, 0);
+  descriptor.setProperty(rt, "value", jsi::Object::createFromHostObject(rt, nativeDeallocator));
+  jsObject->setProperty(rt, "__expo_shared_object_deallocator__", std::move(descriptor));
 }
 } // namespace expo
