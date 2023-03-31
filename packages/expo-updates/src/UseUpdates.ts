@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
+import { useEffect, useRef, useState } from 'react';
 
 import * as Updates from './Updates';
 import { useUpdateEvents } from './UpdatesHooks';
@@ -6,81 +6,22 @@ import type {
   UpdatesInfo,
   UseUpdatesCallbacksType,
   UseUpdatesReturnType,
-} from './UpdatesProvider.types';
-import { currentlyRunning } from './UpdatesProviderConstants';
+} from './UseUpdates.types';
+import { currentlyRunning } from './UseUpdatesConstants';
 import {
   checkForUpdateAndReturnAvailableAsync,
   downloadUpdateAsync,
   downloadAndRunUpdateAsync,
   runUpdateAsync,
   updatesInfoFromEvent,
-} from './UpdatesProviderUtils';
-
-// Context that includes getter and setter for the updates info
-type UpdatesContextType = {
-  updatesInfo: UpdatesInfo;
-  setUpdatesInfo: (mutator: (updatesInfo: UpdatesInfo) => UpdatesInfo) => void;
-};
-
-// The context provided to the app
-const UpdatesContext: React.Context<UpdatesContextType> = createContext({
-  updatesInfo: {
-    currentlyRunning,
-  },
-  setUpdatesInfo: (_: any) => {},
-});
-
-/////// Provider and hook ///////////
+} from './UseUpdatesUtils';
 
 /**
- * Provides the Updates React context. Includes an [`UpdateEvent`](#updateevent) listener
- * that will set the context automatically, if automatic updates are enabled and a new
- * update is available. This is required if application code uses the [`useUpdates`](#useupdatescallbacks) hook.
- *
- * @param props Context will be provided to `props.children`
- *
- * @return the provider.
- *
- * @example
- * ```jsx App.tsx
- * import * as Updates from 'expo-updates';
- *
- * const { UpdatesProvider } = Updates.Provider;
- *
- * import UpdatesDemo from './src/UpdatesDemo';
- *
- * export default function App() {
- *   return (
- *     <UpdatesProvider>
- *       <UpdatesDemo />
- *     </UpdatesProvider>
- *   );
- * }
- * ```
- */
-const UpdatesProvider = (props: { children: any }) => {
-  const [updatesInfo, setUpdatesInfo] = useState({
-    currentlyRunning,
-  });
-  // Set up listener for events from automatic update requests
-  // that happen on startup, and use events to refresh the updates info
-  // context
-  useUpdateEvents((event) => {
-    setUpdatesInfo(updatesInfoFromEvent(event));
-  });
-  return (
-    <UpdatesContext.Provider value={{ updatesInfo, setUpdatesInfo }}>
-      {props.children}
-    </UpdatesContext.Provider>
-  );
-};
-
-/**
- * Hook that obtains the Updates info structure and functions. Requires that application code be inside an [`UpdatesProvider`](#updatesproviderprops).
+ * Hook that obtains the Updates info structure and functions.
  *
  * @param callbacks Optional set of callbacks that will be called when `checkForUpdate()`, `downloadUpdate()`, `downloadAndRunUpdate()`, or `runUpdate()`, start, complete, or have errors.
  *
- * @return the [`UpdatesInfo`](#updatesinfo) structure and associated methods. When using the provider, the methods returned by this hook should be used instead of [`checkForUpdateAsync`](#updatescheckforupdateasync), [`fetchUpdateAsync`](#updatesfetchupdateasync), [`readLogEntriesAsync`](#updatesreadlogentriesasync), and [`reloadAsync`](#updatesreloadasync).
+ * @return the [`UpdatesInfo`](#updatesinfo) structure and associated methods. When using this hook, the methods returned should be used instead of [`checkForUpdateAsync`](#updatescheckforupdateasync), [`fetchUpdateAsync`](#updatesfetchupdateasync), [`readLogEntriesAsync`](#updatesreadlogentriesasync), and [`reloadAsync`](#updatesreloadasync).
  *
  * @example
  * ```jsx UpdatesDemo.tsx
@@ -89,10 +30,8 @@ const UpdatesProvider = (props: { children: any }) => {
  * import { Pressable, Text, View } from 'react-native';
  * import * as Updates from 'expo-updates';
  *
- * const { useUpdates } = Updates.Provider;
- *
  * export default function UpdatesDemo() {
- *   const { updatesInfo, checkForUpdate, downloadAndRunUpdate } = useUpdates();
+ *   const { updatesInfo, checkForUpdate, downloadAndRunUpdate } = Updates.useUpdates();
  *
  *   const { currentlyRunning, availableUpdate } = updatesInfo;
  *
@@ -120,13 +59,22 @@ const UpdatesProvider = (props: { children: any }) => {
  */
 const useUpdates: (callbacks?: UseUpdatesCallbacksType) => UseUpdatesReturnType = (callbacks) => {
   // Get updates info value and setter from provider
-  const { updatesInfo, setUpdatesInfo } = useContext(UpdatesContext);
+  const [updatesInfo, setUpdatesInfo] = useState({
+    currentlyRunning,
+  });
 
   const callbacksRef = useRef<UseUpdatesCallbacksType | undefined>();
 
   useEffect(() => {
     callbacksRef.current = callbacks;
   }, [callbacks]);
+
+  // Set up listener for events from automatic update requests
+  // that happen on startup, and use events to refresh the updates info
+  // context
+  useUpdateEvents((event) => {
+    setUpdatesInfo((updatesInfo: UpdatesInfo) => updatesInfoFromEvent(updatesInfo, event));
+  });
 
   const checkForUpdate = () => {
     checkForUpdateAndReturnAvailableAsync(callbacksRef.current)
@@ -190,4 +138,4 @@ const useUpdates: (callbacks?: UseUpdatesCallbacksType) => UseUpdatesReturnType 
   };
 };
 
-export { UpdatesProvider, useUpdates };
+export { useUpdates };

@@ -5,11 +5,10 @@ import React from 'react';
 import * as Updates from '..';
 import type { Manifest, UpdateEvent, UseUpdatesCallbacksType } from '..';
 import ExpoUpdates from '../ExpoUpdates';
-import { availableUpdateFromManifest, updatesInfoFromEvent } from '../UpdatesProviderUtils';
-import { UpdatesProviderTestApp } from './UpdatesProviderTestApp';
+import { availableUpdateFromManifest, updatesInfoFromEvent } from '../UseUpdatesUtils';
+import UseUpdatesTestApp from './UseUpdatesTestApp';
 
 const { UpdatesLogEntryCode, UpdatesLogEntryLevel, UpdateEventType } = Updates;
-const { UpdatesProvider } = Updates.Provider;
 
 const getCallbacks: () => UseUpdatesCallbacksType = () => {
   return {
@@ -40,11 +39,7 @@ jest.mock('../ExpoUpdates', () => {
 describe('Updates provider and hook tests', () => {
   describe('Test hook and provider', () => {
     it('App with provider shows currently running info', async () => {
-      render(
-        <UpdatesProvider>
-          <UpdatesProviderTestApp />
-        </UpdatesProvider>
-      );
+      render(<UseUpdatesTestApp />);
       const updateIdView = await screen.findByTestId('currentlyRunning_updateId');
       expect(updateIdView).toHaveTextContent('0000-1111');
       const createdAtView = await screen.findByTestId('currentlyRunning_createdAt');
@@ -55,11 +50,7 @@ describe('Updates provider and hook tests', () => {
 
     it('App with provider shows available update after running checkForUpdate()', async () => {
       const callbacks = getCallbacks();
-      render(
-        <UpdatesProvider>
-          <UpdatesProviderTestApp callbacks={callbacks} />
-        </UpdatesProvider>
-      );
+      render(<UseUpdatesTestApp callbacks={callbacks} />);
       const mockDate = new Date();
       const mockManifest = {
         id: '0000-2222',
@@ -94,11 +85,7 @@ describe('Updates provider and hook tests', () => {
 
     it('App with provider shows no available update after running checkForUpdate()', async () => {
       const callbacks = getCallbacks();
-      render(
-        <UpdatesProvider>
-          <UpdatesProviderTestApp callbacks={callbacks} />
-        </UpdatesProvider>
-      );
+      render(<UseUpdatesTestApp callbacks={callbacks} />);
       ExpoUpdates.checkForUpdateAsync.mockReturnValueOnce({
         isAvailable: false,
       });
@@ -122,11 +109,7 @@ describe('Updates provider and hook tests', () => {
 
     it('App with provider handles error in checkForUpdate()', async () => {
       const callbacks = getCallbacks();
-      render(
-        <UpdatesProvider>
-          <UpdatesProviderTestApp callbacks={callbacks} />
-        </UpdatesProvider>
-      );
+      render(<UseUpdatesTestApp callbacks={callbacks} />);
       const mockError = { code: 'ERR_TEST', message: 'test message' };
       ExpoUpdates.checkForUpdateAsync.mockRejectedValueOnce(mockError);
       const buttonView = await screen.findByTestId('checkForUpdate');
@@ -142,11 +125,7 @@ describe('Updates provider and hook tests', () => {
 
     it('App with provider calls callbacks during downloadUpdate()', async () => {
       const callbacks = getCallbacks();
-      render(
-        <UpdatesProvider>
-          <UpdatesProviderTestApp callbacks={callbacks} />
-        </UpdatesProvider>
-      );
+      render(<UseUpdatesTestApp callbacks={callbacks} />);
       ExpoUpdates.fetchUpdateAsync.mockReturnValueOnce({
         isNew: true,
         manifestString: '{"name": "test"}',
@@ -162,11 +141,7 @@ describe('Updates provider and hook tests', () => {
 
     it('App with provider handles error during downloadUpdate()', async () => {
       const callbacks = getCallbacks();
-      render(
-        <UpdatesProvider>
-          <UpdatesProviderTestApp callbacks={callbacks} />
-        </UpdatesProvider>
-      );
+      render(<UseUpdatesTestApp callbacks={callbacks} />);
       const mockError = { code: 'ERR_TEST', message: 'test message' };
       ExpoUpdates.fetchUpdateAsync.mockRejectedValueOnce(mockError);
       const buttonView = await screen.findByTestId('downloadUpdate');
@@ -182,11 +157,7 @@ describe('Updates provider and hook tests', () => {
 
     it('App with provider calls callbacks during downloadAndRunUpdate()', async () => {
       const callbacks = getCallbacks();
-      render(
-        <UpdatesProvider>
-          <UpdatesProviderTestApp callbacks={callbacks} />
-        </UpdatesProvider>
-      );
+      render(<UseUpdatesTestApp callbacks={callbacks} />);
       ExpoUpdates.fetchUpdateAsync.mockReturnValueOnce({
         isNew: true,
         manifestString: '{"name": "test"}',
@@ -212,11 +183,7 @@ describe('Updates provider and hook tests', () => {
           level: UpdatesLogEntryLevel.INFO,
         },
       ]);
-      render(
-        <UpdatesProvider>
-          <UpdatesProviderTestApp />
-        </UpdatesProvider>
-      );
+      render(<UseUpdatesTestApp />);
       const buttonView = await screen.findByTestId('readLogEntries');
       await act(async () => {
         fireEvent(buttonView, 'press');
@@ -251,35 +218,40 @@ describe('Updates provider and hook tests', () => {
       expect(result).toBeUndefined();
     });
 
-    it('updatesInfoFromEvent() when update is available', () => {
-      const event: UpdateEvent = {
+    it('updatesInfoFromEvent() returns mutated info as expected', () => {
+      // Available
+      let event: UpdateEvent = {
         type: UpdateEventType.UPDATE_AVAILABLE,
         manifest,
       };
-      const updatesInfo = updatesInfoFromEvent(event);
+      let updatesInfo = updatesInfoFromEvent(undefined, event);
       expect(updatesInfo.currentlyRunning.updateId).toEqual('0000-1111');
       expect(updatesInfo.availableUpdate?.updateId).toEqual('0000-2222');
-    });
-
-    it('updatesInfoFromEvent() when update is not available', () => {
-      const event: UpdateEvent = {
-        type: UpdateEventType.NO_UPDATE_AVAILABLE,
-      };
-      const updatesInfo = updatesInfoFromEvent(event);
+      expect(updatesInfo.error).toBeUndefined();
+      // Not available
+      event = { type: UpdateEventType.NO_UPDATE_AVAILABLE };
+      updatesInfo = updatesInfoFromEvent(updatesInfo, event);
       expect(updatesInfo.currentlyRunning.updateId).toEqual('0000-1111');
       expect(updatesInfo.availableUpdate).toBeUndefined();
       expect(updatesInfo.error).toBeUndefined();
-    });
-
-    it('updatesInfoFromEvent() when an error occurs', () => {
-      const event: UpdateEvent = {
-        type: UpdateEventType.ERROR,
-        message: 'It broke',
-      };
-      const updatesInfo = updatesInfoFromEvent(event);
+      // Error
+      event = { type: UpdateEventType.ERROR, message: 'It broke' };
+      updatesInfo = updatesInfoFromEvent(updatesInfo, event);
       expect(updatesInfo.currentlyRunning.updateId).toEqual('0000-1111');
       expect(updatesInfo.availableUpdate).toBeUndefined();
       expect(updatesInfo.error?.message).toEqual('It broke');
+      // Back to available
+      event = {
+        type: UpdateEventType.UPDATE_AVAILABLE,
+        manifest,
+      };
+      updatesInfo = updatesInfoFromEvent(undefined, event);
+      expect(updatesInfo.currentlyRunning.updateId).toEqual('0000-1111');
+      expect(updatesInfo.availableUpdate?.updateId).toEqual('0000-2222');
+      updatesInfo = updatesInfoFromEvent(undefined, event);
+      expect(updatesInfo.currentlyRunning.updateId).toEqual('0000-1111');
+      expect(updatesInfo.availableUpdate?.updateId).toEqual('0000-2222');
+      expect(updatesInfo.error).toBeUndefined();
     });
   });
 });

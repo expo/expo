@@ -4,9 +4,9 @@ import { View, Text, Pressable } from 'react-native';
 import * as Updates from '..';
 import { UseUpdatesCallbacksType } from '..';
 
-const { useUpdates } = Updates.Provider;
+const { useUpdates } = Updates;
 
-export const UpdatesProviderTestApp = (props: { callbacks?: UseUpdatesCallbacksType }) => {
+const UseUpdatesTestApp = (props: { callbacks?: UseUpdatesCallbacksType }) => {
   const { updatesInfo, checkForUpdate, downloadUpdate, downloadAndRunUpdate, readLogEntries } =
     useUpdates(props.callbacks);
   return (
@@ -41,3 +41,5 @@ export const UpdatesProviderTestApp = (props: { callbacks?: UseUpdatesCallbacksT
     </View>
   );
 };
+
+export default UseUpdatesTestApp;

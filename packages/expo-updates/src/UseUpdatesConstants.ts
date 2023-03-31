@@ -1,5 +1,5 @@
 import * as Updates from './Updates';
-import type { CurrentlyRunningInfo } from './UpdatesProvider.types';
+import type { CurrentlyRunningInfo } from './UseUpdates.types';
 /////// Constants and enums  ////////
 
 // The currently running info, constructed from Updates constants

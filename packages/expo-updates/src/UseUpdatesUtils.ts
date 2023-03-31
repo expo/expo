@@ -1,11 +1,7 @@
 import * as Updates from './Updates';
 import type { UpdateEvent } from './Updates.types';
-import type {
-  AvailableUpdateInfo,
-  UpdatesInfo,
-  UseUpdatesCallbacksType,
-} from './UpdatesProvider.types';
-import { currentlyRunning } from './UpdatesProviderConstants';
+import type { AvailableUpdateInfo, UpdatesInfo, UseUpdatesCallbacksType } from './UseUpdates.types';
+import { currentlyRunning } from './UseUpdatesConstants';
 
 /////// Internal functions ////////
 
@@ -26,23 +22,33 @@ export const availableUpdateFromManifest = (manifest: any) => {
 };
 
 // Constructs the UpdatesInfo from an event
-export const updatesInfoFromEvent = (event: UpdateEvent): UpdatesInfo => {
+export const updatesInfoFromEvent = (
+  updatesInfo: UpdatesInfo | undefined,
+  event: UpdateEvent
+): UpdatesInfo => {
   const lastCheckForUpdateTime = new Date();
   if (event.type === Updates.UpdateEventType.NO_UPDATE_AVAILABLE) {
     return {
+      ...updatesInfo,
       currentlyRunning,
+      availableUpdate: undefined,
+      error: undefined,
       lastCheckForUpdateTimeSinceRestart: lastCheckForUpdateTime,
     };
   } else if (event.type === Updates.UpdateEventType.UPDATE_AVAILABLE) {
     return {
+      ...updatesInfo,
       currentlyRunning,
       availableUpdate: availableUpdateFromManifest(event.manifest),
+      error: undefined,
       lastCheckForUpdateTimeSinceRestart: lastCheckForUpdateTime,
     };
   } else {
     // event type === ERROR
     return {
+      ...updatesInfo,
       currentlyRunning,
+      availableUpdate: undefined,
       error: new Error(event.message),
       lastCheckForUpdateTimeSinceRestart: lastCheckForUpdateTime,
     };

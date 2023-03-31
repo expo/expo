@@ -6,5 +6,5 @@ export type {
   UseUpdatesReturnType,
   CurrentlyRunningInfo,
   AvailableUpdateInfo,
-} from './UpdatesProvider.types';
-export * as Provider from './UpdatesProvider';
+} from './UseUpdates.types';
+export * from './UseUpdates';

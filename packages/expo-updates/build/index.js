@@ -1,5 +1,4 @@
 export * from './Updates';
 export * from './UpdatesHooks';
-import * as Provider_1 from './UpdatesProvider';
-export { Provider_1 as Provider };
+export * from './UseUpdates';
 //# sourceMappingURL=index.js.map
