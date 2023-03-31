@@ -6,6 +6,7 @@
 #include "JSITypeConverter.h"
 #include "JavaScriptRuntime.h"
 #include "WeakRuntimeHolder.h"
+#include "JNIFunctionBody.h"
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -66,6 +67,10 @@ public:
     jsi::Object *jsthis,
     const std::string &name,
     jsi::Object descriptor
+  );
+
+  void defineNativeDeallocator(
+    jni::alias_ref<JNIFunctionBody::javaobject> deallocator
   );
 
 protected:
