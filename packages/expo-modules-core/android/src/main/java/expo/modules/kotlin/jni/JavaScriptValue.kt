@@ -9,7 +9,12 @@ import expo.modules.core.interfaces.DoNotStrip
  */
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
-class JavaScriptValue @DoNotStrip private constructor(@DoNotStrip private val mHybridData: HybridData) {
+class JavaScriptValue @DoNotStrip private constructor(@DoNotStrip private val mHybridData: HybridData) : Destructible {
+  init {
+    JNIDeallocator.addReference(this)
+  }
+
+  fun isValid() = mHybridData.isValid
   external fun kind(): String
 
   external fun isNull(): Boolean
@@ -36,6 +41,10 @@ class JavaScriptValue @DoNotStrip private constructor(@DoNotStrip private val mH
 
   @Throws(Throwable::class)
   protected fun finalize() {
+    deallocate()
+  }
+
+  override fun deallocate() {
     mHybridData.resetNative()
   }
 }

@@ -1,0 +1,73 @@
+package expo.modules.kotlin.jni
+
+import java.lang.ref.PhantomReference
+import java.lang.ref.ReferenceQueue
+import java.lang.ref.WeakReference
+
+interface Destructible {
+  fun deallocate()
+}
+
+object JNIDeallocator {
+  /**
+   * A [PhantomReference] queue managed by JVM
+   */
+  private val referenceQueue = ReferenceQueue<Destructible>()
+
+  /**
+   * A registry to keep all active [Destructible] objects and their [PhantomReference]s
+   */
+  private val destructorMap = mutableMapOf<PhantomReference<Destructible>, WeakReference<Destructible>>()
+
+  /**
+   * A thread that clears your registry when an object has been garbage collected
+   * to not store invalid references to every created object.
+   */
+  private val destructorThread = object : Thread("Expo JNI deallocator") {
+    override fun run() {
+      while (true) {
+        try {
+          // Referent of PhantomReference were garbage collected so we can remove it from our registry.
+          // Note that we don't have to call `deallocate` method - it was called [com.facebook.jni.HybridData].
+          val current = referenceQueue.remove()
+          synchronized(this) {
+            destructorMap.remove(current)
+          }
+        } catch (e: InterruptedException) {
+          // Continue. This thread should never be terminated.
+        }
+      }
+    }
+  }.also {
+    it.start()
+  }
+
+  /**
+   * Adds reference to the internal registry.
+   * That reference will be deallocated when [JNIDeallocator.deallocate] is called or
+   * when the reference won't be reachable by the GC.
+   */
+  internal fun addReference(destructible: Destructible) = synchronized(this) {
+    val weakRef = WeakReference(destructible)
+    val phantomRef = PhantomReference(destructible, referenceQueue)
+    destructorMap[phantomRef] = weakRef
+  }
+
+  /**
+   * Deallocates valid references and clears the internal registry.
+   */
+  internal fun deallocate() = synchronized(this) {
+    destructorMap.values.forEach {
+      it.get()?.deallocate()
+    }
+    destructorMap.clear()
+  }
+
+  /**
+   * Returns references to all hybrid objects that contain references to the jsi value
+   * and are present in the memory.
+   */
+  fun inspectMemory() = synchronized(this) {
+    destructorMap.values.mapNotNull { it.get() }
+  }
+}
