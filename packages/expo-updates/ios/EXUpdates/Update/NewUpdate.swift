@@ -2,7 +2,6 @@
 
 import Foundation
 import EXManifests
-import EXStructuredHeaders
 
 internal final class NewUpdate: Update {
   /**

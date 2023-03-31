@@ -70,6 +70,33 @@ class UpdatesDatabaseSpec : ExpoSpec {
         }
       }
     }
+
+    describe("setExtraClientParams") {
+      it("functions") {
+        db.databaseQueue.sync {
+          let beforeSave = try! db.extraParams(withScopeKey: "test")
+          expect(beforeSave).to(beNil())
+
+          try! db.setExtraParam(key: "wat", value: "hello", withScopeKey: "test")
+
+          let afterSave = try! db.extraParams(withScopeKey: "test")
+          expect(NSDictionary(dictionary: afterSave!).isEqual(to: ["wat": "hello"])) == true
+
+          try! db.setExtraParam(key: "wat", value: nil, withScopeKey: "test")
+
+          let afterRemove = try! db.extraParams(withScopeKey: "test")
+          expect(NSDictionary(dictionary: afterRemove!).isEqual(to: [:])) == true
+        }
+      }
+
+      it("validates") {
+        db.databaseQueue.sync {
+          expect {
+            try db.setExtraParam(key: "Hello", value: "World", withScopeKey: "test")
+          }.to(throwError(SerializerError.invalidCharacterInKey(key: "Hello", character: "H")))
+        }
+      }
+    }
     
     describe("setMetadata") {
       it("overwrites all fields") {

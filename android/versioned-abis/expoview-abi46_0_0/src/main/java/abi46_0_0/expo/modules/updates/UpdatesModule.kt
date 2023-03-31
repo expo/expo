@@ -126,7 +126,7 @@ class UpdatesModule(
         return
       }
       val databaseHolder = updatesServiceLocal.databaseHolder
-      val extraHeaders = FileDownloader.getExtraHeaders(
+      val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(
         databaseHolder.database,
         updatesServiceLocal.configuration,
         updatesServiceLocal.launchedUpdate,
