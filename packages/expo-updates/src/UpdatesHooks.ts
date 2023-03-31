@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 
 import * as Updates from './Updates';
 import { UpdateEvent } from './Updates.types';
@@ -28,10 +28,19 @@ import { UpdateEvent } from './Updates.types';
  * ```
  */
 export const useUpdateEvents = (listener: (event: UpdateEvent) => void) => {
+  const listenerRef = useRef<typeof listener>();
+
   useEffect(() => {
-    const subscription = Updates.addListener(listener);
-    return () => {
-      subscription.remove();
-    };
+    listenerRef.current = listener;
+  }, [listener]);
+
+  useEffect(() => {
+    if (listenerRef.current) {
+      const subscription = Updates.addListener(listenerRef.current);
+      return () => {
+        subscription.remove();
+      };
+    }
+    return undefined;
   }, []);
 };
