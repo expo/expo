@@ -41,7 +41,7 @@ class RemoteLoader internal constructor(
     callback: RemoteUpdateDownloadCallback
   ) {
     val embeddedUpdate = loaderFiles.readEmbeddedManifest(context, configuration)?.updateEntity
-    val extraHeaders = FileDownloader.getExtraHeaders(database, configuration, launchedUpdate, embeddedUpdate)
+    val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(database, configuration, launchedUpdate, embeddedUpdate)
     mFileDownloader.downloadRemoteUpdate(configuration, extraHeaders, context, callback)
   }
 

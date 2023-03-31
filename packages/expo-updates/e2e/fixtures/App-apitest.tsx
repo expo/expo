@@ -20,6 +20,12 @@ export default function App() {
    * Async function to manually check for an available update from EAS.
    */
   const checkManuallyForUpdate = async () => {
+    // set a few extra params to test extra params
+    setUpdateMessage('Calling setExtraParamAsync...');
+    await Updates.setExtraParamAsync('testsetnull', 'testvalue');
+    await Updates.setExtraParamAsync('testsetnull', null);
+    await Updates.setExtraParamAsync('testparam', 'testvalue');
+
     setUpdateMessage('Calling checkForUpdateAsync...');
     const checkResult = await Updates.checkForUpdateAsync();
     if (checkResult.isAvailable) {
