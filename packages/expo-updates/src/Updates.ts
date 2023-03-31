@@ -206,7 +206,7 @@ export async function setExtraParamAsync(
     throw new UnavailabilityError('Updates', 'setExtraParamsAsync');
   }
 
-  return await ExpoUpdates.setExtraParamsAsync(key, value ?? null);
+  return await ExpoUpdates.setExtraParamAsync(key, value ?? null);
 }
 
 /**

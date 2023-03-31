@@ -161,7 +161,7 @@ export async function setExtraParamAsync(key, value) {
     if (!ExpoUpdates.setExtraParamsAsync) {
         throw new UnavailabilityError('Updates', 'setExtraParamsAsync');
     }
-    return await ExpoUpdates.setExtraParamsAsync(key, value ?? null);
+    return await ExpoUpdates.setExtraParamAsync(key, value ?? null);
 }
 /**
  * Retrieves the most recent expo-updates log entries.
