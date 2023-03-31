@@ -221,7 +221,7 @@ export default function App() {
           const onReceiveURL = ({ url }: { url: string }) => listener(url);
 
           // Listen to incoming links from deep linking
-          const subEvent = Linking.addEventListener('url', onReceiveURL);
+          const eventListenerSubscription = Linking.addEventListener('url', onReceiveURL);
 
           // Listen to expo push notifications
           const subscription = Notifications.addNotificationResponseReceivedListener(response => {
