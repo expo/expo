@@ -84,8 +84,8 @@ export default function ExpoImage({
                   onTransitionEnd: [onAnimationFinished],
                 }}
                 contentPosition={{ left: '50%', top: '50%' }}
-                blurhashContentPosition={contentPosition}
-                blurhashStyle={blurhashStyle}
+                hashPlaceholderContentPosition={contentPosition}
+                hashPlaceholderStyle={blurhashStyle}
               />
             ),
       ]
@@ -117,8 +117,8 @@ export default function ExpoImage({
             className={className}
             priority={priority}
             contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
-            blurhashContentPosition={contentPosition}
-            blurhashStyle={blurhashStyle}
+            hashPlaceholderContentPosition={contentPosition}
+            hashPlaceholderStyle={blurhashStyle}
           />
         ),
   ];

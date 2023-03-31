@@ -8,30 +8,32 @@ type ComparisonImageProps = {
   source: ImageSource;
   placeholder?: ImageSource;
   showGrid?: boolean;
+  backgroundImage?: ImageSource | null;
 };
 
 export default function ComparisonImage({
   source,
   placeholder,
   showGrid = false,
+  backgroundImage,
 }: ComparisonImageProps) {
   const image = (
     <Image
       style={styles.image}
       source={source}
       contentFit="cover"
-      cachePolicy="disk"
+      cachePolicy="none"
       placeholder={placeholder}
       transition={2000}
     />
   );
+  // background is useful for showing grid on transparent views or avoiding images becoming brighter during transition
+  const background = showGrid
+    ? require('../../../assets/images/transparencyGrid.png')
+    : backgroundImage;
 
-  return showGrid ? (
-    <ImageBackground
-      source={{
-        uri: 'https://lpc.opengameart.org/sites/default/files/Transparency500.png',
-      }}
-      style={styles.imageContainer}>
+  return background ? (
+    <ImageBackground source={background} style={styles.imageContainer}>
       {image}
     </ImageBackground>
   ) : (

@@ -6,7 +6,7 @@ import ComparisonImage from './ComparisonImage';
 
 type ComparisonRowProps = {
   source: ImageSource;
-  blurhash: string;
+  blurhash: ImageSource;
   thumbhash: string;
   showRealImage?: boolean;
   showGrid?: boolean;
@@ -23,10 +23,15 @@ export default function ComparisonRow({
     <View style={styles.rowContainer}>
       <ComparisonImage source={source} showGrid={showGrid} />
       <ComparisonImage
-        source={showRealImage ? source : { blurhash, width: 18, height: 12 }}
+        source={showRealImage ? source : blurhash}
         showGrid={showGrid}
+        backgroundImage={source}
       />
-      <ComparisonImage source={showRealImage ? source : { thumbhash }} showGrid={showGrid} />
+      <ComparisonImage
+        source={showRealImage ? source : { thumbhash }}
+        showGrid={showGrid}
+        backgroundImage={source}
+      />
     </View>
   );
 }

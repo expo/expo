@@ -1,10 +1,10 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView } from 'react-native';
+import { StyleSheet, Text, View, ScrollView, FlatList } from 'react-native';
 
 import Button from '../../components/Button';
 import ComparisonRow from '../../components/HashPlaceholdersDemo/ComparisonRow';
-import { comparisonImages } from '../../components/HashPlaceholdersDemo/comparisonImages';
+import { comparisonImages } from '../../constants/ComparisonImages';
 import { Colors } from '../../constants';
 
 export default function ImageHashPlaceholdersScreen() {
@@ -24,6 +24,7 @@ export default function ImageHashPlaceholdersScreen() {
             thumbhash={item.thumbhash}
             showGrid={item.showGrid}
             showRealImage={showRealImage}
+            key={item.blurhash + item.thumbhash}
           />
         ))}
       </ScrollView>
@@ -40,21 +41,12 @@ const styles = StyleSheet.create({
   container: {
     flex: 1,
     padding: 20,
+    justifyContent: 'center',
+    alignItems: 'center',
   },
   rowContainer: {
     flexDirection: 'row',
     justifyContent: 'space-around',
-  },
-  image: {
-    width: 110,
-    height: 150,
-  },
-  imageContainer: {
-    width: 110,
-    height: 150,
-    margin: 5,
-    borderWidth: 1,
-    borderColor: Colors.border,
   },
   text: {
     color: 'rgb(28,28,28)',

@@ -3,8 +3,10 @@ import { resolveBlurhashString, resolveThumbhashString } from './resolveHashStri
 export function isBlurhashString(str) {
     return /^(blurhash:\/)?[\w#$%*+,\-.:;=?@[\]^_{}|~]+(\/[\d.]+)*$/.test(str);
 }
+// Base64 strings will be recognized as blurhash by default (to keep compatibility),
+// interpret as thumbhash only if correct uri scheme is provided
 export function isThumbhashString(str) {
-    return /^(thumbhash:\/)?[\w#$%*+,\-.:;=?@[\]^_{}|~]+(\/[\d.]+)*$/.test(str);
+    return str.startsWith('thumbhash:/');
 }
 function resolveSource(source) {
     if (typeof source === 'string') {
