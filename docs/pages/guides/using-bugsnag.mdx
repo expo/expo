@@ -10,15 +10,15 @@ Bugsnag supports the full stack with open-source libraries for [50+ platforms](h
 
 With Bugsnag, developers and engineering organizations can:
 
-* **Stabilize:** Innovate faster by knowing when to build new features vs. fix bugs.
+- **Stabilize:** Innovate faster by knowing when to build new features vs. fix bugs.
 
   Use release health dashboard, stability scores and targets, built-in alerts via email, Slack, PagerDuty, and more.
 
-* **Prioritize:** Improve customer experience by identifying and prioritizing bugs that have the greatest impact on app stability.
+- **Prioritize:** Improve customer experience by identifying and prioritizing bugs that have the greatest impact on app stability.
 
   Analyze issues grouped by root cause and sorted by business impact, customer segmentation, A/B testing and experiments results.
 
-* **Fix:** Increase productivity by spending less time on reproducing and fixing bugs.
+- **Fix:** Increase productivity by spending less time on reproducing and fixing bugs.
 
   Utilize powerful diagnostic data, full stacktraces and automatic breadcrumbs.
 
@@ -38,8 +38,7 @@ This will install the [`@bugsnag/expo`](https://www.npmjs.com/package/@bugsnag/e
 
 ### Capturing React render errors
 
-An [error boundary](https://reactjs.org/docs/error-boundaries.html) component is included which you can use to wrap your application.
-When render errors happen, they will be reported to Bugsnag along with any React-specific info that was available at the time.
+An [error boundary](https://react.dev/reference/react/Component#catching-rendering-errors-with-an-error-boundary) component is included which you can use to wrap your application. When render errors happen, they will be reported to Bugsnag along with any React-specific info that was available at the time.
 
 To catch all render errors in your application and show a custom error screen to your users, follow this example:
 
