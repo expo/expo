@@ -38,6 +38,9 @@ class ScopedPermissionsRequester(private val experienceKey: ExperienceKey) {
     permissionsResult = mutableMapOf()
 
     for (permission in permissions) {
+      if (permission == null) {
+        continue
+      }
       val globalStatus = currentActivity.checkSelfPermission(permission)
       if (globalStatus == PackageManager.PERMISSION_DENIED) {
         permissionsToRequestGlobally.add(permission)
