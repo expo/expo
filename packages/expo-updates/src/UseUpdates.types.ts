@@ -76,7 +76,7 @@ export type AvailableUpdateInfo = {
 };
 
 /**
- * Combined updates info structure provided by [`UpdatesProvider`](#updatesprovider).
+ * Combined updates info structure provided by [`useUpdates()`](#useupdatescallbacks)
  */
 export type UpdatesInfo = {
   /**

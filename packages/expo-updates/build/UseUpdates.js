@@ -45,7 +45,6 @@ import { checkForUpdateAndReturnAvailableAsync, downloadUpdateAsync, downloadAnd
  *
  */
 const useUpdates = (callbacks) => {
-    // Get updates info value and setter from provider
     const [updatesInfo, setUpdatesInfo] = useState({
         currentlyRunning,
     });

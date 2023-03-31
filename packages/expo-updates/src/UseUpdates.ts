@@ -58,7 +58,6 @@ import {
  *
  */
 const useUpdates: (callbacks?: UseUpdatesCallbacksType) => UseUpdatesReturnType = (callbacks) => {
-  // Get updates info value and setter from provider
   const [updatesInfo, setUpdatesInfo] = useState({
     currentlyRunning,
   });
