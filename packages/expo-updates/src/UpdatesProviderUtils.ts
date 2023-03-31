@@ -1,20 +1,25 @@
 import * as Updates from './Updates';
-import type { Manifest, UpdateEvent } from './Updates.types';
+import type { UpdateEvent } from './Updates.types';
 import type {
   AvailableUpdateInfo,
   UpdatesInfo,
-  UpdatesProviderCallbacksType,
+  UseUpdatesCallbacksType,
 } from './UpdatesProvider.types';
 import { currentlyRunning } from './UpdatesProviderConstants';
 
 /////// Internal functions ////////
 
 // Constructs the availableUpdate from the update manifest
-export const availableUpdateFromManifest = (manifest: Manifest | undefined) => {
+// Manifest is of type "any" until we no longer support classic updates
+export const availableUpdateFromManifest = (manifest: any) => {
   return manifest
     ? {
-        updateId: manifest?.id ? manifest?.id : null,
-        createdAt: manifest?.createdAt ? new Date(manifest?.createdAt) : null,
+        updateId: manifest?.id ?? null,
+        createdAt: manifest?.createdAt
+          ? new Date(manifest?.createdAt)
+          : manifest?.publishedTime
+          ? new Date(manifest?.publishedTime)
+          : null,
         manifest,
       }
     : undefined;
@@ -46,7 +51,7 @@ export const updatesInfoFromEvent = (event: UpdateEvent): UpdatesInfo => {
 
 // Implementation of checkForUpdate
 export const checkForUpdateAndReturnAvailableAsync: (
-  callbacks?: UpdatesProviderCallbacksType
+  callbacks?: UseUpdatesCallbacksType
 ) => Promise<AvailableUpdateInfo | undefined> = async (callbacks) => {
   try {
     callbacks?.onCheckForUpdateStart && callbacks?.onCheckForUpdateStart();
@@ -64,7 +69,7 @@ export const checkForUpdateAndReturnAvailableAsync: (
 };
 
 // Implementation of downloadUpdate
-export const downloadUpdateAsync = async (callbacks?: UpdatesProviderCallbacksType) => {
+export const downloadUpdateAsync = async (callbacks?: UseUpdatesCallbacksType) => {
   try {
     callbacks?.onDownloadUpdateStart && callbacks?.onDownloadUpdateStart();
     await Updates.fetchUpdateAsync();
@@ -76,7 +81,7 @@ export const downloadUpdateAsync = async (callbacks?: UpdatesProviderCallbacksTy
 };
 
 // Implementation of runUpdate
-export const runUpdateAsync = async (callbacks?: UpdatesProviderCallbacksType) => {
+export const runUpdateAsync = async (callbacks?: UseUpdatesCallbacksType) => {
   try {
     callbacks?.onRunUpdateStart && callbacks?.onRunUpdateStart();
     await Updates.reloadAsync();
@@ -87,7 +92,7 @@ export const runUpdateAsync = async (callbacks?: UpdatesProviderCallbacksType) =
 };
 
 // Implementation of downloadAndRunUpdate
-export const downloadAndRunUpdateAsync = async (callbacks?: UpdatesProviderCallbacksType) => {
+export const downloadAndRunUpdateAsync = async (callbacks?: UseUpdatesCallbacksType) => {
   await downloadUpdateAsync(callbacks);
   await runUpdateAsync(callbacks);
 };

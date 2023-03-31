@@ -1,19 +1,5 @@
 import type { Manifest, UpdatesLogEntry } from './Updates.types';
 /**
- * Callbacks that will be called when Updates.Provider methods [`checkForUpdate()`](#checkforupdate), [`downloadUpdate()`](#downloadupdate),
- * or [`downloadAndRunUpdate()`](#downloadandrunupdate) start, complete, or have errors.
- */
-export type UpdatesProviderCallbacksType = {
-    onCheckForUpdateStart?: () => void;
-    onCheckForUpdateComplete?: () => void;
-    onCheckForUpdateError?: (error?: Error) => void;
-    onDownloadUpdateStart?: () => void;
-    onDownloadUpdateComplete?: () => void;
-    onDownloadUpdateError?: (error?: Error) => void;
-    onRunUpdateStart?: () => void;
-    onRunUpdateError?: (error?: Error) => void;
-};
-/**
  * Structure encapsulating information on the currently running app
  * (either the embedded bundle or a downloaded update).
  */
@@ -72,9 +58,9 @@ export type CurrentlyRunningInfo = {
  */
 export type AvailableUpdateInfo = {
     /**
-     * The UUID that uniquely identifies thls update. The
-     * UUID is represented in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`) and
-     * will always use lowercase letters.
+     * A string that uniquely identifies thls update. For the manifests used in the current Expo Updates protocol (including
+     * EAS Update), this represents the update's UUID in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`)
+     * and will always use lowercase letters.
      */
     updateId: string | null;
     /**
@@ -96,7 +82,7 @@ export type UpdatesInfo = {
     currentlyRunning: CurrentlyRunningInfo;
     /**
      * If a new available update has been found, either by using checkForUpdate(),
-     * or by the [`UpdateEvent`](#updateevent) listener in [`useUpdates`](#useupdatesprovidereventhandler),
+     * or by the [`UpdateEvent`](#updateevent) listener in [`useUpdates`](#useupdatescallbacks),
      * this will contain the information for that update.
      */
     availableUpdate?: AvailableUpdateInfo;
@@ -112,8 +98,52 @@ export type UpdatesInfo = {
      */
     lastCheckForUpdateTimeSinceRestart?: Date;
     /**
-     * If present, contains expo-updates log entries returned by the `getLogEntries()` method (see [`useUpdates()`](#useupdatesprovidereventhandler).)
+     * If present, contains expo-updates log entries returned by the `getLogEntries()` method (see [`useUpdates()`](#useupdatescallbacks).)
      */
     logEntries?: UpdatesLogEntry[];
+};
+/**
+ * Callbacks that will be called when methods (`checkForUpdate()`, `downloadUpdate()`,
+ * `downloadAndRunUpdate()`, or `runUpdate()`) start, complete, or have errors.
+ */
+export type UseUpdatesCallbacksType = {
+    onCheckForUpdateStart?: () => void;
+    onCheckForUpdateComplete?: () => void;
+    onCheckForUpdateError?: (error?: Error) => void;
+    onDownloadUpdateStart?: () => void;
+    onDownloadUpdateComplete?: () => void;
+    onDownloadUpdateError?: (error?: Error) => void;
+    onRunUpdateStart?: () => void;
+    onRunUpdateError?: (error?: Error) => void;
+};
+/**
+ * The updates info and methods returned by `useUpdates()`.
+ */
+export type UseUpdatesReturnType = {
+    /**
+     * The information on what is currently running, and on any available update that has already been found.
+     */
+    updatesInfo: UpdatesInfo;
+    /**
+     * Calls `Updates.checkForUpdateAsync()` and uses the passed in setter.
+     */
+    checkForUpdate(): void;
+    /**
+     * Downloads an update, if one is available, using `Updates.fetchUpdateAsync()`.
+     */
+    downloadUpdate(): void;
+    /**
+     * Downloads and runs an update, if one is available.
+     */
+    downloadAndRunUpdate(): void;
+    /**
+     * Runs an update by calling `Updates.reloadAsync()`. This should not be called unless there is an available update
+     * that has already been successfully downloaded using `downloadUpdate()`.
+     */
+    runUpdate(): void;
+    /**
+     * Calls `Updates.readLogEntriesAsync()` and sets the `logEntries` property in the `updatesInfo` structure to the results.
+     */
+    readLogEntries(maxAge?: number): void;
 };
 //# sourceMappingURL=UpdatesProvider.types.d.ts.map

@@ -2,11 +2,16 @@ import * as Updates from './Updates';
 import { currentlyRunning } from './UpdatesProviderConstants';
 /////// Internal functions ////////
 // Constructs the availableUpdate from the update manifest
+// Manifest is of type "any" until we no longer support classic updates
 export const availableUpdateFromManifest = (manifest) => {
     return manifest
         ? {
-            updateId: manifest?.id ? manifest?.id : null,
-            createdAt: manifest?.createdAt ? new Date(manifest?.createdAt) : null,
+            updateId: manifest?.id ?? null,
+            createdAt: manifest?.createdAt
+                ? new Date(manifest?.createdAt)
+                : manifest?.publishedTime
+                    ? new Date(manifest?.publishedTime)
+                    : null,
             manifest,
         }
         : undefined;

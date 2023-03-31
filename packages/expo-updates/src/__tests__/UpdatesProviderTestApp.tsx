@@ -2,11 +2,11 @@ import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 
 import * as Updates from '..';
-import { UpdatesProviderCallbacksType } from '..';
+import { UseUpdatesCallbacksType } from '..';
 
 const { useUpdates } = Updates.Provider;
 
-export const UpdatesProviderTestApp = (props: { callbacks?: UpdatesProviderCallbacksType }) => {
+export const UpdatesProviderTestApp = (props: { callbacks?: UseUpdatesCallbacksType }) => {
   const { updatesInfo, checkForUpdate, downloadUpdate, downloadAndRunUpdate, readLogEntries } =
     useUpdates(props.callbacks);
   return (

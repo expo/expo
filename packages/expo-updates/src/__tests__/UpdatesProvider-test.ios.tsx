@@ -3,22 +3,15 @@ import '@testing-library/jest-native/extend-expect';
 import React from 'react';
 
 import * as Updates from '..';
-import type { Manifest, UpdateEvent, UpdatesProviderCallbacksType } from '..';
+import type { Manifest, UpdateEvent, UseUpdatesCallbacksType } from '..';
 import ExpoUpdates from '../ExpoUpdates';
-import {
-  checkForUpdate,
-  downloadUpdate,
-  downloadAndRunUpdate,
-  runUpdate,
-  readLogEntries,
-} from '../UpdatesProvider';
 import { availableUpdateFromManifest, updatesInfoFromEvent } from '../UpdatesProviderUtils';
 import { UpdatesProviderTestApp } from './UpdatesProviderTestApp';
 
 const { UpdatesLogEntryCode, UpdatesLogEntryLevel, UpdateEventType } = Updates;
 const { UpdatesProvider } = Updates.Provider;
 
-const getCallbacks: () => UpdatesProviderCallbacksType = () => {
+const getCallbacks: () => UseUpdatesCallbacksType = () => {
   return {
     onCheckForUpdateComplete: jest.fn(),
     onCheckForUpdateError: jest.fn(),
@@ -287,40 +280,6 @@ describe('Updates provider and hook tests', () => {
       expect(updatesInfo.currentlyRunning.updateId).toEqual('0000-1111');
       expect(updatesInfo.availableUpdate).toBeUndefined();
       expect(updatesInfo.error?.message).toEqual('It broke');
-    });
-  });
-
-  describe('Directly imported methods should throw', () => {
-    const testThatMethodThrows = (testMethod: () => void) => {
-      let mockError = null;
-      const method = () => {
-        try {
-          testMethod();
-        } catch (error) {
-          mockError = error;
-        }
-      };
-      method();
-      expect(mockError).not.toBeNull();
-    };
-    it('checkForUpdate', () => {
-      testThatMethodThrows(checkForUpdate);
-    });
-
-    it('downloadUpdate', () => {
-      testThatMethodThrows(downloadUpdate);
-    });
-
-    it('downloadAndRunUpdate', () => {
-      testThatMethodThrows(downloadAndRunUpdate);
-    });
-
-    it('runUpdate', () => {
-      testThatMethodThrows(runUpdate);
-    });
-
-    it('readLogEntries', () => {
-      testThatMethodThrows(readLogEntries);
     });
   });
 });

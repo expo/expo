@@ -1,39 +1,13 @@
-import type { UpdatesInfo, UpdatesProviderCallbacksType } from './UpdatesProvider.types';
-/**
- * Downloads and runs an update, if one is available.
- * Provided to application code from the [`useUpdates`](#useupdatesprovidereventhandler) hook.
- */
-declare const downloadAndRunUpdate: () => never;
-/**
- * Downloads an update, if one is available, using `Updates.fetchUpdateAsync()`.
- * Provided to application code from the [`useUpdates`](#useupdatesprovidereventhandler) hook.
- */
-declare const downloadUpdate: () => never;
-/**
- * Runs an update by calling `Updates.reloadAsync()`. This should not be called unless there is an available update
- * that has already been successfully downloaded using [`downloadUpdate()`](#downloadupdate).
- * Provided to application code from the [`useUpdates`](#useupdatesprovidereventhandler) hook.
- */
-declare const runUpdate: () => never;
-/**
- * Calls `Updates.checkForUpdateAsync()` and uses the passed in setter
- * to refresh the [`UpdatesInfo`](#updatesinfo).
- * Provided to application code from the [`useUpdates`](#useupdatesprovidereventhandler) hook.
- */
-declare const checkForUpdate: () => never;
-/**
- * Calls `Updates.readLogEntriesAsync()` and sets the `logEntries` property in the [`UpdatesInfo`](#updatesinfo) structure to the results.
- * Provided to application code from the [`useUpdates`](#useupdatesprovidereventhandler) hook.
- *
- * @param maxAge Sets the max age of retrieved log entries in milliseconds. Default to 3600000 ms (1 hour).
- */
-declare const readLogEntries: (maxAge?: number) => never;
+import type { UseUpdatesCallbacksType, UseUpdatesReturnType } from './UpdatesProvider.types';
 /**
  * Provides the Updates React context. Includes an [`UpdateEvent`](#updateevent) listener
  * that will set the context automatically, if automatic updates are enabled and a new
- * update is available. This is required if application code uses the [`useUpdates`](#useupdatesprovidereventhandler) hook.
+ * update is available. This is required if application code uses the [`useUpdates`](#useupdatescallbacks) hook.
+ *
  * @param props Context will be provided to `props.children`
+ *
  * @return the provider.
+ *
  * @example
  * ```jsx App.tsx
  * import * as Updates from 'expo-updates';
@@ -55,10 +29,12 @@ declare const UpdatesProvider: (props: {
     children: any;
 }) => JSX.Element;
 /**
- * Hook that obtains the Updates info structure and functions.
- * Requires that application code be inside an [`UpdatesProvider`](#updatesproviderprops).
- * @param callbacks Optional set of callbacks that will be called when Updates.Provider methods [`checkForUpdate()`](#checkforupdate), [`downloadUpdate()`](#downloadupdate), [`runUpdate()](#runupdate), or [`downloadAndRunUpdate()`](#downloadandrunupdate) start, complete, or have errors.
+ * Hook that obtains the Updates info structure and functions. Requires that application code be inside an [`UpdatesProvider`](#updatesproviderprops).
+ *
+ * @param callbacks Optional set of callbacks that will be called when `checkForUpdate()`, `downloadUpdate()`, `downloadAndRunUpdate()`, or `runUpdate()`, start, complete, or have errors.
+ *
  * @return the [`UpdatesInfo`](#updatesinfo) structure and associated methods. When using the provider, the methods returned by this hook should be used instead of [`checkForUpdateAsync`](#updatescheckforupdateasync), [`fetchUpdateAsync`](#updatesfetchupdateasync), [`readLogEntriesAsync`](#updatesreadlogentriesasync), and [`reloadAsync`](#updatesreloadasync).
+ *
  * @example
  * ```jsx UpdatesDemo.tsx
  * import { StatusBar } from 'expo-status-bar';
@@ -93,14 +69,8 @@ declare const UpdatesProvider: (props: {
  *     </View>
  *   );
  * }
+ *
  */
-declare const useUpdates: (callbacks?: UpdatesProviderCallbacksType) => {
-    updatesInfo: UpdatesInfo;
-    checkForUpdate: () => void;
-    downloadAndRunUpdate: () => void;
-    downloadUpdate: () => void;
-    runUpdate: () => void;
-    readLogEntries: (maxAge?: number) => void;
-};
-export { UpdatesProvider, useUpdates, checkForUpdate, downloadUpdate, downloadAndRunUpdate, runUpdate, readLogEntries, };
+declare const useUpdates: (callbacks?: UseUpdatesCallbacksType) => UseUpdatesReturnType;
+export { UpdatesProvider, useUpdates };
 //# sourceMappingURL=UpdatesProvider.d.ts.map
