@@ -92,7 +92,7 @@ public final class UpdatesModule: Module {
 
       var extraHeaders: [String: Any] = [:]
       updatesService.database.databaseQueue.sync {
-        extraHeaders = FileDownloader.extraHeaders(
+        extraHeaders = FileDownloader.extraHeadersForRemoteUpdateRequest(
           withDatabase: updatesService.database,
           config: config,
           launchedUpdate: updatesService.launchedUpdate,
@@ -127,6 +127,47 @@ public final class UpdatesModule: Module {
         }
       } errorBlock: { error in
         promise.reject("ERR_UPDATES_CHECK", error.localizedDescription)
+      }
+    }
+
+    AsyncFunction("getExtraClientParamsAsync") { (promise: Promise) in
+      guard let updatesService = updatesService,
+        let config = updatesService.config,
+        config.isEnabled else {
+        throw UpdatesDisabledException()
+      }
+
+      guard let scopeKey = config.scopeKey else {
+        throw Exception(name: "ERR_UPDATES_SCOPE_KEY", description: "Muse have scopeKey in config")
+      }
+
+      updatesService.database.databaseQueue.async {
+        do {
+          promise.resolve(try updatesService.database.extraParams(withScopeKey: scopeKey))
+        } catch {
+          promise.reject(error)
+        }
+      }
+    }
+
+    AsyncFunction("setExtraParamAsync") { (key: String, value: String?, promise: Promise) in
+      guard let updatesService = updatesService,
+        let config = updatesService.config,
+        config.isEnabled else {
+        throw UpdatesDisabledException()
+      }
+
+      guard let scopeKey = config.scopeKey else {
+        throw Exception(name: "ERR_UPDATES_SCOPE_KEY", description: "Muse have scopeKey in config")
+      }
+
+      updatesService.database.databaseQueue.async {
+        do {
+          try updatesService.database.setExtraParam(key: key, value: value, withScopeKey: scopeKey)
+          promise.resolve(nil)
+        } catch {
+          promise.reject(error)
+        }
       }
     }
 

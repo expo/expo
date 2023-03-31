@@ -205,17 +205,27 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
    * Get extra (stateful) headers to pass into `downloadManifestFromURL:`
    * Must be called on the database queue
    */
-  static func extraHeaders(
+  static func extraHeadersForRemoteUpdateRequest(
     withDatabase database: UpdatesDatabase,
     config: UpdatesConfig,
     launchedUpdate: Update?,
     embeddedUpdate: Update?
   ) -> [String: Any] {
+    let scopeKey = config.scopeKey.require("Must have scopeKey in config")
+
     var extraHeaders: [String: Any] = [:]
     do {
-      extraHeaders = try database.serverDefinedHeaders(withScopeKey: config.scopeKey.require("Must have scopeKey in config")) ?? [:]
+      extraHeaders = try database.serverDefinedHeaders(withScopeKey: scopeKey) ?? [:]
     } catch {
       NSLog("Error selecting serverDefinedHeaders from database: %@", [error.localizedDescription])
+    }
+
+    do {
+      if let extraClientParams = try database.extraParams(withScopeKey: scopeKey) {
+        extraHeaders["Expo-Extra-Params"] = try StringStringDictionarySerializer.serialize(dictionary: extraClientParams)
+      }
+    } catch {
+      NSLog("Error adding extra params to headers: %@", [error.localizedDescription])
     }
 
     if let launchedUpdate = launchedUpdate {
