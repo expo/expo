@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 
 import * as Updates from './Updates';
 import { useUpdateEvents } from './UpdatesHooks';
@@ -122,8 +122,14 @@ const useUpdates: (callbacks?: UseUpdatesCallbacksType) => UseUpdatesReturnType 
   // Get updates info value and setter from provider
   const { updatesInfo, setUpdatesInfo } = useContext(UpdatesContext);
 
+  const callbacksRef = useRef<UseUpdatesCallbacksType | undefined>();
+
+  useEffect(() => {
+    callbacksRef.current = callbacks;
+  }, [callbacks]);
+
   const checkForUpdate = () => {
-    checkForUpdateAndReturnAvailableAsync(callbacks)
+    checkForUpdateAndReturnAvailableAsync(callbacksRef.current)
       .then((availableUpdate) =>
         setUpdatesInfo((updatesInfo: UpdatesInfo) => ({
           ...updatesInfo,
@@ -140,7 +146,7 @@ const useUpdates: (callbacks?: UseUpdatesCallbacksType) => UseUpdatesReturnType 
       );
   };
   const downloadAndRunUpdate = () => {
-    downloadAndRunUpdateAsync(callbacks).catch((error) => {
+    downloadAndRunUpdateAsync(callbacksRef.current).catch((error) => {
       setUpdatesInfo((updatesInfo: UpdatesInfo) => ({
         ...updatesInfo,
         error,
@@ -148,7 +154,7 @@ const useUpdates: (callbacks?: UseUpdatesCallbacksType) => UseUpdatesReturnType 
     });
   };
   const downloadUpdate = () => {
-    downloadUpdateAsync(callbacks).catch((error) => {
+    downloadUpdateAsync(callbacksRef.current).catch((error) => {
       setUpdatesInfo((updatesInfo: UpdatesInfo) => ({
         ...updatesInfo,
         error,
@@ -156,7 +162,7 @@ const useUpdates: (callbacks?: UseUpdatesCallbacksType) => UseUpdatesReturnType 
     });
   };
   const runUpdate = () => {
-    runUpdateAsync(callbacks).catch((error) => {
+    runUpdateAsync(callbacksRef.current).catch((error) => {
       setUpdatesInfo((updatesInfo: UpdatesInfo) => ({
         ...updatesInfo,
         error,

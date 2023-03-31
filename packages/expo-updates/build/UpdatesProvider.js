@@ -1,4 +1,4 @@
-import React, { createContext, useContext, useState } from 'react';
+import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import * as Updates from './Updates';
 import { useUpdateEvents } from './UpdatesHooks';
 import { currentlyRunning } from './UpdatesProviderConstants';
@@ -95,8 +95,12 @@ const UpdatesProvider = (props) => {
 const useUpdates = (callbacks) => {
     // Get updates info value and setter from provider
     const { updatesInfo, setUpdatesInfo } = useContext(UpdatesContext);
+    const callbacksRef = useRef();
+    useEffect(() => {
+        callbacksRef.current = callbacks;
+    }, [callbacks]);
     const checkForUpdate = () => {
-        checkForUpdateAndReturnAvailableAsync(callbacks)
+        checkForUpdateAndReturnAvailableAsync(callbacksRef.current)
             .then((availableUpdate) => setUpdatesInfo((updatesInfo) => ({
             ...updatesInfo,
             lastCheckForUpdateTimeSinceRestart: new Date(),
@@ -109,7 +113,7 @@ const useUpdates = (callbacks) => {
         })));
     };
     const downloadAndRunUpdate = () => {
-        downloadAndRunUpdateAsync(callbacks).catch((error) => {
+        downloadAndRunUpdateAsync(callbacksRef.current).catch((error) => {
             setUpdatesInfo((updatesInfo) => ({
                 ...updatesInfo,
                 error,
@@ -117,7 +121,7 @@ const useUpdates = (callbacks) => {
         });
     };
     const downloadUpdate = () => {
-        downloadUpdateAsync(callbacks).catch((error) => {
+        downloadUpdateAsync(callbacksRef.current).catch((error) => {
             setUpdatesInfo((updatesInfo) => ({
                 ...updatesInfo,
                 error,
@@ -125,7 +129,7 @@ const useUpdates = (callbacks) => {
         });
     };
     const runUpdate = () => {
-        runUpdateAsync(callbacks).catch((error) => {
+        runUpdateAsync(callbacksRef.current).catch((error) => {
             setUpdatesInfo((updatesInfo) => ({
                 ...updatesInfo,
                 error,
