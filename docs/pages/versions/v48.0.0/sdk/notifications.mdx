@@ -236,7 +236,7 @@ export default function App() {
 
           return () => {
             // Clean up the event listeners
-            subEvent.remove()
+            eventListenerSubscription.remove()
             subscription.remove();
           };
         },
