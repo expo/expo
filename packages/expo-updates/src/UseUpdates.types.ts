@@ -1,4 +1,10 @@
-import type { Manifest, UpdatesLogEntry } from './Updates.types';
+import Constants from 'expo-constants';
+
+import type { UpdatesLogEntry } from './Updates.types';
+
+export type ClassicManifest = NonNullable<typeof Constants.manifest>;
+
+export type Manifest = ClassicManifest | NonNullable<typeof Constants.manifest2>;
 
 /**
  * Structure encapsulating information on the currently running app
@@ -47,7 +53,7 @@ export type CurrentlyRunningInfo = {
    * In development mode, or any other environment in which `expo-updates` is disabled, this object is
    * empty.
    */
-  manifest: Partial<Manifest>;
+  manifest: Partial<Manifest> | null;
   /**
    * The runtime version of the current build.
    */

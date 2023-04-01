@@ -7,9 +7,9 @@ import type {
   UseUpdatesCallbacksType,
   UseUpdatesReturnType,
 } from './UseUpdates.types';
-import { currentlyRunning } from './UseUpdatesConstants';
 import {
   checkForUpdateAndReturnAvailableAsync,
+  currentlyRunning,
   downloadUpdateAsync,
   downloadAndRunUpdateAsync,
   runUpdateAsync,

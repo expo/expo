@@ -1,16 +1,24 @@
 import * as Updates from './Updates';
-import { currentlyRunning } from './UseUpdatesConstants';
+// The currently running info, constructed from Updates constants
+export const currentlyRunning = {
+    updateId: Updates.updateId,
+    channel: Updates.channel,
+    createdAt: Updates.createdAt,
+    isEmbeddedLaunch: Updates.isEmbeddedLaunch,
+    isEmergencyLaunch: Updates.isEmergencyLaunch,
+    manifest: Updates.manifest,
+    runtimeVersion: Updates.runtimeVersion,
+};
 /////// Internal functions ////////
 // Constructs the availableUpdate from the update manifest
-// Manifest is of type "any" until we no longer support classic updates
 export const availableUpdateFromManifest = (manifest) => {
     return manifest
         ? {
             updateId: manifest?.id ?? null,
-            createdAt: manifest?.createdAt
-                ? new Date(manifest?.createdAt)
-                : manifest?.publishedTime
-                    ? new Date(manifest?.publishedTime)
+            createdAt: manifest && 'createdAt' in manifest && manifest.createdAt
+                ? new Date(manifest.createdAt)
+                : manifest && 'publishedTime' in manifest && manifest.publishedTime
+                    ? new Date(manifest.publishedTime)
                     : null,
             manifest,
         }
@@ -18,34 +26,31 @@ export const availableUpdateFromManifest = (manifest) => {
 };
 // Constructs the UpdatesInfo from an event
 export const updatesInfoFromEvent = (updatesInfo, event) => {
-    const lastCheckForUpdateTime = new Date();
-    if (event.type === Updates.UpdateEventType.NO_UPDATE_AVAILABLE) {
-        return {
-            ...updatesInfo,
-            currentlyRunning,
-            availableUpdate: undefined,
-            error: undefined,
-            lastCheckForUpdateTimeSinceRestart: lastCheckForUpdateTime,
-        };
-    }
-    else if (event.type === Updates.UpdateEventType.UPDATE_AVAILABLE) {
-        return {
-            ...updatesInfo,
-            currentlyRunning,
-            availableUpdate: availableUpdateFromManifest(event.manifest),
-            error: undefined,
-            lastCheckForUpdateTimeSinceRestart: lastCheckForUpdateTime,
-        };
-    }
-    else {
-        // event type === ERROR
-        return {
-            ...updatesInfo,
-            currentlyRunning,
-            availableUpdate: undefined,
-            error: new Error(event.message),
-            lastCheckForUpdateTimeSinceRestart: lastCheckForUpdateTime,
-        };
+    switch (event.type) {
+        case Updates.UpdateEventType.NO_UPDATE_AVAILABLE:
+            return {
+                ...updatesInfo,
+                currentlyRunning,
+                availableUpdate: undefined,
+                error: undefined,
+                lastCheckForUpdateTimeSinceRestart: new Date(),
+            };
+        case Updates.UpdateEventType.UPDATE_AVAILABLE:
+            return {
+                ...updatesInfo,
+                currentlyRunning,
+                availableUpdate: availableUpdateFromManifest(event.manifest),
+                error: undefined,
+                lastCheckForUpdateTimeSinceRestart: new Date(),
+            };
+        case Updates.UpdateEventType.ERROR:
+            return {
+                ...updatesInfo,
+                currentlyRunning,
+                availableUpdate: undefined,
+                error: new Error(event.message),
+                lastCheckForUpdateTimeSinceRestart: new Date(),
+            };
     }
 };
 // Implementation of checkForUpdate

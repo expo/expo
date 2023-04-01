@@ -1,8 +1,7 @@
 import { useEffect, useRef, useState } from 'react';
 import * as Updates from './Updates';
 import { useUpdateEvents } from './UpdatesHooks';
-import { currentlyRunning } from './UseUpdatesConstants';
-import { checkForUpdateAndReturnAvailableAsync, downloadUpdateAsync, downloadAndRunUpdateAsync, runUpdateAsync, updatesInfoFromEvent, } from './UseUpdatesUtils';
+import { checkForUpdateAndReturnAvailableAsync, currentlyRunning, downloadUpdateAsync, downloadAndRunUpdateAsync, runUpdateAsync, updatesInfoFromEvent, } from './UseUpdatesUtils';
 /**
  * Hook that obtains the Updates info structure and functions.
  *

@@ -1,9 +1,10 @@
 import type { UpdateEvent } from './Updates.types';
-import type { AvailableUpdateInfo, UpdatesInfo, UseUpdatesCallbacksType } from './UseUpdates.types';
-export declare const availableUpdateFromManifest: (manifest: any) => {
-    updateId: any;
+import type { AvailableUpdateInfo, CurrentlyRunningInfo, Manifest, UpdatesInfo, UseUpdatesCallbacksType } from './UseUpdates.types';
+export declare const currentlyRunning: CurrentlyRunningInfo;
+export declare const availableUpdateFromManifest: (manifest: Manifest | null | undefined) => {
+    updateId: string | null;
     createdAt: Date | null;
-    manifest: any;
+    manifest: Manifest;
 } | undefined;
 export declare const updatesInfoFromEvent: (updatesInfo: UpdatesInfo | undefined, event: UpdateEvent) => UpdatesInfo;
 export declare const checkForUpdateAndReturnAvailableAsync: (callbacks?: UseUpdatesCallbacksType) => Promise<AvailableUpdateInfo | undefined>;
