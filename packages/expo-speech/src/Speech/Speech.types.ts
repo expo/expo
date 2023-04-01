@@ -16,7 +16,8 @@ export type SpeechOptions = {
    */
   rate?: number;
   /**
-   * if true, the speech follows the same behavior as `Audio.setAudioModeAsync()`
+   * If set to `true`, the speech synthesizer will use the main audio session that is usually used by other modules such as `expo-av`. Otherwise, the system creates a separate audio session to automatically manage speech, interruptions, and mixing and ducking the speech with other audio sources.
+   * @default false
    * @platform ios
    */
   useSharedAudioSession?: boolean;
