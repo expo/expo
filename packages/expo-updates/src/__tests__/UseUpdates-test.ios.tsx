@@ -5,6 +5,7 @@ import React from 'react';
 import * as Updates from '..';
 import type { Manifest, UpdateEvent, UseUpdatesCallbacksType } from '..';
 import ExpoUpdates from '../ExpoUpdates';
+import { emitEvent } from '../UpdatesEmitter';
 import { availableUpdateFromManifest, updatesInfoFromEvent } from '../UseUpdatesUtils';
 import UseUpdatesTestApp from './UseUpdatesTestApp';
 
@@ -36,9 +37,9 @@ jest.mock('../ExpoUpdates', () => {
   };
 });
 
-describe('Updates provider and hook tests', () => {
-  describe('Test hook and provider', () => {
-    it('App with provider shows currently running info', async () => {
+describe('useUpdates()', () => {
+  describe('Component tests', () => {
+    it('Shows currently running info', async () => {
       render(<UseUpdatesTestApp />);
       const updateIdView = await screen.findByTestId('currentlyRunning_updateId');
       expect(updateIdView).toHaveTextContent('0000-1111');
@@ -48,7 +49,7 @@ describe('Updates provider and hook tests', () => {
       expect(channelView).toHaveTextContent('main');
     });
 
-    it('App with provider shows available update after running checkForUpdate()', async () => {
+    it('Shows available update after running checkForUpdate()', async () => {
       const callbacks = getCallbacks();
       render(<UseUpdatesTestApp callbacks={callbacks} />);
       const mockDate = new Date();
@@ -83,7 +84,37 @@ describe('Updates provider and hook tests', () => {
       expect(callbacks.onCheckForUpdateError).not.toHaveBeenCalled();
     });
 
-    it('App with provider shows no available update after running checkForUpdate()', async () => {
+    it('Shows available update after UpdateEvent fired', async () => {
+      render(<UseUpdatesTestApp />);
+      const mockDate = new Date();
+      const mockManifest = {
+        id: '0000-2222',
+        createdAt: mockDate.toISOString(),
+        runtimeVersion: '1.0.0',
+        launchAsset: {
+          url: 'testUrl',
+        },
+        assets: [],
+        metadata: {},
+      };
+      const event: UpdateEvent = {
+        type: UpdateEventType.UPDATE_AVAILABLE,
+        manifest: mockManifest,
+      };
+      await act(async () => {
+        emitEvent(event);
+      });
+      const lastCheckForUpdateTime = new Date();
+      const updateIdView = await screen.findByTestId('availableUpdate_updateId');
+      expect(updateIdView).toHaveTextContent('0000-2222');
+      const lastCheckForUpdateTimeView = await screen.findByTestId('lastCheckForUpdateTime');
+      expect(lastCheckForUpdateTimeView).toHaveTextContent(
+        // truncate the fractional part of the seconds value in the time
+        lastCheckForUpdateTime.toISOString().substring(0, 19)
+      );
+    });
+
+    it('Shows no available update after running checkForUpdate()', async () => {
       const callbacks = getCallbacks();
       render(<UseUpdatesTestApp callbacks={callbacks} />);
       ExpoUpdates.checkForUpdateAsync.mockReturnValueOnce({
@@ -107,7 +138,7 @@ describe('Updates provider and hook tests', () => {
       expect(callbacks.onCheckForUpdateError).not.toHaveBeenCalled();
     });
 
-    it('App with provider handles error in checkForUpdate()', async () => {
+    it('Handles error in checkForUpdate()', async () => {
       const callbacks = getCallbacks();
       render(<UseUpdatesTestApp callbacks={callbacks} />);
       const mockError = { code: 'ERR_TEST', message: 'test message' };
@@ -123,7 +154,7 @@ describe('Updates provider and hook tests', () => {
       expect(callbacks.onCheckForUpdateError).toHaveBeenCalledWith(mockError);
     });
 
-    it('App with provider calls callbacks during downloadUpdate()', async () => {
+    it('Calls callbacks during downloadUpdate()', async () => {
       const callbacks = getCallbacks();
       render(<UseUpdatesTestApp callbacks={callbacks} />);
       ExpoUpdates.fetchUpdateAsync.mockReturnValueOnce({
@@ -139,7 +170,7 @@ describe('Updates provider and hook tests', () => {
       expect(callbacks.onDownloadUpdateError).not.toHaveBeenCalled();
     });
 
-    it('App with provider handles error during downloadUpdate()', async () => {
+    it('Handles error during downloadUpdate()', async () => {
       const callbacks = getCallbacks();
       render(<UseUpdatesTestApp callbacks={callbacks} />);
       const mockError = { code: 'ERR_TEST', message: 'test message' };
@@ -155,7 +186,7 @@ describe('Updates provider and hook tests', () => {
       expect(callbacks.onDownloadUpdateError).toHaveBeenCalledWith(mockError);
     });
 
-    it('App with provider calls callbacks during downloadAndRunUpdate()', async () => {
+    it('Calls callbacks during downloadAndRunUpdate()', async () => {
       const callbacks = getCallbacks();
       render(<UseUpdatesTestApp callbacks={callbacks} />);
       ExpoUpdates.fetchUpdateAsync.mockReturnValueOnce({
@@ -174,7 +205,7 @@ describe('Updates provider and hook tests', () => {
       expect(callbacks.onRunUpdateError).not.toHaveBeenCalled();
     });
 
-    it('App with provider shows log entries after running readLogEntries()', async () => {
+    it('Shows log entries after running readLogEntries()', async () => {
       ExpoUpdates.readLogEntriesAsync.mockReturnValueOnce([
         {
           timestamp: 100,
