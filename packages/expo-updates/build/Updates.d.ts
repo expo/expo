@@ -111,11 +111,11 @@ export declare function getExtraParamsAsync(): Promise<{
  * Sets an extra param if value is non-null, otherwise unsets the param.
  * Extra params are sent in a header of update requests.
  * The update server may use these params when evaluating logic to determine which update to serve.
- * EAS Update merges these fields into params when evaluating channel branch mapping logic.
+ * EAS Update merges these params into the fields used to evaluate channel–branch mapping logic.
  *
  * @example An app may want to add a feature where users can opt-in to beta updates. In this instance,
  * extra params could be set to `{userType: 'beta'}`, and then the server can use this information
- * when deciding which update to serve. If using EAS Update, the channel branch mapping can be set to
+ * when deciding which update to serve. If using EAS Update, the channel-branch mapping can be set to
  * discriminate branches based on the `userType`.
  */
 export declare function setExtraParamAsync(key: string, value: string | null | undefined): Promise<void>;
