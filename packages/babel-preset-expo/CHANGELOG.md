@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for `process.env.EXPO_OS` which can be used as an alternative to `Platform.OS` for improved tree-shaking and light-weight checking since you don't need to import `react-native` to check the platform.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

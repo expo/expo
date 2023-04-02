@@ -259,6 +259,13 @@ require("react-native");
 require("@expo/vector-icons");"
 `;
 
+exports[`metro inlines EXPO_OS platform variable 1`] = `
+"Object.defineProperty(exports,"__esModule",{value:true});exports.default=App;var _reactNative=require("react-native");
+function App(){
+return React.createElement(_reactNative.Text,null,"ios");
+}"
+`;
+
 exports[`metro supports automatic JSX runtime 1`] = `
 "Object.defineProperty(exports,"__esModule",{value:true});exports.default=App;
 var _reactNative=require("react-native");var _jsxRuntime=require("react/jsx-runtime");
@@ -292,6 +299,13 @@ exports[`webpack composes with babel-plugin-module-resolver 1`] = `
 "
 import"react-native";
 import"@expo/vector-icons";"
+`;
+
+exports[`webpack inlines EXPO_OS platform variable 1`] = `
+"import Text from"react-native-web/dist/exports/Text";
+export default function App(){
+return React.createElement(Text,null,"web");
+}"
 `;
 
 exports[`webpack supports automatic JSX runtime 1`] = `

@@ -105,6 +105,12 @@ module.exports = function (api, options = {}) {
       ],
     ],
     plugins: [
+      // Convert `process.env.EXPO_OS` to a string literal denoting the platform.
+      // this is more lightweight than using `Platform.OS` and allows for automatic dead code elimination.
+      [
+        require.resolve('./plugins/inline-variables'),
+        { variables: [{ name: 'EXPO_OS', value: platform }] },
+      ],
       getObjectRestSpreadPlugin(),
       ...extraPlugins,
       getAliasPlugin(),

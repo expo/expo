@@ -2,7 +2,7 @@ import { Ionicons } from '@expo/vector-icons';
 import AppLoading from 'expo-app-loading';
 import { Asset } from 'expo-asset';
 import React from 'react';
-import { StyleSheet, View } from 'react-native';
+import { StyleSheet, View, Text } from 'react-native';
 import { connect } from 'react-redux';
 
 class App extends React.Component {
@@ -19,6 +19,7 @@ class App extends React.Component {
       return (
         <View style={styles.container}>
           <Ionicons name="md-options" size={28} />
+          <Text>Platform: {process.env.EXPO_OS}</Text>
         </View>
       );
     }

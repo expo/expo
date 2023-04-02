@@ -4,9 +4,13 @@ const path = require('path');
 
 const preset = require('..');
 // Used to distinguish webpack from metro
-const WEBPACK_CALLER = { name: 'babel-loader' };
+const WEBPACK_CALLER = { name: 'babel-loader', platform: 'web' };
+const METRO_CALLER = { name: 'metro', bundler: 'metro', platform: 'ios' };
 
-describe.each([['metro'], ['webpack', WEBPACK_CALLER]])('%s', (_name, caller) => {
+describe.each([
+  ['metro', METRO_CALLER],
+  ['webpack', WEBPACK_CALLER],
+])('%s', (_name, caller) => {
   const isMetro = _name === 'metro';
   it(`compiles sample files`, () => {
     const options = {
@@ -93,6 +97,28 @@ export default function App() {
     expect(code).toMatchSnapshot();
   });
 
+  it(`inlines EXPO_OS platform variable`, () => {
+    const options = {
+      babelrc: false,
+      presets: [[preset, { jsxRuntime: 'classic' }]],
+      filename: 'unknown',
+      // Make the snapshot easier to read
+      retainLines: true,
+      caller,
+    };
+
+    // No React import...
+    const sourceCode = `import { Text } from 'react-native';
+export default function App() {
+  return (<Text>{process.env.EXPO_OS}</Text>);
+}`;
+    const { code } = babel.transform(sourceCode, options);
+
+    expect(code).not.toMatch(/EXPO_OS/);
+    expect(code).toMatchSnapshot();
+    expect(code).toMatch(options.caller.platform);
+  });
+
   it(`aliases @expo/vector-icons`, () => {
     const options = {
       babelrc: false,
@@ -151,12 +177,14 @@ describe('"lazyImports" option', () => {
     const optionsDefault = {
       babelrc: false,
       presets: [preset],
+      caller: METRO_CALLER,
     };
     const { codeDefault } = babel.transformFileSync(testFilename, optionsDefault);
 
     const optionsNull = {
       babelrc: false,
       presets: [[preset, { lazyImports: null }]],
+      caller: METRO_CALLER,
     };
     const { codeNull } = babel.transformFileSync(testFilename, optionsNull);
 
@@ -176,6 +204,7 @@ describe('"lazyImports" option', () => {
       presets: [[preset, { lazyImports: lazyImportsOption }]],
       // Make the snapshot easier to read
       retainLines: true,
+      caller: METRO_CALLER,
     };
 
     const { code } = babel.transformFileSync(testFilename, options);
