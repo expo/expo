@@ -6,13 +6,13 @@
 
 ### 🎉 New features
 
-- Added support for `process.env.EXPO_OS` which can be used as an alternative to `Platform.OS` for improved tree-shaking and light-weight checking since you don't need to import `react-native` to check the platform.
+- Added support for `process.env.EXPO_OS` which can be used as an alternative to `Platform.OS` for improved tree-shaking and light-weight checking since you don't need to import `react-native` to check the platform. ([#21950](https://github.com/expo/expo/pull/21950) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
 
-- Move README to versioned Expo Docs.
+- Move README to versioned Expo Docs. ([#21950](https://github.com/expo/expo/pull/21950) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 9.3.0 — 2023-02-03
 
