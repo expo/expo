@@ -35,6 +35,7 @@
 - Upgrade e2e tests to SDK 47. ([#21335](https://github.com/expo/expo/pull/21335) by [@EvanBacon](https://github.com/EvanBacon))
 - Update `metro.config.js` template file to match new template. ([#21898](https://github.com/expo/expo/pull/21898) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix node rendering. ([#21902](https://github.com/expo/expo/pull/21902) by [@EvanBacon](https://github.com/EvanBacon))
+- Update migration map to suggest standalone npx expo doctor instead of expo-cli doctor. ([#18548](https://github.com/expo/expo/pull/21931) by [@keith-kurak](https://github.com/keith-kurak))
 
 ## 0.6.1 — 2023-02-15
 
