@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Move README to versioned Expo Docs.
+
 ## 9.3.0 — 2023-02-03
 
 ### 🐛 Bug fixes
