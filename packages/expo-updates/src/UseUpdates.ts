@@ -3,9 +3,9 @@ import { useEffect, useRef, useState } from 'react';
 import * as Updates from './Updates';
 import { useUpdateEvents } from './UpdatesHooks';
 import type {
-  UpdatesInfo,
   UseUpdatesCallbacksType,
   UseUpdatesReturnType,
+  UseUpdatesStateType,
 } from './UseUpdates.types';
 import {
   checkForUpdateAndReturnAvailableAsync,
@@ -13,7 +13,7 @@ import {
   downloadUpdateAsync,
   downloadAndRunUpdateAsync,
   runUpdateAsync,
-  updatesInfoFromEvent,
+  availableUpdateFromEvent,
 } from './UseUpdatesUtils';
 
 /**
@@ -58,9 +58,7 @@ import {
  *
  */
 const useUpdates: (callbacks?: UseUpdatesCallbacksType) => UseUpdatesReturnType = (callbacks) => {
-  const [updatesInfo, setUpdatesInfo] = useState({
-    currentlyRunning,
-  });
+  const [updatesState, setUpdatesState] = useState<UseUpdatesStateType>({});
 
   const callbacksRef = useRef<UseUpdatesCallbacksType | undefined>();
 
@@ -72,21 +70,27 @@ const useUpdates: (callbacks?: UseUpdatesCallbacksType) => UseUpdatesReturnType 
   // that happen on startup, and use events to refresh the updates info
   // context
   useUpdateEvents((event) => {
-    setUpdatesInfo((updatesInfo: UpdatesInfo) => updatesInfoFromEvent(updatesInfo, event));
+    const { availableUpdate, error } = availableUpdateFromEvent(event);
+    setUpdatesState((updatesState) => ({
+      ...updatesState,
+      availableUpdate,
+      error,
+      lastCheckForUpdateTimeSinceRestart: new Date(),
+    }));
   });
 
   const checkForUpdate = () => {
     checkForUpdateAndReturnAvailableAsync(callbacksRef.current)
       .then((availableUpdate) =>
-        setUpdatesInfo((updatesInfo: UpdatesInfo) => ({
-          ...updatesInfo,
+        setUpdatesState((updatesState) => ({
+          ...updatesState,
           lastCheckForUpdateTimeSinceRestart: new Date(),
           availableUpdate,
         }))
       )
       .catch((error) =>
-        setUpdatesInfo((updatesInfo: UpdatesInfo) => ({
-          ...updatesInfo,
+        setUpdatesState((updatesState) => ({
+          ...updatesState,
           lastCheckForUpdateTimeSinceRestart: new Date(),
           error,
         }))
@@ -94,24 +98,24 @@ const useUpdates: (callbacks?: UseUpdatesCallbacksType) => UseUpdatesReturnType 
   };
   const downloadAndRunUpdate = () => {
     downloadAndRunUpdateAsync(callbacksRef.current).catch((error) => {
-      setUpdatesInfo((updatesInfo: UpdatesInfo) => ({
-        ...updatesInfo,
+      setUpdatesState((updatesState) => ({
+        ...updatesState,
         error,
       }));
     });
   };
   const downloadUpdate = () => {
     downloadUpdateAsync(callbacksRef.current).catch((error) => {
-      setUpdatesInfo((updatesInfo: UpdatesInfo) => ({
-        ...updatesInfo,
+      setUpdatesState((updatesState) => ({
+        ...updatesState,
         error,
       }));
     });
   };
   const runUpdate = () => {
     runUpdateAsync(callbacksRef.current).catch((error) => {
-      setUpdatesInfo((updatesInfo: UpdatesInfo) => ({
-        ...updatesInfo,
+      setUpdatesState((updatesState) => ({
+        ...updatesState,
         error,
       }));
     });
@@ -119,16 +123,19 @@ const useUpdates: (callbacks?: UseUpdatesCallbacksType) => UseUpdatesReturnType 
   const readLogEntries = (maxAge: number = 3600000) => {
     Updates.readLogEntriesAsync(maxAge)
       .then((logEntries) =>
-        setUpdatesInfo((updatesInfo: UpdatesInfo) => ({
-          ...updatesInfo,
+        setUpdatesState((updatesState) => ({
+          ...updatesState,
           logEntries,
         }))
       )
-      .catch((error) => setUpdatesInfo((updatesInfo: UpdatesInfo) => ({ ...updatesInfo, error })));
+      .catch((error) => setUpdatesState((updatesState) => ({ ...updatesState, error })));
   };
   // Return the updates info and the user facing functions
   return {
-    updatesInfo,
+    updatesInfo: {
+      currentlyRunning,
+      ...updatesState,
+    },
     checkForUpdate,
     downloadAndRunUpdate,
     downloadUpdate,

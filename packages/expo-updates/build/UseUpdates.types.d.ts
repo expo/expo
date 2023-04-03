@@ -128,25 +128,36 @@ export type UseUpdatesReturnType = {
      */
     updatesInfo: UpdatesInfo;
     /**
-     * Calls `Updates.checkForUpdateAsync()` and uses the passed in setter.
+     * Calls `Updates.checkForUpdateAsync()` and refreshes the `availableUpdate` property of `updatesInfo` with the result.
+     * If an error occurs, the `error` property of `updatesInfo` will be set.
      */
     checkForUpdate(): void;
     /**
      * Downloads an update, if one is available, using `Updates.fetchUpdateAsync()`.
+     * If an error occurs, the `error` property of `updatesInfo` will be set.
      */
     downloadUpdate(): void;
     /**
      * Downloads and runs an update, if one is available.
+     * If an error occurs, the `error` property of `updatesInfo` will be set.
      */
     downloadAndRunUpdate(): void;
     /**
      * Runs an update by calling `Updates.reloadAsync()`. This should not be called unless there is an available update
      * that has already been successfully downloaded using `downloadUpdate()`.
+     * If an error occurs, the `error` property of `updatesInfo` will be set.
      */
     runUpdate(): void;
     /**
      * Calls `Updates.readLogEntriesAsync()` and sets the `logEntries` property in the `updatesInfo` structure to the results.
+     * If an error occurs, the `error` property of `updatesInfo` will be set.
      */
     readLogEntries(maxAge?: number): void;
+};
+export type UseUpdatesStateType = {
+    availableUpdate?: AvailableUpdateInfo;
+    error?: Error;
+    lastCheckForUpdateTimeSinceRestart?: Date;
+    logEntries?: UpdatesLogEntry[];
 };
 //# sourceMappingURL=UseUpdates.types.d.ts.map

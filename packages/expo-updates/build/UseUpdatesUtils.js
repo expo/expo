@@ -25,31 +25,17 @@ export const availableUpdateFromManifest = (manifest) => {
         : undefined;
 };
 // Constructs the UpdatesInfo from an event
-export const updatesInfoFromEvent = (updatesInfo, event) => {
+export const availableUpdateFromEvent = (event) => {
     switch (event.type) {
         case Updates.UpdateEventType.NO_UPDATE_AVAILABLE:
-            return {
-                ...updatesInfo,
-                currentlyRunning,
-                availableUpdate: undefined,
-                error: undefined,
-                lastCheckForUpdateTimeSinceRestart: new Date(),
-            };
+            return {};
         case Updates.UpdateEventType.UPDATE_AVAILABLE:
             return {
-                ...updatesInfo,
-                currentlyRunning,
-                availableUpdate: availableUpdateFromManifest(event.manifest),
-                error: undefined,
-                lastCheckForUpdateTimeSinceRestart: new Date(),
+                availableUpdate: availableUpdateFromManifest(event?.manifest || undefined),
             };
         case Updates.UpdateEventType.ERROR:
             return {
-                ...updatesInfo,
-                currentlyRunning,
-                availableUpdate: undefined,
                 error: new Error(event.message),
-                lastCheckForUpdateTimeSinceRestart: new Date(),
             };
     }
 };
@@ -60,7 +46,7 @@ export const checkForUpdateAndReturnAvailableAsync = async (callbacks) => {
         const checkResult = await Updates.checkForUpdateAsync();
         callbacks?.onCheckForUpdateComplete && callbacks?.onCheckForUpdateComplete();
         if (checkResult.isAvailable) {
-            return availableUpdateFromManifest(checkResult.manifest);
+            return availableUpdateFromManifest(checkResult?.manifest || undefined);
         }
         else {
             return undefined;

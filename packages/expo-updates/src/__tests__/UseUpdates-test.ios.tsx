@@ -6,7 +6,7 @@ import * as Updates from '..';
 import type { Manifest, UpdateEvent, UseUpdatesCallbacksType } from '..';
 import ExpoUpdates from '../ExpoUpdates';
 import { emitEvent } from '../UpdatesEmitter';
-import { availableUpdateFromManifest, updatesInfoFromEvent } from '../UseUpdatesUtils';
+import { availableUpdateFromManifest, availableUpdateFromEvent } from '../UseUpdatesUtils';
 import UseUpdatesTestApp from './UseUpdatesTestApp';
 
 const { UpdatesLogEntryCode, UpdatesLogEntryLevel, UpdateEventType } = Updates;
@@ -249,40 +249,28 @@ describe('useUpdates()', () => {
       expect(result).toBeUndefined();
     });
 
-    it('updatesInfoFromEvent() returns mutated info as expected', () => {
-      // Available
-      let event: UpdateEvent = {
+    it('availableUpdateFromEvent() returns info for UPDATE_AVAILABLE', () => {
+      const event: UpdateEvent = {
         type: UpdateEventType.UPDATE_AVAILABLE,
         manifest,
       };
-      let updatesInfo = updatesInfoFromEvent(undefined, event);
-      expect(updatesInfo.currentlyRunning.updateId).toEqual('0000-1111');
-      expect(updatesInfo.availableUpdate?.updateId).toEqual('0000-2222');
-      expect(updatesInfo.error).toBeUndefined();
-      // Not available
-      event = { type: UpdateEventType.NO_UPDATE_AVAILABLE };
-      updatesInfo = updatesInfoFromEvent(updatesInfo, event);
-      expect(updatesInfo.currentlyRunning.updateId).toEqual('0000-1111');
-      expect(updatesInfo.availableUpdate).toBeUndefined();
-      expect(updatesInfo.error).toBeUndefined();
-      // Error
-      event = { type: UpdateEventType.ERROR, message: 'It broke' };
-      updatesInfo = updatesInfoFromEvent(updatesInfo, event);
-      expect(updatesInfo.currentlyRunning.updateId).toEqual('0000-1111');
-      expect(updatesInfo.availableUpdate).toBeUndefined();
-      expect(updatesInfo.error?.message).toEqual('It broke');
-      // Back to available
-      event = {
-        type: UpdateEventType.UPDATE_AVAILABLE,
-        manifest,
-      };
-      updatesInfo = updatesInfoFromEvent(undefined, event);
-      expect(updatesInfo.currentlyRunning.updateId).toEqual('0000-1111');
-      expect(updatesInfo.availableUpdate?.updateId).toEqual('0000-2222');
-      updatesInfo = updatesInfoFromEvent(undefined, event);
-      expect(updatesInfo.currentlyRunning.updateId).toEqual('0000-1111');
-      expect(updatesInfo.availableUpdate?.updateId).toEqual('0000-2222');
-      expect(updatesInfo.error).toBeUndefined();
+      const result = availableUpdateFromEvent(event);
+      expect(result.availableUpdate?.updateId).toEqual('0000-2222');
+      expect(result.error).toBeUndefined();
+    });
+
+    it('availableUpdateFromEvent() returns info for NO_UPDATE_AVAILABLE', () => {
+      const event = { type: UpdateEventType.NO_UPDATE_AVAILABLE };
+      const result = availableUpdateFromEvent(event);
+      expect(result.availableUpdate).toBeUndefined();
+      expect(result.error).toBeUndefined();
+    });
+
+    it('availableUpdateFromEvent() returns info for ERROR', () => {
+      const event = { type: UpdateEventType.ERROR, message: 'It broke' };
+      const result = availableUpdateFromEvent(event);
+      expect(result.availableUpdate).toBeUndefined();
+      expect(result.error?.message).toEqual('It broke');
     });
   });
 });

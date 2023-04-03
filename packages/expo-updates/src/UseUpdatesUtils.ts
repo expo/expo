@@ -4,7 +4,6 @@ import type {
   AvailableUpdateInfo,
   CurrentlyRunningInfo,
   Manifest,
-  UpdatesInfo,
   UseUpdatesCallbacksType,
 } from './UseUpdates.types';
 
@@ -22,7 +21,7 @@ export const currentlyRunning: CurrentlyRunningInfo = {
 /////// Internal functions ////////
 
 // Constructs the availableUpdate from the update manifest
-export const availableUpdateFromManifest = (manifest: Manifest | null | undefined) => {
+export const availableUpdateFromManifest = (manifest?: Manifest) => {
   return manifest
     ? {
         updateId: manifest?.id ?? null,
@@ -38,34 +37,20 @@ export const availableUpdateFromManifest = (manifest: Manifest | null | undefine
 };
 
 // Constructs the UpdatesInfo from an event
-export const updatesInfoFromEvent = (
-  updatesInfo: UpdatesInfo | undefined,
-  event: UpdateEvent
-): UpdatesInfo => {
+export const availableUpdateFromEvent: (event: UpdateEvent) => {
+  availableUpdate?: AvailableUpdateInfo;
+  error?: Error;
+} = (event) => {
   switch (event.type) {
     case Updates.UpdateEventType.NO_UPDATE_AVAILABLE:
-      return {
-        ...updatesInfo,
-        currentlyRunning,
-        availableUpdate: undefined,
-        error: undefined,
-        lastCheckForUpdateTimeSinceRestart: new Date(),
-      };
+      return {};
     case Updates.UpdateEventType.UPDATE_AVAILABLE:
       return {
-        ...updatesInfo,
-        currentlyRunning,
-        availableUpdate: availableUpdateFromManifest(event.manifest),
-        error: undefined,
-        lastCheckForUpdateTimeSinceRestart: new Date(),
+        availableUpdate: availableUpdateFromManifest(event?.manifest || undefined),
       };
     case Updates.UpdateEventType.ERROR:
       return {
-        ...updatesInfo,
-        currentlyRunning,
-        availableUpdate: undefined,
         error: new Error(event.message),
-        lastCheckForUpdateTimeSinceRestart: new Date(),
       };
   }
 };
@@ -79,7 +64,7 @@ export const checkForUpdateAndReturnAvailableAsync: (
     const checkResult = await Updates.checkForUpdateAsync();
     callbacks?.onCheckForUpdateComplete && callbacks?.onCheckForUpdateComplete();
     if (checkResult.isAvailable) {
-      return availableUpdateFromManifest(checkResult.manifest);
+      return availableUpdateFromManifest(checkResult?.manifest || undefined);
     } else {
       return undefined;
     }
