@@ -14,6 +14,10 @@
 
 - Move README to versioned Expo Docs. ([#21950](https://github.com/expo/expo/pull/21950) by [@EvanBacon](https://github.com/EvanBacon))
 
+### 📚 3rd party library updates
+
+- Update `metro-react-native-babel-preset` to 0.73.9. ([#21909](https://github.com/expo/expo/pull/21909) by [@kudo](https://github.com/kudo))
+
 ## 9.3.0 — 2023-02-03
 
 ### 🐛 Bug fixes
