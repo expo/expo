@@ -34,6 +34,7 @@ const schema = {
                 buildToolsVersion: { type: 'string', nullable: true },
                 kotlinVersion: { type: 'string', nullable: true },
                 enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
+                enableShrinkResourcesInReleaseBuilds: { type: 'boolean', nullable: true },
                 extraProguardRules: { type: 'string', nullable: true },
                 flipper: {
                     type: 'string',
@@ -129,6 +130,10 @@ function validateConfig(config) {
     // https://github.com/facebook/flipper/issues/2414
     if (config?.ios?.flipper !== undefined && config?.ios?.useFrameworks !== undefined) {
         throw new Error('`ios.flipper` cannot be enabled when `ios.useFrameworks` is set.');
+    }
+    if (config.android?.enableShrinkResourcesInReleaseBuilds === true &&
+        config.android?.enableProguardInReleaseBuilds !== true) {
+        throw new Error('`android.enableShrinkResourcesInReleaseBuilds` requires `android.enableProguardInReleaseBuilds` to be enabled.');
     }
     return config;
 }
