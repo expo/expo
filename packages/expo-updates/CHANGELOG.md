@@ -8,10 +8,14 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 0.16.4 — 2023-04-03
+
+### 🐛 Bug fixes
+
 - Change arg in gradle `.execute()` call to null to inherit env variables from user's env ([#21712](https://github.com/expo/expo/pull/21712) by [@phoenixiguess](https://github.com/phoenixiguess))
 - [Android] Fix missing manifest for build flavor variants. ([#21813](https://github.com/expo/expo/pull/21813) by [@douglowder](https://github.com/douglowder))
-
-### 💡 Others
 
 ## 0.16.3 — 2023-02-22
 
