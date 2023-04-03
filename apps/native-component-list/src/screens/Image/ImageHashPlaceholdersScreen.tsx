@@ -1,11 +1,10 @@
 import * as React from 'react';
 import { useState } from 'react';
-import { StyleSheet, Text, View, ScrollView, FlatList } from 'react-native';
+import { StyleSheet, Text, View, ScrollView } from 'react-native';
 
 import Button from '../../components/Button';
 import ComparisonRow from '../../components/HashPlaceholdersDemo/ComparisonRow';
 import { comparisonImages } from '../../constants/ComparisonImages';
-import { Colors } from '../../constants';
 
 export default function ImageHashPlaceholdersScreen() {
   const [showRealImage, setShowRealImage] = useState(false);
