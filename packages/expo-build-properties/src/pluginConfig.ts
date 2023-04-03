@@ -67,6 +67,11 @@ export interface PluginConfigTypeAndroid {
    */
   enableProguardInReleaseBuilds?: boolean;
   /**
+   * Enable [`shrinkResources`](https://developer.android.com/studio/build/shrink-code#shrink-resources) in release builds to remove unused resources from the app.
+   * This property should be used in combination with `enableProguardInReleaseBuilds`.
+   */
+  enableShrinkResourcesInReleaseBuilds?: boolean;
+  /**
    * Append custom [Proguard rules](https://www.guardsquare.com/manual/configuration/usage) to **android/app/proguard-rules.pro**.
    */
   extraProguardRules?: string;
@@ -157,6 +162,7 @@ const schema: JSONSchemaType<PluginConfigType> = {
         kotlinVersion: { type: 'string', nullable: true },
 
         enableProguardInReleaseBuilds: { type: 'boolean', nullable: true },
+        enableShrinkResourcesInReleaseBuilds: { type: 'boolean', nullable: true },
         extraProguardRules: { type: 'string', nullable: true },
 
         flipper: {
@@ -264,6 +270,15 @@ export function validateConfig(config: any): PluginConfigType {
   // https://github.com/facebook/flipper/issues/2414
   if (config?.ios?.flipper !== undefined && config?.ios?.useFrameworks !== undefined) {
     throw new Error('`ios.flipper` cannot be enabled when `ios.useFrameworks` is set.');
+  }
+
+  if (
+    config.android?.enableShrinkResourcesInReleaseBuilds === true &&
+    config.android?.enableProguardInReleaseBuilds !== true
+  ) {
+    throw new Error(
+      '`android.enableShrinkResourcesInReleaseBuilds` requires `android.enableProguardInReleaseBuilds` to be enabled.'
+    );
   }
 
   return config;
