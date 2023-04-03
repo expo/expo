@@ -65,7 +65,7 @@ class DevLauncherNetworkLogger private constructor() {
       put("loaderId", "")
       put("documentURL", "mobile")
       put("initiator", mapOf("type" to "script"))
-      put("redirectHasExtraInfo", false)
+      put("redirectHasExtraInfo", redirectResponse != null)
       put("request", requestParams)
       put("referrerPolicy", "no-referrer")
       put("type", "Fetch")

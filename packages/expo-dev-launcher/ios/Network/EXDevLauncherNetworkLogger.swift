@@ -49,7 +49,7 @@ public class EXDevLauncherNetworkLogger: NSObject {
       "loaderId": "",
       "documentURL": "mobile",
       "initiator": ["type": "script"],
-      "redirectHasExtraInfo": false,
+      "redirectHasExtraInfo": redirectResponse != nil,
       "request": requestParams,
       "referrerPolicy": "no-referrer",
       "type": "Fetch",
