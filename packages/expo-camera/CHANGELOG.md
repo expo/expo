@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Fixed `Expo camera - Cannot take landscape photos if screen orientation is locked'` on iOS. ([#21938](https://github.com/expo/expo/issues/21938) by [@chalenascholl](https://github.com/chalenascholl))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
