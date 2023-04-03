@@ -23,7 +23,14 @@ class ThumbhashLoader: NSObject, SDImageLoader {
 
     // The URI looks like this: thumbhash:/3OcRJYB4d3h/iIeHeEh3eIhw+j2w
     // the "thumbhash:/" part has to be skipped, but the hash can contain other '/' characters, which need to be included
-    let thumbhash = url.pathComponents[1..<url.pathComponents.count].joined(separator: "/")
+    var thumbhash = url.pathComponents[1..<url.pathComponents.count].joined(separator: "/")
+
+    // Thumbhashes with transparency cause the conversion to data to fail, padding the thumbhash string to correct length fixes that
+    let remainder = thumbhash.count % 4
+    if remainder > 0 {
+      thumbhash = thumbhash.padding(toLength: thumbhash.count + 4 - remainder, withPad: "=", startingAt: 0)
+    }
+
     guard let thumbhashData = Data(base64Encoded: thumbhash, options: .ignoreUnknownCharacters) else {
       let error = makeNSError(description: "URL provided to ThumbhashLoader is invalid")
       completedBlock?(nil, nil, error, false)
