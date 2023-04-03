@@ -19,7 +19,7 @@ module.exports = function (api) {
 
 Projects using `babel-preset-expo`, have access to the following environment variables:
 
-- `process.env.EXPO_OS`: The operating system of the device. This can be used as a replacement for `Platform.OS`. One of `ios`, `android`, `web`.
+- `process.env.EXPO_OS`: The operating system of the device. This can be used as a replacement for `Platform.OS`. One of `android`, `ios`, `web`.
 - `process.env.NODE_ENV`: The environment that the project is running in. One of `development`, `production`.
 
 > You should always opt to use `process.env.NODE_ENV === 'development'` instead of `__DEV__` as this will provide support for more environments (e.g. Node.js/SSR).
@@ -89,7 +89,7 @@ This property is passed down to [`@babel/plugin-transform-react-jsx`](https://ba
 
 Changes Babel's compiled `import` statements to be lazily evaluated when their imported bindings are used for the first time.
 
-_Note:_ this option has an effect only when the `disableImportExportTransform` option is set to `false`. On Android and iOS, `disableImportExportTransform` defaults to `false`, and on web it defaults to `true` to allow for tree shaking.
+> This option has an effect only when the `disableImportExportTransform` option is set to `false`. On Android and iOS, `disableImportExportTransform` defaults to `false`, and on web it defaults to `true` to allow for tree shaking.
 
 This can improve the initial load time of your app because evaluating dependencies up front is sometimes entirely un-necessary, particularly when the dependencies have no side effects.
 
@@ -132,7 +132,7 @@ Enabling this option will allow your project to run with older JavaScript syntax
 
 ## Babel Caller
 
-> This section is for advanced developers who want to use `babel-preset-expo` with a custom bundler implementation.
+> **info** This section is for advanced developers who want to use `babel-preset-expo` with a custom bundler implementation.
 
 The babel loading mechanism must include the following properties on its `caller`.
 
@@ -142,8 +142,8 @@ A `platform` property denoting the target platform. If the `platform` is not def
 
 | Value     | Description             |
 | --------- | ----------------------- |
-| `ios`     | Runs on iOS devices     |
 | `android` | Runs on Android devices |
+| `ios`     | Runs on iOS devices     |
 | `web`     | Runs in web browsers    |
 
 Starting in SDK +49, the `platform` property is used to inline the environment variable `process.env.EXPO_OS`.

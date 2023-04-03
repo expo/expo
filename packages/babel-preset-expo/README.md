@@ -1,3 +1,4 @@
 # babel-preset-expo
 
-> The docs have moved to [Expo: `babel.config.js`](https://docs.expo.dev/versions/latest/config/babel/).
+> **Note**
+> The documentation has been moved to [`babel.config.js` page](https://docs.expo.dev/versions/latest/config/babel/) in Expo Docs.
