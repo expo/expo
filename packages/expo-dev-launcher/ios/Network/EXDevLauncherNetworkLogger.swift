@@ -70,7 +70,6 @@ public class EXDevLauncherNetworkLogger: NSObject {
     ), let message = String(data: data, encoding: .utf8) {
       inspectorPackagerConn?.sendWrappedEventToAllPages(message)
     }
-    
     params = [
       "requestId": requestId,
       "associatedCookies": [],
