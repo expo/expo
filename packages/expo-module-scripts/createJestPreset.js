@@ -4,7 +4,7 @@ const findYarnWorkspaceRoot = require('find-yarn-workspace-root');
 const fs = require('fs');
 const path = require('path');
 
-module.exports = function(basePreset) {
+module.exports = function (basePreset) {
   // Explicitly catch and log errors since Jest sometimes suppresses error messages
   try {
     return _createJestPreset(basePreset);
@@ -21,7 +21,9 @@ function _createJestPreset(basePreset) {
     clearMocks: true,
     roots: ['<rootDir>/src'],
     transform: {
-      '^.+\\.jsx?$': 'babel-jest',
+      // '^.+\\.jsx?$': 'babel-jest',
+      ...basePreset.transform,
+
       '^.+\\.tsx?$': [
         'ts-jest',
         {
@@ -29,7 +31,6 @@ function _createJestPreset(basePreset) {
           babelConfig: _createBabelConfiguration(),
         },
       ],
-      ...basePreset.transform,
     },
   };
 }

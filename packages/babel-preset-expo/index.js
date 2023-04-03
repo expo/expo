@@ -170,7 +170,6 @@ function getPlatform(caller) {
  */
 function getBundler(caller) {
   if (!caller) return null;
-
   const { bundler, name } = caller;
 
   if (!bundler) {
@@ -184,6 +183,7 @@ function getBundler(caller) {
       // expo/webpack-config, gatsby, storybook, and next.js <10
       return 'webpack';
     }
+    // else: `babel-jest`
   }
   // Perhaps we should add a check to log once when an unexpected bundler is being used.
   return bundler || null;

@@ -8,7 +8,8 @@ const jestPreset = cloneDeep(require('react-native/jest-preset'));
 // transform
 if (!jestPreset.transform) {
   jestPreset.transform = {
-    '\\.[jt]sx?$': 'babel-jest',
+    // Use a custom babel jest transformer to support babel-preset-expo caller options.
+    '\\.[jt]sx?$': require.resolve('./babel-jest.js'),
   };
 }
 

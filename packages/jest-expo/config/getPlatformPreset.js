@@ -1,6 +1,5 @@
 'use strict';
 const { getBareExtensions } = require('@expo/config/paths');
-
 const expoPreset = require('../jest-preset');
 const { withWatchPlugins } = require('./withWatchPlugins');
 
@@ -53,6 +52,10 @@ module.exports = {
   getWebPreset() {
     return {
       ...getBaseWebPreset(),
+      transform: {
+        ...expoPreset?.transform,
+        '^.+\\.(js|ts|tsx)$': require.resolve('./babel-jest/web.js'),
+      },
       ...getPlatformPreset({ name: 'Web', color: 'magenta' }, ['web']),
       testEnvironment: 'jsdom',
     };
@@ -60,6 +63,10 @@ module.exports = {
   getNodePreset() {
     return {
       ...getBaseWebPreset(),
+      transform: {
+        ...expoPreset?.transform,
+        '^.+\\.(js|ts|tsx)$': require.resolve('./babel-jest/web.js'),
+      },
       ...getPlatformPreset({ name: 'Node', color: 'cyan' }, ['node', 'web']),
       testEnvironment: 'node',
     };
@@ -67,12 +74,20 @@ module.exports = {
   getIOSPreset() {
     return {
       ...expoPreset,
+      transform: {
+        ...expoPreset?.transform,
+        '^.+\\.(js|ts|tsx)$': require.resolve('./babel-jest/ios.js'),
+      },
       ...getPlatformPreset({ name: 'iOS', color: 'white' }, ['ios', 'native']),
     };
   },
   getAndroidPreset() {
     return {
       ...expoPreset,
+      transform: {
+        ...expoPreset?.transform,
+        '^.+\\.(js|ts|tsx)$': require.resolve('./babel-jest/android.js'),
+      },
       ...getPlatformPreset({ name: 'Android', color: 'blueBright' }, ['android', 'native']),
     };
   },
