@@ -94,11 +94,11 @@ class DevLauncherNetworkLogger private constructor() {
         "requestTime" to now,
       ),
     )
-    val extraInfodata = JSONObject(mapOf(
+    val extraInfoData = JSONObject(mapOf(
       "method" to "Network.requestWillBeSentExtraInfo",
       "params" to extraInfoParams
     ))
-    inspectorPackagerConnection.sendWrappedEventToAllPages(extraInfodata.toString())
+    inspectorPackagerConnection.sendWrappedEventToAllPages(extraInfoData.toString())
   }
 
   /**
