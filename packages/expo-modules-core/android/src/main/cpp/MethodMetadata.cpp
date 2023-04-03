@@ -6,6 +6,7 @@
 #include "JavaReferencesCache.h"
 #include "Exceptions.h"
 #include "JavaCallback.h"
+#include "ObjectDeallocator.h"
 
 #include <utility>
 #include <functional>
@@ -21,20 +22,6 @@ namespace jsi = facebook::jsi;
 namespace react = facebook::react;
 
 namespace expo {
-
-class JSI_EXPORT ObjectDeallocator : public jsi::HostObject {
-public:
-  typedef std::function<void()> ObjectDeallocatorType;
-
-  ObjectDeallocator(ObjectDeallocatorType deallocator) : deallocator(deallocator) {};
-
-  virtual ~ObjectDeallocator() {
-    deallocator();
-  }
-
-  const ObjectDeallocatorType deallocator;
-
-}; // class ObjectDeallocator
 
 // Modified version of the RN implementation
 // https://github.com/facebook/react-native/blob/7dceb9b63c0bfd5b13bf6d26f9530729506e9097/ReactCommon/react/nativemodule/core/platform/android/ReactCommon/JavaTurboModule.cpp#L57
@@ -139,6 +126,16 @@ jobjectArray MethodMetadata::convertJSIArgsToJNI(
   // This function takes the owner, so the args number is higher because we have access to the thisValue.
   if (takesOwner) {
     count++;
+  }
+
+  // The `count < this->args` case is handled by the Kotlin part
+  if (count > this->args) {
+    throwNewJavaException(
+      InvalidArgsNumberException::create(
+        count,
+        this->args
+      ).get()
+    );
   }
 
   auto argumentArray = env->NewObjectArray(
@@ -270,7 +267,8 @@ jsi::Function MethodMetadata::toSyncFunction(
     });
 }
 
-jsi::Value MethodMetadata::callSync(
+jni::local_ref<jobject> MethodMetadata::callJNISync(
+  JNIEnv *env,
   jsi::Runtime &rt,
   JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &thisValue,
@@ -278,17 +276,8 @@ jsi::Value MethodMetadata::callSync(
   size_t count
 ) {
   if (this->jBodyReference == nullptr) {
-    return jsi::Value::undefined();
+    return nullptr;
   }
-
-  JNIEnv *env = jni::Environment::current();
-
-  /**
-   * This will push a new JNI stack frame for the LocalReferences in this
-   * function call. When the stack frame for this lambda is popped,
-   * all LocalReferences are deleted.
-   */
-  jni::JniLocalScope scope(env, (int) count);
 
   auto convertedArgs = convertJSIArgsToJNI(moduleRegistry, env, rt, thisValue, args, count);
 
@@ -299,6 +288,26 @@ jsi::Value MethodMetadata::callSync(
   );
 
   env->DeleteLocalRef(convertedArgs);
+  return result;
+}
+
+jsi::Value MethodMetadata::callSync(
+  jsi::Runtime &rt,
+  JSIInteropModuleRegistry *moduleRegistry,
+  const jsi::Value &thisValue,
+  const jsi::Value *args,
+  size_t count
+) {
+  JNIEnv *env = jni::Environment::current();
+  /**
+  * This will push a new JNI stack frame for the LocalReferences in this
+  * function call. When the stack frame for this lambda is popped,
+  * all LocalReferences are deleted.
+  */
+  jni::JniLocalScope scope(env, (int) count);
+
+  auto result = this->callJNISync(env, rt, moduleRegistry, thisValue, args, count);
+
   if (result == nullptr) {
     return jsi::Value::undefined();
   }
@@ -351,7 +360,7 @@ jsi::Value MethodMetadata::callSync(
 
     jni::global_ref<jobject> globalRef = jni::make_global(result);
     std::shared_ptr<expo::ObjectDeallocator> deallocator = std::make_shared<ObjectDeallocator>(
-      [globalRef = globalRef]() mutable {
+      [globalRef = std::move(globalRef)]() mutable {
         globalRef.reset();
       });
 

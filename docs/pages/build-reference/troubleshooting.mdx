@@ -55,7 +55,7 @@ It's important to note that with iOS builds the build details page only displays
 
 {/* TODO: native and js build phases should be separate in eas build logs, this is too much work for people to figure out */}
 
-If you are working on a managed app and the build error is a native error rather than a JavaScript error, this is likely due to a [config plugin](/guides/config-plugins) or a dependency in your project. Keep an eye out in the logs for any new packages that you've added since your previous successful build. Run `expo doctor` to determine that the versions of Expo SDK dependencies in your project are compatible with your Expo SDK version.
+If you are working on a managed app and the build error is a native error rather than a JavaScript error, this is likely due to a [config plugin](/guides/config-plugins) or a dependency in your project. Keep an eye out in the logs for any new packages that you've added since your previous successful build. Run `npx expo-doctor` to determine that the versions of Expo SDK dependencies in your project are compatible with your Expo SDK version.
 
 Armed with your error logs, you can often start to fix your build, or you can search the [forums](https://forums.expo.dev) and GitHub issues for related packages to dig deeper. Some common sources of problems are listed below.
 
@@ -146,7 +146,7 @@ If you have followed the advice here, you're now in a good position to describe 
 
 ### How to ask a good question
 
-Join us on [Discord](https://chat.expo.dev) or the [forums](https://forums.expo.dev) to ask for help from the community and the Expo team. The Expo team does our best to respond to high quality and well articulated questions and issues, but responses are not guaranteed unless you are signed up for a [support plan](https://expo.dev/eas/enterprise-support).
+Join us on [Discord](https://chat.expo.dev) or the [forums](https://forums.expo.dev) to ask for help from the community and the Expo team. The Expo team does our best to respond to high quality and well articulated questions and issues, but responses are not guaranteed unless you are signed up for a [support plan](https://expo.dev/eas/enterprise-support). To ensure that an Expo team member sees your question, you can file a ticket at [expo.dev/contact](https://expo.dev/contact).
 
 When you ask for troubleshooting help, be sure to share the following information:
 

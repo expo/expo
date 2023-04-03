@@ -19,5 +19,5 @@ internal protocol AnyFieldInternal: AnyField {
    */
   var isRequired: Bool { get }
 
-  func set(_ newValue: Any?) throws
+  func set(_ newValue: Any?, appContext: AppContext) throws
 }

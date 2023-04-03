@@ -39,6 +39,8 @@ type StaticRenderOptions = {
   // Ensure the style format is `css-xxxx` (prod) instead of `css-view-xxxx` (dev)
   dev?: boolean;
   minify?: boolean;
+  platform?: string;
+  environment?: 'node';
 };
 
 const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredModuleId: string) => {
@@ -57,7 +59,7 @@ const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredMod
 export async function getStaticRenderFunctionsContentAsync(
   projectRoot: string,
   devServerUrl: string,
-  { dev = false, minify = false }: StaticRenderOptions = {}
+  { dev = false, minify = false, environment }: StaticRenderOptions = {}
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
   const requiredModuleId = getRenderModuleId(root);
@@ -69,11 +71,45 @@ export async function getStaticRenderFunctionsContentAsync(
     moduleId = await moveStaticRenderFunction(projectRoot, requiredModuleId);
   }
 
-  const serverPath = path.relative(root, moduleId).replace(/\.[jt]sx?$/, '.bundle');
-  console.log(serverPath);
-  debug('Loading render functions from:', moduleId, moduleId, root);
+  return requireFileContentsWithMetro(root, devServerUrl, moduleId, { dev, minify, environment });
+}
 
-  const res = await fetch(`${devServerUrl}/${serverPath}?platform=web&dev=${dev}&minify=${minify}`);
+async function ensureFileInRootDirectory(projectRoot: string, otherFile: string) {
+  // Cannot be accessed using Metro's server API, we need to move the file
+  // into the project root and try again.
+  if (!path.relative(projectRoot, otherFile).startsWith('../')) {
+    return otherFile;
+  }
+
+  // Copy the file into the project to ensure it works in monorepos.
+  // This means the file cannot have any relative imports.
+  const tempDir = path.join(projectRoot, '.expo/static-tmp');
+  await fs.promises.mkdir(tempDir, { recursive: true });
+  const moduleId = path.join(tempDir, path.basename(otherFile));
+  await fs.promises.writeFile(moduleId, await fs.promises.readFile(otherFile, 'utf8'));
+  // Sleep to give watchman time to register the file.
+  await delayAsync(50);
+  return moduleId;
+}
+
+export async function requireFileContentsWithMetro(
+  projectRoot: string,
+  devServerUrl: string,
+  absoluteFilePath: string,
+  { dev = false, platform = 'web', minify = false, environment }: StaticRenderOptions = {}
+): Promise<string> {
+  const root = getMetroServerRoot(projectRoot);
+  const safeOtherFile = await ensureFileInRootDirectory(projectRoot, absoluteFilePath);
+  const serverPath = path.relative(root, safeOtherFile).replace(/\.[jt]sx?$/, '.bundle');
+  debug('fetching from Metro:', root, serverPath);
+
+  let url = `${devServerUrl}/${serverPath}?platform=${platform}&dev=${dev}&minify=${minify}`;
+
+  if (environment) {
+    url += `&resolver.environment=${environment}&transform.environment=${environment}`;
+  }
+
+  const res = await fetch(url);
 
   // TODO: Improve error handling
   if (res.status === 500) {
@@ -92,6 +128,21 @@ export async function getStaticRenderFunctionsContentAsync(
   const content = await res.text();
 
   return wrapBundle(content);
+}
+export async function requireWithMetro<T>(
+  projectRoot: string,
+  devServerUrl: string,
+  absoluteFilePath: string,
+  options: StaticRenderOptions = {}
+): Promise<T> {
+  const content = await requireFileContentsWithMetro(
+    projectRoot,
+    devServerUrl,
+    absoluteFilePath,
+    options
+  );
+
+  return profile(requireString, 'eval-metro-bundle')(content);
 }
 
 export async function getStaticRenderFunctions(

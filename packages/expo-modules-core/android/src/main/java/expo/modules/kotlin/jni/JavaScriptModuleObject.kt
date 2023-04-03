@@ -16,12 +16,16 @@ import expo.modules.kotlin.objects.ObjectDefinitionData
  */
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
-class JavaScriptModuleObject(val name: String) {
+class JavaScriptModuleObject(val name: String) : Destructible {
   // Has to be called "mHybridData" - fbjni uses it via reflection
   @DoNotStrip
   private val mHybridData = initHybrid()
 
   private external fun initHybrid(): HybridData
+
+  init {
+    JNIDeallocator.addReference(this)
+  }
 
   fun initUsingObjectDefinition(appContext: AppContext, definition: ObjectDefinitionData) = apply {
     val constants = definition.constantsProvider()
@@ -60,12 +64,20 @@ class JavaScriptModuleObject(val name: String) {
 
   external fun registerProperty(name: String, desiredType: ExpectedType, getter: JNIFunctionBody?, setter: JNIFunctionBody?)
 
-  external fun registerClass(name: String, classModule: JavaScriptModuleObject)
+  external fun registerClass(name: String, classModule: JavaScriptModuleObject, takesOwner: Boolean, args: Int, desiredTypes: Array<ExpectedType>, body: JNIFunctionBody)
 
   external fun registerViewPrototype(viewPrototype: JavaScriptModuleObject)
 
   @Throws(Throwable::class)
   protected fun finalize() {
+    deallocate()
+  }
+
+  override fun deallocate() {
     mHybridData.resetNative()
+  }
+
+  override fun toString(): String {
+    return "JavaScriptModuleObject_$name"
   }
 }

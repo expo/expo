@@ -119,6 +119,7 @@ export default function ExpoImage({
             contentPosition={selectedSource ? contentPosition : { top: '50%', left: '50%' }}
             hashPlaceholderContentPosition={contentPosition}
             hashPlaceholderStyle={blurhashStyle}
+            accessibilityLabel={props.accessibilityLabel}
           />
         ),
   ];

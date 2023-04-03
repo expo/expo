@@ -27,5 +27,7 @@ enum class CppType(val clazz: KClass<*>, val value: Int = nextValue()) {
   TYPED_ARRAY(TypedArray::class),
   PRIMITIVE_ARRAY(Array::class),
   LIST(List::class),
-  MAP(Map::class);
+  MAP(Map::class),
+  VIEW_TAG(Int::class),
+  SHARED_OBJECT_ID(Int::class);
 }

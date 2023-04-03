@@ -429,4 +429,42 @@ bool MapFrontendConverter::canConvert(
 ) const {
   return value.isObject();
 }
+
+jobject ViewTagFrontendConverter::convert(jsi::Runtime &rt, JNIEnv *env,
+                                          JSIInteropModuleRegistry *moduleRegistry,
+                                          const jsi::Value &value) const {
+  auto nativeTag = value.getObject(rt).getProperty(rt, "nativeTag");
+  if (nativeTag.isNull()) {
+    return nullptr;
+  }
+
+  auto viewTag = (int) nativeTag.getNumber();
+  auto &integerClass = JavaReferencesCache::instance()
+    ->getJClass("java/lang/Integer");
+  jmethodID integerConstructor = integerClass.getMethod("<init>", "(I)V");
+  return env->NewObject(integerClass.clazz, integerConstructor, viewTag);
+}
+
+bool ViewTagFrontendConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
+  return value.isObject() && value.getObject(rt).hasProperty(rt, "nativeTag");
+}
+
+jobject SharedObjectIdConverter::convert(jsi::Runtime &rt, JNIEnv *env,
+                                          JSIInteropModuleRegistry *moduleRegistry,
+                                          const jsi::Value &value) const {
+  auto objectId = value.getObject(rt).getProperty(rt, "__expo_shared_object_id__");
+  if (objectId.isNull()) {
+    return nullptr;
+  }
+
+  auto viewTag = (int) objectId.getNumber();
+  auto &integerClass = JavaReferencesCache::instance()
+    ->getJClass("java/lang/Integer");
+  jmethodID integerConstructor = integerClass.getMethod("<init>", "(I)V");
+  return env->NewObject(integerClass.clazz, integerConstructor, viewTag);
+}
+
+bool SharedObjectIdConverter::canConvert(jsi::Runtime &rt, const jsi::Value &value) const {
+  return value.isObject() && value.getObject(rt).hasProperty(rt, "__expo_shared_object_id__");
+}
 } // namespace expo

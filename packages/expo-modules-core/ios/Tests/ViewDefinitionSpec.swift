@@ -15,6 +15,8 @@ final class ViewDefinitionSpec: ExpoSpec {
     }
 
     describe("Prop") {
+      let appContext = AppContext.create()
+
       it("sets the prop") {
         let textView = UITextView()
         let content = "hello"
@@ -23,7 +25,7 @@ final class ViewDefinitionSpec: ExpoSpec {
             view.text = value
           }
         }
-        try definition.propsDict()["content"]?.set(value: content, onView: textView)
+        try definition.propsDict()["content"]?.set(value: content, onView: textView, appContext: appContext)
         expect(textView.text) == content
       }
 
@@ -36,7 +38,7 @@ final class ViewDefinitionSpec: ExpoSpec {
             expect(view).to(beAKindOf(UITextView.self))
           }
         }
-        try definition.propsDict()["content"]?.set(value: content, onView: textView)
+        try definition.propsDict()["content"]?.set(value: content, onView: textView, appContext: appContext)
       }
     }
 

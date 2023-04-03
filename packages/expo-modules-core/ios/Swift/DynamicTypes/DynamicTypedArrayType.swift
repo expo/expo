@@ -14,13 +14,24 @@ internal struct DynamicTypedArrayType: AnyDynamicType {
     return false
   }
 
-  func cast<ValueType>(_ value: ValueType) throws -> Any {
-    // It must be a JavaScript typed array.
-    guard let value = value as? JavaScriptValue, let jsTypedArray = value.getTypedArray() else {
+  /**
+   Converts JS typed array to its native representation.
+   */
+  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+    guard let jsTypedArray = jsValue.getTypedArray() else {
       throw NotTypedArrayException(innerType)
     }
-    let typedArray = TypedArray.create(from: jsTypedArray)
+    return TypedArray.create(from: jsTypedArray)
+  }
 
+  /**
+   Converts the given native `TypedArray` to a concrete typed array class wrapped by the dynamic type.
+   Throws `ArrayTypeMismatchException` otherwise.
+   */
+  func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
+    guard let typedArray = value as? TypedArray else {
+      throw NotTypedArrayException(innerType)
+    }
     // Concrete typed arrays must be the same as the inner type.
     guard innerType == TypedArray.self || type(of: typedArray) == innerType else {
       throw ArrayTypeMismatchException((received: type(of: typedArray), expected: innerType))

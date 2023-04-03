@@ -75,16 +75,6 @@ public:
   MethodMetadata(MethodMetadata &&other) = default;
 
   /**
-   * MethodMetadata owns the only reference to the Kotlin function.
-   * We have to clean that, cause it's a `global_ref`.
-   */
-  ~MethodMetadata() {
-    if (jBodyReference != nullptr) {
-      jBodyReference.release();
-    }
-  }
-
-  /**
    * Transforms metadata to a jsi::Function.
    *
    * @param runtime
@@ -100,6 +90,15 @@ public:
    * Calls the underlying Kotlin function.
    */
   jsi::Value callSync(
+    jsi::Runtime &rt,
+    JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value &thisValue,
+    const jsi::Value *args,
+    size_t count
+  );
+
+  jni::local_ref<jobject> callJNISync(
+    JNIEnv *env,
     jsi::Runtime &rt,
     JSIInteropModuleRegistry *moduleRegistry,
     const jsi::Value &thisValue,

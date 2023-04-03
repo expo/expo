@@ -62,7 +62,7 @@ internal final class RemoteAppLoader: AppLoader {
 
     database.databaseQueue.async {
       let embeddedUpdate = EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database)
-      let extraHeaders = FileDownloader.extraHeaders(
+      let extraHeaders = FileDownloader.extraHeadersForRemoteUpdateRequest(
         withDatabase: self.database,
         config: self.config,
         launchedUpdate: self.launchedUpdate,
