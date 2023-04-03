@@ -1,4 +1,5 @@
 #import <AVFoundation/AVFoundation.h>
+#import <CoreMotion/CoreMotion.h>
 
 #import <ExpoModulesCore/EXBarcodeScannerProviderInterface.h>
 #import <EXCamera/EXCamera.h>
@@ -19,9 +20,11 @@
 @property (nonatomic, strong) id<EXBarCodeScannerInterface> barCodeScanner;
 @property (nonatomic, weak) id<EXPermissionsInterface> permissionsManager;
 @property (nonatomic, weak) id<EXAppLifecycleService> lifecycleManager;
+@property (nonatomic, strong) CMMotionManager * motionManager;
 
 @property (nonatomic, assign, getter=isSessionPaused) BOOL paused;
 @property (nonatomic, assign) BOOL isValidVideoOptions;
+@property (nonatomic, assign) UIDeviceOrientation orientation;
 
 @property (nonatomic, strong) NSDictionary *photoCaptureOptions;
 @property (nonatomic, strong) EXPromiseResolveBlock photoCapturedResolve;
@@ -70,6 +73,9 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
                                                  name:UIDeviceOrientationDidChangeNotification
                                                object:nil];
     [_lifecycleManager registerAppLifecycleListener:self];
+    _motionManager = [[CMMotionManager alloc] init];
+    _motionManager.accelerometerUpdateInterval = 0.2;
+    _motionManager.gyroUpdateInterval = 0.2;
   }
   return self;
 }
@@ -354,7 +360,7 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     return;
   }
   AVCaptureConnection *connection = [_photoOutput connectionWithMediaType:AVMediaTypeVideo];
-  [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]]];
+  [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:self.orientation]];
 
   _photoCapturedReject = reject;
   _photoCapturedResolve = resolve;
@@ -549,7 +555,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     } else {
       [connection setPreferredVideoStabilizationMode:self.videoStabilizationMode];
     }
-    [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:[[UIDevice currentDevice] orientation]]];
+    [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:self.orientation]];
     
     AVCaptureSessionPreset preset;
     if (options[@"quality"]) {
@@ -709,6 +715,13 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
       });
     }]];
 
+    [self.motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue new]
+      withHandler:^(CMAccelerometerData  *accelerometerData, NSError *error) {
+        if (!error) {
+          self.orientation = [EXCameraUtils deviceOrientationForAccelerometerData:self.motionManager.accelerometerData defaultOrientation:self.orientation];
+        }
+    }];
+
     // when BarCodeScanner is enabled since the beginning of camera component lifecycle,
     // some race condition occurs in reconfiguration and barcodes aren't scanned at all
     dispatch_after(dispatch_time(DISPATCH_TIME_NOW, 50 * NSEC_PER_USEC), self.sessionQueue, ^{
@@ -741,6 +754,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     if (self.barCodeScanner) {
       [self.barCodeScanner stopBarCodeScanning];
     }
+    [self.motionManager stopAccelerometerUpdates];
     [self.previewLayer removeFromSuperlayer];
     [self.session commitConfiguration];
     [self.session stopRunning];
