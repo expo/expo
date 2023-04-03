@@ -24,7 +24,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
-- Migrated Android implementation to Expo Modules API. ([#20112](https://github.com/expo/expo/pull/20112) by [@alanhughes](https://github.com/alanjhughes))
+- Migrated module to Expo Modules API. ([#20112](https://github.com/expo/expo/pull/20112) and ([#20969](https://github.com/expo/expo/pull/20969) by [@alanhughes](https://github.com/alanjhughes))
 
 ## 11.0.1 — 2022-10-27
 
