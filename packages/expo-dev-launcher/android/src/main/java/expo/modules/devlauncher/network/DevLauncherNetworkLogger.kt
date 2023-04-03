@@ -45,7 +45,7 @@ class DevLauncherNetworkLogger private constructor() {
   }
 
   /**
-   * Emits CDP `Network.requestWillBeSent` event
+   * Emits CDP `Network.requestWillBeSent` and `Network.requestWillBeSentExtraInfo` events
    */
   fun emitNetworkWillBeSent(request: Request, requestId: String, redirectResponse: Response?) {
     val now = BigDecimal(System.currentTimeMillis() / 1000.0).setScale(3, RoundingMode.CEILING)
@@ -80,9 +80,23 @@ class DevLauncherNetworkLogger private constructor() {
         ))
       }
     }
-    val data = JSONObject(mapOf(
+    var data = JSONObject(mapOf(
       "method" to "Network.requestWillBeSent",
       "params" to params,
+    ))
+    inspectorPackagerConnection.sendWrappedEventToAllPages(data.toString())
+
+    params = mapOf(
+      "requestId" to requestId,
+      "associatedCookies" to emptyList<Void>(),
+      "headers" to request.headers().toSingleMap(),
+      "connectTiming" to mapOf(
+        "requestTime" to now,
+      ),
+    )
+    data = JSONObject(mapOf(
+      "method" to "Network.requestWillBeSentExtraInfo",
+      "params" to params
     ))
     inspectorPackagerConnection.sendWrappedEventToAllPages(data.toString())
   }

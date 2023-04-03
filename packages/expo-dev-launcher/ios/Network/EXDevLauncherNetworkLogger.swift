@@ -32,7 +32,7 @@ public class EXDevLauncherNetworkLogger: NSObject {
   }
 
   /**
-   Emits CDP `Network.requestWillBeSent` event
+   Emits CDP `Network.requestWillBeSent` and `Network.requestWillBeSentExtraInfo` events
    */
   func emitNetworkWillBeSent(request: URLRequest, requestId: String, redirectResponse: HTTPURLResponse?) {
     let now = Date().timeIntervalSince1970
@@ -66,6 +66,21 @@ public class EXDevLauncherNetworkLogger: NSObject {
     }
     if let data = try? JSONSerialization.data(
       withJSONObject: ["method": "Network.requestWillBeSent", "params": params],
+      options: []
+    ), let message = String(data: data, encoding: .utf8) {
+      inspectorPackagerConn?.sendWrappedEventToAllPages(message)
+    }
+    
+    params = [
+      "requestId": requestId,
+      "associatedCookies": [],
+      "headers": requestParams["headers"],
+      "connectTiming": [
+        "requestTime": now
+      ]
+    ] as [String: Any]
+    if let data = try? JSONSerialization.data(
+      withJSONObject: ["method": "Network.requestWillBeSentExtraInfo", "params": params],
       options: []
     ), let message = String(data: data, encoding: .utf8) {
       inspectorPackagerConn?.sendWrappedEventToAllPages(message)
