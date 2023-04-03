@@ -3,7 +3,6 @@ import { debounce } from 'lodash';
 import { Server } from 'metro';
 import path from 'path';
 
-import { env } from '../../../utils/env';
 import { unsafeTemplate } from '../../../utils/template';
 import { ServerLike } from '../BundlerDevServer';
 import { metroWatchTypeScriptFiles } from '../metro/metroWatchTypeScriptFiles';

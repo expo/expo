@@ -6,7 +6,7 @@ import { env } from '../../../utils/env';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import { ServerLike } from '../BundlerDevServer';
 import { setupTypedRoutes } from './routes';
-import { forceUpdateTSConfig } from './tsconfig';
+import { forceRemovalTSConfig, forceUpdateTSConfig } from './tsconfig';
 
 export interface TypeScriptTypeGenerationOptions {
   server: ServerLike;
