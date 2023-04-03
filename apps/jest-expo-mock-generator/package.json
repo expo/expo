@@ -12,7 +12,7 @@
     "expo": "~48.0.0-beta.0",
     "expo-clipboard": "~4.1.1",
     "react": "18.2.0",
-    "react-native": "0.71.5",
+    "react-native": "0.71.6",
     "uuid": "^3.4.0"
   }
 }
