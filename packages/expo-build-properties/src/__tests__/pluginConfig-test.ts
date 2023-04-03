@@ -51,4 +51,28 @@ describe(validateConfig, () => {
       `"\`ios.flipper\` cannot be enabled when \`ios.useFrameworks\` is set."`
     );
   });
+
+  it('should use `enableShrinkResourcesInReleaseBuilds` with `enableProguardInReleaseBuilds`', () => {
+    expect(() =>
+      validateConfig({ android: { enableShrinkResourcesInReleaseBuilds: true } })
+    ).toThrow();
+
+    expect(() =>
+      validateConfig({
+        android: {
+          enableShrinkResourcesInReleaseBuilds: true,
+          enableProguardInReleaseBuilds: true,
+        },
+      })
+    ).not.toThrow();
+
+    expect(() =>
+      validateConfig({
+        android: {
+          enableShrinkResourcesInReleaseBuilds: true,
+          enableProguardInReleaseBuilds: false,
+        },
+      })
+    ).toThrow();
+  });
 });

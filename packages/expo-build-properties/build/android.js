@@ -54,6 +54,10 @@ exports.withAndroidBuildProperties = createBuildGradlePropsConfigPlugin([
         propName: 'android.enableProguardInReleaseBuilds',
         propValueGetter: (config) => config.android?.enableProguardInReleaseBuilds?.toString(),
     },
+    {
+        propName: 'android.enableShrinkResourcesInReleaseBuilds',
+        propValueGetter: (config) => config.android?.enableShrinkResourcesInReleaseBuilds?.toString(),
+    },
 ], 'withAndroidBuildProperties');
 const withAndroidFlipper = (config, props) => {
     const ANDROID_FLIPPER_KEY = 'FLIPPER_VERSION';

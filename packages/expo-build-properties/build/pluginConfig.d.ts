@@ -47,6 +47,11 @@ export interface PluginConfigTypeAndroid {
      */
     enableProguardInReleaseBuilds?: boolean;
     /**
+     * Enable [`shrinkResources`](https://developer.android.com/studio/build/shrink-code#shrink-resources) in release builds to remove unused resources from the app.
+     * This property should be used in combination with `enableProguardInReleaseBuilds`.
+     */
+    enableShrinkResourcesInReleaseBuilds?: boolean;
+    /**
      * Append custom [Proguard rules](https://www.guardsquare.com/manual/configuration/usage) to **android/app/proguard-rules.pro**.
      */
     extraProguardRules?: string;

@@ -59,6 +59,10 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
       propName: 'android.enableProguardInReleaseBuilds',
       propValueGetter: (config) => config.android?.enableProguardInReleaseBuilds?.toString(),
     },
+    {
+      propName: 'android.enableShrinkResourcesInReleaseBuilds',
+      propValueGetter: (config) => config.android?.enableShrinkResourcesInReleaseBuilds?.toString(),
+    },
   ],
   'withAndroidBuildProperties'
 );
