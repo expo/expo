@@ -1261,7 +1261,7 @@ SPEC CHECKSUMS:
   Expo: 79deb55f33fab1b232232868a74713772943238d
   expo-dev-client: 71c7a10806a324e4312c1cac34d4a439670d2c3b
   expo-dev-launcher: b3ef874bd1676f248bc134c2ba38fa916e6dd314
-  expo-dev-menu: 1c514e8816e8ff0685bebbfc9a6e1c80519f0bb2
+  expo-dev-menu: 47c8d048c20a17f1713fe32bfab2726e805c1541
   expo-dev-menu-interface: 6c82ae323c4b8724dead4763ce3ff24a2108bdb1
   ExpoAppleAuthentication: 7bd5e4150d59e8df37aa80b425850ae88adf9e65
   ExpoBattery: 678d2b710a8fc398c30258c4dc22c12340ee5411

@@ -3,7 +3,7 @@
 import React
 
 @objc
-class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
+class DevMenuAppInstance: DevMenuRCTCxxBridgeDelegate, RCTBridgeDelegate {
   static private var CloseEventName = "closeDevMenu"
   static private var OpenEventName = "openDevMenu"
 
