@@ -11,6 +11,7 @@
 ### 🐛 Bug fixes
 
 - Add missing `mimeType` when emitting network responses. ([#21676](https://github.com/expo/expo/pull/21676) by [@byCedric](https://github.com/byCedric))
+- Add missing `Network.requestWillBeSentExtraInfo` when emitting network requests. ([#21965](https://github.com/expo/expo/pull/21965) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 
