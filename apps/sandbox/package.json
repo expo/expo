@@ -12,7 +12,7 @@
   "dependencies": {
     "expo": "~47.0.0-alpha.1",
     "react": "18.1.0",
-    "react-native": "0.70.5"
+    "react-native": "0.70.8"
   },
   "devDependencies": {
     "babel-preset-expo": "~9.2.0",
