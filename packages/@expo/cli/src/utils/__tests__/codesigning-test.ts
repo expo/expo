@@ -6,6 +6,17 @@ import { APISettings } from '../../api/settings';
 import { getCodeSigningInfoAsync, signManifestString } from '../codesigning';
 import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
 
+jest.mock('../../api/graphql/queries/AppQuery', () => ({
+  AppQuery: {
+    byIdAsync: jest.fn(async () => ({
+      id: 'blah',
+      scopeKey: 'scope-key',
+      ownerAccount: {
+        id: 'blah-account',
+      },
+    })),
+  },
+}));
 jest.mock('../../log');
 jest.mock('@expo/code-signing-certificates', () => ({
   ...(jest.requireActual(
@@ -249,6 +260,7 @@ describe(signManifestString, () => {
         certificateChainForResponse: [],
         certificateForPrivateKey: mockSelfSigned.certificate,
         privateKey: mockSelfSigned.privateKey,
+        scopeKey: null,
       })
     ).toMatchSnapshot();
   });
@@ -259,6 +271,7 @@ describe(signManifestString, () => {
         certificateChainForResponse: [],
         certificateForPrivateKey: '',
         privateKey: mockSelfSigned.privateKey,
+        scopeKey: null,
       })
     ).toThrowError('Invalid PEM formatted message.');
   });

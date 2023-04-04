@@ -8,7 +8,7 @@ import { vol } from 'memfs';
 import nullthrows from 'nullthrows';
 
 import { asMock } from '../../../../__tests__/asMock';
-import { getProjectAsync } from '../../../../api/getProject';
+import { AppQuery } from '../../../../api/graphql/queries/AppQuery';
 import { APISettings } from '../../../../api/settings';
 import { getUserAsync } from '../../../../api/user/user';
 import {
@@ -21,10 +21,16 @@ import { ServerHeaders, ServerRequest } from '../server.types';
 
 jest.mock('../../../../api/user/user');
 jest.mock('../../../../log');
-jest.mock('../../../../api/getProject', () => ({
-  getProjectAsync: jest.fn(() => ({
-    scopeKey: 'scope-key',
-  })),
+jest.mock('../../../../api/graphql/queries/AppQuery', () => ({
+  AppQuery: {
+    byIdAsync: jest.fn(async () => ({
+      id: 'blah',
+      scopeKey: 'scope-key',
+      ownerAccount: {
+        id: 'blah-account',
+      },
+    })),
+  },
 }));
 jest.mock('@expo/code-signing-certificates', () => ({
   ...(jest.requireActual(
@@ -165,7 +171,13 @@ describe('getParsedHeaders', () => {
 describe('_getManifestResponseAsync', () => {
   beforeEach(() => {
     APISettings.isOffline = false;
-    asMock(getUserAsync).mockImplementation(async () => ({} as any));
+    asMock(getUserAsync).mockImplementation(async () => ({
+      __typename: 'User',
+      id: 'userwat',
+      username: 'wat',
+      primaryAccount: { id: 'blah-account' },
+      accounts: [],
+    }));
   });
 
   function createMiddleware(
@@ -249,7 +261,7 @@ describe('_getManifestResponseAsync', () => {
     });
   });
 
-  it('returns a signed manifest', async () => {
+  it('returns a legacy-signed manifest', async () => {
     const middleware = createMiddleware();
 
     const results = await middleware._getManifestResponseAsync({
@@ -280,10 +292,10 @@ describe('_getManifestResponseAsync', () => {
         },
         expoClient: expect.anything(),
         expoGo: {},
-        scopeKey: expect.not.stringMatching(/@anonymous\/.*/),
+        scopeKey: 'scope-key',
       },
     });
-    expect(getProjectAsync).toBeCalledTimes(1);
+    expect(AppQuery.byIdAsync).toBeCalledTimes(1);
 
     // Test memoization on API calls...
     await middleware._getManifestResponseAsync({
@@ -294,7 +306,7 @@ describe('_getManifestResponseAsync', () => {
       hostname: 'localhost',
     });
 
-    expect(getProjectAsync).toBeCalledTimes(1);
+    expect(AppQuery.byIdAsync).toBeCalledTimes(1);
   });
 
   it('returns a code signed manifest with developers own key when requested', async () => {
@@ -347,7 +359,7 @@ describe('_getManifestResponseAsync', () => {
         },
         expoClient: expect.anything(),
         expoGo: {},
-        scopeKey: expect.not.stringMatching(/@anonymous\/.*/),
+        scopeKey: 'scope-key',
       },
     });
 
@@ -389,7 +401,132 @@ describe('_getManifestResponseAsync', () => {
         },
         expoClient: expect.anything(),
         expoGo: {},
-        scopeKey: expect.not.stringMatching(/@anonymous\/.*/),
+        scopeKey: 'scope-key',
+      },
+    });
+
+    const { body: certificateChainPartBody } = nullthrows(
+      await getMultipartPartAsync('certificate_chain', results)
+    );
+    expect(certificateChainPartBody).toMatchSnapshot();
+  });
+
+  it('returns a code signed manifest with developers own key when requested when offline', async () => {
+    vol.fromJSON({
+      'certs/cert.pem': mockSelfSigned.certificate,
+      'custom/private/key/path/private-key.pem': mockSelfSigned.privateKey,
+    });
+
+    APISettings.isOffline = true;
+
+    const middleware = createMiddleware(
+      {
+        updates: {
+          codeSigningCertificate: 'certs/cert.pem',
+          codeSigningMetadata: {
+            keyid: 'testkeyid',
+            alg: 'rsa-v1_5-sha256',
+          },
+        },
+      },
+      {
+        privateKeyPath: 'custom/private/key/path/private-key.pem',
+      }
+    );
+
+    const results = await middleware._getManifestResponseAsync({
+      explicitlyPrefersMultipartMixed: true,
+      platform: 'android',
+      acceptSignature: true,
+      expectSignature: 'sig, keyid="testkeyid", alg="rsa-v1_5-sha256"',
+      hostname: 'localhost',
+    });
+    expect(results.version).toBe('45.0.0');
+
+    // when offline, don't serve legacy signature even when developer code signing is present
+    expect(results.headers.get('expo-manifest-signature')).toBeUndefined();
+
+    const { body, headers } = nullthrows(await getMultipartPartAsync('manifest', results));
+    expect(headers.get('expo-signature')).toContain('keyid="testkeyid"');
+
+    expect(JSON.parse(body)).toEqual({
+      id: expect.any(String),
+      createdAt: expect.any(String),
+      runtimeVersion: '45.0.0',
+      launchAsset: {
+        key: 'bundle',
+        contentType: 'application/javascript',
+        url: 'https://localhost:8081/bundle.js',
+      },
+      assets: [],
+      metadata: {},
+      extra: {
+        eas: {
+          projectId: 'projectId',
+        },
+        expoClient: expect.anything(),
+        expoGo: {},
+        scopeKey: expect.stringMatching(/@anonymous\/.*/),
+      },
+    });
+
+    const certificateChainMultipartPart = await getMultipartPartAsync('certificate_chain', results);
+    expect(certificateChainMultipartPart).toBeNull();
+  });
+
+  it('returns a code signed manifest with expo-root chain when requested when offline and has cached dev cert', async () => {
+    // start online to cache cert and stuff
+    APISettings.isOffline = false;
+
+    const middlewareOnline = createMiddleware();
+    await middlewareOnline._getManifestResponseAsync({
+      explicitlyPrefersMultipartMixed: true,
+      platform: 'android',
+      acceptSignature: true,
+      expectSignature: 'sig, keyid="expo-root", alg="rsa-v1_5-sha256"',
+      hostname: 'localhost',
+    });
+
+    // go offline
+    APISettings.isOffline = true;
+
+    const middleware = createMiddleware();
+
+    const results = await middleware._getManifestResponseAsync({
+      explicitlyPrefersMultipartMixed: true,
+      platform: 'android',
+      acceptSignature: true,
+      expectSignature: 'sig, keyid="expo-root", alg="rsa-v1_5-sha256"',
+      hostname: 'localhost',
+    });
+    expect(results.version).toBe('45.0.0');
+
+    // when offline, don't serve legacy signature even when developer code signing is present
+    expect(results.headers.get('expo-manifest-signature')).toBeUndefined();
+
+    const { body: manifestPartBody, headers: manifestPartHeaders } = nullthrows(
+      await getMultipartPartAsync('manifest', results)
+    );
+    expect(manifestPartHeaders.get('expo-signature')).toContain('keyid="expo-go"');
+
+    expect(JSON.parse(manifestPartBody)).toEqual({
+      id: expect.any(String),
+      createdAt: expect.any(String),
+      runtimeVersion: '45.0.0',
+      launchAsset: {
+        key: 'bundle',
+        contentType: 'application/javascript',
+        url: 'https://localhost:8081/bundle.js',
+      },
+      assets: [],
+      metadata: {},
+      extra: {
+        eas: {
+          projectId: 'projectId',
+        },
+        expoClient: expect.anything(),
+        expoGo: {},
+        scopeKey: 'scope-key',
       },
     });
 

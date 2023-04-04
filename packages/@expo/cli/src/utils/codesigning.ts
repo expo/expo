@@ -18,6 +18,7 @@ import { Dictionary, parseDictionary } from 'structured-headers';
 
 import { getExpoGoIntermediateCertificateAsync } from '../api/getExpoGoIntermediateCertificate';
 import { getProjectDevelopmentCertificateAsync } from '../api/getProjectDevelopmentCertificate';
+import { AppQuery } from '../api/graphql/queries/AppQuery';
 import { APISettings } from '../api/settings';
 import * as Log from '../log';
 import { CommandError } from './errors';
@@ -35,14 +36,20 @@ export type CodeSigningInfo = {
    * An empty array indicates that there is no need to serve the certificate chain in the multipart response.
    */
   certificateChainForResponse: string[];
+  /**
+   * Scope key cached for the project when certificate is development Expo Go code signing.
+   * For project code signing (keyId == the projects generated keyId) this is undefined.
+   */
+  scopeKey: string | null;
 };
 
 type StoredDevelopmentExpoRootCodeSigningInfo = {
   easProjectId: string | null;
+  scopeKey: string | null;
   privateKey: string | null;
   certificateChain: string[] | null;
 };
-const DEVELOPMENT_CODE_SIGNING_SETTINGS_FILE_NAME = 'development-code-signing-settings.json';
+const DEVELOPMENT_CODE_SIGNING_SETTINGS_FILE_NAME = 'development-code-signing-settings-2.json';
 
 export function getDevelopmentCodeSigningDirectory(): string {
   return path.join(getExpoHomeDirectory(), 'codesigning');
@@ -95,6 +102,7 @@ function getProjectDevelopmentCodeSigningInfoFile<T extends JSONObject>(defaults
 export const DevelopmentCodeSigningInfoFile =
   getProjectDevelopmentCodeSigningInfoFile<StoredDevelopmentExpoRootCodeSigningInfo>({
     easProjectId: null,
+    scopeKey: null,
     privateKey: null,
     certificateChain: null,
   });
@@ -262,6 +270,7 @@ async function getProjectCodeSigningCertificateAsync(
     privateKey: privateKeyPEM,
     certificateForPrivateKey: certificatePEM,
     certificateChainForResponse: [],
+    scopeKey: null,
   };
 }
 
@@ -313,7 +322,11 @@ function validateStoredDevelopmentExpoRootCertificateCodeSigningInfo(
     return null;
   }
 
-  const { privateKey: privateKeyPEM, certificateChain: certificatePEMs } = codeSigningInfo;
+  const {
+    privateKey: privateKeyPEM,
+    certificateChain: certificatePEMs,
+    scopeKey,
+  } = codeSigningInfo;
   if (!privateKeyPEM || !certificatePEMs) {
     return null;
   }
@@ -329,13 +342,14 @@ function validateStoredDevelopmentExpoRootCertificateCodeSigningInfo(
     return null;
   }
 
-  // TODO(wschurman): maybe do more validation
+  // TODO(wschurman): maybe do more validation, like validation of projectID and scopeKey within eas certificate extension
 
   return {
     keyId: 'expo-go',
     certificateChainForResponse: certificatePEMs,
     certificateForPrivateKey: certificatePEMs[0],
     privateKey: privateKeyPEM,
+    scopeKey,
   };
 }
 
@@ -346,13 +360,17 @@ async function fetchAndCacheNewDevelopmentCodeSigningInfoAsync(
   const keyPairPEM = convertKeyPairToPEM(keyPair);
   const csr = generateCSR(keyPair, `Development Certificate for ${easProjectId}`);
   const csrPEM = convertCSRToCSRPEM(csr);
-  const [developmentSigningCertificate, expoGoIntermediateCertificate] = await Promise.all([
-    getProjectDevelopmentCertificateAsync(easProjectId, csrPEM),
-    getExpoGoIntermediateCertificateAsync(easProjectId),
-  ]);
+  const [appInfo, developmentSigningCertificate, expoGoIntermediateCertificate] = await Promise.all(
+    [
+      AppQuery.byIdAsync(easProjectId),
+      getProjectDevelopmentCertificateAsync(easProjectId, csrPEM),
+      getExpoGoIntermediateCertificateAsync(easProjectId),
+    ]
+  );
 
   await DevelopmentCodeSigningInfoFile.setAsync(easProjectId, {
     easProjectId,
+    scopeKey: appInfo.scopeKey,
     privateKey: keyPairPEM.privateKeyPEM,
     certificateChain: [developmentSigningCertificate, expoGoIntermediateCertificate],
   });
@@ -362,6 +380,7 @@ async function fetchAndCacheNewDevelopmentCodeSigningInfoAsync(
     certificateChainForResponse: [developmentSigningCertificate, expoGoIntermediateCertificate],
     certificateForPrivateKey: developmentSigningCertificate,
     privateKey: keyPairPEM.privateKeyPEM,
+    scopeKey: appInfo.scopeKey,
   };
 }
 /**

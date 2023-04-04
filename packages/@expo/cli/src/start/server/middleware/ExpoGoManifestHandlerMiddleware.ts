@@ -1,16 +1,18 @@
 import { ExpoUpdatesManifest } from '@expo/config';
 import { Updates } from '@expo/config-plugins';
 import accepts from 'accepts';
-import assert from 'assert';
+import chalk from 'chalk';
 import crypto from 'crypto';
 import FormData from 'form-data';
 import { serializeDictionary, Dictionary } from 'structured-headers';
 
-import { getProjectAsync } from '../../../api/getProject';
+import { AppQuery } from '../../../api/graphql/queries/AppQuery';
 import { APISettings } from '../../../api/settings';
 import { signExpoGoManifestAsync } from '../../../api/signManifest';
 import UserSettings from '../../../api/user/UserSettings';
 import { ANONYMOUS_USERNAME, getUserAsync } from '../../../api/user/user';
+import { Permission } from '../../../graphql/generated';
+import * as Log from '../../../log';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import {
   CodeSigningInfo,
@@ -19,6 +21,7 @@ import {
 } from '../../../utils/codesigning';
 import { CommandError } from '../../../utils/errors';
 import { memoize } from '../../../utils/fn';
+import { learnMore } from '../../../utils/link';
 import { stripPort } from '../../../utils/url';
 import { ManifestMiddleware, ManifestRequestInfo } from './ManifestMiddleware';
 import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
@@ -98,18 +101,20 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       this.options.privateKeyPath
     );
 
-    const easProjectId = exp.extra?.eas?.projectId;
-    const shouldUseAnonymousManifest = await shouldUseAnonymousManifestAsync(
+    const easProjectId = exp.extra?.eas?.projectId as string | undefined | null;
+    const scopeKeyToServeResult = await this.getResponseSignatureInfoAndScopeKeyAsync({
       easProjectId,
-      codeSigningInfo
-    );
-    const userAnonymousIdentifier = await UserSettings.getAnonymousIdentifierAsync();
-    if (!shouldUseAnonymousManifest) {
-      assert(easProjectId);
+      slug: exp.slug,
+      codeSigningInfo,
+    });
+
+    if (requestOptions.acceptSignature && scopeKeyToServeResult.shouldOmitLegacySignature) {
+      Log.warn(
+        `\n${scopeKeyToServeResult.omittanceReason}. ${chalk.dim(
+          learnMore('https://expo.fyi/development-manifest-signing')
+        )}`
+      );
     }
-    const scopeKey = shouldUseAnonymousManifest
-      ? `@${ANONYMOUS_USERNAME}/${exp.slug}-${userAnonymousIdentifier}`
-      : await this.getScopeKeyForProjectIdAsync(easProjectId);
 
     const expoUpdatesManifest: ExpoUpdatesManifest = {
       id: crypto.randomUUID(),
@@ -131,12 +136,12 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
           hostUri,
         },
         expoGo: expoGoConfig,
-        scopeKey,
+        scopeKey: scopeKeyToServeResult.scopeKey,
       },
     };
 
     const headers = this.getDefaultResponseHeaders();
-    if (requestOptions.acceptSignature && !shouldUseAnonymousManifest) {
+    if (requestOptions.acceptSignature && !scopeKeyToServeResult.shouldOmitLegacySignature) {
       const manifestSignature = await this.getSignedManifestStringAsync(expoUpdatesManifest);
       headers.set('expo-manifest-signature', manifestSignature);
     }
@@ -211,29 +216,121 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
 
   private getSignedManifestStringAsync = memoize(signExpoGoManifestAsync);
 
-  private getScopeKeyForProjectIdAsync = memoize(getScopeKeyForProjectIdAsync);
-}
+  private getAppByIdAsync = memoize(AppQuery.byIdAsync);
 
-/**
- * 1. No EAS project ID in config, then use anonymous scope key
- * 2. When offline or not logged in
- *   a. If code signing not accepted by client (only legacy manifest signing is supported), then use anonymous scope key
- *   b. If code signing accepted by client and no development code signing certificate is cached, then use anonymous scope key
- */
-async function shouldUseAnonymousManifestAsync(
-  easProjectId: string | undefined | null,
-  codeSigningInfo: CodeSigningInfo | null
-): Promise<boolean> {
-  if (!easProjectId || (APISettings.isOffline && codeSigningInfo === null)) {
-    return true;
+  private async getResponseSignatureInfoAndScopeKeyAsync({
+    easProjectId,
+    slug,
+    codeSigningInfo,
+  }: {
+    easProjectId: string | undefined | null;
+    slug: string;
+    codeSigningInfo: CodeSigningInfo | null;
+  }): Promise<
+    | {
+        shouldOmitLegacySignature: true;
+        omittanceReason: string;
+        scopeKey: string;
+      }
+    | {
+        shouldOmitLegacySignature: false;
+        scopeKey: string;
+      }
+  > {
+    // if there isn't an EAS project, we couldn't have ever fetched codeSigningInfo with a scope key (implicit assumption)
+    // and we won't be able to sign or fetch a scope key
+    if (!easProjectId) {
+      return {
+        shouldOmitLegacySignature: true,
+        omittanceReason:
+          'This app is not associated with an EAS project so it may run with limited permissions',
+        scopeKey: await getAnonymousScopeKeyAsync(slug),
+      };
+    }
+
+    // if offline but we have code signing info with a scope key, we can use that scope key
+    if (APISettings.isOffline && codeSigningInfo && codeSigningInfo.scopeKey) {
+      return {
+        shouldOmitLegacySignature: true,
+        omittanceReason: 'Using saved code signing info to sign manifest while offline',
+        scopeKey: codeSigningInfo.scopeKey,
+      };
+    }
+
+    // if offline and don't have code signing info, we can't sign or fetch a scope key
+    if (APISettings.isOffline) {
+      return {
+        shouldOmitLegacySignature: true,
+        omittanceReason: 'This app may run with limited permissions while in offline mode',
+        scopeKey: await getAnonymousScopeKeyAsync(slug),
+      };
+    }
+
+    const user = await getUserAsync();
+
+    // if not logged in but we have code signing info with a scope key, we can use that scope key
+    if (!user && codeSigningInfo && codeSigningInfo.scopeKey) {
+      return {
+        shouldOmitLegacySignature: true,
+        omittanceReason: 'Using saved code signing info to sign manifest while not logged in',
+        scopeKey: codeSigningInfo.scopeKey,
+      };
+    }
+
+    // if not logged in and don't have code signing info, we can't sign or fetch a scope key
+    if (!user) {
+      return {
+        shouldOmitLegacySignature: true,
+        omittanceReason: 'This app may run with limited permissions when not logged in',
+        scopeKey: await getAnonymousScopeKeyAsync(slug),
+      };
+    }
+
+    const app = await this.getAppByIdAsync(easProjectId);
+    const owningAccountId = app.ownerAccount.id;
+
+    const owningAccountIsUserPrimaryAccount =
+      user.__typename === 'User' || user.__typename === 'SSOUser'
+        ? user.primaryAccount.id === owningAccountId
+        : false;
+    const userHasPublishPermissionForOwningAccount = !!user.accounts
+      .find((account) => account.id === owningAccountId)
+      ?.users?.find((userPermission) => userPermission.actor.id === user.id)
+      ?.permissions?.includes(Permission.Publish);
+    const userCanSignManifest =
+      owningAccountIsUserPrimaryAccount || userHasPublishPermissionForOwningAccount;
+
+    // if the user can't sign the manifest but we have code signing info with a scope key, we can use that scope key
+    if (!userCanSignManifest && codeSigningInfo && codeSigningInfo.scopeKey) {
+      if (app.scopeKey !== codeSigningInfo.scopeKey) {
+        throw new Error(`scopeKey mismatch: ${app.scopeKey} !== ${codeSigningInfo.scopeKey}`);
+      }
+      return {
+        shouldOmitLegacySignature: true,
+        omittanceReason:
+          'Using saved code signing info to sign manifest because you do not have a developer role on the account that owns this project',
+        scopeKey: app.scopeKey,
+      };
+    }
+
+    // if the user can't sign the manifest and we don't have code signing info, we can't sign the manifest and an anonymous
+    // scope key should be used as an extra precaution
+    if (!userCanSignManifest) {
+      return {
+        shouldOmitLegacySignature: true,
+        omittanceReason:
+          'This app may run with limited permissions because you do not have a developer role on the account that owns this project',
+        scopeKey: await getAnonymousScopeKeyAsync(slug),
+      };
+    }
+
+    return { shouldOmitLegacySignature: false, scopeKey: app.scopeKey };
   }
-
-  return !(await getUserAsync());
 }
 
-async function getScopeKeyForProjectIdAsync(projectId: string): Promise<string> {
-  const project = await getProjectAsync(projectId);
-  return project.scopeKey;
+async function getAnonymousScopeKeyAsync(slug: string): Promise<string> {
+  const userAnonymousIdentifier = await UserSettings.getAnonymousIdentifierAsync();
+  return `@${ANONYMOUS_USERNAME}/${slug}-${userAnonymousIdentifier}`;
 }
 
 function convertToDictionaryItemsRepresentation(obj: { [key: string]: string }): Dictionary {
