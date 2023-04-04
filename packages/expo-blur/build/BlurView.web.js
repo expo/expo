@@ -21,6 +21,7 @@ function getBlurStyle({ intensity, tint }) {
     };
     if (isBlurSupported()) {
         style.backdropFilter = `saturate(180%) blur(${intensity * 0.2}px)`;
+        style.webkitBackdropFilter = `saturate(180%) blur(${intensity * 0.2}px)`;
     }
     return style;
 }
