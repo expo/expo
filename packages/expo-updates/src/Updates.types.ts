@@ -38,7 +38,7 @@ export type Manifest = ClassicManifest | typeof Constants.manifest2;
 /**
  * The successful result of checking for a new update.
  */
-type UpdateCheckResultSuccess = {
+export type UpdateCheckResultSuccess = {
   /**
    * Signifies that an update is available.
    */
@@ -52,7 +52,7 @@ type UpdateCheckResultSuccess = {
 /**
  * The failed result of checking for a new update.
  */
-type UpdateCheckResultFailure = {
+export type UpdateCheckResultFailure = {
   /**
    * Signifies that the app is already running the latest available update.
    */
@@ -71,7 +71,7 @@ export type UpdateCheckResult = UpdateCheckResultSuccess | UpdateCheckResultFail
 /**
  * The successful result of fetching a new update.
  */
-type UpdateFetchResultSuccess = {
+export type UpdateFetchResultSuccess = {
   /**
    * Signifies that the fetched bundle is new (that is, a different version than what's currently
    * running).
@@ -86,7 +86,7 @@ type UpdateFetchResultSuccess = {
 /**
  * The failed result of fetching a new update.
  */
-type UpdateFetchResultFailure = {
+export type UpdateFetchResultFailure = {
   /**
    * Signifies that the fetched bundle is the same as version which is currently running.
    */
