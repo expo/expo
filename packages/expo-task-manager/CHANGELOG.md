@@ -10,7 +10,7 @@
 
 ### 💡 Others
 
-- Update `defineTask` to accept type arguments.
+- Update `defineTask` to accept type arguments. ([#21958](https://github.com/expo/expo/pull/21958) by [@kazuma0129](https://github.com/kazuma0129))
 
 ## 11.1.1 — 2023-02-09
 
