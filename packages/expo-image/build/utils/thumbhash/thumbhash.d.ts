@@ -6,14 +6,14 @@
  * @param rgba The pixels in the input image, row-by-row. Must have w*h*4 elements.
  * @returns The ThumbHash as a Uint8Array.
  */
-export declare function rgbaToThumbHash(w: number, h: number, rgba: number[]): Uint8Array;
+export declare function rgbaToThumbHash(w: number, h: number, rgba: Uint8Array): Uint8Array;
 /**
  * Decodes a ThumbHash to an RGBA image. RGB is not be premultiplied by A.
  *
  * @param hash The bytes of the ThumbHash.
  * @returns The width, height, and pixels of the rendered placeholder image.
  */
-export declare function thumbHashToRGBA(hash: any): {
+export declare function thumbHashToRGBA(hash: Uint8Array): {
     w: number;
     h: number;
     rgba: Uint8Array;
@@ -24,7 +24,7 @@ export declare function thumbHashToRGBA(hash: any): {
  * @param hash The bytes of the ThumbHash.
  * @returns The RGBA values for the average color. Each value ranges from 0 to 1.
  */
-export declare function thumbHashToAverageRGBA(hash: number[]): {
+export declare function thumbHashToAverageRGBA(hash: Uint8Array): {
     r: number;
     g: number;
     b: number;
@@ -36,7 +36,7 @@ export declare function thumbHashToAverageRGBA(hash: number[]): {
  * @param hash The bytes of the ThumbHash.
  * @returns The approximate aspect ratio (i.e. width / height).
  */
-export declare function thumbHashToApproximateAspectRatio(hash: number[]): number;
+export declare function thumbHashToApproximateAspectRatio(hash: Uint8Array): number;
 /**
  * Encodes an RGBA image to a PNG data URL. RGB should not be premultiplied by
  * A. This is optimized for speed and simplicity and does not optimize for size
@@ -55,11 +55,12 @@ export declare function rgbaToDataURL(w: number, h: number, rgba: Uint8Array): s
  * @param hash The bytes of the ThumbHash.
  * @returns A data URL containing a PNG for the rendered ThumbHash.
  */
-export declare function thumbHashToDataURL(hash: any): string;
+export declare function thumbHashToDataURL(hash: Uint8Array): string;
 /**
  * Convenience function added to the original thumbhash code, allows generating a thumbhash image directly from
  * thumbhash string.
  * @param thumbhash string from which thumbhashDataURL should be generated
+ * @returns A data URL containing a PNG for the rendered ThumbHash
  */
 export declare function thumbHashStringToDataURL(thumbhash: string): string;
 //# sourceMappingURL=thumbhash.d.ts.map

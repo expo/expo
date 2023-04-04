@@ -22,19 +22,18 @@ object ThumbhashDecoder {
     var avg_g = 0f
     var avg_b = 0f
     var avg_a = 0f
-    run {
-      var i = 0
-      var j = 0
-      while (i < w * h) {
-        val alpha = (rgba[j + 3].toInt() and 255) / 255.0f
-        avg_r += alpha / 255.0f * (rgba[j].toInt() and 255)
-        avg_g += alpha / 255.0f * (rgba[j + 1].toInt() and 255)
-        avg_b += alpha / 255.0f * (rgba[j + 2].toInt() and 255)
-        avg_a += alpha
-        i++
-        j += 4
-      }
+    var i = 0
+    var j = 0
+    while (i < w * h) {
+      val alpha = (rgba[j + 3].toInt() and 255) / 255.0f
+      avg_r += alpha / 255.0f * (rgba[j].toInt() and 255)
+      avg_g += alpha / 255.0f * (rgba[j + 1].toInt() and 255)
+      avg_b += alpha / 255.0f * (rgba[j + 2].toInt() and 255)
+      avg_a += alpha
+      i++
+      j += 4
     }
+
     if (avg_a > 0) {
       avg_r /= avg_a
       avg_g /= avg_a
@@ -50,8 +49,8 @@ object ThumbhashDecoder {
     val a = FloatArray(w * h) // alpha
 
     // Convert the image from RGBA to LPQA (composite atop the average color)
-    var i = 0
-    var j = 0
+    i = 0
+    j = 0
     while (i < w * h) {
       val alpha = (rgba[j + 3].toInt() and 255) / 255.0f
       val r = avg_r * (1.0f - alpha) + alpha / 255.0f * (rgba[j].toInt() and 255)

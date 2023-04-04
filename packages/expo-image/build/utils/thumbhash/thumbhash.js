@@ -329,6 +329,7 @@ export function thumbHashToDataURL(hash) {
  * Convenience function added to the original thumbhash code, allows generating a thumbhash image directly from
  * thumbhash string.
  * @param thumbhash string from which thumbhashDataURL should be generated
+ * @returns A data URL containing a PNG for the rendered ThumbHash
  */
 export function thumbHashStringToDataURL(thumbhash) {
     const hash = Uint8Array.from(atob(thumbhash), (c) => c.charCodeAt(0));

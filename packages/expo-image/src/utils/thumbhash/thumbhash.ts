@@ -9,7 +9,7 @@
  * @returns The ThumbHash as a Uint8Array.
  */
 
-export function rgbaToThumbHash(w: number, h: number, rgba: number[]) {
+export function rgbaToThumbHash(w: number, h: number, rgba: Uint8Array) {
   // Encoding an image larger than 100x100 is slow with no benefit
   if (w > 100 || h > 100) throw new Error(`${w}x${h} doesn't fit in 100x100`);
   const { PI, round, max, cos, abs } = Math;
@@ -120,7 +120,7 @@ export function rgbaToThumbHash(w: number, h: number, rgba: number[]) {
  * @param hash The bytes of the ThumbHash.
  * @returns The width, height, and pixels of the rendered placeholder image.
  */
-export function thumbHashToRGBA(hash) {
+export function thumbHashToRGBA(hash: Uint8Array) {
   const { PI, min, max, cos, round } = Math;
 
   // Read the constants
@@ -215,7 +215,7 @@ export function thumbHashToRGBA(hash) {
  * @param hash The bytes of the ThumbHash.
  * @returns The RGBA values for the average color. Each value ranges from 0 to 1.
  */
-export function thumbHashToAverageRGBA(hash: number[]) {
+export function thumbHashToAverageRGBA(hash: Uint8Array) {
   const { min, max } = Math;
   const header = hash[0] | (hash[1] << 8) | (hash[2] << 16);
   const l = (header & 63) / 63;
@@ -240,7 +240,7 @@ export function thumbHashToAverageRGBA(hash: number[]) {
  * @param hash The bytes of the ThumbHash.
  * @returns The approximate aspect ratio (i.e. width / height).
  */
-export function thumbHashToApproximateAspectRatio(hash: number[]) {
+export function thumbHashToApproximateAspectRatio(hash: Uint8Array) {
   const header = hash[3];
   const hasAlpha = hash[2] & 0x80;
   const isLandscape = hash[4] & 0x80;
@@ -370,7 +370,7 @@ export function rgbaToDataURL(w: number, h: number, rgba: Uint8Array) {
  * @param hash The bytes of the ThumbHash.
  * @returns A data URL containing a PNG for the rendered ThumbHash.
  */
-export function thumbHashToDataURL(hash) {
+export function thumbHashToDataURL(hash: Uint8Array): string {
   const image = thumbHashToRGBA(hash);
   return rgbaToDataURL(image.w, image.h, image.rgba);
 }
@@ -379,8 +379,9 @@ export function thumbHashToDataURL(hash) {
  * Convenience function added to the original thumbhash code, allows generating a thumbhash image directly from
  * thumbhash string.
  * @param thumbhash string from which thumbhashDataURL should be generated
+ * @returns A data URL containing a PNG for the rendered ThumbHash
  */
-export function thumbHashStringToDataURL(thumbhash: string) {
+export function thumbHashStringToDataURL(thumbhash: string): string {
   const hash = Uint8Array.from(atob(thumbhash), (c) => c.charCodeAt(0));
   return thumbHashToDataURL(hash);
 }
