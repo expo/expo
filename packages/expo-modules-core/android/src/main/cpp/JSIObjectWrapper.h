@@ -30,4 +30,12 @@ public:
    */
   virtual std::shared_ptr<jsi::Value> get() = 0;
 };
+
+class JSIFunctionWrapper {
+public:
+  /**
+   * @return a pointer to the underlying jsi::Value.
+   */
+  virtual std::shared_ptr<jsi::Function> get() = 0;
+};
 } // namespace expo
