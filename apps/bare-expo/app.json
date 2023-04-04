@@ -46,6 +46,11 @@
     "notification": {
       "serviceWorkerPath": "/expo-service-worker.js",
       "vapidPublicKey": "BNHvR05XkY5LH9GdN0GreLx2wZnK9IwNJGVmo3jujIkFni4of26E3U3fnt9nUrZfM7h0omdIHKM0eshkzTSFOWQ"
+    },
+    "extra": {
+      "eas": {
+        "projectId": "2c28de10-a2cd-11e6-b8ce-59d1587e6774"
+      }
     }
   }
 }
