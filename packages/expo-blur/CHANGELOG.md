@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Web: Add `-webkit` prefixed property to support `backdropFilter` on Safari browsers
+
 ### 💡 Others
 
 ## 11.0.0 — 2021-12-03
