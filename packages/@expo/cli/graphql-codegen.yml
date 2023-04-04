@@ -1,0 +1,15 @@
+overwrite: true
+schema: 'https://staging-api.expo.dev/graphql'
+documents:
+  - 'src/**/graphql/**/!(*.d).{ts,tsx}'
+generates:
+  src/graphql/generated.ts:
+    plugins:
+      - 'typescript'
+      - 'typescript-operations'
+    config:
+      dedupeOperationSuffix: true
+    hooks:
+      afterOneFileWrite:
+        - 'node ./scripts/annotate-graphql-codegen.js'
+
