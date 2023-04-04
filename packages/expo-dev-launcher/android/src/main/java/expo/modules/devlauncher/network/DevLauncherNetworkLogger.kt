@@ -45,11 +45,11 @@ class DevLauncherNetworkLogger private constructor() {
   }
 
   /**
-   * Emits CDP `Network.requestWillBeSent` event
+   * Emits CDP `Network.requestWillBeSent` and `Network.requestWillBeSentExtraInfo` events
    */
   fun emitNetworkWillBeSent(request: Request, requestId: String, redirectResponse: Response?) {
     val now = BigDecimal(System.currentTimeMillis() / 1000.0).setScale(3, RoundingMode.CEILING)
-    var requestParams = buildMap<String, Any> {
+    val requestParams = buildMap<String, Any> {
       put("url", request.url().toString())
       put("method", request.method())
       put("headers", request.headers().toSingleMap())
@@ -60,12 +60,12 @@ class DevLauncherNetworkLogger private constructor() {
         put("postData", buffer.readUtf8(buffer.size.coerceAtMost(MAX_BODY_SIZE)))
       }
     }
-    var params = buildMap<String, Any> {
+    val requestWillBeSentParams = buildMap<String, Any> {
       put("requestId", requestId)
       put("loaderId", "")
       put("documentURL", "mobile")
       put("initiator", mapOf("type" to "script"))
-      put("redirectHasExtraInfo", false)
+      put("redirectHasExtraInfo", redirectResponse != null)
       put("request", requestParams)
       put("referrerPolicy", "no-referrer")
       put("type", "Fetch")
@@ -80,11 +80,25 @@ class DevLauncherNetworkLogger private constructor() {
         ))
       }
     }
-    val data = JSONObject(mapOf(
+    val requestWillBeSentData = JSONObject(mapOf(
       "method" to "Network.requestWillBeSent",
-      "params" to params,
+      "params" to requestWillBeSentParams,
     ))
-    inspectorPackagerConnection.sendWrappedEventToAllPages(data.toString())
+    inspectorPackagerConnection.sendWrappedEventToAllPages(requestWillBeSentData.toString())
+
+    val extraInfoParams = mapOf(
+      "requestId" to requestId,
+      "associatedCookies" to emptyList<Void>(),
+      "headers" to request.headers().toSingleMap(),
+      "connectTiming" to mapOf(
+        "requestTime" to now,
+      ),
+    )
+    val extraInfoData = JSONObject(mapOf(
+      "method" to "Network.requestWillBeSentExtraInfo",
+      "params" to extraInfoParams
+    ))
+    inspectorPackagerConnection.sendWrappedEventToAllPages(extraInfoData.toString())
   }
 
   /**
@@ -92,7 +106,7 @@ class DevLauncherNetworkLogger private constructor() {
    */
   fun emitNetworkResponse(request: Request, requestId: String, response: Response) {
     val now = BigDecimal(System.currentTimeMillis() / 1000.0).setScale(3, RoundingMode.CEILING)
-    var params = mapOf(
+    val responseReceivedParams = mapOf(
       "requestId" to requestId,
       "loaderId" to "",
       "hasExtraInfo" to false,
@@ -107,22 +121,22 @@ class DevLauncherNetworkLogger private constructor() {
       "type" to "Fetch",
       "timestamp" to now,
     )
-    var data = JSONObject(mapOf(
+    val responseReceivedData = JSONObject(mapOf(
       "method" to "Network.responseReceived",
-      "params" to params,
+      "params" to responseReceivedParams,
     ))
-    inspectorPackagerConnection.sendWrappedEventToAllPages(data.toString())
+    inspectorPackagerConnection.sendWrappedEventToAllPages(responseReceivedData.toString())
 
-    params = mapOf(
+    val loadingFinishedParams = mapOf(
       "requestId" to requestId,
       "timestamp" to now,
       "encodedDataLength" to (response.body()?.contentLength() ?: 0),
     )
-    data = JSONObject(mapOf(
+    val loadingFinishedData = JSONObject(mapOf(
       "method" to "Network.loadingFinished",
-      "params" to params,
+      "params" to loadingFinishedParams,
     ))
-    inspectorPackagerConnection.sendWrappedEventToAllPages(data.toString())
+    inspectorPackagerConnection.sendWrappedEventToAllPages(loadingFinishedData.toString())
   }
 
   /**
@@ -137,12 +151,12 @@ class DevLauncherNetworkLogger private constructor() {
     val contentType = body.contentType()
     val isText = contentType?.type() == "text" || (contentType?.type() == "application" && contentType?.subtype() == "json")
     val bodyString = if (isText) body.string() else body.source().readByteString().base64()
-    var params = mapOf(
+    val params = mapOf(
       "requestId" to requestId,
       "body" to bodyString,
       "base64Encoded" to !isText,
     )
-    var data = JSONObject(mapOf(
+    val data = JSONObject(mapOf(
       "method" to "Expo(Network.receivedResponseBody)",
       "params" to params,
     ))
