@@ -43,7 +43,7 @@ type UpdateCheckResultRollBackToEmbedded = {
 /**
  * The successful result of checking for a new update.
  */
-type UpdateCheckResultSuccess = {
+export type UpdateCheckResultSuccess = {
     /**
      * Signifies that an update is available.
      */
@@ -60,7 +60,7 @@ type UpdateCheckResultSuccess = {
 /**
  * The failed result of checking for a new update.
  */
-type UpdateCheckResultFailure = {
+export type UpdateCheckResultFailure = {
     /**
      * Signifies that the app is already running the latest available update.
      */
