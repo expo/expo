@@ -9,6 +9,7 @@ generates:
       - 'typescript-operations'
     config:
       dedupeOperationSuffix: true
+      onlyOperationTypes: true
     hooks:
       afterOneFileWrite:
         - 'node ./scripts/annotate-graphql-codegen.js'
