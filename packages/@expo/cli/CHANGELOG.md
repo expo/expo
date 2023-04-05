@@ -10,7 +10,10 @@
 
 ### 🐛 Bug fixes
 
+- Fix legacy accept signature parsing. ([#21970](https://github.com/expo/expo/pull/21970) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
+
 - Update migration map to suggest standalone npx expo doctor instead of expo-cli doctor. ([#18548](https://github.com/expo/expo/pull/21931) by [@keith-kurak](https://github.com/keith-kurak))
 
 ## 0.6.2 — 2023-02-21

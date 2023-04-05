@@ -22,7 +22,8 @@ NS_ASSUME_NONNULL_BEGIN
     @"EXUpdatesCheckOnLaunch": @"ALWAYS",
     @"EXUpdatesHasEmbeddedUpdate": @(NO),
     @"EXUpdatesEnabled": @(YES),
-    @"EXUpdatesRequestHeaders": requestHeaders
+    @"EXUpdatesRequestHeaders": requestHeaders,
+    @"EXUpdatesExpectsSignedManifest": @(NO),
   };
 }
 

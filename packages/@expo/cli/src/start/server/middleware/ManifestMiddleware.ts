@@ -156,6 +156,18 @@ export abstract class ManifestMiddleware<
   /** Parse request headers into options. */
   public abstract getParsedHeaders(req: ServerRequest): TManifestRequestInfo;
 
+  /**
+   * This header is specified as a string "true" or "false", in one of two headers:
+   * - exponent-accept-signature
+   * - expo-accept-signature
+   */
+  protected getLegacyAcceptSignatureHeader(req: ServerRequest): boolean {
+    return (
+      req.headers['exponent-accept-signature'] === 'true' ||
+      req.headers['expo-accept-signature'] === 'true'
+    );
+  }
+
   /** Store device IDs that were sent in the request headers. */
   private async saveDevicesAsync(req: ServerRequest) {
     const deviceIds = req.headers?.['expo-dev-client-id'];
