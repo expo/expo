@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 PACKAGER_PORT=2137
-PACKAGER_IP=`ifconfig en0 | grep inet | grep -v inet6 | awk '{print $2}'`
+PACKAGER_IP=`ifconfig | grep -v 127.0.0.1  | grep inet | grep -v inet6 | awk 'NR==1 {print $2}'`
 PACKAGER_HOST="$PACKAGER_IP:$PACKAGER_PORT"
 HOST_FILE='./assets/dev-menu-packager-host'
 
