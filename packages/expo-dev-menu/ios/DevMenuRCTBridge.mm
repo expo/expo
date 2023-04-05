@@ -1,6 +1,19 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
 #import <EXDevMenu/DevMenuRCTBridge.h>
+
+// The search path for the Swift generated headers are different
+// between use_frameworks and non_use_frameworks mode.
+#if __has_include(<EXDevMenuInterface/EXDevMenuInterface-Swift.h>)
+#import <EXDevMenuInterface/EXDevMenuInterface-Swift.h>
+#else
+#import <EXDevMenuInterface-Swift.h>
+#endif
+#if __has_include(<ExpoModulesCore/ExpoModulesCore-Swift.h>)
+#import <ExpoModulesCore/ExpoModulesCore-Swift.h>
+#else
+#import <ExpoModulesCore-Swift.h>
+#endif
 #if __has_include(<EXDevMenu/EXDevMenu-Swift.h>)
 #import <EXDevMenu/EXDevMenu-Swift.h>
 #else
@@ -12,8 +25,11 @@
 #import <React/RCTDevSettings.h>
 #import <React/RCTBridge+Private.h>
 #import <React/RCTDevMenu.h>
-
-@import EXDevMenuInterface;
+#import <React/RCTCxxBridgeDelegate.h>
+#import <React/RCTJSIExecutorRuntimeInstaller.h>
+#if __has_include(<reacthermes/HermesExecutorFactory.h>)
+#import <reacthermes/HermesExecutorFactory.h>
+#endif
 
 @implementation DevMenuRCTCxxBridge
 
@@ -87,5 +103,28 @@
 // This method is still used so we need to override it even if it's deprecated
 - (void)reloadWithReason:(NSString *)reason {}
 #pragma clang diagnostic pop
+
+@end
+
+@interface DevMenuRCTCxxBridgeDelegate () <RCTCxxBridgeDelegate>
+
+@end
+
+@implementation DevMenuRCTCxxBridgeDelegate
+
+- (std::unique_ptr<facebook::react::JSExecutorFactory>)jsExecutorFactoryForBridge:(RCTBridge *)bridge
+{
+#if __has_include(<reacthermes/HermesExecutorFactory.h>)
+  // Disable Hermes debugger to prevent Hermes debugger uses dev-menu
+  // as inspecting target.
+  auto installBindings = facebook::react::RCTJSIExecutorRuntimeInstaller(nullptr);
+  auto *hermesExecutorFactory = new facebook::react::HermesExecutorFactory(installBindings);
+  hermesExecutorFactory->setEnableDebugger(false);
+  std::unique_ptr<facebook::react::JSExecutorFactory> jsExecutorFactory(hermesExecutorFactory);
+  return std::move(jsExecutorFactory);
+#else
+  return nullptr;
+#endif
+}
 
 @end
