@@ -20,6 +20,10 @@
 
 - Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
 
+### ⚠️ Notices
+
+- Disable the `Remote JS debugger` option on menu when using SDK 49 or above. ([#22010](https://github.com/expo/expo/pull/22010) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 2.1.4 - 2023-03-20
 
 ### 🐛 Bug fixes
