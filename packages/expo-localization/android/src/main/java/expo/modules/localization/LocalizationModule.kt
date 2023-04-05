@@ -131,26 +131,30 @@ class LocalizationModule : Module() {
     val locales = mutableListOf<Map<String, Any?>>()
     val localeList: LocaleListCompat = LocaleListCompat.getDefault()
     for (i in 0 until localeList.size()) {
-      val locale: Locale = localeList.get(i) ?: continue
-      val decimalFormat = DecimalFormatSymbols.getInstance(locale)
-      locales.add(
-        mapOf(
-          "languageTag" to locale.toLanguageTag(),
-          "regionCode" to getRegionCode(locale),
-          "textDirection" to if (getLayoutDirectionFromLocale(locale) == LayoutDirection.RTL) "rtl" else "ltr",
-          "languageCode" to locale.language,
+      try {
+        val locale: Locale = localeList.get(i) ?: continue
+        val decimalFormat = DecimalFormatSymbols.getInstance(locale)
+        locales.add(
+          mapOf(
+            "languageTag" to locale.toLanguageTag(),
+            "regionCode" to getRegionCode(locale),
+            "textDirection" to if (getLayoutDirectionFromLocale(locale) == LayoutDirection.RTL) "rtl" else "ltr",
+            "languageCode" to locale.language,
 
-          // the following two properties should be deprecated once Intl makes it way to RN, instead use toLocaleString
-          "decimalSeparator" to decimalFormat.decimalSeparator.toString(),
-          "digitGroupingSeparator" to decimalFormat.groupingSeparator.toString(),
+            // the following two properties should be deprecated once Intl makes it way to RN, instead use toLocaleString
+            "decimalSeparator" to decimalFormat.decimalSeparator.toString(),
+            "digitGroupingSeparator" to decimalFormat.groupingSeparator.toString(),
 
-          "measurementSystem" to getMeasurementSystem(locale),
-          "currencyCode" to decimalFormat.currency.currencyCode,
+            "measurementSystem" to getMeasurementSystem(locale),
+            "currencyCode" to decimalFormat.currency.currencyCode,
 
-          // currency symbol can be localized to display locale (1st on the list) or to the locale for the currency (as done here).
-          "currencySymbol" to Currency.getInstance(locale).getSymbol(locale),
+            // currency symbol can be localized to display locale (1st on the list) or to the locale for the currency (as done here).
+            "currencySymbol" to Currency.getInstance(locale).getSymbol(locale),
+          )
         )
-      )
+      } catch (Exception e) {
+        // we don't append the problematic locale to the list
+      }
     }
     return locales
   }
