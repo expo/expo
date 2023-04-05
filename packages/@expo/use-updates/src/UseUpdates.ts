@@ -1,7 +1,6 @@
+import * as Updates from 'expo-updates';
 import { useEffect, useRef, useState } from 'react';
 
-import * as Updates from './Updates';
-import { useUpdateEvents } from './UpdatesHooks';
 import type {
   UseUpdatesCallbacksType,
   UseUpdatesReturnType,
@@ -69,7 +68,7 @@ const useUpdates: (callbacks?: UseUpdatesCallbacksType) => UseUpdatesReturnType 
   // Set up listener for events from automatic update requests
   // that happen on startup, and use events to refresh the updates info
   // context
-  useUpdateEvents((event) => {
+  Updates.useUpdateEvents((event) => {
     const { availableUpdate, error } = availableUpdateFromEvent(event);
     setUpdatesState((updatesState) => ({
       ...updatesState,

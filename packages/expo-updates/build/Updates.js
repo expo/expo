@@ -1,6 +1,6 @@
-import { CodedError, NativeModulesProxy, UnavailabilityError } from 'expo-modules-core';
+import { RCTDeviceEventEmitter, CodedError, NativeModulesProxy, UnavailabilityError, } from 'expo-modules-core';
+import { EventEmitter } from 'fbemitter';
 import ExpoUpdates from './ExpoUpdates';
-import { getEmitter } from './UpdatesEmitter';
 export * from './Updates.types';
 /**
  * The UUID that uniquely identifies the currently running update if `expo-updates` is enabled. The
@@ -225,6 +225,28 @@ export async function fetchUpdateAsync() {
 export function clearUpdateCacheExperimentalAsync(_sdkVersion) {
     console.warn("This method is no longer necessary. `expo-updates` now automatically deletes your app's old bundle files!");
 }
+let _emitter;
+function _getEmitter() {
+    if (!_emitter) {
+        _emitter = new EventEmitter();
+        RCTDeviceEventEmitter.addListener('Expo.nativeUpdatesEvent', _emitEvent);
+    }
+    return _emitter;
+}
+function _emitEvent(params) {
+    let newParams = params;
+    if (typeof params === 'string') {
+        newParams = JSON.parse(params);
+    }
+    if (newParams.manifestString) {
+        newParams.manifest = JSON.parse(newParams.manifestString);
+        delete newParams.manifestString;
+    }
+    if (!_emitter) {
+        throw new Error(`EventEmitter must be initialized to use from its listener`);
+    }
+    _emitter.emit('Expo.updatesEvent', newParams);
+}
 /**
  * Adds a callback to be invoked when updates-related events occur (such as upon the initial app
  * load) due to auto-update settings chosen at build-time. See also the
@@ -236,7 +258,7 @@ export function clearUpdateCacheExperimentalAsync(_sdkVersion) {
  * listener.
  */
 export function addListener(listener) {
-    const emitter = getEmitter();
+    const emitter = _getEmitter();
     return emitter.addListener('Expo.updatesEvent', listener);
 }
 //# sourceMappingURL=Updates.js.map

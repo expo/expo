@@ -1,11 +1,15 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
+import * as Updates from 'expo-updates';
+import type {
+  Manifest,
+  UpdateCheckResult,
+  UpdateEvent,
+  UpdatesLogEntry,
+  UseUpdatesCallbacksType,
+} from 'expo-updates';
 import '@testing-library/jest-native/extend-expect';
 import React from 'react';
 
-import * as Updates from '..';
-import type { Manifest, UpdateEvent, UseUpdatesCallbacksType } from '..';
-import ExpoUpdates from '../ExpoUpdates';
-import { emitEvent } from '../UpdatesEmitter';
 import { availableUpdateFromManifest, availableUpdateFromEvent } from '../UseUpdatesUtils';
 import UseUpdatesTestApp from './UseUpdatesTestApp';
 
@@ -24,16 +28,17 @@ const getCallbacks: () => UseUpdatesCallbacksType = () => {
   };
 };
 
-jest.mock('../ExpoUpdates', () => {
+jest.mock('expo-updates', () => {
   return {
-    nativeDebug: true,
+    ...jest.requireActual('expo-updates'),
     channel: 'main',
     updateId: '0000-1111',
-    commitTime: '2023-03-26T04:58:02.560Z',
+    createdAt: new Date('2023-03-26T04:58:02.560Z'),
     checkForUpdateAsync: jest.fn(),
     fetchUpdateAsync: jest.fn(),
     reload: jest.fn(),
     readLogEntriesAsync: jest.fn(),
+    useUpdateEvents: jest.fn(),
   };
 });
 
@@ -63,10 +68,12 @@ describe('useUpdates()', () => {
         assets: [],
         metadata: {},
       };
-      ExpoUpdates.checkForUpdateAsync.mockReturnValueOnce({
+      const mockResponse: UpdateCheckResult = {
         isAvailable: true,
+        isRollBackToEmbedded: false,
         manifest: mockManifest,
-      });
+      };
+      jest.spyOn(Updates, 'checkForUpdateAsync').mockResolvedValueOnce(mockResponse);
       const buttonView = await screen.findByTestId('checkForUpdate');
       await act(async () => {
         fireEvent(buttonView, 'press');
@@ -85,6 +92,11 @@ describe('useUpdates()', () => {
     });
 
     it('Shows available update after UpdateEvent fired', async () => {
+      let mockListener: any = null;
+      jest.spyOn(Updates, 'useUpdateEvents').mockImplementation((listener) => {
+        mockListener = listener;
+      });
+
       render(<UseUpdatesTestApp />);
       const mockDate = new Date();
       const mockManifest = {
@@ -97,12 +109,13 @@ describe('useUpdates()', () => {
         assets: [],
         metadata: {},
       };
-      const event: UpdateEvent = {
+      const mockEvent: UpdateEvent = {
         type: UpdateEventType.UPDATE_AVAILABLE,
         manifest: mockManifest,
       };
+
       await act(async () => {
-        emitEvent(event);
+        mockListener(mockEvent);
       });
       const lastCheckForUpdateTime = new Date();
       const updateIdView = await screen.findByTestId('availableUpdate_updateId');
@@ -117,9 +130,12 @@ describe('useUpdates()', () => {
     it('Shows no available update after running checkForUpdate()', async () => {
       const callbacks = getCallbacks();
       render(<UseUpdatesTestApp callbacks={callbacks} />);
-      ExpoUpdates.checkForUpdateAsync.mockReturnValueOnce({
+      const mockResponse: UpdateCheckResult = {
         isAvailable: false,
-      });
+        isRollBackToEmbedded: false,
+        manifest: undefined,
+      };
+      jest.spyOn(Updates, 'checkForUpdateAsync').mockResolvedValueOnce(mockResponse);
       const buttonView = await screen.findByTestId('checkForUpdate');
       await act(async () => {
         fireEvent(buttonView, 'press');
@@ -142,7 +158,7 @@ describe('useUpdates()', () => {
       const callbacks = getCallbacks();
       render(<UseUpdatesTestApp callbacks={callbacks} />);
       const mockError = { code: 'ERR_TEST', message: 'test message' };
-      ExpoUpdates.checkForUpdateAsync.mockRejectedValueOnce(mockError);
+      jest.spyOn(Updates, 'checkForUpdateAsync').mockRejectedValueOnce(mockError);
       const buttonView = await screen.findByTestId('checkForUpdate');
       await act(async () => {
         fireEvent(buttonView, 'press');
@@ -157,10 +173,11 @@ describe('useUpdates()', () => {
     it('Calls callbacks during downloadUpdate()', async () => {
       const callbacks = getCallbacks();
       render(<UseUpdatesTestApp callbacks={callbacks} />);
-      ExpoUpdates.fetchUpdateAsync.mockReturnValueOnce({
+      const mockResponse: any = {
         isNew: true,
-        manifestString: '{"name": "test"}',
-      });
+        manifest: { name: 'test' },
+      };
+      jest.spyOn(Updates, 'fetchUpdateAsync').mockResolvedValueOnce(mockResponse);
       const buttonView = await screen.findByTestId('downloadUpdate');
       await act(async () => {
         fireEvent(buttonView, 'press');
@@ -174,7 +191,7 @@ describe('useUpdates()', () => {
       const callbacks = getCallbacks();
       render(<UseUpdatesTestApp callbacks={callbacks} />);
       const mockError = { code: 'ERR_TEST', message: 'test message' };
-      ExpoUpdates.fetchUpdateAsync.mockRejectedValueOnce(mockError);
+      jest.spyOn(Updates, 'fetchUpdateAsync').mockRejectedValueOnce(mockError);
       const buttonView = await screen.findByTestId('downloadUpdate');
       await act(async () => {
         fireEvent(buttonView, 'press');
@@ -186,34 +203,14 @@ describe('useUpdates()', () => {
       expect(callbacks.onDownloadUpdateError).toHaveBeenCalledWith(mockError);
     });
 
-    it('Calls callbacks during downloadAndRunUpdate()', async () => {
-      const callbacks = getCallbacks();
-      render(<UseUpdatesTestApp callbacks={callbacks} />);
-      ExpoUpdates.fetchUpdateAsync.mockReturnValueOnce({
-        isNew: true,
-        manifestString: '{"name": "test"}',
-      });
-      ExpoUpdates.reload.mockReturnValueOnce('');
-      const buttonView = await screen.findByTestId('downloadAndRunUpdate');
-      await act(async () => {
-        fireEvent(buttonView, 'press');
-      });
-      expect(callbacks.onDownloadUpdateStart).toHaveBeenCalledTimes(1);
-      expect(callbacks.onDownloadUpdateComplete).toHaveBeenCalledTimes(1);
-      expect(callbacks.onDownloadUpdateError).not.toHaveBeenCalled();
-      expect(callbacks.onRunUpdateStart).toHaveBeenCalledTimes(1);
-      expect(callbacks.onRunUpdateError).not.toHaveBeenCalled();
-    });
-
     it('Shows log entries after running readLogEntries()', async () => {
-      ExpoUpdates.readLogEntriesAsync.mockReturnValueOnce([
-        {
-          timestamp: 100,
-          message: 'Message 1',
-          code: UpdatesLogEntryCode.NONE,
-          level: UpdatesLogEntryLevel.INFO,
-        },
-      ]);
+      const logEntry: UpdatesLogEntry = {
+        timestamp: 100,
+        message: 'Message 1',
+        code: UpdatesLogEntryCode.NONE,
+        level: UpdatesLogEntryLevel.INFO,
+      };
+      jest.spyOn(Updates, 'readLogEntriesAsync').mockResolvedValueOnce([logEntry]);
       render(<UseUpdatesTestApp />);
       const buttonView = await screen.findByTestId('readLogEntries');
       await act(async () => {

@@ -1,6 +1,5 @@
 import Constants from 'expo-constants';
-
-import type { UpdatesLogEntry } from './Updates.types';
+import type { UpdatesLogEntry } from 'expo-updates';
 
 export type ClassicManifest = NonNullable<typeof Constants.manifest>;
 

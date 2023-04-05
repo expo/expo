@@ -1,5 +1,6 @@
-import * as Updates from './Updates';
-import type { UpdateEvent } from './Updates.types';
+import * as Updates from 'expo-updates';
+import type { UpdateEvent } from 'expo-updates';
+
 import type {
   AvailableUpdateInfo,
   CurrentlyRunningInfo,
