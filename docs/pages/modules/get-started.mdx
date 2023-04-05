@@ -10,28 +10,7 @@ import { BoxLink } from '~/ui/components/BoxLink';
 import { Step } from '~/ui/components/Step';
 import { Terminal } from '~/ui/components/Snippet';
 
-Sometimes, installing an Expo package or a third-party library is not enough when looking to extend the capabilities of your app. In that scenario, you can write custom native code to tap into native platform APIs or use available Android or iOS dependencies. Luckily, Expo has first class support for this in the form of Expo Modules.
-
-Luckily, Expo has first class support for this in the form of Expo Modules.
-
-## What are Expo Modules
-
-Expo Modules allow you to write native code in a way that feels natural with minimal boilerplate that is also consistent on both platforms.
-
-<BoxLink
-  title="Expo Modules Overview"
-  description="Learn more about the design considerations behind Expo Modules."
-  href="./overview"
-  Icon={BookOpen02Icon}
-/>
-<BoxLink
-  title="Expo Modules API Reference"
-  description="A list of building blocks you can use to create your own Expo Module."
-  href="./module-api"
-  Icon={Grid01Icon}
-/>
-
-There are two ways to get started with the Expo Module API: you can either initialize a new module from scratch or add the Expo Module API to an existing module. This guide will walk you through creating a new module from scratch, and the [Integrating in an existing library guide](/modules/existing-library) covers the latter case.
+There are two ways to get started with the Expo Modules API: you can either initialize a new module from scratch or add the Expo Modules API to an existing module. This guide will walk you through creating a new module from scratch, and the [Integrating in an existing library guide](/modules/existing-library) covers the latter case.
 
 The two recommended flows to create a new module with Expo Modules API:
 
@@ -62,7 +41,8 @@ If you have an **ios** directory in your project that you created using `expo pr
 
 <Terminal cmd={[`$ pod install --project-directory=ios`]} />
 
-If you're using a development client, you need to rebuild your development client any time you want to use new native code.
+> **Note:**
+> If you're using a development client, you need to rebuild your development client any time you want to use new native code.
 
 Now, import the module in your application:
 
@@ -98,7 +78,7 @@ If you have an `android` directory in your project that you created using `expo 
 
 You can always just edit the files in the `modules/my-module/android/src/main/java/expo/modules/mymodule/` directory directly in your favorite text editor.
 
-Change the hello method to return a different string. For example, you can change it to return "Hello world! 🌎🍎".
+Change the `hello` method to return a different string. For example, you can change it to return "Hello world! 🌎🍎".
 
 Rebuild the app or build a new development client and you should see your change.
 
@@ -171,10 +151,12 @@ Now that you've learned how to initialize a module and make simple changes to it
   title="Creating your first native module"
   description="Create a simple, but complete, native module to interact with Android and iOS preferences APIs."
   href="/modules/native-module-tutorial"
+  Icon={BookOpen02Icon}
 />
 
 <BoxLink
   title="Module API Reference"
   description="Outline for the Expo Module API and common patterns like sending events from native code to JavaScript."
   href="/modules/module-api"
+  Icon={Grid01Icon}
 />
