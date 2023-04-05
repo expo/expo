@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix missing `await` syntax that was causing build error for `android.adapative.monochromeImage` field, if specified in `app.json`. [#22000](https://github.com/expo/expo/pull/22000) by [@amandeepmittal](https://github.com/amandeepmittal))
+
 ### 💡 Others
 
 ## 6.0.0 — 2023-02-03
