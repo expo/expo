@@ -118,8 +118,10 @@ export default {
       // Some of the search engines only track the first N items from the sitemap,
       // this makes sure our starting and general guides are first, and API index last (in order from new to old)
       pathsPriority: [
+        ...navigation.homeDirectories,
+        ...navigation.learnDirectories,
         ...navigation.generalDirectories,
-        ...navigation.easDirectories,
+        ...navigation.referenceDirectories.filter(dir => dir === 'versions'),
         ...VERSIONS.map(version => `versions/${version}`),
       ],
       // Some of our pages are "hidden" and should not be added to the sitemap
