@@ -44,7 +44,7 @@ class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
     #if DEBUG
     if let packagerHost = jsPackagerHost() {
       return RCTBundleURLProvider.jsBundleURL(
-        forBundleRoot: "index",
+        forBundleRoot: ".expo/.virtual-metro-entry",
         packagerHost: packagerHost,
         enableDev: true,
         enableMinification: false)

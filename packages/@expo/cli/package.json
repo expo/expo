@@ -19,8 +19,7 @@
     "test": "expo-module test",
     "test:e2e": "jest --config e2e/jest.config.js",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module",
-    "generate-graphql-code": "graphql-codegen --config graphql-codegen.yml"
+    "expo-module": "expo-module"
   },
   "repository": {
     "type": "git",
@@ -106,9 +105,6 @@
     ]
   },
   "devDependencies": {
-    "@graphql-codegen/cli": "2.16.3",
-    "@graphql-codegen/typescript": "2.8.7",
-    "@graphql-codegen/typescript-operations": "2.5.12",
     "@expo/multipart-body-parser": "^1.0.0",
     "@expo/ngrok": "4.1.0",
     "@expo/webpack-config": "^0.17.4",

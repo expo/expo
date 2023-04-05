@@ -33,7 +33,7 @@ export declare const getDefaultReturnUrl: (urlPath?: string | undefined, options
  * // Web: https://localhost:19006/redirect
  * ```
  *
- * @deprecated Use `makeRedirectUri()` instead.
+ * @deprecated Use `makeRedirectUri({ path, useProxy })` instead.
  */
 export declare function getRedirectUrl(path?: string): string;
 /**
