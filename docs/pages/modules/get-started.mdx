@@ -58,17 +58,19 @@ It's best to provide a meaningful module name. However, you can accept the defau
 
 ### Using the module
 
-If you have an `ios` folder in your project that you created using `expo prebuild`, you need to reinstall the pods using `pod install --project-directory=ios`.
+If you have an **ios** directory in your project that you created using `expo prebuild`, you must reinstall the pods:
+
+<Terminal cmd={[`$ pod install --project-directory=ios`]} />
 
 If you're using a development client, you need to rebuild your development client any time you want to use new native code.
 
-You can now import the module in your application:
+Now, import the module in your application:
 
 ```js
 import { hello } from 'my-module';
 ```
 
-To run your app locally, run the `prebuild` command and then compile the app.
+To run your app locally, run the `prebuild` command and then compile the app:
 
 <Terminal
   cmdCopy="npx expo prebuild --clean && npx expo run:ios"
@@ -85,15 +87,16 @@ To run your app locally, run the `prebuild` command and then compile the app.
 Congratulations! You have created a local Expo Module. You can now start working on it.
 
 </Step>
+
 <Step label="3">
 
-### Making a change
+### Editing the module
 
 #### Android
 
 If you have an `android` directory in your project that you created using `expo prebuild`, you can open the directory in Android Studio.
 
-You can always just edit the files in the `modules/my-module/android/src/main/java/expo/modules/mymodule/` directory directly in your favourite text editor.
+You can always just edit the files in the `modules/my-module/android/src/main/java/expo/modules/mymodule/` directory directly in your favorite text editor.
 
 Change the hello method to return a different string. For example, you can change it to return "Hello world! 🌎🍎".
 
