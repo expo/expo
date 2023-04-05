@@ -50,14 +50,16 @@ open class Either<FirstType, SecondType>: Convertible {
 
   // MARK: - Convertible
 
-  public class func convert(from value: Any?) throws -> Self {
-    for type in dynamicTypes() {
+  public class func convert(from value: Any?, appContext: AppContext) throws -> Self {
+    let dynamicTypes = dynamicTypes()
+
+    for type in dynamicTypes {
       // Initialize the "either" when the current type can cast given value.
-      if let value = try? type.cast(value) {
+      if let value = try? type.cast(value, appContext: appContext) {
         return Self(value)
       }
     }
-    throw NeitherTypeException(Self.dynamicTypes())
+    throw NeitherTypeException(dynamicTypes)
   }
 }
 

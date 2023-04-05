@@ -43,7 +43,11 @@ class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
   func sourceURL(for bridge: RCTBridge!) -> URL! {
     #if DEBUG
     if let packagerHost = jsPackagerHost() {
-      return RCTBundleURLProvider.jsBundleURL(forBundleRoot: "index", packagerHost: packagerHost, enableDev: true, enableMinification: false)
+      return RCTBundleURLProvider.jsBundleURL(
+        forBundleRoot: "index",
+        packagerHost: packagerHost,
+        enableDev: true,
+        enableMinification: false)
     }
     #endif
     return jsSourceUrl()

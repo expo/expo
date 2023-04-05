@@ -64,7 +64,7 @@
     "graphql": "^15.3.0",
     "graphql-tag": "^2.10.1",
     "react": "18.2.0",
-    "react-native": "0.71.3",
+    "react-native": "0.71.6",
     "use-subscription": "^1.8.0",
     "url": "^0.11.0"
   },

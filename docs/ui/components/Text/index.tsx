@@ -1,28 +1,27 @@
 import { css, CSSObject, SerializedStyles } from '@emotion/react';
-import { theme, typography, spacing, borderRadius } from '@expo/styleguide';
+import { theme, typography, LinkBase, LinkBaseProps } from '@expo/styleguide';
+import { spacing, borderRadius } from '@expo/styleguide-base';
 import * as React from 'react';
 
-import { LinkBase, LinkProps } from './Link';
 import { TextComponentProps, TextElement } from './types';
 
 import { AdditionalProps, HeadingType } from '~/common/headingManager';
 import Permalink from '~/components/Permalink';
 import { durations } from '~/ui/foundations/durations';
 
-export { LinkBase } from './Link';
 export { AnchorContext } from './withAnchor';
 
 const CRAWLABLE_HEADINGS = ['h1', 'h2', 'h3', 'h4', 'h5'];
 const CRAWLABLE_TEXT = ['span', 'p', 'li', 'blockquote', 'code', 'pre'];
 
 type PermalinkedComponentProps = React.PropsWithChildren<
-  { level?: number; id?: string } & AdditionalProps
+  { level?: number; id?: string } & AdditionalProps & TextComponentProps
 >;
 
 const isDev = process.env.NODE_ENV === 'development';
 
 export const createPermalinkedComponent = (
-  BaseComponent: React.ComponentType<React.PropsWithChildren<any>>,
+  BaseComponent: React.ComponentType<React.PropsWithChildren<TextComponentProps>>,
   options?: {
     baseNestingLevel?: number;
     sidebarType?: HeadingType;
@@ -52,11 +51,20 @@ export const createPermalinkedComponent = (
 
 export function createTextComponent(Element: TextElement, textStyle?: SerializedStyles) {
   function TextComponent(props: TextComponentProps) {
-    const { testID, tag, weight: textWeight, theme: textTheme, ...rest } = props;
+    const {
+      testID,
+      tag,
+      className,
+      weight: textWeight,
+      theme: textTheme,
+      crawlable = true,
+      ...rest
+    } = props;
     const TextElementTag = tag ?? Element;
 
     return (
       <TextElementTag
+        className={className}
         css={[
           baseTextStyle,
           textStyle,
@@ -64,8 +72,8 @@ export function createTextComponent(Element: TextElement, textStyle?: Serialized
           textTheme && { color: theme.text[textTheme] },
         ]}
         data-testid={testID}
-        data-heading={CRAWLABLE_HEADINGS.includes(TextElementTag) || undefined}
-        data-text={CRAWLABLE_TEXT.includes(TextElementTag) || undefined}
+        data-heading={(crawlable && CRAWLABLE_HEADINGS.includes(TextElementTag)) || undefined}
+        data-text={(crawlable && CRAWLABLE_TEXT.includes(TextElementTag)) || undefined}
         {...rest}
       />
     );
@@ -108,10 +116,6 @@ const linkStyled = css({
   },
 });
 
-const listStyle = css({
-  marginLeft: '1.5rem',
-});
-
 const codeStyle = css({
   borderColor: theme.border.secondary,
   borderRadius: borderRadius.sm,
@@ -148,7 +152,7 @@ const h2Style = {
   ...h2,
   fontWeight: 600,
   marginTop: spacing[8],
-  marginBottom: spacing[3],
+  marginBottom: spacing[3.5],
   ...codeInHeaderStyle,
 };
 
@@ -156,7 +160,7 @@ const h3Style = {
   ...h3,
   fontWeight: 600,
   marginTop: spacing[6],
-  marginBottom: spacing[1.5],
+  marginBottom: spacing[2.5],
   ...codeInHeaderStyle,
 };
 
@@ -164,7 +168,7 @@ const h4Style = {
   ...h4,
   fontWeight: 600,
   marginTop: spacing[6],
-  marginBottom: spacing[1],
+  marginBottom: spacing[1.5],
   ...codeInHeaderStyle,
 };
 
@@ -204,23 +208,29 @@ export const FOOTNOTE = createTextComponent(TextElement.P, css(typography.body.f
 export const CALLOUT = createTextComponent(TextElement.P, css(typography.body.callout));
 export const BOLD = createTextComponent(TextElement.STRONG, css({ fontWeight: 600 }));
 export const DEMI = createTextComponent(TextElement.SPAN, css({ fontWeight: 500 }));
-export const UL = createTextComponent(TextElement.UL, css([typography.body.ul, listStyle]));
-export const OL = createTextComponent(TextElement.OL, css([typography.body.ol, listStyle]));
+export const UL = createTextComponent(
+  TextElement.UL,
+  css([typography.body.ul, { listStyle: 'disc' }])
+);
+export const OL = createTextComponent(
+  TextElement.OL,
+  css([typography.body.ol, { listStyle: 'decimal' }])
+);
 export const PRE = createTextComponent(TextElement.PRE, css(typography.utility.pre as CSSObject));
 export const KBD = createTextComponent(
   TextElement.KBD,
   css([typography.utility.pre as CSSObject, kbdStyle])
 );
-export const MONOSPACE = createTextComponent(TextElement.CODE, css({ fontWeight: 500 }));
+export const MONOSPACE = createTextComponent(TextElement.CODE);
 
 const isExternalLink = (href?: string) => href?.includes('://');
 
-export const A = (props: LinkProps & { isStyled?: boolean }) => {
-  const { isStyled, ...rest } = props;
+export const A = (props: LinkBaseProps & { isStyled?: boolean }) => {
+  const { isStyled, openInNewTab, ...rest } = props;
   return (
     <LinkBase
       css={[link, !isStyled && linkStyled]}
-      openInNewTab={isExternalLink(props.href)}
+      openInNewTab={openInNewTab ?? isExternalLink(props.href)}
       {...rest}
     />
   );

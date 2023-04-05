@@ -10,13 +10,13 @@ import android.print.PrintDocumentAdapterLayoutCallback
 import android.print.PrintDocumentAdapterWriteCallback
 import android.webkit.WebView
 import android.webkit.WebViewClient
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.interfaces.services.UIManager
+import androidx.annotation.UiThread
+import expo.modules.kotlin.exception.CodedException
 import java.io.File
-import java.io.IOException
+
 import kotlin.math.roundToInt
 
-class PrintPDFRenderTask(private val context: Context, private val options: Map<String?, Any?>, private val moduleRegistry: ModuleRegistry) {
+internal class PrintPDFRenderTask(private val context: Context, private val options: PrintOptions) {
   private val PIXELS_PER_INCH = 72
   private val MILS_PER_INCH = 1000.0
   private val PIXELS_PER_MIL = PIXELS_PER_INCH / MILS_PER_INCH
@@ -29,52 +29,46 @@ class PrintPDFRenderTask(private val context: Context, private val options: Map<
   private lateinit var document: PrintDocumentAdapter
   private var numberOfPages = 0
 
-  fun render(filePath: String?, callbacks: Callbacks) {
+  @UiThread
+  fun render(outputFile: File?, fileDescriptor: ParcelFileDescriptor?, callbacks: Callbacks) {
     this.callbacks = callbacks
-    filePath?.let {
-      try {
-        outputFile = File(it)
-        outputFile.createNewFile()
-        fileDescriptor = ParcelFileDescriptor.open(outputFile, ParcelFileDescriptor.MODE_TRUNCATE or ParcelFileDescriptor.MODE_WRITE_ONLY)
-      } catch (e: IOException) {
-        this.callbacks.onRenderError("E_FILE_NOT_FOUND", "Cannot create or open a file.", e)
-        return
-      }
+    this.fileDescriptor = fileDescriptor
+    outputFile?.let {
+      this.outputFile = it
     }
-    moduleRegistry.getModule(UIManager::class.java).runOnUiQueueThread {
-      val html = if (options.containsKey("html")) {
-        options["html"] as String
-      } else {
-        ""
-      }
-      webView = WebView(context)
-      val settings = webView.settings
-      settings.defaultTextEncodingName = "UTF-8"
-      webView.webViewClient = webViewClient
-      webView.loadDataWithBaseURL(null, html, "text/html; charset=utf-8", "UTF-8", null)
-    }
+
+    val html = options.html ?: ""
+    webView = WebView(context)
+    val settings = webView.settings
+    settings.defaultTextEncodingName = "UTF-8"
+    webView.webViewClient = webViewClient
+    webView.loadDataWithBaseURL(null, html, "text/html; charset=utf-8", "UTF-8", null)
   }
 
   private val printAttributes: PrintAttributes
     get() {
       val builder = PrintAttributes.Builder()
-      if (options.containsKey("html")) {
+      if (options.html != null) {
         var width = DEFAULT_MEDIA_WIDTH
         var height = DEFAULT_MEDIA_HEIGHT
-        if (options.containsKey("width") && options["width"] != null) {
-          width = (options["width"] as Number).toInt()
+        options.width?.let {
+          width = it
         }
-        if (options.containsKey("height") && options["height"] != null) {
-          height = (options["height"] as Number).toInt()
+
+        options.height?.let {
+          height = it
         }
+
         var mediaSize = PrintAttributes.MediaSize(
           "id",
           "label",
           (width / PIXELS_PER_MIL).roundToInt(),
           (height / PIXELS_PER_MIL).roundToInt()
         )
-        if (options.containsKey("orientation") && "landscape" == options["orientation"]) {
-          mediaSize = mediaSize.asLandscape()
+        options.orientation?.let {
+          if (it === "landscape") {
+            mediaSize = mediaSize.asLandscape()
+          }
         }
         builder
           .setMediaSize(mediaSize)
@@ -111,13 +105,13 @@ class PrintPDFRenderTask(private val context: Context, private val options: Map<
     }
 
     override fun onWriteFailed(error: CharSequence?) {
-      callbacks.onRenderError("E_PRINT_FAILED", "An error occurred while writing PDF data.", null)
+      callbacks.onRenderError(PdfWriteException())
     }
   }
 
   abstract class Callbacks {
     open fun onRenderFinished(document: PrintDocumentAdapter, outputFile: File?, numberOfPages: Int) = Unit
 
-    open fun onRenderError(errorCode: String?, errorMessage: String?, exception: Exception?) = Unit
+    open fun onRenderError(exception: CodedException) = Unit
   }
 }

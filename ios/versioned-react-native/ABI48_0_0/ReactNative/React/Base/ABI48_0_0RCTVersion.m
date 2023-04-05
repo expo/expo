@@ -23,7 +23,7 @@ NSDictionary* ABI48_0_0RCTGetreactNativeVersion(void)
     __rnVersion = @{
                   ABI48_0_0RCTVersionMajor: @(0),
                   ABI48_0_0RCTVersionMinor: @(71),
-                  ABI48_0_0RCTVersionPatch: @(3),
+                  ABI48_0_0RCTVersionPatch: @(4),
                   ABI48_0_0RCTVersionPrerelease: [NSNull null],
                   };
   });

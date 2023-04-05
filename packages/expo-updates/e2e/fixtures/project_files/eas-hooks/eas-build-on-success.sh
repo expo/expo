@@ -1,6 +1,18 @@
 #!/usr/bin/env bash
 
+function cleanup()
+{
+  echo 'Cleaning up...'
+  if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
+    # Kill emulator
+    adb emu kill &
+  fi
+}
+
+# Fail if anything errors
 set -eox pipefail
+# If this script exits, trap it first and clean up the emulator
+trap cleanup EXIT
 
 if [[ "$EAS_BUILD_PROFILE" != "updates_testing" ]]; then
   exit
@@ -18,10 +30,15 @@ export NO_FLIPPER=1
 
 mkdir ./logs
 
+yarn generate-test-update-bundles
 
 if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
   # Start emulator
-  $ANDROID_SDK_ROOT/emulator/emulator @$ANDROID_EMULATOR -no-audio -no-boot-anim -no-window -use-system-libs 2>&1 >/dev/null &
+  if [[ "$LOCAL_TESTING" == "1" ]]; then
+    $ANDROID_SDK_ROOT/emulator/emulator @$ANDROID_EMULATOR -no-audio -no-boot-anim 2>&1 >/dev/null &
+  else
+    $ANDROID_SDK_ROOT/emulator/emulator @$ANDROID_EMULATOR -no-audio -no-boot-anim -no-window -use-system-libs 2>&1 >/dev/null &
+  fi
 
   # Wait for emulator
   max_retry=10
@@ -32,27 +49,16 @@ if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
     counter=$((counter + 1))
   done
 
+  sleep 10
+
   # Ensure emulator can reach the local updates server
   adb reverse tcp:4747 tcp:4747
-fi
 
-# Execute tests
-detox test --configuration $EAS_BUILD_PLATFORM.debug --headless 2>&1 | tee ./logs/detox-tests.log
-
-export DETOX_EXIT_CODE=$?
-
-if [[ "$EAS_BUILD_PLATFORM" == "android" ]]; then
-  # Kill emulator
-  adb emu kill &
-fi
-
-# Attempt to handle exit codes correctly (handle Android emulator occasional crashes gracefully)
-if [ $DETOX_EXIT_CODE -eq 0 ]
-then
-  echo "Tests were successful"
-  exit 0
+  # Execute Android tests
+  detox test --configuration android.release 2>&1 | tee ./logs/detox-tests.log
 else
-  echo "Tests failed" >&2
-  exit 1
+  # Execute iOS tests
+  detox test --configuration ios.debug 2>&1 | tee ./logs/detox-tests.log
 fi
+
 

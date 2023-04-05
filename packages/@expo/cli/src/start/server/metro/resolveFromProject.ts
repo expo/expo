@@ -1,5 +1,7 @@
 import resolveFrom from 'resolve-from';
 
+const debug = require('debug')('expo:metro:import');
+
 // These resolvers enable us to test the CLI in older projects.
 // We may be able to get rid of this in the future.
 // TODO: Maybe combine with AsyncResolver?
@@ -30,12 +32,39 @@ function importFromProject(projectRoot: string, moduleId: string) {
 export function importMetroFromProject(projectRoot: string): typeof import('metro') {
   return importFromProject(projectRoot, 'metro');
 }
-
-/** Import `@expo/metro-config` from the project. */
-export function importExpoMetroConfigFromProject(
+export function importMetroCreateWebsocketServerFromProject(
   projectRoot: string
-): typeof import('@expo/metro-config') {
-  return importFromProject(projectRoot, '@expo/metro-config');
+): typeof import('metro/src/lib/createWebsocketServer').createWebsocketServer {
+  return importFromProject(projectRoot, 'metro/src/lib/createWebsocketServer');
+}
+export function importMetroHmrServerFromProject(
+  projectRoot: string
+): typeof import('metro/src/HmrServer').MetroHmrServer {
+  return importFromProject(projectRoot, 'metro/src/HmrServer');
+}
+
+export function importExpoMetroConfig(projectRoot: string) {
+  return importFromProjectOrFallback<typeof import('@expo/metro-config')>(
+    projectRoot,
+    '@expo/metro-config'
+  );
+}
+
+/**
+ * Attempt to use the local version of a module or fallback on the CLI version.
+ * This should only ever happen when testing Expo CLI in development.
+ */
+export function importFromProjectOrFallback<TModule>(
+  projectRoot: string,
+  moduleId: string
+): TModule {
+  const resolvedPath = resolveFrom.silent(projectRoot, moduleId);
+  if (!resolvedPath) {
+    debug(`requiring "${moduleId}" relative to the CLI`);
+    return require(require.resolve(moduleId));
+  }
+  debug(`requiring "${moduleId}" from the project:`, resolvedPath);
+  return require(resolvedPath);
 }
 
 /** Import `metro-resolver` from the project. */
@@ -43,6 +72,20 @@ export function importMetroResolverFromProject(
   projectRoot: string
 ): typeof import('metro-resolver') {
   return importFromProject(projectRoot, 'metro-resolver');
+}
+
+/** Import `metro-inspector-proxy` from the project. */
+export function importMetroInspectorProxyFromProject(
+  projectRoot: string
+): typeof import('metro-inspector-proxy') {
+  return importFromProject(projectRoot, 'metro-inspector-proxy');
+}
+
+/** Import `metro-inspector-proxy/src/Device` from the project. */
+export function importMetroInspectorDeviceFromProject(
+  projectRoot: string
+): typeof import('metro-inspector-proxy/src/Device') {
+  return importFromProject(projectRoot, 'metro-inspector-proxy/src/Device');
 }
 
 /**
@@ -56,6 +99,15 @@ export function importCliSaveAssetsFromProject(
     projectRoot,
     '@react-native-community/cli-plugin-metro/build/commands/bundle/saveAssets'
   ).default;
+}
+
+export function importCliBuildBundleWithConfigFromProject(
+  projectRoot: string
+): typeof import('@react-native-community/cli-plugin-metro/build/commands/bundle/buildBundle').buildBundleWithConfig {
+  return importFromProject(
+    projectRoot,
+    '@react-native-community/cli-plugin-metro/build/commands/bundle/buildBundle'
+  ).buildBundleWithConfig;
 }
 
 /** Resolve the installed Metro version from project */

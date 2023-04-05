@@ -242,12 +242,24 @@ export interface ImageProps extends ViewProps {
   accessible?: boolean;
 
   /**
-   * The text that's read by the screen reader when the user interacts with the image.
+   * The text that's read by the screen reader when the user interacts with the image. Sets the the `alt` tag on web which is used for web crawlers and link traversal.
    * @default undefined
    * @platform android
    * @platform ios
+   * @platform web
    */
   accessibilityLabel?: string;
+
+  /**
+   * The text that's read by the screen reader when the user interacts with the image. Sets the the `alt` tag on web which is used for web crawlers and link traversal. Is an alias for `accessibilityLabel`.
+   *
+   * @alias accessibilityLabel
+   * @default undefined
+   * @platform android
+   * @platform ios
+   * @platform web
+   */
+  alt?: string;
 
   /**
    * Enables Live Text interaction with the image. Check official [Apple documentation](https://developer.apple.com/documentation/visionkit/enabling_live_text_interactions_with_images) for more details.
@@ -255,6 +267,17 @@ export interface ImageProps extends ViewProps {
    * @platform ios 16.0+
    */
   enableLiveTextInteraction?: boolean;
+
+  /**
+   * Whether the image should be downscaled to match the size of the view container.
+   * Turning off this functionality could negatively impact the application's performance, particularly when working with large assets.
+   * However, it would result in smoother image resizing, and end-users would always have access to the highest possible asset quality.
+   *
+   * Downscaling is never used when the `contentFit` prop is set to `none` or `fill`.
+   * @default true
+   * @platform android
+   */
+  allowDownscaling?: boolean;
 }
 
 /**

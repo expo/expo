@@ -31,28 +31,40 @@ It notifies you of exceptions or errors that your users run into while using you
 
 ## Installing and configuring Sentry
 
-### Step 1: Sign up for a Sentry account and create a project
+<Step label="1">
+
+### Sign up for a Sentry account and create a project
 
 Before getting real-time updates on errors and making your app generally incredible, you'll need to make sure you've created a Sentry project. Here's how to do that:
 
-<Step label="1">
-  [Sign up for Sentry](https://sentry.io/signup/) (it's free), and create a project in your
-  Dashboard. Take note of your **organization name**, **project name**, and **`DSN`**; you'll need
-  them later. - **organization name** is available in your `Organization settings` tab - **project
-  name** is available in your project's `Settings` > `Projects` tab (find it in the list) -
-  **`DSN`** is available in your project's `Settings` > `Projects` > **Project name** > `Client Keys
-  (DSN)` tab
+<Step label="1.1">
+
+[Sign up for Sentry](https://sentry.io/signup/) (it's free), and create a project in your
+Dashboard. Take note of your **organization slug**, **project name**, and **`DSN`** as you'll need
+them later:
+
+- **organization slug** is available in your **Organization settings** tab
+- **project name** is available in your project's **Settings** > **Projects** tab (find it in the list)
+- **`DSN`** is available in your project's **Settings** > **Projects** > **Project name** > **Client Keys
+  (DSN)** tab.
+
+</Step>
+
+<Step label="1.2">
+
+Go to the [Sentry API section](https://sentry.io/settings/account/api/auth-tokens/), and create an
+**auth token**. The token requires the scopes: `org:read`, `project:releases`, and
+`project:write`. Save them.
+
+</Step>
+
+Once you have each of these: organization slug, project name, DSN, and auth token, you're all set!
+
 </Step>
 
 <Step label="2">
-  Go to the [Sentry API section](https://sentry.io/settings/account/api/auth-tokens/), and create an
-  **auth token**. The token requires the scopes: `org:read`, `project:releases`, and
-  `project:write`. Save this, too.
-</Step>
 
-Once you have each of these: organization name, project name, DSN, and auth token, you're all set!
-
-### Step 2: Installation
+### Installation
 
 In your project directory, run:
 
@@ -66,7 +78,11 @@ In your project directory, run:
   ]}
 />
 
-### Step 3: Code
+</Step>
+
+<Step label="3">
+
+### Code
 
 #### Initialization
 
@@ -104,7 +120,11 @@ try {
 }
 ```
 
-### Step 4: App Configuration
+</Step>
+
+<Step label="4">
+
+### App Configuration
 
 Configuring sentry-expo is done through the config plugin in your **app.json** or **app.config.js**.
 
@@ -137,9 +157,8 @@ Add `expo.hooks` property to your project's **app.json** or **app.config.js** fi
         {
           "file": "sentry-expo/upload-sourcemaps",
           "config": {
-            "organization": "your sentry organization slug here",
-            "project": "your sentry project name here",
-            "authToken": "your auth token here"
+            "organization": "sentry org slug, or use the `SENTRY_ORG` environment variable",
+            "project": "sentry project name, or use the `SENTRY_PROJECT` environment variable"
           }
         }
       ]
@@ -148,17 +167,14 @@ Add `expo.hooks` property to your project's **app.json** or **app.config.js** fi
 }
 ```
 
-The `authToken` value can be generated from the [Sentry API page](https://sentry.io/settings/account/api/).
+To upload the source map to Sentry, you must create a [Sentry auth token](https://docs.sentry.io/product/cli/configuration/). After creating your Sentry auth token [here](https://sentry.io/settings/account/api/), you can configure this token through the `SENTRY_AUTH_TOKEN` environment variable in [EAS Build](/build-reference/variables/#using-secrets-in-environment-variables).
 
-<Collapsible summary="Prefer to use environment variables instead of storing values in app.json?">
+> **warning** Never commit secrets to your repository. Keep the Sentry auth token in a safe place, outside your repository and use the environment variable instead.
 
-You can also use environment variables for your config, if you prefer:
+Besides the auth token, you can also configure the following options through environment variables:
 
 - organization → `SENTRY_ORG`
 - project → `SENTRY_PROJECT`
-- authToken → `SENTRY_AUTH_TOKEN`
-
-</Collapsible>
 
 <Collapsible summary="Additional configuration options">
 
@@ -193,6 +209,8 @@ Add `expo.plugins` to your project's **app.json** or **app.config.js** file:
   }
 }
 ```
+
+</Step>
 
 ## Source Maps
 
@@ -273,9 +291,9 @@ These values should match the values you pass to the `sentry-cli` when uploading
 
 When building tests for your application, you want to assert that the right flow-tracking or error is being sent to Sentry, but without really sending it to Sentry servers. This way you won't swamp Sentry with false reports during test running and other CI operations.
 
-[`sentry-testkit`](https://wix.github.io/sentry-testkit) enables Sentry to work natively in your application, and by overriding the default Sentry transport mechanism, the report is not really sent but rather logged locally into memory. In this way, the logged reports can be fetched later for your own usage, verification, or any other use you may have in your local developing/testing environment.
+[`sentry-testkit`](https://zivl.github.io/sentry-testkit) enables Sentry to work natively in your application, and by overriding the default Sentry transport mechanism, the report is not really sent but rather logged locally into memory. In this way, the logged reports can be fetched later for your own usage, verification, or any other use you may have in your local developing/testing environment.
 
-For more information on how to get started, see [`sentry-testkit` documentation](https://wix.github.io/sentry-testkit/).
+For more information on how to get started, see [`sentry-testkit` documentation](https://zivl.github.io/sentry-testkit/).
 
 > If you're using `jest`, make sure to add `@sentry/.*` and `sentry-expo` to your `transformIgnorePatterns`.
 
@@ -297,7 +315,7 @@ Make sure your `organization`, `project` and `authToken` properties are set corr
 
 </Collapsible>
 
-<Collapsible summary={<>`expo-dev-client` transactions never finish</>}>
+<Collapsible summary={<><CODE>expo-dev-client</CODE> transactions never finish</>}>
 
 This error is caused by the HTTP request tracking, which creates spans for log requests to the development server. To fix this, stop creating spans by adding the following code snippet:
 

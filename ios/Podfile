@@ -29,12 +29,14 @@ abstract_target 'Expo Go' do
   use_expo_modules!({
     exclude: [
       'expo-module-template',
+      'expo-module-template-local',
       'expo-in-app-purchases',
       'expo-dev-menu',
       'expo-dev-menu-interface',
       'expo-dev-launcher',
       'expo-dev-client',
-      'expo-maps'
+      'expo-maps',
+      'expo-insights',
     ],
     includeTests: true,
     flags: {

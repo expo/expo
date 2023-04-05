@@ -1,5 +1,4 @@
 import { css } from '@emotion/react';
-import { spacing, theme } from '@expo/styleguide';
 
 import { EnumDefinitionData, EnumValueData } from '~/components/plugins/api/APIDataTypes';
 import { APISectionDeprecationNote } from '~/components/plugins/api/APISectionDeprecationNote';
@@ -11,7 +10,7 @@ import {
   STYLES_APIBOX_NESTED,
   H3Code,
 } from '~/components/plugins/api/APISectionUtils';
-import { H2, H4, CODE } from '~/ui/components/Text';
+import { H2, H4, CODE, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionEnumsProps = {
   data: EnumDefinitionData[];
@@ -35,7 +34,7 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
     <APISectionDeprecationNote comment={comment} />
     <APISectionPlatformTags comment={comment} prefix="Only for:" />
     <H3Code tags={getTagNamesList(comment)}>
-      <CODE>{name}</CODE>
+      <MONOSPACE weight="medium">{name}</MONOSPACE>
     </H3Code>
     <CommentTextBlock comment={comment} includePlatforms={false} />
     {children.sort(sortByValue).map((enumValue: EnumValueData) => (
@@ -45,7 +44,7 @@ const renderEnum = ({ name, children, comment }: EnumDefinitionData): JSX.Elemen
         <H4 css={enumValueNameStyle}>
           <CODE>{enumValue.name}</CODE>
         </H4>
-        <CODE css={enumValueStyles}>
+        <CODE theme="secondary" className="mb-4">
           {`${name}.${enumValue.name} ＝ ${renderEnumValue(enumValue.type.value)}`}
         </CODE>
         <CommentTextBlock comment={enumValue.comment} includePlatforms={false} />
@@ -66,14 +65,6 @@ const enumValueNameStyle = css({
   h4: {
     marginTop: 0,
   },
-});
-
-const enumValueStyles = css({
-  display: 'inline-block',
-  padding: `0 ${spacing[2]}px`,
-  color: theme.text.secondary,
-  fontSize: '75%',
-  marginBottom: spacing[4],
 });
 
 const enumContentStyles = css({

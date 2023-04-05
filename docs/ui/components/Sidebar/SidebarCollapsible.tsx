@@ -1,10 +1,11 @@
 import { css } from '@emotion/react';
-import { theme, iconSize, spacing, ChevronDownIcon, borderRadius, shadows } from '@expo/styleguide';
+import { ButtonBase, theme, shadows } from '@expo/styleguide';
+import { spacing, borderRadius } from '@expo/styleguide-base';
+import { ChevronDownIcon } from '@expo/styleguide-icons';
 import { useRouter } from 'next/router';
 import type { PropsWithChildren } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
-import { ButtonBase } from '../Button';
 import { CALLOUT } from '../Text';
 
 import { stripVersionFromPath } from '~/common/utilities';
@@ -81,7 +82,10 @@ export function SidebarCollapsible(props: Props) {
         onClick={toggleIsOpen}
         {...customDataAttributes}>
         <div css={chevronContainerStyle}>
-          <ChevronDownIcon size={iconSize.xs} css={[chevronStyle, !isOpen && chevronClosedStyle]} />
+          <ChevronDownIcon
+            className="icon-xs text-icon-secondary transition-transform"
+            css={!isOpen && chevronClosedStyle}
+          />
         </div>
         <CALLOUT weight="medium">{info.name}</CALLOUT>
       </ButtonBase>
@@ -122,11 +126,6 @@ const chevronContainerStyle = css({
   marginRight: spacing[1],
 });
 
-const chevronStyle = css({
-  transition: '100ms ease transform',
-  transform: 'translateX(-0.5px)',
-});
-
 const chevronClosedStyle = css({
-  transform: 'rotate(-90deg)',
+  transform: 'rotate(-90deg) translateY(0.5px)',
 });

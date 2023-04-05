@@ -2,6 +2,7 @@
   "name": "expo-updates",
   "platforms": ["ios", "android"],
   "ios": {
+    "modules": ["UpdatesModule"],
     "appDelegateSubscribers": ["ExpoUpdatesAppDelegateSubscriber"],
     "reactDelegateHandlers": ["ExpoUpdatesReactDelegateHandler"]
   }

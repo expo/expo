@@ -33,10 +33,14 @@ public:
    */
   std::string name;
   /**
+   * Whether this function takes owner
+   */
+  bool takesOwner;
+  /**
    * Number of arguments
    */
   int args;
-  /*
+  /**
    * Whether this function is async
    */
   bool isAsync;
@@ -48,6 +52,7 @@ public:
   MethodMetadata(
     std::weak_ptr<react::LongLivedObjectCollection> longLivedObjectCollection,
     std::string name,
+    bool takesOwner,
     int args,
     bool isAsync,
     jni::local_ref<jni::JArrayClass<ExpectedType>> expectedArgTypes,
@@ -57,6 +62,7 @@ public:
   MethodMetadata(
     std::weak_ptr<react::LongLivedObjectCollection> longLivedObjectCollection,
     std::string name,
+    bool takesOwner,
     int args,
     bool isAsync,
     std::vector<std::unique_ptr<AnyType>> &&expectedArgTypes,
@@ -67,16 +73,6 @@ public:
   MethodMetadata(const MethodMetadata &) = delete;
 
   MethodMetadata(MethodMetadata &&other) = default;
-
-  /**
-   * MethodMetadata owns the only reference to the Kotlin function.
-   * We have to clean that, cause it's a `global_ref`.
-   */
-  ~MethodMetadata() {
-    if (jBodyReference != nullptr) {
-      jBodyReference.release();
-    }
-  }
 
   /**
    * Transforms metadata to a jsi::Function.
@@ -96,6 +92,16 @@ public:
   jsi::Value callSync(
     jsi::Runtime &rt,
     JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value &thisValue,
+    const jsi::Value *args,
+    size_t count
+  );
+
+  jni::local_ref<jobject> callJNISync(
+    JNIEnv *env,
+    jsi::Runtime &rt,
+    JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value &thisValue,
     const jsi::Value *args,
     size_t count
   );
@@ -130,6 +136,7 @@ private:
     JSIInteropModuleRegistry *moduleRegistry,
     JNIEnv *env,
     jsi::Runtime &rt,
+    const jsi::Value &thisValue,
     const jsi::Value *args,
     size_t count
   );

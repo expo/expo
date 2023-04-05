@@ -33,11 +33,11 @@ export default [
   },
   {
     name: 'resourceClass',
-    enum: ['default', 'medium', 'm1-medium', 'intel-medium'],
+    enum: ['default', 'medium', 'm-medium', 'intel-medium'],
     description: [
       'The iOS-specific resource class that will be used to run this build. [Learn more](../../build-reference/infrastructure#ios-build-server-configurations)',
-      '- `default` maps to `intel-medium`',
-      '- `medium` maps to `intel-medium`',
+      '- For SDK version >= 45 or React Native version >= 0.71.0 `default` maps to `m-medium`, otherwise it maps to `intel-medium`',
+      '- For SDK version >= 45 or React Native version >= 0.71.0 `medium` maps to `m-medium`, otherwise it maps to `intel-medium`',
       '',
       'This can change over time. To ensure you stay on the same configuration even when we change our defaults, use the specific resource class name.',
     ],

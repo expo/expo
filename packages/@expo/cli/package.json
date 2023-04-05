@@ -19,7 +19,8 @@
     "test": "expo-module test",
     "test:e2e": "jest --config e2e/jest.config.js",
     "prepublishOnly": "expo-module prepublishOnly",
-    "expo-module": "expo-module"
+    "expo-module": "expo-module",
+    "generate-graphql-code": "graphql-codegen --config graphql-codegen.yml"
   },
   "repository": {
     "type": "git",
@@ -84,6 +85,7 @@
     "progress": "2.0.3",
     "prompts": "^2.3.2",
     "qrcode-terminal": "0.11.0",
+    "require-from-string": "^2.0.2",
     "requireg": "^0.2.2",
     "resolve-from": "^5.0.0",
     "semver": "^6.3.0",
@@ -95,7 +97,8 @@
     "terminal-link": "^2.1.1",
     "text-table": "^0.2.0",
     "url-join": "4.0.0",
-    "wrap-ansi": "^7.0.0"
+    "wrap-ansi": "^7.0.0",
+    "ws": "^8.12.1"
   },
   "taskr": {
     "requires": [
@@ -103,6 +106,9 @@
     ]
   },
   "devDependencies": {
+    "@graphql-codegen/cli": "2.16.3",
+    "@graphql-codegen/typescript": "2.8.7",
+    "@graphql-codegen/typescript-operations": "2.5.12",
     "@expo/multipart-body-parser": "^1.0.0",
     "@expo/ngrok": "4.1.0",
     "@expo/webpack-config": "^0.17.4",
@@ -132,11 +138,15 @@
     "@types/webpack": "~4.41.32",
     "@types/webpack-dev-server": "3.11.0",
     "@types/wrap-ansi": "^8.0.1",
+    "@types/ws": "^8.5.4",
+    "devtools-protocol": "^0.0.1113120",
     "expo-module-scripts": "^3.0.0",
+    "find-process": "^1.4.7",
     "klaw-sync": "^6.0.0",
     "nock": "~13.2.2",
     "nullthrows": "^1.1.1",
     "structured-headers": "^0.4.1",
-    "taskr": "1.1.0"
+    "taskr": "1.1.0",
+    "tree-kill": "^1.2.2"
   }
 }

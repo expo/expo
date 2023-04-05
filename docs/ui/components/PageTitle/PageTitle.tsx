@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
-import { breakpoints, BuildIcon, GithubIcon, spacing, theme } from '@expo/styleguide';
+import { breakpoints, spacing } from '@expo/styleguide-base';
+import { BuildIcon, GithubIcon } from '@expo/styleguide-icons';
 
 import { A, CALLOUT, H1 } from '~/ui/components/Text';
 
@@ -11,10 +12,10 @@ type Props = {
 };
 
 export const PageTitle = ({ title, packageName, iconUrl, sourceCodeUrl }: Props) => (
-  <H1>
+  <H1 crawlable={false}>
     {iconUrl && <img src={iconUrl} css={titleIconStyle} alt={`Expo ${title} icon`} />}
     {packageName && packageName.startsWith('expo-') && 'Expo '}
-    {title}
+    <span data-heading="true">{title}</span>
     {packageName && (
       <span css={linksContainerStyle}>
         {sourceCodeUrl && (
@@ -24,7 +25,7 @@ export const PageTitle = ({ title, packageName, iconUrl, sourceCodeUrl }: Props)
             href={sourceCodeUrl}
             css={linkStyle}
             title={`View source code of ${packageName} on GitHub`}>
-            <GithubIcon color={theme.icon.secondary} title="" />
+            <GithubIcon className="text-icon-secondary" />
             <CALLOUT theme="secondary">GitHub</CALLOUT>
           </A>
         )}
@@ -34,7 +35,7 @@ export const PageTitle = ({ title, packageName, iconUrl, sourceCodeUrl }: Props)
           href={`https://www.npmjs.com/package/${packageName}`}
           css={linkStyle}
           title="View package in npm Registry">
-          <BuildIcon color={theme.icon.secondary} title="" />
+          <BuildIcon className="text-icon-secondary" />
           <CALLOUT theme="secondary">npm</CALLOUT>
         </A>
       </span>

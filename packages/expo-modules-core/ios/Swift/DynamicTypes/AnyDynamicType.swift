@@ -17,10 +17,26 @@ public protocol AnyDynamicType: CustomStringConvertible {
   func equals(_ type: AnyDynamicType) -> Bool
 
   /**
-   Casts given any value to the wrapped type and returns as `Any`.
+   Preliminarily casts the given JavaScriptValue to a non-JS value that the other `cast` function can handle.
+   It **must** be run on the thread used by the JavaScript runtime.
+   */
+  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any
+
+  /**
+   Casts the given value to the wrapped type and returns it as `Any`.
    NOTE: It may not be just simple type-casting (e.g. when the wrapped type conforms to `Convertible`).
    */
-  func cast<ValueType>(_ value: ValueType) throws -> Any
+  func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any
+}
+
+extension AnyDynamicType {
+  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+    return jsValue.getRaw()
+  }
+
+  func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
+    return value
+  }
 }
 
 // MARK: - Operators

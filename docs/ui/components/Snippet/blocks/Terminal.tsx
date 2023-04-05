@@ -1,5 +1,5 @@
 import { css } from '@emotion/react';
-import { darkTheme, palette, spacing } from '@expo/styleguide';
+import { spacing } from '@expo/styleguide-base';
 
 import { Snippet } from '../Snippet';
 import { SnippetContent } from '../SnippetContent';
@@ -62,37 +62,40 @@ function cmdMapper(line: string, index: number) {
   const key = `line-${index}`;
 
   if (line.trim() === '') {
-    return <br key={key} css={unselectableStyle} />;
+    return <br key={key} className="select-none" />;
   }
 
   if (line.startsWith('#')) {
     return (
-      <CODE key={key} css={[codeStyle, unselectableStyle, { color: palette.dark.gray10 }]}>
-        {line}
-      </CODE>
+      <div key={key} className="dark-theme">
+        <CODE className="whitespace-pre inline-block !bg-[transparent] !border-none !leading-snug select-none !text-palette-gray10">
+          {line}
+        </CODE>
+      </div>
     );
   }
 
   if (line.startsWith('$')) {
     return (
-      <div key={key}>
-        <CODE
-          css={[
-            codeStyle,
-            unselectableStyle,
-            { display: 'inline', color: darkTheme.text.secondary },
-          ]}>
+      <div key={key} className="dark-theme">
+        <CODE className="whitespace-pre inline-block !bg-[transparent] !border-none !leading-snug select-none !text-secondary">
           -&nbsp;
         </CODE>
-        <CODE css={codeStyle}>{line.substring(1).trim()}</CODE>
+        <CODE className="whitespace-pre inline-block !bg-[transparent] !border-none text-default !leading-snug">
+          {line.substring(1).trim()}
+        </CODE>
       </div>
     );
   }
 
   return (
-    <CODE key={key} css={[codeStyle, { display: 'inherit' }]}>
-      {line}
-    </CODE>
+    <div key={key} className="dark-theme">
+      <CODE
+        css={[{ display: 'inherit' }]}
+        className="whitespace-pre inline-block !bg-[transparent] !border-none text-default !leading-snug">
+        {line}
+      </CODE>
+    </div>
   );
 }
 
@@ -101,17 +104,4 @@ const wrapperStyle = css`
     margin-top: ${spacing[4]}px;
     display: flex;
   }
-`;
-
-const unselectableStyle = css`
-  user-select: none;
-`;
-
-const codeStyle = css`
-  white-space: pre;
-  display: inline-block;
-  line-height: 140%;
-  background-color: transparent;
-  border: none;
-  color: ${darkTheme.text.default};
 `;

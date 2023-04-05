@@ -20,6 +20,7 @@ import abi48_0_0.com.facebook.react.uimanager.UIManagerModule
 import abi48_0_0.com.facebook.react.uimanager.ViewManager
 import abi48_0_0.com.facebook.systrace.Systrace
 import abi48_0_0.com.swmansion.reanimated.ReanimatedModule
+import abi48_0_0.com.swmansion.reanimated.ReanimatedUIManagerFactory
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.experience.ReactNativeActivity
 import host.exp.exponent.kernel.KernelConstants
@@ -113,7 +114,7 @@ class ExpoTurboPackage(
     Systrace.beginSection(Systrace.TRACE_TAG_REACT_JAVA_BRIDGE, "createUIManagerModule")
     val minTimeLeftInFrameForNonBatchedOperationMs = -1
     return try {
-      ReanimatedUIManager(
+      ReanimatedUIManagerFactory.create(
         reactContext,
         reactInstanceManager.getOrCreateViewManagers(reactContext),
         minTimeLeftInFrameForNonBatchedOperationMs

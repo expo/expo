@@ -222,7 +222,7 @@ Property("foo") {
 In the case of the mutable property, both the getter and the setter closure are needed (using the syntax below is also possible to declare a property with only a setter):
 
 - **name**: `String` — Name of the property that you'll use from JavaScript.
-- **getter**: `() -> ProperyType` — The closure to run when the getter for a property was called.
+- **getter**: `() -> PropertyType` — The closure to run when the getter for a property was called.
 - **setter**: `(newValue: PropertyType) -> void` — The closure to run when the setter for a property was called.
 
 <CodeBlocksTable>
@@ -462,7 +462,7 @@ Defines action the retrieves the number of child views in the view group.
 
 #### Arguments
 
-- **action**: `(parent: ParentType) -> Int` — A function that returns numer of child views.
+- **action**: `(parent: ParentType) -> Int` — A function that returns number of child views.
 
 This property can only be used within a [`GroupView`](#groupview) closure.
 
@@ -888,7 +888,8 @@ class LinearGradientModule : Module() {
 
 ## Guides
 
-<APIBox header="Sending events">
+<APIBox>
+### Sending events
 
 While JavaScript/TypeScript to Native communication is mostly covered by native functions, you might also want to let the JavaScript/TypeScript code know about certain system events, for example, when the clipboard content changes.
 
@@ -979,7 +980,8 @@ export function addClipboardListener(listener: (event) => void): Subscription {
 
 </APIBox>
 
-<APIBox header="View callbacks">
+<APIBox>
+### View callbacks
 
 Some events are connected to a certain view. For example, the touch event should be sent only to the underlying JavaScript view which was pressed. In that case, you can't use `sendEvent` described in [`Sending events`](#sending-events). The `expo-modules-core` introduces a view callbacks mechanism to handle view-bound events.
 

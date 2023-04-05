@@ -1,5 +1,7 @@
 import { css } from '@emotion/react';
-import { borderRadius, iconSize, shadows, spacing, theme, ChevronDownIcon } from '@expo/styleguide';
+import { shadows, theme } from '@expo/styleguide';
+import { borderRadius, spacing } from '@expo/styleguide-base';
+import { ChevronDownIcon } from '@expo/styleguide-icons';
 
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
@@ -18,9 +20,9 @@ export function ApiVersionSelect() {
 
   return (
     <div css={containerStyle}>
-      <label css={labelStyle} htmlFor="api-version-select">
-        <LABEL css={labelTextStyle}>{versionToText(version)}</LABEL>
-        <ChevronDownIcon css={labelIconStyle} size={iconSize.sm} />
+      <label className="flex flex-row items-center" htmlFor="api-version-select">
+        <LABEL className="flex">{versionToText(version)}</LABEL>
+        <ChevronDownIcon className="icon-sm shrink-0" />
       </label>
       <select
         id="api-version-select"
@@ -35,7 +37,7 @@ export function ApiVersionSelect() {
       </select>
       {/* Changing versions is a JS only mechanism. To help crawlers find other versions, we add hidden links. */}
       {VERSIONS.map(version => (
-        <A css={crawlerLinkStyle} key={version} href={`/versions/${version}`} />
+        <A className="hidden" key={version} href={`/versions/${version}`} />
       ))}
     </div>
   );
@@ -60,24 +62,6 @@ const containerStyle = css({
   boxShadow: shadows.xs,
   margin: spacing[4],
   padding: `${spacing[2]}px ${spacing[3]}px`,
-});
-
-const labelStyle = css({
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-});
-
-const labelTextStyle = css({
-  flex: 1,
-});
-
-const labelIconStyle = css({
-  flexShrink: 0,
-});
-
-const crawlerLinkStyle = css({
-  display: 'none',
 });
 
 const selectStyle = css({

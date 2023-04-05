@@ -120,9 +120,11 @@ async function copyCommonFixturesToProject(projectRoot, appJsFileName, repoRoot)
       projectFilesTarballPath,
       'tsconfig.json',
       '.detoxrc.json',
+      'detox.config.js',
       'eas.json',
       'eas-hooks',
       'e2e',
+      'scripts',
     ],
     {
       cwd: projectFilesSourcePath,
@@ -177,17 +179,18 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
         'detox:ios:release:test': 'detox test -c ios.release',
         'eas-build-pre-install': './eas-hooks/eas-build-pre-install.sh',
         'eas-build-on-success': './eas-hooks/eas-build-on-success.sh',
+        'generate-test-update-bundles': 'node scripts/generate-test-update-bundles.js',
       }
     : {};
 
   const extraDevDependencies = configureE2E
     ? {
-        '@config-plugins/detox': '^3.0.0',
+        '@config-plugins/detox': '^5.0.1',
         '@types/express': '^4.17.17',
         '@types/jest': '^29.4.0',
         '@types/react': '~18.0.14',
         '@types/react-native': '~0.70.6',
-        detox: '^19.12.1',
+        detox: '^20.4.0',
         express: '^4.18.2',
         'form-data': '^4.0.0',
         jest: '^29.3.1',
@@ -236,21 +239,13 @@ async function preparePackageJson(projectRoot, repoRoot, configureE2E) {
  */
 async function prepareLocalUpdatesModule(repoRoot) {
   // copy UpdatesE2ETest exported module into the local package
-  const iosE2ETestModuleHPath = path.join(
+  const iosE2ETestModuleSwiftPath = path.join(
     repoRoot,
     'packages',
     'expo-updates',
     'ios',
     'EXUpdates',
-    'EXUpdatesE2ETestModule.h'
-  );
-  const iosE2ETestModuleMPath = path.join(
-    repoRoot,
-    'packages',
-    'expo-updates',
-    'ios',
-    'EXUpdates',
-    'EXUpdatesE2ETestModule.m'
+    'E2ETestModule.swift'
   );
   const androidE2ETestModuleKTPath = path.join(
     repoRoot,
@@ -266,12 +261,8 @@ async function prepareLocalUpdatesModule(repoRoot) {
     'UpdatesE2ETestModule.kt'
   );
   await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'EXUpdatesE2ETestModule.h'),
-    iosE2ETestModuleHPath
-  );
-  await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'EXUpdatesE2ETestModule.m'),
-    iosE2ETestModuleMPath
+    path.resolve(dirName, '..', 'fixtures', 'E2ETestModule.swift'),
+    iosE2ETestModuleSwiftPath
   );
   await fs.copyFile(
     path.resolve(dirName, '..', 'fixtures', 'UpdatesE2ETestModule.kt'),
@@ -307,11 +298,29 @@ async function prepareLocalUpdatesModule(repoRoot) {
   }
   await fs.writeFile(updatesPackageFilePath, updatesPackageFileContents, 'utf8');
 
+  // Add E2ETestModule to expo-module.config.json
+  const expoModuleConfigFilePath = path.join(
+    repoRoot,
+    'packages',
+    'expo-updates',
+    'expo-module.config.json'
+  );
+  const originalExpoModuleConfigJsonString = await fs.readFile(expoModuleConfigFilePath, 'utf-8');
+  const originalExpoModuleConfig = JSON.parse(originalExpoModuleConfigJsonString);
+  const expoModuleConfig = {
+    ...originalExpoModuleConfig,
+    ios: {
+      ...originalExpoModuleConfig.ios,
+      modules: ['UpdatesModule', 'E2ETestModule'],
+    },
+  };
+  await fs.writeFile(expoModuleConfigFilePath, JSON.stringify(expoModuleConfig, null, 2), 'utf-8');
+
   // Return cleanup function
   return async () => {
     await fs.writeFile(updatesPackageFilePath, originalUpdatesPackageFileContents, 'utf8');
-    await fs.rm(iosE2ETestModuleHPath, { force: true });
-    await fs.rm(iosE2ETestModuleMPath, { force: true });
+    await fs.writeFile(expoModuleConfigFilePath, originalExpoModuleConfigJsonString, 'utf-8');
+    await fs.rm(iosE2ETestModuleSwiftPath, { force: true });
     await fs.rm(androidE2ETestModuleKTPath, { force: true });
   };
 }
@@ -327,7 +336,7 @@ function transformAppJsonForE2E(appJson, projectName, runtimeVersion) {
       name: projectName,
       owner: 'expo-ci',
       runtimeVersion,
-      jsEngine: 'hermes',
+      jsEngine: 'jsc',
       plugins: ['expo-updates', '@config-plugins/detox'],
       android: { ...appJson.expo.android, package: 'dev.expo.updatese2e' },
       ios: { ...appJson.expo.ios, bundleIdentifier: 'dev.expo.updatese2e' },
@@ -472,6 +481,13 @@ async function initAsync(
     'utf-8'
   );
 
+  // Append additional Proguard rule for Detox 20
+  await fs.appendFile(
+    path.join(projectRoot, 'android', 'app', 'proguard-rules.pro'),
+    '\n-keep class org.apache.commons.** { *; }\n',
+    'utf-8'
+  );
+
   // Force bundling on iOS for debug builds
   const iosProjectPath = glob.sync(
     path.join(projectRoot, 'ios', '*.xcodeproj', 'project.pbxproj')
@@ -489,87 +505,8 @@ async function initAsync(
   return projectRoot;
 }
 
-async function createUpdateBundleAsync(projectRoot, localCliBin) {
-  await fs.rm(path.join(projectRoot, 'dist'), { force: true, recursive: true });
-  await spawnAsync(localCliBin, ['export'], {
-    cwd: projectRoot,
-    stdio: 'inherit',
-  });
-}
-
-/**
- * Originally, the E2E tests would directly modify the text of the minified JS in update bundles
- * when testing to make sure that the correct update was applied.
- *
- * Since Hermes bundles are bytecode and not readable JS, we instead pre-generate Hermes bundles
- * corresponding to each test case, and save them in the `test-update-bundles` directory in the test app.
- */
-async function createTestUpdateBundles(projectRoot, localCliBin, notifyStrings) {
-  const testUpdateBundlesPath = path.join(projectRoot, 'test-update-bundles');
-  await fs.rm(testUpdateBundlesPath, { recursive: true, force: true });
-  await fs.mkdir(testUpdateBundlesPath);
-  const appJsPath = path.join(projectRoot, 'App.tsx');
-  const originalAppJs = await fs.readFile(appJsPath, 'utf-8');
-  const testUpdateJson = {};
-  for (const notifyString of ['test', ...notifyStrings]) {
-    console.log(`Creating bundle for string '${notifyString}'...`);
-    const modifiedAppJs = originalAppJs.replace(/\/notify\/test/g, `/notify/${notifyString}`);
-    await fs.rm(appJsPath);
-    await fs.writeFile(appJsPath, modifiedAppJs, 'utf-8');
-    await createUpdateBundleAsync(projectRoot, localCliBin);
-    const manifestJsonString = await fs.readFile(
-      path.join(projectRoot, 'dist', 'metadata.json'),
-      'utf-8'
-    );
-    const manifest = JSON.parse(manifestJsonString);
-    const iosBundlePath = path.join(projectRoot, 'dist', manifest.fileMetadata.ios.bundle);
-    const androidBundlePath = path.join(projectRoot, 'dist', manifest.fileMetadata.android.bundle);
-    const iosBundleDestPath = path.join(testUpdateBundlesPath, path.basename(iosBundlePath));
-    const androidBundleDestPath = path.join(
-      testUpdateBundlesPath,
-      path.basename(androidBundlePath)
-    );
-    await fs.copyFile(iosBundlePath, iosBundleDestPath);
-    await fs.copyFile(androidBundlePath, androidBundleDestPath);
-    testUpdateJson[notifyString] = {
-      ios: path.basename(iosBundlePath),
-      android: path.basename(androidBundlePath),
-    };
-  }
-  const testUpdateBundlesJsonPath = path.join(testUpdateBundlesPath, 'test-updates.json');
-  await fs.writeFile(testUpdateBundlesJsonPath, JSON.stringify(testUpdateJson, null, 2), 'utf-8');
-  await fs.rm(appJsPath);
-  await fs.writeFile(appJsPath, originalAppJs, 'utf-8');
-  console.log('Done creating test bundles');
-}
-
-async function setupBasicAppAsync(projectRoot, localCliBin, repoRoot) {
+async function setupE2EAppAsync(projectRoot, localCliBin, repoRoot) {
   await copyCommonFixturesToProject(projectRoot, 'App.tsx', repoRoot);
-
-  // export update for test server to host
-  await createUpdateBundleAsync(projectRoot, localCliBin);
-
-  // create test bundles with different notify strings
-  await createTestUpdateBundles(projectRoot, localCliBin, [
-    'test-update-1',
-    'test-update-2',
-    'test-update-3',
-    'test-update-invalid-hash',
-    'test-update-older',
-  ]);
-
-  // move exported update to "updates" directory for EAS testing
-  await fs.rename(path.join(projectRoot, 'dist'), path.join(projectRoot, 'updates'));
-
-  // Copy Detox test file to e2e/tests directory
-  await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'Updates-basic.e2e.ts'),
-    path.join(projectRoot, 'e2e', 'tests', 'Updates-basic.e2e.ts')
-  );
-}
-
-async function setupAssetsAppAsync(projectRoot, localCliBin, repoRoot) {
-  await copyCommonFixturesToProject(projectRoot, 'App-assets.tsx', repoRoot);
 
   // copy png assets and install extra package
   await fs.copyFile(
@@ -581,19 +518,10 @@ async function setupAssetsAppAsync(projectRoot, localCliBin, repoRoot) {
     stdio: 'inherit',
   });
 
-  // export update for test server to host
-  await createUpdateBundleAsync(projectRoot, localCliBin);
-
-  // create test bundles with different notify strings
-  await createTestUpdateBundles(projectRoot, localCliBin, ['test-assets-1']);
-
-  // move exported update to "updates" directory for EAS testing
-  await fs.rename(path.join(projectRoot, 'dist'), path.join(projectRoot, 'updates'));
-
   // Copy Detox test file to e2e/tests directory
   await fs.copyFile(
-    path.resolve(dirName, '..', 'fixtures', 'Updates-assets.e2e.ts'),
-    path.join(projectRoot, 'e2e', 'tests', 'Updates-assets.e2e.ts')
+    path.resolve(dirName, '..', 'fixtures', 'Updates.e2e.ts'),
+    path.join(projectRoot, 'e2e', 'tests', 'Updates.e2e.ts')
   );
 }
 
@@ -614,7 +542,6 @@ async function setupManualTestAppAsync(projectRoot) {
 
 module.exports = {
   initAsync,
-  setupBasicAppAsync,
-  setupAssetsAppAsync,
+  setupE2EAppAsync,
   setupManualTestAppAsync,
 };

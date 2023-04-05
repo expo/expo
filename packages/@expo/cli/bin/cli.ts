@@ -25,6 +25,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
   config: () => import('../src/config').then((i) => i.expoConfig),
   export: () => import('../src/export').then((i) => i.expoExport),
   'export:web': () => import('../src/export/web').then((i) => i.expoExportWeb),
+  'export:embed': () => import('../src/export/embed').then((i) => i.expoExportEmbed),
 
   // Auxiliary commands
   install: () => import('../src/install').then((i) => i.expoInstall),
@@ -83,6 +84,10 @@ if (!isSubcommand && args['--help']) {
     prebuild,
     'run:ios': runIos,
     'run:android': runAndroid,
+    // NOTE(EvanBacon): Don't document this command as it's a temporary
+    // workaround until we can use `expo export` for all production bundling.
+    // https://github.com/expo/expo/pull/21396/files#r1121025873
+    'export:embed': exportEmbed_unused,
     ...others
   } = commands;
 
@@ -119,7 +124,7 @@ if (!isSubcommand) {
     'build:android': 'eas build -p android',
     'client:install:ios': 'npx expo start --ios',
     'client:install:android': 'npx expo start --android',
-    doctor: 'expo-cli doctor',
+    doctor: 'npx expo-doctor',
     upgrade: 'expo-cli upgrade',
     'customize:web': 'npx expo customize',
 

@@ -4,11 +4,55 @@
 
 ### 🛠 Breaking changes
 
+- drop `EXPO_USE_LOCAL_CLI` in favor of using `expo` for the local CLI and `expo-cli` for the global CLI. ([#21388](https://github.com/expo/expo/pull/21388) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 🎉 New features
+
+- Add `expo/scripts/launchPackager.command` script for launching Expo CLI when building iOS apps for development in Xcode. ([#21397](https://github.com/expo/expo/pull/21397) by [@EvanBacon](https://github.com/EvanBacon))
+- Added internal `export:embed` command for use in Xcode and Android Studio builds. ([#21396](https://github.com/expo/expo/pull/21396) by [@EvanBacon](https://github.com/EvanBacon))
+- Export TypeScript types for `expo/metro-config`. ([#21898](https://github.com/expo/expo/pull/21898) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+### 📚 3rd party library updates
+
+## 48.0.10 - 2023-04-03
+
+### 📚 3rd party library updates
+
+- Update `react-native` to 0.71.6. ([#21909](https://github.com/expo/expo/pull/21909) by [@kudo](https://github.com/kudo))
+
+## 48.0.8 - 2023-03-20
+
+### 🐛 Bug fixes
+
+- Change arg in gradle `.execute()` call to null to inherit env variables from user's env ([#21712](https://github.com/expo/expo/pull/21712) by [@phoenixiguess](https://github.com/phoenixiguess))
+
+## 48.0.7 - 2023-03-14
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.6 - 2023-03-08
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.5 - 2023-03-03
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.4 - 2023-02-23
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.3 - 2023-02-21
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.2 - 2023-02-21
+
+_This version does not introduce any user-facing changes._
 
 ## 48.0.1 — 2023-02-15
 

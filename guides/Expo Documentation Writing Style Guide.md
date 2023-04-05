@@ -215,6 +215,10 @@ Only apply inline code formatting using back-ticks (``) on programming words and
 - Correct: Make sure you write `async` before the `function` keyword to set up an asynchronous function.
 - Incorrect: Click the `File` menu, then click `Save As` to export the file as a specific file type.
 
+### Use `&mdash;`
+
+In some scenarios, when you split to senetences and use `-` or `--`, instead, use `&mdash;`. Markdown renders that mdash nicely instead of a `-`.
+
 ### Referencing Keyboard shortcuts
 
 Keyboard shortcuts mentioned in the text should use the `<kbd>` element in markdown files. Each key should be wrapped with a separate tag, and plus signs should remain outside the elements:

@@ -9,9 +9,7 @@
     "*.fx.js",
     "*.fx.web.js"
   ],
-  "bin": {
-    "expo": "bin/cli.js"
-  },
+  "bin": "bin/cli",
   "files": [
     "android",
     "bin",
@@ -24,6 +22,7 @@
     "bundledNativeModules.json",
     "expo-module.config.json",
     "metro-config.js",
+    "metro-config.d.ts",
     "config.js",
     "config.d.ts",
     "config-plugins.js",
@@ -64,7 +63,6 @@
     "@expo/config-plugins": "6.0.0",
     "@expo/config": "8.0.1",
     "babel-preset-expo": "~9.3.0",
-    "cross-spawn": "^6.0.5",
     "expo-application": "~5.1.1",
     "expo-asset": "~8.9.0",
     "expo-constants": "~14.2.1",
@@ -74,7 +72,6 @@
     "expo-modules-autolinking": "1.1.2",
     "expo-modules-core": "1.2.2",
     "fbemitter": "^3.0.0",
-    "getenv": "^1.0.0",
     "invariant": "^2.2.4",
     "md5-file": "^3.2.3",
     "node-fetch": "^2.6.7",
@@ -90,6 +87,6 @@
     "expo-module-scripts": "^3.0.7",
     "react": "18.2.0",
     "react-dom": "18.2.0",
-    "react-native": "0.71.3"
+    "react-native": "0.71.6"
   }
 }

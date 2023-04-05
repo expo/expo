@@ -1,6 +1,6 @@
 ---
-title: Add Expo to an existing project
-description: Learn how to add Expo SDK to an existing React Native project.
+title: Install Expo modules
+description: Learn how to prepare your existing React Native project to install and use any Expo module.
 ---
 
 import InstallSection from '~/components/plugins/InstallSection';
@@ -38,11 +38,15 @@ To install and use Expo modules, the easiest way to get up and running is with t
 
 ## Manual installation
 
-The following instructions apply to installing the latest version of Expo modules in React Native 0.68.
+The following instructions apply to installing the latest version of Expo modules in React Native 0.71.
 
 <InstallSection packageName="expo" cmd={['npm install expo']} hideBareInstructions />
 
 Once installation is complete, apply the changes from the following diffs to configure Expo modules in your project. This is expected to take about five minutes, and you may need to adapt it slightly depending on how customized your project is.
+
+### Configuration for Android
+
+<DiffBlock source="/static/diffs/expo-android.diff" />
 
 ### Configuration for iOS
 
@@ -50,7 +54,7 @@ Once installation is complete, apply the changes from the following diffs to con
 
 Optionally, you can also add additional delegate methods to your **AppDelegate.mm**. Some libraries may require them, so unless you have a good reason to leave them out, it is recommended to add them. [See delegate methods in AppDelegate.mm](https://github.com/expo/expo/blob/b7c0356c697ef2cf46388e5742d67b7b48adc97f/templates/expo-template-bare-minimum/ios/HelloWorld/AppDelegate.mm#L75-L102).
 
-Save all of your changes. In Xcode, update the iOS Deployment Target under `Target → Build Settings → Deployment` to `iOS 12.0`. The last step is to install the project's CocoaPods again in order to pull in Expo modules that are detected by `use_expo_modules!` directive that we added to the `Podfile`:
+Save all of your changes. In Xcode, update the iOS Deployment Target under `Target → Build Settings → Deployment` to `iOS 13.0`. The last step is to install the project's CocoaPods again to pull in Expo modules that are detected by `use_expo_modules!` directive that we added to the `Podfile`:
 
 <InstallSection
   packageName="expo"
@@ -63,14 +67,6 @@ Save all of your changes. In Xcode, update the iOS Deployment Target under `Targ
   ]}
   hideBareInstructions
 />
-
-<div style={{ marginTop: 50 }} />
-
-### Configuration for Android
-
-<DiffBlock source="/static/diffs/expo-android.diff" />
-
-<div style={{ marginTop: -10 }} />
 
 ## Usage
 

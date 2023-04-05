@@ -1,5 +1,4 @@
-import { css } from '@emotion/react';
-import { theme, spacing, UndoIcon, iconSize } from '@expo/styleguide';
+import { CornerDownRightIcon } from '@expo/styleguide-icons';
 import ReactMarkdown from 'react-markdown';
 
 import { APIDataType } from '~/components/plugins/api/APIDataType';
@@ -30,7 +29,7 @@ import {
   getCommentContent,
   BoxSectionHeader,
 } from '~/components/plugins/api/APISectionUtils';
-import { H2, LI, UL, CODE } from '~/ui/components/Text';
+import { H2, LI, UL, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionMethodsProps = {
   data: (MethodDefinitionData | PropData)[];
@@ -66,9 +65,9 @@ export const renderMethod = (
           <APISectionDeprecationNote comment={comment} />
           <APISectionPlatformTags comment={comment} prefix="Only for:" />
           <HeaderComponent tags={getTagNamesList(comment)}>
-            <CODE css={!exposeInSidebar ? STYLES_NOT_EXPOSED_HEADER : undefined}>
+            <MONOSPACE weight="medium" css={!exposeInSidebar && STYLES_NOT_EXPOSED_HEADER}>
               {getMethodName(method as MethodDefinitionData, apiName, name, parameters)}
-            </CODE>
+            </MONOSPACE>
           </HeaderComponent>
           {parameters && parameters.length > 0 && (
             <>
@@ -80,13 +79,9 @@ export const renderMethod = (
           {resolveTypeName(type) !== 'undefined' && (
             <>
               <BoxSectionHeader text="Returns" />
-              <UL css={STYLES_NO_BULLET_LIST}>
+              <UL className="!list-none !ml-0">
                 <LI>
-                  <UndoIcon
-                    color={theme.icon.secondary}
-                    size={iconSize.sm}
-                    css={returnIconStyles}
-                  />
+                  <CornerDownRightIcon className="inline-block icon-sm text-icon-secondary align-middle mr-2" />
                   <APIDataType typeDefinition={type} />
                 </LI>
               </UL>
@@ -120,12 +115,6 @@ const APISectionMethods = ({
       )}
     </>
   ) : null;
-
-const returnIconStyles = css({
-  transform: 'rotate(180deg)',
-  marginRight: spacing[2],
-  verticalAlign: 'middle',
-});
 
 export default APISectionMethods;
 
@@ -185,8 +174,3 @@ export const APIMethod = ({
     { exposeInSidebar }
   );
 };
-
-const STYLES_NO_BULLET_LIST = css({
-  listStyle: 'none',
-  marginLeft: spacing[2],
-});

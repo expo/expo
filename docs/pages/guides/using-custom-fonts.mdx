@@ -69,7 +69,7 @@ Then, you can use the font on the `Text` component by using `fontFamily` style p
 <Text style={{ fontFamily: 'Inter-Black', fontSize: 30 }}>Inter Black</Text>
 ```
 
-Alternatively, you can use [`Fonts.loadAsync`](#using--fontloadasync--instead-of-the) to load the fonts in your app.
+Alternatively, you can use [`Font.loadAsync`](#using-fontloadasync-instead-of-the-usefonts-hook) to load the fonts in your app.
 
 ### A minimal working example
 
@@ -222,7 +222,7 @@ You probably don't need to know anything beyond this point to use custom fonts e
 
 In general, it's best and safest to load fonts from your local assets. If you submit to app stores, they will be bundled with the download and available immediately. You don't have to worry about CORS or other potential issues.
 
-However, if you to load a remote font file directly from the web rather than from your project's assets, you can do it by replacing the `require('./assets/fonts/MyFont.otf')` with the URL of your font. See the below example:
+However, if you need to load a remote font file directly from the web rather than from your project's assets, you can do it by replacing the `require('./assets/fonts/MyFont.otf')` with the URL of your font. See the below example:
 
 <SnackInline label="Using a remote font" dependencies={['expo-font']}>
 

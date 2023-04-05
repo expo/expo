@@ -22,6 +22,8 @@ void FrontendConverterProvider::createConverters() {
   RegisterConverter(CppType::STRING, StringFrontendConverter);
   RegisterConverter(CppType::READABLE_MAP, ReadableNativeMapArrayFrontendConverter);
   RegisterConverter(CppType::READABLE_ARRAY, ReadableNativeArrayFrontendConverter);
+  RegisterConverter(CppType::VIEW_TAG, ViewTagFrontendConverter);
+  RegisterConverter(CppType::SHARED_OBJECT_ID, SharedObjectIdConverter);
 #undef RegisterConverter
 
   auto registerPolyConverter = [this](const std::vector<CppType> &types) {

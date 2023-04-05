@@ -137,9 +137,16 @@ class Env {
     return process.env.HTTP_PROXY || process.env.http_proxy || '';
   }
 
-  /** **Experimental:** Prevent Metro from using the `compilerOptions.paths` feature from `tsconfig.json` (or `jsconfig.json`) to enable import aliases. */
-  get EXPO_USE_PATH_ALIASES(): boolean {
-    return boolish('EXPO_USE_PATH_ALIASES', false);
+  /**
+   * **Experimental:** Use static generation for Metro web projects. This only works with Expo Router.
+   */
+  get EXPO_USE_STATIC(): boolean {
+    return boolish('EXPO_USE_STATIC', false);
+  }
+
+  /** **Experimental:** Use the network inspector by overriding the metro inspector proxy with a custom version */
+  get EXPO_USE_CUSTOM_INSPECTOR_PROXY(): boolean {
+    return boolish('EXPO_USE_CUSTOM_INSPECTOR_PROXY', false);
   }
 }
 

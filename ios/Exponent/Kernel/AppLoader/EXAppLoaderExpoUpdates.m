@@ -19,18 +19,6 @@
 #import "Expo_Go-Swift.h"
 #endif // defined(EX_DETACHED)
 
-#import <EXUpdates/EXUpdatesAppLauncherNoDatabase.h>
-#import <EXUpdates/EXUpdatesAppLoaderTask.h>
-#import <EXUpdates/EXUpdatesConfig.h>
-#import <EXUpdates/EXUpdatesDatabase.h>
-#import <EXUpdates/EXUpdatesErrorRecovery.h>
-#import <EXUpdates/EXUpdatesFileDownloader.h>
-#import <EXUpdates/EXUpdatesLauncherSelectionPolicyFilterAware.h>
-#import <EXUpdates/EXUpdatesLoaderSelectionPolicyFilterAware.h>
-#import <EXUpdates/EXUpdatesReaper.h>
-#import <EXUpdates/EXUpdatesReaperSelectionPolicyDevelopmentClient.h>
-#import <EXUpdates/EXUpdatesSelectionPolicy.h>
-#import <EXUpdates/EXUpdatesUtils.h>
 #import <React/RCTUtils.h>
 #import <sys/utsname.h>
 
@@ -365,16 +353,16 @@ NS_ASSUME_NONNULL_BEGIN
   }
 
   NSMutableDictionary *updatesConfig = [[NSMutableDictionary alloc] initWithDictionary:@{
-    EXUpdatesConfigUpdateUrlKey: httpManifestUrl.absoluteString,
-    EXUpdatesConfigSDKVersionKey: [self _sdkVersions],
-    EXUpdatesConfigScopeKeyKey: httpManifestUrl.absoluteString,
-    EXUpdatesConfigReleaseChannelKey: releaseChannel,
-    EXUpdatesConfigHasEmbeddedUpdateKey: @([EXEnvironment sharedEnvironment].isDetached),
-    EXUpdatesConfigEnabledKey: @([EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled),
-    EXUpdatesConfigLaunchWaitMsKey: launchWaitMs,
-    EXUpdatesConfigCheckOnLaunchKey: shouldCheckOnLaunch ? EXUpdatesConfigCheckOnLaunchValueAlways : EXUpdatesConfigCheckOnLaunchValueNever,
-    EXUpdatesConfigExpectsSignedManifestKey: @YES,
-    EXUpdatesConfigRequestHeadersKey: [self _requestHeaders]
+    EXUpdatesConfig.EXUpdatesConfigUpdateUrlKey: httpManifestUrl.absoluteString,
+    EXUpdatesConfig.EXUpdatesConfigSDKVersionKey: [self _sdkVersions],
+    EXUpdatesConfig.EXUpdatesConfigScopeKeyKey: httpManifestUrl.absoluteString,
+    EXUpdatesConfig.EXUpdatesConfigReleaseChannelKey: releaseChannel,
+    EXUpdatesConfig.EXUpdatesConfigHasEmbeddedUpdateKey: @([EXEnvironment sharedEnvironment].isDetached),
+    EXUpdatesConfig.EXUpdatesConfigEnabledKey: @([EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled),
+    EXUpdatesConfig.EXUpdatesConfigLaunchWaitMsKey: launchWaitMs,
+    EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchKey: shouldCheckOnLaunch ? EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchValueAlways : EXUpdatesConfig.EXUpdatesConfigCheckOnLaunchValueNever,
+    EXUpdatesConfig.EXUpdatesConfigExpectsSignedManifestKey: @YES,
+    EXUpdatesConfig.EXUpdatesConfigRequestHeadersKey: [self _requestHeaders]
   }];
 
   if (!EXEnvironment.sharedEnvironment.isDetached) {
@@ -399,16 +387,20 @@ NS_ASSUME_NONNULL_BEGIN
                                    userInfo:@{ @"underlyingError": error.localizedDescription }];
     }
 
-    updatesConfig[EXUpdatesConfigCodeSigningCertificateKey] = expoRootCert;
-    updatesConfig[EXUpdatesConfigCodeSigningMetadataKey] = @{
+    updatesConfig[EXUpdatesConfig.EXUpdatesConfigCodeSigningCertificateKey] = expoRootCert;
+    updatesConfig[EXUpdatesConfig.EXUpdatesConfigCodeSigningMetadataKey] = @{
       @"keyid": @"expo-root",
       @"alg": @"rsa-v1_5-sha256",
     };
-    updatesConfig[EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey] = @YES;
-    updatesConfig[EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey] = @YES;
+    updatesConfig[EXUpdatesConfig.EXUpdatesConfigCodeSigningIncludeManifestResponseCertificateChainKey] = @YES;
+    updatesConfig[EXUpdatesConfig.EXUpdatesConfigCodeSigningAllowUnsignedManifestsKey] = @YES;
+    
+    // in Expo Go, ignore directives in manifest responses and require a manifest. the current directives
+    // (no update available, roll back) don't have any practical use outside of standalone apps
+    updatesConfig[EXUpdatesConfig.EXUpdatesConfigEnableExpoUpdatesProtocolV0CompatibilityModeKey] = @YES;
   }
 
-  _config = [EXUpdatesConfig configWithDictionary:updatesConfig];
+  _config = [EXUpdatesConfig configFromDictionary:updatesConfig];
 
   if (![EXEnvironment sharedEnvironment].areRemoteUpdatesEnabled) {
     [self _launchWithNoDatabaseAndError:nil];

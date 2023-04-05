@@ -28,7 +28,7 @@ import {
   getCommentContent,
 } from '~/components/plugins/api/APISectionUtils';
 import { Cell, Row, Table } from '~/ui/components/Table';
-import { H2, BOLD, P, CODE } from '~/ui/components/Text';
+import { H2, BOLD, P, CODE, MONOSPACE } from '~/ui/components/Text';
 
 export type APISectionTypesProps = {
   data: TypeGeneralData[];
@@ -115,10 +115,10 @@ const renderType = ({
         <APISectionDeprecationNote comment={comment} />
         <APISectionPlatformTags comment={comment} prefix="Only for:" />
         <H3Code tags={getTagNamesList(comment)}>
-          <CODE>
+          <MONOSPACE weight="medium">
             {name}
             {type.declaration.signatures ? '()' : ''}
-          </CODE>
+          </MONOSPACE>
         </H3Code>
         <CommentTextBlock comment={comment} includePlatforms={false} />
         {type.declaration.children && renderTypeDeclarationTable(type.declaration)}
@@ -143,7 +143,7 @@ const renderType = ({
           <APISectionDeprecationNote comment={comment} />
           <APISectionPlatformTags comment={comment} prefix="Only for:" />
           <H3Code tags={getTagNamesList(comment)}>
-            <CODE>{name}</CODE>
+            <MONOSPACE weight="medium">{name}</MONOSPACE>
           </H3Code>
           <CommentTextBlock comment={comment} includePlatforms={false} />
           {type.type === 'intersection' ? (
@@ -173,7 +173,7 @@ const renderType = ({
           <APISectionDeprecationNote comment={comment} />
           <APISectionPlatformTags comment={comment} prefix="Only for:" />
           <H3Code tags={getTagNamesList(comment)}>
-            <CODE>{name}</CODE>
+            <MONOSPACE weight="medium">{name}</MONOSPACE>
           </H3Code>
           <CommentTextBlock comment={comment} includePlatforms={false} />
           <P>
@@ -195,7 +195,7 @@ const renderType = ({
         <APISectionDeprecationNote comment={comment} />
         <APISectionPlatformTags comment={comment} prefix="Only for:" />
         <H3Code tags={getTagNamesList(comment)}>
-          <CODE>{name}</CODE>
+          <MONOSPACE weight="medium">{name}</MONOSPACE>
         </H3Code>
         <div css={{ display: 'flex', gap: 8, marginBottom: 12 }}>
           <BOLD>Type: </BOLD>
@@ -210,7 +210,7 @@ const renderType = ({
         <APISectionDeprecationNote comment={comment} />
         <APISectionPlatformTags comment={comment} prefix="Only for:" />
         <H3Code tags={getTagNamesList(comment)}>
-          <CODE>{name}</CODE>
+          <MONOSPACE weight="medium">{name}</MONOSPACE>
         </H3Code>
         <CommentTextBlock comment={comment} includePlatforms={false} />
         <P>
@@ -225,9 +225,9 @@ const renderType = ({
         <APISectionDeprecationNote comment={comment} />
         <APISectionPlatformTags comment={comment} prefix="Only for:" />
         <H3Code tags={getTagNamesList(comment)}>
-          <CODE>
+          <MONOSPACE weight="medium">
             {name}&lt;{type.checkType.name}&gt;
-          </CODE>
+          </MONOSPACE>
         </H3Code>
         <CommentTextBlock comment={comment} includePlatforms={false} />
         <P>

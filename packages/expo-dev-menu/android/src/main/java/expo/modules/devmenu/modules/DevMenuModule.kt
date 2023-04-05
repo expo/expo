@@ -9,27 +9,43 @@ class DevMenuModule(reactContext: ReactApplicationContext) :
 
   private val devMenuManager: DevMenuManager = DevMenuManager
 
-  private fun openMenuOn(screen: String?) {
+  @ReactMethod
+  fun openMenu() {
     reactApplicationContext
       .currentActivity
       ?.run {
-        devMenuManager.openMenu(this, screen)
+        devMenuManager.openMenu(this)
       }
   }
 
   @ReactMethod
-  fun openMenu() {
-    openMenuOn(null)
+  fun closeMenu() {
+    devMenuManager.closeMenu()
+  }
+
+  @ReactMethod
+  fun hideMenu() {
+    devMenuManager.hideMenu()
   }
 
   override fun invalidate() {
-    devMenuManager.registeredCallbacks = arrayListOf<String>()
+    devMenuManager.registeredCallbacks.clear()
     super.invalidate()
   }
 
   @ReactMethod
-  fun addDevMenuCallbacks(names: ReadableArray, promise: Promise) {
-    devMenuManager.registeredCallbacks = names.toArrayList() as ArrayList<String>
+  fun addDevMenuCallbacks(callbacks: ReadableArray, promise: Promise) {
+    val size = callbacks.size()
+    for (i in 0 until size) {
+      val callback = callbacks.getMap(i)
+      val name = callback.getString("name") ?: continue
+      val shouldCollapse = if (callback.hasKey("shouldCollapse")) {
+        callback.getBoolean("shouldCollapse")
+      } else {
+        true
+      }
+      devMenuManager.registeredCallbacks.add(DevMenuManager.Callback(name, shouldCollapse))
+    }
 
     return promise.resolve(null)
   }

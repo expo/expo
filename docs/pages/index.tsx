@@ -1,9 +1,7 @@
 import { css } from '@emotion/react';
+import { theme, typography } from '@expo/styleguide';
+import { spacing, breakpoints, borderRadius } from '@expo/styleguide-base';
 import {
-  iconSize,
-  spacing,
-  theme,
-  typography,
   ArrowUpRightIcon,
   ArrowRightIcon,
   DiscordIcon,
@@ -11,12 +9,12 @@ import {
   GithubIcon,
   RedditIcon,
   TwitterIcon,
-  breakpoints,
-} from '@expo/styleguide';
+} from '@expo/styleguide-icons';
 import type { PropsWithChildren } from 'react';
 import { Container, Row, ScreenClassProvider } from 'react-grid-system';
 
 import DocumentationPage from '~/components/DocumentationPage';
+import { AppJSBanner } from '~/ui/components/AppJSBanner';
 import { APIGridCell, CommunityGridCell, GridCell, HomeButton } from '~/ui/components/Home';
 import {
   APICameraIcon,
@@ -37,7 +35,7 @@ import { H1, RawH2, RawH3, P } from '~/ui/components/Text';
 
 export const CellContainer = ({ children }: PropsWithChildren<object>) => (
   // https://github.com/sealninja/react-grid-system/issues/175
-  <Container fluid style={{ paddingLeft: -15, paddingRight: -15, marginBottom: spacing[8] }}>
+  <Container fluid style={{ paddingLeft: -15, paddingRight: -15, marginBottom: spacing[6] }}>
     {children}
   </Container>
 );
@@ -49,11 +47,11 @@ const Description = ({ children }: PropsWithChildren<object>) => (
 );
 
 const Home = () => {
-  const { palette, button, background } = theme;
+  const { palette, background } = theme;
   return (
     <ScreenClassProvider>
       <DocumentationPage tocVisible={false} hideFromSearch>
-        <div css={imageMasksContainerStyle}>
+        <div className="h-0">
           <DevicesImageMasks />
           <CodecademyImageMasks />
         </div>
@@ -61,6 +59,7 @@ const Home = () => {
         <Description>
           Build one JavaScript/TypeScript project that runs natively on all your users' devices.
         </Description>
+        <AppJSBanner />
         <CellContainer>
           <Row>
             <GridCell xl={4} lg={12} css={quickStartCellStyle}>
@@ -110,13 +109,9 @@ const Home = () => {
                 and web app
               </RawH2>
               <HomeButton
-                css={css({
-                  background: button.primary.background,
-                  color: button.primary.text,
-                  height: 40,
-                })}
+                className="hocus:bg-button-primary hocus:opacity-80"
                 href="/tutorial/introduction/"
-                iconRight={<ArrowRightIcon color={button.primary.icon} />}>
+                rightSlot={<ArrowRightIcon className="icon-md" />}>
                 Start Tutorial
               </HomeButton>
             </GridCell>
@@ -136,17 +131,17 @@ const Home = () => {
                 borderColor: palette.purple7,
               })}>
               <SnackImage />
-              <RawH3 css={css({ color: palette.purple12 })}>Try Expo in your browser</RawH3>
+              <RawH3 css={css({ color: palette.purple11 })}>Try Expo in your browser</RawH3>
               <P css={css({ color: palette.purple11, ...typography.fontSizes[14] })}>
                 Expo’s Snack lets you try Expo
                 <br />
                 with zero local setup.
               </P>
               <HomeButton
-                css={css({ backgroundColor: palette.purple11, color: palette.purple3 })}
+                className="bg-palette-purple11 border-palette-purple11 text-palette-purple3 hocus:bg-palette-purple11 hocus:opacity-80"
                 href="https://snack.expo.dev/"
                 target="_blank"
-                iconRight={<ArrowUpRightIcon color={palette.purple3} />}>
+                rightSlot={<ArrowUpRightIcon className="text-palette-purple3 icon-md" />}>
                 Create a Snack
               </HomeButton>
             </GridCell>
@@ -158,12 +153,13 @@ const Home = () => {
                 borderColor: palette.orange8,
               })}>
               <CodecademyImage />
-              <RawH3 css={css({ color: palette.orange12 })}>
+              <RawH3 css={css({ color: palette.orange11 })}>
                 Learn Expo on
                 <br />
                 Codecademy
               </RawH3>
               <HomeButton
+                className="bg-palette-orange11 border-palette-orange11 text-palette-orange4 hocus:bg-palette-orange11 hocus:opacity-80"
                 css={css({
                   backgroundColor: palette.orange11,
                   color: palette.orange4,
@@ -173,7 +169,7 @@ const Home = () => {
                 })}
                 href="https://www.codecademy.com/learn/learn-react-native"
                 target="_blank"
-                iconRight={<ArrowUpRightIcon color={palette.orange4} />}>
+                rightSlot={<ArrowUpRightIcon className="text-palette-orange4 icon-md" />}>
                 Start Course
               </HomeButton>
             </GridCell>
@@ -185,16 +181,16 @@ const Home = () => {
                 borderColor: palette.green7,
               })}>
               <WhyImage />
-              <RawH3 css={css({ color: palette.green12 })}>Why choose Expo?</RawH3>
-              <P css={{ color: palette.green12, ...typography.fontSizes[14] }}>
+              <RawH3 css={css({ color: palette.green11 })}>Why choose Expo?</RawH3>
+              <P css={{ color: palette.green11, ...typography.fontSizes[14] }}>
                 Learn the tradeoffs of
                 <br />
                 using Expo.
               </P>
               <HomeButton
-                css={css({ backgroundColor: palette.green11, color: palette.green2 })}
+                className="bg-palette-green11 border-palette-green11 text-palette-green2 hocus:bg-palette-green11 hocus:opacity-80"
                 href="/introduction/faq"
-                iconRight={<ArrowRightIcon color={palette.green2} />}>
+                rightSlot={<ArrowRightIcon className="text-palette-green2 icon-md" />}>
                 Read
               </HomeButton>
             </GridCell>
@@ -206,20 +202,16 @@ const Home = () => {
                 borderColor: palette.yellow8,
               })}>
               <OfficeHoursImage />
-              <RawH3 css={css({ color: palette.yellow12 })}>Join us for Office Hours</RawH3>
+              <RawH3 css={css({ color: palette.yellow11 })}>Join us for Office Hours</RawH3>
               <P css={css({ color: palette.yellow11, ...typography.fontSizes[14] })}>
                 Get answers to your questions and
                 <br />
                 get advice from the Expo team.
               </P>
               <HomeButton
-                css={css({
-                  backgroundColor: palette.yellow11,
-                  color: palette.yellow2,
-                })}
+                className="bg-palette-yellow11 border-palette-yellow11 text-palette-yellow2 hocus:bg-palette-yellow11 hocus:opacity-80"
                 href="https://us02web.zoom.us/meeting/register/tZcvceivqj0oHdGVOjEeKY0dRxCRPb0HzaAK"
-                target="_blank"
-                iconRight={<ArrowUpRightIcon color={palette.yellow2} />}>
+                rightSlot={<ArrowUpRightIcon className="text-palette-yellow2 icon-md" />}>
                 Register
               </HomeButton>
             </GridCell>
@@ -231,26 +223,18 @@ const Home = () => {
         </Description>
         <CellContainer>
           <Row>
-            <APIGridCell
-              title="Maps"
-              link="/versions/latest/sdk/map-view"
-              icon={<APIMapsIcon size={70} />}
-            />
+            <APIGridCell title="Maps" link="/versions/latest/sdk/map-view" icon={<APIMapsIcon />} />
             <APIGridCell
               title="Camera"
               link="/versions/latest/sdk/camera"
-              icon={<APICameraIcon size={70} />}
+              icon={<APICameraIcon />}
             />
             <APIGridCell
               title="Notifications"
               link="/versions/latest/sdk/notifications"
-              icon={<APINotificationsIcon size={70} />}
+              icon={<APINotificationsIcon />}
             />
-            <APIGridCell
-              title="View all APIs"
-              link="/versions/latest/"
-              icon={<APIListIcon size={70} />}
-            />
+            <APIGridCell title="View all APIs" link="/versions/latest/" icon={<APIListIcon />} />
           </Row>
         </CellContainer>
         <RawH3>Join the community</RawH3>
@@ -261,8 +245,6 @@ const Home = () => {
 };
 
 export function JoinTheCommunity() {
-  const { palette } = theme;
-
   return (
     <>
       <Description>See the source code, connect with others, and get connected.</Description>
@@ -272,16 +254,14 @@ export function JoinTheCommunity() {
             title="GitHub"
             description="View our SDK, submit a PR, or report an issue."
             link="https://github.com/expo/expo"
-            icon={<GithubIcon color={palette.white} size={iconSize.lg} />}
-            css={communityCellStyle}
+            icon={<GithubIcon className="icon-lg text-palette-white" />}
           />
           <CommunityGridCell
             title="Discord"
             description="Join our Discord and chat with other Expo users."
             link="https://chat.expo.dev"
-            icon={<DiscordIcon color={palette.white} size={iconSize.lg} />}
+            icon={<DiscordIcon className="icon-lg text-palette-white" />}
             iconBackground="#3131E8"
-            css={communityCellStyle}
           />
         </Row>
         <Row>
@@ -289,16 +269,14 @@ export function JoinTheCommunity() {
             title="Twitter"
             description="Follow Expo on Twitter for news and updates."
             link="https://twitter.com/expo"
-            icon={<TwitterIcon color={palette.white} size={iconSize.lg} />}
+            icon={<TwitterIcon className="icon-lg text-palette-white" />}
             iconBackground="#1E8EF0"
-            css={communityCellStyle}
           />
           <CommunityGridCell
             title="Forums"
             description="Ask or answer a question on the forums."
             link="https://forums.expo.dev/"
-            icon={<DiscourseIcon color={palette.white} size={iconSize.lg} />}
-            css={communityCellStyle}
+            icon={<DiscourseIcon className="icon-lg text-palette-white" />}
           />
         </Row>
         <Row>
@@ -306,9 +284,8 @@ export function JoinTheCommunity() {
             title="Reddit"
             description="Get the latest on r/expo."
             link="https://www.reddit.com/r/expo"
-            icon={<RedditIcon color={palette.white} size={iconSize.lg} />}
+            icon={<RedditIcon className="icon-lg text-palette-white" />}
             iconBackground="#FC471E"
-            css={communityCellStyle}
           />
         </Row>
       </CellContainer>
@@ -331,6 +308,7 @@ const baseGradientStyle = css({
   width: '100%',
   height: '100%',
   position: 'absolute',
+  borderRadius: borderRadius.lg,
 });
 
 const quickStartCellStyle = css({
@@ -353,14 +331,6 @@ const tutorialCellStyle = css({
   [`@media screen and (max-width: ${breakpoints.medium}px)`]: {
     minHeight: 200,
   },
-});
-
-const imageMasksContainerStyle = css({
-  height: 0,
-});
-
-const communityCellStyle = css({
-  minHeight: 'unset',
 });
 
 export default Home;

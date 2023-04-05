@@ -5,7 +5,7 @@ import Foundation
 /**
  Schema for the fields in expo-updates log message JSON strings
  */
-public struct UpdatesLogEntry: Codable {
+internal struct UpdatesLogEntry: Codable {
   var timestamp: UInt // milliseconds since 1/1/1970 UTC
   var message: String
   var code: String // One of the UpdatesErrorCode string values
@@ -17,7 +17,7 @@ public struct UpdatesLogEntry: Codable {
   /**
    Returns a JSON string representation from this UpdatesLogEntry object
    */
-  public func asString() -> String? {
+  func asString() -> String? {
     do {
       let jsonEncoder = JSONEncoder()
       let jsonData = try jsonEncoder.encode(self)
@@ -30,7 +30,7 @@ public struct UpdatesLogEntry: Codable {
   /**
    Returns a Dictionary representation from this UpdatesLogEntry object
    */
-  public func asDict() -> [String: Any] {
+  func asDict() -> [String: Any] {
     var result = [String: Any]()
     result["timestamp"] = timestamp
     result["message"] = message
@@ -51,7 +51,7 @@ public struct UpdatesLogEntry: Codable {
   /**
    Returns a new UpdatesLogEntry from a JSON string, or nil if a decoding error occurs
    */
-  public static func create(from: String) -> UpdatesLogEntry? {
+  static func create(from: String) -> UpdatesLogEntry? {
     do {
       let jsonDecoder = JSONDecoder()
       guard let jsonData = from.data(using: .utf8) else {
@@ -68,7 +68,7 @@ public struct UpdatesLogEntry: Codable {
   /**
    Utility method to construct stacktrace as a string array for log entries
    */
-  public static func currentStackTrace() -> [String] {
+  static func currentStackTrace() -> [String] {
     return [String](Thread.callStackSymbols.dropFirst().dropFirst().prefix(STACKTRACE_MAX_LENGTH))
       .map { stackframe in
         stackframe.replacingOccurrences(of: #"^\d+\s+"#, with: "", options: .regularExpression)

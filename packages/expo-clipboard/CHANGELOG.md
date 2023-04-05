@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 4.1.2 - 2023-03-03
+
+### 🐛 Bug fixes
+
+- Fixed crash in clipboard listener on Android SDK <26 ([#21383](https://github.com/expo/expo/pull/21383) by [@frw](https://github.com/frw))
+
 ## 4.1.1 — 2023-02-09
 
 _This version does not introduce any user-facing changes._

@@ -20,8 +20,7 @@ import {
   scale,
 } from 'expo-dev-client-components';
 import * as React from 'react';
-import { ScrollView } from 'react-native';
-import { Switch } from 'react-native-gesture-handler';
+import { Platform, ScrollView, Switch } from 'react-native';
 
 import { useAppInfo } from '../hooks/useAppInfo';
 import { useClipboard } from '../hooks/useClipboard';
@@ -346,6 +345,8 @@ export function Main({ registeredCallbacks = [] }: MainProps) {
             </Row>
           </Button.ScaleOnPressContainer>
         </View>
+
+        {Platform.OS === 'android' && <View style={{ height: 50 }} />}
         <Spacer.Vertical size="large" />
       </ScrollView>
     </View>

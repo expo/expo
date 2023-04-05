@@ -1,7 +1,6 @@
 package expo.modules.kotlin.functions
 
 import com.facebook.react.bridge.ReadableArray
-import com.facebook.react.bridge.ReadableType
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.exception.ArgumentCastException
 import expo.modules.kotlin.exception.CodedException
@@ -10,8 +9,12 @@ import expo.modules.kotlin.exception.exceptionDecorator
 import expo.modules.kotlin.iterator
 import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.JavaScriptModuleObject
+import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.recycle
 import expo.modules.kotlin.types.AnyType
+import kotlin.reflect.KType
+import kotlin.reflect.full.isSubtypeOf
+import kotlin.reflect.typeOf
 
 /**
  * Base class of all exported functions
@@ -21,6 +24,16 @@ abstract class AnyFunction(
   protected val desiredArgsTypes: Array<AnyType>
 ) {
   internal val argsCount get() = desiredArgsTypes.size
+
+  internal var canTakeOwner: Boolean = false
+
+  @PublishedApi
+  internal var ownerType: KType? = null
+
+  internal val takesOwner: Boolean
+    get() = canTakeOwner &&
+      desiredArgsTypes.firstOrNull()?.kType?.isSubtypeOf(typeOf<JavaScriptObject>()) == true ||
+      (ownerType != null && desiredArgsTypes.firstOrNull()?.kType?.isSubtypeOf(ownerType!!) == true)
 
   /**
    * A minimum number of arguments the functions needs which equals to `argumentsCount` reduced by the number of trailing optional arguments.
@@ -54,7 +67,7 @@ abstract class AnyFunction(
       val desiredType = desiredArgsTypes[index]
       argIterator.next().recycle {
         exceptionDecorator({ cause ->
-          ArgumentCastException(desiredType.kType, index, type, cause)
+          ArgumentCastException(desiredType.kType, index, type.toString(), cause)
         }) {
           finalArgs[index] = desiredType.convert(this)
         }
@@ -70,7 +83,7 @@ abstract class AnyFunction(
    * @throws `CodedException` if conversion isn't possible
    */
   @Throws(CodedException::class)
-  protected fun convertArgs(args: Array<Any?>): Array<out Any?> {
+  protected fun convertArgs(args: Array<Any?>, appContext: AppContext? = null): Array<out Any?> {
     if (requiredArgumentsCount > args.size || args.size > desiredArgsTypes.size) {
       throw InvalidArgsNumberException(args.size, desiredArgsTypes.size, requiredArgumentsCount)
     }
@@ -81,9 +94,9 @@ abstract class AnyFunction(
       val element = argIterator.next()
       val desiredType = desiredArgsTypes[index]
       exceptionDecorator({ cause ->
-        ArgumentCastException(desiredType.kType, index, ReadableType.String, cause)
+        ArgumentCastException(desiredType.kType, index, element?.javaClass.toString(), cause)
       }) {
-        finalArgs[index] = desiredType.convert(element)
+        finalArgs[index] = desiredType.convert(element, appContext)
       }
     }
     return finalArgs
