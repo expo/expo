@@ -7,7 +7,6 @@ import { unsafeTemplate } from '../../../utils/template';
 import { ServerLike } from '../BundlerDevServer';
 import { metroWatchTypeScriptFiles } from '../metro/metroWatchTypeScriptFiles';
 import { getExpoRouterRootDirectory } from '../metro/router';
-import { setToUnionType } from './utils';
 
 // /test/[...param1]/[param2]/[param3] - captures ["param1", "param2", "param3"]
 export const CAPTURE_DYNAMIC_PARAMS = /\[(?:\.{3})?(\w*?)[\]$]/g;
@@ -182,6 +181,10 @@ export function getTypedRoutesUtils(appRoot: string) {
     addFilePath,
   };
 }
+
+const setToUnionType = <T>(set: Set<T>) => {
+  return set.size > 0 ? [...set].map((s) => `\`${s}\``).join(' | ') : 'never';
+};
 
 /**
  * Recursively walk a directory and call the callback with the file path.
