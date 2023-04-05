@@ -43,15 +43,11 @@ const generalDirectories = fs
 
 const home = [
   makeSection('', [makePage('home/overview.mdx')]),
-  makeSection(
-    'Get started',
-    [
-      makePage('home/get-started/installation.mdx'),
-      makePage('home/get-started/expo-go.mdx'),
-      makePage('home/get-started/create-a-project.mdx'),
-    ],
-    { expanded: true }
-  ),
+  makeSection('Get started', [
+    makePage('home/get-started/installation.mdx'),
+    makePage('home/get-started/expo-go.mdx'),
+    makePage('home/get-started/create-a-project.mdx'),
+  ]),
   makeSection('Develop', [
     makePage('home/develop/project-structure.mdx'),
     makeGroup(
@@ -66,7 +62,7 @@ const home = [
         makePage('home/develop/user-interface/store-data.mdx'),
         makePage('home/develop/user-interface/next-steps.mdx'),
       ],
-      { expanded: true }
+      { expanded: false }
     ),
     makeGroup(
       'Development builds',
@@ -80,7 +76,7 @@ const home = [
         makePage('home/develop/development-builds/development-workflows.mdx'),
         makePage('home/develop/development-builds/next-steps.mdx'),
       ],
-      { expanded: true }
+      { expanded: false }
     ),
     makeGroup(
       'Config plugins',
@@ -153,19 +149,13 @@ const general = [
   ]),
   makeSection('EAS', [makePage('eas/index.mdx')]),
   makeSection('EAS Build', [
-    makeGroup(
-      'Start Building',
-      [
-        makePage('build/introduction.mdx'),
-        makePage('build/setup.mdx'),
-        makePage('build/eas-json.mdx'),
-        makePage('build/internal-distribution.mdx'),
-        makePage('build/automating-submissions.mdx'),
-        makePage('build/updates.mdx'),
-        makePage('build/building-on-ci.mdx'),
-      ],
-      { expanded: true }
-    ),
+    makePage('build/introduction.mdx'),
+    makePage('build/setup.mdx'),
+    makePage('build/eas-json.mdx'),
+    makePage('build/internal-distribution.mdx'),
+    makePage('build/automating-submissions.mdx'),
+    makePage('build/updates.mdx'),
+    makePage('build/building-on-ci.mdx'),
     makeGroup(
       'App Signing',
       [
@@ -176,7 +166,7 @@ const general = [
         makePage('app-signing/syncing-credentials.mdx'),
         makePage('app-signing/security.mdx'),
       ],
-      { expanded: true }
+      { expanded: false }
     ),
     makeGroup(
       'Reference',
