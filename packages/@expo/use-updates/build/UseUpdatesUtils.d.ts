@@ -13,5 +13,4 @@ export declare const availableUpdateFromEvent: (event: UpdateEvent) => {
 export declare const checkForUpdateAndReturnAvailableAsync: (callbacks?: UseUpdatesCallbacksType) => Promise<AvailableUpdateInfo | undefined>;
 export declare const downloadUpdateAsync: (callbacks?: UseUpdatesCallbacksType) => Promise<void>;
 export declare const runUpdateAsync: (callbacks?: UseUpdatesCallbacksType) => Promise<void>;
-export declare const downloadAndRunUpdateAsync: (callbacks?: UseUpdatesCallbacksType) => Promise<void>;
 //# sourceMappingURL=UseUpdatesUtils.d.ts.map

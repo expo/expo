@@ -129,11 +129,6 @@ export type UseUpdatesReturnType = {
      */
     downloadUpdate(): void;
     /**
-     * Downloads and runs an update, if one is available.
-     * If an error occurs, the `error` property of `updatesInfo` will be set.
-     */
-    downloadAndRunUpdate(): void;
-    /**
      * Runs an update by calling `Updates.reloadAsync()`. This should not be called unless there is an available update
      * that has already been successfully downloaded using `downloadUpdate()`.
      * If an error occurs, the `error` property of `updatesInfo` will be set.

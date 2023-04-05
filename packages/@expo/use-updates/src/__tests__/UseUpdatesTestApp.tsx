@@ -15,7 +15,6 @@ const UseUpdatesTestApp = (props: { callbacks?: UseUpdatesCallbacksType }) => {
     logEntries,
     checkForUpdate,
     downloadUpdate,
-    downloadAndRunUpdate,
     readLogEntries,
   } = useUpdates(props.callbacks);
   return (
@@ -43,7 +42,6 @@ const UseUpdatesTestApp = (props: { callbacks?: UseUpdatesCallbacksType }) => {
       {/* Buttons for test code to invoke methods */}
       <Pressable testID="checkForUpdate" onPress={() => checkForUpdate()} />
       <Pressable testID="downloadUpdate" onPress={() => downloadUpdate()} />
-      <Pressable testID="downloadAndRunUpdate" onPress={() => downloadAndRunUpdate()} />
       <Pressable testID="readLogEntries" onPress={() => readLogEntries()} />
     </View>
   );

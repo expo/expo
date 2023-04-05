@@ -97,9 +97,3 @@ export const runUpdateAsync = async (callbacks?: UseUpdatesCallbacksType) => {
     throw error;
   }
 };
-
-// Implementation of downloadAndRunUpdate
-export const downloadAndRunUpdateAsync = async (callbacks?: UseUpdatesCallbacksType) => {
-  await downloadUpdateAsync(callbacks);
-  await runUpdateAsync(callbacks);
-};

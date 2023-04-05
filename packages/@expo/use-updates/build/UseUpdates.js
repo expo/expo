@@ -1,6 +1,6 @@
 import * as Updates from 'expo-updates';
 import { useEffect, useRef, useState } from 'react';
-import { checkForUpdateAndReturnAvailableAsync, currentlyRunning, downloadUpdateAsync, downloadAndRunUpdateAsync, runUpdateAsync, availableUpdateFromEvent, } from './UseUpdatesUtils';
+import { checkForUpdateAndReturnAvailableAsync, currentlyRunning, downloadUpdateAsync, runUpdateAsync, availableUpdateFromEvent, } from './UseUpdatesUtils';
 /**
  * Hook that obtains the Updates info structure and functions.
  *
@@ -73,14 +73,6 @@ const useUpdates = (callbacks) => {
             error,
         })));
     };
-    const downloadAndRunUpdate = () => {
-        downloadAndRunUpdateAsync(callbacksRef.current).catch((error) => {
-            setUpdatesState((updatesState) => ({
-                ...updatesState,
-                error,
-            }));
-        });
-    };
     const downloadUpdate = () => {
         downloadUpdateAsync(callbacksRef.current).catch((error) => {
             setUpdatesState((updatesState) => ({
@@ -110,7 +102,6 @@ const useUpdates = (callbacks) => {
         currentlyRunning,
         ...updatesState,
         checkForUpdate,
-        downloadAndRunUpdate,
         downloadUpdate,
         runUpdate,
         readLogEntries,

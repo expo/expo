@@ -10,7 +10,6 @@ import {
   checkForUpdateAndReturnAvailableAsync,
   currentlyRunning,
   downloadUpdateAsync,
-  downloadAndRunUpdateAsync,
   runUpdateAsync,
   availableUpdateFromEvent,
 } from './UseUpdatesUtils';
@@ -95,14 +94,6 @@ const useUpdates: (callbacks?: UseUpdatesCallbacksType) => UseUpdatesReturnType 
         }))
       );
   };
-  const downloadAndRunUpdate = () => {
-    downloadAndRunUpdateAsync(callbacksRef.current).catch((error) => {
-      setUpdatesState((updatesState) => ({
-        ...updatesState,
-        error,
-      }));
-    });
-  };
   const downloadUpdate = () => {
     downloadUpdateAsync(callbacksRef.current).catch((error) => {
       setUpdatesState((updatesState) => ({
@@ -134,7 +125,6 @@ const useUpdates: (callbacks?: UseUpdatesCallbacksType) => UseUpdatesReturnType 
     currentlyRunning,
     ...updatesState,
     checkForUpdate,
-    downloadAndRunUpdate,
     downloadUpdate,
     runUpdate,
     readLogEntries,

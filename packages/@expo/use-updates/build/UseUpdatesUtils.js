@@ -80,9 +80,4 @@ export const runUpdateAsync = async (callbacks) => {
         throw error;
     }
 };
-// Implementation of downloadAndRunUpdate
-export const downloadAndRunUpdateAsync = async (callbacks) => {
-    await downloadUpdateAsync(callbacks);
-    await runUpdateAsync(callbacks);
-};
 //# sourceMappingURL=UseUpdatesUtils.js.map
