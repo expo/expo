@@ -57,7 +57,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     return {
       explicitlyPrefersMultipartMixed,
       platform,
-      acceptSignature: !!req.headers['expo-accept-signature'],
+      acceptSignature: this.getLegacyAcceptSignatureHeader(req),
       expectSignature: expectSignature ? String(expectSignature) : null,
       hostname: stripPort(req.headers['host']),
     };
