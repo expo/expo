@@ -25,7 +25,7 @@ import {
  * When using this hook, the methods returned should be used instead of `expo-updates` methods (`checkForUpdateAsync()`, `fetchUpdateAsync()`, `reloadAsync()).
  *
  * @example
- * ```jsx UpdatesDemo.tsx
+ * ```tsx UpdatesDemo.tsx
  * import { StatusBar } from 'expo-status-bar';
  * import React from 'react';
  * import { Pressable, Text, View } from 'react-native';
@@ -91,12 +91,12 @@ const useUpdates: (callbacks?: {
   error?: Error;
   /**
    * A `Date` object representing the last time this client checked for an available update,
-   * or undefined if no check has yet occurred since the app started. Does not persist across
+   * or `undefined` if no check has yet occurred since the app started. Does not persist across
    * app reloads or restarts.
    */
   lastCheckForUpdateTimeSinceRestart?: Date;
   /**
-   * If present, contains expo-updates log entries returned by the `getLogEntries()` method.
+   * If present, contains `expo-updates` log entries returned by the `getLogEntries()` method.
    */
   logEntries?: UpdatesLogEntry[];
   /**

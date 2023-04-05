@@ -18,7 +18,7 @@ export type CurrentlyRunningInfo = {
    */
   updateId: string | null;
   /**
-   * The channel name of the current build, if configured for use with EAS Update. Null otherwise.
+   * The channel name of the current build, if configured for use with EAS Update. `null` otherwise.
    */
   channel: string | null;
   /**
@@ -26,7 +26,7 @@ export type CurrentlyRunningInfo = {
    * that's currently running (whether it was embedded or downloaded at runtime).
    *
    * In development mode, or any other environment in which `expo-updates` is disabled, this value is
-   * null.
+   * `null`.
    */
   createdAt: Date | null;
   /**
@@ -65,17 +65,17 @@ export type CurrentlyRunningInfo = {
  */
 export type AvailableUpdateInfo = {
   /**
-   * A string that uniquely identifies thls update. For the manifests used in the current Expo Updates protocol (including
+   * A string that uniquely identifies the update. For the manifests used in the current Expo Updates protocol (including
    * EAS Update), this represents the update's UUID in its canonical string form (`xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx`)
    * and will always use lowercase letters.
    */
   updateId: string | null;
   /**
-   * A `Date` object representing the creation time of this update.
+   * A `Date` object representing the creation time of the update.
    */
   createdAt: Date | null;
   /**
-   * The manifest for this update.
+   * The manifest for the update.
    */
   manifest: Manifest;
 };

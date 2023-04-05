@@ -10,7 +10,7 @@ import { checkForUpdateAndReturnAvailableAsync, currentlyRunning, downloadUpdate
  * When using this hook, the methods returned should be used instead of `expo-updates` methods (`checkForUpdateAsync()`, `fetchUpdateAsync()`, `reloadAsync()).
  *
  * @example
- * ```jsx UpdatesDemo.tsx
+ * ```tsx UpdatesDemo.tsx
  * import { StatusBar } from 'expo-status-bar';
  * import React from 'react';
  * import { Pressable, Text, View } from 'react-native';

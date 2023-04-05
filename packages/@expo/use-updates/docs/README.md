@@ -2,15 +2,15 @@
 
 # @expo/use-updates
 
-A new, simpler JS API for the `expo-updates` module.
+A simpler JavaScript API for the `expo-updates` module.
 
 - Wrap existing asynchronous methods and native event listener
 - No asynchronous methods needed
 - Optional callbacks called on start, completion or error during update check or download
 
-*Usage*
+## Usage
 
-```jsx UpdatesDemo.tsx
+```tsx UpdatesDemo.tsx
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
