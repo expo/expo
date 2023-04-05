@@ -75,10 +75,6 @@ export type AvailableUpdateInfo = {
      */
     manifest: Manifest;
 };
-/**
- * Callbacks that will be called when methods (`checkForUpdate()`, `downloadUpdate()`,
- * `downloadAndRunUpdate()`, or `runUpdate()`) start, complete, or have errors.
- */
 export type UseUpdatesCallbacksType = {
     onCheckForUpdateStart?: () => void;
     onCheckForUpdateComplete?: () => void;
@@ -88,57 +84,6 @@ export type UseUpdatesCallbacksType = {
     onDownloadUpdateError?: (error?: Error) => void;
     onRunUpdateStart?: () => void;
     onRunUpdateError?: (error?: Error) => void;
-};
-/**
- * The updates info and methods returned by `useUpdates()`.
- */
-export type UseUpdatesReturnType = {
-    /**
-     * Information on the currently running app
-     */
-    currentlyRunning: CurrentlyRunningInfo;
-    /**
-     * If a new available update has been found, either by using checkForUpdate(),
-     * or by the [`UpdateEvent`](#updateevent) listener in [`useUpdates`](#useupdatescallbacks),
-     * this will contain the information for that update.
-     */
-    availableUpdate?: AvailableUpdateInfo;
-    /**
-     * If an error is returned by any of the APIs to check for, download, or launch updates,
-     * the error description will appear here.
-     */
-    error?: Error;
-    /**
-     * A `Date` object representing the last time this client checked for an available update,
-     * or undefined if no check has yet occurred since the app started. Does not persist across
-     * app reloads or restarts.
-     */
-    lastCheckForUpdateTimeSinceRestart?: Date;
-    /**
-     * If present, contains expo-updates log entries returned by the `getLogEntries()` method (see [`useUpdates()`](#useupdatescallbacks).)
-     */
-    logEntries?: UpdatesLogEntry[];
-    /**
-     * Calls `Updates.checkForUpdateAsync()` and refreshes the `availableUpdate` property of `updatesInfo` with the result.
-     * If an error occurs, the `error` property of `updatesInfo` will be set.
-     */
-    checkForUpdate(): void;
-    /**
-     * Downloads an update, if one is available, using `Updates.fetchUpdateAsync()`.
-     * If an error occurs, the `error` property of `updatesInfo` will be set.
-     */
-    downloadUpdate(): void;
-    /**
-     * Runs an update by calling `Updates.reloadAsync()`. This should not be called unless there is an available update
-     * that has already been successfully downloaded using `downloadUpdate()`.
-     * If an error occurs, the `error` property of `updatesInfo` will be set.
-     */
-    runUpdate(): void;
-    /**
-     * Calls `Updates.readLogEntriesAsync()` and sets the `logEntries` property in the `updatesInfo` structure to the results.
-     * If an error occurs, the `error` property of `updatesInfo` will be set.
-     */
-    readLogEntries(maxAge?: number): void;
 };
 export type UseUpdatesStateType = {
     availableUpdate?: AvailableUpdateInfo;

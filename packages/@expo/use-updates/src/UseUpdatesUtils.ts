@@ -4,8 +4,8 @@ import type { UpdateEvent } from 'expo-updates';
 import type {
   AvailableUpdateInfo,
   CurrentlyRunningInfo,
-  Manifest,
   UseUpdatesCallbacksType,
+  Manifest,
 } from './UseUpdates.types';
 
 // The currently running info, constructed from Updates constants

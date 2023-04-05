@@ -2,11 +2,10 @@ import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 
 import * as Updates from '..';
-import { UseUpdatesCallbacksType } from '..';
 
 const { useUpdates } = Updates;
 
-const UseUpdatesTestApp = (props: { callbacks?: UseUpdatesCallbacksType }) => {
+const UseUpdatesTestApp = (props: { callbacks?: any }) => {
   const {
     currentlyRunning,
     availableUpdate,

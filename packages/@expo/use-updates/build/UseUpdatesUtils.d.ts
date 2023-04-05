@@ -1,5 +1,5 @@
 import type { UpdateEvent } from 'expo-updates';
-import type { AvailableUpdateInfo, CurrentlyRunningInfo, Manifest, UseUpdatesCallbacksType } from './UseUpdates.types';
+import type { AvailableUpdateInfo, CurrentlyRunningInfo, UseUpdatesCallbacksType, Manifest } from './UseUpdates.types';
 export declare const currentlyRunning: CurrentlyRunningInfo;
 export declare const availableUpdateFromManifest: (manifest?: Manifest) => {
     updateId: string | null;

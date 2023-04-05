@@ -15,8 +15,6 @@
 - [CurrentlyRunningInfo](modules.md#currentlyrunninginfo)
 - [Manifest](modules.md#manifest)
 - [UpdatesLogEntry](modules.md#updateslogentry)
-- [UseUpdatesCallbacksType](modules.md#useupdatescallbackstype)
-- [UseUpdatesReturnType](modules.md#useupdatesreturntype)
 
 ### Functions
 
@@ -41,7 +39,7 @@ or an [`UpdateEvent`](#updateevent) emitted by native code.
 
 #### Defined in
 
-[@expo/use-updates/src/UseUpdates.types.ts:66](https://github.com/expo/expo/blob/9ce7bf18c4/packages/@expo/use-updates/src/UseUpdates.types.ts#L66)
+[@expo/use-updates/src/UseUpdates.types.ts:66](https://github.com/expo/expo/blob/aeb52755a4/packages/@expo/use-updates/src/UseUpdates.types.ts#L66)
 
 ___
 
@@ -66,7 +64,7 @@ Structure encapsulating information on the currently running app
 
 #### Defined in
 
-[@expo/use-updates/src/UseUpdates.types.ts:12](https://github.com/expo/expo/blob/9ce7bf18c4/packages/@expo/use-updates/src/UseUpdates.types.ts#L12)
+[@expo/use-updates/src/UseUpdates.types.ts:12](https://github.com/expo/expo/blob/aeb52755a4/packages/@expo/use-updates/src/UseUpdates.types.ts#L12)
 
 ___
 
@@ -76,7 +74,7 @@ ___
 
 #### Defined in
 
-[@expo/use-updates/src/UseUpdates.types.ts:6](https://github.com/expo/expo/blob/9ce7bf18c4/packages/@expo/use-updates/src/UseUpdates.types.ts#L6)
+[@expo/use-updates/src/UseUpdates.types.ts:6](https://github.com/expo/expo/blob/aeb52755a4/packages/@expo/use-updates/src/UseUpdates.types.ts#L6)
 
 ___
 
@@ -100,65 +98,13 @@ An object representing a single log entry from expo-updates logging on the clien
 
 #### Defined in
 
-[expo-updates/build/Updates.types.d.ts:142](https://github.com/expo/expo/blob/9ce7bf18c4/packages/expo-updates/build/Updates.types.d.ts#L142)
-
-___
-
-### UseUpdatesCallbacksType
-
-Ƭ **UseUpdatesCallbacksType**: `Object`
-
-Callbacks that will be called when methods (`checkForUpdate()`, `downloadUpdate()`,
-`downloadAndRunUpdate()`, or `runUpdate()`) start, complete, or have errors.
-
-#### Type declaration
-
-| Name | Type |
-| :------ | :------ |
-| `onCheckForUpdateComplete?` | () => `void` |
-| `onCheckForUpdateError?` | (`error?`: `Error`) => `void` |
-| `onCheckForUpdateStart?` | () => `void` |
-| `onDownloadUpdateComplete?` | () => `void` |
-| `onDownloadUpdateError?` | (`error?`: `Error`) => `void` |
-| `onDownloadUpdateStart?` | () => `void` |
-| `onRunUpdateError?` | (`error?`: `Error`) => `void` |
-| `onRunUpdateStart?` | () => `void` |
-
-#### Defined in
-
-[@expo/use-updates/src/UseUpdates.types.ts:87](https://github.com/expo/expo/blob/9ce7bf18c4/packages/@expo/use-updates/src/UseUpdates.types.ts#L87)
-
-___
-
-### UseUpdatesReturnType
-
-Ƭ **UseUpdatesReturnType**: `Object`
-
-The updates info and methods returned by `useUpdates()`.
-
-#### Type declaration
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `availableUpdate?` | [`AvailableUpdateInfo`](modules.md#availableupdateinfo) | If a new available update has been found, either by using checkForUpdate(), or by the [`UpdateEvent`](#updateevent) listener in [`useUpdates`](#useupdatescallbacks), this will contain the information for that update. |
-| `currentlyRunning` | [`CurrentlyRunningInfo`](modules.md#currentlyrunninginfo) | Information on the currently running app |
-| `error?` | `Error` | If an error is returned by any of the APIs to check for, download, or launch updates, the error description will appear here. |
-| `lastCheckForUpdateTimeSinceRestart?` | `Date` | A `Date` object representing the last time this client checked for an available update, or undefined if no check has yet occurred since the app started. Does not persist across app reloads or restarts. |
-| `logEntries?` | [`UpdatesLogEntry`](modules.md#updateslogentry)[] | If present, contains expo-updates log entries returned by the `getLogEntries()` method (see [`useUpdates()`](#useupdatescallbacks).) |
-| `checkForUpdate` | () => `void` | Calls `Updates.checkForUpdateAsync()` and refreshes the `availableUpdate` property of `updatesInfo` with the result. If an error occurs, the `error` property of `updatesInfo` will be set. |
-| `downloadUpdate` | () => `void` | Downloads an update, if one is available, using `Updates.fetchUpdateAsync()`. If an error occurs, the `error` property of `updatesInfo` will be set. |
-| `readLogEntries` | (`maxAge?`: `number`) => `void` | Calls `Updates.readLogEntriesAsync()` and sets the `logEntries` property in the `updatesInfo` structure to the results. If an error occurs, the `error` property of `updatesInfo` will be set. |
-| `runUpdate` | () => `void` | Runs an update by calling `Updates.reloadAsync()`. This should not be called unless there is an available update that has already been successfully downloaded using `downloadUpdate()`. If an error occurs, the `error` property of `updatesInfo` will be set. |
-
-#### Defined in
-
-[@expo/use-updates/src/UseUpdates.types.ts:101](https://github.com/expo/expo/blob/9ce7bf18c4/packages/@expo/use-updates/src/UseUpdates.types.ts#L101)
+[expo-updates/build/Updates.types.d.ts:142](https://github.com/expo/expo/blob/aeb52755a4/packages/expo-updates/build/Updates.types.d.ts#L142)
 
 ## Functions
 
 ### useUpdates
 
-▸ **useUpdates**(`callbacks?`): [`UseUpdatesReturnType`](modules.md#useupdatesreturntype)
+▸ **useUpdates**(`callbacks?`): `Object`
 
 Hook that obtains the Updates info structure and functions.
 
@@ -168,18 +114,24 @@ Hook that obtains the Updates info structure and functions.
 import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
-import * as Updates from 'expo-updates';
+
+import { useUpdates } from '@expo/use-updates';
+import type { UseUpdatesCallbacksType } from '@expo/use-updates';
 
 export default function UpdatesDemo() {
-  const { updatesInfo, checkForUpdate, downloadAndRunUpdate } = Updates.useUpdates();
+  const callbacks = {
+    onDownloadUpdateComplete: () => {
+      runUpdate();
+    },
+  };
 
-  const { currentlyRunning, availableUpdate } = updatesInfo;
+  const { currentlyRunning, availableUpdate, checkForUpdate, downloadUpdate, runUpdate } = useUpdates();
 
   // If true, we show the button to download and run the update
   const showDownloadButton = availableUpdate !== undefined;
 
   // Show whether or not we are running embedded code or an update
-  const runTypeMessage = updatesInfo.currentlyRunning.isEmbeddedLaunch
+  const runTypeMessage = currentlyRunning.isEmbeddedLaunch
     ? 'This app is running from built-in code'
     : 'This app is running an update';
 
@@ -189,7 +141,7 @@ export default function UpdatesDemo() {
       <Text>{runTypeMessage}</Text>
       <Button pressHandler={checkForUpdate} text="Check manually for updates" />
       {showDownloadButton ? (
-        <Button pressHandler={downloadAndRunUpdate} text="Download and run update" />
+        <Button pressHandler={downloadUpdate} text="Download and run update" />
       ) : null}
       <StatusBar style="auto" />
     </View>
@@ -200,14 +152,35 @@ export default function UpdatesDemo() {
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `callbacks?` | [`UseUpdatesCallbacksType`](modules.md#useupdatescallbackstype) | Optional set of callbacks that will be called when `checkForUpdate()`, `downloadUpdate()`, `downloadAndRunUpdate()`, or `runUpdate()`, start, complete, or have errors. |
+| `callbacks?` | `Object` | Optional set of callbacks that will be called when `checkForUpdate()`, `downloadUpdate()`, `downloadAndRunUpdate()`, or `runUpdate()`, start, complete, or have errors. |
+| `callbacks.onCheckForUpdateComplete?` | () => `void` | - |
+| `callbacks.onCheckForUpdateError?` | (`error?`: `Error`) => `void` | - |
+| `callbacks.onCheckForUpdateStart?` | () => `void` | - |
+| `callbacks.onDownloadUpdateComplete?` | () => `void` | - |
+| `callbacks.onDownloadUpdateError?` | (`error?`: `Error`) => `void` | - |
+| `callbacks.onDownloadUpdateStart?` | () => `void` | - |
+| `callbacks.onRunUpdateError?` | (`error?`: `Error`) => `void` | - |
+| `callbacks.onRunUpdateStart?` | () => `void` | - |
 
 #### Returns
 
-[`UseUpdatesReturnType`](modules.md#useupdatesreturntype)
+`Object`
 
-the [`UpdatesInfo`](#updatesinfo) structure and associated methods. When using this hook, the methods returned should be used instead of [`checkForUpdateAsync`](#updatescheckforupdateasync), [`fetchUpdateAsync`](#updatesfetchupdateasync), [`readLogEntriesAsync`](#updatesreadlogentriesasync), and [`reloadAsync`](#updatesreloadasync).
+the structures with information on currently running and available updates, and associated methods.
+When using this hook, the methods returned should be used instead of `expo-updates` methods (`checkForUpdateAsync()`, `fetchUpdateAsync()`, `reloadAsync()).
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `availableUpdate?` | [`AvailableUpdateInfo`](modules.md#availableupdateinfo) | If a new available update has been found, either by using checkForUpdate(), or by the `UpdateEvent` listener in `useUpdates()`, this will contain the information for that update. |
+| `currentlyRunning` | [`CurrentlyRunningInfo`](modules.md#currentlyrunninginfo) | Information on the currently running app |
+| `error?` | `Error` | If an error is returned by any of the APIs to check for, download, or launch updates, the error description will appear here. |
+| `lastCheckForUpdateTimeSinceRestart?` | `Date` | A `Date` object representing the last time this client checked for an available update, or undefined if no check has yet occurred since the app started. Does not persist across app reloads or restarts. |
+| `logEntries?` | [`UpdatesLogEntry`](modules.md#updateslogentry)[] | If present, contains expo-updates log entries returned by the `getLogEntries()` method. |
+| `checkForUpdate` | () => `void` | Calls `Updates.checkForUpdateAsync()` and refreshes the `availableUpdate` property with the result. If an error occurs, the `error` property will be set. |
+| `downloadUpdate` | () => `void` | Downloads an update, if one is available, using `Updates.fetchUpdateAsync()`. If an error occurs, the `error` property will be set. |
+| `readLogEntries` | (`maxAge?`: `number`) => `void` | Calls `Updates.readLogEntriesAsync()` and sets the `logEntries` property in the `updatesInfo` structure to the results. If an error occurs, the `error` property will be set. |
+| `runUpdate` | () => `void` | Runs an update by calling `Updates.reloadAsync()`. This should not be called unless there is an available update that has already been successfully downloaded using `downloadUpdate()`. If an error occurs, the `error` property will be set. |
 
 #### Defined in
 
-[@expo/use-updates/src/UseUpdates.ts:58](https://github.com/expo/expo/blob/9ce7bf18c4/packages/@expo/use-updates/src/UseUpdates.ts#L58)
+[@expo/use-updates/src/UseUpdates.ts:66](https://github.com/expo/expo/blob/aeb52755a4/packages/@expo/use-updates/src/UseUpdates.ts#L66)

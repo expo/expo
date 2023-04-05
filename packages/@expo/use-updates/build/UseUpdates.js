@@ -6,25 +6,32 @@ import { checkForUpdateAndReturnAvailableAsync, currentlyRunning, downloadUpdate
  *
  * @param callbacks Optional set of callbacks that will be called when `checkForUpdate()`, `downloadUpdate()`, `downloadAndRunUpdate()`, or `runUpdate()`, start, complete, or have errors.
  *
- * @return the [`UpdatesInfo`](#updatesinfo) structure and associated methods. When using this hook, the methods returned should be used instead of [`checkForUpdateAsync`](#updatescheckforupdateasync), [`fetchUpdateAsync`](#updatesfetchupdateasync), [`readLogEntriesAsync`](#updatesreadlogentriesasync), and [`reloadAsync`](#updatesreloadasync).
+ * @return the structures with information on currently running and available updates, and associated methods.
+ * When using this hook, the methods returned should be used instead of `expo-updates` methods (`checkForUpdateAsync()`, `fetchUpdateAsync()`, `reloadAsync()).
  *
  * @example
  * ```jsx UpdatesDemo.tsx
  * import { StatusBar } from 'expo-status-bar';
  * import React from 'react';
  * import { Pressable, Text, View } from 'react-native';
- * import * as Updates from 'expo-updates';
+ *
+ * import { useUpdates } from '@expo/use-updates';
+ * import type { UseUpdatesCallbacksType } from '@expo/use-updates';
  *
  * export default function UpdatesDemo() {
- *   const { updatesInfo, checkForUpdate, downloadAndRunUpdate } = Updates.useUpdates();
+ *   const callbacks = {
+ *     onDownloadUpdateComplete: () => {
+ *       runUpdate();
+ *     },
+ *   };
  *
- *   const { currentlyRunning, availableUpdate } = updatesInfo;
+ *   const { currentlyRunning, availableUpdate, checkForUpdate, downloadUpdate, runUpdate } = useUpdates();
  *
  *   // If true, we show the button to download and run the update
  *   const showDownloadButton = availableUpdate !== undefined;
  *
  *   // Show whether or not we are running embedded code or an update
- *   const runTypeMessage = updatesInfo.currentlyRunning.isEmbeddedLaunch
+ *   const runTypeMessage = currentlyRunning.isEmbeddedLaunch
  *     ? 'This app is running from built-in code'
  *     : 'This app is running an update';
  *
@@ -34,13 +41,12 @@ import { checkForUpdateAndReturnAvailableAsync, currentlyRunning, downloadUpdate
  *       <Text>{runTypeMessage}</Text>
  *       <Button pressHandler={checkForUpdate} text="Check manually for updates" />
  *       {showDownloadButton ? (
- *         <Button pressHandler={downloadAndRunUpdate} text="Download and run update" />
+ *         <Button pressHandler={downloadUpdate} text="Download and run update" />
  *       ) : null}
  *       <StatusBar style="auto" />
  *     </View>
  *   );
  * }
- *
  */
 const useUpdates = (callbacks) => {
     const [updatesState, setUpdatesState] = useState({});

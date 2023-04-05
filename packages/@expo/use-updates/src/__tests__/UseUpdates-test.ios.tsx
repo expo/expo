@@ -4,7 +4,7 @@ import type { Manifest, UpdateCheckResult, UpdateEvent, UpdatesLogEntry } from '
 import '@testing-library/jest-native/extend-expect';
 import React from 'react';
 
-import type { UseUpdatesCallbacksType } from '..';
+import type { UseUpdatesCallbacksType } from '../UseUpdates.types';
 import { availableUpdateFromManifest, availableUpdateFromEvent } from '../UseUpdatesUtils';
 import UseUpdatesTestApp from './UseUpdatesTestApp';
 
