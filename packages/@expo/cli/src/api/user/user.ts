@@ -1,11 +1,11 @@
 import { promises as fs } from 'fs';
 import gql from 'graphql-tag';
 
+import { CurrentUserQuery } from '../../graphql/generated';
 import * as Log from '../../log';
 import * as Analytics from '../../utils/analytics/rudderstackClient';
 import { getDevelopmentCodeSigningDirectory } from '../../utils/codesigning';
 import { graphqlClient } from '../graphql/client';
-import { CurrentUserQuery } from '../graphql/generated';
 import { UserQuery } from '../graphql/queries/UserQuery';
 import { fetchAsync } from '../rest/client';
 import { APISettings } from '../settings';
