@@ -16,4 +16,8 @@ NS_ASSUME_NONNULL_BEGIN
 
 @end
 
+@interface DevMenuRCTCxxBridgeDelegate : NSObject
+
+@end
+
 NS_ASSUME_NONNULL_END
