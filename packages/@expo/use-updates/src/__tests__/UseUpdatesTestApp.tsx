@@ -7,32 +7,39 @@ import { UseUpdatesCallbacksType } from '..';
 const { useUpdates } = Updates;
 
 const UseUpdatesTestApp = (props: { callbacks?: UseUpdatesCallbacksType }) => {
-  const { updatesInfo, checkForUpdate, downloadUpdate, downloadAndRunUpdate, readLogEntries } =
-    useUpdates(props.callbacks);
+  const {
+    currentlyRunning,
+    availableUpdate,
+    error,
+    lastCheckForUpdateTimeSinceRestart,
+    logEntries,
+    checkForUpdate,
+    downloadUpdate,
+    downloadAndRunUpdate,
+    readLogEntries,
+  } = useUpdates(props.callbacks);
   return (
     <View>
       {/* Currently running info */}
-      <Text testID="currentlyRunning_updateId">{updatesInfo.currentlyRunning.updateId}</Text>
-      <Text testID="currentlyRunning_channel">{updatesInfo.currentlyRunning.channel}</Text>
+      <Text testID="currentlyRunning_updateId">{currentlyRunning.updateId}</Text>
+      <Text testID="currentlyRunning_channel">{currentlyRunning.channel}</Text>
       <Text testID="currentlyRunning_createdAt">
-        {updatesInfo.currentlyRunning?.createdAt
-          ? updatesInfo.currentlyRunning?.createdAt.toISOString()
-          : ''}
+        {currentlyRunning?.createdAt ? currentlyRunning?.createdAt.toISOString() : ''}
       </Text>
       {/* Last time there was a check for update */}
       <Text testID="lastCheckForUpdateTime">
-        {updatesInfo?.lastCheckForUpdateTimeSinceRestart?.toISOString().substring(0, 19) || ''}
+        {lastCheckForUpdateTimeSinceRestart?.toISOString().substring(0, 19) || ''}
       </Text>
       {/* Available update, if one is present */}
-      <Text testID="availableUpdate_updateId">{updatesInfo.availableUpdate?.updateId || ''}</Text>
+      <Text testID="availableUpdate_updateId">{availableUpdate?.updateId || ''}</Text>
       {/* Log entries, if they have been read */}
-      {(updatesInfo.logEntries?.length || 0) > 0 ? (
+      {(logEntries?.length || 0) > 0 ? (
         <Text testID="logEntry">
-          {JSON.stringify(updatesInfo?.logEntries ? updatesInfo?.logEntries[0].message : '') || ''}
+          {JSON.stringify(logEntries ? logEntries[0].message : '') || ''}
         </Text>
       ) : null}
       {/* Error, if one has occurred */}
-      {updatesInfo?.error ? <Text testID="error">{JSON.stringify(updatesInfo?.error)}</Text> : null}
+      {error ? <Text testID="error">{JSON.stringify(error)}</Text> : null}
       {/* Buttons for test code to invoke methods */}
       <Pressable testID="checkForUpdate" onPress={() => checkForUpdate()} />
       <Pressable testID="downloadUpdate" onPress={() => downloadUpdate()} />

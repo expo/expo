@@ -81,9 +81,24 @@ export type AvailableUpdateInfo = {
 };
 
 /**
- * Combined updates info structure provided by [`useUpdates()`](#useupdatescallbacks)
+ * Callbacks that will be called when methods (`checkForUpdate()`, `downloadUpdate()`,
+ * `downloadAndRunUpdate()`, or `runUpdate()`) start, complete, or have errors.
  */
-export type UpdatesInfo = {
+export type UseUpdatesCallbacksType = {
+  onCheckForUpdateStart?: () => void;
+  onCheckForUpdateComplete?: () => void;
+  onCheckForUpdateError?: (error?: Error) => void;
+  onDownloadUpdateStart?: () => void;
+  onDownloadUpdateComplete?: () => void;
+  onDownloadUpdateError?: (error?: Error) => void;
+  onRunUpdateStart?: () => void;
+  onRunUpdateError?: (error?: Error) => void;
+};
+
+/**
+ * The updates info and methods returned by `useUpdates()`.
+ */
+export type UseUpdatesReturnType = {
   /**
    * Information on the currently running app
    */
@@ -109,31 +124,6 @@ export type UpdatesInfo = {
    * If present, contains expo-updates log entries returned by the `getLogEntries()` method (see [`useUpdates()`](#useupdatescallbacks).)
    */
   logEntries?: UpdatesLogEntry[];
-};
-
-/**
- * Callbacks that will be called when methods (`checkForUpdate()`, `downloadUpdate()`,
- * `downloadAndRunUpdate()`, or `runUpdate()`) start, complete, or have errors.
- */
-export type UseUpdatesCallbacksType = {
-  onCheckForUpdateStart?: () => void;
-  onCheckForUpdateComplete?: () => void;
-  onCheckForUpdateError?: (error?: Error) => void;
-  onDownloadUpdateStart?: () => void;
-  onDownloadUpdateComplete?: () => void;
-  onDownloadUpdateError?: (error?: Error) => void;
-  onRunUpdateStart?: () => void;
-  onRunUpdateError?: (error?: Error) => void;
-};
-
-/**
- * The updates info and methods returned by `useUpdates()`.
- */
-export type UseUpdatesReturnType = {
-  /**
-   * The information on what is currently running, and on any available update that has already been found.
-   */
-  updatesInfo: UpdatesInfo;
   /**
    * Calls `Updates.checkForUpdateAsync()` and refreshes the `availableUpdate` property of `updatesInfo` with the result.
    * If an error occurs, the `error` property of `updatesInfo` will be set.

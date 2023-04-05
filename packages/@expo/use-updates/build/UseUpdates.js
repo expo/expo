@@ -107,10 +107,8 @@ const useUpdates = (callbacks) => {
     };
     // Return the updates info and the user facing functions
     return {
-        updatesInfo: {
-            currentlyRunning,
-            ...updatesState,
-        },
+        currentlyRunning,
+        ...updatesState,
         checkForUpdate,
         downloadAndRunUpdate,
         downloadUpdate,

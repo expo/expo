@@ -1,15 +1,10 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import * as Updates from 'expo-updates';
-import type {
-  Manifest,
-  UpdateCheckResult,
-  UpdateEvent,
-  UpdatesLogEntry,
-  UseUpdatesCallbacksType,
-} from 'expo-updates';
+import type { Manifest, UpdateCheckResult, UpdateEvent, UpdatesLogEntry } from 'expo-updates';
 import '@testing-library/jest-native/extend-expect';
 import React from 'react';
 
+import type { UseUpdatesCallbacksType } from '..';
 import { availableUpdateFromManifest, availableUpdateFromEvent } from '../UseUpdatesUtils';
 import UseUpdatesTestApp from './UseUpdatesTestApp';
 

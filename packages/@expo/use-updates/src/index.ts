@@ -1,5 +1,4 @@
 export type {
-  UpdatesInfo,
   UseUpdatesCallbacksType,
   UseUpdatesReturnType,
   CurrentlyRunningInfo,
