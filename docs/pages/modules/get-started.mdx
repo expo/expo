@@ -108,7 +108,7 @@ If you have an `ios` directory in your project that you created using `expo preb
 
 You can always just edit the files in the `modules/my-module/ios/` directory directly in your favourite text editor.
 
-Change the hello method to return a different string. For example, you can change it to return "Hello world! 🌎🍎".
+Now, change the `hello` method to return a different string. For example, you can change it to return "Hello world! 🌎🍎".
 
 Rebuild the app or build a new development client and you should see your change. Remember you need to either run `npx expo prebuild` each time you make a native change or you reinstall the pods using `pod install --project-directory="example/ios"` (which should be way faster).
 
@@ -117,19 +117,23 @@ Rebuild the app or build a new development client and you should see your change
 > **Note**
 >
 > There are also other flows for working on an Expo Module in parallel with your application.
-> For example, you can use a monorepo or publish to npm, as described by the [How to use a standalone Expo module in your project](./use-standalone-expo-module-in-your-project) guide.
+> For example, you can use a monorepo or publish to npm, as described in [How to use a standalone Expo module in your project](/modules/use-standalone-expo-module-in-your-project) guide.
 
 ## Creating a new module with an example project
 
 <Step label="1">
+
 ### Creating the Expo Module
 
 To create a new Expo module from scratch, run the `create-expo-module` script as shown below.
 The script will ask you a few questions and then generate the native Expo module along with the example app for Android and iOS that uses your new module.
 
 <Terminal cmd={[`$ npx create-expo-module my-module`]} />
+
 </Step>
+
 <Step label="2">
+
 ### Running the example project
 
 Navigate to the module directory and then open the Android and/or iOS example project by running the following commands:
@@ -141,7 +145,9 @@ Now, you can run the example project on your device or simulator/emulator. When 
 > **Note:** If you're using Windows, you can open the example project by opening the **android** directory in Android Studio, but you cannot open the iOS project files.
 
 </Step>
+
 <Step label="3">
+
 ### Making a change
 
 #### Android
