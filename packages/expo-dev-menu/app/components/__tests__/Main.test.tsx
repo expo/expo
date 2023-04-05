@@ -49,7 +49,7 @@ describe('<Main />', () => {
       appVersion: '123',
       appIcon: 'hello',
       hostUrl: '321',
-      sdkVersion: '500',
+      sdkVersion: '500.0.0',
       runtimeVersion: '10',
     };
 
