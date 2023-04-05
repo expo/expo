@@ -124,6 +124,9 @@ function getDefaultConfig(projectRoot, options = {}) {
     isModern: false
   };
   const sourceExts = (0, _paths().getBareExtensions)([], sourceExtsConfig);
+  if (options.isCSSEnabled) {
+    sourceExts.push('css');
+  }
   if (isExotic) {
     // Add support for cjs (without platform extensions).
     sourceExts.push('cjs');
@@ -188,12 +191,14 @@ function getDefaultConfig(projectRoot, options = {}) {
       port: Number(_env().env.RCT_METRO_PORT) || 8081,
       // NOTE(EvanBacon): Moves the server root down to the monorepo root.
       // This enables proper monorepo support for web.
-      // @ts-expect-error: not on type
       unstable_serverRoot: (0, _getModulesPaths().getServerRoot)(projectRoot)
     },
     symbolicator: {
       customizeFrame: (0, _customizeFrame().getDefaultCustomizeFrame)()
     },
+    transformerPath: options.isCSSEnabled ?
+    // Custom worker that adds CSS support for Metro web.
+    require.resolve('./transform-worker/transform-worker') : undefined,
     transformer: {
       // `require.context` support
       unstable_allowRequireContext: true,
