@@ -13,6 +13,7 @@
 ### 🐛 Bug fixes
 
 - Fixed reload crash when expo-dev-menu is turned off. ([#21279](https://github.com/expo/expo/pull/21279) by [@jayshah123](https://github.com/jayshah123))
+- Fix JS entry file in development builds. ([#21984](https://github.com/expo/expo/pull/21984) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
