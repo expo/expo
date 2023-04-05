@@ -10,7 +10,8 @@
     "clean": "expo-module clean",
     "lint": "expo-module lint",
     "test": "expo-module test",
-    "prepare": "expo-module prepare",
+    "docs": "typedoc --plugin typedoc-plugin-markdown --out docs src/index.ts",
+    "prepare": "typedoc --plugin typedoc-plugin-markdown --out docs src/index.ts; expo-module prepare",
     "prepublishOnly": "expo-module prepublishOnly",
     "expo-module": "expo-module"
   },
@@ -52,7 +53,9 @@
     "express": "^4.17.2",
     "form-data": "^4.0.0",
     "fs-extra": "^9.1.0",
-    "memfs": "^3.2.0"
+    "memfs": "^3.2.0",
+    "typedoc": "^0.23.28",
+    "typedoc-plugin-markdown": "^3.14.0"
   },
   "peerDependencies": {
     "expo": "*",

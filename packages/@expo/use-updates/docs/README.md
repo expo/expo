@@ -1,3 +1,5 @@
+@expo/use-updates / [Exports](modules.md)
+
 # @expo/use-updates
 
 A new, simpler JS API for the `expo-updates` module.
@@ -7,7 +9,6 @@ A new, simpler JS API for the `expo-updates` module.
 - Optional callbacks called on start, completion or error during update check or download
 
 *Usage*
-
 
 ```jsx UpdatesDemo.tsx
 import { StatusBar } from 'expo-status-bar';
@@ -64,4 +65,3 @@ function Button(props: { text: string; pressHandler: () => void }) {
 ```
 
 ## [API docs](docs/modules.md)
-
