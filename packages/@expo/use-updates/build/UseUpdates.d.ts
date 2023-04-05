@@ -46,6 +46,7 @@ import type { AvailableUpdateInfo, CurrentlyRunningInfo } from './UseUpdates.typ
  *     </View>
  *   );
  * }
+ * ```
  */
 declare const useUpdates: (callbacks?: {
     onCheckForUpdateStart?(): void;

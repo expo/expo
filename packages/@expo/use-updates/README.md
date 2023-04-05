@@ -18,15 +18,13 @@ import { useUpdates } from '@expo/use-updates';
 import type { UseUpdatesCallbacksType } from '@expo/use-updates';
 
 export default function UpdatesDemo() {
-  const callbacks: UseUpdatesCallbacksType = {
+  const callbacks = {
     onDownloadUpdateComplete: () => {
       runUpdate();
     },
   };
 
-  const { updatesInfo, checkForUpdate, downloadUpdate, runUpdate } = useUpdates();
-
-  const { currentlyRunning, availableUpdate } = updatesInfo;
+  const { currentlyRunning, availableUpdate, checkForUpdate, downloadUpdate, runUpdate } = useUpdates();
 
   // If true, we show the button to download and run the update
   const showDownloadButton = availableUpdate !== undefined;

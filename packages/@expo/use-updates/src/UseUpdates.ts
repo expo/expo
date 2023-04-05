@@ -62,6 +62,7 @@ import {
  *     </View>
  *   );
  * }
+ * ```
  */
 const useUpdates: (callbacks?: {
   onCheckForUpdateStart?(): void;

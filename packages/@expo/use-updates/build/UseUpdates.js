@@ -47,6 +47,7 @@ import { checkForUpdateAndReturnAvailableAsync, currentlyRunning, downloadUpdate
  *     </View>
  *   );
  * }
+ * ```
  */
 const useUpdates = (callbacks) => {
     const [updatesState, setUpdatesState] = useState({});

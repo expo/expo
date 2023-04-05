@@ -39,7 +39,7 @@ or an [`UpdateEvent`](#updateevent) emitted by native code.
 
 #### Defined in
 
-[@expo/use-updates/src/UseUpdates.types.ts:66](https://github.com/expo/expo/blob/aeb52755a4/packages/@expo/use-updates/src/UseUpdates.types.ts#L66)
+[@expo/use-updates/src/UseUpdates.types.ts:66](https://github.com/expo/expo/blob/00fd6af300/packages/@expo/use-updates/src/UseUpdates.types.ts#L66)
 
 ___
 
@@ -64,7 +64,7 @@ Structure encapsulating information on the currently running app
 
 #### Defined in
 
-[@expo/use-updates/src/UseUpdates.types.ts:12](https://github.com/expo/expo/blob/aeb52755a4/packages/@expo/use-updates/src/UseUpdates.types.ts#L12)
+[@expo/use-updates/src/UseUpdates.types.ts:12](https://github.com/expo/expo/blob/00fd6af300/packages/@expo/use-updates/src/UseUpdates.types.ts#L12)
 
 ___
 
@@ -74,7 +74,7 @@ ___
 
 #### Defined in
 
-[@expo/use-updates/src/UseUpdates.types.ts:6](https://github.com/expo/expo/blob/aeb52755a4/packages/@expo/use-updates/src/UseUpdates.types.ts#L6)
+[@expo/use-updates/src/UseUpdates.types.ts:6](https://github.com/expo/expo/blob/00fd6af300/packages/@expo/use-updates/src/UseUpdates.types.ts#L6)
 
 ___
 
@@ -98,7 +98,7 @@ An object representing a single log entry from expo-updates logging on the clien
 
 #### Defined in
 
-[expo-updates/build/Updates.types.d.ts:142](https://github.com/expo/expo/blob/aeb52755a4/packages/expo-updates/build/Updates.types.d.ts#L142)
+[expo-updates/build/Updates.types.d.ts:142](https://github.com/expo/expo/blob/00fd6af300/packages/expo-updates/build/Updates.types.d.ts#L142)
 
 ## Functions
 
@@ -147,6 +147,7 @@ export default function UpdatesDemo() {
     </View>
   );
 }
+```
 
 #### Parameters
 
@@ -183,4 +184,4 @@ When using this hook, the methods returned should be used instead of `expo-updat
 
 #### Defined in
 
-[@expo/use-updates/src/UseUpdates.ts:66](https://github.com/expo/expo/blob/aeb52755a4/packages/@expo/use-updates/src/UseUpdates.ts#L66)
+[@expo/use-updates/src/UseUpdates.ts:67](https://github.com/expo/expo/blob/00fd6af300/packages/@expo/use-updates/src/UseUpdates.ts#L67)
