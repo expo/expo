@@ -1,4 +1,5 @@
 import { css } from '@emotion/react';
+import { theme } from '@expo/styleguide';
 import { spacing } from '@expo/styleguide-base';
 import type { PropsWithChildren } from 'react';
 
@@ -15,7 +16,9 @@ export const SidebarTitle = ({ children }: SidebarTitleProps) => (
 const STYLES_TITLE = css({
   display: 'block',
   position: 'relative',
-  marginLeft: spacing[3],
+  marginBottom: spacing[2],
+  borderBottom: `1px solid ${theme.border.default}`,
+  marginLeft: spacing[5] + spacing[0.5],
   marginRight: -spacing[4],
   paddingBottom: spacing[2],
   userSelect: 'none',

@@ -1,13 +1,10 @@
 ---
-title: 'Tutorial: Introduction'
-sidebar_title: Introduction
+title: Introduction
 ---
 
 import Highlight from '~/components/plugins/Highlight';
 import { SnackInline } from '~/ui/components/Snippet';
 import Video from '~/components/plugins/Video';
-import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 We're about to embark on a journey of building universal apps. In this tutorial, we'll create a universal app that runs on Android, iOS, and the web; all with a single codebase. Let's get started!
 
@@ -46,8 +43,8 @@ import { StyleSheet, Text, View } from 'react-native';
 
 export default function App() {
   return (
-    <View style={styles.container}>
-      /* @info This used to say, "Open up App.js to start working on your app!". Now it's "Hello world!". */<Text>Hello world!</Text>/* @end */
+    <View style={styles.container}>    
+      /* @info This used to say, "Open up App.js to start working on your app!". Now it's "Hello world!". */<Text>Hello world!</Text>/* @end */      
     </View>
   );
 }
@@ -66,17 +63,12 @@ const styles = StyleSheet.create({
 
 > **Wait, what is this "Open in Snack" button?**
 >
-> Snack is a web-based editor that works similarly to an Expo project. It's a great way to share code snippets and experiments without downloading any tools on your computer.
+> Snack is a web-based editor that works similarly to an Expo project. It's a great way to share code snippets and experiment without downloading any tools on your computer.
 >
-> Go ahead and press the above button. You will see the above code running in a Snack. Try to switch between iOS, Android, or the web tabs. You can also open it on your device in the Expo Go app from the **My device** tab.
+> Go ahead, press the above button. You will see the above code running in a Snack. Try to switch between iOS, Android, or the web tabs. You can also open it on your device in the Expo Go app from the **My device** tab.
 >
-> Throughout this tutorial, use Snack to copy and paste the code into your project on your computer. We will continue to provide Snacks for each module, but **we recommend you create the app on your machine to go through the experience of building the app**.
+> Throughout this tutorial, use Snack to copy and paste the code into your own project on your computer. We will continue to provide Snacks for each module, but **we recommend you create the app on your machine to go through the experience of building the app**.
 
-## Next step
+## Next steps
 
-<BoxLink
-  title="Create your first app with"
-  Icon={BookOpen02Icon}
-  description="If you're already familiar with Expo, feel free to jump ahead to specific chapters. However, if you'd like to start from scratch, continue to the next chapter in which we will learn how to create your first app with Expo."
-  href="/tutorial/create-your-first-app"
-/>
+If you're already familiar with Expo, feel free to jump ahead to specific chapters. However, if you'd like to start from scratch, continue to the next chapter in which we will learn [how to create your first app with Expo](/tutorial/create-your-first-app).

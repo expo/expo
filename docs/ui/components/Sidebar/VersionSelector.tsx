@@ -2,11 +2,9 @@ import { css } from '@emotion/react';
 import { theme, typography, shadows } from '@expo/styleguide';
 import { spacing, borderRadius } from '@expo/styleguide-base';
 import { ChevronDownIcon } from '@expo/styleguide-icons';
-import { useRouter } from 'next/router';
 
 import { A } from '../Text';
 
-import { isReferencePath } from '~/common/routes';
 import * as Utilities from '~/common/utilities';
 import { usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
@@ -32,10 +30,9 @@ const STYLES_SELECT = css({
 });
 
 export const VersionSelector = () => {
-  const { version = 'latest', hasVersion, setVersion } = usePageApiVersion();
-  const { pathname } = useRouter();
+  const { version, hasVersion, setVersion } = usePageApiVersion();
 
-  if (!hasVersion && !isReferencePath(pathname)) {
+  if (!hasVersion) {
     return null;
   }
 
@@ -45,12 +42,12 @@ export const VersionSelector = () => {
         // Add hidden links to create crawlable references to other SDK versions
         // We can use JS to switch between them, while helping search bots find other SDK versions
         VERSIONS.map(version => (
-          <A key={version} className="hidden" href={`/versions/${version}/`} />
+          <A key={version} style={{ display: 'none' }} href={`/versions/${version}/`} />
         ))
       }
       <select
         id="version-menu"
-        css={STYLES_SELECT}
+        css={[STYLES_SELECT]}
         value={version}
         onChange={e => setVersion(e.target.value)}>
         {VERSIONS.map(version => (

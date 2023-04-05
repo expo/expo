@@ -1,0 +1,244 @@
+---
+title: Debugging Runtime Issues
+description: Learn about different techniques and tools available to debug your Expo project.
+---
+
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import Video from '~/components/plugins/Video';
+import { Terminal } from '~/ui/components/Snippet';
+
+Whether you're developing your app locally, sending it out to select beta testers, or launching your app live to the app stores, you'll always find yourself debugging issues. It's useful to split errors into two categories:
+
+1. Errors you encounter in the development
+2. Errors you (or your users) encounter in production
+
+Let's go through some of our recommended practices when it comes to each of these situations, and at the end of this guide, we'll recommend tools that can make debugging easier.
+
+## Development errors
+
+These are way more common, and we won't delve too much into how to approach these. Usually, debugging when running your app locally with [Expo CLI](/workflow/expo-cli/) is pretty easy, thanks to [all the tools available in the Expo Go app](#developer-menu).
+
+Sometimes you'll be able to tell exactly what's wrong just by the [stack trace](/get-started/errors#redbox-errors-and-stack-traces), but other times the error message is a little more cryptic. For errors that aren't as intuitive to solve, here's a good list of steps to take:
+
+- Search for the error message in Google and [Stack Overflow](https://stackoverflow.com/questions), it's likely you're not the first person to ever run into this
+- **Isolate the code that's throwing the error**. This step is _vital_ in fixing obscure errors. To do this:
+  - Revert back to a working version of your code (this may even be a completely blank `npx create-expo-app` project)
+  - Apply your recent changes piece by piece, until it breaks
+    - If the code you're adding in each "piece" is complex, you may want to simplify what you're doing. For example, if you use a state management library like Redux, you can try removing that from the equation completely to see if the issue lies in your state management (which is really common in React apps)
+  - This should narrow down the possible sources of the error, and provide you with more information to search the internet for others who have had the same problem
+- Use breakpoints (or `console.log`s) to check and make sure a certain piece of code is being run, or that a variable has a certain value. Using `console.log` for debugging isn't considered the best practice, but it's fast, easy, and oftentimes provides some illuminating information
+
+If you are able to simplify your code as much as possible, tracking down the source of an error gets exponentially easier. That's exactly why so many open source repos require a [minimal reproducible demo](https://stackoverflow.com/help/minimal-reproducible-example) in their bug reports- it ensures you have isolated the issue and identified exactly where the problem lies! If your app is too large and complex to do that, try and extract the functionality you're trying to add to its own blank `npx create-expo-app` project, and go from there.
+
+### Native Debugging
+
+You can perform full native debugging with Xcode and Android Studio by generating the source code locally and building from source.
+
+#### Xcode
+
+> This is only available for macOS users.
+
+1. Generate the native code for your project with: `npx expo prebuild -p ios`
+   1. You can delete the `/ios` folder when you're done to ensure your project remains managed by Expo CLI. Keeping the folder and manually modifying it outside of `npx expo prebuild` means you'll need to manually upgrade and configure native libraries (Bare Workflow).
+2. Open the project in Xcode `xed ios`
+3. Build the app with <kbd>Cmd ⌘</kbd> + <kbd>R</kbd> or by pressing the play button in the upper left corner of Xcode.
+4. You can utilize **lldb** and all of the other Xcode debugging tools to examine the native runtime.
+
+When you're done, simply delete the native folder with `rm -rf ios` to continue having your code managed by Expo.
+
+#### Android Studio
+
+1. Generate the native code for your project with: `npx expo prebuild -p android`
+   1. You can delete the `/android` folder when you're done to ensure your project remains managed by Expo CLI. Keeping the folder and manually modifying it outside of `npx expo prebuild` means you'll need to manually upgrade and configure native libraries (Bare Workflow).
+2. Open the project in Android Studio: `open -a /Applications/Android\ Studio.app ./android`
+3. Build the app from Android Studio and connect the debugger. Refer to the [Google documentation for more information](https://developer.android.com/studio/debug#startdebug).
+
+When you're done, simply delete the native folder with `rm -rf android` to continue having your code managed by Expo.
+
+## Production errors
+
+Errors or bugs in your production app can be much harder to solve, mainly because you have less context around the error (i.e. where, how, and why did the error occur?). **The best first step in addressing a production error is to reproduce it locally.** Once you reproduce an error locally, you can follow the [development debugging process](#development-errors) to isolate and address the root cause.
+
+> **Hint**: Sometimes, running your app in "production mode" locally will show errors that normally wouldn't be thrown. You can run an app locally in production by running `npx expo start --no-dev --minify`. "--no-dev" tells the server not to be run in development mode, and "--minify" will minify your code the same way it is for production JavaScript bundles.
+
+Using an automated error logging system like [Sentry](/guides/using-sentry) is a huge help in identifying, tracking, and resolving JavaScript errors in your production app. This will give you a good sense of how many people are running into an error, and how often.
+
+### My production app is crashing
+
+This can be a really frustrating scenario, since it gives you very little information to go off of at first glance. It's important now to reproduce the issue, and, even if you can't do that, to find any related crash reports.
+
+- Reproduce the crash (either using your production app, or the Expo Go app)
+- **Find an associated JavaScript crash report**: Check your JavaScript error reporting service (such as Sentry).
+- **Find an associated iOS crash report**: If your iOS app is on TestFlight or the App Store, you can use the [Crashes Organizer](https://developer.apple.com/news/?id=nra79npr) in Xcode. If not, refer to their ["Diagnosing Issues Using Crash Reports and Device Logs" guide](https://developer.apple.com/documentation/xcode/diagnosing-issues-using-crash-reports-and-device-logs).
+- **Find an associated Android crash report**: If your Android app is on Google Play, refer to the crashes section of the [Google Play Console](https://play.google.com/console/about/), or connect your Android device to your computer and run `adb logcat` to view the streaming logs. The `adb` (Android Debug Bridge) program is part of the Android SDK; an alternative to installing the Android SDK is to use [WebADB](https://webadb.com/) in Chrome.
+
+With that information, you should be able to identify where the error is coming from, or at least search the internet for possible causes & solutions.
+
+### My app crashes on certain (older) devices
+
+This might indicate that there is a performance issue. You likely need to run your app through a profiler to get a better idea of what processes are killing the app, and [React Native provides some great documentation for this](https://reactnative.dev/docs/profiling). We also recommend using [React DevTools](https://www.npmjs.com/package/react-devtools) and the included profiler, which makes it super easy to identify performance sinks in your app.
+
+## Stuck
+
+The Expo community and the React and React Native communities are great resources for help when you get stuck. There's a good chance someone else has run into the exact same error as you, so make sure to read the documentation, search the [forums](https://forums.expo.dev/), [GitHub issues](https://github.com/expo/expo/issues/), and [Stack Overflow](https://stackoverflow.com/).
+
+## Debugging tools
+
+Below are a few tools we recommend, and use ourselves, when it comes to debugging your React Native app:
+
+### Developer menu
+
+This menu gives you access to several functions which are useful for debugging and is built into the Expo Go app. The way you open it is a bit different depending on where you're running the Expo Go app:
+
+- Android Device: Shake the device vertically, or if your device is connected via USB, run `adb shell input keyevent 82` in your terminal
+- Android Emulator: Either press <kbd>Cmd ⌘</kbd> + <kbd>M</kbd> or <kbd>Ctrl</kbd> + <kbd>M</kbd> or run `adb shell input keyevent 82` in your terminal
+- iOS Device: Shake the device, or touch 3 fingers to the screen
+- iOS Simulator: Press <kbd>Ctrl</kbd> + <kbd>Cmd ⌘</kbd> + <kbd>Z</kbd> on a Mac in the emulator to simulate the shake gesture, or press <kbd>Cmd ⌘</kbd> + <kbd>D</kbd>
+
+Once you have opened the Developer menu, it will appear as below:
+
+<ImageSpotlight
+  alt="The Expo Go Developer Menu, showing the menu options available."
+  src="/static/images/expo-go-developer-menu.png"
+  style={{ maxWidth: 320 }}
+/>
+
+The Developer menu provides multiple options:
+
+- Reload: reloads your app. Usually not necessary since Fast Refresh is enabled by default
+- Copy Link: copy the [`exp://`](/guides/linking/#linking-to-expo-go) link of your app.
+- Go Home: leave your app and navigate back to the Expo Go app's Home screen
+- Enable/Disable Fast Refresh: toggle automatic refreshing of the JS bundle whenever you make changes to files in your project using a text editor
+
+Now let's explore some of the more exciting functionalities.
+
+#### Debug Remote JS
+
+Opens a React Native Debugger tab in your browser to allow you to use DevTools. For example, you can use the Console tab to read the `console.log` statements.
+
+It uses [`@react-native-community/cli-debugger-ui`](https://github.com/react-native-community/cli/tree/main/packages/cli-debugger-ui):
+
+<ImageSpotlight
+  alt="The Expo Go Element Inspector, showing details about an element after inspecting it."
+  src="/static/images/react-native-community-cli-debugger-ui.png"
+/>
+
+> **warning** The Network tab will not work out of the box. To enable the Network tab and other debugging tools, additional setup is required, see the [React Native Debugger](#react-native-debugger) and [React DevTools](#debugging-with-react-devtools) sections below.
+
+#### Show Performance Monitor
+
+Opens up a small window giving you performance information about your app. It provides:
+
+- RAM usage of your project
+- JavaScript heap (this is an easy way to know of any memory leaks in your application)
+- 2 numbers for Views, the top indicates the number of views for the screen, the bottom indicates the number of views in the component
+- Frames Per Second for the UI and JS threads. The UI thread is used for native Android or iOS UI rendering. The JS thread is where most of your logic runs, including API calls, touch events, and so on.
+
+#### Show/Hide Element Inspector
+
+Opens up the Element Inspector overlay:
+
+<ImageSpotlight
+  alt="The Expo Go Element Inspector, showing details about an element after inspecting it"
+  src="/static/images/expo-go-element-inspector.png"
+  style={{ maxWidth: 320 }}
+/>
+
+This overlay has capabilities to:
+
+1. Inspect: Inspect elements
+2. Perf: Show Performance overlay
+3. Network: Show network details
+4. Touchables: Highlight touchable elements
+
+### React Native Debugger
+
+The React Native Debugger includes many tools listed later on this page, all bundled into one, including [React DevTools](#debugging-with-react-devtools) and network request inspection. For this reason, if you use one tool from this page, it should probably be this one.
+
+We'll give a quick look at it here, but check out their [documentation](https://github.com/jhen0409/react-native-debugger#documentation) for a more in-depth look.
+
+You can install it via the [release page](https://github.com/jhen0409/react-native-debugger/releases), or if you're on macOS you can run:
+
+<Terminal cmd={['$ brew install react-native-debugger']} />
+
+#### Startup
+
+After firing up React Native Debugger, you'll need to specify the port (shortcuts: <kbd>Cmd ⌘</kbd> + <kbd>T</kbd> on macOS, <kbd>Ctrl</kbd> + <kbd>T</kbd> on Linux/Windows) to `19000` (if you use SDK &lt;= 39, the port should be `19001`&gt;). After that, run your project with `npx expo start`, and select `Debug remote JS` from the Developer Menu. The debugger should automatically connect.
+
+In the debugger console, you can see the Element tree, as well as the props, state, and children of whatever element you select. You also have the Chrome console on the right, and if you type `$r` in the console, you will see the breakdown of your selected element.
+
+If you right-click anywhere in the React Native Debugger, you'll get some handy short-cuts to reload your JS, enable/disable the element inspector, network inspector, and to log and clear your `AsyncStorage` content.
+
+<Video file="debugging/react-native-debugger.mp4" />
+
+#### Inspecting network traffic
+
+It's easy to use the React Native Debugger to debug your network request: right-click anywhere in the React Native Debugger and select `Enable Network Inspect`. This will enable the Network tab and allow you to inspect requests of `fetch` and `XMLHttpRequest`.
+
+There are however [some limitations](https://github.com/jhen0409/react-native-debugger/blob/master/docs/network-inspect-of-chrome-devtools.md#limitations), so there are a few other alternatives, all of which require using a proxy:
+
+- [Charles Proxy](https://www.charlesproxy.com/documentation/configuration/browser-and-system-configuration/) (~$50 USD, our preferred tool)
+- [Proxyman](https://proxyman.io) (Free version available or $49 to $59 USD)
+- [mitmproxy](https://medium.com/@rotxed/how-to-debug-http-s-traffic-on-android-7fbe5d2a34#.hnhanhyoz)
+- [Fiddler](http://www.telerik.com/fiddler)
+
+> In bare workflow apps you can use [Flipper](https://fbflipper.com/) to inspect network traffic.
+
+### Debugging Redux
+
+[Redux](https://redux.js.org/) is a popular library for managing and centralizing application state shared throughout the app. You can use Redux DevTools on React Native Debugger for debugging the application's state changes. The setup is as follows:
+
+1. Download React Native Debugger from the [releases page](https://github.com/jhen0409/react-native-debugger/releases).
+2. Open the app, press <kbd>Cmd ⌘</kbd> + <kbd>T</kbd> or <kbd>Ctrl</kbd> + <kbd>T</kbd> to open a new window, then set the port to 19000.
+3. Start your app, open the in-app developer menu, and select “Debug JS Remotely.”
+4. Configure `__REDUX_DEVTOOLS_EXTENSION__` as [shown here](https://github.com/zalmoxisus/redux-devtools-extension#11-basic-store).
+
+You're now good to go! If you are experiencing any issues or want to learn more about how to use these tools, refer to this [guide](https://medium.com/@tetsuyahasegawa/how-to-integrate-react-native-debugger-to-your-expo-react-native-project-db1d631fad02).
+
+### Debugging with React DevTools
+
+React DevTools is a great way to get a look at each of your components' props and state. First, you'll need to run
+
+<Terminal
+  cmdCopy="npm install -g react-devtools"
+  cmd={[
+    '# Install React DevTools with npm',
+    '$ npm install -g react-devtools',
+    '',
+    '# If you are using Expo SDK <= 37: npm install -g react-devtools@^3',
+  ]}
+/>
+
+(if you don't want to install it globally, run `npm install --dev react-devtools` to install it as a project dependency).
+
+After running `npx expo start` in your project's root directory, use a separate terminal tab to run `react-devtools`. This will open up the React DevTools console (for it to connect, you need to select `Debug remote JS` from the Developer Menu in the Expo Go app). From this console, you can search for your React components at the top, or open up the Developer Menu and enable the Element Inspector. Once you do that, you can tap on any element on screen and React DevTools will automatically find and display that element in the tree. From there, you can inspect the elements state, props, etc.
+
+<Video file="debugging/react-devtools.mp4" />
+
+React DevTools can also be paired with remote debugging, allowing you to inspect props, state, and instance properties in the Chrome console. If you have any questions on setting that up, give the next section a look!
+
+### Remote debugging with Chrome Developer Tools
+
+You can debug React Native apps using the Chrome debugger tools. Rather than running your app's JavaScript on your phone, it will instead run it inside of a webworker in Chrome. You can then set breakpoints, inspect variables, execute code, etc., as you would when debugging a web app.
+
+- To ensure the best debugging experience, first, change your host type to `npx expo start --lan` or `npx expo start --localhost`. If you use `npx expo start --tunnel` with debugging enabled, you are likely to experience so much latency that your app is unusable.
+
+- If you are using `npx expo start --lan`, make sure your device is on the same Wi-Fi network as your development machine. This may not work on some public networks. `npx expo start --localhost` will not work for iOS unless you are in the simulator, and it only works on Android if your device is connected to your machine via USB.
+
+- Open the app on your device, reveal the developer menu then tap on `Debug JS Remotely`. This should open up a Chrome tab with the URL `http://localhost:19000/debugger-ui`. From there, you can set breakpoints and interact through the JavaScript console. Shake the device and stop Chrome debugging when you're done.
+
+- Line numbers for `console.log` statements don't work by default when using Chrome debugging. To get correct line numbers open up the Chrome Dev Tools settings, go to the "Blackboxing" tab, make sure that "Blackbox content scripts" is checked, and add **expo/build/logs/RemoteConsole.js** as a pattern with "Blackbox" selected.
+
+#### Troubleshooting localhost debugging
+
+When you run a project on your device with `npx expo start` or `npx expo run:android`, the Expo CLI automatically tells your device to forward `localhost:19000` to your development machine, as long as your device is plugged in or emulator is running. If you are using `localhost` for debugging and it isn't working, close the app and open it up again using `Open on Android`. Alternatively, you can use the following `adb` command if you have the Android developer tools installed: `adb reverse tcp:19000 tcp:19000`.
+
+#### Source maps and async functions
+
+Source maps and async functions aren't 100% reliable. React Native doesn't play well with Chrome's source mapping in every case, so if you want to make sure you're breakpointing in the correct place, you should use the `debugger` call directly from your code.
+
+### Debugging production apps with Sentry
+
+In a perfect world, your app would ship without any bugs. However, that's usually not the case. So, it's usually a good idea to implement a crash and bug reporting system into your app. This way, if any user experiences a fatal JS error (or any event that you've configured to notify Sentry) you can see the details in your Sentry dashboard.
+
+Expo provides a wrapper called [sentry-expo](/guides/using-sentry) which allows you to get as much information as possible from crashes and other events. Plus, when running in the managed workflow, you can configure sourcemaps so that the stracktraces you see in Sentry will look much more like the code in your editor.

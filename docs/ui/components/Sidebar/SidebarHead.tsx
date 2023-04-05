@@ -1,13 +1,9 @@
 import { css } from '@emotion/react';
 import { theme, DocsLogo } from '@expo/styleguide';
 import { spacing } from '@expo/styleguide-base';
-import {
-  ArrowLeftIcon,
-  BookOpen02Icon,
-  Home02Icon,
-  GraduationHat02Icon,
-  Stars02Icon,
-} from '@expo/styleguide-icons';
+import { ArrowLeftIcon, BookOpen02Icon, PlanEnterpriseIcon } from '@expo/styleguide-icons';
+
+import { PreviewIcon, PreviewInactiveIcon } from './icons/Preview';
 
 import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags.cjs';
 import { Search } from '~/ui/components/Search';
@@ -35,33 +31,31 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
       <Search />
       <SidebarSingleEntry
         href="/"
-        title="Home"
-        Icon={Home02Icon}
-        isActive={sidebarActiveGroup === 'home'}
-      />
-      <SidebarSingleEntry
-        href="/workflow/customizing"
         title="Guides"
         Icon={BookOpen02Icon}
         isActive={sidebarActiveGroup === 'general'}
       />
       <SidebarSingleEntry
-        href="/versions/latest"
-        title="Reference"
-        Icon={DocsLogo}
-        isActive={sidebarActiveGroup === 'reference'}
+        href="/eas"
+        title="Expo Application Services"
+        Icon={PlanEnterpriseIcon}
+        isActive={sidebarActiveGroup === 'eas'}
       />
       <SidebarSingleEntry
-        href="/tutorial/create-your-first-app/"
-        title="Learn"
-        Icon={GraduationHat02Icon}
-        isActive={sidebarActiveGroup === 'learn'}
+        href="/versions/latest"
+        title="API Reference"
+        Icon={DocsLogo}
+        isActive={sidebarActiveGroup === 'reference'}
       />
       {shouldShowFeaturePreviewLink() && (
         <SidebarSingleEntry
           href="/feature-preview"
           title="Feature Preview"
-          Icon={Stars02Icon}
+          Icon={
+            sidebarActiveGroup === 'featurePreview' || sidebarActiveGroup === 'preview'
+              ? PreviewIcon
+              : PreviewInactiveIcon
+          }
           isActive={sidebarActiveGroup === 'featurePreview' || sidebarActiveGroup === 'preview'}
         />
       )}
