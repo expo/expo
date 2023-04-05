@@ -90,7 +90,7 @@ export const getDefaultReturnUrl = sessionUrlProvider.getDefaultReturnUrl;
  * // Web: https://localhost:19006/redirect
  * ```
  *
- * @deprecated Use `makeRedirectUri({ path, useProxy })` instead.
+ * @deprecated Use `makeRedirectUri()` instead.
  */
 export function getRedirectUrl(path) {
     return sessionUrlProvider.getRedirectUrl({ urlPath: path });
