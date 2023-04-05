@@ -39,7 +39,7 @@ or an [`UpdateEvent`](#updateevent) emitted by native code.
 
 #### Defined in
 
-[@expo/use-updates/src/UseUpdates.types.ts:66](https://github.com/expo/expo/blob/6eb18b3915/packages/@expo/use-updates/src/UseUpdates.types.ts#L66)
+[@expo/use-updates/src/UseUpdates.types.ts:66](https://github.com/expo/expo/blob/27f8b2cf0f/packages/@expo/use-updates/src/UseUpdates.types.ts#L66)
 
 ___
 
@@ -64,7 +64,7 @@ Structure encapsulating information on the currently running app
 
 #### Defined in
 
-[@expo/use-updates/src/UseUpdates.types.ts:12](https://github.com/expo/expo/blob/6eb18b3915/packages/@expo/use-updates/src/UseUpdates.types.ts#L12)
+[@expo/use-updates/src/UseUpdates.types.ts:12](https://github.com/expo/expo/blob/27f8b2cf0f/packages/@expo/use-updates/src/UseUpdates.types.ts#L12)
 
 ___
 
@@ -74,7 +74,7 @@ ___
 
 #### Defined in
 
-[@expo/use-updates/src/UseUpdates.types.ts:6](https://github.com/expo/expo/blob/6eb18b3915/packages/@expo/use-updates/src/UseUpdates.types.ts#L6)
+[@expo/use-updates/src/UseUpdates.types.ts:6](https://github.com/expo/expo/blob/27f8b2cf0f/packages/@expo/use-updates/src/UseUpdates.types.ts#L6)
 
 ___
 
@@ -98,7 +98,7 @@ An object representing a single log entry from expo-updates logging on the clien
 
 #### Defined in
 
-[expo-updates/build/Updates.types.d.ts:142](https://github.com/expo/expo/blob/6eb18b3915/packages/expo-updates/build/Updates.types.d.ts#L142)
+[expo-updates/build/Updates.types.d.ts:142](https://github.com/expo/expo/blob/27f8b2cf0f/packages/expo-updates/build/Updates.types.d.ts#L142)
 
 ## Functions
 
@@ -116,7 +116,6 @@ import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { useUpdates } from '@expo/use-updates';
-import type { UseUpdatesCallbacksType } from '@expo/use-updates';
 
 export default function UpdatesDemo() {
   const callbacks = {
@@ -179,9 +178,9 @@ When using this hook, the methods returned should be used instead of `expo-updat
 | `logEntries?` | [`UpdatesLogEntry`](modules.md#updateslogentry)[] | If present, contains `expo-updates` log entries returned by the `getLogEntries()` method. |
 | `checkForUpdate` | () => `void` | Calls `Updates.checkForUpdateAsync()` and refreshes the `availableUpdate` property with the result. If an error occurs, the `error` property will be set. |
 | `downloadUpdate` | () => `void` | Downloads an update, if one is available, using `Updates.fetchUpdateAsync()`. If an error occurs, the `error` property will be set. |
-| `readLogEntries` | (`maxAge?`: `number`) => `void` | Calls `Updates.readLogEntriesAsync()` and sets the `logEntries` property in the `updatesInfo` structure to the results. If an error occurs, the `error` property will be set. |
+| `readLogEntries` | (`maxAge?`: `number`) => `void` | Calls `Updates.readLogEntriesAsync()` and sets the `logEntries` property to the results. If an error occurs, the `error` property will be set. |
 | `runUpdate` | () => `void` | Runs an update by calling `Updates.reloadAsync()`. This should not be called unless there is an available update that has already been successfully downloaded using `downloadUpdate()`. If an error occurs, the `error` property will be set. |
 
 #### Defined in
 
-[@expo/use-updates/src/UseUpdates.ts:67](https://github.com/expo/expo/blob/6eb18b3915/packages/@expo/use-updates/src/UseUpdates.ts#L67)
+[@expo/use-updates/src/UseUpdates.ts:66](https://github.com/expo/expo/blob/27f8b2cf0f/packages/@expo/use-updates/src/UseUpdates.ts#L66)

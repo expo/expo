@@ -16,7 +16,6 @@ import { checkForUpdateAndReturnAvailableAsync, currentlyRunning, downloadUpdate
  * import { Pressable, Text, View } from 'react-native';
  *
  * import { useUpdates } from '@expo/use-updates';
- * import type { UseUpdatesCallbacksType } from '@expo/use-updates';
  *
  * export default function UpdatesDemo() {
  *   const callbacks = {

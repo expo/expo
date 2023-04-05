@@ -24,7 +24,7 @@ export const availableUpdateFromManifest = (manifest) => {
         }
         : undefined;
 };
-// Constructs the UpdatesInfo from an event
+// Constructs the available update from an event
 export const availableUpdateFromEvent = (event) => {
     switch (event.type) {
         case Updates.UpdateEventType.NO_UPDATE_AVAILABLE:

@@ -31,7 +31,6 @@ import {
  * import { Pressable, Text, View } from 'react-native';
  *
  * import { useUpdates } from '@expo/use-updates';
- * import type { UseUpdatesCallbacksType } from '@expo/use-updates';
  *
  * export default function UpdatesDemo() {
  *   const callbacks = {
@@ -116,7 +115,7 @@ const useUpdates: (callbacks?: {
    */
   runUpdate(): void;
   /**
-   * Calls `Updates.readLogEntriesAsync()` and sets the `logEntries` property in the `updatesInfo` structure to the results.
+   * Calls `Updates.readLogEntriesAsync()` and sets the `logEntries` property to the results.
    * If an error occurs, the `error` property will be set.
    */
   readLogEntries(maxAge?: number): void;

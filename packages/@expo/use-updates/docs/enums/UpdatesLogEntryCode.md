@@ -27,7 +27,7 @@ The possible code values for expo-updates log entries
 
 #### Defined in
 
-[expo-updates/build/Updates.types.d.ts:183](https://github.com/expo/expo/blob/6eb18b3915/packages/expo-updates/build/Updates.types.d.ts#L183)
+[expo-updates/build/Updates.types.d.ts:183](https://github.com/expo/expo/blob/27f8b2cf0f/packages/expo-updates/build/Updates.types.d.ts#L183)
 
 ___
 
@@ -37,7 +37,7 @@ ___
 
 #### Defined in
 
-[expo-updates/build/Updates.types.d.ts:184](https://github.com/expo/expo/blob/6eb18b3915/packages/expo-updates/build/Updates.types.d.ts#L184)
+[expo-updates/build/Updates.types.d.ts:184](https://github.com/expo/expo/blob/27f8b2cf0f/packages/expo-updates/build/Updates.types.d.ts#L184)
 
 ___
 
@@ -47,7 +47,7 @@ ___
 
 #### Defined in
 
-[expo-updates/build/Updates.types.d.ts:176](https://github.com/expo/expo/blob/6eb18b3915/packages/expo-updates/build/Updates.types.d.ts#L176)
+[expo-updates/build/Updates.types.d.ts:176](https://github.com/expo/expo/blob/27f8b2cf0f/packages/expo-updates/build/Updates.types.d.ts#L176)
 
 ___
 
@@ -57,7 +57,7 @@ ___
 
 #### Defined in
 
-[expo-updates/build/Updates.types.d.ts:177](https://github.com/expo/expo/blob/6eb18b3915/packages/expo-updates/build/Updates.types.d.ts#L177)
+[expo-updates/build/Updates.types.d.ts:177](https://github.com/expo/expo/blob/27f8b2cf0f/packages/expo-updates/build/Updates.types.d.ts#L177)
 
 ___
 
@@ -67,7 +67,7 @@ ___
 
 #### Defined in
 
-[expo-updates/build/Updates.types.d.ts:185](https://github.com/expo/expo/blob/6eb18b3915/packages/expo-updates/build/Updates.types.d.ts#L185)
+[expo-updates/build/Updates.types.d.ts:185](https://github.com/expo/expo/blob/27f8b2cf0f/packages/expo-updates/build/Updates.types.d.ts#L185)
 
 ___
 
@@ -77,7 +77,7 @@ ___
 
 #### Defined in
 
-[expo-updates/build/Updates.types.d.ts:178](https://github.com/expo/expo/blob/6eb18b3915/packages/expo-updates/build/Updates.types.d.ts#L178)
+[expo-updates/build/Updates.types.d.ts:178](https://github.com/expo/expo/blob/27f8b2cf0f/packages/expo-updates/build/Updates.types.d.ts#L178)
 
 ___
 
@@ -87,7 +87,7 @@ ___
 
 #### Defined in
 
-[expo-updates/build/Updates.types.d.ts:181](https://github.com/expo/expo/blob/6eb18b3915/packages/expo-updates/build/Updates.types.d.ts#L181)
+[expo-updates/build/Updates.types.d.ts:181](https://github.com/expo/expo/blob/27f8b2cf0f/packages/expo-updates/build/Updates.types.d.ts#L181)
 
 ___
 
@@ -97,7 +97,7 @@ ___
 
 #### Defined in
 
-[expo-updates/build/Updates.types.d.ts:182](https://github.com/expo/expo/blob/6eb18b3915/packages/expo-updates/build/Updates.types.d.ts#L182)
+[expo-updates/build/Updates.types.d.ts:182](https://github.com/expo/expo/blob/27f8b2cf0f/packages/expo-updates/build/Updates.types.d.ts#L182)
 
 ___
 
@@ -107,7 +107,7 @@ ___
 
 #### Defined in
 
-[expo-updates/build/Updates.types.d.ts:180](https://github.com/expo/expo/blob/6eb18b3915/packages/expo-updates/build/Updates.types.d.ts#L180)
+[expo-updates/build/Updates.types.d.ts:180](https://github.com/expo/expo/blob/27f8b2cf0f/packages/expo-updates/build/Updates.types.d.ts#L180)
 
 ___
 
@@ -117,4 +117,4 @@ ___
 
 #### Defined in
 
-[expo-updates/build/Updates.types.d.ts:179](https://github.com/expo/expo/blob/6eb18b3915/packages/expo-updates/build/Updates.types.d.ts#L179)
+[expo-updates/build/Updates.types.d.ts:179](https://github.com/expo/expo/blob/27f8b2cf0f/packages/expo-updates/build/Updates.types.d.ts#L179)

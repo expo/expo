@@ -23,7 +23,7 @@ The possible log levels for expo-updates log entries
 
 #### Defined in
 
-[expo-updates/build/Updates.types.d.ts:192](https://github.com/expo/expo/blob/6eb18b3915/packages/expo-updates/build/Updates.types.d.ts#L192)
+[expo-updates/build/Updates.types.d.ts:192](https://github.com/expo/expo/blob/27f8b2cf0f/packages/expo-updates/build/Updates.types.d.ts#L192)
 
 ___
 
@@ -33,7 +33,7 @@ ___
 
 #### Defined in
 
-[expo-updates/build/Updates.types.d.ts:195](https://github.com/expo/expo/blob/6eb18b3915/packages/expo-updates/build/Updates.types.d.ts#L195)
+[expo-updates/build/Updates.types.d.ts:195](https://github.com/expo/expo/blob/27f8b2cf0f/packages/expo-updates/build/Updates.types.d.ts#L195)
 
 ___
 
@@ -43,7 +43,7 @@ ___
 
 #### Defined in
 
-[expo-updates/build/Updates.types.d.ts:196](https://github.com/expo/expo/blob/6eb18b3915/packages/expo-updates/build/Updates.types.d.ts#L196)
+[expo-updates/build/Updates.types.d.ts:196](https://github.com/expo/expo/blob/27f8b2cf0f/packages/expo-updates/build/Updates.types.d.ts#L196)
 
 ___
 
@@ -53,7 +53,7 @@ ___
 
 #### Defined in
 
-[expo-updates/build/Updates.types.d.ts:193](https://github.com/expo/expo/blob/6eb18b3915/packages/expo-updates/build/Updates.types.d.ts#L193)
+[expo-updates/build/Updates.types.d.ts:193](https://github.com/expo/expo/blob/27f8b2cf0f/packages/expo-updates/build/Updates.types.d.ts#L193)
 
 ___
 
@@ -63,7 +63,7 @@ ___
 
 #### Defined in
 
-[expo-updates/build/Updates.types.d.ts:191](https://github.com/expo/expo/blob/6eb18b3915/packages/expo-updates/build/Updates.types.d.ts#L191)
+[expo-updates/build/Updates.types.d.ts:191](https://github.com/expo/expo/blob/27f8b2cf0f/packages/expo-updates/build/Updates.types.d.ts#L191)
 
 ___
 
@@ -73,4 +73,4 @@ ___
 
 #### Defined in
 
-[expo-updates/build/Updates.types.d.ts:194](https://github.com/expo/expo/blob/6eb18b3915/packages/expo-updates/build/Updates.types.d.ts#L194)
+[expo-updates/build/Updates.types.d.ts:194](https://github.com/expo/expo/blob/27f8b2cf0f/packages/expo-updates/build/Updates.types.d.ts#L194)

@@ -37,7 +37,7 @@ export const availableUpdateFromManifest = (manifest?: Manifest) => {
     : undefined;
 };
 
-// Constructs the UpdatesInfo from an event
+// Constructs the available update from an event
 export const availableUpdateFromEvent: (event: UpdateEvent) => {
   availableUpdate?: AvailableUpdateInfo;
   error?: Error;
