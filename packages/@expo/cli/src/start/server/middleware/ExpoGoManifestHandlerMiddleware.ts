@@ -1,17 +1,13 @@
 import { ExpoUpdatesManifest } from '@expo/config';
 import { Updates } from '@expo/config-plugins';
 import accepts from 'accepts';
-import chalk from 'chalk';
 import crypto from 'crypto';
 import FormData from 'form-data';
 import { serializeDictionary, Dictionary } from 'structured-headers';
 
-import { AppQuery } from '../../../api/graphql/queries/AppQuery';
 import { APISettings } from '../../../api/settings';
-import { signExpoGoManifestAsync } from '../../../api/signManifest';
 import UserSettings from '../../../api/user/UserSettings';
-import { ANONYMOUS_USERNAME, getUserAsync } from '../../../api/user/user';
-import { Permission } from '../../../graphql/generated';
+import { ANONYMOUS_USERNAME } from '../../../api/user/user';
 import * as Log from '../../../log';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import {
@@ -20,8 +16,6 @@ import {
   signManifestString,
 } from '../../../utils/codesigning';
 import { CommandError } from '../../../utils/errors';
-import { memoize } from '../../../utils/fn';
-import { learnMore } from '../../../utils/link';
 import { stripPort } from '../../../utils/url';
 import { ManifestMiddleware, ManifestRequestInfo } from './ManifestMiddleware';
 import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
@@ -60,7 +54,6 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     return {
       explicitlyPrefersMultipartMixed,
       platform,
-      acceptSignature: this.getLegacyAcceptSignatureHeader(req),
       expectSignature: expectSignature ? String(expectSignature) : null,
       hostname: stripPort(req.headers['host']),
     };
@@ -102,19 +95,10 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     );
 
     const easProjectId = exp.extra?.eas?.projectId as string | undefined | null;
-    const scopeKeyToServeResult = await this.getResponseSignatureInfoAndScopeKeyAsync({
-      easProjectId,
+    const scopeKey = await ExpoGoManifestHandlerMiddleware.getScopeKeyAsync({
       slug: exp.slug,
       codeSigningInfo,
     });
-
-    if (requestOptions.acceptSignature && scopeKeyToServeResult.shouldOmitLegacySignature) {
-      Log.warn(
-        `\n${scopeKeyToServeResult.omittanceReason}. ${chalk.dim(
-          learnMore('https://expo.fyi/development-manifest-signing')
-        )}`
-      );
-    }
 
     const expoUpdatesManifest: ExpoUpdatesManifest = {
       id: crypto.randomUUID(),
@@ -136,15 +120,9 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
           hostUri,
         },
         expoGo: expoGoConfig,
-        scopeKey: scopeKeyToServeResult.scopeKey,
+        scopeKey,
       },
     };
-
-    const headers = this.getDefaultResponseHeaders();
-    if (requestOptions.acceptSignature && !scopeKeyToServeResult.shouldOmitLegacySignature) {
-      const manifestSignature = await this.getSignedManifestStringAsync(expoUpdatesManifest);
-      headers.set('expo-manifest-signature', manifestSignature);
-    }
 
     const stringifiedManifest = JSON.stringify(expoUpdatesManifest);
 
@@ -170,6 +148,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       certificateChainBody,
     });
 
+    const headers = this.getDefaultResponseHeaders();
     headers.set(
       'content-type',
       requestOptions.explicitlyPrefersMultipartMixed
@@ -214,117 +193,24 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     });
   }
 
-  private getSignedManifestStringAsync = memoize(signExpoGoManifestAsync);
-
-  private getAppByIdAsync = memoize(AppQuery.byIdAsync);
-
-  private async getResponseSignatureInfoAndScopeKeyAsync({
-    easProjectId,
+  private static async getScopeKeyAsync({
     slug,
     codeSigningInfo,
   }: {
-    easProjectId: string | undefined | null;
     slug: string;
     codeSigningInfo: CodeSigningInfo | null;
-  }): Promise<
-    | {
-        shouldOmitLegacySignature: true;
-        omittanceReason: string;
-        scopeKey: string;
-      }
-    | {
-        shouldOmitLegacySignature: false;
-        scopeKey: string;
-      }
-  > {
-    // if there isn't an EAS project, we couldn't have ever fetched codeSigningInfo with a scope key (implicit assumption)
-    // and we won't be able to sign or fetch a scope key
-    if (!easProjectId) {
-      return {
-        shouldOmitLegacySignature: true,
-        omittanceReason:
-          'This app is not associated with an EAS project so it may run with limited permissions',
-        scopeKey: await getAnonymousScopeKeyAsync(slug),
-      };
+  }): Promise<string> {
+    const scopeKeyFromCodeSigningInfo = codeSigningInfo?.scopeKey;
+    if (scopeKeyFromCodeSigningInfo) {
+      return scopeKeyFromCodeSigningInfo;
     }
 
-    // if offline but we have code signing info with a scope key, we can use that scope key
-    if (APISettings.isOffline && codeSigningInfo && codeSigningInfo.scopeKey) {
-      return {
-        shouldOmitLegacySignature: true,
-        omittanceReason: 'Using saved code signing info to sign manifest while offline',
-        scopeKey: codeSigningInfo.scopeKey,
-      };
-    }
-
-    // if offline and don't have code signing info, we can't sign or fetch a scope key
-    if (APISettings.isOffline) {
-      return {
-        shouldOmitLegacySignature: true,
-        omittanceReason: 'This app may run with limited permissions while in offline mode',
-        scopeKey: await getAnonymousScopeKeyAsync(slug),
-      };
-    }
-
-    const user = await getUserAsync();
-
-    // if not logged in but we have code signing info with a scope key, we can use that scope key
-    if (!user && codeSigningInfo && codeSigningInfo.scopeKey) {
-      return {
-        shouldOmitLegacySignature: true,
-        omittanceReason: 'Using saved code signing info to sign manifest while not logged in',
-        scopeKey: codeSigningInfo.scopeKey,
-      };
-    }
-
-    // if not logged in and don't have code signing info, we can't sign or fetch a scope key
-    if (!user) {
-      return {
-        shouldOmitLegacySignature: true,
-        omittanceReason: 'This app may run with limited permissions when not logged in',
-        scopeKey: await getAnonymousScopeKeyAsync(slug),
-      };
-    }
-
-    const app = await this.getAppByIdAsync(easProjectId);
-    const owningAccountId = app.ownerAccount.id;
-
-    const owningAccountIsUserPrimaryAccount =
-      user.__typename === 'User' || user.__typename === 'SSOUser'
-        ? user.primaryAccount.id === owningAccountId
-        : false;
-    const userHasPublishPermissionForOwningAccount = !!user.accounts
-      .find((account) => account.id === owningAccountId)
-      ?.users?.find((userPermission) => userPermission.actor.id === user.id)
-      ?.permissions?.includes(Permission.Publish);
-    const userCanSignManifest =
-      owningAccountIsUserPrimaryAccount || userHasPublishPermissionForOwningAccount;
-
-    // if the user can't sign the manifest but we have code signing info with a scope key, we can use that scope key
-    if (!userCanSignManifest && codeSigningInfo && codeSigningInfo.scopeKey) {
-      if (app.scopeKey !== codeSigningInfo.scopeKey) {
-        throw new Error(`scopeKey mismatch: ${app.scopeKey} !== ${codeSigningInfo.scopeKey}`);
-      }
-      return {
-        shouldOmitLegacySignature: true,
-        omittanceReason:
-          'Using saved code signing info to sign manifest because you do not have a developer role on the account that owns this project',
-        scopeKey: app.scopeKey,
-      };
-    }
-
-    // if the user can't sign the manifest and we don't have code signing info, we can't sign the manifest and an anonymous
-    // scope key should be used as an extra precaution
-    if (!userCanSignManifest) {
-      return {
-        shouldOmitLegacySignature: true,
-        omittanceReason:
-          'This app may run with limited permissions because you do not have a developer role on the account that owns this project',
-        scopeKey: await getAnonymousScopeKeyAsync(slug),
-      };
-    }
-
-    return { shouldOmitLegacySignature: false, scopeKey: app.scopeKey };
+    Log.warn(
+      APISettings.isOffline
+        ? 'Using anonymous scope key in manifest for offline mode with no cached development code signing info.'
+        : 'Using anonymous scope key in manifest.'
+    );
+    return await getAnonymousScopeKeyAsync(slug);
   }
 }
 

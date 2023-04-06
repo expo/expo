@@ -8,7 +8,6 @@ import { vol } from 'memfs';
 import nullthrows from 'nullthrows';
 
 import { asMock } from '../../../../__tests__/asMock';
-import { AppQuery } from '../../../../api/graphql/queries/AppQuery';
 import { APISettings } from '../../../../api/settings';
 import { getUserAsync } from '../../../../api/user/user';
 import {
@@ -59,9 +58,6 @@ jest.mock('@expo/config-plugins', () => ({
   Updates: {
     getRuntimeVersion: jest.fn(() => '45.0.0'),
   },
-}));
-jest.mock('../../../../api/signManifest', () => ({
-  signExpoGoManifestAsync: jest.fn((manifest) => JSON.stringify(manifest)),
 }));
 jest.mock('../resolveAssets', () => ({
   resolveManifestAssets: jest.fn(),
@@ -120,7 +116,6 @@ describe('getParsedHeaders', () => {
         })
       )
     ).toEqual({
-      acceptSignature: false,
       expectSignature: null,
       explicitlyPrefersMultipartMixed: false,
       hostname: null,
@@ -135,7 +130,6 @@ describe('getParsedHeaders', () => {
       )
     ).toEqual({
       explicitlyPrefersMultipartMixed: false,
-      acceptSignature: false,
       expectSignature: null,
       hostname: null,
       platform: 'android',
@@ -151,15 +145,12 @@ describe('getParsedHeaders', () => {
             accept: 'multipart/mixed',
             host: 'localhost:8081',
             'expo-platform': 'ios',
-            // This is different to the classic manifest middleware.
-            'expo-accept-signature': 'true',
             'expo-expect-signature': 'wat',
           },
         })
       )
     ).toEqual({
       explicitlyPrefersMultipartMixed: true,
-      acceptSignature: true,
       expectSignature: 'wat',
       hostname: 'localhost',
       // We don't care much about the platform here since it's already tested.
@@ -207,13 +198,12 @@ describe('_getManifestResponseAsync', () => {
   }
 
   // Sanity
-  it('returns an anon manifest', async () => {
+  it('returns an anon manifest when no code signing is requested', async () => {
     const middleware = createMiddleware();
     APISettings.isOffline = true;
     const results = await middleware._getManifestResponseAsync({
       explicitlyPrefersMultipartMixed: true,
       platform: 'android',
-      acceptSignature: true,
       expectSignature: null,
       hostname: 'localhost',
     });
@@ -261,54 +251,6 @@ describe('_getManifestResponseAsync', () => {
     });
   });
 
-  it('returns a legacy-signed manifest', async () => {
-    const middleware = createMiddleware();
-
-    const results = await middleware._getManifestResponseAsync({
-      explicitlyPrefersMultipartMixed: true,
-      platform: 'android',
-      acceptSignature: true,
-      expectSignature: null,
-      hostname: 'localhost',
-    });
-    expect(results.version).toBe('45.0.0');
-    expect(results.headers.get('expo-manifest-signature')).toEqual(expect.any(String));
-
-    const { body } = nullthrows(await getMultipartPartAsync('manifest', results));
-    expect(JSON.parse(body)).toEqual({
-      id: expect.any(String),
-      createdAt: expect.any(String),
-      runtimeVersion: '45.0.0',
-      launchAsset: {
-        key: 'bundle',
-        contentType: 'application/javascript',
-        url: 'https://localhost:8081/bundle.js',
-      },
-      assets: [],
-      metadata: {},
-      extra: {
-        eas: {
-          projectId: 'projectId',
-        },
-        expoClient: expect.anything(),
-        expoGo: {},
-        scopeKey: 'scope-key',
-      },
-    });
-    expect(AppQuery.byIdAsync).toBeCalledTimes(1);
-
-    // Test memoization on API calls...
-    await middleware._getManifestResponseAsync({
-      explicitlyPrefersMultipartMixed: true,
-      platform: 'android',
-      acceptSignature: true,
-      expectSignature: null,
-      hostname: 'localhost',
-    });
-
-    expect(AppQuery.byIdAsync).toBeCalledTimes(1);
-  });
-
   it('returns a code signed manifest with developers own key when requested', async () => {
     vol.fromJSON({
       'certs/cert.pem': mockSelfSigned.certificate,
@@ -333,7 +275,6 @@ describe('_getManifestResponseAsync', () => {
     const results = await middleware._getManifestResponseAsync({
       explicitlyPrefersMultipartMixed: true,
       platform: 'android',
-      acceptSignature: false,
       expectSignature: 'sig, keyid="testkeyid", alg="rsa-v1_5-sha256"',
       hostname: 'localhost',
     });
@@ -359,7 +300,7 @@ describe('_getManifestResponseAsync', () => {
         },
         expoClient: expect.anything(),
         expoGo: {},
-        scopeKey: 'scope-key',
+        scopeKey: expect.stringMatching(/@anonymous\/.*/),
       },
     });
 
@@ -373,7 +314,6 @@ describe('_getManifestResponseAsync', () => {
     const results = await middleware._getManifestResponseAsync({
       explicitlyPrefersMultipartMixed: true,
       platform: 'android',
-      acceptSignature: false,
       expectSignature: 'sig, keyid="expo-root", alg="rsa-v1_5-sha256"',
       hostname: 'localhost',
     });
@@ -437,14 +377,10 @@ describe('_getManifestResponseAsync', () => {
     const results = await middleware._getManifestResponseAsync({
       explicitlyPrefersMultipartMixed: true,
       platform: 'android',
-      acceptSignature: true,
       expectSignature: 'sig, keyid="testkeyid", alg="rsa-v1_5-sha256"',
       hostname: 'localhost',
     });
     expect(results.version).toBe('45.0.0');
-
-    // when offline, don't serve legacy signature even when developer code signing is present
-    expect(results.headers.get('expo-manifest-signature')).toBeUndefined();
 
     const { body, headers } = nullthrows(await getMultipartPartAsync('manifest', results));
     expect(headers.get('expo-signature')).toContain('keyid="testkeyid"');
@@ -482,7 +418,6 @@ describe('_getManifestResponseAsync', () => {
     await middlewareOnline._getManifestResponseAsync({
       explicitlyPrefersMultipartMixed: true,
       platform: 'android',
-      acceptSignature: true,
       expectSignature: 'sig, keyid="expo-root", alg="rsa-v1_5-sha256"',
       hostname: 'localhost',
     });
@@ -495,14 +430,10 @@ describe('_getManifestResponseAsync', () => {
     const results = await middleware._getManifestResponseAsync({
       explicitlyPrefersMultipartMixed: true,
       platform: 'android',
-      acceptSignature: true,
       expectSignature: 'sig, keyid="expo-root", alg="rsa-v1_5-sha256"',
       hostname: 'localhost',
     });
     expect(results.version).toBe('45.0.0');
-
-    // when offline, don't serve legacy signature even when developer code signing is present
-    expect(results.headers.get('expo-manifest-signature')).toBeUndefined();
 
     const { body: manifestPartBody, headers: manifestPartHeaders } = nullthrows(
       await getMultipartPartAsync('manifest', results)
@@ -542,7 +473,6 @@ describe('_getManifestResponseAsync', () => {
     const results = await middleware._getManifestResponseAsync({
       explicitlyPrefersMultipartMixed: false,
       platform: 'android',
-      acceptSignature: true,
       expectSignature: null,
       hostname: 'localhost',
     });

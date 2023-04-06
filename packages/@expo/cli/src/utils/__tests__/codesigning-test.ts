@@ -3,9 +3,11 @@ import { vol } from 'memfs';
 import { asMock } from '../../__tests__/asMock';
 import { getProjectDevelopmentCertificateAsync } from '../../api/getProjectDevelopmentCertificate';
 import { APISettings } from '../../api/settings';
+import { getUserAsync } from '../../api/user/user';
 import { getCodeSigningInfoAsync, signManifestString } from '../codesigning';
 import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
 
+jest.mock('../../api/user/user');
 jest.mock('../../api/graphql/queries/AppQuery', () => ({
   AppQuery: {
     byIdAsync: jest.fn(async () => ({
@@ -51,6 +53,14 @@ jest.mock('../../api/settings', () => ({
 
 beforeEach(() => {
   vol.reset();
+
+  asMock(getUserAsync).mockImplementation(async () => ({
+    __typename: 'User',
+    id: 'userwat',
+    username: 'wat',
+    primaryAccount: { id: 'blah-account' },
+    accounts: [],
+  }));
 });
 
 describe(getCodeSigningInfoAsync, () => {

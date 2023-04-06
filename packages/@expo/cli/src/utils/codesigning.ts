@@ -20,6 +20,9 @@ import { getExpoGoIntermediateCertificateAsync } from '../api/getExpoGoIntermedi
 import { getProjectDevelopmentCertificateAsync } from '../api/getProjectDevelopmentCertificate';
 import { AppQuery } from '../api/graphql/queries/AppQuery';
 import { APISettings } from '../api/settings';
+import { ensureLoggedInAsync } from '../api/user/actions';
+import { Actor } from '../api/user/user';
+import { AppByIdQuery, Permission } from '../graphql/generated';
 import * as Log from '../log';
 import { CommandError } from './errors';
 
@@ -202,6 +205,7 @@ async function getExpoRootDevelopmentCodeSigningInfoAsync(
         );
         return validatedCodeSigningInfo;
       } else {
+        // need to return null here and say a message
         throw e;
       }
     }
@@ -353,24 +357,41 @@ function validateStoredDevelopmentExpoRootCertificateCodeSigningInfo(
   };
 }
 
+function actorCanGetProjectDevelopmentCertificate(actor: Actor, app: AppByIdQuery['app']['byId']) {
+  const owningAccountId = app.ownerAccount.id;
+
+  const owningAccountIsActorPrimaryAccount =
+    actor.__typename === 'User' || actor.__typename === 'SSOUser'
+      ? actor.primaryAccount.id === owningAccountId
+      : false;
+  const userHasPublishPermissionForOwningAccount = !!actor.accounts
+    .find((account) => account.id === owningAccountId)
+    ?.users?.find((userPermission) => userPermission.actor.id === actor.id)
+    ?.permissions?.includes(Permission.Publish);
+  return owningAccountIsActorPrimaryAccount || userHasPublishPermissionForOwningAccount;
+}
+
 async function fetchAndCacheNewDevelopmentCodeSigningInfoAsync(
   easProjectId: string
-): Promise<CodeSigningInfo> {
+): Promise<CodeSigningInfo | null> {
+  const actor = await ensureLoggedInAsync();
+  const app = await AppQuery.byIdAsync(easProjectId);
+  if (!actorCanGetProjectDevelopmentCertificate(actor, app)) {
+    return null;
+  }
+
   const keyPair = generateKeyPair();
   const keyPairPEM = convertKeyPairToPEM(keyPair);
   const csr = generateCSR(keyPair, `Development Certificate for ${easProjectId}`);
   const csrPEM = convertCSRToCSRPEM(csr);
-  const [appInfo, developmentSigningCertificate, expoGoIntermediateCertificate] = await Promise.all(
-    [
-      AppQuery.byIdAsync(easProjectId),
-      getProjectDevelopmentCertificateAsync(easProjectId, csrPEM),
-      getExpoGoIntermediateCertificateAsync(easProjectId),
-    ]
-  );
+  const [developmentSigningCertificate, expoGoIntermediateCertificate] = await Promise.all([
+    getProjectDevelopmentCertificateAsync(easProjectId, csrPEM),
+    getExpoGoIntermediateCertificateAsync(easProjectId),
+  ]);
 
   await DevelopmentCodeSigningInfoFile.setAsync(easProjectId, {
     easProjectId,
-    scopeKey: appInfo.scopeKey,
+    scopeKey: app.scopeKey,
     privateKey: keyPairPEM.privateKeyPEM,
     certificateChain: [developmentSigningCertificate, expoGoIntermediateCertificate],
   });
@@ -380,7 +401,7 @@ async function fetchAndCacheNewDevelopmentCodeSigningInfoAsync(
     certificateChainForResponse: [developmentSigningCertificate, expoGoIntermediateCertificate],
     certificateForPrivateKey: developmentSigningCertificate,
     privateKey: keyPairPEM.privateKeyPEM,
-    scopeKey: appInfo.scopeKey,
+    scopeKey: app.scopeKey,
   };
 }
 /**
