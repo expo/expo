@@ -1,10 +1,16 @@
 {
   "platforms": [
-    "ios"
+    "ios",
+    "android"
   ],
   "ios": {
     "modules": [
       "InsightsModule"
+    ]
+  },
+  "android": {
+    "modules": [
+      "expo.modules.insights.ExpoInsightsModule"
     ]
   }
 }

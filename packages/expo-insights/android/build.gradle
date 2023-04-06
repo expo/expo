@@ -87,5 +87,7 @@ repositories {
 
 dependencies {
   implementation project(':expo-modules-core')
+  implementation project(':expo-eas-client')
+
   implementation "org.jetbrains.kotlin:kotlin-stdlib-jdk7:${getKotlinVersion()}"
 }
