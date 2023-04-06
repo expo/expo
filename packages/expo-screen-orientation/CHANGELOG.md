@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Migrated to new modules API on Android
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
