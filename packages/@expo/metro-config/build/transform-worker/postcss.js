@@ -119,7 +119,8 @@ async function parsePostcssConfigAsync(projectRoot, {
   };
   if (typeof parser === 'string') {
     try {
-      processOptions.parser = await (0, _require().tryRequireThenImport)(parser);
+      var _resolveFrom$silent;
+      processOptions.parser = await (0, _require().tryRequireThenImport)((_resolveFrom$silent = _resolveFrom().default.silent(projectRoot, parser)) !== null && _resolveFrom$silent !== void 0 ? _resolveFrom$silent : parser);
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Loading PostCSS "${parser}" parser failed: ${error.message}\n\n(@${file})`);
@@ -129,7 +130,8 @@ async function parsePostcssConfigAsync(projectRoot, {
   }
   if (typeof stringifier === 'string') {
     try {
-      processOptions.stringifier = await (0, _require().tryRequireThenImport)(stringifier);
+      var _resolveFrom$silent2;
+      processOptions.stringifier = await (0, _require().tryRequireThenImport)((_resolveFrom$silent2 = _resolveFrom().default.silent(projectRoot, stringifier)) !== null && _resolveFrom$silent2 !== void 0 ? _resolveFrom$silent2 : stringifier);
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Loading PostCSS "${stringifier}" stringifier failed: ${error.message}\n\n(@${file})`);
@@ -139,7 +141,8 @@ async function parsePostcssConfigAsync(projectRoot, {
   }
   if (typeof syntax === 'string') {
     try {
-      processOptions.syntax = await (0, _require().tryRequireThenImport)(syntax);
+      var _resolveFrom$silent3;
+      processOptions.syntax = await (0, _require().tryRequireThenImport)((_resolveFrom$silent3 = _resolveFrom().default.silent(projectRoot, syntax)) !== null && _resolveFrom$silent3 !== void 0 ? _resolveFrom$silent3 : syntax);
     } catch (error) {
       throw new Error(`Loading PostCSS "${syntax}" syntax failed: ${error.message}\n\n(@${file})`);
     }

@@ -1,6 +1,7 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 import { getPackageJson } from '@expo/config';
 import { getBareExtensions } from '@expo/config/paths';
+import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import { Reporter } from 'metro';
 // @ts-expect-error: incorrectly typed
@@ -91,7 +92,12 @@ export function getDefaultConfig(
   const sourceExtsConfig = { isTS: true, isReact: true, isModern: false };
   const sourceExts = getBareExtensions([], sourceExtsConfig);
 
+  let sassVersion: string | null = null;
   if (options.isCSSEnabled) {
+    sassVersion = getSassVersion(projectRoot);
+    if (sassVersion) {
+      sourceExts.push('scss', 'sass');
+    }
     sourceExts.push('css');
   }
 
@@ -183,6 +189,7 @@ export function getDefaultConfig(
       browserslistHash: pkg.browserslist
         ? stableHash(JSON.stringify(pkg.browserslist)).toString('hex')
         : null,
+      sassVersion,
 
       // `require.context` support
       unstable_allowRequireContext: true,
@@ -218,3 +225,15 @@ export { MetroConfig, INTERNAL_CALLSITES_REGEX };
 
 // re-export for legacy cases.
 export const EXPO_DEBUG = env.EXPO_DEBUG;
+
+function getSassVersion(projectRoot: string): string | null {
+  const sassPkg = resolveFrom.silent(projectRoot, 'sass/package.json');
+  if (!sassPkg) return null;
+  const pkg = JsonFile.read(sassPkg);
+  const sassVersion = pkg.version;
+  if (typeof sassVersion === 'string') {
+    return sassVersion;
+  }
+
+  return null;
+}

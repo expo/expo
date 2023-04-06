@@ -104,7 +104,9 @@ async function parsePostcssConfigAsync(
 
   if (typeof parser === 'string') {
     try {
-      processOptions.parser = await tryRequireThenImport(parser);
+      processOptions.parser = await tryRequireThenImport(
+        resolveFrom.silent(projectRoot, parser) ?? parser
+      );
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw new Error(
@@ -117,7 +119,9 @@ async function parsePostcssConfigAsync(
 
   if (typeof stringifier === 'string') {
     try {
-      processOptions.stringifier = await tryRequireThenImport(stringifier);
+      processOptions.stringifier = await tryRequireThenImport(
+        resolveFrom.silent(projectRoot, stringifier) ?? stringifier
+      );
     } catch (error: unknown) {
       if (error instanceof Error) {
         throw new Error(
@@ -130,7 +134,9 @@ async function parsePostcssConfigAsync(
 
   if (typeof syntax === 'string') {
     try {
-      processOptions.syntax = await tryRequireThenImport(syntax);
+      processOptions.syntax = await tryRequireThenImport(
+        resolveFrom.silent(projectRoot, syntax) ?? syntax
+      );
     } catch (error: any) {
       throw new Error(`Loading PostCSS "${syntax}" syntax failed: ${error.message}\n\n(@${file})`);
     }

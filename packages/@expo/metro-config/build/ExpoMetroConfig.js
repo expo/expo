@@ -32,6 +32,13 @@ function _paths() {
   };
   return data;
 }
+function _jsonFile() {
+  const data = _interopRequireDefault(require("@expo/json-file"));
+  _jsonFile = function () {
+    return data;
+  };
+  return data;
+}
 function _chalk() {
   const data = _interopRequireDefault(require("chalk"));
   _chalk = function () {
@@ -147,7 +154,12 @@ function getDefaultConfig(projectRoot, options = {}) {
     isModern: false
   };
   const sourceExts = (0, _paths().getBareExtensions)([], sourceExtsConfig);
+  let sassVersion = null;
   if (options.isCSSEnabled) {
+    sassVersion = getSassVersion(projectRoot);
+    if (sassVersion) {
+      sourceExts.push('scss', 'sass');
+    }
     sourceExts.push('css');
   }
   if (isExotic) {
@@ -228,6 +240,7 @@ function getDefaultConfig(projectRoot, options = {}) {
       // @ts-expect-error: not on type.
       postcssHash: (0, _postcss().getPostcssConfigHash)(projectRoot),
       browserslistHash: pkg.browserslist ? (0, _metroCache().stableHash)(JSON.stringify(pkg.browserslist)).toString('hex') : null,
+      sassVersion,
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
@@ -266,4 +279,14 @@ async function loadAsync(projectRoot, {
 // re-export for legacy cases.
 const EXPO_DEBUG = _env().env.EXPO_DEBUG;
 exports.EXPO_DEBUG = EXPO_DEBUG;
+function getSassVersion(projectRoot) {
+  const sassPkg = _resolveFrom().default.silent(projectRoot, 'sass/package.json');
+  if (!sassPkg) return null;
+  const pkg = _jsonFile().default.read(sassPkg);
+  const sassVersion = pkg.version;
+  if (typeof sassVersion === 'string') {
+    return sassVersion;
+  }
+  return null;
+}
 //# sourceMappingURL=ExpoMetroConfig.js.map

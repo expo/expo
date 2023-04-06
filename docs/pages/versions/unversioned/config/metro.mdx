@@ -122,46 +122,33 @@ export default function Page() {
 
 > Changing the Post CSS or `browserslist` config will require you to clear the Metro cache: `npx expo start --clear` | `npx expo export --clear`.
 
-[PostCSS](https://github.com/postcss/postcss) can be customized by adding a `postcss.config.js` file to the root of your project. This file should export a function that returns a PostCSS configuration object. For example:
+[PostCSS](https://github.com/postcss/postcss) can be customized by adding a `postcss.config.json` file to the root of your project. This file should export a function that returns a PostCSS configuration object. For example:
 
-```js postcss.config.js
-module.exports = () => ({
-  plugins: {
-    autoprefixer: {},
-  },
-});
+```json postcss.config.json
+{
+  "plugins": {
+    "autoprefixer": {}
+  }
+}
 ```
 
-This can be used to enable scss syntax, for example:
+Both `postcss.config.json` and `postcss.config.js` are supported, but `postcss.config.json` enables better caching.
 
-```js postcss.config.js
-module.exports = () => ({
-  plugins: {
-    'postcss-scss': {},
-    'postcss-nested': {},
-    autoprefixer: {},
-  },
-});
+### SCSS
+
+Expo Metro has partial support for SCSS/SASS.
+
+To setup, install the `sass` package:
+
+```sh
+yarn add sass
 ```
 
-You will additionally need to add the `scss` extension to your `metro.config.js`:
+Then, ensure [CSS is setup](#css) in the `metro.config.js` file.
 
-```js metro.config.js
-const { getDefaultConfig } = require('expo/metro-config');
-
-/** @type {import('expo/metro-config').MetroConfig} */
-const config = getDefaultConfig(__dirname, {
-  // Enable CSS support.
-  isCSSEnabled: true,
-});
-
-// Add the scss extension to the list of supported extensions.
-config.resolver.sourceExts.push('scss');
-
-module.exports = config;
-```
-
-The Expo Metro transformer can currently only support `css`, `scss`, and `sass` extensions. `scss` and `sass` must be added to the `sourceExts` array in `metro.config.js` to be observed by the file watcher.
+- When `sass` is installed, then modules without extensions will be resolved in the following order: `scss`, `sass`, `css`.
+- Only use the intended syntax with `sass` files.
+- Importing other files from inside a scss/sass file is not currently supported.
 
 ## Bare workflow setup
 
