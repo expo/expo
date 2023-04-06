@@ -2,6 +2,7 @@ package expo.modules.kotlin.jni
 
 import com.facebook.jni.HybridData
 import expo.modules.core.interfaces.DoNotStrip
+import kotlin.reflect.typeOf
 
 /**
  * A Kotlin representation of jsi::Value.
@@ -34,6 +35,21 @@ class JavaScriptValue @DoNotStrip private constructor(@DoNotStrip private val mH
   external fun getObject(): JavaScriptObject
   external fun getArray(): Array<JavaScriptValue>
   external fun getTypedArray(): JavaScriptTypedArray
+
+  private external fun <T : Any?> jniGetFunction(): JavaScriptFunction<T>
+  @PublishedApi
+  internal fun <T : Any?> internalJniGetFunction(): JavaScriptFunction<T> = jniGetFunction()
+  inline fun <reified ReturnType : Any?> getFunction(): JavaScriptFunction<ReturnType> {
+    return internalJniGetFunction<ReturnType>().apply {
+      returnType = typeOf<ReturnType>()
+    }
+  }
+  @JvmName("getVoidFunction")
+  fun getFunction(): JavaScriptFunction<Unit> {
+    return internalJniGetFunction<Unit>().apply {
+      returnType = typeOf<Unit>()
+    }
+  }
 
   fun getInt() = getDouble().toInt()
   fun getLong() = getDouble().toLong()

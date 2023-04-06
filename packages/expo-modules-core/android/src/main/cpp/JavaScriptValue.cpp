@@ -5,6 +5,7 @@
 #include "JavaScriptRuntime.h"
 #include "JavaScriptObject.h"
 #include "JavaScriptTypedArray.h"
+#include "JavaScriptFunction.h"
 #include "TypedArray.h"
 #include "Exceptions.h"
 
@@ -28,6 +29,7 @@ void JavaScriptValue::registerNatives() {
                    makeNativeMethod("getObject", JavaScriptValue::getObject),
                    makeNativeMethod("getArray", JavaScriptValue::getArray),
                    makeNativeMethod("getTypedArray", JavaScriptValue::getTypedArray),
+                   makeNativeMethod("jniGetFunction", JavaScriptValue::jniGetFunction),
                  });
 }
 
@@ -154,6 +156,13 @@ jni::local_ref<JavaScriptObject::javaobject> JavaScriptValue::getObject() {
   auto &jsRuntime = runtimeHolder.getJSRuntime();
   auto jsObject = std::make_shared<jsi::Object>(jsValue->getObject(jsRuntime));
   return JavaScriptObject::newObjectCxxArgs(runtimeHolder, jsObject);
+}
+
+jni::local_ref<JavaScriptFunction::javaobject> JavaScriptValue::jniGetFunction() {
+  auto &jsRuntime = runtimeHolder.getJSRuntime();
+  auto jsFunction = std::make_shared<jsi::Function>(
+    jsValue->getObject(jsRuntime).asFunction(jsRuntime));
+  return JavaScriptFunction::newObjectCxxArgs(runtimeHolder, jsFunction);
 }
 
 jni::local_ref<jni::JArrayClass<JavaScriptValue::javaobject>> JavaScriptValue::getArray() {

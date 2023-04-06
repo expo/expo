@@ -2,6 +2,7 @@
 
 #include "JavaScriptObject.h"
 #include "JavaScriptValue.h"
+#include "JavaScriptFunction.h"
 #include "JavaScriptRuntime.h"
 #include "JSITypeConverter.h"
 #include "ObjectDeallocator.h"
@@ -101,6 +102,12 @@ jni::local_ref<jni::JArrayClass<jstring>> JavaScriptObject::jniGetPropertyNames(
   }
 
   return paredResult;
+}
+
+jni::local_ref<JavaScriptFunction::javaobject> JavaScriptObject::jniAsFunction() {
+  auto &jsRuntime = runtimeHolder.getJSRuntime();
+  auto jsFuncion = std::make_shared<jsi::Function>(jsObject->asFunction(jsRuntime));
+  return JavaScriptFunction::newObjectCxxArgs(runtimeHolder, jsFuncion);
 }
 
 void JavaScriptObject::setProperty(const std::string &name, jsi::Value value) {

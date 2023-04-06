@@ -19,6 +19,8 @@ namespace jsi = facebook::jsi;
 namespace expo {
 class JavaScriptValue;
 
+class JavaScriptFunction;
+
 /**
  * Represents any JavaScript object. Its purpose is to exposes `jsi::Object` API back to Kotlin.
  */
@@ -87,6 +89,8 @@ private:
   );
 
   jni::local_ref<jni::JArrayClass<jstring>> jniGetPropertyNames();
+
+  jni::local_ref<jni::HybridClass<JavaScriptFunction>::javaobject> jniAsFunction();
 
   /**
    * Unsets property with the given name.
