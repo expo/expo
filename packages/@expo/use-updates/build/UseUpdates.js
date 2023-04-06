@@ -85,7 +85,7 @@ export const readLogEntries = (maxAge = 3600000) => {
     });
 };
 /**
- * Hook that obtains the Updates info structure and functions.
+ * Hook that obtains information on available updates and on the currently running update.
  *
  * @param eventListener Optional event listener that will receive events from the `UseUpdatesEvent` emitter.
  *
