@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 12.2.2 — 2023-04-06
+
+### 💡 Others
+
 - Set the missing return type of `randomUUID` method. ([#21187](https://github.com/expo/expo/pull/21187) by [@KiwiKilian](https://github.com/KiwiKilian))
 
 ## 12.2.1 — 2023-02-09

@@ -119,7 +119,7 @@
     "expo-speech": "~11.1.0",
     "expo-splash-screen": "^0.18.0",
     "expo-sqlite": "~11.1.0",
-    "expo-standard-web-crypto": "~1.4.0",
+    "expo-standard-web-crypto": "~1.5.0",
     "expo-status-bar": "^1.1.0",
     "expo-store-review": "~6.2.0",
     "expo-system-ui": "~2.2.0",
