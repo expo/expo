@@ -14,6 +14,7 @@ import worker, {
 
 import { wrapDevelopmentCSS } from './css';
 import { matchCssModule, transformCssModuleWeb } from './css-modules';
+import { transformPostCssModule } from './postcss';
 
 const countLines = require('metro/src/lib/countLines') as (string: string) => number;
 
@@ -36,7 +37,7 @@ export async function transform(
   data: Buffer,
   options: JsTransformOptions
 ): Promise<TransformResponse> {
-  const isCss = options.type !== 'asset' && filename.endsWith('.css');
+  const isCss = options.type !== 'asset' && /\.(s?css|sass)$/.test(filename);
   // If the file is not CSS, then use the default behavior.
   if (!isCss) {
     return worker.transform(config, projectRoot, filename, data, options);
@@ -55,7 +56,12 @@ export async function transform(
     );
   }
 
-  const code = data.toString('utf8');
+  let code = data.toString('utf8');
+
+  code = await transformPostCssModule(projectRoot, {
+    src: code,
+    filename,
+  });
 
   // If the file is a CSS Module, then transform it to a JS module
   // in development and a static CSS file in production.

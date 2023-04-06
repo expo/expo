@@ -89,6 +89,16 @@ CSS Modules are a way to scope CSS to a specific component. This is useful for a
 
 In Expo, CSS Modules are defined by creating a file with the `.module.css` extension. The file can be imported from any component. The exported value is an object with the class names as keys and the React Native style objects as values.
 
+CSS Modules support platform extensions to allow you to define different styles for different platforms. For example, you can define a `module.ios.css` and `module.android.css` file to define styles for iOS and Android respectively. You'll need to import without the extension, for example:
+
+```diff App.js
+// Importing `./App.module.ios.css`:
+- import styles from './App.module.css';
++ import styles from './App.module';
+```
+
+Flipping the extension, e.g. `App.ios.module.css` will not work and result in a universal module named `App.ios.module`.
+
 > You cannot pass styles to the `className` prop of a React Native or React Native for web component. Instead, you must use the `style` prop.
 
 ```js App.js
@@ -108,15 +118,56 @@ export default function Page() {
 - On web, all CSS values are available. CSS is not processed or auto-prefixed like it is with the React Native Web `StyleSheet` API.
 - CSS Modules use [lightningcss](https://github.com/parcel-bundler/lightningcss) under the hood, check [the issues](https://github.com/parcel-bundler/lightningcss/issues) for unsupported features.
 
+### PostCSS
+
+[PostCSS](https://github.com/postcss/postcss) can be customized by adding a `postcss.config.js` file to the root of your project. This file should export a function that returns a PostCSS configuration object. For example:
+
+```js postcss.config.js
+module.exports = () => ({
+  plugins: {
+    autoprefixer: {},
+  },
+});
+```
+
+This can be used to enable scss syntax, for example:
+
+```js postcss.config.js
+module.exports = () => ({
+  plugins: {
+    'postcss-scss': {},
+    'postcss-nested': {},
+    autoprefixer: {},
+  },
+});
+```
+
+You will additionally need to add the `scss` extension to your `metro.config.js`:
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+/** @type {import('expo/metro-config').MetroConfig} */
+const config = getDefaultConfig(__dirname, {
+  // Enable CSS support.
+  isCSSEnabled: true,
+});
+
+// Add the scss extension to the list of supported extensions.
+config.resolver.sourceExts.push('scss');
+
+module.exports = config;
+```
+
 ## Bare workflow setup
 
 > This guide is versioned and will need to be revisited when upgrading/downgrading Expo. Alternatively, use [Expo Prebuild](/workflow/prebuild) for fully automated setup.
 
 Projects that don't use [Expo Prebuild](/workflow/prebuild) must configure native files to ensure the Expo Metro config is always used to bundle the project.
 
-{/* 
+{/_
 If this isn't done, then features like [aliases](/guides/typescript#path-aliases), [absolute imports](/guides/typescript#absolute-imports), asset hashing, and more will not work.
-*/}
+_/}
 
 These modifications are meant to replace `npx react-native bundle` and `npx react-native start` with `npx expo export:embed` and `npx expo start --dev-client` respectively.
 

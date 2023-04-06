@@ -78,5 +78,5 @@ export function convertLightningCssToReactNativeWebStyleSheet(
 }
 
 export function matchCssModule(filePath: string): boolean {
-  return !!/\.module(\.(native|ios|android|web))?\.css$/.test(filePath);
+  return !!/\.module(\.(native|ios|android|web))?\.(s?css|sass)$/.test(filePath);
 }

@@ -1,6 +1,7 @@
 import {
   convertLightningCssToReactNativeWebStyleSheet,
   transformCssModuleWeb,
+  matchCssModule,
 } from '../css-modules';
 
 const fixtureA = `
@@ -27,6 +28,28 @@ const fixtureA = `
       }
   }
   `;
+
+describe(matchCssModule, () => {
+  [
+    'foo.module.css',
+    'foo.native.module.sass',
+    'foo.module.scss',
+    'foo.module.native.scss',
+    'foo.module.web.scss',
+    'foo.module.ios.css',
+    'foo.module.sass',
+    'foo.module.less',
+  ].forEach((filename) => {
+    it(`matches ${filename}`, () => {
+      expect(matchCssModule(filename)).toBeTruthy();
+    });
+  });
+  ['foo.css', 'foo.scss', 'foo.sass', 'foo.less'].forEach((filename) => {
+    it(`does not match ${filename}`, () => {
+      expect(matchCssModule(filename)).toBeFalsy();
+    });
+  });
+});
 
 describe(convertLightningCssToReactNativeWebStyleSheet, () => {
   it(`transforms A`, () => {
