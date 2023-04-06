@@ -11,15 +11,15 @@ import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 
 import { Terminal } from '~/ui/components/Snippet';
 
-`AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](webbrowser.mdx), and [Crypto](crypto.mdx). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Authentication Guide](/guides/authentication).
+`AuthSession` is the easiest way to add web browser based authentication (for example, browser-based OAuth flows) to your app, built on top of [WebBrowser](webbrowser.mdx), [Crypto](crypto.mdx), and [Random](random.mdx). If you would like to understand how it does this, read this document from top to bottom. If you just want to use it, jump to the [Authentication Guide](/guides/authentication).
 
 <PlatformsSection android emulator ios simulator web />
 
 ## Installation
 
-> `expo-crypto` is a peer dependency and must be installed alongside `expo-auth-session`.
+> `expo-random` is a peer dependency and must be installed alongside `expo-auth-session`.
 
-<APIInstallSection packageName="expo-auth-session expo-crypto" />
+<APIInstallSection packageName="expo-auth-session expo-random" />
 
 <ConfigReactNative>
 
@@ -95,10 +95,11 @@ AuthSession has built-in support for some popular providers to make usage as eas
 import * as Google from 'expo-auth-session/providers/google';
 ```
 
-- See the guide for more info on usage: [Google Authentication](/guides/google-authentication/).
+- See the guide for more info on usage: [Google Authentication](/guides/authentication.mdx#google).
 - Provides an extra `loginHint` parameter. If the user's email address is known ahead of time, it can be supplied to be the default option.
 - Enforces minimum scopes to `['openid', 'https://www.googleapis.com/auth/userinfo.profile', 'https://www.googleapis.com/auth/userinfo.email']` for optimal usage with services like Firebase and Auth0.
 - By default, the authorization `code` will be automatically exchanged for an access token. This can be overridden with `shouldAutoExchangeCode`.
+- Automatically uses the proxy in Expo Go because native auth is not supported due to custom build time configuration. This can be overridden with `redirectUriOptions.useProxy`.
 - Defaults to using the bundle ID and package name for the native URI redirect instead of the reverse client ID.
 - Disables PKCE for implicit and id-token based auth responses.
 - On web, the popup is presented with the dimensions that are optimized for the Google login UI (`{ width: 515, height: 680 }`).
@@ -129,7 +130,7 @@ import * as Facebook from 'expo-auth-session/providers/facebook';
 ```
 
 - Uses implicit auth (`ResponseType.Token`) by default.
-- See the guide for more info on usage: [Facebook Authentication](https://docs.expo.dev/guides/facebook-authentication/).
+- See the guide for more info on usage: [Facebook Authentication](/guides/authentication.mdx#facebook).
 - Enforces minimum scopes to `['public_profile', 'email']` for optimal usage with services like Firebase and Auth0.
 - Uses `display=popup` for better UI results.
 - Automatically uses the proxy in Expo Go because native auth is not supported due to custom build time configuration.
