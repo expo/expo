@@ -19,7 +19,7 @@
     "schema-sync": "node --async-stack-traces --unhandled-rejections=strict ./scripts/schema-sync.cjs",
     "remove-version": "node --unhandled-rejections=strict ./scripts/remove-version.js",
     "generate-static-resoures": "rimraf public/static/constants && node --unhandled-rejections=strict ./scripts/generate-static-resources.js",
-    "postinstall": "yarn generate-static-resoures"
+    "postinstall": "node --async-stack-traces --unhandled-rejections=strict ./scripts/copy-latest.js && yarn generate-static-resoures"
   },
   "dependencies": {
     "@emotion/react": "^11.10.5",
