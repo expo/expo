@@ -169,7 +169,7 @@ export function getDefaultConfig(
     transformerPath: options.isCSSEnabled
       ? // Custom worker that adds CSS support for Metro web.
         require.resolve('./transform-worker/transform-worker')
-      : undefined,
+      : metroDefaultValues.transformerPath,
 
     transformer: {
       // `require.context` support
