@@ -1,7 +1,7 @@
 {
   "name": "expo-template-tabs",
   "description": "The Tab Navigation project template includes several example screens.",
-  "version": "46.0.27",
+  "version": "46.0.28",
   "main": "node_modules/expo/AppEntry.js",
   "scripts": {
     "start": "expo start",
@@ -18,7 +18,7 @@
     "@react-navigation/bottom-tabs": "^6.0.5",
     "@react-navigation/native": "^6.0.2",
     "@react-navigation/native-stack": "^6.1.0",
-    "expo": "~46.0.19",
+    "expo": "~46.0.21",
     "expo-asset": "~8.6.3",
     "expo-constants": "~13.2.4",
     "expo-font": "~10.2.1",
