@@ -13,6 +13,7 @@ import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.MissingTypeConverter
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
+import expo.modules.kotlin.jni.JavaScriptFunction
 import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.jni.JavaScriptValue
 import expo.modules.kotlin.records.Record
@@ -125,6 +126,10 @@ object TypeConverterProviderImpl : TypeConverterProvider {
 
     if (kClass.isSubclassOf(SharedObject::class)) {
       return SharedObjectTypeConverter<SharedObject>(type)
+    }
+
+    if (kClass.isSubclassOf(JavaScriptFunction::class)) {
+      return JavaScriptFunctionTypeConverter<Any>(type)
     }
 
     return handelEither(type, kClass)

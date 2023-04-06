@@ -4,6 +4,7 @@
 #include "JavaScriptValue.h"
 #include "JavaScriptObject.h"
 #include "Exceptions.h"
+#include "JavaScriptRuntime.h"
 
 #if UNIT_TEST
 
@@ -37,9 +38,12 @@ void SyncCallInvoker::invokeSync(std::function<void()> &&func) {
   func();
 }
 
-JavaScriptRuntime::JavaScriptRuntime()
+JavaScriptRuntime::JavaScriptRuntime(
+  JSIInteropModuleRegistry *jsiInteropModuleRegistry
+)
   : jsInvoker(std::make_shared<SyncCallInvoker>()),
-    nativeInvoker(std::make_shared<SyncCallInvoker>()) {
+    nativeInvoker(std::make_shared<SyncCallInvoker>()),
+    jsiInteropModuleRegistry(jsiInteropModuleRegistry) {
 #if !UNIT_TEST
   throw std::logic_error(
     "The JavaScriptRuntime constructor is only avaiable when UNIT_TEST is defined.");
@@ -100,10 +104,12 @@ JavaScriptRuntime::JavaScriptRuntime()
 }
 
 JavaScriptRuntime::JavaScriptRuntime(
+  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
   jsi::Runtime *runtime,
   std::shared_ptr<react::CallInvoker> jsInvoker,
   std::shared_ptr<react::CallInvoker> nativeInvoker
-) : jsInvoker(std::move(jsInvoker)), nativeInvoker(std::move(nativeInvoker)) {
+) : jsInvoker(std::move(jsInvoker)), nativeInvoker(std::move(nativeInvoker)),
+    jsiInteropModuleRegistry(jsiInteropModuleRegistry) {
   // Creating a shared pointer that points to the runtime but doesn't own it, thus doesn't release it.
   // In this code flow, the runtime should be owned by something else like the CatalystInstance.
   // See explanation for constructor (8): https://en.cppreference.com/w/cpp/memory/shared_ptr/shared_ptr
@@ -178,4 +184,7 @@ std::shared_ptr<jsi::Object> JavaScriptRuntime::getMainObject() {
   return mainObject;
 }
 
+JSIInteropModuleRegistry *JavaScriptRuntime::getModuleRegistry() {
+  return jsiInteropModuleRegistry;
+}
 } // namespace expo
