@@ -77,7 +77,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (14.0.0):
     - ExpoModulesCore
-  - Expo (47.0.13):
+  - Expo (47.0.14):
     - ExpoModulesCore
   - expo-dev-client (2.0.1):
     - EXManifests
@@ -1256,7 +1256,7 @@ SPEC CHECKSUMS:
   EXNetwork: c16feb0dc85dacaf11fef55721e0b8ead2a8038f
   EXNotifications: 2bda232eb900aa6d602e40cad363879ae827d672
   EXPermissions: a2007c82e5d3ffeb2e2dbc78ef65ae464dd1ee57
-  Expo: b9fa98bf260992312ee3c424400819fb9beadafe
+  Expo: 5f4240506a147162542178989696e56e3dd72924
   expo-dev-client: d723d52ccfbe2eb47ee24d1ac0cf5b39001589c2
   expo-dev-launcher: 953f564f7d006f1af50b119cacb48cafcad40c73
   expo-dev-menu: 73476baf8eb6ab44ede1bc0033074fe21aa50f19

@@ -8,13 +8,17 @@
 
 ### 🐛 Bug fixes
 
+### 💡 Others
+
+## 47.0.14 — 2023-04-06
+
+### 🐛 Bug fixes
+
 - Align `@types/react-native` version with `react-native`. ([#21371](https://github.com/expo/expo/pull/21371) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 📚 3rd party library updates
 
 - Update `react-native` to 0.70.8. ([#21982](https://github.com/expo/expo/pull/21982) by [@kudo](https://github.com/kudo))
-
-### 💡 Others
 
 ## 47.0.13 — 2023-01-10
 

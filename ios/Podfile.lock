@@ -1960,7 +1960,7 @@ PODS:
     - ExpoModulesCore
   - EXApplication (5.0.1):
     - ExpoModulesCore
-  - EXAV (13.0.2):
+  - EXAV (13.0.3):
     - ExpoModulesCore
     - ReactCommon/turbomodule/core
   - EXBackgroundFetch (11.0.1):
@@ -2034,7 +2034,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (14.0.0):
     - ExpoModulesCore
-  - Expo (47.0.13):
+  - Expo (47.0.14):
     - ExpoModulesCore
   - ExpoBattery (7.0.0):
     - ExpoModulesCore
@@ -4483,13 +4483,13 @@ SPEC CHECKSUMS:
   AppAuth: 8fca6b5563a5baef2c04bee27538025e4ceb2add
   ASN1Decoder: 6110fdeacfdb41559b1481457a1645be716610aa
   boost: a7c83b31436843459a1961bfd74b96033dc77234
-  Branch: 9a37f707974a128c37829033c49018b79c7e7a2d
+  Branch: 23b6b9351d5574377e7a764841cfb13a70c2799b
   CocoaLumberjack: 2f44e60eb91c176d471fdba43b9e3eae6a721947
   DoubleConversion: 5189b271737e1565bdce30deb4a08d647e3f5f54
   EASClient: 19efe9e8ef9b3917c5f3dcb3ed82319de4d8c0bd
   EXAppleAuthentication: d93f7acd71fb3dcfa14eb6cb12ada053e06d4b66
   EXApplication: 034b1c40a8e9fe1bff76a1e511ee90dff64ad834
-  EXAV: 9a45d37772c5329294c054a041dcc39931fc5032
+  EXAV: 8e4e12377926c071843498d19adfa27802695385
   EXBackgroundFetch: 186248a00a38fc4d22d60ec30e4e751449e785ee
   EXBarCodeScanner: 0ff9f35bba5dc67fcf8919eecf1f7f4c287dc3e8
   EXBlur: d87af64a1b4ae264059983bf54baca72be2cbc7d
@@ -4517,7 +4517,7 @@ SPEC CHECKSUMS:
   EXNetwork: c16feb0dc85dacaf11fef55721e0b8ead2a8038f
   EXNotifications: 2bda232eb900aa6d602e40cad363879ae827d672
   EXPermissions: a2007c82e5d3ffeb2e2dbc78ef65ae464dd1ee57
-  Expo: b9fa98bf260992312ee3c424400819fb9beadafe
+  Expo: 5f4240506a147162542178989696e56e3dd72924
   ExpoBattery: 41fab48a6bad4aacff2e7d3108f6a3f636e73d3c
   ExpoCellular: 851660eb7a461d5b11889e537e3a8be4b20fc088
   ExpoClipboard: 334921ae215b4be261e393e6fdd9050025008a20
