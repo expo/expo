@@ -6,7 +6,7 @@ A simpler JavaScript API for the [`expo-updates`](https://docs.expo.dev/versions
 
 - Wrap existing asynchronous methods and native event listener
 - No asynchronous methods needed
-- Optional callbacks called on start, completion or error during update check or download
+- Optional event listener receives events when update available/not available, download starts, download completes
 
 ## Usage
 
