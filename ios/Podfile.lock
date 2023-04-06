@@ -2164,9 +2164,6 @@ PODS:
     - ExpoModulesCore
   - ExpoImagePicker (14.1.1):
     - ExpoModulesCore
-  - ExpoInsights (0.1.0):
-    - EASClient
-    - ExpoModulesCore
   - ExpoKeepAwake (12.0.1):
     - ExpoModulesCore
   - ExpoLinearGradient (12.1.1):
@@ -3338,7 +3335,6 @@ DEPENDENCIES:
   - ExpoImage (from `../packages/expo-image/ios`)
   - ExpoImageManipulator (from `../packages/expo-image-manipulator/ios`)
   - ExpoImagePicker (from `../packages/expo-image-picker/ios`)
-  - ExpoInsights (from `../packages/expo-insights/ios`)
   - ExpoKeepAwake (from `../packages/expo-keep-awake/ios`)
   - ExpoLinearGradient (from `../packages/expo-linear-gradient/ios`)
   - ExpoLocalAuthentication (from `../packages/expo-local-authentication/ios`)
@@ -4223,8 +4219,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-image-manipulator/ios"
   ExpoImagePicker:
     :path: "../packages/expo-image-picker/ios"
-  ExpoInsights:
-    :path: "../packages/expo-insights/ios"
   ExpoKeepAwake:
     :path: "../packages/expo-keep-awake/ios"
   ExpoLinearGradient:
@@ -4756,7 +4750,6 @@ SPEC CHECKSUMS:
   ExpoImage: 80221ee353e8e7f1afee71fdbc8099ae61f394f2
   ExpoImageManipulator: 85ab87e9641b9d83108f8d603e0418c12fc19e2d
   ExpoImagePicker: 270dea232b3a072d981dd564e2cafc63a864edb1
-  ExpoInsights: 55e764c08fe52d6cb5f926d8e9223df54ed0e9f4
   ExpoKeepAwake: 69f5f627670d62318410392d03e0b5db0f85759a
   ExpoLinearGradient: 496147427ac1a8ee4738e016e94fc19ba2f3a00a
   ExpoLocalAuthentication: b870b7a8df5e15b8b0be042185a2bb7764093096
@@ -4891,6 +4884,6 @@ SPEC CHECKSUMS:
   Yoga: 79dd7410de6f8ad73a77c868d3d368843f0c93e0
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: dc45619fd52e09f0d0b5a03d966526483049cedf
+PODFILE CHECKSUM: 54bfc5a3db3368261ff5adbca7a033bc5edb2651
 
 COCOAPODS: 1.11.2
