@@ -31,6 +31,7 @@
   ],
   "dependencies": {
     "@expo/config": "~8.0.0",
+    "@expo/env": "~0.0.0",
     "chalk": "^4.1.0",
     "debug": "^4.3.2",
     "find-yarn-workspace-root": "~2.0.0",

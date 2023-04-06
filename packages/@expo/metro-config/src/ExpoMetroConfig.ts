@@ -1,14 +1,9 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 import { getBareExtensions } from '@expo/config/paths';
+import * as runtimeEnv from '@expo/env';
 import chalk from 'chalk';
-import { Reporter } from 'metro';
-import {
-  ConfigT as MetroConfig,
-  getDefaultConfig as getDefaultMetroConfig,
-  InputConfigT,
-  loadConfig,
-  mergeConfig,
-} from 'metro-config';
+import type { Reporter } from 'metro';
+import type { ConfigT as MetroConfig, InputConfigT } from 'metro-config';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -17,6 +12,8 @@ import { env } from './env';
 import { getModulesPaths, getServerRoot } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
+import { withExpoSerializers } from './serializer';
+import { importMetroConfig } from './traveling/metro-config';
 
 export interface LoadOptions {
   config?: string;
@@ -61,6 +58,8 @@ export function getDefaultConfig(
   projectRoot: string,
   options: DefaultConfigOptions = {}
 ): InputConfigT {
+  const { getDefaultConfig: getDefaultMetroConfig, mergeConfig } = importMetroConfig(projectRoot);
+
   const isExotic = options.mode === 'exotic' || env.EXPO_USE_EXOTIC;
 
   if (isExotic && !hasWarnedAboutExotic) {
@@ -96,6 +95,8 @@ export function getDefaultConfig(
     sourceExts.push('cjs');
   }
 
+  const envFiles = runtimeEnv.getFiles(process.env.NODE_ENV);
+
   const babelConfigPath = getProjectBabelConfigFile(projectRoot);
   const isCustomBabelConfigDefined = !!babelConfigPath;
 
@@ -124,6 +125,7 @@ export function getDefaultConfig(
     console.log(`- Watch Folders: ${watchFolders.join(', ')}`);
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
     console.log(`- Exotic: ${isExotic}`);
+    console.log(`- Env Files: ${envFiles}`);
     console.log();
   }
   const {
@@ -135,7 +137,7 @@ export function getDefaultConfig(
 
   // Merge in the default config from Metro here, even though loadConfig uses it as defaults.
   // This is a convenience for getDefaultConfig use in metro.config.js, e.g. to modify assetExts.
-  return mergeConfig(metroDefaultValues, {
+  const metroConfig: Partial<MetroConfig> = mergeConfig(metroDefaultValues, {
     watchFolders,
     resolver: {
       resolverMainFields,
@@ -148,6 +150,10 @@ export function getDefaultConfig(
         .filter((assetExt) => !sourceExts.includes(assetExt)),
       sourceExts,
       nodeModulesPaths,
+    },
+    watcher: {
+      // strip starting dot from env files
+      additionalExts: envFiles.map((file: string) => file.replace(/^\./, '')),
     },
     serializer: {
       getModulesRunBeforeMainModule: () => [
@@ -188,6 +194,8 @@ export function getDefaultConfig(
       assetPlugins: getAssetPlugins(projectRoot),
     },
   });
+
+  return withExpoSerializers(metroConfig);
 }
 
 export async function loadAsync(
@@ -198,6 +206,9 @@ export async function loadAsync(
   if (reporter) {
     defaultConfig = { ...defaultConfig, reporter };
   }
+
+  const { loadConfig } = importMetroConfig(projectRoot);
+
   return await loadConfig({ cwd: projectRoot, projectRoot, ...metroOptions }, defaultConfig);
 }
 
