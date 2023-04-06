@@ -30,6 +30,7 @@
     "@expo/swiftlint": "^0.2.0",
     "@expo/xcodegen": "2.18.0-patch.1",
     "@expo/xdl": "^59.2.1",
+    "@linear/sdk": "^2.6.0",
     "@octokit/rest": "^19.0.7",
     "aws-sdk": "^2.814.0",
     "body-parser": "^1.20.0",
