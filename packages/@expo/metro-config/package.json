@@ -36,7 +36,8 @@
     "find-yarn-workspace-root": "~2.0.0",
     "getenv": "^1.0.0",
     "resolve-from": "^5.0.0",
-    "sucrase": "^3.20.0"
+    "sucrase": "^3.20.0",
+    "lightningcss": "~1.19.0"
   },
   "devDependencies": {
     "@babel/core": "^7.15.5"

@@ -3,7 +3,7 @@
 exports[`createTemplateHtmlFromExpoConfigAsync creates using an override project file 1`] = `
 "<!DOCTYPE html><html lang="en"><head><meta name="theme-color" content="#123456">
 <meta name="description" content="my static app">
-</head><body><div id="root"></div><script src="/script.js"></script></body></html>"
+</head><body><div id="root"></div><script src="/script.js" defer></script></body></html>"
 `;
 
 exports[`createTemplateHtmlFromExpoConfigAsync creates using the default template 1`] = `
@@ -69,7 +69,7 @@ exports[`createTemplateHtmlFromExpoConfigAsync creates using the default templat
         }
       }*/
     </style>
-  <meta name="theme-color" content="#123456">
+  <link rel="preload" href="/_expo/static/1.css" as="style"><link rel="stylesheet" href="/_expo/static/1.css"><link rel="preload" href="/_expo/static/2.css" as="style"><link rel="stylesheet" href="/_expo/static/2.css"><meta name="theme-color" content="#123456">
 <meta name="description" content="my static app">
 </head>
 
@@ -124,7 +124,7 @@ exports[`createTemplateHtmlFromExpoConfigAsync creates using the default templat
     </noscript>
     <!-- The root element for your Expo app. -->
     <div id="root"></div>
-  <script src="/script.js"></script></body>
+  <script src="/script.js" defer></script></body>
 </html>
 "
 `;

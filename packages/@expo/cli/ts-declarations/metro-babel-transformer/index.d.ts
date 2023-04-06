@@ -7,6 +7,8 @@ declare module 'metro-babel-transformer' {
     __proto__: null;
   };
 
+  export type TransformProfile = 'default' | 'hermes-stable' | 'hermes-canary';
+
   export type BabelTransformerOptions = {
     customTransformOptions?: CustomTransformOptions;
     dev: boolean;
@@ -31,9 +33,7 @@ declare module 'metro-babel-transformer' {
   };
 
   export type BabelTransformer = {
-    transform: (
-      args: BabelTransformerArgs
-    ) => {
+    transform: (args: BabelTransformerArgs) => {
       ast: Ast;
       code: string | null;
       functionMap?: FBSourceFunctionMap | null;

@@ -1,0 +1,28 @@
+import { getHotReplaceTemplate, wrapDevelopmentCSS, pathToHtmlSafeName } from '../css';
+
+describe(wrapDevelopmentCSS, () => {
+  it(`should transform css in dev mode`, async () => {
+    const result = await wrapDevelopmentCSS({
+      filename: 'test.css',
+      src: 'body { color: red; }',
+    });
+
+    expect(result).toMatchSnapshot();
+    expect(result).toMatch(/expo-css-hmr/);
+  });
+});
+
+describe(pathToHtmlSafeName, () => {
+  it(`converts filepath to safe name`, () => {
+    expect(pathToHtmlSafeName('foo')).toEqual('foo');
+    expect(pathToHtmlSafeName('../123/abc/something.module.css')).toEqual(
+      '___123_abc_something_module_css'
+    );
+  });
+});
+
+describe(getHotReplaceTemplate, () => {
+  it(`should generate the correct template`, () => {
+    expect(getHotReplaceTemplate('foo')).toMatchSnapshot();
+  });
+});
