@@ -10,6 +10,8 @@ const UseUpdatesTestApp = (props: { eventListener?: (event: UseUpdatesEvent) => 
   const {
     currentlyRunning,
     availableUpdate,
+    isUpdateAvailable,
+    isUpdatePending,
     error,
     lastCheckForUpdateTimeSinceRestart,
     logEntries,
@@ -28,6 +30,9 @@ const UseUpdatesTestApp = (props: { eventListener?: (event: UseUpdatesEvent) => 
       </Text>
       {/* Available update, if one is present */}
       <Text testID="availableUpdate_updateId">{availableUpdate?.updateId || ''}</Text>
+      {/* Booleans */}
+      <Text testID="isUpdateAvailable">{`${isUpdateAvailable}`}</Text>
+      <Text testID="isUpdatePending">{`${isUpdatePending}`}</Text>
       {/* Log entries, if they have been read */}
       {(logEntries?.length || 0) > 0 ? (
         <Text testID="logEntry">

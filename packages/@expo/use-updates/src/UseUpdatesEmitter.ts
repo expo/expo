@@ -2,7 +2,7 @@ import { DeviceEventEmitter } from 'expo-modules-core';
 import { EventEmitter, EventSubscription } from 'fbemitter';
 import { useEffect, useRef } from 'react';
 
-import { UseUpdatesEvent } from './UseUpdates.types';
+import { UseUpdatesEvent, UseUpdatesEventType } from './UseUpdates.types';
 
 // Emitter and hook specifically for @expo/use-updates module
 // Listens for the same native events as Updates.addListener
@@ -39,14 +39,24 @@ function _emitNativeEvent(params: any) {
     delete newParams.message;
   }
 
+  // The native event UPDATE_AVAILABLE is actually fired on the automatic update check
+  // when the update is downloaded. So here we change the event type as needed.
+  if (newParams.type === UseUpdatesEventType.UPDATE_AVAILABLE) {
+    newParams.type = UseUpdatesEventType.DOWNLOAD_COMPLETE;
+  }
+
   if (!_emitter) {
     throw new Error(`EventEmitter must be initialized to use from its listener`);
   }
   _emitter.emit('Expo.useUpdatesEvent', newParams);
 }
 
+// What JS code uses to emit events
 export const emitEvent = (event: UseUpdatesEvent) => {
-  _emitNativeEvent(event);
+  if (!_emitter) {
+    throw new Error(`EventEmitter must be initialized to use from its listener`);
+  }
+  _emitter.emit('Expo.useUpdatesEvent', event);
 };
 
 export const useUpdateEvents = (listener: (event: UseUpdatesEvent) => void) => {

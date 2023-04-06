@@ -96,6 +96,8 @@ describe('useUpdates()', () => {
         // truncate the fractional part of the seconds value in the time
         lastCheckForUpdateTime.toISOString().substring(0, 19)
       );
+      const isUpdateAvailableView = await screen.findByTestId('isUpdateAvailable');
+      expect(isUpdateAvailableView).toHaveTextContent('true');
       expect(eventListener).toHaveBeenCalledWith({
         type: UseUpdatesEventType.NO_UPDATE_AVAILABLE,
       });

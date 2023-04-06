@@ -44,7 +44,7 @@ export const downloadUpdate = () => {
     type: UseUpdatesEventType.DOWNLOAD_START,
   });
   Updates.fetchUpdateAsync()
-    .then(() => {
+    .then((result: any) => {
       emitEvent({
         type: UseUpdatesEventType.DOWNLOAD_COMPLETE,
       });
@@ -149,7 +149,10 @@ export const readLogEntries: (maxAge?: number) => void = (maxAge: number = 36000
 export const useUpdates: (
   eventListener?: (event: UseUpdatesEvent) => void
 ) => UseUpdatesReturnType = (eventListener) => {
-  const [updatesState, setUpdatesState] = useState<UseUpdatesStateType>({});
+  const [updatesState, setUpdatesState] = useState<UseUpdatesStateType>({
+    isUpdateAvailable: false,
+    isUpdatePending: false,
+  });
 
   const eventListenerRef = useRef<((event: UseUpdatesEvent) => void) | undefined>();
 
@@ -171,7 +174,17 @@ export const useUpdates: (
         setUpdatesState((updatesState) => ({
           ...updatesState,
           availableUpdate,
+          isUpdateAvailable: true,
           error,
+          lastCheckForUpdateTimeSinceRestart: new Date(),
+        }));
+        break;
+      case UseUpdatesEventType.DOWNLOAD_COMPLETE:
+        setUpdatesState((updatesState) => ({
+          ...updatesState,
+          availableUpdate: availableUpdate || updatesState.availableUpdate,
+          isUpdateAvailable: true,
+          isUpdatePending: true,
           lastCheckForUpdateTimeSinceRestart: new Date(),
         }));
         break;

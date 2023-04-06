@@ -31,6 +31,7 @@ export const availableUpdateFromEvent = (event) => {
         case UseUpdatesEventType.NO_UPDATE_AVAILABLE:
             return {};
         case UseUpdatesEventType.UPDATE_AVAILABLE:
+        case UseUpdatesEventType.DOWNLOAD_COMPLETE:
             return {
                 availableUpdate: availableUpdateFromManifest(event?.manifest || undefined),
             };

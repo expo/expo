@@ -98,6 +98,14 @@ export type UseUpdatesReturnType = {
    */
   availableUpdate?: AvailableUpdateInfo;
   /**
+   * True if a new available update has been found, false otherwise.
+   */
+  isUpdateAvailable: boolean;
+  /**
+   * True if a new available update is available and has been downloaded.
+   */
+  isUpdatePending: boolean;
+  /**
    * If an error is returned by any of the APIs to check for, download, or launch updates,
    * the error description will appear here.
    */
@@ -119,6 +127,8 @@ export type UseUpdatesReturnType = {
 export type UseUpdatesStateType = {
   availableUpdate?: AvailableUpdateInfo;
   error?: Error;
+  isUpdateAvailable: boolean;
+  isUpdatePending: boolean;
   lastCheckForUpdateTimeSinceRestart?: Date;
   logEntries?: UpdatesLogEntry[];
 };
@@ -167,8 +177,8 @@ export type UseUpdatesEvent = {
    */
   type: UseUpdatesEventType;
   /**
-   * If `type` is `UseUpdatesEvent.UPDATE_AVAILABLE`,
-   * the manifest of the newly downloaded update, and `undefined` otherwise.
+   * If `type` is `UseUpdatesEvent.UPDATE_AVAILABLE` or `UseUpdatesEvent.DOWNLOAD_COMPLETE`,
+   * the manifest of the new update, and `undefined` otherwise.
    */
   manifest?: Manifest;
   /**
