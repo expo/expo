@@ -97,16 +97,23 @@ export const readLogEntries = (maxAge = 3600000) => {
  * import React from 'react';
  * import { Pressable, Text, View } from 'react-native';
  *
- * import { useUpdates } from '@expo/use-updates';
+ * import type { UseUpdatesEvent } from '@expo/use-updates';
+ * import {
+ *   useUpdates,
+ *   checkForUpdate,
+ *   downloadUpdate,
+ *   runUpdate,
+ *   UseUpdatesEventType,
+ * } from '@expo/use-updates';
  *
  * export default function UpdatesDemo() {
- *   const callback: UseUpdatesCallbacksType = {
- *     onDownloadUpdateComplete: () => {
+ *   const eventListener = (event: UseUpdatesEvent) => {
+ *     if (event.type === UseUpdatesEventType.DOWNLOAD_COMPLETE) {
  *       runUpdate();
- *     },
+ *     }
  *   };
  *
- *   const { currentlyRunning, availableUpdate, checkForUpdate, downloadUpdate, runUpdate } = useUpdates();
+ *   const { currentlyRunning, availableUpdate } = useUpdates(eventListener);
  *
  *   // If true, we show the button to download and run the update
  *   const showDownloadButton = availableUpdate !== undefined;

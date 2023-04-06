@@ -42,7 +42,7 @@ or an [`UpdateEvent`](#updateevent) emitted by native code.
 
 #### Defined in
 
-[UseUpdates.types.ts:69](https://github.com/expo/expo/blob/c6c9c3ea1a/packages/@expo/use-updates/src/UseUpdates.types.ts#L69)
+[UseUpdates.types.ts:69](https://github.com/expo/expo/blob/0980c512b6/packages/@expo/use-updates/src/UseUpdates.types.ts#L69)
 
 ___
 
@@ -67,7 +67,7 @@ Structure encapsulating information on the currently running app
 
 #### Defined in
 
-[UseUpdates.types.ts:15](https://github.com/expo/expo/blob/c6c9c3ea1a/packages/@expo/use-updates/src/UseUpdates.types.ts#L15)
+[UseUpdates.types.ts:15](https://github.com/expo/expo/blob/0980c512b6/packages/@expo/use-updates/src/UseUpdates.types.ts#L15)
 
 ___
 
@@ -88,7 +88,7 @@ An object that is passed into each event listener when an auto-update check occu
 
 #### Defined in
 
-[UseUpdates.types.ts:164](https://github.com/expo/expo/blob/c6c9c3ea1a/packages/@expo/use-updates/src/UseUpdates.types.ts#L164)
+[UseUpdates.types.ts:164](https://github.com/expo/expo/blob/0980c512b6/packages/@expo/use-updates/src/UseUpdates.types.ts#L164)
 
 ___
 
@@ -110,7 +110,7 @@ The structures and methods returned by `useUpdates()`.
 
 #### Defined in
 
-[UseUpdates.types.ts:89](https://github.com/expo/expo/blob/c6c9c3ea1a/packages/@expo/use-updates/src/UseUpdates.types.ts#L89)
+[UseUpdates.types.ts:89](https://github.com/expo/expo/blob/0980c512b6/packages/@expo/use-updates/src/UseUpdates.types.ts#L89)
 
 ## Functions
 
@@ -127,7 +127,7 @@ If an error occurs, the `error` property will be set.
 
 #### Defined in
 
-[UseUpdates.ts:17](https://github.com/expo/expo/blob/c6c9c3ea1a/packages/@expo/use-updates/src/UseUpdates.ts#L17)
+[UseUpdates.ts:17](https://github.com/expo/expo/blob/0980c512b6/packages/@expo/use-updates/src/UseUpdates.ts#L17)
 
 ___
 
@@ -144,7 +144,7 @@ If an error occurs, the `error` property will be set.
 
 #### Defined in
 
-[UseUpdates.ts:42](https://github.com/expo/expo/blob/c6c9c3ea1a/packages/@expo/use-updates/src/UseUpdates.ts#L42)
+[UseUpdates.ts:42](https://github.com/expo/expo/blob/0980c512b6/packages/@expo/use-updates/src/UseUpdates.ts#L42)
 
 ___
 
@@ -167,7 +167,7 @@ If an error occurs, the `error` property will be set.
 
 #### Defined in
 
-[UseUpdates.ts:80](https://github.com/expo/expo/blob/c6c9c3ea1a/packages/@expo/use-updates/src/UseUpdates.ts#L80)
+[UseUpdates.ts:80](https://github.com/expo/expo/blob/0980c512b6/packages/@expo/use-updates/src/UseUpdates.ts#L80)
 
 ___
 
@@ -185,7 +185,7 @@ If an error occurs, the `error` property will be set.
 
 #### Defined in
 
-[UseUpdates.ts:65](https://github.com/expo/expo/blob/c6c9c3ea1a/packages/@expo/use-updates/src/UseUpdates.ts#L65)
+[UseUpdates.ts:65](https://github.com/expo/expo/blob/0980c512b6/packages/@expo/use-updates/src/UseUpdates.ts#L65)
 
 ___
 
@@ -202,16 +202,23 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { useUpdates } from '@expo/use-updates';
+import type { UseUpdatesEvent } from '@expo/use-updates';
+import {
+  useUpdates,
+  checkForUpdate,
+  downloadUpdate,
+  runUpdate,
+  UseUpdatesEventType,
+} from '@expo/use-updates';
 
 export default function UpdatesDemo() {
-  const callback: UseUpdatesCallbacksType = {
-    onDownloadUpdateComplete: () => {
+  const eventListener = (event: UseUpdatesEvent) => {
+    if (event.type === UseUpdatesEventType.DOWNLOAD_COMPLETE) {
       runUpdate();
-    },
+    }
   };
 
-  const { currentlyRunning, availableUpdate, checkForUpdate, downloadUpdate, runUpdate } = useUpdates();
+  const { currentlyRunning, availableUpdate } = useUpdates(eventListener);
 
   // If true, we show the button to download and run the update
   const showDownloadButton = availableUpdate !== undefined;
@@ -249,4 +256,4 @@ the structures with information on currently running and available updates.
 
 #### Defined in
 
-[UseUpdates.ts:142](https://github.com/expo/expo/blob/c6c9c3ea1a/packages/@expo/use-updates/src/UseUpdates.ts#L142)
+[UseUpdates.ts:149](https://github.com/expo/expo/blob/0980c512b6/packages/@expo/use-updates/src/UseUpdates.ts#L149)

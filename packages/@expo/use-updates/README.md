@@ -13,23 +13,29 @@ import { StatusBar } from 'expo-status-bar';
 import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 
-import { useUpdates } from '@expo/use-updates';
+import type { UseUpdatesEvent } from '@expo/use-updates';
+import {
+  useUpdates,
+  checkForUpdate,
+  downloadUpdate,
+  runUpdate,
+  UseUpdatesEventType,
+} from '@expo/use-updates';
 
 export default function UpdatesDemo() {
-  const callbacks: UseUpdatesCallbacksType = {
-    onDownloadUpdateComplete: () => {
+  const eventListener = (event: UseUpdatesEvent) => {
+    if (event.type === UseUpdatesEventType.DOWNLOAD_COMPLETE) {
       runUpdate();
-    },
+    }
   };
 
-  const { currentlyRunning, availableUpdate, checkForUpdate, downloadUpdate, runUpdate } =
-    useUpdates();
+  const { currentlyRunning, availableUpdate } = useUpdates(eventListener);
 
   // If true, we show the button to download and run the update
   const showDownloadButton = availableUpdate !== undefined;
 
   // Show whether or not we are running embedded code or an update
-  const runTypeMessage = updatesInfo.currentlyRunning.isEmbeddedLaunch
+  const runTypeMessage = currentlyRunning.isEmbeddedLaunch
     ? 'This app is running from built-in code'
     : 'This app is running an update';
 
@@ -45,7 +51,6 @@ export default function UpdatesDemo() {
     </View>
   );
 }
-
 function Button(props: { text: string; pressHandler: () => void }) {
   const { text, pressHandler } = props;
   return (
