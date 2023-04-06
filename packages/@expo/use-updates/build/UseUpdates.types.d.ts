@@ -1,6 +1,9 @@
 import Constants from 'expo-constants';
 import type { UpdatesLogEntry } from 'expo-updates';
 export type ClassicManifest = NonNullable<typeof Constants.manifest>;
+/**
+ * The [modern manifest type](https://docs.expo.dev/versions/latest/sdk/constants/#manifest)
+ */
 export type Manifest = ClassicManifest | NonNullable<typeof Constants.manifest2>;
 /**
  * Structure encapsulating information on the currently running app
@@ -43,7 +46,7 @@ export type CurrentlyRunningInfo = {
     isEmergencyLaunch: boolean;
     /**
      * If `expo-updates` is enabled, this is the
-     * [manifest](/workflow/expo-go#manifest) object for the update that's currently
+     * [manifest](https://docs.expo.dev/versions/latest/sdk/updates/#updatesmanifest) object for the update that's currently
      * running.
      *
      * In development mode, or any other environment in which `expo-updates` is disabled, this object is
@@ -71,10 +74,14 @@ export type AvailableUpdateInfo = {
      */
     createdAt: Date | null;
     /**
-     * The manifest for the update.
+     * The [manifest](https://docs.expo.dev/versions/latest/sdk/constants/#manifest) for the update.
      */
     manifest: Manifest;
 };
+/**
+ * Callbacks that will be called when methods (`checkForUpdate()`, `downloadUpdate()`,
+ * `downloadAndRunUpdate()`, or `runUpdate()`) start, complete, or have errors.
+ */
 export type UseUpdatesCallbacksType = {
     onCheckForUpdateStart?: () => void;
     onCheckForUpdateComplete?: () => void;
@@ -84,6 +91,58 @@ export type UseUpdatesCallbacksType = {
     onDownloadUpdateError?: (error?: Error) => void;
     onRunUpdateStart?: () => void;
     onRunUpdateError?: (error?: Error) => void;
+};
+/**
+ * The structures and methods returned by `useUpdates()`.
+ */
+export type UseUpdatesReturnType = {
+    /**
+     * Information on the currently running app
+     */
+    currentlyRunning: CurrentlyRunningInfo;
+    /**
+     * If a new available update has been found, either by using checkForUpdate(),
+     * or by the `UpdateEvent` listener in `useUpdates()`,
+     * this will contain the information for that update.
+     */
+    availableUpdate?: AvailableUpdateInfo;
+    /**
+     * If an error is returned by any of the APIs to check for, download, or launch updates,
+     * the error description will appear here.
+     */
+    error?: Error;
+    /**
+     * A `Date` object representing the last time this client checked for an available update,
+     * or `undefined` if no check has yet occurred since the app started. Does not persist across
+     * app reloads or restarts.
+     */
+    lastCheckForUpdateTimeSinceRestart?: Date;
+    /**
+     * If present, contains items of type [UpdatesLogEntry](https://docs.expo.dev/versions/latest/sdk/updates/#updateslogentry)
+     * returned by the `getLogEntries()` method.
+     */
+    logEntries?: UpdatesLogEntry[];
+    /**
+     * Calls `Updates.checkForUpdateAsync()` and refreshes the `availableUpdate` property with the result.
+     * If an error occurs, the `error` property will be set.
+     */
+    checkForUpdate(): void;
+    /**
+     * Downloads an update, if one is available, using `Updates.fetchUpdateAsync()`.
+     * If an error occurs, the `error` property will be set.
+     */
+    downloadUpdate(): void;
+    /**
+     * Runs an update by calling `Updates.reloadAsync()`. This should not be called unless there is an available update
+     * that has already been successfully downloaded using `downloadUpdate()`.
+     * If an error occurs, the `error` property will be set.
+     */
+    runUpdate(): void;
+    /**
+     * Calls `Updates.readLogEntriesAsync()` and sets the `logEntries` property to the results.
+     * If an error occurs, the `error` property will be set.
+     */
+    readLogEntries(maxAge?: number): void;
 };
 export type UseUpdatesStateType = {
     availableUpdate?: AvailableUpdateInfo;

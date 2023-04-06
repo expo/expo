@@ -7,7 +7,10 @@ import { checkForUpdateAndReturnAvailableAsync, currentlyRunning, downloadUpdate
  * @param callbacks Optional set of callbacks that will be called when `checkForUpdate()`, `downloadUpdate()`, `downloadAndRunUpdate()`, or `runUpdate()`, start, complete, or have errors.
  *
  * @return the structures with information on currently running and available updates, and associated methods.
- * When using this hook, the methods returned should be used instead of `expo-updates` methods (`checkForUpdateAsync()`, `fetchUpdateAsync()`, `reloadAsync()).
+ * When using this hook, the methods returned should be used instead of `expo-updates` methods (
+ * [`checkForUpdateAsync()`](https://docs.expo.dev/versions/latest/sdk/updates/#updatescheckforupdateasync),
+ * [`fetchUpdateAsync()`](https://docs.expo.dev/versions/latest/sdk/updates/#updatesfetchupdateasync)),
+ * [`reloadAsync()`](https://docs.expo.dev/versions/latest/sdk/updates/#updatesreloadasync))).
  *
  * @example
  * ```tsx UpdatesDemo.tsx
@@ -18,7 +21,7 @@ import { checkForUpdateAndReturnAvailableAsync, currentlyRunning, downloadUpdate
  * import { useUpdates } from '@expo/use-updates';
  *
  * export default function UpdatesDemo() {
- *   const callbacks = {
+ *   const callback: UseUpdatesCallbacksType = {
  *     onDownloadUpdateComplete: () => {
  *       runUpdate();
  *     },

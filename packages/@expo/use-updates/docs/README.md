@@ -2,7 +2,7 @@
 
 # @expo/use-updates
 
-A simpler JavaScript API for the `expo-updates` module.
+A simpler JavaScript API for the [`expo-updates`](https://docs.expo.dev/versions/latest/sdk/updates/) module.
 
 - Wrap existing asynchronous methods and native event listener
 - No asynchronous methods needed
@@ -16,16 +16,16 @@ import React from 'react';
 import { Pressable, Text, View } from 'react-native';
 
 import { useUpdates } from '@expo/use-updates';
-import type { UseUpdatesCallbacksType } from '@expo/use-updates';
 
 export default function UpdatesDemo() {
-  const callbacks = {
+  const callbacks: UseUpdatesCallbacksType = {
     onDownloadUpdateComplete: () => {
       runUpdate();
     },
   };
 
-  const { currentlyRunning, availableUpdate, checkForUpdate, downloadUpdate, runUpdate } = useUpdates();
+  const { currentlyRunning, availableUpdate, checkForUpdate, downloadUpdate, runUpdate } =
+    useUpdates();
 
   // If true, we show the button to download and run the update
   const showDownloadButton = availableUpdate !== undefined;
