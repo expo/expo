@@ -19,13 +19,13 @@ public final class SharingModule: Module {
 
       let activityController = UIActivityViewController(activityItems: [url], applicationActivities: nil)
       activityController.title = options.dialogTitle
-      
+
       activityController.completionWithItemsHandler = { type, completed, _, _ in
         // user shared an item
         if type != nil && completed {
           promise.resolve(nil)
         }
-        
+
         // dismissed without action
         if type == nil && !completed {
           promise.resolve(nil)
