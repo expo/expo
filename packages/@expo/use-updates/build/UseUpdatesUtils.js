@@ -1,4 +1,5 @@
 import * as Updates from 'expo-updates';
+import { UseUpdatesEventType } from './UseUpdates.types';
 // The currently running info, constructed from Updates constants
 export const currentlyRunning = {
     updateId: Updates.updateId,
@@ -27,57 +28,18 @@ export const availableUpdateFromManifest = (manifest) => {
 // Constructs the available update from an event
 export const availableUpdateFromEvent = (event) => {
     switch (event.type) {
-        case Updates.UpdateEventType.NO_UPDATE_AVAILABLE:
+        case UseUpdatesEventType.NO_UPDATE_AVAILABLE:
             return {};
-        case Updates.UpdateEventType.UPDATE_AVAILABLE:
+        case UseUpdatesEventType.UPDATE_AVAILABLE:
             return {
                 availableUpdate: availableUpdateFromManifest(event?.manifest || undefined),
             };
-        case Updates.UpdateEventType.ERROR:
+        case UseUpdatesEventType.ERROR:
             return {
                 error: new Error(event.message),
             };
-    }
-};
-// Implementation of checkForUpdate
-export const checkForUpdateAndReturnAvailableAsync = async (callbacks) => {
-    try {
-        callbacks?.onCheckForUpdateStart && callbacks?.onCheckForUpdateStart();
-        const checkResult = await Updates.checkForUpdateAsync();
-        callbacks?.onCheckForUpdateComplete && callbacks?.onCheckForUpdateComplete();
-        if (checkResult.isAvailable) {
-            return availableUpdateFromManifest(checkResult?.manifest || undefined);
-        }
-        else {
-            return undefined;
-        }
-    }
-    catch (error) {
-        callbacks?.onCheckForUpdateError && callbacks?.onCheckForUpdateError(error);
-        throw error;
-    }
-};
-// Implementation of downloadUpdate
-export const downloadUpdateAsync = async (callbacks) => {
-    try {
-        callbacks?.onDownloadUpdateStart && callbacks?.onDownloadUpdateStart();
-        await Updates.fetchUpdateAsync();
-        callbacks?.onDownloadUpdateComplete && callbacks?.onDownloadUpdateComplete();
-    }
-    catch (error) {
-        callbacks?.onDownloadUpdateError && callbacks?.onDownloadUpdateError(error);
-        throw error;
-    }
-};
-// Implementation of runUpdate
-export const runUpdateAsync = async (callbacks) => {
-    try {
-        callbacks?.onRunUpdateStart && callbacks?.onRunUpdateStart();
-        await Updates.reloadAsync();
-    }
-    catch (error) {
-        callbacks?.onRunUpdateError && callbacks?.onRunUpdateError();
-        throw error;
+        default:
+            return {};
     }
 };
 //# sourceMappingURL=UseUpdatesUtils.js.map

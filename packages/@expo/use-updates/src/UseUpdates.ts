@@ -1,29 +1,104 @@
 import * as Updates from 'expo-updates';
 import { useEffect, useRef, useState } from 'react';
 
-import type {
-  UseUpdatesCallbacksType,
+import {
   UseUpdatesStateType,
   UseUpdatesReturnType,
+  UseUpdatesEventType,
+  UseUpdatesEvent,
 } from './UseUpdates.types';
-import {
-  checkForUpdateAndReturnAvailableAsync,
-  currentlyRunning,
-  downloadUpdateAsync,
-  runUpdateAsync,
-  availableUpdateFromEvent,
-} from './UseUpdatesUtils';
+import { emitEvent, useUpdateEvents } from './UseUpdatesEmitter';
+import { currentlyRunning, availableUpdateFromEvent } from './UseUpdatesUtils';
+
+/**
+ * Calls `Updates.checkForUpdateAsync()` and refreshes the `availableUpdate` property with the result.
+ * If an error occurs, the `error` property will be set.
+ */
+export const checkForUpdate = () => {
+  Updates.checkForUpdateAsync()
+    .then((result) => {
+      if (result.isAvailable) {
+        emitEvent({
+          type: UseUpdatesEventType.UPDATE_AVAILABLE,
+          manifest: result?.manifest || undefined,
+        });
+      } else {
+        emitEvent({
+          type: UseUpdatesEventType.NO_UPDATE_AVAILABLE,
+        });
+      }
+    })
+    .catch((error) => {
+      emitEvent({
+        type: UseUpdatesEventType.ERROR,
+        message: error?.message,
+      });
+    });
+};
+/**
+ * Downloads an update, if one is available, using `Updates.fetchUpdateAsync()`.
+ * If an error occurs, the `error` property will be set.
+ */
+export const downloadUpdate = () => {
+  emitEvent({
+    type: UseUpdatesEventType.DOWNLOAD_START,
+  });
+  Updates.fetchUpdateAsync()
+    .then(() => {
+      emitEvent({
+        type: UseUpdatesEventType.DOWNLOAD_COMPLETE,
+      });
+    })
+    .catch((error) => {
+      emitEvent({
+        type: UseUpdatesEventType.ERROR,
+        message: error?.message,
+      });
+    });
+};
+
+/**
+ * Runs an update by calling `Updates.reloadAsync()`. This should not be called unless there is an available update
+ * that has already been successfully downloaded using `downloadUpdate()`.
+ * If an error occurs, the `error` property will be set.
+ */
+export const runUpdate = () => {
+  Updates.reloadAsync().catch((error) => {
+    emitEvent({
+      type: UseUpdatesEventType.ERROR,
+      message: error?.message,
+    });
+  });
+};
+
+/**
+ * Calls `Updates.readLogEntriesAsync()` and sets the `logEntries` property to the results.
+ * If an error occurs, the `error` property will be set.
+ *
+ * @param maxAge Max age of log entries to read, in ms. Defaults to 3600000 (1 hour).
+ */
+export const readLogEntries: (maxAge?: number) => void = (maxAge: number = 3600000) => {
+  Updates.readLogEntriesAsync(maxAge)
+    .then((logEntries) => {
+      emitEvent({
+        type: UseUpdatesEventType.READ_LOG_ENTRIES_COMPLETE,
+        logEntries,
+      });
+    })
+    .catch((error) => {
+      emitEvent({
+        type: UseUpdatesEventType.ERROR,
+        message: error?.message,
+      });
+    });
+};
 
 /**
  * Hook that obtains the Updates info structure and functions.
  *
- * @param callbacks Optional set of callbacks that will be called when `checkForUpdate()`, `downloadUpdate()`, `downloadAndRunUpdate()`, or `runUpdate()`, start, complete, or have errors.
+ * @param eventListener Optional event listener that will receive events from the `UseUpdatesEvent` emitter.
  *
- * @return the structures with information on currently running and available updates, and associated methods.
- * When using this hook, the methods returned should be used instead of `expo-updates` methods (
- * [`checkForUpdateAsync()`](https://docs.expo.dev/versions/latest/sdk/updates/#updatescheckforupdateasync),
- * [`fetchUpdateAsync()`](https://docs.expo.dev/versions/latest/sdk/updates/#updatesfetchupdateasync)),
- * [`reloadAsync()`](https://docs.expo.dev/versions/latest/sdk/updates/#updatesreloadasync))).
+ * @return the structures with information on currently running and available updates.
  *
  * @example
  * ```tsx UpdatesDemo.tsx
@@ -64,80 +139,49 @@ import {
  * }
  * ```
  */
-const useUpdates: (callbacks?: UseUpdatesCallbacksType) => UseUpdatesReturnType = (callbacks) => {
+export const useUpdates: (
+  eventListener?: (event: UseUpdatesEvent) => void
+) => UseUpdatesReturnType = (eventListener) => {
   const [updatesState, setUpdatesState] = useState<UseUpdatesStateType>({});
 
-  const callbacksRef = useRef<UseUpdatesCallbacksType>();
+  const eventListenerRef = useRef<((event: UseUpdatesEvent) => void) | undefined>();
 
   useEffect(() => {
-    callbacksRef.current = callbacks;
-  }, [callbacks]);
+    eventListenerRef.current = eventListener;
+  }, [eventListener]);
 
   // Set up listener for events from automatic update requests
   // that happen on startup, and use events to refresh the updates info
   // context
-  Updates.useUpdateEvents((event) => {
+  useUpdateEvents((event) => {
+    eventListenerRef?.current && eventListenerRef?.current(event);
+
     const { availableUpdate, error } = availableUpdateFromEvent(event);
-    setUpdatesState((updatesState) => ({
-      ...updatesState,
-      availableUpdate,
-      error,
-      lastCheckForUpdateTimeSinceRestart: new Date(),
-    }));
+    switch (event.type) {
+      case UseUpdatesEventType.UPDATE_AVAILABLE:
+      case UseUpdatesEventType.NO_UPDATE_AVAILABLE:
+      case UseUpdatesEventType.ERROR:
+        setUpdatesState((updatesState) => ({
+          ...updatesState,
+          availableUpdate,
+          error,
+          lastCheckForUpdateTimeSinceRestart: new Date(),
+        }));
+        break;
+      case UseUpdatesEventType.READ_LOG_ENTRIES_COMPLETE:
+        setUpdatesState((updatesState) => ({
+          ...updatesState,
+          logEntries: event?.logEntries,
+        }));
+        break;
+      default:
+        break;
+    }
   });
 
-  const checkForUpdate = () => {
-    checkForUpdateAndReturnAvailableAsync(callbacksRef.current)
-      .then((availableUpdate) =>
-        setUpdatesState((updatesState) => ({
-          ...updatesState,
-          lastCheckForUpdateTimeSinceRestart: new Date(),
-          availableUpdate,
-        }))
-      )
-      .catch((error) =>
-        setUpdatesState((updatesState) => ({
-          ...updatesState,
-          lastCheckForUpdateTimeSinceRestart: new Date(),
-          error,
-        }))
-      );
-  };
-  const downloadUpdate = () => {
-    downloadUpdateAsync(callbacksRef.current).catch((error) => {
-      setUpdatesState((updatesState) => ({
-        ...updatesState,
-        error,
-      }));
-    });
-  };
-  const runUpdate = () => {
-    runUpdateAsync(callbacksRef.current).catch((error) => {
-      setUpdatesState((updatesState) => ({
-        ...updatesState,
-        error,
-      }));
-    });
-  };
-  const readLogEntries = (maxAge: number = 3600000) => {
-    Updates.readLogEntriesAsync(maxAge)
-      .then((logEntries) =>
-        setUpdatesState((updatesState) => ({
-          ...updatesState,
-          logEntries,
-        }))
-      )
-      .catch((error) => setUpdatesState((updatesState) => ({ ...updatesState, error })));
-  };
   // Return the updates info and the user facing functions
   return {
     currentlyRunning,
     ...updatesState,
-    checkForUpdate,
-    downloadUpdate,
-    runUpdate,
-    readLogEntries,
   };
 };
-
-export { useUpdates };

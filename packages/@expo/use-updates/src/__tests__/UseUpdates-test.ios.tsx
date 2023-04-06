@@ -1,27 +1,14 @@
 import { act, fireEvent, render, screen } from '@testing-library/react-native';
 import * as Updates from 'expo-updates';
-import type { Manifest, UpdateCheckResult, UpdateEvent, UpdatesLogEntry } from 'expo-updates';
+import type { Manifest, UpdateCheckResult, UpdatesLogEntry } from 'expo-updates';
 import '@testing-library/jest-native/extend-expect';
 import React from 'react';
 
-import type { UseUpdatesCallbacksType } from '../UseUpdates.types';
+import { UseUpdatesEvent, UseUpdatesEventType } from '..';
 import { availableUpdateFromManifest, availableUpdateFromEvent } from '../UseUpdatesUtils';
 import UseUpdatesTestApp from './UseUpdatesTestApp';
 
-const { UpdatesLogEntryCode, UpdatesLogEntryLevel, UpdateEventType } = Updates;
-
-const getCallbacks: () => UseUpdatesCallbacksType = () => {
-  return {
-    onCheckForUpdateComplete: jest.fn(),
-    onCheckForUpdateError: jest.fn(),
-    onCheckForUpdateStart: jest.fn(),
-    onDownloadUpdateComplete: jest.fn(),
-    onDownloadUpdateError: jest.fn(),
-    onDownloadUpdateStart: jest.fn(),
-    onRunUpdateError: jest.fn(),
-    onRunUpdateStart: jest.fn(),
-  };
-};
+const { UpdatesLogEntryCode, UpdatesLogEntryLevel } = Updates;
 
 jest.mock('expo-updates', () => {
   return {
@@ -50,8 +37,8 @@ describe('useUpdates()', () => {
     });
 
     it('Shows available update after running checkForUpdate()', async () => {
-      const callbacks = getCallbacks();
-      render(<UseUpdatesTestApp callbacks={callbacks} />);
+      const eventListener = jest.fn();
+      render(<UseUpdatesTestApp eventListener={eventListener} />);
       const mockDate = new Date();
       const mockManifest = {
         id: '0000-2222',
@@ -81,50 +68,15 @@ describe('useUpdates()', () => {
         // truncate the fractional part of the seconds value in the time
         lastCheckForUpdateTime.toISOString().substring(0, 19)
       );
-      expect(callbacks.onCheckForUpdateStart).toHaveBeenCalledTimes(1);
-      expect(callbacks.onCheckForUpdateComplete).toHaveBeenCalledTimes(1);
-      expect(callbacks.onCheckForUpdateError).not.toHaveBeenCalled();
-    });
-
-    it('Shows available update after UpdateEvent fired', async () => {
-      let mockListener: any = null;
-      jest.spyOn(Updates, 'useUpdateEvents').mockImplementation((listener) => {
-        mockListener = listener;
-      });
-
-      render(<UseUpdatesTestApp />);
-      const mockDate = new Date();
-      const mockManifest = {
-        id: '0000-2222',
-        createdAt: mockDate.toISOString(),
-        runtimeVersion: '1.0.0',
-        launchAsset: {
-          url: 'testUrl',
-        },
-        assets: [],
-        metadata: {},
-      };
-      const mockEvent: UpdateEvent = {
-        type: UpdateEventType.UPDATE_AVAILABLE,
+      expect(eventListener).toHaveBeenCalledWith({
+        type: UseUpdatesEventType.UPDATE_AVAILABLE,
         manifest: mockManifest,
-      };
-
-      await act(async () => {
-        mockListener(mockEvent);
       });
-      const lastCheckForUpdateTime = new Date();
-      const updateIdView = await screen.findByTestId('availableUpdate_updateId');
-      expect(updateIdView).toHaveTextContent('0000-2222');
-      const lastCheckForUpdateTimeView = await screen.findByTestId('lastCheckForUpdateTime');
-      expect(lastCheckForUpdateTimeView).toHaveTextContent(
-        // truncate the fractional part of the seconds value in the time
-        lastCheckForUpdateTime.toISOString().substring(0, 19)
-      );
     });
 
     it('Shows no available update after running checkForUpdate()', async () => {
-      const callbacks = getCallbacks();
-      render(<UseUpdatesTestApp callbacks={callbacks} />);
+      const eventListener = jest.fn();
+      render(<UseUpdatesTestApp eventListener={eventListener} />);
       const mockResponse: UpdateCheckResult = {
         isAvailable: false,
         isRollBackToEmbedded: false,
@@ -144,14 +96,14 @@ describe('useUpdates()', () => {
         // truncate the fractional part of the seconds value in the time
         lastCheckForUpdateTime.toISOString().substring(0, 19)
       );
-      expect(callbacks.onCheckForUpdateStart).toHaveBeenCalledTimes(1);
-      expect(callbacks.onCheckForUpdateComplete).toHaveBeenCalledTimes(1);
-      expect(callbacks.onCheckForUpdateError).not.toHaveBeenCalled();
+      expect(eventListener).toHaveBeenCalledWith({
+        type: UseUpdatesEventType.NO_UPDATE_AVAILABLE,
+      });
     });
 
     it('Handles error in checkForUpdate()', async () => {
-      const callbacks = getCallbacks();
-      render(<UseUpdatesTestApp callbacks={callbacks} />);
+      const eventListener = jest.fn();
+      render(<UseUpdatesTestApp eventListener={eventListener} />);
       const mockError = { code: 'ERR_TEST', message: 'test message' };
       jest.spyOn(Updates, 'checkForUpdateAsync').mockRejectedValueOnce(mockError);
       const buttonView = await screen.findByTestId('checkForUpdate');
@@ -159,15 +111,16 @@ describe('useUpdates()', () => {
         fireEvent(buttonView, 'press');
       });
       const errorView = await screen.findByTestId('error');
-      expect(errorView).toHaveTextContent('{"code":"ERR_TEST","message":"test message"}');
-      expect(callbacks.onCheckForUpdateStart).toHaveBeenCalledTimes(1);
-      expect(callbacks.onCheckForUpdateComplete).not.toHaveBeenCalled();
-      expect(callbacks.onCheckForUpdateError).toHaveBeenCalledWith(mockError);
+      expect(errorView).toHaveTextContent('test message');
+      expect(eventListener).toHaveBeenCalledWith({
+        type: UseUpdatesEventType.ERROR,
+        message: 'test message',
+      });
     });
 
     it('Calls callbacks during downloadUpdate()', async () => {
-      const callbacks = getCallbacks();
-      render(<UseUpdatesTestApp callbacks={callbacks} />);
+      const eventListener = jest.fn();
+      render(<UseUpdatesTestApp eventListener={eventListener} />);
       const mockResponse: any = {
         isNew: true,
         manifest: { name: 'test' },
@@ -177,14 +130,17 @@ describe('useUpdates()', () => {
       await act(async () => {
         fireEvent(buttonView, 'press');
       });
-      expect(callbacks.onDownloadUpdateStart).toHaveBeenCalledTimes(1);
-      expect(callbacks.onDownloadUpdateComplete).toHaveBeenCalledTimes(1);
-      expect(callbacks.onDownloadUpdateError).not.toHaveBeenCalled();
+      expect(eventListener).toHaveBeenCalledWith({
+        type: UseUpdatesEventType.DOWNLOAD_START,
+      });
+      expect(eventListener).toHaveBeenCalledWith({
+        type: UseUpdatesEventType.DOWNLOAD_COMPLETE,
+      });
     });
 
     it('Handles error during downloadUpdate()', async () => {
-      const callbacks = getCallbacks();
-      render(<UseUpdatesTestApp callbacks={callbacks} />);
+      const eventListener = jest.fn();
+      render(<UseUpdatesTestApp eventListener={eventListener} />);
       const mockError = { code: 'ERR_TEST', message: 'test message' };
       jest.spyOn(Updates, 'fetchUpdateAsync').mockRejectedValueOnce(mockError);
       const buttonView = await screen.findByTestId('downloadUpdate');
@@ -192,10 +148,14 @@ describe('useUpdates()', () => {
         fireEvent(buttonView, 'press');
       });
       const errorView = await screen.findByTestId('error');
-      expect(errorView).toHaveTextContent('{"code":"ERR_TEST","message":"test message"}');
-      expect(callbacks.onDownloadUpdateStart).toHaveBeenCalledTimes(1);
-      expect(callbacks.onDownloadUpdateComplete).not.toHaveBeenCalled();
-      expect(callbacks.onDownloadUpdateError).toHaveBeenCalledWith(mockError);
+      expect(errorView).toHaveTextContent('test message');
+      expect(eventListener).toHaveBeenCalledWith({
+        type: UseUpdatesEventType.DOWNLOAD_START,
+      });
+      expect(eventListener).toHaveBeenCalledWith({
+        type: UseUpdatesEventType.ERROR,
+        message: 'test message',
+      });
     });
 
     it('Shows log entries after running readLogEntries()', async () => {
@@ -242,8 +202,8 @@ describe('useUpdates()', () => {
     });
 
     it('availableUpdateFromEvent() returns info for UPDATE_AVAILABLE', () => {
-      const event: UpdateEvent = {
-        type: UpdateEventType.UPDATE_AVAILABLE,
+      const event: UseUpdatesEvent = {
+        type: UseUpdatesEventType.UPDATE_AVAILABLE,
         manifest,
       };
       const result = availableUpdateFromEvent(event);
@@ -252,14 +212,14 @@ describe('useUpdates()', () => {
     });
 
     it('availableUpdateFromEvent() returns info for NO_UPDATE_AVAILABLE', () => {
-      const event = { type: UpdateEventType.NO_UPDATE_AVAILABLE };
+      const event = { type: UseUpdatesEventType.NO_UPDATE_AVAILABLE };
       const result = availableUpdateFromEvent(event);
       expect(result.availableUpdate).toBeUndefined();
       expect(result.error).toBeUndefined();
     });
 
     it('availableUpdateFromEvent() returns info for ERROR', () => {
-      const event = { type: UpdateEventType.ERROR, message: 'It broke' };
+      const event = { type: UseUpdatesEventType.ERROR, message: 'It broke' };
       const result = availableUpdateFromEvent(event);
       expect(result.availableUpdate).toBeUndefined();
       expect(result.error?.message).toEqual('It broke');

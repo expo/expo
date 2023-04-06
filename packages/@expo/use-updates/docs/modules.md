@@ -4,15 +4,23 @@
 
 ## Table of contents
 
+### Enumerations
+
+- [UseUpdatesEventType](enums/UseUpdatesEventType.md)
+
 ### Type Aliases
 
 - [AvailableUpdateInfo](modules.md#availableupdateinfo)
 - [CurrentlyRunningInfo](modules.md#currentlyrunninginfo)
-- [UseUpdatesCallbacksType](modules.md#useupdatescallbackstype)
+- [UseUpdatesEvent](modules.md#useupdatesevent)
 - [UseUpdatesReturnType](modules.md#useupdatesreturntype)
 
 ### Functions
 
+- [checkForUpdate](modules.md#checkforupdate)
+- [downloadUpdate](modules.md#downloadupdate)
+- [readLogEntries](modules.md#readlogentries)
+- [runUpdate](modules.md#runupdate)
 - [useUpdates](modules.md#useupdates)
 
 ## Type Aliases
@@ -34,7 +42,7 @@ or an [`UpdateEvent`](#updateevent) emitted by native code.
 
 #### Defined in
 
-[UseUpdates.types.ts:69](https://github.com/expo/expo/blob/074f307b5a/packages/@expo/use-updates/src/UseUpdates.types.ts#L69)
+[UseUpdates.types.ts:69](https://github.com/expo/expo/blob/c6c9c3ea1a/packages/@expo/use-updates/src/UseUpdates.types.ts#L69)
 
 ___
 
@@ -59,33 +67,28 @@ Structure encapsulating information on the currently running app
 
 #### Defined in
 
-[UseUpdates.types.ts:15](https://github.com/expo/expo/blob/074f307b5a/packages/@expo/use-updates/src/UseUpdates.types.ts#L15)
+[UseUpdates.types.ts:15](https://github.com/expo/expo/blob/c6c9c3ea1a/packages/@expo/use-updates/src/UseUpdates.types.ts#L15)
 
 ___
 
-### UseUpdatesCallbacksType
+### UseUpdatesEvent
 
-Ƭ **UseUpdatesCallbacksType**: `Object`
+Ƭ **UseUpdatesEvent**: `Object`
 
-Callbacks that will be called when methods (`checkForUpdate()`, `downloadUpdate()`,
-`downloadAndRunUpdate()`, or `runUpdate()`) start, complete, or have errors.
+An object that is passed into each event listener when an auto-update check occurs.
 
 #### Type declaration
 
-| Name | Type |
-| :------ | :------ |
-| `onCheckForUpdateComplete?` | () => `void` |
-| `onCheckForUpdateError?` | (`error?`: `Error`) => `void` |
-| `onCheckForUpdateStart?` | () => `void` |
-| `onDownloadUpdateComplete?` | () => `void` |
-| `onDownloadUpdateError?` | (`error?`: `Error`) => `void` |
-| `onDownloadUpdateStart?` | () => `void` |
-| `onRunUpdateError?` | (`error?`: `Error`) => `void` |
-| `onRunUpdateStart?` | () => `void` |
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `logEntries?` | `UpdatesLogEntry`[] | If `type` is `UseUpdatesEventType.READ_LOG_ENTRIES_COMPLETE`, the log entries returned, and `undefined` otherwise. |
+| `manifest?` | `Manifest` | If `type` is `UseUpdatesEvent.UPDATE_AVAILABLE`, the manifest of the newly downloaded update, and `undefined` otherwise. |
+| `message?` | `string` | If `type` is `UseUpdatesEventType.ERROR`, the error message, and `undefined` otherwise. |
+| `type` | [`UseUpdatesEventType`](enums/UseUpdatesEventType.md) | Type of the event. |
 
 #### Defined in
 
-[UseUpdates.types.ts:90](https://github.com/expo/expo/blob/074f307b5a/packages/@expo/use-updates/src/UseUpdates.types.ts#L90)
+[UseUpdates.types.ts:164](https://github.com/expo/expo/blob/c6c9c3ea1a/packages/@expo/use-updates/src/UseUpdates.types.ts#L164)
 
 ___
 
@@ -104,20 +107,91 @@ The structures and methods returned by `useUpdates()`.
 | `error?` | `Error` | If an error is returned by any of the APIs to check for, download, or launch updates, the error description will appear here. |
 | `lastCheckForUpdateTimeSinceRestart?` | `Date` | A `Date` object representing the last time this client checked for an available update, or `undefined` if no check has yet occurred since the app started. Does not persist across app reloads or restarts. |
 | `logEntries?` | `UpdatesLogEntry`[] | If present, contains items of type [UpdatesLogEntry](https://docs.expo.dev/versions/latest/sdk/updates/#updateslogentry) returned by the `getLogEntries()` method. |
-| `checkForUpdate` | () => `void` | Calls `Updates.checkForUpdateAsync()` and refreshes the `availableUpdate` property with the result. If an error occurs, the `error` property will be set. |
-| `downloadUpdate` | () => `void` | Downloads an update, if one is available, using `Updates.fetchUpdateAsync()`. If an error occurs, the `error` property will be set. |
-| `readLogEntries` | (`maxAge?`: `number`) => `void` | Calls `Updates.readLogEntriesAsync()` and sets the `logEntries` property to the results. If an error occurs, the `error` property will be set. |
-| `runUpdate` | () => `void` | Runs an update by calling `Updates.reloadAsync()`. This should not be called unless there is an available update that has already been successfully downloaded using `downloadUpdate()`. If an error occurs, the `error` property will be set. |
 
 #### Defined in
 
-[UseUpdates.types.ts:104](https://github.com/expo/expo/blob/074f307b5a/packages/@expo/use-updates/src/UseUpdates.types.ts#L104)
+[UseUpdates.types.ts:89](https://github.com/expo/expo/blob/c6c9c3ea1a/packages/@expo/use-updates/src/UseUpdates.types.ts#L89)
 
 ## Functions
 
+### checkForUpdate
+
+▸ **checkForUpdate**(): `void`
+
+Calls `Updates.checkForUpdateAsync()` and refreshes the `availableUpdate` property with the result.
+If an error occurs, the `error` property will be set.
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[UseUpdates.ts:17](https://github.com/expo/expo/blob/c6c9c3ea1a/packages/@expo/use-updates/src/UseUpdates.ts#L17)
+
+___
+
+### downloadUpdate
+
+▸ **downloadUpdate**(): `void`
+
+Downloads an update, if one is available, using `Updates.fetchUpdateAsync()`.
+If an error occurs, the `error` property will be set.
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[UseUpdates.ts:42](https://github.com/expo/expo/blob/c6c9c3ea1a/packages/@expo/use-updates/src/UseUpdates.ts#L42)
+
+___
+
+### readLogEntries
+
+▸ **readLogEntries**(`maxAge?`): `void`
+
+Calls `Updates.readLogEntriesAsync()` and sets the `logEntries` property to the results.
+If an error occurs, the `error` property will be set.
+
+#### Parameters
+
+| Name | Type | Description |
+| :------ | :------ | :------ |
+| `maxAge?` | `number` | Max age of log entries to read, in ms. Defaults to 3600000 (1 hour). |
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[UseUpdates.ts:80](https://github.com/expo/expo/blob/c6c9c3ea1a/packages/@expo/use-updates/src/UseUpdates.ts#L80)
+
+___
+
+### runUpdate
+
+▸ **runUpdate**(): `void`
+
+Runs an update by calling `Updates.reloadAsync()`. This should not be called unless there is an available update
+that has already been successfully downloaded using `downloadUpdate()`.
+If an error occurs, the `error` property will be set.
+
+#### Returns
+
+`void`
+
+#### Defined in
+
+[UseUpdates.ts:65](https://github.com/expo/expo/blob/c6c9c3ea1a/packages/@expo/use-updates/src/UseUpdates.ts#L65)
+
+___
+
 ### useUpdates
 
-▸ **useUpdates**(`callbacks?`): [`UseUpdatesReturnType`](modules.md#useupdatesreturntype)
+▸ **useUpdates**(`eventListener?`): [`UseUpdatesReturnType`](modules.md#useupdatesreturntype)
 
 Hook that obtains the Updates info structure and functions.
 
@@ -165,18 +239,14 @@ export default function UpdatesDemo() {
 
 | Name | Type | Description |
 | :------ | :------ | :------ |
-| `callbacks?` | [`UseUpdatesCallbacksType`](modules.md#useupdatescallbackstype) | Optional set of callbacks that will be called when `checkForUpdate()`, `downloadUpdate()`, `downloadAndRunUpdate()`, or `runUpdate()`, start, complete, or have errors. |
+| `eventListener?` | (`event`: [`UseUpdatesEvent`](modules.md#useupdatesevent)) => `void` | Optional event listener that will receive events from the `UseUpdatesEvent` emitter. |
 
 #### Returns
 
 [`UseUpdatesReturnType`](modules.md#useupdatesreturntype)
 
-the structures with information on currently running and available updates, and associated methods.
-When using this hook, the methods returned should be used instead of `expo-updates` methods (
-[`checkForUpdateAsync()`](https://docs.expo.dev/versions/latest/sdk/updates/#updatescheckforupdateasync),
-[`fetchUpdateAsync()`](https://docs.expo.dev/versions/latest/sdk/updates/#updatesfetchupdateasync)),
-[`reloadAsync()`](https://docs.expo.dev/versions/latest/sdk/updates/#updatesreloadasync))).
+the structures with information on currently running and available updates.
 
 #### Defined in
 
-[UseUpdates.ts:67](https://github.com/expo/expo/blob/074f307b5a/packages/@expo/use-updates/src/UseUpdates.ts#L67)
+[UseUpdates.ts:142](https://github.com/expo/expo/blob/c6c9c3ea1a/packages/@expo/use-updates/src/UseUpdates.ts#L142)

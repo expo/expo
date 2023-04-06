@@ -1,14 +1,33 @@
-import type { UseUpdatesCallbacksType, UseUpdatesReturnType } from './UseUpdates.types';
+import { UseUpdatesReturnType, UseUpdatesEvent } from './UseUpdates.types';
+/**
+ * Calls `Updates.checkForUpdateAsync()` and refreshes the `availableUpdate` property with the result.
+ * If an error occurs, the `error` property will be set.
+ */
+export declare const checkForUpdate: () => void;
+/**
+ * Downloads an update, if one is available, using `Updates.fetchUpdateAsync()`.
+ * If an error occurs, the `error` property will be set.
+ */
+export declare const downloadUpdate: () => void;
+/**
+ * Runs an update by calling `Updates.reloadAsync()`. This should not be called unless there is an available update
+ * that has already been successfully downloaded using `downloadUpdate()`.
+ * If an error occurs, the `error` property will be set.
+ */
+export declare const runUpdate: () => void;
+/**
+ * Calls `Updates.readLogEntriesAsync()` and sets the `logEntries` property to the results.
+ * If an error occurs, the `error` property will be set.
+ *
+ * @param maxAge Max age of log entries to read, in ms. Defaults to 3600000 (1 hour).
+ */
+export declare const readLogEntries: (maxAge?: number) => void;
 /**
  * Hook that obtains the Updates info structure and functions.
  *
- * @param callbacks Optional set of callbacks that will be called when `checkForUpdate()`, `downloadUpdate()`, `downloadAndRunUpdate()`, or `runUpdate()`, start, complete, or have errors.
+ * @param eventListener Optional event listener that will receive events from the `UseUpdatesEvent` emitter.
  *
- * @return the structures with information on currently running and available updates, and associated methods.
- * When using this hook, the methods returned should be used instead of `expo-updates` methods (
- * [`checkForUpdateAsync()`](https://docs.expo.dev/versions/latest/sdk/updates/#updatescheckforupdateasync),
- * [`fetchUpdateAsync()`](https://docs.expo.dev/versions/latest/sdk/updates/#updatesfetchupdateasync)),
- * [`reloadAsync()`](https://docs.expo.dev/versions/latest/sdk/updates/#updatesreloadasync))).
+ * @return the structures with information on currently running and available updates.
  *
  * @example
  * ```tsx UpdatesDemo.tsx
@@ -49,6 +68,5 @@ import type { UseUpdatesCallbacksType, UseUpdatesReturnType } from './UseUpdates
  * }
  * ```
  */
-declare const useUpdates: (callbacks?: UseUpdatesCallbacksType) => UseUpdatesReturnType;
-export { useUpdates };
+export declare const useUpdates: (eventListener?: (event: UseUpdatesEvent) => void) => UseUpdatesReturnType;
 //# sourceMappingURL=UseUpdates.d.ts.map

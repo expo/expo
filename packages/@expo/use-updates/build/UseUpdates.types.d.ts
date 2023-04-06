@@ -79,20 +79,6 @@ export type AvailableUpdateInfo = {
     manifest: Manifest;
 };
 /**
- * Callbacks that will be called when methods (`checkForUpdate()`, `downloadUpdate()`,
- * `downloadAndRunUpdate()`, or `runUpdate()`) start, complete, or have errors.
- */
-export type UseUpdatesCallbacksType = {
-    onCheckForUpdateStart?: () => void;
-    onCheckForUpdateComplete?: () => void;
-    onCheckForUpdateError?: (error?: Error) => void;
-    onDownloadUpdateStart?: () => void;
-    onDownloadUpdateComplete?: () => void;
-    onDownloadUpdateError?: (error?: Error) => void;
-    onRunUpdateStart?: () => void;
-    onRunUpdateError?: (error?: Error) => void;
-};
-/**
  * The structures and methods returned by `useUpdates()`.
  */
 export type UseUpdatesReturnType = {
@@ -122,32 +108,67 @@ export type UseUpdatesReturnType = {
      * returned by the `getLogEntries()` method.
      */
     logEntries?: UpdatesLogEntry[];
-    /**
-     * Calls `Updates.checkForUpdateAsync()` and refreshes the `availableUpdate` property with the result.
-     * If an error occurs, the `error` property will be set.
-     */
-    checkForUpdate(): void;
-    /**
-     * Downloads an update, if one is available, using `Updates.fetchUpdateAsync()`.
-     * If an error occurs, the `error` property will be set.
-     */
-    downloadUpdate(): void;
-    /**
-     * Runs an update by calling `Updates.reloadAsync()`. This should not be called unless there is an available update
-     * that has already been successfully downloaded using `downloadUpdate()`.
-     * If an error occurs, the `error` property will be set.
-     */
-    runUpdate(): void;
-    /**
-     * Calls `Updates.readLogEntriesAsync()` and sets the `logEntries` property to the results.
-     * If an error occurs, the `error` property will be set.
-     */
-    readLogEntries(maxAge?: number): void;
 };
 export type UseUpdatesStateType = {
     availableUpdate?: AvailableUpdateInfo;
     error?: Error;
     lastCheckForUpdateTimeSinceRestart?: Date;
+    logEntries?: UpdatesLogEntry[];
+};
+/**
+ * The types of update-related events.
+ */
+export declare enum UseUpdatesEventType {
+    /**
+     * A new update is available for the app. This event can be fired either from
+     * the native code that automatically checks for an update on startup (when automatic updates
+     * are enabled), or from the completion of checkForUpdate().
+     */
+    UPDATE_AVAILABLE = "updateAvailable",
+    /**
+     * No new update is available for the app, and the most up-to-date update is already running.
+     * This event can be fired either from
+     * the native code that automatically checks for an update on startup (when automatic updates
+     * are enabled), or from the completion of checkForUpdate().
+     */
+    NO_UPDATE_AVAILABLE = "noUpdateAvailable",
+    /**
+     * An error occurred.
+     */
+    ERROR = "error",
+    /**
+     * A call to `downloadUpdate()` has started.
+     */
+    DOWNLOAD_START = "downloadStart",
+    /**
+     * A call to `downloadUpdate()` has completed successfully.
+     */
+    DOWNLOAD_COMPLETE = "downloadComplete",
+    /**
+     * A call to `readLogEntries()` has completed successfully.
+     */
+    READ_LOG_ENTRIES_COMPLETE = "readLogEntriesComplete"
+}
+/**
+ * An object that is passed into each event listener when an auto-update check occurs.
+ */
+export type UseUpdatesEvent = {
+    /**
+     * Type of the event.
+     */
+    type: UseUpdatesEventType;
+    /**
+     * If `type` is `UseUpdatesEvent.UPDATE_AVAILABLE`,
+     * the manifest of the newly downloaded update, and `undefined` otherwise.
+     */
+    manifest?: Manifest;
+    /**
+     * If `type` is `UseUpdatesEventType.ERROR`, the error message, and `undefined` otherwise.
+     */
+    message?: string;
+    /**
+     * If `type` is `UseUpdatesEventType.READ_LOG_ENTRIES_COMPLETE`, the log entries returned, and `undefined` otherwise.
+     */
     logEntries?: UpdatesLogEntry[];
 };
 //# sourceMappingURL=UseUpdates.types.d.ts.map

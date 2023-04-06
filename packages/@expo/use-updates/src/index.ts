@@ -1,7 +1,8 @@
 export type {
   CurrentlyRunningInfo,
   AvailableUpdateInfo,
-  UseUpdatesCallbacksType,
+  UseUpdatesEvent,
   UseUpdatesReturnType,
 } from './UseUpdates.types';
+export { UseUpdatesEventType } from './UseUpdates.types';
 export * from './UseUpdates';

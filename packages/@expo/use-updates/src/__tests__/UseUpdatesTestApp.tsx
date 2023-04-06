@@ -1,21 +1,19 @@
 import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 
-import * as Updates from '..';
+import * as UseUpdates from '..';
+import type { UseUpdatesEvent } from '..';
 
-const { useUpdates } = Updates;
+const { useUpdates, checkForUpdate, downloadUpdate, readLogEntries } = UseUpdates;
 
-const UseUpdatesTestApp = (props: { callbacks?: any }) => {
+const UseUpdatesTestApp = (props: { eventListener?: (event: UseUpdatesEvent) => void }) => {
   const {
     currentlyRunning,
     availableUpdate,
     error,
     lastCheckForUpdateTimeSinceRestart,
     logEntries,
-    checkForUpdate,
-    downloadUpdate,
-    readLogEntries,
-  } = useUpdates(props.callbacks);
+  } = useUpdates(props.eventListener);
   return (
     <View>
       {/* Currently running info */}
@@ -37,7 +35,7 @@ const UseUpdatesTestApp = (props: { callbacks?: any }) => {
         </Text>
       ) : null}
       {/* Error, if one has occurred */}
-      {error ? <Text testID="error">{JSON.stringify(error)}</Text> : null}
+      {error ? <Text testID="error">{error.message}</Text> : null}
       {/* Buttons for test code to invoke methods */}
       <Pressable testID="checkForUpdate" onPress={() => checkForUpdate()} />
       <Pressable testID="downloadUpdate" onPress={() => downloadUpdate()} />
