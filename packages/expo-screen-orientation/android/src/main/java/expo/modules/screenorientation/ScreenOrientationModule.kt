@@ -1,146 +1,125 @@
 package expo.modules.screenorientation
 
 import android.app.Activity
-import android.content.Context
 import android.content.pm.ActivityInfo
+import android.os.Build
 import android.util.DisplayMetrics
 import android.view.Surface
-import expo.modules.core.ExportedModule
-import expo.modules.core.ModuleRegistry
-import expo.modules.core.Promise
+import android.view.WindowInsets
+
 import expo.modules.core.errors.InvalidArgumentException
-import expo.modules.core.interfaces.ActivityProvider
-import expo.modules.core.interfaces.ExpoMethod
 import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.core.interfaces.services.UIManager
+import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Coroutine
+import expo.modules.kotlin.modules.Module
+import expo.modules.kotlin.modules.ModuleDefinition
 
-private const val ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK = "ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK"
-private const val ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK = "ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK"
-private const val ERR_SCREEN_ORIENTATION_GET_ORIENTATION_LOCK = "ERR_SCREEN_ORIENTATION_GET_ORIENTATION_LOCK"
-private const val ERR_SCREEN_ORIENTATION_GET_PLATFORM_ORIENTATION_LOCK = "ERR_SCREEN_ORIENTATION_GET_PLATFORM_ORIENTATION_LOCK"
-private const val ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY = "ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY"
+class ScreenOrientationModule : Module(), LifecycleEventListener {
+  private val currentActivity
+    get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
+  private var initialOrientation: Int? = null
 
-class ScreenOrientationModule(context: Context) : ExportedModule(context), LifecycleEventListener {
-  private lateinit var mActivityProvider: ActivityProvider
-  private var mInitialOrientation: Int? = null
+  override fun definition() = ModuleDefinition {
+    Name("ExpoScreenOrientation")
 
-  override fun getName() = "ExpoScreenOrientation"
+    AsyncFunction("lockAsync") Coroutine { orientationLock: Int ->
+      try {
+        currentActivity.requestedOrientation = importOrientationLock(orientationLock)
+        return@Coroutine
+      } catch (e: InvalidArgumentException) {
+        throw InvalidOrientationLockException(orientationLock, e)
+      } catch (e: Exception) {
+        throw UnsupportedOrientationLockException(orientationLock, e)
+      }
+    }
 
-  override fun onCreate(moduleRegistry: ModuleRegistry) {
-    mActivityProvider = moduleRegistry.getModule(ActivityProvider::class.java)
-      ?: throw IllegalStateException("Could not find implementation for ActivityProvider.")
+    AsyncFunction("lockPlatformAsync") Coroutine { orientationAttr: Int ->
+      try {
+        currentActivity.requestedOrientation = orientationAttr
+        return@Coroutine
+      } catch (e: Exception) {
+        throw UnsupportedOrientationPlatformLockException(orientationAttr, e)
+      }
+    }
 
-    (
-      moduleRegistry.getModule(UIManager::class.java)
-        ?: throw IllegalStateException("Could not find implementation for UIManager.")
-      )
-      .registerLifecycleEventListener(this)
+    AsyncFunction("getOrientationAsync") Coroutine { ->
+      return@Coroutine getScreenOrientation(currentActivity).value
+    }
+
+    AsyncFunction("getOrientationLockAsync") Coroutine { ->
+      try {
+        return@Coroutine exportOrientationLock(currentActivity.requestedOrientation)
+      } catch (e: Exception) {
+        throw GetOrientationLockException(e)
+      }
+    }
+
+    AsyncFunction("getPlatformOrientationLockAsync") Coroutine { ->
+      try {
+        return@Coroutine currentActivity.requestedOrientation
+      } catch (e: Exception) {
+        throw GetPlatformOrientationLockException(e)
+      }
+    }
+
+    AsyncFunction("supportsOrientationLockAsync") Coroutine { orientationLock: Int ->
+      try {
+        importOrientationLock(orientationLock)
+        return@Coroutine true
+      } catch (e: Exception) {
+        return@Coroutine false
+      }
+    }
+
+    OnCreate {
+      appContext.registry
+      (
+        appContext.legacyModuleRegistry.getModule(UIManager::class.java)
+          ?: throw IllegalStateException("Could not find implementation for UIManager.")
+        )
+        .registerLifecycleEventListener(this@ScreenOrientationModule)
+    }
+
+    OnDestroy {
+      initialOrientation?.let {
+        currentActivity.requestedOrientation = it
+      }
+    }
   }
 
   override fun onHostResume() {
-    mActivityProvider.currentActivity?.let {
-      if (mInitialOrientation == null) {
-        mInitialOrientation = it.requestedOrientation
-      }
-    }
+    initialOrientation = initialOrientation ?: currentActivity.requestedOrientation
   }
 
   override fun onHostPause() = Unit
 
   override fun onHostDestroy() = Unit
 
-  override fun onDestroy() {
-    mActivityProvider.currentActivity?.let { activity ->
-      mInitialOrientation?.let {
-        activity.requestedOrientation = it
-      }
-    }
-  }
-
-  @ExpoMethod
-  fun lockAsync(orientationLock: Int, promise: Promise) {
-    mActivityProvider.currentActivity?.let {
-      return try {
-        it.requestedOrientation = importOrientationLock(orientationLock)
-        promise.resolve(null)
-      } catch (e: InvalidArgumentException) {
-        promise.reject(ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK, "An invalid OrientationLock was passed in: $orientationLock", e)
-      } catch (e: Exception) {
-        promise.reject(ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK, "Could not apply the ScreenOrientation lock: $orientationLock", e)
-      }
-    }
-
-    promise.reject(ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY, "Could not find activity.", null)
-  }
-
-  @ExpoMethod
-  fun lockPlatformAsync(orientationAttr: Int, promise: Promise) {
-    mActivityProvider.currentActivity?.let {
-      return try {
-        it.requestedOrientation = orientationAttr
-        promise.resolve(null)
-      } catch (e: Exception) {
-        promise.reject(ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK, "Could not apply the ScreenOrientation platform lock: $orientationAttr", e)
-      }
-    }
-
-    promise.reject(ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY, "Could not find activity.", null)
-  }
-
-  @ExpoMethod
-  fun getOrientationAsync(promise: Promise) {
-    mActivityProvider.currentActivity?.let {
-      return promise.resolve(getScreenOrientation(it).value)
-    }
-
-    promise.reject(ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY, "Could not find activity.", null)
-  }
-
-  @ExpoMethod
-  fun getOrientationLockAsync(promise: Promise) {
-    mActivityProvider.currentActivity?.let {
-      return try {
-        promise.resolve(exportOrientationLock(it.requestedOrientation))
-      } catch (e: Exception) {
-        promise.reject(ERR_SCREEN_ORIENTATION_GET_ORIENTATION_LOCK, "Could not get the current screen orientation lock", e)
-      }
-    }
-
-    promise.reject(ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY, "Could not find activity.", null)
-  }
-
-  @ExpoMethod
-  fun getPlatformOrientationLockAsync(promise: Promise) {
-    mActivityProvider.currentActivity?.let {
-      return try {
-        promise.resolve(it.requestedOrientation)
-      } catch (e: Exception) {
-        promise.reject(ERR_SCREEN_ORIENTATION_GET_PLATFORM_ORIENTATION_LOCK, "Could not get the current screen orientation platform lock", e)
-      }
-    }
-
-    promise.reject(ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY, "Could not find activity.", null)
-  }
-
-  @ExpoMethod
-  fun supportsOrientationLockAsync(orientationLock: Int, promise: Promise) {
-    try {
-      importOrientationLock(orientationLock)
-      promise.resolve(true)
-    } catch (e: Exception) {
-      promise.resolve(false)
-    }
-  }
-
   // https://stackoverflow.com/a/10383164/1123156
   // Will not work in all cases as surface rotation is not standardized across android devices, but this is best effort
   private fun getScreenOrientation(activity: Activity): Orientation {
     val windowManager = activity.windowManager ?: return Orientation.UNKNOWN
-    val rotation = windowManager.defaultDisplay.rotation
-    val dm = DisplayMetrics().also(windowManager.defaultDisplay::getMetrics)
+
+    val rotation = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      currentActivity.window.context.display?.rotation ?: return Orientation.UNKNOWN
+    } else {
+      windowManager.defaultDisplay.rotation
+    }
+
+    val dm = if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
+      val windowMetrics = windowManager.currentWindowMetrics
+      val insets = windowMetrics.windowInsets
+        .getInsetsIgnoringVisibility(WindowInsets.Type.systemBars())
+      DisplayMetrics().apply {
+        widthPixels = windowMetrics.bounds.width() - insets.left - insets.right
+        heightPixels = windowMetrics.bounds.height() - insets.top - insets.bottom
+      }
+    } else {
+      DisplayMetrics().also(windowManager.defaultDisplay::getMetrics)
+    }
 
     val currentOrientation: Orientation
-
     if (isPortraitNaturalOrientation(rotation, dm.widthPixels, dm.heightPixels)) {
       currentOrientation = when (rotation) {
         Surface.ROTATION_0 -> Orientation.PORTRAIT_UP
