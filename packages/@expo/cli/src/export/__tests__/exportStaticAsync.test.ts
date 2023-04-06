@@ -25,6 +25,7 @@ describe(getFilesToExportFromServerAsync, () => {
         },
         renderAsync,
         scripts: ['bar'],
+        cssLinks: ['baz'],
       })
     ).toEqual(
       new Map([

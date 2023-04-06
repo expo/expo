@@ -28,6 +28,13 @@ export interface LoadOptions {
 
 export interface DefaultConfigOptions {
   mode?: 'exotic';
+  /**
+   * **Experimental:** Enable CSS support for Metro web, and shim on native.
+   *
+   * This is an experimental feature and may change in the future. The underlying implementation
+   * is subject to change, and native support for CSS Modules may be added in the future during a non-major SDK release.
+   */
+  isCSSEnabled?: boolean;
 }
 
 function getProjectBabelConfigFile(projectRoot: string): string | undefined {
@@ -79,6 +86,10 @@ export function getDefaultConfig(
 
   const sourceExtsConfig = { isTS: true, isReact: true, isModern: false };
   const sourceExts = getBareExtensions([], sourceExtsConfig);
+
+  if (options.isCSSEnabled) {
+    sourceExts.push('css');
+  }
 
   if (isExotic) {
     // Add support for cjs (without platform extensions).
@@ -150,12 +161,16 @@ export function getDefaultConfig(
       port: Number(env.RCT_METRO_PORT) || 8081,
       // NOTE(EvanBacon): Moves the server root down to the monorepo root.
       // This enables proper monorepo support for web.
-      // @ts-expect-error: not on type
       unstable_serverRoot: getServerRoot(projectRoot),
     },
     symbolicator: {
       customizeFrame: getDefaultCustomizeFrame(),
     },
+    transformerPath: options.isCSSEnabled
+      ? // Custom worker that adds CSS support for Metro web.
+        require.resolve('./transform-worker/transform-worker')
+      : metroDefaultValues.transformerPath,
+
     transformer: {
       // `require.context` support
       unstable_allowRequireContext: true,

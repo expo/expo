@@ -7,6 +7,11 @@ declare module 'metro-source-map' {
 
   type HermesFunctionOffsets = { [key: number]: Readonly<Array<number>> };
 
+  export type MetroSourceMapSegmentTuple =
+    | SourceMappingWithName
+    | SourceMapping
+    | GeneratedCodeMapping;
+
   type FBSourcesArray = Readonly<Array<FBSourceMetadata | null>>;
   type FBSourceMetadata = [FBSourceFunctionMap | null];
   export type FBSourceFunctionMap = {

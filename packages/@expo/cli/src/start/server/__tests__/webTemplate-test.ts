@@ -26,6 +26,7 @@ describe(createTemplateHtmlFromExpoConfigAsync, () => {
 
     const contents = await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
       scripts: ['/script.js'],
+      cssLinks: ['/_expo/static/1.css', '/_expo/static/2.css'],
       exp: {
         name: 'My App',
         slug: 'my-app',
@@ -43,7 +44,10 @@ describe(createTemplateHtmlFromExpoConfigAsync, () => {
     expect(contents).toMatch(/<meta name="description" content="my static app">/);
     expect(contents).toMatch(/<meta name="theme-color" content="#123456">/);
     // Adds script tag
-    expect(contents).toMatch(/<script src="\/script\.js"><\/script>/);
+    expect(contents).toMatch(/<script src="\/script\.js" defer><\/script>/);
+    // Adds css links
+    expect(contents).toMatch(/<link rel="stylesheet" href="\/_expo\/static\/1\.css">/);
+    expect(contents).toMatch(/<link rel="stylesheet" href="\/_expo\/static\/2\.css">/);
 
     // Sanity
     expect(contents).toMatchSnapshot();
@@ -79,7 +83,7 @@ describe(createTemplateHtmlFromExpoConfigAsync, () => {
     expect(contents).toMatch(/<meta name="description" content="my static app">/);
     expect(contents).toMatch(/<meta name="theme-color" content="#123456">/);
     // Adds script tag
-    expect(contents).toMatch(/<script src="\/script\.js"><\/script>/);
+    expect(contents).toMatch(/<script src="\/script\.js" defer><\/script>/);
 
     // Sanity
     expect(contents).toMatchSnapshot();

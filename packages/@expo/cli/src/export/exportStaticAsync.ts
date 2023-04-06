@@ -15,10 +15,11 @@ import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { stripAnsi } from '../utils/ansi';
+import { appendLinkToHtml, appendScriptsToHtml } from './html';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
-type Options = { outputDir: string; scripts: string[]; minify: boolean };
+type Options = { outputDir: string; scripts: string[]; cssLinks: string[]; minify: boolean };
 
 /** @private */
 export async function unstable_exportStaticAsync(projectRoot: string, options: Options) {
@@ -53,20 +54,15 @@ function matchGroupName(name: string): string | undefined {
   return name.match(/^\(([^/]+?)\)$/)?.[1];
 }
 
-function appendScriptsToHtml(html: string, scripts: string[]) {
-  return html.replace(
-    '</body>',
-    scripts.map((script) => `<script src="${script}" defer></script>`).join('') + '</body>'
-  );
-}
-
 export async function getFilesToExportFromServerAsync({
   manifest,
   scripts,
+  cssLinks,
   renderAsync,
 }: {
   manifest: any;
   scripts: string[];
+  cssLinks: string[];
   renderAsync: (pathname: string) => Promise<{
     fetchData: boolean;
     scriptContents: string;
@@ -105,7 +101,25 @@ export async function getFilesToExportFromServerAsync({
         if (data.fetchData) {
           // console.log('ssr:', pathname);
         } else {
-          files.set(outputPath, appendScriptsToHtml(data.renderAsync(), scripts));
+          files.set(
+            outputPath,
+            appendLinkToHtml(
+              appendScriptsToHtml(data.renderAsync(), scripts),
+              cssLinks
+                .map((href) => [
+                  {
+                    as: 'style',
+                    rel: 'preload',
+                    href,
+                  },
+                  {
+                    rel: 'stylesheet',
+                    href,
+                  },
+                ])
+                .flat()
+            )
+          );
         }
       } catch (e: any) {
         // TODO: Format Metro error message better...
@@ -161,7 +175,7 @@ export async function getFilesToExportFromServerAsync({
 /** Perform all fs commits */
 export async function exportFromServerAsync(
   devServerManager: DevServerManager,
-  { outputDir, scripts }: Options
+  { outputDir, scripts, cssLinks }: Options
 ): Promise<void> {
   const devServer = devServerManager.getDefaultDevServer();
 
@@ -172,6 +186,7 @@ export async function exportFromServerAsync(
   const files = await getFilesToExportFromServerAsync({
     manifest,
     scripts,
+    cssLinks,
     renderAsync(pathname: string) {
       assert(devServer instanceof MetroBundlerDevServer);
       return devServer.getStaticPageAsync(pathname, { mode: 'production' });
