@@ -36,10 +36,10 @@ class JavaScriptValue @DoNotStrip private constructor(@DoNotStrip private val mH
   external fun getArray(): Array<JavaScriptValue>
   external fun getTypedArray(): JavaScriptTypedArray
 
-  private external fun <T: Any?> jniGetFunction(): JavaScriptFunction<T>
+  private external fun <T : Any?> jniGetFunction(): JavaScriptFunction<T>
   @PublishedApi
-  internal fun <T: Any?> internalJniGetFunction(): JavaScriptFunction<T> = jniGetFunction()
-  inline fun <reified ReturnType: Any?> getFunction(): JavaScriptFunction<ReturnType> {
+  internal fun <T : Any?> internalJniGetFunction(): JavaScriptFunction<T> = jniGetFunction()
+  inline fun <reified ReturnType : Any?> getFunction(): JavaScriptFunction<ReturnType> {
     return internalJniGetFunction<ReturnType>().apply {
       returnType = typeOf<ReturnType>()
     }

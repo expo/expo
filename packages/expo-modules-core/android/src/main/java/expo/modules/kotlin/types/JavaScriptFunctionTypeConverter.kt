@@ -6,7 +6,7 @@ import expo.modules.kotlin.jni.ExpectedType
 import expo.modules.kotlin.jni.JavaScriptFunction
 import kotlin.reflect.KType
 
-class JavaScriptFunctionTypeConverter<T: Any>(
+class JavaScriptFunctionTypeConverter<T : Any>(
   val type: KType
 ) : NullAwareTypeConverter<JavaScriptFunction<T>>(type.isMarkedNullable) {
   override fun convertNonOptional(value: Any, context: AppContext?): JavaScriptFunction<T> {
