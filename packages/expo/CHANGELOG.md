@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+### 📚 3rd party library updates
+
+- Update `react-native` to 0.69.9. ([#21981](https://github.com/expo/expo/pull/21981) by [@kudo](https://github.com/kudo))
+
 ## 46.0.20 — 2023-01-19
 
 _This version does not introduce any user-facing changes._

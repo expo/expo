@@ -111,7 +111,7 @@
     "native-component-list": "*",
     "react": "18.0.0",
     "react-dom": "18.0.0",
-    "react-native": "0.69.6",
+    "react-native": "0.69.9",
     "react-native-gesture-handler": "~2.5.0",
     "react-native-reanimated": "~2.9.1",
     "react-native-safe-area-context": "4.3.1",

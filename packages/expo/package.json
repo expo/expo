@@ -88,6 +88,6 @@
     "expo-module-scripts": "^2.1.1",
     "react": "18.0.0",
     "react-dom": "18.0.0",
-    "react-native": "0.69.6"
+    "react-native": "0.69.9"
   }
 }
