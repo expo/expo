@@ -25,9 +25,9 @@ Both of these flows are covered in the next sections.
 
 ### Creating the local Expo Module
 
-Navigate to your project directory (the one that contains the **package.json** file) and run the following command, which is the recommended way to create a local Expo Module:
+Navigate to your project directory (the one that contains the **package.json** file) and run the following command, which is the recommended way to create a local Expo module:
 
-<Terminal cmd={[`$ npx create-expo-module --local`]} />
+<Terminal cmd={[`$ npx create-expo-module@latest --local`]} />
 
 It's best to provide a meaningful module name. However, you can accept the default suggestions for the rest of the questions.
 
@@ -64,7 +64,7 @@ To run your app locally, run the `prebuild` command and then compile the app:
   ]}
 />
 
-Congratulations! You have created a local Expo Module. You can now start working on it.
+Congratulations! You have created a local Expo module. You can now start working on it.
 
 </Step>
 
@@ -94,14 +94,14 @@ Rebuild the app or build a new development client and you should see your change
 
 > **Note**
 >
-> There are also other flows for working on an Expo Module in parallel with your application.
+> There are also other flows for working on an Expo module in parallel with your application.
 > For example, you can use a monorepo or publish to npm, as described in [How to use a standalone Expo module in your project](/modules/use-standalone-expo-module-in-your-project) guide.
 
 ## Creating a new module with an example project
 
 <Step label="1">
 
-### Creating the Expo Module
+### Creating the Expo module
 
 To create a new Expo module from scratch, run the `create-expo-module` script as shown below.
 The script will ask you a few questions and then generate the native Expo module along with the example app for Android and iOS that uses your new module.
