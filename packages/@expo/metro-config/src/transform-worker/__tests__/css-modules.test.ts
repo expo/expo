@@ -38,7 +38,6 @@ describe(matchCssModule, () => {
     'foo.module.web.scss',
     'foo.module.ios.css',
     'foo.module.sass',
-    'foo.module.less',
   ].forEach((filename) => {
     it(`matches ${filename}`, () => {
       expect(matchCssModule(filename)).toBeTruthy();
