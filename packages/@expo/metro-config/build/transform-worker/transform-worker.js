@@ -51,6 +51,8 @@ async function transform(config, projectRoot, filename, data, options) {
     Buffer.from(code), options);
   }
   let code = data.toString('utf8');
+
+  // Apply postcss transforms
   code = await (0, _postcss().transformPostCssModule)(projectRoot, {
     src: code,
     filename

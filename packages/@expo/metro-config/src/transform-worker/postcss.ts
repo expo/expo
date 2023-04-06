@@ -168,8 +168,6 @@ function loadPlugin(projectRoot: string, plugin: string, options: unknown, file:
   }
 }
 
-import { JSONValue } from '@expo/json-file';
-
 export function pluginFactory() {
   const listOfPlugins = new Map<string, any>();
 
@@ -243,5 +241,21 @@ export function resolvePostcssConfig(projectRoot: string): PostCSSInputConfig | 
     return JsonFile.read(jsonConfigPath, { json5: true });
   }
 
+  return null;
+}
+
+export function getPostcssConfigHash(projectRoot: string): string | null {
+  // TODO: Maybe recurse plugins and add versions to the hash in the future.
+  const { stableHash } = require('metro-cache');
+
+  const jsConfigPath = path.join(projectRoot, CONFIG_FILE_NAME + '.js');
+  if (fs.existsSync(jsConfigPath)) {
+    return stableHash(fs.readFileSync(jsConfigPath, 'utf8')).toString('hex');
+  }
+
+  const jsonConfigPath = path.join(projectRoot, CONFIG_FILE_NAME + '.json');
+  if (fs.existsSync(jsonConfigPath)) {
+    return stableHash(fs.readFileSync(jsonConfigPath, 'utf8')).toString('hex');
+  }
   return null;
 }

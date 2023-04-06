@@ -1,7 +1,10 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
+import { getPackageJson } from '@expo/config';
 import { getBareExtensions } from '@expo/config/paths';
 import chalk from 'chalk';
 import { Reporter } from 'metro';
+// @ts-expect-error: incorrectly typed
+import { stableHash } from 'metro-cache';
 import {
   ConfigT as MetroConfig,
   getDefaultConfig as getDefaultMetroConfig,
@@ -17,6 +20,7 @@ import { env } from './env';
 import { getModulesPaths, getServerRoot } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
+import { getPostcssConfigHash } from './transform-worker/postcss';
 
 export interface LoadOptions {
   config?: string;
@@ -108,6 +112,7 @@ export function getDefaultConfig(
   }
   resolverMainFields.push('browser', 'main');
 
+  const pkg = getPackageJson(projectRoot);
   const watchFolders = getWatchFolders(projectRoot);
   // TODO: nodeModulesPaths does not work with the new Node.js package.json exports API, this causes packages like uuid to fail. Disabling for now.
   const nodeModulesPaths = getModulesPaths(projectRoot);
@@ -172,6 +177,13 @@ export function getDefaultConfig(
       : metroDefaultValues.transformerPath,
 
     transformer: {
+      // Custom: These are passed to `getCacheKey`
+      // @ts-expect-error: not on type.
+      postcssHash: getPostcssConfigHash(projectRoot),
+      browserslistHash: pkg.browserslist
+        ? stableHash(JSON.stringify(pkg.browserslist)).toString('hex')
+        : null,
+
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,

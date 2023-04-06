@@ -18,6 +18,13 @@ Object.defineProperty(exports, "MetroConfig", {
 });
 exports.getDefaultConfig = getDefaultConfig;
 exports.loadAsync = loadAsync;
+function _config() {
+  const data = require("@expo/config");
+  _config = function () {
+    return data;
+  };
+  return data;
+}
 function _paths() {
   const data = require("@expo/config/paths");
   _paths = function () {
@@ -28,6 +35,13 @@ function _paths() {
 function _chalk() {
   const data = _interopRequireDefault(require("chalk"));
   _chalk = function () {
+    return data;
+  };
+  return data;
+}
+function _metroCache() {
+  const data = require("metro-cache");
+  _metroCache = function () {
     return data;
   };
   return data;
@@ -88,8 +102,17 @@ function _rewriteRequestUrl() {
   };
   return data;
 }
+function _postcss() {
+  const data = require("./transform-worker/postcss");
+  _postcss = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
+
+// @ts-expect-error: incorrectly typed
 
 function getProjectBabelConfigFile(projectRoot) {
   return _resolveFrom().default.silent(projectRoot, './babel.config.js') || _resolveFrom().default.silent(projectRoot, './.babelrc') || _resolveFrom().default.silent(projectRoot, './.babelrc.js');
@@ -141,6 +164,7 @@ function getDefaultConfig(projectRoot, options = {}) {
     resolverMainFields.push('react-native');
   }
   resolverMainFields.push('browser', 'main');
+  const pkg = (0, _config().getPackageJson)(projectRoot);
   const watchFolders = (0, _getWatchFolders().getWatchFolders)(projectRoot);
   // TODO: nodeModulesPaths does not work with the new Node.js package.json exports API, this causes packages like uuid to fail. Disabling for now.
   const nodeModulesPaths = (0, _getModulesPaths().getModulesPaths)(projectRoot);
@@ -200,6 +224,10 @@ function getDefaultConfig(projectRoot, options = {}) {
     // Custom worker that adds CSS support for Metro web.
     require.resolve('./transform-worker/transform-worker') : metroDefaultValues.transformerPath,
     transformer: {
+      // Custom: These are passed to `getCacheKey`
+      // @ts-expect-error: not on type.
+      postcssHash: (0, _postcss().getPostcssConfigHash)(projectRoot),
+      browserslistHash: pkg.browserslist ? (0, _metroCache().stableHash)(JSON.stringify(pkg.browserslist)).toString('hex') : null,
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,

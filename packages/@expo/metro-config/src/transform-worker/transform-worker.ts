@@ -58,6 +58,7 @@ export async function transform(
 
   let code = data.toString('utf8');
 
+  // Apply postcss transforms
   code = await transformPostCssModule(projectRoot, {
     src: code,
     filename,
@@ -197,6 +198,5 @@ export async function transform(
 module.exports = {
   // Use defaults for everything that's not custom.
   ...worker,
-
   transform,
 };

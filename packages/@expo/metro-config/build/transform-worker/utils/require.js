@@ -24,7 +24,7 @@ async function tryRequireThenImport(moduleId) {
 }
 function requireUncachedFile(moduleId) {
   try {
-    delete require.cache[require.resolve(moduleId)];
+    // delete require.cache[require.resolve(moduleId)];
   } catch {}
   try {
     return require(moduleId);

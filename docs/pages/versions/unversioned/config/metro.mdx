@@ -120,6 +120,8 @@ export default function Page() {
 
 ### PostCSS
 
+> Changing the Post CSS or `browserslist` config will require you to clear the Metro cache: `npx expo start --clear` | `npx expo export --clear`.
+
 [PostCSS](https://github.com/postcss/postcss) can be customized by adding a `postcss.config.js` file to the root of your project. This file should export a function that returns a PostCSS configuration object. For example:
 
 ```js postcss.config.js

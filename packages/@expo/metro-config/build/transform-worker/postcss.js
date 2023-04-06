@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.getPostcssConfigHash = getPostcssConfigHash;
 exports.pluginFactory = pluginFactory;
 exports.resolvePostcssConfig = resolvePostcssConfig;
 exports.transformPostCssModule = transformPostCssModule;
@@ -184,6 +185,9 @@ function pluginFactory() {
       for (const plugin of plugins) {
         if (Array.isArray(plugin)) {
           const [name, options] = plugin;
+          if (typeof name !== 'string') {
+            throw new Error(`PostCSS plugin must be a string, but "${name}" was found. Please check your configuration.`);
+          }
           listOfPlugins.set(name, options);
         } else if (plugin && typeof plugin === 'function') {
           listOfPlugins.set(plugin, undefined);
@@ -225,6 +229,21 @@ function resolvePostcssConfig(projectRoot) {
     return _jsonFile().default.read(jsonConfigPath, {
       json5: true
     });
+  }
+  return null;
+}
+function getPostcssConfigHash(projectRoot) {
+  // TODO: Maybe recurse plugins and add versions to the hash in the future.
+  const {
+    stableHash
+  } = require('metro-cache');
+  const jsConfigPath = _path().default.join(projectRoot, CONFIG_FILE_NAME + '.js');
+  if (_fs().default.existsSync(jsConfigPath)) {
+    return stableHash(_fs().default.readFileSync(jsConfigPath, 'utf8')).toString('hex');
+  }
+  const jsonConfigPath = _path().default.join(projectRoot, CONFIG_FILE_NAME + '.json');
+  if (_fs().default.existsSync(jsonConfigPath)) {
+    return stableHash(_fs().default.readFileSync(jsonConfigPath, 'utf8')).toString('hex');
   }
   return null;
 }

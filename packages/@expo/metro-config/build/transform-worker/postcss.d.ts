@@ -13,4 +13,5 @@ export declare function transformPostCssModule(projectRoot: string, { src, filen
 }): Promise<string>;
 export declare function pluginFactory(): (plugins?: any) => Map<string, any>;
 export declare function resolvePostcssConfig(projectRoot: string): PostCSSInputConfig | null;
+export declare function getPostcssConfigHash(projectRoot: string): string | null;
 export {};
