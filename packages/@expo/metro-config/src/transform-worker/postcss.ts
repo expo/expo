@@ -6,10 +6,11 @@
  */
 import JsonFile from '@expo/json-file';
 import fs from 'fs';
-import type { BabelTransformerArgs } from 'metro-babel-transformer';
 import path from 'path';
 import type { AcceptedPlugin, ProcessOptions } from 'postcss';
 import resolveFrom from 'resolve-from';
+
+import { requireUncachedFile, tryRequireThenImport } from './utils/require';
 
 type PostCSSInputConfig = {
   plugins?: any[];
@@ -143,26 +144,6 @@ async function parsePostcssConfigAsync(
   return { plugins, processOptions };
 }
 
-async function tryRequireThenImport<TModule>(moduleId: string): Promise<TModule> {
-  try {
-    return require(moduleId);
-  } catch (requireError: any) {
-    let importESM;
-    try {
-      // eslint-disable-next-line no-new-func
-      importESM = new Function('id', 'return import(id);');
-    } catch {
-      importESM = null;
-    }
-
-    if (requireError?.code === 'ERR_REQUIRE_ESM' && importESM) {
-      return (await importESM(moduleId)).default;
-    }
-
-    throw requireError;
-  }
-}
-
 function loadPlugin(projectRoot: string, plugin: string, options: unknown, file: string) {
   try {
     debug('load plugin:', plugin);
@@ -187,7 +168,9 @@ function loadPlugin(projectRoot: string, plugin: string, options: unknown, file:
   }
 }
 
-function pluginFactory() {
+import { JSONValue } from '@expo/json-file';
+
+export function pluginFactory() {
   const listOfPlugins = new Map<string, any>();
 
   return (plugins?: any) => {
@@ -199,6 +182,12 @@ function pluginFactory() {
       for (const plugin of plugins) {
         if (Array.isArray(plugin)) {
           const [name, options] = plugin;
+
+          if (typeof name !== 'string') {
+            throw new Error(
+              `PostCSS plugin must be a string, but "${name}" was found. Please check your configuration.`
+            );
+          }
 
           listOfPlugins.set(name, options);
         } else if (plugin && typeof plugin === 'function') {
@@ -238,27 +227,13 @@ function pluginFactory() {
   };
 }
 
-function requireUncachedPostcssFile(moduleId: string) {
-  try {
-    delete require.cache[require.resolve(moduleId)];
-  } catch {}
-  try {
-    return require(moduleId);
-  } catch (error: unknown) {
-    if (error instanceof Error) {
-      error.message = `Cannot load postcss config file ${moduleId}: ${error.message}`;
-    }
-    throw error;
-  }
-}
-
-function resolvePostcssConfig(projectRoot: string): PostCSSInputConfig | null {
+export function resolvePostcssConfig(projectRoot: string): PostCSSInputConfig | null {
   // TODO: Maybe support platform-specific postcss config files in the future.
   const jsConfigPath = path.join(projectRoot, CONFIG_FILE_NAME + '.js');
 
   if (fs.existsSync(jsConfigPath)) {
     debug('load file:', jsConfigPath);
-    return requireUncachedPostcssFile(jsConfigPath);
+    return requireUncachedFile(jsConfigPath);
   }
 
   const jsonConfigPath = path.join(projectRoot, CONFIG_FILE_NAME + '.json');

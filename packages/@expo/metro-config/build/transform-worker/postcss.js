@@ -3,6 +3,8 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.pluginFactory = pluginFactory;
+exports.resolvePostcssConfig = resolvePostcssConfig;
 exports.transformPostCssModule = transformPostCssModule;
 function _jsonFile() {
   const data = _interopRequireDefault(require("@expo/json-file"));
@@ -32,51 +34,31 @@ function _resolveFrom() {
   };
   return data;
 }
+function _require() {
+  const data = require("./utils/require");
+  _require = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 const CONFIG_FILE_NAME = 'postcss.config';
 const debug = require('debug')('expo:metro:transformer:postcss');
-function requireUncachedPostcssFile(moduleId) {
-  try {
-    delete require.cache[require.resolve(moduleId)];
-  } catch {}
-  try {
-    return require(moduleId);
-  } catch (error) {
-    if (error instanceof Error) {
-      error.message = `Cannot load postcss config file ${moduleId}: ${error.message}`;
-    }
-    throw error;
-  }
-}
-function resolvePostcssConfig(projectRoot) {
-  // TODO: Maybe support platform-specific postcss config files in the future.
-  const jsConfigPath = _path().default.join(projectRoot, CONFIG_FILE_NAME + '.js');
-  if (_fs().default.existsSync(jsConfigPath)) {
-    debug('load file:', jsConfigPath);
-    return requireUncachedPostcssFile(jsConfigPath);
-  }
-  const jsonConfigPath = _path().default.join(projectRoot, CONFIG_FILE_NAME + '.json');
-  if (_fs().default.existsSync(jsonConfigPath)) {
-    debug('load file:', jsonConfigPath);
-    return _jsonFile().default.read(jsonConfigPath, {
-      json5: true
-    });
-  }
-  return null;
-}
-async function transformPostCssModule(props) {
-  const inputConfig = resolvePostcssConfig(props.options.projectRoot);
+async function transformPostCssModule(projectRoot, {
+  src,
+  filename
+}) {
+  const inputConfig = resolvePostcssConfig(projectRoot);
   if (!inputConfig) {
-    return props;
+    return src;
   }
-  props.src = await processWithPostcssInputConfigAsync(props.options.projectRoot, {
+  return await processWithPostcssInputConfigAsync(projectRoot, {
     inputConfig,
-    src: props.src,
-    filename: props.filename
+    src,
+    filename
   });
-  return props;
 }
 async function processWithPostcssInputConfigAsync(projectRoot, {
   src,
@@ -96,8 +78,10 @@ async function processWithPostcssInputConfigAsync(projectRoot, {
   // TODO: Surely this can be cached...
   const postcss = await Promise.resolve().then(() => _interopRequireWildcard(require('postcss')));
   const processor = postcss.default(plugins);
-  const results = await processor.process(src, processOptions);
-  return results.content;
+  const {
+    content
+  } = await processor.process(src, processOptions);
+  return content;
 }
 async function parsePostcssConfigAsync(projectRoot, {
   resourcePath: file,
@@ -134,7 +118,7 @@ async function parsePostcssConfigAsync(projectRoot, {
   };
   if (typeof parser === 'string') {
     try {
-      processOptions.parser = await tryRequireThenImport(parser);
+      processOptions.parser = await (0, _require().tryRequireThenImport)(parser);
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Loading PostCSS "${parser}" parser failed: ${error.message}\n\n(@${file})`);
@@ -144,7 +128,7 @@ async function parsePostcssConfigAsync(projectRoot, {
   }
   if (typeof stringifier === 'string') {
     try {
-      processOptions.stringifier = await tryRequireThenImport(stringifier);
+      processOptions.stringifier = await (0, _require().tryRequireThenImport)(stringifier);
     } catch (error) {
       if (error instanceof Error) {
         throw new Error(`Loading PostCSS "${stringifier}" stringifier failed: ${error.message}\n\n(@${file})`);
@@ -154,7 +138,7 @@ async function parsePostcssConfigAsync(projectRoot, {
   }
   if (typeof syntax === 'string') {
     try {
-      processOptions.syntax = await tryRequireThenImport(syntax);
+      processOptions.syntax = await (0, _require().tryRequireThenImport)(syntax);
     } catch (error) {
       throw new Error(`Loading PostCSS "${syntax}" syntax failed: ${error.message}\n\n(@${file})`);
     }
@@ -169,23 +153,6 @@ async function parsePostcssConfigAsync(projectRoot, {
     plugins,
     processOptions
   };
-}
-async function tryRequireThenImport(moduleId) {
-  try {
-    return require(moduleId);
-  } catch (requireError) {
-    let importESM;
-    try {
-      // eslint-disable-next-line no-new-func
-      importESM = new Function('id', 'return import(id);');
-    } catch {
-      importESM = null;
-    }
-    if ((requireError === null || requireError === void 0 ? void 0 : requireError.code) === 'ERR_REQUIRE_ESM' && importESM) {
-      return (await importESM(moduleId)).default;
-    }
-    throw requireError;
-  }
 }
 function loadPlugin(projectRoot, plugin, options, file) {
   try {
@@ -244,5 +211,21 @@ function pluginFactory() {
     }
     return listOfPlugins;
   };
+}
+function resolvePostcssConfig(projectRoot) {
+  // TODO: Maybe support platform-specific postcss config files in the future.
+  const jsConfigPath = _path().default.join(projectRoot, CONFIG_FILE_NAME + '.js');
+  if (_fs().default.existsSync(jsConfigPath)) {
+    debug('load file:', jsConfigPath);
+    return (0, _require().requireUncachedFile)(jsConfigPath);
+  }
+  const jsonConfigPath = _path().default.join(projectRoot, CONFIG_FILE_NAME + '.json');
+  if (_fs().default.existsSync(jsonConfigPath)) {
+    debug('load file:', jsonConfigPath);
+    return _jsonFile().default.read(jsonConfigPath, {
+      json5: true
+    });
+  }
+  return null;
 }
 //# sourceMappingURL=postcss.js.map
