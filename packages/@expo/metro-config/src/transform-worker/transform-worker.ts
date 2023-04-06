@@ -15,7 +15,6 @@ import worker, {
 import { wrapDevelopmentCSS } from './css';
 import { matchCssModule, transformCssModuleWeb } from './css-modules';
 import { transformPostCssModule } from './postcss';
-import { compileSass, matchSass } from './sass';
 
 const countLines = require('metro/src/lib/countLines') as (string: string) => number;
 
@@ -58,11 +57,6 @@ export async function transform(
   }
 
   let code = data.toString('utf8');
-
-  const syntax = matchSass(filename);
-  if (syntax) {
-    code = compileSass(projectRoot, { filename, src: code }, { syntax }).src;
-  }
 
   // Apply postcss transforms
   code = await transformPostCssModule(projectRoot, {

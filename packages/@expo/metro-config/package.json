@@ -41,8 +41,7 @@
     "sucrase": "^3.20.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.5",
-    "sass": "^1.60.0"
+    "@babel/core": "^7.15.5"
   },
   "publishConfig": {
     "access": "public"

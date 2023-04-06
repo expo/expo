@@ -134,22 +134,6 @@ export default function Page() {
 
 Both `postcss.config.json` and `postcss.config.js` are supported, but `postcss.config.json` enables better caching.
 
-### SCSS
-
-Expo Metro has partial support for SCSS/SASS.
-
-To setup, install the `sass` package:
-
-```sh
-yarn add sass
-```
-
-Then, ensure [CSS is setup](#css) in the `metro.config.js` file.
-
-- When `sass` is installed, then modules without extensions will be resolved in the following order: `scss`, `sass`, `css`.
-- Only use the intended syntax with `sass` files.
-- Importing other files from inside a scss/sass file is not currently supported.
-
 ## Bare workflow setup
 
 > This guide is versioned and will need to be revisited when upgrading/downgrading Expo. Alternatively, use [Expo Prebuild](/workflow/prebuild) for fully automated setup.
