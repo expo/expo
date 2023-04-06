@@ -31,7 +31,7 @@ export const checkForUpdate = () => {
     .catch((error) => {
       emitEvent({
         type: UseUpdatesEventType.ERROR,
-        message: error?.message,
+        error,
       });
     });
 };
@@ -52,7 +52,7 @@ export const downloadUpdate = () => {
     .catch((error) => {
       emitEvent({
         type: UseUpdatesEventType.ERROR,
-        message: error?.message,
+        error,
       });
     });
 };
@@ -66,7 +66,7 @@ export const runUpdate = () => {
   Updates.reloadAsync().catch((error) => {
     emitEvent({
       type: UseUpdatesEventType.ERROR,
-      message: error?.message,
+      error,
     });
   });
 };
@@ -88,7 +88,7 @@ export const readLogEntries: (maxAge?: number) => void = (maxAge: number = 36000
     .catch((error) => {
       emitEvent({
         type: UseUpdatesEventType.ERROR,
-        message: error?.message,
+        error,
       });
     });
 };

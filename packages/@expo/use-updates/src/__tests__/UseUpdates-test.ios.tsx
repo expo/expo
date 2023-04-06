@@ -114,7 +114,7 @@ describe('useUpdates()', () => {
       expect(errorView).toHaveTextContent('test message');
       expect(eventListener).toHaveBeenCalledWith({
         type: UseUpdatesEventType.ERROR,
-        message: 'test message',
+        error: mockError,
       });
     });
 
@@ -154,7 +154,7 @@ describe('useUpdates()', () => {
       });
       expect(eventListener).toHaveBeenCalledWith({
         type: UseUpdatesEventType.ERROR,
-        message: 'test message',
+        error: mockError,
       });
     });
 
@@ -219,7 +219,7 @@ describe('useUpdates()', () => {
     });
 
     it('availableUpdateFromEvent() returns info for ERROR', () => {
-      const event = { type: UseUpdatesEventType.ERROR, message: 'It broke' };
+      const event = { type: UseUpdatesEventType.ERROR, error: new Error('It broke') };
       const result = availableUpdateFromEvent(event);
       expect(result.availableUpdate).toBeUndefined();
       expect(result.error?.message).toEqual('It broke');

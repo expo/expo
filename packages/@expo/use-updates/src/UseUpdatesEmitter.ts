@@ -34,6 +34,11 @@ function _emitNativeEvent(params: any) {
     delete newParams.manifestString;
   }
 
+  if (newParams.message) {
+    newParams.error = new Error(newParams.message);
+    delete newParams.message;
+  }
+
   if (!_emitter) {
     throw new Error(`EventEmitter must be initialized to use from its listener`);
   }

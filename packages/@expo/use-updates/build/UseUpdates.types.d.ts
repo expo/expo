@@ -163,9 +163,9 @@ export type UseUpdatesEvent = {
      */
     manifest?: Manifest;
     /**
-     * If `type` is `UseUpdatesEventType.ERROR`, the error message, and `undefined` otherwise.
+     * If `type` is `UseUpdatesEventType.ERROR`, the error, and `undefined` otherwise.
      */
-    message?: string;
+    error?: Error;
     /**
      * If `type` is `UseUpdatesEventType.READ_LOG_ENTRIES_COMPLETE`, the log entries returned, and `undefined` otherwise.
      */

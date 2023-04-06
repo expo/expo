@@ -26,6 +26,10 @@ function _emitNativeEvent(params) {
         newParams.manifest = JSON.parse(newParams.manifestString);
         delete newParams.manifestString;
     }
+    if (newParams.message) {
+        newParams.error = new Error(newParams.message);
+        delete newParams.message;
+    }
     if (!_emitter) {
         throw new Error(`EventEmitter must be initialized to use from its listener`);
     }

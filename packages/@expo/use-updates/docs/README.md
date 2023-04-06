@@ -53,7 +53,6 @@ export default function UpdatesDemo() {
     </View>
   );
 }
-
 function Button(props: { text: string; pressHandler: () => void }) {
   const { text, pressHandler } = props;
   return (

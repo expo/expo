@@ -51,7 +51,7 @@ export const availableUpdateFromEvent: (event: UseUpdatesEvent) => {
       };
     case UseUpdatesEventType.ERROR:
       return {
-        error: new Error(event.message),
+        error: event.error,
       };
     default:
       return {};
