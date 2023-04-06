@@ -89,16 +89,6 @@ CSS Modules are a way to scope CSS to a specific component. This is useful for a
 
 In Expo, CSS Modules are defined by creating a file with the `.module.css` extension. The file can be imported from any component. The exported value is an object with the class names as keys and the React Native style objects as values.
 
-CSS Modules support platform extensions to allow you to define different styles for different platforms. For example, you can define a `module.ios.css` and `module.android.css` file to define styles for iOS and Android respectively. You'll need to import without the extension, for example:
-
-```diff App.js
-// Importing `./App.module.ios.css`:
-- import styles from './App.module.css';
-+ import styles from './App.module';
-```
-
-Flipping the extension, e.g. `App.ios.module.css` will not work and result in a universal module named `App.ios.module`.
-
 > You cannot pass styles to the `className` prop of a React Native or React Native for web component. Instead, you must use the `style` prop.
 
 ```js App.js
