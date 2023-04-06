@@ -138,6 +138,7 @@ const RENAMED_PAGES: Record<string, string> = {
   // TODO: (@aman) Uncomment the two lines below when we've removed third-party libraries from Reference
   // '/versions/latest/sdk/safe-area-context/': '/home/develop/user-interface/safe-areas',
   // '/versions/latest/sdk/async-storage/': '/home/develop/user-interface/store-data/#async-storage',
+  '/get-started/installation': '/home/get-started/installation/',
   '/get-started/create-a-new-app/': '/home/get-started/create-a-project',
   '/guides/config-plugins/': '/home/config-plugins/introduction/',
   '/workflow/debugging/': '/home/debugging/runtime-issue/',
