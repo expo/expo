@@ -144,7 +144,7 @@
     "processing-js": "^1.6.6",
     "react": "18.1.0",
     "react-dom": "18.0.0",
-    "react-native": "0.70.5",
+    "react-native": "0.70.8",
     "react-native-gesture-handler": "~2.8.0",
     "react-native-iphone-x-helper": "^1.3.0",
     "react-native-maps": "1.3.2",
