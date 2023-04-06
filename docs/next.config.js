@@ -13,9 +13,10 @@ import remarkCodeTitle from './mdx-plugins/remark-code-title.js';
 import remarkCreateStaticProps from './mdx-plugins/remark-create-static-props.js';
 import remarkExportHeadings from './mdx-plugins/remark-export-headings.js';
 import remarkLinkRewrite from './mdx-plugins/remark-link-rewrite.js';
+import { copyAsLatest } from './scripts/copy-latest.js';
 import createSitemap from './scripts/create-sitemap.js';
 
-const { copySync, removeSync, readJsonSync } = fsExtra;
+const { readJsonSync } = fsExtra;
 
 // note(simek): We cannot use direct JSON import because ESLint do not support `assert { type: 'json' }` syntax yet:
 // * https://github.com/eslint/eslint/discussions/15305
@@ -23,11 +24,7 @@ const { version, betaVersion } = readJsonSync('./package.json');
 const { VERSIONS } = readJsonSync('./public/static/constants/versions.json');
 const navigation = readJsonSync('./public/static/constants/navigation.json');
 
-// Prepare the latest version by copying the actual exact latest version
-const vLatest = join('pages', 'versions', `v${version}/`);
-const latest = join('pages', 'versions', 'latest/');
-removeSync(latest);
-copySync(vLatest, latest);
+copyAsLatest(version);
 logInfo(`Copied latest Expo SDK version from v${version}`);
 
 const removeConsole =
@@ -118,8 +115,10 @@ export default {
       // Some of the search engines only track the first N items from the sitemap,
       // this makes sure our starting and general guides are first, and API index last (in order from new to old)
       pathsPriority: [
+        ...navigation.homeDirectories,
+        ...navigation.learnDirectories,
         ...navigation.generalDirectories,
-        ...navigation.easDirectories,
+        ...navigation.referenceDirectories.filter(dir => dir === 'versions'),
         ...VERSIONS.map(version => `versions/${version}`),
       ],
       // Some of our pages are "hidden" and should not be added to the sitemap

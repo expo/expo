@@ -1,0 +1,51 @@
+---
+title: 'Development builds: Installation'
+sidebar_title: Installation
+description: Learn what are the prerequisites and installation steps to create a development build.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { Step } from '~/ui/components/Step';
+
+In this guide, you'll learn what you need to install in your project to create a development build.
+
+## Prerequisites
+
+You need to initialize your project with Expo. If you still need to do so, see the [initializing steps](/get-started/create-a-new-app/#initializing-the-project) if you are starting a new project.
+
+We also recommend installing EAS CLI as a global npm dependency by running the following command:
+
+<Terminal cmd={['$ npm install -g eas-cli']} />
+
+<Step label="1">
+
+## Install expo-dev-client
+
+To initialize a development build, you need to install the `expo-dev-client` library in your project:
+
+<Terminal cmd={['$ npx expo install expo-dev-client']} />
+
+</Step>
+
+<Step label="2">
+
+## Login to your Expo account
+
+Logging into your Expo account will be useful when creating a build or submitting your app to the app stores.
+
+If you are already signed in to an Expo account using Expo CLI, you can skip the steps described in this section. If you are not, run the following command to log in:
+
+<Terminal cmd={['$ eas login']} />
+
+You can check whether you are logged in by running `eas whoami`.
+
+</Step>
+
+## Next step
+
+<BoxLink
+  title="Create development builds"
+  description="Learn about how you can create a development build."
+  href="/home/develop/development-builds/create-a-build"
+/>

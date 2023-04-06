@@ -35,21 +35,21 @@ test('redirects versioned non-renamed path', () => {
   const redirectPath = '/versions/latest/workflow/expo-cli/';
   const newPath = getRedirectPath(redirectPath);
 
-  expect(newPath).toEqual('/workflow/expo-cli/');
+  expect(newPath).toEqual('/more/expo-cli/');
 });
 
 test('does not redirect non-renamed path', () => {
   const redirectPath = '/workflow/expo-cli/';
   const newPath = getRedirectPath(redirectPath);
 
-  expect(newPath).toEqual('/workflow/expo-cli/');
+  expect(newPath).toEqual('/more/expo-cli/');
 });
 
 test('adds forward slash to end of path', () => {
   const redirectPath = '/workflow/expo-cli';
   const newPath = getRedirectPath(redirectPath);
 
-  expect(newPath).toEqual('/workflow/expo-cli/');
+  expect(newPath).toEqual('/more/expo-cli/');
 });
 
 test('redirects old versions to latest', () => {

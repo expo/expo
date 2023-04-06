@@ -189,7 +189,7 @@ const Home = () => {
               </P>
               <HomeButton
                 className="bg-palette-green11 border-palette-green11 text-palette-green2 hocus:bg-palette-green11 hocus:opacity-80"
-                href="/introduction/faq"
+                href="/home/faq"
                 rightSlot={<ArrowRightIcon className="text-palette-green2 icon-md" />}>
                 Read
               </HomeButton>

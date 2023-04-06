@@ -37,7 +37,7 @@ export const Layout = ({
   header = (
     <Header
       sidebar={<Sidebar />}
-      sidebarActiveGroup="general"
+      sidebarActiveGroup="home"
       isMobileMenuVisible={false}
       setMobileMenuVisible={() => undefined}
     />
