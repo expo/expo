@@ -206,6 +206,21 @@ public:
 };
 
 /**
+ * Converter from js function to [expo.modules.kotlin.jni.JavaScriptFunction].
+ */
+class JavaScriptFunctionFrontendConverter : public FrontendConverter {
+public:
+  jobject convert(
+    jsi::Runtime &rt,
+    JNIEnv *env,
+    JSIInteropModuleRegistry *moduleRegistry,
+    const jsi::Value &value
+  ) const override;
+
+  bool canConvert(jsi::Runtime &rt, const jsi::Value &value) const override;
+};
+
+/**
  * Converter from js view object to int.
  */
 class ViewTagFrontendConverter : public FrontendConverter {

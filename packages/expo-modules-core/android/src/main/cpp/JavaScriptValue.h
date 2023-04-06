@@ -21,6 +21,8 @@ class JavaScriptObject;
 
 class JavaScriptTypedArray;
 
+class JavaScriptFunction;
+
 /**
  * Represents any JavaScript value. Its purpose is to expose the `jsi::Value` API back to Kotlin.
  */
@@ -77,6 +79,8 @@ public:
   jni::local_ref<jni::JArrayClass<JavaScriptValue::javaobject>> getArray();
 
   jni::local_ref<JavaScriptTypedArray::javaobject> getTypedArray();
+
+  jni::local_ref<jni::HybridClass<JavaScriptFunction>::javaobject> jniGetFunction();
 
 private:
   friend HybridBase;

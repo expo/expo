@@ -15,6 +15,8 @@ class JavaScriptValue;
 
 class JavaScriptObject;
 
+class JSIInteropModuleRegistry;
+
 /**
  * Dummy CallInvoker that invokes everything immediately.
  * Used in the test environment to check the async flow.
@@ -42,9 +44,12 @@ public:
    * Initializes a runtime that is independent from React Native and its runtime initialization.
    * This flow is mostly intended for tests. The JS call invoker is set to `SyncCallInvoker`.
    */
-  JavaScriptRuntime();
+  JavaScriptRuntime(
+    JSIInteropModuleRegistry *jsiInteropModuleRegistry
+  );
 
   JavaScriptRuntime(
+    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
     jsi::Runtime *runtime,
     std::shared_ptr<react::CallInvoker> jsInvoker,
     std::shared_ptr<react::CallInvoker> nativeInvoker
@@ -83,9 +88,12 @@ public:
   std::shared_ptr<react::CallInvoker> nativeInvoker;
 
   std::shared_ptr<jsi::Object> getMainObject();
+
+  JSIInteropModuleRegistry *getModuleRegistry();
 private:
   std::shared_ptr<jsi::Runtime> runtime;
   std::shared_ptr<jsi::Object> mainObject;
+  JSIInteropModuleRegistry *jsiInteropModuleRegistry;
 
   void installMainObject();
 };
