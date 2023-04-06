@@ -1,11 +1,5 @@
 import ExpoModulesCore
 
-internal class SharingInProgressException: Exception {
-  override var reason: String {
-    "Another share request is being processed now"
-  }
-}
-
 internal class FilePermissionException: Exception {
   override var reason: String {
     "You don't have access to the provided file"
