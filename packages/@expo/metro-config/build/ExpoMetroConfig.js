@@ -26,6 +26,13 @@ function runtimeEnv() {
   };
   return data;
 }
+function _jsonFile() {
+  const data = _interopRequireDefault(require("@expo/json-file"));
+  _jsonFile = function () {
+    return data;
+  };
+  return data;
+}
 function _chalk() {
   const data = _interopRequireDefault(require("chalk"));
   _chalk = function () {
@@ -101,6 +108,7 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 
+const debug = require('debug')('expo:metro:config');
 function getProjectBabelConfigFile(projectRoot) {
   return _resolveFrom().default.silent(projectRoot, './babel.config.js') || _resolveFrom().default.silent(projectRoot, './.babelrc') || _resolveFrom().default.silent(projectRoot, './.babelrc.js');
 }
@@ -138,8 +146,12 @@ function getDefaultConfig(projectRoot, options = {}) {
     isModern: false
   };
   const sourceExts = (0, _paths().getBareExtensions)([], sourceExtsConfig);
+  let sassVersion = null;
   if (options.isCSSEnabled) {
-    sourceExts.push('css');
+    sassVersion = getSassVersion(projectRoot);
+    // Enable SCSS by default so we can provide a better error message
+    // when sass isn't installed.
+    sourceExts.push('scss', 'sass', 'css');
   }
   if (isExotic) {
     // Add support for cjs (without platform extensions).
@@ -173,6 +185,7 @@ function getDefaultConfig(projectRoot, options = {}) {
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
     console.log(`- Exotic: ${isExotic}`);
     console.log(`- Env Files: ${envFiles}`);
+    console.log(`- Sass: ${sassVersion}`);
     console.log();
   }
   const {
@@ -220,6 +233,9 @@ function getDefaultConfig(projectRoot, options = {}) {
     // Custom worker that adds CSS support for Metro web.
     require.resolve('./transform-worker/transform-worker') : metroDefaultValues.transformerPath,
     transformer: {
+      // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
+      // @ts-expect-error
+      sassVersion,
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
@@ -262,4 +278,25 @@ async function loadAsync(projectRoot, {
 // re-export for legacy cases.
 const EXPO_DEBUG = _env2().env.EXPO_DEBUG;
 exports.EXPO_DEBUG = EXPO_DEBUG;
+function getSassVersion(projectRoot) {
+  const sassPkg = _resolveFrom().default.silent(projectRoot, 'sass');
+  if (!sassPkg) return null;
+  const sassPkgJson = findUpPackageJson(sassPkg);
+  if (!sassPkgJson) return null;
+  const pkg = _jsonFile().default.read(sassPkgJson);
+  debug('sass package.json:', sassPkgJson);
+  const sassVersion = pkg.version;
+  if (typeof sassVersion === 'string') {
+    return sassVersion;
+  }
+  return null;
+}
+function findUpPackageJson(cwd) {
+  if (['.', _path().default.sep].includes(cwd)) return null;
+  const found = _resolveFrom().default.silent(cwd, './package.json');
+  if (found) {
+    return found;
+  }
+  return findUpPackageJson(_path().default.dirname(cwd));
+}
 //# sourceMappingURL=ExpoMetroConfig.js.map
