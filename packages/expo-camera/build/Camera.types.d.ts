@@ -90,6 +90,12 @@ export declare enum VideoQuality {
     '480p' = "480p",
     '4:3' = "4:3"
 }
+export declare enum CameraOrientation {
+    portrait = "portrait",
+    portraitUpsideDown = "portraitUpsideDown",
+    landscapeLeft = "landscapeLeft",
+    landscapeRight = "landscapeRight"
+}
 /**
  * @hidden We do not expose related web methods in docs.
  * @platform web
@@ -252,6 +258,15 @@ export type PictureSavedListener = (event: {
  * @hidden
  */
 export type CameraReadyListener = () => void;
+/**
+ * @hidden
+ */
+export type ResponsiveOrientationChangedListener = (event: {
+    nativeEvent: ResponsiveOrientationChanged;
+}) => void;
+export type ResponsiveOrientationChanged = {
+    orientation: CameraOrientation;
+};
 /**
  * @hidden
  */
@@ -444,6 +459,12 @@ export type CameraProps = ViewProps & {
      * @platform ios
     */
     responsiveOrientationWhenOrientationLocked?: boolean;
+    /**
+      * Callback invoked when responsive orientation changes. Only applicable if `responsiveOrientationWhenOrientationLocked` is `true`
+      * @param event result object that contains updated orientation of camera
+      * @platform ios
+    */
+    onResponsiveOrientationChanged?: (event: ResponsiveOrientationChanged) => void;
 };
 /**
  * @hidden
@@ -464,6 +485,7 @@ export type CameraNativeProps = {
         nativeEvent: Error;
     }) => void;
     onPictureSaved?: PictureSavedListener;
+    onResponsiveOrientationChanged?: ResponsiveOrientationChangedListener;
     type?: number | string;
     flashMode?: number | string;
     autoFocus?: string | boolean | number;

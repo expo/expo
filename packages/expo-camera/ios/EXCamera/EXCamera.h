@@ -105,6 +105,7 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
 - (void)pausePreview;
 - (void)onReady:(NSDictionary *)event;
 - (void)onMountingError:(NSDictionary *)event;
+- (void)onResponsiveOrientationChanged:(NSDictionary *)event;
 - (void)onPictureSaved:(NSDictionary *)event;
 
 @end

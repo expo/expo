@@ -36,6 +36,7 @@
 @property (nonatomic, copy) EXDirectEventBlock onCameraReady;
 @property (nonatomic, copy) EXDirectEventBlock onMountError;
 @property (nonatomic, copy) EXDirectEventBlock onPictureSaved;
+@property (nonatomic, copy) EXDirectEventBlock onResponsiveOrientationChanged;
 
 @property (nonatomic, copy) EXDirectEventBlock onBarCodeScanned;
 @property (nonatomic, copy) EXDirectEventBlock onFacesDetected;
@@ -117,6 +118,13 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
 {
   if (_onPictureSaved) {
     _onPictureSaved(event);
+  }
+}
+
+- (void)onResponsiveOrientationChanged:(NSDictionary *)event
+{
+  if (_onResponsiveOrientationChanged) {
+    _onResponsiveOrientationChanged(event);
   }
 }
 
@@ -323,7 +331,11 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     [self.motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue new]
       withHandler:^(CMAccelerometerData  *accelerometerData, NSError *error) {
         if (!error) {
-          self.physicalOrientation = [EXCameraUtils deviceOrientationForAccelerometerData:self.motionManager.accelerometerData defaultOrientation:self.physicalOrientation];
+          UIDeviceOrientation deviceOrientation = [EXCameraUtils deviceOrientationForAccelerometerData:self.motionManager.accelerometerData defaultOrientation:self.physicalOrientation];
+          if (deviceOrientation != self.physicalOrientation) {
+            self.physicalOrientation = deviceOrientation;
+            [self onResponsiveOrientationChanged:@{@"orientation": [[NSNumber alloc] initWithInteger:deviceOrientation]}];
+          }
         }
     }];
   } else {

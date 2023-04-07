@@ -67,7 +67,8 @@ public final class CameraViewModule: Module {
         "onMountError",
         "onPictureSaved",
         "onBarCodeScanned",
-        "onFacesDetected"
+        "onFacesDetected",
+        "onResponsiveOrientationChanged"
       )
 
       Prop("type") { (view, type: Int) in
