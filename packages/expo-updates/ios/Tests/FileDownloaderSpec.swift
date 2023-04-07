@@ -142,7 +142,7 @@ class FileDownloaderSpec : ExpoSpec {
         )
         
         db.databaseQueue.sync {
-          let extraHeaders = FileDownloader.extraHeaders(
+          let extraHeaders = FileDownloader.extraHeadersForRemoteUpdateRequest(
             withDatabase: db,
             config: config,
             launchedUpdate: launchedUpdate,
@@ -159,7 +159,7 @@ class FileDownloaderSpec : ExpoSpec {
         ])
         
         db.databaseQueue.sync {
-          let extraHeaders = FileDownloader.extraHeaders(
+          let extraHeaders = FileDownloader.extraHeadersForRemoteUpdateRequest(
             withDatabase: db,
             config: config,
             launchedUpdate: nil,

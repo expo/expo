@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 0.5.2 — 2023-04-03
+
+### 🎉 New features
+
+- Added `enableShrinkResourcesInReleaseBuilds` property to enable Android `shrinkResources` build feature. ([#21911](https://github.com/expo/expo/pull/21911) by [@kudo](https://github.com/kudo))
+
 ## 0.5.1 — 2023-02-09
 
 ### 🎉 New features

@@ -16,10 +16,17 @@ import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { stripAnsi } from '../utils/ansi';
+import { appendLinkToHtml, appendScriptsToHtml } from './html';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
-type Options = { outputDir: string; scripts: string[]; minify: boolean; features: ExportFeature[] };
+type Options = {
+  outputDir: string;
+  scripts: string[];
+  cssLinks: string[];
+  minify: boolean;
+  features: ExportFeature[];
+};
 
 /** @private */
 export async function unstable_exportStaticAsync(projectRoot: string, options: Options) {
@@ -43,20 +50,21 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
   await devServerManager.stopAsync();
 }
 
-function appendScriptsToHtml(html: string, scripts: string[]) {
-  return html.replace(
-    '</body>',
-    scripts.map((script) => `<script src="${script}" defer></script>`).join('') + '</body>'
-  );
+async function getExpoRoutesAsync(devServerManager: DevServerManager) {
+  const server = devServerManager.getDefaultDevServer();
+  assert(server instanceof MetroBundlerDevServer);
+  return server.getRoutesAsync();
 }
 
-export async function getHtmlFilesToExportFromServerAsync({
+export async function getFilesToExportFromServerAsync({
   requests,
   scripts,
+  cssLinks,
   renderAsync,
 }: {
   requests: string[];
   scripts: string[];
+  cssLinks: string[];
   renderAsync: (pathname: string) => Promise<{
     fetchData: boolean;
     scriptContents: string;
@@ -70,7 +78,30 @@ export async function getHtmlFilesToExportFromServerAsync({
     requests.map(async (pathname) => {
       try {
         const data = await renderAsync(pathname);
-        files.set(pathname + '.html', appendScriptsToHtml(data.renderAsync(), scripts));
+
+        if (data.fetchData) {
+          // console.log('ssr:', pathname);
+        } else {
+          files.set(
+            outputPath,
+            appendLinkToHtml(
+              appendScriptsToHtml(data.renderAsync(), scripts),
+              cssLinks
+                .map((href) => [
+                  {
+                    as: 'style',
+                    rel: 'preload',
+                    href,
+                  },
+                  {
+                    rel: 'stylesheet',
+                    href,
+                  },
+                ])
+                .flat()
+            )
+          );
+        }
       } catch (e: any) {
         // TODO: Format Metro error message better...
         Log.error('Failed to statically render route:', pathname);
@@ -90,7 +121,7 @@ export type ExportFeature = 'html' | 'handlers';
 export async function exportFromServerAsync(
   projectRoot: string,
   devServerManager: DevServerManager,
-  { outputDir, scripts, features }: Options
+  { outputDir, scripts, features, cssLinks }: Options
 ): Promise<void> {
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
@@ -123,6 +154,7 @@ async function exportStaticHtmlFilesAsync(
   const files = await getHtmlFilesToExportFromServerAsync({
     requests: manifest.staticHtmlPaths,
     scripts,
+    cssLinks,
     renderAsync(pathname: string) {
       return server.getStaticPageAsync(pathname, { mode: 'production' });
     },

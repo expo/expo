@@ -215,14 +215,10 @@ export function withExtendedResolver(
         // Node.js runtimes should only be importing main at the moment.
         // This is a temporary fix until we can support the package.json exports.
         mainFields = ['main'];
-      } else if (!env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE) {
+      } else if (env.EXPO_METRO_NO_MAIN_FIELD_OVERRIDE) {
         mainFields = context.mainFields;
       } else if (platform && platform in preferredMainFields) {
         mainFields = preferredMainFields[platform];
-      }
-
-      if (isNode) {
-        mainFields = ['main'];
       }
 
       function doResolve(moduleName: string): Resolution | null {

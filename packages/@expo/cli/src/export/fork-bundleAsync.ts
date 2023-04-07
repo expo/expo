@@ -12,6 +12,7 @@ import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import Metro from 'metro';
 
+import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssDependencies';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 
 export type MetroDevServerOptions = LoadOptions & {
@@ -33,6 +34,7 @@ export type BundleOutput = {
   map?: string;
   hermesBytecodeBundle?: Uint8Array;
   hermesSourcemap?: string;
+  css: CSSAsset[];
   assets: readonly BundleAssetWithFileHashes[];
 };
 
@@ -112,14 +114,16 @@ export async function bundleAsync(
     });
     try {
       const { code, map } = await metroServer.build(bundleOptions);
-      const assets = (await metroServer.getAssets(
-        bundleOptions
-      )) as readonly BundleAssetWithFileHashes[];
+      const [assets, css] = await Promise.all([
+        metroServer.getAssets(bundleOptions),
+        getCssModulesFromBundler(config, metroServer.getBundler(), bundleOptions),
+      ]);
+
       reporter.update({
         buildID,
         type: 'bundle_build_done',
       });
-      return { code, map, assets };
+      return { code, map, assets: assets as readonly BundleAssetWithFileHashes[], css };
     } catch (error) {
       reporter.update({
         buildID,

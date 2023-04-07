@@ -45,6 +45,7 @@ void JSIInteropModuleRegistry::installJSI(
   jsRegistry = std::make_unique<JSReferencesCache>(*runtime);
 
   runtimeHolder = std::make_shared<JavaScriptRuntime>(
+    this,
     runtime,
     jsInvokerHolder->cthis()->getCallInvoker(),
     nativeInvokerHolder->cthis()->getCallInvoker()
@@ -76,7 +77,7 @@ void JSIInteropModuleRegistry::installJSIForTests() {
 #if !UNIT_TEST
   throw std::logic_error("The function is only available when UNIT_TEST is defined.");
 #else
-  runtimeHolder = std::make_shared<JavaScriptRuntime>();
+  runtimeHolder = std::make_shared<JavaScriptRuntime>(this);
   jsi::Runtime &jsiRuntime = runtimeHolder->get();
 
   jsRegistry = std::make_unique<JSReferencesCache>(jsiRuntime);
