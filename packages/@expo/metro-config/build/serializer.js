@@ -109,7 +109,7 @@ function serializeWithEnvironmentVariables(entryPoint, preModules, graph, option
   return [entryPoint, preModules, graph, options];
 }
 function getEnvPrelude(contents) {
-  const code = '// Injected by Expo CLI\n' + contents;
+  const code = '// HMR env vars from Expo CLI (dev-only)\n' + contents;
   const name = '__env__';
   return {
     dependencies: new Map(),

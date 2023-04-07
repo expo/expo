@@ -107,7 +107,7 @@ export function serializeWithEnvironmentVariables(
 }
 
 function getEnvPrelude(contents: string): Module<MixedOutput> {
-  const code = '// Injected by Expo CLI\n' + contents;
+  const code = '// HMR env vars from Expo CLI (dev-only)\n' + contents;
   const name = '__env__';
 
   return {
