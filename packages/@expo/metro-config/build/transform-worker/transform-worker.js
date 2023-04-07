@@ -25,9 +25,9 @@ function _cssModules() {
   };
   return data;
 }
-function _postcss() {
-  const data = require("./postcss");
-  _postcss = function () {
+function _sass() {
+  const data = require("./sass");
+  _sass = function () {
     return data;
   };
   return data;
@@ -52,11 +52,16 @@ async function transform(config, projectRoot, filename, data, options) {
   }
   let code = data.toString('utf8');
 
-  // Apply postcss transforms
-  code = await (0, _postcss().transformPostCssModule)(projectRoot, {
-    src: code,
-    filename
-  });
+  // TODO: When native has CSS support, this will need to move higher up.
+  const syntax = (0, _sass().matchSass)(filename);
+  if (syntax) {
+    code = (0, _sass().compileSass)(projectRoot, {
+      filename,
+      src: code
+    }, {
+      syntax
+    }).src;
+  }
 
   // If the file is a CSS Module, then transform it to a JS module
   // in development and a static CSS file in production.

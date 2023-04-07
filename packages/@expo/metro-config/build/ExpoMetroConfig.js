@@ -18,13 +18,6 @@ Object.defineProperty(exports, "MetroConfig", {
 });
 exports.getDefaultConfig = getDefaultConfig;
 exports.loadAsync = loadAsync;
-function _config() {
-  const data = require("@expo/config");
-  _config = function () {
-    return data;
-  };
-  return data;
-}
 function _paths() {
   const data = require("@expo/config/paths");
   _paths = function () {
@@ -32,16 +25,16 @@ function _paths() {
   };
   return data;
 }
-function _chalk() {
-  const data = _interopRequireDefault(require("chalk"));
-  _chalk = function () {
+function _jsonFile() {
+  const data = _interopRequireDefault(require("@expo/json-file"));
+  _jsonFile = function () {
     return data;
   };
   return data;
 }
-function _metroCache() {
-  const data = require("metro-cache");
-  _metroCache = function () {
+function _chalk() {
+  const data = _interopRequireDefault(require("chalk"));
+  _chalk = function () {
     return data;
   };
   return data;
@@ -102,18 +95,10 @@ function _rewriteRequestUrl() {
   };
   return data;
 }
-function _postcss() {
-  const data = require("./transform-worker/postcss");
-  _postcss = function () {
-    return data;
-  };
-  return data;
-}
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 
-// @ts-expect-error: incorrectly typed
-
+const debug = require('debug')('expo:metro:config');
 function getProjectBabelConfigFile(projectRoot) {
   return _resolveFrom().default.silent(projectRoot, './babel.config.js') || _resolveFrom().default.silent(projectRoot, './.babelrc') || _resolveFrom().default.silent(projectRoot, './.babelrc.js');
 }
@@ -147,8 +132,12 @@ function getDefaultConfig(projectRoot, options = {}) {
     isModern: false
   };
   const sourceExts = (0, _paths().getBareExtensions)([], sourceExtsConfig);
+  let sassVersion = null;
   if (options.isCSSEnabled) {
-    sourceExts.push('css');
+    sassVersion = getSassVersion(projectRoot);
+    // Enable SCSS by default so we can provide a better error message
+    // when sass isn't installed.
+    sourceExts.push('scss', 'sass', 'css');
   }
   if (isExotic) {
     // Add support for cjs (without platform extensions).
@@ -164,7 +153,6 @@ function getDefaultConfig(projectRoot, options = {}) {
     resolverMainFields.push('react-native');
   }
   resolverMainFields.push('browser', 'main');
-  const pkg = (0, _config().getPackageJson)(projectRoot);
   const watchFolders = (0, _getWatchFolders().getWatchFolders)(projectRoot);
   // TODO: nodeModulesPaths does not work with the new Node.js package.json exports API, this causes packages like uuid to fail. Disabling for now.
   const nodeModulesPaths = (0, _getModulesPaths().getModulesPaths)(projectRoot);
@@ -181,6 +169,7 @@ function getDefaultConfig(projectRoot, options = {}) {
     console.log(`- Watch Folders: ${watchFolders.join(', ')}`);
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
     console.log(`- Exotic: ${isExotic}`);
+    console.log(`- Sass: ${sassVersion}`);
     console.log();
   }
   const {
@@ -224,10 +213,9 @@ function getDefaultConfig(projectRoot, options = {}) {
     // Custom worker that adds CSS support for Metro web.
     require.resolve('./transform-worker/transform-worker') : metroDefaultValues.transformerPath,
     transformer: {
-      // Custom: These are passed to `getCacheKey`
-      // @ts-expect-error: not on type.
-      postcssHash: (0, _postcss().getPostcssConfigHash)(projectRoot),
-      browserslistHash: pkg.browserslist ? (0, _metroCache().stableHash)(JSON.stringify(pkg.browserslist)).toString('hex') : null,
+      // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
+      // @ts-expect-error
+      sassVersion,
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
@@ -266,4 +254,25 @@ async function loadAsync(projectRoot, {
 // re-export for legacy cases.
 const EXPO_DEBUG = _env().env.EXPO_DEBUG;
 exports.EXPO_DEBUG = EXPO_DEBUG;
+function getSassVersion(projectRoot) {
+  const sassPkg = _resolveFrom().default.silent(projectRoot, 'sass');
+  if (!sassPkg) return null;
+  const sassPkgJson = findUpPackageJson(sassPkg);
+  if (!sassPkgJson) return null;
+  const pkg = _jsonFile().default.read(sassPkgJson);
+  debug('sass package.json:', sassPkgJson);
+  const sassVersion = pkg.version;
+  if (typeof sassVersion === 'string') {
+    return sassVersion;
+  }
+  return null;
+}
+function findUpPackageJson(cwd) {
+  if (['.', _path().default.sep].includes(cwd)) return null;
+  const found = _resolveFrom().default.silent(cwd, './package.json');
+  if (found) {
+    return found;
+  }
+  return findUpPackageJson(_path().default.dirname(cwd));
+}
 //# sourceMappingURL=ExpoMetroConfig.js.map

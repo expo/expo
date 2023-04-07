@@ -81,7 +81,7 @@ const STYLES_LINK = css`
   color: ${theme.text.secondary};
   transition: 50ms ease color;
   align-items: center;
-  padding-left: ${spacing[4] + spacing[0.5]}px;
+  padding-left: ${spacing[2]}px;
   scroll-margin: 60px;
   width: 100%;
 
@@ -97,6 +97,7 @@ const STYLES_LINK = css`
 const STYLES_LINK_ACTIVE = css`
   color: ${theme.text.link};
   padding-left: 0;
+  margin-left: -${spacing[2.5]}px;
 `;
 
 const STYLES_CONTAINER = css`
