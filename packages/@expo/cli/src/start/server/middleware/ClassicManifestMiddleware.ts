@@ -26,7 +26,10 @@ type SignManifestProps = {
   acceptSignature: boolean;
 };
 
-interface ClassicManifestRequestInfo extends ManifestRequestInfo {}
+interface ClassicManifestRequestInfo extends ManifestRequestInfo {
+  /** Should return the signed manifest. */
+  acceptSignature: boolean;
+}
 
 const debug = require('debug')(
   'expo:start:server:middleware:ClassicManifestMiddleware'
@@ -41,6 +44,18 @@ export class ClassicManifestMiddleware extends ManifestMiddleware<ClassicManifes
       acceptSignature: this.getLegacyAcceptSignatureHeader(req),
       hostname: stripPort(req.headers['host']),
     };
+  }
+
+  /**
+   * This header is specified as a string "true" or "false", in one of two headers:
+   * - exponent-accept-signature
+   * - expo-accept-signature
+   */
+  private getLegacyAcceptSignatureHeader(req: ServerRequest): boolean {
+    return (
+      req.headers['exponent-accept-signature'] === 'true' ||
+      req.headers['expo-accept-signature'] === 'true'
+    );
   }
 
   public async _getManifestResponseAsync({
