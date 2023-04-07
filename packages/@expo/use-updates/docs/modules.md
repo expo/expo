@@ -42,7 +42,7 @@ or an [`UpdateEvent`](#updateevent) emitted by native code.
 
 #### Defined in
 
-[UseUpdates.types.ts:69](https://github.com/expo/expo/blob/90e5f64cbc/packages/@expo/use-updates/src/UseUpdates.types.ts#L69)
+[UseUpdates.types.ts:69](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.types.ts#L69)
 
 ___
 
@@ -67,7 +67,7 @@ Structure encapsulating information on the currently running app
 
 #### Defined in
 
-[UseUpdates.types.ts:15](https://github.com/expo/expo/blob/90e5f64cbc/packages/@expo/use-updates/src/UseUpdates.types.ts#L15)
+[UseUpdates.types.ts:15](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.types.ts#L15)
 
 ___
 
@@ -83,12 +83,12 @@ An object that is passed into each event listener when an auto-update check occu
 | :------ | :------ | :------ |
 | `error?` | `Error` | If `type` is `UseUpdatesEventType.ERROR`, the error, and `undefined` otherwise. |
 | `logEntries?` | `UpdatesLogEntry`[] | If `type` is `UseUpdatesEventType.READ_LOG_ENTRIES_COMPLETE`, the log entries returned, and `undefined` otherwise. |
-| `manifest?` | `Manifest` | If `type` is `UseUpdatesEvent.UPDATE_AVAILABLE`, the manifest of the newly downloaded update, and `undefined` otherwise. |
+| `manifest?` | `Manifest` | If `type` is `UseUpdatesEvent.UPDATE_AVAILABLE` or `UseUpdatesEvent.DOWNLOAD_COMPLETE`, the manifest of the new update, and `undefined` otherwise. |
 | `type` | [`UseUpdatesEventType`](enums/UseUpdatesEventType.md) | Type of the event. |
 
 #### Defined in
 
-[UseUpdates.types.ts:164](https://github.com/expo/expo/blob/90e5f64cbc/packages/@expo/use-updates/src/UseUpdates.types.ts#L164)
+[UseUpdates.types.ts:174](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.types.ts#L174)
 
 ___
 
@@ -105,12 +105,14 @@ The structures and methods returned by `useUpdates()`.
 | `availableUpdate?` | [`AvailableUpdateInfo`](modules.md#availableupdateinfo) | If a new available update has been found, either by using checkForUpdate(), or by the `UpdateEvent` listener in `useUpdates()`, this will contain the information for that update. |
 | `currentlyRunning` | [`CurrentlyRunningInfo`](modules.md#currentlyrunninginfo) | Information on the currently running app |
 | `error?` | `Error` | If an error is returned by any of the APIs to check for, download, or launch updates, the error description will appear here. |
+| `isUpdateAvailable` | `boolean` | True if a new available update has been found, false otherwise. |
+| `isUpdatePending` | `boolean` | True if a new available update is available and has been downloaded. |
 | `lastCheckForUpdateTimeSinceRestart?` | `Date` | A `Date` object representing the last time this client checked for an available update, or `undefined` if no check has yet occurred since the app started. Does not persist across app reloads or restarts. |
 | `logEntries?` | `UpdatesLogEntry`[] | If present, contains items of type [UpdatesLogEntry](https://docs.expo.dev/versions/latest/sdk/updates/#updateslogentry) returned by the `getLogEntries()` method. |
 
 #### Defined in
 
-[UseUpdates.types.ts:89](https://github.com/expo/expo/blob/90e5f64cbc/packages/@expo/use-updates/src/UseUpdates.types.ts#L89)
+[UseUpdates.types.ts:89](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.types.ts#L89)
 
 ## Functions
 
@@ -127,7 +129,7 @@ If an error occurs, the `error` property will be set.
 
 #### Defined in
 
-[UseUpdates.ts:17](https://github.com/expo/expo/blob/90e5f64cbc/packages/@expo/use-updates/src/UseUpdates.ts#L17)
+[UseUpdates.ts:17](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.ts#L17)
 
 ___
 
@@ -144,7 +146,7 @@ If an error occurs, the `error` property will be set.
 
 #### Defined in
 
-[UseUpdates.ts:42](https://github.com/expo/expo/blob/90e5f64cbc/packages/@expo/use-updates/src/UseUpdates.ts#L42)
+[UseUpdates.ts:42](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.ts#L42)
 
 ___
 
@@ -167,7 +169,7 @@ If an error occurs, the `error` property will be set.
 
 #### Defined in
 
-[UseUpdates.ts:80](https://github.com/expo/expo/blob/90e5f64cbc/packages/@expo/use-updates/src/UseUpdates.ts#L80)
+[UseUpdates.ts:80](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.ts#L80)
 
 ___
 
@@ -185,7 +187,7 @@ If an error occurs, the `error` property will be set.
 
 #### Defined in
 
-[UseUpdates.ts:65](https://github.com/expo/expo/blob/90e5f64cbc/packages/@expo/use-updates/src/UseUpdates.ts#L65)
+[UseUpdates.ts:65](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.ts#L65)
 
 ___
 
@@ -256,4 +258,4 @@ the structures with information on currently running and available updates.
 
 #### Defined in
 
-[UseUpdates.ts:149](https://github.com/expo/expo/blob/90e5f64cbc/packages/@expo/use-updates/src/UseUpdates.ts#L149)
+[UseUpdates.ts:149](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.ts#L149)

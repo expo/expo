@@ -68,6 +68,8 @@ describe('useUpdates()', () => {
         // truncate the fractional part of the seconds value in the time
         lastCheckForUpdateTime.toISOString().substring(0, 19)
       );
+      const isUpdateAvailableView = await screen.findByTestId('isUpdateAvailable');
+      expect(isUpdateAvailableView).toHaveTextContent('true');
       expect(eventListener).toHaveBeenCalledWith({
         type: UseUpdatesEventType.UPDATE_AVAILABLE,
         manifest: mockManifest,
@@ -97,7 +99,7 @@ describe('useUpdates()', () => {
         lastCheckForUpdateTime.toISOString().substring(0, 19)
       );
       const isUpdateAvailableView = await screen.findByTestId('isUpdateAvailable');
-      expect(isUpdateAvailableView).toHaveTextContent('true');
+      expect(isUpdateAvailableView).toHaveTextContent('false');
       expect(eventListener).toHaveBeenCalledWith({
         type: UseUpdatesEventType.NO_UPDATE_AVAILABLE,
       });
@@ -114,24 +116,85 @@ describe('useUpdates()', () => {
       });
       const errorView = await screen.findByTestId('error');
       expect(errorView).toHaveTextContent('test message');
+      const isUpdateAvailableView = await screen.findByTestId('isUpdateAvailable');
+      expect(isUpdateAvailableView).toHaveTextContent('false');
       expect(eventListener).toHaveBeenCalledWith({
         type: UseUpdatesEventType.ERROR,
         error: mockError,
       });
     });
 
-    it('Calls callbacks during downloadUpdate()', async () => {
+    it('downloadUpdate() succeeds when manifest included in event', async () => {
       const eventListener = jest.fn();
       render(<UseUpdatesTestApp eventListener={eventListener} />);
-      const mockResponse: any = {
-        isNew: true,
-        manifest: { name: 'test' },
+      const mockDate = new Date();
+      const mockManifest = {
+        id: '0000-2222',
+        createdAt: mockDate.toISOString(),
+        runtimeVersion: '1.0.0',
+        launchAsset: {
+          url: 'testUrl',
+        },
+        assets: [],
+        metadata: {},
       };
-      jest.spyOn(Updates, 'fetchUpdateAsync').mockResolvedValueOnce(mockResponse);
+      const mockDownloadResponse: any = {
+        isNew: true,
+        manifest: mockManifest,
+      };
+      jest.spyOn(Updates, 'fetchUpdateAsync').mockResolvedValueOnce(mockDownloadResponse);
       const buttonView = await screen.findByTestId('downloadUpdate');
       await act(async () => {
         fireEvent(buttonView, 'press');
       });
+      const isUpdateAvailableView = await screen.findByTestId('isUpdateAvailable');
+      expect(isUpdateAvailableView).toHaveTextContent('true');
+      const isUpdatePendingView = await screen.findByTestId('isUpdatePending');
+      expect(isUpdatePendingView).toHaveTextContent('true');
+      expect(eventListener).toHaveBeenCalledWith({
+        type: UseUpdatesEventType.DOWNLOAD_START,
+      });
+      expect(eventListener).toHaveBeenCalledWith({
+        type: UseUpdatesEventType.DOWNLOAD_COMPLETE,
+      });
+    });
+
+    it('downloadUpdate() succeeds when manifest not included in event, checkForUpdate has already run successfully', async () => {
+      const eventListener = jest.fn();
+      render(<UseUpdatesTestApp eventListener={eventListener} />);
+      const mockDate = new Date();
+      const mockManifest = {
+        id: '0000-2222',
+        createdAt: mockDate.toISOString(),
+        runtimeVersion: '1.0.0',
+        launchAsset: {
+          url: 'testUrl',
+        },
+        assets: [],
+        metadata: {},
+      };
+      const mockCheckResponse: UpdateCheckResult = {
+        isAvailable: true,
+        isRollBackToEmbedded: false,
+        manifest: mockManifest,
+      };
+      const mockDownloadResponse: any = {
+        isNew: false,
+      };
+      jest.spyOn(Updates, 'checkForUpdateAsync').mockResolvedValueOnce(mockCheckResponse);
+      jest.spyOn(Updates, 'fetchUpdateAsync').mockResolvedValueOnce(mockDownloadResponse);
+      const checkButtonView = await screen.findByTestId('checkForUpdate');
+      await act(async () => {
+        fireEvent(checkButtonView, 'press');
+      });
+      const downloadButtonView = await screen.findByTestId('downloadUpdate');
+      await act(async () => {
+        fireEvent(downloadButtonView, 'press');
+      });
+      const isUpdateAvailableView = await screen.findByTestId('isUpdateAvailable');
+      expect(isUpdateAvailableView).toHaveTextContent('true');
+      const isUpdatePendingView = await screen.findByTestId('isUpdatePending');
+      expect(isUpdatePendingView).toHaveTextContent('true');
       expect(eventListener).toHaveBeenCalledWith({
         type: UseUpdatesEventType.DOWNLOAD_START,
       });
@@ -151,6 +214,10 @@ describe('useUpdates()', () => {
       });
       const errorView = await screen.findByTestId('error');
       expect(errorView).toHaveTextContent('test message');
+      const isUpdateAvailableView = await screen.findByTestId('isUpdateAvailable');
+      expect(isUpdateAvailableView).toHaveTextContent('false');
+      const isUpdatePendingView = await screen.findByTestId('isUpdatePending');
+      expect(isUpdatePendingView).toHaveTextContent('false');
       expect(eventListener).toHaveBeenCalledWith({
         type: UseUpdatesEventType.DOWNLOAD_START,
       });

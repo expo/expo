@@ -153,13 +153,25 @@ export const useUpdates = (eventListener) => {
         eventListenerRef?.current && eventListenerRef?.current(event);
         const { availableUpdate, error } = availableUpdateFromEvent(event);
         switch (event.type) {
-            case UseUpdatesEventType.UPDATE_AVAILABLE:
             case UseUpdatesEventType.NO_UPDATE_AVAILABLE:
-            case UseUpdatesEventType.ERROR:
+                setUpdatesState((updatesState) => ({
+                    ...updatesState,
+                    availableUpdate,
+                    isUpdateAvailable: false,
+                    lastCheckForUpdateTimeSinceRestart: new Date(),
+                }));
+                break;
+            case UseUpdatesEventType.UPDATE_AVAILABLE:
                 setUpdatesState((updatesState) => ({
                     ...updatesState,
                     availableUpdate,
                     isUpdateAvailable: true,
+                    lastCheckForUpdateTimeSinceRestart: new Date(),
+                }));
+                break;
+            case UseUpdatesEventType.ERROR:
+                setUpdatesState((updatesState) => ({
+                    ...updatesState,
                     error,
                     lastCheckForUpdateTimeSinceRestart: new Date(),
                 }));
