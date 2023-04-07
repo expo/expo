@@ -317,6 +317,20 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
   [self updateSessionPreset:_pictureSize];
 }
 
+- (void)updateResponsiveOrientationWhenOrientationLocked
+{
+  if (self.responsiveOrientationWhenOrientationLocked) {
+    [self.motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue new]
+      withHandler:^(CMAccelerometerData  *accelerometerData, NSError *error) {
+        if (!error) {
+          self.physicalOrientation = [EXCameraUtils deviceOrientationForAccelerometerData:self.motionManager.accelerometerData defaultOrientation:self.physicalOrientation];
+        }
+    }];
+  } else {
+    [self.motionManager stopAccelerometerUpdates];
+  }
+}
+
 - (void)setIsScanningBarCodes:(BOOL)barCodeScanning
 {
   if (_barCodeScanner) {
@@ -716,13 +730,6 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
         [self onReady:nil];
       });
     }]];
-
-    [self.motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue new]
-      withHandler:^(CMAccelerometerData  *accelerometerData, NSError *error) {
-        if (!error) {
-          self.physicalOrientation = [EXCameraUtils deviceOrientationForAccelerometerData:self.motionManager.accelerometerData defaultOrientation:self.physicalOrientation];
-        }
-    }];
 
     // when BarCodeScanner is enabled since the beginning of camera component lifecycle,
     // some race condition occurs in reconfiguration and barcodes aren't scanned at all

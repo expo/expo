@@ -95,6 +95,7 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
 - (void)updateZoom;
 - (void)updateWhiteBalance;
 - (void)updatePictureSize;
+- (void)updateResponsiveOrientationWhenOrientationLocked;
 - (void)updateFaceDetectorSettings:(NSDictionary *)settings;
 - (void)setBarCodeScannerSettings:(NSDictionary *)settings;
 - (void)takePicture:(NSDictionary *)options resolve:(EXPromiseResolveBlock)resolve reject:(EXPromiseRejectBlock)reject;
