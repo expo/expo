@@ -42,7 +42,7 @@ or an [`UpdateEvent`](#updateevent) emitted by native code.
 
 #### Defined in
 
-[UseUpdates.types.ts:69](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.types.ts#L69)
+[UseUpdates.types.ts:69](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.types.ts#L69)
 
 ___
 
@@ -67,7 +67,7 @@ Structure encapsulating information on the currently running app
 
 #### Defined in
 
-[UseUpdates.types.ts:15](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.types.ts#L15)
+[UseUpdates.types.ts:15](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.types.ts#L15)
 
 ___
 
@@ -88,7 +88,7 @@ An object that is passed into each event listener when an auto-update check occu
 
 #### Defined in
 
-[UseUpdates.types.ts:174](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.types.ts#L174)
+[UseUpdates.types.ts:174](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.types.ts#L174)
 
 ___
 
@@ -112,7 +112,7 @@ The structures and methods returned by `useUpdates()`.
 
 #### Defined in
 
-[UseUpdates.types.ts:89](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.types.ts#L89)
+[UseUpdates.types.ts:89](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.types.ts#L89)
 
 ## Functions
 
@@ -129,7 +129,7 @@ If an error occurs, the `error` property will be set.
 
 #### Defined in
 
-[UseUpdates.ts:17](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.ts#L17)
+[UseUpdates.ts:17](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.ts#L17)
 
 ___
 
@@ -146,7 +146,7 @@ If an error occurs, the `error` property will be set.
 
 #### Defined in
 
-[UseUpdates.ts:42](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.ts#L42)
+[UseUpdates.ts:42](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.ts#L42)
 
 ___
 
@@ -169,7 +169,7 @@ If an error occurs, the `error` property will be set.
 
 #### Defined in
 
-[UseUpdates.ts:80](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.ts#L80)
+[UseUpdates.ts:80](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.ts#L80)
 
 ___
 
@@ -187,7 +187,7 @@ If an error occurs, the `error` property will be set.
 
 #### Defined in
 
-[UseUpdates.ts:65](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.ts#L65)
+[UseUpdates.ts:65](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.ts#L65)
 
 ___
 
@@ -210,20 +210,20 @@ import {
   checkForUpdate,
   downloadUpdate,
   runUpdate,
-  UseUpdatesEventType,
 } from '@expo/use-updates';
 
 export default function UpdatesDemo() {
-  const eventListener = (event: UseUpdatesEvent) => {
-    if (event.type === UseUpdatesEventType.DOWNLOAD_COMPLETE) {
+  const { currentlyRunning, availableUpdate, isUpdateAvailable, isUpdatePending } = useUpdates();
+
+  React.useEffect(() => {
+    if (isUpdatePending) {
+      // Update has successfully downloaded
       runUpdate();
     }
-  };
-
-  const { currentlyRunning, availableUpdate } = useUpdates(eventListener);
+  }, [isUpdatePending]);
 
   // If true, we show the button to download and run the update
-  const showDownloadButton = availableUpdate !== undefined;
+  const showDownloadButton = isUpdateAvailable;
 
   // Show whether or not we are running embedded code or an update
   const runTypeMessage = currentlyRunning.isEmbeddedLaunch
@@ -258,4 +258,4 @@ the structures with information on currently running and available updates.
 
 #### Defined in
 
-[UseUpdates.ts:149](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.ts#L149)
+[UseUpdates.ts:149](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.ts#L149)

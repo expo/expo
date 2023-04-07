@@ -25,7 +25,7 @@ A call to `downloadUpdate()` has completed successfully.
 
 #### Defined in
 
-[UseUpdates.types.ts:164](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.types.ts#L164)
+[UseUpdates.types.ts:164](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.types.ts#L164)
 
 ___
 
@@ -37,7 +37,7 @@ A call to `downloadUpdate()` has started.
 
 #### Defined in
 
-[UseUpdates.types.ts:160](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.types.ts#L160)
+[UseUpdates.types.ts:160](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.types.ts#L160)
 
 ___
 
@@ -49,7 +49,7 @@ An error occurred.
 
 #### Defined in
 
-[UseUpdates.types.ts:156](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.types.ts#L156)
+[UseUpdates.types.ts:156](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.types.ts#L156)
 
 ___
 
@@ -64,7 +64,7 @@ are enabled), or from the completion of checkForUpdate().
 
 #### Defined in
 
-[UseUpdates.types.ts:152](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.types.ts#L152)
+[UseUpdates.types.ts:152](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.types.ts#L152)
 
 ___
 
@@ -76,7 +76,7 @@ A call to `readLogEntries()` has completed successfully.
 
 #### Defined in
 
-[UseUpdates.types.ts:168](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.types.ts#L168)
+[UseUpdates.types.ts:168](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.types.ts#L168)
 
 ___
 
@@ -90,4 +90,4 @@ are enabled), or from the completion of checkForUpdate().
 
 #### Defined in
 
-[UseUpdates.types.ts:145](https://github.com/expo/expo/blob/104b98ab49/packages/@expo/use-updates/src/UseUpdates.types.ts#L145)
+[UseUpdates.types.ts:145](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.types.ts#L145)

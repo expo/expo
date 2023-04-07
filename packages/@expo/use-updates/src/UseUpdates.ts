@@ -112,20 +112,20 @@ export const readLogEntries: (maxAge?: number) => void = (maxAge: number = 36000
  *   checkForUpdate,
  *   downloadUpdate,
  *   runUpdate,
- *   UseUpdatesEventType,
  * } from '@expo/use-updates';
  *
  * export default function UpdatesDemo() {
- *   const eventListener = (event: UseUpdatesEvent) => {
- *     if (event.type === UseUpdatesEventType.DOWNLOAD_COMPLETE) {
+ *   const { currentlyRunning, availableUpdate, isUpdateAvailable, isUpdatePending } = useUpdates();
+ *
+ *   React.useEffect(() => {
+ *     if (isUpdatePending) {
+ *       // Update has successfully downloaded
  *       runUpdate();
  *     }
- *   };
- *
- *   const { currentlyRunning, availableUpdate } = useUpdates(eventListener);
+ *   }, [isUpdatePending]);
  *
  *   // If true, we show the button to download and run the update
- *   const showDownloadButton = availableUpdate !== undefined;
+ *   const showDownloadButton = isUpdateAvailable;
  *
  *   // Show whether or not we are running embedded code or an update
  *   const runTypeMessage = currentlyRunning.isEmbeddedLaunch
