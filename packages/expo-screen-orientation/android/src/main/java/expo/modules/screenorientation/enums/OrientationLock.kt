@@ -33,7 +33,7 @@ enum class OrientationLock(val value: Int) : Enumerable {
     fun fromPlatformInt(value: Int) = OrientationAttr.fromInt(value).toOrientationLock()
 
     // Other and Unknown can be assigned but are not valid orientation locks
-    fun supportsOrientationLock(value: Int): Boolean=
-       OrientationLock.values().any{it.value == value} && value !=8 && value != 9
+    fun supportsOrientationLock(value: Int): Boolean =
+      OrientationLock.values().any { it.value == value } && value != 8 && value != 9
   }
 }
