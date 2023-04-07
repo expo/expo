@@ -1,5 +1,5 @@
 import * as Updates from 'expo-updates';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 import { UseUpdatesEventType, } from './UseUpdates.types';
 import { emitEvent, useUpdateEvents } from './UseUpdatesEmitter';
 import { currentlyRunning, availableUpdateFromEvent } from './UseUpdatesUtils';
@@ -87,8 +87,6 @@ export const readLogEntries = (maxAge = 3600000) => {
 /**
  * Hook that obtains information on available updates and on the currently running update.
  *
- * @param eventListener Optional event listener that will receive events from the `UseUpdatesEvent` emitter.
- *
  * @return the structures with information on currently running and available updates.
  *
  * @example
@@ -137,20 +135,15 @@ export const readLogEntries = (maxAge = 3600000) => {
  * }
  * ```
  */
-export const useUpdates = (eventListener) => {
+export const useUpdates = () => {
     const [updatesState, setUpdatesState] = useState({
         isUpdateAvailable: false,
         isUpdatePending: false,
     });
-    const eventListenerRef = useRef();
-    useEffect(() => {
-        eventListenerRef.current = eventListener;
-    }, [eventListener]);
     // Set up listener for events from automatic update requests
     // that happen on startup, and use events to refresh the updates info
     // context
     useUpdateEvents((event) => {
-        eventListenerRef?.current && eventListenerRef?.current(event);
         const { availableUpdate, error } = availableUpdateFromEvent(event);
         switch (event.type) {
             case UseUpdatesEventType.NO_UPDATE_AVAILABLE:

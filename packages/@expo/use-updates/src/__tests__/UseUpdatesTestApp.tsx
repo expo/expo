@@ -2,11 +2,10 @@ import React from 'react';
 import { View, Text, Pressable } from 'react-native';
 
 import * as UseUpdates from '..';
-import type { UseUpdatesEvent } from '..';
 
 const { useUpdates, checkForUpdate, downloadUpdate, readLogEntries } = UseUpdates;
 
-const UseUpdatesTestApp = (props: { eventListener?: (event: UseUpdatesEvent) => void }) => {
+const UseUpdatesTestApp = () => {
   const {
     currentlyRunning,
     availableUpdate,
@@ -15,7 +14,7 @@ const UseUpdatesTestApp = (props: { eventListener?: (event: UseUpdatesEvent) => 
     error,
     lastCheckForUpdateTimeSinceRestart,
     logEntries,
-  } = useUpdates(props.eventListener);
+  } = useUpdates();
   return (
     <View>
       {/* Currently running info */}

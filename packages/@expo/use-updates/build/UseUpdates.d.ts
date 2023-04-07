@@ -1,4 +1,4 @@
-import { UseUpdatesReturnType, UseUpdatesEvent } from './UseUpdates.types';
+import { UseUpdatesReturnType } from './UseUpdates.types';
 /**
  * Calls `Updates.checkForUpdateAsync()` and refreshes the `availableUpdate` property with the result.
  * If an error occurs, the `error` property will be set.
@@ -24,8 +24,6 @@ export declare const runUpdate: () => void;
 export declare const readLogEntries: (maxAge?: number) => void;
 /**
  * Hook that obtains information on available updates and on the currently running update.
- *
- * @param eventListener Optional event listener that will receive events from the `UseUpdatesEvent` emitter.
  *
  * @return the structures with information on currently running and available updates.
  *
@@ -75,5 +73,5 @@ export declare const readLogEntries: (maxAge?: number) => void;
  * }
  * ```
  */
-export declare const useUpdates: (eventListener?: (event: UseUpdatesEvent) => void) => UseUpdatesReturnType;
+export declare const useUpdates: () => UseUpdatesReturnType;
 //# sourceMappingURL=UseUpdates.d.ts.map

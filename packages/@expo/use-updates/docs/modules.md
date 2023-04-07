@@ -4,15 +4,10 @@
 
 ## Table of contents
 
-### Enumerations
-
-- [UseUpdatesEventType](enums/UseUpdatesEventType.md)
-
 ### Type Aliases
 
 - [AvailableUpdateInfo](modules.md#availableupdateinfo)
 - [CurrentlyRunningInfo](modules.md#currentlyrunninginfo)
-- [UseUpdatesEvent](modules.md#useupdatesevent)
 - [UseUpdatesReturnType](modules.md#useupdatesreturntype)
 
 ### Functions
@@ -42,7 +37,7 @@ or an [`UpdateEvent`](#updateevent) emitted by native code.
 
 #### Defined in
 
-[UseUpdates.types.ts:69](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.types.ts#L69)
+[UseUpdates.types.ts:69](https://github.com/expo/expo/blob/5d51177373/packages/@expo/use-updates/src/UseUpdates.types.ts#L69)
 
 ___
 
@@ -67,28 +62,7 @@ Structure encapsulating information on the currently running app
 
 #### Defined in
 
-[UseUpdates.types.ts:15](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.types.ts#L15)
-
-___
-
-### UseUpdatesEvent
-
-Ƭ **UseUpdatesEvent**: `Object`
-
-An object that is passed into each event listener when an auto-update check occurs.
-
-#### Type declaration
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `error?` | `Error` | If `type` is `UseUpdatesEventType.ERROR`, the error, and `undefined` otherwise. |
-| `logEntries?` | `UpdatesLogEntry`[] | If `type` is `UseUpdatesEventType.READ_LOG_ENTRIES_COMPLETE`, the log entries returned, and `undefined` otherwise. |
-| `manifest?` | `Manifest` | If `type` is `UseUpdatesEvent.UPDATE_AVAILABLE` or `UseUpdatesEvent.DOWNLOAD_COMPLETE`, the manifest of the new update, and `undefined` otherwise. |
-| `type` | [`UseUpdatesEventType`](enums/UseUpdatesEventType.md) | Type of the event. |
-
-#### Defined in
-
-[UseUpdates.types.ts:174](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.types.ts#L174)
+[UseUpdates.types.ts:15](https://github.com/expo/expo/blob/5d51177373/packages/@expo/use-updates/src/UseUpdates.types.ts#L15)
 
 ___
 
@@ -112,7 +86,7 @@ The structures and methods returned by `useUpdates()`.
 
 #### Defined in
 
-[UseUpdates.types.ts:89](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.types.ts#L89)
+[UseUpdates.types.ts:89](https://github.com/expo/expo/blob/5d51177373/packages/@expo/use-updates/src/UseUpdates.types.ts#L89)
 
 ## Functions
 
@@ -129,7 +103,7 @@ If an error occurs, the `error` property will be set.
 
 #### Defined in
 
-[UseUpdates.ts:17](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.ts#L17)
+[UseUpdates.ts:17](https://github.com/expo/expo/blob/5d51177373/packages/@expo/use-updates/src/UseUpdates.ts#L17)
 
 ___
 
@@ -146,7 +120,7 @@ If an error occurs, the `error` property will be set.
 
 #### Defined in
 
-[UseUpdates.ts:42](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.ts#L42)
+[UseUpdates.ts:42](https://github.com/expo/expo/blob/5d51177373/packages/@expo/use-updates/src/UseUpdates.ts#L42)
 
 ___
 
@@ -169,7 +143,7 @@ If an error occurs, the `error` property will be set.
 
 #### Defined in
 
-[UseUpdates.ts:80](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.ts#L80)
+[UseUpdates.ts:80](https://github.com/expo/expo/blob/5d51177373/packages/@expo/use-updates/src/UseUpdates.ts#L80)
 
 ___
 
@@ -187,13 +161,13 @@ If an error occurs, the `error` property will be set.
 
 #### Defined in
 
-[UseUpdates.ts:65](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.ts#L65)
+[UseUpdates.ts:65](https://github.com/expo/expo/blob/5d51177373/packages/@expo/use-updates/src/UseUpdates.ts#L65)
 
 ___
 
 ### useUpdates
 
-▸ **useUpdates**(`eventListener?`): [`UseUpdatesReturnType`](modules.md#useupdatesreturntype)
+▸ **useUpdates**(): [`UseUpdatesReturnType`](modules.md#useupdatesreturntype)
 
 Hook that obtains information on available updates and on the currently running update.
 
@@ -244,12 +218,6 @@ export default function UpdatesDemo() {
 }
 ```
 
-#### Parameters
-
-| Name | Type | Description |
-| :------ | :------ | :------ |
-| `eventListener?` | (`event`: [`UseUpdatesEvent`](modules.md#useupdatesevent)) => `void` | Optional event listener that will receive events from the `UseUpdatesEvent` emitter. |
-
 #### Returns
 
 [`UseUpdatesReturnType`](modules.md#useupdatesreturntype)
@@ -258,4 +226,4 @@ the structures with information on currently running and available updates.
 
 #### Defined in
 
-[UseUpdates.ts:149](https://github.com/expo/expo/blob/4361432752/packages/@expo/use-updates/src/UseUpdates.ts#L149)
+[UseUpdates.ts:147](https://github.com/expo/expo/blob/5d51177373/packages/@expo/use-updates/src/UseUpdates.ts#L147)

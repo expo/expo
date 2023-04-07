@@ -37,8 +37,7 @@ describe('useUpdates()', () => {
     });
 
     it('Shows available update after running checkForUpdate()', async () => {
-      const eventListener = jest.fn();
-      render(<UseUpdatesTestApp eventListener={eventListener} />);
+      render(<UseUpdatesTestApp />);
       const mockDate = new Date();
       const mockManifest = {
         id: '0000-2222',
@@ -70,15 +69,10 @@ describe('useUpdates()', () => {
       );
       const isUpdateAvailableView = await screen.findByTestId('isUpdateAvailable');
       expect(isUpdateAvailableView).toHaveTextContent('true');
-      expect(eventListener).toHaveBeenCalledWith({
-        type: UseUpdatesEventType.UPDATE_AVAILABLE,
-        manifest: mockManifest,
-      });
     });
 
     it('Shows no available update after running checkForUpdate()', async () => {
-      const eventListener = jest.fn();
-      render(<UseUpdatesTestApp eventListener={eventListener} />);
+      render(<UseUpdatesTestApp />);
       const mockResponse: UpdateCheckResult = {
         isAvailable: false,
         isRollBackToEmbedded: false,
@@ -100,14 +94,10 @@ describe('useUpdates()', () => {
       );
       const isUpdateAvailableView = await screen.findByTestId('isUpdateAvailable');
       expect(isUpdateAvailableView).toHaveTextContent('false');
-      expect(eventListener).toHaveBeenCalledWith({
-        type: UseUpdatesEventType.NO_UPDATE_AVAILABLE,
-      });
     });
 
     it('Handles error in checkForUpdate()', async () => {
-      const eventListener = jest.fn();
-      render(<UseUpdatesTestApp eventListener={eventListener} />);
+      render(<UseUpdatesTestApp />);
       const mockError = { code: 'ERR_TEST', message: 'test message' };
       jest.spyOn(Updates, 'checkForUpdateAsync').mockRejectedValueOnce(mockError);
       const buttonView = await screen.findByTestId('checkForUpdate');
@@ -118,15 +108,10 @@ describe('useUpdates()', () => {
       expect(errorView).toHaveTextContent('test message');
       const isUpdateAvailableView = await screen.findByTestId('isUpdateAvailable');
       expect(isUpdateAvailableView).toHaveTextContent('false');
-      expect(eventListener).toHaveBeenCalledWith({
-        type: UseUpdatesEventType.ERROR,
-        error: mockError,
-      });
     });
 
     it('downloadUpdate() succeeds when manifest included in event', async () => {
-      const eventListener = jest.fn();
-      render(<UseUpdatesTestApp eventListener={eventListener} />);
+      render(<UseUpdatesTestApp />);
       const mockDate = new Date();
       const mockManifest = {
         id: '0000-2222',
@@ -151,17 +136,10 @@ describe('useUpdates()', () => {
       expect(isUpdateAvailableView).toHaveTextContent('true');
       const isUpdatePendingView = await screen.findByTestId('isUpdatePending');
       expect(isUpdatePendingView).toHaveTextContent('true');
-      expect(eventListener).toHaveBeenCalledWith({
-        type: UseUpdatesEventType.DOWNLOAD_START,
-      });
-      expect(eventListener).toHaveBeenCalledWith({
-        type: UseUpdatesEventType.DOWNLOAD_COMPLETE,
-      });
     });
 
     it('downloadUpdate() succeeds when manifest not included in event, checkForUpdate has already run successfully', async () => {
-      const eventListener = jest.fn();
-      render(<UseUpdatesTestApp eventListener={eventListener} />);
+      render(<UseUpdatesTestApp />);
       const mockDate = new Date();
       const mockManifest = {
         id: '0000-2222',
@@ -195,17 +173,10 @@ describe('useUpdates()', () => {
       expect(isUpdateAvailableView).toHaveTextContent('true');
       const isUpdatePendingView = await screen.findByTestId('isUpdatePending');
       expect(isUpdatePendingView).toHaveTextContent('true');
-      expect(eventListener).toHaveBeenCalledWith({
-        type: UseUpdatesEventType.DOWNLOAD_START,
-      });
-      expect(eventListener).toHaveBeenCalledWith({
-        type: UseUpdatesEventType.DOWNLOAD_COMPLETE,
-      });
     });
 
     it('Handles error during downloadUpdate()', async () => {
-      const eventListener = jest.fn();
-      render(<UseUpdatesTestApp eventListener={eventListener} />);
+      render(<UseUpdatesTestApp />);
       const mockError = { code: 'ERR_TEST', message: 'test message' };
       jest.spyOn(Updates, 'fetchUpdateAsync').mockRejectedValueOnce(mockError);
       const buttonView = await screen.findByTestId('downloadUpdate');
@@ -218,13 +189,6 @@ describe('useUpdates()', () => {
       expect(isUpdateAvailableView).toHaveTextContent('false');
       const isUpdatePendingView = await screen.findByTestId('isUpdatePending');
       expect(isUpdatePendingView).toHaveTextContent('false');
-      expect(eventListener).toHaveBeenCalledWith({
-        type: UseUpdatesEventType.DOWNLOAD_START,
-      });
-      expect(eventListener).toHaveBeenCalledWith({
-        type: UseUpdatesEventType.ERROR,
-        error: mockError,
-      });
     });
 
     it('Shows log entries after running readLogEntries()', async () => {
