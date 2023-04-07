@@ -47,7 +47,7 @@ describe(getFiles, () => {
 
   it(`throws if NODE_ENV is not set`, () => {
     expect(() => getFiles(undefined)).toThrowErrorMatchingInlineSnapshot(
-      `"The NODE_ENV environment variable is required but was not specified."`
+      `"The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI."`
     );
   });
   it(`throws if NODE_ENV is not valid`, () => {

@@ -111,7 +111,9 @@ export function createControlledEnvironment() {
 
 export function getFiles(mode: string | undefined): string[] {
   if (!mode) {
-    throw new Error('The NODE_ENV environment variable is required but was not specified.');
+    throw new Error(
+      'The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI.'
+    );
   }
 
   if (!mode || !['development', 'test', 'production'].includes(mode)) {
