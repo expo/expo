@@ -30,8 +30,8 @@ import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { typescriptTypeGeneration } from '../type-generation';
 import { instantiateMetroAsync } from './instantiateMetro';
-import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
+import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 

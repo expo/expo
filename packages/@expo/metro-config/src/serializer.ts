@@ -4,10 +4,11 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { Graph, Module, SerializerOptions } from 'metro';
+import type { Graph, MixedOutput, Module, SerializerOptions } from 'metro';
 import { ConfigT, InputConfigT } from 'metro-config';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import bundleToString from 'metro/src/lib/bundleToString';
+import countLines from 'metro/src/lib/countLines';
 
 const debug = require('debug')('expo:metro-config:serializer') as typeof console.log;
 
@@ -45,6 +46,18 @@ export function getTransformEnvironment(url: string): string | null {
   return match ? match[1] : null;
 }
 
+function getAllExpoPublicEnvVars() {
+  // Create an object containing all environment variables that start with EXPO_PUBLIC_
+  const env = {};
+  for (const key in process.env) {
+    if (key.startsWith('EXPO_PUBLIC_')) {
+      // @ts-ignore
+      env[key] = process.env[key];
+    }
+  }
+  return env;
+}
+
 export function serializeWithEnvironmentVariables(
   entryPoint: string,
   preModules: readonly Module[],
@@ -60,6 +73,16 @@ export function serializeWithEnvironmentVariables(
   // Adds about 5ms on a blank Expo Router app.
   // TODO: We can probably cache the results.
 
+  // In development, we need to add the process.env object to ensure it
+  // persists between Fast Refresh updates.
+  if (options.dev) {
+    const envCode = `var process=this.process||{};process.env = ${JSON.stringify(
+      getAllExpoPublicEnvVars()
+    )};`;
+    return [entryPoint, [getEnvPrelude(envCode), ...preModules], graph, options];
+  }
+
+  // In production, inline all process.env variables to ensure they cannot be iterated and read arbitrarily.
   for (const value of graph.dependencies.values()) {
     // Skip node_modules, the feature is a bit too sensitive to allow in arbitrary code.
     if (/node_modules/.test(value.path)) {
@@ -72,8 +95,29 @@ export function serializeWithEnvironmentVariables(
       value.output[index].data.code = code;
     }
   }
-
   return [entryPoint, preModules, graph, options];
+}
+
+function getEnvPrelude(contents: string): Module<MixedOutput> {
+  const code = '// Injected by Expo CLI\n' + contents;
+  const name = '__env__';
+
+  return {
+    dependencies: new Map(),
+    getSource: (): Buffer => Buffer.from(code),
+    inverseDependencies: new Set(),
+    path: name,
+    output: [
+      {
+        type: 'js/script/virtual',
+        data: {
+          code,
+          lineCount: countLines(code),
+          map: [],
+        },
+      },
+    ],
+  };
 }
 
 export function withExpoSerializers(config: InputConfigT): InputConfigT {

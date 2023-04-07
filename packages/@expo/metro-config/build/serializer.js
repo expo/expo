@@ -23,6 +23,13 @@ function _bundleToString() {
   };
   return data;
 }
+function _countLines() {
+  const data = _interopRequireDefault(require("metro/src/lib/countLines"));
+  _countLines = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /**
  * Copyright © 2022 650 Industries.
@@ -52,6 +59,17 @@ function getTransformEnvironment(url) {
   const match = url.match(/[&?]transform\.environment=([^&]+)/);
   return match ? match[1] : null;
 }
+function getAllExpoPublicEnvVars() {
+  // Create an object containing all environment variables that start with EXPO_PUBLIC_
+  const env = {};
+  for (const key in process.env) {
+    if (key.startsWith('EXPO_PUBLIC_')) {
+      // @ts-ignore
+      env[key] = process.env[key];
+    }
+  }
+  return env;
+}
 function serializeWithEnvironmentVariables(entryPoint, preModules, graph, options) {
   // Skip replacement in Node.js environments.
   if (options.sourceUrl && getTransformEnvironment(options.sourceUrl) === 'node') {
@@ -62,6 +80,14 @@ function serializeWithEnvironmentVariables(entryPoint, preModules, graph, option
   // Adds about 5ms on a blank Expo Router app.
   // TODO: We can probably cache the results.
 
+  // In development, we need to add the process.env object to ensure it
+  // persists between Fast Refresh updates.
+  if (options.dev) {
+    const envCode = `var process=this.process||{};process.env = ${JSON.stringify(getAllExpoPublicEnvVars())};`;
+    return [entryPoint, [getEnvPrelude(envCode), ...preModules], graph, options];
+  }
+
+  // In production, inline all process.env variables to ensure they cannot be iterated and read arbitrarily.
   for (const value of graph.dependencies.values()) {
     // Skip node_modules, the feature is a bit too sensitive to allow in arbitrary code.
     if (/node_modules/.test(value.path)) {
@@ -74,6 +100,24 @@ function serializeWithEnvironmentVariables(entryPoint, preModules, graph, option
     }
   }
   return [entryPoint, preModules, graph, options];
+}
+function getEnvPrelude(contents) {
+  const code = '// Injected by Expo CLI\n' + contents;
+  const name = '__env__';
+  return {
+    dependencies: new Map(),
+    getSource: () => Buffer.from(code),
+    inverseDependencies: new Set(),
+    path: name,
+    output: [{
+      type: 'js/script/virtual',
+      data: {
+        code,
+        lineCount: (0, _countLines().default)(code),
+        map: []
+      }
+    }]
+  };
 }
 function withExpoSerializers(config) {
   return withSerialProcessors(config, [serializeWithEnvironmentVariables]);
