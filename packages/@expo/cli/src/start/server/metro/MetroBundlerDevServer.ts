@@ -90,24 +90,18 @@ async function refetchManifest(projectRoot: string, options: { mode?: string; po
   return fetchManifest(projectRoot, options);
 }
 
+type ExpoRouterServerManifestV1Route<TType> = {
+  dynamic: any;
+  generated: boolean;
+  type: TType;
+  file: string;
+  regex: RegExp;
+  src: string;
+};
 type ExpoRouterServerManifestV1 = {
   staticHtmlPaths: string[];
-  staticHtml: {
-    dynamic: any;
-    generated: boolean;
-    type: 'static';
-    file: string;
-    regex: RegExp;
-    src: string;
-  }[];
-  functions: {
-    dynamic: any;
-    generated: boolean;
-    type: 'dynamic';
-    file: string;
-    regex: RegExp;
-    src: string;
-  }[];
+  staticHtml: ExpoRouterServerManifestV1Route<'static'>[];
+  functions: ExpoRouterServerManifestV1Route<'dynamic'>[];
 };
 
 async function fetchManifest(
@@ -264,14 +258,14 @@ function createRouteHandlerMiddleware(
     const pathname = location.pathname?.replace(/\/$/, '');
     const sanitizedPathname = pathname.replace(/^\/+/, '').replace(/\/+$/, '') + '/';
 
-    let functionFilePath: string | null = null;
+    let functionRoute: ExpoRouterServerManifestV1Route<'dynamic'> | null = null;
 
     const staticManifest = manifest?.staticHtml;
     const dynamicManifest = manifest?.functions;
 
     for (const route of dynamicManifest) {
       if (route.regex.test(sanitizedPathname)) {
-        functionFilePath = route.file;
+        functionRoute = route;
         break;
       }
     }
@@ -284,7 +278,7 @@ function createRouteHandlerMiddleware(
             route.generated &&
             route.file.match(/^\.\/\[\.\.\.404]\.[jt]sx?$/)
           ) {
-            if (functionFilePath) {
+            if (functionRoute) {
               continue;
             }
           }
@@ -324,15 +318,15 @@ function createRouteHandlerMiddleware(
       }
     }
 
-    if (!functionFilePath) {
+    if (!functionRoute) {
       return next();
     }
-    functionFilePath = await resolveAsync(functionFilePath, {
+    const resolvedFunctionPath = await resolveAsync(functionRoute.file, {
       extensions: ['.js', '.jsx', '.ts', '.tsx'],
       basedir: appDir,
-    })!;
+    });
 
-    const middlewareContents = await bundleApiRoute(projectRoot, functionFilePath!, options);
+    const middlewareContents = await bundleApiRoute(projectRoot, resolvedFunctionPath!, options);
     if (!middlewareContents) {
       return next();
     }
@@ -349,7 +343,7 @@ function createRouteHandlerMiddleware(
       return res.end('Method not allowed');
     }
 
-    const expoRequest = convertRequest(req, res);
+    const expoRequest = convertRequest(req, res, functionRoute);
 
     try {
       // 4. Execute.
