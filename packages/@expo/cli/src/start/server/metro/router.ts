@@ -29,3 +29,7 @@ function getFallbackEntryRoot(projectRoot: string): string {
   }
   return path.join(projectRoot, 'node_modules/expo-router/entry');
 }
+
+export function getExpoRouterRootDirectory(projectRoot: string): string {
+  return path.join(projectRoot, 'app');
+}

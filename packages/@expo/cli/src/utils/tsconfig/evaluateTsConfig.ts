@@ -33,7 +33,7 @@ export function evaluateTsConfig(ts: typeof import('typescript'), tsConfigPath: 
       throw new Error(ts.formatDiagnostic(jsonFileContents.errors[0], formatDiagnosticsHost));
     }
 
-    return { compilerOptions: jsonFileContents.options };
+    return { compilerOptions: jsonFileContents.options, raw: config.raw };
   } catch (error: any) {
     if (error?.name === 'SyntaxError') {
       throw new Error('tsconfig.json is invalid:\n' + (error.message ?? ''));
