@@ -41,7 +41,7 @@ export type CodeSigningInfo = {
   certificateChainForResponse: string[];
   /**
    * Scope key cached for the project when certificate is development Expo Go code signing.
-   * For project code signing (keyId == the projects generated keyId) this is undefined.
+   * For project-specific code signing (keyId == the project's generated keyId) this is undefined.
    */
   scopeKey: string | null;
 };
