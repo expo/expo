@@ -182,7 +182,7 @@ export function getTypedRoutesUtils(appRoot: string) {
   };
 }
 
-const setToUnionType = <T>(set: Set<T>) => {
+export const setToUnionType = <T>(set: Set<T>) => {
   return set.size > 0 ? [...set].map((s) => `\`${s}\``).join(' | ') : 'never';
 };
 
