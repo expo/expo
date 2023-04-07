@@ -1062,7 +1062,16 @@ export enum WebhookType {
   Submit = 'SUBMIT'
 }
 
+export type AppByIdQueryVariables = Exact<{
+  appId: Scalars['String'];
+}>;
+
+
+export type AppByIdQuery = { __typename?: 'RootQuery', app: { __typename?: 'AppQuery', byId: { __typename?: 'App', id: string, scopeKey: string, ownerAccount: { __typename?: 'Account', id: string } } } };
+
 export type CurrentUserQueryVariables = Exact<{ [key: string]: never; }>;
 
 
-export type CurrentUserQuery = { __typename?: 'RootQuery', meActor?: { __typename: 'Robot', firstName?: string | null, id: string, isExpoAdmin: boolean, accounts: Array<{ __typename?: 'Account', id: string, name: string }> } | { __typename: 'SSOUser', id: string, isExpoAdmin: boolean, accounts: Array<{ __typename?: 'Account', id: string, name: string }> } | { __typename: 'User', username: string, id: string, isExpoAdmin: boolean, accounts: Array<{ __typename?: 'Account', id: string, name: string }> } | null };
+export type CurrentUserQuery = { __typename?: 'RootQuery', meActor?: { __typename: 'Robot', firstName?: string | null, id: string, accounts: Array<{ __typename?: 'Account', id: string, users: Array<{ __typename?: 'UserPermission', permissions: Array<Permission>, actor: { __typename?: 'Robot', id: string } | { __typename?: 'SSOUser', id: string } | { __typename?: 'User', id: string } }> }> } | { __typename: 'SSOUser', username: string, id: string, primaryAccount: { __typename?: 'Account', id: string }, accounts: Array<{ __typename?: 'Account', id: string, users: Array<{ __typename?: 'UserPermission', permissions: Array<Permission>, actor: { __typename?: 'Robot', id: string } | { __typename?: 'SSOUser', id: string } | { __typename?: 'User', id: string } }> }> } | { __typename: 'User', username: string, id: string, primaryAccount: { __typename?: 'Account', id: string }, accounts: Array<{ __typename?: 'Account', id: string, users: Array<{ __typename?: 'UserPermission', permissions: Array<Permission>, actor: { __typename?: 'Robot', id: string } | { __typename?: 'SSOUser', id: string } | { __typename?: 'User', id: string } }> }> } | null };
+
+export type AppFragment = { __typename?: 'App', id: string, scopeKey: string, ownerAccount: { __typename?: 'Account', id: string } };

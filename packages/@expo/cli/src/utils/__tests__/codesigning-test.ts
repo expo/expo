@@ -3,9 +3,22 @@ import { vol } from 'memfs';
 import { asMock } from '../../__tests__/asMock';
 import { getProjectDevelopmentCertificateAsync } from '../../api/getProjectDevelopmentCertificate';
 import { APISettings } from '../../api/settings';
+import { getUserAsync } from '../../api/user/user';
 import { getCodeSigningInfoAsync, signManifestString } from '../codesigning';
 import { mockExpoRootChain, mockSelfSigned } from './fixtures/certificates';
 
+jest.mock('../../api/user/user');
+jest.mock('../../api/graphql/queries/AppQuery', () => ({
+  AppQuery: {
+    byIdAsync: jest.fn(async () => ({
+      id: 'blah',
+      scopeKey: 'scope-key',
+      ownerAccount: {
+        id: 'blah-account',
+      },
+    })),
+  },
+}));
 jest.mock('../../log');
 jest.mock('@expo/code-signing-certificates', () => ({
   ...(jest.requireActual(
@@ -40,6 +53,14 @@ jest.mock('../../api/settings', () => ({
 
 beforeEach(() => {
   vol.reset();
+
+  asMock(getUserAsync).mockImplementation(async () => ({
+    __typename: 'User',
+    id: 'userwat',
+    username: 'wat',
+    primaryAccount: { id: 'blah-account' },
+    accounts: [],
+  }));
 });
 
 describe(getCodeSigningInfoAsync, () => {
@@ -249,6 +270,7 @@ describe(signManifestString, () => {
         certificateChainForResponse: [],
         certificateForPrivateKey: mockSelfSigned.certificate,
         privateKey: mockSelfSigned.privateKey,
+        scopeKey: null,
       })
     ).toMatchSnapshot();
   });
@@ -259,6 +281,7 @@ describe(signManifestString, () => {
         certificateChainForResponse: [],
         certificateForPrivateKey: '',
         privateKey: mockSelfSigned.privateKey,
+        scopeKey: null,
       })
     ).toThrowError('Invalid PEM formatted message.');
   });
