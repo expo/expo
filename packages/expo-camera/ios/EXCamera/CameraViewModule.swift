@@ -140,7 +140,7 @@ public final class CameraViewModule: Module {
       Prop("responsiveOrientationWhenOrientationLocked") { (view, responsiveOrientation: Bool) in
         if view.responsiveOrientationWhenOrientationLocked != responsiveOrientation {
           view.responsiveOrientationWhenOrientationLocked = responsiveOrientation
-          view.updateResponsiveOrientationWhenOrientationLocked();
+          view.updateResponsiveOrientationWhenOrientationLocked()
         }
       }
     }
