@@ -83,7 +83,14 @@ function serializeWithEnvironmentVariables(entryPoint, preModules, graph, option
   // In development, we need to add the process.env object to ensure it
   // persists between Fast Refresh updates.
   if (options.dev) {
-    const envCode = `var process=this.process||{};process.env = ${JSON.stringify(getAllExpoPublicEnvVars())};`;
+    // Set the process.env object to the current environment variables object
+    // ensuring they aren't iterable, settable, or enumerable.
+    const str = `Object.defineProperty(process, 'env', {
+      value: Object.freeze(Object.defineProperties({}, {
+        ${Object.keys(getAllExpoPublicEnvVars()).map(key => `${JSON.stringify(key)}: { value: ${JSON.stringify(process.env[key])} }`).join(',')}
+      }))
+    });`;
+    const envCode = `var process=this.process||{};${str}`;
     return [entryPoint, [getEnvPrelude(envCode), ...preModules], graph, options];
   }
 
