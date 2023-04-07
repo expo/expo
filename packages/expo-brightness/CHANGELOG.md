@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Migrated Android to Expo Modules API.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
