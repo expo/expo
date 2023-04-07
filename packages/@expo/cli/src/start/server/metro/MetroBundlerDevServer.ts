@@ -113,14 +113,14 @@ type ExpoRouterServerManifestV1 = {
 async function fetchManifest(
   projectRoot: string,
   options: { mode?: string; port?: number }
-): Promise<ExpoRouterServerManifestV1> {
+): Promise<null | ExpoRouterServerManifestV1> {
   if (manifestOperation.has('manifest')) {
     return manifestOperation.get('manifest');
   }
 
   const devServerUrl = `http://localhost:${options.port}`;
 
-  async function bundleAsync() {
+  async function bundleAsync(): Promise<null | ExpoRouterServerManifestV1> {
     // TODO: Update eagerly when files change
     const getManifest = await getExpoRouteManifestBuilderAsync(projectRoot, {
       devServerUrl,
@@ -130,13 +130,21 @@ async function fetchManifest(
     // Get the serialized manifest
     const results = await getManifest();
 
-    results.staticHtml = results.staticHtml.map((value: any) => {
+    if (!results) {
+      return null;
+    }
+
+    if (!results.staticHtml || !results.functions) {
+      throw new Error('Routes manifest is malformed: ' + JSON.stringify(results, null, 2));
+    }
+
+    results.staticHtml = results.staticHtml?.map((value: any) => {
       return {
         ...value,
         regex: new RegExp(value.regex),
       };
     });
-    results.functions = results.functions.map((value: any) => {
+    results.functions = results.functions?.map((value: any) => {
       return {
         ...value,
         regex: new RegExp(value.regex),
@@ -147,7 +155,9 @@ async function fetchManifest(
   }
 
   const manifest = bundleAsync();
-  manifestOperation.set('manifest', manifest);
+  if (manifest) {
+    manifestOperation.set('manifest', manifest);
+  }
   return manifest;
 }
 
@@ -241,22 +251,20 @@ function createRouteHandlerMiddleware(
     if (!req?.url || !req.method) {
       return next();
     }
+    const manifest = await fetchManifest(projectRoot, options);
+    // NOTE: no app dir
+    if (!manifest) {
+      // TODO: Redirect to 404 page
+      return next();
+    }
 
     const location = new URL(req.url, 'https://example.dev');
 
     // 1. Get pathname, e.g. `/thing`
     const pathname = location.pathname?.replace(/\/$/, '');
-
-    const manifest = await fetchManifest(projectRoot, options);
-
     const sanitizedPathname = pathname.replace(/^\/+/, '').replace(/\/+$/, '') + '/';
 
     let functionFilePath: string | null = null;
-
-    // NOTE: no app dir
-    if (!manifest) {
-      return next();
-    }
 
     const staticManifest = manifest?.staticHtml;
     const dynamicManifest = manifest?.functions;
