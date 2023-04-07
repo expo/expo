@@ -24,7 +24,7 @@
 
 @property (nonatomic, assign, getter=isSessionPaused) BOOL paused;
 @property (nonatomic, assign) BOOL isValidVideoOptions;
-@property (nonatomic, assign) UIDeviceOrientation orientation;
+@property (nonatomic, assign) UIDeviceOrientation physicalOrientation;
 
 @property (nonatomic, strong) NSDictionary *photoCaptureOptions;
 @property (nonatomic, strong) EXPromiseResolveBlock photoCapturedResolve;
@@ -360,7 +360,8 @@ static NSDictionary *defaultFaceDetectorOptions = nil;
     return;
   }
   AVCaptureConnection *connection = [_photoOutput connectionWithMediaType:AVMediaTypeVideo];
-  [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:self.orientation]];
+  UIDeviceOrientation deviceOrientation = self.responsiveOrientationWhenOrientationLocked ? self.physicalOrientation : [[UIDevice currentDevice] orientation];
+  [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:deviceOrientation]];
 
   _photoCapturedReject = reject;
   _photoCapturedResolve = resolve;
@@ -555,7 +556,8 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     } else {
       [connection setPreferredVideoStabilizationMode:self.videoStabilizationMode];
     }
-    [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:self.orientation]];
+    UIDeviceOrientation deviceOrientation = self.responsiveOrientationWhenOrientationLocked ? self.physicalOrientation : [[UIDevice currentDevice] orientation];
+    [connection setVideoOrientation:[EXCameraUtils videoOrientationForDeviceOrientation:deviceOrientation]];
     
     AVCaptureSessionPreset preset;
     if (options[@"quality"]) {
@@ -718,7 +720,7 @@ previewPhotoSampleBuffer:(CMSampleBufferRef)previewPhotoSampleBuffer
     [self.motionManager startAccelerometerUpdatesToQueue:[NSOperationQueue new]
       withHandler:^(CMAccelerometerData  *accelerometerData, NSError *error) {
         if (!error) {
-          self.orientation = [EXCameraUtils deviceOrientationForAccelerometerData:self.motionManager.accelerometerData defaultOrientation:self.orientation];
+          self.physicalOrientation = [EXCameraUtils deviceOrientationForAccelerometerData:self.motionManager.accelerometerData defaultOrientation:self.physicalOrientation];
         }
     }];
 

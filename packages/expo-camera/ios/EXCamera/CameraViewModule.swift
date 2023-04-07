@@ -136,6 +136,12 @@ public final class CameraViewModule: Module {
           view.isScanningBarCodes = scanBarCodes
         }
       }
+
+      Prop("responsiveOrientationWhenOrientationLocked") { (view, responsiveOrientation: Bool) in
+        if view.responsiveOrientationWhenOrientationLocked != responsiveOrientation {
+          view.responsiveOrientationWhenOrientationLocked = responsiveOrientation
+        }
+      }
     }
 
     AsyncFunction("takePicture") { (options: TakePictureOptions, viewTag: Int, promise: Promise) in

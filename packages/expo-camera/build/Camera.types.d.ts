@@ -438,6 +438,12 @@ export type CameraProps = ViewProps & {
      * @platform web
      */
     poster?: string;
+    /**
+    * Whether to allow responsive orientation of the camera when the screen orientation is locked (i.e. when set to `true`
+    * landscape photos will be taken if the device is turned that way, even if the app or device orientation is locked to portrait)
+    * @platform ios
+    */
+    responsiveOrientationWhenOrientationLocked?: boolean;
 };
 /**
  * @hidden
@@ -472,6 +478,7 @@ export type CameraNativeProps = {
     ratio?: string;
     useCamera2Api?: boolean;
     poster?: string;
+    responsiveOrientationWhenOrientationLocked?: boolean;
 };
 export type BarCodeSettings = {
     barCodeTypes: string[];

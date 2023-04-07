@@ -80,6 +80,8 @@ typedef NS_ENUM(NSInteger, EXCameraVideoCodec) {
 @property (nonatomic, assign) NSInteger whiteBalance;
 @property (assign, nonatomic) AVCaptureSessionPreset pictureSize;
 @property (nonatomic, assign) AVCaptureVideoStabilizationMode videoStabilizationMode;
+@property (nonatomic, assign) BOOL responsiveOrientationWhenOrientationLocked;
+
 
 @property (nonatomic, assign) BOOL isScanningBarCodes;
 @property (nonatomic, assign) BOOL isDetectingFaces;
