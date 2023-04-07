@@ -88,6 +88,6 @@ function convertLightningCssToReactNativeWebStyleSheet(input) {
   };
 }
 function matchCssModule(filePath) {
-  return !!/\.module(\.(native|ios|android|web))?\.css$/.test(filePath);
+  return !!/\.module(\.(native|ios|android|web))?\.(css|s[ac]ss)$/.test(filePath);
 }
 //# sourceMappingURL=css-modules.js.map

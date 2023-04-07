@@ -1,6 +1,7 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
 import { getBareExtensions } from '@expo/config/paths';
 import * as runtimeEnv from '@expo/env';
+import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
 import type { Reporter } from 'metro';
 import type { ConfigT as MetroConfig, InputConfigT } from 'metro-config';
@@ -14,6 +15,8 @@ import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
 import { withExpoSerializers } from './serializer';
 import { importMetroConfig } from './traveling/metro-config';
+
+const debug = require('debug')('expo:metro:config') as typeof console.log;
 
 export interface LoadOptions {
   config?: string;
@@ -86,8 +89,12 @@ export function getDefaultConfig(
   const sourceExtsConfig = { isTS: true, isReact: true, isModern: false };
   const sourceExts = getBareExtensions([], sourceExtsConfig);
 
+  let sassVersion: string | null = null;
   if (options.isCSSEnabled) {
-    sourceExts.push('css');
+    sassVersion = getSassVersion(projectRoot);
+    // Enable SCSS by default so we can provide a better error message
+    // when sass isn't installed.
+    sourceExts.push('scss', 'sass', 'css');
   }
 
   if (isExotic) {
@@ -126,6 +133,7 @@ export function getDefaultConfig(
     console.log(`- Node Module Paths: ${nodeModulesPaths.join(', ')}`);
     console.log(`- Exotic: ${isExotic}`);
     console.log(`- Env Files: ${envFiles}`);
+    console.log(`- Sass: ${sassVersion}`);
     console.log();
   }
   const {
@@ -178,6 +186,10 @@ export function getDefaultConfig(
       : metroDefaultValues.transformerPath,
 
     transformer: {
+      // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
+      // @ts-expect-error
+      sassVersion,
+
       // `require.context` support
       unstable_allowRequireContext: true,
       allowOptionalDependencies: true,
@@ -217,3 +229,29 @@ export { MetroConfig, INTERNAL_CALLSITES_REGEX };
 
 // re-export for legacy cases.
 export const EXPO_DEBUG = env.EXPO_DEBUG;
+
+function getSassVersion(projectRoot: string): string | null {
+  const sassPkg = resolveFrom.silent(projectRoot, 'sass');
+  if (!sassPkg) return null;
+  const sassPkgJson = findUpPackageJson(sassPkg);
+  if (!sassPkgJson) return null;
+  const pkg = JsonFile.read(sassPkgJson);
+
+  debug('sass package.json:', sassPkgJson);
+  const sassVersion = pkg.version;
+  if (typeof sassVersion === 'string') {
+    return sassVersion;
+  }
+
+  return null;
+}
+
+function findUpPackageJson(cwd: string): string | null {
+  if (['.', path.sep].includes(cwd)) return null;
+
+  const found = resolveFrom.silent(cwd, './package.json');
+  if (found) {
+    return found;
+  }
+  return findUpPackageJson(path.dirname(cwd));
+}

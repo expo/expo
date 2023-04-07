@@ -28,11 +28,10 @@ import {
 } from '../middleware/RuntimeRedirectMiddleware';
 import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
+import { typescriptTypeGeneration } from '../type-generation';
 import { instantiateMetroAsync } from './instantiateMetro';
-import {
-  observeFileChanges,
-  waitForMetroToObserveTypeScriptFile,
-} from './waitForMetroToObserveTypeScriptFile';
+import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
+import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -273,42 +272,59 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
   }
 
-  public async waitForTypeScriptAsync(): Promise<void> {
+  public async waitForTypeScriptAsync(): Promise<boolean> {
     if (!this.instance) {
       throw new Error('Cannot wait for TypeScript without a running server.');
     }
-    if (!this.metro) {
-      // This can happen when the run command is used and the server is already running in another
-      // process. In this case we can't wait for the TypeScript check to complete because we don't
-      // have access to the Metro server.
-      debug('Skipping TypeScript check because Metro is not running (headless).');
-      return;
-    }
 
-    const off = waitForMetroToObserveTypeScriptFile(
-      this.projectRoot,
-      { server: this.instance!.server, metro: this.metro },
-      async () => {
-        // Run once, this prevents the TypeScript project prerequisite from running on every file change.
-        off();
-        const { TypeScriptProjectPrerequisite } = await import(
-          '../../doctor/typescript/TypeScriptProjectPrerequisite'
-        );
-
-        try {
-          const req = new TypeScriptProjectPrerequisite(this.projectRoot);
-          await req.bootstrapAsync();
-        } catch (error: any) {
-          // Ensure the process doesn't fail if the TypeScript check fails.
-          // This could happen during the install.
-          Log.log();
-          Log.error(
-            chalk.red`Failed to automatically setup TypeScript for your project. Try restarting the dev server to fix.`
-          );
-          Log.exception(error);
-        }
+    return new Promise<boolean>((resolve) => {
+      if (!this.metro) {
+        // This can happen when the run command is used and the server is already running in another
+        // process. In this case we can't wait for the TypeScript check to complete because we don't
+        // have access to the Metro server.
+        debug('Skipping TypeScript check because Metro is not running (headless).');
+        return resolve(false);
       }
-    );
+
+      const off = metroWatchTypeScriptFiles({
+        projectRoot: this.projectRoot,
+        server: this.instance!.server,
+        metro: this.metro,
+        tsconfig: true,
+        throttle: true,
+        eventTypes: ['change', 'add'],
+        callback: async () => {
+          // Run once, this prevents the TypeScript project prerequisite from running on every file change.
+          off();
+          const { TypeScriptProjectPrerequisite } = await import(
+            '../../doctor/typescript/TypeScriptProjectPrerequisite'
+          );
+
+          try {
+            const req = new TypeScriptProjectPrerequisite(this.projectRoot);
+            await req.bootstrapAsync();
+            resolve(true);
+          } catch (error: any) {
+            // Ensure the process doesn't fail if the TypeScript check fails.
+            // This could happen during the install.
+            Log.log();
+            Log.error(
+              chalk.red`Failed to automatically setup TypeScript for your project. Try restarting the dev server to fix.`
+            );
+            Log.exception(error);
+            resolve(false);
+          }
+        },
+      });
+    });
+  }
+
+  public async startTypeScriptServices() {
+    typescriptTypeGeneration({
+      server: this.instance!.server,
+      metro: this.metro,
+      projectRoot: this.projectRoot,
+    });
   }
 
   protected getConfigModuleIds(): string[] {

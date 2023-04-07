@@ -116,6 +116,16 @@ CSS Modules are a way to scope CSS to a specific component. This is useful for a
 
 In Expo, CSS Modules are defined by creating a file with the `.module.css` extension. The file can be imported from any component. The exported value is an object with the class names as keys and the React Native style objects as values.
 
+CSS Modules support platform extensions to allow you to define different styles for different platforms. For example, you can define a `module.ios.css` and `module.android.css` file to define styles for iOS and Android respectively. You'll need to import without the extension, for example:
+
+```diff App.js
+// Importing `./App.module.ios.css`:
+- import styles from './App.module.css';
++ import styles from './App.module';
+```
+
+Flipping the extension, e.g. `App.ios.module.css` will not work and result in a universal module named `App.ios.module`.
+
 > You cannot pass styles to the `className` prop of a React Native or React Native for web component. Instead, you must use the `style` prop.
 
 ```js App.js
@@ -134,6 +144,22 @@ export default function Page() {
 
 - On web, all CSS values are available. CSS is not processed or auto-prefixed like it is with the React Native Web `StyleSheet` API.
 - CSS Modules use [lightningcss](https://github.com/parcel-bundler/lightningcss) under the hood, check [the issues](https://github.com/parcel-bundler/lightningcss/issues) for unsupported features.
+
+### SASS
+
+Expo Metro has _partial_ support for SCSS/SASS.
+
+To setup, install the `sass` package in your project:
+
+```sh
+yarn add sass
+```
+
+Then, ensure [CSS is setup](#css) in the `metro.config.js` file.
+
+- When `sass` is installed, then modules without extensions will be resolved in the following order: `scss`, `sass`, `css`.
+- Only use the intended syntax with `sass` files.
+- Importing other files from inside a scss/sass file is not currently supported.
 
 ## Bare workflow setup
 

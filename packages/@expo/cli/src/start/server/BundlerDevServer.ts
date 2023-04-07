@@ -163,7 +163,11 @@ export abstract class BundlerDevServer {
     options: BundlerStartOptions
   ): Promise<DevServerInstance>;
 
-  public async waitForTypeScriptAsync(): Promise<void> {
+  public async waitForTypeScriptAsync(): Promise<boolean> {
+    return false;
+  }
+
+  public async startTypeScriptServices(): Promise<void> {
     // noop -- We've only implemented this functionality in Metro.
   }
 
