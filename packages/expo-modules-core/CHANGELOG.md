@@ -17,6 +17,7 @@
 - [Android] Made `fallbackCallback` optional in the `registerForActivityResult` method. ([#21661](https://github.com/expo/expo/pull/21661) by [@lukmccall](https://github.com/lukmccall))
 - [iOS] Removed the legacy implementation of view managers. ([#21760](https://github.com/expo/expo/pull/21760) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Passed the app context instance down to dynamic types, object builders and convertibles. ([#21819](https://github.com/expo/expo/pull/21819) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Use `jsi::WeakObject` for weak objects on Hermes. ([#21986](https://github.com/expo/expo/pull/21986) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.2.6 - 2023-03-20
 
