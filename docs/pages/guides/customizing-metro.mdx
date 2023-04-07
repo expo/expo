@@ -162,20 +162,23 @@ Learn once, bundle everywhere!
 
 Universal Expo Metro is designed to be fully universal, meaning any web bundling features should also work on native too. Because of this, we make some breaking changes between the two bundler implementations, carefully check the difference if you're moving from webpack to Metro.
 
-| Feature          | Metro                               | webpack                |
-| ---------------- | ----------------------------------- | ---------------------- |
-| Start command    | `npx expo start`                    | `npx expo start`       |
-| Bundle command   | `npx expo export`                   | `npx expo export:web`  |
-| Output folder    | **dist**                            | **web-build**          |
-| Static folder    | **public**                          | **web**                |
-| Config file      | **metro.config.js**                 | **webpack.config.js**  |
-| Default config   | `@expo/metro-config`                | `@expo/webpack-config` |
-| Fast Refresh     | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
-| Error Overlay    | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
-| Tree Shaking     | <NoIcon />                          | <YesIcon />            |
-| CSS Handling     | <NoIcon />                          | <YesIcon />            |
-| Asset Manifests  | <NoIcon />                          | <YesIcon />            |
-| Bundle Splitting | <PendingIcon /> (pending native)    | <YesIcon />            |
+| Feature           | Metro                               | webpack                |
+| ----------------- | ----------------------------------- | ---------------------- |
+| Start command     | `npx expo start`                    | `npx expo start`       |
+| Bundle command    | `npx expo export`                   | `npx expo export:web`  |
+| Output folder     | **dist**                            | **web-build**          |
+| Static folder     | **public**                          | **web**                |
+| Config file       | **metro.config.js**                 | **webpack.config.js**  |
+| Default config    | `@expo/metro-config`                | `@expo/webpack-config` |
+| Multi-platform    | <YesIcon />                         | <NoIcon />             |
+| Fast Refresh      | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
+| Error Overlay     | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
+| Deferred Bundling | <YesIcon /> (`@expo/metro-runtime`) | <NoIcon />             |
+| Global CSS        | <PendingIcon /> (Beta • SDK 49)     | <YesIcon />            |
+| CSS Modules       | <PendingIcon /> (Beta • SDK 49)     | <NoIcon />             |
+| Bundle Splitting  | <PendingIcon /> (pending native)    | <YesIcon />            |
+| Tree Shaking      | <NoIcon />                          | <YesIcon />            |
+| Asset Manifests   | <NoIcon />                          | <YesIcon />            |
 
 Note that aliases, resolution, and other bundler features are now universal across platforms as well!
 
@@ -216,14 +219,14 @@ $ npx expo export
 Starting Metro Bundler
 iOS ./index.tsx ░░░░░░░░░░░░░░░░  4.0% (  8/132)
 Android ./index.tsx ░░░░░░░░░░░░░░░░  0.5% (  3/129)
-Web ./index.tsx ░░░░░░░░░░░░░░░░  4.0% ( 5/5
+Web ./index.tsx ░░░░░░░░░░░░░░░░  4.0% ( 5/5)
 ```
 
 You can also skip bundling for other platforms by using the `--platform` flag:
 
 <Terminal cmd={['$ npx expo export --platform web']} />
 
-The output is found in the **dist** directory. To test it locally and see it will ork in production, use [Serve CLI](https://www.npmjs.com/package/serve).
+The output is found in the **dist** directory. To test it locally and see it will work in production, use [Serve CLI](https://www.npmjs.com/package/serve).
 
 <Terminal cmd={['$ npx serve dist']} />
 
@@ -231,7 +234,7 @@ You can deploy the website using any popular web host by following a guide from 
 
 #### Static Files
 
-Expo's Metro implementation supports hosting static files from the dev server by putting them in the root **public** directory. It is similar to many other web frameworks. In Expo webpack, the **web** directory is default.
+Expo's Metro implementation supports hosting static files from the dev server by putting them in the root **public/** directory. It is similar to many other web frameworks. In Expo webpack, the **web** directory is default.
 
 When exporting with `npx expo export`, the contents of the **public** directory are copied into the **dist/** directory. It means your app can expect to fetch these assets relative to the host URL. The most common example of this is the **public/favicon.ico** which is used by websites to render the tab icon.
 
@@ -239,10 +242,20 @@ You can overwrite the default **index.html** in Metro web by creating a **public
 
 In the future, this will work universally across platforms with EAS Update hosting. Currently, the feature is web-only based on the static host used for the native app, for example, the legacy Expo service updates do not support this feature.
 
+{/*
+
 ## TypeScript
 
-> Experimental feature in SDK 49. Enable with the environment variable `EXPO_USE_PATH_ALIASES=1`.
+> Available since SDK 49.
 
 Expo's Metro config has experimental support for the `compilerOptions.paths` and `compilerOptions.baseUrl` fields in the project's `tsconfig.json` (or `jsconfig.json`) file. This enables absolute imports and aliases in the project. Learn more in the [TypeScript guide](/guides/typescript).
 
 These feature requires additional setup in bare projects. See the [versioned Metro setup guide](/versions/latest/config/metro#bare-workflow-setup) for more information.
+
+## CSS
+
+> Since SDK 49.
+
+See the versioned [CSS guide](/versions/latest/config/metro#css) for more information.
+
+*/}

@@ -21,6 +21,7 @@ import {
 } from 'expo-dev-client-components';
 import * as React from 'react';
 import { Platform, ScrollView, Switch } from 'react-native';
+import semver from 'semver';
 
 import { useAppInfo } from '../hooks/useAppInfo';
 import { useClipboard } from '../hooks/useClipboard';
@@ -241,12 +242,23 @@ export function Main({ registeredCallbacks = [] }: MainProps) {
           ) : (
             <View bg="default">
               <SettingsRowSwitch
-                disabled={!devSettings.isRemoteDebuggingAvailable}
+                disabled={
+                  appInfo?.sdkVersion && semver.lt(appInfo.sdkVersion, '49.0.0')
+                    ? !devSettings.isRemoteDebuggingAvailable
+                    : true
+                }
                 testID="remote-js-debugger"
                 label="Remote JS debugger"
                 icon={<DebugIcon />}
                 isEnabled={devSettings.isDebuggingRemotely}
                 setIsEnabled={actions.toggleDebugRemoteJS}
+                description={
+                  !appInfo?.sdkVersion || semver.lt(appInfo.sdkVersion, '49.0.0')
+                    ? `This is not compatible with ${
+                        appInfo?.engine ?? 'JSC'
+                      } in this SDK version, please use Hermes to debug.`
+                    : undefined
+                }
               />
             </View>
           )}

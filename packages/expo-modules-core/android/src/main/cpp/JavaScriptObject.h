@@ -6,6 +6,7 @@
 #include "JSITypeConverter.h"
 #include "JavaScriptRuntime.h"
 #include "WeakRuntimeHolder.h"
+#include "JNIFunctionBody.h"
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
@@ -17,6 +18,8 @@ namespace jsi = facebook::jsi;
 
 namespace expo {
 class JavaScriptValue;
+
+class JavaScriptFunction;
 
 /**
  * Represents any JavaScript object. Its purpose is to exposes `jsi::Object` API back to Kotlin.
@@ -68,6 +71,10 @@ public:
     jsi::Object descriptor
   );
 
+  void defineNativeDeallocator(
+    jni::alias_ref<JNIFunctionBody::javaobject> deallocator
+  );
+
 protected:
   WeakRuntimeHolder runtimeHolder;
   std::shared_ptr<jsi::Object> jsObject;
@@ -82,6 +89,8 @@ private:
   );
 
   jni::local_ref<jni::JArrayClass<jstring>> jniGetPropertyNames();
+
+  jni::local_ref<jni::HybridClass<JavaScriptFunction>::javaobject> jniAsFunction();
 
   /**
    * Unsets property with the given name.

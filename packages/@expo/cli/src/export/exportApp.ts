@@ -8,7 +8,7 @@ import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { createBundlesAsync } from './createBundles';
-import { exportAssetsAsync } from './exportAssets';
+import { exportAssetsAsync, exportCssAssetsAsync } from './exportAssets';
 import { unstable_exportStaticAsync } from './exportStaticAsync';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { printBundleSizes } from './printBundleSizes';
@@ -94,12 +94,16 @@ export async function exportAppAsync(
   const { hashes, fileNames } = await writeBundlesAsync({ bundles, outputDir: bundlesPath });
 
   Log.log('Finished saving JS Bundles');
-
+  const cssLinks = await exportCssAssetsAsync({
+    outputDir,
+    bundles,
+  });
   if (fileNames.web) {
     if (env.EXPO_USE_STATIC) {
       await unstable_exportStaticAsync(projectRoot, {
         outputDir: outputPath,
         scripts: [`/bundles/${fileNames.web}`],
+        cssLinks,
         // TODO: Expose
         minify: true,
       });
@@ -111,6 +115,7 @@ export async function exportAppAsync(
         path.join(staticFolder, 'index.html'),
         await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
           scripts: [`/bundles/${fileNames.web}`],
+          cssLinks,
         })
       );
     }

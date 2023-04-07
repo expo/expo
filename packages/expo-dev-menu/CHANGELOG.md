@@ -13,10 +13,16 @@
 ### 🐛 Bug fixes
 
 - Fixed reload crash when expo-dev-menu is turned off. ([#21279](https://github.com/expo/expo/pull/21279) by [@jayshah123](https://github.com/jayshah123))
+- Fix JS entry file in development builds. ([#21984](https://github.com/expo/expo/pull/21984) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Update the start script to dynamically locate the packager IP from any network interface. ([#21977](https://github.com/expo/expo/pull/21977) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 
 - Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
+
+### ⚠️ Notices
+
+- Disable the `Remote JS debugger` option on menu when using SDK 49 or above. ([#22010](https://github.com/expo/expo/pull/22010) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ## 2.1.4 - 2023-03-20
 

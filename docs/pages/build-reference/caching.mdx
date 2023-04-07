@@ -11,15 +11,11 @@ Before a build job can begin compiling your project, all project dependencies ne
 
 The `cache` field on build profiles in [eas.json](/build/eas-json) can be used to configure caching for specific files and directories. Specified files will be saved to persistent storage after a successful build and restored on subsequent builds after the JavaScript dependencies are installed. Restoring does not overwrite existing files. Changing the `cache.key` value will invalidate the cache. Changing any other property of the `cache` object will also invalidate the cache.
 
-The caching implementation is built on top of Amazon S3, and it's not fast enough to give you any benefit from caching **node_modules** or CocoaPods; it's intended only for files that require significant computation to generate, for example, compilation results (both final binaries and any intermediate files).
-
 ## JavaScript dependencies
 
 EAS Build runs an npm cache server that can speed up downloading JavaScript dependencies for your build jobs. Projects that are using npm or yarn v2 will use the cache by default, but yarn v1 will require that you apply this [workaround](/build-reference/npm-cache-with-yarn).
 
-It is not yet possible to save and restore **node_modules** between builds.
-
-To disable using our npm cache server for your builds set `EAS_BUILD_DISABLE_NPM_CACHE` env variable value to `"1"` in **eas.json**.
+To disable using our npm cache server for your builds set the `EAS_BUILD_DISABLE_NPM_CACHE` env variable value to `"1"` in **eas.json**.
 
 {/* prettier-ignore */}
 ```json eas.json
@@ -49,7 +45,7 @@ Currently, we are caching:
 - `jcenter` - [https://jcenter.bintray.com/](https://jcenter.bintray.com/)
 - `plugins` - [https://plugins.gradle.org/m2/](https://plugins.gradle.org/m2/)
 
-To disable using our Maven cache server for your builds set `EAS_BUILD_DISABLE_MAVEN_CACHE` env variable value to `"1"` in **eas.json**.
+To disable using our Maven cache server for your builds set the `EAS_BUILD_DISABLE_MAVEN_CACHE` env variable value to `"1"` in **eas.json**.
 
 {/* prettier-ignore */}
 ```json eas.json
@@ -70,13 +66,9 @@ To disable using our Maven cache server for your builds set `EAS_BUILD_DISABLE_M
 
 ## iOS dependencies
 
-EAS Build caches the **Podfile.lock** file by default. This provides consistent results across managed app builds.
+EAS Build serves most CocoaPods artifacts from a cache server. This improves the consistency of `pod install` times and generally improves speed. The cache will be bypassed automatically if you provide your own **.netrc** or **.curlrc** files.
 
-Additionally, EAS Build runs a CocoaPods cache server that can speed up downloading iOS dependencies for your build jobs in most cases. It also makes the service more resilient to CocoaPods CDN outages.
-
-The cache server is configured to cache almost all the pods served from the official CocoaPods CDN, minus a few exceptions that our cache server can't handle. These exceptions can be found on the [blacklist](https://github.com/expo/eas-build/blob/main/packages/cocoapods-nexus-plugin/lib/cocoapods_plugin.rb#L4) of our custom CocoaPods plugin. These are fetched directly from the CDN instead of being fetched through our cache server.
-
-This is an experimental feature that requires explicit opt-in. You can **enable** it by setting the `EAS_BUILD_ENABLE_COCOAPODS_CACHE` env variable value to `"1"` in **eas.json**.
+To use our CocoaPods cache server for your builds set the `EAS_BUILD_DISABLE_COCOAPODS_CACHE` env variable value to `"1"` in **eas.json**.
 
 {/* prettier-ignore */}
 ```json eas.json
@@ -84,7 +76,7 @@ This is an experimental feature that requires explicit opt-in. You can **enable*
   "build": {
     "production": {
       "env": {
-        "EAS_BUILD_ENABLE_COCOAPODS_CACHE": "1"
+        "EAS_BUILD_DISABLE_COCOAPODS_CACHE": "1"
         /* @hide ... */ /* @end */
       }
       /* @hide ... */ /* @end */
@@ -95,15 +87,18 @@ This is an experimental feature that requires explicit opt-in. You can **enable*
 }
 ```
 
-To explicitly disable using our CocoaPods cache server for your builds, set the `EAS_BUILD_ENABLE_COCOAPODS_CACHE` env variable value to `"0"` in **eas.json**.
+It is typical to not have your project **Podfile.lock** committed to source control when using [prebuild](/workflow/prebuild) to generate your **ios** directory [remotely at build time](/build-reference/ios-builds).
+It can be useful to cache your **Podfile.lock** in order to have deterministic builds, but the tradeoff in this case is that, because you don't use the lockfile during local development, your ability to determine when a change is needed and to update specific dependencies is limited.
+If you cache this file, you may occasionally end up with build errors that require clearing the cache.
+To cache **Podfile.lock**, add **./ios/Podfile.lock** to the `cache.customPaths` list in your build profile in **eas.json**.
 
 {/* prettier-ignore */}
 ```json eas.json
 {
   "build": {
     "production": {
-      "env": {
-        "EAS_BUILD_ENABLE_COCOAPODS_CACHE": "0"
+      "cache": {
+        "customPaths": ["./ios/Podfile.lock"]
         /* @hide ... */ /* @end */
       }
       /* @hide ... */ /* @end */

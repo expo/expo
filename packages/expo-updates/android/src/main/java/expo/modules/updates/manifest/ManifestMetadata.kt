@@ -1,10 +1,12 @@
 package expo.modules.updates.manifest
 
 import android.util.Log
+import expo.modules.jsonutils.require
+import expo.modules.structuredheaders.Dictionary
+import expo.modules.structuredheaders.StringItem
 import expo.modules.updates.UpdatesConfiguration
 import expo.modules.updates.db.UpdatesDatabase
 import org.json.JSONObject
-import java.util.*
 
 /**
  * Utility methods for reading and writing JSON metadata from manifests (e.g. `serverDefinedHeaders`
@@ -13,6 +15,7 @@ import java.util.*
 object ManifestMetadata {
   private val TAG = ManifestMetadata::class.java.simpleName
 
+  private const val EXTRA_PARAMS_KEY = "extraParams"
   private const val MANIFEST_SERVER_DEFINED_HEADERS_KEY = "serverDefinedHeaders"
   private const val MANIFEST_FILTERS_KEY = "manifestFilters"
 
@@ -45,6 +48,35 @@ object ManifestMetadata {
     return getJSONObject(MANIFEST_FILTERS_KEY, database, configuration)
   }
 
+  fun getExtraParams(
+    database: UpdatesDatabase,
+    configuration: UpdatesConfiguration
+  ): Map<String, String>? {
+    return getJSONObject(EXTRA_PARAMS_KEY, database, configuration)?.asStringStringMap()
+  }
+
+  fun setExtraParam(
+    database: UpdatesDatabase,
+    configuration: UpdatesConfiguration,
+    key: String,
+    value: String?
+  ) {
+    val extraParamsToWrite = (getExtraParams(database, configuration)?.toMutableMap() ?: mutableMapOf()).also {
+      if (value != null) {
+        it[key] = value
+      } else {
+        it.remove(key)
+      }
+    }.toMap()
+
+    // ensure that this can be serialized to a structured-header dictionary
+    // this will throw for invalid values
+    Dictionary.valueOf(extraParamsToWrite.mapValues { elem -> StringItem.valueOf(elem.value) })
+
+    val extraClientParamsJSONObject = JSONObject(extraParamsToWrite)
+    database.jsonDataDao()!!.setMultipleFields(mapOf(EXTRA_PARAMS_KEY to extraClientParamsJSONObject.toString()), configuration.scopeKey!!)
+  }
+
   fun saveMetadata(
     responseHeaderData: ResponseHeaderData,
     database: UpdatesDatabase,
@@ -59,6 +91,14 @@ object ManifestMetadata {
     }
     if (fieldsToSet.isNotEmpty()) {
       database.jsonDataDao()!!.setMultipleFields(fieldsToSet, configuration.scopeKey!!)
+    }
+  }
+
+  private fun JSONObject.asStringStringMap(): Map<String, String> {
+    return buildMap {
+      this@asStringStringMap.keys().asSequence().forEach { key ->
+        this[key] = this@asStringStringMap.require(key)
+      }
     }
   }
 }

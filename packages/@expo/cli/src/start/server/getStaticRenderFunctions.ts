@@ -59,7 +59,7 @@ const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredMod
 export async function getStaticRenderFunctionsContentAsync(
   projectRoot: string,
   devServerUrl: string,
-  { dev = false, minify = false }: StaticRenderOptions = {}
+  { dev = false, minify = false, environment }: StaticRenderOptions = {}
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
   const requiredModuleId = getRenderModuleId(root);
@@ -71,7 +71,7 @@ export async function getStaticRenderFunctionsContentAsync(
     moduleId = await moveStaticRenderFunction(projectRoot, requiredModuleId);
   }
 
-  return requireFileContentsWithMetro(root, devServerUrl, moduleId, { dev, minify });
+  return requireFileContentsWithMetro(root, devServerUrl, moduleId, { dev, minify, environment });
 }
 
 async function ensureFileInRootDirectory(projectRoot: string, otherFile: string) {

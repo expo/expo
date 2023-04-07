@@ -50,9 +50,13 @@ export async function loadMetroConfigAsync(
   const ExpoMetroConfig = importExpoMetroConfig(projectRoot);
   let config = await ExpoMetroConfig.loadAsync(projectRoot, { reporter, ...options });
 
-  const bundlerPlatforms = getPlatformBundlers(exp);
+  const platformBundlers = getPlatformBundlers(exp);
 
-  config = await withMetroMultiPlatformAsync(projectRoot, config, bundlerPlatforms);
+  config = await withMetroMultiPlatformAsync(projectRoot, {
+    config,
+    platformBundlers,
+    isTsconfigPathsEnabled: !!exp.experiments?.tsconfigPaths,
+  });
 
   logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));
 
