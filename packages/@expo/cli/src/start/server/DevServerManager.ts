@@ -4,6 +4,7 @@ import chalk from 'chalk';
 
 import { FileNotifier } from '../../utils/FileNotifier';
 import { logEventAsync } from '../../utils/analytics/rudderstackClient';
+import { env } from '../../utils/env';
 import { ProjectPrerequisite } from '../doctor/Prerequisite';
 import { TypeScriptProjectPrerequisite } from '../doctor/typescript/TypeScriptProjectPrerequisite';
 import * as AndroidDebugBridge from '../platforms/android/adb';
@@ -152,16 +153,30 @@ export class DevServerManager {
   }
 
   async bootstrapTypeScriptAsync() {
-    if (await this.ensureProjectPrerequisiteAsync(TypeScriptProjectPrerequisite)) {
+    const typescriptPrerequisite = await this.ensureProjectPrerequisiteAsync(
+      TypeScriptProjectPrerequisite
+    );
+
+    if (env.EXPO_NO_TYPESCRIPT_SETUP) {
       return;
     }
+
     // Optionally, wait for the user to add TypeScript during the
     // development cycle.
     const server = devServers.find((server) => server.name === 'metro');
     if (!server) {
       return;
     }
-    await server.waitForTypeScriptAsync();
+
+    if (!typescriptPrerequisite) {
+      server.waitForTypeScriptAsync().then(async (success) => {
+        if (success) {
+          await server.startTypeScriptServices();
+        }
+      });
+    } else {
+      server.startTypeScriptServices();
+    }
   }
 
   /** Stop all servers including ADB. */
