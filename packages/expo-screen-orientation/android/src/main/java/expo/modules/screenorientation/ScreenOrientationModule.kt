@@ -1,7 +1,6 @@
 package expo.modules.screenorientation
 
 import android.app.Activity
-import android.content.pm.ActivityInfo
 import android.os.Build
 import android.util.DisplayMetrics
 import android.view.Surface
@@ -11,77 +10,66 @@ import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.core.interfaces.LifecycleEventListener
 import expo.modules.core.interfaces.services.UIManager
 import expo.modules.kotlin.exception.Exceptions
-import expo.modules.kotlin.functions.Coroutine
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
+import expo.modules.screenorientation.enums.Orientation
+import expo.modules.screenorientation.enums.OrientationAttr
+import expo.modules.screenorientation.enums.OrientationLock
 
 class ScreenOrientationModule : Module(), LifecycleEventListener {
   private val currentActivity
     get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
+  private val uiManager
+    get() = appContext.legacyModuleRegistry.getModule(UIManager::class.java)
+      ?: throw IllegalStateException("Could not find implementation for UIManager.")
+
   private var initialOrientation: Int? = null
 
   override fun definition() = ModuleDefinition {
     Name("ExpoScreenOrientation")
 
-    AsyncFunction("lockAsync") Coroutine { orientationLock: Int ->
+    AsyncFunction("lockAsync") { orientationLock: OrientationLock ->
       try {
-        currentActivity.requestedOrientation = importOrientationLock(orientationLock)
-        return@Coroutine
+        currentActivity.requestedOrientation = orientationLock.toPlatformInt()
       } catch (e: InvalidArgumentException) {
-        throw InvalidOrientationLockException(orientationLock, e)
-      } catch (e: Exception) {
-        throw UnsupportedOrientationLockException(orientationLock, e)
+        throw InvalidOrientationLockException(orientationLock.value, e)
       }
     }
 
-    AsyncFunction("lockPlatformAsync") Coroutine { orientationAttr: Int ->
-      try {
-        currentActivity.requestedOrientation = orientationAttr
-        return@Coroutine
-      } catch (e: Exception) {
-        throw UnsupportedOrientationPlatformLockException(orientationAttr, e)
-      }
+    AsyncFunction("lockPlatformAsync") { orientationAttr: OrientationAttr ->
+      currentActivity.requestedOrientation = orientationAttr.value
     }
 
-    AsyncFunction("getOrientationAsync") Coroutine { ->
-      return@Coroutine getScreenOrientation(currentActivity).value
+    AsyncFunction("getOrientationAsync") {
+      return@AsyncFunction getScreenOrientation(currentActivity).value
     }
 
-    AsyncFunction("getOrientationLockAsync") Coroutine { ->
+    AsyncFunction("getOrientationLockAsync") {
       try {
-        return@Coroutine exportOrientationLock(currentActivity.requestedOrientation)
+        return@AsyncFunction OrientationLock.fromPlatformInt(currentActivity.requestedOrientation)
       } catch (e: Exception) {
         throw GetOrientationLockException(e)
       }
     }
 
-    AsyncFunction("getPlatformOrientationLockAsync") Coroutine { ->
+    AsyncFunction("getPlatformOrientationLockAsync") {
       try {
-        return@Coroutine currentActivity.requestedOrientation
+        return@AsyncFunction currentActivity.requestedOrientation
       } catch (e: Exception) {
         throw GetPlatformOrientationLockException(e)
       }
     }
 
-    AsyncFunction("supportsOrientationLockAsync") Coroutine { orientationLock: Int ->
-      try {
-        importOrientationLock(orientationLock)
-        return@Coroutine true
-      } catch (e: Exception) {
-        return@Coroutine false
-      }
+    AsyncFunction("supportsOrientationLockAsync") { orientationLock: Int ->
+      return@AsyncFunction OrientationLock.supportsOrientationLock(orientationLock)
     }
 
     OnCreate {
-      appContext.registry
-      (
-        appContext.legacyModuleRegistry.getModule(UIManager::class.java)
-          ?: throw IllegalStateException("Could not find implementation for UIManager.")
-        )
-        .registerLifecycleEventListener(this@ScreenOrientationModule)
+      uiManager.registerLifecycleEventListener(this@ScreenOrientationModule)
     }
 
     OnDestroy {
+      uiManager.unregisterLifecycleEventListener(this@ScreenOrientationModule)
       initialOrientation?.let {
         currentActivity.requestedOrientation = it
       }
@@ -150,34 +138,5 @@ class ScreenOrientationModule : Module(), LifecycleEventListener {
     return (rotation == Surface.ROTATION_0 || rotation == Surface.ROTATION_180) &&
       height > width || (rotation == Surface.ROTATION_90 || rotation == Surface.ROTATION_270) &&
       width > height
-  }
-
-  private fun exportOrientationLock(nativeOrientationLock: Int): Int {
-    return when (nativeOrientationLock) {
-      ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED -> 0
-      ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR -> 1
-      ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT -> 2
-      ActivityInfo.SCREEN_ORIENTATION_PORTRAIT -> 3
-      ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT -> 4
-      ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE -> 5
-      ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE -> 6
-      ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE -> 7
-      else -> 8 // other orientation
-    }
-  }
-
-  @Throws(InvalidArgumentException::class)
-  private fun importOrientationLock(orientationLock: Int): Int {
-    return when (orientationLock) {
-      0 -> ActivityInfo.SCREEN_ORIENTATION_UNSPECIFIED
-      1 -> ActivityInfo.SCREEN_ORIENTATION_FULL_SENSOR
-      2 -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_PORTRAIT
-      3 -> ActivityInfo.SCREEN_ORIENTATION_PORTRAIT
-      4 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_PORTRAIT
-      5 -> ActivityInfo.SCREEN_ORIENTATION_SENSOR_LANDSCAPE
-      6 -> ActivityInfo.SCREEN_ORIENTATION_REVERSE_LANDSCAPE
-      7 -> ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE
-      else -> throw InvalidArgumentException("OrientationLock $orientationLock is not mappable to a native Android orientation attr")
-    }
   }
 }
