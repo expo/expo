@@ -124,7 +124,7 @@ In the **EmojiSticker.js** file, import `TapGestureHandler` from `react-native-g
 These hooks will animate the style on the `<AnimatedImage>` component for the sticker when the tap gesture is recognized.
 
 ```jsx EmojiSticker.js
-import { TapGestureHandler } from 'react-native-gesture-handler';
+import { TapGestureHandler, State } from 'react-native-gesture-handler';
 import Animated, {
   useAnimatedStyle,
   useSharedValue,
@@ -141,18 +141,18 @@ const scaleImage = useSharedValue(imageSize);
 
 Creating a shared value using the `useSharedValue()` hook has many advantages. It helps to mutate a piece of data and allows running animations based on the current value.
 A shared value can be accessed and modified using the `.value` property. It will scale the initial value of `scaleImage` so that when a user double-taps the sticker,
-it scales to twice its original size. To do this, we will create a function and call it `onDoubleTap()`, and this function will use the `useAnimatedGestureHandler()` hook
+it scales to twice its original size. To do this, we will create a function and call it `onDoubleTap()`, and this function will run when `State` of the event is active.
 to animate the transition while scaling the sticker image.
 
 Create the following function in the `<EmojiSticker>` component:
 
 ```jsx EmojiSticker.js
-const onDoubleTap = useAnimatedGestureHandler({
-  onActive: () => {
-    if (scaleImage.value) {
-      scaleImage.value = scaleImage.value * 2;
-    }
-  },
+const onDoubleTap = (event) => {
+    if (event.nativeEvent.state === State.ACTIVE) {
+        if (scaleImage.value) {
+            scaleImage.value = scaleImage.value * 2;
+        }
+    },
 });
 ```
 
@@ -202,7 +202,7 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
   // ...rest of the code remains same
   return (
     <View style={{ top: -350 }}>
-      /* @info Wrap the AnimatedImage component with TapGestureHandler*/ <TapGestureHandler onGestureEvent={onDoubleTap} numberOfTaps={2}>/* @end */
+      /* @info Wrap the AnimatedImage component with TapGestureHandler*/ <TapGestureHandler onHandlerStateChange={onDoubleTap} numberOfTaps={2}>/* @end */
         <AnimatedImage
           source={stickerSource}
           resizeMode="contain"
@@ -252,7 +252,7 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
 
   return (
     /* @info Replace the View component with AnimatedView */<AnimatedView style={{ top: -350 }}>/* @end */
-      <TapGestureHandler onGestureEvent={onDoubleTap} numberOfTaps={2}>
+      <TapGestureHandler onHandlerStateChange={onDoubleTap} numberOfTaps={2}>
         {/* ...rest of the code remains same */}
       </TapGestureHandler>
     /* @info */</AnimatedView>/* @end */
@@ -350,7 +350,7 @@ export default function EmojiSticker({ imageSize, stickerSource }) {
   return (
     /* @info Wrap all components inside PanGestureHandler. */<PanGestureHandler onGestureEvent={onDrag}>/* @end */
       /* @info Add containerStyle to the AnimatedView style prop. */<AnimatedView style={[containerStyle, { top: -350 }]}>/* @end */
-        <TapGestureHandler onGestureEvent={onDoubleTap} numberOfTaps={2}>
+        <TapGestureHandler onHandlerStateChange={onDoubleTap} numberOfTaps={2}>
           <AnimatedImage
             source={stickerSource}
             resizeMode="contain"
