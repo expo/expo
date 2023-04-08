@@ -15,6 +15,7 @@ import { resolveOptionsAsync } from './options/resolveOptions';
 
 export async function runIosAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.configuration === 'Release' ? 'production' : 'development');
+  require('@expo/env').load(projectRoot);
 
   assertPlatform();
 

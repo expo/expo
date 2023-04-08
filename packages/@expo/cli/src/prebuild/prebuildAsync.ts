@@ -59,6 +59,7 @@ export async function prebuildAsync(
   }
 ): Promise<PrebuildResults | null> {
   setNodeEnv('development');
+  require('@expo/env').load(projectRoot);
 
   if (options.clean) {
     const { maybeBailOnGitStatusAsync } = await import('../utils/git');

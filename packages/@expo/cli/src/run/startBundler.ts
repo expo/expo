@@ -58,6 +58,7 @@ export async function startBundlerAsync(
   }
 
   if (!options.headless) {
+    await devServerManager.watchEnvironmentVariables();
     await devServerManager.bootstrapTypeScriptAsync();
   }
 

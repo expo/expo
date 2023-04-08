@@ -135,6 +135,7 @@ declare module 'metro-config' {
     enhanceMiddleware: (middleware: Middleware, server: Server) => Middleware;
     useGlobalHotkey: boolean;
     port: number;
+    unstable_serverRoot: string;
     runInspectorProxy: boolean;
     verifyConnections: boolean;
     unstable_serverRoot?: string;
@@ -159,6 +160,7 @@ declare module 'metro-config' {
         resolver: Partial<ResolverConfigT>;
         server: Partial<ServerConfigT>;
         serializer: Partial<SerializerConfigT>;
+        watcher?: { additionalExts?: string[] };
         symbolicator: Partial<SymbolicatorConfigT>;
         transformer: Partial<TransformerConfigT>;
       }>

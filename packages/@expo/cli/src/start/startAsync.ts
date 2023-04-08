@@ -70,7 +70,7 @@ export async function startAsync(
   Log.log(chalk.gray(`Starting project at ${projectRoot}`));
 
   setNodeEnv(options.dev ? 'development' : 'production');
-
+  require('@expo/env').load(projectRoot);
   const { exp, pkg } = profile(getConfig)(projectRoot);
 
   const platformBundlers = getPlatformBundlers(exp);
@@ -100,6 +100,8 @@ export async function startAsync(
   await profile(devServerManager.startAsync.bind(devServerManager))(startOptions);
 
   if (!settings.webOnly) {
+    await devServerManager.watchEnvironmentVariables();
+
     // After the server starts, we can start attempting to bootstrap TypeScript.
     await devServerManager.bootstrapTypeScriptAsync();
   }

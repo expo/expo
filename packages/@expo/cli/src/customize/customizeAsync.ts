@@ -12,6 +12,8 @@ export async function customizeAsync(files: string[], options: Options, extras: 
   // This enables users to run `npx expo customize` from a subdirectory of the project.
   const projectRoot = findUpProjectRootOrAssert(process.cwd());
 
+  require('@expo/env').load(projectRoot);
+
   // Get the static path (defaults to 'web/')
   // Doesn't matter if expo is installed or which mode is used.
   const { exp } = getConfig(projectRoot, {
