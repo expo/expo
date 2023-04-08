@@ -1,17 +1,13 @@
 import * as Updates from 'expo-updates';
-import { useEffect, useRef, useState } from 'react';
+import { useState } from 'react';
 
-import {
-  UseUpdatesStateType,
-  UseUpdatesReturnType,
-  UseUpdatesEventType,
-  UseUpdatesEvent,
-} from './UseUpdates.types';
+import { UseUpdatesStateType, UseUpdatesReturnType, UseUpdatesEventType } from './UseUpdates.types';
 import { emitEvent, useUpdateEvents } from './UseUpdatesEmitter';
 import { currentlyRunning, availableUpdateFromEvent } from './UseUpdatesUtils';
 
 /**
- * Calls `Updates.checkForUpdateAsync()` and refreshes the `availableUpdate` property with the result.
+ * Calls [`Updates.checkForUpdateAsync()`](https://docs.expo.dev/versions/latest/sdk/updates/#updatescheckforupdateasync)
+ * and refreshes the `availableUpdate` property with the result.
  * If an error occurs, the `error` property will be set.
  */
 export const checkForUpdate = () => {
@@ -36,7 +32,9 @@ export const checkForUpdate = () => {
     });
 };
 /**
- * Downloads an update, if one is available, using `Updates.fetchUpdateAsync()`.
+ * Downloads an update, if one is available, using
+ * [`Updates.fetchUpdateAsync()`](https://docs.expo.dev/versions/latest/sdk/updates/#updatesfetchupdateasync).
+ * This should not be called unless `isUpdateAvailable` is true.
  * If an error occurs, the `error` property will be set.
  */
 export const downloadUpdate = () => {
@@ -58,8 +56,11 @@ export const downloadUpdate = () => {
 };
 
 /**
- * Runs an update by calling `Updates.reloadAsync()`. This should not be called unless there is an available update
- * that has already been successfully downloaded using `downloadUpdate()`.
+ * Runs an update by calling [`Updates.reloadAsync()`](https://docs.expo.dev/versions/latest/sdk/updates/#updatesreloadasync).
+ * This instructs the app to reload using the most recently downloaded version.
+ * This is useful for triggering a newly downloaded update to launch without the user needing to manually restart the app.
+ * This should not be called unless there is an available update
+ * that has already been successfully downloaded (`isUpdatePending` is true).
  * If an error occurs, the `error` property will be set.
  */
 export const runUpdate = () => {

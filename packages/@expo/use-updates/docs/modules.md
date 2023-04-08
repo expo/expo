@@ -37,7 +37,7 @@ or an [`UpdateEvent`](#updateevent) emitted by native code.
 
 #### Defined in
 
-[UseUpdates.types.ts:69](https://github.com/expo/expo/blob/5d51177373/packages/@expo/use-updates/src/UseUpdates.types.ts#L69)
+[UseUpdates.types.ts:69](https://github.com/expo/expo/blob/579ad8daa0/packages/@expo/use-updates/src/UseUpdates.types.ts#L69)
 
 ___
 
@@ -62,7 +62,7 @@ Structure encapsulating information on the currently running app
 
 #### Defined in
 
-[UseUpdates.types.ts:15](https://github.com/expo/expo/blob/5d51177373/packages/@expo/use-updates/src/UseUpdates.types.ts#L15)
+[UseUpdates.types.ts:15](https://github.com/expo/expo/blob/579ad8daa0/packages/@expo/use-updates/src/UseUpdates.types.ts#L15)
 
 ___
 
@@ -86,7 +86,7 @@ The structures and methods returned by `useUpdates()`.
 
 #### Defined in
 
-[UseUpdates.types.ts:89](https://github.com/expo/expo/blob/5d51177373/packages/@expo/use-updates/src/UseUpdates.types.ts#L89)
+[UseUpdates.types.ts:89](https://github.com/expo/expo/blob/579ad8daa0/packages/@expo/use-updates/src/UseUpdates.types.ts#L89)
 
 ## Functions
 
@@ -94,7 +94,8 @@ The structures and methods returned by `useUpdates()`.
 
 ▸ **checkForUpdate**(): `void`
 
-Calls `Updates.checkForUpdateAsync()` and refreshes the `availableUpdate` property with the result.
+Calls [`Updates.checkForUpdateAsync()`](https://docs.expo.dev/versions/latest/sdk/updates/#updatescheckforupdateasync)
+and refreshes the `availableUpdate` property with the result.
 If an error occurs, the `error` property will be set.
 
 #### Returns
@@ -103,7 +104,7 @@ If an error occurs, the `error` property will be set.
 
 #### Defined in
 
-[UseUpdates.ts:17](https://github.com/expo/expo/blob/5d51177373/packages/@expo/use-updates/src/UseUpdates.ts#L17)
+[UseUpdates.ts:13](https://github.com/expo/expo/blob/579ad8daa0/packages/@expo/use-updates/src/UseUpdates.ts#L13)
 
 ___
 
@@ -111,7 +112,9 @@ ___
 
 ▸ **downloadUpdate**(): `void`
 
-Downloads an update, if one is available, using `Updates.fetchUpdateAsync()`.
+Downloads an update, if one is available, using
+[`Updates.fetchUpdateAsync()`](https://docs.expo.dev/versions/latest/sdk/updates/#updatesfetchupdateasync).
+This should not be called unless `isUpdateAvailable` is true.
 If an error occurs, the `error` property will be set.
 
 #### Returns
@@ -120,7 +123,7 @@ If an error occurs, the `error` property will be set.
 
 #### Defined in
 
-[UseUpdates.ts:42](https://github.com/expo/expo/blob/5d51177373/packages/@expo/use-updates/src/UseUpdates.ts#L42)
+[UseUpdates.ts:40](https://github.com/expo/expo/blob/579ad8daa0/packages/@expo/use-updates/src/UseUpdates.ts#L40)
 
 ___
 
@@ -143,7 +146,7 @@ If an error occurs, the `error` property will be set.
 
 #### Defined in
 
-[UseUpdates.ts:80](https://github.com/expo/expo/blob/5d51177373/packages/@expo/use-updates/src/UseUpdates.ts#L80)
+[UseUpdates.ts:81](https://github.com/expo/expo/blob/579ad8daa0/packages/@expo/use-updates/src/UseUpdates.ts#L81)
 
 ___
 
@@ -151,8 +154,11 @@ ___
 
 ▸ **runUpdate**(): `void`
 
-Runs an update by calling `Updates.reloadAsync()`. This should not be called unless there is an available update
-that has already been successfully downloaded using `downloadUpdate()`.
+Runs an update by calling [`Updates.reloadAsync()`](https://docs.expo.dev/versions/latest/sdk/updates/#updatesreloadasync).
+This instructs the app to reload using the most recently downloaded version.
+This is useful for triggering a newly downloaded update to launch without the user needing to manually restart the app.
+This should not be called unless there is an available update
+that has already been successfully downloaded (`isUpdatePending` is true).
 If an error occurs, the `error` property will be set.
 
 #### Returns
@@ -161,7 +167,7 @@ If an error occurs, the `error` property will be set.
 
 #### Defined in
 
-[UseUpdates.ts:65](https://github.com/expo/expo/blob/5d51177373/packages/@expo/use-updates/src/UseUpdates.ts#L65)
+[UseUpdates.ts:66](https://github.com/expo/expo/blob/579ad8daa0/packages/@expo/use-updates/src/UseUpdates.ts#L66)
 
 ___
 
@@ -226,4 +232,4 @@ the structures with information on currently running and available updates.
 
 #### Defined in
 
-[UseUpdates.ts:147](https://github.com/expo/expo/blob/5d51177373/packages/@expo/use-updates/src/UseUpdates.ts#L147)
+[UseUpdates.ts:148](https://github.com/expo/expo/blob/579ad8daa0/packages/@expo/use-updates/src/UseUpdates.ts#L148)
