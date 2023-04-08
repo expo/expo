@@ -19,6 +19,7 @@
 - iOS: Fix legacy update bundled asset parsing. ([#21691](https://github.com/expo/expo/pull/21691) by [@wschurman](https://github.com/wschurman))
 - iOS: Fix config plist overriding. ([#21702](https://github.com/expo/expo/pull/21702) by [@wschurman](https://github.com/wschurman))
 - Align properties for different UpdateEvent types. ([#21818](https://github.com/expo/expo/pull/21818) by [@douglowder](https://github.com/douglowder))
+- Improvement in stability of useUpdateEvents() hook. ([#21880](https://github.com/expo/expo/pull/21880) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 
