@@ -247,6 +247,7 @@ export type ImagePickerAsset = {
    * Length of the video in milliseconds or `null` if the asset is not a video.
    */
   duration?: number | null;
+  originalUri?: string | null;
 };
 
 // @needsAudit

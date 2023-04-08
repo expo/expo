@@ -63,6 +63,7 @@ internal class MediaHandler(
       base64 = base64,
       exif = exif,
       assetId = sourceUri.getMediaStoreAssetId(),
+      originalUri = sourceUri.getPath(),
     )
   }
 

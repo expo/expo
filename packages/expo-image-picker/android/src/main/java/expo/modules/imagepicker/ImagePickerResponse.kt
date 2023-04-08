@@ -14,7 +14,8 @@ internal class ImagePickerAsset(
   @Field val base64: String? = null,
   @Field val exif: Bundle? = null,
   @Field val duration: Int? = null,
-  @Field val rotation: Int? = null
+  @Field val rotation: Int? = null,
+  @Field val originalUri: String? = ""
 ) : Record
 
 internal class ImagePickerResponse(
