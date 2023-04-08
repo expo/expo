@@ -21,6 +21,8 @@
 
 ### 🐛 Bug fixes
 
+- Escape backticks in runtime CSS scripts.
+
 ### 💡 Others
 
 - Drop `testing` and `native` from `resolver.platforms`. ([#21330](https://github.com/expo/expo/pull/21330) by [@EvanBacon](https://github.com/EvanBacon))
