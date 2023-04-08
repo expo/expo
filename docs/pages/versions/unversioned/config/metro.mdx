@@ -4,6 +4,33 @@ title: metro.config.js
 
 See more information about **metro.config.js** in the [customizing Metro guide](/guides/customizing-metro/).
 
+## Envrionment variables
+
+> For SDK 49 and above
+
+Environment variables can be loaded using **.env** files. These files are loaded according to the [standard **.env** file resolution](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use).
+
+If you are migrating an older project to SDK 49 or above, then you should ignore local env files by adding the following to your **.gitignore**:
+
+```sh .gitignore
+# local env files
+.env*.local
+```
+
+### Client envrionment variables
+
+Envrionment variables prefixed with `EXPO_PUBLIC_` will be exposed to the app at build-time. For example, `EXPO_PUBLIC_API_KEY` will be available as `process.env.EXPO_PUBLIC_API_KEY`.
+
+Envrionmnet variables will not be inlined in Node Modules.
+
+For security purposes, client environment variables are inlined in the bundle, which means that `process.env` is not an iterable object, and you cannot dynamically access environment variables. Every variable must be explicitly defined. For example, `process.env.EXPO_PUBLIC_KEY` is valid, and `process.env['EXPO_PUBLIC_KEY']` is not.
+
+- Client environment variables should not contain secrets as they will be viewable in plain-text format in the production binary.
+- Use client environment variables for partially protected values, such as public API keys you don't want to commit to GitHub.
+- Expo environment variables can be updated during `npx expo start` (without clearing the bundler cache). However, you'll need to modify and save an included source file to see the updates. You must also perform a client reload, as environment variables do not support Fast Refresh.
+
+{/* TODO: Usage in EAS */}
+
 ## CSS
 
 > Since SDK 49

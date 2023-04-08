@@ -6,8 +6,10 @@
  */
 import { getConfig } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
+import * as runtimeEnv from '@expo/env';
 import assert from 'assert';
 import chalk from 'chalk';
+import path from 'path';
 
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
@@ -29,6 +31,7 @@ import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.
 import { typescriptTypeGeneration } from '../type-generation';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
+import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -88,6 +91,37 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
 
     return await load(location);
+  }
+
+  async watchEnvironmentVariables() {
+    if (!this.instance) {
+      throw new Error(
+        'Cannot observe environment variable changes without a running Metro instance.'
+      );
+    }
+    if (!this.metro) {
+      // This can happen when the run command is used and the server is already running in another
+      // process.
+      debug('Skipping Environment Variable observation because Metro is not running (headless).');
+      return;
+    }
+
+    const envFiles = runtimeEnv
+      .getFiles(process.env.NODE_ENV)
+      .map((fileName) => path.join(this.projectRoot, fileName));
+
+    observeFileChanges(
+      {
+        metro: this.metro,
+        server: this.instance.server,
+      },
+      envFiles,
+      () => {
+        debug('Reloading environment variables...');
+        // Force reload the environment variables.
+        runtimeEnv.load(this.projectRoot, { force: true });
+      }
+    );
   }
 
   protected async startImplementationAsync(

@@ -53,3 +53,6 @@ yarn-error.log
 .expo/
 web-build/
 dist/
+
+# local env files
+.env*.local

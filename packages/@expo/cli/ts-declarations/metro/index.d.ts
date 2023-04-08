@@ -203,7 +203,7 @@ declare module 'metro' {
   //#region metro/src/DeltaBundler/types.flow.js
 
   export interface MixedOutput {
-    readonly data: unknown;
+    readonly data: any;
     readonly type: string;
   }
 
@@ -679,4 +679,46 @@ declare module 'metro' {
   }
 
   //#endregion
+}
+
+declare module 'metro/src/DeltaBundler/Serializers/baseJSBundle' {
+  import { Module, Graph, SerializerOptions } from 'metro';
+
+  type ModuleMap = readonly [number, string][];
+
+  type Bundle = {
+    readonly modules: ModuleMap;
+    readonly post: string;
+    readonly pre: string;
+  };
+
+  export default function baseJSBundle(
+    entryPoint: string,
+    preModules: readonly Module[],
+    graph: Graph,
+    options: SerializerOptions
+  ): Bundle;
+}
+
+declare module 'metro/src/lib/bundleToString' {
+  import { Module, ReadOnlyGraph, SerializerOptions } from 'metro';
+
+  type ModuleMap = readonly [number, string][];
+
+  type Bundle = {
+    readonly modules: ModuleMap;
+    readonly post: string;
+    readonly pre: string;
+  };
+
+  type BundleMetadata = {
+    readonly pre: number;
+    readonly post: number;
+    readonly modules: readonly [number, number][];
+  };
+
+  export default function bundleToString(bundle: Bundle): {
+    readonly code: string;
+    readonly metadata: BundleMetadata;
+  };
 }

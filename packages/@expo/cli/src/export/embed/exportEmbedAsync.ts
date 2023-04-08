@@ -5,6 +5,7 @@ import { Options } from './resolveOptions';
 
 export async function exportEmbedAsync(projectRoot: string, options: Options) {
   setNodeEnv(options.dev ? 'development' : 'production');
+  require('@expo/env').load(projectRoot);
 
   const { config } = await loadMetroConfigAsync(projectRoot, {
     maxWorkers: options.maxWorkers,

@@ -179,6 +179,10 @@ export class DevServerManager {
     }
   }
 
+  async watchEnvironmentVariables() {
+    await devServers.find((server) => server.name === 'metro')?.watchEnvironmentVariables();
+  }
+
   /** Stop all servers including ADB. */
   async stopAsync(): Promise<void> {
     await Promise.allSettled([

@@ -2,6 +2,8 @@
 
 # iOS
 
+export NODE_ENV=production
+
 EXPO_BUNDLE_APP=1 npx react-native bundle \
     --platform ios \
     --dev false \
