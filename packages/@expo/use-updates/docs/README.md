@@ -9,8 +9,8 @@ A simpler JavaScript API for the [`expo-updates`](https://docs.expo.dev/versions
 
 ## Notes
 
+- This API is in an early stage of development, and is subject to change, including breaking changes.
 - If the app is configured to [download and run updates automatically](https://docs.expo.dev/versions/latest/config/app/#checkautomatically), then the `useUpdates()` hook should be added near the root level of the application code, so that the events emitted by automatic update checks are detected.
-- This API is in an early (alpha) state, and is likely to be changed and/or added to in the near future.
 
 ## Example Usage
 
