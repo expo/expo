@@ -15,6 +15,7 @@ export function getHotReplaceTemplate(id: string) {
 }
 
 export function wrapDevelopmentCSS(props: { src: string; filename: string }) {
+  const withBackTicksEscaped = props.src.replace(/`/g, '\\`');
   return `(() => {
   if (typeof document === 'undefined') {
     return
@@ -24,7 +25,7 @@ export function wrapDevelopmentCSS(props: { src: string; filename: string }) {
   ${getHotReplaceTemplate(props.filename)}
   style.setAttribute('data-expo-loader', 'css');
   head.appendChild(style);
-  const css = \`${props.src.replace(/`/, '`')}\`;
+  const css = \`${withBackTicksEscaped}\`;
   if (style.styleSheet){
     style.styleSheet.cssText = css;
   } else {
