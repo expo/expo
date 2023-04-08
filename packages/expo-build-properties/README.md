@@ -48,4 +48,4 @@ Contributions are very welcome! Please refer to guidelines described in the [con
 [docs-main]: https://github.com/expo/expo/blob/main/docs/pages/versions/unversioned/sdk/build-properties.mdx
 [docs-stable]: https://docs.expo.dev/versions/latest/sdk/build-properties/
 [contributing]: https://github.com/expo/expo#contributing
-[config-plugins]: https://docs.expo.dev/guides/config-plugins/
+[config-plugins]: https://docs.expo.dev/home/config-plugins/introduction
