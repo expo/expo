@@ -1,0 +1,1 @@
+{"version":3,"file":"index.js","sourceRoot":"","sources":["../src/index.ts"],"names":[],"mappings":"AAKA,cAAc,cAAc,CAAC","sourcesContent":["export type {\n  CurrentlyRunningInfo,\n  AvailableUpdateInfo,\n  UseUpdatesReturnType,\n} from './UseUpdates.types';\nexport * from './UseUpdates';\n"]}

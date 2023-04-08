@@ -1,4 +1,4 @@
-import { useEffect } from 'react';
+import { useEffect, useRef } from 'react';
 import * as Updates from './Updates';
 /**
  * React hook to create an [`UpdateEvent`](#updateevent) listener subscription on mount, using
@@ -25,11 +25,18 @@ import * as Updates from './Updates';
  * ```
  */
 export const useUpdateEvents = (listener) => {
+    const listenerRef = useRef();
     useEffect(() => {
-        const subscription = Updates.addListener(listener);
-        return () => {
-            subscription.remove();
-        };
+        listenerRef.current = listener;
+    }, [listener]);
+    useEffect(() => {
+        if (listenerRef.current) {
+            const subscription = Updates.addListener(listenerRef.current);
+            return () => {
+                subscription.remove();
+            };
+        }
+        return undefined;
     }, []);
 };
 //# sourceMappingURL=UpdatesHooks.js.map
