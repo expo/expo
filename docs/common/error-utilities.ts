@@ -169,7 +169,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/distribution/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
   '/guides/genymotion/': '/workflow/android-studio-emulator/',
   '/workflow/upgrading-expo/': '/workflow/upgrading-expo-sdk-walkthrough/',
-  '/workflow/create-react-native-app/': '/workflow/glossary-of-terms/#create-react-native-app',
+  '/workflow/create-react-native-app/': '/more/glossary-of-terms/#create-react-native-app',
   '/expokit/': '/archive/glossary/#expokit/',
 
   // Development builds redirects
