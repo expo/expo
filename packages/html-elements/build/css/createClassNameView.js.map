@@ -1,0 +1,1 @@
+{"version":3,"file":"createClassNameView.js","sourceRoot":"","sources":["../../src/css/createClassNameView.tsx"],"names":[],"mappings":"AAEA,MAAM,UAAU,mBAAmB,CAAyC,IAAW;IACrF,OAAO,IAAI,CAAC;AACd,CAAC","sourcesContent":["import React from 'react';\n\nexport function createClassNameView<TView extends React.ComponentType<any>>(View: TView) {\n  return View;\n}\n"]}

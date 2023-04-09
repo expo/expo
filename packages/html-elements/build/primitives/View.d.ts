@@ -116,6 +116,8 @@ export type ViewStyle = Omit<NativeViewStyle, 'position'> & WebViewStyle;
 export type WebViewProps = {
     style?: StyleProp<ViewStyle>;
     accessibilityRole?: 'list' | 'listitem' | 'complementary' | 'contentinfo' | 'region' | 'navigation' | 'main' | 'article' | 'banner' | AccessibilityRole;
+    /** @platform web */
+    className?: string;
 };
 export type ViewProps = WebViewProps & Omit<NativeViewProps, 'style' | 'accessibilityRole'>;
 declare const _default: ComponentType<ViewProps>;

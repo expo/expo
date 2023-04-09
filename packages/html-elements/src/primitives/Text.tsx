@@ -6,6 +6,7 @@ import {
   TextStyle as NativeTextStyle,
 } from 'react-native';
 
+import { createClassNameView } from '../css/createClassNameView';
 import { createSafeStyledView } from '../css/createSafeStyledView';
 import { WebViewStyle } from './View';
 
@@ -60,10 +61,12 @@ export type WebTextProps = {
   };
   /** @platform web */
   lang?: string;
+  /** @platform web */
+  className?: string;
 };
 
 export type TextProps = Omit<NativeTextProps, 'style' | 'accessibilityRole'> & WebTextProps;
 
 const Text = NativeText as ComponentType<TextProps>;
 
-export default createSafeStyledView(Text) as ComponentType<TextProps>;
+export default createClassNameView(createSafeStyledView(Text)) as ComponentType<TextProps>;

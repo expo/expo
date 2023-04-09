@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `className` prop for web styles.
+
 ### 🐛 Bug fixes
 
 - Prevent babel plugin from running on node_modules. ([#21594](https://github.com/expo/expo/pull/21594) by [@EvanBacon](https://github.com/EvanBacon))

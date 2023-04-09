@@ -6,6 +6,7 @@ import {
   ViewStyle as NativeViewStyle,
 } from 'react-native';
 
+import { createClassNameView } from '../css/createClassNameView';
 import { createSafeStyledView } from '../css/createSafeStyledView';
 import { createDevView } from './createDevView';
 
@@ -141,6 +142,9 @@ export type WebViewProps = {
     | 'article'
     | 'banner'
     | AccessibilityRole;
+
+  /** @platform web */
+  className?: string;
 };
 
 export type ViewProps = WebViewProps & Omit<NativeViewProps, 'style' | 'accessibilityRole'>;
@@ -152,4 +156,4 @@ if (process.env.NODE_ENV !== 'production') {
   View = createDevView(NativeView) as ComponentType<ViewProps>;
 }
 
-export default createSafeStyledView(View) as ComponentType<ViewProps>;
+export default createClassNameView(createSafeStyledView(View)) as ComponentType<ViewProps>;

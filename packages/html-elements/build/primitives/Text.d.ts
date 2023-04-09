@@ -45,6 +45,8 @@ export type WebTextProps = {
     };
     /** @platform web */
     lang?: string;
+    /** @platform web */
+    className?: string;
 };
 export type TextProps = Omit<NativeTextProps, 'style' | 'accessibilityRole'> & WebTextProps;
 declare const _default: ComponentType<TextProps>;
