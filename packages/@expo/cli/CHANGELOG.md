@@ -176,6 +176,7 @@ _This version does not introduce any user-facing changes._
 
 ### 🎉 New features
 
+- Added middleware generating Apple App Site Association file in-memory when it doesn't exist in the public directory. ([#19506](https://github.com/expo/expo/pull/19506) by [@EvanBacon](https://github.com/EvanBacon))
 - Add proxy support across all Expo CLI commands. ([#19592](https://github.com/expo/expo/pull/19592) by [@EvanBacon](https://github.com/EvanBacon))
 - Added ability to open tunnel URLs with Metro web. ([#19504](https://github.com/expo/expo/pull/19504) by [@EvanBacon](https://github.com/EvanBacon))
 - Added prompt for signing simulator builds that use entitlements that work on simulator builds like associated domains. ([#19505](https://github.com/expo/expo/pull/19505) by [@EvanBacon](https://github.com/EvanBacon))

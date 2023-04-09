@@ -4,7 +4,7 @@ import { parse } from 'url';
 
 import { env } from '../../../utils/env';
 import { parsePlatformHeader } from './resolvePlatform';
-import { ServerRequest, ServerResponse } from './server.types';
+import { ServerNext, ServerRequest, ServerResponse } from './server.types';
 
 const debug = require('debug')('expo:start:server:middleware:serveStatic') as typeof console.log;
 
@@ -37,27 +37,38 @@ export class ServeStaticMiddleware {
       }
 
       debug(`Maybe serve static:`, pathname);
-      const stream = send(req, pathname, opts);
-
-      // add file listener for fallthrough
-      let forwardError = false;
-      stream.on('file', function onFile() {
-        // once file is determined, always forward error
-        forwardError = true;
-      });
-
-      // forward errors
-      stream.on('error', function error(err: any) {
-        if (forwardError || !(err.statusCode < 500)) {
-          next(err);
-          return;
-        }
-
-        next();
-      });
-
-      // pipe
-      stream.pipe(res);
+      streamStaticFileResponse(pathname, opts, req, res, next);
     };
   }
+}
+
+export function streamStaticFileResponse(
+  pathname: string,
+  opts: send.SendOptions,
+  req: ServerRequest,
+  res: ServerResponse,
+  next: ServerNext
+) {
+  debug(`Maybe serve static:`, pathname);
+  const stream = send(req, pathname, opts);
+
+  // add file listener for fallthrough
+  let forwardError = false;
+  stream.on('file', function onFile() {
+    // once file is determined, always forward error
+    forwardError = true;
+  });
+
+  // forward errors
+  stream.on('error', function error(err: any) {
+    if (forwardError || !(err.statusCode < 500)) {
+      next(err);
+      return;
+    }
+
+    next();
+  });
+
+  // pipe
+  stream.pipe(res);
 }

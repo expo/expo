@@ -18,6 +18,7 @@ import { env } from '../../../utils/env';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { getStaticRenderFunctions, getStaticPageContentsAsync } from '../getStaticRenderFunctions';
+import { AppleAppSiteAssociationMiddleware } from '../middleware/AppleAppSiteAssociationMiddleware';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
@@ -184,6 +185,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     if (this.isTargetingWeb()) {
       // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
+
+      // This MUST be after the static middleware so the physical apple app site association file takes precedence.
+      middleware.use(new AppleAppSiteAssociationMiddleware(this.projectRoot).getHandler());
 
       const devServerUrl = `http://localhost:${options.port}`;
 

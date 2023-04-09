@@ -138,6 +138,13 @@ class Env {
   }
 
   /**
+   * Disable automated Apple app site association generation for universal links.
+   */
+  get EXPO_NO_APPLE_APP_SITE_ASSOCIATION(): boolean {
+    return boolish('EXPO_NO_APPLE_APP_SITE_ASSOCIATION', false);
+  }
+
+  /**
    * **Experimental:** Use static generation for Metro web projects. This only works with Expo Router.
    */
   get EXPO_USE_STATIC(): boolean {

@@ -2,6 +2,7 @@ import fs from 'fs';
 import path from 'path';
 
 import * as Log from '../log';
+import { exportAppleAppSiteAssociationAsync } from '../start/platforms/ios/association/aasa';
 import { importCliSaveAssetsFromProject } from '../start/server/metro/resolveFromProject';
 import { createTemplateHtmlFromExpoConfigAsync } from '../start/server/webTemplate';
 import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
@@ -134,6 +135,9 @@ export async function exportAppAsync(
         );
       })
     );
+
+    // Write the apple app site association file for web.
+    await exportAppleAppSiteAssociationAsync(projectRoot, outputPath);
   }
 
   const { assets } = await exportAssetsAsync(projectRoot, {
