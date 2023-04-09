@@ -1,5 +1,9 @@
-import { IssueLabel, LinearClient, WorkflowState } from '@linear/sdk';
-import { IssueCreateInput, IssueLabelFilter } from '@linear/sdk/dist/_generated_documents';
+import { IssueLabel, LinearClient, User, WorkflowState } from '@linear/sdk';
+import {
+  IssueCreateInput,
+  IssueLabelFilter,
+  UserFilter,
+} from '@linear/sdk/dist/_generated_documents';
 
 const linearClient = new LinearClient({
   apiKey: process.env.LINEAR_API_KEY,
@@ -64,4 +68,26 @@ export async function getTeamWorkflowStateAsync(
   }
 
   return state;
+}
+
+/**
+ * Gets a workflow state by name and team ID.
+ */
+export async function getTeamMembersAsync({
+  filter,
+  teamId,
+}: {
+  filter?: UserFilter;
+  teamId: string;
+}): Promise<User[]> {
+  const team = await linearClient.team(teamId);
+  const states = await team.members({ filter });
+
+  if (!states.nodes?.length) {
+    throw new Error(
+      `Failed to find Linear members with the given filter: ${JSON.stringify(filter)}`
+    );
+  }
+
+  return states.nodes;
 }

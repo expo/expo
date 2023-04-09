@@ -59,6 +59,7 @@
     "npm-packlist": "^5.1.3",
     "nullthrows": "^1.1.1",
     "open": "^8.4.0",
+    "openai": "^3.2.1",
     "ora": "^5.4.1",
     "pacote": "^13.1.1",
     "parse-diff": "^0.9.0",
