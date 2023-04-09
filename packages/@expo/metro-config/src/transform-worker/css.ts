@@ -15,7 +15,7 @@ export function getHotReplaceTemplate(id: string) {
 }
 
 export function wrapDevelopmentCSS(props: { src: string; filename: string }) {
-  const withBackTicksEscaped = props.src.replace(/`/g, '\\`');
+  const withBackTicksEscaped = escapeBackticksAndOctals(props.src);
   return `(() => {
   if (typeof document === 'undefined') {
     return
@@ -32,4 +32,15 @@ export function wrapDevelopmentCSS(props: { src: string; filename: string }) {
     style.appendChild(document.createTextNode(css));
   }
 })();`;
+}
+
+export function escapeBackticksAndOctals(str: string) {
+  if (typeof str !== 'string') {
+    return '';
+  }
+
+  return str
+    .replace(/\\/g, '\\\\')
+    .replace(/`/g, '\\`')
+    .replace(/[\0-\7]/g, (match) => `\\0${match.charCodeAt(0).toString(8)}`);
 }
