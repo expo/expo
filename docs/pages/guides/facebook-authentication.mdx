@@ -11,7 +11,7 @@ import { CODE } from '~/ui/components/Text';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Step } from '~/ui/components/Step';
 
-AuthSession API allows [browser-based authentication](/versions/latest/sdk/auth-session/#how-web-browser-based-authentication-flows-work) (using OAuth or OpenID Connect) to your project for Android, iOS, and the web. This guide provides steps on configuring and using the API with Facebook and a [development build](/development/create-development-builds/).
+AuthSession API allows [browser-based authentication](/versions/latest/sdk/auth-session/#how-web-browser-based-authentication-flows-work) (using OAuth or OpenID Connect) to your project for Android, iOS, and the web. This guide provides steps on configuring and using the API with Facebook and a [development build](/home/develop/development-builds/create-a-build/).
 
 <Step label="1">
 
@@ -83,7 +83,7 @@ scheme://expo-development-client/?url={manifestUrl}
 yourscheme://expo-development-client/?url=https://u.expo.dev/[your-eas-build-project-id]?channel-name=[channel-name]
 ```
 
-- Replace `scheme` with the one you defined in the previous step. To learn what goes in the `manifestUrl` parameter, read the [development workflows](/development/development-workflows/#deep-linking-urls) section. Click **Save changes**.
+- Replace `scheme` with the one you defined in the previous step. To learn what goes in the `manifestUrl` parameter, read the [development workflows](/home/develop/development-builds/development-workflows/#deep-linking-urls) section. Click **Save changes**.
 
   <ImageSpotlight
     alt="Settings for Facebook Login product."
@@ -123,7 +123,7 @@ import * as WebBrowser from 'expo-web-browser';
 
 ### Add a method to dismiss the web popup
 
-Expo's [WebBrowser API](https://docs.expo.dev/versions/latest/sdk/webbrowser/) provides `maybeCompleteAuthSession()` method to dismiss the popup when the authentication sessions are completed successfully. It uses the redirect URL added in the provider's authorized list of URLs.
+Expo's [WebBrowser API](/versions/latest/sdk/webbrowser/) provides `maybeCompleteAuthSession()` method to dismiss the popup when the authentication sessions are completed successfully. It uses the redirect URL added in the provider's authorized list of URLs.
 
 Invoke this method to the app screen you want to redirect back to by adding the following code snippet:
 
@@ -314,4 +314,4 @@ For bare workflow, your project needs to conform to the URI scheme matching your
 - [AuthSession API reference](/versions/latest/sdk/auth-session/)
 - [How browser-based authentication works?](/versions/latest/sdk/auth-session/#how-web-browser-based-authentication-flows-work)
 - [Facebook authentication provider reference](/versions/latest/sdk/auth-session/#facebook)
-- Alternatively, you can also use [`react-native-fbsdk-next`](https://github.com/thebergamo/react-native-fbsdk-next#expo-installation) library with a [development build](/development/introduction/).
+- Alternatively, you can also use [`react-native-fbsdk-next`](https://github.com/thebergamo/react-native-fbsdk-next#expo-installation) library with a [development build](/home/develop/development-builds/introduction/).

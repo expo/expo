@@ -188,7 +188,7 @@ Now when running `npx expo prebuild` inside our **example** folder we should see
 
 <Terminal cmd={['$ cd example', '$ npx expo prebuild --clean']} />
 
-To inject our custom API keys into **AndroidManifest.xml** and **Info.plist** we can use a few helper [`mods` provided by `expo/config-plugins`](/guides/config-plugins/#mod-plugins), which makes it easy to modify native files. In our example, we will use two of them, `withAndroidManifest` and `withInfoPlist`.
+To inject our custom API keys into **AndroidManifest.xml** and **Info.plist** we can use a few helper [`mods` provided by `expo/config-plugins`](/home/config-plugins/plugins-and-mods/#what-are-mods), which makes it easy to modify native files. In our example, we will use two of them, `withAndroidManifest` and `withInfoPlist`.
 
 As the name suggests, `withInfoPlist` allows us to read and modify **Info.plist** values. Using the `modResults` property, we can add custom values as demonstrated in the code snippet below:
 

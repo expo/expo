@@ -259,6 +259,7 @@ const general = [
     makePage('guides/using-hermes.mdx'),
     makePage('guides/adopting-prebuild.mdx'),
     makePage('guides/ios-developer-mode.mdx'),
+    makePage('guides/icons.mdx'),
     makePage('guides/localization.mdx'),
     makePage('guides/configuring-js-engines.mdx'),
   ]),
