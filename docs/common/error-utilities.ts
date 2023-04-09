@@ -160,6 +160,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/development/development-workflows/': '/home/develop/development-builds/development-workflows/',
   '/workflow/expo-cli/': '/more/expo-cli/',
   '/versions/latest/workflow/expo-cli/': '/more/expo-cli/',
+  '/debugging/': '/home/debugging/runtime-issue/',
 
   // Old redirects
   '/introduction/project-lifecycle/': '/introduction/managed-vs-bare/',
