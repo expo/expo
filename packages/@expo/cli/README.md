@@ -20,7 +20,7 @@
 </p>
 
 <p align="center">
-  <a aria-label="expo documentation" href="https://docs.expo.dev/workflow/expo-cli/">📚 Read the Documentation</a>
+  <a aria-label="expo documentation" href="https://docs.expo.dev/more/expo-cli/">📚 Read the Documentation</a>
   |
   <a aria-label="Contribute to Expo CLI" href="#contributing"><b>Contribute to Expo CLI</b></a>
 </p>
