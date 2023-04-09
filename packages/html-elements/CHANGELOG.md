@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add `className` prop for web styles.
+- Add `className` prop for web styles. ([#22055](https://github.com/expo/expo/pull/22055) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
