@@ -230,7 +230,7 @@ An example of the `exp+` scheme breaking the verification process:
 </activity>
 ```
 
-You can fix this issue by creating a custom [Config Plugin](/guides/config-plugins/) that removes the `exp+` schemes when verifying `intentFilters`. In your project, create a new file called **withAndroidVerifiedLinksWorkaround.js** with the following code snippet:
+You can fix this issue by creating a custom [Config Plugin](/home/config-plugins/introduction/) that removes the `exp+` schemes when verifying `intentFilters`. In your project, create a new file called **withAndroidVerifiedLinksWorkaround.js** with the following code snippet:
 
 ```js withAndroidVerifiedLinksWorkaround.js
 const { createRunOncePlugin, withAndroidManifest } = require('@expo/config-plugins');

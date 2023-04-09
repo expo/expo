@@ -6,6 +6,7 @@ description: An overview of submitting an app to the app stores or with the inte
 
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
+import { AndroidIcon, AppleIcon, Earth02Icon, UpdateIcon } from '@expo/styleguide-icons';
 
 Get your app into the hands of users by submitting it to the app stores or with [Internal Distribution](/build/internal-distribution).
 
@@ -33,12 +34,14 @@ This automatically manages **all native code signing** for Android and iOS for a
   title="Submitting to the Google Play Store"
   description="Learn how to submit an Android app to the Google Play Store."
   href="/submit/android"
+  Icon={AndroidIcon}
 />
 
 <BoxLink
   title="Submitting to the Apple App Store"
   description="Learn how to submit an iOS/iPadOS app to the Apple App Store from any operating system."
   href="/submit/ios"
+  Icon={AppleIcon}
 />
 
 <BoxLink
@@ -51,10 +54,12 @@ This automatically manages **all native code signing** for Android and iOS for a
   title="Publishing websites"
   description="Export your website and upload to any web host."
   href="/distribution/publishing-websites"
+  Icon={Earth02Icon}
 />
 
 <BoxLink
   title="OTA updates"
   description="Send over-the-air updates to your users instantly."
   href="/eas-update/introduction"
+  Icon={UpdateIcon}
 />

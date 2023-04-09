@@ -9,7 +9,7 @@ import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 import { YesIcon, NoIcon } from '~/ui/components/DocIcons';
 
-The expo-updates library allows you to programmatically control and respond to new updates made available to your app.
+The `expo-updates` library allows you to programmatically control and respond to new updates made available to your app.
 
 <PlatformsSection android emulator ios simulator />
 
@@ -27,10 +27,9 @@ Most of the methods and constants in this module can only be used or tested in r
 
 ### Using expo-updates with a custom server
 
-Every custom updates server must implement the [Expo Updates protocol](https://docs.expo.dev/technical-specs/expo-updates-1/).
+Every custom updates server must implement the [Expo Updates protocol](/technical-specs/expo-updates-1/).
 
 You can find an example implementation of a custom server and an app using that server in the [custom-expo-updates-server](https://github.com/expo/custom-expo-updates-server) repository.
-
 
 ### Configuration options
 
@@ -40,20 +39,20 @@ On Android, these options are set as `meta-data` tags adjacent to the tags added
 
 On iOS, these properties are set as keys in **Expo.plist** file. You can also set them at runtime by calling `[EXUpdatesAppController.sharedInstance setConfiguration:]` at any point before calling `start` or `startAndShowLaunchScreen`, and the values in this dictionary will override any values specified in **Expo.plist**.
 
-| iOS plist/dictionary key | Android Map key | Android meta-data name         | Default | Required? |
-|--------------------------|---------------- | ------------------------------ | ------- | --------- |
-| `EXUpdatesEnabled`       | `enabled`       | `expo.modules.updates.ENABLED` | `true`  | <NoIcon />        |
-| `EXUpdatesURL`           | `updateUrl`     | `expo.modules.updates.EXPO_UPDATE_URL` | (none)  | <YesIcon />        |
-| `EXUpdatesRequestHeaders`| `requestHeaders`| `expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY` | (none)  | <NoIcon />        |
-| `EXUpdatesSDKVersion`    | `sdkVersion`    | `expo.modules.updates.EXPO_SDK_VERSION` | (none)  | (exactly one of `sdkVersion` or `runtimeVersion` is required, Required for apps hosted on Expo's server) |
-| `EXUpdatesRuntimeVersion` | `runtimeVersion` | `expo.modules.updates.EXPO_RUNTIME_VERSION` | (none)  | (exactly one of `sdkVersion` or `runtimeVersion` is required) |
-| `EXUpdatesReleaseChannel` | `releaseChannel` | `expo.modules.updates.EXPO_RELEASE_CHANNEL` | `default` | <NoIcon />        |
-| `EXUpdatesCheckOnLaunch` | `checkOnLaunch` | `expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH` | `ALWAYS` (`ALWAYS`, `NEVER`, `WIFI_ONLY`, `ERROR_RECOVERY_ONLY`)| <NoIcon />        |
-| `EXUpdatesLaunchWaitMs`  | `launchWaitMs`  | `expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS` | `0`     | <NoIcon />        |
-| `EXUpdatesCodeSigningCertificate` | `codeSigningCertificate` | `expo.modules.updates.CODE_SIGNING_CERTIFICATE`    | (none)  | <NoIcon />        |
-| `EXUpdatesCodeSigningMetadata`    | `codeSigningMetadata`    | `expo.modules.updates.CODE_SIGNING_METADATA`       | (none)  | <NoIcon />        |
-| `EXUpdatesCodeSigningIncludeManifestResponseCertificateChain` | `codeSigningIncludeManifestResponseCertificateChain` | `expo.modules.updates.CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN` | false | <NoIcon />        |
-| `EXUpdatesConfigCodeSigningAllowUnsignedManifests` | `codeSigningAllowUnsignedManifests` | `expo.modules.updates.CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS` | false | <NoIcon />        |
+| iOS plist/dictionary key                                      | Android Map key                                      | Android meta-data name                                                          | Default                                                          | Required?                                                                                                |
+| ------------------------------------------------------------- | ---------------------------------------------------- | ------------------------------------------------------------------------------- | ---------------------------------------------------------------- | -------------------------------------------------------------------------------------------------------- |
+| `EXUpdatesEnabled`                                            | `enabled`                                            | `expo.modules.updates.ENABLED`                                                  | `true`                                                           | <NoIcon />                                                                                               |
+| `EXUpdatesURL`                                                | `updateUrl`                                          | `expo.modules.updates.EXPO_UPDATE_URL`                                          | (none)                                                           | <YesIcon />                                                                                              |
+| `EXUpdatesRequestHeaders`                                     | `requestHeaders`                                     | `expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY`                | (none)                                                           | <NoIcon />                                                                                               |
+| `EXUpdatesSDKVersion`                                         | `sdkVersion`                                         | `expo.modules.updates.EXPO_SDK_VERSION`                                         | (none)                                                           | (exactly one of `sdkVersion` or `runtimeVersion` is required, Required for apps hosted on Expo's server) |
+| `EXUpdatesRuntimeVersion`                                     | `runtimeVersion`                                     | `expo.modules.updates.EXPO_RUNTIME_VERSION`                                     | (none)                                                           | (exactly one of `sdkVersion` or `runtimeVersion` is required)                                            |
+| `EXUpdatesReleaseChannel`                                     | `releaseChannel`                                     | `expo.modules.updates.EXPO_RELEASE_CHANNEL`                                     | `default`                                                        | <NoIcon />                                                                                               |
+| `EXUpdatesCheckOnLaunch`                                      | `checkOnLaunch`                                      | `expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH`                             | `ALWAYS` (`ALWAYS`, `NEVER`, `WIFI_ONLY`, `ERROR_RECOVERY_ONLY`) | <NoIcon />                                                                                               |
+| `EXUpdatesLaunchWaitMs`                                       | `launchWaitMs`                                       | `expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS`                              | `0`                                                              | <NoIcon />                                                                                               |
+| `EXUpdatesCodeSigningCertificate`                             | `codeSigningCertificate`                             | `expo.modules.updates.CODE_SIGNING_CERTIFICATE`                                 | (none)                                                           | <NoIcon />                                                                                               |
+| `EXUpdatesCodeSigningMetadata`                                | `codeSigningMetadata`                                | `expo.modules.updates.CODE_SIGNING_METADATA`                                    | (none)                                                           | <NoIcon />                                                                                               |
+| `EXUpdatesCodeSigningIncludeManifestResponseCertificateChain` | `codeSigningIncludeManifestResponseCertificateChain` | `expo.modules.updates.CODE_SIGNING_INCLUDE_MANIFEST_RESPONSE_CERTIFICATE_CHAIN` | false                                                            | <NoIcon />                                                                                               |
+| `EXUpdatesConfigCodeSigningAllowUnsignedManifests`            | `codeSigningAllowUnsignedManifests`                  | `expo.modules.updates.CODE_SIGNING_ALLOW_UNSIGNED_MANIFESTS`                    | false                                                            | <NoIcon />                                                                                               |
 
 For a detailed explanation, see the [`expo-updates`](https://github.com/expo/expo/blob/main/packages/expo-updates/README.md) repository.
 
