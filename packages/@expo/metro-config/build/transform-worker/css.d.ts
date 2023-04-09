@@ -4,3 +4,4 @@ export declare function wrapDevelopmentCSS(props: {
     src: string;
     filename: string;
 }): string;
+export declare function escapeBackticksAndOctals(str: string): string;

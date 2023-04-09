@@ -1,4 +1,16 @@
-import { getHotReplaceTemplate, wrapDevelopmentCSS, pathToHtmlSafeName } from '../css';
+import {
+  escapeBackticksAndOctals,
+  getHotReplaceTemplate,
+  wrapDevelopmentCSS,
+  pathToHtmlSafeName,
+} from '../css';
+
+describe(escapeBackticksAndOctals, () => {
+  it(`should escape backticks and octals`, () => {
+    expect(escapeBackticksAndOctals('`')).toEqual('\\`');
+    expect(escapeBackticksAndOctals('`\\0')).toEqual('\\`\\\\0');
+  });
+});
 
 describe(wrapDevelopmentCSS, () => {
   it(`should transform css in dev mode`, async () => {
