@@ -22,7 +22,7 @@
 ### 🐛 Bug fixes
 
 - Escape backticks in runtime CSS scripts. ([#22040](https://github.com/expo/expo/pull/22040) by [@EvanBacon](https://github.com/EvanBacon))
-- Escape octal characters in runtime CSS scripts.
+- Escape octal characters in runtime CSS scripts. ([#22054](https://github.com/expo/expo/pull/22054) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
