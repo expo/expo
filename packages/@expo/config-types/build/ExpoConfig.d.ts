@@ -158,7 +158,7 @@ export interface ExpoConfig {
      */
     scheme?: string;
     /**
-     * Any extra fields you want to pass to your experience. Values are accessible via `Expo.Constants.manifest.extra` ([Learn more](https://docs.expo.dev/versions/latest/sdk/constants/#constantsmanifest))
+     * Any extra fields you want to pass to your experience. Values are accessible via `Constants.expoConfig.extra` ([Learn more](https://docs.expo.dev/versions/latest/sdk/constants/#constantsmanifest))
      */
     extra?: {
         [k: string]: any;
