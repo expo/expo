@@ -25,6 +25,11 @@ class Env {
   get EXPO_USE_METRO_WORKSPACE_ROOT(): boolean {
     return boolish('EXPO_USE_METRO_WORKSPACE_ROOT', false);
   }
+
+  /** Disable Environment Variable injection in client bundles. */
+  get EXPO_NO_CLIENT_ENV_VARS(): boolean {
+    return boolish('EXPO_NO_CLIENT_ENV_VARS', false);
+  }
 }
 
 export const env = new Env();
