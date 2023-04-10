@@ -10,7 +10,7 @@ This page lists some of the common questions and answers about Expo and related 
 
 ## What is Expo used for?
 
-Expo is an [open-source framework](https://github.com/expo/expo) for apps that run natively on Android, iOS, and the web. Expo brings together the best of mobile and the web and enables many important features for building and scaling an app such as live updates, instantly sharing your app, and web support. The `expo` npm package enables a suite of incredible features for React Native apps. The `expo` package can be installed in nearly any React Native project. See [what Expo offers](/home/core-concepts) for more information.
+Expo is an [open-source framework](https://github.com/expo/expo) for apps that run natively on Android, iOS, and the web. Expo brings together the best of mobile and the web and enables many important features for building and scaling an app such as live updates, instantly sharing your app, and web support. The `expo` npm package enables a suite of incredible features for React Native apps. The `expo` package can be installed in nearly any React Native project. See [what Expo offers](/core-concepts) for more information.
 
 ## Do companies use Expo?
 
@@ -26,7 +26,7 @@ The Expo SDK is also written with the [Expo native API](/modules) to make contri
 
 ## What is the difference between Expo and React Native?
 
-The `expo` package provides a suite of features that make it easier to develop, and scale complex React Native applications. You can install `expo` in nearly any React Native app. The `expo` package is not required to use [Expo Application Services (EAS)](/eas) or React Native, however, it is highly recommended. See [what Expo offers](/home/core-concepts) for more information.
+The `expo` package provides a suite of features that make it easier to develop, and scale complex React Native applications. You can install `expo` in nearly any React Native app. The `expo` package is not required to use [Expo Application Services (EAS)](/eas) or React Native, however, it is highly recommended. See [what Expo offers](/core-concepts) for more information.
 
 ## Do I need to switch from React Native to use Expo?
 
@@ -40,7 +40,7 @@ The Expo platform is [free and open source](https://blog.expo.dev/exponent-is-fr
 
 ## How do I add custom native code to my Expo project?
 
-Expo supports adding custom native code and customizing that native code (Android/Xcode projects). To use any custom native code, you can create a [development build](/development/introduction) and [config plugins](/home/config-plugins/introduction). We do recommend using the modules in the [Expo SDK](/versions/latest) when possible for easier upgrades and improved developer experience.
+Expo supports adding custom native code and customizing that native code (Android/Xcode projects). To use any custom native code, you can create a [development build](/develop/development-builds/introduction/) and [config plugins](/config-plugins/introduction). We do recommend using the modules in the [Expo SDK](/versions/latest) when possible for easier upgrades and improved developer experience.
 
 ## Can I use Expo in the app that is created with React Native CLI?
 
@@ -104,7 +104,7 @@ Unlike the `expo eject` library, authors can configure their libraries to work w
 
 ## Limitations
 
-**Previously**, Expo had large native binary sizes and didn't support custom native code without "ejecting". These issues went away in December 2020 when we released [EAS Build](/build/index) which supports any React Native app. The concept of "ejecting" was replaced by the popular [Expo Prebuild](/workflow/prebuild) feature which has been around since SDK 41 (April 2021). The [`expo eject` command was fully deprecated](/home/faq/#what-happens-when-you-eject-expo) in Expo SDK 46 (August 2022).
+**Previously**, Expo had large native binary sizes and didn't support custom native code without "ejecting". These issues went away in December 2020 when we released [EAS Build](/build/index) which supports any React Native app. The concept of "ejecting" was replaced by the popular [Expo Prebuild](/workflow/prebuild) feature which has been around since SDK 41 (April 2021). The [`expo eject` command was fully deprecated](#is-expo-eject-deprecated) in Expo SDK 46 (August 2022).
 
 We believe Expo tools are a great option for anyone looking to create amazing cross-platform apps quickly. Nonetheless, everyone's project is unique, and there may be reasons Expo is not the right choice for what you're building. Reasons, why you may **not** want to use certain Expo tools with your project, are listed below:
 
@@ -148,7 +148,7 @@ EAS Build is compatible with bare workflow projects if you check in the native d
 
 ### Expo Go
 
-[Expo Go](/home/get-started/expo-go/) provides a quick way to get started with your app development. It comes with a pre-configured set of libraries known as the Expo SDK. This makes experimentation much faster and brings the mobile development experience much closer to the web development experience.
+[Expo Go](/get-started/expo-go/) provides a quick way to get started with your app development. It comes with a pre-configured set of libraries known as the Expo SDK. This makes experimentation much faster and brings the mobile development experience much closer to the web development experience.
 
 Like any other tool, it too has its limitations:
 

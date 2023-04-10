@@ -11,7 +11,7 @@ import { CODE } from '~/ui/components/Text';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Step } from '~/ui/components/Step';
 
-AuthSession API allows [browser-based authentication](/versions/latest/sdk/auth-session/#how-web-browser-based-authentication-flows-work) (using OAuth or OpenID Connect) to your project for Android, iOS, and the web. This guide provides steps on configuring and using the API with Facebook and a [development build](/home/develop/development-builds/create-a-build/).
+AuthSession API allows [browser-based authentication](/versions/latest/sdk/auth-session/#how-web-browser-based-authentication-flows-work) (using OAuth or OpenID Connect) to your project for Android, iOS, and the web. This guide provides steps on configuring and using the API with Facebook and a [development build](/develop/development-builds/create-a-build/).
 
 <Step label="1">
 
@@ -83,7 +83,7 @@ scheme://expo-development-client/?url={manifestUrl}
 yourscheme://expo-development-client/?url=https://u.expo.dev/[your-eas-build-project-id]?channel-name=[channel-name]
 ```
 
-- Replace `scheme` with the one you defined in the previous step. To learn what goes in the `manifestUrl` parameter, read the [development workflows](/home/develop/development-builds/development-workflows/#deep-linking-urls) section. Click **Save changes**.
+- Replace `scheme` with the one you defined in the previous step. To learn what goes in the `manifestUrl` parameter, read the [development workflows](/develop/development-builds/development-workflows/#deep-linking-urls) section. Click **Save changes**.
 
   <ImageSpotlight
     alt="Settings for Facebook Login product."
@@ -314,4 +314,4 @@ For bare workflow, your project needs to conform to the URI scheme matching your
 - [AuthSession API reference](/versions/latest/sdk/auth-session/)
 - [How browser-based authentication works?](/versions/latest/sdk/auth-session/#how-web-browser-based-authentication-flows-work)
 - [Facebook authentication provider reference](/versions/latest/sdk/auth-session/#facebook)
-- Alternatively, you can also use [`react-native-fbsdk-next`](https://github.com/thebergamo/react-native-fbsdk-next#expo-installation) library with a [development build](/home/develop/development-builds/introduction/).
+- Alternatively, you can also use [`react-native-fbsdk-next`](https://github.com/thebergamo/react-native-fbsdk-next#expo-installation) library with a [development build](/develop/development-builds/introduction/).
