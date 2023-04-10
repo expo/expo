@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- On iOS, fix incorrect nil check when checking for `NSFaceIDUsageDescription` in the Info.plist. ([#21500](https://github.com/expo/expo/pull/21500) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 13.3.0 — 2023-04-10
+
+### 🐛 Bug fixes
+
+- On iOS, fix incorrect nil check when checking for `NSFaceIDUsageDescription` in the Info.plist. ([#21500](https://github.com/expo/expo/pull/21500) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 13.2.1 — 2023-02-09
 

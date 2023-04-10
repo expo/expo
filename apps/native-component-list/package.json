@@ -94,7 +94,7 @@
     "expo-keep-awake": "~12.0.0",
     "expo-linear-gradient": "~12.1.0",
     "expo-linking": "~4.0.0",
-    "expo-local-authentication": "~13.2.0",
+    "expo-local-authentication": "~13.3.0",
     "expo-localization": "~14.1.0",
     "expo-location": "~15.1.0",
     "expo-mail-composer": "~12.1.0",
