@@ -9,6 +9,8 @@ declare class Env {
     get RCT_METRO_PORT(): number;
     /** Enable auto server root detection for Metro. This will change the server root to the workspace root. */
     get EXPO_USE_METRO_WORKSPACE_ROOT(): boolean;
+    /** Disable Environment Variable injection in client bundles. */
+    get EXPO_NO_CLIENT_ENV_VARS(): boolean;
 }
 export declare const env: Env;
 export {};
