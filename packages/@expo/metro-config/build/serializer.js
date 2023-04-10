@@ -30,6 +30,13 @@ function _countLines() {
   };
   return data;
 }
+function _env() {
+  const data = require("./env");
+  _env = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /**
  * Copyright © 2022 650 Industries.
@@ -85,13 +92,17 @@ function serializeWithEnvironmentVariables(entryPoint, preModules, graph, option
   if (options.dev) {
     // Set the process.env object to the current environment variables object
     // ensuring they aren't iterable, settable, or enumerable.
-    const str = `Object.defineProperty(process, 'env', {
-      value: Object.freeze(Object.defineProperties({}, {
-        ${Object.keys(getAllExpoPublicEnvVars()).map(key => `${JSON.stringify(key)}: { value: ${JSON.stringify(process.env[key])} }`).join(',')}
-      }))
-    });`;
-    const envCode = `var process=this.process||{};${str}`;
-    return [entryPoint, [getEnvPrelude(envCode), ...preModules], graph, options];
+    const str = `process.env=Object.defineProperties(process.env, {${Object.keys(getAllExpoPublicEnvVars()).map(key => `${JSON.stringify(key)}: { value: ${JSON.stringify(process.env[key])} }`).join(',')}});`;
+    const [firstModule, ...restModules] = preModules;
+    // const envCode = `var process=this.process||{};${str}`;
+    // process.env
+    return [entryPoint, [
+    // First module defines the process.env object.
+    firstModule,
+    // Second module modifies the process.env object.
+    getEnvPrelude(str),
+    // Now we add the rest
+    ...restModules], graph, options];
   }
 
   // In production, inline all process.env variables to ensure they cannot be iterated and read arbitrarily.
@@ -127,7 +138,11 @@ function getEnvPrelude(contents) {
   };
 }
 function withExpoSerializers(config) {
-  return withSerialProcessors(config, [serializeWithEnvironmentVariables]);
+  const processors = [];
+  if (!_env().env.EXPO_NO_CLIENT_ENV_VARS) {
+    processors.push(serializeWithEnvironmentVariables);
+  }
+  return withSerialProcessors(config, processors);
 }
 
 // There can only be one custom serializer as the input doesn't match the output.
