@@ -283,13 +283,13 @@ We also provide a [step-by-step guide to try out EAS Update quickly](/eas-update
 sed -i '' 's/SKIP_BUNDLING/FORCE_BUNDLING/g;' ios/&lt;project name&gt;.xcodeproj/project.pbxproj
 ```
 
-- Execute a [debug build](/home/debugging/runtime-issue/#native-debugging) of the app with Xcode or from the command line.
+- Execute a [debug build](/debugging/runtime-issue/#native-debugging) of the app with Xcode or from the command line.
 
 #### Android local builds
 
 - Set the debug environment variable: `export EX_UPDATES_NATIVE_DEBUG=1`
 - [Ensure the desired channel is set in your **AndroidManifest.xml**](/bare/updating-your-app/#configuring-the-channel-manually)
-- Execute a [debug build](/home/debugging/runtime-issue/#native-debugging) of the app with Android Studio or from the command line.
+- Execute a [debug build](/debugging/runtime-issue/#native-debugging) of the app with Android Studio or from the command line.
 
 #### EAS Build
 
