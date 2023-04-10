@@ -145,6 +145,22 @@ export default function Page() {
 - On web, all CSS values are available. CSS is not processed or auto-prefixed like it is with the React Native Web `StyleSheet` API.
 - CSS Modules use [lightningcss](https://github.com/parcel-bundler/lightningcss) under the hood, check [the issues](https://github.com/parcel-bundler/lightningcss/issues) for unsupported features.
 
+### PostCSS
+
+> Changing the Post CSS or `browserslist` config will require you to clear the Metro cache: `npx expo start --clear` | `npx expo export --clear`.
+
+[PostCSS](https://github.com/postcss/postcss) can be customized by adding a `postcss.config.json` file to the root of your project. This file should export a function that returns a PostCSS configuration object. For example:
+
+```json postcss.config.json
+{
+  "plugins": {
+    "autoprefixer": {}
+  }
+}
+```
+
+Both `postcss.config.json` and `postcss.config.js` are supported, but `postcss.config.json` enables better caching.
+
 ### SASS
 
 Expo Metro has _partial_ support for SCSS/SASS.
