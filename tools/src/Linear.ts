@@ -6,7 +6,7 @@ import {
 } from '@linear/sdk/dist/_generated_documents';
 
 const linearClient = new LinearClient({
-  apiKey: process.env.LINEAR_API_KEY,
+  apiKey: process.env.LINEAR_API_KEY ?? '<LINEAR-API-KEY>',
 });
 
 export const ENG_TEAM_ID = 'e678ab8b-874f-4ee2-bf4b-6c0b60ac2743';
