@@ -44,7 +44,7 @@
     "fs-extra": "^9.0.0",
     "resolve-from": "^5.0.0",
     "semver": "7.3.2",
-    "xml2js": "0.4.23"
+    "xml2js": "0.5.0"
   },
   "peerDependencies": {
     "expo-modules-autolinking": ">=0.8.1"
