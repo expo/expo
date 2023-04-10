@@ -124,7 +124,7 @@ Modify **android/app/build.gradle** to check for the JS engine configuration (JS
 
 After the steps above are complete, execute `npx expo prebuild` to complete the changes needed for both Android and iOS:
 
-<Terminal cmd={['$ npx expo install expo-updates']} />
+<Terminal cmd={['$ npx expo prebuild']} />
 
 After this step, the **AndroidManifest.xml** and **Expo.plist** files will be configured with the updates URL and request headers that you specified in **app.json**.
 
