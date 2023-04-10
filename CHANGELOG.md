@@ -13,6 +13,10 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 🐛 Bug fixes
 
+### ⚠️ Notices
+
+- Removed the `Remote JS debugger` option from Expo Go menu when using SDK 49 or above. ([#22027](https://github.com/expo/expo/pull/22027) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 48.0.0 — 2023-02-09
 
 ### 📚 3rd party library updates
