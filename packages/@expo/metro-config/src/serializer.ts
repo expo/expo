@@ -78,16 +78,28 @@ export function serializeWithEnvironmentVariables(
   if (options.dev) {
     // Set the process.env object to the current environment variables object
     // ensuring they aren't iterable, settable, or enumerable.
-    const str = `Object.defineProperty(process, 'env', {
-      value: Object.freeze(Object.defineProperties({}, {
-        ${Object.keys(getAllExpoPublicEnvVars())
-          .map((key) => `${JSON.stringify(key)}: { value: ${JSON.stringify(process.env[key])} }`)
-          .join(',')}
-      }))
-    });`;
+    const str = `process.env=Object.defineProperties(process.env, {${Object.keys(
+      getAllExpoPublicEnvVars()
+    )
+      .map((key) => `${JSON.stringify(key)}: { value: ${JSON.stringify(process.env[key])} }`)
+      .join(',')}});`;
 
-    const envCode = `var process=this.process||{};${str}`;
-    return [entryPoint, [getEnvPrelude(envCode), ...preModules], graph, options];
+    const [firstModule, ...restModules] = preModules;
+    // const envCode = `var process=this.process||{};${str}`;
+    // process.env
+    return [
+      entryPoint,
+      [
+        // First module defines the process.env object.
+        firstModule,
+        // Second module modifies the process.env object.
+        getEnvPrelude(str),
+        // Now we add the rest
+        ...restModules,
+      ],
+      graph,
+      options,
+    ];
   }
 
   // In production, inline all process.env variables to ensure they cannot be iterated and read arbitrarily.
