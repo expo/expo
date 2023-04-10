@@ -47,21 +47,17 @@ export async function requestReview(): Promise<void> {
 
 // @needsAudit
 /**
- * This uses the `Constants` API to get the `Constants.manifest.ios.appStoreUrl` on iOS, or the
- * `Constants.manifest.android.playStoreUrl` on Android.
+ * This uses the `Constants` API to get the `Constants.expoConfig.ios.appStoreUrl` on iOS, or the
+ * `Constants.expoConfig.android.playStoreUrl` on Android.
  *
  * On Web this will return `null`.
  */
 export function storeUrl(): string | null {
-  const { manifest, manifest2 } = Constants;
-  if (Platform.OS === 'ios' && manifest?.ios) {
-    return manifest.ios.appStoreUrl ?? null;
-  } else if (Platform.OS === 'ios' && manifest2?.extra?.expoClient?.ios) {
-    return manifest2.extra.expoClient.ios.appStoreUrl ?? null;
-  } else if (Platform.OS === 'android' && manifest?.android) {
-    return manifest.android.playStoreUrl ?? null;
-  } else if (Platform.OS === 'android' && manifest2?.extra?.expoClient?.android) {
-    return manifest2.extra.expoClient.android.playStoreUrl ?? null;
+  const expoConfig = Constants.expoConfig;
+  if (Platform.OS === 'ios' && expoConfig?.ios) {
+    return expoConfig.ios.appStoreUrl ?? null;
+  } else if (Platform.OS === 'android' && expoConfig?.android) {
+    return expoConfig.android.playStoreUrl ?? null;
   }
   return null;
 }

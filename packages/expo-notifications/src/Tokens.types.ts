@@ -89,7 +89,7 @@ export interface ExpoPushTokenOptions {
   development?: boolean;
   /**
    * The ID of the experience to which the token should be attributed.
-   * Defaults to [`Constants.manifest.id`](/constants/#constantsmanifest) exposed by `expo-constants`.
+   * Defaults to [`Constants.expoConfig?.originalFullName`](/constants/#constantsmanifest) exposed by `expo-constants`.
    * When building with EAS Build, or in the bare workflow, you must provide a value which takes the shape `@username/projectSlug`,
    * where `username` is the Expo account that the project is associated with, and `projectSlug` is your [`slug`](/config/app.mdx#slug) from Expo config.
    *
@@ -103,7 +103,7 @@ export interface ExpoPushTokenOptions {
    * When using EAS Build, this value is automatically set. However, it is
    * **recommended** to set it manually. Once you have EAS Build configured, you can find
    * the value in **app.json** under `extra.eas.projectId`. You can copy and paste it into your code.
-   * If you are not using EAS Build, it will fallback to [`Constants.manifest.projectId`](/constants/#manifest).
+   * If you are not using EAS Build, it will fallback to [`Constants.expoConfig?.extra?.eas?.projectId`](/constants/#manifest).
    */
   projectId?: string;
   /**

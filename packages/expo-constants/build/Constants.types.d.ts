@@ -31,7 +31,7 @@ export interface IOSManifest {
     /**
      * The build number specified in the embedded **Info.plist** value for `CFBundleVersion` in this app.
      * In a standalone app, you can set this with the `ios.buildNumber` value in **app.json**. This
-     * may differ from the value in `Constants.manifest.ios.buildNumber` because the manifest
+     * may differ from the value in `Constants.expoConfig.ios.buildNumber` because the manifest
      * can be updated, whereas this value will never change for a given native binary.
      * The value is set to `null` in case you run your app in Expo Go.
      */
@@ -238,14 +238,14 @@ export interface NativeConstants {
     /**
      * Classic manifest for Expo apps using classic updates and the updates embedded in builds.
      * Returns `null` in bare workflow and when `manifest2` is non-null.
-     * > Use `Constants.expoConfig` instead, which behaves more consistently across EAS Build
+     * @deprecated Use `Constants.expoConfig` instead, which behaves more consistently across EAS Build
      * and Update.
      */
     manifest: AppManifest | null;
     /**
      * Manifest for Expo apps using modern Expo Updates from a remote source, such as apps that
      * use EAS Update. Returns `null` in bare workflow and when `manifest` is non-null.
-     * > Use `Constants.expoConfig` instead, which behaves more consistently across EAS Build
+     * @deprecated Use `Constants.expoConfig` instead, which behaves more consistently across EAS Build
      * and Update.
      */
     manifest2: Manifest | null;
