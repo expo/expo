@@ -40,7 +40,14 @@ yarn run export-server
 
 ## Editing Docs Content
 
-You can find the content source of the documentation inside the `pages/` directory. Documentation is mostly written in markdown with the help of some React components (for Snack embeds, etc). Our API documentation can all be found under `pages/versions/`; we keep separate versions of the documentation for each SDK version currently supported in Expo Go, see ["A note about versioning"](#a-note-about-versioning) for more info. The routes and navbar are automatically inferred from the directory structure within `versions`.
+All documentation-related content is inside the **pages** directory. We write docs in markdown with the help of custom React components that provide additional functionality, such as embedding Snack examples and so on.
+
+The documentation is divided into four main sections:
+
+- **Home**: Provides a guided path from starting a project from scratch to deploying it to app stores.
+- **Guides**: General purpose and fundamental guides that help you understand how Expo works and how to use it. This section also contains all EAS related documentation.
+- **Reference**: Detailed reference documentation for all Expo APIs and modules. All Expo SDK API docs are located under **pages/versions** directory. We keep separate versions of documentation for each SDK version currently supported in Expo Go. See ["A note about versioning"](#a-note-about-versioning) for more information.
+- **Learn**: Tutorials and guides that help you learn how to use Expo and React Native.
 
 > **Note**
 > We are currently in the process of moving our API documentation to being auto-generated using `expotools`'s `GenerateDocsAPIData` command.
@@ -83,7 +90,7 @@ yarn lint
 
 ### Server-side redirects
 
-These redirects are limited in their expressiveness - you can map a path to another path, but no regular expressions or anything are supported. See client-side redirects for more of that. Server-side redirects are re-created on each run of **deploy.sh**.
+These redirects are limited in their expressiveness - you can map a path to another path, but no regular expressions are supported. See client-side redirects for more of that. Server-side redirects are re-created on each run of **deploy.sh**.
 
 We currently do two client-side redirects, using meta tags with `http-equiv="refresh"`:
 
