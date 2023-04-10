@@ -30,6 +30,13 @@ function _countLines() {
   };
   return data;
 }
+function _env() {
+  const data = require("./env");
+  _env = function () {
+    return data;
+  };
+  return data;
+}
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /**
  * Copyright © 2022 650 Industries.
@@ -131,7 +138,11 @@ function getEnvPrelude(contents) {
   };
 }
 function withExpoSerializers(config) {
-  return withSerialProcessors(config, [serializeWithEnvironmentVariables]);
+  const processors = [];
+  if (!_env().env.EXPO_NO_CLIENT_ENV_VARS) {
+    processors.push(serializeWithEnvironmentVariables);
+  }
+  return withSerialProcessors(config, processors);
 }
 
 // There can only be one custom serializer as the input doesn't match the output.

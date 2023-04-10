@@ -10,6 +10,8 @@ import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import bundleToString from 'metro/src/lib/bundleToString';
 import countLines from 'metro/src/lib/countLines';
 
+import { env } from './env';
+
 const debug = require('debug')('expo:metro-config:serializer') as typeof console.log;
 
 type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
@@ -141,7 +143,12 @@ function getEnvPrelude(contents: string): Module<MixedOutput> {
 }
 
 export function withExpoSerializers(config: InputConfigT): InputConfigT {
-  return withSerialProcessors(config, [serializeWithEnvironmentVariables]);
+  const processors: SerialProcessor[] = [];
+  if (!env.EXPO_NO_CLIENT_ENV_VARS) {
+    processors.push(serializeWithEnvironmentVariables);
+  }
+
+  return withSerialProcessors(config, processors);
 }
 
 // There can only be one custom serializer as the input doesn't match the output.
