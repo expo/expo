@@ -13,6 +13,7 @@
 ### 🐛 Bug fixes
 
 - [Web] Prevent breaking in static rendering environments. ([#21883](https://github.com/expo/expo/pull/21883) by [@EvanBacon](https://github.com/EvanBacon))
+- [Android] Fixed image disappears before navigation animation is complete.
 
 ### 💡 Others
 

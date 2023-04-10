@@ -171,7 +171,9 @@ class ExpoImageModule : Module() {
       }
 
       OnViewDestroys { view: ExpoImageViewWrapper ->
-        view.onViewDestroys()
+        view.doOnDetach {
+          view.onViewDestroys()
+        }
       }
     }
   }
