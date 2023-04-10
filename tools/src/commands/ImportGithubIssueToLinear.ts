@@ -48,7 +48,7 @@ async function importIssueAsync(githubIssueNumber: number) {
 
   try {
     issueSummary = await OpenAI.askChatGPTAsync(
-      `Provide a brief summary of the following GitHub issue on the Expo repository in 3 to 5 sentences. This summary will be read by the Expo project maintainers,\n${issue.body}`
+      `Provide a brief summary of the following GitHub issue on the Expo repository in 3 to 5 bullet points, ignoring the environment section. Keep in mind that this is the user's perspective, and any judgement they share around priority may not match the opinion of maintainers. This summary will be read by the Expo project maintainers.\n${issue.body}`
     );
   } catch (error) {
     logger.warn('Failed to generate issue summary using OpenAI. Skipping...');
