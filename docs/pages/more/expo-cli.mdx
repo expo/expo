@@ -149,7 +149,7 @@ You can compile your app locally with the `run` commands:
 
 `expo run:ios` can only be run on a Mac, and Xcode must be installed. You can build the app in the cloud from any computer using `eas build -p ios`. Similarly, `expo run:android` requires Android Studio and Java to be installed and configured on your computer.
 
-Building locally is useful for developing native modules and [debugging complex native issues](/workflow/debugging#native-debugging). Building remotely with `eas build` is a much more resilient option due to the pre-configured cloud environment.
+Building locally is useful for developing native modules and [debugging complex native issues](/debugging/runtime-issue/#native-debugging). Building remotely with `eas build` is a much more resilient option due to the pre-configured cloud environment.
 
 If your project does not have the corresponding native directories, the `npx expo prebuild` command will run once to generate the respective directory before building.
 
@@ -272,9 +272,7 @@ Unlike the web, React Native is not backwards compatible. This means that npm pa
 
 Running a single instance of this command, you can also install multiple packages:
 
-<Terminal
-  cmd={['$ npx expo install typescript expo-sms']}
-/>
+<Terminal cmd={['$ npx expo install typescript expo-sms']} />
 
 You can directly pass arguments to the underlying package manager by using the `--` operator:
 
@@ -352,7 +350,7 @@ From here, you can choose to generate basic project files like:
 ## Environment Variables
 
 | Name                                | Type        | Description                                                                                                                                                                                                                                                                                                                                                                          |
-|-------------------------------------|-------------|--------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------|
+| ----------------------------------- | ----------- | ------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------------ |
 | `HTTP_PROXY`                        | **string**  | HTTP/HTTPS proxy URL to connect for all network requests. Configures [https-proxy-agent](https://www.npmjs.com/package/https-proxy-agent).                                                                                                                                                                                                                                           |
 | `EXPO_NO_WEB_SETUP`                 | **boolean** | Prevents the CLI from forcing web dependencies (`react-dom`, `react-native-web`, `@expo/webpack-config`) to be installed before using web functionality.<br/>This is useful for cases where you wish to perform non-standard web development.                                                                                                                                        |
 | `EXPO_NO_TYPESCRIPT_SETUP`          | **boolean** | Prevents the CLI from forcing TypeScript to be configured on `npx expo start`.<br/>For more information, see [TypeScript guide](/guides/typescript/).                                                                                                                                                                                                                                |
@@ -372,7 +370,7 @@ From here, you can choose to generate basic project files like:
 | `EXPO_METRO_NO_MAIN_FIELD_OVERRIDE` | **boolean** | Force Expo CLI to use the [`resolver.resolverMainFields`](https://facebook.github.io/metro/docs/configuration/#resolvermainfields) from the project's **metro.config.js** for all platforms. By default, Expo CLI will use `['browser', 'module', 'main']`, which is the default for webpack, for the web and the user-defined main fields for other platforms.                      |
 | `EXPO_USE_PATH_ALIASES`             | **boolean** | <StatusTag status="experimental" note="SDK 49+" /><br/>Allow Metro to use the `compilerOptions.paths` and `compilerOptions.baseUrl` features from **tsconfig.json** or **jsconfig.json**) to enable import aliases and absolute imports.                                                                                                                                             |
 | `EXPO_USE_CUSTOM_INSPECTOR_PROXY`   | **boolean** | <StatusTag status="experimental" note="SDK 49+" /><br/>Use a customized inspector proxy with improved support for the Chrome DevTools protocol.<br/>This includes support for the network inspector.                                                                                                                                                                                 |
-| `EXPO_USE_TYPED_ROUTES`             | **boolean** | <StatusTag status="experimental" note="SDK 49+" /><br/>Generate TypeScript types for Expo Router.<br/>This includes support for the network inspector.                                                                                                                                                                                 |
+| `EXPO_USE_TYPED_ROUTES`             | **boolean** | <StatusTag status="experimental" note="SDK 49+" /><br/>Generate TypeScript types for Expo Router.<br/>This includes support for the network inspector.                                                                                                                                                                                                                               |
 
 ## Telemetry
 

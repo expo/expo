@@ -1,0 +1,50 @@
+---
+title: Share a development build with your team
+description: Learn how to install and share the development with your team or run it on multiple devices.
+sidebar_title: Share with your team
+---
+
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+import { BoxLink } from '~/ui/components/BoxLink';
+
+Android and iOS both offer ways to install a build of your application directly on devices. This gives you full control of putting specific builds on devices, allowing you to iterate quickly and have multiple builds of your application available for review at the same time. You can also share it with your team or run it on multiple test devices.
+
+## Share the URL
+
+When a development build is ready, a shareable URL is generated for your build with instructions on how to get it up and running. You can use this URL with a teammate or send it to your test device to install the build. The URL generated is unique to the build for your project.
+
+<ImageSpotlight
+  alt="An example of shareable development build URL after the Android internal distribution build is ready."
+  src="/static/images/share-dev-build/shareable-url.png"
+/>
+
+> If you register any new iOS devices after creating a development build, you'll need to create a new development build to install it on those devices. For more information, see [internal distribution](/build/internal-distribution/).
+
+### Use the Expo dashboard
+
+You can also direct your teammate to the build page in the Expo dashboard. From there, they can download the build artifact directly on their device.
+
+<ImageSpotlight
+  alt="An example of shareable development build URL from Expo dashboard."
+  src="/static/images/share-dev-build/expo-dashboard.png"
+/>
+
+### iOS-only instructions
+
+> If you're running iOS 16 or above and haven't yet turned on Developer Mode, you'll need to [enable it](/guides/ios-developer-mode) before you can run your build. (This doesn't apply if you're using enterprise provisioning.)
+
+You can use `eas build:resign` to codesign an existing **.ipa** for iOS to a new ad hoc provisioning profile. This helps reduce time when distributing with your team. For example, if you want to add a new test device to an existing build, you can use this command to update the provisioning profile to include the device without rebuilding the entire app from scratch. For more information, see [Re-signing new credentials](/app-signing/app-credentials/#re-signing-new-credentials).
+
+## Next steps
+
+<BoxLink
+  title="Parallel installation"
+  description="Learn about having a development build and a production build installed on the same device."
+  href="/develop/development-builds/parallel-installation"
+/>
+
+<BoxLink
+  title="Sharing pre-release versions of your app"
+  description="Learn more about sharing pre-release versions of your app."
+  href="/guides/sharing-preview-releases"
+/>

@@ -45,6 +45,7 @@ export async function exportAppAsync(
   }: Pick<Options, 'dumpAssetmap' | 'dumpSourcemap' | 'dev' | 'clear' | 'outputDir' | 'platforms'>
 ): Promise<void> {
   setNodeEnv(dev ? 'development' : 'production');
+  require('@expo/env').load(projectRoot);
 
   const exp = await getPublicExpoManifestAsync(projectRoot);
 

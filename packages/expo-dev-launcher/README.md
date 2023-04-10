@@ -4,4 +4,4 @@
 
 ## Documentation
 
-You can find the documentation under [https://docs.expo.dev/clients/introduction](https://docs.expo.dev/clients/introduction).
+You can find more information in the [Expo documentation](https://docs.expo.dev/home/develop/development-builds/introduction).

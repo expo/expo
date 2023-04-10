@@ -40,6 +40,7 @@
     "@babel/runtime": "^7.20.0",
     "@expo/code-signing-certificates": "0.0.5",
     "@expo/config": "~8.0.0",
+    "@expo/env": "~0.0.1",
     "@expo/config-plugins": "~6.0.0",
     "@expo/dev-server": "0.2.2",
     "@expo/devcert": "^1.0.0",

@@ -43,7 +43,7 @@ If you install a package with an Expo [**config plugin**](/guides/config-plugins
 
 If you've made manual modifications to your **android** or **ios** directory, you'll need to manually setup new packages because running `expo prebuild` may not work as expected with an unpredictable project state (think of this like running `yarn` after manually modifying your **node_modules** directory).
 
-If you want to make static changes to your native project files like the iOS **AndroidManifest.xml** or **Info.plist** and still have access to prebuilding, check out the [config plugins guide](/guides/config-plugins/#creating-a-plugin) to see how you can hook into the prebuild process to make those changes.
+If you want to make static changes to your native project files like the iOS **AndroidManifest.xml** or **Info.plist** and still have access to prebuilding, check out the [config plugins guide](/config-plugins/plugins-and-mods/#create-a-plugin) to see how you can hook into the prebuild process to make those changes.
 
 ### Reverting changes from `expo run`
 
@@ -51,7 +51,7 @@ If you've decided that you want to roll your app back to being fully managed (no
 
 ### Developing apps with custom native code
 
-Once you have customized the native code in your project, you can use the [`expo-dev-client`](/development/introduction) package to create a development build and retain the convenience of working with just JavaScript and/or TypeScript in Expo Go. You can [create a development build](/development/create-development-builds/) for your managed or bare workflow.
+Once you have customized the native code in your project, you can use the [`expo-dev-client`](/development/introduction) package to create a development build and retain the convenience of working with just JavaScript and/or TypeScript in Expo Go. You can [create a development build](/develop/development-builds/create-a-build/) for your managed or bare workflow.
 
 ## Releasing apps with custom native code to production
 
