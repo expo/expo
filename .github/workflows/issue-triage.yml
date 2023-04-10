@@ -107,6 +107,8 @@ jobs:
         run: expotools import-github-issue-to-linear --issue "${{ github.event.issue.number }}"
         env:
           GITHUB_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
+          OPENAI_API_KEY: ${{ secrets.OPENAI_API_KEY }}
 
   question:
     runs-on: ubuntu-20.04
