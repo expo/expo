@@ -186,16 +186,14 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
       @"label": @"Open JS Debugger",
       @"isEnabled": @YES
     };
-  } else if (devSettings.isRemoteDebuggingAvailable && isDevModeEnabled) {
+  } else if (
+      [self.manifest.sdkVersion compare:@"49.0.0" options:NSNumericSearch] == NSOrderedAscending &&
+      devSettings.isRemoteDebuggingAvailable &&
+      isDevModeEnabled
+    ) {
     items[@"dev-remote-debug"] = @{
       @"label": (devSettings.isDebuggingRemotely) ? @"Stop Remote Debugging" : @"Debug Remote JS",
       @"isEnabled": @YES
-    };
-  } else {
-    items[@"dev-remote-debug"] =  @{
-      @"label": @"Remote Debugger Unavailable",
-      @"isEnabled": @NO,
-      @"detail": RCTTurboModuleEnabled() ? @"Remote debugging is unavailable while Turbo Modules are enabled. To debug remotely, please set `turboModules` to false in app.json." : [NSNull null]
     };
   }
 
