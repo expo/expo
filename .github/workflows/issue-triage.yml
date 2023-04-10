@@ -81,7 +81,8 @@ jobs:
     runs-on: ubuntu-20.04
     if: github.event.label.name == 'issue accepted'
     steps:
-      - uses: actions/github-script@v6
+      - name: Comment on issue
+        uses: actions/github-script@v6
         with:
           github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           script: |
@@ -93,6 +94,19 @@ jobs:
               This comment acknowledges we believe this may be a bug and there’s enough information to investigate it.
               However, we can’t promise any sort of timeline for resolution. We prioritize issues based on severity, breadth of impact, and alignment with our roadmap. If you’d like to help move it more quickly, you can continue to investigate it more deeply and/or you can open a pull request that fixes the cause.
             `})
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
+      - name: ➕ Add `bin` to GITHUB_PATH
+        run: echo "$(pwd)/bin" >> $GITHUB_PATH
+      - name: ♻️ Restore caches
+        uses: ./.github/actions/expo-caches
+        id: expo-caches
+        with:
+          yarn-tools: 'true'
+      - name: 🔎 Import issue to Linear
+        run: expotools import-github-issue-to-linear --issue "${{ github.event.issue.number }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
 
   question:
     runs-on: ubuntu-20.04
