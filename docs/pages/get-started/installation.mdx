@@ -1,0 +1,66 @@
+---
+title: Installation
+description: Learn how to get started creating a new Expo project quickly and easily using Expo CLI and Expo Go.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { ExpoGoLogo } from '@expo/styleguide';
+
+To develop applications with Expo, you will want to start with two tools:
+
+- [Expo CLI](#expo-cli) a command-line tool to serve your project
+- [Expo Go](#expo-go-app-for-android-and-ios) a mobile client app to open the project on Android and iOS platforms.
+
+Additionally, you can use any web browser to run the project on the web.
+
+> **info** You don't need macOS to build an iOS app with [EAS](/eas). You only need an iOS device to run [development builds](/development/introduction). Windows, Linux, and macOS are all supported as your development machine.
+
+## Expo CLI
+
+[Expo CLI](/workflow/expo-cli) is a command-line tool that is the primary interface between a developer and other Expo tools. It is used for different tasks in the development life cycle of your project such as serving the project in development, viewing logs, opening the app on an emulator or a physical device, and so on.
+
+### Requirements
+
+To use Expo CLI, you need to have the following tools installed on your developer machine:
+
+- [Node.js LTS release](https://nodejs.org/en/) - Only Node.js LTS releases (even-numbered) are recommended. As Node.js [officially states](https://nodejs.org/en/about/releases/), _"Production applications should only use Active LTS or Maintenance LTS releases"_. You can install Node.js using a version management tool (such as `nvm` or `volta` or any other of your choice) to switch between different Node.js versions.
+- [Git](https://git-scm.com)
+- [Watchman](https://facebook.github.io/watchman/docs/install#buildinstall) for macOS or Linux users.
+
+### Recommended tools
+
+- [Yarn](https://classic.yarnpkg.com/en/docs/install)
+- [VS Code Editor](https://code.visualstudio.com/download)
+  - [VS Code Expo Extension](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo) for Expo config debugging and autocomplete.
+- [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-windows), Bash via WSL, or the VS Code terminal for developers who prefer Windows.
+
+### Use Expo CLI
+
+Expo CLI is part of the `expo` package, and you can use it by leveraging `npx` &mdash; a Node.js package runner. **No external installation is required**.
+
+For example, to see a list of available commands in Expo CLI, open the terminal on your development machine and run the following command:
+
+<Terminal cmd={['# See a list of available commands in Expo CLI', '$ npx expo -h']} />
+
+Now, run the following command to check which Expo account is currently authenticated on your machine:
+
+<Terminal cmd={['$ npx expo whoami']} />
+
+You will see a **Not logged in** message since you are not logged in to an Expo account.
+You do not need an account to start and can proceed further with your project. However, if you want to register a new Expo account, run the following command to register a new account:
+
+<Terminal cmd={['$ npx expo register']} />
+
+If you already have an Expo account, you can log in to it by running the command:
+
+<Terminal cmd={['$ npx expo login']} />
+
+## Next step
+
+<BoxLink
+  title="Expo Go"
+  description="Now that Expo CLI is working, in the next step, let's learn about one of the fastest ways to test your project using Expo Go."
+  Icon={ExpoGoLogo}
+  href="/get-started/expo-go"
+/>
