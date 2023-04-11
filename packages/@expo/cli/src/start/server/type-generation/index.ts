@@ -3,8 +3,10 @@ import { Server } from 'metro';
 import path from 'path';
 
 import { env } from '../../../utils/env';
+import { upsertGitIgnoreContents, removeFromGitIgnore } from '../../../utils/mergeGitIgnorePaths';
 import { ensureDotExpoProjectDirectoryInitialized } from '../../project/dotExpo';
 import { ServerLike } from '../BundlerDevServer';
+import { removeExpoEnvDTS, writeExpoEnvDTS } from './expo-env';
 import { setupTypedRoutes } from './routes';
 import { forceRemovalTSConfig, forceUpdateTSConfig } from './tsconfig';
 
@@ -19,8 +21,13 @@ export async function typescriptTypeGeneration({
   projectRoot,
   server,
 }: TypeScriptTypeGenerationOptions) {
+  const gitIgnorePath = path.join(projectRoot, '.gitignore');
   if (!env.EXPO_USE_TYPED_ROUTES) {
-    return forceRemovalTSConfig(projectRoot);
+    await Promise.all([
+      forceRemovalTSConfig(projectRoot),
+      removeExpoEnvDTS(projectRoot),
+      removeFromGitIgnore(gitIgnorePath, 'expo-env.d.ts'),
+    ]);
   }
 
   if (!metro) {
@@ -33,6 +40,10 @@ export async function typescriptTypeGeneration({
   // Ensure the types directory exists.
   await fs.mkdir(typesDirectory, { recursive: true });
 
-  await forceUpdateTSConfig(projectRoot);
-  await setupTypedRoutes({ metro, server, typesDirectory, projectRoot });
+  await Promise.all([
+    upsertGitIgnoreContents(path.join(projectRoot, '.gitignore'), 'expo-env.d.ts'),
+    writeExpoEnvDTS(projectRoot),
+    forceUpdateTSConfig(projectRoot),
+    setupTypedRoutes({ metro, server, typesDirectory, projectRoot }),
+  ]);
 }
