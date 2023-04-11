@@ -81,9 +81,9 @@ function selectSource(
   const srcset = staticSupportedSources
     ?.map((source) => `${source.uri} ${source.width}w`)
     .join(', ');
-  const sizes = staticSupportedSources
+  const sizes = `${staticSupportedSources
     ?.map((source) => `(max-width: ${source.webMaxViewportWidth}px) ${source.width}px`)
-    .join(', ');
+    .join(', ')}, ${staticSupportedSources[staticSupportedSources.length - 1]?.width}px`;
   return {
     srcset,
     sizes,
