@@ -93,17 +93,15 @@ export function getDefaultConfig(
   const sourceExtsConfig = { isTS: true, isReact: true, isModern: false };
   const sourceExts = getBareExtensions([], sourceExtsConfig);
 
+  // Add support for cjs (without platform extensions).
+  sourceExts.push('cjs');
+
   let sassVersion: string | null = null;
   if (options.isCSSEnabled) {
     sassVersion = getSassVersion(projectRoot);
     // Enable SCSS by default so we can provide a better error message
     // when sass isn't installed.
     sourceExts.push('scss', 'sass', 'css');
-  }
-
-  if (isExotic) {
-    // Add support for cjs (without platform extensions).
-    sourceExts.push('cjs');
   }
 
   const envFiles = runtimeEnv.getFiles(process.env.NODE_ENV);
