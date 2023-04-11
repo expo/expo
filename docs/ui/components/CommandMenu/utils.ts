@@ -99,6 +99,17 @@ export const openLink = (url: string, isExternal: boolean = false) => {
   link.click();
 };
 
+const ReferencePathChunks = ['/versions/', '/modules/', '/more/'] as const;
+
+export const isReferencePath = (url: string) => {
+  for (const pathChunk of ReferencePathChunks) {
+    if (url.includes(pathChunk)) {
+      return true;
+    }
+  }
+  return false;
+};
+
 const EASPathChunks = [
   '/app-signing/',
   '/build/',
@@ -112,6 +123,36 @@ const EASPathChunks = [
 
 export const isEASPath = (url: string) => {
   for (const pathChunk of EASPathChunks) {
+    if (url.includes(pathChunk)) {
+      return true;
+    }
+  }
+  return false;
+};
+
+const HomePathChunks = [
+  '/get-started/',
+  '/develop/',
+  '/deploy/',
+  '/faq/',
+  '/core-concepts/',
+  '/debugging/',
+  '/config-plugins/',
+] as const;
+
+export const isHomePath = (url: string) => {
+  for (const pathChunk of HomePathChunks) {
+    if (url.includes(pathChunk)) {
+      return true;
+    }
+  }
+  return false;
+};
+
+const LearnPathChunks = ['/tutorial', '/ui-programming/', '/additional-resources/'] as const;
+
+export const isLearnPath = (url: string) => {
+  for (const pathChunk of LearnPathChunks) {
     if (url.includes(pathChunk)) {
       return true;
     }
