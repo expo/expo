@@ -40,6 +40,7 @@ function onErrorAdapter(onError) {
         });
     };
 }
+// Used for some transitions to mimic native animations
 const setCssVariables = (element, size) => {
     element?.style.setProperty('--expo-image-width', `${size.width}px`);
     element?.style.setProperty('--expo-image-height', `${size.height}px`);
@@ -80,9 +81,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                 ...style,
             }, className: className, priority: priority, contentPosition: selectedSource ? contentPosition : { top: '50%', left: '50%' }, hashPlaceholderContentPosition: contentPosition, hashPlaceholderStyle: blurhashStyle, accessibilityLabel: props.accessibilityLabel })),
     ];
-    return (React.createElement("div", { ref: containerRef, className: "expo-image-container", 
-        // @ts-expect-error
-        style: {
+    return (React.createElement("div", { ref: containerRef, className: "expo-image-container", style: {
             aspectRatio: String(aspectRatio),
             backgroundColor: backgroundColor?.toString(),
             transform: transform?.toString(),

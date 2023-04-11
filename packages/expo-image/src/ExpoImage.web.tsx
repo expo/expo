@@ -49,6 +49,7 @@ function onErrorAdapter(onError?: { (event: { error: string }): void }) {
   };
 }
 
+// Used for some transitions to mimic native animations
 const setCssVariables = (element: HTMLElement, size: DOMRect) => {
   element?.style.setProperty('--expo-image-width', `${size.width}px`);
   element?.style.setProperty('--expo-image-height', `${size.height}px`);
@@ -147,7 +148,6 @@ export default function ExpoImage({
     <div
       ref={containerRef}
       className="expo-image-container"
-      // @ts-expect-error
       style={{
         aspectRatio: String(aspectRatio),
         backgroundColor: backgroundColor?.toString(),

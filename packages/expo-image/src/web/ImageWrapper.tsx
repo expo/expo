@@ -9,6 +9,7 @@ import {
 import { useBlurhash } from '../utils/blurhash/useBlurhash';
 import { isBlurhashString, isThumbhashString } from '../utils/resolveSources';
 import { thumbHashStringToDataURL } from '../utils/thumbhash/thumbhash';
+import { SrcSetSource } from './useSourceSelection';
 
 function ensureUnit(value: string | number) {
   const trimmedValue = String(value).trim();
@@ -53,6 +54,16 @@ function getFetchPriorityFromImagePriority(priority: ImageNativeProps['priority'
   return priority && ['low', 'high'].includes(priority) ? priority : 'auto';
 }
 
+function getImgPropsFromSource(source: ImageSource | SrcSetSource | null | undefined) {
+  if (source && 'srcset' in source) {
+    return {
+      srcSet: source.srcset,
+      sizes: source.sizes,
+    };
+  }
+  return {};
+}
+
 const ImageWrapper = React.forwardRef(
   (
     {
@@ -67,7 +78,7 @@ const ImageWrapper = React.forwardRef(
       accessibilityLabel,
       ...props
     }: {
-      source?: ImageSource | null;
+      source?: ImageSource | SrcSetSource | null;
       events?: {
         onLoad?: (((event: SyntheticEvent<HTMLImageElement, Event>) => void) | undefined | null)[];
         onError?: ((({ source }: { source: ImageSource | null }) => void) | undefined | null)[];
@@ -99,18 +110,20 @@ const ImageWrapper = React.forwardRef(
     );
 
     const blurhashUri = useBlurhash(isBlurhash ? source?.uri : null, source?.width, source?.height);
+    if (!source) return null;
+
     const objectPosition = getObjectPositionFromContentPositionObject(
       isHash ? hashPlaceholderContentPosition : contentPosition
     );
 
     const uri = isHash ? blurhashUri ?? thumbhashUri : source?.uri;
-    if (!uri) return null;
     return (
       <img
         ref={ref}
         alt={accessibilityLabel}
         className={className}
         src={uri || undefined}
+        {...getImgPropsFromSource(source)}
         key={source?.uri}
         {...props}
         style={{
@@ -142,4 +155,5 @@ const ImageWrapper = React.forwardRef(
     );
   }
 );
+
 export default ImageWrapper;

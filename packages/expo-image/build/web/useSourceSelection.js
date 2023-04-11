@@ -1,5 +1,8 @@
 import React, { useState, useRef } from 'react';
+import { isBlurhashString, isThumbhashString } from '../utils/resolveSources';
 function findBestSourceForSize(sources, size) {
+    if (sources?.length === 1)
+        return sources[0];
     return ([...(sources || [])]
         // look for the smallest image that's still larger then a container
         ?.map((source) => {
@@ -22,7 +25,43 @@ function findBestSourceForSize(sources, size) {
         .sort((a, b) => a.penalty - b.penalty)
         .sort((a, b) => Number(b.covers) - Number(a.covers))[0]?.source ?? null);
 }
-export default function useSourceSelection(sources, sizeCalculation = 'live', measurementCallback) {
+function getDefaultResponsivePolicy(sources) {
+    const allSourcesHaveStaticSizeSelectionInfo = sources?.every((source) => typeof source === 'object' && source.webMaxViewportWidth != null);
+    return allSourcesHaveStaticSizeSelectionInfo ? 'static' : 'live';
+}
+function selectSource(sources, size, responsivePolicy) {
+    if (sources == null)
+        return null;
+    if (sources.length === 0)
+        return null;
+    if (responsivePolicy !== 'static') {
+        return findBestSourceForSize(sources, size);
+    }
+    const staticSupportedSources = sources
+        .filter((s) => s.uri &&
+        s.webMaxViewportWidth != null &&
+        s.width != null &&
+        !isBlurhashString(s.uri) &&
+        !isThumbhashString(s.uri))
+        .sort((a, b) => (a.webMaxViewportWidth ?? 0) - (b.webMaxViewportWidth ?? 0));
+    if (staticSupportedSources.length === 0) {
+        console.warn("You've set the `static` responsivePolicy but none of the sources have the `webMaxViewportWidth` and `width` properties set. Falling back to the `initial` policy.");
+        return findBestSourceForSize(sources, size);
+    }
+    const srcset = staticSupportedSources
+        ?.map((source) => `${source.uri} ${source.width}w`)
+        .join(', ');
+    const sizes = staticSupportedSources
+        ?.map((source) => `(max-width: ${source.webMaxViewportWidth}px) ${source.width}px`)
+        .join(', ');
+    return {
+        srcset,
+        sizes,
+        uri: staticSupportedSources[staticSupportedSources.length - 1]?.uri ?? '',
+        type: 'srcset',
+    };
+}
+export default function useSourceSelection(sources, responsivePolicy = getDefaultResponsivePolicy(sources), measurementCallback) {
     const hasMoreThanOneSource = (sources?.length ?? 0) > 1;
     // null - not calculated yet, DOMRect - size available
     const [size, setSize] = useState(null);
@@ -33,13 +72,14 @@ export default function useSourceSelection(sources, sizeCalculation = 'live', me
         };
     }, []);
     const containerRef = React.useCallback((element) => {
+        // we can't short circuit here since we need to read the size for better animated transitions
         if (!hasMoreThanOneSource && !measurementCallback) {
             return;
         }
         const rect = element?.getBoundingClientRect();
         measurementCallback?.(element, rect);
         setSize(rect);
-        if (sizeCalculation === 'live') {
+        if (responsivePolicy === 'live') {
             resizeObserver.current?.disconnect();
             if (!element) {
                 return;
@@ -50,9 +90,8 @@ export default function useSourceSelection(sources, sizeCalculation = 'live', me
             });
             resizeObserver.current.observe(element);
         }
-    }, [hasMoreThanOneSource, sizeCalculation]);
-    const bestSourceForSize = size !== undefined ? findBestSourceForSize(sources, size) : null;
-    const source = (hasMoreThanOneSource ? bestSourceForSize : sources?.[0]) ?? null;
+    }, [hasMoreThanOneSource, responsivePolicy]);
+    const source = selectSource(sources, size, responsivePolicy);
     return React.useMemo(() => ({
         containerRef,
         source,
