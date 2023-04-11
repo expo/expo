@@ -27,7 +27,9 @@ Once installation is complete, apply the changes from the following diffs to con
 ## Configuration in JavaScript and JSON
 
 Modify the `expo` section of **app.json**. (If you originally created your app using `npx react-native init`, you will need to add this section.)
-The changes below add the updates URL and a request header to the Expo configuration.
+The changes below add the updates URL to the Expo configuration.
+
+> The example URL shown here is for use with a custom update server running on the same machine. When using EAS Update, the EAS CLI will set this URL correctly for the EAS Update service.
 
 ```diff app.json
  {
@@ -45,10 +47,7 @@ The changes below add the updates URL and a request header to the Expo configura
 +    },
 +    "runtimeVersion": "1.0.0",
 +    "updates": {
-+      "requestHeaders": {
-+        "expo-channel-name": "your-channel-name"
-+      },
-+      "url": "https://exp.host/@my-expo-username/my-app"
++      "url": "http://localhost:3000/api/manifest"  
 +    }
 +  }
  }
@@ -128,14 +127,16 @@ After the steps above are complete, execute `npx expo prebuild` to complete the 
 
 After this step, the **AndroidManifest.xml** and **Expo.plist** files will be configured with the updates URL and request headers that you specified in **app.json**.
 
-## Usage
+## Additional iOS configuration
+
+If the project was created using `npx react-native init`, then after running `npx expo prebuild`, you must add the new file **SplashScreen.storyboard** to the "Copy Bundle Resources" build phase of the Xcode app build target.
+
+## Next Steps
 
 See more information about usage in the [`expo-updates` README](https://github.com/expo/expo/tree/main/packages/expo-updates/README.md).
 
-## FAQ
+See [this guide](/eas-update/eas-update-with-local-build/) for trying out EAS Update with a local build.
 
-<Collapsible summary="How do I customize which assets are included in an update bundle?">
+To start trying out EAS Update with EAS Build, see the [EAS Update "Getting Started" guide](/eas-update/getting-started/).
 
-If you have assets (such as images or other media) that are imported in your application code, and you would like these to be downloaded atomically as part of an update, add the `assetBundlePatterns` field under the `expo` key in your project's **app.json**. This field should be an array of file glob strings that point to the assets you want to be bundled. For example: `"assetBundlePatterns": ["**/*"]`
-
-</Collapsible>
+It is also possible to use `expo-updates` with a custom server that implements the [Expo Updates protocol](/technical-specs/expo-updates-1/); see the [`custom-expo-updates-server` README](https://github.com/expo/custom-expo-updates-server#readme).
