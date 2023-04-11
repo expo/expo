@@ -182,16 +182,15 @@ function getDefaultConfig(projectRoot, options = {}) {
     isModern: false
   };
   const sourceExts = (0, _paths().getBareExtensions)([], sourceExtsConfig);
+
+  // Add support for cjs (without platform extensions).
+  sourceExts.push('cjs');
   let sassVersion = null;
   if (options.isCSSEnabled) {
     sassVersion = getSassVersion(projectRoot);
     // Enable SCSS by default so we can provide a better error message
     // when sass isn't installed.
     sourceExts.push('scss', 'sass', 'css');
-  }
-  if (isExotic) {
-    // Add support for cjs (without platform extensions).
-    sourceExts.push('cjs');
   }
   const envFiles = runtimeEnv().getFiles(process.env.NODE_ENV);
   const babelConfigPath = getProjectBabelConfigFile(projectRoot);

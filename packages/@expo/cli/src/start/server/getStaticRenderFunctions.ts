@@ -23,6 +23,11 @@ function wrapBundle(str: string) {
   return str.replace(/^(__r\(.*\);)$/m, 'module.exports = $1');
 }
 
+function stripProcess(str: string) {
+  // TODO: Remove from the metro prelude
+  return str.replace(/process=this\.process\|\|{},/m, '');
+}
+
 // TODO(EvanBacon): Group all the code together and version.
 const getRenderModuleId = (projectRoot: string): string => {
   const moduleId = resolveFrom.silent(projectRoot, 'expo-router/node/render.js');
@@ -127,7 +132,14 @@ export async function requireFileContentsWithMetro(
 
   const content = await res.text();
 
-  return wrapBundle(content);
+  let bun = wrapBundle(content);
+
+  // This exposes the entire environment to the bundle.
+  if (environment === 'node') {
+    bun = stripProcess(bun);
+  }
+
+  return bun;
 }
 export async function requireWithMetro<T>(
   projectRoot: string,
