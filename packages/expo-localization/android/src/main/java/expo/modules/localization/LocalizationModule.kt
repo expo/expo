@@ -10,6 +10,7 @@ import android.text.TextUtils
 import android.text.TextUtils.getLayoutDirectionFromLocale
 import android.text.format.DateFormat
 import android.util.LayoutDirection
+import android.util.Log
 import android.view.View
 import androidx.core.os.LocaleListCompat
 import androidx.core.os.bundleOf
@@ -152,8 +153,10 @@ class LocalizationModule : Module() {
             "currencySymbol" to Currency.getInstance(locale).getSymbol(locale),
           )
         )
-      } catch (Exception e) {
+      } catch (e: Exception) {
+        // warn about the problematic locale
         // we don't append the problematic locale to the list
+        Log.w("expo-localization", "Failed to get locale for index $i", e)
       }
     }
     return locales

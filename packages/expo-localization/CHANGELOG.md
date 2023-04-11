@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed errors thrown on Play Console pre-launch report.
+
 ### 💡 Others
 
 ## 14.1.1 — 2023-02-09
