@@ -89,10 +89,6 @@ async function transform(config, projectRoot, filename, data, options) {
         sourceMap: false
       }
     });
-    if (options.dev) {
-      // Dev has the CSS appended to the JS file.
-      return _metroTransformWorker().default.transform(config, projectRoot, filename, Buffer.from(results.output), options);
-    }
     const jsModuleResults = await _metroTransformWorker().default.transform(config, projectRoot, filename, Buffer.from(results.output), options);
     const cssCode = results.css.toString();
     const output = [{
@@ -117,17 +113,6 @@ async function transform(config, projectRoot, filename, data, options) {
 
   // Global CSS:
 
-  if (options.dev) {
-    return _metroTransformWorker().default.transform(config, projectRoot, filename,
-    // In development, we use a JS file that appends a style tag to the
-    // document. This is necessary because we need to replace the style tag
-    // when the CSS changes.
-    // NOTE: We may change this to better support static rendering in the future.
-    Buffer.from((0, _css().wrapDevelopmentCSS)({
-      src: code,
-      filename
-    })), options);
-  }
   const {
     transform
   } = await Promise.resolve().then(() => _interopRequireWildcard(require('lightningcss')));
@@ -150,7 +135,10 @@ async function transform(config, projectRoot, filename, data, options) {
 
   // Create a mock JS module that exports an empty object,
   // this ensures Metro dependency graph is correct.
-  const jsModuleResults = await _metroTransformWorker().default.transform(config, projectRoot, filename, Buffer.from(''), options);
+  const jsModuleResults = await _metroTransformWorker().default.transform(config, projectRoot, filename, options.dev ? Buffer.from((0, _css().wrapDevelopmentCSS)({
+    src: code,
+    filename
+  })) : Buffer.from(''), options);
   const cssCode = cssResults.code.toString();
 
   // In production, we export the CSS as a string and use a special type to prevent

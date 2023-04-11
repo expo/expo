@@ -30,9 +30,30 @@ function _countLines() {
   };
   return data;
 }
+function _path() {
+  const data = _interopRequireDefault(require("path"));
+  _path = function () {
+    return data;
+  };
+  return data;
+}
 function _env() {
   const data = require("./env");
   _env = function () {
+    return data;
+  };
+  return data;
+}
+function _getCssDeps() {
+  const data = require("./getCssDeps");
+  _getCssDeps = function () {
+    return data;
+  };
+  return data;
+}
+function _css() {
+  const data = require("./transform-worker/css");
+  _css = function () {
     return data;
   };
   return data;
@@ -160,8 +181,43 @@ function withSerialProcessors(config, processors) {
 }
 function getDefaultSerializer() {
   return (...props) => {
+    var _props$3$sourceUrl;
     const bundle = (0, _baseJSBundle().default)(...props);
-    return (0, _bundleToString().default)(bundle).code;
+    if (!((_props$3$sourceUrl = props[3].sourceUrl) !== null && _props$3$sourceUrl !== void 0 && _props$3$sourceUrl.includes('&_type=html'))) {
+      // Default behavior if `_type=html` is not present in the URL.
+      return (0, _bundleToString().default)(bundle).code;
+    }
+    const cssDeps = (0, _getCssDeps().getCssModules)(props[2].dependencies, {
+      projectRoot: props[3].projectRoot,
+      processModuleFilter: props[3].processModuleFilter
+    });
+    // Combine the CSS modules into tags that have hot refresh data attributes.
+    const styleString = cssDeps.map(([ipath, content]) => {
+      // TODO: No data id in prod
+      return `<style data-expo-css-hmr="${(0, _css().pathToHtmlSafeName)(_path().default.relative(props[3].projectRoot, ipath))}">` + content + '\n</style>';
+    }).join('');
+    const url = props[3].sourceUrl.replace('&_type=html', '')
+    // Hack to make the path relative to the dev server.
+    .replace('http://192.168.1.118:19000', '');
+    // Fast refresh only appears to work if we include a script with a URL.
+    // Possibly https://github.com/expo/router/blob/348a352e031ac46e4f1f29b0f0dc0d609454e1c4/packages/expo-router/src/getDevServer/index.ts#L20
+    const script = `<script src="${url}"></script>`;
+    // const script = '<script>' + bundleToString(bundle).code + '\n</script>';
+
+    // TODO: Render this statically
+    return `<!DOCTYPE html>
+    <html>
+    <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1.00001,viewport-fit=cover">
+    <style data-id="expo-reset">#root,body{display:flex}#root,body,html{width:100%;-webkit-overflow-scrolling:touch;margin:0;padding:0;min-height:100%}#root{flex-shrink:0;flex-basis:auto;flex-grow:1;flex:1}html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;height:calc(100% + env(safe-area-inset-top))}body{overflow-y:auto;overscroll-behavior-y:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;-ms-overflow-style:scrollbar}</style>
+      ${styleString}
+      </head>
+      <body>
+      <div id="root"></div>
+      ${script}
+      </body>`;
   };
 }
 function createSerializerFromSerialProcessors(processors, serializer) {

@@ -277,7 +277,8 @@ export abstract class ManifestMiddleware<
     const platform = 'web';
     // Read from headers
     const mainModuleName = this.resolveMainModuleName(this.initialProjectConfig, platform);
-    return this._getBundleUrlPath({
+
+    return this._getBundleUrl({
       platform,
       mainModuleName,
     });
@@ -293,14 +294,12 @@ export abstract class ManifestMiddleware<
     // Read from headers
     const bundleUrl = this.getWebBundleUrl();
 
+    // Fetch the generated HTML from our custom Metro serializer
+    const results = await fetch(bundleUrl + '&_type=html');
+
     res.setHeader('Content-Type', 'text/html');
 
-    res.end(
-      await createTemplateHtmlFromExpoConfigAsync(this.projectRoot, {
-        exp: this.initialProjectConfig.exp,
-        scripts: [bundleUrl],
-      })
-    );
+    res.end(await results.text());
   }
 
   /** Exposed for testing. */

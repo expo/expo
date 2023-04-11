@@ -85,11 +85,6 @@ export async function transform(
       },
     });
 
-    if (options.dev) {
-      // Dev has the CSS appended to the JS file.
-      return worker.transform(config, projectRoot, filename, Buffer.from(results.output), options);
-    }
-
     const jsModuleResults = await worker.transform(
       config,
       projectRoot,
@@ -125,20 +120,6 @@ export async function transform(
 
   // Global CSS:
 
-  if (options.dev) {
-    return worker.transform(
-      config,
-      projectRoot,
-      filename,
-      // In development, we use a JS file that appends a style tag to the
-      // document. This is necessary because we need to replace the style tag
-      // when the CSS changes.
-      // NOTE: We may change this to better support static rendering in the future.
-      Buffer.from(wrapDevelopmentCSS({ src: code, filename })),
-      options
-    );
-  }
-
   const { transform } = await import('lightningcss');
 
   // TODO: Add bundling to resolve imports
@@ -163,7 +144,7 @@ export async function transform(
     config,
     projectRoot,
     filename,
-    Buffer.from(''),
+    options.dev ? Buffer.from(wrapDevelopmentCSS({ src: code, filename })) : Buffer.from(''),
     options
   );
 
