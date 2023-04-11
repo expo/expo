@@ -1,6 +1,6 @@
 import { cleanCopyValue } from './code';
 
-describe('Code copy', () => {
+describe('cleanCopyValue', () => {
   it('SlashComments - preserves the fully annotated line', () => {
     expect(
       cleanCopyValue(
@@ -20,12 +20,28 @@ describe('Code copy', () => {
   it('SlashComments - preserves the line wrapped with annotations', () => {
     expect(
       cleanCopyValue(
-        `/* @info This text will be shown onHover */
+        `        /* @info This text will be shown onHover */
         return x + 1;
         /* @end */`
       )
-    ).toBe(`        return x + 1;
-        `);
+    ).toBe(`        return x + 1;`);
+  });
+
+  it('SlashComments - removes @hide line', () => {
+    expect(
+      cleanCopyValue(`const styles = StyleSheet.create({
+  /* @hide // Styles that are unchanged from previous step are hidden for brevity. */
+  container: {`)
+    ).toBe(`const styles = StyleSheet.create({
+  container: {`);
+  });
+
+  it('SlashComments - removes annotation with # in content', () => {
+    expect(
+      cleanCopyValue(`    /* @info Replace the default value of backgroundColor property with '#25292e'. */
+    backgroundColor: '#25292e',
+    /* @end */`)
+    ).toBe(`    backgroundColor: '#25292e',`);
   });
 
   it('HashComments - preserves the fully annotated line', () => {
@@ -47,12 +63,20 @@ describe('Code copy', () => {
   it('HashComments - preserves the line wrapped with annotations', () => {
     expect(
       cleanCopyValue(
-        `# @info This text will be shown onHover #
+        `        # @info This text will be shown onHover #
         return x + 1;
         # @end #`
       )
-    ).toBe(`        return x + 1;
-        `);
+    ).toBe(`        return x + 1;`);
+  });
+
+  it('HashComments - removes @hide line', () => {
+    expect(
+      cleanCopyValue(`const styles = StyleSheet.create({
+  # @hide // Styles that are unchanged from previous step are hidden for brevity. #
+  container: {`)
+    ).toBe(`const styles = StyleSheet.create({
+  container: {`);
   });
 
   it('XMLComments - preserves the fully annotated line', () => {
@@ -74,11 +98,19 @@ describe('Code copy', () => {
   it('XMLComments - preserves the line wrapped with annotations', () => {
     expect(
       cleanCopyValue(
-        `<!-- @info This text will be shown onHover -->
+        `        <!-- @info This text will be shown onHover -->
         return x + 1;
         <!-- @end -->`
       )
-    ).toBe(`        return x + 1;
-        `);
+    ).toBe(`        return x + 1;`);
+  });
+
+  it('XMLComments - removes @hide line', () => {
+    expect(
+      cleanCopyValue(`const styles = StyleSheet.create({
+  <!-- @hide // Styles that are unchanged from previous step are hidden for brevity. -->
+  container: {`)
+    ).toBe(`const styles = StyleSheet.create({
+  container: {`);
   });
 });

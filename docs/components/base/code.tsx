@@ -76,7 +76,11 @@ type Props = {
 };
 
 export function cleanCopyValue(value: string) {
-  return value.replace(/\n?(\/\*|#|<!--)\s?@(info[^*#<>]+|end|hide).?(\*\/|#|-->)\n?/g, '');
+  return value
+    .replace(/\/\*\s?@(info[^*]+|end|hide[^*]+).?\*\//g, '')
+    .replace(/#\s?@(info[^#]+|end|hide[^#]+).?#/g, '')
+    .replace(/<!--\s?@(info[^<>]+|end|hide[^<>]+).?-->/g, '')
+    .replace(/^ +\r?\n|\n +\r?$/gm, '');
 }
 
 export class Code extends React.Component<React.PropsWithChildren<Props>> {
