@@ -1,3 +1,4 @@
+import { Log } from '../../../../log';
 import { MetroBundlerDevServer } from '../MetroBundlerDevServer';
 import {
   importMetroInspectorDeviceFromProject,
@@ -8,10 +9,10 @@ import { ExpoInspectorProxy } from './proxy';
 
 export { ExpoInspectorProxy } from './proxy';
 
-const debug = require('debug')('expo:metro:inspector-proxy') as typeof console.log;
-
 export function createInspectorProxy(metroBundler: MetroBundlerDevServer, projectRoot: string) {
-  debug('Experimental inspector proxy enabled');
+  Log.warn(
+    'Experimental inspector proxy enabled. This early version requires newer Metro functionality, which is only available in SDK 49+.'
+  );
 
   // Import the installed `metro-inspector-proxy` from the project
   // We use these base classes to extend functionality
