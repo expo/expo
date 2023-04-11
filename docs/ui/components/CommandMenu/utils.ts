@@ -102,12 +102,7 @@ export const openLink = (url: string, isExternal: boolean = false) => {
 const ReferencePathChunks = ['/versions/', '/modules/', '/more/'] as const;
 
 export const isReferencePath = (url: string) => {
-  for (const pathChunk of ReferencePathChunks) {
-    if (url.includes(pathChunk)) {
-      return true;
-    }
-  }
-  return false;
+  return ReferencePathChunks.some(pathChunk => url.includes(pathChunk));
 };
 
 const EASPathChunks = [
@@ -122,12 +117,7 @@ const EASPathChunks = [
 ] as const;
 
 export const isEASPath = (url: string) => {
-  for (const pathChunk of EASPathChunks) {
-    if (url.includes(pathChunk)) {
-      return true;
-    }
-  }
-  return false;
+  return EASPathChunks.some(pathChunk => url.includes(pathChunk));
 };
 
 const HomePathChunks = [
@@ -141,23 +131,13 @@ const HomePathChunks = [
 ] as const;
 
 export const isHomePath = (url: string) => {
-  for (const pathChunk of HomePathChunks) {
-    if (url.includes(pathChunk)) {
-      return true;
-    }
-  }
-  return false;
+  return HomePathChunks.some(pathChunk => url.includes(pathChunk));
 };
 
 const LearnPathChunks = ['/tutorial', '/ui-programming/', '/additional-resources/'] as const;
 
 export const isLearnPath = (url: string) => {
-  for (const pathChunk of LearnPathChunks) {
-    if (url.includes(pathChunk)) {
-      return true;
-    }
-  }
-  return false;
+  return LearnPathChunks.some(pathChunk => url.includes(pathChunk));
 };
 
 export const isAppleDevice = () => {
