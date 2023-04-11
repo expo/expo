@@ -45,9 +45,7 @@ public class ExpoFabricView: ExpoFabricViewObjC {
   // MARK: - ExpoFabricViewInterface
 
   public override func updateProps(_ props: [String: Any]) {
-    guard let view = contentView,
-          let context = appContext,
-          let propsDict = viewManagerPropDict else {
+    guard let view = contentView, let context = appContext, let propsDict = viewManagerPropDict else {
       return
     }
     for (key, prop) in propsDict {
