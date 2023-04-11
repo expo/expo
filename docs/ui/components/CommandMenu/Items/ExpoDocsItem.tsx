@@ -1,9 +1,22 @@
 import { DocsLogo } from '@expo/styleguide';
-import { PlanEnterpriseIcon, BookOpen02Icon } from '@expo/styleguide-icons';
+import {
+  PlanEnterpriseIcon,
+  BookOpen02Icon,
+  GraduationHat02Icon,
+  Home02Icon,
+} from '@expo/styleguide-icons';
 import { Command } from 'cmdk';
 
 import type { AlgoliaItemType } from '../types';
-import { getContentHighlightHTML, getHighlightHTML, isEASPath, openLink } from '../utils';
+import {
+  getContentHighlightHTML,
+  getHighlightHTML,
+  isReferencePath,
+  isEASPath,
+  openLink,
+  isHomePath,
+  isLearnPath,
+} from '../utils';
 import { FootnoteSection } from './FootnoteSection';
 import { FootnoteArrowIcon } from './icons';
 import { contentStyle, footnoteStyle, itemIconWrapperStyle, itemStyle } from './styles';
@@ -21,19 +34,27 @@ type Props = {
 const isDev = process.env.NODE_ENV === 'development';
 
 const ItemIcon = ({ url }: { url: string }) => {
-  if (url.includes('/versions/')) {
+  if (isReferencePath(url)) {
     return <DocsLogo className="text-icon-secondary" />;
   } else if (isEASPath(url)) {
     return <PlanEnterpriseIcon className="text-icon-secondary" />;
+  } else if (isHomePath(url)) {
+    return <Home02Icon className="text-icon-secondary" />;
+  } else if (isLearnPath(url)) {
+    return <GraduationHat02Icon className="text-icon-secondary" />;
   }
   return <BookOpen02Icon className="text-icon-secondary" />;
 };
 
 const getFootnotePrefix = (url: string) => {
-  if (url.includes('/versions/')) {
-    return 'API Reference';
+  if (isReferencePath(url)) {
+    return 'Reference';
   } else if (isEASPath(url)) {
     return 'Expo Application Services';
+  } else if (isHomePath(url)) {
+    return 'Home';
+  } else if (isLearnPath(url)) {
+    return 'Learn';
   } else {
     return 'Guides';
   }
