@@ -15,7 +15,11 @@ function getScaledAssetPath(asset): string {
   const scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
   const scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
   const type = !asset.type ? '' : `.${asset.type}`;
-  return asset.httpServerLocation.replace(/\.\.\//g, '_') + '/' + asset.name + scaleSuffix + type;
+  if (process.env.NODE_ENV === 'development') {
+    return asset.httpServerLocation + '/' + asset.name + scaleSuffix + type;
+  } else {
+    return asset.httpServerLocation.replace(/\.\.\//g, '_') + '/' + asset.name + scaleSuffix + type;
+  }
 }
 
 export default class AssetSourceResolver {

@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed monorepo asset resolution in production for Metro web.
+
 ### 💡 Others
 
 ## 8.9.1 - 2023-03-08
