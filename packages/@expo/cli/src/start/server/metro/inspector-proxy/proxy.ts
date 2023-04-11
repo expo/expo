@@ -32,7 +32,7 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
    * Initialize the server address from the metro server.
    * This is required to properly reference sourcemaps for the debugger.
    */
-  private setServerAddress(server: HttpServer | HttpsServer) {
+  public setServerAddress(server: HttpServer | HttpsServer) {
     const addressInfo = server.address();
 
     if (typeof addressInfo === 'string') {
@@ -55,8 +55,10 @@ export class ExpoInspectorProxy<D extends MetroDevice = MetroDevice> {
     this.metroProxy.processRequest(req, res, next);
   }
 
-  public createWebSocketListeners(server: HttpServer | HttpsServer): Record<string, WSServer> {
-    this.setServerAddress(server);
+  public createWebSocketListeners(server?: HttpServer | HttpsServer): Record<string, WSServer> {
+    if (server) {
+      this.setServerAddress(server);
+    }
 
     return {
       [WS_DEVICE_URL]: this.createDeviceWebSocketServer(),
