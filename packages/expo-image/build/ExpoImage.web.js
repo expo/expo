@@ -46,7 +46,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                     ...style,
                 }, className: className, events: {
                     onTransitionEnd: [onAnimationFinished],
-                }, contentPosition: { left: '50%', top: '50%' }, blurhashContentPosition: contentPosition, blurhashStyle: blurhashStyle })),
+                }, contentPosition: { left: '50%', top: '50%' }, hashPlaceholderContentPosition: contentPosition, hashPlaceholderStyle: blurhashStyle })),
         ]
         : null;
     const currentNodeAnimationKey = (recyclingKey
@@ -63,7 +63,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
                 objectFit: selectedSource ? contentFit : imagePlaceholderContentFit,
                 ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
                 ...style,
-            }, className: className, priority: priority, contentPosition: selectedSource ? contentPosition : { top: '50%', left: '50%' }, blurhashContentPosition: contentPosition, blurhashStyle: blurhashStyle, accessibilityLabel: props.accessibilityLabel })),
+            }, className: className, priority: priority, contentPosition: selectedSource ? contentPosition : { top: '50%', left: '50%' }, hashPlaceholderContentPosition: contentPosition, hashPlaceholderStyle: blurhashStyle, accessibilityLabel: props.accessibilityLabel })),
     ];
     return (React.createElement("div", { ref: containerRef, className: "expo-image-container", style: {
             aspectRatio: String(aspectRatio),

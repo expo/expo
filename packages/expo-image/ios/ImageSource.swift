@@ -29,6 +29,10 @@ struct ImageSource: Record {
     return uri?.scheme == "blurhash"
   }
 
+  var isThumbhash: Bool {
+    return uri?.scheme == "thumbhash"
+  }
+
   var isPhotoLibraryAsset: Bool {
     return isPhotoLibraryAssetUrl(uri)
   }

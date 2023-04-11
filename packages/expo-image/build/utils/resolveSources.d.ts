@@ -1,5 +1,6 @@
 import { ImageNativeProps, ImageProps } from '../Image.types';
 export declare function isBlurhashString(str: string): boolean;
+export declare function isThumbhashString(str: string): boolean;
 /**
  * Resolves provided `source` prop to an array of objects expected by the native implementation.
  */
