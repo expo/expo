@@ -12,7 +12,7 @@ import countLines from 'metro/src/lib/countLines';
 import path from 'path';
 
 import { env } from './env';
-import { getCssModules } from './getCssDeps';
+import { getCssModules, SerialAsset } from './getCssDeps';
 import { pathToHtmlSafeName } from './transform-worker/css';
 
 const debug = require('debug')('expo:metro-config:serializer') as typeof console.log;
@@ -162,6 +162,10 @@ export function withSerialProcessors(
 ): InputConfigT {
   const originalSerializer = config.serializer?.customSerializer;
 
+  if (originalSerializer) {
+    console.warn('Custom Metro serializers are not supported with Expo CLI.');
+  }
+
   return {
     ...config,
     serializer: {
@@ -172,53 +176,67 @@ export function withSerialProcessors(
 }
 
 function getDefaultSerializer(): Serializer {
-  return (...props: SerializerParameters): string => {
+  return (...props: SerializerParameters): string | any => {
     const bundle = baseJSBundle(...props);
     if (!props[3].sourceUrl?.includes('&_type=html')) {
       // Default behavior if `_type=html` is not present in the URL.
       return bundleToString(bundle).code;
     }
-    const cssDeps = getCssModules(props[2].dependencies, {
-      projectRoot: props[3].projectRoot,
-      processModuleFilter: props[3].processModuleFilter,
+
+    const [, , graph, options] = props;
+
+    const cssDeps = getCssModules(graph.dependencies, {
+      projectRoot: options.projectRoot,
+      processModuleFilter: options.processModuleFilter,
     });
-    // Combine the CSS modules into tags that have hot refresh data attributes.
-    const styleString = cssDeps
-      .map(([ipath, content]) => {
-        // TODO: No data id in prod
-        return (
-          `<style data-expo-css-hmr="${pathToHtmlSafeName(
-            path.relative(props[3].projectRoot, ipath)
-          )}">` +
-          content +
-          '\n</style>'
-        );
-      })
-      .join('');
 
-    const url = props[3]
-      .sourceUrl!.replace('&_type=html', '')
-      // Hack to make the path relative to the dev server.
-      .replace('http://192.168.1.118:19000', '');
-    // Fast refresh only appears to work if we include a script with a URL.
-    // Possibly https://github.com/expo/router/blob/348a352e031ac46e4f1f29b0f0dc0d609454e1c4/packages/expo-router/src/getDevServer/index.ts#L20
-    const script = `<script src="${url}"></script>`;
-    // const script = '<script>' + bundleToString(bundle).code + '\n</script>';
+    const jsAsset: SerialAsset = {
+      filename: 'index.js',
+      originFilename: 'index.js',
+      type: 'js',
+      metadata: {},
+      source: bundleToString(bundle).code,
+    };
 
-    // TODO: Render this statically
-    return `<!DOCTYPE html>
-    <html>
-    <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1.00001,viewport-fit=cover">
-    <style data-id="expo-reset">#root,body{display:flex}#root,body,html{width:100%;-webkit-overflow-scrolling:touch;margin:0;padding:0;min-height:100%}#root{flex-shrink:0;flex-basis:auto;flex-grow:1;flex:1}html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;height:calc(100% + env(safe-area-inset-top))}body{overflow-y:auto;overscroll-behavior-y:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;-ms-overflow-style:scrollbar}</style>
-      ${styleString}
-      </head>
-      <body>
-      <div id="root"></div>
-      ${script}
-      </body>`;
+    return JSON.stringify([jsAsset, ...cssDeps]);
+
+    // // Combine the CSS modules into tags that have hot refresh data attributes.
+    // const styleString = cssDeps
+    //   .map(([ipath, content]) => {
+    //     // TODO: No data id in prod
+    //     return (
+    //       `<style data-expo-css-hmr="${pathToHtmlSafeName(
+    //         path.relative(options.projectRoot, ipath)
+    //       )}">` +
+    //       content +
+    //       '\n</style>'
+    //     );
+    //   })
+    //   .join('');
+
+    // const url = options
+    //   .sourceUrl!.replace('&_type=html', '')
+    //   // Hack to make the path relative to the dev server.
+    //   .replace('http://192.168.1.118:19000', '');
+    // // Fast refresh only appears to work if we include a script with a URL.
+    // // Possibly https://github.com/expo/router/blob/348a352e031ac46e4f1f29b0f0dc0d609454e1c4/packages/expo-router/src/getDevServer/index.ts#L20
+    // const script = `<script src="${url}"></script>`;
+    // // const script = '<script>' + bundleToString(bundle).code + '\n</script>';
+
+    // // TODO: Render this statically
+    // return `<!DOCTYPE html>
+    // <html>
+    // <head>
+    // <meta charset="utf-8">
+    // <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    // <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1.00001,viewport-fit=cover">
+    // <style data-id="expo-reset">#root,body{display:flex}#root,body,html{width:100%;-webkit-overflow-scrolling:touch;margin:0;padding:0;min-height:100%}#root{flex-shrink:0;flex-basis:auto;flex-grow:1;flex:1}html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;height:calc(100% + env(safe-area-inset-top))}body{overflow-y:auto;overscroll-behavior-y:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;-ms-overflow-style:scrollbar}</style>
+    //   ${styleString}
+    //   </head>
+    //   <body>
+    //   <div id="root"></div>
+    //   ${script}
+    //   </body>`;
   };
 }
 
@@ -233,7 +251,88 @@ export function createSerializerFromSerialProcessors(
       }
     }
 
-    const finalSerializer = serializer ?? getDefaultSerializer();
+    const finalSerializer = getDefaultSerializer();
+    // const finalSerializer = serializer ?? getDefaultSerializer();
     return finalSerializer(...props);
   };
+}
+
+import fs from 'fs';
+
+export function writeSerialAssets(assets: SerialAsset[], { outputDir }: { outputDir: string }) {
+  assets.forEach((asset) => {
+    const output = path.join(outputDir, asset.filename);
+    fs.mkdirSync(path.dirname(output), { recursive: true });
+    fs.writeFileSync(output, asset.source);
+  });
+}
+
+export function htmlFromSerialAssets(
+  assets: SerialAsset[],
+  { dev, bundleUrl }: { dev: boolean; bundleUrl: string }
+) {
+  // Combine the CSS modules into tags that have hot refresh data attributes.
+  const styleString = assets
+    .filter((asset) => asset.type === 'css')
+    .map(({ metadata, filename, source }) => {
+      if (dev) {
+        // TODO: No data id in prod
+        return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
+      } else {
+        return [
+          `<link rel="preload" href="${filename}" as="style">`,
+          `<link rel="stylesheet" href="${filename}">`,
+        ].join('');
+      }
+    })
+    .join('');
+
+  const jsAssets = assets.filter((asset) => asset.type === 'js');
+
+  const scripts = bundleUrl
+    ? `<script src="${bundleUrl}"></script>`
+    : jsAssets
+        .map(({ filename }) => {
+          return `<script src="${filename}"></script>`;
+        })
+        .join('');
+  // const script = '<script>' + bundleToString(bundle).code + '\n</script>';
+
+  // TODO: Render this statically
+  return `<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8">
+    <meta http-equiv="X-UA-Compatible" content="IE=edge">
+    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1.00001,viewport-fit=cover">
+    <style data-id="expo-reset">#root,body{display:flex}#root,body,html{width:100%;-webkit-overflow-scrolling:touch;margin:0;padding:0;min-height:100%}#root{flex-shrink:0;flex-basis:auto;flex-grow:1;flex:1}html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;height:calc(100% + env(safe-area-inset-top))}body{overflow-y:auto;overscroll-behavior-y:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;-ms-overflow-style:scrollbar}</style>
+    ${styleString}
+  </head>
+  <body>
+    <div id="root"></div>
+    ${scripts}
+  </body>
+</html>`;
+}
+
+// <link rel="preload" href="/_expo/static/css/xxxxxx.css" as="style">
+export function appendLinkToHtml(
+  html: string,
+  links: { rel: string; href: string; as?: string }[]
+) {
+  return html.replace(
+    '</head>',
+    links
+      .map((link) => {
+        let linkTag = `<link rel="${link.rel}"`;
+
+        if (link.href) linkTag += ` href="${link.href}"`;
+        if (link.as) linkTag += ` as="${link.as}"`;
+
+        linkTag += '>';
+
+        return linkTag;
+      })
+      .join('') + '</head>'
+  );
 }

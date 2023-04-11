@@ -41,6 +41,8 @@ export function getEntryWithServerRoot(
   );
 }
 
+import { htmlFromSerialAssets } from '@expo/metro-config/build/serializer';
+
 export function getMetroServerRoot(projectRoot: string) {
   if (env.EXPO_USE_METRO_WORKSPACE_ROOT) {
     return getWorkspaceRoot(projectRoot) ?? projectRoot;
@@ -297,9 +299,19 @@ export abstract class ManifestMiddleware<
     // Fetch the generated HTML from our custom Metro serializer
     const results = await fetch(bundleUrl + '&_type=html');
 
+    const txt = await results.json();
+    console.log('results', txt);
     res.setHeader('Content-Type', 'text/html');
 
-    res.end(await results.text());
+    res.end(
+      htmlFromSerialAssets(txt, {
+        dev: this.options.mode !== 'production',
+        bundleUrl: this._getBundleUrlPath({
+          platform: 'web',
+          mainModuleName: this.resolveMainModuleName(this.initialProjectConfig, 'web'),
+        }),
+      })
+    );
   }
 
   /** Exposed for testing. */

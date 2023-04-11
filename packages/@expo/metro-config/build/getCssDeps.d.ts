@@ -7,10 +7,12 @@ type Options = {
     projectRoot: string;
     publicPath: string;
 };
-export type CSSAsset = {
+export type SerialAsset = {
     originFilename: string;
     filename: string;
     source: string;
+    type: 'css' | 'js';
+    metadata: Record<string, string>;
 };
-export declare function getCssModules(dependencies: ReadOnlyDependencies, { processModuleFilter, projectRoot }: Pick<Options, 'projectRoot' | 'processModuleFilter'>): string[][];
+export declare function getCssModules(dependencies: ReadOnlyDependencies, { processModuleFilter, projectRoot }: Pick<Options, 'projectRoot' | 'processModuleFilter'>): SerialAsset[];
 export {};

@@ -1,6 +1,8 @@
+import crypto from 'crypto';
 import type { Module } from 'metro';
 import { getJsOutput, isJsModule } from 'metro/src/DeltaBundler/Serializers/helpers/js';
 import path from 'path';
+import { pathToHtmlSafeName } from './transform-worker/css';
 
 export type ReadOnlyDependencies<T = any> = Map<string, Module<T>>;
 
@@ -18,20 +20,23 @@ type MetroModuleCSSMetadata = {
   map: any[];
 };
 
-export type CSSAsset = {
+export type SerialAsset = {
   // 'styles.css'
   originFilename: string;
   // '_expo/static/css/bc6aa0a69dcebf8e8cac1faa76705756.css'
   filename: string;
   // '\ndiv {\n    background: cyan;\n}\n\n'
   source: string;
+  type: 'css' | 'js';
+
+  metadata: Record<string, string>;
 };
 
 export function getCssModules(
   dependencies: ReadOnlyDependencies,
   { processModuleFilter, projectRoot }: Pick<Options, 'projectRoot' | 'processModuleFilter'>
-) {
-  const promises = [];
+): SerialAsset[] {
+  const assets: SerialAsset[] = [];
 
   for (const module of dependencies.values()) {
     if (
@@ -43,12 +48,27 @@ export function getCssModules(
       const cssMetadata = getCssMetadata(module);
       if (cssMetadata) {
         const contents = cssMetadata.code;
-        promises.push([module.path, contents]);
+        const filename = path.join(
+          // Consistent location
+          STATIC_EXPORT_DIRECTORY,
+          // Hashed file contents + name for caching
+          getFileName(module.path) + '-' + hashString(module.path + contents) + '.css'
+        );
+        const originFilename = path.relative(projectRoot, module.path);
+        assets.push({
+          type: 'css',
+          originFilename,
+          filename,
+          source: contents,
+          metadata: {
+            hmrId: pathToHtmlSafeName(originFilename),
+          },
+        });
       }
     }
   }
 
-  return promises;
+  return assets;
 }
 
 function getCssMetadata(module: Module): MetroModuleCSSMetadata | null {
@@ -62,4 +82,15 @@ function getCssMetadata(module: Module): MetroModuleCSSMetadata | null {
     return data.css as MetroModuleCSSMetadata;
   }
   return null;
+}
+
+// s = static
+const STATIC_EXPORT_DIRECTORY = '_expo/static/css';
+
+function getFileName(module: string) {
+  return path.basename(module).replace(/\.[^.]+$/, '');
+}
+
+function hashString(str: string) {
+  return crypto.createHash('md5').update(str).digest('hex');
 }

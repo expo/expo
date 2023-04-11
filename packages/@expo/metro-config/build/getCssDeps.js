@@ -1,49 +1,59 @@
 "use strict";
-
-Object.defineProperty(exports, "__esModule", {
-  value: true
-});
+var __importDefault = (this && this.__importDefault) || function (mod) {
+    return (mod && mod.__esModule) ? mod : { "default": mod };
+};
+Object.defineProperty(exports, "__esModule", { value: true });
+exports.getCssModules = void 0;
+const crypto_1 = __importDefault(require("crypto"));
+const js_1 = require("metro/src/DeltaBundler/Serializers/helpers/js");
+const path_1 = __importDefault(require("path"));
+const css_1 = require("./transform-worker/css");
+function getCssModules(dependencies, { processModuleFilter, projectRoot }) {
+    const assets = [];
+    for (const module of dependencies.values()) {
+        if ((0, js_1.isJsModule)(module) &&
+            processModuleFilter(module) &&
+            (0, js_1.getJsOutput)(module).type === 'js/module' &&
+            path_1.default.relative(projectRoot, module.path) !== 'package.json') {
+            const cssMetadata = getCssMetadata(module);
+            if (cssMetadata) {
+                const contents = cssMetadata.code;
+                const filename = path_1.default.join(
+                // Consistent location
+                STATIC_EXPORT_DIRECTORY, 
+                // Hashed file contents + name for caching
+                getFileName(module.path) + '-' + hashString(module.path + contents) + '.css');
+                const originFilename = path_1.default.relative(projectRoot, module.path);
+                assets.push({
+                    type: 'css',
+                    originFilename,
+                    filename,
+                    source: contents,
+                    metadata: {
+                        hmrId: (0, css_1.pathToHtmlSafeName)(originFilename),
+                    },
+                });
+            }
+        }
+    }
+    return assets;
+}
 exports.getCssModules = getCssModules;
-function _js() {
-  const data = require("metro/src/DeltaBundler/Serializers/helpers/js");
-  _js = function () {
-    return data;
-  };
-  return data;
-}
-function _path() {
-  const data = _interopRequireDefault(require("path"));
-  _path = function () {
-    return data;
-  };
-  return data;
-}
-function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-function getCssModules(dependencies, {
-  processModuleFilter,
-  projectRoot
-}) {
-  const promises = [];
-  for (const module of dependencies.values()) {
-    if ((0, _js().isJsModule)(module) && processModuleFilter(module) && (0, _js().getJsOutput)(module).type === 'js/module' && _path().default.relative(projectRoot, module.path) !== 'package.json') {
-      const cssMetadata = getCssMetadata(module);
-      if (cssMetadata) {
-        const contents = cssMetadata.code;
-        promises.push([module.path, contents]);
-      }
-    }
-  }
-  return promises;
-}
 function getCssMetadata(module) {
-  var _module$output$;
-  const data = (_module$output$ = module.output[0]) === null || _module$output$ === void 0 ? void 0 : _module$output$.data;
-  if (data && typeof data === 'object' && 'css' in data) {
-    if (typeof data.css !== 'object' || !('code' in data.css)) {
-      throw new Error(`Unexpected CSS metadata in Metro module (${module.path}): ${JSON.stringify(data.css)}`);
+    const data = module.output[0]?.data;
+    if (data && typeof data === 'object' && 'css' in data) {
+        if (typeof data.css !== 'object' || !('code' in data.css)) {
+            throw new Error(`Unexpected CSS metadata in Metro module (${module.path}): ${JSON.stringify(data.css)}`);
+        }
+        return data.css;
     }
-    return data.css;
-  }
-  return null;
+    return null;
 }
-//# sourceMappingURL=getCssDeps.js.map
+// s = static
+const STATIC_EXPORT_DIRECTORY = '_expo/static/css';
+function getFileName(module) {
+    return path_1.default.basename(module).replace(/\.[^.]+$/, '');
+}
+function hashString(str) {
+    return crypto_1.default.createHash('md5').update(str).digest('hex');
+}
