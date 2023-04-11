@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed monorepo asset resolution in production for Metro web.
+- Fixed monorepo asset resolution in production for Metro web. ([#22094](https://github.com/expo/expo/pull/22094) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
