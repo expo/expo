@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Fixed invalid timezone returned for `getCalendars` on Web.
 - Fixed errors thrown on Play Console pre-launch report.
 
 ### 💡 Others
