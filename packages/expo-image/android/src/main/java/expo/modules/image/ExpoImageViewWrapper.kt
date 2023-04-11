@@ -560,7 +560,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         .apply {
           if (placeholder != null) {
             thumbnail(requestManager.load(placeholder.glideData))
-            val newPlaceholderContentFit = if (bestPlaceholder.isBlurhash()) {
+            val newPlaceholderContentFit = if (bestPlaceholder.isBlurhash() || bestPlaceholder.isThumbhash()) {
               contentFit
             } else {
               placeholderContentFit

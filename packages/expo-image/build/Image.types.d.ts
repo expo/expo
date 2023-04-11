@@ -29,6 +29,11 @@ export type ImageSource = {
      */
     blurhash?: string;
     /**
+     * The thumbhash string to use to generate the image placeholder. You can read more about thumbhash
+     * on the [`thumbhash website`](https://evanw.github.io/thumbhash/). Ignored when `uri` is provided.
+     */
+    thumbhash?: string;
+    /**
      * The cache key used to query and store this specific image.
      * If not provided, the `uri` is used also as the cache key.
      */

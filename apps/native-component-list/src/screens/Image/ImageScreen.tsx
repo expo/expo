@@ -70,10 +70,10 @@ export const ImageScreens = [
     },
   },
   {
-    name: 'Blurhash',
-    route: 'image/blurhash',
+    name: 'Hash Placeholders',
+    route: 'image/hash-placeholders',
     getComponent() {
-      return optionalRequire(() => require('./ImageBlurhashScreen'));
+      return optionalRequire(() => require('./ImageHashPlaceholdersScreen'));
     },
   },
   {
