@@ -83,11 +83,5 @@ export async function getTeamMembersAsync({
   const team = await linearClient.team(teamId);
   const states = await team.members({ filter });
 
-  if (!states.nodes?.length) {
-    throw new Error(
-      `Failed to find Linear members with the given filter: ${JSON.stringify(filter)}`
-    );
-  }
-
   return states.nodes;
 }
