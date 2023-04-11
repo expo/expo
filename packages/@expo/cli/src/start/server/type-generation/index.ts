@@ -12,7 +12,7 @@ import { forceRemovalTSConfig, forceUpdateTSConfig } from './tsconfig';
 
 export interface TypeScriptTypeGenerationOptions {
   server: ServerLike;
-  metro: Server | null;
+  metro?: Server | null;
   projectRoot: string;
 }
 
@@ -28,10 +28,6 @@ export async function typescriptTypeGeneration({
       removeExpoEnvDTS(projectRoot),
       removeFromGitIgnore(gitIgnorePath, 'expo-env.d.ts'),
     ]);
-  }
-
-  if (!metro) {
-    return;
   }
 
   const dotExpoDir = ensureDotExpoProjectDirectoryInitialized(projectRoot);
