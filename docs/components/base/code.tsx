@@ -75,6 +75,10 @@ type Props = {
   className?: string;
 };
 
+export function cleanCopyValue(value: string) {
+  return value.replace(/\n?(\/\*|#|<!--)\s?@(info[^*#<>]+|end|hide).?(\*\/|#|-->)\n?/g, '');
+}
+
 export class Code extends React.Component<React.PropsWithChildren<Props>> {
   componentDidMount() {
     this.runTippy();
@@ -171,10 +175,6 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
     };
   }
 
-  private cleanCopyValue(value: string) {
-    return value.replace(/ *(\/\*|#|<!--)+\s@.+(\*\/|-->|#)\r?\n/g, '');
-  }
-
   render() {
     // note(simek): MDX dropped `inlineCode` pseudo-tag, and we need to relay on `pre` and `code` now,
     // which results in this nesting mess, we should fix it in the future
@@ -215,7 +215,7 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
     return value?.title ? (
       <Snippet>
         <SnippetHeader title={value.title}>
-          <CopyAction text={this.cleanCopyValue(value.value)} />
+          <CopyAction text={cleanCopyValue(value.value)} />
         </SnippetHeader>
         <SnippetContent skipPadding>
           <pre css={STYLES_CODE_CONTAINER} {...attributes}>
