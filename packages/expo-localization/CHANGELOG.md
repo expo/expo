@@ -8,8 +8,8 @@
 
 ### 🐛 Bug fixes
 
-- Fixed invalid timezone returned for `getCalendars` on Web.
-- Fixed errors thrown on Play Console pre-launch report.
+- Fixed invalid timezone returned for `getCalendars` on Web. ([#22003](https://github.com/expo/expo/pull/22003) by [@aleqsio](https://github.com/aleqsio))
+- Fixed errors thrown on Play Console pre-launch report. ([#22003](https://github.com/expo/expo/pull/22003) by [@aleqsio](https://github.com/aleqsio))
 
 ### 💡 Others
 
