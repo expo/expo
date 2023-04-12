@@ -157,17 +157,25 @@ export async function exportFromServerAsync(
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
 
-  const manifest = await getExpoRoutesAsync(devServerManager);
+  const [manifest, resources, renderAsync] = await Promise.all([
+    getExpoRoutesAsync(devServerManager),
+    devServer.getStaticResourcesAsync({ mode: 'production' }),
+    devServer.getStaticRenderFunctionAsync({
+      mode: 'production',
+    }),
+  ]);
 
   debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
 
-  const resources = await devServer.getStaticResourcesAsync({ mode: 'production' });
-
   const files = await getFilesToExportFromServerAsync({
     manifest,
-    renderAsync(pathname: string) {
-      assert(devServer instanceof MetroBundlerDevServer);
-      return devServer.getStaticPageWithResourcesAsync(pathname, { mode: 'production', resources });
+    async renderAsync(pathname: string) {
+      const template = await renderAsync(pathname);
+      return devServer.composeResourcesWithHtml({
+        mode: 'production',
+        resources,
+        template,
+      });
     },
   });
 
@@ -177,7 +185,8 @@ export async function exportFromServerAsync(
 
   fs.mkdirSync(path.join(outputDir), { recursive: true });
 
-  Log.log(`Exporting ${files.size} files:`);
+  Log.log('');
+  Log.log(chalk.bold`Exporting ${files.size} files:`);
   await Promise.all(
     [...files.entries()]
       .sort(([a], [b]) => a.localeCompare(b))
@@ -189,4 +198,5 @@ export async function exportFromServerAsync(
         await fs.promises.writeFile(outputPath, contents);
       })
   );
+  Log.log('');
 }
