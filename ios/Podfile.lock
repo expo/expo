@@ -2196,7 +2196,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSecureStore (12.1.1):
     - ExpoModulesCore
-  - ExpoSharing (11.2.1):
+  - ExpoSharing (11.3.0):
     - ExpoModulesCore
   - ExpoSMS (11.2.1):
     - ExpoModulesCore
@@ -4761,7 +4761,7 @@ SPEC CHECKSUMS:
   ExpoPrint: a0d6f6817ccd072af447bc96b6122b8e7341332c
   ExpoRandom: 7ee07d62e7003b74d0536e0495e3a653fe1b2a74
   ExpoSecureStore: 22b2088cf8cb9d5a276d7a143fdd5b26f83cc601
-  ExpoSharing: 7cc49c2fda862eddc1578bb0e007fedf50bb35dc
+  ExpoSharing: 57e419f55ba242b0a9d255d6db829275a1ead586
   ExpoSMS: e4f3901fdb30ab239ee1172005dbe6634f2d6138
   ExpoSpeech: ed7dda8073aedbb3f0b0e79d16257534fddff516
   ExpoSQLite: 510412d853e6758df616d7d6168d39596efe5b61

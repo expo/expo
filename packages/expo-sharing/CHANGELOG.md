@@ -6,11 +6,15 @@
 
 ### 🎉 New features
 
-- On iOS, switched from using `UIDocumentInteractionController` to `UIActivityViewController` which provides more features. ([#22012](https://github.com/expo/expo/pull/22012) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 11.3.0 — 2023-04-12
+
+### 🎉 New features
+
+- On iOS, switched from using `UIDocumentInteractionController` to `UIActivityViewController` which provides more features. ([#22012](https://github.com/expo/expo/pull/22012) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 11.2.1 — 2023-02-09
 
