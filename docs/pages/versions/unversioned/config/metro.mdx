@@ -21,13 +21,13 @@ If you are migrating an older project to SDK 49 or above, then you should ignore
 
 Envrionment variables prefixed with `EXPO_PUBLIC_` will be exposed to the app at build-time. For example, `EXPO_PUBLIC_API_KEY` will be available as `process.env.EXPO_PUBLIC_API_KEY`.
 
-Envrionmnet variables will not be inlined in Node Modules.
+Environment variables will not be inlined in code inside of **node_modules**.
 
-For security purposes, client environment variables are inlined in the bundle, which means that `process.env` is not an iterable object, and you cannot dynamically access environment variables. Every variable must be explicitly defined. For example, `process.env.EXPO_PUBLIC_KEY` is valid, and `process.env['EXPO_PUBLIC_KEY']` is not.
+For security purposes, client environment variables are inlined in the bundle, which means that `process.env` is not an iterable object, and you cannot dynamically access environment variables. Every variable must be referenced as a static property in order for it to be inlined. For example, the expression `process.env.EXPO_PUBLIC_KEY` will be rewritten and `process.env[‘EXPO_PUBLIC_KEY’]` will not.
 
 - Client environment variables should not contain secrets as they will be viewable in plain-text format in the production binary.
-- Use client environment variables for partially protected values, such as public API keys you don't want to commit to GitHub.
-- Expo environment variables can be updated during `npx expo start` (without clearing the bundler cache). However, you'll need to modify and save an included source file to see the updates. You must also perform a client reload, as environment variables do not support Fast Refresh.
+- Use client environment variables for partially protected values, such as public API keys you don't want to commit to Git or hard-code in your app and that may change depending on the environment.
+- Expo environment variables can be updated while the development server (`npx expo start`) is running, without restarting or clearing the bundler cache — however, you'll need to modify and save an included source file to see the updates. You must also perform a client reload, as environment variables do not support Fast Refresh.
 
 {/* TODO: Usage in EAS */}
 
