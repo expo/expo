@@ -1,16 +1,16 @@
 {
   "name": "@expo/sandbox",
   "version": "0.0.0",
-  "main": "__generated__/AppEntry.js",
+  "main": "index.js",
   "scripts": {
     "start": "expo start",
     "android": "expo start --android",
     "ios": "expo start --ios",
-    "eject": "expo eject",
-    "postinstall": "expo-yarn-workspaces postinstall"
+    "eject": "expo eject"
   },
   "dependencies": {
     "expo": "~48.0.0-beta.0",
+    "expo-router": "^1.5.3",
     "react": "18.2.0",
     "react-native": "0.71.6"
   },

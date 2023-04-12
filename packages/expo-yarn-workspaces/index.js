@@ -23,7 +23,9 @@ exports.createMetroConfiguration = function createMetroConfiguration(projectPath
     // Remove the React Native reporter.
     reporter,
     ...defaultConfig
-  } = getDefaultConfig(projectPath);
+  } = getDefaultConfig(projectPath, {
+    isCSSEnabled: true,
+  });
 
   let watchFolders;
   let extraNodeModules;
