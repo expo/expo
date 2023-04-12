@@ -324,6 +324,15 @@ platform :android do
     )
   end
 
+  lane :upload_crashlytics_symbols do |flavor: "versioned"|
+    gradle(
+      project_dir: "android",
+      task: "app:uploadCrashlyticsSymbolFile",
+      flavor: flavor,
+      build_type: "Release",
+    )
+  end
+
   lane :prod_release do
     build_gradle = File.read("../android/app/build.gradle")
 

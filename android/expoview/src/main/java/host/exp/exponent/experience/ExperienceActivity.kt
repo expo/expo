@@ -23,6 +23,7 @@ import androidx.core.content.ContextCompat
 import com.facebook.react.ReactPackage
 import com.facebook.react.bridge.UiThreadUtil
 import com.facebook.soloader.SoLoader
+import com.google.firebase.crashlytics.FirebaseCrashlytics
 import de.greenrobot.event.EventBus
 import expo.modules.core.interfaces.Package
 import expo.modules.manifests.core.Manifest
@@ -170,6 +171,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       }
     }
 
+    FirebaseCrashlytics.getInstance().log("ExperienceActivity.manifestUrl: ${this.manifestUrl}")
     if (this.manifestUrl != null && shouldOpenImmediately) {
       val forceCache = intent.getBooleanExtra(KernelConstants.LOAD_FROM_CACHE_KEY, false)
       ExpoUpdatesAppLoader(
