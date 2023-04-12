@@ -32,6 +32,7 @@ import { typescriptTypeGeneration } from '../type-generation';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
+import { getStackFormattedLocation, symbolicateServerError } from './symbolicate';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -230,9 +231,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             res.end(content);
             return;
           } catch (error: any) {
-            console.error(error);
             res.setHeader('Content-Type', 'text/html');
-            res.end(getErrorResult(error));
+            res.end(await getErrorResult(this.projectRoot, devServerUrl, error));
           }
         });
       }
@@ -332,21 +332,135 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   }
 }
 
-function getErrorResult(error: Error) {
-  return `
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Error</title>
-  </head>
-  <body>
-    <h1>Failed to render static app</h1>
-    <pre>${error.stack}</pre>
-  </body>
-  </html>
-  `;
+import terminalLink from 'terminal-link';
+
+async function logMetroError(projectRoot: string, originUrl: string, error: Error) {
+  const stack = await symbolicateServerError(originUrl, error);
+  // console.log('stack', stack);
+
+  Log.error(chalk.red('Metro error:\n'));
+  Log.error(error.message);
+
+  if (stack.codeFrame) {
+    Log.error(stack.codeFrame.content);
+    Log.error(`  ${stack.codeFrame.location}`);
+  }
+
+  const stackProps = stack.stack.map((frame) => {
+    return {
+      title: frame.methodName,
+      subtitle: getStackFormattedLocation(projectRoot, frame),
+    };
+  });
+
+  stackProps.forEach((frame) => {
+    const position = terminalLink.isSupported
+      ? terminalLink(frame.subtitle, frame.subtitle)
+      : path.join(projectRoot, frame.subtitle);
+    Log.error(chalk.gray`  ${frame.title} ${position}`);
+  });
+}
+
+async function getErrorResult(projectRoot: string, originUrl: string, error: Error) {
+  try {
+    const stack = await symbolicateServerError(originUrl, error);
+    // console.log('stack', stack);
+
+    Log.error(chalk.red('Error while static rendering page:'));
+    Log.error(error.message);
+
+    if (stack.codeFrame) {
+      Log.error(stack.codeFrame.content);
+      Log.error(`  ${stack.codeFrame.location}`);
+    }
+
+    const stackProps = stack.stack.map((frame) => {
+      return {
+        title: frame.methodName,
+        subtitle: getStackFormattedLocation(projectRoot, frame),
+      };
+    });
+
+    stackProps.forEach((frame) => {
+      Log.error(chalk.gray`  ${frame.title} ${path.join(projectRoot, frame.subtitle)}`);
+    });
+
+    return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <title>Metro Error</title>
+      <style>
+        * {
+          box-sizing: border-box;
+          margin: 0;
+          padding: 0;
+        }
+        body {
+          font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell,
+            'Open Sans', 'Helvetica Neue', sans-serif;
+          font-size: 16px;
+          line-height: 1.5;
+          color: #222;
+          background-color: #fff;
+        }
+        h1 {
+          font-size: 2rem;
+          font-weight: 400;
+          margin-bottom: 1rem;
+        }
+        h2 {
+          font-size: 1.5rem;
+          font-weight: 400;
+          margin-bottom: 1rem;
+        }
+        li {
+          margin-bottom: 1rem;
+        }
+      </style>
+    </head>
+    <body>
+      <h1>Failed to render static app</h1>
+      <p>${error.message}</p>
+      <h2>Stack</h2>
+      <ul>
+        ${stackProps
+          .map(
+            (frame) => `
+          <li>
+            
+            <h3>${frame.title}</h3>
+            <p>${frame.subtitle}</p>
+          </li>
+        `
+          )
+          .join('')}
+      </ul>
+  
+    </body>
+    </html>
+    `;
+  } catch (error: any) {
+    Log.error('Error symbolicating stack');
+    Log.exception(error);
+
+    return `
+    <!DOCTYPE html>
+    <html lang="en">
+    <head>
+      <meta charset="utf-8">
+      <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
+      <title>Error</title>
+    </head>
+    <body>
+      <h1>Failed to render static app</h1>
+      <pre>${error.stack}</pre>
+    </body>
+    </html>
+    `;
+  }
 }
 
 export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
