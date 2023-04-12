@@ -253,7 +253,6 @@ const general = [
     makePage('guides/authentication.mdx'),
     makePage('guides/delaying-code.mdx'),
     makePage('guides/errors.mdx'),
-    makePage('guides/testing-with-jest.mdx'),
     makePage('guides/troubleshooting-proxies.mdx'),
     makePage('guides/sharing-preview-releases.mdx'),
     makePage('guides/using-hermes.mdx'),
