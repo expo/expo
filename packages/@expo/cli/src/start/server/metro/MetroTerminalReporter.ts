@@ -31,7 +31,6 @@ export class MetroTerminalReporter extends TerminalReporter {
   _getBundleStatusMessage(progress: BundleProgress, phase: BuildPhase): string {
     const platform = getPlatformTagForBuildDetails(progress.bundleDetails);
     const inProgress = phase === 'in_progress';
-
     if (!inProgress) {
       const status = phase === 'done' ? `Bundling complete ` : `Bundling failed `;
       const color = phase === 'done' ? chalk.green : chalk.red;

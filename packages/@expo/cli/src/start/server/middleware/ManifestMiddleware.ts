@@ -41,8 +41,6 @@ export function getEntryWithServerRoot(
   );
 }
 
-import { htmlFromSerialAssets } from '@expo/metro-config/build/serializer';
-
 export function getMetroServerRoot(projectRoot: string) {
   if (env.EXPO_USE_METRO_WORKSPACE_ROOT) {
     return getWorkspaceRoot(projectRoot) ?? projectRoot;
@@ -57,7 +55,7 @@ export function resolveMainModuleName(
   projectConfig: ProjectConfig,
   platform: string
 ): string {
-  let entryPoint = getEntryWithServerRoot(projectRoot, projectConfig, platform);
+  const entryPoint = getEntryWithServerRoot(projectRoot, projectConfig, platform);
 
   debug(`Resolved entry point: ${entryPoint} (project root: ${projectRoot})`);
 
@@ -238,6 +236,27 @@ export abstract class ManifestMiddleware<
     );
   }
 
+  public _getBundleUrlPath({
+    platform,
+    mainModuleName,
+  }: {
+    platform: string;
+    mainModuleName: string;
+  }): string {
+    const queryParams = new URLSearchParams({
+      platform: encodeURIComponent(platform),
+      dev: String(this.options.mode !== 'production'),
+      // TODO: Is this still needed?
+      hot: String(false),
+    });
+
+    if (this.options.minify) {
+      queryParams.append('minify', String(this.options.minify));
+    }
+
+    return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
+  }
+
   /** Log telemetry. */
   protected abstract trackManifest(version?: string): void;
 
@@ -301,21 +320,7 @@ export abstract class ManifestMiddleware<
     const platform = 'web';
     // Read from headers
     const mainModuleName = this.resolveMainModuleName(this.initialProjectConfig, platform);
-
-    return this._getBundleUrl({
-      platform,
-      mainModuleName,
-    });
-  }
-
-  public getWebBundleUrlPath() {
-    const platform = 'web';
-    // Read from headers
-    const mainModuleName = this.resolveMainModuleName(this.initialProjectConfig, platform);
-
-    return createBundleUrlPath({
-      mode: this.options.mode ?? 'development',
-      minify: this.options.minify,
+    return this._getBundleUrlPath({
       platform,
       mainModuleName,
     });
@@ -331,23 +336,12 @@ export abstract class ManifestMiddleware<
     // Read from headers
     const bundleUrl = this.getWebBundleUrl();
 
-    // Fetch the generated HTML from our custom Metro serializer
-    const results = await fetch(bundleUrl + '&serializer.export=html');
-
-    const txt = await results.json();
-    console.log('results', txt);
     res.setHeader('Content-Type', 'text/html');
 
     res.end(
-      htmlFromSerialAssets(txt, {
-        dev: this.options.mode !== 'production',
-        template: '',
-        bundleUrl: createBundleUrlPath({
-          platform: 'web',
-          mode: this.options.mode ?? 'development',
-          minify: this.options.minify,
-          mainModuleName: this.resolveMainModuleName(this.initialProjectConfig, 'web'),
-        }),
+      await createTemplateHtmlFromExpoConfigAsync(this.projectRoot, {
+        exp: this.initialProjectConfig.exp,
+        scripts: [bundleUrl],
       })
     );
   }

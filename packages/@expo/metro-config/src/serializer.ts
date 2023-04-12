@@ -187,6 +187,7 @@ function getDefaultSerializer(): Serializer {
       url.searchParams.get('platform') !== 'web' ||
       url.searchParams.get('serializer.export') !== 'html'
     ) {
+      console.log('return js:', options.sourceUrl);
       // Default behavior if `serializer.export=html` is not present in the URL.
       return bundleToString(bundle).code;
     }
@@ -196,7 +197,7 @@ function getDefaultSerializer(): Serializer {
       processModuleFilter: options.processModuleFilter,
     });
 
-    const jsCode = bundleToString(bundle).code;
+    const jsCode = ''; //bundleToString(bundle).code;
     const jsAsset: SerialAsset = {
       filename: options.dev
         ? 'index.js'
@@ -210,6 +211,7 @@ function getDefaultSerializer(): Serializer {
       source: jsCode,
     };
 
+    console.log('return html:', options.sourceUrl);
     return JSON.stringify([jsAsset, ...cssDeps]);
   };
 }
@@ -264,35 +266,16 @@ export function htmlFromSerialAssets(
   const jsAssets = assets.filter((asset) => asset.type === 'js');
 
   const scripts = bundleUrl
-    ? `<script src="${bundleUrl}"></script>`
+    ? `<script src="${bundleUrl}" defer></script>`
     : jsAssets
         .map(({ filename }) => {
-          return `<script src="${filename}"></script>`;
+          return `<script src="${filename}" defer></script>`;
         })
         .join('');
-  // const script = '<script>' + bundleToString(bundle).code + '\n</script>';
 
-  if (template) {
-    return template
-      .replace('</head>', `${styleString}</head>`)
-      .replace('</body>', `${scripts}</body>`);
-  }
-
-  // TODO: Render this statically
-  return `<!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8">
-    <meta http-equiv="X-UA-Compatible" content="IE=edge">
-    <meta name="viewport" content="width=device-width,initial-scale=1,minimum-scale=1,maximum-scale=1.00001,viewport-fit=cover">
-    <style data-id="expo-reset">#root,body{display:flex}#root,body,html{width:100%;-webkit-overflow-scrolling:touch;margin:0;padding:0;min-height:100%}#root{flex-shrink:0;flex-basis:auto;flex-grow:1;flex:1}html{scroll-behavior:smooth;-webkit-text-size-adjust:100%;height:calc(100% + env(safe-area-inset-top))}body{overflow-y:auto;overscroll-behavior-y:none;text-rendering:optimizeLegibility;-webkit-font-smoothing:antialiased;-moz-osx-font-smoothing:grayscale;-ms-overflow-style:scrollbar}</style>
-    ${styleString}
-  </head>
-  <body>
-    <div id="root"></div>
-    ${scripts}
-  </body>
-</html>`;
+  return template
+    .replace('</head>', `${styleString}</head>`)
+    .replace('</body>', `${scripts}\n</body>`);
 }
 
 // <link rel="preload" href="/_expo/static/css/xxxxxx.css" as="style">
