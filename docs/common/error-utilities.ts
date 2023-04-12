@@ -159,6 +159,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/expo-cli/': '/more/expo-cli/',
   '/versions/latest/workflow/expo-cli/': '/more/expo-cli/',
   '/debugging/': '/debugging/runtime-issue/',
+  '/guides/testing-with-jest/': '/develop/unit-testing/',
 
   // Old redirects
   '/introduction/project-lifecycle/': '/introduction/managed-vs-bare/',
