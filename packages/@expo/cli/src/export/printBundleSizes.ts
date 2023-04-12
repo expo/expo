@@ -16,12 +16,12 @@ export function printBundleSizes(bundles: Partial<Record<Platform, BundleOutput>
     Pick<BundleOutput, 'hermesBytecodeBundle' | 'code' | 'hermesSourcemap' | 'map'>
   ][]) {
     if (bundleOutput.hermesBytecodeBundle) {
-      files.push([chalk.bold(`index.${platform}.js (Hermes)`), bundleOutput.hermesBytecodeBundle]);
+      files.push([chalk.bold(`index.${platform}.hbc`), bundleOutput.hermesBytecodeBundle]);
     } else if (bundleOutput.code) {
       files.push([chalk.bold(`index.${platform}.js`), bundleOutput.code]);
     }
     if (bundleOutput.hermesSourcemap) {
-      files.push([chalk.dim(`index.${platform}.js.map (Hermes)`), bundleOutput.hermesSourcemap]);
+      files.push([chalk.dim(`index.${platform}.hbc.map`), bundleOutput.hermesSourcemap]);
     } else if (bundleOutput.map) {
       files.push([chalk.dim(`index.${platform}.js.map`), bundleOutput.map]);
     }

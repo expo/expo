@@ -67,7 +67,7 @@ describe(writeBundlesAsync, () => {
       },
     });
 
-    expect(results.fileNames.ios).toBe('ios-5289df737df57326fcdd22597afb1fac.js');
+    expect(results.fileNames.ios).toBe('ios-5289df737df57326fcdd22597afb1fac.hbc');
     expect(results.hashes).toStrictEqual({
       ios: expect.any(String),
     });
