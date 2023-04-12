@@ -8,6 +8,7 @@ import expo.modules.core.errors.InvalidArgumentException
 import expo.modules.interfaces.permissions.Permissions
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.Exceptions
+import expo.modules.kotlin.functions.Queues
 import expo.modules.kotlin.modules.Module
 import expo.modules.kotlin.modules.ModuleDefinition
 import kotlin.math.roundToInt
@@ -27,32 +28,23 @@ class BrightnessModule : Module() {
       Permissions.getPermissionsWithPermissionsManager(appContext.permissions, promise, Manifest.permission.WRITE_SETTINGS)
     }
 
-    AsyncFunction("setBrightnessAsync") { brightnessValue: Float, promise: Promise ->
-      currentActivity.runOnUiThread {
-        try {
-          val lp = currentActivity.window.attributes
-          lp.screenBrightness = brightnessValue
-          currentActivity.window.attributes = lp // must be done on UI thread
-          promise.resolve(null)
-        } catch (e: Exception) {
-          promise.reject(SetBrightnessException())
-        }
-      }
-    }
+    AsyncFunction("setBrightnessAsync") { brightnessValue: Float ->
+      val lp = currentActivity.window.attributes
+      lp.screenBrightness = brightnessValue
+      currentActivity.window.attributes = lp // must be done on UI thread
+    }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("getBrightnessAsync") { promise: Promise ->
-      currentActivity.runOnUiThread {
-        val lp = currentActivity.window.attributes
-        val brightness = if (lp.screenBrightness == WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE) {
-          // system brightness is not overridden by the current activity, so just resolve with it
-          getSystemBrightness()
-        } else {
-          lp.screenBrightness
-        }
-
-        promise.resolve(brightness)
+    AsyncFunction("getBrightnessAsync") {
+      val lp = currentActivity.window.attributes
+      val brightness = if (lp.screenBrightness == WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE) {
+        // system brightness is not overridden by the current activity, so just resolve with it
+        getSystemBrightness()
+      } else {
+        lp.screenBrightness
       }
-    }
+
+      return@AsyncFunction brightness
+    }.runOnQueue(Queues.MAIN)
 
     AsyncFunction("getSystemBrightnessAsync") {
       return@AsyncFunction getSystemBrightness()
@@ -77,20 +69,16 @@ class BrightnessModule : Module() {
       )
     }
 
-    AsyncFunction("restoreSystemBrightnessAsync") {
-      currentActivity.runOnUiThread {
-        val lp = currentActivity.window.attributes
-        lp.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
-        currentActivity.window.attributes = lp // must be done on UI thread
-      }
-    }
+    AsyncFunction<Unit>("restoreSystemBrightnessAsync") {
+      val lp = currentActivity.window.attributes
+      lp.screenBrightness = WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
+      currentActivity.window.attributes = lp // must be done on UI thread
+    }.runOnQueue(Queues.MAIN)
 
-    AsyncFunction("isUsingSystemBrightnessAsync") { promise: Promise ->
-      currentActivity.runOnUiThread {
-        val lp = currentActivity.window.attributes
-        promise.resolve(lp.screenBrightness == WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE)
-      }
-    }
+    AsyncFunction("isUsingSystemBrightnessAsync") {
+      val lp = currentActivity.window.attributes
+      return@AsyncFunction lp.screenBrightness == WindowManager.LayoutParams.BRIGHTNESS_OVERRIDE_NONE
+    }.runOnQueue(Queues.MAIN)
 
     AsyncFunction("getSystemBrightnessModeAsync") {
       val brightnessMode = Settings.System.getInt(
