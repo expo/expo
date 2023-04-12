@@ -32,6 +32,7 @@ import { typescriptTypeGeneration } from '../type-generation';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
+import { htmlFromSerialAssets } from '@expo/metro-config/build/serializer';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -200,7 +201,16 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
           const location = new URL(req.url, devServerUrl);
 
-          try {
+          const bundleResources = async () => {
+            const bundleUrl = manifestMiddleware.getWebBundleUrl();
+
+            // Fetch the generated HTML from our custom Metro serializer
+            const results = await fetch(bundleUrl + '&_type=html');
+
+            return await results.json();
+          };
+
+          const bundleStaticHtml = async (): Promise<string> => {
             const { getStaticContent } = await getStaticRenderFunctions(
               this.projectRoot,
               devServerUrl,
@@ -212,18 +222,35 @@ export class MetroBundlerDevServer extends BundlerDevServer {
               }
             );
 
-            let content = await getStaticContent(location);
+            return await getStaticContent(location);
+          };
 
+          try {
+            const [resources, staticHtml] = await Promise.all([
+              bundleResources(),
+              bundleStaticHtml(),
+            ]);
+
+            let content = staticHtml;
             //TODO: Not this -- disable injection some other way
             if (options.mode !== 'production') {
-              // Add scripts for rehydration
-              // TODO: bundle split
-              content = content.replace(
-                '</body>',
-                [`<script src="${manifestMiddleware.getWebBundleUrl()}" defer></script>`].join(
-                  '\n'
-                ) + '</body>'
-              );
+              // Read from headers
+              const bundleUrlPath = manifestMiddleware.getWebBundleUrlPath();
+
+              content = htmlFromSerialAssets(resources, {
+                dev: options.mode === 'development',
+                template: staticHtml,
+                bundleUrl: bundleUrlPath,
+              });
+
+              // // Add scripts for rehydration
+              // // TODO: bundle split
+              // content = content.replace(
+              //   '</body>',
+              //   [`<script src="${manifestMiddleware.getWebBundleUrl()}" defer></script>`].join(
+              //     '\n'
+              //   ) + '</body>'
+              // );
             }
 
             res.setHeader('Content-Type', 'text/html');

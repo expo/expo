@@ -269,7 +269,7 @@ export function writeSerialAssets(assets: SerialAsset[], { outputDir }: { output
 
 export function htmlFromSerialAssets(
   assets: SerialAsset[],
-  { dev, bundleUrl }: { dev: boolean; bundleUrl: string }
+  { dev, template, bundleUrl }: { dev: boolean; template: string; bundleUrl: string }
 ) {
   // Combine the CSS modules into tags that have hot refresh data attributes.
   const styleString = assets
@@ -297,6 +297,12 @@ export function htmlFromSerialAssets(
         })
         .join('');
   // const script = '<script>' + bundleToString(bundle).code + '\n</script>';
+
+  if (template) {
+    return template
+      .replace('</head>', `${styleString}</head>`)
+      .replace('</body>', `${scripts}</body>`);
+  }
 
   // TODO: Render this statically
   return `<!DOCTYPE html>

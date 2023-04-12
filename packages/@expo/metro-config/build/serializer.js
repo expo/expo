@@ -214,7 +214,7 @@ function writeSerialAssets(assets, { outputDir }) {
     });
 }
 exports.writeSerialAssets = writeSerialAssets;
-function htmlFromSerialAssets(assets, { dev, bundleUrl }) {
+function htmlFromSerialAssets(assets, { dev, template, bundleUrl }) {
     // Combine the CSS modules into tags that have hot refresh data attributes.
     const styleString = assets
         .filter((asset) => asset.type === 'css')
@@ -240,6 +240,11 @@ function htmlFromSerialAssets(assets, { dev, bundleUrl }) {
         })
             .join('');
     // const script = '<script>' + bundleToString(bundle).code + '\n</script>';
+    if (template) {
+        return template
+            .replace('</head>', `${styleString}</head>`)
+            .replace('</body>', `${scripts}</body>`);
+    }
     // TODO: Render this statically
     return `<!DOCTYPE html>
 <html>

@@ -286,6 +286,17 @@ export abstract class ManifestMiddleware<
     });
   }
 
+  public getWebBundleUrlPath() {
+    const platform = 'web';
+    // Read from headers
+    const mainModuleName = this.resolveMainModuleName(this.initialProjectConfig, platform);
+
+    return this._getBundleUrlPath({
+      platform,
+      mainModuleName,
+    });
+  }
+
   /**
    * Web platforms should create an index.html response using the same script resolution as native.
    *

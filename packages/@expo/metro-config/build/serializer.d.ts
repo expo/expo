@@ -19,8 +19,9 @@ export declare function createSerializerFromSerialProcessors(processors: (Serial
 export declare function writeSerialAssets(assets: SerialAsset[], { outputDir }: {
     outputDir: string;
 }): void;
-export declare function htmlFromSerialAssets(assets: SerialAsset[], { dev, bundleUrl }: {
+export declare function htmlFromSerialAssets(assets: SerialAsset[], { dev, template, bundleUrl }: {
     dev: boolean;
+    template: string;
     bundleUrl: string;
 }): string;
 export declare function appendLinkToHtml(html: string, links: {
