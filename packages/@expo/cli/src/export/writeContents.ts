@@ -100,7 +100,13 @@ export async function writeSourceMapsAsync({
         const mapName = `${platform}-${hash}.map`;
         await fs.writeFile(path.join(outputDir, mapName), sourceMap);
 
-        const jsBundleFileName = fileNames?.[platform] ?? createBundleFileName({ platform, hash });
+        const jsBundleFileName =
+          fileNames?.[platform] ??
+          createBundleFileName({
+            platform,
+            format: bundle.hermesBytecodeBundle ? 'bytecode' : 'javascript',
+            hash,
+          });
         const jsPath = path.join(outputDir, jsBundleFileName);
 
         // Add correct mapping to sourcemap paths
