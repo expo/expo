@@ -11,6 +11,7 @@ const debug = require('debug')('expo:export:write') as typeof console.log;
 
 /**
  * @param props.platform native platform for the bundle
+ * @param props.format extension to use for the name
  * @param props.hash crypto hash for the bundle contents
  * @returns filename for the JS bundle.
  */
