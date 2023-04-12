@@ -14,8 +14,16 @@ const debug = require('debug')('expo:export:write') as typeof console.log;
  * @param props.hash crypto hash for the bundle contents
  * @returns filename for the JS bundle.
  */
-function createBundleFileName({ platform, hash }: { platform: string; hash: string }): string {
-  return `${platform}-${hash}.js`;
+function createBundleFileName({
+  platform,
+  format,
+  hash,
+}: {
+  platform: string;
+  format: 'javascript' | 'bytecode';
+  hash: string;
+}): string {
+  return `${platform}-${hash}.${format === 'javascript' ? 'js' : 'hbc'}`;
 }
 
 /**
@@ -42,7 +50,11 @@ export async function writeBundlesAsync({
   ][]) {
     const bundle = bundleOutput.hermesBytecodeBundle ?? bundleOutput.code;
     const hash = createBundleHash(bundle);
-    const fileName = createBundleFileName({ platform, hash });
+    const fileName = createBundleFileName({
+      platform,
+      format: bundleOutput.hermesBytecodeBundle ? 'bytecode' : 'javascript',
+      hash,
+    });
 
     hashes[platform] = hash;
     fileNames[platform] = fileName;
