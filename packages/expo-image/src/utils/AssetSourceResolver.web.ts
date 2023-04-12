@@ -15,7 +15,11 @@ function getScaledAssetPath(asset): string {
   const scale = AssetSourceResolver.pickScale(asset.scales, PixelRatio.get());
   const scaleSuffix = scale === 1 ? '' : '@' + scale + 'x';
   const type = !asset.type ? '' : `.${asset.type}`;
-  return asset.httpServerLocation + '/' + asset.name + scaleSuffix + type;
+  if (__DEV__) {
+    return asset.httpServerLocation + '/' + asset.name + scaleSuffix + type;
+  } else {
+    return asset.httpServerLocation.replace(/\.\.\//g, '_') + '/' + asset.name + scaleSuffix + type;
+  }
 }
 
 export default class AssetSourceResolver {
@@ -31,11 +35,7 @@ export default class AssetSourceResolver {
     jsbundleUrl: string | undefined | null,
     asset: PackagerAsset
   ) {
-    if (!serverUrl) {
-      throw new Error('Web assets require a server URL');
-    }
-
-    this.serverUrl = serverUrl;
+    this.serverUrl = serverUrl || 'https://expo.dev';
     this.jsbundleUrl = null;
     this.asset = asset;
   }
@@ -61,7 +61,10 @@ export default class AssetSourceResolver {
     const fromUrl = new URL(getScaledAssetPath(this.asset), this.serverUrl);
     fromUrl.searchParams.set('platform', Platform.OS);
     fromUrl.searchParams.set('hash', this.asset.hash);
-    return this.fromSource(fromUrl.toString());
+    return this.fromSource(
+      // Relative on web
+      fromUrl.toString().replace(fromUrl.origin, '')
+    );
   }
 
   fromSource(source: string): ResolvedAssetSource {
