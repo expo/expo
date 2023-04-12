@@ -169,30 +169,3 @@ export async function getStaticRenderFunctions(
   );
   return profile(requireString, 'eval-metro-bundle')(scriptContents);
 }
-
-export async function getStaticPageContentsAsync(
-  projectRoot: string,
-  devServerUrl: string,
-  options: StaticRenderOptions = {}
-) {
-  const scriptContents = await getStaticRenderFunctionsContentAsync(
-    projectRoot,
-    devServerUrl,
-    options
-  );
-
-  const {
-    getStaticContent,
-    // getDataLoader
-  } = profile(requireString, 'eval-metro-bundle')(scriptContents);
-
-  return function loadPageAsync(url: URL) {
-    // const fetchData = getDataLoader(url);
-
-    return {
-      fetchData: false,
-      scriptContents,
-      renderAsync: () => getStaticContent(url),
-    };
-  };
-}

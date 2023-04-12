@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import { SerialAsset } from '@expo/metro-config/build/getCssDeps';
 import assert from 'assert';
 import chalk from 'chalk';
 import fs from 'fs';
@@ -15,11 +16,10 @@ import { Log } from '../log';
 import { DevServerManager } from '../start/server/DevServerManager';
 import { MetroBundlerDevServer } from '../start/server/metro/MetroBundlerDevServer';
 import { stripAnsi } from '../utils/ansi';
-import { appendLinkToHtml, appendScriptsToHtml } from './html';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
-type Options = { outputDir: string; scripts: string[]; cssLinks: string[]; minify: boolean };
+type Options = { outputDir: string; minify: boolean };
 
 /** @private */
 export async function unstable_exportStaticAsync(projectRoot: string, options: Options) {
@@ -56,18 +56,10 @@ function matchGroupName(name: string): string | undefined {
 
 export async function getFilesToExportFromServerAsync({
   manifest,
-  scripts,
-  cssLinks,
   renderAsync,
 }: {
   manifest: any;
-  scripts: string[];
-  cssLinks: string[];
-  renderAsync: (pathname: string) => Promise<{
-    fetchData: boolean;
-    scriptContents: string;
-    renderAsync: () => any;
-  }>;
+  renderAsync: (pathname: string) => Promise<string>;
 }): Promise<Map<string, string>> {
   // name : contents
   const files = new Map<string, string>();
@@ -98,29 +90,14 @@ export async function getFilesToExportFromServerAsync({
       try {
         const data = await renderAsync(pathname);
 
-        if (data.fetchData) {
-          // console.log('ssr:', pathname);
-        } else {
-          files.set(
-            outputPath,
-            appendLinkToHtml(
-              appendScriptsToHtml(data.renderAsync(), scripts),
-              cssLinks
-                .map((href) => [
-                  {
-                    as: 'style',
-                    rel: 'preload',
-                    href,
-                  },
-                  {
-                    rel: 'stylesheet',
-                    href,
-                  },
-                ])
-                .flat()
-            )
-          );
-        }
+        files.set(outputPath, data);
+
+        // data.resources.forEach((asset) => {
+        //   // There are going to be a lot of duplicates until we have bundle splitting.
+        //   if (!files.has(asset.filename)) {
+        //     files.set(asset.filename, asset.source);
+        //   }
+        // });
       } catch (e: any) {
         // TODO: Format Metro error message better...
         Log.error('Failed to statically render route:', pathname);
@@ -175,22 +152,27 @@ export async function getFilesToExportFromServerAsync({
 /** Perform all fs commits */
 export async function exportFromServerAsync(
   devServerManager: DevServerManager,
-  { outputDir, scripts, cssLinks }: Options
+  { outputDir }: Options
 ): Promise<void> {
   const devServer = devServerManager.getDefaultDevServer();
+  assert(devServer instanceof MetroBundlerDevServer);
 
   const manifest = await getExpoRoutesAsync(devServerManager);
 
   debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
 
+  const resources = await devServer.getStaticResourcesAsync({ mode: 'production' });
+
   const files = await getFilesToExportFromServerAsync({
     manifest,
-    scripts,
-    cssLinks,
     renderAsync(pathname: string) {
       assert(devServer instanceof MetroBundlerDevServer);
-      return devServer.getStaticPageAsync(pathname, { mode: 'production' });
+      return devServer.getStaticPageWithResourcesAsync(pathname, { mode: 'production', resources });
     },
+  });
+
+  resources.forEach((resource) => {
+    files.set(resource.filename, resource.source);
   });
 
   fs.mkdirSync(path.join(outputDir), { recursive: true });

@@ -51,6 +51,44 @@ export function getMetroServerRoot(projectRoot: string) {
   return projectRoot;
 }
 
+/** Get the main entry module ID (file) relative to the project root. */
+export function resolveMainModuleName(
+  projectRoot: string,
+  projectConfig: ProjectConfig,
+  platform: string
+): string {
+  let entryPoint = getEntryWithServerRoot(projectRoot, projectConfig, platform);
+
+  debug(`Resolved entry point: ${entryPoint} (project root: ${projectRoot})`);
+
+  return stripExtension(entryPoint, 'js');
+}
+
+export function createBundleUrlPath({
+  platform,
+  mainModuleName,
+  mode,
+  minify = mode === 'production',
+}: {
+  platform: string;
+  mainModuleName: string;
+  mode: string;
+  minify?: boolean;
+}): string {
+  const queryParams = new URLSearchParams({
+    platform: encodeURIComponent(platform),
+    dev: String(mode !== 'production'),
+    // TODO: Is this still needed?
+    hot: String(false),
+  });
+
+  if (minify) {
+    queryParams.append('minify', String(minify));
+  }
+
+  return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
+}
+
 /** Info about the computer hosting the dev server. */
 export interface HostInfo {
   host: string;
@@ -184,7 +222,12 @@ export abstract class ManifestMiddleware<
     hostname?: string | null;
     mainModuleName: string;
   }): string {
-    const path = this._getBundleUrlPath({ platform, mainModuleName });
+    const path = createBundleUrlPath({
+      mode: this.options.mode ?? 'development',
+      minify: this.options.minify,
+      platform,
+      mainModuleName,
+    });
 
     return (
       this.options.constructUrl({
@@ -193,27 +236,6 @@ export abstract class ManifestMiddleware<
         hostname,
       }) + path
     );
-  }
-
-  public _getBundleUrlPath({
-    platform,
-    mainModuleName,
-  }: {
-    platform: string;
-    mainModuleName: string;
-  }): string {
-    const queryParams = new URLSearchParams({
-      platform: encodeURIComponent(platform),
-      dev: String(this.options.mode !== 'production'),
-      // TODO: Is this still needed?
-      hot: String(false),
-    });
-
-    if (this.options.minify) {
-      queryParams.append('minify', String(this.options.minify));
-    }
-
-    return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
   }
 
   /** Log telemetry. */
@@ -291,7 +313,9 @@ export abstract class ManifestMiddleware<
     // Read from headers
     const mainModuleName = this.resolveMainModuleName(this.initialProjectConfig, platform);
 
-    return this._getBundleUrlPath({
+    return createBundleUrlPath({
+      mode: this.options.mode ?? 'development',
+      minify: this.options.minify,
       platform,
       mainModuleName,
     });
@@ -317,8 +341,11 @@ export abstract class ManifestMiddleware<
     res.end(
       htmlFromSerialAssets(txt, {
         dev: this.options.mode !== 'production',
-        bundleUrl: this._getBundleUrlPath({
+        template: '',
+        bundleUrl: createBundleUrlPath({
           platform: 'web',
+          mode: this.options.mode ?? 'development',
+          minify: this.options.minify,
           mainModuleName: this.resolveMainModuleName(this.initialProjectConfig, 'web'),
         }),
       })

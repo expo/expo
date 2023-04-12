@@ -3,7 +3,7 @@ var __importDefault = (this && this.__importDefault) || function (mod) {
     return (mod && mod.__esModule) ? mod : { "default": mod };
 };
 Object.defineProperty(exports, "__esModule", { value: true });
-exports.getCssModules = void 0;
+exports.hashString = exports.getFileName = exports.fileNameFromContents = exports.getCssModules = void 0;
 const crypto_1 = __importDefault(require("crypto"));
 const js_1 = require("metro/src/DeltaBundler/Serializers/helpers/js");
 const path_1 = __importDefault(require("path"));
@@ -22,7 +22,10 @@ function getCssModules(dependencies, { processModuleFilter, projectRoot }) {
                 // Consistent location
                 STATIC_EXPORT_DIRECTORY, 
                 // Hashed file contents + name for caching
-                getFileName(module.path) + '-' + hashString(module.path + contents) + '.css');
+                fileNameFromContents({
+                    filepath: module.path,
+                    src: contents,
+                }) + '.css');
                 const originFilename = path_1.default.relative(projectRoot, module.path);
                 assets.push({
                     type: 'css',
@@ -51,9 +54,15 @@ function getCssMetadata(module) {
 }
 // s = static
 const STATIC_EXPORT_DIRECTORY = '_expo/static/css';
+function fileNameFromContents({ filepath, src }) {
+    return getFileName(filepath) + '-' + hashString(filepath + src);
+}
+exports.fileNameFromContents = fileNameFromContents;
 function getFileName(module) {
     return path_1.default.basename(module).replace(/\.[^.]+$/, '');
 }
+exports.getFileName = getFileName;
 function hashString(str) {
     return crypto_1.default.createHash('md5').update(str).digest('hex');
 }
+exports.hashString = hashString;

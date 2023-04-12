@@ -52,7 +52,10 @@ export function getCssModules(
           // Consistent location
           STATIC_EXPORT_DIRECTORY,
           // Hashed file contents + name for caching
-          getFileName(module.path) + '-' + hashString(module.path + contents) + '.css'
+          fileNameFromContents({
+            filepath: module.path,
+            src: contents,
+          }) + '.css'
         );
         const originFilename = path.relative(projectRoot, module.path);
         assets.push({
@@ -87,10 +90,14 @@ function getCssMetadata(module: Module): MetroModuleCSSMetadata | null {
 // s = static
 const STATIC_EXPORT_DIRECTORY = '_expo/static/css';
 
-function getFileName(module: string) {
+export function fileNameFromContents({ filepath, src }: { filepath: string; src: string }): string {
+  return getFileName(filepath) + '-' + hashString(filepath + src);
+}
+
+export function getFileName(module: string) {
   return path.basename(module).replace(/\.[^.]+$/, '');
 }
 
-function hashString(str: string) {
+export function hashString(str: string) {
   return crypto.createHash('md5').update(str).digest('hex');
 }

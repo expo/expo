@@ -65,51 +65,55 @@ export async function exportAppAsync(
     projectRoot,
     { resetCache: !!clear },
     {
-      platforms,
+      platforms: env.EXPO_USE_STATIC
+        ? platforms.filter((platform) => platform !== 'web')
+        : platforms,
       dev,
       // TODO: Disable source map generation if we aren't outputting them.
     }
   );
 
-  // Log bundle size info to the user
-  printBundleSizes(
-    Object.fromEntries(
-      Object.entries(bundles).map(([key, value]) => {
-        if (!dumpSourcemap) {
-          return [
-            key,
-            {
-              ...value,
-              // Remove source maps from the bundles if they aren't going to be written.
-              map: undefined,
-            },
-          ];
-        }
+  const bundleEntries = Object.entries(bundles);
+  if (bundleEntries.length) {
+    // Log bundle size info to the user
+    printBundleSizes(
+      Object.fromEntries(
+        bundleEntries.map(([key, value]) => {
+          if (!dumpSourcemap) {
+            return [
+              key,
+              {
+                ...value,
+                // Remove source maps from the bundles if they aren't going to be written.
+                map: undefined,
+              },
+            ];
+          }
 
-        return [key, value];
-      })
-    )
-  );
+          return [key, value];
+        })
+      )
+    );
+  }
 
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
   const { hashes, fileNames } = await writeBundlesAsync({ bundles, outputDir: bundlesPath });
 
   Log.log('Finished saving JS Bundles');
-  const cssLinks = await exportCssAssetsAsync({
-    outputDir,
-    bundles,
-  });
-  if (fileNames.web) {
+
+  if (platforms.includes('web')) {
     if (env.EXPO_USE_STATIC) {
       await unstable_exportStaticAsync(projectRoot, {
         outputDir: outputPath,
-        scripts: [`/bundles/${fileNames.web}`],
-        cssLinks,
         // TODO: Expose
         minify: true,
       });
       Log.log('Finished saving static files');
     } else {
+      const cssLinks = await exportCssAssetsAsync({
+        outputDir,
+        bundles,
+      });
       // Generate SPA-styled HTML file.
       // If web exists, then write the template HTML file.
       await fs.promises.writeFile(
