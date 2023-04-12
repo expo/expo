@@ -243,6 +243,8 @@ dependencies {
   // Our dependencies
   compileOnly 'org.glassfish:javax.annotation:3.1.1'
   api 'de.greenrobot:eventbus:2.4.0'
+  api 'com.google.firebase:firebase-crashlytics:18.3.6'
+  api 'com.google.firebase:firebase-crashlytics-ndk:18.3.6'
   api "androidx.room:room-runtime:2.1.0"
 
   api("com.facebook.fresco:animated-gif:${reactProperties.getProperty('FRESCO_VERSION')}")

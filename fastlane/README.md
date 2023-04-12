@@ -92,6 +92,14 @@ For _fastlane_ installation instructions, see [Installing _fastlane_](https://do
 
 
 
+### android upload_crashlytics_symbols
+
+```sh
+[bundle exec] fastlane android upload_crashlytics_symbols
+```
+
+
+
 ### android prod_release
 
 ```sh
