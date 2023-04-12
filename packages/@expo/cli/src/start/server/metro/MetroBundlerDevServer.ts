@@ -169,14 +169,23 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     bundleUrl.searchParams.set('platform', 'web');
     bundleUrl.searchParams.set('dev', String(isDev));
     bundleUrl.searchParams.set('minify', String(!isDev));
-    bundleUrl.searchParams.set('_type', 'html');
-    console.log('bundle res:', bundleUrl.toString());
+    bundleUrl.searchParams.set('serializer.export', 'html');
     // bundleUrl.searchParams.set('resolver.environment', 'node');
 
     // Fetch the generated HTML from our custom Metro serializer
     const results = await fetch(bundleUrl.toString());
 
-    return await results.json();
+    const txt = await results.text();
+
+    try {
+      return JSON.parse(txt);
+    } catch (error) {
+      console.log('error', error);
+      console.log('txt', txt);
+      throw error;
+    }
+
+    //   return await results.json();
   }
 
   async getStaticPageAsync(
@@ -203,7 +212,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // Fetch the generated HTML from our custom Metro serializer
       const results = await fetch(bundleUrl.toString());
 
-      return await results.json();
+      const txt = await results.text();
+
+      try {
+        return JSON.parse(txt);
+      } catch (error) {
+        console.log('error', error);
+        console.log('txt', txt);
+        throw error;
+      }
     };
 
     const bundleStaticHtml = async (): Promise<string> => {
