@@ -114,7 +114,7 @@
     "expo-screen-orientation": "~5.1.0",
     "expo-secure-store": "~12.1.0",
     "expo-sensors": "~12.1.0",
-    "expo-sharing": "~11.2.0",
+    "expo-sharing": "~11.3.0",
     "expo-sms": "~11.2.0",
     "expo-speech": "~11.1.0",
     "expo-splash-screen": "^0.18.0",
