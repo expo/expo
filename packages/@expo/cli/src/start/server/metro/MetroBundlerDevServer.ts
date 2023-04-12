@@ -198,7 +198,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       bundleUrl.searchParams.set('platform', 'web');
       bundleUrl.searchParams.set('dev', String(isDev));
       bundleUrl.searchParams.set('minify', String(!isDev));
-      bundleUrl.searchParams.set('_type', 'html');
+      bundleUrl.searchParams.set('serializer.export', 'html');
 
       // Fetch the generated HTML from our custom Metro serializer
       const results = await fetch(bundleUrl.toString());
@@ -338,7 +338,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           if (req.url.endsWith('.ico')) {
             return next();
           }
-          if (req.url.includes('_type=html')) {
+          if (req.url.includes('serializer.export=html')) {
             return next();
           }
 

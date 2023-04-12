@@ -332,7 +332,7 @@ export abstract class ManifestMiddleware<
     const bundleUrl = this.getWebBundleUrl();
 
     // Fetch the generated HTML from our custom Metro serializer
-    const results = await fetch(bundleUrl + '&_type=html');
+    const results = await fetch(bundleUrl + '&serializer.export=html');
 
     const txt = await results.json();
     console.log('results', txt);

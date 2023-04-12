@@ -143,8 +143,9 @@ function getDefaultSerializer() {
             return (0, bundleToString_1.default)(bundle).code;
         }
         const url = new URL(options.sourceUrl, 'https://expo.dev');
-        if (url.searchParams.get('platform') !== 'web' || url.searchParams.get('_type') !== 'html') {
-            // Default behavior if `_type=html` is not present in the URL.
+        if (url.searchParams.get('platform') !== 'web' ||
+            url.searchParams.get('serializer.export') !== 'html') {
+            // Default behavior if `serializer.export=html` is not present in the URL.
             return (0, bundleToString_1.default)(bundle).code;
         }
         const cssDeps = (0, getCssDeps_1.getCssModules)(graph.dependencies, {

@@ -183,8 +183,11 @@ function getDefaultSerializer(): Serializer {
       return bundleToString(bundle).code;
     }
     const url = new URL(options.sourceUrl, 'https://expo.dev');
-    if (url.searchParams.get('platform') !== 'web' || url.searchParams.get('_type') !== 'html') {
-      // Default behavior if `_type=html` is not present in the URL.
+    if (
+      url.searchParams.get('platform') !== 'web' ||
+      url.searchParams.get('serializer.export') !== 'html'
+    ) {
+      // Default behavior if `serializer.export=html` is not present in the URL.
       return bundleToString(bundle).code;
     }
 
