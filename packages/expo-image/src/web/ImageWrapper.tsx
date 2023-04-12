@@ -125,7 +125,9 @@ const ImageWrapper = React.forwardRef(
         // eslint-disable-next-line react/no-unknown-property
         fetchpriority={getFetchPriorityFromImagePriority(priority || 'normal')}
         onLoad={(event) => {
-          events?.onLoad?.forEach((e) => e?.(event));
+          window.requestAnimationFrame(() => {
+            events?.onLoad?.forEach((e) => e?.(event));
+          });
         }}
         onTransitionEnd={() => events?.onTransitionEnd?.forEach((e) => e?.())}
         onError={() => events?.onError?.forEach((e) => e?.({ source: source || null }))}
