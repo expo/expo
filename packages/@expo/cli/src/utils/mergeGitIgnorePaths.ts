@@ -129,8 +129,6 @@ export function upsertGitIgnoreContents(
     const indexes = getGeneratedSectionIndexes(targetGitIgnore);
 
     contents = `${indexes.contents.slice(indexes.start + 3, indexes.end).join('\n')}\n${contents}`;
-
-    console.log(222, contents);
   }
 
   const merged = mergeGitIgnoreContents(targetGitIgnore, contents);
