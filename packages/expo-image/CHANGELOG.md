@@ -6,6 +6,7 @@
 
 ### 🎉 New features
 
+- [Web] Add support for static image responsiveness using `srcset` attributes.
 - Add prefetch implementation on web. ([#22630](https://github.com/expo/expo/pull/22630) by [@aleqsio](https://github.com/aleqsio))
 - Add `ImageBackground` component. ([#22347](https://github.com/expo/expo/pull/22347) by [@alanjhughes](https://github.com/alanjhughes))
 - Added support for React Native 0.72. ([#22588](https://github.com/expo/expo/pull/22588) by [@kudo](https://github.com/kudo))
