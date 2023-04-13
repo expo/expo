@@ -17,7 +17,7 @@ import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
-import { getStaticRenderFunctions, getStaticPageContentsAsync } from '../getStaticRenderFunctions';
+import { getStaticPageContentsAsync, getStaticRenderFunctions } from '../getStaticRenderFunctions';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
@@ -30,6 +30,7 @@ import { ServeStaticMiddleware } from '../middleware/ServeStaticMiddleware';
 import { ServerNext, ServerRequest, ServerResponse } from '../middleware/server.types';
 import { typescriptTypeGeneration } from '../type-generation';
 import { instantiateMetroAsync } from './instantiateMetro';
+import { getErrorOverlayHtmlAsync } from './metroErrorInterface';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
 
@@ -71,6 +72,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       environment: 'node',
     });
     return getManifest({ fetchData: true });
+  }
+
+  private async renderStaticErrorAsync(error: Error) {
+    return getErrorOverlayHtmlAsync({
+      error,
+      projectRoot: this.projectRoot,
+    });
   }
 
   async getStaticPageAsync(
@@ -139,6 +147,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // TODO: Deprecate this property when expo-cli goes away.
       unversioned: false,
     };
+
+    // Required for symbolication:
+    process.env.EXPO_DEV_SERVER_ORIGIN = `http://localhost:${options.port}`;
 
     const { metro, server, middleware, messageSocket } = await instantiateMetroAsync(
       this,
@@ -230,9 +241,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             res.end(content);
             return;
           } catch (error: any) {
-            console.error(error);
             res.setHeader('Content-Type', 'text/html');
-            res.end(getErrorResult(error));
+            res.end(await this.renderStaticErrorAsync(error));
           }
         });
       }
@@ -330,23 +340,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
   protected getConfigModuleIds(): string[] {
     return ['./metro.config.js', './metro.config.json', './rn-cli.config.js'];
   }
-}
-
-function getErrorResult(error: Error) {
-  return `
-  <!DOCTYPE html>
-  <html lang="en">
-  <head>
-    <meta charset="utf-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1, shrink-to-fit=no">
-    <title>Error</title>
-  </head>
-  <body>
-    <h1>Failed to render static app</h1>
-    <pre>${error.stack}</pre>
-  </body>
-  </html>
-  `;
 }
 
 export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
