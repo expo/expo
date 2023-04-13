@@ -97,7 +97,7 @@ async function ensureFileInRootDirectory(projectRoot: string, otherFile: string)
   return moduleId;
 }
 
-export async function requireFileContentsWithMetro(
+export async function createMetroEndpointAsync(
   projectRoot: string,
   devServerUrl: string,
   absoluteFilePath: string,
@@ -113,11 +113,22 @@ export async function requireFileContentsWithMetro(
   if (environment) {
     url += `&resolver.environment=${environment}&transform.environment=${environment}`;
   }
+  return url;
+}
+
+export async function requireFileContentsWithMetro(
+  projectRoot: string,
+  devServerUrl: string,
+  absoluteFilePath: string,
+  props: StaticRenderOptions = {}
+): Promise<string> {
+  const url = await createMetroEndpointAsync(projectRoot, devServerUrl, absoluteFilePath, props);
 
   const res = await fetch(url);
 
   // TODO: Improve error handling
   if (res.status === 500) {
+    console.log('res erro:', res);
     const text = await res.text();
     if (text.startsWith('{"originModulePath"')) {
       const errorObject = JSON.parse(text);
@@ -135,7 +146,7 @@ export async function requireFileContentsWithMetro(
   let bun = wrapBundle(content);
 
   // This exposes the entire environment to the bundle.
-  if (environment === 'node') {
+  if (props.environment === 'node') {
     bun = stripProcess(bun);
   }
 

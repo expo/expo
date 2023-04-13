@@ -10,6 +10,7 @@ import * as runtimeEnv from '@expo/env';
 import assert from 'assert';
 import chalk from 'chalk';
 import path from 'path';
+import resolveFrom from 'resolve-from';
 
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
@@ -17,7 +18,12 @@ import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
-import { getStaticRenderFunctions, getStaticPageContentsAsync } from '../getStaticRenderFunctions';
+import {
+  getStaticRenderFunctions,
+  getStaticPageContentsAsync,
+  requireFileContentsWithMetro,
+  createMetroEndpointAsync,
+} from '../getStaticRenderFunctions';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
@@ -32,7 +38,7 @@ import { typescriptTypeGeneration } from '../type-generation';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
-import { getStackFormattedLocation, symbolicateServerError } from './symbolicate';
+import { getStackFormattedLocation, parseErrorStack, symbolicateServerError } from './symbolicate';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -72,6 +78,93 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       environment: 'node',
     });
     return getManifest({ fetchData: true });
+  }
+
+  /** Get routes from Expo Router. */
+  async renderStaticErrorAsync(error: Error) {
+    const url = this.getDevServerUrl();
+    assert(url, 'Dev server must be started');
+    try {
+      const getHtml = async () => {
+        const stack = parseErrorStack(error.stack);
+        const { LogBoxLog } = require(resolveFrom(
+          this.projectRoot,
+          '@expo/metro-runtime/build/error-overlay/Data/LogBoxLog'
+        ));
+
+        const log = new LogBoxLog({
+          level: 'static',
+          message: {
+            content: error.message,
+            substitutions: [],
+          },
+          isComponentError: false,
+          stack,
+          category: 'static',
+          componentStack: [],
+        });
+
+        await new Promise((res) => log.symbolicate('stack', res));
+
+        const logBoxContext = {
+          selectedLogIndex: 0,
+          isDisabled: false,
+          logs: [log],
+        };
+        // const logBoxContext = {
+        //   selectedLogIndex: 0,
+        //   isDisabled: false,
+        //   logs: [
+        //     {
+        //       level: 'static',
+        //       message: {
+        //         content: error.message,
+        //         substitutions: [],
+        //       },
+        //       isComponentError: false,
+        //       stack,
+        //       category: 'static',
+        //       componentStack: [],
+        //     },
+        //   ],
+        // };
+
+        return `<html><head><style>#root,body,html{height:100%}body{overflow:hidden}#root{display:flex}</style></head><body><div id="root"></div><script id="_expo-static-error" type="application/json">${JSON.stringify(
+          logBoxContext
+        )}</script></body></html>`;
+        // const { renderErrorOverlayAsync } = await getStaticRenderFunctions(this.projectRoot, url, {
+        //   // Ensure the API Routes are included
+        //   environment: 'node',
+        // });
+        // return await renderErrorOverlayAsync({ error, onRetry: () => {} });
+        const { renderErrorOverlayAsync } = await getStaticRenderFunctions(this.projectRoot, url, {
+          // Ensure the API Routes are included
+          environment: 'node',
+        });
+        return await renderErrorOverlayAsync({ error, onRetry: () => {} });
+      };
+      const [html] = await Promise.all([getHtml()]);
+      const htmlWithJs = html.replace(
+        '</body>',
+        `<script src=${await createMetroEndpointAsync(
+          this.projectRoot,
+          '',
+          resolveFrom(this.projectRoot, 'expo-router/_error'),
+          {
+            dev: true,
+            platform: 'web',
+            minify: false,
+            environment: 'node',
+          }
+        )}></script></body>`
+      );
+
+      console.log(htmlWithJs);
+
+      return htmlWithJs;
+    } catch (error: any) {
+      return getErrorResult(this.projectRoot, url, error);
+    }
   }
 
   async getStaticPageAsync(
@@ -140,6 +233,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // TODO: Deprecate this property when expo-cli goes away.
       unversioned: false,
     };
+
+    // Required for symbolication:
+    process.env.EXPO_DEV_SERVER_ORIGIN = `http://localhost:${options.port}`;
 
     const { metro, server, middleware, messageSocket } = await instantiateMetroAsync(
       this,
@@ -232,7 +328,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             return;
           } catch (error: any) {
             res.setHeader('Content-Type', 'text/html');
-            res.end(await getErrorResult(this.projectRoot, devServerUrl, error));
+
+            res.end(await this.renderStaticErrorAsync(error));
           }
         });
       }
@@ -371,7 +468,7 @@ async function getErrorResult(projectRoot: string, originUrl: string, error: Err
 
     if (stack.codeFrame) {
       Log.error(stack.codeFrame.content);
-      Log.error(`  ${stack.codeFrame.location}`);
+      // Log.error(`  ${stack.codeFrame.location}`);
     }
 
     const stackProps = stack.stack.map((frame) => {
@@ -385,6 +482,7 @@ async function getErrorResult(projectRoot: string, originUrl: string, error: Err
       Log.error(chalk.gray`  ${frame.title} ${path.join(projectRoot, frame.subtitle)}`);
     });
 
+    // TODO: use react
     return `
     <!DOCTYPE html>
     <html lang="en">

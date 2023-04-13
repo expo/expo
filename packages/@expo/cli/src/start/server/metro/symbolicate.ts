@@ -1,4 +1,5 @@
 import fetch from 'node-fetch';
+import { parse, StackFrame } from 'stacktrace-parser';
 
 export type CodeFrame = {
   content: string;
@@ -25,8 +26,6 @@ export async function symbolicateStackTrace(
   });
   return await response.json();
 }
-
-import { parse, StackFrame } from 'stacktrace-parser';
 
 export function parseErrorStack(stack?: string): (StackFrame & { collapse?: boolean })[] {
   if (stack == null) {
