@@ -28,6 +28,7 @@ export async function typescriptTypeGeneration({
       removeExpoEnvDTS(projectRoot),
       removeFromGitIgnore(gitIgnorePath, 'expo-env.d.ts'),
     ]);
+    return;
   }
 
   const dotExpoDir = ensureDotExpoProjectDirectoryInitialized(projectRoot);
