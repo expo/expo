@@ -6,16 +6,24 @@
  */
 import chalk from 'chalk';
 import resolveFrom from 'resolve-from';
+import { StackFrame } from 'stacktrace-parser';
 import terminalLink from 'terminal-link';
 
 import { Log } from '../../../log';
 import { createMetroEndpointAsync } from '../getStaticRenderFunctions';
-import {
-  CodeFrame,
-  getStackFormattedLocation,
-  MetroStackFrame,
-  parseErrorStack,
-} from './symbolicate';
+// import type { CodeFrame, MetroStackFrame } from '@expo/metro-runtime/symbolicate';
+
+type CodeFrame = {
+  content: string;
+  location?: {
+    row: number;
+    column: number;
+    [key: string]: any;
+  };
+  fileName: string;
+};
+
+type MetroStackFrame = StackFrame & { collapse?: boolean };
 
 export async function logMetroErrorWithStack(
   projectRoot: string,
@@ -29,6 +37,11 @@ export async function logMetroErrorWithStack(
     error: Error;
   }
 ) {
+  const { getStackFormattedLocation } = require(resolveFrom(
+    projectRoot,
+    '@expo/metro-runtime/symbolicate'
+  ));
+
   Log.log();
   Log.log(chalk.red('Metro error: ') + error.message);
   Log.log();
@@ -72,11 +85,11 @@ export async function getErrorOverlayHtmlAsync({
   error: Error;
   projectRoot: string;
 }) {
-  const stack = parseErrorStack(error.stack);
-  const { LogBoxLog } = require(resolveFrom(
+  const { LogBoxLog, parseErrorStack } = require(resolveFrom(
     projectRoot,
-    '@expo/metro-runtime/build/error-overlay/Data/LogBoxLog'
+    '@expo/metro-runtime/symbolicate'
   ));
+  const stack = parseErrorStack(error.stack);
 
   const log = new LogBoxLog({
     level: 'static',
