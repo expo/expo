@@ -12,7 +12,7 @@ public final class SharingModule: Module {
         throw FilePermissionModuleException()
       }
 
-      let grantedPermissions = filePermissions.getPathPermissions(url.absoluteString)
+      let grantedPermissions = filePermissions.getPathPermissions(url.relativePath)
       guard grantedPermissions.rawValue >= EXFileSystemPermissionFlags.read.rawValue else {
         throw FilePermissionException()
       }
