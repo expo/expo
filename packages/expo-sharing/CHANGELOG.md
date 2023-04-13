@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On iOS, fixed an issue where file permissions were not checked correctly.
+
 ### 💡 Others
 
 ## 11.3.0 — 2023-04-12
