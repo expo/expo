@@ -5,6 +5,7 @@
 ### 🛠 Breaking changes
 
 - Set `NODE_ENV` and `BABEL_ENV` environment variables to `development` or `production` in `start`, `export`, `customize`, `install`, `run:ios`, `run:android`, `config`, `prebuild` commands based on the input mode. ([#21337](https://github.com/expo/expo/pull/21337) by [@EvanBacon](https://github.com/EvanBacon))
+- Export Hermes bytecode with `.hbc` extension. ([#22098](https://github.com/expo/expo/pull/22098) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🎉 New features
 
@@ -26,6 +27,8 @@
 - Add support for loading environment variables from `.env` files. ([#21983](https://github.com/expo/expo/pull/21983) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for emitting static CSS files when exporting web projects with `expo export`. ([#21941](https://github.com/expo/expo/pull/21941) by [@EvanBacon](https://github.com/EvanBacon))
 - Remove legacy manifest signing and fall back to unsigned when insufficient account permission to sign. ([#21989](https://github.com/expo/expo/pull/21989) by [@wschurman](https://github.com/wschurman))
+- Expose environment variables to Node.js processes. ([#22076](https://github.com/expo/expo/pull/22076) by [@EvanBacon](https://github.com/EvanBacon))
+- Generate experimental expo-env.d.ts when EXPO_ROUTER_TYPED_ROUTES=true ([#22096](https://github.com/expo/expo/pull/22096) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 

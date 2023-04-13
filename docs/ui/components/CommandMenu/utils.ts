@@ -99,6 +99,12 @@ export const openLink = (url: string, isExternal: boolean = false) => {
   link.click();
 };
 
+const ReferencePathChunks = ['/versions/', '/modules/', '/more/'] as const;
+
+export const isReferencePath = (url: string) => {
+  return ReferencePathChunks.some(pathChunk => url.includes(pathChunk));
+};
+
 const EASPathChunks = [
   '/app-signing/',
   '/build/',
@@ -111,12 +117,27 @@ const EASPathChunks = [
 ] as const;
 
 export const isEASPath = (url: string) => {
-  for (const pathChunk of EASPathChunks) {
-    if (url.includes(pathChunk)) {
-      return true;
-    }
-  }
-  return false;
+  return EASPathChunks.some(pathChunk => url.includes(pathChunk));
+};
+
+const HomePathChunks = [
+  '/get-started/',
+  '/develop/',
+  '/deploy/',
+  '/faq/',
+  '/core-concepts/',
+  '/debugging/',
+  '/config-plugins/',
+] as const;
+
+export const isHomePath = (url: string) => {
+  return HomePathChunks.some(pathChunk => url.includes(pathChunk));
+};
+
+const LearnPathChunks = ['/tutorial', '/ui-programming/', '/additional-resources/'] as const;
+
+export const isLearnPath = (url: string) => {
+  return LearnPathChunks.some(pathChunk => url.includes(pathChunk));
 };
 
 export const isAppleDevice = () => {

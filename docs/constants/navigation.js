@@ -12,7 +12,7 @@ const PAGES_DIR = path.resolve(dirname, '../pages');
 // TODO(cedric): refactor docs to get rid of the directory lists
 
 /** Manual list of directories to categorize as "Home" */
-const homeDirectories = ['home'];
+const homeDirectories = ['get-started', 'develop', 'config-plugins', 'debugging', 'deploy'];
 /** Manual list of directories to categorize as "Learn" */
 const learnDirectories = ['tutorial', 'ui-programming', 'additional-resources'];
 /** Manual list of directories to categorize as "Archive" */
@@ -42,74 +42,74 @@ const generalDirectories = fs
 // --- Navigation ---
 
 const home = [
-  makeSection('', [makePage('home/overview.mdx')]),
+  makeSection('', [makePage('overview.mdx')]),
   makeSection('Get started', [
-    makePage('home/get-started/installation.mdx'),
-    makePage('home/get-started/expo-go.mdx'),
-    makePage('home/get-started/create-a-project.mdx'),
+    makePage('get-started/installation.mdx'),
+    makePage('get-started/expo-go.mdx'),
+    makePage('get-started/create-a-project.mdx'),
   ]),
   makeSection('Develop', [
-    makePage('home/develop/project-structure.mdx'),
+    makePage('develop/project-structure.mdx'),
     makeGroup(
       'User interface',
       [
-        makePage('home/develop/user-interface/splash-screen.mdx'),
-        makePage('home/develop/user-interface/app-icons.mdx'),
-        makePage('home/develop/user-interface/safe-areas.mdx'),
-        makePage('home/develop/user-interface/fonts.mdx'),
-        makePage('home/develop/user-interface/color-themes.mdx'),
-        makePage('home/develop/user-interface/animation.mdx'),
-        makePage('home/develop/user-interface/store-data.mdx'),
-        makePage('home/develop/user-interface/next-steps.mdx'),
+        makePage('develop/user-interface/splash-screen.mdx'),
+        makePage('develop/user-interface/app-icons.mdx'),
+        makePage('develop/user-interface/safe-areas.mdx'),
+        makePage('develop/user-interface/fonts.mdx'),
+        makePage('develop/user-interface/color-themes.mdx'),
+        makePage('develop/user-interface/animation.mdx'),
+        makePage('develop/user-interface/store-data.mdx'),
+        makePage('develop/user-interface/next-steps.mdx'),
       ],
       { expanded: false }
     ),
     makeGroup(
       'Development builds',
       [
-        makePage('home/develop/development-builds/introduction.mdx'),
-        makePage('home/develop/development-builds/installation.mdx'),
-        makePage('home/develop/development-builds/create-a-build.mdx'),
-        makePage('home/develop/development-builds/use-development-builds.mdx'),
-        makePage('home/develop/development-builds/share-with-your-team.mdx'),
-        makePage('home/develop/development-builds/parallel-installation.mdx'),
-        makePage('home/develop/development-builds/development-workflows.mdx'),
-        makePage('home/develop/development-builds/next-steps.mdx'),
+        makePage('develop/development-builds/introduction.mdx'),
+        makePage('develop/development-builds/installation.mdx'),
+        makePage('develop/development-builds/create-a-build.mdx'),
+        makePage('develop/development-builds/use-development-builds.mdx'),
+        makePage('develop/development-builds/share-with-your-team.mdx'),
+        makePage('develop/development-builds/parallel-installation.mdx'),
+        makePage('develop/development-builds/development-workflows.mdx'),
+        makePage('develop/development-builds/next-steps.mdx'),
       ],
       { expanded: false }
     ),
     makeGroup(
       'Config plugins',
       [
-        makePage('home/config-plugins/introduction.mdx'),
-        makePage('home/config-plugins/plugins-and-mods.mdx'),
-        makePage('home/config-plugins/development-and-debugging.mdx'),
+        makePage('config-plugins/introduction.mdx'),
+        makePage('config-plugins/plugins-and-mods.mdx'),
+        makePage('config-plugins/development-and-debugging.mdx'),
       ],
       { expanded: false }
     ),
     makeGroup(
       'Debugging',
       [
-        makePage('home/errors-and-warnings.mdx'),
-        makePage('home/debugging/runtime-issue.mdx'),
-        makePage('home/debugging/tools.mdx'),
+        makePage('debugging/errors-and-warnings.mdx'),
+        makePage('debugging/runtime-issue.mdx'),
+        makePage('debugging/tools.mdx'),
       ],
       { expanded: false }
     ),
-    makePage('home/authentication.mdx'),
-    makePage('home/unit-testing.mdx'),
+    makePage('develop/authentication.mdx'),
+    makePage('develop/unit-testing.mdx'),
   ]),
   makeSection('Deploy', [
-    makePage('home/deploy/build-project.mdx'),
-    makePage('home/deploy/submit-to-app-stores.mdx'),
-    makePage('home/deploy/app-stores-metadata.mdx'),
-    makePage('home/deploy/instant-updates.mdx'),
+    makePage('deploy/build-project.mdx'),
+    makePage('deploy/submit-to-app-stores.mdx'),
+    makePage('deploy/app-stores-metadata.mdx'),
+    makePage('deploy/instant-updates.mdx'),
   ]),
-  makeSection('More', [makePage('home/core-concepts.mdx'), makePage('home/faq.mdx')]),
+  makeSection('More', [makePage('core-concepts.mdx'), makePage('faq.mdx')]),
 ];
 
 const general = [
-  makeSection('Develop', [
+  makeSection('Fundamentals', [
     makePage('workflow/customizing.mdx'),
     makePage('workflow/configuration.mdx'),
     makePage('workflow/using-libraries.mdx'),
@@ -253,7 +253,6 @@ const general = [
     makePage('guides/authentication.mdx'),
     makePage('guides/delaying-code.mdx'),
     makePage('guides/errors.mdx'),
-    makePage('guides/testing-with-jest.mdx'),
     makePage('guides/troubleshooting-proxies.mdx'),
     makePage('guides/sharing-preview-releases.mdx'),
     makePage('guides/using-hermes.mdx'),
@@ -394,6 +393,7 @@ const versionsReference = VERSIONS.reduce(
           makePage('modules/native-module-tutorial.mdx'),
           makePage('modules/native-view-tutorial.mdx'),
           makePage('modules/config-plugin-and-native-module-tutorial.mdx'),
+          makePage('modules/use-standalone-expo-module-in-your-project.mdx'),
           makePage('modules/existing-library.mdx'),
           makePage('modules/module-api.mdx'),
           makePage('modules/android-lifecycle-listeners.mdx'),
@@ -461,10 +461,6 @@ function makeGroup(name, children = [], props = {}) {
  * @param {string} file
  */
 function makePage(file) {
-  if (file === 'home') {
-    return make('page', { name: 'Overview', href: '/' });
-  }
-
   const filePath = path.resolve(PAGES_DIR, file);
   const contents = fs.readFileSync(filePath, 'utf-8');
   const url = pageUrl(filePath);

@@ -1,10 +1,13 @@
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
+import { getPackageJson } from '@expo/config';
 import { getBareExtensions } from '@expo/config/paths';
 import * as runtimeEnv from '@expo/env';
 import JsonFile from '@expo/json-file';
 import chalk from 'chalk';
-import type { Reporter } from 'metro';
-import type { ConfigT as MetroConfig, InputConfigT } from 'metro-config';
+import { Reporter } from 'metro';
+// @ts-expect-error: incorrectly typed
+import { stableHash } from 'metro-cache';
+import { ConfigT as MetroConfig, InputConfigT } from 'metro-config';
 import path from 'path';
 import resolveFrom from 'resolve-from';
 
@@ -14,6 +17,7 @@ import { getModulesPaths, getServerRoot } from './getModulesPaths';
 import { getWatchFolders } from './getWatchFolders';
 import { getRewriteRequestUrl } from './rewriteRequestUrl';
 import { withExpoSerializers } from './serializer';
+import { getPostcssConfigHash } from './transform-worker/postcss';
 import { importMetroConfig } from './traveling/metro-config';
 
 const debug = require('debug')('expo:metro:config') as typeof console.log;
@@ -89,17 +93,15 @@ export function getDefaultConfig(
   const sourceExtsConfig = { isTS: true, isReact: true, isModern: false };
   const sourceExts = getBareExtensions([], sourceExtsConfig);
 
+  // Add support for cjs (without platform extensions).
+  sourceExts.push('cjs');
+
   let sassVersion: string | null = null;
   if (options.isCSSEnabled) {
     sassVersion = getSassVersion(projectRoot);
     // Enable SCSS by default so we can provide a better error message
     // when sass isn't installed.
     sourceExts.push('scss', 'sass', 'css');
-  }
-
-  if (isExotic) {
-    // Add support for cjs (without platform extensions).
-    sourceExts.push('cjs');
   }
 
   const envFiles = runtimeEnv.getFiles(process.env.NODE_ENV);
@@ -116,6 +118,7 @@ export function getDefaultConfig(
   }
   resolverMainFields.push('browser', 'main');
 
+  const pkg = getPackageJson(projectRoot);
   const watchFolders = getWatchFolders(projectRoot);
   // TODO: nodeModulesPaths does not work with the new Node.js package.json exports API, this causes packages like uuid to fail. Disabling for now.
   const nodeModulesPaths = getModulesPaths(projectRoot);
@@ -187,7 +190,11 @@ export function getDefaultConfig(
 
     transformer: {
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
-      // @ts-expect-error
+      // @ts-expect-error: not on type.
+      postcssHash: getPostcssConfigHash(projectRoot),
+      browserslistHash: pkg.browserslist
+        ? stableHash(JSON.stringify(pkg.browserslist)).toString('hex')
+        : null,
       sassVersion,
 
       // `require.context` support

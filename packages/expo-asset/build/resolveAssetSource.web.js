@@ -16,7 +16,9 @@ export default function resolveAssetSource(source) {
     if (!asset) {
         return undefined;
     }
-    const resolver = new AssetSourceResolver(location.origin, null, asset);
+    const resolver = new AssetSourceResolver(
+    // Doesn't matter since this is removed on web
+    'https://expo.dev', null, asset);
     if (_customSourceTransformer) {
         return _customSourceTransformer(resolver);
     }

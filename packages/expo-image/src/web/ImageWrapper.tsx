@@ -1,4 +1,4 @@
-import React, { CSSProperties, SyntheticEvent, useEffect, Ref } from 'react';
+import React, { CSSProperties, SyntheticEvent, useEffect, Ref, useMemo } from 'react';
 
 import {
   ImageContentPositionObject,
@@ -7,7 +7,8 @@ import {
   ImageSource,
 } from '../Image.types';
 import { useBlurhash } from '../utils/blurhash/useBlurhash';
-import { isBlurhashString } from '../utils/resolveSources';
+import { isBlurhashString, isThumbhashString } from '../utils/resolveSources';
+import { thumbHashStringToDataURL } from '../utils/thumbhash/thumbhash';
 
 function ensureUnit(value: string | number) {
   const trimmedValue = String(value).trim();
@@ -58,10 +59,10 @@ const ImageWrapper = React.forwardRef(
       source,
       events,
       contentPosition,
-      blurhashContentPosition,
+      hashPlaceholderContentPosition,
       priority,
       style,
-      blurhashStyle,
+      hashPlaceholderStyle,
       className,
       accessibilityLabel,
     }: {
@@ -73,10 +74,10 @@ const ImageWrapper = React.forwardRef(
         onMount?: ((() => void) | undefined | null)[];
       };
       contentPosition?: ImageContentPositionObject;
-      blurhashContentPosition?: ImageContentPositionObject;
+      hashPlaceholderContentPosition?: ImageContentPositionObject;
       priority?: string | null;
       style: CSSProperties;
-      blurhashStyle?: CSSProperties;
+      hashPlaceholderStyle?: CSSProperties;
       className?: string;
       accessibilityLabel?: string;
     },
@@ -86,11 +87,22 @@ const ImageWrapper = React.forwardRef(
       events?.onMount?.forEach((e) => e?.());
     }, []);
     const isBlurhash = isBlurhashString(source?.uri || '');
+    const isThumbhash = isThumbhashString(source?.uri || '');
+    const isHash = isBlurhash || isThumbhash;
+
+    // Thumbhash uri always has to start with 'thumbhash:/'
+    const thumbhash = source?.uri?.replace(/thumbhash:\//, '');
+    const thumbhashUri = useMemo(
+      () => (isThumbhash ? thumbHashStringToDataURL(thumbhash ?? '') : null),
+      [thumbhash]
+    );
+
     const blurhashUri = useBlurhash(isBlurhash ? source?.uri : null, source?.width, source?.height);
     const objectPosition = getObjectPositionFromContentPositionObject(
-      isBlurhash ? blurhashContentPosition : contentPosition
+      isHash ? hashPlaceholderContentPosition : contentPosition
     );
-    const uri = isBlurhash ? blurhashUri : source?.uri;
+
+    const uri = isHash ? blurhashUri ?? thumbhashUri : source?.uri;
     if (!uri) return null;
     return (
       <img
@@ -107,7 +119,7 @@ const ImageWrapper = React.forwardRef(
           right: 0,
           objectPosition,
           ...style,
-          ...(isBlurhash ? blurhashStyle : {}),
+          ...(isHash ? hashPlaceholderStyle : {}),
         }}
         // @ts-ignore
         // eslint-disable-next-line react/no-unknown-property
