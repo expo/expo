@@ -8,7 +8,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 
 The `expo-updates` library fetches and manages updates received from a remote server. It supports [EAS Update](/eas-update/introduction), a hosted service that serves updates for projects using the `expo-updates` library.
 
-> If you are creating a new project, we recommend using `npx create-react-native-app` instead of `npx react-native init` because it will handle the following configuration for you automatically. It includes the `expo-updates` [config plugin](/guides/config-plugins), which will handle the following steps for you.
+> If you are creating a new project, we recommend using `npx create-expo-app --template bare-minimum` (or `yarn create expo-app --template bare-minimum`) instead of `npx react-native init` because it will handle the following configuration for you automatically. It includes the `expo-updates` [config plugin](/guides/config-plugins), which will handle the following steps for you.
 
 ## Installation
 
@@ -26,23 +26,71 @@ Once installation is complete, apply the changes from the following diffs to con
 
 ## Configuration in JavaScript and JSON
 
-You'll need to modify **index.js** to import `expo-asset` early in your app, to be able to update assets with updates.
+Modify the `expo` section of **app.json**. (If you originally created your app using `npx react-native init`, you will need to add this section.)
+The changes below add the updates URL to the Expo configuration.
 
-```diff index.js
-+ import 'expo-asset';
-import { registerRootComponent } from 'expo';
+> The example URL shown here is for use with a custom update server running on the same machine. When using EAS Update, the EAS CLI will set this URL correctly for the EAS Update service.
 
-import App from './App';
-
-// registerRootComponent calls AppRegistry.registerComponent('main', () => App);
-// It also ensures that whether you load the app in Expo Go or in a native build,
-// the environment is set up appropriately
-registerRootComponent(App);
+```diff app.json
+ {
+   "name": "MyApp",
+-  "displayName": "MyApp"
++  "displayName": "MyApp",
++  "expo": {
++    "name": "MyApp",
++    "slug": "MyApp",
++    "ios": {
++      "bundleIdentifier": "com.MyApp"
++    },
++    "android": {
++      "package": "com.MyApp"
++    },
++    "runtimeVersion": "1.0.0",
++    "updates": {
++      "url": "http://localhost:3000/api/manifest"  
++    }
++  }
+ }
 ```
+
 
 ## Configuration for iOS
 
-Add the **Supporting** directory containing **Expo.plist** to your project in Xcode with the following content:
+Add the file **Podfile.properties.json** to the **ios** directory:
+
+```json ios/Podfile.properties.json
+{
+  "expo.jsEngine": "hermes"
+}
+```
+
+Modify **ios/Podfile** to check for the JS engine configuration (JSC or Hermes) in Expo files:
+
+```diff ios/Podfile
+--- a/ios/Podfile
++++ b/ios/Podfile
+@@ -2,6 +2,9 @@ require File.join(File.dirname(`node --print "require.resolve('expo/package.json
+ require_relative '../node_modules/react-native/scripts/react_native_pods'
+ require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
+ 
++require 'json'
++podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
++
+ platform :ios, '13.0'
+ prepare_react_native_project!
+ 
+@@ -41,7 +44,7 @@ target 'MyApp' do
+     # Hermes is now enabled by default. Disable by setting this flag to false.
+     # Upcoming versions of React Native may rely on get_default_flags(), but
+     # we make it explicit here to aid in the React Native upgrade process.
+-    :hermes_enabled => flags[:hermes_enabled],
++    :hermes_enabled => podfile_properties['expo.jsEngine'] == nil || podfile_properties['expo.jsEngine'] == 'hermes',
+     :fabric_enabled => flags[:fabric_enabled],
+     # Enables Flipper.
+     #
+
+```
+Add the **Supporting** directory containing **Expo.plist** to your project in Xcode with the following content, to match the content in **app.json**:
 
 ```xml Expo.plist
 <?xml version="1.0" encoding="UTF-8"?>
@@ -55,228 +103,72 @@ Add the **Supporting** directory containing **Expo.plist** to your project in Xc
     <true/>
     <key>EXUpdatesLaunchWaitMs</key>
     <integer>0</integer>
-    <key>EXUpdatesSDKVersion</key>
-    <string>46.0.0</string>
+    <key>EXUpdatesRuntimeVersion</key>
+    <string>1.0.0</string>
     <key>EXUpdatesURL</key>
-    <string>https://exp.host/@my-expo-username/my-app</string>
+    <string>http://localhost:3000/api/manifest</string>
   </dict>
 </plist>
 ```
 
 ## Configuration for Android
 
-Apply the following configurations to your **AndroidManifest.xml** file:
+Modify **android/app/build.gradle** to check for the JS engine configuration (JSC or Hermes) in Expo files:
 
-```diff AndroidManifest.xml
-+ <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://exp.host/@my-expo-username/my-app" />
-+ <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="46.0.0" />
-+ <meta-data android:name="expo.modules.updates.UPDATES_CONFIGURATION_REQUEST_HEADERS_KEY" android:value="{'expo-channel-name':'your-channel-name'}"/>
-+ <meta-data android:name="expo.modules.updates.EXPO_UPDATES_ENABLED" android:value="true" />
-+ <meta-data android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS" android:value="0" />
-+ <meta-data android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH" android:value="ALWAYS" />
-```
-
-## Customizing Automatic Setup for iOS
-
-By default, `expo-updates` requires no additional setup. If you want to customize the installation, for example, to enable updates only in some build variants, you can instead follow these manual setup steps and then apply any customizations.
-
-### Update AppDelegate.h
-
-```diff apps/bare-update/ios/bareupdate/AppDelegate.h
-#import <Foundation/Foundation.h>
-+ #import <EXUpdates/EXUpdatesAppController.h>
-#import <React/RCTBridgeDelegate.h>
-#import <UIKit/UIKit.h>
-
-#import <ExpoModulesCore/EXAppDelegateWrapper.h>
-
-- @interface AppDelegate : EXAppDelegateWrapper <RCTBridgeDelegate>
-+ @interface AppDelegate : EXAppDelegateWrapper <RCTBridgeDelegate, EXUpdatesAppControllerDelegate>
-```
-
-### Update AppDelegate.mm
-
-There are multiple changes to apply to your project's **AppDelegate.mm**.
-
-```diff apps/bare-update/ios/bareupdate/AppDelegate.mm
-+ @interface AppDelegate () <RCTBridgeDelegate>
-+
-+ @property (nonatomic, strong) NSDictionary *launchOptions;
-+
-+ @end
-+
- @implementation AppDelegate
-
-```
-
-```diff apps/bare-update/ios/bareupdate/AppDelegate.mm
--  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:launchOptions];
-+  self.launchOptions = launchOptions;
-+  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-+  #ifdef DEBUG
-+    [self initializeReactNativeApp];
-+  #else
-+    EXUpdatesAppController *controller = [EXUpdatesAppController sharedInstance];
-+    controller.delegate = self;
-+    [controller startAndShowLaunchScreen:self.window];
-+  #endif
-+
-+  [super application:application didFinishLaunchingWithOptions:launchOptions];
-+
-+  return YES;
-+ }
-+
-+ - (RCTBridge *)initializeReactNativeApp
-+ {
-+  RCTBridge *bridge = [[RCTBridge alloc] initWithDelegate:self launchOptions:self.launchOptions];
-   RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:bridge moduleName:@"main" initialProperties:nil];
-   id rootViewBackgroundColor = [[NSBundle mainBundle] objectForInfoDictionaryKey:@"RCTRootViewBackgroundColor"];
-   if (rootViewBackgroundColor != nil) {
-```
-
-```diff apps/bare-update/ios/bareupdate/AppDelegate.mm
-     rootView.backgroundColor = [UIColor whiteColor];
-   }
-
--  self.window = [[UIWindow alloc] initWithFrame:[UIScreen mainScreen].bounds];
-   UIViewController *rootViewController = [UIViewController new];
-   rootViewController.view = rootView;
-   self.window.rootViewController = rootViewController;
-   [self.window makeKeyAndVisible];
-
--  [super application:application didFinishLaunchingWithOptions:launchOptions];
--
--  return YES;
-+  return bridge;
-  }
-
- - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
-```
-
-```diff apps/bare-update/ios/bareupdate/AppDelegate.mm
-  #ifdef DEBUG
-   return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index" fallbackResource:nil];
-  #else
--  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
-+  return [[EXUpdatesAppController sharedInstance] launchAssetUrl];
-  #endif
+```diff android/app/build.gradle
+--- a/android/app/build.gradle
++++ b/android/app/build.gradle
+@@ -52,6 +52,11 @@ react {
+     // hermesFlags = ["-O", "-output-source-map"]
  }
-
-+ - (void)appController:(EXUpdatesAppController *)appController didStartWithSuccess:(BOOL)success {
-+  appController.bridge = [self initializeReactNativeApp];
-+ }
-
- // Linking API
- - (BOOL)application:(UIApplication *)application openURL:(NSURL *)url options:(NSDictionary<UIApplicationOpenURLOptionsKey,id> *)options {
-   return [RCTLinkingManager application:application openURL:url options:options];
-```
-
-### Expo.plist
-
-```diff apps/bare-update/ios/bareupdate/Supporting/Expo.plist
-     <key>EXUpdatesURL</key>
-     <string>https://exp.host/@my-expo-username/my-app</string>
-+    <key>EXUpdatesAutoSetup</key>
-+    <false/>
-   </dict>
- </plist>
-```
-
-## Customizing Automatic Setup for Android
-
-By default, `expo-updates` requires no additional setup. If you want to customize the installation, for example, to enable updates only in some build variants, you can instead follow these manual setup steps and then apply any customizations.
-
-### AndroidManifest.xml
-
-```diff apps/bare-update/android/app/src/main/AndroidManifest.xml
-   <application android:name=".MainApplication" android:label="@string/app_name" android:icon="@mipmap/ic_launcher" android:roundIcon="@mipmap/ic_launcher_round" android:allowBackup="false" android:theme="@style/AppTheme" android:usesCleartextTraffic="true">
-     <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="https://exp.host/@my-expo-username/my-app"/>
-     <meta-data android:name="expo.modules.updates.EXPO_SDK_VERSION" android:value="46.0.0"/>
-+    <meta-data android:name="expo.modules.updates.AUTO_SETUP" android:value="false"/>
-     <activity android:name=".MainActivity" android:label="@string/app_name" android:configChanges="keyboard|keyboardHidden|orientation|screenSize|uiMode" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize" android:theme="@style/Theme.App.SplashScreen">
-       <intent-filter>
-         <action android:name="android.intent.action.MAIN"/>
-```
-
-### MainApplication.java
-
-There are multiple changes to apply to your project's **MainApplication.java**
-
-```diff apps/bare-update/android/app/src/main/java/com/bareupdate/MainApplication.java
- import android.app.Application;
- import android.content.Context;
- import android.content.res.Configuration;
-+ import android.net.Uri;
-
- import com.facebook.react.PackageList;
- import com.facebook.react.ReactApplication;
-```
-
-```diff apps/bare-update/android/app/src/main/java/com/bareupdate/MainApplication.java
- import expo.modules.ApplicationLifecycleDispatcher;
- import expo.modules.ReactNativeHostWrapper;
-+ import expo.modules.updates.UpdatesController;
-
- import com.facebook.react.bridge.JSIModulePackage;
- import com.swmansion.reanimated.ReanimatedJSIModulePackage;
-```
-
-```diff apps/bare-update/android/app/src/main/java/com/bareupdate/MainApplication.java
- import java.lang.reflect.InvocationTargetException;
- import java.util.Arrays;
- import java.util.List;
-+ import javax.annotation.Nullable;
-
- public class MainApplication extends Application implements ReactApplication {
-   private final ReactNativeHost mReactNativeHost = new ReactNativeHostWrapper(
-```
-
-```diff apps/bare-update/android/app/src/main/java/com/bareupdate/MainApplication.java
-     protected JSIModulePackage getJSIModulePackage() {
-       return new ReanimatedJSIModulePackage();
-     }
+ 
++// Override `hermesEnabled` by `expo.jsEngine`
++ext {
++  hermesEnabled = (findProperty('expo.jsEngine') ?: "hermes") == "hermes"
++}
 +
-+    @Override
-+    protected @Nullable String getJSBundleFile() {
-+      if (BuildConfig.DEBUG) {
-+        return super.getJSBundleFile();
-+      } else {
-+        return UpdatesController.getInstance().getLaunchAssetFile();
-+      }
-+    }
-+
-+    @Override
-+    protected @Nullable String getBundleAssetName() {
-+      if (BuildConfig.DEBUG) {
-+        return super.getBundleAssetName();
-+      } else {
-+        return UpdatesController.getInstance().getBundleAssetName();
-+      }
-+    }
-   });
+ /**
+  * Set this to true to create four separate APKs instead of one,
+  * one for each native architecture. This is useful if you don't
 ```
 
-```diff apps/bare-update/android/app/src/main/java/com/bareupdate/MainApplication.java
-     super.onCreate();
-     SoLoader.init(this, /* native exopackage */ false);
+Modify **android/app/src/main/AndroidManifest.xml** to add the `expo-updates` configuration XML so that it matches the contents of **app.json**:
 
-+    if (!BuildConfig.DEBUG) {
-+      UpdatesController.initialize(this);
-+    }
-+
-     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
-     ApplicationLifecycleDispatcher.onApplicationCreate(this);
-   }
+```diff android/app/src/main/AndroidManifest.xml
+--- a/android/app/src/main/AndroidManifest.xml
++++ b/android/app/src/main/AndroidManifest.xml
+@@ -9,6 +9,11 @@
+       android:roundIcon="@mipmap/ic_launcher_round"
+       android:allowBackup="false"
+       android:theme="@style/AppTheme">
++      <meta-data android:name="expo.modules.updates.ENABLED" android:value="true"/>
++      <meta-data android:name="expo.modules.updates.EXPO_RUNTIME_VERSION" android:value="@string/expo_runtime_version"/>
++      <meta-data android:name="expo.modules.updates.EXPO_UPDATES_CHECK_ON_LAUNCH" android:value="ALWAYS"/>
++      <meta-data android:name="expo.modules.updates.EXPO_UPDATES_LAUNCH_WAIT_MS" android:value="0"/>
++      <meta-data android:name="expo.modules.updates.EXPO_UPDATE_URL" android:value="http://localhost:3000/api/manifest"/>
+       <activity
+         android:name=".MainActivity"
+         android:label="@string/app_name"
 ```
 
-## Usage
+Add the Expo runtime version string key to **android/app/src/main/res/values/strings.xml**:
+
+```diff android/app/src/main/res/values/strings.xml
+--- a/android/app/src/main/res/values/strings.xml
++++ b/android/app/src/main/res/values/strings.xml
+@@ -1,3 +1,4 @@
+ <resources>
+     <string name="app_name">MyApp</string>
++    <string name="expo_runtime_version">1.0.0</string>
+ </resources>
+```
+
+## Next Steps
 
 See more information about usage in the [`expo-updates` README](https://github.com/expo/expo/tree/main/packages/expo-updates/README.md).
 
-## FAQ
+See [this guide](/eas-update/eas-update-with-local-build/) for trying out EAS Update with a local build.
 
-<Collapsible summary="How do I customize which assets are included in an update bundle?">
+To start trying out EAS Update with EAS Build, see the [EAS Update "Getting Started" guide](/eas-update/getting-started/).
 
-If you have assets (such as images or other media) that are imported in your application code, and you would like these to be downloaded atomically as part of an update, add the `assetBundlePatterns` field under the `expo` key in your project's **app.json**. This field should be an array of file glob strings that point to the assets you want to be bundled. For example: `"assetBundlePatterns": ["**/*"]`
-
-</Collapsible>
+It is also possible to use `expo-updates` with a custom server that implements the [Expo Updates protocol](/technical-specs/expo-updates-1/); see the [`custom-expo-updates-server` README](https://github.com/expo/custom-expo-updates-server#readme).
