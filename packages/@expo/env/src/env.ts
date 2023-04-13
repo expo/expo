@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import chalk from 'chalk';
 import * as dotenv from 'dotenv';
 import { expand } from 'dotenv-expand';
 import * as fs from 'fs';
@@ -111,9 +112,13 @@ export function createControlledEnvironment() {
 
 export function getFiles(mode: string | undefined): string[] {
   if (!mode) {
-    throw new Error(
-      'The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI.'
+    console.error(
+      chalk.red(
+        'The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI or NODE_ENV is set.'
+      )
     );
+    console.error(chalk.red('Proceeding in development mode.'));
+    mode = 'development';
   }
 
   if (!mode || !['development', 'test', 'production'].includes(mode)) {
