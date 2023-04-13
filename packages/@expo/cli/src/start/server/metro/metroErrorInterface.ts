@@ -19,39 +19,49 @@ import {
 
 export async function logMetroErrorWithStack(
   projectRoot: string,
-  stack: MetroStackFrame[],
-  codeFrame: CodeFrame,
-  error: Error
+  {
+    stack,
+    codeFrame,
+    error,
+  }: {
+    stack: MetroStackFrame[];
+    codeFrame: CodeFrame;
+    error: Error;
+  }
 ) {
   Log.log();
-  Log.log(chalk.red('Metro error:\n') + error.message);
+  Log.log(chalk.red('Metro error: ') + error.message);
   Log.log();
 
-  Log.log(chalk.bold`Source`);
   if (codeFrame) {
     Log.log(codeFrame.content);
   }
-  Log.log();
-  Log.log(chalk.bold`Call Stack`);
 
-  const stackProps = stack.map((frame) => {
-    return {
-      title: frame.methodName,
-      subtitle: getStackFormattedLocation(projectRoot, frame),
-      collapse: frame.collapse,
-    };
-  });
+  if (stack?.length) {
+    Log.log();
+    Log.log(chalk.bold`Call Stack`);
 
-  stackProps.forEach((frame) => {
-    const position = terminalLink.isSupported
-      ? terminalLink(frame.subtitle, frame.subtitle)
-      : frame.subtitle;
-    let lineItem = chalk.gray(`  ${frame.title} (${position})`);
-    if (frame.collapse) {
-      lineItem = chalk.dim(lineItem);
-    }
-    Log.log(lineItem);
-  });
+    const stackProps = stack.map((frame) => {
+      return {
+        title: frame.methodName,
+        subtitle: getStackFormattedLocation(projectRoot, frame),
+        collapse: frame.collapse,
+      };
+    });
+
+    stackProps.forEach((frame) => {
+      const position = terminalLink.isSupported
+        ? terminalLink(frame.subtitle, frame.subtitle)
+        : frame.subtitle;
+      let lineItem = chalk.gray(`  ${frame.title} (${position})`);
+      if (frame.collapse) {
+        lineItem = chalk.dim(lineItem);
+      }
+      Log.log(lineItem);
+    });
+  } else {
+    Log.log(chalk.gray(`  ${error.stack}`));
+  }
 }
 
 /** @returns the html required to render the static metro error as an SPA. */
@@ -82,7 +92,11 @@ export async function getErrorOverlayHtmlAsync({
 
   await new Promise((res) => log.symbolicate('stack', res));
 
-  logMetroErrorWithStack(projectRoot, log.symbolicated?.stack?.stack ?? [], log.codeFrame, error);
+  logMetroErrorWithStack(projectRoot, {
+    stack: log.symbolicated?.stack?.stack ?? [],
+    codeFrame: log.codeFrame,
+    error,
+  });
 
   const logBoxContext = {
     selectedLogIndex: 0,
