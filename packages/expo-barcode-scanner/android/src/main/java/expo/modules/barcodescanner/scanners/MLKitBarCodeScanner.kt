@@ -13,7 +13,6 @@ import expo.modules.interfaces.barcodescanner.BarCodeScannerSettings
 import kotlinx.coroutines.*
 import kotlin.coroutines.resumeWithException
 
-
 @OptIn(ExperimentalCoroutinesApi::class)
 suspend fun <T> Task<T>.await(): T = suspendCancellableCoroutine { continuation ->
   addOnSuccessListener { result ->
@@ -56,7 +55,7 @@ class MLKitBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
     return scanBlocking(inputImage)
   }
 
-  private fun scanBlocking(inputImage: InputImage):List<BarCodeScannerResult> = runBlocking(Dispatchers.IO) {
+  private fun scanBlocking(inputImage: InputImage): List<BarCodeScannerResult> = runBlocking(Dispatchers.IO) {
     try {
       val result = barcodeScanner.process(inputImage).await()
       val results = mutableListOf<BarCodeScannerResult>()
@@ -73,7 +72,7 @@ class MLKitBarCodeScanner(context: Context) : ExpoBarCodeScanner(context) {
         results.add(BarCodeScannerResult(barcode.format, value, cornerPoints, inputImage.height, inputImage.width))
       }
       results
-    }catch (e: Exception){
+    } catch (e: Exception) {
       Log.e(TAG, "Failed to detect barcode: " + e.message)
       mutableListOf<BarCodeScannerResult>()
     }
