@@ -1,7 +1,7 @@
 {
   "name": "expo-dev-launcher",
   "title": "Expo Development Launcher",
-  "version": "2.1.6",
+  "version": "2.2.0",
   "description": "Pre-release version of the Expo development launcher package for testing.",
   "main": "build/DevLauncher.js",
   "types": "build/DevLauncher.d.ts",
@@ -29,7 +29,7 @@
   "license": "MIT",
   "homepage": "https://docs.expo.dev",
   "dependencies": {
-    "expo-dev-menu": "2.1.4",
+    "expo-dev-menu": "2.2.0",
     "resolve-from": "^5.0.0",
     "semver": "^7.3.5"
   },

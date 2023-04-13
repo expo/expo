@@ -6,6 +6,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.2.0 — 2023-04-13
+
+### 🎉 New features
+
 - Added experimental network inspector. ([#21265](https://github.com/expo/expo/pull/21265), [#21327](https://github.com/expo/expo/pull/21327) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
@@ -13,8 +21,6 @@
 - Add missing `mimeType` when emitting network responses. ([#21676](https://github.com/expo/expo/pull/21676) by [@byCedric](https://github.com/byCedric))
 - Add missing `Network.requestWillBeSentExtraInfo` when emitting network requests. ([#21965](https://github.com/expo/expo/pull/21965) by [@byCedric](https://github.com/byCedric))
 - Don't require legacy manifest signature in dev clients. ([#21970](https://github.com/expo/expo/pull/21970) by [@wschurman](https://github.com/wschurman))
-
-### 💡 Others
 
 ## 2.1.6 — 2023-03-20
 

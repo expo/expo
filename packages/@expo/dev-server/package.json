@@ -1,6 +1,6 @@
 {
   "name": "@expo/dev-server",
-  "version": "0.2.3",
+  "version": "0.3.0",
   "description": "Development servers for starting React Native projects",
   "main": "build/MetroDevServer.js",
   "scripts": {

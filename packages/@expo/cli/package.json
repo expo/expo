@@ -1,6 +1,6 @@
 {
   "name": "@expo/cli",
-  "version": "0.6.2",
+  "version": "0.7.0",
   "description": "The Expo CLI",
   "main": "build/bin/cli",
   "bin": {
@@ -40,7 +40,7 @@
     "@expo/code-signing-certificates": "0.0.5",
     "@expo/config": "~8.0.0",
     "@expo/config-plugins": "~6.0.0",
-    "@expo/dev-server": "0.2.3",
+    "@expo/dev-server": "0.3.0",
     "@expo/devcert": "^1.0.0",
     "@expo/json-file": "^8.2.37",
     "@expo/metro-config": "~0.7.0",
