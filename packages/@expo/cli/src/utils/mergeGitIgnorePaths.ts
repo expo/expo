@@ -170,6 +170,10 @@ export function createGitIgnoreHash(gitIgnore: string): string {
 }
 
 export function removeFromGitIgnore(targetGitIgnorePath: string, contents: string) {
+  if (!fs.existsSync(targetGitIgnorePath)) {
+    return;
+  }
+
   let targetGitIgnore = fs.readFileSync(targetGitIgnorePath, 'utf-8');
 
   if (!targetGitIgnore.includes(contents)) {
