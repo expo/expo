@@ -23,11 +23,16 @@ export function getTSConfigUpdates(tsConfig: JSONObject) {
   const updates = new Set<string>();
 
   if (!tsConfig.include) {
-    tsConfig.include = ['**/*.ts', '**/*.tsx', '.expo/types/**/*.ts'];
+    tsConfig.include = ['**/*.ts', '**/*.tsx', '.expo/types/**/*.ts', 'expo-env.d.ts'];
     updates.add('include');
   } else if (Array.isArray(tsConfig.include)) {
     if (!tsConfig.include.includes('.expo/types/**/*.ts')) {
       tsConfig.include = [...tsConfig.include, '.expo/types/**/*.ts'];
+      updates.add('include');
+    }
+
+    if (!tsConfig.include.includes('expo-env.d.ts')) {
+      tsConfig.include = [...tsConfig.include, 'expo-env.d.ts'];
       updates.add('include');
     }
   }
@@ -50,9 +55,16 @@ export async function forceRemovalTSConfig(projectRoot: string) {
 export function getTSConfigRemoveUpdates(tsConfig: JSONObject) {
   const updates = new Set<string>();
 
-  if (Array.isArray(tsConfig.include) && tsConfig.include.includes('.expo/types/**/*.ts')) {
-    tsConfig.include = tsConfig.include.filter((i) => (i as string) !== '.expo/types/**/*.ts');
-    updates.add('include');
+  if (Array.isArray(tsConfig.include)) {
+    const filtered = (tsConfig.include as string[]).filter(
+      (i) => i !== 'expo-env.d.ts' && i !== '.expo/types/**/*.ts'
+    );
+
+    if (filtered.length !== tsConfig.include.length) {
+      updates.add('include');
+    }
+
+    tsConfig.include = filtered;
   }
 
   return { tsConfig, updates };
