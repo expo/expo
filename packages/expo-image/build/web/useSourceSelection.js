@@ -1,8 +1,9 @@
 import React, { useState, useRef } from 'react';
 import { isBlurhashString, isThumbhashString } from '../utils/resolveSources';
 function findBestSourceForSize(sources, size) {
-    if (sources?.length === 1)
+    if (sources?.length === 1) {
         return sources[0];
+    }
     return ([...(sources || [])]
         // look for the smallest image that's still larger then a container
         ?.map((source) => {
@@ -30,10 +31,9 @@ function getDefaultResponsivePolicy(sources) {
     return allSourcesHaveStaticSizeSelectionInfo ? 'static' : 'live';
 }
 function selectSource(sources, size, responsivePolicy) {
-    if (sources == null)
+    if (sources == null || sources.length === 0) {
         return null;
-    if (sources.length === 0)
-        return null;
+    }
     if (responsivePolicy !== 'static') {
         return findBestSourceForSize(sources, size);
     }

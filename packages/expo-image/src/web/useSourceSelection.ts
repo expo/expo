@@ -7,7 +7,9 @@ function findBestSourceForSize(
   sources: ImageSource[] | undefined,
   size: DOMRect | null
 ): ImageSource | null {
-  if (sources?.length === 1) return sources[0];
+  if (sources?.length === 1) {
+    return sources[0];
+  }
   return (
     [...(sources || [])]
       // look for the smallest image that's still larger then a container
@@ -54,8 +56,9 @@ function selectSource(
   size: DOMRect | null,
   responsivePolicy: ImageProps['responsivePolicy']
 ): ImageSource | SrcSetSource | null {
-  if (sources == null) return null;
-  if (sources.length === 0) return null;
+  if (sources == null || sources.length === 0) {
+    return null;
+  }
 
   if (responsivePolicy !== 'static') {
     return findBestSourceForSize(sources, size);

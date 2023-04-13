@@ -52,8 +52,9 @@ const ImageWrapper = React.forwardRef(({ source, events, contentPosition, hashPl
     const thumbhash = source?.uri?.replace(/thumbhash:\//, '');
     const thumbhashUri = useMemo(() => (isThumbhash ? thumbHashStringToDataURL(thumbhash ?? '') : null), [thumbhash]);
     const blurhashUri = useBlurhash(isBlurhash ? source?.uri : null, source?.width, source?.height);
-    if (!source)
+    if (!source) {
         return null;
+    }
     const objectPosition = getObjectPositionFromContentPositionObject(isHash ? hashPlaceholderContentPosition : contentPosition);
     const uri = isHash ? blurhashUri ?? thumbhashUri : source?.uri;
     return (React.createElement("img", { ref: ref, alt: accessibilityLabel, className: className, src: uri || undefined, ...getImgPropsFromSource(source), key: source?.uri, ...props, style: {

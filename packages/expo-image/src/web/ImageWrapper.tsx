@@ -110,7 +110,9 @@ const ImageWrapper = React.forwardRef(
     );
 
     const blurhashUri = useBlurhash(isBlurhash ? source?.uri : null, source?.width, source?.height);
-    if (!source) return null;
+    if (!source) {
+      return null;
+    }
 
     const objectPosition = getObjectPositionFromContentPositionObject(
       isHash ? hashPlaceholderContentPosition : contentPosition
