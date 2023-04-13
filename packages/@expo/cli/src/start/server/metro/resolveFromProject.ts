@@ -45,6 +45,20 @@ export function importMetroResolverFromProject(
   return importFromProject(projectRoot, 'metro-resolver');
 }
 
+/** Import `metro-inspector-proxy` from the project. */
+export function importMetroInspectorProxyFromProject(
+  projectRoot: string
+): typeof import('metro-inspector-proxy') {
+  return importFromProject(projectRoot, 'metro-inspector-proxy');
+}
+
+/** Import `metro-inspector-proxy/src/Device` from the project. */
+export function importMetroInspectorDeviceFromProject(
+  projectRoot: string
+): typeof import('metro-inspector-proxy/src/Device') {
+  return importFromProject(projectRoot, 'metro-inspector-proxy/src/Device');
+}
+
 /**
  * Import the internal `saveAssets()` function from `react-native` for the purpose
  * of saving production assets as-is instead of converting them to a hash.

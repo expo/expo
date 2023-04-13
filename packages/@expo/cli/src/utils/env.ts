@@ -136,6 +136,11 @@ class Env {
   get HTTP_PROXY(): string {
     return process.env.HTTP_PROXY || process.env.http_proxy || '';
   }
+
+  /** **Experimental:** Use the network inspector by overriding the metro inspector proxy with a custom version */
+  get EXPO_USE_CUSTOM_INSPECTOR_PROXY(): boolean {
+    return boolish('EXPO_USE_CUSTOM_INSPECTOR_PROXY', false);
+  }
 }
 
 export const env = new Env();

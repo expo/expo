@@ -133,6 +133,8 @@
     "@types/webpack": "~4.41.32",
     "@types/webpack-dev-server": "3.11.0",
     "@types/wrap-ansi": "^8.0.1",
+    "@types/ws": "^8.5.4",
+    "devtools-protocol": "^0.0.1113120",
     "expo-module-scripts": "^3.0.0",
     "klaw-sync": "^6.0.0",
     "nock": "~13.2.2",

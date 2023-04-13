@@ -7,9 +7,13 @@
 ### 🎉 New features
 
 - Added experimental react-devtools integration. ([#21462](https://github.com/expo/expo/pull/21462) by [@kudo](https://github.com/kudo))
+- Add experimental inspector proxy to handle more CDP requests. ([#21449](https://github.com/expo/expo/pull/21449) by [@byCedric](https://github.com/byCedric))
+- Add inspector proxy workarounds for known issues with vscode debugger and Hermes CDP messages. ([#21560](https://github.com/expo/expo/pull/21560) by [@byCedric](https://github.com/byCedric))
+- Add inspector support for `Page.reload` CDP message. ([#21827](https://github.com/expo/expo/pull/21827) by [@byCedric](https://github.com/byCedric))
 
 ### 🐛 Bug fixes
 
+- Respond to `Debugger.getScriptSource` CDP messages when using lan or tunnel. ([#21825](https://github.com/expo/expo/pull/21825) by [@byCedric](https://github.com/byCedric))
 - Fix legacy accept signature parsing. ([#21970](https://github.com/expo/expo/pull/21970) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others

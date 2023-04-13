@@ -12,7 +12,9 @@ import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import { env } from '../../../utils/env';
 import { createDevServerMiddleware } from '../middleware/createDevServerMiddleware';
 import { getPlatformBundlers } from '../platformBundlers';
+import { MetroBundlerDevServer } from './MetroBundlerDevServer';
 import { MetroTerminalReporter } from './MetroTerminalReporter';
+import { createInspectorProxy } from './inspector-proxy';
 import { importExpoMetroConfigFromProject, importMetroFromProject } from './resolveFromProject';
 import { withMetroMultiPlatformAsync } from './withMetroMultiPlatform';
 
@@ -23,13 +25,15 @@ type MessageSocket = {
 
 /** The most generic possible setup for Metro bundler. */
 export async function instantiateMetroAsync(
-  projectRoot: string,
+  metroBundler: MetroBundlerDevServer,
   options: Omit<MetroDevServerOptions, 'logger'>
 ): Promise<{
   server: http.Server;
   middleware: any;
   messageSocket: MessageSocket;
 }> {
+  const projectRoot = metroBundler.projectRoot;
+
   let reportEvent: ((event: any) => void) | undefined;
 
   const Metro = importMetroFromProject(projectRoot);
@@ -82,14 +86,34 @@ export async function instantiateMetroAsync(
     return middleware.use(metroMiddleware);
   };
 
+  // Create the custom inspector proxy only when enabled and opt-in
+  const inspectorProxy =
+    metroConfig.server.runInspectorProxy && env.EXPO_USE_CUSTOM_INSPECTOR_PROXY
+      ? createInspectorProxy(metroBundler, metroBundler.projectRoot)
+      : null;
+
+  if (inspectorProxy) {
+    // @ts-expect-error Property is read-only, but we need to disable it
+    metroConfig.server.runInspectorProxy = false;
+  }
+
   middleware.use(createDebuggerTelemetryMiddleware(projectRoot, exp));
 
   const server = await Metro.runServer(metroConfig, {
     hmrEnabled: true,
-    websocketEndpoints,
+    websocketEndpoints: {
+      ...websocketEndpoints,
+      ...(inspectorProxy ? inspectorProxy.createWebSocketListeners() : {}),
+    },
     // @ts-expect-error Property was added in 0.73.4, remove this statement when updating Metro
     watch: isWatchEnabled(),
   });
+
+  // Hook the inspector proxy in the Metro server
+  if (inspectorProxy) {
+    inspectorProxy.setServerAddress(server);
+    middleware.use(inspectorProxy.processRequest);
+  }
 
   if (attachToServer) {
     // Expo SDK 44 and lower

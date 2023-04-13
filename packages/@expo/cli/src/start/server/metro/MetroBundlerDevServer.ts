@@ -57,10 +57,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       unversioned: false,
     };
 
-    const { server, middleware, messageSocket } = await instantiateMetroAsync(
-      this.projectRoot,
-      parsedOptions
-    );
+    const { server, middleware, messageSocket } = await instantiateMetroAsync(this, parsedOptions);
 
     const manifestMiddleware = await this.getManifestMiddlewareAsync(options);
 
