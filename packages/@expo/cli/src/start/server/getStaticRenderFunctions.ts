@@ -128,7 +128,6 @@ export async function requireFileContentsWithMetro(
 
   // TODO: Improve error handling
   if (res.status === 500) {
-    console.log('res erro:', res);
     const text = await res.text();
     if (text.startsWith('{"originModulePath"')) {
       const errorObject = JSON.parse(text);

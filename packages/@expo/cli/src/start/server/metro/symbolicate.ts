@@ -1,4 +1,3 @@
-import fetch from 'node-fetch';
 import { parse, StackFrame } from 'stacktrace-parser';
 
 export type CodeFrame = {
@@ -11,21 +10,8 @@ export type CodeFrame = {
   fileName: string;
 };
 
-export type SymbolicatedStackTrace = {
-  stack: StackFrame[];
-  codeFrame?: CodeFrame;
-};
-
-export async function symbolicateStackTrace(
-  origin: string,
-  stack: StackFrame[]
-): Promise<SymbolicatedStackTrace> {
-  const response = await fetch(origin + '/symbolicate', {
-    method: 'POST',
-    body: JSON.stringify({ stack }),
-  });
-  return await response.json();
-}
+export type MetroStackFrame = StackFrame & { collapse?: boolean };
+export type Stack = StackFrame[];
 
 export function parseErrorStack(stack?: string): (StackFrame & { collapse?: boolean })[] {
   if (stack == null) {
@@ -48,76 +34,6 @@ export function parseErrorStack(stack?: string): (StackFrame & { collapse?: bool
       column: frame.column != null ? frame.column - 1 : null,
     };
   });
-}
-
-declare const process: any;
-
-export function openFileInEditor(baseUrl: string, file: string, lineNumber: number) {
-  if (process.env.NODE_ENV !== 'production') {
-    // TODO: This is not a great URL since it now blocks users from accessing the `/open-stack-frame` url in their router
-    // ideally it would be something like `/_devtools/open-stack-frame`.
-
-    fetch(baseUrl + '/open-stack-frame', {
-      method: 'POST',
-      body: JSON.stringify({ file, lineNumber }),
-    });
-  }
-}
-
-const cache: Map<Stack, Promise<SymbolicatedStackTrace>> = new Map();
-
-/**
- * Sanitize because sometimes, `symbolicateStackTrace` gives us invalid values.
- */
-const sanitize = ({
-  stack: maybeStack,
-  codeFrame,
-}: SymbolicatedStackTrace): SymbolicatedStackTrace => {
-  if (!Array.isArray(maybeStack)) {
-    throw new Error('Expected stack to be an array.');
-  }
-  const stack: MetroStackFrame[] = [];
-  for (const maybeFrame of maybeStack) {
-    let collapse = false;
-    if ('collapse' in maybeFrame) {
-      if (typeof maybeFrame.collapse !== 'boolean') {
-        throw new Error('Expected stack frame `collapse` to be a boolean.');
-      }
-      collapse = maybeFrame.collapse;
-    }
-    stack.push({
-      arguments: [],
-      column: maybeFrame.column,
-      file: maybeFrame.file,
-      lineNumber: maybeFrame.lineNumber,
-      methodName: maybeFrame.methodName,
-      collapse,
-    });
-  }
-  return { stack, codeFrame };
-};
-
-export function symbolicate(originUrl: string, stack: Stack): Promise<SymbolicatedStackTrace> {
-  let promise = cache.get(stack);
-  if (promise == null) {
-    promise = symbolicateStackTrace(originUrl, stack).then(sanitize);
-    cache.set(stack, promise);
-  }
-
-  return promise;
-}
-
-type MetroStackFrame = StackFrame & { collapse?: boolean };
-
-export type Stack = StackFrame[];
-
-export async function symbolicateServerError(
-  originUrl: string,
-  error: Error
-): Promise<SymbolicatedStackTrace> {
-  const stack = parseErrorStack(error.stack);
-
-  return symbolicate(originUrl, stack);
 }
 
 export function getStackFormattedLocation(projectRoot: string, frame: MetroStackFrame) {
