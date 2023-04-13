@@ -367,7 +367,6 @@ const archive = [
   ]),
   makeSection('Technical Specs', [makePage('archive/technical-specs/expo-updates-0.mdx')]),
   makeSection('More', [
-    makePage('archive/adhoc-builds.mdx'),
     makePage('archive/expo-cli.mdx'),
     makePage('archive/managed-vs-bare.mdx'),
     makePage('archive/notification-channels.mdx'),
