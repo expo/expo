@@ -18,17 +18,17 @@ There are three parts to consider when designing a EAS Update deployment process
 2. **Testing changes**
    - (a) We can test changes with TestFlight and Play Store Internal Track.
    - (b) We can test changes with an internal distribution build.
-   - (c) We can test changes with Expo Go or a development app.
+   - (c) We can test changes with Expo Go or a [Development Build](https://docs.expo.dev/develop/development-builds/introduction/).
 3. **Publishing updates**
    - (a) We can publish updates to a single branch.
    - (b) We can create update branches that are environment-based, like "production" and "staging".
    - (c) We can create update branches that are version-based, like "version-1.0", which enables us to promote updates from one channel to another.
 
-We can mix and match the parts above to create a process that is the right balance of cadence and safety for our team and users.
+We can mix and match and tweak the parts above to create a process that is the right balance of release cadence and safety for our team and users.
 
 Another trade-off to consider is the amount of bookkeeping of versions/names/environments we'll have to do throughout the process. The less bookkeeping we have to do will make it easier to follow a consistent process. It'll also make it easier to communicate with our colleagues. If we need fine-grained control, bookkeeping will be required to get the exact process we want.
 
-Below, we've outlined four common patterns on how to deploy a project with Expo and EAS.
+Below, we've outlined four common patterns on how to deploy a project using EAS Update.
 
 ## Two-command flow
 
@@ -36,7 +36,7 @@ This flow is the simplest and fastest flow, with the fewest amount of safety che
 
 **Creating builds:** (a) Create builds for production use only.
 
-**Testing changes:** (c) Test changes with Expo Go or a development app.
+**Testing changes:** (c) Test changes with Expo Go or a [Development Build](https://docs.expo.dev/develop/development-builds/introduction/).
 
 **Publishing updates:** (a) Publish to a single branch.
 
@@ -50,7 +50,7 @@ This flow is the simplest and fastest flow, with the fewest amount of safety che
 
 ### Explanation of flow
 
-1. Develop a project locally and test changes in Expo Go.
+1. Develop a project locally and test changes in Dev Client or Expo Go.
 2. Run `eas build` to create builds, then submit them to app stores. These builds are for public use, and should be submitted/reviewed, and released on the app stores.
 3. When we have updates we'd like to deliver, run `eas update --branch production` to deliver updates to our users immediately.
 
@@ -61,17 +61,17 @@ This flow is the simplest and fastest flow, with the fewest amount of safety che
 
 #### Disadvantages of this flow
 
-- There are no pre-production checks to make sure the code will function as intended. We can test with Expo Go or a development app, but this is less safe than having a dedicated test environment.
+- There are no pre-production checks to make sure the code will function as intended. We can test with Expo Go or a [Development Build](https://docs.expo.dev/develop/development-builds/introduction/), but this is less safe than having a dedicated test environment.
 
 ## Branch promotion flow
 
 This flow is great for managing versioned releases. Here are the parts of the deployment process above that make up this flow:
 
-**Creating builds:** (b) Create builds for production and separate builds for testing.
+**Creating builds:** (b) Create builds for production (one per major version) and separate builds for testing.
 
 **Testing changes:** (a) Test changes on TestFlight and the Play Store Internal Track and/or (b) Test changes with internal distribution builds.
 
-**Publishing updates:** (c) Create update branches that are version based, like "version-1.0".
+**Publishing updates:** (c) Create update branches that are version based, like "version-1.0". Branches are dynamically mapped to channels to promote well-tested changes from testing to production.
 
 ### Diagram of flow
 
@@ -83,18 +83,29 @@ This flow is great for managing versioned releases. Here are the parts of the de
 
 ### Explanation of flow
 
-1. Develop a project locally and test changes in Expo Go.
-2. Create builds with channels named "production", which will eventually get reviewed and become available on app stores. Create another set of builds with channels named "staging", which will be used for testing on TestFlight and the Play Store Internal Track.
+1. Develop a project locally and test changes in Expo Go or a [Development Build](https://docs.expo.dev/develop/development-builds/introduction/).
+2. Create builds with channels named "production-rtv-1" (indicating a channel with a runtime version 1), which will eventually get reviewed and become available on app stores. Create another set of builds with channels named "staging", which will be used for testing on TestFlight and the Play Store Internal Track.
 3. Set up `expo-github-action` to publish updates when merging commits to branches.
 4. Merge changes into a branch named "version-1.0".
 5. Use the website or EAS CLI to point the "staging" channel at the EAS Update branch "version-1.0". Test the update by opening the apps on TestFlight and the Play Store Internal Track.
-6. When ready, use the website or EAS CLI to point the "production" channel at the EAS Update branch "version-1.0".
-7. Then, create another GitHub branch named "version-1.1", and merge commits until the new features and fixes are ready. When they are, use the website or EAS CLI to point the "staging" channel at the EAS Update branch "version-1.1".
-8. When ready, use the website or EAS CLI to point the "production" channel at the EAS Update branch "version-1.1".
+6. When ready, use the website or EAS CLI to point the "production-rtv-1" channel at the EAS Update branch "version-1.0".
+7. Then, there are two update scenarios you may encounter:
+    - A new release does not require a new runtime version:
+        1. Create another GitHub branch named "version-1.1".
+        2. Use the website or EAS CLI to point the "staging" channel at the EAS Update branch "version-1.1".
+        3. Merge commits into the "version-1.1" branch until the new features and fixes are ready and stable.
+        4. Use the website or EAS CLI to point the "production-rtv-1" channel at the EAS Update branch "version-1.1". This will mean that everyone with a production build (users who downloaded the app from the app stores) will now get the latest update on the "version-1.1" branch.
+    - A new release requires a new runtime version (for example, when new native libraries are added or SDK version is upgraded):
+        1. Create a new "staging" build with the new runtime version.
+        1. Create another GitHub branch named "version-1.1".
+        2. Use the website or EAS CLI to point the "staging" channel at the EAS Update branch "version-1.1".
+        3. Merge commits into the "version-1.1" branch until the new features and fixes are ready and stable.
+        4. Create a new build with channel named "production-rtv-2", which will eventually get reviewed and become available on app stores.
+        5. Use the website or EAS CLI to point the "production-rtv-2" channel at the EAS Update branch "version-1.2". This will mean that everyone who previously had a production build (users who downloaded the app from the app stores) will continue to get the latest update on EAS Update branch "version-1.1" until they download the new version of the app from the app store, at which time they will get the latest update on EAS Update branch "version-1.2".
 
 #### Advantages of this flow
 
-- This flow is safer than the other flows. All updates are tested on test builds, and branches are moved between channels, so the exact artifact tested is the one deployed to production builds.
+- This flow is safer than the other flows. All updates are tested on test builds which are distributed to internal tests, and branches are moved between channels, so the exact artifact tested is the one deployed to production builds.
 - This flow creates a direct mapping between GitHub branches and EAS Update branches. It also creates a mapping between GitHub commits and EAS Update updates. If you're keeping track of GitHub branches, you can create EAS Update branches for each GitHub branch and link those branches to a build's channel.
   In practice, this makes it so you can push to GitHub, then select the same branch name on Expo to link to builds.
 - Previous versions of your deployments are always preserved on GitHub. Once the "version-1.0" branch is deployed, then another version is deployed after it (like "version-1.1"), the "version-1.0" branch is forever preserved, making it easy to checkout a previous version of your project.
