@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update barcode scanner library for Android. ([#22107](https://github.com/expo/expo/pull/22107) by [@toshiyuki-suzuki-yukashikado](https://github.com/toshiyuki-suzuki-yukashikado))
+
 ## 12.3.2 - 2023-03-03
 
 ### 🐛 Bug fixes
