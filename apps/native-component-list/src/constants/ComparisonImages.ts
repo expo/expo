@@ -52,6 +52,11 @@ export const comparisonImages: ComparisonImage[] = [
     thumbhash: 'yPcFDQJ3d3mHB4hIiH23R5eAfxn4',
   },
   {
+    source: { uri: 'https://picsum.photos/seed/743/200/300' },
+    blurhash: { blurhash: 'TMK+#~xt00c[Sizn0=NKkPIFWBtk', width: 18, height: 12 },
+    thumbhash: 'HHsOPQYIpnt2WHdnl4eYh4hzgA4n',
+  },
+  {
     source: { uri: 'https://picsum.photos/seed/466/200/300' },
     blurhash: { blurhash: 'TAJjw{-UQ;00Iqjc^zo^bt~Bw4RQ', width: 18, height: 12 },
     thumbhash: 'nRkWLQh4eHB3h3iId3d3iHhwiAl4',
