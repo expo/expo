@@ -42,6 +42,26 @@ export const comparisonImages: ComparisonImage[] = [
     thumbhash: 'JRkaPQh4d394V4doeHd3h3iAgAcI',
   },
   {
+    source: { uri: 'https://picsum.photos/seed/566/200/300' },
+    blurhash: { blurhash: 'T#H{NaxuWA?wWVoLRkV?ofE3ogoJ', width: 18, height: 12 },
+    thumbhash: 'JtcRFQR6d3+IaIZYeXWHd28h+naS',
+  },
+  {
+    source: { uri: 'https://picsum.photos/seed/666/200/300' },
+    blurhash: { blurhash: 'T15#kc9urWu6aeWB00^PTKL#ogt8', width: 18, height: 12 },
+    thumbhash: 'yPcFDQJ3d3mHB4hIiH23R5eAfxn4',
+  },
+  {
+    source: { uri: 'https://picsum.photos/seed/466/200/300' },
+    blurhash: { blurhash: 'TAJjw{-UQ;00Iqjc^zo^bt~Bw4RQ', width: 18, height: 12 },
+    thumbhash: 'nRkWLQh4eHB3h3iId3d3iHhwiAl4',
+  },
+  {
+    source: { uri: 'https://picsum.photos/seed/523/200/300' },
+    blurhash: { blurhash: 'TYF~:d%2M{_4t6Rk%1ofWBWCt7ay', width: 18, height: 12 },
+    thumbhash: 'YecNDQJpiI+Hh3h3eIdnWFyVv3f4',
+  },
+  {
     source: { uri: 'https://picsum.photos/id/237/200/300' },
     blurhash: {
       blurhash: 'WRB:KZbH%LxaoeNGIpR*IoWBs:oL~UWVt6t6WBWB%1ofs:j[t6WV',
