@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added experimental `unstable_networkInspector` properties. ([#22129](https://github.com/expo/expo/pull/22129) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
