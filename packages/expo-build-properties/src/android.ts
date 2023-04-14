@@ -63,6 +63,10 @@ export const withAndroidBuildProperties = createBuildGradlePropsConfigPlugin<Plu
       propName: 'android.enableShrinkResourcesInReleaseBuilds',
       propValueGetter: (config) => config.android?.enableShrinkResourcesInReleaseBuilds?.toString(),
     },
+    {
+      propName: 'EX_DEV_CLIENT_NETWORK_INSPECTOR',
+      propValueGetter: (config) => config.android?.unstable_networkInspector?.toString(),
+    },
   ],
   'withAndroidBuildProperties'
 );
