@@ -213,8 +213,10 @@ class ImagePickerModule : Module() {
           continuation.resumeWithException(UserRejectedPermissionsException())
         }
       },
-      Manifest.permission.WRITE_EXTERNAL_STORAGE.takeIf { Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU },
-      Manifest.permission.CAMERA
+      *listOfNotNull(
+        Manifest.permission.WRITE_EXTERNAL_STORAGE.takeIf { Build.VERSION.SDK_INT < Build.VERSION_CODES.TIRAMISU },
+        Manifest.permission.CAMERA
+      ).toTypedArray()
     )
   }
 
