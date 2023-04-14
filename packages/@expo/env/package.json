@@ -1,6 +1,6 @@
 {
   "name": "@expo/env",
-  "version": "0.0.1",
+  "version": "0.0.2",
   "description": "hydrate environment variables from .env files into process.env",
   "main": "build/index.js",
   "scripts": {
@@ -28,6 +28,7 @@
   "dependencies": {
     "dotenv": "~16.0.3",
     "dotenv-expand": "~10.0.0",
+    "chalk": "^4.0.0",
     "debug": "^4.3.4"
   },
   "devDependencies": {
