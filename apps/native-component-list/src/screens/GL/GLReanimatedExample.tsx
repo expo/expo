@@ -146,7 +146,7 @@ export default function GLReanimated() {
     y: useSharedValue(0),
   };
 
-  const [assets] = useAssets([require('../../../assets/images/exponent-icon.png')]);
+  const [assets] = useAssets([require('../../../assets/images/expo-icon.png')]);
 
   const gestureHandler = useAnimatedGestureHandler<
     PanGestureHandlerGestureEvent,

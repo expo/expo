@@ -2,20 +2,18 @@ import { Image, ImageSource } from 'expo-image';
 import * as React from 'react';
 import { ImageBackground, StyleSheet, View } from 'react-native';
 
-import { Colors } from '../../constants';
-
 type ComparisonImageProps = {
-  source: ImageSource;
+  source: ImageSource | null;
   placeholder?: ImageSource;
   showGrid?: boolean;
-  backgroundImage?: ImageSource | null;
+  transition?: number;
 };
 
 export default function ComparisonImage({
   source,
   placeholder,
   showGrid = false,
-  backgroundImage,
+  transition = 2000,
 }: ComparisonImageProps) {
   const image = (
     <Image
@@ -24,13 +22,11 @@ export default function ComparisonImage({
       contentFit="cover"
       cachePolicy="none"
       placeholder={placeholder}
-      transition={2000}
+      transition={transition}
     />
   );
-  // background is useful for showing grid on transparent views or avoiding images becoming brighter during transition
-  const background = showGrid
-    ? require('../../../assets/images/transparencyGrid.png')
-    : backgroundImage;
+  // background is useful for showing grid on transparent views
+  const background = showGrid ? require('../../../assets/images/transparencyGrid.png') : null;
 
   return background ? (
     <ImageBackground source={background} style={styles.imageContainer}>
@@ -40,16 +36,14 @@ export default function ComparisonImage({
     <View style={styles.imageContainer}>{image}</View>
   );
 }
+
 const styles = StyleSheet.create({
   image: {
-    width: 110,
-    height: 150,
+    flex: 1,
   },
   imageContainer: {
-    width: 110,
+    flex: 1,
     height: 150,
-    margin: 5,
-    borderWidth: 1,
-    borderColor: Colors.border,
+    marginVertical: 5,
   },
 });
