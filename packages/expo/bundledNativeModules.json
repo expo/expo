@@ -31,7 +31,7 @@
   "expo-constants": "~14.2.1",
   "expo-contacts": "~12.0.1",
   "expo-crypto": "~12.2.1",
-  "expo-dev-client": "~2.2.0",
+  "expo-dev-client": "~2.2.1",
   "expo-device": "~5.2.1",
   "expo-document-picker": "~11.2.2",
   "expo-face-detector": "~12.1.1",
