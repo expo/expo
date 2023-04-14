@@ -5,6 +5,13 @@ Object.defineProperty(exports, "__esModule", {
 });
 exports.createControlledEnvironment = createControlledEnvironment;
 exports.getFiles = getFiles;
+function _chalk() {
+  const data = _interopRequireDefault(require("chalk"));
+  _chalk = function () {
+    return data;
+  };
+  return data;
+}
 function dotenv() {
   const data = _interopRequireWildcard(require("dotenv"));
   dotenv = function () {
@@ -35,6 +42,7 @@ function path() {
 }
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
+function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
 /**
  * Copyright © 2023 650 Industries.
  *
@@ -137,12 +145,16 @@ function createControlledEnvironment() {
 }
 function getFiles(mode) {
   if (!mode) {
-    throw new Error('The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI.');
+    console.error(_chalk().default.red('The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI or NODE_ENV is set.'));
+    console.error(_chalk().default.red('Proceeding without mode-specific .env'));
   }
-  if (!mode || !['development', 'test', 'production'].includes(mode)) {
+  if (mode && !['development', 'test', 'production'].includes(mode)) {
     throw new Error(`Environment variable "NODE_ENV=${mode}" is invalid. Valid values are "development", "test", and "production`);
   }
-
+  if (!mode) {
+    // Support environments that don't respect NODE_ENV
+    return [`.env.local`, '.env'];
+  }
   // https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
   const dotenvFiles = [`.env.${mode}.local`,
   // Don't include `.env.local` for `test` environment

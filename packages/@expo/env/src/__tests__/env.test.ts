@@ -44,10 +44,20 @@ describe(getFiles, () => {
     // important
     expect(getFiles('test')).toEqual(['.env.test.local', '.env.test', '.env']);
   });
+  const originalError = console.error;
+  beforeEach(() => {
+    console.error = jest.fn();
+  });
+  afterEach(() => {
+    console.error = originalError;
+  });
 
   it(`throws if NODE_ENV is not set`, () => {
-    expect(() => getFiles(undefined)).toThrowErrorMatchingInlineSnapshot(
-      `"The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI."`
+    getFiles(undefined);
+
+    expect(console.error).toBeCalledTimes(2);
+    expect(console.error).toBeCalledWith(
+      expect.stringContaining('The NODE_ENV environment variable is required but was not specified')
     );
   });
   it(`throws if NODE_ENV is not valid`, () => {
