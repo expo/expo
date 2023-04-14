@@ -11,6 +11,18 @@ public enum CheckAutomaticallyConfig: Int {
   case WifiOnly = 1
   case Never = 2
   case ErrorRecoveryOnly = 3
+  var asString: String {
+    switch self {
+    case .Always:
+      return "ON_LOAD"
+    case .WifiOnly:
+      return "WIFI_ONLY"
+    case .Never:
+      return "NEVER"
+    case .ErrorRecoveryOnly:
+      return "ON_ERROR_RECOVERY"
+    }
+  }
 }
 
 @objc(EXUpdatesConfigError)

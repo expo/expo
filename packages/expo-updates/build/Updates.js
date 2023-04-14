@@ -24,6 +24,10 @@ export const channel = ExpoUpdates.channel ?? null;
  * The runtime version of the current build.
  */
 export const runtimeVersion = ExpoUpdates.runtimeVersion ?? null;
+/**
+ * Determines if and when expo-updates checks for and downloads updates automatically on startup.
+ */
+export const checkAutomatically = ExpoUpdates.checkAutomatically ?? null;
 // @docsMissing
 /**
  * @hidden
