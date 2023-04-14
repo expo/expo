@@ -146,13 +146,15 @@ function createControlledEnvironment() {
 function getFiles(mode) {
   if (!mode) {
     console.error(_chalk().default.red('The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI or NODE_ENV is set.'));
-    console.error(_chalk().default.red('Proceeding in development mode.'));
-    mode = 'development';
+    console.error(_chalk().default.red('Proceeding without mode-specific .env'));
   }
-  if (!mode || !['development', 'test', 'production'].includes(mode)) {
+  if (mode && !['development', 'test', 'production'].includes(mode)) {
     throw new Error(`Environment variable "NODE_ENV=${mode}" is invalid. Valid values are "development", "test", and "production`);
   }
-
+  if (!mode) {
+    // Support environments that don't respect NODE_ENV
+    return [`.env.local`, '.env'];
+  }
   // https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
   const dotenvFiles = [`.env.${mode}.local`,
   // Don't include `.env.local` for `test` environment
