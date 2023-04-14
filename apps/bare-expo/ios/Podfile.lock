@@ -52,23 +52,23 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (14.1.1):
     - ExpoModulesCore
-  - Expo (48.0.10):
+  - Expo (48.0.11):
     - ExpoModulesCore
-  - expo-dev-client (2.1.6):
+  - expo-dev-client (2.2.0):
     - EXManifests
     - expo-dev-launcher
     - expo-dev-menu
     - expo-dev-menu-interface
     - EXUpdatesInterface
-  - expo-dev-launcher (2.1.6):
+  - expo-dev-launcher (2.2.1):
     - EXManifests
-    - expo-dev-launcher/Main (= 2.1.6)
+    - expo-dev-launcher/Main (= 2.2.1)
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Main (2.1.6):
+  - expo-dev-launcher/Main (2.2.1):
     - EXManifests
     - expo-dev-launcher/Unsafe
     - expo-dev-menu
@@ -76,24 +76,24 @@ PODS:
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-launcher/Unsafe (2.1.6):
+  - expo-dev-launcher/Unsafe (2.2.1):
     - EXManifests
     - expo-dev-menu
     - expo-dev-menu-interface
     - ExpoModulesCore
     - EXUpdatesInterface
     - React-Core
-  - expo-dev-menu (2.1.4):
-    - expo-dev-menu/Main (= 2.1.4)
+  - expo-dev-menu (2.2.0):
+    - expo-dev-menu/Main (= 2.2.0)
   - expo-dev-menu-interface (1.1.1)
-  - expo-dev-menu/GestureHandler (2.1.4)
-  - expo-dev-menu/Main (2.1.4):
+  - expo-dev-menu/GestureHandler (2.2.0)
+  - expo-dev-menu/Main (2.2.0):
     - EXManifests
     - expo-dev-menu-interface
     - expo-dev-menu/Vendored
     - ExpoModulesCore
     - React-Core
-  - expo-dev-menu/Reanimated (2.1.4):
+  - expo-dev-menu/Reanimated (2.2.0):
     - DoubleConversion
     - FBLazyVector
     - FBReactNativeSpec
@@ -121,16 +121,16 @@ PODS:
     - React-RCTVibration
     - ReactCommon/turbomodule/core
     - Yoga
-  - expo-dev-menu/SafeAreaView (2.1.4)
-  - expo-dev-menu/Tests (2.1.4):
+  - expo-dev-menu/SafeAreaView (2.2.0)
+  - expo-dev-menu/Tests (2.2.0):
     - ExpoModulesTestCore
     - Nimble
     - Quick
     - React-CoreModules
-  - expo-dev-menu/UITests (2.1.4):
+  - expo-dev-menu/UITests (2.2.0):
     - React
     - React-CoreModules
-  - expo-dev-menu/Vendored (2.1.4):
+  - expo-dev-menu/Vendored (2.2.0):
     - expo-dev-menu/GestureHandler
     - expo-dev-menu/Reanimated
     - expo-dev-menu/SafeAreaView
@@ -170,7 +170,7 @@ PODS:
     - ExpoModulesCore
   - ExpoLinearGradient (12.1.2):
     - ExpoModulesCore
-  - ExpoLocalAuthentication (13.2.1):
+  - ExpoLocalAuthentication (13.3.0):
     - ExpoModulesCore
   - ExpoLocalization (14.1.1):
     - ExpoModulesCore
@@ -1233,10 +1233,10 @@ SPEC CHECKSUMS:
   EXMediaLibrary: 587cd8aad27a6fc8d7c38b950bc75bc1845a7480
   EXNotifications: dd628737af60fc8cc62dccebacd326b0fbbc0dcb
   EXPermissions: 2291c6736a823b4c680d5bf8e12d3c1c5d11da35
-  Expo: b04d142a2b477a391b47c62d179c1a9e1140e6ad
-  expo-dev-client: 84792ce20d34fa5c882cdc3ca338ea1b2cde5013
-  expo-dev-launcher: d29b64da11f838face098b48f4bf55c558a39b37
-  expo-dev-menu: d19c631d547ad3a71299753229627b27e3e7a09e
+  Expo: 81418098ffb16914b2e190f54e06db923248e4a1
+  expo-dev-client: 608af31b81a680b47907d83c1ddcdedbc943d420
+  expo-dev-launcher: 5b89ebcefb38b3fcaac174b54487574a9c6c81b3
+  expo-dev-menu: c8b80f8f6bd92559fc184476076366170178ea2b
   expo-dev-menu-interface: 6c82ae323c4b8724dead4763ce3ff24a2108bdb1
   ExpoAppleAuthentication: 7bd5e4150d59e8df37aa80b425850ae88adf9e65
   ExpoBattery: 678d2b710a8fc398c30258c4dc22c12340ee5411
@@ -1253,7 +1253,7 @@ SPEC CHECKSUMS:
   ExpoImagePicker: 270dea232b3a072d981dd564e2cafc63a864edb1
   ExpoKeepAwake: 69f5f627670d62318410392d03e0b5db0f85759a
   ExpoLinearGradient: 8eaab76b7f55c612ed8348c8be8c2a18a9b4529f
-  ExpoLocalAuthentication: b870b7a8df5e15b8b0be042185a2bb7764093096
+  ExpoLocalAuthentication: 32919307c66fb3661caefa07e7811a95a7539d7b
   ExpoLocalization: f26cd431ad9ea3533c5b08c4fabd879176a794bb
   ExpoMailComposer: 0085b258d00ba40664f7acb40d96042b29a1da7d
   ExpoMaps: be6983038f20ab7d6c953cda7aa48f81713896d3
@@ -1358,6 +1358,6 @@ SPEC CHECKSUMS:
   Yoga: ba09b6b11e6139e3df8229238aa794205ca6a02a
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 221d96cc63183a5dfbb774316e11def3300ac02d
+PODFILE CHECKSUM: 1ab84f0cf99ff30b5bef34b15772716deaa3f3ca
 
 COCOAPODS: 1.11.2

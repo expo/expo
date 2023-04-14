@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed `Invalid State: Cannot call send: until connection is open` crash when using network inspector on iOS. ([#22130](https://github.com/expo/expo/pull/22130) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 2.2.1 — 2023-04-14
+
+### 🐛 Bug fixes
+
+- Fixed `Invalid State: Cannot call send: until connection is open` crash when using network inspector on iOS. ([#22130](https://github.com/expo/expo/pull/22130) by [@kudo](https://github.com/kudo))
 
 ## 2.2.0 — 2023-04-13
 

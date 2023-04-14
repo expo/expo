@@ -22,7 +22,7 @@
   "expo-battery": "~7.1.1",
   "expo-blur": "~12.2.2",
   "expo-brightness": "~11.2.1",
-  "expo-build-properties": "~0.5.2",
+  "expo-build-properties": "~0.6.0",
   "expo-calendar": "~11.1.1",
   "expo-camera": "~13.2.1",
   "expo-cellular": "~5.1.1",
