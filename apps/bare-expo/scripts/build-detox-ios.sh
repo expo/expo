@@ -19,7 +19,7 @@ xcodebuild \
   -sdk iphonesimulator \
   -arch x86_64 \
   -derivedDataPath "ios/build" \
-  -UseModernBuildSystem="$UseModernBuildSystem" 2>&1 | xcpretty --knock
+  -UseModernBuildSystem="$UseModernBuildSystem" 2>&1 | yarn excpretty
 
 if [ "${PIPESTATUS[0]}" -ne "0" ]; then
   echo 'Build Failed'

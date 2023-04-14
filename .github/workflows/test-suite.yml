@@ -112,9 +112,15 @@ jobs:
         run: yarn ios:detox:build:release
         working-directory: apps/bare-expo
         timeout-minutes: 30
+        env:
+          EXPO_DEBUG: 1
+          NODE_ENV: production
       - name: Run tests
         run: yarn ios:detox:test:release
         working-directory: apps/bare-expo
+        env:
+          EXPO_DEBUG: 1
+          NODE_ENV: production
       - name: Store images of build failures
         if: always()
         uses: actions/upload-artifact@v3
@@ -182,6 +188,8 @@ jobs:
         working-directory: apps/bare-expo
         timeout-minutes: 35
         env:
+          EXPO_DEBUG: 1
+          NODE_ENV: production
           GRADLE_OPTS: '-Dorg.gradle.internal.http.connectionTimeout=180000 -Dorg.gradle.internal.http.socketTimeout=180000 -Dorg.gradle.internal.network.retry.max.attempts=18 -Dorg.gradle.internal.network.retry.initial.backOff=2000'
       - name: 🧪 Run tests
         uses: reactivecircus/android-emulator-runner@v2
