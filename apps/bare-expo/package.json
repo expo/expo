@@ -83,7 +83,7 @@
     "react-native": "0.71.6",
     "react-native-gesture-handler": "~2.9.0",
     "react-native-pager-view": "6.1.2",
-    "react-native-reanimated": "~2.14.4",
+    "react-native-reanimated": "~3.0.2",
     "react-native-safe-area-context": "4.5.0",
     "react-native-screens": "~3.20.0",
     "react-native-shared-element": "0.8.8",
