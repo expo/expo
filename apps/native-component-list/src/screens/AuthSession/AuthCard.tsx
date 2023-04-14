@@ -116,7 +116,7 @@ const providers: Record<string, any> = {
     image:
       'https://github.com/expo/expo/blob/main/docs/public/static/images/sdk/auth-session/beyondidentity.png?raw=true',
     color: '#4673D3',
-  }
+  },
 };
 
 function SocialImage({ image }: any) {
