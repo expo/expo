@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Add missing updates.checkAutomatically values. ([#22119](https://github.com/expo/expo/pull/22119) by [@douglowder](https://github.com/douglowder))
+
 ### 💡 Others
 
 - Update snapshots. ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))

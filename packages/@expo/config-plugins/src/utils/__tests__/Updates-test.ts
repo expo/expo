@@ -61,6 +61,11 @@ describe('shared config getters', () => {
       getUpdatesCheckOnLaunch({ updates: { checkAutomatically: 'ON_ERROR_RECOVERY' } }, '0.10.15')
     ).toBe('NEVER');
     expect(getUpdatesCheckOnLaunch({ updates: { checkAutomatically: 'ON_LOAD' } })).toBe('ALWAYS');
+    expect(getUpdatesCheckOnLaunch({ updates: { checkAutomatically: 'WIFI_ONLY' } })).toBe(
+      'WIFI_ONLY'
+    );
+    expect(getUpdatesCheckOnLaunch({ updates: { checkAutomatically: 'NEVER' } })).toBe('NEVER');
+    expect(getUpdatesCheckOnLaunch({ updates: {} })).toBe('ALWAYS');
     expect(getUpdatesEnabled({ updates: { enabled: false } })).toBe(false);
     expect(getUpdatesTimeout({ updates: { fallbackToCacheTimeout: 2000 } })).toBe(2000);
     expect(
