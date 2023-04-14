@@ -180,41 +180,37 @@ export default function App() {
 
 | Website                             | Provider | PKCE      | Auto Discovery |
 | ----------------------------------- | -------- | --------- | -------------- |
-| [Sign Up][c-beyondidentity] | OpenID   | Supported | Available      |
+| [Get your config](https://www.beyondidentity.com/developers/signup) | OpenID   | Supported | Available      |
 
-[c-beyondidentity]: https://www.beyondidentity.com/developers/signup
-[c-beyondidentity-docs]: https://developer.beyondidentity.com
-[c-beyondidentity-github]: https://github.com/gobeyondidentity/bi-sdk-react-native
-[c-beyondidentity-authenticator-config]: https://developer.beyondidentity.com/docs/v1/platform-overview/authenticator-config
 
-> Beyond Identity allows developers to implement strong passwordless authentication based on public-private key pairs called "Universal Passkeys". All keys are cryptographically linked to the user and can be centrally managed using the Beyond Identity APIs. You will need a Universal Passkey before you can authenticate. 
+- Beyond Identity allows developers to implement strong passwordless authentication based on public-private key pairs called Universal Passkeys. All keys are cryptographically linked to the user and can be centrally managed using the Beyond Identity APIs. 
+- You will need a Universal Passkey before you can authenticate. See [Beyond Identity documentation](https://developer.beyondidentity.com).
+- Make sure to [create a development build](/develop/development-builds/create-a-build/) and follow instructions to [install required config plugins](https://github.com/gobeyondidentity/bi-sdk-react-native/tree/main#using-expo).
+- For a complete example app, see [SDK's GitHub repository](https://github.com/gobeyondidentity/bi-sdk-react-native).
 
-> For information on Universal Passkeys, documentation and guides visit the [developer documentation][c-beyondidentity-docs].
-
-> For a complete example app and installation instructions visit the sdk on [github][c-beyondidentity-github].
-
-<Tabs tabs={["Auth Code w/ automatic invocation", "Auth Code w/ manual invocation"]}>
+<Tabs tabs={["Auth Code with automatic invocation", "Auth Code with manual invocation"]}>
 <Tab>
 Set your Beyond Identity [Authenticator Config][c-beyondidentity-authenticator-config]'s Invocation Type to <code>"Automatic"</code>. If "Automatic" is selected, Beyond Identity will automatically redirect to your application using the Invoke URL (the App Scheme or Univeral URL pointing to your application).
+
 {/* prettier-ignore */}
 ```tsx Beyond Identity Auth Code w/ Invocation Type "Automatic"
 import * as React from 'react';
 import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
 import { Button } from 'react-native';
-/* @info Install the Beyond Identity Embedded SDK. This can only be used in standalone and bare workflow native apps. This SDK cannot be used in the Expo Go app. */
+/* @info Import the Beyond Identity Embedded SDK.*/
 import { Embedded } from '@beyondidentity/bi-sdk-react-native';
 /* @end */
 
 export default function App() {
   // Endpoint
-  const discovery = useAutoDiscovery(`https://auth-${REGION}.beyondidentity.com/v1/tenants/${TENANT_ID}/realms/${REALM_ID}/applications/${APPLICATION_ID}`);
+  const discovery = useAutoDiscovery(`https://auth-${region}.beyondidentity.com/v1/tenants/${tenant_id}/realms/${realm_id}/applications/${application_id}`);
   // Request
   const [request, response, promptAsync] = useAuthRequest(
     {
-      clientId: `${CLIENT_ID}`,
+      clientId: `${client_id}`,
       scopes: ['openid'],
       redirectUri: makeRedirectUri({
-        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property of your app.json or app.config.js will be used instead. */
+        /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property in your app.json or app.config.js is used instead. */
         scheme: 'your.app'
         /* @end */
       }),
@@ -235,7 +231,7 @@ export default function App() {
       }
     };
 
-     /* @info The response does not need to be of type 'success' if it has a url. The state value is stored in a JWT in the url 'request' paramater and the url will be validated through the Beyond Identity Embedded SDK.  */
+     /* @info The response does not need to be of type 'success' if it has a url. The state value is stored in a JWT in the url 'request' parameter, and the url will be validated through the Beyond Identity Embedded SDK. */
      if (response?.url) {
      /* @end */
       authenticate(url)
@@ -260,18 +256,20 @@ export default function App() {
 </Tab>
 
 <Tab>
-Set your Beyond Identity [Authenticator Config][c-beyondidentity-authenticator-config]'s Invocation Type to <code>"Manual"</code>. If "Manual" is selected, an authentication URL be returned to you as part of a JSON response. No redirects are needed and will not require authentication through a web service. The result is a completley silent OAuth 2.0 authentication using Passkeys. Since the challenge is packaged as part of the authentication URL, following the URL will result in the same behavior as if an Invocation Type of "Automatic" were selected.
+- Set your Beyond Identity [Authenticator Config's](https://developer.beyondidentity.com/docs/v1/platform-overview/authenticator-config) Invocation Type to **Manual**. 
+- If **Manual** is selected, an authentication URL is returned as part of a JSON response. No redirects are needed and do not require web service authentication. The result is a completely silent OAuth 2.0 authentication using Passkeys. Since the challenge is packaged as part of the authentication URL, following the URL will result in the same behavior as if an Invocation Type of **Automatic** were selected.
+
 {/* prettier-ignore */}
 ```tsx Beyond Identity Auth Code w/ Invocation Type "Manual"
 import * as React from 'react';
 import { Button } from 'react-native';
-/* @info Install the Beyond Identity Embedded SDK. This can only be used in standalone and bare workflow native apps. This SDK cannot be used in the Expo Go app. */
+/* @info Import the Beyond Identity Embedded SDK.*/
 import { Embedded } from '@beyondidentity/bi-sdk-react-native';
 /* @end */
 
 export default function App() {
   async function authenticate() {
-    const BeyondIdentityAuthUrl = `https://auth-${REGION}.beyondidentity.com/v1/tenants/${TENANT_ID}/realms/${REALM_ID}/applications/${APPLICATION_ID}/authorize?response_type=code&client_id=${CLIENT_ID}&redirect_uri=${URI_ENCODED_REDIRECT_URI}&scope=openid&state=${STATE}&code_challenge_method=S256&code_challenge=${PKCE_CODE_CHALLENGE}`;
+    const BeyondIdentityAuthUrl = `https://auth-${region}.beyondidentity.com/v1/tenants/${tenant_od}/realms/${realm_id}/applications/${application_id}/authorize?response_type=code&client_id=${client_id}&redirect_uri=${uri_encoded_redirect_uri}&scope=openid&state=${state}&code_challenge_method=S256&code_challenge=${pkce_code_challenge}`;
 
     let response = await fetch(BeyondIdentityAuthUrl, {
       method: 'GET',
