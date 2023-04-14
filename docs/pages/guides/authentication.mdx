@@ -190,11 +190,12 @@ export default function App() {
 
 <Tabs tabs={["Auth Code with automatic invocation", "Auth Code with manual invocation"]}>
 <Tab>
-Set your Beyond Identity [Authenticator Config][c-beyondidentity-authenticator-config]'s Invocation Type to <code>"Automatic"</code>. If "Automatic" is selected, Beyond Identity will automatically redirect to your application using the Invoke URL (the App Scheme or Univeral URL pointing to your application).
+- Set your Beyond Identity [Authenticator Config's](https://developer.beyondidentity.com/docs/v1/platform-overview/authenticator-config) Invocation Type to **Automatic**. 
 
+- If **Automatic** is selected, Beyond Identity will automatically redirect to your application using the **Invoke URL** (the App Scheme or Univeral URL pointing to your application).
 {/* prettier-ignore */}
-```tsx Beyond Identity Auth Code w/ Invocation Type "Automatic"
-import * as React from 'react';
+```jsx Auth Code
+import { useEffect } from 'react';
 import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
 import { Button } from 'react-native';
 /* @info Import the Beyond Identity Embedded SDK.*/
@@ -218,7 +219,7 @@ export default function App() {
     discovery
   );
 
-  React.useEffect(() => {
+  useEffect(() => {
     const authenticate = async (url) => {
       // Display UI for user to select a passwordless passkey
       const passkeys = await Embedded.getPasskeys();
@@ -257,11 +258,11 @@ export default function App() {
 
 <Tab>
 - Set your Beyond Identity [Authenticator Config's](https://developer.beyondidentity.com/docs/v1/platform-overview/authenticator-config) Invocation Type to **Manual**. 
-- If **Manual** is selected, an authentication URL is returned as part of a JSON response. No redirects are needed and do not require web service authentication. The result is a completely silent OAuth 2.0 authentication using Passkeys. Since the challenge is packaged as part of the authentication URL, following the URL will result in the same behavior as if an Invocation Type of **Automatic** were selected.
+- If **Manual** is selected, an authentication URL is returned as part of a JSON response. No redirects are needed and do not require web service authentication. The result is a completely silent OAuth 2.0 authentication using Passkeys.
 
 {/* prettier-ignore */}
-```tsx Beyond Identity Auth Code w/ Invocation Type "Manual"
-import * as React from 'react';
+```jsx Auth Code
+import React from 'react';
 import { Button } from 'react-native';
 /* @info Import the Beyond Identity Embedded SDK.*/
 import { Embedded } from '@beyondidentity/bi-sdk-react-native';
