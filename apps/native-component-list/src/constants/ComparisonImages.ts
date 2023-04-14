@@ -27,9 +27,9 @@ export const comparisonImages: ComparisonImage[] = [
     thumbhash: 'EQgKHQZlh2122Hb4dm2Gh2hwkQc3',
   },
   {
-    source: require('../../assets/images/exponent-icon.png'),
-    blurhash: { blurhash: 'LnNU9mj[%1j[a#ay~UoL-ofQRkj[', width: 18, height: 12 },
-    thumbhash: 'GTSBBIAmOIlphnApR+P7ijmPhYUIR4h3Bg',
+    source: require('../../assets/images/expo-icon.png'),
+    blurhash: { blurhash: 'L00000fQfQfQfQfQfQfQfQfQfQfQ', width: 18, height: 12 },
+    thumbhash: 'AAiCBYAmAAAAAAAAAAAAAAAAWFiHcHR5Zw',
     showGrid: true,
   },
   {
