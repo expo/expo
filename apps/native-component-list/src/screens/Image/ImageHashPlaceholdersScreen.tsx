@@ -15,7 +15,7 @@ export default function ImageHashPlaceholdersScreen() {
         <Text style={styles.text}>BlurHash</Text>
         <Text style={styles.text}>ThumbHash</Text>
       </View>
-      <ScrollView>
+      <ScrollView contentContainerStyle={styles.scrollView}>
         {comparisonImages.map((item) => (
           <ComparisonRow
             source={item.source}
@@ -28,7 +28,7 @@ export default function ImageHashPlaceholdersScreen() {
         ))}
       </ScrollView>
       <Button
-        title="Transition"
+        title={showRealImage ? 'Reset' : 'Transition'}
         onPress={() => setShowRealImage(!showRealImage)}
         style={styles.button}
       />
@@ -39,13 +39,15 @@ export default function ImageHashPlaceholdersScreen() {
 const styles = StyleSheet.create({
   container: {
     flex: 1,
-    padding: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+  },
+  scrollView: {
+    padding: 15,
+    paddingTop: 0,
   },
   rowContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
+    gap: 15,
   },
   text: {
     color: 'rgb(28,28,28)',
@@ -56,6 +58,6 @@ const styles = StyleSheet.create({
     fontWeight: '600',
   },
   button: {
-    paddingTop: 15,
+    margin: 15,
   },
 });

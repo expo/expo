@@ -23,7 +23,7 @@ export default function ImagePlaceholderScreen() {
       <Image
         style={styles.image}
         source={source ?? []}
-        placeholder={require('../../../assets/images/exponent-icon.png')}
+        placeholder={require('../../../assets/images/expo-icon.png')}
         cachePolicy="none"
       />
 
