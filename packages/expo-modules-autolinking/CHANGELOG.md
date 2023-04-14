@@ -7,11 +7,16 @@
 ### 🎉 New features
 
 - Generating `ExpoModulesProvider.swift` in the build phase script instead of only `pod install`. ([#21108](https://github.com/expo/expo/pull/21108) by [@tsapeta](https://github.com/tsapeta))
-- Added Gradle plugin autolinking support for Android. ([#21377](https://github.com/expo/expo/pull/21377) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.2.0 - 2023-04-13
+
+### 🎉 New features
+
+- Added Gradle plugin autolinking support for Android. ([#21377](https://github.com/expo/expo/pull/21377) by [@kudo](https://github.com/kudo))
 
 ## 1.1.2 — 2023-02-14
 

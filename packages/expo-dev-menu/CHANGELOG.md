@@ -8,8 +8,6 @@
 
 ### 🎉 New features
 
-- Added experimental react-devtools integration. ([#21462](https://github.com/expo/expo/pull/21462) by [@kudo](https://github.com/kudo))
-
 ### 🐛 Bug fixes
 
 - Fixed reload crash when expo-dev-menu is turned off. ([#21279](https://github.com/expo/expo/pull/21279) by [@jayshah123](https://github.com/jayshah123))
@@ -23,6 +21,12 @@
 ### ⚠️ Notices
 
 - Disable the `Remote JS debugger` option on menu when using SDK 49 or above. ([#22010](https://github.com/expo/expo/pull/22010) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 2.2.0 - 2023-04-13
+
+### 🎉 New features
+
+- Added experimental react-devtools integration. ([#21462](https://github.com/expo/expo/pull/21462) by [@kudo](https://github.com/kudo))
 
 ## 2.1.4 - 2023-03-20
 
