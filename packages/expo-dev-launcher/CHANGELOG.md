@@ -13,6 +13,7 @@
 - Add missing `mimeType` when emitting network responses. ([#21676](https://github.com/expo/expo/pull/21676) by [@byCedric](https://github.com/byCedric))
 - Add missing `Network.requestWillBeSentExtraInfo` when emitting network requests. ([#21965](https://github.com/expo/expo/pull/21965) by [@byCedric](https://github.com/byCedric))
 - Don't require legacy manifest signature in dev clients. ([#21970](https://github.com/expo/expo/pull/21970) by [@wschurman](https://github.com/wschurman))
+- Fixed `Invalid State: Cannot call send: until connection is open` crash when using network inspector on iOS. ([#22130](https://github.com/expo/expo/pull/22130) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
