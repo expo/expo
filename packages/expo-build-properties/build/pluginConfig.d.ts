@@ -66,6 +66,11 @@ export interface PluginConfigTypeAndroid {
      * alternate Flipper version.
      */
     flipper?: string;
+    /**
+     * Enable the experimental Network Inspector for [Development builds](https://docs.expo.dev/develop/development-builds/introduction/).
+     * SDK 49+ is required.
+     */
+    unstable_networkInspector?: boolean;
 }
 /**
  * Interface representing available configuration for iOS native build properties.
@@ -99,6 +104,11 @@ export interface PluginConfigTypeIos {
      * doing so will generate an error.
      */
     flipper?: boolean | string;
+    /**
+     * Enable the experimental Network Inspector for [Development builds](https://docs.expo.dev/develop/development-builds/introduction/).
+     * SDK 49+ is required.
+     */
+    unstable_networkInspector?: boolean;
 }
 /**
  * Interface representing available configuration for Android Gradle plugin [PackagingOptions](https://developer.android.com/reference/tools/gradle-api/7.0/com/android/build/api/dsl/PackagingOptions).

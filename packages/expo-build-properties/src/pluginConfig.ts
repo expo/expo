@@ -87,6 +87,12 @@ export interface PluginConfigTypeAndroid {
    * alternate Flipper version.
    */
   flipper?: string;
+
+  /**
+   * Enable the experimental Network Inspector for [Development builds](https://docs.expo.dev/develop/development-builds/introduction/).
+   * SDK 49+ is required.
+   */
+  unstable_networkInspector?: boolean;
 }
 
 /**
@@ -123,6 +129,12 @@ export interface PluginConfigTypeIos {
    * doing so will generate an error.
    */
   flipper?: boolean | string;
+
+  /**
+   * Enable the experimental Network Inspector for [Development builds](https://docs.expo.dev/develop/development-builds/introduction/).
+   * SDK 49+ is required.
+   */
+  unstable_networkInspector?: boolean;
 }
 
 /**
@@ -180,6 +192,8 @@ const schema: JSONSchemaType<PluginConfigType> = {
           },
           nullable: true,
         },
+
+        unstable_networkInspector: { type: 'boolean', nullable: true },
       },
       nullable: true,
     },
@@ -194,6 +208,8 @@ const schema: JSONSchemaType<PluginConfigType> = {
           type: ['boolean', 'string'],
           nullable: true,
         },
+
+        unstable_networkInspector: { type: 'boolean', nullable: true },
       },
       nullable: true,
     },
