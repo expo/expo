@@ -2146,7 +2146,7 @@ PODS:
     - ExpoModulesCore
   - ExpoDevice (5.2.1):
     - ExpoModulesCore
-  - ExpoDocumentPicker (11.2.1):
+  - ExpoDocumentPicker (11.3.0):
     - ExpoModulesCore
   - ExpoGL (12.4.0):
     - ExpoModulesCore
@@ -2196,7 +2196,7 @@ PODS:
     - ExpoModulesCore
   - ExpoSecureStore (12.1.1):
     - ExpoModulesCore
-  - ExpoSharing (11.3.0):
+  - ExpoSharing (11.3.1):
     - ExpoModulesCore
   - ExpoSMS (11.2.1):
     - ExpoModulesCore
@@ -4744,7 +4744,7 @@ SPEC CHECKSUMS:
   ExpoClipboard: 8a36a8376ab93df9050c14577e9e0fcb805e9114
   ExpoCrypto: 9105610a09cd6290b900bd82fc5d190e489125a3
   ExpoDevice: e0bebf68f978b3d353377ce42e73c20c0a070215
-  ExpoDocumentPicker: 98d6f7987c4e13d79a6b937c8bb26f9002b9cf8d
+  ExpoDocumentPicker: 0da86a728526cc8dd72fce5d322ebcc0c703900f
   ExpoGL: 8f8e40e494a462f33c1f513cf101bf7d6abe767e
   ExpoHaptics: 5156bc5160d8e04c170dd6e645a71154951a2ad9
   ExpoImage: 80221ee353e8e7f1afee71fdbc8099ae61f394f2
@@ -4761,7 +4761,7 @@ SPEC CHECKSUMS:
   ExpoPrint: a0d6f6817ccd072af447bc96b6122b8e7341332c
   ExpoRandom: 7ee07d62e7003b74d0536e0495e3a653fe1b2a74
   ExpoSecureStore: 22b2088cf8cb9d5a276d7a143fdd5b26f83cc601
-  ExpoSharing: 57e419f55ba242b0a9d255d6db829275a1ead586
+  ExpoSharing: 2e37814ae679df9cf5a9f99b4b30408ea7118397
   ExpoSMS: e4f3901fdb30ab239ee1172005dbe6634f2d6138
   ExpoSpeech: ed7dda8073aedbb3f0b0e79d16257534fddff516
   ExpoSQLite: 510412d853e6758df616d7d6168d39596efe5b61
