@@ -120,7 +120,7 @@ export function upsertGitIgnoreContents(
     flag: 'a+',
   });
 
-  if (targetGitIgnore.match(new RegExp(`^${contents}$`))) {
+  if (targetGitIgnore.match(new RegExp(`^${contents}[\\n\\r\\s]*$`, 'm'))) {
     return null;
   }
 
