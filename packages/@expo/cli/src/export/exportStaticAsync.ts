@@ -68,7 +68,6 @@ export async function getFilesToExportFromServerAsync(
     cssLinks,
     renderAsync,
   }: {
-    projectRoot: string;
     manifest: any;
     scripts: string[];
     cssLinks: string[];
