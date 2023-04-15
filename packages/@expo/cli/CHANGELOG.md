@@ -26,7 +26,7 @@
 - Expose environment variables to Node.js processes. ([#22076](https://github.com/expo/expo/pull/22076) by [@EvanBacon](https://github.com/EvanBacon))
 - Use LogBox for static Metro errors. ([#22118](https://github.com/expo/expo/pull/22118) by [@EvanBacon](https://github.com/EvanBacon))
 - Generate experimental expo-env.d.ts when EXPO_ROUTER_TYPED_ROUTES=true ([#22096](https://github.com/expo/expo/pull/22096) by [@marklawlor](https://github.com/marklawlor))
-- Add pretty errors for static exports.
+- Add pretty errors for static exports. ([#22142](https://github.com/expo/expo/pull/22142) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
