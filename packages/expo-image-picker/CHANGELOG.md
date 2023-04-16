@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Added support for the `cameraType` option for Android + Updated types to include the `cameraType` option in `ImagePickerOptions` ([#22143](https://github.com/expo/expo/pull/22143) by [@YoussefHenna](https://github.com/YoussefHenna))
+
 ### 🐛 Bug fixes
 
 - Fix images unexpectedly being converted to `.png` when opening `.bmp` files and selecting any quality in `ImagePickerOptions`. ([#21361](https://github.com/expo/expo/pull/21361) by [@behenate](https://github.com/behenate))
@@ -317,8 +319,3 @@ _This version does not introduce any user-facing changes._
 
 - Skip asking for camera permissions on web with `ImagePicker.getCameraPermissionsAsync`. ([#8475](https://github.com/expo/expo/pull/8475) by [@EvanBacon](https://github.com/EvanBacon))
 - Fixed exception when calling `ImagePicker.getCameraPermissionsAsync` on Web. ([#7498](https://github.com/expo/expo/pull/7498) by [@IjzerenHein](https://github.com/IjzerenHein))
-
-### 🎉 New features
-
-- Added support for the `cameraType` option for Android.
-- Updated types of to include the `cameraType` option in `ImagePickerOptions`
