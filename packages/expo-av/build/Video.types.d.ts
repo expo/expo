@@ -105,7 +105,7 @@ export type VideoProps = {
     videoStyle?: StyleProp<ViewStyle>;
     /**
      * A function to be called regularly with the `AVPlaybackStatus` of the video. You will likely be using this a lot.
-     * See the [AV documentation](av.md) for further information on `onPlaybackStatusUpdate`, and the interval at which it is called.
+     * See the [AV documentation](./av) for further information on `onPlaybackStatusUpdate`, and the interval at which it is called.
      * @param status
      */
     onPlaybackStatusUpdate?: (status: AVPlaybackStatus) => void;
