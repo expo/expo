@@ -10,14 +10,14 @@ struct ContextState {
 
 struct ContextManager {
   std::unordered_map<EXGLContextId, ContextState> contextMap;
-  std::mutex contextLookupMutex;
+  std::shared_mutex contextLookupMutex;
   EXGLContextId nextId = 1;
 };
 
 ContextManager manager;
 
 ContextWithLock ContextGet(EXGLContextId id) {
-  std::lock_guard lock(manager.contextLookupMutex);
+  std::shared_lock lock(manager.contextLookupMutex);
   auto iter = manager.contextMap.find(id);
   // if ctx is null then destroy is in progress
   if (iter == manager.contextMap.end() || iter->second.ctx == nullptr) {
@@ -33,7 +33,7 @@ EXGLContextId ContextCreate() {
     return 0;
   }
 
-  std::lock_guard<std::mutex> lock(manager.contextLookupMutex);
+  std::unique_lock lock(manager.contextLookupMutex);
   EXGLContextId ctxId = manager.nextId++;
   if (manager.contextMap.find(ctxId) != manager.contextMap.end()) {
     EXGLSysLog("Tried to reuse an EXGLContext id. This shouldn't really happen...");
@@ -44,12 +44,13 @@ EXGLContextId ContextCreate() {
 }
 
 void ContextDestroy(EXGLContextId id) {
-  std::lock_guard lock(manager.contextLookupMutex);
+  std::unique_lock lock(manager.contextLookupMutex);
 
   auto iter = manager.contextMap.find(id);
   if (iter != manager.contextMap.end()) {
     {
       std::unique_lock lock(iter->second.mutex);
+      iter->second.ctx->maybeBlockingTaskPromise.set_value();
       delete iter->second.ctx;
     }
     manager.contextMap.erase(iter);

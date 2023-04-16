@@ -127,6 +127,7 @@ class EXGLContext {
 
   // function that calls flush on GL thread - on Android it is passed by JNI
   std::function<void(void)> flushOnGLThread = [&] {};
+  std::promise<void> maybeBlockingTaskPromise;
 
   // OpenGLES state
   bool needsRedraw = false;

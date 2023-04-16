@@ -1,4 +1,5 @@
 #include "EXGLNativeContext.h"
+#include <future>
 #include "EXPlatformUtils.h"
 
 namespace expo {
@@ -34,7 +35,7 @@ void EXGLContext::maybePrepareWorkletContext(jsi::Runtime &runtime, initGlesCont
     return;
   }
   uintptr_t rawWorkletRuntimePointer =
-      *reinterpret_cast<uintptr_t*>(workletRuntimeArrayBuffer.data(runtime));
+      *reinterpret_cast<uintptr_t *>(workletRuntimeArrayBuffer.data(runtime));
   jsi::Runtime &workletRuntime = *reinterpret_cast<jsi::Runtime *>(rawWorkletRuntimePointer);
   createWebGLRenderer(
       workletRuntime,
@@ -60,12 +61,20 @@ void EXGLContext::addToNextBatch(Op &&op) noexcept {
 // [JS thread] Add a blocking operation to the 'next' batch -- waits for the
 // queued function to run before returning
 void EXGLContext::addBlockingToNextBatch(Op &&op) {
-  std::packaged_task<void(void)> task(std::move(op));
-  auto future = task.get_future();
-  addToNextBatch([&] { task(); });
+  maybeBlockingTaskPromise = std::promise<void>();
+  auto future = maybeBlockingTaskPromise.get_future();
+  addToNextBatch([&] {
+    try {
+      op();
+      maybeBlockingTaskPromise.set_value();
+    } catch (...) {
+      maybeBlockingTaskPromise.set_value();
+    }
+  });
   endNextBatch();
   flushOnGLThread();
   future.wait();
+  maybeBlockingTaskPromise = std::promise<void>();
 }
 
 // [JS thread] Enqueue a function and return an EXGL object that will get mapped
