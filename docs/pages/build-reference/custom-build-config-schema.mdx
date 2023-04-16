@@ -1,0 +1,89 @@
+---
+title: EAS Build custom builds config schema
+description: A reference of configuration options for custom workflows with EAS Build.
+hideFromSearch: true
+---
+
+Creating custom workflows for EAS Build helps customize the build process by adding your own workflows.
+
+## YAML syntax for workflows
+
+Workflow files are stored inside the **.eas/build** directory path. They use YAML syntax and must have either a `.yml` or `.yaml` file extension. If you are new to YAML or want to learn more about the syntax, see [Learn YAML in Y minutes](https://learnxinyminutes.com/docs/yaml/).
+
+## `build`
+
+Defined to describe a custom workflow. All config options to create a workflow config are specified under it.
+
+### `name`
+
+The name of your workflow. It is used to identify the workflow in the build logs. EAS Build uses this property to display the name of your workflow in the dashboard.
+
+#### Example of `name`
+
+In the example below, the name of the workflow is described as "Run tests".
+
+```yaml
+build:
+  name: Run tests
+  steps:
+    - run:
+        name: Install dependencies
+        command: npm install
+```
+
+### `steps`
+
+Steps are used to describe a list of actions either in the form of commands or functions. They are the actions that are executed when running a workflow. You can define single or multiple steps in a workflow. It is **required** to define at least one step per workflow.
+
+Each step is configured with the following options:
+
+| Property  | Description                                                                                                                       |
+| --------- | --------------------------------------------------------------------------------------------------------------------------------- |
+| `run`     | Key to trigger a step. In the case to trigger a reusable function from `functions`, the name of the function can be used instead. |
+| `name`    | Name of the step.                                                                                                                 |
+| `command` | Command to run when a step is executed.                                                                                           |
+
+#### Use a single step
+
+For example, a workflow with the following `steps` will run a single command to install npm dependencies:
+
+```yaml
+build:
+  name: Install npm dependencies
+  steps:
+    - run:
+        name: Install dependencies
+        command: npm install
+```
+
+> **info** `-` before `run` counts as indentation.
+
+#### Use multiple steps
+
+When multiple `steps` are defined, they are executed sequentially. For example, a workflow with the following `steps` will first run a single command to install npm dependencies and then run a command to run tests:
+
+```yaml
+build:
+  name: Run tests
+  steps:
+    - run:
+        name: Install dependencies
+        command: npm install
+    - run:
+        name: Run tests
+        command: |
+          echo "Running tests..."
+          npm test
+```
+
+#### `steps.command`
+
+The `command` property is used to define the command to run when a step is executed. It is **required** to define a command for each step.
+
+## `functions`
+
+Defined to describe a reusable function or built-in EAS functions (for example, `eas/upload_artifact`) that can be used in a workflow. All config options to create a function that runs as a step in the workflow are specified under it.
+
+### `name`
+
+The name of a function that is used in a `build`. It is also used to identify the function triggered in the build logs.
