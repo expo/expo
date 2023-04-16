@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 11.3.1 — 2023-04-14
+
+### 🐛 Bug fixes
+
+- On iOS, fixed an issue where file permissions were not checked correctly. ([#22112](https://github.com/expo/expo/pull/22112) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 11.3.0 — 2023-04-12
 
 ### 🎉 New features

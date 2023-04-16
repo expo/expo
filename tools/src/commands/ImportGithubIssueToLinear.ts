@@ -1,4 +1,5 @@
 import { Command } from '@expo/commander';
+import { User as LinearUser } from '@linear/sdk';
 import { UserFilter } from '@linear/sdk/dist/_generated_documents';
 
 import * as GitHub from '../GitHub';
@@ -8,6 +9,7 @@ import * as OpenAI from '../OpenAI';
 
 type ActionOptions = {
   issue: string;
+  importer?: string;
 };
 
 export default (program: Command) => {
@@ -16,6 +18,10 @@ export default (program: Command) => {
     .alias('igitl')
     .description('Import accepted issues from GitHub to Linear.')
     .option('-i, --issue <string>', 'Number of the issue to import.')
+    .option(
+      '-imp, --importer [string]',
+      '[optional] The username of GitHub account that is importing the issue.'
+    )
     .asyncAction(action);
 };
 
@@ -31,14 +37,14 @@ async function action(options: ActionOptions) {
   }
 
   try {
-    await importIssueAsync(+options.issue);
+    await importIssueAsync(+options.issue, options.importer);
   } catch (error) {
     logger.error(error);
     throw error;
   }
 }
 
-async function importIssueAsync(githubIssueNumber: number) {
+async function importIssueAsync(githubIssueNumber: number, importer?: string) {
   const issue = await GitHub.getIssueAsync(githubIssueNumber);
   if (!issue) {
     throw new Error(`Issue #${githubIssueNumber} does not exist.`);
@@ -55,7 +61,13 @@ async function importIssueAsync(githubIssueNumber: number) {
     logger.debug(`OpenAI askChatGPTAsync error: ${error}`);
   }
 
-  const issueDescription = `### This issue was automatically imported from GitHub: ${issue.html_url}\n---\n## Summary:\n${issueSummary}`;
+  let issueDescription = `### This issue was automatically imported from GitHub: ${issue.html_url}\n`;
+
+  let importerLinearUser: LinearUser | undefined;
+  if (importer && (importerLinearUser = await inferLinearUserId([importer]))) {
+    issueDescription += `#### Issue accepted by @${importerLinearUser.displayName}\n`;
+  }
+  issueDescription += `---\n## Summary:\n${issueSummary}`;
 
   const githubLabel = await Linear.getOrCreateLabelAsync('GitHub');
   const expoSDKLabel = await Linear.getOrCreateLabelAsync('Expo SDK', Linear.ENG_TEAM_ID);
@@ -69,24 +81,18 @@ async function importIssueAsync(githubIssueNumber: number) {
     labelIds: [githubLabel.id, expoSDKLabel.id],
     stateId: backlogWorkflowState.id,
     description: issueDescription,
-    assigneeId: await inferAssigneeId(issue.assignees),
+    assigneeId: (await inferLinearUserId(issue.assignees?.map(({ login }) => login)))?.id,
+    subscriberIds: importerLinearUser?.id ? [importerLinearUser.id] : undefined,
   });
 }
 
-/**
- * Utility type. Extracts `T` type from `Promise<T>`.
- */
-type PromiseType<T extends Promise<any>> = T extends Promise<infer U> ? U : never;
-
-async function inferAssigneeId(
-  githubAssignees: PromiseType<ReturnType<typeof GitHub.getIssueAsync>>['assignees']
-): Promise<string | undefined> {
-  if (!githubAssignees?.length) {
+async function inferLinearUserId(githubUsernames?: string[]): Promise<LinearUser | undefined> {
+  if (!githubUsernames?.length) {
     return undefined;
   }
 
   const githubUsers = await Promise.all(
-    githubAssignees.map(async ({ login }) => await GitHub.getUserAsync(login))
+    githubUsernames.map(async (u) => await GitHub.getUserAsync(u))
   );
 
   const linearUsers = await Linear.getTeamMembersAsync({
@@ -106,5 +112,5 @@ async function inferAssigneeId(
     },
   });
 
-  return linearUsers?.[0]?.id;
+  return linearUsers?.[0];
 }

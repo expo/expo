@@ -21,16 +21,16 @@ export default function ComparisonRow({
 }: ComparisonRowProps) {
   return (
     <View style={styles.rowContainer}>
-      <ComparisonImage source={source} showGrid={showGrid} />
+      <ComparisonImage source={source} showGrid={showGrid} transition={0} />
       <ComparisonImage
-        source={showRealImage ? source : blurhash}
+        source={showRealImage ? source : null}
+        placeholder={blurhash}
         showGrid={showGrid}
-        backgroundImage={source}
       />
       <ComparisonImage
-        source={showRealImage ? source : { thumbhash }}
+        source={showRealImage ? source : null}
+        placeholder={{ thumbhash }}
         showGrid={showGrid}
-        backgroundImage={source}
       />
     </View>
   );
@@ -38,6 +38,7 @@ export default function ComparisonRow({
 const styles = StyleSheet.create({
   rowContainer: {
     flexDirection: 'row',
-    justifyContent: 'space-around',
+    justifyContent: 'center',
+    gap: 15,
   },
 });

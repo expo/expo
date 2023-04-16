@@ -307,6 +307,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/expokit/eject/': '/archive/glossary/#eject',
   '/expokit/expokit/': '/archive/glossary/#expokit',
   '/submit/classic-builds/': '/submit/introduction/',
+  '/archive/adhoc-builds/': '/develop/development-builds/introduction/',
 
   // Redirects for removed API docs based on Sentry
   '/versions/latest/sdk/facebook/': '/guides/authentication/',

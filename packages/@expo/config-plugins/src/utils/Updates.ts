@@ -153,7 +153,7 @@ export function getUpdatesTimeout(config: Pick<ExpoConfigUpdates, 'updates'>): n
 export function getUpdatesCheckOnLaunch(
   config: Pick<ExpoConfigUpdates, 'updates'>,
   expoUpdatesPackageVersion?: string | null
-): 'NEVER' | 'ERROR_RECOVERY_ONLY' | 'ALWAYS' {
+): 'NEVER' | 'ERROR_RECOVERY_ONLY' | 'ALWAYS' | 'WIFI_ONLY' {
   if (config.updates?.checkAutomatically === 'ON_ERROR_RECOVERY') {
     // native 'ERROR_RECOVERY_ONLY' option was only introduced in 0.11.x
     if (expoUpdatesPackageVersion && semver.gte(expoUpdatesPackageVersion, '0.11.0')) {
@@ -162,6 +162,10 @@ export function getUpdatesCheckOnLaunch(
     return 'NEVER';
   } else if (config.updates?.checkAutomatically === 'ON_LOAD') {
     return 'ALWAYS';
+  } else if (config.updates?.checkAutomatically === 'WIFI_ONLY') {
+    return 'WIFI_ONLY';
+  } else if (config.updates?.checkAutomatically === 'NEVER') {
+    return 'NEVER';
   }
   return 'ALWAYS';
 }
