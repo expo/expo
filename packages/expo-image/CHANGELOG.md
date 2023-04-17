@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed image was loaded event if the view dimensions were 0.
+
 ### 💡 Others
 
 ## 1.2.0 — 2023-04-14
