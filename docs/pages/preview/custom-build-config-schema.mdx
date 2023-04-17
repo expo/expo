@@ -1,0 +1,280 @@
+---
+title: EAS Build custom builds config schema
+description: A reference of configuration options for custom workflows with EAS Build.
+hideFromSearch: true
+---
+
+Creating custom workflows for EAS Build helps customize the build process by adding your workflows.
+
+## YAML syntax for workflows
+
+Workflow files are stored inside the **.eas/build** directory path. They use YAML syntax and must have a `.yml` or `.yaml` file extension. If you are new to YAML or want to learn more about the syntax, see [Learn YAML in Y minutes](https://learnxinyminutes.com/docs/yaml/).
+
+## `build`
+
+Defined to describe a custom workflow. All config options to create a workflow are specified under it.
+
+### `name`
+
+The name of your workflow that is used to identify the workflow in the build logs. EAS Build uses this property to display the name of your workflow in the dashboard.
+
+For example, the workflow's name is "Run tests":
+
+```yaml
+build:
+  # @info #
+  name: Run tests
+  # @end #
+  steps:
+    - run:
+        name: Install dependencies
+        command: npm install
+```
+
+### `steps`
+
+Steps are used to describe a list of actions either in the form of commands or functions. These actions are executed when a workflow is triggered. You can define single or multiple steps in a workflow. It is **required** to define at least one step per workflow.
+
+Each step is configured with the following properties.
+
+#### `steps.run`
+
+The `run` key is used to trigger a set of instructions. For example, a `run` key is used to install dependencies using the `npm install` command:
+
+```yaml
+build:
+  name: Install npm dependencies
+  steps:
+    # @info #
+    - run:
+        name: Install dependencies
+        command: npm install
+    # @end #
+```
+
+You can also `steps.run` to execute inline bash shell commands:
+
+```yaml
+build:
+  name: Run inline shell commands
+  steps:
+    # @info #
+    - run: echo "Hello world"
+    # @end #
+```
+
+#### `steps.name`
+
+The name of a step that is used in a `build` to identify which step triggers in the build logs.
+
+#### `steps.command`
+
+The `command` is defins a custom shell command to run when a step is executed. It is **required** to define a command for each step and can be a multiline bash shell command.
+
+#### `steps.working_directory`
+
+The `working_directory` is used to define an existing directory from the project's root directory. For example, a step is created to list all the assets inside the **assets** directory, which is a directory in your Expo project. The `working_directory` is set to `assets`:
+
+```yaml
+build:
+  name: Demo
+  steps:
+    - run:
+        name: List assets
+        # @info #
+        working_directory: assets
+        # @end #
+        command: ls -la
+```
+
+#### Use a single step
+
+For example, a workflow with the following `steps` will run a single command to install npm dependencies:
+
+```yaml
+build:
+  name: Install npm dependencies
+  steps:
+    # @info #
+    - run:
+        name: Install dependencies
+        command: npm install
+    # @end #
+```
+
+> **info** `-` before `run` counts as indentation.
+
+#### Use multiple steps
+
+When multiple `steps` are defined, they are executed sequentially. For example, a workflow with the following `steps` will first run a single command to install npm dependencies and then run a command to run tests:
+
+```yaml
+build:
+  name: Run tests
+  steps:
+    # @info #
+    - run:
+        name: Install dependencies
+        command: npm install
+    - run:
+        name: Run tests
+        command: |
+          echo "Running tests..."
+          npm test
+    # @end #
+```
+
+## `functions`
+
+Defined to describe a reusable function or [built-in EAS functions](#built-in-eas-functions) that can be used in a workflow. All config options to create a function are specified with the following properties:
+
+### `name`
+
+The name of a function that is used in a `build`. It is also used to identify the function triggered in the build logs. For example, a function named `greetings` is created:
+
+```yaml
+functions:
+  greetings:
+    # @info #
+    name: Say Hi!
+    # @end #
+```
+
+### `platforms`
+
+Name of the platform that a specific function should get executed. `linux` is used for Android and `darwin` for iOS. If not specified, the function is executed for both platforms when the appropriate build runs for each platform.
+
+### `inputs`
+
+An input value is provided to a function.
+
+#### `inputs.default_value`
+
+You can use `default_value` to provide one default input. For example, a function has a default value of `Hello world`:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    inputs:
+      - name: name
+        # @info #
+        default_value: Hello world
+        # @end #
+```
+
+#### `inputs.allowed_values`
+
+You can use `allowed_values` to provide multiple values in an array. For example, a function has multiple allowed values:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    inputs:
+      - name: name
+        default_value: Hello world
+        # @info #
+        allowed_values: [Hi, Hello, Hey]
+        # @end #
+```
+
+### `outputs`
+
+An output value is expected from a function. For example, a function has an output value of `Hello world`:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    # @info #
+    outputs: [value]
+    # @end #
+    command: set-output value Hello
+```
+
+### `command`
+
+Used to define the command to run when a function is executed. It is **required** to define a command for each reusable function. For example, the command `echo "Hello world"` is used to print a message:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    # @info #
+    command: echo "Hello world"
+    # @end #
+```
+
+### `shell`
+
+Used to define the default executable shell for a system. For example, the default shell is set to system's shell:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    # @info #
+    shell: /bin/sh
+    # @end #
+```
+
+### Built-in EAS functions
+
+EAS provides a built-in reusable function called `upload_artifact` that you can use in a workflow without defining the function definition.
+
+For example, a workflow with the following `steps` will upload an artifact to the EAS servers:
+
+```yaml upload.yml
+build:
+  name: Upload artifacts
+  steps:
+    - eas/upload_artifact:
+        name: Upload application archive
+        inputs:
+          path: fixtures/app-debug.apk
+    - eas/upload_artifact:
+        name: Upload build artifact
+        inputs:
+          type: build-artifact
+          path: assets/icon.png
+```
+
+> **info** Any function that is built-in and provided by EAS must start with the prefix `eas/`.
+
+The `eas/upload_artifact` function has the following properties
+
+| Property      | Description                                                                 |
+| ------------- | --------------------------------------------------------------------------- |
+| `name`        | The name of the step in the reusable function that shows in the build logs. |
+| `inputs`      | Requires input providers (such as `path` or `type`) to be defined.          |
+| `inputs.path` | **Required**. The path to the artifact that is uploaded to the EAS servers. |
+| `inputs.type` | The type of artifact that is uploaded to the EAS servers.                   |
+
+## Use a reusable function in a `build`
+
+For example, a workflow with the following reusable function contains a single command to print a message that is echoed.
+
+```yaml
+functions:
+  greetings:
+    - name: name
+      default_value: Hello world
+    inputs: [value]
+    command: echo "${ inputs.name }, { inputs.value }"
+```
+
+The above function can be used in a `build` as follows:
+
+```yaml
+build:
+  name: Functions Demo
+  steps:
+    # @info #
+    - greetings:
+        inputs:
+          value: Expo
+    # @end #
+```
+
+> **info** `build.steps` can execute multiple reusable `functions` sequentially.

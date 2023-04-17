@@ -339,6 +339,10 @@ const preview = [
   makeSection('Preview', [
     makePage('preview/introduction.mdx'),
     makePage('preview/support.mdx'),
+    makeGroup('Custom build workflows', [
+      makePage('preview/custom-build-config.mdx'),
+      makePage('preview/custom-build-config-schema.mdx'),
+    ]),
     { expanded: true },
   ]),
 ];
