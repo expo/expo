@@ -41,8 +41,8 @@ internal class CameraContract(
           putExtra("android.intent.extra.USE_FRONT_CAMERA", true)
         } else {
           putExtra("android.intent.extras.LENS_FACING_BACK", 1)
-          putExtra( "android.intent.extras.CAMERA_FACING", 0)
-          putExtra( "android.intent.extra.USE_FRONT_CAMERA", false)
+          putExtra("android.intent.extras.CAMERA_FACING", 0)
+          putExtra("android.intent.extra.USE_FRONT_CAMERA", false)
         }
       }
 
