@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Added support for the `cameraType` option for Android + Updated types to include the `cameraType` option in `ImagePickerOptions` ([#22143](https://github.com/expo/expo/pull/22143) by [@YoussefHenna](https://github.com/YoussefHenna))
+- Added ability to choose the camera-facing type. ([#22143](https://github.com/expo/expo/pull/22143) by [@YoussefHenna](https://github.com/YoussefHenna))
 
 ### 🐛 Bug fixes
 
