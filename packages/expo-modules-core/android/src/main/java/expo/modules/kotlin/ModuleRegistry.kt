@@ -34,8 +34,10 @@ class ModuleRegistry(
     // However, until then, we must find a way to address this problem.
     // Therefore, we have decided to dispatch a lambda
     // that invokes `declaredMemberProperties` during module creation.
-    appContext.get()?.backgroundCoroutineScope?.launch {
-      holder.viewClass()?.declaredMemberProperties
+    holder.viewClass()?.let { viewType ->
+      appContext.get()?.backgroundCoroutineScope?.launch {
+        viewType.declaredMemberProperties
+      }
     }
     registry[holder.name] = holder
   }
