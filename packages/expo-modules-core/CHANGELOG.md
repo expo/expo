@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Improve the initial loading speed of the native view. ([#22153](https://github.com/expo/expo/pull/22153) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 1.2.6 — 2023-03-20

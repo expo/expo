@@ -6,7 +6,9 @@ import kotlinx.coroutines.CoroutineName
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.SupervisorJob
+import kotlinx.coroutines.launch
 import java.lang.ref.WeakReference
+import kotlin.reflect.full.declaredMemberProperties
 
 class ModuleRegistry(
   private val appContext: WeakReference<AppContext>
@@ -26,6 +28,17 @@ class ModuleRegistry(
     }
     holder.post(EventName.MODULE_CREATE)
     holder.registerContracts()
+    // The initial invocation of `declaredMemberProperties` appears to be slow,
+    // as Kotlin must deserialize metadata internally.
+    // This is a known issue that may be resolved by the new K2 compiler in the future.
+    // However, until then, we must find a way to address this problem.
+    // Therefore, we have decided to dispatch a lambda
+    // that invokes `declaredMemberProperties` during module creation.
+    holder.viewClass()?.let { viewType ->
+      appContext.get()?.backgroundCoroutineScope?.launch {
+        viewType.declaredMemberProperties
+      }
+    }
     registry[holder.name] = holder
   }
 

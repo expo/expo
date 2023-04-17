@@ -69,6 +69,15 @@ class AppContext(
     .asCoroutineDispatcher()
 
   /**
+   * A scope used to dispatch all background work.
+   */
+  val backgroundCoroutineScope = CoroutineScope(
+    Dispatchers.IO +
+      SupervisorJob() +
+      CoroutineName("expo.modules.BackgroundCoroutineScope")
+  )
+
+  /**
    * A queue used to dispatch all async methods that are called via JSI.
    */
   val modulesQueue = CoroutineScope(
@@ -265,6 +274,8 @@ class AppContext(
     registry.cleanUp()
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
+    backgroundCoroutineScope.cancel(ContextDestroyedException())
+    JNIDeallocator.deallocate()
     logger.info("✅ AppContext was destroyed")
   }
 
