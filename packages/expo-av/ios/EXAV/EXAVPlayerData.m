@@ -557,7 +557,6 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
         if (!set.count) {
           [_observers removeObjectForKey:object];
         }
-        NSLog(@"_tryRemoveObserver: object=%@ self=%@ path=%@", object, self, path);
         [object removeObserver:self forKeyPath:path];
       }
     }
