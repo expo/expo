@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix images not loading after the app was foregrounded.
+
 ### 💡 Others
 
 ## 1.2.0 — 2023-04-14
