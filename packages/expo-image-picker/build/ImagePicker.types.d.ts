@@ -408,9 +408,9 @@ export type ImagePickerOptions = {
      */
     presentationStyle?: UIImagePickerPresentationStyle;
     /**
-     * Camera facing. Use one of `CameraType`. When `CameraType.front`, use the front-facing camera.
-     * When `CameraType.back`, use the back-facing camera.
-     * - **On Android**, effect of this option depends on support of installed camera app.
+     * Selects the camera-facing type. The `CameraType` enum provides two options:
+     * `front` for the front-facing camera and `back` for the back-facing camera.
+     * - **On Android**, the behavior of this option may vary based on the camera app installed on the device.
      * @default CameraType.back
      * @platform ios
      * @platform android
