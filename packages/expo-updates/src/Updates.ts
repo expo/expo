@@ -293,7 +293,7 @@ function _getEmitter(): EventEmitter {
 }
 
 function _emitEvent(params): void {
-  let newParams = params;
+  let newParams = { ...params };
   if (typeof params === 'string') {
     newParams = JSON.parse(params);
   }
