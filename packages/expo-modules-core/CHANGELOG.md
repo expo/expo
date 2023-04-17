@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Improve the initial loading speed of the native view.
+
 ### 💡 Others
 
 - [Android] Made `fallbackCallback` optional in the `registerForActivityResult` method. ([#21661](https://github.com/expo/expo/pull/21661) by [@lukmccall](https://github.com/lukmccall))
