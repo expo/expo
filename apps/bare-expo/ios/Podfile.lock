@@ -130,7 +130,7 @@ PODS:
     - ExpoModulesCore
   - ExpoBattery (7.1.1):
     - ExpoModulesCore
-  - ExpoBlur (12.2.2):
+  - ExpoBlur (12.3.0):
     - ExpoModulesCore
   - ExpoBrightness (11.2.1):
     - ExpoModulesCore
@@ -1272,7 +1272,7 @@ SPEC CHECKSUMS:
   expo-dev-menu-interface: 6c82ae323c4b8724dead4763ce3ff24a2108bdb1
   ExpoAppleAuthentication: 7bd5e4150d59e8df37aa80b425850ae88adf9e65
   ExpoBattery: 678d2b710a8fc398c30258c4dc22c12340ee5411
-  ExpoBlur: fac3c6318fdf409dd5740afd3313b2bd52a35bac
+  ExpoBlur: b0d995dbfc725fc5b7ee60da076131995300815d
   ExpoBrightness: fa662d10f9a8547c86264cde7ad754226a1efa72
   ExpoCellular: 2daef47056576e5735f9e93e38739e3176e399ad
   ExpoClipboard: 8a36a8376ab93df9050c14577e9e0fcb805e9114

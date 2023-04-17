@@ -69,7 +69,7 @@
     "expo-background-fetch": "~11.1.0",
     "expo-barcode-scanner": "~12.3.0",
     "expo-battery": "~7.1.0",
-    "expo-blur": "~12.2.0",
+    "expo-blur": "~12.3.0",
     "expo-brightness": "~11.2.0",
     "expo-calendar": "~11.1.0",
     "expo-camera": "~13.2.0",
