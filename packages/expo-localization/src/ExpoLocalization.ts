@@ -118,14 +118,9 @@ export default {
     });
   },
   getCalendars(): Calendar[] {
-    // Prefer locales with region codes as they contain more info about calendar.
-    // They seem to always exist in the list for each locale without region
-    const locales = [...getNavigatorLocales()].sort((a, b) =>
-      a.includes('-') === b.includes('-') ? 0 : a.includes('-') ? -1 : 1
-    );
-    const locale = (locales[0] && typeof Intl !== 'undefined'
-      ? new Intl.Locale(locales[0])
-      : null) as unknown as null | ExtendedLocale;
+    const locale = ((typeof Intl !== 'undefined'
+      ? Intl.DateTimeFormat().resolvedOptions()
+      : null) ?? null) as unknown as null | ExtendedLocale;
     return [
       {
         calendar: ((locale?.calendar || locale?.calendars?.[0]) as CalendarIdentifier) || null,
