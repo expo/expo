@@ -27,7 +27,9 @@ export function resolveBlurhashString(str: string): ImageSource {
  * @return An ImageSource representing the provided thumbhash.
  * */
 export function resolveThumbhashString(str: string): ImageSource {
-  const thumbhash = str.replace(/^thumbhash:\//, '');
+  // ThumbHash may contain slashes that could break the url when the slash is at the beginning.
+  // We replace slashes with backslashes to make sure we don't break the url's path.
+  const thumbhash = str.replace(/^thumbhash:\//, '').replace(/\//g, '\\');
   return {
     uri: hashToUri('thumbhash', thumbhash),
   };
