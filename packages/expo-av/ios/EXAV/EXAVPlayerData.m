@@ -532,7 +532,6 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
   [self _addObserver:object forKeyPath:path options:0];
 }
 
-
 - (void)_addObserver:(NSObject *)object forKeyPath:(NSString *)path options:(NSKeyValueObservingOptions)options
 {
   @synchronized(_observers) {
