@@ -46,12 +46,19 @@ Pod::Spec.new do |s|
   }
 
   s.subspec 'SafeAreaView' do |safearea|
+    safearea.dependency 'ExpoModulesCore'
+
+    # Swift/Objective-C compatibility
+    safearea.pod_target_xcconfig = {
+      'DEFINES_MODULE' => 'YES',
+      'SWIFT_COMPILATION_MODE' => 'wholemodule'
+    }
     if File.exist?("vendored/react-native-safe-area-context/dev-menu-react-native-safe-area-context.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
       safearea.source_files = "vendored/react-native-safe-area-context/**/*.{h}"
       safearea.vendored_frameworks = "vendored/react-native-safe-area-context/dev-menu-react-native-safe-area-context.xcframework"
       safearea.private_header_files = 'vendored/react-native-safe-area-context/**/*.h'
     else
-      safearea.source_files = 'vendored/react-native-safe-area-context/**/*.{h,m}'
+      safearea.source_files = 'vendored/react-native-safe-area-context/**/*.{h,m,swift}'
       safearea.private_header_files = 'vendored/react-native-safe-area-context/**/*.h'
 
       safearea.compiler_flags = '-w -Xanalyzer -analyzer-disable-all-checks'
