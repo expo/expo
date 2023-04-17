@@ -35,7 +35,7 @@ internal class CameraContract(
         if (input.options.mediaTypes.toCameraIntentAction() == MediaStore.ACTION_VIDEO_CAPTURE) {
           putExtra(MediaStore.EXTRA_DURATION_LIMIT, input.options.videoMaxDuration)
         }
-        if (input.options.cameraType == CameraType.FRONT){
+        if (input.options.cameraType == CameraType.FRONT) {
           putExtra("android.intent.extras.LENS_FACING_FRONT", 1)
           putExtra("android.intent.extras.CAMERA_FACING", 1)
           putExtra("android.intent.extra.USE_FRONT_CAMERA", true)
