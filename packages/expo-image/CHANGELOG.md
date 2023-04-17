@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `url` property returned by the `onLoad` event.
+
 ### 💡 Others
 
 ## 1.2.0 — 2023-04-14
