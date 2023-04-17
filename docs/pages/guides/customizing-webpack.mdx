@@ -12,7 +12,9 @@ When you run `npx expo start --web` or `expo export:web` the CLI will check to s
 
 To edit the config, install `@expo/webpack-config` as a dev dependency and create a template **webpack.config.js** at the root of your project. This can be done by running the following command:
 
-<Terminal cmd={['$ npx expo customize webpack.config.js']} />
+<Terminal cmd={['$ npx expo customize:web']} />
+
+> Navigate the options, choose the file you want to generate with the space key, then press enter. If the file exists it would not be choosable.
 
 You can now make changes to a config object based on the default config and return it for Expo CLI to use. Deleting the config will cause Expo to fall back to the default again.
 
