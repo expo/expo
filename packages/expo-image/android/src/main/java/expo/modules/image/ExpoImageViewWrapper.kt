@@ -618,6 +618,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   companion object {
     private var requestManager: RequestManager? = null
     private var appContextRef: WeakReference<AppContext?> = WeakReference(null)
+    private var activityRef: WeakReference<Activity?> = WeakReference(null)
 
     fun getOrCreateRequestManager(
       appContext: AppContext,
@@ -627,13 +628,15 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         ?: return createNewRequestManager(activity).also {
           requestManager = it
           appContextRef = WeakReference(appContext)
+          activityRef = WeakReference(activity)
         }
 
-      // Request manager was created using different activity
-      if (appContextRef.get() != appContext) {
+      // Request manager was created using different activity or app context
+      if (appContextRef.get() != appContext || activityRef.get() != activity) {
         return createNewRequestManager(activity).also {
           requestManager = it
           appContextRef = WeakReference(appContext)
+          activityRef = WeakReference(activity)
         }
       }
 
