@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fix `url` property returned by the `onLoad` event. ([#22161](https://github.com/expo/expo/pull/22161) by [@lukmccall](https://github.com/lukmccall))
+
 ### 💡 Others
 
 ## 1.2.0 — 2023-04-14

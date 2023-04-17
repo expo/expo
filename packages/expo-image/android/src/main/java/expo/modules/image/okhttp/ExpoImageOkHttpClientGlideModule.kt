@@ -62,6 +62,10 @@ class GlideUrlWithCustomCacheKey(
  */
 data class GlideUrlWrapper(val glideUrl: GlideUrl) {
   var progressListener: OkHttpProgressListener? = null
+
+  override fun toString(): String {
+    return glideUrl.toString()
+  }
 }
 
 @GlideModule
