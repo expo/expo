@@ -1,6 +1,7 @@
 package expo.modules.image
 
 import android.view.View
+import androidx.core.view.doOnDetach
 import com.bumptech.glide.Glide
 import com.bumptech.glide.load.model.GlideUrl
 import com.facebook.react.uimanager.PixelUtil
@@ -171,7 +172,9 @@ class ExpoImageModule : Module() {
       }
 
       OnViewDestroys { view: ExpoImageViewWrapper ->
-        view.onViewDestroys()
+        view.doOnDetach {
+          view.onViewDestroys()
+        }
       }
     }
   }
