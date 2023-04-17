@@ -19,7 +19,7 @@ function _addListener(listener) {
     return emitter.addListener('Expo.useUpdatesEvent', listener);
 }
 function _emitNativeEvent(params) {
-    let newParams = params;
+    let newParams = { ...params };
     if (typeof params === 'string') {
         newParams = JSON.parse(params);
     }

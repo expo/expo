@@ -25,7 +25,7 @@ function _addListener(listener: (event: UseUpdatesEvent) => void): EventSubscrip
 }
 
 function _emitNativeEvent(params: any) {
-  let newParams = params;
+  let newParams = { ...params };
   if (typeof params === 'string') {
     newParams = JSON.parse(params);
   }
