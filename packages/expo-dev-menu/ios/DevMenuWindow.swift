@@ -95,7 +95,7 @@ class DevMenuWindow: UIWindow, OverlayContainerViewControllerDelegate {
   ) -> CGFloat {
     switch OverlayNotch.allCases[index] {
     case .fullscreen:
-      return availableSpace - 45
+      return max(availableSpace - 45, 0)
     case .open:
       return availableSpace * 0.6
     case .hidden:
