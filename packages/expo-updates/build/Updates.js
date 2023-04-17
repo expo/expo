@@ -234,7 +234,7 @@ function _getEmitter() {
     return _emitter;
 }
 function _emitEvent(params) {
-    let newParams = params;
+    let newParams = { ...params };
     if (typeof params === 'string') {
         newParams = JSON.parse(params);
     }
