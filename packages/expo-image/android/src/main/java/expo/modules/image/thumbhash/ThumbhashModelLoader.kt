@@ -13,8 +13,11 @@ class ThumbhashModelLoader : ModelLoader<GlideThumbhashModel, Bitmap> {
   override fun handles(model: GlideThumbhashModel): Boolean = true
 
   override fun buildLoadData(model: GlideThumbhashModel, width: Int, height: Int, options: Options): ModelLoader.LoadData<Bitmap> {
-    // Thumbhash might contain '/' characters
-    val thumbhash = model.uri.pathSegments.joinToString(separator = "/")
+    // The URI looks like this: thumbhash:/3OcRJYB4d3h\iIeHeEh3eIhw+j2w
+    // ThumbHash may include slashes which could break the structure of the URL, so we replace them
+    // with backslashes on the JS side and revert them back to slashes here, before generating the image.
+    val thumbhash = model.uri.pathSegments.joinToString(separator = "/").replace("\\", "/")
+
     return ModelLoader.LoadData(
       ObjectKey(model),
       ThumbhashFetcher(thumbhash)
