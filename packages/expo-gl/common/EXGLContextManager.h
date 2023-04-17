@@ -9,7 +9,7 @@ namespace gl_cpp {
 using ContextWithLock = std::pair<EXGLContext *, std::shared_lock<std::shared_mutex>>;
 
 EXGLContextId ContextCreate();
-ContextWithLock ContextGet(EXGLContextId id);
+std::shared_ptr<EXGLContext> ContextGet(EXGLContextId id);
 void ContextDestroy(EXGLContextId id);
 
 } // namespace gl_cpp

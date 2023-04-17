@@ -3,27 +3,22 @@
 namespace expo {
 namespace gl_cpp {
 
-struct ContextState {
-  EXGLContext *ctx;
-  std::shared_mutex mutex;
-};
-
 struct ContextManager {
-  std::unordered_map<EXGLContextId, ContextState> contextMap;
+  std::unordered_map<EXGLContextId, std::shared_ptr<EXGLContext>> contextMap;
   std::shared_mutex contextLookupMutex;
   EXGLContextId nextId = 1;
 };
 
 ContextManager manager;
 
-ContextWithLock ContextGet(EXGLContextId id) {
+std::shared_ptr<EXGLContext> ContextGet(EXGLContextId id) {
   std::shared_lock lock(manager.contextLookupMutex);
   auto iter = manager.contextMap.find(id);
   // if ctx is null then destroy is in progress
-  if (iter == manager.contextMap.end() || iter->second.ctx == nullptr) {
-    return {nullptr, std::shared_lock<std::shared_mutex>()};
+  if (iter == manager.contextMap.end() || iter->second == nullptr) {
+    return nullptr;
   }
-  return {iter->second.ctx, std::shared_lock(iter->second.mutex)};
+  return iter->second;
 }
 
 EXGLContextId ContextCreate() {
@@ -39,7 +34,7 @@ EXGLContextId ContextCreate() {
     EXGLSysLog("Tried to reuse an EXGLContext id. This shouldn't really happen...");
     return 0;
   }
-  manager.contextMap[ctxId].ctx = new EXGLContext(ctxId);
+  manager.contextMap[ctxId] = std::make_shared<EXGLContext>(ctxId);
   return ctxId;
 }
 
@@ -48,11 +43,7 @@ void ContextDestroy(EXGLContextId id) {
 
   auto iter = manager.contextMap.find(id);
   if (iter != manager.contextMap.end()) {
-    {
-      std::unique_lock lock(iter->second.mutex);
-      iter->second.ctx->maybeBlockingTaskPromise.set_value();
-      delete iter->second.ctx;
-    }
+    iter->second->maybeBlockingTaskPromise.set_value();
     manager.contextMap.erase(iter);
   }
 }

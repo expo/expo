@@ -9,24 +9,24 @@ EXGLContextId EXGLContextCreate() {
 }
 
 void EXGLContextPrepare(void *jsiPtr, EXGLContextId exglCtxId, std::function<void(void)> flushMethod) {
-  auto [exglCtx, lock] = ContextGet(exglCtxId);
-  if (exglCtx) {
-    exglCtx->prepareContext(*reinterpret_cast<jsi::Runtime *>(jsiPtr), flushMethod);
+  auto ctx = ContextGet(exglCtxId);
+  if (ctx) {
+    ctx->prepareContext(*reinterpret_cast<jsi::Runtime *>(jsiPtr), flushMethod);
   }
 }
 
 bool EXGLContextNeedsRedraw(EXGLContextId exglCtxId) {
-  auto [exglCtx, lock] = ContextGet(exglCtxId);
-  if (exglCtx) {
-    return exglCtx->needsRedraw;
+  auto ctx = ContextGet(exglCtxId);
+  if (ctx) {
+    return ctx->needsRedraw;
   }
   return false;
 }
 
 void EXGLContextDrawEnded(EXGLContextId exglCtxId) {
-  auto [exglCtx, lock] = ContextGet(exglCtxId);
-  if (exglCtx) {
-    exglCtx->needsRedraw = false;
+  auto ctx = ContextGet(exglCtxId);
+  if (ctx) {
+    ctx->needsRedraw = false;
   }
 }
 
@@ -35,45 +35,45 @@ void EXGLContextDestroy(EXGLContextId exglCtxId) {
 }
 
 void EXGLContextFlush(EXGLContextId exglCtxId) {
-  auto [exglCtx, lock] = ContextGet(exglCtxId);
-  if (exglCtx) {
-    exglCtx->flush();
+  auto ctx = ContextGet(exglCtxId);
+  if (ctx) {
+    ctx->flush();
   }
 }
 
 void EXGLContextSetDefaultFramebuffer(EXGLContextId exglCtxId, GLint framebuffer) {
-  auto [exglCtx, lock] = ContextGet(exglCtxId);
-  if (exglCtx) {
-    exglCtx->defaultFramebuffer = framebuffer;
+  auto ctx = ContextGet(exglCtxId);
+  if (ctx) {
+    ctx->defaultFramebuffer = framebuffer;
   }
 }
 
 EXGLObjectId EXGLContextCreateObject(EXGLContextId exglCtxId) {
-  auto [exglCtx, lock] = ContextGet(exglCtxId);
-  if (exglCtx) {
-    return exglCtx->createObject();
+  auto ctx = ContextGet(exglCtxId);
+  if (ctx) {
+    return ctx->createObject();
   }
   return 0;
 }
 
 void EXGLContextDestroyObject(EXGLContextId exglCtxId, EXGLObjectId exglObjId) {
-  auto [exglCtx, lock] = ContextGet(exglCtxId);
-  if (exglCtx) {
-    exglCtx->destroyObject(exglObjId);
+  auto ctx = ContextGet(exglCtxId);
+  if (ctx) {
+    ctx->destroyObject(exglObjId);
   }
 }
 
 void EXGLContextMapObject(EXGLContextId exglCtxId, EXGLObjectId exglObjId, GLuint glObj) {
-  auto [exglCtx, lock] = ContextGet(exglCtxId);
-  if (exglCtx) {
-    exglCtx->mapObject(exglObjId, glObj);
+  auto ctx = ContextGet(exglCtxId);
+  if (ctx) {
+    ctx->mapObject(exglObjId, glObj);
   }
 }
 
 GLuint EXGLContextGetObject(EXGLContextId exglCtxId, EXGLObjectId exglObjId) {
-  auto [exglCtx, lock] = ContextGet(exglCtxId);
-  if (exglCtx) {
-    return exglCtx->lookupObject(exglObjId);
+  auto ctx = ContextGet(exglCtxId);
+  if (ctx) {
+    return ctx->lookupObject(exglObjId);
   }
   return 0;
 }
