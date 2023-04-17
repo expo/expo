@@ -512,8 +512,8 @@ describe('JS API tests', () => {
     });
     await waitForAppToBecomeVisible();
     const lastUpdateEventType = await testElementValueAsync('lastUpdateEventType');
-    // Server is not running, so no response received
-    jestExpect(lastUpdateEventType).toEqual('');
+    // Server is not running, so error received
+    jestExpect(lastUpdateEventType).toEqual('error');
 
     // Start server with no update available directive,
     // then restart app, we should get "No update available" event
