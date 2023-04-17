@@ -22,12 +22,20 @@ export function getExpoUpdatesPackageVersion(projectRoot: string): string | null
   return packageJson.version;
 }
 
+function shouldDefaultToClassicUpdates(config: Pick<ExpoConfigUpdates, 'updates'>): boolean {
+  return !!config.updates?.useClassicUpdates;
+}
+
 export function getUpdateUrl(
   config: Pick<ExpoConfigUpdates, 'owner' | 'slug' | 'updates'>,
   username: string | null
 ): string | null {
   if (config.updates?.url) {
     return config.updates?.url;
+  }
+
+  if (!shouldDefaultToClassicUpdates(config)) {
+    return null;
   }
 
   const user = typeof config.owner === 'string' ? config.owner : username;
@@ -142,8 +150,17 @@ export function getSDKVersion(config: Pick<ExpoConfigUpdates, 'sdkVersion'>): st
   return typeof config.sdkVersion === 'string' ? config.sdkVersion : null;
 }
 
-export function getUpdatesEnabled(config: Pick<ExpoConfigUpdates, 'updates'>): boolean {
-  return config.updates?.enabled !== false;
+export function getUpdatesEnabled(
+  config: Pick<ExpoConfigUpdates, 'owner' | 'slug' | 'updates'>,
+  username: string | null
+): boolean {
+  // allow override of enabled property
+  if (config.updates?.enabled !== undefined) {
+    return config.updates.enabled;
+  }
+
+  // enable if URL is set (which respects shouldDefaultToClassicUpdates)
+  return getUpdateUrl(config, username) !== null;
 }
 
 export function getUpdatesTimeout(config: Pick<ExpoConfigUpdates, 'updates'>): number {
