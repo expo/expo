@@ -542,7 +542,6 @@ NSString *const EXAVPlayerDataObserverMetadataKeyPath = @"timedMetadata";
     }
     if (![set containsObject:path]) {
       [set addObject:path];
-      NSLog(@"_addObserver: object=%@ self=%@ path=%@", object, self, path);
       [object addObserver:self forKeyPath:path options:options context:nil];
     }
   }
