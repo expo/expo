@@ -10,5 +10,6 @@
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- Copy native events before transforming them. ([#22162](https://github.com/expo/expo/pull/22162) by [@douglowder](https://github.com/douglowder))
 
+### 💡 Others
