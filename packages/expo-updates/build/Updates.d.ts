@@ -1,5 +1,5 @@
 import { EventSubscription } from 'fbemitter';
-import { LocalAssets, Manifest, UpdateCheckResult, UpdateEvent, UpdateFetchResult, UpdatesLogEntry } from './Updates.types';
+import { LocalAssets, Manifest, UpdateCheckResult, UpdateEvent, UpdateFetchResult, UpdatesCheckAutomaticallyValue, UpdatesLogEntry } from './Updates.types';
 export * from './Updates.types';
 /**
  * The UUID that uniquely identifies the currently running update if `expo-updates` is enabled. The
@@ -21,6 +21,10 @@ export declare const channel: string | null;
  * The runtime version of the current build.
  */
 export declare const runtimeVersion: string | null;
+/**
+ * Determines if and when expo-updates checks for and downloads updates automatically on startup.
+ */
+export declare const checkAutomatically: UpdatesCheckAutomaticallyValue | null;
 /**
  * @hidden
  */

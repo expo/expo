@@ -36,7 +36,19 @@ data class UpdatesConfiguration(
   val enableExpoUpdatesProtocolV0CompatibilityMode: Boolean, // used only in Expo Go to prevent loading rollbacks and other directives, which don't make much sense in the context of Expo Go
 ) {
   enum class CheckAutomaticallyConfiguration {
-    NEVER, ERROR_RECOVERY_ONLY, WIFI_ONLY, ALWAYS
+    NEVER {
+      override fun toJSString() = "NEVER"
+    },
+    ERROR_RECOVERY_ONLY {
+      override fun toJSString() = "ERROR_RECOVERY_ONLY"
+    },
+    WIFI_ONLY {
+      override fun toJSString() = "WIFI_ONLY"
+    },
+    ALWAYS {
+      override fun toJSString() = "ALWAYS"
+    };
+    abstract fun toJSString(): String
   }
 
   constructor(context: Context?, overrideMap: Map<String, Any>?) : this(

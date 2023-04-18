@@ -64,6 +64,7 @@ class UpdatesModule(
         constants["releaseChannel"] = updatesServiceLocal.configuration.releaseChannel
         constants["isUsingEmbeddedAssets"] = updatesServiceLocal.isUsingEmbeddedAssets
         constants["runtimeVersion"] = updatesServiceLocal.configuration.runtimeVersion ?: ""
+        constants["checkAutomatically"] = updatesServiceLocal.configuration.checkOnLaunch.toJSString()
         constants["channel"] = updatesServiceLocal.configuration.requestHeaders["expo-channel-name"] ?: ""
         constants["nativeDebug"] = BuildConfig.EX_UPDATES_NATIVE_DEBUG
 
