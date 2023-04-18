@@ -45,12 +45,14 @@ jobs:
       - name: 🧶 Install workspace node modules
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
         run: yarn install --frozen-lockfile
-      - name: Publish update
-        working-directory: ./apps/native-component-list
-        run: EXPO_SDK_VERSION=45.0.0 eas update --branch main --message "Publishing ${{ github.sha }}"
-      - name: 🏗️ Build the NCL website
-        working-directory: ./apps/native-component-list
-        run: yarn build:web
+      # NOTE(brentvatne): this is currently disabled because it was failing on main and nobody fixed it.
+      #
+      # - name: Publish update
+      #   working-directory: ./apps/native-component-list
+      #   run: EXPO_SDK_VERSION=45.0.0 eas update --branch main --message "Publishing ${{ github.sha }}"
+      # - name: 🏗️ Build the NCL website
+      #   working-directory: ./apps/native-component-list
+      #   run: yarn build:web
       # - name: 🌐 Publish NCL website
       #   working-directory: ./apps/native-component-list
       #   env:
