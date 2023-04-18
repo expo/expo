@@ -7,6 +7,7 @@
 #import <React/RCTRedBox.h>
 #import <React/RCTLogBox.h>
 #import <React/RCTBundleURLProvider.h>
+#import <React/RCTAppSetupUtils.h>
 
 #pragma clang diagnostic pop
 
