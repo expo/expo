@@ -130,6 +130,10 @@ const manualUpdatesInstructions = isUsingExpoDevelopmentClient
  * executed after the `Updates.reloadAsync` method call resolves, since that depends on the OS and
  * the state of the native module and main threads.
  *
+ * In some production use cases, and in the Detox environment, reloadAsync() can
+ * fail or hang if called directly. For these use cases, this API can be called within a setTimeout(),
+ * to allow other JS and native code to complete before the app reloads.
+ *
  * This method cannot be used in development mode, and the returned promise will be rejected if you
  * try to do so.
  *
