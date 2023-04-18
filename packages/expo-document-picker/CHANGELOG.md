@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Export all types from the module.
+- Export all types from the module. ([#22172](https://github.com/expo/expo/pull/22172) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
