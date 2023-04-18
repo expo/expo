@@ -5,6 +5,7 @@
 
 #include <folly/dynamic.h>
 #include <jsi/JSIDynamic.h>
+#include <react/bridging/LongLivedObject.h>
 
 namespace jsi = facebook::jsi;
 
@@ -17,6 +18,7 @@ ExpoModulesHostObject::ExpoModulesHostObject(JSIInteropModuleRegistry *installer
  * Clears jsi references held by JSRegistry and JavaScriptRuntime. 
  */
 ExpoModulesHostObject::~ExpoModulesHostObject() {
+  facebook::react::LongLivedObjectCollection::get().clear();
   installer->jsRegistry.reset();
   installer->runtimeHolder.reset();
 }
