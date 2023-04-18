@@ -50,4 +50,5 @@ export async function getDocumentAsync({ type = '*/*', copyToCacheDirectory = tr
     });
     return mergeDeprecatedResult(result);
 }
+export * from './types';
 //# sourceMappingURL=index.js.map

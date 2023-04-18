@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Export all types from the module. ([#22172](https://github.com/expo/expo/pull/22172) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 💡 Others
 
 ## 11.3.0 — 2023-04-14
