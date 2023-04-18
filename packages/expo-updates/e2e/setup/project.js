@@ -11,6 +11,7 @@ const expoDependencyNames = [
   '@expo/config-plugins',
   '@expo/config-types',
   '@expo/dev-server',
+  '@expo/use-updates',
   'expo-application',
   'expo-constants',
   'expo-eas-client',
