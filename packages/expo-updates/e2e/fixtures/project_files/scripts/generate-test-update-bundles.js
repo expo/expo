@@ -13,7 +13,6 @@ const notifyStrings = [
   'test-assets-1',
 ];
 
-
 createTestUpdateBundles(projectRoot, notifyStrings);
 
 ///////////////////////////////////////////////////////////////
@@ -41,7 +40,10 @@ async function createTestUpdateBundles(projectRoot, notifyStrings) {
   const testUpdateJson = {};
   for (const notifyString of ['test', ...notifyStrings]) {
     console.log(`Creating bundle for string '${notifyString}'...`);
-    const modifiedAppJs = originalAppJs.replace(/\/notify\/test/g, `/notify/${notifyString}`);
+    const modifiedAppJs = originalAppJs.replace(
+      /testID="updateString" value="test"/g,
+      `testID="updateString" value="${notifyString}"`
+    );
     await fs.rm(appJsPath);
     await fs.writeFile(appJsPath, modifiedAppJs, 'utf-8');
     await createUpdateBundleAsync(projectRoot);
