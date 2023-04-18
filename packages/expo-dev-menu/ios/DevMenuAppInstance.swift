@@ -55,7 +55,6 @@ class DevMenuAppInstance: DevMenuRCTCxxBridgeDelegate, RCTBridgeDelegate {
 
   func extraModules(for bridge: RCTBridge!) -> [RCTBridgeModule]! {
     var modules: [RCTBridgeModule] = [DevMenuInternalModule(manager: manager)]
-    modules.append(contentsOf: DevMenuVendoredModulesUtils.vendoredModules(bridge))
     modules.append(DevMenuLoadingView.init())
     modules.append(DevMenuRCTDevSettings.init())
     return modules
