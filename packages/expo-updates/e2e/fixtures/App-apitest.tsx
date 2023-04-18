@@ -16,6 +16,8 @@ export default function App() {
     ? 'This app is running from built-in code'
     : 'This app is running an update';
 
+  const checkAutomaticallyMessage = `Automatic check setting = ${Updates.checkAutomatically}`;
+
   /**
    * Async function to manually check for an available update from EAS.
    */
@@ -31,8 +33,8 @@ export default function App() {
     if (checkResult.isAvailable) {
       setUpdateMessage(
         `checkForUpdateAsync found a new update: manifest = \n${manifestToString(
-          checkResult.manifest
-        )}...`
+          checkResult.manifest,
+        )}...`,
       );
     } else {
       setUpdateMessage('No new update available');
@@ -63,7 +65,9 @@ export default function App() {
     } else if (event.type === Updates.UpdateEventType.NO_UPDATE_AVAILABLE) {
       setUpdateMessage('No new update available');
     } else if (event.type === Updates.UpdateEventType.UPDATE_AVAILABLE) {
-      setUpdateMessage(`New update available\n${manifestToString(event.manifest)}`);
+      setUpdateMessage(
+        `New update available\n${manifestToString(event.manifest)}`,
+      );
       setUpdateAvailable(true);
     }
   };
@@ -77,7 +81,9 @@ export default function App() {
 
   const handleDownloadButtonPress = () => {
     downloadAndRunUpdate().catch((error) => {
-      setUpdateMessage(`Error downloading and running update: ${error.message}`);
+      setUpdateMessage(
+        `Error downloading and running update: ${error.message}`,
+      );
     });
   };
 
@@ -85,6 +91,7 @@ export default function App() {
     <View style={styles.container}>
       <Text>Open up App.js to start working on your app!</Text>
       <Text>{runTypeMessage}</Text>
+      <Text>{checkAutomaticallyMessage}</Text>
       <Text style={styles.updateMessageText}>{updateMessage}</Text>
       <Pressable style={styles.button} onPress={handleCheckButtonPress}>
         <Text style={styles.buttonText}>Check manually for updates</Text>
@@ -153,7 +160,7 @@ const manifestToString = (manifest?: Updates.Manifest) => {
           metadata: manifest.metadata,
         },
         null,
-        2
+        2,
       )
     : 'null';
 };

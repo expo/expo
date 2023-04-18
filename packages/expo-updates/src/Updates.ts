@@ -13,6 +13,7 @@ import {
   UpdateCheckResult,
   UpdateEvent,
   UpdateFetchResult,
+  UpdatesCheckAutomaticallyValue,
   UpdatesLogEntry,
 } from './Updates.types';
 
@@ -44,6 +45,19 @@ export const channel: string | null = ExpoUpdates.channel ?? null;
  * The runtime version of the current build.
  */
 export const runtimeVersion: string | null = ExpoUpdates.runtimeVersion ?? null;
+
+const _checkAutomaticallyMapNativeToJS = {
+  ALWAYS: 'ON_LOAD',
+  ERROR_RECOVERY_ONLY: 'ON_ERROR_RECOVERY',
+  NEVER: 'NEVER',
+  WIFI_ONLY: 'WIFI_ONLY',
+};
+
+/**
+ * Determines if and when expo-updates checks for and downloads updates automatically on startup.
+ */
+export const checkAutomatically: UpdatesCheckAutomaticallyValue | null =
+  _checkAutomaticallyMapNativeToJS[ExpoUpdates.checkAutomatically] ?? null;
 
 // @docsMissing
 /**
