@@ -37,7 +37,7 @@ Steps are used to describe a list of actions either in the form of commands or f
 
 Each step is configured with the following properties.
 
-#### `steps.run`
+#### `steps[].run`
 
 The `run` key is used to trigger a set of instructions. For example, a `run` key is used to install dependencies using the `npm install` command:
 
@@ -52,7 +52,7 @@ build:
     # @end #
 ```
 
-You can also `steps.run` to execute inline bash shell commands:
+You can also use `steps.run` to execute inline bash shell commands:
 
 ```yaml
 build:
@@ -63,13 +63,13 @@ build:
     # @end #
 ```
 
-#### `steps.name`
+#### `steps[].name`
 
-The name of a step that is used in a `build` to identify which step triggers in the build logs.
+The name that is used in build logs to identify the step.
 
 #### `steps.command`
 
-The `command` is defins a custom shell command to run when a step is executed. It is **required** to define a command for each step and can be a multiline bash shell command.
+The `command` defines a custom shell command to run when a step is executed. It is **required** to define a command for each step. It can be a multiline bash shell command.
 
 #### `steps.working_directory`
 
@@ -126,11 +126,11 @@ build:
 
 ## `functions`
 
-Defined to describe a reusable function or [built-in EAS functions](#built-in-eas-functions) that can be used in a workflow. All config options to create a function are specified with the following properties:
+Defined to describe a reusable function that can be used in a workflow. All config options to create a function are specified with the following properties:
 
 ### `name`
 
-The name of a function that is used in a `build`. It is also used to identify the function triggered in the build logs. For example, a function named `greetings` is created:
+The name that is used to identify the function in the build logs. For example, a function with the display name `Say Hi!`:
 
 ```yaml
 functions:
@@ -190,7 +190,7 @@ functions:
     # @info #
     outputs: [value]
     # @end #
-    command: set-output value Hello
+    command: set-output value "Hello world"
 ```
 
 ### `command`
