@@ -6,8 +6,18 @@ ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/../../.. && pwd )"
 
 if [ "$EAS_BUILD_PLATFORM" = "android" ]; then
   sudo apt-get -y update
-  sudo apt-get -y install ruby icu-devtools libicu66 libicu-dev maven
+  sudo apt-get -y install ruby icu-devtools libicu66 libicu-dev maven 
   sdkmanager "cmake;3.22.1"
+fi
+
+if [ "$EAS_BUILD_PROFILE" = "release-client" ]; then
+  if [ "$EAS_BUILD_PLATFORM" = "android" ]; then
+    sudo apt-get -y update
+    sudo apt-get -y install git-crypt
+  elif [ "$EAS_BUILD_PLATFORM" = "ios" ]; then
+    HOMEBREW_NO_AUTO_UPDATE=1 brew install git-crypt
+  fi
+  git-crypt unlock $GIT_CRYPT_KEY
 fi
 
 cat << EOF > $ROOT_DIR/.gitmodules
