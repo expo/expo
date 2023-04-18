@@ -24,10 +24,16 @@ export const channel = ExpoUpdates.channel ?? null;
  * The runtime version of the current build.
  */
 export const runtimeVersion = ExpoUpdates.runtimeVersion ?? null;
+const _checkAutomaticallyMapNativeToJS = {
+    ALWAYS: 'ON_LOAD',
+    ERROR_RECOVERY_ONLY: 'ON_ERROR_RECOVERY',
+    NEVER: 'NEVER',
+    WIFI_ONLY: 'WIFI_ONLY',
+};
 /**
  * Determines if and when expo-updates checks for and downloads updates automatically on startup.
  */
-export const checkAutomatically = ExpoUpdates.checkAutomatically ?? null;
+export const checkAutomatically = _checkAutomaticallyMapNativeToJS[ExpoUpdates.checkAutomatically] ?? null;
 // @docsMissing
 /**
  * @hidden

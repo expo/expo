@@ -40,13 +40,13 @@ data class UpdatesConfiguration(
       override fun toJSString() = "NEVER"
     },
     ERROR_RECOVERY_ONLY {
-      override fun toJSString() = "ON_ERROR_RECOVERY"
+      override fun toJSString() = "ERROR_RECOVERY_ONLY"
     },
     WIFI_ONLY {
       override fun toJSString() = "WIFI_ONLY"
     },
     ALWAYS {
-      override fun toJSString() = "ON_LOAD"
+      override fun toJSString() = "ALWAYS"
     };
     abstract fun toJSString(): String
   }

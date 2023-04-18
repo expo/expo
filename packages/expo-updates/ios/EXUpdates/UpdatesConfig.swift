@@ -14,13 +14,13 @@ public enum CheckAutomaticallyConfig: Int {
   var asString: String {
     switch self {
     case .Always:
-      return "ON_LOAD"
+      return "ALWAYS"
     case .WifiOnly:
       return "WIFI_ONLY"
     case .Never:
       return "NEVER"
     case .ErrorRecoveryOnly:
-      return "ON_ERROR_RECOVERY"
+      return "ERROR_RECOVERY_ONLY"
     }
   }
 }

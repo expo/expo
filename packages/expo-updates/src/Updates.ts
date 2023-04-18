@@ -46,11 +46,18 @@ export const channel: string | null = ExpoUpdates.channel ?? null;
  */
 export const runtimeVersion: string | null = ExpoUpdates.runtimeVersion ?? null;
 
+const _checkAutomaticallyMapNativeToJS = {
+  ALWAYS: 'ON_LOAD',
+  ERROR_RECOVERY_ONLY: 'ON_ERROR_RECOVERY',
+  NEVER: 'NEVER',
+  WIFI_ONLY: 'WIFI_ONLY',
+};
+
 /**
  * Determines if and when expo-updates checks for and downloads updates automatically on startup.
  */
 export const checkAutomatically: UpdatesCheckAutomaticallyValue | null =
-  ExpoUpdates.checkAutomatically ?? null;
+  _checkAutomaticallyMapNativeToJS[ExpoUpdates.checkAutomatically] ?? null;
 
 // @docsMissing
 /**
