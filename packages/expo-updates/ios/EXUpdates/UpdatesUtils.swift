@@ -91,7 +91,11 @@ public final class UpdatesUtils: NSObject {
 
   internal static func shouldCheckForUpdate(withConfig config: UpdatesConfig) -> Bool {
     func isConnectedToWifi() -> Bool {
-      return try! Reachability().connection == .wifi
+      do {
+        return try Reachability().connection == .wifi
+      } catch {
+        return false
+      }
     }
 
     switch config.checkOnLaunch {
