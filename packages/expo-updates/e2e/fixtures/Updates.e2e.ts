@@ -471,6 +471,8 @@ describe('JS API tests', () => {
     jestExpect(message).toEqual('test');
     const isEmbedded = await testElementValueAsync('isEmbeddedLaunch');
     jestExpect(isEmbedded).toEqual('true');
+    const checkAutomatically = await testElementValueAsync('checkAutomatically');
+    jestExpect(checkAutomatically).toEqual('ON_LOAD');
     Server.start(Update.serverPort, protocolVersion);
     await Server.serveSignedManifest(manifest, projectRoot);
     await pressTestButtonAsync('checkForUpdate');
