@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed build errors on React Native 0.72.x. ([#22177](https://github.com/expo/expo/pull/22177) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 - Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
