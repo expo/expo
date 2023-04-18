@@ -4,7 +4,6 @@
 
 #include <fbjni/fbjni.h>
 #include <jsi/jsi.h>
-#include <react/bridging/LongLivedObject.h>
 #include <react/jni/ReadableNativeArray.h>
 #include <jni/JCallback.h>
 
@@ -179,11 +178,6 @@ private:
    * The first MethodMetadata points to the getter and the second one to the setter.
    */
   std::map<std::string, std::pair<MethodMetadata, MethodMetadata>> properties;
-
-  /**
-   * The `LongLivedObjectCollection` to hold `LongLivedObject` (callbacks or promises) for this module.
-   */
-  std::shared_ptr<react::LongLivedObjectCollection> longLivedObjectCollection_;
 
   std::map<
     std::string,

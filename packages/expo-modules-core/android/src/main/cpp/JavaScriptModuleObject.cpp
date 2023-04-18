@@ -257,7 +257,6 @@ void JavaScriptModuleObject::registerSyncFunction(
 
   methodsMetadata.try_emplace(
     cName,
-    longLivedObjectCollection_,
     cName,
     takesOwner,
     args,
@@ -278,7 +277,6 @@ void JavaScriptModuleObject::registerAsyncFunction(
 
   methodsMetadata.try_emplace(
     cName,
-    longLivedObjectCollection_,
     cName,
     takesOwner,
     args,
@@ -298,7 +296,6 @@ void JavaScriptModuleObject::registerClass(
 ) {
   std::string cName = name->toStdString();
   MethodMetadata constructor(
-    longLivedObjectCollection_,
     "constructor",
     takesOwner,
     args,
@@ -330,7 +327,6 @@ void JavaScriptModuleObject::registerProperty(
   auto cName = name->toStdString();
 
   auto getterMetadata = MethodMetadata(
-    longLivedObjectCollection_,
     cName,
     false,
     0,
@@ -342,7 +338,6 @@ void JavaScriptModuleObject::registerProperty(
   auto types = std::vector<std::unique_ptr<AnyType>>();
   types.push_back(std::make_unique<AnyType>(jni::make_local(expectedArgType)));
   auto setterMetadata = MethodMetadata(
-    longLivedObjectCollection_,
     cName,
     false,
     1,
@@ -361,6 +356,5 @@ void JavaScriptModuleObject::registerProperty(
 
 JavaScriptModuleObject::JavaScriptModuleObject(jni::alias_ref<jhybridobject> jThis)
   : javaPart_(jni::make_global(jThis)) {
-  longLivedObjectCollection_ = std::make_shared<react::LongLivedObjectCollection>();
 }
 } // namespace expo

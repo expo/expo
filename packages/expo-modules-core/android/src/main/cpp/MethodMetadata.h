@@ -9,7 +9,6 @@
 #include <jsi/jsi.h>
 #include <fbjni/fbjni.h>
 #include <ReactCommon/TurboModuleUtils.h>
-#include <react/bridging/LongLivedObject.h>
 #include <react/jni/ReadableNativeArray.h>
 #include <memory>
 #include <vector>
@@ -50,7 +49,6 @@ public:
   std::vector<std::unique_ptr<AnyType>> argTypes;
 
   MethodMetadata(
-    std::weak_ptr<react::LongLivedObjectCollection> longLivedObjectCollection,
     std::string name,
     bool takesOwner,
     int args,
@@ -60,7 +58,6 @@ public:
   );
 
   MethodMetadata(
-    std::weak_ptr<react::LongLivedObjectCollection> longLivedObjectCollection,
     std::string name,
     bool takesOwner,
     int args,
@@ -119,8 +116,6 @@ private:
    * To not create a jsi::Function always when we need it, we cached that value.
    */
   std::shared_ptr<jsi::Function> body = nullptr;
-
-  std::weak_ptr<react::LongLivedObjectCollection> longLivedObjectCollection_;
 
   jsi::Function toSyncFunction(jsi::Runtime &runtime, JSIInteropModuleRegistry *moduleRegistry);
 
