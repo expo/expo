@@ -44,7 +44,9 @@ export default function App() {
 
   React.useEffect(() => {
     if (isUpdatePending && runNow) {
-      setTimeout(() => runUpdate(), 2000);
+      runUpdate();
+      // Optionally call runUpdate with a setTimeout
+      // setTimeout(() => runUpdate(), 2000);
     }
   }, [isUpdatePending, runNow]);
 

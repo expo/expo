@@ -478,7 +478,9 @@ describe('JS API tests', () => {
     await pressTestButtonAsync('checkForUpdate');
     const availableUpdateID = await testElementValueAsync('availableUpdateID');
     jestExpect(availableUpdateID).toEqual(manifest.id);
-    await pressTestButtonAsync('downloadUpdate');
+    // Since pressing downloadUpdate restarts the app after downloading,
+    // don't do an await (this avoids a Detox hang issue)
+    pressTestButtonAsync('downloadUpdate').catch((e) => console.warn(`Download button error ${e}`));
     await setTimeout(2000);
     Server.stop();
     await device.terminateApp();
