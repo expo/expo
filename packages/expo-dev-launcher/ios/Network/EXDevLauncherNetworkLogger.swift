@@ -1,3 +1,4 @@
+import SocketRocket
 import React
 
 #if DEBUG && EX_DEV_CLIENT_NETWORK_INSPECTOR
@@ -204,7 +205,7 @@ extension RCTInspectorPackagerConnection {
     guard isConnected() else {
       return false
     }
-    guard let webSocket = value(forKey: "_webSocket") as? RCTSRWebSocket else {
+    guard let webSocket = value(forKey: "_webSocket") as? SRWebSocket else {
       return false
     }
     return webSocket.readyState == .OPEN
