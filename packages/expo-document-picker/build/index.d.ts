@@ -1,5 +1,4 @@
 import { DocumentPickerOptions, DocumentPickerResult } from './types';
-export { DocumentPickerOptions, DocumentPickerResult as DocumentResult };
 /**
  * Display the system UI for choosing a document. By default, the chosen file is copied to [the app's internal cache directory](filesystem.md#filesystemcachedirectory).
  * > **Notes for Web:** The system UI can only be shown after user activation (e.g. a `Button` press).
@@ -12,4 +11,5 @@ export { DocumentPickerOptions, DocumentPickerResult as DocumentResult };
  * If the user cancelled the document picking, the promise resolves to `{ type: 'cancel' }`.
  */
 export declare function getDocumentAsync({ type, copyToCacheDirectory, multiple, }?: DocumentPickerOptions): Promise<DocumentPickerResult>;
+export * from './types';
 //# sourceMappingURL=index.d.ts.map
