@@ -1,6 +1,6 @@
 # @expo/use-updates
 
-A simpler JavaScript API for the [`expo-updates`](https://docs.expo.dev/versions/latest/sdk/updates/) module.
+An easier to use, declarative JavaScript API for the [`expo-updates`](https://docs.expo.dev/versions/latest/sdk/updates/) module.
 
 - Wrap existing asynchronous methods and native event listener
 - No asynchronous methods needed
@@ -8,6 +8,7 @@ A simpler JavaScript API for the [`expo-updates`](https://docs.expo.dev/versions
 ## Notes
 
 - This API is in an early stage of development, and is subject to change, including breaking changes.
+- If `Updates` APIs such as `checkForUpdateAsync()` are used directly, the properties returned by the `useUpdates()` hook in this module will not be refreshed automatically. To ensure correct behavior, we recommend that `checkForUpdateAsync()`, `fetchUpdateAsync()`, and `reloadAsync()` not be used directly when using the `useUpdates()` hook.
 - If the app is configured to [download and run updates automatically](https://docs.expo.dev/versions/latest/config/app/#checkautomatically), then the `useUpdates()` hook should be added near the root level of the application code, so that the events emitted by automatic update checks are detected.
 
 ## Example Usage
