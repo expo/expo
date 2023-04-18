@@ -1,5 +1,5 @@
 ---
-title: Authentication
+title: Authentication with OAuth or OpenID providers
 ---
 
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
@@ -30,7 +30,11 @@ If you'd like to see more, you can [open a PR](https://github.com/expo/expo/edit
     href="/versions/latest/sdk/apple-authentication"
     image={ASSETS.apple}
   />
-  <GridItem title="Beyond Identity" protocol={['OAuth 2', 'OpenID']} image={ASSETS.beyondidentity} />
+  <GridItem
+    title="Beyond Identity"
+    protocol={['OAuth 2', 'OpenID']}
+    image={ASSETS.beyondidentity}
+  />
   <GridItem title="Cognito" protocol={['OAuth 2', 'OpenID']} image={ASSETS.cognito} />
   <GridItem title="Coinbase" protocol={['OAuth 2']} image={ASSETS.coinbase} />
   <GridItem title="Dropbox" protocol={['OAuth 2']} image={ASSETS.dropbox} />
@@ -188,22 +192,22 @@ export default function App() {
   image={ASSETS.beyondidentity}
 >
 
-| Website                             | Provider | PKCE      | Auto Discovery |
-| ----------------------------------- | -------- | --------- | -------------- |
+| Website                                                             | Provider | PKCE      | Auto Discovery |
+| ------------------------------------------------------------------- | -------- | --------- | -------------- |
 | [Get your config](https://www.beyondidentity.com/developers/signup) | OpenID   | Supported | Available      |
 
-
-- Beyond Identity allows developers to implement strong passwordless authentication based on public-private key pairs called Universal Passkeys. All keys are cryptographically linked to the user and can be centrally managed using the Beyond Identity APIs. 
+- Beyond Identity allows developers to implement strong passwordless authentication based on public-private key pairs called Universal Passkeys. All keys are cryptographically linked to the user and can be centrally managed using the Beyond Identity APIs.
 - You will need a Universal Passkey before you can authenticate. See [Beyond Identity documentation](https://developer.beyondidentity.com).
 - Make sure to [create a development build](/develop/development-builds/create-a-build/) and follow instructions to [install required config plugins](https://github.com/gobeyondidentity/bi-sdk-react-native/tree/main#using-expo).
 - For a complete example app, see [SDK's GitHub repository](https://github.com/gobeyondidentity/bi-sdk-react-native).
 
 <Tabs tabs={["Auth Code with automatic invocation", "Auth Code with manual invocation"]}>
 <Tab>
-- Set your Beyond Identity [Authenticator Config's](https://developer.beyondidentity.com/docs/v1/platform-overview/authenticator-config) Invocation Type to **Automatic**. 
+- Set your Beyond Identity [Authenticator Config's](https://developer.beyondidentity.com/docs/v1/platform-overview/authenticator-config) Invocation Type to **Automatic**.
 
 - If **Automatic** is selected, Beyond Identity will automatically redirect to your application using the **Invoke URL** (the App Scheme or Univeral URL pointing to your application).
-{/* prettier-ignore */}
+  {/* prettier-ignore */}
+
 ```jsx Auth Code
 import { useEffect } from 'react';
 import { makeRedirectUri, useAuthRequest, useAutoDiscovery } from 'expo-auth-session';
@@ -214,7 +218,9 @@ import { Embedded } from '@beyondidentity/bi-sdk-react-native';
 
 export default function App() {
   // Endpoint
-  const discovery = useAutoDiscovery(`https://auth-${region}.beyondidentity.com/v1/tenants/${tenant_id}/realms/${realm_id}/applications/${application_id}`);
+  const discovery = useAutoDiscovery(
+    `https://auth-${region}.beyondidentity.com/v1/tenants/${tenant_id}/realms/${realm_id}/applications/${application_id}`
+  );
   // Request
   const [request, response, promptAsync] = useAuthRequest(
     {
@@ -222,7 +228,7 @@ export default function App() {
       scopes: ['openid'],
       redirectUri: makeRedirectUri({
         /* @info The URI <code>[scheme]://</code> to be used in bare and standalone. If undefined, the <code>scheme</code> property in your app.json or app.config.js is used instead. */
-        scheme: 'your.app'
+        scheme: 'your.app',
         /* @end */
       }),
     },
@@ -230,7 +236,7 @@ export default function App() {
   );
 
   useEffect(() => {
-    const authenticate = async (url) => {
+    const authenticate = async url => {
       // Display UI for user to select a passwordless passkey
       const passkeys = await Embedded.getPasskeys();
 
@@ -242,10 +248,10 @@ export default function App() {
       }
     };
 
-     /* @info The response does not need to be of type 'success' if it has a url. The state value is stored in a JWT in the url 'request' parameter, and the url will be validated through the Beyond Identity Embedded SDK. */
-     if (response?.url) {
-     /* @end */
-      authenticate(url)
+    /* @info The response does not need to be of type 'success' if it has a url. The state value is stored in a JWT in the url 'request' parameter, and the url will be validated through the Beyond Identity Embedded SDK. */
+    if (response?.url) {
+      /* @end */
+      authenticate(url);
     }
   }, [response]);
 
@@ -264,10 +270,11 @@ export default function App() {
   );
 }
 ```
+
 </Tab>
 
 <Tab>
-- Set your Beyond Identity [Authenticator Config's](https://developer.beyondidentity.com/docs/v1/platform-overview/authenticator-config) Invocation Type to **Manual**. 
+- Set your Beyond Identity [Authenticator Config's](https://developer.beyondidentity.com/docs/v1/platform-overview/authenticator-config) Invocation Type to **Manual**.
 - If **Manual** is selected, an authentication URL is returned as part of a JSON response. No redirects are needed and do not require web service authentication. The result is a completely silent OAuth 2.0 authentication using Passkeys.
 
 {/* prettier-ignore */}
@@ -309,6 +316,7 @@ export default function App() {
   );
 }
 ```
+
 </Tab>
 
 </Tabs>
