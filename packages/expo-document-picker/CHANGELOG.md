@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Export all types from the module.
+
 ### 💡 Others
 
 ## 11.3.0 — 2023-04-14
