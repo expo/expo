@@ -67,10 +67,10 @@ test('redirects versionless SDK paths to new version', () => {
 });
 
 test('removes null from end of paths', () => {
-  const redirectPath = '/get-started/errors/null';
+  const redirectPath = '/debugging/errors-and-warnings/null';
   const newPath = getRedirectPath(redirectPath);
 
-  expect(newPath).toEqual('/get-started/errors/');
+  expect(newPath).toEqual('/debugging/errors-and-warnings/');
 });
 
 test('redirect SDK permissions to the permission guide', () => {
