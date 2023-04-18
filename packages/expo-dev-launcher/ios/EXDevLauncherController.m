@@ -16,6 +16,8 @@
 #import "EXDevLauncherUpdatesHelper.h"
 #import "RCTPackagerConnection+EXDevLauncherPackagerConnectionInterceptor.h"
 
+#import "EXDevLauncherBridgeDelegate.h"
+
 #if __has_include(<EXDevLauncher/EXDevLauncher-Swift.h>)
 // For cocoapods framework, the generated swift header will be inside EXDevLauncher module
 #import <EXDevLauncher/EXDevLauncher-Swift.h>
@@ -280,12 +282,8 @@
   }
 
   [self _removeInitModuleObserver];
-
-  _launcherBridge = [[EXDevLauncherRCTBridge alloc] initWithDelegate:self launchOptions:_launchOptions];
-
-  RCTRootView *rootView = [[RCTRootView alloc] initWithBridge:_launcherBridge
-                                                   moduleName:@"main"
-                                            initialProperties:@{}];
+  UIApplication *application = [UIApplication sharedApplication];
+  UIView *rootView = [EXDevLauncherBridgeDelegate createRootViewWithModuleName:@"main" launchOptions:_launchOptions application:application];
 
   [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:rootView];
 
