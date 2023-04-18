@@ -1,9 +1,6 @@
 # @expo/use-updates
 
-An easier to use, declarative JavaScript API for the [`expo-updates`](https://docs.expo.dev/versions/latest/sdk/updates/) module.
-
-- Wrap existing asynchronous methods and native event listener
-- No asynchronous methods needed
+An easier to use, declarative JavaScript API for the [`expo-updates`](https://docs.expo.dev/versions/latest/sdk/updates/) module. The API wraps existing asynchronous methods and does not require the developer to add an event listener.
 
 ## Notes
 
