@@ -40,6 +40,7 @@
 - Fix E2E after Swift conversion. ([#21592](https://github.com/expo/expo/pull/21592) by [@douglowder](https://github.com/douglowder))
 - Fix iOS native debug after Swift conversion. ([#21602](https://github.com/expo/expo/pull/21602) by [@douglowder](https://github.com/douglowder))
 - Fix compilation errors and enable modules after Swift conversion. ([#21621](https://github.com/expo/expo/pull/21621) by [@wschurman](https://github.com/wschurman), [@douglowder](https://github.com/douglowder))
+- E2E tests for JS API. ([#22167](https://github.com/expo/expo/pull/22167) by [@douglowder](https://github.com/douglowder))
 
 ## 0.16.4 - 2023-04-03
 
