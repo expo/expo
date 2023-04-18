@@ -8,7 +8,6 @@ import { Terminal } from '~/ui/components/Snippet';
 import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { Tab, Tabs } from '~/ui/components/Tabs';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { Collapsible } from '~/ui/components/Collapsible';
 
 Usually, creating a new native build from scratch takes long enough that you'll be tempted to switch tasks and lose your focus. However, with the development build installed on your device or an emulator/simulator, you won't have to wait for the native build process until you [change the underlying native code](#rebuild-a-development-build) that powers your app.
 
@@ -54,45 +53,6 @@ If you add a library to your project that contains native code APIs, for example
 When you need to, you can access the menu by pressing <kbd>Cmd ⌘</kbd> + <kbd>d</kbd> or <kbd>Ctrl</kbd> + <kbd>d</kbd> in Expo CLI or by shaking your phone or tablet. Here you'll be able to access all of the functions of your development build, any debugging functionality you need, or switch to a different version of your app.
 
 See [Debugging](/debugging/runtime-issue/) guide for more information.
-
-<Collapsible summary="Build locally with Android Studio and Xcode">
-
-> **warning** We do not recommend this method or modifying these **android** and **ios** directories directly, especially when creating a development build with EAS Build. For more information, see [Prebuild](/workflow/prebuild/).
-
-If you need to debug native code or you prefer to manage your native projects and run the locally before creating a development build, you can use `npx expo run` commands. You'll need to set up or have access to Android Studio, Xcode, and related dependencies on your local computer.
-
-The [`npx expo run` commands](/workflow/expo-cli/#compiling) will create a new build, install it on your emulator/simulator or device, and start running it.
-
-<Tabs tabs={["For Android", "For iOS (macOS Only)"]}>
-
-<Tab>
-
-To build and run on an emulator:
-
-<Terminal cmd={['$ npx expo run:android']} />
-
-To build and run on a connected device:
-
-<Terminal cmd={['$ npx expo run:android -d']} />
-
-</Tab>
-<Tab>
-
-To build and run on a simulator:
-
-<Terminal cmd={['$ npx expo run:ios']} />
-
-To build and run on a connected device:
-
-<Terminal cmd={['$ npx expo run:ios -d']} />
-
-</Tab>
-
-</Tabs>
-
-Running the above commands generates native source code in their corresponding **android** and **ios** directories.
-
-</Collapsible>
 
 ## Next step
 

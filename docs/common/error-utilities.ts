@@ -160,6 +160,9 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/latest/workflow/expo-cli/': '/more/expo-cli/',
   '/debugging/': '/debugging/runtime-issue/',
   '/guides/testing-with-jest/': '/develop/unit-testing/',
+  '/workflow/glossary-of-terms/': '/more/glossary-of-terms/',
+  '/development/installation/': '/develop/development-builds/installation/',
+  '/get-started/errors/': '/debugging/errors-and-warnings/',
 
   // Old redirects
   '/introduction/project-lifecycle/': '/introduction/managed-vs-bare/',
@@ -329,4 +332,13 @@ const RENAMED_PAGES: Record<string, string> = {
   // Push notifications
   '/push-notifications/using-fcm/': '/push-notifications/push-notifications-setup',
   '/config/app/': '/workflow/configuration/',
+  '/versions/latest/sdk/settings/': '/versions/latest/',
+  '/archive/expokit/eject/': '/archive/glossary/#eject',
+  '/versions/latest/sdk/admob/': '/versions/latest/',
+  '/versions/latest/sdk/payments/': '/versions/latest/sdk/stripe/',
+  '/distribution/app-icons/': '/develop/user-interface/app-icons/',
+  '/guides/using-libraries/': '/workflow/using-libraries/',
+  '/tutorial/': '/tutorial/introduction/',
+  // Note (@aman): The following redirect is temporary until Guides section has an overview
+  '/guides/': '/workflow/customizing/',
 };
