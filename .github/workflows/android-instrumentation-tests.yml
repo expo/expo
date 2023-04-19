@@ -75,7 +75,7 @@ jobs:
         timeout-minutes: 80
         uses: ./.github/actions/use-android-emulator
         with:
-          api-level: ${{ matrix.api-level }}
+          avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
           script: expotools android-native-unit-tests --type instrumented
       - name: 💾 Save test results

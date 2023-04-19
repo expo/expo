@@ -160,7 +160,7 @@ runs:
       if: inputs.avd == 'true'
       uses: ./.github/actions/use-android-emulator
       with:
-        api-level: ${{ inputs.avd-api }}
+        avd-api: ${{ inputs.avd-api }}
         avd-name: avd-${{ matrix.api-level }}
 
     - name: ♻️ Restore Android NDK from cache
