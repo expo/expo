@@ -31,6 +31,7 @@
 
 - Fix main field resolution for metro web. ([#21939](https://github.com/expo/expo/pull/21939) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix cached code signing development certificate offline behavior. ([#21989](https://github.com/expo/expo/pull/21989) by [@wschurman](https://github.com/wschurman))
+- Remove invalid array group syntax from Expo Router type generation. ([#22185](https://github.com/expo/expo/pull/22185) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 
