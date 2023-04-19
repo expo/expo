@@ -82,20 +82,27 @@ class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
 
   // MARK: affecting screen orientation
   func enforceDesiredDeviceOrientation(withOrientationMask orientationMask: UIInterfaceOrientationMask) {
-    // if current sreen orientation isn't part of the mask, we have to change orientation to default one included in mask, in order up-left-right-down
-    if !doesOrientationMask(orientationMask, contain: currentScreenOrientation) {
-      var newOrientation = defaultOrientation(for: orientationMask)
-      if newOrientation != .unknown {
-        DispatchQueue.main.async { [weak self] in
-          guard let self = self else {
-            return
-          }
+    var newOrientation = defaultOrientation(for: orientationMask)
+    if doesOrientationMask(orientationMask, contain: currentScreenOrientation) {
+      newOrientation = currentScreenOrientation
+    }
+    if newOrientation != .unknown {
+      DispatchQueue.main.async { [weak self] in
+        guard let self = self else {
+          return
+        }
 
+        if #available(iOS 16.0, *) {
+          let rootViewController = UIApplication.shared.keyWindow?.rootViewController
+          let windowScene = rootViewController?.view.window?.windowScene
+          windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: orientationMask))
+          rootViewController?.setNeedsUpdateOfSupportedInterfaceOrientations()
+        } else {
           UIDevice.current.setValue(newOrientation.rawValue, forKey: "orientation")
           UIViewController.attemptRotationToDeviceOrientation()
-          if self.currentScreenOrientation == .unknown {
-            self.screenOrientationDidChange(newOrientation)
-          }
+        }
+        if self.currentScreenOrientation == .unknown {
+          self.screenOrientationDidChange(newOrientation)
         }
       }
     }
