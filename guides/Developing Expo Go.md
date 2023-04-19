@@ -114,7 +114,7 @@ Here are the steps to build a standalone iOS app:
 
 The Expo Go apps run a root Expo project in addition to native code. By default, this will use a published version of the project, so any changes made in the `home` directory will not show up without some extra work.
 
-Serve this project locally by running `expo start` from the `home` directory. **On iOS**, you'll additionally need to set `DEV_KERNEL_SOURCE` to `LOCAL` in `EXBuildConstants.plist` (the default is `PUBLISHED`).
+Serve this project locally by running `npx expo start --port=80` from the `home` directory. **On iOS**, you'll additionally need to set `DEV_KERNEL_SOURCE` to `LOCAL` in `EXBuildConstants.plist` (the default is `PUBLISHED`).
 
 The native Android Studio and Xcode projects have a build hook which will find this if `expo start` is running. Keep this running and rebuild the app on each platform.
 
