@@ -156,28 +156,12 @@ runs:
       if: inputs.avd == 'true' || inputs.ndk == 'true' || inputs.gradle == 'true'
       uses: gradle/gradle-build-action@v2
 
-    - name: ♻️ Restore AVD cache
+    - name: ♻️ Restore AVD
       if: inputs.avd == 'true'
-      uses: actions/cache@v3
-      id: avd-cache
-      with:
-        path: |
-          ~/.android/avd/*
-          ~/.android/adb*
-        key: avd-${{ inputs.avd-api }}
-    - name: 📱 Create AVD and generate snapshot for caching
-      if: inputs.avd == 'true' && steps.avd-cache.outputs.cache-hit != 'true'
-      uses: reactivecircus/android-emulator-runner@v2
+      uses: ./.github/actions/use-android-emulator
       with:
         api-level: ${{ inputs.avd-api }}
         avd-name: avd-${{ matrix.api-level }}
-        arch: x86_64
-        target: google_apis
-        emulator-build: 9322596
-        force-avd-creation: false
-        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-        disable-animations: false
-        script: echo "Generated AVD snapshot for caching."
 
     - name: ♻️ Restore Android NDK from cache
       if: inputs.ndk == 'true'

@@ -1,0 +1,58 @@
+name: 'Use Android Emulator'
+description: 'Setup to run script on an Android emulator'
+
+inputs:
+  avd-api:
+    description: 'API version used in AVD'
+    required: false
+    default: '33'
+  avd-name:
+    description: 'Created AVD name'
+    required: true
+  script:
+    description: 'custom script to run - e.g. `./gradlew connectedCheck`'
+    required: false
+  working-directory:
+    description: 'A custom working directory - e.g. `./android` if your root Gradle project is under the `./android` sub-directory within your repository'
+    required: false
+    default: './'
+
+runs:
+  using: 'composite'
+  steps:
+    - name: ♻️ Restore AVD cache
+      uses: actions/cache@v3
+      id: avd-cache
+      with:
+        path: |
+          ~/.android/avd/*
+          ~/.android/adb*
+        key: avd-${{ inputs.avd-api }}
+    - name: 📱 Create AVD and generate snapshot for caching
+      if: steps.avd-cache.outputs.cache-hit != 'true'
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: ${{ inputs.avd-api }}
+        avd-name: ${{ inputs.avd-name }}
+        arch: x86_64
+        target: google_apis
+        emulator-build: 9322596
+        force-avd-creation: false
+        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+        disable-animations: false
+        script: echo "Generated AVD snapshot for caching."
+
+    - name: 💿 Run script
+      if: inputs.script != ''
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: ${{ inputs.avd-api }}
+        avd-name: ${{ inputs.avd-name }}
+        arch: x86_64
+        target: google_apis
+        emulator-build: 9322596
+        force-avd-creation: false
+        emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+        disable-animations: false
+        script: ${{ inputs.script }}
+        working-directory: ${{ inputs.working-directory }}

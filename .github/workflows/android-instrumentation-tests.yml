@@ -73,18 +73,11 @@ jobs:
         run: yarn install --frozen-lockfile
       - name: 📱 Run instrumented unit tests
         timeout-minutes: 80
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: ./.github/actions/use-android-emulator
         with:
           api-level: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
-          arch: x86_64
-          target: google_apis
-          emulator-build: 9322596
-          force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: false
           script: expotools android-native-unit-tests --type instrumented
-          disk-size: 2048M
       - name: 💾 Save test results
         if: always()
         uses: actions/upload-artifact@v3

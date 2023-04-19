@@ -192,16 +192,10 @@ jobs:
           NODE_ENV: production
           GRADLE_OPTS: '-Dorg.gradle.internal.http.connectionTimeout=180000 -Dorg.gradle.internal.http.socketTimeout=180000 -Dorg.gradle.internal.network.retry.max.attempts=18 -Dorg.gradle.internal.network.retry.initial.backOff=2000'
       - name: 🧪 Run tests
-        uses: reactivecircus/android-emulator-runner@v2
+        uses: ./.github/actions/use-android-emulator
         with:
           api-level: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
-          arch: x86_64
-          target: google_apis
-          emulator-build: 9322596
-          force-avd-creation: false
-          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
-          disable-animations: false
           script: yarn android:detox:test:release
           working-directory: ./apps/bare-expo
       - name: 📸 Store images of build failures
