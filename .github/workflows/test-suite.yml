@@ -139,14 +139,11 @@ jobs:
           fields: job,message,ref,eventName,author,took
           author_name: Test Suite (iOS)
 
-  android:
-    runs-on: macos-12
+  android-build:
+    runs-on: ubuntu-20.04
     env:
       ORG_GRADLE_PROJECT_reactNativeArchitectures: x86_64
-      GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx4096m -XX:MaxMetaspaceSize=2048m
-    strategy:
-      matrix:
-        api-level: [31]
+      GRADLE_OPTS: -Dorg.gradle.jvmargs="-Xmx4096m -XX:MaxMetaspaceSize=4096m"
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
@@ -161,18 +158,15 @@ jobs:
         with:
           distribution: 'temurin'
           java-version: '11'
-      - name: 🍺 Install required tools
-        run: brew install watchman
       - name: ➕ Add `bin` to GITHUB_PATH
         run: echo "$(pwd)/bin" >> $GITHUB_PATH
       - name: ♻️ Restore caches
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
+          gradle: 'true'
           yarn-workspace: 'true'
           yarn-tools: 'true'
-          avd: 'true'
-          avd-api: ${{ matrix.api-level }}
           react-native-gradle-downloads: 'true'
       - name: 🧶 Install workspace node modules
         if: steps.expo-caches.outputs.yarn-workspace-hit != 'true'
@@ -182,29 +176,55 @@ jobs:
         working-directory: apps/bare-expo
       - name: 🛠️ Generate dynamic macros
         run: expotools android-generate-dynamic-macros --configuration release --bare
+      - name: 📸 Restore apk cache
+        uses: actions/cache@v3
+        id: cache-apk
+        with:
+          key: bareexpo-apk
+          path: apps/bare-expo/android/app/build/outputs/apk
       - name: 🏗️ Build Android project
-        run: ./gradlew -DtestBuildType=release :app:assembleRelease :app:assembleAndroidTest
+        if: steps.cache-apk.outputs.cache-hit != 'true'
+        run: ./gradlew -DtestBuildType=release :app:assembleRelease :app:assembleAndroidTest --no-daemon
         working-directory: apps/bare-expo/android
         timeout-minutes: 35
         env:
           EXPO_DEBUG: 1
           NODE_ENV: production
-          GRADLE_OPTS: '-Dorg.gradle.internal.http.connectionTimeout=180000 -Dorg.gradle.internal.http.socketTimeout=180000 -Dorg.gradle.internal.network.retry.max.attempts=18 -Dorg.gradle.internal.network.retry.initial.backOff=2000'
-      - name: 🧪 Run tests
-        uses: reactivecircus/android-emulator-runner@v2
+      - name: 📸 Upload builds
+        uses: actions/upload-artifact@v3
         with:
-          api-level: ${{ matrix.api-level }}
+          name: bare-expo-android-builds
+          path: apps/bare-expo/android/app/build/outputs/apk
+
+  android-test:
+    needs: android-build
+    runs-on: macos-12
+    strategy:
+      matrix:
+        api-level: [33]
+    steps:
+      - name: 👀 Checkout
+        uses: actions/checkout@v3
+      - name: 🌠 Download builds
+        uses: actions/download-artifact@v3
+        with:
+          name: bare-expo-android-builds
+          path: apps/bare-expo/android/app/build/outputs/apk
+      - name: 🧪 Run tests
+        uses: ./.github/actions/use-android-emulator
+        with:
+          avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
-          arch: x86_64
-          force-avd-creation: false
           script: |
             mkdir artifacts
             adb logcat -d > artifacts/emulator.log
             adb logcat -c || true
+            adb shell screencap -p /data/local/tmp/bareexpo.png && adb pull /data/local/tmp/bareexpo.png artifacts/beforeTests.png
             ./scripts/start-android-e2e-test.sh
+            adb shell screencap -p /data/local/tmp/bareexpo.png && adb pull /data/local/tmp/bareexpo.png artifacts/afterTests.png
             adb logcat -d > artifacts/adb.log
           working-directory: ./apps/bare-expo
-      - name: 📸 Store images of build failures
+      - name: 📸 Store images of test failures
         if: always()
         uses: actions/upload-artifact@v3
         with:
