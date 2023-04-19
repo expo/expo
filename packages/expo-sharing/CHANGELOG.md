@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- On iOS, fix crash when share menu is presented on iPad.
+- On iOS, fix crash when share menu is presented on iPad. ([#22193](https://github.com/expo/expo/pull/22193) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
