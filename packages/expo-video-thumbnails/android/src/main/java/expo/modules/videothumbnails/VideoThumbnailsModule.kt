@@ -40,22 +40,27 @@ class VideoThumbnailsModule : Module() {
         val thumbnail = GetThumbnail(sourceFilename, options, context).execute()
           ?: throw GenerateThumbnailException()
 
-        try {
-          val path = FileUtilities.generateOutputPath(context.cacheDir, "VideoThumbnails", "jpg")
-          FileOutputStream(path).use { outputStream ->
-            thumbnail.compress(Bitmap.CompressFormat.JPEG, (options.quality * 100).toInt(), outputStream)
-          }
-          promise.resolve(
-            VideoThumbnailResult(
-              uri = Uri.fromFile(File(path)).toString(),
-              width = thumbnail.width,
-              height = thumbnail.height
+        if(thumbnail == null){
+          promise.reject(ERROR_TAG, "Thumbnail generation failed", GenerateThumbnailException())
+        }
+        else{
+          try {
+            val path = FileUtilities.generateOutputPath(context.cacheDir, "VideoThumbnails", "jpg")
+            FileOutputStream(path).use { outputStream ->
+              thumbnail.compress(Bitmap.CompressFormat.JPEG, (options.quality * 100).toInt(), outputStream)
+            }
+            promise.resolve(
+              VideoThumbnailResult(
+                uri = Uri.fromFile(File(path)).toString(),
+                width = thumbnail.width,
+                height = thumbnail.height
+              )
             )
-          )
-        } catch (ex: IOException) {
-          promise.reject(ERROR_TAG, ex.message, ex)
-        } catch (ex: RuntimeException) {
-          promise.reject(ERROR_TAG, ex.message, ex)
+          } catch (ex: IOException) {
+            promise.reject(ERROR_TAG, ex.message, ex)
+          } catch (ex: RuntimeException) {
+            promise.reject(ERROR_TAG, ex.message, ex)
+          }
         }
       }
     }
@@ -71,21 +76,28 @@ class VideoThumbnailsModule : Module() {
 
   private class GetThumbnail(private val sourceFilename: String, private val videoOptions: VideoThumbnailOptions, private val context: Context) {
     fun execute(): Bitmap? {
-      val retriever = MediaMetadataRetriever()
+      try{
+        val retriever = MediaMetadataRetriever()
 
-      if (URLUtil.isFileUrl(sourceFilename)) {
-        retriever.setDataSource(Uri.decode(sourceFilename).replace("file://", ""))
-      } else if (URLUtil.isContentUrl(sourceFilename)) {
-        val fileUri = Uri.parse(sourceFilename)
-        val fileDescriptor = context.contentResolver.openFileDescriptor(fileUri, "r")!!.fileDescriptor
-        FileInputStream(fileDescriptor).use { inputStream ->
-          retriever.setDataSource(inputStream.fd)
+        if (URLUtil.isFileUrl(sourceFilename)) {
+          retriever.setDataSource(Uri.decode(sourceFilename).replace("file://", ""))
+        } else if (URLUtil.isContentUrl(sourceFilename)) {
+          val fileUri = Uri.parse(sourceFilename)
+          val fileDescriptor = context.contentResolver.openFileDescriptor(fileUri, "r")!!.fileDescriptor
+          FileInputStream(fileDescriptor).use { inputStream ->
+            retriever.setDataSource(inputStream.fd)
+          }
+        } else {
+          retriever.setDataSource(sourceFilename, videoOptions.headers)
         }
-      } else {
-        retriever.setDataSource(sourceFilename, videoOptions.headers)
-      }
 
-      return retriever.getFrameAtTime(videoOptions.time.toLong() * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+        return retriever.getFrameAtTime(videoOptions.time.toLong() * 1000, MediaMetadataRetriever.OPTION_CLOSEST_SYNC)
+      }
+      catch(e: RuntimeException){
+        Log.e(ERROR_TAG, "setDataSource failed")
+
+        return null
+      }
     }
   }
 
