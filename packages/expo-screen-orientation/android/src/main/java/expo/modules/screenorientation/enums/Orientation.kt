@@ -1,4 +1,4 @@
-package expo.modules.screenorientation
+package expo.modules.screenorientation.enums
 
 /*
  * Enum representing a screen orientation.
