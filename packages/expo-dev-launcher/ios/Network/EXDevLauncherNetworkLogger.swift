@@ -204,10 +204,17 @@ extension RCTInspectorPackagerConnection {
     guard isConnected() else {
       return false
     }
-    guard let webSocket = value(forKey: "_webSocket") as? RCTSRWebSocket else {
+    guard let webSocket = value(forKey: "_webSocket") as? AnyObject,
+      let readyState = webSocket.value(forKey: "readyState") as? Int else {
       return false
     }
-    return webSocket.readyState == .OPEN
+    // To support both RCTSRWebSocket (RN < 0.72) and SRWebSocket (RN >= 0.72)
+    // and not to introduce extra podspec dependencies,
+    // we use the internal and hardcoded value here.
+    // Given the fact that both RCTSRWebSocket and SRWebSocket has the readyState property
+    // and the open state is 1.
+    let OPEN_STATE = 1
+    return readyState == OPEN_STATE
   }
 
   /**
