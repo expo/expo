@@ -28,7 +28,7 @@ inputs:
     required: false
   avd-api:
     description: 'API version used in AVD'
-    default: '31'
+    default: '33'
     required: false
   ndk:
     description: 'Restore NDK cache'
@@ -172,7 +172,10 @@ runs:
         api-level: ${{ inputs.avd-api }}
         avd-name: avd-${{ matrix.api-level }}
         arch: x86_64
+        target: google_apis
         force-avd-creation: false
+        emulator-options: -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+        disable-animations: false
         script: echo "Generated AVD snapshot for caching."
 
     - name: ♻️ Restore Android NDK from cache

@@ -41,7 +41,7 @@ jobs:
       GRADLE_OPTS: -Dorg.gradle.jvmargs=-Xmx2048m -XX:MaxMetaspaceSize=1024m
     strategy:
       matrix:
-        api-level: [31]
+        api-level: [33]
     steps:
       - name: ⬢ Setup Node
         uses: actions/setup-node@v3
@@ -78,7 +78,10 @@ jobs:
           api-level: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
           arch: x86_64
+          target: google_apis
           force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
           script: expotools android-native-unit-tests --type instrumented
           disk-size: 2048M
       - name: 💾 Save test results

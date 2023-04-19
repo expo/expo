@@ -98,7 +98,7 @@ jobs:
       REACT_NATIVE_OVERRIDE_VERSION: 9999.9999.9999
     strategy:
       matrix:
-        api-level: [31]
+        api-level: [33]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
@@ -143,7 +143,10 @@ jobs:
           api-level: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
           arch: x86_64
+          target: google_apis
           force-avd-creation: false
+          emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
+          disable-animations: false
           script: yarn android:detox:test:release
           working-directory: ./apps/bare-expo
       - name: 📸 Store images of build failures
