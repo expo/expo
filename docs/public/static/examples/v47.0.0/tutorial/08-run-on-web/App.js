@@ -32,7 +32,7 @@ export default function App() {
 
   const pickImageAsync = async () => {
     let result = await ImagePicker.launchImageLibraryAsync({
-      allowsEditing: true,      
+      allowsEditing: true,
       quality: 1,
     });
 
@@ -71,21 +71,20 @@ export default function App() {
         console.log(e);
       }
     } else {
-        domtoimage
-          .toJpeg(imageRef.current, {
-            quality: 0.95,
-            width: 320,
-            height: 440,
-          })
-          .then(dataUrl => {
-            let link = document.createElement('a');
-            link.download = 'sticker-smash.jpeg';
-            link.href = dataUrl;
-            link.click();
-          })
-          .catch(e => {
-            console.log(e);
-          });
+      try {
+        const dataUrl = await domtoimage.toJpeg(imageRef.current, {
+          quality: 0.95,
+          width: 320,
+          height: 440,
+        });
+
+        let link = document.createElement('a');
+        link.download = 'sticker-smash.jpeg';
+        link.href = dataUrl;
+        link.click();
+      } catch (e) {
+        console.log(e);
+      }
     }
   };
 
@@ -134,7 +133,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   imageContainer: {
-    flex:1, 
+    flex: 1,
     paddingTop: 58
   },
   footerContainer: {
