@@ -9,7 +9,7 @@
 
 ### Installation
 
-**Note:** To use this config plugin, your apps must be a managed app and build by either [EAS Build](/build/introduction.md) or `expo run:[android|ios]`.
+**Note:** To use this config plugin, your apps must be a managed app and build by either [EAS Build](/build/introduction.md) or `npx expo run:[android|ios]`.
 
 ```
 expo install expo-build-properties

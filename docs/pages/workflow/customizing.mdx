@@ -30,8 +30,8 @@ If you would like to move from a JavaScript based project and take ownership ove
   cmdCopy="npx expo run:android && npx expo run:ios"
 />
 
-- `expo run:android` requires Android Studio and the Android SDK to be installed. See the [setup environment guide](https://reactnative.dev/docs/environment-setup).
-- `expo run:ios` requires Xcode (macOS only) installed on your computer. See the [setup environment guide](https://reactnative.dev/docs/environment-setup).
+- `npx expo run:android` requires Android Studio and the Android SDK to be installed. See the [setup environment guide](https://reactnative.dev/docs/environment-setup).
+- `npx expo run:ios` requires Xcode (macOS only) installed on your computer. See the [setup environment guide](https://reactnative.dev/docs/environment-setup).
 
 Using the run commands will initially [prebuild](https://expo.fyi/prebuilding) your project to generate all of the native code within your project directory. If you manually modify the **android** or **ios** directory, you won't be able to safely re-run `expo prebuild`, this is known as the [bare workflow](/introduction/managed-vs-bare#bare-workflow).
 
@@ -45,9 +45,9 @@ If you've made manual modifications to your **android** or **ios** directory, yo
 
 If you want to make static changes to your native project files like the iOS **AndroidManifest.xml** or **Info.plist** and still have access to prebuilding, check out the [config plugins guide](/config-plugins/plugins-and-mods/#create-a-plugin) to see how you can hook into the prebuild process to make those changes.
 
-### Reverting changes from `expo run`
+### Reverting changes from `npx expo run`
 
-If you've decided that you want to roll your app back to being fully managed (no iOS and Android projects in your project directory), you can check out your most recent commit before executing `expo run:[ios|android]`, then run `npm install` again to restore the state of your **node_modules** directory.
+If you've decided that you want to roll your app back to being fully managed (no iOS and Android projects in your project directory), you can check out your most recent commit before executing `npx expo run:[ios|android]`, then run `npm install` again to restore the state of your **node_modules** directory.
 
 ### Developing apps with custom native code
 

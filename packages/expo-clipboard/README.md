@@ -6,13 +6,9 @@
 
 Please refer to the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/clipboard/).
 
-## Installation in managed Expo projects
+## Installation
 
-`expo install expo-clipboard`
-
-## Installation in bare React Native projects
-
-`yarn add expo-clipboard && npx pod-install`
+`npxx expo install expo-clipboard`
 
 ## Contributing
 
