@@ -1,3 +1,6 @@
-import { NativeModulesProxy } from 'expo-modules-core';
+import { NativeModulesProxy, requireNativeModule } from 'expo-modules-core';
+import { Platform } from 'react-native';
 
-export default NativeModulesProxy.ExpoScreenOrientation || {};
+export default Platform.OS === 'android'
+  ? requireNativeModule('ExpoScreenOrientation')
+  : NativeModulesProxy.ExpoScreenOrientation || {};
