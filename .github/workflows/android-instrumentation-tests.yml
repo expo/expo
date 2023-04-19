@@ -79,6 +79,7 @@ jobs:
           avd-name: avd-${{ matrix.api-level }}
           arch: x86_64
           target: google_apis
+          emulator-build: 9322596
           force-avd-creation: false
           emulator-options: -no-snapshot-save -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none
           disable-animations: false
