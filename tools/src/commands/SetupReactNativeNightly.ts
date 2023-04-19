@@ -44,6 +44,8 @@ async function main() {
 
   await patchReanimatedAsync(nightlyVersion);
   await patchDetoxAsync();
+  await patchReactNavigationAsync();
+  await patchGestureHandlerAsync();
 
   logger.info('Setting up Expo modules files');
   await updateExpoModulesAsync();
@@ -66,6 +68,8 @@ async function addBareExpoOptionalPackagesAsync() {
   const versionMap = {
     ...(packageJsonNCL.devDependencies as object),
     ...(packageJsonNCL.dependencies as object),
+    // override @shopify/react-native-skia version to fix xcode 14.3 build error
+    '@shopify/react-native-skia': '0.1.184',
   };
 
   const installPackages = OPTIONAL_PKGS.map((pkg) => {
@@ -166,18 +170,39 @@ async function patchDetoxAsync() {
   await applyPatchAsync({ patchContent, cwd: EXPO_DIR, stripPrefixNum: 1 });
 }
 
-async function updateExpoModulesAsync() {
+async function patchReactNavigationAsync() {
   await transformFileAsync(
-    path.join(EXPO_DIR, 'packages/expo-modules-core/android/src/main/cpp/MethodMetadata.cpp'),
+    path.join(EXPO_DIR, 'node_modules', '@react-navigation/elements', 'src/Header/Header.tsx'),
     [
       {
-        // Workaround build error for CallbackWrapper interface change:
-        // https://github.com/facebook/react-native/commit/229a1ded15772497fd632c299b336566d001e37d
-        find: 'auto weakWrapper = react::CallbackWrapper::createWeak(strongLongLiveObjectCollection,',
-        replaceWith: 'auto weakWrapper = react::CallbackWrapper::createWeak(',
+        // Weird that the nightlies will break if pass `undefined` to the `transform` prop
+        find: 'style={[{ height, minHeight, maxHeight, opacity, transform }]}',
+        replaceWith:
+          'style={[{ height, minHeight, maxHeight, opacity, transform: transform ?? [] }]}',
       },
     ]
   );
+}
+
+async function patchGestureHandlerAsync() {
+  await transformFileAsync(
+    path.join(
+      EXPO_DIR,
+      'node_modules',
+      'react-native-gesture-handler',
+      'android/src/main/java/com/swmansion/gesturehandler/react/RNGestureHandlerModule.kt'
+    ),
+    [
+      {
+        find: 'decorateRuntime(jsContext.get())',
+        replaceWith: 'decorateRuntime(jsContext!!.get())',
+      },
+    ]
+  );
+}
+
+async function updateExpoModulesAsync() {
+  // no-op currently
 }
 
 async function updateBareExpoAsync(nightlyVersion: string) {
@@ -186,6 +211,13 @@ async function updateBareExpoAsync(nightlyVersion: string) {
     {
       find: /react-native-gradle-plugin/g,
       replaceWith: '@react-native/gradle-plugin',
+    },
+  ]);
+
+  await transformFileAsync(path.join(root, 'ios', 'Podfile'), [
+    {
+      find: /(platform :ios, )['"]13\.0['"]/g,
+      replaceWith: "$1'13.4'",
     },
   ]);
 }

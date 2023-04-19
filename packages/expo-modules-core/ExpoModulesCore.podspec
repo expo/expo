@@ -68,6 +68,7 @@ Pod::Spec.new do |s|
   s.dependency 'React-Core'
   s.dependency 'ReactCommon/turbomodule/core'
   s.dependency 'React-RCTAppDelegate' if REACT_NATIVE_MINOR_VERSION >= 71
+  s.dependency 'React-NativeModulesApple' if REACT_NATIVE_MINOR_VERSION >= 72
 
   if fabric_enabled
     compiler_flags << ' ' << fabric_compiler_flags
