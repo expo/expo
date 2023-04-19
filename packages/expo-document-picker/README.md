@@ -45,7 +45,7 @@ You can change the `com.apple.developer.icloud-container-environment` entitlemen
 }
 ```
 
-> Running `expo prebuild` will generate the [native project locally](https://docs.expo.io/workflow/customizing/) with the applied changes in your iOS Entitlements file.
+> Running `npx expo prebuild` will generate the [native project locally](https://docs.expo.io/workflow/customizing/) with the applied changes in your iOS Entitlements file.
 
 # Contributing
 
