@@ -196,7 +196,7 @@ jobs:
         with:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
-          script: 'adb install -r android/app/build/outputs/apk/release/app-release.apk && yarn android:detox:test:release --reuse'
+          script: 'adb install -r android/app/build/outputs/apk/release/app-release.apk && adb install -r android/app/build/outputs/apk/androidTest/release/app-release-androidTest.apk && yarn android:detox:test:release --reuse'
           working-directory: ./apps/bare-expo
       - name: 📸 Store images of build failures
         if: always()
