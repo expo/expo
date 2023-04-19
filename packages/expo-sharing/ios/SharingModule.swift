@@ -36,6 +36,8 @@ public final class SharingModule: Module {
         throw MissingCurrentViewControllerException()
       }
 
+      /// Apple docs state that `UIActivityViewController` must be presented in a
+      /// popover on iPad https://developer.apple.com/documentation/uikit/uiactivityviewcontroller
       if UIDevice.current.userInterfaceIdiom == .pad {
         let viewFrame = currentViewcontroller.view.frame
         activityController.popoverPresentationController?.sourceRect = CGRect(
