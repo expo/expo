@@ -159,7 +159,9 @@ export function getTypedRoutesUtils(appRoot: string) {
       }
     };
 
-    addRoute(route, route);
+    if (!route.match(ARRAY_GROUP_REGEX)) {
+      addRoute(route, route);
+    }
 
     // Does this route have a group? eg /(group)
     if (route.includes('/(')) {
