@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On iOS, fix crash when share menu is presented on iPad.
+
 ### 💡 Others
 
 ## 11.3.1 — 2023-04-14

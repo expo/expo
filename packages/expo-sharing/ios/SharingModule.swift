@@ -36,6 +36,18 @@ public final class SharingModule: Module {
         throw MissingCurrentViewControllerException()
       }
 
+      if UIDevice.current.userInterfaceIdiom == .pad {
+        let viewFrame = currentViewcontroller.view.frame
+        activityController.popoverPresentationController?.sourceRect = CGRect(
+          x: viewFrame.midX,
+          y: viewFrame.maxY,
+          width: 0,
+          height: 0
+        )
+        activityController.popoverPresentationController?.sourceView = currentViewcontroller.view
+        activityController.modalPresentationStyle = .pageSheet
+      }
+
       currentViewcontroller.present(activityController, animated: true)
     }
     .runOnQueue(.main)
