@@ -31,10 +31,12 @@ public final class SyncFunctionComponent<Args, FirstArgType, ReturnType>: AnySyn
     _ name: String,
     firstArgType: FirstArgType.Type,
     dynamicArgumentTypes: [AnyDynamicType],
+    dynamicReturnType: AnyDynamicType,
     _ body: @escaping ClosureType
   ) {
     self.name = name
     self.dynamicArgumentTypes = dynamicArgumentTypes
+    self.dynamicReturnType = dynamicReturnType
     self.body = body
   }
 
@@ -43,6 +45,11 @@ public final class SyncFunctionComponent<Args, FirstArgType, ReturnType>: AnySyn
   let name: String
 
   let dynamicArgumentTypes: [AnyDynamicType]
+
+  /**
+   A dynamic type representing the returned type.
+   */
+  let dynamicReturnType: AnyDynamicType
 
   var argumentsCount: Int {
     return dynamicArgumentTypes.count - (takesOwner ? 1 : 0)
@@ -82,8 +89,7 @@ public final class SyncFunctionComponent<Args, FirstArgType, ReturnType>: AnySyn
       arguments = try cast(arguments: arguments, forFunction: self, appContext: appContext)
 
       let argumentsTuple = try Conversions.toTuple(arguments) as! Args
-      let result = try body(argumentsTuple)
-      return Conversions.convertFunctionResult(result, appContext: appContext)
+      return try body(argumentsTuple)
     } catch let error as Exception {
       throw FunctionCallException(name).causedBy(error)
     } catch {
@@ -103,7 +109,7 @@ public final class SyncFunctionComponent<Args, FirstArgType, ReturnType>: AnySyn
         throw Exceptions.AppContextLost()
       }
       let result = try self.call(by: this, withArguments: args, appContext: appContext)
-      return Conversions.convertFunctionResult(result, appContext: appContext)
+      return Conversions.convertFunctionResult(result, appContext: appContext, dynamicType: dynamicReturnType)
     }
   }
 }
@@ -119,6 +125,7 @@ public func Function<R>(
     name,
     firstArgType: Void.self,
     dynamicArgumentTypes: [],
+    dynamicReturnType: ~R.self,
     closure
   )
 }
@@ -134,6 +141,7 @@ public func Function<R, A0: AnyArgument>(
     name,
     firstArgType: A0.self,
     dynamicArgumentTypes: [~A0.self],
+    dynamicReturnType: ~R.self,
     closure
   )
 }
@@ -149,6 +157,7 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument>(
     name,
     firstArgType: A0.self,
     dynamicArgumentTypes: [~A0.self, ~A1.self],
+    dynamicReturnType: ~R.self,
     closure
   )
 }
@@ -168,6 +177,7 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument>(
       ~A1.self,
       ~A2.self
     ],
+    dynamicReturnType: ~R.self,
     closure
   )
 }
@@ -188,6 +198,7 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
       ~A2.self,
       ~A3.self
     ],
+    dynamicReturnType: ~R.self,
     closure
   )
 }
@@ -209,6 +220,7 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
       ~A3.self,
       ~A4.self
     ],
+    dynamicReturnType: ~R.self,
     closure
   )
 }
@@ -231,6 +243,7 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
       ~A4.self,
       ~A5.self
     ],
+    dynamicReturnType: ~R.self,
     closure
   )
 }
@@ -254,6 +267,7 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
       ~A5.self,
       ~A6.self
     ],
+    dynamicReturnType: ~R.self,
     closure
   )
 }
@@ -278,6 +292,7 @@ public func Function<R, A0: AnyArgument, A1: AnyArgument, A2: AnyArgument, A3: A
       ~A6.self,
       ~A7.self
     ],
+    dynamicReturnType: ~R.self,
     closure
   )
 }
