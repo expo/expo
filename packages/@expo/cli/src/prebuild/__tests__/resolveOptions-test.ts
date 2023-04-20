@@ -1,6 +1,5 @@
 import { vol } from 'memfs';
 
-import * as Log from '../../log';
 import {
   ensureValidPlatforms,
   resolvePlatformOption,
@@ -8,8 +7,6 @@ import {
   resolvePackageManagerOptions,
   resolveTemplateOption,
 } from '../resolveOptions';
-
-jest.mock('../../log');
 
 describe(resolvePackageManagerOptions, () => {
   it(`resolves`, () => {
@@ -60,9 +57,8 @@ describe(resolvePlatformOption, () => {
 
     expect(resolvePlatformOption('all')).toEqual(['android']);
   });
-  it('warns on unknown platform', () => {
+  it('accepts unknown platforms', () => {
     expect(resolvePlatformOption('foo')).toEqual(['foo']);
-    expect(Log.warn).toBeCalledWith(expect.stringContaining('prebuild will continue'));
   });
 });
 
