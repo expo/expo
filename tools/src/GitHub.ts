@@ -351,5 +351,3 @@ export type PullRequestReview = RestEndpointMethodTypes['pulls']['getReview']['r
 export type IssueComment = RestEndpointMethodTypes['issues']['getComment']['response']['data'];
 export type ListCommentsOptions = RestEndpointMethodTypes['issues']['listComments']['parameters'];
 export type ListCommentsResponse = RestEndpointMethodTypes['issues']['listComments']['response'];
-export type ListPullRequestOptions = RestEndpointMethodTypes['pulls']['list']['parameters'];
-export type ListPullRequestResponse = RestEndpointMethodTypes['pulls']['list']['response'];
