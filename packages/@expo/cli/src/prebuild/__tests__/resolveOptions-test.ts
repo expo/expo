@@ -57,10 +57,8 @@ describe(resolvePlatformOption, () => {
 
     expect(resolvePlatformOption('all')).toEqual(['android']);
   });
-  it('throws on unknown platform', () => {
-    expect(() => resolvePlatformOption('foo')).toThrowError(
-      'Unsupported platform "foo". Options are: ios, android, all'
-    );
+  it('accepts unknown platforms', () => {
+    expect(resolvePlatformOption('foo')).toEqual(['foo']);
   });
 });
 
