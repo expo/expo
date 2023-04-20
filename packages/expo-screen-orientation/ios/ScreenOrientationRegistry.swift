@@ -3,25 +3,6 @@ import ExpoModulesCore
 protocol OrientationListener {
   func screenOrientationDidChange(_ orientation: UIInterfaceOrientation)
 }
-// Modules are AnyObject, which is not hashable. We are using a dictionary (moduleInterfaceMasks), where modules are keys.
-// This class allows using them as keys, it is similar to how NSMapTable NSMapTable<id, NSNumber *> *moduleInterfaceMasks; works in objective-c
-class ObjectIdentifierHashable: Hashable {
-  let value: AnyObject
-  init(_ value: AnyObject) {
-    self.value = value
-  }
-  func hash(into hasher: inout Hasher) {
-    hasher.combine(ObjectIdentifier(value))
-  }
-  static func == (lhs: ObjectIdentifierHashable, rhs: ObjectIdentifierHashable) -> Bool {
-    return ObjectIdentifier(lhs.value) == ObjectIdentifier(rhs.value)
-  }
-
-  // A wrapper function that converts an AnyObject to an ObjectIdentifierHashable
-  static func wrap(_ value: AnyObject) -> ObjectIdentifierHashable {
-    return ObjectIdentifierHashable(value)
-  }
-}
 
 class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   static let shared = ScreenOrientationRegistry()
@@ -82,8 +63,8 @@ class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
 
   // MARK: affecting screen orientation
   func enforceDesiredDeviceOrientation(withOrientationMask orientationMask: UIInterfaceOrientationMask) {
-    var newOrientation = defaultOrientation(for: orientationMask)
-    if doesOrientationMask(orientationMask, contain: currentScreenOrientation) {
+    var newOrientation = orientationMask.defaultOrientation()
+    if orientationMask.contains(currentScreenOrientation) {
       newOrientation = currentScreenOrientation
     }
     if newOrientation != .unknown {
@@ -131,20 +112,13 @@ class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   }
 
   // MARK: events
-
-  func handleDeviceOrientationChange(_ notification: Notification) {
-    let newScreenOrientation = interfaceOrientation(from: UIDevice.current.orientation)
-    interfaceOrientationDidChange(newScreenOrientation)
-  }
-
   func interfaceOrientationDidChange(_ newScreenOrientation: UIInterfaceOrientation) {
-    UIApplication.shared.keyWindow?.windowLevel = .statusBar
     if currentScreenOrientation == newScreenOrientation || newScreenOrientation == .unknown {
       return
     }
 
     // checks if screen orientation should be changed when user rotates the device
-    if doesOrientationMask(currentOrientationMask, contain: newScreenOrientation) {
+    if currentOrientationMask.contains(newScreenOrientation) {
       // change current screen orientation
       if (newScreenOrientation.isPortrait && currentScreenOrientation.isPortrait)
         || (newScreenOrientation.isLandscape && currentScreenOrientation.isLandscape) {
@@ -166,7 +140,7 @@ class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
 
     let verticalSizeClass = traitCollection.verticalSizeClass
     let horizontalSizeClass = traitCollection.horizontalSizeClass
-    let currentDeviceOrientation = interfaceOrientation(from: UIDevice.current.orientation)
+    let currentDeviceOrientation = UIDevice.current.orientation.toInterfaceOrientation()
     let currentOrientationMask = UIApplication.shared.keyWindow?.rootViewController?.supportedInterfaceOrientations ?? []
 
     var newScreenOrientation = UIInterfaceOrientation.unknown
@@ -193,10 +167,10 @@ class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
     } else if (verticalSizeClass == .compact && horizontalSizeClass == .compact)
       || (verticalSizeClass == .regular && horizontalSizeClass == .regular)
       || (verticalSizeClass == .compact && horizontalSizeClass == .regular) {
-      // From trait collection, we know that screen is in landspace left or right orientation.
+      // From trait collection, we know that screen is in landscape left or right orientation.
       let landscapeMask = currentOrientationMask.intersection(.landscape)
 
-      // Mask allows only proper landspace - we know that the device is in either proper landspace left or right
+      // Mask allows only proper landscape - we know that the device is in either proper landscape left or right
       // we deduce it is proper left.
       if landscapeMask == .landscapeLeft {
         newScreenOrientation = .landscapeLeft
@@ -206,7 +180,7 @@ class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
       else if landscapeMask == .landscapeRight {
         newScreenOrientation = .landscapeRight
       }
-      // Mask allows landspace left or right - we can try to deduce orientation
+      // Mask allows landscape left or right - we can try to deduce orientation
       // from device orientation.
       else if currentDeviceOrientation == .landscapeLeft || currentDeviceOrientation == .landscapeRight {
         newScreenOrientation = currentDeviceOrientation
@@ -226,7 +200,7 @@ class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   }
 
   @objc func handleDeviceOrientationChange(notification: Notification) {
-    let newScreenOrientation = interfaceOrientation(from: UIDevice.current.orientation)
+    let newScreenOrientation = UIDevice.current.orientation.toInterfaceOrientation()
     interfaceOrientationDidChange(newScreenOrientation)
   }
   // MARK: lifecycle
@@ -244,7 +218,7 @@ class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
       return
     }
 
-    if foregroundedModule.isEqual(to: module) {
+    if foregroundedModule === module {
       // We save the mask to restore it when the app moves to the foreground.
       // We don't want to wait for the module to call moduleDidForeground, cause it will add unnecessary rotation.
       lastOrientationMask = requiredOrientationMask()

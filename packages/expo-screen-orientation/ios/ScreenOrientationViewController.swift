@@ -32,7 +32,6 @@ class ScreenOrientationViewController: UIViewController {
     guard !shouldUseRNScreenOrientation() else {
       return super.supportedInterfaceOrientations
     }
-    setNeedsStatusBarAppearanceUpdate()
     return screenOrientationRegistry.requiredOrientationMask()
   }
 

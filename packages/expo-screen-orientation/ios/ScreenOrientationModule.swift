@@ -11,25 +11,26 @@ public class ScreenOrientationModule: Module, OrientationListener {
 
     Events("expoDidUpdateDimensions")
 
-    AsyncFunction("lockAsync") { (orientationLock: Int, promise: Promise) in
-      let orientationMask = importOrientationLock(orientationLock)
-      if orientationMask == nil {
+    AsyncFunction("lockAsync") { (orientationLock: ModuleOrientationLock, promise: Promise) in
+      let orientationMask = orientationLock.toInterfaceOrientationMask()
+      guard !orientationMask.isEmpty else {
         promise.reject(InvalidOrientationLockException())
         return
       }
-      if !doesDeviceSupport(orientationMask) {
-        promise.reject(UnsupportedOrientationLockException(String(orientationLock)))
+
+      if !orientationMask.isSupportedByDevice() {
+        promise.reject(UnsupportedOrientationLockException("\(orientationLock.rawValue)"))
         return
       }
       screenOrientationRegistry.setMask(orientationMask, forModule: self)
       promise.resolve()
     }
 
-    AsyncFunction("lockPlatformAsync") { (allowedOrientations: [Int], promise: Promise) in
+    AsyncFunction("lockPlatformAsync") { (allowedOrientations: [ModuleOrientation], promise: Promise) in
       var allowedOrientationsMask: UIInterfaceOrientationMask = []
       for allowedOrientation in allowedOrientations {
-        let orientation = importOrientation(allowedOrientation)
-        let orientationMask = maskFromOrientation(orientation)
+        let orientation = allowedOrientation.toInterfaceOrientation()
+        let orientationMask = orientation.toInterfaceOrientationMask()
         if orientationMask == nil {
           promise.reject(InvalidOrientationLockException())
           return
@@ -38,7 +39,7 @@ public class ScreenOrientationModule: Module, OrientationListener {
         allowedOrientationsMask.insert(orientationMask)
       }
 
-      if !doesDeviceSupport(allowedOrientationsMask) {
+      if !allowedOrientationsMask.isSupportedByDevice() {
         promise.reject(UnsupportedOrientationLockException(nil))
         return
       }
@@ -48,32 +49,32 @@ public class ScreenOrientationModule: Module, OrientationListener {
     }
 
     AsyncFunction("getOrientationLockAsync") { (promise: Promise) in
-      promise.resolve(exportOrientationLock(screenOrientationRegistry.currentOrientationMask))
+      promise.resolve(ModuleOrientationLock.from(mask: screenOrientationRegistry.currentOrientationMask).rawValue)
     }
 
     AsyncFunction("getPlatformOrientationLockAsync") {(promise: Promise) in
       let orientationMask = screenOrientationRegistry.currentOrientationMask
-      var allowedOrientations: [Int] = []
+      var allowedOrientations: [Int?] = []
       let orientationMasks: [UIInterfaceOrientationMask] = [.portrait, .portraitUpsideDown, .landscapeLeft, .landscapeRight]
 
       // If the particular orientation is supported, we add it to the array of allowedOrientations
       for wrappedSingleOrientation in orientationMasks {
         let supportedOrientationMask = orientationMask.intersection(UIInterfaceOrientationMask(rawValue: wrappedSingleOrientation.rawValue))
         if !supportedOrientationMask.isEmpty {
-          let supportedOrientation = orientationMaskToOrientation(supportedOrientationMask)
-          allowedOrientations.append(exportOrientation(supportedOrientation))
+          let supportedOrientation = supportedOrientationMask.toUIInterfaceOrientation()
+          allowedOrientations.append(ModuleOrientation.from(orientation: supportedOrientation).rawValue)
         }
       }
       promise.resolve(allowedOrientations)
     }
 
-    AsyncFunction("supportsOrientationLockAsync") {(orientationLock: Int, promise: Promise) in
-      let orientationMask = importOrientationLock(orientationLock)
-      promise.resolve(!orientationMask.isEmpty && doesDeviceSupport(orientationMask))
+    AsyncFunction("supportsOrientationLockAsync") {(orientationLock: ModuleOrientationLock, promise: Promise) in
+      let orientationMask = orientationLock.toInterfaceOrientationMask()
+      promise.resolve(!orientationMask.isEmpty && orientationMask.isSupportedByDevice())
     }
 
     AsyncFunction("getOrientationAsync") {(promise: Promise) in
-      promise.resolve(exportOrientation(screenOrientationRegistry.currentScreenOrientation))
+      promise.resolve(ModuleOrientation.from(orientation: screenOrientationRegistry.currentScreenOrientation).rawValue)
     }
 
     OnCreate {
@@ -107,9 +108,9 @@ public class ScreenOrientationModule: Module, OrientationListener {
     }
 
     sendEvent(ScreenOrientationModule.didUpdateDimensionsEvent, [
-      "orientationLock": exportOrientationLock(screenOrientationRegistry.currentOrientationMask),
+      "orientationLock": ModuleOrientationLock.from(mask: screenOrientationRegistry.currentOrientationMask).rawValue,
       "orientationInfo": [
-        "orientation": exportOrientation(orientation),
+        "orientation": ModuleOrientation.from(orientation: orientation).rawValue,
         "verticalSizeClass": currentTraitCollection.verticalSizeClass,
         "horizontalSizeClass": currentTraitCollection.horizontalSizeClass
       ]
