@@ -85,7 +85,7 @@
 - (NSArray<id<RCTBridgeModule>> *)extraModulesForBridge:(RCTBridge *)bridge
 {
 
-  NSMutableArray *modules = [[DevMenuVendoredModulesUtils vendoredModules:bridge] mutableCopy];
+  NSMutableArray<id<RCTBridgeModule>> *modules = [NSMutableArray new];
 
   [modules addObject:[RCTDevMenu new]];
 #ifndef EX_DEV_LAUNCHER_URL

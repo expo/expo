@@ -1,5 +1,5 @@
-import Quick
 import Nimble
+import Quick
 
 @testable import EXDevLauncher
 
@@ -27,12 +27,6 @@ class EXDevLauncherControllerTest: QuickSpec {
       expect(modules.first { $0 is RCTDevMenu }).toNot(beNil())
       expect(modules.first { type(of: $0).moduleName() == "DevLoadingView" }).toNot(beNil())
       expect(modules.first { type(of: $0).moduleName() == "EXDevLauncherInternal" }).toNot(beNil())
-
-      // vendored
-      expect(modules.first { type(of: $0).moduleName() == "RNGestureHandlerModule" }).toNot(beNil())
-      expect(modules.first { type(of: $0).moduleName() == "RNGestureHandlerButton" }).toNot(beNil())
-      expect(modules.first { type(of: $0).moduleName() == "RNCSafeAreaProvider" }).toNot(beNil())
-      expect(modules.first { type(of: $0).moduleName() == "RNCSafeAreaView" }).toNot(beNil())
     }
 
     it("controller should have access to managers classes") {
