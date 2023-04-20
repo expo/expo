@@ -1,10 +1,8 @@
 import { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
-import path from 'path';
 
 import * as Log from '../log';
-import { directoryExistsAsync } from '../utils/dir';
 import { AbortCommandError, SilentError } from '../utils/errors';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
