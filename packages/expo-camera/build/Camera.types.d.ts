@@ -91,10 +91,10 @@ export declare enum VideoQuality {
     '4:3' = "4:3"
 }
 export declare enum CameraOrientation {
-    portrait = "portrait",
-    portraitUpsideDown = "portraitUpsideDown",
-    landscapeLeft = "landscapeLeft",
-    landscapeRight = "landscapeRight"
+    portrait = 1,
+    portraitUpsideDown = 2,
+    landscapeLeft = 3,
+    landscapeRight = 4
 }
 /**
  * @hidden We do not expose related web methods in docs.

@@ -106,10 +106,10 @@ export enum VideoQuality {
 }
 
 export enum CameraOrientation {
-  portrait = 'portrait',
-  portraitUpsideDown = 'portraitUpsideDown',
-  landscapeLeft = 'landscapeLeft',
-  landscapeRight = 'landscapeRight',
+  portrait = 1,
+  portraitUpsideDown = 2,
+  landscapeLeft = 3,
+  landscapeRight = 4,
 }
 
 // @docsMissing

@@ -100,10 +100,10 @@ export var VideoQuality;
 })(VideoQuality || (VideoQuality = {}));
 export var CameraOrientation;
 (function (CameraOrientation) {
-    CameraOrientation["portrait"] = "portrait";
-    CameraOrientation["portraitUpsideDown"] = "portraitUpsideDown";
-    CameraOrientation["landscapeLeft"] = "landscapeLeft";
-    CameraOrientation["landscapeRight"] = "landscapeRight";
+    CameraOrientation[CameraOrientation["portrait"] = 1] = "portrait";
+    CameraOrientation[CameraOrientation["portraitUpsideDown"] = 2] = "portraitUpsideDown";
+    CameraOrientation[CameraOrientation["landscapeLeft"] = 3] = "landscapeLeft";
+    CameraOrientation[CameraOrientation["landscapeRight"] = 4] = "landscapeRight";
 })(CameraOrientation || (CameraOrientation = {}));
 export { PermissionStatus };
 //# sourceMappingURL=Camera.types.js.map
