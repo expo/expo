@@ -67,7 +67,9 @@ async function importIssueAsync(githubIssueNumber: number, importer?: string) {
   if (importer && (importerLinearUser = await inferLinearUserId([importer]))) {
     issueDescription += `#### Issue accepted by @${importerLinearUser.displayName}\n`;
   }
-  issueDescription += `---\n## Summary:\n${issueSummary}`;
+  if (issueSummary) {
+    issueDescription += `---\n## Summary:\n${issueSummary}`;
+  }
 
   const githubLabel = await Linear.getOrCreateLabelAsync('GitHub');
   const expoSDKLabel = await Linear.getOrCreateLabelAsync('Expo SDK', Linear.ENG_TEAM_ID);
