@@ -55,6 +55,40 @@ export async function getPullRequestAsync(
 }
 
 /**
+ * Returns the url of the PR that closed an issue.
+ */
+export async function getIssueCloserPrUrlAsync(issueNumber: number): Promise<string> {
+  const { repository } = await octokit.graphql<any>(
+    `query GetIssueCloser($repo: String!, $owner: String!, $issueNumber: Int!) {
+        repository(name: $repo, owner: $owner) {
+          issue(number: $issueNumber) {
+            timelineItems(itemTypes: CLOSED_EVENT, last: 1) {
+              nodes {
+                ... on ClosedEvent {
+                  createdAt
+                  closer {
+                    __typename
+                    ... on PullRequest {
+                      url
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }`,
+    {
+      owner,
+      repo,
+      issueNumber,
+    }
+  );
+
+  return repository?.issue?.timelineItems?.nodes?.[0]?.closer?.url;
+}
+
+/**
  * Requests and parses the diff of the pull request with given number.
  */
 export async function getPullRequestDiffAsync(
