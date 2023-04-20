@@ -144,7 +144,11 @@ export async function evalModsAsync(
     let entries = Object.entries(platform);
     if (entries.length) {
       // Move dangerous item to the first position if it exists, this ensures that all dangerous code runs first.
-      entries = sortMods(entries, orders[platformName]!);
+      if (orders[platformName]) {
+        entries = sortMods(entries, orders[platformName]!);
+      } else {
+        debug(`no pre-defined order for platform: ${platformName}`);
+      }
       debug(`run in order: ${entries.map(([name]) => name).join(', ')}`);
       const platformProjectRoot = path.join(projectRoot, platformName);
       const projectName =

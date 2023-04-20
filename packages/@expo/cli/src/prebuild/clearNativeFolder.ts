@@ -99,6 +99,9 @@ export async function getMalformedNativeProjectsAsync(
   return (
     await Promise.all(
       checkPlatforms.map(async (platform) => {
+        if (!VERIFIERS[platform]) {
+          return false;
+        }
         if (await VERIFIERS[platform](projectRoot)) {
           return false;
         }
