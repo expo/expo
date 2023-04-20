@@ -1,5 +1,6 @@
 import { vol } from 'memfs';
 
+import { Log } from '../../log';
 import {
   ensureValidPlatforms,
   resolvePlatformOption,
@@ -7,6 +8,8 @@ import {
   resolvePackageManagerOptions,
   resolveTemplateOption,
 } from '../resolveOptions';
+
+jest.mock('../../log');
 
 describe(resolvePackageManagerOptions, () => {
   it(`resolves`, () => {
@@ -57,10 +60,9 @@ describe(resolvePlatformOption, () => {
 
     expect(resolvePlatformOption('all')).toEqual(['android']);
   });
-  it('throws on unknown platform', () => {
-    expect(() => resolvePlatformOption('foo')).toThrowError(
-      'Unsupported platform "foo". Options are: ios, android, all'
-    );
+  it('warns on unknown platform', () => {
+    expect(resolvePlatformOption('foo')).toEqual(['foo']);
+    expect(Log.warn).toBeCalledWith(expect.stringContaining('prebuild will continue'));
   });
 });
 
