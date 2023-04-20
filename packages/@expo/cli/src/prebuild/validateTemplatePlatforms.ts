@@ -1,4 +1,5 @@
 import { ModPlatform } from '@expo/config-plugins';
+import chalk from 'chalk';
 import path from 'path';
 
 import * as Log from '../log';
@@ -18,7 +19,7 @@ export async function validateTemplatePlatforms({
       existingPlatforms.push(platform);
     } else {
       Log.warn(
-        `The template does not contain native files for ${platform} (./${platform}), skipping platform`
+        chalk`⚠️  Skipping platform ${platform}. Use a template that contains native files for ${platform} (./${platform}).`
       );
     }
   }
