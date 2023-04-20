@@ -97,7 +97,7 @@ If the logs weren't enough to immediately help you understand and fix the root c
 - Relevant [environment variables](/build-reference/variables) are the same in both environments.
 - The [archive](https://expo.fyi/eas-build-archive) that is uploaded to EAS Build includes the same relevant source files.
 
-You can verify that your project builds on your local machine with the `npx expo run` commands with variant/configuration flags set to release to most faithfully reproduce what executes on EAS Build. For more information, see [Android build process](/build-reference/android-builds) and [iOS build process](/build-reference/ios-builds).
+You can verify that your project builds on your local machine with the `npx expo run:ios` and `npx expo run:android` commands, with variant/configuration flags set to release to most faithfully reproduce what executes on EAS Build. For more information, see [Android build process](/build-reference/android-builds) and [iOS build process](/build-reference/ios-builds).
 
 <Terminal
   cmd={[
