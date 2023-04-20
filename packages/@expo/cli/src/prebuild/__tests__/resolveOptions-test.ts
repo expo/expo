@@ -1,6 +1,6 @@
 import { vol } from 'memfs';
 
-import { Log } from '../../log';
+import * as Log from '../../log';
 import {
   ensureValidPlatforms,
   resolvePlatformOption,
