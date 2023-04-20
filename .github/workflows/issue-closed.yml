@@ -18,7 +18,7 @@ jobs:
         id: expo-caches
         with:
           yarn-tools: 'true'
-      - name: 🔎 Close linear issue
+      - name: 🔎 Close Linear issue
         run: expotools close-linear-issue-from-github --issue "${{ github.event.issue.number }}"
         env:
           GITHUB_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}

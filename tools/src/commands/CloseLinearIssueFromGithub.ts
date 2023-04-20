@@ -41,7 +41,12 @@ async function closeIssueAsync(githubIssueNumber: number) {
     teamId: Linear.ENG_TEAM_ID,
     filter: {
       description: {
-        containsIgnoreCase: `This issue was automatically imported from GitHub: [https://github.com/expo/expo/issues/${githubIssueNumber}]`,
+        containsIgnoreCase: `https://github.com/expo/expo/issues/${githubIssueNumber}`,
+      },
+      labels: {
+        some: {
+          name: { eq: 'GitHub' },
+        },
       },
     },
   });
@@ -49,18 +54,18 @@ async function closeIssueAsync(githubIssueNumber: number) {
 
   if (!linearIssue) {
     throw new Error(
-      `Unable to find a linear issue referring to the Github issue #${githubIssueNumber}.`
+      `Unable to find a Linear issue referring to the Github issue #${githubIssueNumber}.`
     );
   }
 
   await Linear.closeIssueAsync({ issueId: linearIssue.id, teamId: Linear.ENG_TEAM_ID });
 
-  const issueCloserPR = await GitHub.getIssueCloserPrUrlAsync(22192);
+  const issueCloserPR = await GitHub.getIssueCloserPrUrlAsync(githubIssueNumber);
 
   if (issueCloserPR) {
     await Linear.commentIssueAsync({
       issueId: linearIssue.id,
-      comment: `This issue was automatically marked as Done by ${issueCloserPR}`,
+      comment: `This issue was automatically marked as done by ${issueCloserPR}`,
     });
   }
 }
