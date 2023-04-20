@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- On iOS, fix crash when share menu is presented on iPad. ([#22193](https://github.com/expo/expo/pull/22193) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 💡 Others
+
+## 11.3.2 — 2023-04-20
+
+### 🐛 Bug fixes
+
+- On iOS, fix crash when share menu is presented on iPad. ([#22193](https://github.com/expo/expo/pull/22193) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 11.3.1 — 2023-04-14
 
