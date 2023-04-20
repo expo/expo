@@ -11,6 +11,7 @@ import { profile } from '../utils/profile';
 import { copyTemplateFilesAsync, createCopyFilesSuccessMessage } from './copyTemplateFiles';
 import { cloneTemplateAsync } from './resolveTemplate';
 import { DependenciesModificationResults, updatePackageJSONAsync } from './updatePackageJson';
+import { validateTemplatePlatforms } from './validateTemplatePlatforms';
 import { writeMetroConfig } from './writeMetroConfig';
 
 /**
@@ -93,7 +94,7 @@ async function cloneTemplateAndCopyToProjectAsync({
   template,
   exp,
   pkg,
-  platforms,
+  platforms: unknownPlatforms,
 }: {
   projectRoot: string;
   templateDirectory: string;
@@ -102,17 +103,6 @@ async function cloneTemplateAndCopyToProjectAsync({
   pkg: PackageJSONConfig;
   platforms: ModPlatform[];
 }): Promise<string[]> {
-  const existingPlatforms: ModPlatform[] = [];
-  for (const platform of platforms) {
-    if (await directoryExistsAsync(path.join(templateDirectory, platform))) {
-      existingPlatforms.push(platform);
-    } else {
-      Log.warn(
-        `The template does not contain native files for ${platform} (./${platform}), skipping platform`
-      );
-    }
-  }
-
   const ora = logNewSection(
     'Creating native project directories (./ios and ./android) and updating .gitignore'
   );
@@ -120,10 +110,15 @@ async function cloneTemplateAndCopyToProjectAsync({
   try {
     await cloneTemplateAsync({ templateDirectory, template, exp, ora });
 
+    const platforms = await validateTemplatePlatforms({
+      templateDirectory,
+      platforms: unknownPlatforms,
+    });
+
     const results = await copyTemplateFilesAsync(projectRoot, {
       pkg,
       templateDirectory,
-      platforms: existingPlatforms,
+      platforms,
     });
 
     ora.succeed(createCopyFilesSuccessMessage(platforms, results));
