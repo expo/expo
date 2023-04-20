@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support to loading Expo modules. ([#22174](https://github.com/expo/expo/pull/22174) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 - Fixed build errors on React Native 0.72.x. ([#22189](https://github.com/expo/expo/pull/22189) by [@kudo](https://github.com/kudo))

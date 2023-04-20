@@ -55,8 +55,6 @@ class DevMenuAppInstanceTest: QuickSpec {
 
       expect(extraModules).toNot(beNil())
       expect(extraModules?.first { type(of: $0).moduleName() == "ExpoDevMenuInternal" }).toNot(beNil())
-      expect(extraModules?.first { type(of: $0).moduleName() == "RNCSafeAreaProvider" }).toNot(beNil())
-      expect(extraModules?.first { type(of: $0).moduleName() == "RNCSafeAreaView" }).toNot(beNil())
       expect(extraModules?.first { type(of: $0).moduleName() == "DevLoadingView" }).toNot(beNil())
     }
   }
