@@ -25,7 +25,7 @@ npx expo install expo-task-manager
 
 Run `npx pod-install` after installing the npm package.
 
-To use ` TaskManager` API in standalone, detached and bare apps on iOS, your app has to include background mode in the `Info.plist` file. See [background tasks configuration guide](https://docs.expo.dev/versions/latest/sdk/task-manager/#configuration-for-standalone-apps) for more details.
+To use `TaskManager` API in standalone, detached and bare apps on iOS, your app has to include background mode in the `Info.plist` file. See [background tasks configuration guide](https://docs.expo.dev/versions/latest/sdk/task-manager/#configuration-for-standalone-apps) for more details.
 
 #### Configure for Android
 
