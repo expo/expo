@@ -1,8 +1,10 @@
 import { ExpoConfig, PackageJSONConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 import chalk from 'chalk';
+import path from 'path';
 
 import * as Log from '../log';
+import { directoryExistsAsync } from '../utils/dir';
 import { AbortCommandError, SilentError } from '../utils/errors';
 import { logNewSection } from '../utils/ora';
 import { profile } from '../utils/profile';
@@ -100,6 +102,17 @@ async function cloneTemplateAndCopyToProjectAsync({
   pkg: PackageJSONConfig;
   platforms: ModPlatform[];
 }): Promise<string[]> {
+  const existingPlatforms: ModPlatform[] = [];
+  for (const platform of platforms) {
+    if (await directoryExistsAsync(path.join(templateDirectory, platform))) {
+      existingPlatforms.push(platform);
+    } else {
+      Log.warn(
+        `The template does not contain native files for ${platform} (./${platform}), skipping platform`
+      );
+    }
+  }
+
   const ora = logNewSection(
     'Creating native project directories (./ios and ./android) and updating .gitignore'
   );
@@ -110,7 +123,7 @@ async function cloneTemplateAndCopyToProjectAsync({
     const results = await copyTemplateFilesAsync(projectRoot, {
       pkg,
       templateDirectory,
-      platforms,
+      platforms: existingPlatforms,
     });
 
     ora.succeed(createCopyFilesSuccessMessage(platforms, results));

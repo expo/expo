@@ -63,9 +63,6 @@ export function resolvePlatformOption(
     case 'all':
       return loose || process.platform !== 'win32' ? ['android', 'ios'] : ['android'];
     default:
-      Log.warn(
-        `Unkown platform "${platform}", prebuild will continue but may have unexpected side effects.`
-      );
       return [platform as ModPlatform];
   }
 }
