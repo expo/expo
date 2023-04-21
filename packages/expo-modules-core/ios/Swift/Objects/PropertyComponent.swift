@@ -66,7 +66,6 @@ public final class PropertyComponent<OwnerType>: AnyDefinition, AnyPropertyCompo
       "get",
       firstArgType: Void.self,
       dynamicArgumentTypes: [],
-      dynamicReturnType: ~ReturnType.self,
       getter
     )
     return self
@@ -82,7 +81,6 @@ public final class PropertyComponent<OwnerType>: AnyDefinition, AnyPropertyCompo
       "get",
       firstArgType: OwnerType.self,
       dynamicArgumentTypes: [~OwnerType.self],
-      dynamicReturnType: ~ReturnType.self,
       getter
     )
     self.getter?.takesOwner = true
@@ -98,7 +96,6 @@ public final class PropertyComponent<OwnerType>: AnyDefinition, AnyPropertyCompo
       "set",
       firstArgType: ValueType.self,
       dynamicArgumentTypes: [~ValueType.self],
-      dynamicReturnType: ~Void.self,
       setter
     )
     return self
@@ -114,7 +111,6 @@ public final class PropertyComponent<OwnerType>: AnyDefinition, AnyPropertyCompo
       "set",
       firstArgType: OwnerType.self,
       dynamicArgumentTypes: [~OwnerType.self, ~ValueType.self],
-      dynamicReturnType: ~Void.self,
       setter
     )
     self.setter?.takesOwner = true
