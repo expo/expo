@@ -158,6 +158,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/development/development-workflows/': '/develop/development-builds/development-workflows/',
   '/workflow/expo-cli/': '/more/expo-cli/',
   '/versions/latest/workflow/expo-cli/': '/more/expo-cli/',
+  '/debugging/': '/debugging/runtime-issue/',
   '/guides/testing-with-jest/': '/develop/unit-testing/',
   '/workflow/glossary-of-terms/': '/more/glossary-of-terms/',
   '/development/installation/': '/develop/development-builds/installation/',
