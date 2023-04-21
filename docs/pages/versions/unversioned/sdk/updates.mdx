@@ -55,6 +55,37 @@ Most of the methods and constants in this module can only be used or tested in r
 
 **To test manual updates with standalone apps**, you can create a [simulator build](/build-reference/simulators.mdx) or [APK](/build-reference/apk.mdx), or make a release build locally with `npx expo run:ios --configuration Release` and `npx expo run:android --variant release` (you don't need to submit this build to the store to test).
 
+### Check for updates manually
+
+The `expo-updates` library exports a variety of functions to interact with updates once the app is already running. In some scenarios, you may want to check if updates are available or not. This can be done manually by using [`checkForUpdateAsync()`](#updatescheckforupdateasync) as shown in the example below:
+
+```jsx App.js
+import { View, Button } from 'react-native';
+import * as Updates from 'expo-updates';
+
+function App() {
+  async function onFetchUpdateAsync() {
+    try {
+      const update = await Updates.checkForUpdateAsync();
+
+      if (update.isAvailable) {
+        await Updates.fetchUpdateAsync();
+        await Updates.reloadAsync();
+      }
+    } catch (error) {
+      // You can also add an alert() to see the error message in case of an error when fetching updates.
+      alert(`Error fetching latest Expo update: ${error}`);
+    }
+  }
+
+  return (
+    <View>
+      <Button title="Fetch update" onPress={onFetchUpdateAsync} />
+    </View>
+  );
+}
+```
+
 ### Using expo-updates with a custom server
 
 Every custom updates server must implement the [Expo Updates protocol](/technical-specs/expo-updates-1/).
