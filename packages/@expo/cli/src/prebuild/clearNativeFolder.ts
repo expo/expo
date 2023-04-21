@@ -9,6 +9,8 @@ import { isInteractive } from '../utils/interactive';
 import { logNewSection } from '../utils/ora';
 import { confirmAsync } from '../utils/prompts';
 
+type ArbitraryPlatform = ModPlatform | string;
+
 /** Delete the input native folders and print a loading step. */
 export async function clearNativeFolder(projectRoot: string, folders: string[]) {
   const step = logNewSection(`Clearing ${folders.join(', ')}`);
@@ -72,8 +74,8 @@ export async function hasRequiredIOSFilesAsync(projectRoot: string) {
  */
 async function filterPlatformsThatDoNotExistAsync(
   projectRoot: string,
-  platforms: ModPlatform[]
-): Promise<ModPlatform[]> {
+  platforms: ArbitraryPlatform[]
+): Promise<ArbitraryPlatform[]> {
   const valid = await Promise.all(
     platforms.map(async (platform) => {
       if (await directoryExistsAsync(path.join(projectRoot, platform))) {
@@ -82,15 +84,15 @@ async function filterPlatformsThatDoNotExistAsync(
       return null;
     })
   );
-  return valid.filter(Boolean) as ModPlatform[];
+  return valid.filter(Boolean) as ArbitraryPlatform[];
 }
 
 /** Get a list of native platforms that have existing directories which contain malformed projects. */
 export async function getMalformedNativeProjectsAsync(
   projectRoot: string,
-  platforms: ModPlatform[]
-): Promise<ModPlatform[]> {
-  const VERIFIERS: Record<ModPlatform, (root: string) => Promise<boolean>> = {
+  platforms: ArbitraryPlatform[]
+): Promise<ArbitraryPlatform[]> {
+  const VERIFIERS: Record<ArbitraryPlatform, (root: string) => Promise<boolean>> = {
     android: hasRequiredAndroidFilesAsync,
     ios: hasRequiredIOSFilesAsync,
   };
@@ -108,12 +110,12 @@ export async function getMalformedNativeProjectsAsync(
         return platform;
       })
     )
-  ).filter(Boolean) as ModPlatform[];
+  ).filter(Boolean) as ArbitraryPlatform[];
 }
 
 export async function promptToClearMalformedNativeProjectsAsync(
   projectRoot: string,
-  checkPlatforms: ModPlatform[]
+  checkPlatforms: ArbitraryPlatform[]
 ) {
   const platforms = await getMalformedNativeProjectsAsync(projectRoot, checkPlatforms);
 
