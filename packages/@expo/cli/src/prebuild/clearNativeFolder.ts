@@ -95,7 +95,8 @@ export async function getMalformedNativeProjectsAsync(
     ios: hasRequiredIOSFilesAsync,
   };
 
-  const checkPlatforms = await filterPlatformsThatDoNotExistAsync(projectRoot, platforms);
+  const checkablePlatforms = platforms.filter((platform) => platform in VERIFIERS);
+  const checkPlatforms = await filterPlatformsThatDoNotExistAsync(projectRoot, checkablePlatforms);
   return (
     await Promise.all(
       checkPlatforms.map(async (platform) => {
