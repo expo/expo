@@ -129,12 +129,9 @@ jobs:
       - name: ⚛️ Display React Native config
         run: yarn react-native config
         working-directory: apps/bare-expo
-      - name: 🧹 Clean Detox
-        run: yarn detox:clean
-        working-directory: apps/bare-expo
-      - name: 🤖 Build Android project for Detox
-        run: yarn android:detox:build:release
-        working-directory: apps/bare-expo
+      - name: 🤖 Build Android project
+        run: ./gradlew -DtestBuildType=release :app:assembleRelease :app:assembleAndroidTest
+        working-directory: apps/bare-expo/android
         env:
           GRADLE_OPTS: '-Dorg.gradle.internal.http.connectionTimeout=180000 -Dorg.gradle.internal.http.socketTimeout=180000 -Dorg.gradle.internal.network.retry.max.attempts=18 -Dorg.gradle.internal.network.retry.initial.backOff=2000'
       - name: 🤖 Run Android tests
@@ -144,7 +141,12 @@ jobs:
           avd-name: avd-${{ matrix.api-level }}
           arch: x86_64
           force-avd-creation: false
-          script: yarn android:detox:test:release
+          script: |
+            mkdir artifacts
+            adb logcat -d > artifacts/emulator.log
+            adb logcat -c || true
+            ./scripts/start-android-e2e-test.sh
+            adb logcat -d > artifacts/adb.log
           working-directory: ./apps/bare-expo
       - name: 📸 Store images of build failures
         if: always()
