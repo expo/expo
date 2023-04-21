@@ -41,7 +41,6 @@ internal struct ImagePickerOptions: Record {
   @Field
   var presentationStyle: PresentationStyle = .automatic
 
-  // TODO: (bbarthec): undocumented
   @Field
   var cameraType: CameraType = .back
 

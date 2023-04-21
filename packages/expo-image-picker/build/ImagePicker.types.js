@@ -155,4 +155,15 @@ export var UIImagePickerPresentationStyle;
      */
     UIImagePickerPresentationStyle["AUTOMATIC"] = "automatic";
 })(UIImagePickerPresentationStyle || (UIImagePickerPresentationStyle = {}));
+export var CameraType;
+(function (CameraType) {
+    /**
+     * Back/rear camera.
+     */
+    CameraType["back"] = "back";
+    /**
+     * Front camera
+     */
+    CameraType["front"] = "front";
+})(CameraType || (CameraType = {}));
 //# sourceMappingURL=ImagePicker.types.js.map

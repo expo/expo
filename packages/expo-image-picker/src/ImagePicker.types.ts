@@ -174,6 +174,17 @@ export enum UIImagePickerPresentationStyle {
   AUTOMATIC = 'automatic',
 }
 
+export enum CameraType {
+  /**
+   * Back/rear camera.
+   */
+  back = 'back',
+  /**
+   * Front camera
+   */
+  front = 'front',
+}
+
 /**
  * @hidden
  * @deprecated Use `ImagePickerAsset` instead
@@ -420,6 +431,15 @@ export type ImagePickerOptions = {
    * @platform ios
    */
   presentationStyle?: UIImagePickerPresentationStyle;
+  /**
+   * Selects the camera-facing type. The `CameraType` enum provides two options:
+   * `front` for the front-facing camera and `back` for the back-facing camera.
+   * - **On Android**, the behavior of this option may vary based on the camera app installed on the device.
+   * @default CameraType.back
+   * @platform ios
+   * @platform android
+   */
+  cameraType?: CameraType;
 };
 
 // @needsAudit
