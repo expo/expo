@@ -12,6 +12,8 @@
 
 ### 💡 Others
 
+- Android: Switch from deprecated `toLowerCase` to `lowercase` function
+
 ## 15.2.2 — 2023-02-09
 
 _This version does not introduce any user-facing changes._
