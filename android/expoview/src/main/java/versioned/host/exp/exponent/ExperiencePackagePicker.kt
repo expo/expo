@@ -48,7 +48,7 @@ import expo.modules.notifications.NotificationsPackage
 import expo.modules.permissions.PermissionsPackage
 import expo.modules.random.RandomModule
 import expo.modules.screencapture.ScreenCapturePackage
-import expo.modules.screenorientation.ScreenOrientationPackage
+import expo.modules.screenorientation.ScreenOrientationModule
 import expo.modules.securestore.SecureStorePackage
 import expo.modules.sensors.SensorsPackage
 import expo.modules.sharing.SharingModule
@@ -87,7 +87,6 @@ object ExperiencePackagePicker : ModulesProvider {
     PermissionsPackage(),
     SQLitePackage(),
     ScreenCapturePackage(),
-    ScreenOrientationPackage(),
     SecureStorePackage(),
     SensorsPackage(),
     SpeechPackage(),
@@ -135,6 +134,7 @@ object ExperiencePackagePicker : ModulesProvider {
     MediaLibraryModule::class.java,
     NetworkModule::class.java,
     RandomModule::class.java,
+    ScreenOrientationModule::class.java,
     SMSModule::class.java,
     SharingModule::class.java,
     StoreReviewModule::class.java,
