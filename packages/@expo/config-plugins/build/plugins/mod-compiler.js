@@ -176,8 +176,9 @@ async function evalModsAsync(config, {
     }
     let entries = Object.entries(platform);
     if (entries.length) {
+      var _orders$platformName;
       // Move dangerous item to the first position if it exists, this ensures that all dangerous code runs first.
-      entries = sortMods(entries, orders[platformName]);
+      entries = sortMods(entries, (_orders$platformName = orders[platformName]) !== null && _orders$platformName !== void 0 ? _orders$platformName : ['dangerous']);
       debug(`run in order: ${entries.map(([name]) => name).join(', ')}`);
       const platformProjectRoot = _path().default.join(projectRoot, platformName);
       const projectName = platformName === 'ios' ? (0, _Xcodeproj().getHackyProjectName)(projectRoot, config) : undefined;
