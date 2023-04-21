@@ -180,6 +180,8 @@ jobs:
       - name: ⚛️ Display React Native config
         run: yarn react-native config
         working-directory: apps/bare-expo
+      - name: 🛠️ Generate dynamic macros
+        run: expotools android-generate-dynamic-macros --configuration release --bare
       - name: 🏗️ Build Android project
         run: ./gradlew -DtestBuildType=release :app:assembleRelease :app:assembleAndroidTest
         working-directory: apps/bare-expo/android
