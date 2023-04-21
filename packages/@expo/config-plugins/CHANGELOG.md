@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Add support for config.updates.useClassicUpdates defaulting behavior. ([#22169](https://github.com/expo/expo/pull/22169) by [@wschurman](https://github.com/wschurman))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
