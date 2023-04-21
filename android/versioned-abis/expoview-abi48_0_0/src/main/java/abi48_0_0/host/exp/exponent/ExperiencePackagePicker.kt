@@ -48,7 +48,7 @@ import abi48_0_0.expo.modules.permissions.PermissionsPackage
 import abi48_0_0.expo.modules.print.PrintPackage
 import abi48_0_0.expo.modules.random.RandomModule
 import abi48_0_0.expo.modules.screencapture.ScreenCapturePackage
-import abi48_0_0.expo.modules.screenorientation.ScreenOrientationModule
+import abi48_0_0.expo.modules.screenorientation.ScreenOrientationPackage
 import abi48_0_0.expo.modules.securestore.SecureStorePackage
 import abi48_0_0.expo.modules.sensors.SensorsPackage
 import abi48_0_0.expo.modules.sharing.SharingModule
@@ -90,6 +90,7 @@ object ExperiencePackagePicker : ModulesProvider {
     PrintPackage(),
     SQLitePackage(),
     ScreenCapturePackage(),
+    ScreenOrientationPackage(),
     SecureStorePackage(),
     SensorsPackage(),
     SpeechPackage(),
@@ -135,7 +136,6 @@ object ExperiencePackagePicker : ModulesProvider {
     MediaLibraryModule::class.java,
     NetworkModule::class.java,
     RandomModule::class.java,
-    ScreenOrientationModule::class.java,
     SMSModule::class.java,
     SharingModule::class.java,
     StoreReviewModule::class.java,
