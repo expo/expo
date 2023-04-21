@@ -8,6 +8,7 @@ import android.net.Uri
 import android.provider.MediaStore
 import androidx.activity.result.contract.ActivityResultContract
 import expo.modules.imagepicker.ImagePickerOptions
+import expo.modules.imagepicker.CameraType
 import expo.modules.imagepicker.toMediaType
 import expo.modules.kotlin.activityresult.AppContextActivityResultContract
 import expo.modules.kotlin.providers.AppContextProvider
@@ -33,6 +34,15 @@ internal class CameraContract(
       .apply {
         if (input.options.mediaTypes.toCameraIntentAction() == MediaStore.ACTION_VIDEO_CAPTURE) {
           putExtra(MediaStore.EXTRA_DURATION_LIMIT, input.options.videoMaxDuration)
+        }
+        if (input.options.cameraType == CameraType.FRONT) {
+          putExtra("android.intent.extras.LENS_FACING_FRONT", 1)
+          putExtra("android.intent.extras.CAMERA_FACING", 1)
+          putExtra("android.intent.extra.USE_FRONT_CAMERA", true)
+        } else {
+          putExtra("android.intent.extras.LENS_FACING_BACK", 1)
+          putExtra("android.intent.extras.CAMERA_FACING", 0)
+          putExtra("android.intent.extra.USE_FRONT_CAMERA", false)
         }
       }
 

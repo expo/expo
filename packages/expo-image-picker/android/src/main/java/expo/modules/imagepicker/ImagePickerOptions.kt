@@ -37,6 +37,9 @@ internal class ImagePickerOptions : Record, Serializable {
   @Field
   var aspect: Pair<Int, Int>? = null
 
+  @Field
+  var cameraType: CameraType = CameraType.BACK
+
   fun toCameraContractOptions(uri: Uri) = CameraContractOptions(uri, this)
 
   fun toImageLibraryContractOptions() = ImageLibraryContractOptions(this)
@@ -77,4 +80,9 @@ internal enum class MediaTypes(val value: String) : Enumerable {
     const val VideoAllMimeType = "video/*"
     const val AllMimeType = "*/*"
   }
+}
+
+internal enum class CameraType(val value: String) : Enumerable {
+  BACK("back"),
+  FRONT("front"),
 }
