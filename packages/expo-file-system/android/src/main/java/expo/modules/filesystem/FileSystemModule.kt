@@ -1245,7 +1245,7 @@ open class FileSystemModule(
 
   private fun getEncodingFromOptions(options: Map<String?, Any?>): String {
     return if (options.containsKey("encoding") && options["encoding"] is String) {
-      (options["encoding"] as String).toLowerCase(Locale.ROOT)
+      (options["encoding"] as String).lowercase(Locale.ROOT)
     } else {
       "utf8"
     }

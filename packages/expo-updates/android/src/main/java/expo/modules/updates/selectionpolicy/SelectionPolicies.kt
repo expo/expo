@@ -28,7 +28,7 @@ object SelectionPolicies {
       val metadataKeySet = metadata.keys()
       while (metadataKeySet.hasNext()) {
         val key = metadataKeySet.next()
-        metadataLCKeys.put(key.toLowerCase(), metadata[key])
+        metadataLCKeys.put(key.lowercase(), metadata[key])
       }
       val filterKeySet = manifestFilters.keys()
       while (filterKeySet.hasNext()) {

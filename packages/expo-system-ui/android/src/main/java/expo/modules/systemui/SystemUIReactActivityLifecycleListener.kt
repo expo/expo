@@ -14,5 +14,5 @@ class SystemUIReactActivityLifecycleListener(activityContext: Context) : ReactAc
   }
 
   private fun getUserInterfaceStyle(context: Context): String =
-    context.getString(R.string.expo_system_ui_user_interface_style).toLowerCase()
+    context.getString(R.string.expo_system_ui_user_interface_style).lowercase()
 }
