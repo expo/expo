@@ -158,38 +158,6 @@ The EAS website has a page that shows the current state of our apps. We can view
 
 After verifying `expo-updates` and EAS Update configurations, we can move on to debugging how our project is interacting with updates.
 
-### In-app debugging
-
-The expo-updates library exports a variety of functions to interact with updates once the app is already running. In certain cases, making a call to fetch an update and seeing an error message can help us narrow down the root cause.
-
-We can write the following code and then make a simulator build of our project to see if there are errors fetching updates:
-
-```jsx
-import { View, Button } from 'react-native';
-import * as Updates from 'expo-updates';
-
-function App() {
-  async function onFetchUpdateAsync() {
-    try {
-      const update = await Updates.checkForUpdateAsync();
-
-      if (update.isAvailable) {
-        await Updates.fetchUpdateAsync();
-        await Updates.reloadAsync();
-      }
-    } catch (error) {
-      alert(`Error fetching latest Expo update: ${error}`);
-    }
-  }
-
-  return (
-    <View>
-      <Button title="Fetch update" onPress={onFetchUpdateAsync} />
-    </View>
-  );
-}
-```
-
 ### Viewing network requests
 
 Another way to identify the root cause of an issue is to look at the network requests that the app is making to EAS servers, then viewing the responses. We recommend using a program like [Proxyman](https://proxyman.io/) or [Charles Proxy](https://www.charlesproxy.com/) to watch network requests from our app.
