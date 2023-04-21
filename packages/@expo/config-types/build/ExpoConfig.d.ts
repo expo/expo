@@ -212,6 +212,10 @@ export interface ExpoConfig {
         requestHeaders?: {
             [k: string]: any;
         };
+        /**
+         * Whether to use deprecated Classic Updates when developing with the local Expo CLI and creating builds. Omitting this or setting it to false affects the behavior of APIs like `Constants.manifest`. SDK 49 is the last SDK version that supports Classic Updates.
+         */
+        useClassicUpdates?: boolean;
     };
     /**
      * Provide overrides by locale for System Dialog prompts like Permissions Boxes
