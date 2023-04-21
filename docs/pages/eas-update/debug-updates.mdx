@@ -158,6 +158,10 @@ The EAS website has a page that shows the current state of our apps. We can view
 
 After verifying `expo-updates` and EAS Update configurations, we can move on to debugging how our project is interacting with updates.
 
+### In-app debugging
+
+The `expo-updates` library exports a variety of functions to interact with updates once the app is already running. In certain cases, making a call to fetch an update and seeing an error message can help us narrow down the root cause. We can make a simulator build of the project and manually check to see if updates are available or if there are errors when fetching updates. See the code example to [check for updates manually](/versions/latest/sdk/updates/#use-expo-updates-with-a-custom-server).
+
 ### Viewing network requests
 
 Another way to identify the root cause of an issue is to look at the network requests that the app is making to EAS servers, then viewing the responses. We recommend using a program like [Proxyman](https://proxyman.io/) or [Charles Proxy](https://www.charlesproxy.com/) to watch network requests from our app.
