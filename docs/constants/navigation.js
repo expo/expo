@@ -519,16 +519,3 @@ function pageUrl(file) {
     .replace(filePath.base, filePath.name === 'index' ? '' : filePath.name)
     .replace(/\/$/, '');
 }
-
-/**
- * Sort the list of pages alphabetically by either the sidebarTitle or title.
- */
-// Note: (@aman) to refactor or remove the function below
-// We're not using it anywhere as of now.
-// function sortAlphabetical(pages) {
-//   return pages.sort((a, b) => {
-//     const aTitle = a.sidebarTitle || a.name;
-//     const bTitle = b.sidebarTitle || b.name;
-//     return aTitle.localeCompare(bTitle);
-//   });
-// }
