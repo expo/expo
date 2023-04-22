@@ -299,7 +299,12 @@ const general = [
     ],
     { expanded: true }
   ),
-  makeSection('Regulatory compliance', sortAlphabetical(pagesFromDir('regulatory-compliance')), {}),
+  makeSection('Regulatory compliance', [
+    makePage('regulatory-compliance/data-and-privacy-protection.mdx'),
+    makePage('regulatory-compliance/gdpr.mdx'),
+    makePage('regulatory-compliance/hipaa.mdx'),
+    makePage('regulatory-compliance/privacy-shield.mdx'),
+  ]),
 ];
 
 const learn = [
@@ -513,15 +518,4 @@ function pageUrl(file) {
   return pathname
     .replace(filePath.base, filePath.name === 'index' ? '' : filePath.name)
     .replace(/\/$/, '');
-}
-
-/**
- * Sort the list of pages alphabetically by either the sidebarTitle or title.
- */
-function sortAlphabetical(pages) {
-  return pages.sort((a, b) => {
-    const aTitle = a.sidebarTitle || a.name;
-    const bTitle = b.sidebarTitle || b.name;
-    return aTitle.localeCompare(bTitle);
-  });
 }
