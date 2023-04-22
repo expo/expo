@@ -34,6 +34,8 @@
 - Fix main field resolution for metro web. ([#21939](https://github.com/expo/expo/pull/21939) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix cached code signing development certificate offline behavior. ([#21989](https://github.com/expo/expo/pull/21989) by [@wschurman](https://github.com/wschurman))
 - Remove invalid array group syntax from Expo Router type generation. ([#22185](https://github.com/expo/expo/pull/22185) by [@marklawlor](https://github.com/marklawlor))
+- Skip verifying arbitrary platforms when prebuilding. ([#22228](https://github.com/expo/expo/pull/22228) by [@byCedric](https://github.com/byCedric))
+- Fix prebuild `--template` flag on Windows for local tarballs. ([#22232](https://github.com/expo/expo/pull/22232) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 

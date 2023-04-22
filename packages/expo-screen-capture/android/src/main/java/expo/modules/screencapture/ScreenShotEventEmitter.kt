@@ -83,7 +83,7 @@ class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistr
   }
 
   private fun isPathOfNewScreenshot(path: String): Boolean {
-    if (!path.toLowerCase().contains("screenshot")) {
+    if (!path.lowercase().contains("screenshot")) {
       return false
     }
     // Cannot check that the onChange event is for an insert operation until API level 30

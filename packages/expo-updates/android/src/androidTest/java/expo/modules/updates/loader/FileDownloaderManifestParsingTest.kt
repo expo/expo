@@ -293,6 +293,48 @@ class FileDownloaderManifestParsingTest {
   }
 
   @Test
+  fun testManifestParsing_MultipartBodyEmpty() {
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    val boundary = "blah"
+    val contentType = "multipart/mixed; boundary=$boundary"
+
+    val response = mockk<Response>().apply {
+      every { header("content-type") } returns contentType
+      every { headers } returns mapOf("content-type" to contentType).toHeaders()
+      every { body } returns ResponseBody.create(MultipartBody.MIXED, "")
+    }
+
+    val configuration = UpdatesConfiguration(
+      null,
+      mapOf(
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
+      )
+    )
+
+    var errorOccurred = false
+    var resultUpdateResponse: UpdateResponse? = null
+
+    FileDownloader(context).parseRemoteUpdateResponse(
+      response, configuration,
+      object : FileDownloader.RemoteUpdateDownloadCallback {
+        override fun onFailure(message: String, e: Exception) {
+          errorOccurred = true
+        }
+
+        override fun onSuccess(updateResponse: UpdateResponse) {
+          resultUpdateResponse = updateResponse
+        }
+      }
+    )
+
+    Assert.assertFalse(errorOccurred)
+
+    Assert.assertNotNull(resultUpdateResponse)
+    Assert.assertNull(resultUpdateResponse!!.manifestUpdateResponsePart)
+    Assert.assertNull(resultUpdateResponse!!.directiveUpdateResponsePart)
+  }
+
+  @Test
   fun testManifestParsing_JSONBodySigned() {
     val contentType = "application/json"
     val headersMap = mapOf(
