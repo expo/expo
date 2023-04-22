@@ -14,6 +14,7 @@
 - Update tests. ([#21396](https://github.com/expo/expo/pull/21396) by [@EvanBacon](https://github.com/EvanBacon))
 - Update tests to use latest Expo template. ([#21339](https://github.com/expo/expo/pull/21339) by [@EvanBacon](https://github.com/EvanBacon))
 - Update snapshots. ([#22032](https://github.com/expo/expo/pull/22032) by [@EvanBacon](https://github.com/EvanBacon))
+- Bump `xml2js` from `0.4.23` to `0.5.0` in `@expo/config-plugins` to patch security vulnerability. ([#22071](https://github.com/expo/expo/pull/22071) by [Dependabot](https://docs.github.com/en/code-security/dependabot/dependabot-security-updates/configuring-dependabot-security-updates) and [cheng-alvin](https://github.com/cheng-alvin))
 
 ## 6.0.0 — 2023-02-03
 
@@ -35,4 +36,3 @@
 ### 💡 Others
 
 - Bump `@expo/json-file`, `@expo/plist`. ([#20720](https://github.com/expo/expo/pull/20720) by [@EvanBacon](https://github.com/EvanBacon))
-- Bump `xml2js` from `0.4.23` to `0.5.0` in `@expo/config-plugins` to patch security vulnerability. ([#22071](https://github.com/expo/expo/pull/22071) by [Dependabot](https://docs.github.com/en/code-security/dependabot/dependabot-security-updates/configuring-dependabot-security-updates) and [cheng-alvin](https://github.com/cheng-alvin))
