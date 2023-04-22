@@ -35,3 +35,4 @@
 ### 💡 Others
 
 - Bump `@expo/json-file`, `@expo/plist`. ([#20720](https://github.com/expo/expo/pull/20720) by [@EvanBacon](https://github.com/EvanBacon))
+- Bump `xml2js` from `0.4.23` to `0.5.0` in `@expo/config-plugins` to patch security vulnerability. ([#22071](https://github.com/expo/expo/pull/22071) by [Dependabot](https://docs.github.com/en/code-security/dependabot/dependabot-security-updates/configuring-dependabot-security-updates) and [cheng-alvin](https://github.com/cheng-alvin))
