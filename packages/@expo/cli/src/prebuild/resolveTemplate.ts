@@ -130,6 +130,12 @@ export async function resolveTemplateArgAsync(
       }
     }
 
+    // On Windows, we can actually create a URL from a local path
+    // Double-check if the created URL is not a path to avoid mixing up URLs and paths
+    if (process.platform === 'win32' && repoUrl && path.isAbsolute(repoUrl.toString())) {
+      repoUrl = undefined;
+    }
+
     if (!repoUrl) {
       const templatePath = path.resolve(template);
       if (!fs.existsSync(templatePath)) {
