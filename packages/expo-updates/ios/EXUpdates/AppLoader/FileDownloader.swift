@@ -417,7 +417,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     var certificateChainStringData: Data?
     var directivePartHeadersAndData: ([String: Any], Data)?
 
-    let completed = reader.readAllParts { headers, content, _ in
+    let completed = data.isEmpty || reader.readAllParts { headers, content, _ in
       if let contentDisposition = (headers as! [String: Any]).stringValueForCaseInsensitiveKey("content-disposition") {
         if let contentDispositionParameters = EXUpdatesParameterParser().parseParameterString(
           contentDisposition,
