@@ -299,7 +299,12 @@ const general = [
     ],
     { expanded: true }
   ),
-  makeSection('Regulatory compliance', sortAlphabetical(pagesFromDir('regulatory-compliance')), {}),
+  makeSection('Regulatory compliance', [
+    makePage('regulatory-compliance/data-and-privacy-protection.mdx'),
+    makePage('regulatory-compliance/gdpr.mdx'),
+    makePage('regulatory-compliance/hipaa.mdx'),
+    makePage('regulatory-compliance/privacy-shield.mdx'),
+  ]),
 ];
 
 const learn = [
