@@ -180,6 +180,14 @@ class ClassComponentSpec: ExpoSpec {
         expect(value.kind) == .number
         expect(value.getInt()) == initialValue
       }
+
+      it("initializes the shared object from native") {
+        let initialValue = Int.random(in: 1..<100)
+        let value = try runtime.eval("expo.modules.TestModule.newCounter(\(initialValue))")
+
+        expect(value.kind) == .object
+        expect(value.getObject().getProperty("currentValue").getInt()) == initialValue
+      }
     }
   }
 }
@@ -190,6 +198,10 @@ class ClassComponentSpec: ExpoSpec {
 fileprivate final class ModuleWithCounterClass: Module {
   func definition() -> ModuleDefinition {
     Name("TestModule")
+
+    Function("newCounter") { (initialValue: Int) in
+      return Counter(initialValue: initialValue)
+    }
 
     Class(Counter.self) {
       Constructor { (initialValue: Int) in

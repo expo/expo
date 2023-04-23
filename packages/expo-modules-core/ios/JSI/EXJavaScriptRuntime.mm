@@ -160,6 +160,12 @@ static NSString *mainObjectPropertyName = @"expo";
   return [[EXJavaScriptObject alloc] initWith:klass runtime:self];
 }
 
+- (nullable EXJavaScriptObject *)createObjectWithPrototype:(nonnull EXJavaScriptObject *)prototype
+{
+  std::shared_ptr<jsi::Object> object = expo::createObjectWithPrototype(*_runtime, [prototype getShared]);
+  return object ? [[EXJavaScriptObject alloc] initWith:object runtime:self] : nil;
+}
+
 #pragma mark - Script evaluation
 
 - (nonnull EXJavaScriptValue *)evaluateScript:(nonnull NSString *)scriptSource
