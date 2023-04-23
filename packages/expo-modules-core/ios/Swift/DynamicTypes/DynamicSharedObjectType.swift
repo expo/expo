@@ -6,6 +6,16 @@
 internal struct DynamicSharedObjectType: AnyDynamicType {
   let innerType: SharedObject.Type
 
+  /**
+   A unique identifier of the wrapped type.
+   */
+  let typeIdentifier: ObjectIdentifier
+
+  init<SharedObjectType: SharedObject>(innerType: SharedObjectType.Type) {
+    self.innerType = innerType
+    self.typeIdentifier = ObjectIdentifier(SharedObjectType.self)
+  }
+
   func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
     return innerType == InnerType.self
   }

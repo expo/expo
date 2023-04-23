@@ -115,6 +115,23 @@ std::shared_ptr<jsi::Function> createClass(jsi::Runtime &runtime, const char *na
   return std::make_shared<jsi::Function>(klass.asFunction(runtime));
 }
 
+std::shared_ptr<jsi::Object> createObjectWithPrototype(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> prototype) {
+  // Get the "Object" class.
+  jsi::Object objectClass = runtime
+    .global()
+    .getPropertyAsObject(runtime, "Object");
+
+  // Call "Object.create(prototype)" to create an object with the given prototype without calling the constructor.
+  jsi::Object object = objectClass
+    .getPropertyAsFunction(runtime, "create")
+    .callWithThis(runtime, objectClass, {
+      jsi::Value(runtime, *prototype)
+    })
+    .asObject(runtime);
+
+  return std::make_shared<jsi::Object>(std::move(object));
+}
+
 #pragma mark - Weak objects
 
 bool isWeakRefSupported(jsi::Runtime &runtime) {
