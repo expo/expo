@@ -68,6 +68,8 @@ void setDeallocator(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> object, 
 
 jsi::Value makeCodedError(jsi::Runtime &runtime, NSString *code, NSString *message);
 
+jsi::Value createException(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> expoObject, const char *code, const char *reason, std::shared_ptr<jsi::Object> cause);
+
 } // namespace expo
 
 #endif

@@ -19,6 +19,10 @@ public class CryptoModule: Module {
 
     Function("digest", digest)
 
+    Function("dupa") {
+      throw Exceptions.FileSystemModuleNotFound()
+    }
+
     Function("randomUUID") {
       UUID().uuidString
     }

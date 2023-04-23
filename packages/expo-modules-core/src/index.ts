@@ -1,3 +1,5 @@
+import './runtime/setup.fx';
+
 import { DeviceEventEmitter } from 'react-native';
 
 import { EventEmitter, Subscription } from './EventEmitter';

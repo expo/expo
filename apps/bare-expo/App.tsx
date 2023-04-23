@@ -54,6 +54,10 @@ export default function Main() {
   }
 
   React.useEffect(() => {
+    setTimeout(() => {
+      console.log(global.expo?.modules?.ExpoCrypto?.dupa());
+    }, 1500);
+
     try {
       const subscription = Notifications.addNotificationResponseReceivedListener(
         ({ notification, actionIdentifier }) => {

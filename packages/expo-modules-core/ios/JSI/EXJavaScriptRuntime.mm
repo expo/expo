@@ -113,7 +113,14 @@ static NSString *mainObjectPropertyName = @"expo";
       if (error == nil) {
         return expo::convertObjCObjectToJSIValue(runtime, result);
       } else {
-        throw jsi::JSError(runtime, [error.userInfo[@"message"] UTF8String]);
+        NSDictionary<NSString *, id> *userInfo = error.userInfo;
+        jsi::Value exception = expo::createException(runtime,
+                                                     [_mainObject getShared],
+                                                     "code",
+                                                     [userInfo[@"message"] UTF8String],
+                                                     nullptr);
+
+        throw jsi::JSError(runtime, jsi::Value(runtime, exception));
       }
     };
   return [self createHostFunction:name argsCount:argsCount block:hostFunctionBlock];

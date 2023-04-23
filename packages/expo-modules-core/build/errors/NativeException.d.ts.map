@@ -1,0 +1,1 @@
+{"version":3,"file":"NativeException.d.ts","sourceRoot":"","sources":["../../src/errors/NativeException.ts"],"names":[],"mappings":"AAAA,cAAM,eAAgB,SAAQ,KAAK;IACjC,IAAI,EAAE,MAAM,CAAC;IACb,MAAM,EAAE,MAAM,CAAC;IACf,KAAK,EAAE,eAAe,GAAG,IAAI,CAAC;gBAElB,IAAI,EAAE,MAAM,EAAE,MAAM,EAAE,MAAM,EAAE,KAAK,CAAC,EAAE,eAAe,GAAG,IAAI;IAqBxE,IAAI,SAAS,IAAI,eAAe,CAU/B;CACF;AAMD,eAAe,eAAe,CAAC"}

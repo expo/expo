@@ -1,17 +1,3 @@
-type ExpoObject = {
-    modules: undefined | {
-        [key: string]: any;
-    };
-};
-declare global {
-    var expo: ExpoObject | undefined;
-    /**
-     * @deprecated `global.ExpoModules` is deprecated, use `global.expo.modules` instead.
-     */
-    var ExpoModules: undefined | {
-        [key: string]: any;
-    };
-}
 /**
  * Imports the native module registered with given name. In the first place it tries to load
  * the module installed through the JSI host object and then falls back to the bridge proxy module.
@@ -22,5 +8,4 @@ declare global {
  * @throws Error when there is no native module with given name.
  */
 export declare function requireNativeModule<ModuleType = any>(moduleName: string): ModuleType;
-export {};
 //# sourceMappingURL=requireNativeModule.d.ts.map

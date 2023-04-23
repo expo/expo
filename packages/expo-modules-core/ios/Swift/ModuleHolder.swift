@@ -43,6 +43,8 @@ public final class ModuleHolder {
    */
   var listenersCount: Int = 0
 
+  let classRegistry = ClassRegistry()
+
   init(appContext: AppContext, module: AnyModule) {
     self.appContext = appContext
     self.module = module

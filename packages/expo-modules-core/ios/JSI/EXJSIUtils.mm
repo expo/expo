@@ -204,4 +204,18 @@ jsi::Value makeCodedError(jsi::Runtime &runtime, NSString *code, NSString *messa
     });
 }
 
+jsi::Value createException(jsi::Runtime &runtime, std::shared_ptr<jsi::Object> expoObject, const char *code, const char *reason, std::shared_ptr<jsi::Object> cause) {
+  jsi::Object exception = expoObject
+    ->getPropertyAsObject(runtime, "core")
+    .getPropertyAsFunction(runtime, "NativeException")
+    .callAsConstructor(runtime, {
+      jsi::String::createFromUtf8(runtime, code),
+      jsi::String::createFromUtf8(runtime, reason),
+      cause != nullptr ? jsi::Value(runtime, *cause) : jsi::Value::null()
+    })
+    .asObject(runtime);
+
+  return jsi::Value(runtime, exception);
+}
+
 } // namespace expo

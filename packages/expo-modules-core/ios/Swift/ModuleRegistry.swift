@@ -66,6 +66,12 @@ public final class ModuleRegistry: Sequence {
     return registry[moduleName]?.module
   }
 
+  public func get<ModuleType: AnyModule>(holderForClass moduleClass: ModuleType.Type) -> ModuleHolder? {
+    return registry.values.first {
+      return $0.module is ModuleType
+    }
+  }
+
   public func getModuleNames() -> [String] {
     return Array(registry.keys)
   }

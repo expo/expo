@@ -86,6 +86,10 @@ internal protocol ClassAssociatedObject {}
 extension JavaScriptObject: ClassAssociatedObject {}
 extension SharedObject: ClassAssociatedObject {}
 
+// MARK: - NativeClass
+
+public typealias NativeClass = SharedObject
+
 // MARK: - Privates
 
 /**
