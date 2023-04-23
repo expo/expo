@@ -35,7 +35,7 @@ build:
 
 Steps are used to describe a list of actions either in the form of commands or functions. These actions are executed when a workflow is triggered. You can define single or multiple steps in a workflow. It is **required** to define at least one step per workflow.
 
-Each step is configured with the following properties.
+Each step is configured with the following properties:
 
 #### `steps[].run`
 
@@ -63,30 +63,6 @@ build:
     # @end #
 ```
 
-#### `steps[].name`
-
-The name that is used in build logs to identify the step.
-
-#### `steps.command`
-
-The `command` defines a custom shell command to run when a step is executed. It is **required** to define a command for each step. It can be a multiline bash shell command.
-
-#### `steps.working_directory`
-
-The `working_directory` is used to define an existing directory from the project's root directory. For example, a step is created to list all the assets inside the **assets** directory, which is a directory in your Expo project. The `working_directory` is set to `assets`:
-
-```yaml
-build:
-  name: Demo
-  steps:
-    - run:
-        name: List assets
-        # @info #
-        working_directory: assets
-        # @end #
-        command: ls -la
-```
-
 #### Use a single step
 
 For example, a workflow with the following `steps` will run a single command to install npm dependencies:
@@ -102,7 +78,7 @@ build:
     # @end #
 ```
 
-> **info** `-` before `run` counts as indentation.
+> **Note:** `-` before `run` counts as indentation.
 
 #### Use multiple steps
 
@@ -124,13 +100,115 @@ build:
     # @end #
 ```
 
+#### `steps[].name`
+
+The name that is used in build logs to display the name of the step.
+
+#### `steps[].command`
+
+The `command` defines a custom shell command to run when a step is executed. It is **required** to define a command for each step. It can be a multiline bash shell command:
+
+```yaml
+build:
+  name: Run tests
+  steps:
+    - run:
+        name: Run tests
+        # @info #
+        command: |
+          echo "Running tests..."
+          npm test
+        # @end #
+```
+
+#### `steps[].working_directory`
+
+The `working_directory` is used to define an existing directory from the project's root directory. For example, a step is created to list all the assets inside the **assets** directory, which is a directory in your Expo project. The `working_directory` is set to `assets`:
+
+```yaml
+build:
+  name: Demo
+  steps:
+    - run:
+        name: List assets
+        # @info #
+        working_directory: assets
+        # @end #
+        command: ls -la
+```
+
+#### `steps[].shell`
+
+Used to define the default executable shell for a system. For example, the default shell is set to the system's shell:
+
+```yaml
+build:
+  name: Demo
+  steps:
+    - run:
+      # @info #
+      shell: /bin/sh
+      # @end #
+      command: |
+        echo "Steps can use another shell"
+        ps -p $$
+```
+
+#### `steps[].inputs`
+
+Input values are provided to a step. For example, you can use `input` to provide a value:
+
+```yaml
+build:
+  name: Demo
+  steps:
+    - run:
+      name: Say Hi
+      # @info #
+      inputs:
+        name: Expo
+      # @end #
+      command: echo "Hi, ${ inputs.name }!"
+```
+
+#### `steps[].outputs`
+
+An output value is expected during a step. For example, a function has an output value of `Hello world`:
+
+```yaml
+build:
+  name: Demo
+  steps:
+    - run:
+      name: Produce output
+      # @info #
+      outputs: [value]
+      # @end #
+      command: |
+        echo "Producing output for another step"
+        set-output value "Output from another step..."
+```
+
 ## `functions`
 
 Defined to describe a reusable function that can be used in a workflow. All config options to create a function are specified with the following properties:
 
-### `name`
+### `functions.function_name`
 
-The name that is used to identify the function in the build logs. For example, a function with the display name `Say Hi!`:
+The name of your function that is used to identify the function in the `build.steps`. For example, you can define a function with the name `greetings`:
+
+{/* prettier-ignore */}
+```yaml
+functions:
+  # @info #
+  greetings:
+  # @end #
+    name: Say Hi!
+```
+
+### `functions.function_name.name`
+
+The name that is used in build logs to display the name of the function. For example, a function with the display name `Say Hi!`:
 
 ```yaml
 functions:
@@ -140,15 +218,47 @@ functions:
     # @end #
 ```
 
-### `platforms`
+{/* Note: (aman) Commenting this out since it's not implemented yet. */}
+{/* `platforms` */}
+{/* Name of the platform that a specific function should get executed. `linux` is used for Android and `darwin` for iOS. If not specified, the function is executed for both platforms when the appropriate build runs for each platform. */}
 
-Name of the platform that a specific function should get executed. `linux` is used for Android and `darwin` for iOS. If not specified, the function is executed for both platforms when the appropriate build runs for each platform.
+### `function.function_name.inputs`
 
-### `inputs`
+Input values are provided to a function.
 
-An input value is provided to a function.
+#### `function.function_name.inputs[].name`
 
-#### `inputs.default_value`
+The name of the input value. It is used as an identifier to access the input value such as in bash command interpolation.
+
+{/* prettier-ignore */}
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    inputs:
+      # @info #
+      - name: name
+      # @end #
+        default_value: Hello world
+    command: echo "${ inputs.name }!"
+```
+
+#### `inputs[].required`
+
+Boolean to indicate if the input value is required or not. For example, a function does not have a required value:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    inputs:
+      - name: name
+        # @info #
+        required: false
+        # @end #
+```
+
+#### `inputs[].default_value`
 
 You can use `default_value` to provide one default input. For example, a function has a default value of `Hello world`:
 
@@ -163,7 +273,7 @@ functions:
         # @end #
 ```
 
-#### `inputs.allowed_values`
+#### `inputs[].allowed_values`
 
 You can use `allowed_values` to provide multiple values in an array. For example, a function has multiple allowed values:
 
@@ -179,7 +289,26 @@ functions:
         # @end #
 ```
 
-### `outputs`
+#### Multiple input values
+
+Multiple input values can be provided to a function.
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    # @info #
+    inputs:
+      - name: name
+        default_value: Expo
+      - name: greeting
+        default_value: Hi
+        allowed_values: [Hi, Hello]
+    # @end #
+    command: echo "${ inputs.greeting }, ${ inputs.name }!"
+```
+
+### `function.function_name.outputs`
 
 An output value is expected from a function. For example, a function has an output value of `Hello world`:
 
@@ -193,7 +322,36 @@ functions:
     command: set-output value "Hello world"
 ```
 
-### `command`
+#### `outputs[].name`
+
+The name of the output value. It is used as an identifier to access the output value in another step:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    inputs:
+      # @info #
+      - name: name
+      # @end #
+```
+
+#### `outputs[].required`
+
+Boolean to indicate if the output value is required or not. For example, a function does not have a required output value:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    outputs:
+      - name: value
+        # @info #
+        required: false
+        # @end #
+```
+
+### `function.function_name.command`
 
 Used to define the command to run when a function is executed. It is **required** to define a command for each reusable function. For example, the command `echo "Hello world"` is used to print a message:
 
@@ -206,9 +364,9 @@ functions:
     # @end #
 ```
 
-### `shell`
+### `function.function.name.shell`
 
-Used to define the default executable shell for a system. For example, the default shell is set to system's shell:
+Used to define the default executable shell for a system. For example, the default shell is set to the system's shell:
 
 ```yaml
 functions:
@@ -240,7 +398,7 @@ build:
           path: assets/icon.png
 ```
 
-> **info** Any function that is built-in and provided by EAS must start with the prefix `eas/`.
+> **info** **Tip:** Any function that is built-in and provided by EAS must start with the prefix `eas/`.
 
 The `eas/upload_artifact` function has the following properties
 
@@ -277,4 +435,4 @@ build:
     # @end #
 ```
 
-> **info** `build.steps` can execute multiple reusable `functions` sequentially.
+> **info** **Tip:** `build.steps` can execute multiple reusable `functions` sequentially.
