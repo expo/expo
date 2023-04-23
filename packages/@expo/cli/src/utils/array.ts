@@ -35,6 +35,11 @@ export function uniqBy<T>(array: T[], key: (item: T) => string): T[] {
   });
 }
 
+/** lodash.uniq */
+export function uniq<T>(array: T[]): T[] {
+  return array.filter((item, index) => array.indexOf(item) === index);
+}
+
 /** `lodash.chunk` */
 export function chunk<T>(array: T[], size: number): T[][] {
   const chunked = [];

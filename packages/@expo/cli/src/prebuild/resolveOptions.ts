@@ -5,6 +5,7 @@ import fs from 'fs';
 import path from 'path';
 
 import * as Log from '../log';
+import { uniq } from '../utils/array';
 import { CommandError } from '../utils/errors';
 import { validateUrl } from '../utils/url';
 
@@ -52,6 +53,18 @@ export function resolveSkipDependencyUpdate(value: any) {
 
 /** Returns an array of platforms based on the input platform identifier and runtime constraints. */
 export function resolvePlatformOption(
+  platform: string = 'all',
+  { loose }: { loose?: boolean } = {}
+): ModPlatform[] {
+  return uniq(
+    platform
+      .split(',')
+      .map((platform) => resolveSinglePlatformOption(platform, { loose }))
+      .flat()
+  );
+}
+
+function resolveSinglePlatformOption(
   platform: string = 'all',
   { loose }: { loose?: boolean } = {}
 ): ModPlatform[] {

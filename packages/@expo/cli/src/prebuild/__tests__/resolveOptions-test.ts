@@ -60,6 +60,16 @@ describe(resolvePlatformOption, () => {
   it('accepts unknown platforms', () => {
     expect(resolvePlatformOption('foo')).toEqual(['foo']);
   });
+  it('returns multiple platforms', () => {
+    expect(resolvePlatformOption('ios,android')).toEqual(
+      expect.arrayContaining(['ios', 'android'])
+    );
+  });
+  it('returns unique multiple platforms', () => {
+    expect(resolvePlatformOption('all,ios,android')).toEqual(
+      expect.arrayContaining(['ios', 'android'])
+    );
+  });
 });
 
 describe(resolveSkipDependencyUpdate, () => {
