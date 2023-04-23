@@ -128,11 +128,15 @@ class FunctionSpec: ExpoSpec {
 
         it("returns the record back (sync)") {
           let result = try Function(functionName) { (record: TestRecord) in record }
-            .call(by: nil, withArguments: [dict], appContext: appContext) as? TestRecord.Dict
+            .call(by: nil, withArguments: [dict], appContext: appContext) as? TestRecord
+
+          guard let result = Conversions.convertFunctionResult(result, appContext: appContext) as? TestRecord.Dict else {
+            return fail()
+          }
 
           expect(result).notTo(beNil())
-          expect(result?["property"] as? String).to(equal(dict["property"]))
-          expect(result?["propertyWithCustomKey"] as? String).to(equal(dict["propertyWithCustomKey"]))
+          expect(result["property"] as? String).to(equal(dict["property"]))
+          expect(result["propertyWithCustomKey"] as? String).to(equal(dict["propertyWithCustomKey"]))
         }
 
         it("returns the record back (async)") {
