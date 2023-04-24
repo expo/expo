@@ -45,9 +45,9 @@ If you've made manual modifications to your **android** or **ios** directory, yo
 
 If you want to make static changes to your native project files like the iOS **AndroidManifest.xml** or **Info.plist** and still have access to prebuilding, check out the [config plugins guide](/config-plugins/plugins-and-mods/#create-a-plugin) to see how you can hook into the prebuild process to make those changes.
 
-### Reverting changes from `npx expo run:[ios|android]`
+### Reverting changes from `npx expo run:[android|ios]`
 
-If you've decided that you want to roll your app back to being fully managed (no iOS and Android projects in your project directory), you can check out your most recent commit before executing `npx expo run:[ios|android]`, then run `npm install` again to restore the state of your **node_modules** directory.
+If you've decided that you want to roll your app back to being fully managed (no iOS and Android projects in your project directory), you can check out your most recent commit before executing `npx expo run:[android|ios]`, then run `npm install` again to restore the state of your **node_modules** directory.
 
 ### Developing apps with custom native code
 
