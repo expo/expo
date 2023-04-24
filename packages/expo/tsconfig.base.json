@@ -13,7 +13,7 @@
     "skipLibCheck": true,
     "target": "ESNext",
     "paths": {
-      "*": ["./modules/*"]
+      "*": ["../../modules/*"]
     }
   },
 
