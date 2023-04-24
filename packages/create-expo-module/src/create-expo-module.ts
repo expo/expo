@@ -77,9 +77,9 @@ async function main(target: string | undefined, options: CommandOptions) {
   if (options.local) {
     console.log();
     console.log(
-      `${chalk.blue('Local modules are created in the ')}${chalk.blue.bold.italic(
+      `${chalk.gray('The local module will be created in the ')}${chalk.gray.bold.italic(
         'modules'
-      )} ${chalk.blue('directory in the root of your project and should not be moved.')}`
+      )} ${chalk.gray('directory in the root of your project and should not be moved.')}`
     );
     console.log();
   }
@@ -162,10 +162,11 @@ async function main(target: string | undefined, options: CommandOptions) {
   }
 
   console.log();
-  console.log('✅ Successfully created Expo module');
   if (options.local) {
+    console.log(`✅ Successfully created Expo module in ${chalk.bold.italic(`modules/${slug}`)}`);
     printFurtherLocalInstructions(slug, data.project.moduleName);
   } else {
+    console.log('✅ Successfully created Expo module');
     printFurtherInstructions(targetDir, packageManager, options.example);
   }
 }
@@ -413,12 +414,8 @@ function printFurtherInstructions(
 
 function printFurtherLocalInstructions(slug: string, name: string) {
   console.log();
-  console.log(
-    `${chalk.blue('Module was created in ')}${chalk.blue.bold.italic(`modules/${slug}`)}.`
-  );
   console.log(`You can now import this module inside your application:`);
-  console.log();
-  console.log(chalk.blue(`import { hello } from '${slug}';`));
+  console.log(`${chalk.gray.italic(`import { hello } from '${slug}';`)}`);
   console.log();
   console.log(`Visit ${chalk.blue.bold(DOCS_URL)} for the documentation on Expo Modules APIs`);
   console.log(
