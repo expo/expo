@@ -1,7 +1,7 @@
 import ExpoModulesCore
 import EXScreenOrientation
 
-let defaultScreenOrientationMask = "DefaultScreenOrientationMask"
+let defaultScreenOrientationMask = "EXDefaultScreenOrientationMask"
 
 // copy of RNScreens protocol
 protocol ScreenOrientationRNSScreenWindowTraits {
@@ -28,6 +28,7 @@ class ScreenOrientationViewController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
 
+  // This requires the UIViewControllerBasedStatusBarAppearance to be set to true. RNScreens might cause this setting to fail anyways.
   override var prefersStatusBarHidden: Bool {
     return screenOrientationRegistry.prefersStatusBarHidden
   }
@@ -36,7 +37,8 @@ class ScreenOrientationViewController: UIViewController {
     guard !shouldUseRNScreenOrientation() else {
       return super.supportedInterfaceOrientations
     }
-    return screenOrientationRegistry.requiredOrientationMask()
+    let mask = screenOrientationRegistry.requiredOrientationMask()
+    return !mask.isEmpty ? mask : defaultOrientationMask
   }
 
   override func traitCollectionDidChange(_ previousTraitCollection: UITraitCollection?) {

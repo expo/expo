@@ -59,7 +59,7 @@ public class ScreenOrientationModule: Module, OrientationListener {
 
       // If the particular orientation is supported, we add it to the array of allowedOrientations
       for wrappedSingleOrientation in orientationMasks {
-        let supportedOrientationMask = orientationMask.intersection(UIInterfaceOrientationMask(rawValue: wrappedSingleOrientation.rawValue))
+        let supportedOrientationMask = orientationMask.intersection(wrappedSingleOrientation)
         if !supportedOrientationMask.isEmpty {
           let supportedOrientation = supportedOrientationMask.toUIInterfaceOrientation()
           allowedOrientations.append(ModuleOrientation.from(orientation: supportedOrientation).rawValue)
