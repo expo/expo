@@ -1,117 +1,86 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
+import ExpoModulesCore
 import SafariServices
 import React
 
-@objc(DevMenuInternalModule)
-public class DevMenuInternalModule: NSObject, RCTBridgeModule {
-  public static func moduleName() -> String! {
-    return "ExpoDevMenuInternal"
-  }
+public class DevMenuInternalModule: Module {
+  public func definition() -> ModuleDefinition {
+    Name("ExpoDevMenuInternal")
 
-  // Module DevMenuInternalModule requires main queue setup since it overrides `constantsToExport`.
-  public static func requiresMainQueueSetup() -> Bool {
-    return true
-  }
-
-  let manager: DevMenuManager
-
-  public override init() {
-    self.manager = DevMenuManager.shared
-  }
-
-  init(manager: DevMenuManager) {
-    self.manager = manager
-  }
-
-  // MARK: JavaScript API
-  @objc
-  public func constantsToExport() -> [AnyHashable: Any] {
-#if targetEnvironment(simulator)
-    let doesDeviceSupportKeyCommands = true
-#else
-    let doesDeviceSupportKeyCommands = false
-#endif
-    return [
-      "doesDeviceSupportKeyCommands": doesDeviceSupportKeyCommands,
-    ]
-  }
-
-  @objc
-  func fetchDataSourceAsync(_ dataSourceId: String?, resolve: @escaping RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    guard let dataSourceId = dataSourceId else {
-      return reject("ERR_DEVMENU_DATA_SOURCE_FAILED", "DataSource ID not provided.", nil)
+    // MARK: JavaScript API
+    Constants {
+      #if targetEnvironment(simulator)
+      let doesDeviceSupportKeyCommands = true
+      #else
+      let doesDeviceSupportKeyCommands = false
+      #endif
+      return [
+        "doesDeviceSupportKeyCommands": doesDeviceSupportKeyCommands
+      ]
     }
 
-    for dataSource in manager.devMenuDataSources {
-      if dataSource.id == dataSourceId {
-        dataSource.fetchData { data in
-          resolve(data.map { $0.serialize() })
+    AsyncFunction("fetchDataSourceAsync") { (dataSourceId: String, promise: Promise) in
+      for dataSource in DevMenuManager.shared.devMenuDataSources {
+        if dataSource.id == dataSourceId {
+          dataSource.fetchData { data in
+            promise.resolve(data.map { $0.serialize() })
+          }
+          return
         }
+      }
+
+      throw Exception(name: "ERR_DEVMENU_DATA_SOURCE_FAILED", description: "DataSource \(dataSourceId) not found.")
+    }
+
+    AsyncFunction("dispatchCallableAsync") { (callableId: String, args: [String: Any]?) in
+      DevMenuManager.shared.dispatchCallable(withId: callableId, args: args)
+    }
+
+    AsyncFunction("loadFontsAsync") {
+      DevMenuManager.shared.loadFonts()
+    }
+
+    AsyncFunction("hideMenu") {
+      DevMenuManager.shared.hideMenu()
+    }
+
+    AsyncFunction("closeMenu") {
+      DevMenuManager.shared.closeMenu()
+    }
+
+    AsyncFunction("setOnboardingFinished") { (finished: Bool) in
+      DevMenuPreferences.isOnboardingFinished = finished
+    }
+
+    AsyncFunction("openDevMenuFromReactNative") {
+      guard let rctDevMenu = DevMenuManager.shared.currentBridge?.devMenu else {
         return
+      }
+
+      DispatchQueue.main.async {
+        rctDevMenu.show()
       }
     }
 
-    return reject("ERR_DEVMENU_DATA_SOURCE_FAILED", "DataSource \(dataSourceId) not founded.", nil)
-  }
-
-  @objc
-  func dispatchCallableAsync(_ callableId: String?, args: [String: Any]?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    guard let callableId = callableId else {
-      return reject("ERR_DEVMENU_ACTION_FAILED", "Callable ID not provided.", nil)
-    }
-    manager.dispatchCallable(withId: callableId, args: args)
-    resolve(nil)
-  }
-  
-  @objc
-  func loadFontsAsync(_ resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    manager.loadFonts()
-    resolve(nil)
-  }
-
-  @objc
-  func hideMenu() {
-    manager.hideMenu()
-  }
-
-  @objc
-  func closeMenu() {
-    manager.closeMenu()
-  }
-
-  @objc
-  func setOnboardingFinished(_ finished: Bool) {
-    DevMenuPreferences.isOnboardingFinished = finished
-  }
-
-  @objc
-  func openDevMenuFromReactNative() {
-    guard let rctDevMenu = manager.currentBridge?.devMenu else {
-      return
+    AsyncFunction("onScreenChangeAsync") { (currentScreen: String?) in
+      DevMenuManager.shared.setCurrentScreen(currentScreen)
     }
 
-    DispatchQueue.main.async {
-      rctDevMenu.show()
-    }
-  }
+    AsyncFunction("fireCallback") { (name: String) in
+      guard let callback = DevMenuManager.shared.registeredCallbacks.first(where: { $0.name == name }) else {
+        throw Exception(name: "ERR_DEVMENU_ACTION_FAILED", description: "\(name) is not a registered callback")
+      }
 
-  @objc
-  func onScreenChangeAsync(_ currentScreen: String?, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    manager.setCurrentScreen(currentScreen)
-    resolve(nil)
-  }
-
-  @objc
-  func fireCallback(_ name: String, resolve: RCTPromiseResolveBlock, reject: RCTPromiseRejectBlock) {
-    guard let callback = manager.registeredCallbacks.first(where: { $0.name == name }) else {
-      return reject("ERR_DEVMENU_ACTION_FAILED", "\(name) is not a registered callback", nil)
+      DevMenuManager.shared.sendEventToDelegateBridge("registeredCallbackFired", data: name)
+      if callback.shouldCollapse {
+        DevMenuManager.shared.closeMenu()
+      }
     }
 
-    manager.sendEventToDelegateBridge("registeredCallbackFired", data: name)
-    if callback.shouldCollapse {
-      closeMenu()
+    AsyncFunction("copyToClipboardAsync") { (content: String) in
+      let clipboard = UIPasteboard.general
+      clipboard.string = content as String
     }
-    return resolve(nil)
   }
 }

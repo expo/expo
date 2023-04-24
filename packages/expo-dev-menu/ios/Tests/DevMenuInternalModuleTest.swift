@@ -11,7 +11,7 @@ class DevMenuInternalModuleTest: QuickSpec {
       #else
           let doesDeviceSupportKeyCommands = false
       #endif
-      let module = DevMenuInternalModule(manager: DevMenuManager.shared)
+      let module = DevMenuInternalModule()
 
       let constants = module.constantsToExport()
 
