@@ -38,7 +38,7 @@ function getScheme(config) {
 }
 
 // This plugin used to remove the unused schemes but this is unpredictable because other plugins could add schemes.
-// The only way to reliably remove schemes from the project is to nuke the file and regenerate the code (`expo prebuild --clean`).
+// The only way to reliably remove schemes from the project is to nuke the file and regenerate the code (`npx expo prebuild --clean`).
 // Regardless, having extra schemes isn't a fatal issue and therefore a tolerable compromise is to just add new schemes that aren't currently present.
 function setScheme(config, androidManifest) {
   var _config$android, _config$android2;

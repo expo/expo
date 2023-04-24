@@ -1,6 +1,6 @@
 # expo-build-properties
 
-**`expo-build-properties`** is a config plugin for managed apps to override the default native build properties.
+**`expo-build-properties`** is a [config plugin](https://docs.expo.dev/config-plugins/introduction/) to customize native build properties when using [`npx expo prebuild`](https://docs.expo.dev/workflow/prebuild/).
 
 ## API documentation
 
@@ -9,10 +9,8 @@
 
 ### Installation
 
-**Note:** To use this config plugin, your apps must be a managed app and build by either [EAS Build](/build/introduction.md) or `expo run:[android|ios]`.
-
 ```
-expo install expo-build-properties
+npx expo install expo-build-properties
 ```
 
 Add plugin to `app.json`. For example:
