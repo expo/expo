@@ -14,6 +14,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix tsconfig paths for local module lookup. ([#22249](https://github.com/expo/expo/pull/22249) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ### 📚 3rd party library updates
