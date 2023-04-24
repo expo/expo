@@ -79,13 +79,15 @@ export async function startAsync(
     if (exp.updates?.useClassicUpdates) {
       options.forceManifestType = 'classic';
     } else {
-      const classicUpdatesUrlRegex = /^(staging-)?exp\.host/;
+      const classicUpdatesUrlRegex = /^(staging\.)?exp\.host/;
       let parsedUpdatesUrl: { hostname: string | null } = { hostname: null };
       if (exp.updates?.url) {
         try {
           parsedUpdatesUrl = new URL(exp.updates.url);
         } catch {
-          Log.error(`Failed to parse \`updates.url\` in this project's app config.`);
+          Log.error(
+            `Failed to parse \`updates.url\` in this project's app config. ${exp.updates.url} is not a valid URL.`
+          );
         }
       }
       const isClassicUpdatesUrl = parsedUpdatesUrl.hostname
