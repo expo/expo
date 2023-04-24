@@ -207,7 +207,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
 
     Log.warn(
       APISettings.isOffline
-        ? 'Using anonymous scope key in manifest for offline mode with no cached development code signing info.'
+        ? 'Using anonymous scope key in manifest for offline mode.'
         : 'Using anonymous scope key in manifest.'
     );
     return await getAnonymousScopeKeyAsync(slug);
