@@ -89,22 +89,20 @@ class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
 
   func setMask(_ mask: UIInterfaceOrientationMask, forModule module: AnyObject) {
     moduleInterfaceMasks[.wrap(module)] = mask.rawValue
-    
+
     // The enforcement of device orientation in handleDeviceOrientationChange causes the status bar to animate to the side and then disappear
     // when there is no .portrait orientation in the mask but the device is rotated to portrait. Hide the status bar to make this glitch invisible to the user.
     // Note: This requires the UIViewControllerBasedStatusBarAppearance to be set to true. RNScreens might cause this setting to fail anyways.
-    prefersStatusBarHidden = true;
-    for mask in moduleInterfaceMasks.values{
-      if (UIInterfaceOrientationMask(rawValue: mask).contains(.portrait)){
-        prefersStatusBarHidden = false
-        break;
-      }
+    prefersStatusBarHidden = true
+    for mask in moduleInterfaceMasks.values where UIInterfaceOrientationMask(rawValue: mask).contains(.portrait) {
+      prefersStatusBarHidden = false
+      break
     }
-    
-    EXUtilities.performSynchronously{
+
+    EXUtilities.performSynchronously {
       UIApplication.shared.keyWindow?.rootViewController?.setNeedsStatusBarAppearanceUpdate()
     }
-    
+
     if foregroundedModule === module {
       enforceDesiredDeviceOrientation(withOrientationMask: mask)
     }
@@ -206,7 +204,6 @@ class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
     screenOrientationDidChange(newScreenOrientation)
   }
 
-  
   func screenOrientationDidChange(_ newScreenOrientation: UIInterfaceOrientation) {
     currentScreenOrientation = newScreenOrientation
     for module in notificationListeners {
@@ -216,25 +213,26 @@ class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
       module.screenOrientationDidChange(newScreenOrientation)
     }
   }
-  
+
   // This function is called when iOS sends and OrientationDidChangeNotification
   @objc func handleDeviceOrientationChange(notification: Notification) {
     let newScreenOrientation = UIDevice.current.orientation.toInterfaceOrientation()
-    // On iOS < 16 if the device is locked in some orientation (eq. landscape) and the device is rotated to a different orientation (eq. portrait), which is not inside of the currentOrientationMask
-    // our view will stay in correct orientation, but status bar and the UIDevice.current.orientation will get updated to the physical device orientation.
-    // It is not possible to override this behaviour from our view controller, therefore upon receiving a notification of rotating to portrait while locked in landscape we force
-    // the device to "think" it's physically in landscape.
-    // This workaround also fixes some unexpected behaviours from other views (eq. SafeAreaView), which use UIDevice.orientation.current (which might be "incorrect") after the view orientation is locked.
+    // On iOS < 16 if the device is locked in some orientation (eq. landscape) and the device is rotated to a different orientation (eq. portrait),
+    // which is not inside of the currentOrientationMask our view will stay in correct orientation, but status bar and the UIDevice.current.orientation
+    // will get updated to the physical device orientation. It is not possible to override this behaviour from the view controller, therefore upon
+    // receiving a notification of rotating to portrait while locked in landscape we force the device to "think" it's physically in landscape.
+    // This workaround also fixes some unexpected behaviours from other views (eq. SafeAreaView), which use UIDevice.orientation.current
+    // (which might be "incorrect") after the view orientation is locked.
     // On iOS 16 the API has changed and the device behaves as expected without any workarounds.
-    if #unavailable(iOS 16){
-      if(!currentOrientationMask.contains(newScreenOrientation)){
+    if #unavailable(iOS 16) {
+      if !currentOrientationMask.contains(newScreenOrientation) {
         enforceDesiredDeviceOrientation(withOrientationMask: self.currentScreenOrientation.toInterfaceOrientationMask())
       }
     }
-    
+
     interfaceOrientationDidChange(newScreenOrientation)
   }
-  
+
   // MARK: lifecycle
   func moduleDidForeground(_ module: AnyObject) {
     foregroundedModule = module
@@ -264,9 +262,9 @@ class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   func registerModuleToReceiveNotification(_ module: ScreenOrientationModule) {
     notificationListeners.append(module)
   }
-  
+
   func unregisterModuleFromReceivingNotification(_ module: ScreenOrientationModule) {
-    for i in (0..<notificationListeners.count).reversed(){
+    for i in (0..<notificationListeners.count).reversed() {
       if notificationListeners[i] === module || notificationListeners[i] == nil {
         notificationListeners.remove(at: i)
       }
