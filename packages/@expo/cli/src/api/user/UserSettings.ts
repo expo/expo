@@ -14,7 +14,7 @@ export type UserSettingsData = {
   auth?: SessionData | null;
   ignoreBundledBinaries?: string[];
   PATH?: string;
-  /** Last development code signing ID used for `expo run:ios`. */
+  /** Last development code signing ID used for `npx expo run:ios`. */
   developmentCodeSigningId?: string;
   /** Unique user ID which is generated anonymously and can be cleared locally. */
   uuid?: string;

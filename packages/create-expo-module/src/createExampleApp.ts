@@ -99,7 +99,7 @@ async function moveFiles(fromPath: string, toPath: string): Promise<void> {
 }
 
 /**
- * Adds missing configuration that are required to run `expo prebuild`.
+ * Adds missing configuration that are required to run `npx expo prebuild`.
  */
 async function addMissingAppConfigFields(appPath: string, data: SubstitutionData): Promise<void> {
   const appConfigPath = path.join(appPath, 'app.json');

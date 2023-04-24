@@ -151,7 +151,7 @@ after the initial reading, which means you can use it to perform actions _during
 If possible, you should attempt to use basic plugins instead of mods, as they're simpler to work with.
 
 - `mods` are omitted from the manifest and **cannot** be accessed via `Updates.manifest`. Mods exist for the sole purpose of modifying native project files during code generation!
-- `mods` can be used to read and write files safely during the `expo prebuild` command. This is how Expo CLI modifies the **Info.plist**, entitlements, xcproj, etc...
+- `mods` can be used to read and write files safely during the `npx expo prebuild` command. This is how Expo CLI modifies the **Info.plist**, entitlements, xcproj, etc...
 - `mods` are platform-specific and should always be added to a platform-specific object:
 
 ```js app.config.js
