@@ -134,7 +134,11 @@ This flow is for projects that need to build and update their Android and iOS ap
 
 ## Branch promotion flow
 
-This flow is an example of a flow for managing versioned releases. It requires a bit more bookkeeping and limits the ability to use auto-runtime version policies (sdkVersion, appVersion). Here are the parts of the deployment process above that make up this flow:
+This flow is an example of a flow for managing versioned releases.
+
+> **warning** This flow requires a bit more bookkeeping and does not support automatic [runtime version policies](https://docs.expo.dev/eas-update/runtime-versions/#setting-runtimeversion) (`"sdkVersion"`, `"appVersion"`, and `"nativeVersion"`). You will need to [manually specify](https://docs.expo.dev/eas-update/runtime-versions/#custom-runtimeversion) your runtimes' versions with this flow.
+
+Here are the parts of the deployment process above that make up this flow:
 
 **Creating builds:** (b) Create builds for production (one per major version) and separate builds for testing.
 
