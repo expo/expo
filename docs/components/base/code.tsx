@@ -207,7 +207,7 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
       }
 
       html = Prism.highlight(html, grammar, lang as Language);
-      if (['properties', 'ruby', 'bash'].includes(lang)) {
+      if (['properties', 'ruby', 'bash', 'yaml'].includes(lang)) {
         html = this.replaceHashCommentsWithAnnotations(html);
       } else if (['xml', 'html'].includes(lang)) {
         html = this.replaceXmlCommentsWithAnnotations(html);
