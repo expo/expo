@@ -14,7 +14,7 @@ jest.mock('react-native/Libraries/Core/Devtools/symbolicateStackTrace', () =>
 );
 
 jest.mock('expo-constants', () => ({
-  manifest: {
+  expoGoConfig: {
     developer: {
       projectRoot: '/home/test/project',
     },
@@ -232,18 +232,18 @@ describe(`without stack trace support in Expo CLI`, () => {
   let originalProjectRoot;
 
   beforeAll(() => {
-    if (!Constants.manifest?.developer) {
-      throw new Error('Constants.manifest.developer is not defined');
+    if (!Constants.expoGoConfig?.developer) {
+      throw new Error('Constants.expoGoConfig.developer is not defined');
     }
-    originalProjectRoot = Constants.manifest.developer.projectRoot;
-    delete Constants.manifest.developer.projectRoot;
+    originalProjectRoot = Constants.expoGoConfig.developer.projectRoot;
+    delete Constants.expoGoConfig.developer.projectRoot;
   });
 
   afterAll(() => {
-    if (!Constants.manifest?.developer) {
-      throw new Error('Constants.manifest.developer is not defined');
+    if (!Constants.expoGoConfig?.developer) {
+      throw new Error('Constants.expoGoConfig.developer is not defined');
     }
-    Constants.manifest.developer.projectRoot = originalProjectRoot;
+    Constants.expoGoConfig.developer.projectRoot = originalProjectRoot;
   });
 
   it(`doesn't capture a stack trace`, async () => {

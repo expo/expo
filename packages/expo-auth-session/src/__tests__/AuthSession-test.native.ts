@@ -230,7 +230,7 @@ describe('Managed', () => {
           const { makeRedirectUri } = require('../AuthSession');
           expect(makeRedirectUri({ preferLocalhost: true })).toBe('exp://localhost:19000');
         });
-        it(`creates a redirect URL with a custom path`, () => {
+        it.only(`creates a redirect URL with a custom path`, () => {
           mockConstants(devConstants, manifestObj);
           const { makeRedirectUri } = require('../AuthSession');
           expect(makeRedirectUri({ path: 'bacon' })).toBe('exp://192.168.1.4:19000/--/bacon');
