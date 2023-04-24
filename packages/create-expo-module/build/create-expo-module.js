@@ -53,6 +53,11 @@ async function getCorrectLocalDirectory(targetOrSlug) {
  * @param command An object from `commander`.
  */
 async function main(target, options) {
+    if (options.local) {
+        console.log();
+        console.log(`${chalk_1.default.blue('Local modules are created in the ')}${chalk_1.default.blue.bold.italic('modules')} ${chalk_1.default.blue('directory in the root of your project and should not be moved.')}`);
+        console.log();
+    }
     const slug = await askForPackageSlugAsync(target, options.local);
     const targetDir = options.local
         ? await getCorrectLocalDirectory(target || slug)
@@ -315,6 +320,8 @@ function printFurtherInstructions(targetDir, packageManager, includesExample) {
     console.log(`Visit ${chalk_1.default.blue.bold(DOCS_URL)} for the documentation on Expo Modules APIs`);
 }
 function printFurtherLocalInstructions(slug, name) {
+    console.log();
+    console.log(`${chalk_1.default.blue('Module was created in ')}${chalk_1.default.blue.bold.italic(`modules/${slug}`)}.`);
     console.log(`You can now import this module inside your application:`);
     console.log();
     console.log(chalk_1.default.blue(`import { hello } from '${slug}';`));

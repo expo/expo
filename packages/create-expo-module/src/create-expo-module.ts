@@ -74,6 +74,15 @@ async function getCorrectLocalDirectory(targetOrSlug: string) {
  * @param command An object from `commander`.
  */
 async function main(target: string | undefined, options: CommandOptions) {
+  if (options.local) {
+    console.log();
+    console.log(
+      `${chalk.blue('Local modules are created in the ')}${chalk.blue.bold.italic(
+        'modules'
+      )} ${chalk.blue('directory in the root of your project and should not be moved.')}`
+    );
+    console.log();
+  }
   const slug = await askForPackageSlugAsync(target, options.local);
   const targetDir = options.local
     ? await getCorrectLocalDirectory(target || slug)
@@ -403,6 +412,10 @@ function printFurtherInstructions(
 }
 
 function printFurtherLocalInstructions(slug: string, name: string) {
+  console.log();
+  console.log(
+    `${chalk.blue('Module was created in ')}${chalk.blue.bold.italic(`modules/${slug}`)}.`
+  );
   console.log(`You can now import this module inside your application:`);
   console.log();
   console.log(chalk.blue(`import { hello } from '${slug}';`));
