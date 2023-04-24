@@ -24,6 +24,7 @@ import { ensureLoggedInAsync } from '../api/user/actions';
 import { Actor } from '../api/user/user';
 import { AppByIdQuery, Permission } from '../graphql/generated';
 import * as Log from '../log';
+import { learnMore } from '../utils/link';
 import { CommandError } from './errors';
 
 export type CodeSigningInfo = {
@@ -181,7 +182,11 @@ async function getExpoRootDevelopmentCodeSigningInfoAsync(
   // can't check for scope key validity since scope key is derived on the server from projectId and we may be offline.
   // we rely upon the client certificate check to validate the scope key
   if (!easProjectId) {
-    Log.warn('No project ID specified in app.json, unable to sign manifest');
+    Log.warn(
+      `Expo Application Services (EAS) is not configured for your project. Configuring EAS enables a more secure development experience amongst many other benefits. ${learnMore(
+        'https://docs.expo.dev/eas/'
+      )}`
+    );
     return null;
   }
 
