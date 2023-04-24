@@ -4,7 +4,7 @@ description: A reference of configuration options for custom workflows with EAS 
 hideFromSearch: true
 ---
 
-Creating custom workflows for EAS Build helps customize the build process by adding your workflows.
+Creating custom workflows for EAS Build helps customize the build process for your project.
 
 ## YAML syntax for workflows
 
@@ -18,7 +18,7 @@ Defined to describe a custom workflow. All config options to create a workflow a
 
 The name of your workflow that is used to identify the workflow in the build logs. EAS Build uses this property to display the name of your workflow in the dashboard.
 
-For example, the workflow's name is "Run tests":
+For example, the workflow's name is `Run tests`:
 
 ```yaml
 build:
@@ -33,7 +33,7 @@ build:
 
 ### `steps`
 
-Steps are used to describe a list of actions either in the form of commands or functions. These actions are executed when a workflow is triggered. You can define single or multiple steps in a workflow. It is **required** to define at least one step per workflow.
+Steps are used to describe a list of actions either in the form of commands or function calls. These actions are executed when a workflow runs on EAS Build. You can define single or multiple steps in a workflow. However, it is **required** to define at least one step per workflow.
 
 Each step is configured with the following properties:
 
@@ -52,7 +52,7 @@ build:
     # @end #
 ```
 
-You can also use `steps.run` to execute inline bash shell commands:
+You can also use `steps[].run` to execute single or multiline shell commands:
 
 ```yaml
 build:
@@ -60,6 +60,9 @@ build:
   steps:
     # @info #
     - run: echo "Hello world"
+    - run: |
+        echo "Multiline"
+        echo "bash commands"
     # @end #
 ```
 
@@ -100,13 +103,13 @@ build:
     # @end #
 ```
 
-#### `steps[].name`
+#### `steps[].run.name`
 
 The name that is used in build logs to display the name of the step.
 
-#### `steps[].command`
+#### `steps[].run.command`
 
-The `command` defines a custom shell command to run when a step is executed. It is **required** to define a command for each step. It can be a multiline bash shell command:
+The `command` defines a custom shell command to run when a step is executed. It is **required** to define a command for each step. It can be a multiline shell command:
 
 ```yaml
 build:
@@ -121,9 +124,9 @@ build:
         # @end #
 ```
 
-#### `steps[].working_directory`
+#### `steps[].run.working_directory`
 
-The `working_directory` is used to define an existing directory from the project's root directory. For example, a step is created to list all the assets inside the **assets** directory, which is a directory in your Expo project. The `working_directory` is set to `assets`:
+The `working_directory` is used to define an existing directory from the project's root directory. After an existing path is defined in a step, using it changes the current directory for that step. For example, a step is created to list all the assets inside the **assets** directory, which is a directory in your Expo project. The `working_directory` is set to `assets`:
 
 ```yaml
 build:
@@ -137,24 +140,24 @@ build:
         command: ls -la
 ```
 
-#### `steps[].shell`
+#### `steps[].run.shell`
 
-Used to define the default executable shell for a system. For example, the default shell is set to the system's shell:
+Used to define the default executable shell for a step. For example, the step's shell is set to `/bin/sh`:
 
 ```yaml
 build:
   name: Demo
   steps:
     - run:
-      # @info #
-      shell: /bin/sh
-      # @end #
-      command: |
-        echo "Steps can use another shell"
-        ps -p $$
+        # @info #
+        shell: /bin/sh
+        # @end #
+        command: |
+          echo "Steps can use another shell"
+          ps -p $$
 ```
 
-#### `steps[].inputs`
+#### `steps[].run.inputs`
 
 Input values are provided to a step. For example, you can use `input` to provide a value:
 
@@ -163,39 +166,123 @@ build:
   name: Demo
   steps:
     - run:
-      name: Say Hi
-      # @info #
-      inputs:
-        name: Expo
-      # @end #
-      command: echo "Hi, ${ inputs.name }!"
+        name: Say Hi
+        # @info #
+        inputs:
+          name: Expo
+        # @end #
+        command: echo "Hi, ${ inputs.name }!"
 ```
 
-#### `steps[].outputs`
+#### `steps[].run.outputs`
 
-An output value is expected during a step. For example, a function has an output value of `Hello world`:
+An output value is expected during a step. For example, a step has an output value of `Hello world`:
 
 ```yaml
 build:
   name: Demo
   steps:
     - run:
-      name: Produce output
-      # @info #
-      outputs: [value]
-      # @end #
-      command: |
-        echo "Producing output for another step"
-        set-output value "Output from another step..."
+        name: Produce output
+        # @info #
+        outputs: [value]
+        # @end #
+        command: |
+          echo "Producing output for another step"
+          set-output value "Output from another step..."
+```
+
+#### `steps[].run.outputs.required`
+
+An output value can use a boolean to indicate if the output value is required or not. For example, a function does not have a required output value:
+
+```yaml
+build:
+  name: Demo
+  steps:
+    - run:
+        name: Produce another output
+        id: id456
+        # @info #
+        outputs:
+          - required_param
+          - name: optional_param
+            required: false
+        # @end #
+        command: |
+          echo "Producing more output"
+          set-output required_param "abc 123 456"
+```
+
+#### `steps[].run.id`
+
+Defining an `id` for a step allows:
+
+- Calling the same function that produces one or more outputs multiple times
+- Using the output from one step to another
+
+#### Call the same function one or more times
+
+For example, the following function generates a random number:
+
+```yaml
+functions:
+  random:
+    name: Generate random number
+    outputs: [value]
+    command: set-output value `random_number`
+```
+
+In a workflow, let's use the `random` function to generate two random numbers and print them:
+
+```yaml
+build:
+  name: Functions Demo
+  steps:
+    - random:
+        id: random_1
+    - random:
+        id: random_2
+    - run:
+        name: Print random numbers
+        inputs:
+          random_1: ${ steps.random_1.value }
+          random_2: ${ steps.random_2.value }
+        command: |
+          echo "${ inputs.random_1 }"
+          echo "${ inputs.random_2 }"
+```
+
+#### Use output from one step to another
+
+For example, the following workflow demonstrates how to use output from one step to another:
+
+```yaml
+build:
+  name: Outputs demo
+  steps:
+    - run:
+        name: Produce output
+        id: id123 # <---- !!!
+        outputs: [foo]
+        command: |
+          echo "Producing output for another step"
+          set-output foo bar
+    - run:
+        name: Use output from another step
+        inputs:
+          foo: ${ steps.id123.foo }
+        command: |
+          echo "foo = \"${ inputs.foo }\""
 ```
 
 ## `functions`
 
 Defined to describe a reusable function that can be used in a workflow. All config options to create a function are specified with the following properties:
 
-### `functions.function_name`
+### `functions.[function_name]`
 
-The name of your function that is used to identify the function in the `build.steps`. For example, you can define a function with the name `greetings`:
+The `[function_name]` is the name of a function that you define to identify it in the `build.steps`. For example, you can define a function with the name `greetings`:
 
 {/* prettier-ignore */}
 ```yaml
@@ -206,7 +293,7 @@ functions:
     name: Say Hi!
 ```
 
-### `functions.function_name.name`
+### `functions.[function_name].name`
 
 The name that is used in build logs to display the name of the function. For example, a function with the display name `Say Hi!`:
 
@@ -222,11 +309,11 @@ functions:
 {/* `platforms` */}
 {/* Name of the platform that a specific function should get executed. `linux` is used for Android and `darwin` for iOS. If not specified, the function is executed for both platforms when the appropriate build runs for each platform. */}
 
-### `function.function_name.inputs`
+### `functions.[function_name].inputs`
 
 Input values are provided to a function.
 
-#### `function.function_name.inputs[].name`
+#### `functions.[function_name].inputs[].name`
 
 The name of the input value. It is used as an identifier to access the input value such as in bash command interpolation.
 
@@ -308,7 +395,7 @@ functions:
     command: echo "${ inputs.greeting }, ${ inputs.name }!"
 ```
 
-### `function.function_name.outputs`
+### `functions.[function_name].outputs`
 
 An output value is expected from a function. For example, a function has an output value of `Hello world`:
 
@@ -330,7 +417,7 @@ The name of the output value. It is used as an identifier to access the output v
 functions:
   greetings:
     name: Say Hi!
-    inputs:
+    outputs:
       # @info #
       - name: name
       # @end #
@@ -351,7 +438,7 @@ functions:
         # @end #
 ```
 
-### `function.function_name.command`
+### `functions.[function_name].command`
 
 Used to define the command to run when a function is executed. It is **required** to define a command for each reusable function. For example, the command `echo "Hello world"` is used to print a message:
 
@@ -364,9 +451,9 @@ functions:
     # @end #
 ```
 
-### `function.function.name.shell`
+### `functions.[function_name].shell`
 
-Used to define the default executable shell for a system. For example, the default shell is set to the system's shell:
+Used to define the default executable shell for a step where a function is executed. For example, the step's shell is set to `/bin/sh`:
 
 ```yaml
 functions:
@@ -436,3 +523,45 @@ build:
 ```
 
 > **info** **Tip:** `build.steps` can execute multiple reusable `functions` sequentially.
+
+## Override values in a `build`
+
+You can override values for following properties:
+
+- `working_directory`
+- `name`
+- `shell`
+
+For example, a reusable function called `list_files`:
+
+```yaml
+functions:
+  # @info #
+  list_files:
+    name: List files
+    command: ls -la
+  # @end #
+```
+
+When `list_files` is called in a workflow, it lists all files in the root directory of a project:
+
+```yaml
+build:
+  name: List files
+  # @info #
+  steps:
+    - list_files
+  # @end #
+```
+
+You can use the `working_directory` property to override the behavior in the function call to list the files in a different directory by specifying the path to that directory:
+
+```yaml
+build:
+  name: List files
+    steps:
+      # @info #
+      - list_files:
+        working_directory: /a/b/c
+      # @end #
+```
