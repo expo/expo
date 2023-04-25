@@ -37,10 +37,11 @@ const IGNORES_PATHS = [
 ];
 // Url to the documentation on Expo Modules
 const DOCS_URL = 'https://docs.expo.dev/modules';
+const FYI_LOCAL_DIR = 'https://expo.fyi/expo-module-local-autolinking.md';
 async function getCorrectLocalDirectory(targetOrSlug) {
     const packageJsonPath = await (0, find_up_1.default)('package.json', { cwd: CWD });
     if (!packageJsonPath) {
-        console.log(chalk_1.default.red.bold('⚠️ This command should  be run inside your Expo project when run with the --local flag.'));
+        console.log(chalk_1.default.red.bold('⚠️ This command should be run inside your Expo project when run with the --local flag.'));
         console.log(chalk_1.default.red('For native modules to autolink correctly, you need to place them in the `modules` directory in the root of the project.'));
         return null;
     }
@@ -55,8 +56,7 @@ async function getCorrectLocalDirectory(targetOrSlug) {
 async function main(target, options) {
     if (options.local) {
         console.log();
-        console.log(`${chalk_1.default.gray('The local module will be created in the ')}${chalk_1.default.gray.bold.italic('modules')} ${chalk_1.default.gray('directory in the root of your project and should not be moved.')}` // TODO: learn more
-        );
+        console.log(`${chalk_1.default.gray('The local module will be created in the ')}${chalk_1.default.gray.bold.italic('modules')} ${chalk_1.default.gray('directory in the root of your project. Learn more: ')}${chalk_1.default.gray.bold(FYI_LOCAL_DIR)}`);
         console.log();
     }
     const slug = await askForPackageSlugAsync(target, options.local);
@@ -323,8 +323,9 @@ function printFurtherInstructions(targetDir, packageManager, includesExample) {
 }
 function printFurtherLocalInstructions(slug, name) {
     console.log();
-    console.log(`You can now import this module inside your application:`);
-    console.log(`${chalk_1.default.gray.italic(`import { hello } from '${slug}';`)}`);
+    console.log(`You can now import this module inside your application.`);
+    console.log(`For example, you can add this line to your App.js or App.tsx file:`);
+    console.log(`${chalk_1.default.gray.italic(`import { hello } from './modules/${slug}';`)}`);
     console.log();
     console.log(`Learn more on Expo Modules APIs: ${chalk_1.default.blue.bold(DOCS_URL)}`);
     console.log(chalk_1.default.yellow(`Remember you need to rebuild your development client or reinstall pods to see the changes.`));
