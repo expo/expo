@@ -44,19 +44,10 @@ If you have an **ios** directory in your project that you created using `npx exp
 > **Note:**
 > If you're using a development client, you need to rebuild your development client any time you want to use new native code.
 
-> **Warning:**
-> If you override the `paths` property in `tsconfig.json` or are using Expo SDK version below `48.0.11`, you need to include the following wildcard in [the paths config](https://www.typescriptlang.org/tsconfig#paths).
->
-> ```
-> "paths": {
->   "*": ["./modules/*"]
-> }
-> ```
-
-Now, import the module in your application:
+Now, import the module in your application, for example in `App.js` or `App.tsx`:
 
 ```js
-import { hello } from 'my-module';
+import { hello } from './modules/my-module';
 ```
 
 To run your app locally, run the `prebuild` command and then compile the app:
@@ -74,6 +65,9 @@ To run your app locally, run the `prebuild` command and then compile the app:
 />
 
 Congratulations! You have created a local Expo module. You can now start working on it.
+
+> **Note:**
+> You can also use absolute import paths [with some configuration changes](https://expo.fyi/absolute-path-expo-modules.md).
 
 </Step>
 
