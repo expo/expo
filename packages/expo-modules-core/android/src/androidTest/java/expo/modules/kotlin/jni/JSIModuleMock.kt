@@ -23,7 +23,12 @@ internal inline fun withJSIInterop(
   block: JSIInteropModuleRegistry.(methodQueue: TestScope) -> Unit
 ) {
   val appContextMock = mockk<AppContext>()
+
   val methodQueue = TestScope()
+  every { appContextMock.modulesQueue } answers { methodQueue }
+  every { appContextMock.mainQueue } answers { methodQueue }
+  every { appContextMock.backgroundCoroutineScope } answers { methodQueue }
+
   val registry = ModuleRegistry(WeakReference(appContextMock)).apply {
     modules.forEach {
       register(it)
@@ -31,8 +36,6 @@ internal inline fun withJSIInterop(
   }
   val sharedObjectRegistry = SharedObjectRegistry()
   every { appContextMock.registry } answers { registry }
-  every { appContextMock.modulesQueue } answers { methodQueue }
-  every { appContextMock.mainQueue } answers { methodQueue }
   every { appContextMock.sharedObjectRegistry } answers { sharedObjectRegistry }
 
   val jsiIterop = JSIInteropModuleRegistry(appContextMock).apply {
