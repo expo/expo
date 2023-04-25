@@ -44,7 +44,7 @@ A cross-platform, performant image component for React Native and Expo.
 
 Add the package to your dependencies with the following commands:
 
-```sh
+```
 npx expo install expo-image
 npx pod-install
 ```

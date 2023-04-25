@@ -242,7 +242,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 
 ## Add the package to your dependencies
 
-```sh
+```
 npx expo install expo-splash-screen
 ```
 

@@ -13,7 +13,7 @@ You must ensure that you have [installed and configured the `react-native-unimod
 
 ### Add the package to your dependencies
 
-```sh
+```
 npx expo install expo-in-app-purchases
 ```
 

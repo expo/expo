@@ -8,7 +8,7 @@ Please refer to the [API documentation for the latest stable release](https://do
 
 ## Installation
 
-```sh
+```
 npx expo install expo-checkbox
 ```
 

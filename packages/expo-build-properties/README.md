@@ -9,7 +9,7 @@
 
 ### Installation
 
-```sh
+```
 npx expo install expo-build-properties
 ```
 
