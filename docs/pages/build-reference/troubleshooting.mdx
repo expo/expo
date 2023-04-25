@@ -63,7 +63,7 @@ Armed with your error logs, you can often start to fix your build, or you can se
 
 Monorepos are incredibly useful but they do introduce their own set of problems. A monorepo that you have set up to work with `expo build` will not necessarily work with `eas build`.
 
-With EAS Build, it's necessary to upload the entire monorepo to the builders, set it up, and run the build; but, on `expo build` you only had to be able to build the JavaScript bundle locally and upload that to the builder.
+It's necessary to upload the entire monorepo to the EAS Build builders, set it up, and run the build. However, on `expo build` you only had to be able to build the JavaScript bundle locally and upload that to the builder.
 
 EAS Build is more like a typical CI service in that we need the source code, rather than a compiled JavaScript bundle and manifest. EAS Build has first-class support for Yarn workspaces, and [your success may vary when using other monorepo tools](/build-reference/limitations).
 
@@ -79,7 +79,7 @@ This can often be a sign that your app bundle is extremely large, which will mak
 
 To determine how large your bundle is and to see a breakdown of where the size comes from, use [react-native-bundle-visualizer](https://github.com/IjzerenHein/react-native-bundle-visualizer).
 
-It's not yet possible to increase memory limits on your build workers, [only one worker configuration is currently available](/build-reference/limitations).
+It's not yet possible to increase memory limits on your EAS Build builders, [only one builder configuration is currently available](/build-reference/limitations).
 
 </Collapsible>
 
