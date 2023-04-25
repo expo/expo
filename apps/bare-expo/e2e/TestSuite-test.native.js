@@ -3,7 +3,7 @@ import { by, device, element, expect, waitFor } from 'detox';
 import { sleepAsync } from './Utils';
 import { expectResults } from './utils/report';
 
-const TESTS = [
+export const TESTS = [
   'Basic',
   // 'Asset',
   // 'FileSystem',
@@ -35,12 +35,16 @@ describe('test-suite', () => {
       `passes ${testName}`,
       async () => {
         const platform = device.getPlatform();
+        const launchArgs = {
+          EXDevMenuIsOnboardingFinished: true,
+        };
+        if (platform === 'android') {
+          launchArgs['class'] = 'dev.expo.payments.DetoxTest';
+        }
         await device.launchApp({
           newInstance: true,
           url: `bareexpo://test-suite/run?tests=${testName}`,
-          launchArgs: {
-            EXDevMenuIsOnboardingFinished: true,
-          },
+          launchArgs,
         });
 
         const launchWaitingTime = platform === 'ios' ? 1000 : 5000;
