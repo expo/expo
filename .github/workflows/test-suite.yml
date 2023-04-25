@@ -176,14 +176,7 @@ jobs:
         working-directory: apps/bare-expo
       - name: 🛠️ Generate dynamic macros
         run: expotools android-generate-dynamic-macros --configuration release --bare
-      - name: 📸 Restore apk cache
-        uses: actions/cache@v3
-        id: cache-apk
-        with:
-          key: bareexpo-apk
-          path: apps/bare-expo/android/app/build/outputs/apk
       - name: 🏗️ Build Android project
-        if: steps.cache-apk.outputs.cache-hit != 'true'
         run: ./gradlew -DtestBuildType=release :app:assembleRelease :app:assembleAndroidTest --no-daemon
         working-directory: apps/bare-expo/android
         timeout-minutes: 35

@@ -4,11 +4,14 @@
 
 ### 🛠 Breaking changes
 
+- Add support for config.updates.useClassicUpdates defaulting behavior. ([#22169](https://github.com/expo/expo/pull/22169) by [@wschurman](https://github.com/wschurman))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
 - Add missing updates.checkAutomatically values. ([#22119](https://github.com/expo/expo/pull/22119) by [@douglowder](https://github.com/douglowder))
+- Default to `['dangerous']` sorting on arbitrary platforms. ([#22224](https://github.com/expo/expo/pull/22224) by [@byCedric](https://github.com/byCedric))
 
 ### 💡 Others
 

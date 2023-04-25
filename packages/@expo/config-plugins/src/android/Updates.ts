@@ -99,7 +99,7 @@ export function setUpdatesConfig(
   addMetaDataItemToMainApplication(
     mainApplication,
     Config.ENABLED,
-    String(getUpdatesEnabled(config))
+    String(getUpdatesEnabled(config, username))
   );
   addMetaDataItemToMainApplication(
     mainApplication,
@@ -265,7 +265,7 @@ export function isMainApplicationMetaDataSynced(
   return (
     getUpdateUrl(config, username) ===
       getMainApplicationMetaDataValue(androidManifest, Config.UPDATE_URL) &&
-    String(getUpdatesEnabled(config)) ===
+    String(getUpdatesEnabled(config, username)) ===
       getMainApplicationMetaDataValue(androidManifest, Config.ENABLED) &&
     String(getUpdatesTimeout(config)) ===
       getMainApplicationMetaDataValue(androidManifest, Config.LAUNCH_WAIT_MS) &&
