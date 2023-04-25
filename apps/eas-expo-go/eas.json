@@ -78,6 +78,7 @@
         "EAS_BUILD_PROFILE": "release-client"
       },
       "android": {
+        "autoIncrement": "versionCode",
         "cache": {
           "disabled": true
         },
@@ -85,6 +86,7 @@
         "gradleCommand": ":app:bundleVersionedRelease"
       },
       "ios": {
+        "autoIncrement": "buildNumber",
         "resourceClass": "m-large",
         "cache": {
           "disabled": true
@@ -103,7 +105,7 @@
       },
       "android": {
         "serviceAccountKeyPath": "./credentials/secrets/android-service-account-key.json",
-        "track": "internal"
+        "track": "production"
       }
     }
   }

@@ -101,10 +101,6 @@ async function iosBuildAndSubmitAsync() {
     `pass:${p12KeystorePassword}`,
   ]);
 
-  // TODO
-  // - Enable auto-increment on release-client build profile
-  // - Add --auto-submit option
-
   await fs.writeFile(
     path.join(projectDir, 'credentials.json'),
     JSON.stringify({
@@ -133,10 +129,14 @@ async function iosBuildAndSubmitAsync() {
     })
   );
 
-  await spawnAsync('eas', ['build', '--platform', 'ios', '--profile', RELEASE_BUILD_PROFILE], {
-    cwd: projectDir,
-    stdio: 'inherit',
-  });
+  await spawnAsync(
+    'eas',
+    ['build', '--platform', 'ios', '--profile', RELEASE_BUILD_PROFILE, '--auto-submit'],
+    {
+      cwd: projectDir,
+      stdio: 'inherit',
+    }
+  );
 }
 
 async function androidBuildAndSubmitAsync() {
@@ -160,11 +160,6 @@ async function androidBuildAndSubmitAsync() {
     releaseSecretsPath,
   ]);
 
-  // TODO:
-  // - Change track to production (using internal track for testing)
-  // - Enable auto-increment on release-client build profile
-  // - Add --auto-submit option
-
   await fs.writeFile(
     path.join(projectDir, 'credentials.json'),
     JSON.stringify({
@@ -179,12 +174,16 @@ async function androidBuildAndSubmitAsync() {
     })
   );
 
-  await spawnAsync('eas', ['build', '--platform', 'android', '--profile', RELEASE_BUILD_PROFILE], {
-    cwd: projectDir,
-    stdio: 'inherit',
-    env: {
-      ...process.env,
-      EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID: 'host.exp.exponent',
-    },
-  });
+  await spawnAsync(
+    'eas',
+    ['build', '--platform', 'android', '--profile', RELEASE_BUILD_PROFILE, '--auto-submit'],
+    {
+      cwd: projectDir,
+      stdio: 'inherit',
+      env: {
+        ...process.env,
+        EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID: 'host.exp.exponent',
+      },
+    }
+  );
 }
