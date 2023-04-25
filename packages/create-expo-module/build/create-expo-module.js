@@ -53,6 +53,12 @@ async function getCorrectLocalDirectory(targetOrSlug) {
  * @param command An object from `commander`.
  */
 async function main(target, options) {
+    if (options.local) {
+        console.log();
+        console.log(`${chalk_1.default.gray('The local module will be created in the ')}${chalk_1.default.gray.bold.italic('modules')} ${chalk_1.default.gray('directory in the root of your project and should not be moved.')}` // TODO: learn more
+        );
+        console.log();
+    }
     const slug = await askForPackageSlugAsync(target, options.local);
     const targetDir = options.local
         ? await getCorrectLocalDirectory(target || slug)
@@ -123,11 +129,12 @@ async function main(target, options) {
         });
     }
     console.log();
-    console.log('✅ Successfully created Expo module');
     if (options.local) {
+        console.log(`✅ Successfully created Expo module in ${chalk_1.default.bold.italic(`modules/${slug}`)}`);
         printFurtherLocalInstructions(slug, data.project.moduleName);
     }
     else {
+        console.log('✅ Successfully created Expo module');
         printFurtherInstructions(targetDir, packageManager, options.example);
     }
 }
@@ -312,14 +319,14 @@ function printFurtherInstructions(targetDir, packageManager, includesExample) {
         commands.forEach((command) => console.log(chalk_1.default.gray('>'), chalk_1.default.bold(command)));
         console.log();
     }
-    console.log(`Visit ${chalk_1.default.blue.bold(DOCS_URL)} for the documentation on Expo Modules APIs`);
+    console.log(`Learn more on Expo Modules APIs: ${chalk_1.default.blue.bold(DOCS_URL)}`);
 }
 function printFurtherLocalInstructions(slug, name) {
+    console.log();
     console.log(`You can now import this module inside your application:`);
+    console.log(`${chalk_1.default.gray.italic(`import { hello } from '${slug}';`)}`);
     console.log();
-    console.log(chalk_1.default.blue(`import { hello } from '${slug}';`));
-    console.log();
-    console.log(`Visit ${chalk_1.default.blue.bold(DOCS_URL)} for the documentation on Expo Modules APIs`);
+    console.log(`Learn more on Expo Modules APIs: ${chalk_1.default.blue.bold(DOCS_URL)}`);
     console.log(chalk_1.default.yellow(`Remember you need to rebuild your development client or reinstall pods to see the changes.`));
 }
 const program = new commander_1.Command();
