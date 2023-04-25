@@ -52,6 +52,7 @@ class DocumentPickerModule : Module() {
       }
 
       val promise = pendingPromise!!
+      pendingPromise = null
 
       if (resultCode == Activity.RESULT_OK) {
         intent?.data?.let { uri ->
@@ -79,7 +80,6 @@ class DocumentPickerModule : Module() {
           DocumentPickerCancelled(type = "cancel")
         )
       }
-      pendingPromise = null
     }
   }
 
