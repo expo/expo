@@ -24,26 +24,26 @@ For bare React Native projects, you must ensure that you have [installed and con
 
 ### Add the package to your npm dependencies
 
-```
-expo install expo-gl
+```sh
+npx expo install expo-gl
 ```
 
 ### Compatibility
 
 To use version `11.2.0` or newer of `expo-gl` you will need to use at least version `0.68.0` of React Native.
 
-| expo-gl            | react-native         |
-| ------------------ | -------------------- |
-| <=8.x.x            | \*                   |
-| >=9.0.0 && <11.2.0 | >=0.63.1 &&  <0.65.0 |
-| >=11.2.0           | >=0.68.0             |
+| expo-gl            | react-native        |
+| ------------------ | ------------------- |
+| <=8.x.x            | \*                  |
+| >=9.0.0 && <11.2.0 | >=0.63.1 && <0.65.0 |
+| >=11.2.0           | >=0.68.0            |
 
 To use reanimated worklets you will need compatible version of `react-native-reanimated`.
 
-| expo-gl            | react-native-reanimated |
-| ------------------ | ----------------------- |
-| <11.3.0            | <=2.8.0                 |
-| >=11.3.0           | >2.8.0                  |
+| expo-gl  | react-native-reanimated |
+| -------- | ----------------------- |
+| <11.3.0  | <=2.8.0                 |
+| >=11.3.0 | >2.8.0                  |
 
 ### Configure for iOS
 

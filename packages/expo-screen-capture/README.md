@@ -22,7 +22,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```sh
-expo install expo-screen-capture
+npx expo install expo-screen-capture
 ```
 
 ### Configure for iOS

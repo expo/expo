@@ -17,8 +17,8 @@ For bare React Native projects, you must ensure that you have [installed and con
 
 ### Add the package to your npm dependencies
 
-```
-expo install expo-auth-session expo-random
+```sh
+npx expo install expo-auth-session expo-crypto
 ```
 
 ### Configuration

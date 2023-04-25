@@ -9,8 +9,8 @@
 
 ### Installation
 
-```
-expo install expo-system-ui
+```sh
+npx expo install expo-system-ui
 ```
 
 ### Extra Setup

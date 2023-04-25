@@ -19,8 +19,8 @@ For bare React Native projects, you must ensure that you have [installed and con
 
 ### Add the package to your npm dependencies
 
-```
-expo install expo-tracking-transparency
+```sh
+npx expo install expo-tracking-transparency
 ```
 
 ### Configure for iOS

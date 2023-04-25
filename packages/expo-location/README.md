@@ -24,8 +24,8 @@ For bare React Native projects, you must ensure that you have [installed and con
 
 ### Add the package to your npm dependencies
 
-```
-expo install expo-location
+```sh
+npx expo install expo-location
 ```
 
 ### Configure for iOS
