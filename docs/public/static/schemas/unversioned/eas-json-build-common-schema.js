@@ -124,7 +124,7 @@ export default [
         description: ['Cache key. You can invalidate the cache by changing this value.'],
       },
       {
-        name: 'customPaths',
+        name: 'paths',
         type: 'array',
         description: [
           'List of the paths that will be saved after a successful build and restored at the beginning of the next one. Both absolute and relative paths are supported, where relative paths are resolved from the directory with `eas.json`.',
