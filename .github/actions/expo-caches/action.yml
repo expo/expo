@@ -23,13 +23,6 @@ inputs:
   gradle:
     description: 'Restore Gradle cache'
     required: false
-  avd:
-    description: 'Restore AVD cache'
-    required: false
-  avd-api:
-    description: 'API version used in AVD'
-    default: '31'
-    required: false
   ndk:
     description: 'Restore NDK cache'
     required: false
@@ -70,9 +63,6 @@ outputs:
   native-tests-pods-hit:
     description: 'Returns true, if /apps/native-tests/ios pods cache is up-to-date'
     value: steps.native-tests-pods-cache.outputs.cache-hit
-  avd-hit:
-    description: 'Returns true, if AVD cache is up-to-date'
-    value: steps.avd-cache.outputs.cache-hit
   git-lfs-hit:
     description: 'Returns true, if Git LFS cache is up-to-date'
     value: steps.git-lfs-cache.outputs.cache-hit
@@ -153,27 +143,8 @@ runs:
         key: ${{ runner.os }}-native-tests-pods-${{ hashFiles('apps/native-tests/ios/Podfile.lock') }}
 
     - name: ♻️ Restore Gradle cache
-      if: inputs.avd == 'true' || inputs.ndk == 'true' || inputs.gradle == 'true'
+      if: inputs.ndk == 'true' || inputs.gradle == 'true'
       uses: gradle/gradle-build-action@v2
-
-    - name: ♻️ Restore AVD cache
-      if: inputs.avd == 'true'
-      uses: actions/cache@v3
-      id: avd-cache
-      with:
-        path: |
-          ~/.android/avd/*
-          ~/.android/adb*
-        key: avd-${{ inputs.avd-api }}
-    - name: 📱 Create AVD and generate snapshot for caching
-      if: inputs.avd == 'true' && steps.avd-cache.outputs.cache-hit != 'true'
-      uses: reactivecircus/android-emulator-runner@v2
-      with:
-        api-level: ${{ inputs.avd-api }}
-        avd-name: avd-${{ matrix.api-level }}
-        arch: x86_64
-        force-avd-creation: false
-        script: echo "Generated AVD snapshot for caching."
 
     - name: ♻️ Restore Android NDK from cache
       if: inputs.ndk == 'true'

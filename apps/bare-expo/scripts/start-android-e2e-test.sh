@@ -10,12 +10,6 @@ echo '🔌 Installing APKs'
 adb install -r app/build/outputs/apk/release/app-release.apk
 adb install -r app/build/outputs/apk/androidTest/release/app-release-androidTest.apk
 
-if [[ -n "${CI}" && -n "${GITHUB_ACTION}" ]]; then
-  echo ''
-  echo '💤 Waiting for GitHub CI emulator to warm up'
-  sleep 30
-fi
-
 echo ''
 echo '📷 Starting instrumentation tests'
 LOG_FILE="${CURR_DIR}/../artifacts/instrumentation.log"

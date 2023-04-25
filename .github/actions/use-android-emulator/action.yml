@@ -1,0 +1,54 @@
+name: 'Use Android Emulator'
+description: 'Setup to run script on an Android emulator'
+
+inputs:
+  avd-api:
+    description: 'API version used in AVD'
+    required: false
+    default: '33'
+  avd-name:
+    description: 'Created AVD name'
+    required: true
+  script:
+    description: 'custom script to run - e.g. `./gradlew connectedCheck`'
+    required: false
+    default: ''
+  working-directory:
+    description: 'A custom working directory - e.g. `./android` if your root Gradle project is under the `./android` sub-directory within your repository'
+    required: false
+    default: './'
+
+outputs:
+  avd-hit:
+    description: 'Returns true, if AVD cache is up-to-date'
+    value: steps.avd-cache.outputs.cache-hit
+
+runs:
+  using: 'composite'
+  steps:
+    - name: 💿 Setup Android Emulator
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: ${{ inputs.avd-api }}
+        avd-name: ${{ inputs.avd-name }}
+        arch: x86_64
+        target: google_apis
+        emulator-build: 9536276
+        emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+        emulator-boot-timeout: 900
+        profile: pixel_6
+        ram-size: 8192MB
+        disk-size: 8192MB
+        heap-size: 2048MB
+        script: |
+          # Wait for emulator to fully ready
+          sleep 20
+          # Try to close SystemUI ANR prompt
+          adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
+          adb shell settings put secure immersive_mode_confirmations confirmed
+          adb shell settings put global window_animation_scale 0.0
+          adb shell settings put global transition_animation_scale 0.0
+          adb shell settings put global animator_duration_scale 0.0
+          adb shell input keyevent 3
+          ${{ inputs.script }}
+        working-directory: ${{ inputs.working-directory }}
