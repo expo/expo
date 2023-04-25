@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix for the "limited" media library permission.
+
 ### 💡 Others
 
 ## 1.2.1 — 2023-04-17
