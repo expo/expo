@@ -14,7 +14,7 @@ jobs:
     runs-on: macos-12
     strategy:
       matrix:
-        api-level: [31]
+        api-level: [33]
     steps:
       - name: 👀 Checkout
         uses: actions/checkout@v3
@@ -40,9 +40,13 @@ jobs:
         uses: ./.github/actions/expo-caches
         id: expo-caches
         with:
+          gradle: 'true'
           yarn-workspace: 'true'
-          avd: 'true'
+      - name: 🤖 Set up android emulator
+        uses: ./.github/actions/use-android-emulator
+        with:
           avd-api: ${{ matrix.api-level }}
+          avd-name: avd-${{ matrix.api-level }}
       - name: 🧶 Install `expo-test-runner`
         run: |
           yarn global add expo-test-runner@$(cat package.json | grep '"expo-test-runner": "[0-9]*\.[0-9]*\.[0-9]*' | head -n 1 | awk '{print $2}' | sed 's/"//g; s/,//g')
