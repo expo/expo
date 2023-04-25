@@ -1,6 +1,7 @@
 package expo.modules.updates.logging
 
 import android.os.Bundle
+import androidx.test.internal.runner.junit4.AndroidJUnit4ClassRunner
 import androidx.test.platform.app.InstrumentationRegistry
 import expo.modules.core.Promise
 import expo.modules.core.logging.LogType
@@ -8,13 +9,14 @@ import expo.modules.core.logging.PersistentFileLog
 import expo.modules.updates.UpdatesModule
 import expo.modules.updates.logging.UpdatesLogger.Companion.EXPO_UPDATES_LOGGING_TAG
 import expo.modules.updates.logging.UpdatesLogger.Companion.MAX_FRAMES_IN_STACKTRACE
-import junit.framework.TestCase
 import org.junit.Assert
 import org.junit.Before
 import org.junit.Test
+import org.junit.runner.RunWith
 import java.util.*
 
-class UpdatesLoggingTest : TestCase() {
+@RunWith(AndroidJUnit4ClassRunner::class)
+class UpdatesLoggingTest {
 
   @Before
   fun setup() {
