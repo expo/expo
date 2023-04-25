@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 48.0.13 — 2023-04-25
+
+_This version does not introduce any user-facing changes._
+
 ## 48.0.12 — 2023-04-20
 
 _This version does not introduce any user-facing changes._
