@@ -90,7 +90,7 @@ To use our CocoaPods cache server for your builds set the `EAS_BUILD_DISABLE_COC
 It is typical to not have your project **Podfile.lock** committed to source control when using [prebuild](/workflow/prebuild) to generate your **ios** directory [remotely at build time](/build-reference/ios-builds).
 It can be useful to cache your **Podfile.lock** in order to have deterministic builds, but the tradeoff in this case is that, because you don't use the lockfile during local development, your ability to determine when a change is needed and to update specific dependencies is limited.
 If you cache this file, you may occasionally end up with build errors that require clearing the cache.
-To cache **Podfile.lock**, add **./ios/Podfile.lock** to the `cache.customPaths` list in your build profile in **eas.json**.
+To cache **Podfile.lock**, add **./ios/Podfile.lock** to the `cache.paths` list in your build profile in **eas.json**.
 
 {/* prettier-ignore */}
 ```json eas.json
@@ -98,7 +98,7 @@ To cache **Podfile.lock**, add **./ios/Podfile.lock** to the `cache.customPaths`
   "build": {
     "production": {
       "cache": {
-        "customPaths": ["./ios/Podfile.lock"]
+        "paths": ["./ios/Podfile.lock"]
         /* @hide ... */ /* @end */
       }
       /* @hide ... */ /* @end */
