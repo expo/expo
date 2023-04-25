@@ -6,11 +6,11 @@ Two-factor authentication provides an extra layer of security when logging in to
 
 ## Enabling Two-Factor Authentication (2FA)
 
-You can enable two-factor authentication from your [personal account settings](https://expo.dev/settings).
+You can enable two-factor authentication from your [personal account settings](https://expo.dev/settings#two-factor-auth).
 
 ## Two-Factor Authentication Methods
 
-You can receive 2FA codes through an authenticator app or via SMS message.
+You can receive 2FA codes through an authenticator app.
 
 ### Authenticator Apps
 
@@ -24,15 +24,15 @@ Expo accepts any authenticator app that supports Time-based One-time Passwords (
 
 Expo will provide a QR code to scan with your authenticator app during setup. The app will provide a confirmation code to enter on Expo. Enter the code to finish activating 2FA via your authenticator app.
 
-### SMS Messages
+### SMS Messages (deprecated)
 
-Provide a mobile phone number to receive a short-lived token via SMS. Codes received via SMS will be valid for at least 10 minutes, so you may receive the same code multiple times within this window.
+> **Note** SMS is no longer supported for newly-added two-factor authentication methods. Existing SMS two-factor authentication methods will continue to work, though we suggest switching to an authenticator app as it provides better security.
 
-> If you set an SMS device as your default 2FA method, you will be sent a verification code automatically whenever you take an action that requires a 2FA code.
+Provide a mobile phone number to receive a short-lived token via SMS. Codes received via SMS will be valid for at least 10 minutes, so you may receive the same code multiple times within this window. If you set an SMS device as your default 2FA method, you will be sent a verification code automatically whenever you take an action that requires a 2FA code.
 
 ### Recovery Codes
 
-As part of setting up two-factor authentication on your account you will receive a list of recovery codes. These codes may be used in place of a one-time password if you lose access to the device(s) that have your authenticator app or that you use to receive SMS messages. Each recovery code may only be used once.
+As part of setting up two-factor authentication on your account you will receive a list of recovery codes. These codes may be used in place of a one-time password if you lose access to your authenticator app or SMS device. Each recovery code may only be used once.
 
 If you chose to download your recovery codes when they were generated, they will be found in a file named `expo-recovery-codes.txt`
 
