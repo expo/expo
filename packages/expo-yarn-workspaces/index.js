@@ -57,11 +57,6 @@ exports.createMetroConfiguration = function createMetroConfiguration(projectPath
       // Include .cjs files
       sourceExts: [...defaultConfig.resolver.sourceExts, 'cjs'],
 
-      nodeModulesPaths: [
-        ...defaultConfig.resolver.nodeModulesPaths,
-        path.join(projectPath, 'modules'),
-      ],
-
       // Make the symlinked packages visible to Metro
       extraNodeModules,
 
