@@ -21,13 +21,11 @@ public class DevMenuInternalModule: Module {
     }
 
     AsyncFunction("fetchDataSourceAsync") { (dataSourceId: String, promise: Promise) in
-      for dataSource in DevMenuManager.shared.devMenuDataSources {
-        if dataSource.id == dataSourceId {
-          dataSource.fetchData { data in
-            promise.resolve(data.map { $0.serialize() })
-          }
-          return
+      for dataSource in DevMenuManager.shared.devMenuDataSources where dataSource.id == dataSourceId {
+        dataSource.fetchData { data in
+          promise.resolve(data.map { $0.serialize() })
         }
+        return
       }
 
       throw Exception(name: "ERR_DEVMENU_DATA_SOURCE_FAILED", description: "DataSource \(dataSourceId) not found.")
