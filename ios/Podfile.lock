@@ -1596,7 +1596,9 @@ PODS:
     - ABI48_0_0React-jsi (= 0.71.7)
     - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.7)
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0hermes-engine (0.71.7)
+  - ABI48_0_0hermes-engine (0.71.7):
+    - ABI48_0_0hermes-engine/Pre-built (= 0.71.7)
+  - ABI48_0_0hermes-engine/Pre-built (0.71.7)
   - ABI48_0_0lottie-react-native (5.1.4):
     - ABI48_0_0React-Core
     - lottie-ios (~> 3.4.0)
@@ -3240,7 +3242,7 @@ DEPENDENCIES:
   - ABI48_0_0EXUpdatesInterface (from `./versioned/sdk48/EXUpdatesInterface`)
   - ABI48_0_0FBLazyVector (from `./versioned-react-native/ABI48_0_0/ReactNative/Libraries/FBLazyVector`)
   - ABI48_0_0FBReactNativeSpec (from `./versioned-react-native/ABI48_0_0/ReactNative/React/FBReactNativeSpec`)
-  - ABI48_0_0hermes-engine (from `./versioned-react-native/ABI48_0_0/ReactNative/sdks/hermes-engine`)
+  - ABI48_0_0hermes-engine (from `./versioned-react-native/ABI48_0_0/ReactNative/sdks/hermes-engine/ABI48_0_0hermes-engine.podspec`)
   - ABI48_0_0lottie-react-native (from `./vendored/sdk48/lottie-react-native`)
   - ABI48_0_0RCTRequired (from `./versioned-react-native/ABI48_0_0/ReactNative/Libraries/RCTRequired`)
   - ABI48_0_0RCTTypeSafety (from `./versioned-react-native/ABI48_0_0/ReactNative/Libraries/TypeSafety`)
@@ -4051,7 +4053,7 @@ EXTERNAL SOURCES:
   ABI48_0_0FBReactNativeSpec:
     :path: "./versioned-react-native/ABI48_0_0/ReactNative/React/FBReactNativeSpec"
   ABI48_0_0hermes-engine:
-    :path: "./versioned-react-native/ABI48_0_0/ReactNative/sdks/hermes-engine"
+    :podspec: "./versioned-react-native/ABI48_0_0/ReactNative/sdks/hermes-engine/ABI48_0_0hermes-engine.podspec"
   ABI48_0_0lottie-react-native:
     :path: "./vendored/sdk48/lottie-react-native"
   ABI48_0_0RCTRequired:
@@ -4657,7 +4659,7 @@ SPEC CHECKSUMS:
   ABI48_0_0EXUpdatesInterface: 483c7b433e33745bc96b5438cdce8ed5106d8f88
   ABI48_0_0FBLazyVector: 9bb30a8f9fc54ad86d94298a24b452b8672d102d
   ABI48_0_0FBReactNativeSpec: d4e590927f29394e491a9cbe2e66a1e34e271e77
-  ABI48_0_0hermes-engine: 9c159d20b102ef419a3921b1cf87590c399183dd
+  ABI48_0_0hermes-engine: 918484db47836e0e5a0d1fb5f740107461d068b4
   ABI48_0_0lottie-react-native: e75c2a083fd686dbf0a69602103912b6317815bc
   ABI48_0_0RCTRequired: fd699c3c7a8ce28f606970f10b00231ed288bfed
   ABI48_0_0RCTTypeSafety: 95269fbb0676ed696b07078b2d4566b6b9b35299
