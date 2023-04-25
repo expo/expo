@@ -74,6 +74,15 @@ async function getCorrectLocalDirectory(targetOrSlug: string) {
  * @param command An object from `commander`.
  */
 async function main(target: string | undefined, options: CommandOptions) {
+  if (options.local) {
+    console.log();
+    console.log(
+      `${chalk.gray('The local module will be created in the ')}${chalk.gray.bold.italic(
+        'modules'
+      )} ${chalk.gray('directory in the root of your project and should not be moved.')}` // TODO: learn more
+    );
+    console.log();
+  }
   const slug = await askForPackageSlugAsync(target, options.local);
   const targetDir = options.local
     ? await getCorrectLocalDirectory(target || slug)
@@ -153,10 +162,11 @@ async function main(target: string | undefined, options: CommandOptions) {
   }
 
   console.log();
-  console.log('✅ Successfully created Expo module');
   if (options.local) {
+    console.log(`✅ Successfully created Expo module in ${chalk.bold.italic(`modules/${slug}`)}`);
     printFurtherLocalInstructions(slug, data.project.moduleName);
   } else {
+    console.log('✅ Successfully created Expo module');
     printFurtherInstructions(targetDir, packageManager, options.example);
   }
 }
@@ -399,15 +409,15 @@ function printFurtherInstructions(
     commands.forEach((command) => console.log(chalk.gray('>'), chalk.bold(command)));
     console.log();
   }
-  console.log(`Visit ${chalk.blue.bold(DOCS_URL)} for the documentation on Expo Modules APIs`);
+  console.log(`Learn more on Expo Modules APIs: ${chalk.blue.bold(DOCS_URL)}`);
 }
 
 function printFurtherLocalInstructions(slug: string, name: string) {
+  console.log();
   console.log(`You can now import this module inside your application:`);
+  console.log(`${chalk.gray.italic(`import { hello } from '${slug}';`)}`);
   console.log();
-  console.log(chalk.blue(`import { hello } from '${slug}';`));
-  console.log();
-  console.log(`Visit ${chalk.blue.bold(DOCS_URL)} for the documentation on Expo Modules APIs`);
+  console.log(`Learn more on Expo Modules APIs: ${chalk.blue.bold(DOCS_URL)}`);
   console.log(
     chalk.yellow(
       `Remember you need to rebuild your development client or reinstall pods to see the changes.`
