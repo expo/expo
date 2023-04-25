@@ -323,7 +323,8 @@ function printFurtherInstructions(targetDir, packageManager, includesExample) {
 }
 function printFurtherLocalInstructions(slug, name) {
     console.log();
-    console.log(`You can now import this module inside your application:`);
+    console.log(`You can now import this module inside your application.`);
+    console.log(`For example, you can add this line to your App.js or App.tsx file:`);
     console.log(`${chalk_1.default.gray.italic(`import { hello } from './modules/${slug}';`)}`);
     console.log();
     console.log(`Learn more on Expo Modules APIs: ${chalk_1.default.blue.bold(DOCS_URL)}`);
