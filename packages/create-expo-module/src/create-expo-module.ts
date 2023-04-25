@@ -79,7 +79,7 @@ async function main(target: string | undefined, options: CommandOptions) {
     console.log(
       `${chalk.gray('The local module will be created in the ')}${chalk.gray.bold.italic(
         'modules'
-      )} ${chalk.gray('directory in the root of your project and should not be moved.')}`
+      )} ${chalk.gray('directory in the root of your project and should not be moved.')}` // TODO: learn more
     );
     console.log();
   }
@@ -409,7 +409,7 @@ function printFurtherInstructions(
     commands.forEach((command) => console.log(chalk.gray('>'), chalk.bold(command)));
     console.log();
   }
-  console.log(`Visit ${chalk.blue.bold(DOCS_URL)} for the documentation on Expo Modules APIs`);
+  console.log(`Learn more on Expo Modules APIs: ${chalk.blue.bold(DOCS_URL)}`);
 }
 
 function printFurtherLocalInstructions(slug: string, name: string) {
@@ -417,7 +417,7 @@ function printFurtherLocalInstructions(slug: string, name: string) {
   console.log(`You can now import this module inside your application:`);
   console.log(`${chalk.gray.italic(`import { hello } from '${slug}';`)}`);
   console.log();
-  console.log(`Visit ${chalk.blue.bold(DOCS_URL)} for the documentation on Expo Modules APIs`);
+  console.log(`Learn more on Expo Modules APIs: ${chalk.blue.bold(DOCS_URL)}`);
   console.log(
     chalk.yellow(
       `Remember you need to rebuild your development client or reinstall pods to see the changes.`
