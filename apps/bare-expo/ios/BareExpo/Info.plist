@@ -97,7 +97,7 @@
 		<string>UIInterfaceOrientationLandscapeRight</string>
 	</array>
 	<key>UIViewControllerBasedStatusBarAppearance</key>
-	<true/>
+	<false/>
 	<key>UIRequiresFullScreen</key>
 	<false/>
 	<key>LSApplicationQueriesSchemes</key>
