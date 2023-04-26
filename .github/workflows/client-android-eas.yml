@@ -10,8 +10,6 @@ on:
         options:
           - versioned-client
           - unversioned-client
-          - versioned-client-signed
-          - versioned-client-signed-apk
           - versioned-client-add-sdk
   schedule:
     # 5:20 AM UTC time on every Monday, Wednesday and Friday
