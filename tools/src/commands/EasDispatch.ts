@@ -139,9 +139,11 @@ async function iosBuildAndSubmitAsync() {
       })
     );
   } catch (err) {
-    logger.error(
-      'There was an error when preparing build credentials. Run with EXPO_DEBUG=1 env to see more details.'
-    );
+    if (!isDebug) {
+      logger.error(
+        'There was an error when preparing build credentials. Run with EXPO_DEBUG=1 env to see more details.'
+      );
+    }
     throw err;
   }
 
@@ -190,9 +192,11 @@ async function androidBuildAndSubmitAsync() {
       })
     );
   } catch (err) {
-    logger.error(
-      'There was an error when preparing build credentials. Run with EXPO_DEBUG=1 env to see more details.'
-    );
+    if (!isDebug) {
+      logger.error(
+        'There was an error when preparing build credentials. Run with EXPO_DEBUG=1 env to see more details.'
+      );
+    }
     throw err;
   }
   await spawnAsync(
