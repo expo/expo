@@ -52,6 +52,7 @@ async function iosBuildAndSubmitAsync() {
   const credentialsDir = path.join(projectDir, 'credentials');
   const fastlaneMatchBucketCopyPath = path.join(credentialsDir, 'fastlane-match');
   const releaseSecretsPath = path.join(credentialsDir, 'secrets');
+  const isDarwin = os.platform() === 'darwin';
 
   try {
     await mkdirp(fastlaneMatchBucketCopyPath);
@@ -97,7 +98,7 @@ async function iosBuildAndSubmitAsync() {
       [
         'pkcs12',
         '-export',
-        '-legacy',
+        ...(isDarwin ? [] : ['-legacy']),
         '-out',
         p12KeystorePath,
         '-inkey',
