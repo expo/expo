@@ -49,6 +49,10 @@
 - Add graphql-codegen. ([#21980](https://github.com/expo/expo/pull/21980) by [@wschurman](https://github.com/wschurman))
 - Add graphql generated file to eslintignore. ([#22001](https://github.com/expo/expo/pull/22001) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
+## 0.7.1 - 2023-04-26
+
+_This version does not introduce any user-facing changes._
+
 ## 0.7.0 - 2023-04-13
 
 ### 🎉 New features
