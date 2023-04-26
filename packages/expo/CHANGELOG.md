@@ -16,6 +16,8 @@
 
 ### 💡 Others
 
+- Warn on use of Constants.manifest. ([#22247](https://github.com/expo/expo/pull/22247) by [@wschurman](https://github.com/wschurman))
+
 ### 📚 3rd party library updates
 
 ## 48.0.10 - 2023-04-03
