@@ -24,9 +24,9 @@ Expo accepts any authenticator app that supports Time-based One-time Passwords (
 
 Expo will provide a QR code to scan with your authenticator app during setup. The app will provide a confirmation code to enter on Expo. Enter the code to finish activating 2FA via your authenticator app.
 
-### SMS Messages (deprecated)
+### SMS Messages
 
-> **Note** SMS is no longer supported for newly-added two-factor authentication methods. Existing SMS two-factor authentication methods will continue to work, though we suggest switching to an authenticator app as it provides better security.
+> **warning** **Deprecated:** SMS is no longer supported for newly-added two-factor authentication methods. Existing SMS two-factor authentication methods will continue to work, though we suggest switching to an authenticator app as it provides better security.
 
 Provide a mobile phone number to receive a short-lived token via SMS. Codes received via SMS will be valid for at least 10 minutes, so you may receive the same code multiple times within this window. If you set an SMS device as your default 2FA method, you will be sent a verification code automatically whenever you take an action that requires a 2FA code.
 
