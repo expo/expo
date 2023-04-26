@@ -52,6 +52,10 @@ public final class ComponentData: RCTComponentData {
       log.warn("View manager '\(self.name)' not found")
       return
     }
+    guard let appContext = moduleHolder?.appContext else {
+      log.warn("App context has been lost")
+      return
+    }
     let propsDict = viewManager.propsDict()
     var remainingProps = props
 
@@ -59,7 +63,7 @@ public final class ComponentData: RCTComponentData {
       let newValue = props[key] as Any
 
       // TODO: @tsapeta: Figure out better way to rethrow errors from here.
-      try? prop.set(value: Conversions.fromNSObject(newValue), onView: view)
+      try? prop.set(value: Conversions.fromNSObject(newValue), onView: view, appContext: appContext)
 
       remainingProps.removeValue(forKey: key)
     }
