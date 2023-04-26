@@ -290,6 +290,7 @@ const general = [
       makeSection('Bare React Native', [
         makePage('bare/hello-world.mdx'),
         makePage('bare/installing-expo-modules.mdx'),
+        makePage('bare/using-expo-cli.mdx'),
         makePage('bare/installing-updates.mdx'),
         makePage('bare/using-expo-client.mdx'),
         makePage('bare/updating-your-app.mdx'),
