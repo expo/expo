@@ -1,7 +1,7 @@
 import { css } from '@emotion/react';
 import { theme } from '@expo/styleguide';
 import { breakpoints } from '@expo/styleguide-base';
-import Router, { useRouter } from 'next/router';
+import { useRouter } from 'next/compat/router';
 import { useEffect, useState, createRef } from 'react';
 
 import * as RoutesUtils from '~/common/routes';
@@ -51,7 +51,8 @@ const getCanonicalUrl = (path: string) => {
 
 export default function DocumentationPage(props: Props) {
   const { version } = usePageApiVersion();
-  const { pathname } = useRouter();
+  const router = useRouter();
+  const pathname = router?.pathname ?? '/';
 
   const layoutRef = createRef<DocumentationNestedScrollLayout>();
   const sidebarRightRef = createRef<SidebarRightComponentType>();
@@ -63,7 +64,7 @@ export default function DocumentationPage(props: Props) {
   const sidebarScrollPosition = process.browser ? window.__sidebarScroll : 0;
 
   useEffect(() => {
-    Router.events.on('routeChangeStart', url => {
+    router?.events.on('routeChangeStart', url => {
       if (layoutRef.current) {
         if (
           RoutesUtils.getPageSection(pathname) !== RoutesUtils.getPageSection(url) ||
