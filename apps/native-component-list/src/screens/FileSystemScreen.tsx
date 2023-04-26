@@ -170,8 +170,7 @@ export default class FileSystemScreen extends React.Component<object, State> {
       const callback: FileSystemNetworkTaskProgressCallback<UploadProgressData> = (
         uploadProgress
       ) => {
-        // intentionally use deprecated property to test warning
-        const progress = uploadProgress.totalByteSent / uploadProgress.totalBytesExpectedToSend;
+        const progress = uploadProgress.totalBytesSent / uploadProgress.totalBytesExpectedToSend;
         this.setState({
           uploadProgress: progress,
         });
