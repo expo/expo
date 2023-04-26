@@ -195,40 +195,40 @@ export type FileInfo =
   /**
    * Object returned when file exist.
    */
-  | {
-      /**
-       * Signifies that the requested file exist.
-       */
-      exists: true;
-      /**
-       * A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
-       */
-      uri: string;
-      /**
-       * The size of the file in bytes. If operating on a source such as an iCloud file, only present if the `size` option was truthy.
-       */
-      size: number;
-      /**
-       * Boolean set to `true` if this is a directory and `false` if it is a file.
-       */
-      isDirectory: boolean;
-      /**
-       * The last modification time of the file expressed in seconds since epoch.
-       */
-      modificationTime: number;
-      /**
-       * Present if the `md5` option was truthy. Contains the MD5 hash of the file.
-       */
-      md5?: string;
-    }
+  {
+    /**
+     * Signifies that the requested file exist.
+     */
+    exists: true;
+    /**
+     * A `file://` URI pointing to the file. This is the same as the `fileUri` input parameter.
+     */
+    uri: string;
+    /**
+     * The size of the file in bytes. If operating on a source such as an iCloud file, only present if the `size` option was truthy.
+     */
+    size: number;
+    /**
+     * Boolean set to `true` if this is a directory and `false` if it is a file.
+     */
+    isDirectory: boolean;
+    /**
+     * The last modification time of the file expressed in seconds since epoch.
+     */
+    modificationTime: number;
+    /**
+     * Present if the `md5` option was truthy. Contains the MD5 hash of the file.
+     */
+    md5?: string;
+  } |
   /**
    * Object returned when file do not exist.
    */
-  | {
-      exists: false;
-      uri: string;
-      isDirectory: false;
-    };
+  {
+    exists: false;
+    uri: string;
+    isDirectory: false;
+  };
 /* eslint-enable */
 
 /**
@@ -323,17 +323,17 @@ export type FileSystemRequestDirectoryPermissionsResult =
   /**
    * If the permissions were not granted.
    */
-  | {
-      granted: false;
-    }
+  {
+    granted: false;
+  } |
   /**
    * If the permissions were granted.
    */
-  | {
-      granted: true;
-      /**
-       * The [SAF URI](#saf-uri) to the user's selected directory. Available only if permissions were granted.
-       */
-      directoryUri: string;
-    };
+  {
+    granted: true;
+    /**
+     * The [SAF URI](#saf-uri) to the user's selected directory. Available only if permissions were granted.
+     */
+    directoryUri: string;
+  };
 /* eslint-enable */

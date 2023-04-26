@@ -4,7 +4,7 @@
 
 ### 🛠 Breaking changes
 
-- Removed the deprecated totalByteSent field from UploadProgressData. ([#22277](https://github.com/expo/expo/pull/22277) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Removed the deprecated `UploadProgressData.totalByteSent` field. ([#22277](https://github.com/expo/expo/pull/22277) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🎉 New features
 
