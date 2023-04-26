@@ -51,7 +51,7 @@ See the [eas.json reference](/build/eas-json) for more information.
 
 ## Environment variables and app.config.js
 
-Environment variables used in your build profile will also be used to evaluate **app.config.js** when you run `eas build`. This is important to ensure that the result of evaluating **app.config.js** is the same when it's done locally while initiating the build (to gather metadata for the build job) and when it occurs on the remote build worker, for example, to configure the project during `npx expo prebuild` or to embed the configuration data in the app.
+Environment variables used in your build profile will also be used to evaluate **app.config.js** when you run `eas build`. This is important to ensure that the result of evaluating **app.config.js** is the same when it's done locally while initiating the build (to gather metadata for the build job) and when it occurs on the remote builder, for example, to configure the project during `npx expo prebuild` or to embed the configuration data in the app.
 
 ## Built-in environment variables
 
@@ -299,7 +299,7 @@ Environment variables set in your build profile that impact **app.config.js** wi
 
 ### Can I just set my environment variables on a CI provider?
 
-Environment variables must be defined in **eas.json** to be made available to EAS Build workers. If you are [triggering builds from CI](/build/building-on-ci) this same rule applies, and you should be careful to not confuse setting environment variables on GitHub Actions (or the provider of your choice) with setting environment variables and secrets in **eas.json**.
+Environment variables must be defined in **eas.json** to be made available to EAS Build builders. If you are [triggering builds from CI](/build/building-on-ci) this same rule applies, and you should be careful to not confuse setting environment variables on GitHub Actions (or the provider of your choice) with setting environment variables and secrets in **eas.json**.
 
 ### How to upload a secret file and use it in my app config?
 

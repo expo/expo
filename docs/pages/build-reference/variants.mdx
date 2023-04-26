@@ -83,7 +83,7 @@ export default {
 };
 ```
 
-> **Note**: if you are using any libraries that require you to register your application identifier with an external service to use the SDK, such as Google Maps, you will need to have a separate configuration for that API for the iOS Bundle Identifier and Android Package. You can also swap this configuration in using the same approach as above.
+> **Note**: if you are using any libraries that require you to register your application identifier with an external service to use the SDK, such as Google Maps, you will need to have a separate configuration for that API for the iOS Bundle Identifier and Android Package. You can also swap this configuration using the same approach as above.
 
 To automatically set the `APP_VARIANT` environment variable when running builds with the "development" profile, we can use `env` in **eas.json**:
 
@@ -101,7 +101,7 @@ To automatically set the `APP_VARIANT` environment variable when running builds 
 }
 ```
 
-Now when you run `eas build --profile development`, the environment variable `APP_VARIANT` will be set to `"development"` when evaluating **app.config.js** both locally and on the EAS Build worker. When you start your development server, you will need to run `APP_VARIANT=development expo start` (or the platform equivalent if you use Windows); a shortcut for this could be to add a script to your **package.json** such as `"dev": "APP_VARIANT=development expo start"`.
+Now when you run `eas build --profile development`, the environment variable `APP_VARIANT` will be set to `"development"` when evaluating **app.config.js** both locally and on the EAS Build builder. When you start your development server, you will need to run `APP_VARIANT=development expo start` (or the platform equivalent if you use Windows); a shortcut for this could be to add a script to your **package.json** such as `"dev": "APP_VARIANT=development expo start"`.
 
 When you run `eas build --profile production` the `APP_VARIANT` variable environment will not be set, and the build will run as the production variant.
 
