@@ -136,8 +136,8 @@ const RENAMED_PAGES: Record<string, string> = {
   // Redirects after creating /home route
   '/next-steps/additional-resources/': '/additional-resources/',
   // TODO: (@aman) Uncomment the two lines below when we've removed third-party libraries from Reference
-  // '/versions/latest/sdk/safe-area-context/': '/home/develop/user-interface/safe-areas',
-  // '/versions/latest/sdk/async-storage/': '/home/develop/user-interface/store-data/#async-storage',
+  // '/versions/latest/sdk/safe-area-context/': '/develop/user-interface/safe-areas',
+  // '/versions/latest/sdk/async-storage/': '/develop/user-interface/store-data/#async-storage',
   '/get-started/create-a-new-app/': '/get-started/create-a-project',
   '/guides/config-plugins/': '/config-plugins/introduction/',
   '/workflow/debugging/': '/debugging/runtime-issue/',
@@ -341,4 +341,6 @@ const RENAMED_PAGES: Record<string, string> = {
   '/tutorial/': '/tutorial/introduction/',
   // Note (@aman): The following redirect is temporary until Guides section has an overview
   '/guides/': '/workflow/customizing/',
+  '/archive/workflow/customizing/': '/workflow/customizing/',
+  '/errors-and-warnings/': '/debugging/errors-and-warnings/',
 };
