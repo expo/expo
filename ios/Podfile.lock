@@ -2123,7 +2123,7 @@ PODS:
     - ExpoModulesCore
   - EXPermissions (14.1.1):
     - ExpoModulesCore
-  - Expo (48.0.14):
+  - Expo (48.0.15):
     - ExpoModulesCore
   - ExpoAppleAuthentication (6.0.1):
     - ExpoModulesCore
@@ -2215,7 +2215,7 @@ PODS:
     - ExpoModulesCore
   - EXSpeech (11.1.1):
     - ExpoModulesCore
-  - EXSplashScreen (0.18.1):
+  - EXSplashScreen (0.18.2):
     - ExpoModulesCore
     - React-Core
   - EXSQLite (11.1.1):
@@ -4733,7 +4733,7 @@ SPEC CHECKSUMS:
   EXMediaLibrary: 587cd8aad27a6fc8d7c38b950bc75bc1845a7480
   EXNotifications: dd628737af60fc8cc62dccebacd326b0fbbc0dcb
   EXPermissions: 2291c6736a823b4c680d5bf8e12d3c1c5d11da35
-  Expo: 3e2c2c9aceeced0b73c863333c148a0cbc40fbfb
+  Expo: 62bba165c9cd30a2983176e7d975ae688b6334b6
   ExpoAppleAuthentication: 7bd5e4150d59e8df37aa80b425850ae88adf9e65
   ExpoBattery: 678d2b710a8fc398c30258c4dc22c12340ee5411
   ExpoBlur: fac3c6318fdf409dd5740afd3313b2bd52a35bac
@@ -4769,7 +4769,7 @@ SPEC CHECKSUMS:
   EXSensors: 29448aedea6ac26f1f11f349c038dbe8698d41e6
   EXSharing: 09839ace249f61bfa13c50c6a28256c31d260355
   EXSpeech: a8da505f08d539364dbcbb2804ac3e63e7bec22b
-  EXSplashScreen: cd7fb052dff5ba8311d5c2455ecbebffe1b7a8ca
+  EXSplashScreen: 0e0a9ba0cf7553094e93213099bd7b42e6e237e9
   EXSQLite: 848167441b14cb6cdd6ae46c8d62289161a79550
   EXStructuredHeaders: b1a48d732562e2cc81f11771bcfd29534f5d9254
   EXTaskManager: f8257faa4c20acfc3f31e21ab82a62544d70db85

@@ -1,6 +1,6 @@
 {
   "name": "expo",
-  "version": "48.0.14",
+  "version": "48.0.15",
   "description": "The Expo SDK",
   "main": "build/Expo.js",
   "module": "build/Expo.js",
@@ -59,7 +59,7 @@
   "homepage": "https://github.com/expo/expo/tree/main/packages/expo",
   "dependencies": {
     "@babel/runtime": "^7.20.0",
-    "@expo/cli": "0.7.0",
+    "@expo/cli": "0.7.1",
     "@expo/vector-icons": "^13.0.0",
     "@expo/config-plugins": "6.0.1",
     "@expo/config": "8.0.2",

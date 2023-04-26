@@ -69,7 +69,7 @@
   "expo-sharing": "~11.2.2",
   "expo-sms": "~11.2.1",
   "expo-speech": "~11.1.1",
-  "expo-splash-screen": "~0.18.1",
+  "expo-splash-screen": "~0.18.2",
   "expo-sqlite": "~11.1.1",
   "expo-status-bar": "~1.4.4",
   "expo-store-review": "~6.2.1",

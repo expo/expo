@@ -59,7 +59,7 @@
     "typescript": "^4.3.5"
   },
   "peerDependencies": {
-    "expo": "48.0.14"
+    "expo": "48.0.15"
   },
   "peerDependenciesMeta": {
     "expo": {
