@@ -41,7 +41,7 @@ export class SessionUrlProvider {
         }
         const legacyExpoProjectFullName = options.projectNameForProxy ||
             Constants.expoConfig?.originalFullName ||
-            Constants.manifest?.id;
+            Constants.__unsafeNoWarnManifest?.id;
         if (!legacyExpoProjectFullName) {
             let nextSteps = '';
             if (__DEV__) {
@@ -69,7 +69,7 @@ export class SessionUrlProvider {
         return redirectUrl;
     }
     static getHostAddressQueryParams() {
-        let hostUri = Constants.manifest?.hostUri ?? Constants.manifest2?.extra?.expoClient?.hostUri;
+        let hostUri = Constants.expoConfig?.hostUri;
         if (!hostUri &&
             (ExecutionEnvironment.StoreClient === Constants.executionEnvironment ||
                 Linking.resolveScheme({}))) {

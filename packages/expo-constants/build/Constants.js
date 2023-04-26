@@ -41,6 +41,7 @@ if (!rawManifest && ExponentConstants && ExponentConstants.manifest) {
 const { name, appOwnership, ...nativeConstants } = (ExponentConstants || {});
 let warnedAboutDeviceYearClass = false;
 let warnedAboutIosModel = false;
+let warnedAboutManifestField = false;
 const constants = {
     ...nativeConstants,
     // Ensure this is null in bare workflow
@@ -92,6 +93,10 @@ Object.defineProperties(constants, {
     },
     manifest: {
         get() {
+            if (__DEV__ && !warnedAboutManifestField) {
+                console.warn(`Constants.manifest has been deprecated in favor of Constants.expoConfig.`);
+                warnedAboutManifestField = true;
+            }
             const maybeManifest = getManifest();
             if (!maybeManifest || !isAppManifest(maybeManifest)) {
                 return null;
@@ -118,6 +123,38 @@ Object.defineProperties(constants, {
             }
             if (isManifest(maybeManifest)) {
                 return maybeManifest.extra?.expoClient ?? null;
+            }
+            else if (isAppManifest(maybeManifest)) {
+                return maybeManifest;
+            }
+            return null;
+        },
+        enumerable: true,
+    },
+    expoGoConfig: {
+        get() {
+            const maybeManifest = getManifest(true);
+            if (!maybeManifest) {
+                return null;
+            }
+            if (isManifest(maybeManifest)) {
+                return maybeManifest.extra?.expoGo ?? null;
+            }
+            else if (isAppManifest(maybeManifest)) {
+                return maybeManifest;
+            }
+            return null;
+        },
+        enumerable: true,
+    },
+    easConfig: {
+        get() {
+            const maybeManifest = getManifest(true);
+            if (!maybeManifest) {
+                return null;
+            }
+            if (isManifest(maybeManifest)) {
+                return maybeManifest.extra?.eas ?? null;
             }
             else if (isAppManifest(maybeManifest)) {
                 return maybeManifest;

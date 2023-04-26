@@ -51,7 +51,7 @@ export class SessionUrlProvider {
     const legacyExpoProjectFullName =
       options.projectNameForProxy ||
       Constants.expoConfig?.originalFullName ||
-      Constants.manifest?.id;
+      Constants.__unsafeNoWarnManifest?.id;
 
     if (!legacyExpoProjectFullName) {
       let nextSteps = '';
@@ -85,8 +85,7 @@ export class SessionUrlProvider {
   }
 
   private static getHostAddressQueryParams(): ParsedQs | undefined {
-    let hostUri: string | undefined =
-      Constants.manifest?.hostUri ?? Constants.manifest2?.extra?.expoClient?.hostUri;
+    let hostUri: string | undefined = Constants.expoConfig?.hostUri;
     if (
       !hostUri &&
       (ExecutionEnvironment.StoreClient === Constants.executionEnvironment ||

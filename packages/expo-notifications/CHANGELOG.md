@@ -11,6 +11,7 @@
 ### 💡 Others
 
 - Update fixtures. ([#21397](https://github.com/expo/expo/pull/21397) by [@EvanBacon](https://github.com/EvanBacon))
+- Warn on use of Constants.manifest. ([#22247](https://github.com/expo/expo/pull/22247) by [@wschurman](https://github.com/wschurman))
 
 ## 0.18.1 — 2023-02-09
 

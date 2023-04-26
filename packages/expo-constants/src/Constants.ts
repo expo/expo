@@ -7,7 +7,9 @@ import {
   AppManifest,
   AppOwnership,
   Constants,
+  EASConfig,
   ExecutionEnvironment,
+  ExpoGoConfig,
   IOSManifest,
   Manifest,
   NativeConstants,
@@ -74,6 +76,7 @@ const { name, appOwnership, ...nativeConstants } = (ExponentConstants || {}) as 
 
 let warnedAboutDeviceYearClass = false;
 let warnedAboutIosModel = false;
+let warnedAboutManifestField = false;
 
 const constants: Constants = {
   ...nativeConstants,
@@ -129,6 +132,11 @@ Object.defineProperties(constants, {
   },
   manifest: {
     get(): AppManifest | null {
+      if (__DEV__ && !warnedAboutManifestField) {
+        console.warn(`Constants.manifest has been deprecated in favor of Constants.expoConfig.`);
+        warnedAboutManifestField = true;
+      }
+
       const maybeManifest = getManifest();
       if (!maybeManifest || !isAppManifest(maybeManifest)) {
         return null;
@@ -148,7 +156,14 @@ Object.defineProperties(constants, {
     enumerable: true,
   },
   expoConfig: {
-    get(): ExpoConfig | null {
+    get():
+      | (ExpoConfig & {
+          /**
+           * Only present during development using @expo/cli.
+           */
+          hostUri?: string;
+        })
+      | null {
       const maybeManifest = getManifest(true);
       if (!maybeManifest) {
         return null;
@@ -156,6 +171,40 @@ Object.defineProperties(constants, {
 
       if (isManifest(maybeManifest)) {
         return maybeManifest.extra?.expoClient ?? null;
+      } else if (isAppManifest(maybeManifest)) {
+        return maybeManifest;
+      }
+
+      return null;
+    },
+    enumerable: true,
+  },
+  expoGoConfig: {
+    get(): ExpoGoConfig | null {
+      const maybeManifest = getManifest(true);
+      if (!maybeManifest) {
+        return null;
+      }
+
+      if (isManifest(maybeManifest)) {
+        return maybeManifest.extra?.expoGo ?? null;
+      } else if (isAppManifest(maybeManifest)) {
+        return maybeManifest;
+      }
+
+      return null;
+    },
+    enumerable: true,
+  },
+  easConfig: {
+    get(): EASConfig | null {
+      const maybeManifest = getManifest(true);
+      if (!maybeManifest) {
+        return null;
+      }
+
+      if (isManifest(maybeManifest)) {
+        return maybeManifest.extra?.eas ?? null;
       } else if (isAppManifest(maybeManifest)) {
         return maybeManifest;
       }
