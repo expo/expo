@@ -1,22 +1,24 @@
 import ExpoModulesCore
 
-// Modules are AnyObject, which is not hashable. We are using a dictionary (moduleInterfaceMasks), where modules are keys.
-// This class allows using them as keys, it is similar to how NSMapTable NSMapTable<id, NSNumber *> *moduleInterfaceMasks; works in objective-c
-class ObjectIdentifierHashable: Hashable {
-  let value: AnyObject
-  init(_ value: AnyObject) {
+// Modules are not hashable. We are using a dictionary (moduleInterfaceMasks), where modules are keys.
+// This class allows using them as keys by using Object Identifiers.
+class HashableModule: Hashable {
+  let value: Module
+  init(_ value: Module) {
     self.value = value
   }
+
   func hash(into hasher: inout Hasher) {
     hasher.combine(ObjectIdentifier(value))
   }
-  static func == (lhs: ObjectIdentifierHashable, rhs: ObjectIdentifierHashable) -> Bool {
+
+  static func == (lhs: HashableModule, rhs: HashableModule) -> Bool {
     return ObjectIdentifier(lhs.value) == ObjectIdentifier(rhs.value)
   }
 
-  // A wrapper function that converts an AnyObject to an ObjectIdentifierHashable
-  static func wrap(_ value: AnyObject) -> ObjectIdentifierHashable {
-    return ObjectIdentifierHashable(value)
+  // A wrapper function that converts a Module to an ObjectIdentifierHashableModule
+  static func wrap(_ value: Module) -> HashableModule {
+    return HashableModule(value)
   }
 }
 
@@ -37,7 +39,6 @@ internal func isIPad() -> Bool {
   return UIDevice.current.userInterfaceIdiom == .pad
 }
 
-// Make UIInterfaceOrientationMask hashable, we use them in dictionaries
 extension UIInterfaceOrientationMask {
   internal func toUIInterfaceOrientation() -> UIInterfaceOrientation {
     switch self {

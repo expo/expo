@@ -28,11 +28,9 @@ class ScreenOrientationViewController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
 
-  // This requires the UIViewControllerBasedStatusBarAppearance to be set to true. RNScreens might cause this setting to fail anyways.
-  override var prefersStatusBarHidden: Bool {
-    return screenOrientationRegistry.prefersStatusBarHidden
-  }
-
+  // This is not technically necessary, because we are also setting the mask in ScreenOrientationAppDelegate
+  // But the supported interface orientations of the view controller should reflect the orientation mask set
+  // by the user.
   override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
     guard !shouldUseRNScreenOrientation() else {
       return super.supportedInterfaceOrientations

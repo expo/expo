@@ -78,11 +78,7 @@ public class ScreenOrientationModule: Module, OrientationListener {
     }
 
     OnCreate {
-      // TODO: This shouldn't be here, but it temporarily fixes
-      // https://github.com/expo/expo/issues/13641 and https://github.com/expo/expo/issues/11558
-      // We're going to redesign this once we drop support for multiple apps being open in Expo Go at the same time.
-      // Then we probably won't need the screen orientation registry at all. (@tsapeta)
-      screenOrientationRegistry.moduleDidForeground(self)
+      screenOrientationRegistry.registerModule(self)
     }
 
     OnStartObserving {
