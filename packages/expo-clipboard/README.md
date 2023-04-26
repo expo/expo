@@ -8,7 +8,9 @@ Please refer to the [API documentation for the latest stable release](https://do
 
 ## Installation
 
-`npx expo install expo-clipboard`
+```
+npx expo install expo-clipboard
+```
 
 ## Contributing
 

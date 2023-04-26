@@ -21,17 +21,17 @@ A cross-platform, performant image component for React Native and Expo.
 
 ## Supported image formats
 
-| Format | Android | iOS | Web |
-|:---:|:---:|:---:|:---:|
-| WebP | ✅ | ✅ | ✅ [~96% adoption](https://caniuse.com/webp) |
-| PNG / APNG | ✅ | ✅ | ✅ / ✅ [~96% adoption](https://caniuse.com/apng) |
-| AVIF | ✅ | ✅ | ⏳ [~79% adoption](https://caniuse.com/avif) |
-| HEIC | ✅ | ✅ | ❌ [not adopted yet](https://caniuse.com/heif) |
-| JPEG | ✅ | ✅ | ✅ |
-| GIF | ✅ | ✅ | ✅ |
-| SVG | ✅ | ✅ | ✅ |
-| ICO | ✅ | ✅ | ✅ |
-| ICNS | ❌ | ✅ | ❌ |
+|   Format   | Android | iOS |                        Web                        |
+| :--------: | :-----: | :-: | :-----------------------------------------------: |
+|    WebP    |   ✅    | ✅  |   ✅ [~96% adoption](https://caniuse.com/webp)    |
+| PNG / APNG |   ✅    | ✅  | ✅ / ✅ [~96% adoption](https://caniuse.com/apng) |
+|    AVIF    |   ✅    | ✅  |   ⏳ [~79% adoption](https://caniuse.com/avif)    |
+|    HEIC    |   ✅    | ✅  |  ❌ [not adopted yet](https://caniuse.com/heif)   |
+|    JPEG    |   ✅    | ✅  |                        ✅                         |
+|    GIF     |   ✅    | ✅  |                        ✅                         |
+|    SVG     |   ✅    | ✅  |                        ✅                         |
+|    ICO     |   ✅    | ✅  |                        ✅                         |
+|    ICNS    |   ❌    | ✅  |                        ❌                         |
 
 # API documentation
 

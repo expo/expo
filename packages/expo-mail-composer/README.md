@@ -25,7 +25,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-expo install expo-mail-composer
+npx expo install expo-mail-composer
 ```
 
 ### Configure for iOS

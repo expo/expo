@@ -34,7 +34,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-expo install expo-notifications
+npx expo install expo-notifications
 ```
 
 ### Configure for iOS
@@ -680,7 +680,7 @@ export default function App() {
           Linking.addEventListener('url', onReceiveURL);
 
           // Listen to expo push notifications
-          const subscription = Notifications.addNotificationResponseReceivedListener(response => {
+          const subscription = Notifications.addNotificationResponseReceivedListener((response) => {
             const url = response.notification.request.content.data.url;
 
             // Any custom logic to see whether the URL needs to be handled

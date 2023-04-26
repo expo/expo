@@ -32,7 +32,7 @@ We at Expo recommend using platform agnostic primitives like `View`, `Image`, an
 
 Install:
 
-```sh
+```
 yarn add @expo/html-elements
 ```
 

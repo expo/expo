@@ -25,7 +25,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-expo install expo-secure-store
+npx expo install expo-secure-store
 ```
 
 ### Configure for iOS
