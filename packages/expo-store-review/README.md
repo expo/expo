@@ -18,7 +18,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your dependencies
 
 ```
-expo install expo-store-review
+npx expo install expo-store-review
 ```
 
 ### Configure for iOS

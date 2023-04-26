@@ -31,10 +31,12 @@ Scale the image uniformly (maintaining the image's aspect ratio) so that both di
 <td>
 
 https://user-images.githubusercontent.com/379606/120575867-aeeb3580-c3d6-11eb-825d-19a847fe30f5.mp4
+
 </td>
 <td>
 
 https://user-images.githubusercontent.com/379606/120575885-b6124380-c3d6-11eb-8485-75a11832962c.mp4
+
 </td>
     </tr>
   </tbody>
@@ -50,10 +52,12 @@ Scale the image uniformly (maintaining the image's aspect ratio) so that both th
 <td>
 
 https://user-images.githubusercontent.com/379606/120575871-b1e62600-c3d6-11eb-9435-5dee19791294.mp4
+
 </td>
 <td>
 
 https://user-images.githubusercontent.com/379606/120575890-b7437080-c3d6-11eb-9c0a-3c563d1ee02a.mp4
+
 </td>
     </tr>
   </tbody>
@@ -72,6 +76,7 @@ Android (unlike iOS) does not support stretching of the provided image during la
 <td>
 
 https://user-images.githubusercontent.com/379606/120575878-b3afe980-c3d6-11eb-80c1-72441c22e8be.mp4
+
 </td>
     </tr>
   </tbody>
@@ -130,7 +135,7 @@ import * as SplashScreen from 'expo-splash-screen';
 
 // Prevent native splash screen from autohiding before App component declaration
 SplashScreen.preventAutoHideAsync()
-  .then(result => console.log(`SplashScreen.preventAutoHideAsync() succeeded: ${result}`))
+  .then((result) => console.log(`SplashScreen.preventAutoHideAsync() succeeded: ${result}`))
   .catch(console.warn); // it's good to explicitly catch and inspect any error
 
 export default class App extends React.Component {
@@ -238,7 +243,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 ## Add the package to your dependencies
 
 ```
-expo install expo-splash-screen
+npx expo install expo-splash-screen
 ```
 
 ## 📱 Configure iOS
