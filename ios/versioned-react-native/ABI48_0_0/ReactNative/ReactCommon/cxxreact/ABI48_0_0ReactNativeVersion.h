@@ -17,7 +17,7 @@ namespace ABI48_0_0facebook::ABI48_0_0React {
 constexpr struct {
   int32_t Major = 0;
   int32_t Minor = 71;
-  int32_t Patch = 4;
+  int32_t Patch = 7;
   std::string_view Prerelease = "";
 } reactNativeVersion;
 
