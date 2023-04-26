@@ -3,6 +3,7 @@
 // swiftlint:disable file_length
 // swiftlint:disable type_body_length
 // swiftlint:disable line_length
+// swiftlint:disable identifier_name
 
 // this class used a bunch of implicit non-null patterns for member variables. not worth refactoring to appease lint.
 // swiftlint:disable force_unwrapping
@@ -38,12 +39,32 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
   private static let ErrorDomain = "EXUpdatesAppController"
   private static let EXUpdatesEventName = "Expo.nativeUpdatesEvent"
 
+  // Events for the legacy UpdateEvent JS listener
   public static let UpdateAvailableEventName = "updateAvailable"
   public static let NoUpdateAvailableEventName = "noUpdateAvailable"
   public static let ErrorEventName = "error"
 
+  // Events that will be used to track state changes
+  public static let CheckOnLaunch_StartCheckEventName = "CheckOnLaunch_StartCheck"
+  public static let CheckOnLaunch_CompleteCheckEventName = "CheckOnLaunch_CompleteCheck"
+  public static let CheckOnLaunch_StartDownloadEventName = "CheckOnLaunch_StartDownload"
+  public static let CheckOnLaunch_AssetDownloadedEventName = "CheckOnLaunch_AssetDownloaded"
+  public static let CheckOnLaunch_CompleteDownloadEventName = "CheckOnLaunch_CompleteDownload"
+  public static let CheckOnLaunch_ErrorEventName = "CheckOnLaunch_Error"
+
+  public static let CheckForUpdate_StartEventName = "CheckForUpdate_Start"
+  public static let CheckForUpdate_Complete_UpdateAvailableEventName = "CheckForUpdate_Complete_UpdateAvailable"
+  public static let CheckForUpdate_Complete_NoUpdateAvailableEventName = "CheckForUpdate_Complete_NoUpdateAvailable"
+  public static let CheckForUpdate_ErrorEventName = "CheckForUpdate_Error"
+
+  public static let FetchUpdate_StartEventName = "FetchUpdate_Start"
+  public static let FetchUpdate_CompleteEventName = "FetchUpdate_Complete"
+  public static let FetchUpdate_AssetDownloadedEventName = "FetchUpdate_AssetDownloaded"
+  public static let FetchUpdate_ErrorEventName = "FetchUpdate_Error"
+
+  // Notification names observed by this class
   public static let UpdateEventNotificationName = "EXUpdates_UpdateEventNotification"
-  public static let CheckForUpdateNotificationName = "EXUpdates_CheckForUpdateNotification"
+  public static let ShouldCheckForUpdateNotificationName = "EXUpdates_ShouldCheckForUpdateNotification"
 
   /**
    Delegate which will be notified when EXUpdates has an update ready to launch and
@@ -105,7 +126,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
 
   public var remoteLoadStatus: RemoteLoadStatus
 
-  private let logger: UpdatesLogger
+  internal let logger: UpdatesLogger
 
   public static let sharedInstance = AppController()
 
@@ -243,7 +264,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
 
     purgeUpdatesLogsOlderThanOneDay()
     initializeUpdateEventNotificationHandler()
-    initializeCheckForUpdateNotificationHandler()
+    initializeShouldCheckForUpdateNotificationHandler()
 
     do {
       try initializeUpdatesDirectory()
@@ -334,27 +355,27 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     return launcher?.launchedUpdate
   }
 
-  // MARK: - Notifications for checkForUpdate
+  // MARK: - Notifications for shouldCheckForUpdate
 
   /**
-   Observer for notifications indicating that the app wants to check for an available
+   Observer for notifications indicating that the app should check for an available
    update.
 
    For now, we just log the notifications.
    */
-  private func initializeCheckForUpdateNotificationHandler() {
-    NotificationCenter.default.addObserver(self, selector: #selector(handleCheckForUpdateNotification(notification:)), name: Notification.Name(AppController.CheckForUpdateNotificationName), object: nil)
+  private func initializeShouldCheckForUpdateNotificationHandler() {
+    NotificationCenter.default.addObserver(self, selector: #selector(handleShouldCheckForUpdateNotification(notification:)), name: Notification.Name(AppController.ShouldCheckForUpdateNotificationName), object: nil)
   }
 
-  public func handleCheckForUpdateNotification(notification: Notification) {
+  public func handleShouldCheckForUpdateNotification(notification: Notification) {
     // TODO: initiate a call to checkForUpdateAsync() here
     // For now, we log that the notification was received
-    logger.debug(message: "CheckForUpdate notification received")
+    logger.debug(message: "ShouldCheckForUpdate notification received")
   }
 
-  public func postCheckForUpdateNotification() {
+  public func postShouldCheckForUpdateNotification() {
     NotificationCenter.default.post(
-      name: Notification.Name(AppController.CheckForUpdateNotificationName),
+      name: Notification.Name(AppController.ShouldCheckForUpdateNotificationName),
       object: nil
     )
   }
@@ -384,8 +405,16 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
       let type = notification.userInfo?["type"] as? String else {
       return
     }
-    // For now, we only support the three types
-    sendEventToBridge(type, body: body)
+    if type == AppController.UpdateAvailableEventName ||
+      type == AppController.NoUpdateAvailableEventName ||
+      type == AppController.ErrorEventName {
+      // For the three legacy UpdateEvent types, we send the events to JS
+      sendEventToBridge(type, body: body)
+    } else {
+      // TODO: use these events to construct the state
+      // For now, log the other events
+      logger.info(message: "UpdateEvent notification \(type), body = \(body)")
+    }
   }
 
   public func postUpdateEventNotification(_ type: String, body: [AnyHashable: Any] = [:]) {
@@ -402,8 +431,17 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     return true
   }
 
+  public func appLoaderTask(_: AppLoaderTask, didStartCheckingForUpdate _: [AnyHashable: Any]) {
+    postUpdateEventNotification(AppController.CheckOnLaunch_StartCheckEventName)
+  }
+
+  public func appLoaderTask(_: AppLoaderTask, didFinishCheckingForUpdate body: [AnyHashable: Any]) {
+    postUpdateEventNotification(AppController.CheckOnLaunch_CompleteCheckEventName, body: body )
+  }
+
   public func appLoaderTask(_: AppLoaderTask, didStartLoadingUpdate update: Update) {
     logger.info(message: "AppController appLoaderTask didStartLoadingUpdate", code: .none, updateId: update.loggingId(), assetId: nil)
+    postUpdateEventNotification(AppController.CheckOnLaunch_StartDownloadEventName)
     remoteLoadStatus = .Loading
   }
 
@@ -431,9 +469,33 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     }
   }
 
+  public func appLoaderTask(_: AppLoaderTask, didLoadAsset asset: UpdateAsset, successfulAssetCount: Int, failedAssetCount: Int, totalAssetCount: Int) {
+    let body = [
+      "assetInfo": [
+        "name": asset.filename,
+        "successfulAssetCount": successfulAssetCount,
+        "failedAssetCount": failedAssetCount,
+        "totalAssetCount": totalAssetCount
+      ]
+    ]
+    logger.info(
+      message: "AppController appLoaderTask didLoadAsset: \(body)",
+      code: .none,
+      updateId: nil,
+      assetId: asset.contentHash
+    )
+    postUpdateEventNotification(AppController.CheckOnLaunch_AssetDownloadedEventName, body: body)
+  }
+
   public func appLoaderTask(_: AppLoaderTask, didFinishWithError error: Error) {
     let logMessage = String(format: "AppController appLoaderTask didFinishWithError: %@", error.localizedDescription)
     logger.error(message: logMessage, code: .updateFailedToLoad)
+    let body = [
+      "message": error.localizedDescription
+    ]
+    postUpdateEventNotification(AppController.CheckOnLaunch_ErrorEventName, body: body)
+    // Until state is implemented, we fire the notification below to send UpdateEvents to JS
+    postUpdateEventNotification(AppController.ErrorEventName, body: body)
     emergencyLaunch(fatalError: error as NSError)
   }
 
@@ -451,13 +513,16 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
       }
       logger.error(
         message: "AppController appLoaderTask didFinishBackgroundUpdateWithStatus=Error",
-        code: .none,
+        code: .updateFailedToLoad,
         updateId: update?.loggingId(),
         assetId: nil
       )
-      postUpdateEventNotification(AppController.ErrorEventName, body: [
+      let body = [
         "message": error.localizedDescription
-      ])
+      ]
+      postUpdateEventNotification(AppController.CheckOnLaunch_ErrorEventName, body: body)
+      // Until state is implemented, we fire the notification below to send UpdateEvents to JS
+      postUpdateEventNotification(AppController.ErrorEventName, body: body)
     case .updateAvailable:
       remoteLoadStatus = .NewUpdateLoaded
       guard let update = update else {
@@ -469,18 +534,22 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
         updateId: update.loggingId(),
         assetId: nil
       )
-      postUpdateEventNotification(AppController.UpdateAvailableEventName, body: [
+      let body = [
         "manifest": update.manifest.rawManifestJSON()
-      ])
+      ]
+      postUpdateEventNotification(AppController.CheckOnLaunch_CompleteDownloadEventName, body: body)
+      // Until state is implemented, we fire the notification below to send UpdateEvents to JS
+      postUpdateEventNotification(AppController.UpdateAvailableEventName, body: body)
     case .noUpdateAvailable:
       remoteLoadStatus = .Idle
-      logger.error(
+      logger.info(
         message: "AppController appLoaderTask didFinishBackgroundUpdateWithStatus=NoUpdateAvailable",
         code: .noUpdatesAvailable,
         updateId: update?.loggingId(),
         assetId: nil
       )
-      postUpdateEventNotification(AppController.NoUpdateAvailableEventName, body: [:])
+      // Until state is implemented, we fire the notification below to send UpdateEvents to JS
+      postUpdateEventNotification(AppController.NoUpdateAvailableEventName)
     }
 
     errorRecovery.notify(newRemoteLoadStatus: remoteLoadStatus)
