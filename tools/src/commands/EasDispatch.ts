@@ -47,87 +47,102 @@ async function main(actionId: string | undefined) {
 }
 
 async function iosBuildAndSubmitAsync() {
+  const isDebug = !!process.env.EXPO_DEBUG;
   const projectDir = path.join(EXPO_DIR, 'apps/eas-expo-go');
   const credentialsDir = path.join(projectDir, 'credentials');
   const fastlaneMatchBucketCopyPath = path.join(credentialsDir, 'fastlane-match');
   const releaseSecretsPath = path.join(credentialsDir, 'secrets');
-  await mkdirp(fastlaneMatchBucketCopyPath);
-  await mkdirp(releaseSecretsPath);
-  await spawnAsync('gsutil', [
-    'rsync',
-    '-r',
-    '-d',
-    'gs://expo-client-certificates',
-    fastlaneMatchBucketCopyPath,
-  ]);
-  await spawnAsync('gsutil', [
-    'rsync',
-    '-r',
-    '-d',
-    'gs://expo-go-release-secrets',
-    releaseSecretsPath,
-  ]);
 
-  const privateKeyMatches = glob.sync('*/certs/distribution/*.p12', {
-    absolute: true,
-    cwd: fastlaneMatchBucketCopyPath,
-  });
-  assert(privateKeyMatches.length === 1);
-  const privateKeyPath = privateKeyMatches[0];
+  try {
+    await mkdirp(fastlaneMatchBucketCopyPath);
+    await mkdirp(releaseSecretsPath);
+    await spawnAsync(
+      'gsutil',
+      ['rsync', '-r', '-d', 'gs://expo-client-certificates', fastlaneMatchBucketCopyPath],
+      { stdio: isDebug ? 'inherit' : 'pipe' }
+    );
+    await spawnAsync(
+      'gsutil',
+      ['rsync', '-r', '-d', 'gs://expo-go-release-secrets', releaseSecretsPath],
+      { stdio: isDebug ? 'inherit' : 'pipe' }
+    );
 
-  const certDERMatches = glob.sync('*/certs/distribution/*.cer', {
-    absolute: true,
-    cwd: fastlaneMatchBucketCopyPath,
-  });
-  assert(certDERMatches.length === 1);
-  const certDERPath = certDERMatches[0];
+    const privateKeyMatches = glob.sync('*/certs/distribution/*.p12', {
+      absolute: true,
+      cwd: fastlaneMatchBucketCopyPath,
+    });
+    assert(privateKeyMatches.length === 1);
+    const privateKeyPath = privateKeyMatches[0];
 
-  const certPEMPath = path.join(credentialsDir, 'cert.pem');
-  const p12KeystorePath = path.join(credentialsDir, 'dist.p12');
-  const p12KeystorePassword = uuidv4();
+    const certDERMatches = glob.sync('*/certs/distribution/*.cer', {
+      absolute: true,
+      cwd: fastlaneMatchBucketCopyPath,
+    });
+    assert(certDERMatches.length === 1);
+    const certDERPath = certDERMatches[0];
 
-  await spawnAsync('openssl', ['x509', '-inform', 'der', '-in', certDERPath, '-out', certPEMPath]);
-  await spawnAsync('openssl', [
-    'pkcs12',
-    '-export',
-    '-legacy',
-    '-out',
-    p12KeystorePath,
-    '-inkey',
-    privateKeyPath,
-    '-in',
-    certPEMPath,
-    '-password',
-    `pass:${p12KeystorePassword}`,
-  ]);
+    const certPEMPath = path.join(credentialsDir, 'cert.pem');
+    const p12KeystorePath = path.join(credentialsDir, 'dist.p12');
+    const p12KeystorePassword = uuidv4();
 
-  await fs.writeFile(
-    path.join(projectDir, 'credentials.json'),
-    JSON.stringify({
-      ios: {
-        'Expo Go (versioned)': {
-          provisioningProfilePath: path.join(
-            fastlaneMatchBucketCopyPath,
-            'C8D8QTF339/profiles/appstore/AppStore_host.exp.Exponent.mobileprovision'
-          ),
-          distributionCertificate: {
-            path: p12KeystorePath,
-            password: p12KeystorePassword,
+    await spawnAsync(
+      'openssl',
+      ['x509', '-inform', 'der', '-in', certDERPath, '-out', certPEMPath],
+      {
+        stdio: isDebug ? 'inherit' : 'pipe',
+      }
+    );
+    await spawnAsync(
+      'openssl',
+      [
+        'pkcs12',
+        '-export',
+        '-legacy',
+        '-out',
+        p12KeystorePath,
+        '-inkey',
+        privateKeyPath,
+        '-in',
+        certPEMPath,
+        '-password',
+        `pass:${p12KeystorePassword}`,
+      ],
+      { stdio: isDebug ? 'inherit' : 'pipe' }
+    );
+
+    await fs.writeFile(
+      path.join(projectDir, 'credentials.json'),
+      JSON.stringify({
+        ios: {
+          'Expo Go (versioned)': {
+            provisioningProfilePath: path.join(
+              fastlaneMatchBucketCopyPath,
+              'C8D8QTF339/profiles/appstore/AppStore_host.exp.Exponent.mobileprovision'
+            ),
+            distributionCertificate: {
+              path: p12KeystorePath,
+              password: p12KeystorePassword,
+            },
+          },
+          ExpoNotificationServiceExtension: {
+            provisioningProfilePath: path.join(
+              fastlaneMatchBucketCopyPath,
+              'C8D8QTF339/profiles/appstore/AppStore_host.exp.Exponent.ExpoNotificationServiceExtension.mobileprovision'
+            ),
+            distributionCertificate: {
+              path: p12KeystorePath,
+              password: p12KeystorePassword,
+            },
           },
         },
-        ExpoNotificationServiceExtension: {
-          provisioningProfilePath: path.join(
-            fastlaneMatchBucketCopyPath,
-            'C8D8QTF339/profiles/appstore/AppStore_host.exp.Exponent.ExpoNotificationServiceExtension.mobileprovision'
-          ),
-          distributionCertificate: {
-            path: p12KeystorePath,
-            password: p12KeystorePassword,
-          },
-        },
-      },
-    })
-  );
+      })
+    );
+  } catch (err) {
+    logger.error(
+      'There was an error when preparing build credentials. Run with EXPO_DEBUG=1 env to see more details.'
+    );
+    throw err;
+  }
 
   await spawnAsync(
     'eas',
@@ -140,6 +155,7 @@ async function iosBuildAndSubmitAsync() {
 }
 
 async function androidBuildAndSubmitAsync() {
+  const isDebug = !!process.env.EXPO_DEBUG;
   const projectDir = path.join(EXPO_DIR, 'apps/eas-expo-go');
   const credentialsDir = path.join(projectDir, 'credentials');
   const releaseSecretsPath = path.join(credentialsDir, 'secrets');
@@ -152,28 +168,32 @@ async function androidBuildAndSubmitAsync() {
     'android-keystore-alias.password'
   );
 
-  await spawnAsync('gsutil', [
-    'rsync',
-    '-r',
-    '-d',
-    'gs://expo-go-release-secrets',
-    releaseSecretsPath,
-  ]);
+  try {
+    await spawnAsync(
+      'gsutil',
+      ['rsync', '-r', '-d', 'gs://expo-go-release-secrets', releaseSecretsPath],
+      { stdio: isDebug ? 'inherit' : 'pipe' }
+    );
 
-  await fs.writeFile(
-    path.join(projectDir, 'credentials.json'),
-    JSON.stringify({
-      android: {
-        keystore: {
-          keystorePath,
-          keystorePassword: (await fs.readFile(keystorePasswordPath, 'utf-8')).trim(),
-          keyAlias: 'ExponentKey',
-          keyPassword: (await fs.readFile(keystoreAliasPasswordPath, 'utf-8')).trim(),
+    await fs.writeFile(
+      path.join(projectDir, 'credentials.json'),
+      JSON.stringify({
+        android: {
+          keystore: {
+            keystorePath,
+            keystorePassword: (await fs.readFile(keystorePasswordPath, 'utf-8')).trim(),
+            keyAlias: 'ExponentKey',
+            keyPassword: (await fs.readFile(keystoreAliasPasswordPath, 'utf-8')).trim(),
+          },
         },
-      },
-    })
-  );
-
+      })
+    );
+  } catch (err) {
+    logger.error(
+      'There was an error when preparing build credentials. Run with EXPO_DEBUG=1 env to see more details.'
+    );
+    throw err;
+  }
   await spawnAsync(
     'eas',
     ['build', '--platform', 'android', '--profile', RELEASE_BUILD_PROFILE, '--auto-submit'],
