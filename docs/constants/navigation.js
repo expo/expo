@@ -18,7 +18,7 @@ const learnDirectories = ['tutorial', 'ui-programming', 'additional-resources'];
 /** Manual list of directories to categorize as "Archive" */
 const archiveDirectories = ['archive'];
 /** Manual list of directories to categorize as "Reference" */
-const referenceDirectories = ['versions', 'modules', 'technical-specs', 'more'];
+const referenceDirectories = ['versions', 'technical-specs', 'more'];
 /** Private preview section which isn't linked in the documentation */
 const previewDirectories = ['feature-preview', 'preview'];
 /** All other unlisted directories */
@@ -233,6 +233,24 @@ const general = [
     makePage('eas/metadata/schema.mdx'),
     makePage('eas/metadata/faq.mdx'),
   ]),
+  makeSection(
+    'Expo Modules API',
+    [
+      makePage('modules/overview.mdx'),
+      makePage('modules/get-started.mdx'),
+      makePage('modules/native-module-tutorial.mdx'),
+      makePage('modules/native-view-tutorial.mdx'),
+      makePage('modules/config-plugin-and-native-module-tutorial.mdx'),
+      makePage('modules/use-standalone-expo-module-in-your-project.mdx'),
+      makePage('modules/existing-library.mdx'),
+      makePage('modules/module-api.mdx'),
+      makePage('modules/android-lifecycle-listeners.mdx'),
+      makePage('modules/appdelegate-subscribers.mdx'),
+      makePage('modules/autolinking.mdx'),
+      makePage('modules/module-config.mdx'),
+    ],
+    { expanded: true }
+  ),
   makeSection('Push notifications', [
     makePage('push-notifications/overview.mdx'),
     makePage('push-notifications/push-notifications-setup.mdx'),
@@ -393,24 +411,6 @@ const versionsReference = VERSIONS.reduce(
         expanded: true,
       }),
       makeSection('Expo SDK', pagesFromDir(`versions/${version}/sdk`), { expanded: true }),
-      makeSection(
-        'Expo Modules API',
-        [
-          makePage('modules/overview.mdx'),
-          makePage('modules/get-started.mdx'),
-          makePage('modules/native-module-tutorial.mdx'),
-          makePage('modules/native-view-tutorial.mdx'),
-          makePage('modules/config-plugin-and-native-module-tutorial.mdx'),
-          makePage('modules/use-standalone-expo-module-in-your-project.mdx'),
-          makePage('modules/existing-library.mdx'),
-          makePage('modules/module-api.mdx'),
-          makePage('modules/android-lifecycle-listeners.mdx'),
-          makePage('modules/appdelegate-subscribers.mdx'),
-          makePage('modules/autolinking.mdx'),
-          makePage('modules/module-config.mdx'),
-        ],
-        { expanded: true }
-      ),
       makeSection('Technical specs', [
         makePage('technical-specs/expo-updates-1.mdx'),
         makePage('technical-specs/expo-sfv-0.mdx'),
