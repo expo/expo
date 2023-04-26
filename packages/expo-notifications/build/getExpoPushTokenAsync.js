@@ -45,10 +45,10 @@ const productionBaseUrl = 'https://exp.host/--/api/v2/';
 export default async function getExpoPushTokenAsync(options = {}) {
     const devicePushToken = options.devicePushToken || (await getDevicePushTokenAsync());
     const deviceId = options.deviceId || (await getDeviceIdAsync());
-    const experienceId = options.experienceId || Constants.expoConfig?.originalFullName || Constants.manifest?.id;
-    const projectId = options.projectId ||
-        Constants.expoConfig?.extra?.eas?.projectId ||
-        Constants.manifest?.projectId;
+    const experienceId = options.experienceId ||
+        Constants.expoConfig?.originalFullName ||
+        Constants.__unsafeNoWarnManifest?.id;
+    const projectId = options.projectId || Constants.easConfig?.projectId;
     if (!projectId) {
         console.warn('Calling getExpoPushTokenAsync without specifying a projectId is deprecated and will no longer be supported in SDK 49+');
     }

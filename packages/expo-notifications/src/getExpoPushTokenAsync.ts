@@ -54,12 +54,11 @@ export default async function getExpoPushTokenAsync(
   const deviceId = options.deviceId || (await getDeviceIdAsync());
 
   const experienceId =
-    options.experienceId || Constants.expoConfig?.originalFullName || Constants.manifest?.id;
+    options.experienceId ||
+    Constants.expoConfig?.originalFullName ||
+    Constants.__unsafeNoWarnManifest?.id;
 
-  const projectId =
-    options.projectId ||
-    Constants.expoConfig?.extra?.eas?.projectId ||
-    Constants.manifest?.projectId;
+  const projectId = options.projectId || Constants.easConfig?.projectId;
 
   if (!projectId) {
     console.warn(
