@@ -207,4 +207,18 @@ async function androidBuildAndSubmitAsync() {
       },
     }
   );
+
+  logger.info('Updating versionCode in local app/build.gradle with value from EAS servers.');
+  await spawnAsync(
+    'eas',
+    ['build:version:sync', '--platform', 'android', '--profile', RELEASE_BUILD_PROFILE],
+    {
+      cwd: projectDir,
+      stdio: 'inherit',
+      env: {
+        ...process.env,
+        EAS_DANGEROUS_OVERRIDE_ANDROID_APPLICATION_ID: 'host.exp.exponent',
+      },
+    }
+  );
 }
