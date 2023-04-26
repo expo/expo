@@ -33,7 +33,7 @@ export function addWarningIOS(property: string, text: string, link?: string) {
 }
 
 export function addWarningForPlatform(
-  platform: ModPlatform,
+  platform: ModPlatform & string,
   property: string,
   text: string,
   link?: string

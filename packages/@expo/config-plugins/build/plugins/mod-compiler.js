@@ -149,8 +149,7 @@ const orders = {
   // dangerous runs first
   'dangerous',
   // run the XcodeProject mod second because many plugins attempt to read from it.
-  'xcodeproj'],
-  android: ['dangerous']
+  'xcodeproj']
 };
 /**
  * A generic plugin compiler.
