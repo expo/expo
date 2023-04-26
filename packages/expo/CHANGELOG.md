@@ -18,7 +18,27 @@
 
 - Warn on use of Constants.manifest. ([#22247](https://github.com/expo/expo/pull/22247) by [@wschurman](https://github.com/wschurman))
 
+## 48.0.15 — 2023-04-26
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.14 — 2023-04-26
+
 ### 📚 3rd party library updates
+
+- Update `react-native` to 0.71.7. ([#22253](https://github.com/expo/expo/pull/22253) by [@kudo](https://github.com/kudo))
+
+## 48.0.13 — 2023-04-25
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.12 — 2023-04-20
+
+_This version does not introduce any user-facing changes._
+
+## 48.0.11 — 2023-04-13
+
+_This version does not introduce any user-facing changes._
 
 ## 48.0.10 - 2023-04-03
 

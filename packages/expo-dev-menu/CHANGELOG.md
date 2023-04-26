@@ -23,6 +23,10 @@
 
 - Disable the `Remote JS debugger` option on menu when using SDK 49 or above. ([#22010](https://github.com/expo/expo/pull/22010) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
+### 📚 3rd party library updates
+
+- Update `react-native` to 0.71.7. ([#22253](https://github.com/expo/expo/pull/22253) by [@kudo](https://github.com/kudo))
+
 ## 2.2.0 - 2023-04-13
 
 ### 🎉 New features

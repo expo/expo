@@ -58,7 +58,7 @@ public class LocalAuthenticationModule: Module {
     }
 
     AsyncFunction("authenticateAsync") { (options: LocalAuthenticationOptions, promise: Promise) -> Void in
-      var warningMessage: NSString?
+      var warningMessage: String?
       var reason = options.promptMessage
       var cancelLabel = options.cancelLabel
       var fallbackLabel = options.fallbackLabel
@@ -67,7 +67,7 @@ public class LocalAuthenticationModule: Module {
       if isFaceIdDevice() {
         let usageDescription = Bundle.main.object(forInfoDictionaryKey: "NSFaceIDUsageDescription")
 
-        if usageDescription != nil {
+        if usageDescription == nil {
           warningMessage = "FaceID is available but has not been configured. To enable FaceID, provide `NSFaceIDUsageDescription`."
         }
       }
@@ -84,7 +84,7 @@ public class LocalAuthenticationModule: Module {
 
       context.interactionNotAllowed = false
 
-      let policyForAuth: LAPolicy = disableDeviceFallback ? LAPolicy.deviceOwnerAuthenticationWithBiometrics : LAPolicy.deviceOwnerAuthentication
+      let policyForAuth = disableDeviceFallback ? LAPolicy.deviceOwnerAuthenticationWithBiometrics : LAPolicy.deviceOwnerAuthentication
 
       if disableDeviceFallback {
         if warningMessage != nil {

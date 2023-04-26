@@ -1,6 +1,6 @@
 {
   "name": "ABI48_0_0EXDocumentPicker",
-  "version": "11.2.1",
+  "version": "11.2.2",
   "summary": "Provides access to the system's UI for selecting documents from the available providers on the user's device.",
   "description": "Provides access to the system's UI for selecting documents from the available providers on the user's device.",
   "license": "MIT",
