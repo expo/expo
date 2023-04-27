@@ -172,6 +172,7 @@ async function androidBuildAndSubmitAsync() {
     'android-keystore-alias.password'
   );
 
+  logger.info('Preparing credentials');
   try {
     await spawnAsync(
       'gsutil',
@@ -200,6 +201,7 @@ async function androidBuildAndSubmitAsync() {
     }
     throw err;
   }
+
   await spawnAsync(
     'eas',
     ['build', '--platform', 'android', '--profile', RELEASE_BUILD_PROFILE, '--auto-submit'],

@@ -3,6 +3,7 @@
 set -xeuo pipefail
 
 ROOT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )"/../../.. && pwd )"
+export PATH="$ROOT_DIR/bin:$PATH"
 
 if [ "$EAS_BUILD_PLATFORM" = "android" ]; then
   sudo apt-get -y update
@@ -21,11 +22,6 @@ if [ "$EAS_BUILD_PROFILE" = "release-client" ]; then
 fi
 
 cat << EOF > $ROOT_DIR/.gitmodules
-[submodule "docs/react-native-website"]
-  path = docs/react-native-website
-  url = https://github.com/facebook/react-native-website.git
-  branch = main
-  update = checkout
 [submodule "react-native-lab/react-native"]
   path = react-native-lab/react-native
   url = https://github.com/expo/react-native.git
@@ -41,3 +37,7 @@ fi
 
 pushd $ROOT_DIR/tools
 yarn
+
+if [ "$EAS_BUILD_PROFILE" = "release-client" ] && [ "$EAS_BUILD_PLATFORM" = "ios" ]; then
+  et remove-background-permissions-from-info-plists
+fi
