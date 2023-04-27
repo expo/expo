@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import { theme, typography, shadows } from '@expo/styleguide';
 import { spacing, borderRadius } from '@expo/styleguide-base';
 import { ChevronDownIcon } from '@expo/styleguide-icons';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/compat/router';
 
 import { A } from '../Text';
 
@@ -33,9 +33,9 @@ const STYLES_SELECT = css({
 
 export const VersionSelector = () => {
   const { version = 'latest', hasVersion, setVersion } = usePageApiVersion();
-  const { pathname } = useRouter();
+  const router = useRouter();
 
-  if (!hasVersion && !isReferencePath(pathname)) {
+  if (!hasVersion && (!router?.pathname || !isReferencePath(router.pathname))) {
     return null;
   }
 

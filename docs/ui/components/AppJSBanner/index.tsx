@@ -3,7 +3,7 @@ import { Button, theme } from '@expo/styleguide';
 import { spacing } from '@expo/styleguide-base';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons';
 import isBefore from 'date-fns/isBefore';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/compat/router';
 import React from 'react';
 
 import { Background } from './Background';
@@ -14,7 +14,7 @@ export function AppJSBanner() {
   const router = useRouter();
   const appJSConfEndDate = new Date('2023-05-10');
   const showAppJSConfShoutout = isBefore(new Date(), appJSConfEndDate);
-  const isHomePage = router.pathname === '/';
+  const isHomePage = router?.pathname === '/';
 
   if (!showAppJSConfShoutout || !isHomePage) {
     return null;
