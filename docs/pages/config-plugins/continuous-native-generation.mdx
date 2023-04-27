@@ -1,0 +1,125 @@
+---
+title: Continuous Native Generation (CNG)
+description: Learn about Continuous Native Generation (CNG) and how it works.
+sidebar_title: Continuous Native Generation
+---
+
+Continuous Native Generation (CNG) is a native development pattern that streamlines the process of creating and managing native projects of any complexity, at scale.
+
+A single native project on its own is complicated to maintain, scale, and update. In a cross-platform app, you have multiple native projects that you must maintain and keep up to date with the latest operating system releases to avoid falling too far behind in any third-party dependencies.
+
+As your project grows, the complexity involved with each third-party dependency increases and makes the app nearly impossible to upgrade--this drastically slows down developer momentum, and encourages building less powerful apps.
+
+To combat these issues, we formalized a process called **Continuous Native Generation** (_CNG_ for short).
+
+Continuous Native Generation is an abstract concept that describes the process of generating ephemeral native projects from a set of inputs. The inputs are typically a combination of configuration and code, and the output is a native project that can be compiled into a native app. We coined this term to describe the process used by Expo Prebuild to generate native projects for React Native apps, but the concept is not limited to React Native, or cross-platform apps.
+
+> The goal of CNG is to enable developers to build more powerful apps without compromising on iteration speed.
+
+## Implementation
+
+Continuous Native Generation should be thought of as a pattern, not a specific implementation. The pattern is as follows:
+
+1. A developer writes a configuration file that describes the native project they want to generate.
+2. The configuration file is passed to a tool that generates the native source code and configuration.
+3. The native project is compiled into a native app.
+4. The generated source code and configuration are discarded.
+
+The reference implementation comes from the Expo framework, specifically Expo Config Plugins, which has been proven to work at scale with extensive adoption:
+
+<a
+  aria-label="Expo Config Plugins downloads"
+  href="http://www.npmtrends.com/@expo/config-plugins"
+  target="_blank">
+  <img
+    alt="Downloads"
+    src="https://img.shields.io/npm/dm/@expo/config-plugins.svg?style=flat-square&labelColor=gray&color=33CC12&label=Downloads"
+  />
+</a>
+
+> Note: NPM downloads do not exactly reflect the number of users, but it's a rough estimate of adoption.
+
+## Usage in Expo
+
+Expo supports **Continuous Native Generation** by combining the following tools:
+
+1. The [Expo Config][expo-config] file (`app.json`, `app.config.js`).
+2. Arguments passed to the `npx expo prebuild` command.
+3. Version of `expo` that's installed in the project and its corresponding [prebuild template](#templates).
+4. [Autolinking][autolinking], for linking [native modules][native-modules] found in the `package.json`.
+5. Native Subscribers, for reducing native code side-effects in entry files.
+
+This boils down to a workflow where a user can express any native application with the `app.json` and generate that project--continuously--by running `npx expo prebuild`.
+
+Community Adoption
+The React Native community can adopt Continuous Native Generation (CNG) in various ways, depending on the complexity of their libraries. Here, we outline different scenarios for library adoption.
+
+No Native Code or Configuration Side Effects: Libraries without native code or configuration side effects, such as react-native-blurhash, can seamlessly integrate with npx expo prebuild. They can rely on Node Module Resolution and [Expo Autolinking][autolinking] to link into the native project without requiring any additional configuration.
+
+Native Code or Configuration Side Effects: Libraries with native code or configuration side effects can adopt CNG by creating [Expo Config Plugins][config-plugins] for their libraries. This approach enables library authors to automate the configuration side effects and allows users to install a library with all required configuration side effects added to their native project automatically.
+
+Libraries Dependent on Native Runtime Hooks: Libraries that depend on specific native runtime hooks, such as intercepting the initial launch URL, can utilize Native App Subscribers to minimize the side effects of their library.
+
+While library authors' adoption of CNG is not a prerequisite for using npx expo prebuild, it significantly enhances the user experience. If a library author has not yet adopted CNG, users can still use npx expo prebuild by creating local Config Plugins to modify the native generation pipeline. This flexibility ensures that the adoption of CNG is accessible and beneficial to all users within the React Native community.
+
+## Success
+
+CNG is designed to empower developers to build better apps than they normally could, by fragmenting architecture into testable and maintainable pieces. This allows developers to build more powerful apps without compromising on iteration speed.
+
+This pattern has been proven to work in the Expo community in the following ways.
+
+### Upgrades
+
+React Native developers who don't use continuous native generation have reported that upgrading their apps to the latest version of React Native is the number one weakness of the library. cite: [React Native Survey (2022)](https://results.stateofreactnative.com/opinions/opinions_pain_points).
+
+Expo developers, using CNG via the `npx expo prebuild` command have remarked that upgrading their complex native apps is nearly as easy as updating a website.
+
+### Features
+
+The community has been able to convert difficult native features into simple configuration files, which has allowed developers to build more powerful apps without compromising on iteration speed.
+
+Here are a few impressive examples:
+
+- [iOS Safari Extensions](https://github.com/andrew-levy/react-native-safari-extension) -- here we can see the process of creating a Safari Extension for iOS, which is a notoriously difficult feature to implement, boiled down to a couple lines of json.
+- [iMessage Sticker App](https://github.com/expo/config-plugins/tree/main/packages/ios-stickers) -- This Expo Config Plugin can generate an entire iMessage Sticker App from a JSON object.
+- [Cross-platform End-2-End testing](https://github.com/expo/config-plugins/tree/main/packages/detox) -- Configure native apps to support E2E testing with Detox in a single-line.
+- [Entire Firebase suite](https://rnfirebase.io/) -- Here you can see the entire native Firebase suite going from a multi-step native process across multiple IDEs, down to basic JSON configuration.
+- [Cross-platform Homescreen Widgets](https://github.com/gaishimo/eas-widget-example) -- This Expo Config Plugin can generate a homescreen widget for iOS and Android.
+- [Notification extension and code signing](https://github.com/OneSignal/onesignal-expo-plugin) -- this Expo Config Plugin not only generates a notification extension target on iOS, but it also augments the EAS credentials service to keep zero-config code signing working.
+- [Apple App Clips](https://github.com/bndkt/react-native-app-clip) -- this Expo Config Plugin takes the process of generating an Apple App Clip from a multi-step process, ranging across multiple targets, and shakes it down to a single line `["react-native-app-clip", { "name": "My App Clip" }]`.
+
+At any point these features can be easily added, and just as easily removed, without any side effects.
+Continuous Native Generation allows developers to experiment with complex features, and iterate on them quickly without worrying about the long-term maintenance costs or potential orphaned code in their project or uncommited native caches.
+
+This nets out to better apps, built faster.
+
+## Frequently Asked Questions
+
+### Is Continuous Native Generation (CNG) limited to React Native projects?
+
+No, CNG is a versatile pattern that can be applied to any native project. While Expo Prebuild is a tool that implements CNG specifically for React Native projects, the concept itself is not limited to this framework.
+
+### Can CNG be used for operating systems other than iOS and Android?
+
+Absolutely! CNG is an abstract concept that can be applied to any operating system. Take Expo for example, although Expo Prebuild officially implements CNG for iOS and Android, it also provides abstract platform support for users to create implementations for additional platforms.
+
+### Is using Expo a requirement for CNG?
+
+Not at all. CNG is an open pattern that can be adopted by any community. We've defined the pattern abstractly to help other communities understand how they can adopt CNG for their own projects.
+
+### How does CNG compare to web development patterns like Static Site Generation (SSG)?
+
+CNG shares similarities with SSG in that it generates a project from a set of inputs. However, CNG differs from SSG in its output; it generates native runtime code instead of static website code. This means the native project is generated on-demand, and the generated source code and configuration are discarded once the native project is compiled into a native app.
+
+### Is it possible to use CNG with an existing brownfield project?
+
+CNG is designed to manage the entire state of a native project continuously. As a result, it's not intended for use with existing brownfield projects. However, you can use CNG to generate a new native project, which can then be integrated into an existing brownfield project.
+
+[config-plugins-repo]: https://github.com/expo/config-plugins
+[template]: https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum
+[native-modules]: /more/glossary-of-terms/#native-module
+[autolinking]: /more/glossary-of-terms#autolinking
+[eas]: /eas
+[expo-go]: https://expo.dev/expo-go
+[config-plugins]: /config-plugins/introduction/
+[expo-config]: /workflow/configuration/
