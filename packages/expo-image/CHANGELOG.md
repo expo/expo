@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fix for the "limited" media library permission. ([#22261](https://github.com/expo/expo/pull/22261) by [@tsapeta](https://github.com/tsapeta))
-
 ### 💡 Others
+
+## 1.2.2 — 2023-04-27
+
+### 🐛 Bug fixes
+
+- Fix for the "limited" media library permission. ([#22261](https://github.com/expo/expo/pull/22261) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.2.1 — 2023-04-17
 
