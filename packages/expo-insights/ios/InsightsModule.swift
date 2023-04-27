@@ -44,7 +44,7 @@ public final class InsightsModule: Module {
  Sends an event with the given name and data.
  */
 private func dispatchEvent(projectId: String, eventName: String, data: [String: String?]) async throws {
-  let endpointUrl = "https://staging-i.expo.dev/v1/c/\(projectId)"
+  let endpointUrl = "https://i.expo.dev/v1/c/\(projectId)"
 
   guard var urlComponents = URLComponents(string: endpointUrl) else {
     log.warn("Insights: The URL for the HTTP endpoint is invalid: \(endpointUrl)")

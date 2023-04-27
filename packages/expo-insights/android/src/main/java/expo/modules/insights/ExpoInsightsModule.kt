@@ -62,7 +62,7 @@ class ExpoInsightsModule : Module() {
    */
   private suspend fun dispatchEvent(projectId: String, eventName: String, data: Map<String, String?>) {
     val endpointUrl = Uri
-      .parse("https://staging-i.expo.dev/v1/c/$projectId")
+      .parse("https://i.expo.dev/v1/c/$projectId")
       .buildUpon()
       .apply {
         data.forEach { (key, value) ->
