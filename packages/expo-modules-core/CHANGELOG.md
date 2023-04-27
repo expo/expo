@@ -15,6 +15,7 @@
 
 - [Android] Improve the initial loading speed of the native view. ([#22153](https://github.com/expo/expo/pull/22153) by [@lukmccall](https://github.com/lukmccall))
 - Fixed build errors on React Native 0.72.x. ([#22170](https://github.com/expo/expo/pull/22170), [#22189](https://github.com/expo/expo/pull/22189) by [@kudo](https://github.com/kudo))
+- [Android] Fixed argument trailing not working correctly when all parameters are optional.
 
 ### 💡 Others
 
