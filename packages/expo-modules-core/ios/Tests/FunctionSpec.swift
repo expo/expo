@@ -265,6 +265,10 @@ class FunctionSpec: ExpoSpec {
               }
             }
           }
+
+          Function("withFunction") { (fn: JavaScriptFunction<String>) -> String in
+            return try fn.call("foo", "bar")
+          }
         })
       }
 
@@ -289,6 +293,13 @@ class FunctionSpec: ExpoSpec {
 
         expect(result.kind) == .number
         expect(result.getInt()) == initialValue + 1
+      }
+
+      it("takes JavaScriptFunction argument") {
+        let value = try runtime.eval("expo.modules.TestModule.withFunction((a, b) => a + b)")
+
+        expect(value.kind) == .string
+        expect(value.getString()) == "foobar"
       }
     }
   }

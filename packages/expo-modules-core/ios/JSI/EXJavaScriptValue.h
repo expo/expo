@@ -9,6 +9,7 @@ namespace jsi = facebook::jsi;
 #endif // __cplusplus
 
 @class EXJavaScriptRuntime;
+@class EXRawJavaScriptFunction;
 @class EXJavaScriptTypedArray;
 
 /**
@@ -49,6 +50,7 @@ NS_SWIFT_NAME(JavaScriptValue)
 - (nonnull NSArray<EXJavaScriptValue *> *)getArray;
 - (nonnull NSDictionary<NSString *, id> *)getDictionary;
 - (nonnull EXJavaScriptObject *)getObject;
+- (nonnull EXRawJavaScriptFunction *)getFunction;
 - (nullable EXJavaScriptTypedArray *)getTypedArray;
 
 #pragma mark - Helpers
