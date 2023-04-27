@@ -99,7 +99,7 @@ export const openLink = (url: string, isExternal: boolean = false) => {
   link.click();
 };
 
-const ReferencePathChunks = ['/versions/', '/modules/', '/more/'] as const;
+const ReferencePathChunks = ['/versions/', '/more/'] as const;
 
 export const isReferencePath = (url: string) => {
   return ReferencePathChunks.some(pathChunk => url.includes(pathChunk));
