@@ -33,8 +33,8 @@ export default function App() {
     if (checkResult.isAvailable) {
       setUpdateMessage(
         `checkForUpdateAsync found a new update: manifest = \n${manifestToString(
-          checkResult.manifest,
-        )}...`,
+          checkResult.manifest
+        )}...`
       );
     } else {
       setUpdateMessage('No new update available');
@@ -65,9 +65,7 @@ export default function App() {
     } else if (event.type === Updates.UpdateEventType.NO_UPDATE_AVAILABLE) {
       setUpdateMessage('No new update available');
     } else if (event.type === Updates.UpdateEventType.UPDATE_AVAILABLE) {
-      setUpdateMessage(
-        `New update available\n${manifestToString(event.manifest)}`,
-      );
+      setUpdateMessage(`New update available\n${manifestToString(event.manifest)}`);
       setUpdateAvailable(true);
     }
   };
@@ -81,9 +79,7 @@ export default function App() {
 
   const handleDownloadButtonPress = () => {
     downloadAndRunUpdate().catch((error) => {
-      setUpdateMessage(
-        `Error downloading and running update: ${error.message}`,
-      );
+      setUpdateMessage(`Error downloading and running update: ${error.message}`);
     });
   };
 
@@ -160,7 +156,7 @@ const manifestToString = (manifest?: Updates.Manifest) => {
           metadata: manifest.metadata,
         },
         null,
-        2,
+        2
       )
     : 'null';
 };

@@ -51,4 +51,11 @@ abstract class JSONDataDao {
       _insertJSONData(JSONDataEntity(entry.key, entry.value, Date(), scopeKey))
     }
   }
+
+  @Transaction
+  open fun updateJSONStringForKey(key: String, scopeKey: String, updater: (previousValue: String?) -> String) {
+    val previousValue = loadJSONStringForKey(key, scopeKey)
+    _deleteJSONDataForKey(key, scopeKey)
+    _insertJSONData(JSONDataEntity(key, updater(previousValue), Date(), scopeKey))
+  }
 }

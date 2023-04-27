@@ -204,7 +204,7 @@ class FileDownloaderManifestParsingSpec : ExpoSpec {
         expect(resultUpdateResponse?.directiveUpdateResponsePart).to(beNil())
       }
 
-      fit("multipart body empty") {
+      it("multipart body empty") {
         let config = UpdatesConfig.config(fromDictionary: [
           UpdatesConfig.EXUpdatesConfigUpdateUrlKey: "https://exp.host/@test/test",
         ])

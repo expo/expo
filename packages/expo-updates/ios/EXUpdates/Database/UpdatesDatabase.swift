@@ -543,18 +543,27 @@ public final class UpdatesDatabase: NSObject {
   }
 
   public func setExtraParam(key: String, value: String?, withScopeKey scopeKey: String) throws {
-    var extraParamsToWrite = try extraParams(withScopeKey: scopeKey) ?? [:]
-    if let value = value {
-      extraParamsToWrite[key] = value
-    } else {
-      extraParamsToWrite.removeValue(forKey: key)
+    sqlite3_exec(db, "BEGIN;", nil, nil, nil)
+
+    do {
+      var extraParamsToWrite = try extraParams(withScopeKey: scopeKey) ?? [:]
+      if let value = value {
+        extraParamsToWrite[key] = value
+      } else {
+        extraParamsToWrite.removeValue(forKey: key)
+      }
+
+      // ensure that this can be serialized to a structured-header dictionary
+      // this will throw for invalid values
+      _ = try StringStringDictionarySerializer.serialize(dictionary: extraParamsToWrite)
+
+      _ = try setJsonData(extraParamsToWrite, withKey: UpdatesDatabase.ExtraParmasKey, scopeKey: scopeKey, isInTransaction: true)
+    } catch {
+      sqlite3_exec(db, "ROLLBACK;", nil, nil, nil)
+      throw error
     }
 
-    // ensure that this can be serialized to a structured-header dictionary
-    // this will throw for invalid values
-    _ = try StringStringDictionarySerializer.serialize(dictionary: extraParamsToWrite)
-
-    return try setJsonData(extraParamsToWrite, withKey: UpdatesDatabase.ExtraParmasKey, scopeKey: scopeKey, isInTransaction: false)
+    sqlite3_exec(db, "COMMIT;", nil, nil, nil)
   }
 
   internal func setMetadata(withResponseHeaderData responseHeaderData: ResponseHeaderData, scopeKey: String) throws {
