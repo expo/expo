@@ -465,7 +465,7 @@ export interface IOS {
     [k: string]: any;
   };
   /**
-   * Specifies the JavaScript engine for iOS apps. Supported only on EAS Build. Defaults to `jsc`. Valid values: `hermes`, `jsc`.
+   * Specifies the JavaScript engine for iOS apps. Supported only on EAS Build. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
    */
   jsEngine?: 'hermes' | 'jsc';
   /**
@@ -739,7 +739,7 @@ export interface Android {
    */
   softwareKeyboardLayoutMode?: 'resize' | 'pan';
   /**
-   * Specifies the JavaScript engine for Android apps. Supported only on EAS Build and in Expo Go. Defaults to `jsc`. Valid values: `hermes`, `jsc`.
+   * Specifies the JavaScript engine for Android apps. Supported only on EAS Build and in Expo Go. Defaults to `hermes`. Valid values: `hermes`, `jsc`.
    */
   jsEngine?: 'hermes' | 'jsc';
   /**
