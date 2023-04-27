@@ -45,15 +45,12 @@ const productionBaseUrl = 'https://exp.host/--/api/v2/';
 export default async function getExpoPushTokenAsync(options = {}) {
     const devicePushToken = options.devicePushToken || (await getDevicePushTokenAsync());
     const deviceId = options.deviceId || (await getDeviceIdAsync());
-    const experienceId = options.experienceId ||
-        Constants.expoConfig?.originalFullName ||
-        Constants.__unsafeNoWarnManifest?.id;
     const projectId = options.projectId || Constants.easConfig?.projectId;
     if (!projectId) {
         console.warn('Calling getExpoPushTokenAsync without specifying a projectId is deprecated and will no longer be supported in SDK 49+');
     }
-    if (!experienceId && !projectId) {
-        throw new CodedError('ERR_NOTIFICATIONS_NO_EXPERIENCE_ID', "No experienceId or projectId found. If one or the other can't be inferred from the manifest (eg. in bare workflow), you have to pass one in yourself.");
+    if (!projectId) {
+        throw new CodedError('ERR_NOTIFICATIONS_NO_EXPERIENCE_ID', "No projectId found. If projectId can't be inferred from the manifest (eg. in bare workflow), you have to pass it in yourself.");
     }
     const applicationId = options.applicationId || Application.applicationId;
     if (!applicationId) {
@@ -69,7 +66,7 @@ export default async function getExpoPushTokenAsync(options = {}) {
         development,
         appId: applicationId,
         deviceToken: getDeviceToken(devicePushToken),
-        ...(projectId ? { projectId } : { experienceId }),
+        projectId,
     };
     const response = await fetch(url, {
         method: 'POST',
