@@ -5,7 +5,7 @@ import {
   ChevronDownIcon,
   Moon01SolidIcon,
   SunSolidIcon,
-  ThemeAutoIcon,
+  Contrast02SolidIcon,
 } from '@expo/styleguide-icons';
 import { useEffect, useState } from 'react';
 
@@ -37,7 +37,7 @@ export const ThemeSelector = () => {
         <option value="dark">Dark</option>
       </select>
       <div css={selectIconStyle}>
-        {themeName === 'auto' && <ThemeAutoIcon className="icon-sm text-icon-default" />}
+        {themeName === 'auto' && <Contrast02SolidIcon className="icon-sm text-icon-default" />}
         {themeName === 'dark' && <Moon01SolidIcon className="icon-sm text-icon-default" />}
         {themeName === 'light' && <SunSolidIcon className="icon-sm text-icon-default" />}
       </div>

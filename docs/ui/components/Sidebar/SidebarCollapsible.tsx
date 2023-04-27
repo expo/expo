@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import { ButtonBase, theme, shadows } from '@expo/styleguide';
 import { spacing, borderRadius } from '@expo/styleguide-base';
 import { ChevronDownIcon } from '@expo/styleguide-icons';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/compat/router';
 import type { PropsWithChildren } from 'react';
 import { useEffect, useRef, useState } from 'react';
 
@@ -31,8 +31,8 @@ export function SidebarCollapsible(props: Props) {
 
     const isSectionActive = (section: NavigationRoute) => {
       const linkUrl = stripVersionFromPath(section.as || section.href);
-      const pathname = stripVersionFromPath(router.pathname);
-      const asPath = stripVersionFromPath(router.asPath);
+      const pathname = stripVersionFromPath(router?.pathname);
+      const asPath = stripVersionFromPath(router?.asPath);
 
       if (linkUrl === pathname || linkUrl === asPath) {
         result = true;

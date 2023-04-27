@@ -2,7 +2,7 @@ import { css } from '@emotion/react';
 import { theme, typography, LinkBase } from '@expo/styleguide';
 import { spacing } from '@expo/styleguide-base';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/compat/router';
 import type { PropsWithChildren } from 'react';
 import { useEffect, useRef } from 'react';
 
@@ -26,19 +26,22 @@ const isLinkInViewport = (element: HTMLAnchorElement) => {
 };
 
 export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
-  const { asPath, pathname } = useRouter();
+  const router = useRouter();
   const ref = useRef<HTMLAnchorElement>(null);
 
   const checkSelection = () => {
     // Special case for root url
     if (info.name === 'Introduction') {
-      if (asPath.match(/\/versions\/[\w.]+\/$/) || asPath === '/versions/latest/') {
+      if (router?.asPath.match(/\/versions\/[\w.]+\/$/) || router?.asPath === '/versions/latest/') {
         return true;
       }
     }
 
     const linkUrl = stripVersionFromPath(info.as || info.href);
-    return linkUrl === stripVersionFromPath(pathname) || linkUrl === stripVersionFromPath(asPath);
+    return (
+      linkUrl === stripVersionFromPath(router?.pathname) ||
+      linkUrl === stripVersionFromPath(router?.asPath)
+    );
   };
 
   const isSelected = checkSelection();

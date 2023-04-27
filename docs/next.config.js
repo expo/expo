@@ -1,5 +1,5 @@
 import fsExtra from 'fs-extra';
-import { info as logInfo } from 'next/dist/build/output/log.js';
+import NextLog from 'next/dist/build/output/log.js';
 import { join } from 'path';
 import rehypeSlug from 'rehype-slug';
 import remarkFrontmatter from 'remark-frontmatter';
@@ -25,7 +25,7 @@ const { VERSIONS } = readJsonSync('./public/static/constants/versions.json');
 const navigation = readJsonSync('./public/static/constants/navigation.json');
 
 copyAsLatest(version);
-logInfo(`Copied latest Expo SDK version from v${version}`);
+NextLog.info(`Copied latest Expo SDK version from v${version}`);
 
 const removeConsole =
   process.env.NODE_ENV !== 'development'
@@ -42,7 +42,6 @@ export default {
     // note(simek): would be nice enhancement, but it breaks the `@next/font` styles currently,
     // and results in font face swap on every page reload
     optimizeCss: false,
-    fontLoaders: [{ loader: '@next/font/google', options: { subsets: ['latin'] } }],
   },
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   compiler: {
@@ -124,7 +123,7 @@ export default {
       // Some of our pages are "hidden" and should not be added to the sitemap
       pathsHidden: [...navigation.previewDirectories, ...navigation.archiveDirectories],
     });
-    logInfo(`📝 Generated sitemap with ${sitemapEntries.length} entries`);
+    NextLog.info(`📝 Generated sitemap with ${sitemapEntries.length} entries`);
 
     return pathMap;
   },

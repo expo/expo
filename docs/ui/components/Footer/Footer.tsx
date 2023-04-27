@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/compat/router';
 
 import { ForumsLink, EditPageLink, IssuesLink } from './Links';
 
@@ -15,8 +15,8 @@ type Props = {
 };
 
 export const Footer = ({ title, sourceCodeUrl, packageName }: Props) => {
-  const { pathname } = useRouter();
-  const isAPIPage = pathname.includes('/sdk/');
+  const router = useRouter();
+  const isAPIPage = router?.pathname.includes('/sdk/') ?? false;
   const isExpoPackage = packageName && packageName.startsWith('expo-');
 
   return (
@@ -26,7 +26,7 @@ export const Footer = ({ title, sourceCodeUrl, packageName }: Props) => {
         {isAPIPage && (
           <IssuesLink title={title} repositoryUrl={isExpoPackage ? undefined : sourceCodeUrl} />
         )}
-        <EditPageLink pathname={pathname} />
+        {router?.pathname && <EditPageLink pathname={router.pathname} />}
       </UL>
       <PageVote />
       {!NEWSLETTER_DISABLED && <NewsletterSignUp />}
