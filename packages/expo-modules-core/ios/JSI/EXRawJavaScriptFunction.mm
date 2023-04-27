@@ -13,7 +13,7 @@
   __weak EXJavaScriptRuntime *_runtime;
 
   /**
-   Shared pointer to the `WeakRef` JS object. Available only on JSC engine.
+   Shared pointer to the underlying JSI function.
    */
   std::shared_ptr<jsi::Function> _function;
 }
