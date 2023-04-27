@@ -50,7 +50,7 @@ export default async function getExpoPushTokenAsync(options = {}) {
         console.warn('Calling getExpoPushTokenAsync without specifying a projectId is deprecated and will no longer be supported in SDK 49+');
     }
     if (!projectId) {
-        throw new CodedError('ERR_NOTIFICATIONS_NO_EXPERIENCE_ID', "No projectId found. If projectId can't be inferred from the manifest (eg. in bare workflow), you have to pass it in yourself.");
+        throw new CodedError('ERR_NOTIFICATIONS_NO_EXPERIENCE_ID', "No 'projectId' found. If 'projectId' can't be inferred from the manifest (eg. in bare workflow), you have to pass it in yourself.");
     }
     const applicationId = options.applicationId || Application.applicationId;
     if (!applicationId) {

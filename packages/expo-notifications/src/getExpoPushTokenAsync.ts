@@ -63,7 +63,7 @@ export default async function getExpoPushTokenAsync(
   if (!projectId) {
     throw new CodedError(
       'ERR_NOTIFICATIONS_NO_EXPERIENCE_ID',
-      "No projectId found. If projectId can't be inferred from the manifest (eg. in bare workflow), you have to pass it in yourself."
+      "No 'projectId' found. If 'projectId' can't be inferred from the manifest (eg. in bare workflow), you have to pass it in yourself."
     );
   }
 
