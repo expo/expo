@@ -2,6 +2,7 @@ import crypto from 'crypto';
 import type { Module } from 'metro';
 import { getJsOutput, isJsModule } from 'metro/src/DeltaBundler/Serializers/helpers/js';
 import path from 'path';
+
 import { pathToHtmlSafeName } from './transform-worker/css';
 
 export type ReadOnlyDependencies<T = any> = Map<string, Module<T>>;

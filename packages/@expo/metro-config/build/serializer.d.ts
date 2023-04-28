@@ -1,9 +1,3 @@
-/**
- * Copyright © 2022 650 Industries.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
 import type { Graph, Module, SerializerOptions } from 'metro';
 import { ConfigT, InputConfigT } from 'metro-config';
 import { SerialAsset } from './getCssDeps';
@@ -22,11 +16,11 @@ export declare function writeSerialAssets(assets: SerialAsset[], { outputDir }: 
 export declare function htmlFromSerialAssets(assets: SerialAsset[], { dev, template, bundleUrl }: {
     dev: boolean;
     template: string;
-    bundleUrl: string;
+    bundleUrl?: string;
 }): string;
 export declare function appendLinkToHtml(html: string, links: {
     rel: string;
     href: string;
     as?: string;
 }[]): string;
-export {};
+export { SerialAsset };

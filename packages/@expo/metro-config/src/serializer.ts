@@ -4,6 +4,7 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
+import fs from 'fs';
 import type { Graph, MixedOutput, Module, SerializerOptions } from 'metro';
 import { ConfigT, InputConfigT } from 'metro-config';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
@@ -12,8 +13,7 @@ import countLines from 'metro/src/lib/countLines';
 import path from 'path';
 
 import { env } from './env';
-import { fileNameFromContents, getCssModules, hashString, SerialAsset } from './getCssDeps';
-import { pathToHtmlSafeName } from './transform-worker/css';
+import { fileNameFromContents, getCssModules, SerialAsset } from './getCssDeps';
 
 const debug = require('debug')('expo:metro-config:serializer') as typeof console.log;
 
@@ -179,17 +179,17 @@ function getDefaultSerializer(): Serializer {
   return (...props: SerializerParameters): string | any => {
     const bundle = baseJSBundle(...props);
     const [, , graph, options] = props;
+    const outputCode = bundleToString(bundle).code;
     if (!options.sourceUrl) {
-      return bundleToString(bundle).code;
+      return outputCode;
     }
     const url = new URL(options.sourceUrl, 'https://expo.dev');
     if (
       url.searchParams.get('platform') !== 'web' ||
       url.searchParams.get('serializer.export') !== 'html'
     ) {
-      console.log('return js:', options.sourceUrl);
       // Default behavior if `serializer.export=html` is not present in the URL.
-      return bundleToString(bundle).code;
+      return outputCode;
     }
 
     const cssDeps = getCssModules(graph.dependencies, {
@@ -197,7 +197,7 @@ function getDefaultSerializer(): Serializer {
       processModuleFilter: options.processModuleFilter,
     });
 
-    const jsCode = ''; //bundleToString(bundle).code;
+    const jsCode = outputCode;
     const jsAsset: SerialAsset = {
       filename: options.dev
         ? 'index.js'
@@ -211,7 +211,6 @@ function getDefaultSerializer(): Serializer {
       source: jsCode,
     };
 
-    console.log('return html:', options.sourceUrl);
     return JSON.stringify([jsAsset, ...cssDeps]);
   };
 }
@@ -220,6 +219,8 @@ export function createSerializerFromSerialProcessors(
   processors: (SerialProcessor | undefined)[],
   serializer?: Serializer
 ): Serializer {
+  const finalSerializer = getDefaultSerializer();
+  // const finalSerializer = serializer ?? getDefaultSerializer();
   return (...props: SerializerParameters): ReturnType<Serializer> => {
     for (const processor of processors) {
       if (processor) {
@@ -227,13 +228,9 @@ export function createSerializerFromSerialProcessors(
       }
     }
 
-    const finalSerializer = getDefaultSerializer();
-    // const finalSerializer = serializer ?? getDefaultSerializer();
     return finalSerializer(...props);
   };
 }
-
-import fs from 'fs';
 
 export function writeSerialAssets(assets: SerialAsset[], { outputDir }: { outputDir: string }) {
   assets.forEach((asset) => {
@@ -245,7 +242,7 @@ export function writeSerialAssets(assets: SerialAsset[], { outputDir }: { output
 
 export function htmlFromSerialAssets(
   assets: SerialAsset[],
-  { dev, template, bundleUrl }: { dev: boolean; template: string; bundleUrl: string }
+  { dev, template, bundleUrl }: { dev: boolean; template: string; bundleUrl?: string }
 ) {
   // Combine the CSS modules into tags that have hot refresh data attributes.
   const styleString = assets
@@ -299,3 +296,5 @@ export function appendLinkToHtml(
       .join('') + '</head>'
   );
 }
+
+export { SerialAsset };

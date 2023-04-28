@@ -42,12 +42,6 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
   await devServerManager.stopAsync();
 }
 
-async function getExpoRoutesAsync(devServerManager: DevServerManager) {
-  const server = devServerManager.getDefaultDevServer();
-  assert(server instanceof MetroBundlerDevServer);
-  return server.getRoutesAsync();
-}
-
 /** Match `(page)` -> `page` */
 function matchGroupName(name: string): string | undefined {
   return name.match(/^\(([^/]+?)\)$/)?.[1];
@@ -88,15 +82,7 @@ export async function getFilesToExportFromServerAsync({
 
       try {
         const data = await renderAsync(pathname);
-
         files.set(outputPath, data);
-
-        // data.resources.forEach((asset) => {
-        //   // There are going to be a lot of duplicates until we have bundle splitting.
-        //   if (!files.has(asset.filename)) {
-        //     files.set(asset.filename, asset.source);
-        //   }
-        // });
       } catch (e: any) {
         // TODO: Format Metro error message better...
         Log.error('Failed to statically render route:', pathname);
@@ -136,7 +122,7 @@ export async function getFilesToExportFromServerAsync({
       }
 
       // TODO: handle dynamic routes
-      if (segment !== '*') {
+      if (!segment.startsWith('*')) {
         await fetchScreenAsync({ segment, filename });
       }
       return null;

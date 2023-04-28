@@ -67,11 +67,13 @@ export function createBundleUrlPath({
   mainModuleName,
   mode,
   minify = mode === 'production',
+  environment,
 }: {
   platform: string;
   mainModuleName: string;
   mode: string;
   minify?: boolean;
+  environment?: string;
 }): string {
   const queryParams = new URLSearchParams({
     platform: encodeURIComponent(platform),
@@ -82,6 +84,10 @@ export function createBundleUrlPath({
 
   if (minify) {
     queryParams.append('minify', String(minify));
+  }
+  if (environment) {
+    queryParams.append('resolver.environment', environment);
+    queryParams.append('transform.environment', environment);
   }
 
   return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;

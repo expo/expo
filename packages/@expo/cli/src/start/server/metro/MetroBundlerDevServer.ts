@@ -32,9 +32,8 @@ import { typescriptTypeGeneration } from '../type-generation';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
-import { htmlFromSerialAssets } from '@expo/metro-config/build/serializer';
+import { htmlFromSerialAssets, SerialAsset } from '@expo/metro-config/build/serializer';
 import { createBundleUrlPath, resolveMainModuleName } from '../middleware/ManifestMiddleware';
-import { SerialAsset } from '@expo/metro-config/build/getCssDeps';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -80,36 +79,22 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     mode,
     resources,
     template,
+    devBundleUrl,
   }: {
     mode: 'development' | 'production';
     resources: SerialAsset[];
     template: string;
+    devBundleUrl?: string;
   }) {
     const isDev = mode === 'development';
     return htmlFromSerialAssets(resources, {
       dev: isDev,
       template,
-      bundleUrl: isDev
-        ? createBundleUrlPath({
-            platform: 'web',
-            mode,
-            mainModuleName: resolveMainModuleName(
-              this.projectRoot,
-              getConfig(this.projectRoot),
-              'web'
-            ),
-          })
-        : undefined,
+      bundleUrl: isDev ? devBundleUrl : undefined,
     });
   }
 
-  async getStaticRenderFunctionAsync({
-    mode,
-  }: // resources,
-  {
-    mode: 'development' | 'production';
-    // resources: SerialAsset[];
-  }) {
+  async getStaticRenderFunctionAsync({ mode }: { mode: 'development' | 'production' }) {
     const url = this.getDevServerUrl()!;
 
     const { getStaticContent } = await getStaticRenderFunctions(this.projectRoot, url, {
@@ -123,45 +108,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
   }
 
-  async getStaticPageWithResourcesAsync(
-    pathname: string[],
-    {
-      mode,
-      resources,
-    }: {
-      mode: 'development' | 'production';
-      resources: SerialAsset[];
-    }
-  ) {
-    const url = this.getDevServerUrl()!;
-    const bundleStaticHtml = async (): Promise<string[]> => {
-      const { getStaticContent } = await getStaticRenderFunctions(this.projectRoot, url, {
-        minify: mode === 'production',
-        dev: mode !== 'production',
-        // Ensure the API Routes are included
-        environment: 'node',
-      });
-      return Promise.all(pathname.map((pathname) => getStaticContent(new URL(pathname, url))));
-    };
-
-    return await Promise.all(
-      (
-        await bundleStaticHtml()
-      ).map((template) =>
-        this.composeResourcesWithHtml({
-          mode,
-          resources,
-          template,
-        })
-      )
-    );
-  }
-
   async getStaticResourcesAsync({ mode }: { mode: string }): Promise<SerialAsset[]> {
     const isDev = mode === 'development';
     const devBundleUrlPathname = createBundleUrlPath({
       platform: 'web',
       mode,
+      environment: 'client',
       mainModuleName: resolveMainModuleName(this.projectRoot, getConfig(this.projectRoot), 'web'),
     });
 
@@ -179,13 +131,11 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     try {
       return JSON.parse(txt);
-    } catch (error) {
-      console.log('error', error);
-      console.log('txt', txt);
+    } catch (error: any) {
+      // console.log('txt', txt);
+      Log.exception(error);
       throw error;
     }
-
-    //   return await results.json();
   }
 
   async getStaticPageAsync(
@@ -200,8 +150,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const devBundleUrlPathname = createBundleUrlPath({
       platform: 'web',
       mode,
+      environment: 'client',
       mainModuleName: resolveMainModuleName(this.projectRoot, getConfig(this.projectRoot), 'web'),
     });
+
     const bundleResources = async () => {
       const bundleUrl = new URL(devBundleUrlPathname, this.getDevServerUrl()!);
       bundleUrl.searchParams.set('platform', 'web');
@@ -217,8 +169,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       try {
         return JSON.parse(txt);
       } catch (error) {
-        console.log('error', error);
-        console.log('txt', txt);
+        Log.error(
+          'Failed to generate resources with Metro, the Metro config may not be using the correct serializer.'
+        );
+        debug(txt);
+        // console.log('error', error);
+        // console.log('txt', txt);
         throw error;
       }
     };
@@ -245,6 +201,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       mode,
       resources,
       template: staticHtml,
+      devBundleUrl: devBundleUrlPathname,
     });
 
     return {
@@ -360,7 +317,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           }
 
           try {
-            const { content } = await this.getStaticPageAsync(req.url!, {
+            const { content } = await this.getStaticPageAsync(req.url, {
               mode: options.mode ?? 'development',
             });
 
@@ -368,7 +325,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
             res.end(content);
             return;
           } catch (error: any) {
-            console.error(error);
             res.setHeader('Content-Type', 'text/html');
             res.end(getErrorResult(error));
           }
