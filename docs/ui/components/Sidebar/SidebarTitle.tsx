@@ -17,6 +17,6 @@ const STYLES_TITLE = css({
   position: 'relative',
   marginLeft: spacing[3],
   marginRight: -spacing[4],
-  paddingBottom: spacing[2],
+  paddingBottom: spacing[1],
   userSelect: 'none',
 });
