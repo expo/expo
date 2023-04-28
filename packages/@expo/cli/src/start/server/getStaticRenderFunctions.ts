@@ -9,8 +9,10 @@ import fetch from 'node-fetch';
 import path from 'path';
 import requireString from 'require-from-string';
 import resolveFrom from 'resolve-from';
+import { stripAnsi } from '../../utils/ansi';
 
 import { delayAsync } from '../../utils/delay';
+import { SilentError } from '../../utils/errors';
 import { memoize } from '../../utils/fn';
 import { profile } from '../../utils/profile';
 import { getMetroServerRoot } from './middleware/ManifestMiddleware';
@@ -116,6 +118,12 @@ export async function createMetroEndpointAsync(
   return url;
 }
 
+export class MetroNodeError extends Error {
+  constructor(message: string, public rawObject: any) {
+    super(message);
+  }
+}
+
 export async function requireFileContentsWithMetro(
   projectRoot: string,
   devServerUrl: string,
@@ -129,9 +137,10 @@ export async function requireFileContentsWithMetro(
   // TODO: Improve error handling
   if (res.status === 500) {
     const text = await res.text();
-    if (text.startsWith('{"originModulePath"')) {
+    if (text.startsWith('{"originModulePath"') || text.startsWith('{"type":"TransformError"')) {
       const errorObject = JSON.parse(text);
-      throw new Error(errorObject.message);
+
+      throw new MetroNodeError(stripAnsi(errorObject.message) ?? errorObject.message, errorObject);
     }
     throw new Error(`[${res.status}]: ${res.statusText}\n${text}`);
   }

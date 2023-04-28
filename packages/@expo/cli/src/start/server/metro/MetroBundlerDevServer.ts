@@ -105,7 +105,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       environment: 'node',
     });
     return async (path: string) => {
-      return getStaticContent(new URL(path, url));
+      return await getStaticContent(new URL(path, url));
     };
   }
 
@@ -123,7 +123,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     bundleUrl.searchParams.set('dev', String(isDev));
     bundleUrl.searchParams.set('minify', String(!isDev));
     bundleUrl.searchParams.set('serializer.output', 'static');
-    // bundleUrl.searchParams.set('resolver.environment', 'node');
 
     // Fetch the generated HTML from our custom Metro serializer
     const results = await fetch(bundleUrl.toString());
@@ -181,8 +180,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           'Failed to generate resources with Metro, the Metro config may not be using the correct serializer. Ensure the metro.config.js is extending the expo/metro-config and is not overriding the serializer.'
         );
         debug(txt);
-        // console.log('error', error);
-        // console.log('txt', txt);
         throw error;
       }
     };

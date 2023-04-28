@@ -89,6 +89,7 @@ export async function getErrorOverlayHtmlAsync({
     projectRoot,
     '@expo/metro-runtime/symbolicate'
   ));
+
   const stack = parseErrorStack(error.stack);
 
   const log = new LogBoxLog({
