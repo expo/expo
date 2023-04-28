@@ -147,7 +147,7 @@ You can compile your app locally with the `run` commands:
 - Smart log parsing shows warnings and errors from your project source code, unlike Xcode which surfaces hundreds of benign warnings from your node modules.
 - Fatal errors causing your app to crash will be surfaced in the terminal preventing the need to reproduce in Xcode.
 
-`expo run:ios` can only be run on a Mac, and Xcode must be installed. You can build the app in the cloud from any computer using `eas build -p ios`. Similarly, `expo run:android` requires Android Studio and Java to be installed and configured on your computer.
+`npx expo run:ios` can only be run on a Mac, and Xcode must be installed. You can build the app in the cloud from any computer using `eas build -p ios`. Similarly, `npx expo run:android` requires Android Studio and Java to be installed and configured on your computer.
 
 Building locally is useful for developing native modules and [debugging complex native issues](/debugging/runtime-issue/#native-debugging). Building remotely with `eas build` is a much more resilient option due to the pre-configured cloud environment.
 
@@ -181,7 +181,7 @@ You can debug the native Android project using native debugging tools by opening
 
 #### Compiling iOS
 
-An iOS app can have multiple **schemes** for representing different sub-apps like App Clips, watchOS apps, Safari Extensions, and so on. By default, `expo run:ios` will choose the scheme for your iOS app. You can pick a custom scheme with the `--scheme <my-scheme>` argument. If you pass in the `--scheme` argument alone, then Expo CLI will prompt you to choose a scheme from the list of available options in your Xcode project.
+An iOS app can have multiple **schemes** for representing different sub-apps like App Clips, watchOS apps, Safari Extensions, and so on. By default, `npx expo run:ios` will choose the scheme for your iOS app. You can pick a custom scheme with the `--scheme <my-scheme>` argument. If you pass in the `--scheme` argument alone, then Expo CLI will prompt you to choose a scheme from the list of available options in your Xcode project.
 
 The scheme you select will filter out which `--device` options show up in the selection prompt, for example, selecting an Apple TV scheme will only show available Apple TV devices.
 
@@ -371,7 +371,7 @@ From here, you can choose to generate basic project files like:
 | `EXPO_USE_PATH_ALIASES`             | **boolean** | <StatusTag status="experimental" note="SDK 49+" /><br/>Allow Metro to use the `compilerOptions.paths` and `compilerOptions.baseUrl` features from **tsconfig.json** or **jsconfig.json**) to enable import aliases and absolute imports.                                                                                                                                             |
 | `EXPO_USE_CUSTOM_INSPECTOR_PROXY`   | **boolean** | <StatusTag status="experimental" note="SDK 49+" /><br/>Use a customized inspector proxy with improved support for the Chrome DevTools protocol.<br/>This includes support for the network inspector.                                                                                                                                                                                 |
 | `EXPO_USE_TYPED_ROUTES`             | **boolean** | <StatusTag status="experimental" note="SDK 49+" /><br/>Generate TypeScript types for Expo Router.<br/>This includes support for the network inspector.                                                                                                                                                                                                                               |
-| `EXPO_NO_CLIENT_ENV_VARS`           | **boolean** | <StatusTag note="SDK 49+" /><br/>Prevent inlining `EXPO_PUBLIC_` environment variables in client bundles.                                                                                                                                                                                                                                                                            |
+| `EXPO_NO_CLIENT_ENV_VARS`           | **boolean** | <StatusTag status="experimental" note="SDK 49+" /><br/>Prevent inlining `EXPO_PUBLIC_` environment variables in client bundles.                                                                                                                                                                                                                                                                            |
 
 ## Telemetry
 

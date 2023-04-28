@@ -5,6 +5,7 @@
  * LICENSE file in the root directory of this source tree.
  */
 
+import chalk from 'chalk';
 import * as dotenv from 'dotenv';
 import { expand } from 'dotenv-expand';
 import * as fs from 'fs';
@@ -111,17 +112,24 @@ export function createControlledEnvironment() {
 
 export function getFiles(mode: string | undefined): string[] {
   if (!mode) {
-    throw new Error(
-      'The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI.'
+    console.error(
+      chalk.red(
+        'The NODE_ENV environment variable is required but was not specified. Ensure the project is bundled with Expo CLI or NODE_ENV is set.'
+      )
     );
+    console.error(chalk.red('Proceeding without mode-specific .env'));
   }
 
-  if (!mode || !['development', 'test', 'production'].includes(mode)) {
+  if (mode && !['development', 'test', 'production'].includes(mode)) {
     throw new Error(
       `Environment variable "NODE_ENV=${mode}" is invalid. Valid values are "development", "test", and "production`
     );
   }
 
+  if (!mode) {
+    // Support environments that don't respect NODE_ENV
+    return [`.env.local`, '.env'];
+  }
   // https://github.com/bkeepers/dotenv#what-other-env-files-can-i-use
   const dotenvFiles = [
     `.env.${mode}.local`,

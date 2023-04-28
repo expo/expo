@@ -14,7 +14,7 @@ You must ensure that you have [installed and configured the `react-native-unimod
 ### Add the package to your dependencies
 
 ```
-expo install expo-in-app-purchases
+npx expo install expo-in-app-purchases
 ```
 
 ### Configure for iOS
@@ -27,4 +27,4 @@ No additional set up necessary.
 
 # Contributing
 
-Contributions are very welcome! Please refer to guidelines described in the [contributing guide]( https://github.com/expo/expo#contributing).
+Contributions are very welcome! Please refer to guidelines described in the [contributing guide](https://github.com/expo/expo#contributing).

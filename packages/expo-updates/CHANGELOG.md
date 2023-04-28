@@ -12,6 +12,7 @@
 
 - Add rollback to embedded update directive. ([#21007](https://github.com/expo/expo/pull/21007), [#21652](https://github.com/expo/expo/pull/21652) by [@wschurman](https://github.com/wschurman))
 - Add support for extra params. ([#21837](https://github.com/expo/expo/pull/21837) by [@wschurman](https://github.com/wschurman))
+- New checkAutomatically constant. ([#22137](https://github.com/expo/expo/pull/22137) by [@douglowder](https://github.com/douglowder))
 
 ### 🐛 Bug fixes
 
@@ -20,6 +21,9 @@
 - iOS: Fix config plist overriding. ([#21702](https://github.com/expo/expo/pull/21702) by [@wschurman](https://github.com/wschurman))
 - Align properties for different UpdateEvent types. ([#21818](https://github.com/expo/expo/pull/21818) by [@douglowder](https://github.com/douglowder))
 - Improvement in stability of useUpdateEvents() hook. ([#21880](https://github.com/expo/expo/pull/21880) by [@douglowder](https://github.com/douglowder))
+- Copy native events before transforming them. ([#22162](https://github.com/expo/expo/pull/22162) by [@douglowder](https://github.com/douglowder))
+- Fix empty body no-op multipart response. ([#22227](https://github.com/expo/expo/pull/22227) by [@wschurman](https://github.com/wschurman))
+- Put extra data mutation in transaction. ([#22252](https://github.com/expo/expo/pull/22252) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
@@ -38,6 +42,8 @@
 - Fix E2E after Swift conversion. ([#21592](https://github.com/expo/expo/pull/21592) by [@douglowder](https://github.com/douglowder))
 - Fix iOS native debug after Swift conversion. ([#21602](https://github.com/expo/expo/pull/21602) by [@douglowder](https://github.com/douglowder))
 - Fix compilation errors and enable modules after Swift conversion. ([#21621](https://github.com/expo/expo/pull/21621) by [@wschurman](https://github.com/wschurman), [@douglowder](https://github.com/douglowder))
+- E2E tests for JS API. ([#22167](https://github.com/expo/expo/pull/22167) by [@douglowder](https://github.com/douglowder))
+- Android: Switch from deprecated `toLowerCase` to `lowercase` function ([#22225](https://github.com/expo/expo/pull/22225) by [@hbiede](https://github.com/hbiede))
 
 ## 0.16.4 - 2023-04-03
 

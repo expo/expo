@@ -6,15 +6,40 @@
 
 ### 🎉 New features
 
-- [Web] Add support for `require()` assets. ([#21798](https://github.com/expo/expo/pull/21798) by [@aleqsio](https://github.com/aleqsio))
-- Add `alt` prop as an alias to `accessibilityLabel`. ([#21884](https://github.com/expo/expo/pull/21884) by [@EvanBacon](https://github.com/EvanBacon))
-- [Web] Add `accessibilityLabel` support on web. ([#21884](https://github.com/expo/expo/pull/21884) by [@EvanBacon](https://github.com/EvanBacon))
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 1.2.2 — 2023-04-27
 
 ### 🐛 Bug fixes
 
-- [Web] Prevent breaking in static rendering environments. ([#21883](https://github.com/expo/expo/pull/21883) by [@EvanBacon](https://github.com/EvanBacon))
+- Fix for the "limited" media library permission. ([#22261](https://github.com/expo/expo/pull/22261) by [@tsapeta](https://github.com/tsapeta))
 
-### 💡 Others
+## 1.2.1 — 2023-04-17
+
+### 🐛 Bug fixes
+
+- [Android] Fix `url` property returned by the `onLoad` event. ([#22161](https://github.com/expo/expo/pull/22161) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fix images not loading after the app was foregrounded. ([#22159](https://github.com/expo/expo/pull/22159) by [@lukmccall](https://github.com/lukmccall))
+- [Android] Fixed image was loaded event if the view dimensions were 0. ([#22157](https://github.com/expo/expo/pull/22157) by [@lukmccall](https://github.com/lukmccall))
+- Fix generating the image from ThumbHash that starts with a slash character. ([#22160](https://github.com/expo/expo/pull/22160) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.2.0 — 2023-04-14
+
+### 🎉 New features
+
+- [Web] Add support for `require()` assets. ([#21798](https://github.com/expo/expo/pull/21798) by [@aleqsio](https://github.com/aleqsio))
+- Add `alt` prop as an alias to `accessibilityLabel`. ([#21884](https://github.com/expo/expo/pull/21884) by [@EvanBacon](https://github.com/EvanBacon))
+- [Web] Add `accessibilityLabel` support on web. ([#21884](https://github.com/expo/expo/pull/21884) by [@EvanBacon](https://github.com/EvanBacon))
+- Added `ThumbHash` support for Android, iOS and Web. ([#21952](https://github.com/expo/expo/pull/21952) by [@behenate](https://github.com/behenate))
+
+### 🐛 Bug fixes
+
+- [Web] Improve transition behavior when switching back and forth two sources. ([#22099](https://github.com/expo/expo/pull/22099) by [@aleqsio](https://github.com/aleqsio))
+- [Web] Prevent breaking in static rendering environments. ([#21883](https://github.com/expo/expo/pull/21883) by [@EvanBacon](https://github.com/EvanBacon))
+- [Android] Fixed image disappearing before navigation animation is complete. ([#22066](https://github.com/expo/expo/pull/22066) by [@sallen450](https://github.com/sallen450))
+- [Web] Fixed monorepo asset resolution in production for Metro web. ([#22094](https://github.com/expo/expo/pull/22094) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 1.1.0 — 2023-03-25
 

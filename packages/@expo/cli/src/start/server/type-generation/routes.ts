@@ -21,7 +21,7 @@ export const CAPTURE_GROUP_REGEX = /[\\(,](\w+?)(?=[,\\)])/g;
 
 export interface SetupTypedRoutesOptions {
   server: ServerLike;
-  metro: Server;
+  metro?: Server | null;
   typesDirectory: string;
   projectRoot: string;
 }
@@ -37,33 +37,35 @@ export async function setupTypedRoutes({
   const { filePathToRoute, staticRoutes, dynamicRoutes, addFilePath } =
     getTypedRoutesUtils(appRoot);
 
-  // Setup out watcher first
-  metroWatchTypeScriptFiles({
-    projectRoot: appRoot,
-    server,
-    metro,
-    eventTypes: ['add', 'delete', 'change'],
-    async callback({ filePath, type }) {
-      let shouldRegenerate = false;
-      if (type === 'delete') {
-        const route = filePathToRoute(filePath);
-        staticRoutes.delete(route);
-        dynamicRoutes.delete(route);
-        shouldRegenerate = true;
-      } else {
-        shouldRegenerate = addFilePath(filePath);
-      }
+  if (metro) {
+    // Setup out watcher first
+    metroWatchTypeScriptFiles({
+      projectRoot: appRoot,
+      server,
+      metro,
+      eventTypes: ['add', 'delete', 'change'],
+      async callback({ filePath, type }) {
+        let shouldRegenerate = false;
+        if (type === 'delete') {
+          const route = filePathToRoute(filePath);
+          staticRoutes.delete(route);
+          dynamicRoutes.delete(route);
+          shouldRegenerate = true;
+        } else {
+          shouldRegenerate = addFilePath(filePath);
+        }
 
-      if (shouldRegenerate) {
-        regenerateRouterDotTS(
-          typesDirectory,
-          new Set([...staticRoutes.values()].flatMap((v) => Array.from(v))),
-          new Set([...dynamicRoutes.values()].flatMap((v) => Array.from(v))),
-          new Set(dynamicRoutes.keys())
-        );
-      }
-    },
-  });
+        if (shouldRegenerate) {
+          regenerateRouterDotTS(
+            typesDirectory,
+            new Set([...staticRoutes.values()].flatMap((v) => Array.from(v))),
+            new Set([...dynamicRoutes.values()].flatMap((v) => Array.from(v))),
+            new Set(dynamicRoutes.keys())
+          );
+        }
+      },
+    });
+  }
 
   // Do we need to walk the entire tree on startup?
   // Idea: Store the list of files in the last write, then simply check Git for what files have changed
@@ -157,7 +159,9 @@ export function getTypedRoutesUtils(appRoot: string) {
       }
     };
 
-    addRoute(route, route);
+    if (!route.match(ARRAY_GROUP_REGEX)) {
+      addRoute(route, route);
+    }
 
     // Does this route have a group? eg /(group)
     if (route.includes('/(')) {

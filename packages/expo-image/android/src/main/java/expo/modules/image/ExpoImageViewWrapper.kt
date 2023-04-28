@@ -3,7 +3,6 @@ package expo.modules.image
 import android.annotation.SuppressLint
 import android.app.Activity
 import android.content.Context
-import android.graphics.Rect
 import android.graphics.drawable.Animatable
 import android.graphics.drawable.Drawable
 import android.os.Build
@@ -371,12 +370,10 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
       return sources.first()
     }
 
-    val selfRect = Rect(0, 0, width, height)
-    if (selfRect.isEmpty) {
+    val targetPixelCount = width * height
+    if (targetPixelCount == 0) {
       return null
     }
-
-    val targetPixelCount = selfRect.width() * selfRect.height()
 
     var bestSource: SourceMap? = null
     var bestFit = Double.MAX_VALUE
@@ -433,8 +430,8 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
 
     val sourceToLoad = bestSource?.createGlideModel(context)
     val placeholder = bestPlaceholder?.createGlideModel(context)
-    // We only clean the image when the source is set to null and we don't have a placeholder.
-    if ((bestSource == null || sourceToLoad == null) && placeholder == null) {
+    // We only clean the image when the source is set to null and we don't have a placeholder or the view is empty.
+    if (width == 0 || height == 0 || (bestSource == null || sourceToLoad == null) && placeholder == null) {
       firstView.recycleView()
       secondView.recycleView()
 
@@ -560,7 +557,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         .apply {
           if (placeholder != null) {
             thumbnail(requestManager.load(placeholder.glideData))
-            val newPlaceholderContentFit = if (bestPlaceholder.isBlurhash()) {
+            val newPlaceholderContentFit = if (bestPlaceholder.isBlurhash() || bestPlaceholder.isThumbhash()) {
               contentFit
             } else {
               placeholderContentFit
@@ -621,6 +618,7 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
   companion object {
     private var requestManager: RequestManager? = null
     private var appContextRef: WeakReference<AppContext?> = WeakReference(null)
+    private var activityRef: WeakReference<Activity?> = WeakReference(null)
 
     fun getOrCreateRequestManager(
       appContext: AppContext,
@@ -630,13 +628,15 @@ class ExpoImageViewWrapper(context: Context, appContext: AppContext) : ExpoView(
         ?: return createNewRequestManager(activity).also {
           requestManager = it
           appContextRef = WeakReference(appContext)
+          activityRef = WeakReference(activity)
         }
 
-      // Request manager was created using different activity
-      if (appContextRef.get() != appContext) {
+      // Request manager was created using different activity or app context
+      if (appContextRef.get() != appContext || activityRef.get() != activity) {
         return createNewRequestManager(activity).also {
           requestManager = it
           appContextRef = WeakReference(appContext)
+          activityRef = WeakReference(activity)
         }
       }
 

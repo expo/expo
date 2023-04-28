@@ -104,7 +104,7 @@ jobs:
         with:
           yarn-tools: 'true'
       - name: 🔎 Import issue to Linear
-        run: expotools import-github-issue-to-linear --issue "${{ github.event.issue.number }}"
+        run: expotools import-github-issue-to-linear --issue "${{ github.event.issue.number }}" --importer "${{ github.triggering_actor }}"
         env:
           GITHUB_TOKEN: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
           LINEAR_API_KEY: ${{ secrets.LINEAR_API_KEY }}
