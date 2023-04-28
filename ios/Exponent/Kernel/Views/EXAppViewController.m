@@ -45,7 +45,7 @@
 
 @import EXManifests;
 
-@import EXScreenOrientation;
+@import ExpoScreenOrientation;
 
 #define EX_INTERFACE_ORIENTATION_USE_MANIFEST 0
 
