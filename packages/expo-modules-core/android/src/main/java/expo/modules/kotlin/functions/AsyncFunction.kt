@@ -1,10 +1,16 @@
 package expo.modules.kotlin.functions
 
+import com.facebook.react.bridge.ReactContext
 import com.facebook.react.bridge.ReadableArray
+import com.facebook.react.uimanager.UIManagerHelper
+import com.facebook.react.uimanager.UIManagerModule
+import com.facebook.react.uimanager.common.UIManagerType
+import expo.modules.BuildConfig
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.ModuleHolder
 import expo.modules.kotlin.Promise
 import expo.modules.kotlin.exception.CodedException
+import expo.modules.kotlin.exception.Exceptions
 import expo.modules.kotlin.exception.FunctionCallException
 import expo.modules.kotlin.exception.UnexpectedException
 import expo.modules.kotlin.exception.exceptionDecorator
@@ -57,12 +63,7 @@ abstract class AsyncFunction(
       argsCount,
       desiredArgsTypes.map { it.getCppRequiredTypes() }.toTypedArray()
     ) { args, bridgePromise ->
-      val queue = when (queue) {
-        Queues.MAIN -> appContext.mainQueue
-        Queues.DEFAULT -> appContext.modulesQueue
-      }
-
-      queue.launch {
+      val functionBody = {
         try {
           exceptionDecorator({
             FunctionCallException(name, jsObject.name, it)
@@ -73,6 +74,28 @@ abstract class AsyncFunction(
           bridgePromise.reject(e)
         } catch (e: Throwable) {
           bridgePromise.reject(UnexpectedException(e))
+        }
+      }
+
+      if (queue == Queues.MAIN) {
+        if (!BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
+          val uiManager = UIManagerHelper.getUIManagerForReactTag(
+            appContext.reactContext as? ReactContext ?: throw Exceptions.ReactContextLost(),
+            UIManagerType.DEFAULT
+          ) as UIManagerModule
+
+          uiManager.addUIBlock {
+            functionBody()
+          }
+          return@registerAsyncFunction
+        }
+
+        appContext.mainQueue.launch {
+          functionBody()
+        }
+      } else {
+        appContext.modulesQueue.launch {
+          functionBody()
         }
       }
     }
