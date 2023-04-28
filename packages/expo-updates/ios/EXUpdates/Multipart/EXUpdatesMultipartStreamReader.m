@@ -103,7 +103,7 @@
       NSInteger bytesRead = [_stream read:buffer maxLength:bufferLen];
       if (bytesRead <= 0 || _stream.streamError) {
         [_stream close];
-        return YES;
+        return NO;
       }
       [content appendBytes:buffer length:bytesRead];
       continue;
