@@ -6,25 +6,15 @@ Object.defineProperty(exports, "__esModule", {
 Object.defineProperty(exports, "SerialAsset", {
   enumerable: true,
   get: function () {
-    return _getCssDeps().SerialAsset;
+    return _serializerAssets().SerialAsset;
   }
 });
-exports.appendLinkToHtml = appendLinkToHtml;
 exports.createSerializerFromSerialProcessors = createSerializerFromSerialProcessors;
 exports.getTransformEnvironment = getTransformEnvironment;
-exports.htmlFromSerialAssets = htmlFromSerialAssets;
 exports.replaceEnvironmentVariables = replaceEnvironmentVariables;
 exports.serializeWithEnvironmentVariables = serializeWithEnvironmentVariables;
 exports.withExpoSerializers = withExpoSerializers;
 exports.withSerialProcessors = withSerialProcessors;
-exports.writeSerialAssets = writeSerialAssets;
-function _fs() {
-  const data = _interopRequireDefault(require("fs"));
-  _fs = function () {
-    return data;
-  };
-  return data;
-}
 function _baseJSBundle() {
   const data = _interopRequireDefault(require("metro/src/DeltaBundler/Serializers/baseJSBundle"));
   _baseJSBundle = function () {
@@ -46,13 +36,6 @@ function _countLines() {
   };
   return data;
 }
-function _path() {
-  const data = _interopRequireDefault(require("path"));
-  _path = function () {
-    return data;
-  };
-  return data;
-}
 function _env() {
   const data = require("./env");
   _env = function () {
@@ -63,6 +46,13 @@ function _env() {
 function _getCssDeps() {
   const data = require("./getCssDeps");
   _getCssDeps = function () {
+    return data;
+  };
+  return data;
+}
+function _serializerAssets() {
+  const data = require("./serializerAssets");
+  _serializerAssets = function () {
     return data;
   };
   return data;
@@ -187,7 +177,7 @@ function withSerialProcessors(config, processors) {
     ...config,
     serializer: {
       ...config.serializer,
-      customSerializer: createSerializerFromSerialProcessors(processors, originalSerializer)
+      customSerializer: createSerializerFromSerialProcessors(processors)
     }
   };
 }
@@ -222,9 +212,8 @@ function getDefaultSerializer() {
     return JSON.stringify([jsAsset, ...cssDeps]);
   };
 }
-function createSerializerFromSerialProcessors(processors, serializer) {
+function createSerializerFromSerialProcessors(processors) {
   const finalSerializer = getDefaultSerializer();
-  // const finalSerializer = serializer ?? getDefaultSerializer();
   return (...props) => {
     for (const processor of processors) {
       if (processor) {
@@ -233,53 +222,5 @@ function createSerializerFromSerialProcessors(processors, serializer) {
     }
     return finalSerializer(...props);
   };
-}
-function writeSerialAssets(assets, {
-  outputDir
-}) {
-  assets.forEach(asset => {
-    const output = _path().default.join(outputDir, asset.filename);
-    _fs().default.mkdirSync(_path().default.dirname(output), {
-      recursive: true
-    });
-    _fs().default.writeFileSync(output, asset.source);
-  });
-}
-function htmlFromSerialAssets(assets, {
-  dev,
-  template,
-  bundleUrl
-}) {
-  // Combine the CSS modules into tags that have hot refresh data attributes.
-  const styleString = assets.filter(asset => asset.type === 'css').map(({
-    metadata,
-    filename,
-    source
-  }) => {
-    if (dev) {
-      // TODO: No data id in prod
-      return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
-    } else {
-      return [`<link rel="preload" href="${filename}" as="style">`, `<link rel="stylesheet" href="${filename}">`].join('');
-    }
-  }).join('');
-  const jsAssets = assets.filter(asset => asset.type === 'js');
-  const scripts = bundleUrl ? `<script src="${bundleUrl}" defer></script>` : jsAssets.map(({
-    filename
-  }) => {
-    return `<script src="${filename}" defer></script>`;
-  }).join('');
-  return template.replace('</head>', `${styleString}</head>`).replace('</body>', `${scripts}\n</body>`);
-}
-
-// <link rel="preload" href="/_expo/static/css/xxxxxx.css" as="style">
-function appendLinkToHtml(html, links) {
-  return html.replace('</head>', links.map(link => {
-    let linkTag = `<link rel="${link.rel}"`;
-    if (link.href) linkTag += ` href="${link.href}"`;
-    if (link.as) linkTag += ` as="${link.as}"`;
-    linkTag += '>';
-    return linkTag;
-  }).join('') + '</head>');
 }
 //# sourceMappingURL=serializer.js.map

@@ -7,6 +7,7 @@
 import { getConfig } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
 import * as runtimeEnv from '@expo/env';
+import { SerialAsset } from '@expo/metro-config/build/serializer';
 import assert from 'assert';
 import chalk from 'chalk';
 import path from 'path';
@@ -21,6 +22,7 @@ import { getStaticRenderFunctions } from '../getStaticRenderFunctions';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
+import { createBundleUrlPath, resolveMainModuleName } from '../middleware/ManifestMiddleware';
 import { ReactDevToolsPageMiddleware } from '../middleware/ReactDevToolsPageMiddleware';
 import {
   DeepLinkHandler,
@@ -32,8 +34,6 @@ import { typescriptTypeGeneration } from '../type-generation';
 import { instantiateMetroAsync } from './instantiateMetro';
 import { metroWatchTypeScriptFiles } from './metroWatchTypeScriptFiles';
 import { observeFileChanges } from './waitForMetroToObserveTypeScriptFile';
-import { htmlFromSerialAssets, SerialAsset } from '@expo/metro-config/build/serializer';
-import { createBundleUrlPath, resolveMainModuleName } from '../middleware/ManifestMiddleware';
 
 const debug = require('debug')('expo:start:server:metro') as typeof console.log;
 
@@ -452,4 +452,38 @@ export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
       ...getDevClientProperties(projectRoot, exp),
     });
   };
+}
+
+function htmlFromSerialAssets(
+  assets: SerialAsset[],
+  { dev, template, bundleUrl }: { dev: boolean; template: string; bundleUrl?: string }
+) {
+  // Combine the CSS modules into tags that have hot refresh data attributes.
+  const styleString = assets
+    .filter((asset) => asset.type === 'css')
+    .map(({ metadata, filename, source }) => {
+      if (dev) {
+        return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
+      } else {
+        return [
+          `<link rel="preload" href="${filename}" as="style">`,
+          `<link rel="stylesheet" href="${filename}">`,
+        ].join('');
+      }
+    })
+    .join('');
+
+  const jsAssets = assets.filter((asset) => asset.type === 'js');
+
+  const scripts = bundleUrl
+    ? `<script src="${bundleUrl}" defer></script>`
+    : jsAssets
+        .map(({ filename }) => {
+          return `<script src="${filename}" defer></script>`;
+        })
+        .join('');
+
+  return template
+    .replace('</head>', `${styleString}</head>`)
+    .replace('</body>', `${scripts}\n</body>`);
 }

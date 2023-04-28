@@ -214,7 +214,6 @@ export function getDefaultConfig(
     },
   });
 
-  // return metroConfig;
   return withExpoSerializers(metroConfig);
 }
 

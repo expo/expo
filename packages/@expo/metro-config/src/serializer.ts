@@ -4,16 +4,15 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import fs from 'fs';
 import type { Graph, MixedOutput, Module, SerializerOptions } from 'metro';
 import { ConfigT, InputConfigT } from 'metro-config';
 import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
 import bundleToString from 'metro/src/lib/bundleToString';
 import countLines from 'metro/src/lib/countLines';
-import path from 'path';
 
 import { env } from './env';
-import { fileNameFromContents, getCssModules, SerialAsset } from './getCssDeps';
+import { fileNameFromContents, getCssModules } from './getCssDeps';
+import { SerialAsset } from './serializerAssets';
 
 const debug = require('debug')('expo:metro-config:serializer') as typeof console.log;
 
@@ -170,7 +169,7 @@ export function withSerialProcessors(
     ...config,
     serializer: {
       ...config.serializer,
-      customSerializer: createSerializerFromSerialProcessors(processors, originalSerializer),
+      customSerializer: createSerializerFromSerialProcessors(processors),
     },
   };
 }
@@ -216,11 +215,9 @@ function getDefaultSerializer(): Serializer {
 }
 
 export function createSerializerFromSerialProcessors(
-  processors: (SerialProcessor | undefined)[],
-  serializer?: Serializer
+  processors: (SerialProcessor | undefined)[]
 ): Serializer {
   const finalSerializer = getDefaultSerializer();
-  // const finalSerializer = serializer ?? getDefaultSerializer();
   return (...props: SerializerParameters): ReturnType<Serializer> => {
     for (const processor of processors) {
       if (processor) {
@@ -230,71 +227,6 @@ export function createSerializerFromSerialProcessors(
 
     return finalSerializer(...props);
   };
-}
-
-export function writeSerialAssets(assets: SerialAsset[], { outputDir }: { outputDir: string }) {
-  assets.forEach((asset) => {
-    const output = path.join(outputDir, asset.filename);
-    fs.mkdirSync(path.dirname(output), { recursive: true });
-    fs.writeFileSync(output, asset.source);
-  });
-}
-
-export function htmlFromSerialAssets(
-  assets: SerialAsset[],
-  { dev, template, bundleUrl }: { dev: boolean; template: string; bundleUrl?: string }
-) {
-  // Combine the CSS modules into tags that have hot refresh data attributes.
-  const styleString = assets
-    .filter((asset) => asset.type === 'css')
-    .map(({ metadata, filename, source }) => {
-      if (dev) {
-        // TODO: No data id in prod
-        return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
-      } else {
-        return [
-          `<link rel="preload" href="${filename}" as="style">`,
-          `<link rel="stylesheet" href="${filename}">`,
-        ].join('');
-      }
-    })
-    .join('');
-
-  const jsAssets = assets.filter((asset) => asset.type === 'js');
-
-  const scripts = bundleUrl
-    ? `<script src="${bundleUrl}" defer></script>`
-    : jsAssets
-        .map(({ filename }) => {
-          return `<script src="${filename}" defer></script>`;
-        })
-        .join('');
-
-  return template
-    .replace('</head>', `${styleString}</head>`)
-    .replace('</body>', `${scripts}\n</body>`);
-}
-
-// <link rel="preload" href="/_expo/static/css/xxxxxx.css" as="style">
-export function appendLinkToHtml(
-  html: string,
-  links: { rel: string; href: string; as?: string }[]
-) {
-  return html.replace(
-    '</head>',
-    links
-      .map((link) => {
-        let linkTag = `<link rel="${link.rel}"`;
-
-        if (link.href) linkTag += ` href="${link.href}"`;
-        if (link.as) linkTag += ` as="${link.as}"`;
-
-        linkTag += '>';
-
-        return linkTag;
-      })
-      .join('') + '</head>'
-  );
 }
 
 export { SerialAsset };

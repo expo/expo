@@ -288,8 +288,6 @@ function getDefaultConfig(projectRoot, options = {}) {
       assetPlugins: getAssetPlugins(projectRoot)
     }
   });
-
-  // return metroConfig;
   return (0, _serializer().withExpoSerializers)(metroConfig);
 }
 async function loadAsync(projectRoot, {
