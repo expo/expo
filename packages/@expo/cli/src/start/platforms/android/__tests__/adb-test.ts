@@ -67,8 +67,6 @@ describe(launchActivityAsync, () => {
       'shell',
       'am',
       'start',
-      '-a',
-      'android.intent.action.RUN',
       '-f',
       '0x20000000',
       '-n',
