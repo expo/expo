@@ -26,7 +26,71 @@ outputs:
 runs:
   using: 'composite'
   steps:
-    - name: 💿 Setup Android Emulator
+    # NOTE: When updating any emulator settings, please make sure all the settings are also updated in each retry step.
+    # Sorry that we can't use a loop here, because GitHub Actions doesn't support it yet.
+    - name: '💿 Setup Android Emulator #1'
+      id: retries-1
+      continue-on-error: true
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: ${{ inputs.avd-api }}
+        avd-name: ${{ inputs.avd-name }}
+        arch: x86_64
+        target: google_apis
+        emulator-build: 9536276
+        emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+        emulator-boot-timeout: 900
+        profile: pixel_6
+        ram-size: 8192MB
+        disk-size: 8192MB
+        heap-size: 2048MB
+        script: |
+          # Wait for emulator to fully ready
+          sleep 20
+          # Try to close SystemUI ANR prompt
+          adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
+          adb shell settings put secure immersive_mode_confirmations confirmed
+          adb shell settings put global window_animation_scale 0.0
+          adb shell settings put global transition_animation_scale 0.0
+          adb shell settings put global animator_duration_scale 0.0
+          adb shell input keyevent 3
+          ${{ inputs.script }}
+        working-directory: ${{ inputs.working-directory }}
+
+    - name: '💿 Setup Android Emulator #2'
+      id: retries-2
+      continue-on-error: true
+      if: steps.retries-1.outcome == 'failure'
+      uses: reactivecircus/android-emulator-runner@v2
+      with:
+        api-level: ${{ inputs.avd-api }}
+        avd-name: ${{ inputs.avd-name }}
+        arch: x86_64
+        target: google_apis
+        emulator-build: 9536276
+        emulator-options: -no-snapshot -no-window -gpu swiftshader_indirect -noaudio -no-boot-anim -camera-back none -camera-front none
+        emulator-boot-timeout: 900
+        profile: pixel_6
+        ram-size: 8192MB
+        disk-size: 8192MB
+        heap-size: 2048MB
+        script: |
+          # Wait for emulator to fully ready
+          sleep 20
+          # Try to close SystemUI ANR prompt
+          adb shell am broadcast -a android.intent.action.CLOSE_SYSTEM_DIALOGS
+          adb shell settings put secure immersive_mode_confirmations confirmed
+          adb shell settings put global window_animation_scale 0.0
+          adb shell settings put global transition_animation_scale 0.0
+          adb shell settings put global animator_duration_scale 0.0
+          adb shell input keyevent 3
+          ${{ inputs.script }}
+        working-directory: ${{ inputs.working-directory }}
+
+    - name: '💿 Setup Android Emulator #3'
+      id: retries-3
+      # continue-on-error: true
+      if: steps.retries-2.outcome == 'failure'
       uses: reactivecircus/android-emulator-runner@v2
       with:
         api-level: ${{ inputs.avd-api }}
