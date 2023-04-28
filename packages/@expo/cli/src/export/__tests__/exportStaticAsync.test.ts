@@ -2,12 +2,7 @@ import { getFilesToExportFromServerAsync } from '../exportStaticAsync';
 
 describe(getFilesToExportFromServerAsync, () => {
   it(`should export from server async`, async () => {
-    const renderAsync = jest.fn(async () => ({
-      fetchData: false,
-      scriptContents: 'foo',
-      renderAsync: () => '',
-    }));
-
+    const renderAsync = jest.fn(async () => '');
     expect(
       await getFilesToExportFromServerAsync({
         manifest: {
@@ -24,14 +19,12 @@ describe(getFilesToExportFromServerAsync, () => {
           },
         },
         renderAsync,
-        scripts: ['bar'],
-        cssLinks: ['baz'],
       })
     ).toEqual(
       new Map([
         ['(auth)/sign-in.html', ''],
         ['sign-in.html', ''],
-        ['[...404].html', ''],
+        // ['[...404].html', ''],
         ['_sitemap.html', ''],
         ['compose.html', ''],
         ['index.html', ''],

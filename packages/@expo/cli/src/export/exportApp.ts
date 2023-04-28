@@ -49,6 +49,8 @@ export async function exportAppAsync(
 
   const exp = await getPublicExpoManifestAsync(projectRoot);
 
+  const useWebSSG = exp.web?.output === 'static';
+
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
 
   const outputPath = path.resolve(projectRoot, outputDir);
@@ -65,9 +67,7 @@ export async function exportAppAsync(
     projectRoot,
     { resetCache: !!clear },
     {
-      platforms: env.EXPO_USE_STATIC
-        ? platforms.filter((platform) => platform !== 'web')
-        : platforms,
+      platforms: useWebSSG ? platforms.filter((platform) => platform !== 'web') : platforms,
       dev,
       // TODO: Disable source map generation if we aren't outputting them.
     }
@@ -102,7 +102,7 @@ export async function exportAppAsync(
   Log.log('Finished saving JS Bundles');
 
   if (platforms.includes('web')) {
-    if (env.EXPO_USE_STATIC) {
+    if (useWebSSG) {
       await unstable_exportStaticAsync(projectRoot, {
         outputDir: outputPath,
         // TODO: Expose

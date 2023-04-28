@@ -363,8 +363,8 @@ export abstract class ManifestMiddleware<
       const platform = parsePlatformHeader(req);
       // On web, serve the public folder
       if (!platform || platform === 'web') {
-        // Skip the spa-styled index.html when static generation is enabled.
-        if (env.EXPO_USE_STATIC) {
+        if (this.initialProjectConfig.exp.web?.output === 'static') {
+          // Skip the spa-styled index.html when static generation is enabled.
           next();
           return true;
         } else {

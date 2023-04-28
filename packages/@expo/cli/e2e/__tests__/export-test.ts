@@ -22,7 +22,7 @@ beforeAll(async () => {
   process.env.FORCE_COLOR = '0';
   process.env.CI = '1';
   process.env._EXPO_E2E_USE_PATH_ALIASES = '1';
-  delete process.env.EXPO_USE_STATIC;
+  delete process.env.EXPO_WEB_OUTPUT_MODE;
 });
 
 afterAll(() => {
@@ -235,7 +235,7 @@ describe('server', () => {
       await execa('node', [bin, 'export', '-p', 'web'], {
         cwd: projectRoot,
         env: {
-          EXPO_USE_STATIC: '1',
+          EXPO_WEB_OUTPUT_MODE: 'static',
         },
       });
 

@@ -307,10 +307,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     // Append support for redirecting unhandled requests to the index.html page on web.
     if (this.isTargetingWeb()) {
+      const { exp } = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
+      const useWebSSG = exp.web?.output === 'static';
+
       // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
 
-      if (env.EXPO_USE_STATIC) {
+      if (useWebSSG) {
         middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
           if (!req?.url) {
             return next();
@@ -340,7 +343,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       }
 
       // This MUST run last since it's the fallback.
-      if (!env.EXPO_USE_STATIC) {
+      if (!useWebSSG) {
         middleware.use(
           new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
         );
