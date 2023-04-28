@@ -286,11 +286,7 @@ export function validateConfig(config: any): PluginConfigType {
 
   // explicitly block using use_frameworks and Flipper in iOS
   // https://github.com/facebook/flipper/issues/2414
-  if (
-    config.ios?.flipper !== undefined &&
-    config.ios?.flipper !== false &&
-    config.ios?.useFrameworks !== undefined
-  ) {
+  if (Boolean(config.ios?.flipper) && config.ios?.useFrameworks !== undefined) {
     throw new Error('`ios.flipper` cannot be enabled when `ios.useFrameworks` is set.');
   }
 
