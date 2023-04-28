@@ -103,7 +103,7 @@ export enum LocationGeofencingRegionState {
  */
 export type LocationOptions = {
   /**
-   * Location manager accuracy. Pass one of `LocationAccuracy` enum values.
+   * Location manager accuracy. Pass one of `Accuracy` enum values.
    * For low-accuracies the implementation can avoid geolocation providers
    * that consume a significant amount of power (such as GPS).
    */
@@ -174,7 +174,7 @@ export type LocationTaskOptions = LocationOptions & {
   /**
    * The type of user activity associated with the location updates.
    * @see See [Apple docs](https://developer.apple.com/documentation/corelocation/cllocationmanager/1620567-activitytype) for more details.
-   * @default LocationActivityType.Other
+   * @default ActivityType.Other
    * @platform ios
    */
   activityType?: LocationActivityType;
