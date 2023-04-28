@@ -192,4 +192,19 @@ class JavaScriptClassTest {
 
     Truth.assertThat(registry!!.pairs[id!!]).isNull()
   }
+
+  @Test
+  fun object_constructor_should_be_able_to_receive_js_object() = withJSIInterop(
+    inlineModule {
+      Name("TestModule")
+      Class("MyClass") {
+        Constructor { self: JavaScriptObject ->
+          self.setProperty("foo", "bar")
+        }
+      }
+    }
+  ) {
+    val result = evaluateScript("new expo.modules.TestModule.MyClass().foo").getString()
+    Truth.assertThat(result).isEqualTo("bar")
+  }
 }
