@@ -62,14 +62,14 @@
 
 - (NSArray<Class> *)filterModuleList:(NSArray<Class> *)modules
 {
-  NSArray<NSString *> *allowedModules = @[@"RCT"];
+  NSArray<NSString *> *allowedModules = @[@"RCT", @"ExpoBridgeModule", @"EXNativeModulesProxy", @"EXReactNativeEventEmitter"];
   NSArray<Class> *filteredModuleList = [modules filteredArrayUsingPredicate:[NSPredicate predicateWithBlock:^BOOL(id  _Nullable clazz, NSDictionary<NSString *,id> * _Nullable bindings) {
     NSString* clazzName = NSStringFromClass(clazz);
-      
+
     if ([clazz conformsToProtocol:@protocol(EXDevExtensionProtocol)]) {
       return true;
     }
-    
+
     for (NSString *allowedModule in allowedModules) {
       if ([clazzName hasPrefix:allowedModule]) {
         return true;
@@ -77,7 +77,7 @@
     }
     return false;
   }]];
-  
+
   return filteredModuleList;
 }
 

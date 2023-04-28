@@ -1,19 +1,20 @@
-import Quick
-import Nimble
+import ExpoModulesTestCore
 
+@testable import ExpoModulesCore
 @testable import EXDevMenu
 
-class DevMenuInternalModuleTest: QuickSpec {
+class DevMenuInternalModuleTest: ExpoSpec {
   override func spec() {
+    let appContext = AppContext.create()
+    let module = DevMenuInternalModule(appContext: appContext)
+
     it("constants should contain information about key command support") {
       #if targetEnvironment(simulator)
           let doesDeviceSupportKeyCommands = true
       #else
           let doesDeviceSupportKeyCommands = false
       #endif
-      let module = DevMenuInternalModule(manager: DevMenuManager.shared)
-
-      let constants = module.constantsToExport()
+      let constants = module.definition().getConstants()
 
       expect(constants["doesDeviceSupportKeyCommands"] as? Bool).to(equal(doesDeviceSupportKeyCommands))
     }
