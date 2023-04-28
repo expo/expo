@@ -4,25 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { Graph, MixedOutput, Module, SerializerOptions } from 'metro';
-import { ConfigT, InputConfigT } from 'metro-config';
-import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
-import bundleToString from 'metro/src/lib/bundleToString';
+import { Graph, MixedOutput, Module, SerializerOptions } from 'metro';
 import countLines from 'metro/src/lib/countLines';
 
-import { env } from './env';
-import { fileNameFromContents, getCssModules } from './getCssDeps';
-import { SerialAsset } from './serializerAssets';
+import { SerializerParameters } from './withExpoSerializers';
 
-const debug = require('debug')('expo:metro-config:serializer') as typeof console.log;
-
-type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
-
-type SerializerParameters = Parameters<Serializer>;
-
-// A serializer that processes the input and returns a modified version.
-// Unlike a serializer, these can be chained together.
-type SerialProcessor = (...props: SerializerParameters) => SerializerParameters;
+const debug = require('debug')('expo:metro-config:serializer:env-var') as typeof console.log;
 
 export function replaceEnvironmentVariables(
   code: string,
@@ -62,7 +49,7 @@ function getAllExpoPublicEnvVars() {
   return env;
 }
 
-export function serializeWithEnvironmentVariables(
+export function environmentVariableSerializerPlugin(
   entryPoint: string,
   preModules: readonly Module[],
   graph: Graph,
@@ -143,90 +130,3 @@ function getEnvPrelude(contents: string): Module<MixedOutput> {
     ],
   };
 }
-
-export function withExpoSerializers(config: InputConfigT): InputConfigT {
-  const processors: SerialProcessor[] = [];
-  if (!env.EXPO_NO_CLIENT_ENV_VARS) {
-    processors.push(serializeWithEnvironmentVariables);
-  }
-
-  return withSerialProcessors(config, processors);
-}
-
-// There can only be one custom serializer as the input doesn't match the output.
-// Here we simply run
-export function withSerialProcessors(
-  config: InputConfigT,
-  processors: SerialProcessor[]
-): InputConfigT {
-  const originalSerializer = config.serializer?.customSerializer;
-
-  if (originalSerializer) {
-    console.warn('Custom Metro serializers are not supported with Expo CLI.');
-  }
-
-  return {
-    ...config,
-    serializer: {
-      ...config.serializer,
-      customSerializer: createSerializerFromSerialProcessors(processors),
-    },
-  };
-}
-
-function getDefaultSerializer(): Serializer {
-  return (...props: SerializerParameters): string | any => {
-    const bundle = baseJSBundle(...props);
-    const [, , graph, options] = props;
-    const outputCode = bundleToString(bundle).code;
-    if (!options.sourceUrl) {
-      return outputCode;
-    }
-    const url = new URL(options.sourceUrl, 'https://expo.dev');
-    if (
-      url.searchParams.get('platform') !== 'web' ||
-      url.searchParams.get('serializer.export') !== 'html'
-    ) {
-      // Default behavior if `serializer.export=html` is not present in the URL.
-      return outputCode;
-    }
-
-    const cssDeps = getCssModules(graph.dependencies, {
-      projectRoot: options.projectRoot,
-      processModuleFilter: options.processModuleFilter,
-    });
-
-    const jsCode = outputCode;
-    const jsAsset: SerialAsset = {
-      filename: options.dev
-        ? 'index.js'
-        : `_expo/static/js/web/${fileNameFromContents({
-            filepath: url.pathname,
-            src: jsCode,
-          })}.js`,
-      originFilename: 'index.js',
-      type: 'js',
-      metadata: {},
-      source: jsCode,
-    };
-
-    return JSON.stringify([jsAsset, ...cssDeps]);
-  };
-}
-
-export function createSerializerFromSerialProcessors(
-  processors: (SerialProcessor | undefined)[]
-): Serializer {
-  const finalSerializer = getDefaultSerializer();
-  return (...props: SerializerParameters): ReturnType<Serializer> => {
-    for (const processor of processors) {
-      if (processor) {
-        props = processor(...props);
-      }
-    }
-
-    return finalSerializer(...props);
-  };
-}
-
-export { SerialAsset };

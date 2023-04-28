@@ -7,7 +7,7 @@
 import { getConfig } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
 import * as runtimeEnv from '@expo/env';
-import { SerialAsset } from '@expo/metro-config/build/serializer';
+import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import chalk from 'chalk';
 import path from 'path';
@@ -122,7 +122,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     bundleUrl.searchParams.set('platform', 'web');
     bundleUrl.searchParams.set('dev', String(isDev));
     bundleUrl.searchParams.set('minify', String(!isDev));
-    bundleUrl.searchParams.set('serializer.export', 'html');
+    bundleUrl.searchParams.set('serializer.output', 'static');
     // bundleUrl.searchParams.set('resolver.environment', 'node');
 
     // Fetch the generated HTML from our custom Metro serializer
@@ -167,7 +167,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       bundleUrl.searchParams.set('platform', 'web');
       bundleUrl.searchParams.set('dev', String(isDev));
       bundleUrl.searchParams.set('minify', String(!isDev));
-      bundleUrl.searchParams.set('serializer.export', 'html');
+      bundleUrl.searchParams.set('serializer.output', 'static');
 
       // Fetch the generated HTML from our custom Metro serializer
       const results = await fetch(bundleUrl.toString());
@@ -178,7 +178,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         return JSON.parse(txt);
       } catch (error) {
         Log.error(
-          'Failed to generate resources with Metro, the Metro config may not be using the correct serializer.'
+          'Failed to generate resources with Metro, the Metro config may not be using the correct serializer. Ensure the metro.config.js is extending the expo/metro-config and is not overriding the serializer.'
         );
         debug(txt);
         // console.log('error', error);
@@ -323,7 +323,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           if (req.url.endsWith('.ico')) {
             return next();
           }
-          if (req.url.includes('serializer.export=html')) {
+          if (req.url.includes('serializer.output=static')) {
             return next();
           }
 

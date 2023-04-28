@@ -99,7 +99,7 @@ export async function transform(
         type: 'js/module',
         data: {
           // @ts-expect-error
-          ...jsModuleResults.output[0].data,
+          ...jsModuleResults.output[0]?.data,
 
           // Append additional css metadata for static extraction.
           css: {
@@ -155,9 +155,10 @@ export async function transform(
   // and append it to the HTML bundle.
   const output: JsOutput[] = [
     {
+      type: 'js/module',
       data: {
         // @ts-expect-error
-        ...jsModuleResults.output[0].data,
+        ...jsModuleResults.output[0]?.data,
 
         // Append additional css metadata for static extraction.
         css: {
@@ -167,7 +168,6 @@ export async function transform(
           functionMap: null,
         },
       },
-      type: 'js/module',
     },
   ];
 

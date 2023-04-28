@@ -44,6 +44,7 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 const countLines = require('metro/src/lib/countLines');
 async function transform(config, projectRoot, filename, data, options) {
+  var _jsModuleResults$outp2;
   const isCss = options.type !== 'asset' && /\.(s?css|sass)$/.test(filename);
   // If the file is not CSS, then use the default behavior.
   if (!isCss) {
@@ -79,6 +80,7 @@ async function transform(config, projectRoot, filename, data, options) {
   // If the file is a CSS Module, then transform it to a JS module
   // in development and a static CSS file in production.
   if ((0, _cssModules().matchCssModule)(filename)) {
+    var _jsModuleResults$outp;
     const results = await (0, _cssModules().transformCssModuleWeb)({
       filename,
       src: code,
@@ -95,7 +97,7 @@ async function transform(config, projectRoot, filename, data, options) {
       type: 'js/module',
       data: {
         // @ts-expect-error
-        ...jsModuleResults.output[0].data,
+        ...((_jsModuleResults$outp = jsModuleResults.output[0]) === null || _jsModuleResults$outp === void 0 ? void 0 : _jsModuleResults$outp.data),
         // Append additional css metadata for static extraction.
         css: {
           code: cssCode,
@@ -145,9 +147,10 @@ async function transform(config, projectRoot, filename, data, options) {
   // it from being included in the JS bundle. We'll extract the CSS like an asset later
   // and append it to the HTML bundle.
   const output = [{
+    type: 'js/module',
     data: {
       // @ts-expect-error
-      ...jsModuleResults.output[0].data,
+      ...((_jsModuleResults$outp2 = jsModuleResults.output[0]) === null || _jsModuleResults$outp2 === void 0 ? void 0 : _jsModuleResults$outp2.data),
       // Append additional css metadata for static extraction.
       css: {
         code: cssCode,
@@ -155,8 +158,7 @@ async function transform(config, projectRoot, filename, data, options) {
         map: [],
         functionMap: null
       }
-    },
-    type: 'js/module'
+    }
   }];
   return {
     dependencies: jsModuleResults.dependencies,
