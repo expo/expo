@@ -104,8 +104,6 @@ export async function launchActivityAsync(
       'shell',
       'am',
       'start',
-      '-a',
-      'android.intent.action.RUN',
       // FLAG_ACTIVITY_SINGLE_TOP -- If set, the activity will not be launched if it is already running at the top of the history stack.
       '-f',
       '0x20000000',
