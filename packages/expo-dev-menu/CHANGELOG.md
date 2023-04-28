@@ -18,6 +18,7 @@
 
 - Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
 - Rewrite vendored safe area view using the new modules API. ([#22174](https://github.com/expo/expo/pull/22174) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Migrate iOS native modules to use the new Module API. ([#22263](https://github.com/expo/expo/pull/22263) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### ⚠️ Notices
 
