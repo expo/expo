@@ -166,7 +166,7 @@ jobs:
           avd-api: ${{ matrix.api-level }}
           avd-name: avd-${{ matrix.api-level }}
           script: |
-            mkdir artifacts
+            mkdir artifacts || true
             adb logcat -d > artifacts/emulator.log
             adb logcat -c || true
             adb shell screencap -p /data/local/tmp/bareexpo.png && adb pull /data/local/tmp/bareexpo.png artifacts/beforeTests.png
