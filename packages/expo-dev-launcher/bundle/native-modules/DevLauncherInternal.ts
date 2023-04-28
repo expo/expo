@@ -1,8 +1,12 @@
-import { NativeModules, NativeEventEmitter, EventSubscription } from 'react-native';
+import { requireNativeModule } from 'expo-modules-core';
+import { NativeModules, NativeEventEmitter, EventSubscription, Platform } from 'react-native';
 
 import { RecentApp } from '../providers/RecentlyOpenedAppsProvider';
 
-const DevLauncher = NativeModules.EXDevLauncherInternal;
+const DevLauncher =
+  Platform.OS === 'ios'
+    ? requireNativeModule('EXDevLauncherInternal')
+    : NativeModules.EXDevLauncherInternal;
 const EventEmitter = new NativeEventEmitter(DevLauncher);
 
 const ON_NEW_DEEP_LINK_EVENT = 'expo.modules.devlauncher.onnewdeeplink';

@@ -1,0 +1,126 @@
+import ExpoModulesCore
+import EXDevMenu
+import React
+
+private let LAUNCHER_NAVIGATION_STATE_KEY = "expo.modules.devlauncher.navigation-state"
+private let ON_NEW_DEEP_LINK_EVENT = "expo.modules.devlauncher.onnewdeeplink"
+
+public class DevLauncherInternal: Module, EXDevLauncherPendingDeepLinkListener {
+  public func definition() -> ModuleDefinition {
+    Name("ExpoDevLauncherInternal")
+    Events(ON_NEW_DEEP_LINK_EVENT)
+
+    Constants {
+      var isDevice = true
+      #if targetEnvironment(simulator)
+        isDevice = false
+      #endif
+
+      return [
+        "clientUrlScheme": self.findClientUrlScheme,
+        "installationID": EXDevLauncherController.sharedInstance().installationIDHelper().getOrCreateInstallationID(),
+        "isDevice": isDevice,
+        "updatesConfig": EXDevLauncherController.sharedInstance().getUpdatesConfig()
+      ]
+    }
+
+    OnCreate {
+      EXDevLauncherController.sharedInstance().pendingDeepLinkRegistry.subscribe(self)
+    }
+
+    OnDestroy {
+      EXDevLauncherController.sharedInstance().pendingDeepLinkRegistry.unsubscribe(self)
+    }
+
+    AsyncFunction("getPendingDeepLink") {
+      return EXDevLauncherController.sharedInstance().pendingDeepLinkRegistry.pendingDeepLink?.absoluteString
+    }
+
+    AsyncFunction("getCrashReport") {
+      return EXDevLauncherErrorRegistry().consumeException()?.toDict()
+    }
+
+    AsyncFunction("loadApp") { (urlString: String, promise: Promise) in
+      guard let url = self.sanitizeUrlString(urlString) else {
+        promise.reject("ERR_DEV_LAUNCHER_INVALID_URL", "Cannot parse the provided url.")
+        return
+      }
+      let controller = EXDevLauncherController.sharedInstance()
+
+      controller.loadApp(url, onSuccess: { promise.resolve(nil) }, onError: { error in
+        promise.reject("ERR_DEV_LAUNCHER_CANNOT_LOAD_APP", error.localizedDescription)
+      })
+    }
+
+    AsyncFunction("getRecentlyOpenedApps") {
+      return EXDevLauncherController.sharedInstance().recentlyOpenedAppsRegistry.recentlyOpenedApps()
+    }
+
+    AsyncFunction("clearRecentlyOpenedApps") {
+      EXDevLauncherController.sharedInstance().clearRecentlyOpenedApps()
+    }
+
+    AsyncFunction("getBuildInfo") {
+      return EXDevLauncherController.sharedInstance().getBuildInfo()
+    }
+
+    AsyncFunction("copyToClipboard") { (content: String) in
+      EXDevLauncherController.sharedInstance().copy(toClipboard: content)
+    }
+
+    AsyncFunction("loadFontsAsync") {
+      DevMenuManager.shared.loadFonts()
+    }
+
+    AsyncFunction("saveNavigationState") { (serializedNavigationState: String) in
+      UserDefaults.standard.set(serializedNavigationState, forKey: LAUNCHER_NAVIGATION_STATE_KEY)
+    }
+
+    AsyncFunction("getNavigationState") {
+      return UserDefaults.standard.string(forKey: LAUNCHER_NAVIGATION_STATE_KEY) ?? ""
+    }
+
+    AsyncFunction("clearNavigationState") {
+      UserDefaults.standard.removeObject(forKey: LAUNCHER_NAVIGATION_STATE_KEY)
+    }
+
+    AsyncFunction("loadUpdate") { (updateUrlString: String, projectUrlString: String, promise: Promise) in
+      guard let updatesUrl = self.sanitizeUrlString(updateUrlString) else {
+        promise.reject("ERR_DEV_LAUNCHER_INVALID_URL", "Cannot parse the provided url.")
+        return
+      }
+      let controller = EXDevLauncherController.sharedInstance()
+      let projectUrl = self.sanitizeUrlString(projectUrlString)
+
+      controller.loadApp(updatesUrl, withProjectUrl: projectUrl, onSuccess: { promise.resolve(nil) }, onError: { error in
+        promise.reject("ERR_DEV_LAUNCHER_CANNOT_LOAD_APP", error.localizedDescription)
+      })
+    }
+  }
+
+  public func onNewPendingDeepLink(_ deepLink: URL) {
+    sendEvent(ON_NEW_DEEP_LINK_EVENT, ["url": deepLink.absoluteString])
+  }
+
+  func sanitizeUrlString(_ urlString: String) -> URL? {
+    let sanitizedUrl = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
+    return URL(string: sanitizedUrl)
+  }
+
+  func findClientUrlScheme() -> String? {
+    var clientUrlScheme: String?
+    if let urlTypes = Bundle.main.object(forInfoDictionaryKey: "CFBundleURLTypes") as? [[String: Any]] {
+      for urlType in urlTypes {
+        if let urlSchemes = urlType["CFBundleURLSchemes"] as? [String] {
+          for urlScheme in urlSchemes {
+            // Find a scheme with a prefix or fall back to the first scheme defined.
+            if urlScheme.hasPrefix("exp+") || clientUrlScheme == nil {
+              clientUrlScheme = urlScheme
+            }
+          }
+        }
+      }
+    }
+    return clientUrlScheme
+  }
+}

@@ -4,6 +4,7 @@
   "ios": {
     "podspecPath": "expo-dev-launcher.podspec",
     "swiftModuleName": "EXDevLauncher",
+    "modules": ["DevLauncherInternal"],
     "appDelegateSubscribers": ["ExpoDevLauncherAppDelegateSubscriber"],
     "reactDelegateHandlers": ["ExpoDevLauncherReactDelegateHandler"],
     "debugOnly": true
