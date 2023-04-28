@@ -78,17 +78,6 @@ public final class UpdatesUtils: NSObject {
     return updatesDirectory
   }
 
-  internal static func sendEvent(toBridge bridge: RCTBridge?, withType eventType: String, body: [AnyHashable: Any]) {
-    guard let bridge = bridge else {
-      NSLog("EXUpdates: Could not emit %@ event. Did you set the bridge property on the controller singleton?", eventType)
-      return
-    }
-
-    var mutableBody = body
-    mutableBody["type"] = eventType
-    bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [EXUpdatesEventName, mutableBody])
-  }
-
   internal static func shouldCheckForUpdate(withConfig config: UpdatesConfig) -> Bool {
     func isConnectedToWifi() -> Bool {
       do {
