@@ -119,4 +119,5 @@ const STYLES_ACTIVE_BULLET = css`
   background-color: ${theme.text.link};
   border-radius: 100%;
   margin: ${spacing[2]}px ${spacing[1.5]}px;
+  align-self: self-start;
 `;
