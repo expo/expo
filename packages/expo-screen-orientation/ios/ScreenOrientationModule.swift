@@ -31,7 +31,7 @@ public class ScreenOrientationModule: Module, OrientationListener {
       for allowedOrientation in allowedOrientations {
         let orientation = allowedOrientation.toInterfaceOrientation()
         let orientationMask = orientation.toInterfaceOrientationMask()
-        if orientationMask == nil {
+        if orientationMask.isEmpty {
           promise.reject(InvalidOrientationLockException())
           return
         }
@@ -109,7 +109,7 @@ public class ScreenOrientationModule: Module, OrientationListener {
         "orientation": ModuleOrientation.from(orientation: orientation).rawValue,
         "verticalSizeClass": currentTraitCollection.verticalSizeClass,
         "horizontalSizeClass": currentTraitCollection.horizontalSizeClass
-      ]
+      ] as [String: Any]
     ])
   }
 }

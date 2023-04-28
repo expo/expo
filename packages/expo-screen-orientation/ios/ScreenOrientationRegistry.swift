@@ -4,11 +4,12 @@ protocol OrientationListener {
   func screenOrientationDidChange(_ orientation: UIInterfaceOrientation)
 }
 
-// This singleton holds information about desired orientation for every app which uses expo-screen-orientation
-// on device rotation it applies the orientation.
-// Most of the time this will only be a single module
-class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
-  static let shared = ScreenOrientationRegistry()
+// This singleton holds information about desired orientation for every app which uses expo-screen-orientation.
+// Marked @objc and public, because this it is also used in EXAppViewController.
+@objc
+public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
+  @objc
+  public static let shared = ScreenOrientationRegistry()
 
   var currentScreenOrientation: UIInterfaceOrientation
   var notificationListeners: [Module?] = []
@@ -16,13 +17,15 @@ class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   weak var foregroundedModule: Module?
   weak var currentTraitCollection: UITraitCollection?
   var lastOrientationMask: UIInterfaceOrientationMask
+  var rootViewController: UIViewController? {
+    return UIApplication.shared.windows.filter { $0.isKeyWindow }.first?.rootViewController
+  }
 
-  // prefersStatusBarHidden is used by ScreenOrientationViewController
-  var prefersStatusBarHidden = false
   var currentOrientationMask: UIInterfaceOrientationMask {
-    var currentOrientationMask = requiredOrientationMask()
+    var currentOrientationMask: UIInterfaceOrientationMask = []
+
     EXUtilities.performSynchronously {
-      currentOrientationMask = UIApplication.shared.keyWindow?.rootViewController?.supportedInterfaceOrientations ?? []
+      currentOrientationMask = self.rootViewController?.supportedInterfaceOrientations ?? []
     }
     return currentOrientationMask
   }
@@ -30,7 +33,8 @@ class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   private override init() {
     self.currentScreenOrientation = .unknown
     self.currentTraitCollection = nil
-    self.lastOrientationMask = UIInterfaceOrientationMask(rawValue: 0)
+    self.lastOrientationMask = []
+
     super.init()
 
     NotificationCenter.default.addObserver(
@@ -63,9 +67,11 @@ class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   // Rotates the view to currentScreenOrientation (or default orientation from the orientationMask)
   func enforceDesiredDeviceOrientation(withOrientationMask orientationMask: UIInterfaceOrientationMask) {
     var newOrientation = orientationMask.defaultOrientation()
+
     if orientationMask.contains(currentScreenOrientation) {
       newOrientation = currentScreenOrientation
     }
+
     if newOrientation != .unknown {
       DispatchQueue.main.async { [weak self] in
         guard let self = self else {
@@ -73,7 +79,6 @@ class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
         }
 
         if #available(iOS 16.0, *) {
-          let rootViewController = UIApplication.shared.keyWindow?.rootViewController
           let windowScene = rootViewController?.view.window?.windowScene
           windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: orientationMask))
           rootViewController?.setNeedsUpdateOfSupportedInterfaceOrientations()
@@ -100,9 +105,9 @@ class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   }
 
   // MARK: getters
-  // Gets the orientationMask for the current module
-  func requiredOrientationMask() -> UIInterfaceOrientationMask {
-    // The app is moved to the foreground.
+  // Gets the orientationMask for the current module. Also used for Expo Go in EXAppViewController
+  @objc
+  public func requiredOrientationMask() -> UIInterfaceOrientationMask {
     guard let foregroundedModule = self.foregroundedModule else {
       return lastOrientationMask
     }
@@ -129,7 +134,7 @@ class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
       return
     }
 
-    // checks if screen orientation should be changed when user rotates the device
+    // checks if screen orientation should be changed after user rotated the device
     if currentOrientationMask.contains(newScreenOrientation) {
       // change current screen orientation
       if (newScreenOrientation.isPortrait && currentScreenOrientation.isPortrait)
@@ -138,7 +143,7 @@ class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
         return
       }
 
-      // on iPads, traitCollectionDidChange isn't triggered at all
+      // on iPads, traitCollectionDidChange isn't triggered at all, so we have to call screenOrientationDidChange manually
       if isIPad()
         && (newScreenOrientation.isPortrait && currentScreenOrientation.isLandscape
         || newScreenOrientation.isLandscape && currentScreenOrientation.isPortrait) {
@@ -148,13 +153,15 @@ class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   }
 
   // Called by ScreenOrientationViewController when the dimensions of the view change
-  func traitCollectionDidChange(to traitCollection: UITraitCollection) {
+  // Also used for Expo Go in EXAppViewController
+  @objc
+  public func traitCollectionDidChange(to traitCollection: UITraitCollection) {
     currentTraitCollection = traitCollection
 
     let verticalSizeClass = traitCollection.verticalSizeClass
     let horizontalSizeClass = traitCollection.horizontalSizeClass
     let currentDeviceOrientation = UIDevice.current.orientation.toInterfaceOrientation()
-    let currentOrientationMask = UIApplication.shared.keyWindow?.rootViewController?.supportedInterfaceOrientations ?? []
+    let currentOrientationMask = self.rootViewController?.supportedInterfaceOrientations ?? []
 
     var newScreenOrientation = UIInterfaceOrientation.unknown
 
@@ -237,7 +244,6 @@ class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
 
     if foregroundedModule === module {
       // We save the mask to restore it when the app moves to the foreground.
-      // We don't want to wait for the module to call moduleDidForeground, cause it will add unnecessary rotation.
       lastOrientationMask = requiredOrientationMask()
       self.foregroundedModule = nil
     }

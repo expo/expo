@@ -1,12 +1,6 @@
 import ExpoModulesCore
-import EXScreenOrientation
 
 let defaultScreenOrientationMask = "EXDefaultScreenOrientationMask"
-
-// copy of RNScreens protocol
-protocol ScreenOrientationRNSScreenWindowTraits {
-  static func shouldAskScreensForScreenOrientation(_ inViewController: UIViewController) -> Bool
-}
 
 class ScreenOrientationViewController: UIViewController {
   let screenOrientationRegistry = ScreenOrientationRegistry.shared
@@ -18,8 +12,24 @@ class ScreenOrientationViewController: UIViewController {
   }
 
   convenience init(defaultScreenOrientationFromPlist: Void) {
-    let plistValue = Bundle.main.object(forInfoDictionaryKey: defaultScreenOrientationMask) as? String
-    let mask = (try? plistValue?.toUIInterfaceOrientationMask()) ?? .portrait
+    guard let orientationString = Bundle.main.object(forInfoDictionaryKey: defaultScreenOrientationMask) as? String else {
+      self.init(defaultOrientationMask: .portrait)
+      return
+    }
+
+    // TODO: When printing to errors to JS available print the warnings there (@behenate)
+    guard let mask = plistStringToInterfaceOrientationMask(orientationString) else {
+      print("Orientation lock string '\(orientationString)' provided in Info.plist does not correspond to a valid orientation mask. Application will default to portrait orientation lock.")
+      self.init(defaultOrientationMask: .portrait)
+      return
+    }
+
+    guard mask.isSupportedByDevice() else {
+      print("Orientation lock string '\(orientationString)' provided in Info.plist is not supported by the device. Application will default to portrait orientation lock.")
+      self.init(defaultOrientationMask: .portrait)
+      return
+    }
+
     self.init(defaultOrientationMask: mask)
   }
 
@@ -28,9 +38,7 @@ class ScreenOrientationViewController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
 
-  // This is not technically necessary, because we are also setting the mask in ScreenOrientationAppDelegate
-  // But the supported interface orientations of the view controller should reflect the orientation mask set
-  // by the user.
+  // Most of the time screen orientation will also be dependent on value set in ScreenOrientationAppDelegate
   override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
     guard !shouldUseRNScreenOrientation() else {
       return super.supportedInterfaceOrientations
@@ -48,11 +56,11 @@ class ScreenOrientationViewController: UIViewController {
     }
   }
 
+  // If RNScreens set the orientation we want to use it instead of our orientation
   private func shouldUseRNScreenOrientation() -> Bool {
-    guard let screenWindowTraitsClass = NSClassFromString("RNSScreenWindowTraits"),
-      let screenWindowTraits = screenWindowTraitsClass as? ScreenOrientationRNSScreenWindowTraits.Type else {
+    guard let screenWindowTraitsClass = NSClassFromString("RNSScreenWindowTraits") else {
       return false
     }
-    return screenWindowTraits.shouldAskScreensForScreenOrientation(self)
+    return screenWindowTraitsClass.shouldAskScreensForScreenOrientation?(in: self) ?? false
   }
 }

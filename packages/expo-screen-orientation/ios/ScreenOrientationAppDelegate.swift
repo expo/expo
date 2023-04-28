@@ -9,7 +9,6 @@ public class ScreenOrientationAppDelegate: ExpoAppDelegateSubscriber {
   }
 
   public func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
-    let mask = ScreenOrientationRegistry.shared.currentOrientationMask
     return ScreenOrientationRegistry.shared.currentOrientationMask
   }
 }

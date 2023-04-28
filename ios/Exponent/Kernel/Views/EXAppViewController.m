@@ -570,6 +570,8 @@ NS_ASSUME_NONNULL_BEGIN
   [self refresh];
 }
 
+// In Expo Go the ScreenOrientationViewController.swift is not used, therefore it is necessary to write the same
+// functionality into the EXAppViewController
 #pragma mark - orientation
 
 - (UIInterfaceOrientationMask)supportedInterfaceOrientations

@@ -79,6 +79,27 @@ extension UIInterfaceOrientationMask {
   }
 }
 
+internal func plistStringToInterfaceOrientationMask(_ maskName: String) -> UIInterfaceOrientationMask? {
+  switch maskName {
+  case "UIInterfaceOrientationMaskPortrait":
+    return .portrait
+  case "UIInterfaceOrientationMaskLandscapeLeft":
+    return .landscapeLeft
+  case "UIInterfaceOrientationMaskLandscapeRight":
+    return .landscapeRight
+  case "UIInterfaceOrientationMaskPortraitUpsideDown":
+    return .portraitUpsideDown
+  case "UIInterfaceOrientationMaskLandscape":
+    return .landscape
+  case "UIInterfaceOrientationMaskAll":
+    return .all
+  case "UIInterfaceOrientationMaskAllButUpsideDown":
+    return .allButUpsideDown
+  default:
+    return nil
+  }
+}
+
 extension UIInterfaceOrientation {
   internal func toInterfaceOrientationMask() -> UIInterfaceOrientationMask {
     return UIInterfaceOrientationMask(rawValue: 1 << self.rawValue)
@@ -86,7 +107,7 @@ extension UIInterfaceOrientation {
 }
 
 extension UIDeviceOrientation {
-  func toInterfaceOrientation() -> UIInterfaceOrientation {
+  internal func toInterfaceOrientation() -> UIInterfaceOrientation {
     switch self {
     case .portrait:
       return .portrait
