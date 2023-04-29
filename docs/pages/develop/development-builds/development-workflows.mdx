@@ -124,7 +124,7 @@ This will create a new section in the dev menu that includes the buttons you hav
 
 The EAS Update extension provides the ability to view and load published updates in your development client.
 
-It's now available for all development clients `v0.9.0` and above. In order to install it, you'll need the most recent publish of `expo-updates`:
+It's available for all development clients `v0.9.0` and above. To install it, you'll need the most recent publish of `expo-updates`:
 
 <Terminal cmd={['$ npx expo install expo-dev-client expo-updates']} />
 
@@ -136,13 +136,13 @@ You can now view and load EAS Updates in your development build via the `Extensi
 
 ## Set runtimeVersion in Expo config
 
-When you create a development build of your project, you'll get a stable environment to load any changes to your app that are defined in JavaScript or other asset-related changes. Other changes to your app, whether defined directly in **ios/** and **android/** directories or by packages or SDKs you choose to install, will require you to create a new build of your development build.
+When you create a development build of your project, you'll get a stable environment to load any changes to your app that are defined in JavaScript or other asset-related changes. Other changes to your app, whether defined directly in **android** and **ios** directories or by packages or SDKs you choose to install, will require you to create a new build of your development build.
 
 To enforce an API contract between the JavaScript and native layers of your app, you should set the [`runtimeVersion`](/distribution/runtime-versions) value in the Expo config. Each build you make will have this value embedded and will only load bundles with the same `runtimeVersion`, in both development and production.
 
 ## Build locally with Android Studio and Xcode
 
-> **warning** We do not recommend this method or modifying these **android/** and **ios/** directories directly, especially when creating a development build with EAS Build. For more information, see [Prebuild](/workflow/prebuild/).
+> **warning** We do not recommend this method or modifying these **android** and **ios** directories directly, especially when creating a development build with EAS Build. For more information, see [Prebuild](/workflow/prebuild/).
 
 If you need to debug native code or you prefer to manage your native projects, you can build and distribute your project using the `npx expo run` commands. You'll need to set up or have access to Android Studio, Xcode, and related dependencies on your local computer.
 
