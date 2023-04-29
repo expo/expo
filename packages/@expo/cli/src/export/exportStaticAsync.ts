@@ -59,11 +59,7 @@ export async function getFilesToExportFromServerAsync({
 
   const sanitizeName = (segment: string) => {
     // Strip group names from the segment
-    return segment
-      .split('/')
-      .map((s) => (matchGroupName(s) ? '' : s))
-      .filter(Boolean)
-      .join('/');
+    return filterJoin(...segment.split('/').map((s) => (matchGroupName(s) ? '' : s)));
   };
 
   const fetchScreens = (
@@ -71,11 +67,12 @@ export async function getFilesToExportFromServerAsync({
     additionPath: string = ''
   ): Promise<any>[] => {
     async function fetchScreenExactAsync(pathname: string, filename: string) {
-      const outputPath = [additionPath, filename].filter(Boolean).join('/').replace(/^\//, '');
+      const outputPath = filterJoin(additionPath, filename).replace(/^\//, '');
       // TODO: Ensure no duplicates in the manifest.
       if (files.has(outputPath)) {
         return;
       }
+      console.log('fetchScreenExactAsync', { additionPath, pathname, filename, outputPath });
 
       // Prevent duplicate requests while running in parallel.
       files.set(outputPath, '');
@@ -99,14 +96,14 @@ export async function getFilesToExportFromServerAsync({
       if (cleanSegment !== segment) {
         // has groups, should request multiple screens.
         await fetchScreenExactAsync(
-          [additionPath, segment].filter(Boolean).join('/'),
-          [additionPath, filename].filter(Boolean).join('/').replace(/^\//, '')
+          filterJoin(additionPath, segment),
+          filterJoin(additionPath, filename).replace(/^\//, '')
         );
       }
 
       await fetchScreenExactAsync(
-        [additionPath, cleanSegment].filter(Boolean).join('/'),
-        [additionPath, sanitizeName(filename)].filter(Boolean).join('/').replace(/^\//, '')
+        filterJoin(additionPath, cleanSegment),
+        filterJoin(additionPath, sanitizeName(filename)).replace(/^\//, '')
       );
     }
 
@@ -116,9 +113,7 @@ export async function getFilesToExportFromServerAsync({
       // Segment is a directory.
       if (typeof segment !== 'string') {
         const cleanSegment = sanitizeName(segment.path);
-        return Promise.all(
-          fetchScreens(segment.screens, [additionPath, cleanSegment].filter(Boolean).join('/'))
-        );
+        return Promise.all(fetchScreens(segment.screens, filterJoin(additionPath, cleanSegment)));
       }
 
       // TODO: handle dynamic routes
@@ -132,6 +127,10 @@ export async function getFilesToExportFromServerAsync({
   await Promise.all(fetchScreens(manifest.screens));
 
   return files;
+}
+
+function filterJoin(...paths: (string | undefined)[]) {
+  return paths.filter(Boolean).join('/');
 }
 
 /** Perform all fs commits */
@@ -184,4 +183,80 @@ export async function exportFromServerAsync(
       })
   );
   Log.log('');
+}
+
+export function getHtmlFiles({ manifest }: { manifest: any }): string[] {
+  const htmlFiles = new Set<string>();
+
+  function traverseScreens(screens: string | { screens: any; path: string }, basePath = '') {
+    for (const value of Object.values(screens)) {
+      if (typeof value === 'string') {
+        let filePath = basePath + value;
+        if (value === '') {
+          filePath =
+            basePath === ''
+              ? 'index'
+              : basePath.endsWith('/')
+              ? basePath + 'index'
+              : basePath.slice(0, -1);
+        }
+        addOptionalGroups(filePath);
+      } else if (typeof value === 'object' && value?.screens) {
+        const newPath = basePath + value.path + '/';
+        traverseScreens(value.screens, newPath);
+      }
+    }
+  }
+
+  function addOptionalGroups(path: string) {
+    const variations = getPathVariations(path);
+    for (const variation of variations) {
+      htmlFiles.add(variation);
+    }
+  }
+
+  traverseScreens(manifest.screens);
+
+  return Array.from(htmlFiles).map((value) => {
+    const parts = value.split('/');
+    // Replace `:foo` with `[foo]` and `*foo` with `[...foo]`
+    const partsWithGroups = parts.map((part) => {
+      if (part.startsWith(':')) {
+        return `[${part.slice(1)}]`;
+      } else if (part.startsWith('*')) {
+        return `[...${part.slice(1)}]`;
+      }
+      return part;
+    });
+    return partsWithGroups.join('/') + '.html';
+  });
+}
+
+// Given a route like `(foo)/bar/(baz)`, return all possible variations of the route.
+// e.g. `(foo)/bar/(baz)`, `(foo)/bar/baz`, `foo/bar/(baz)`, `foo/bar/baz`,
+export function getPathVariations(routePath: string): string[] {
+  const variations = new Set<string>([routePath]);
+  const segments = routePath.split('/');
+
+  function generateVariations(segments: string[], index: number): void {
+    if (index >= segments.length) {
+      return;
+    }
+
+    const segment = segments[index];
+    const groupName = matchGroupName(segment);
+    if (groupName) {
+      const newSegments = [...segments];
+      newSegments.splice(index, 1);
+      variations.add(newSegments.join('/'));
+
+      generateVariations(newSegments, index + 1);
+    }
+
+    generateVariations(segments, index + 1);
+  }
+
+  generateVariations(segments, 0);
+
+  return Array.from(variations);
 }

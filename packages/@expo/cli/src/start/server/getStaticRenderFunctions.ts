@@ -15,6 +15,7 @@ import { delayAsync } from '../../utils/delay';
 import { SilentError } from '../../utils/errors';
 import { memoize } from '../../utils/fn';
 import { profile } from '../../utils/profile';
+import { logMetroError } from './metro/metroErrorInterface';
 import { getMetroServerRoot } from './middleware/ManifestMiddleware';
 
 const debug = require('debug')('expo:start:server:node-renderer') as typeof console.log;
@@ -172,19 +173,41 @@ export async function requireWithMetro<T>(
     absoluteFilePath,
     options
   );
-
-  return profile(requireString, 'eval-metro-bundle')(content);
+  return evalMetro(content);
 }
 
 export async function getStaticRenderFunctions(
   projectRoot: string,
   devServerUrl: string,
   options: StaticRenderOptions = {}
-): Promise<any> {
+): Promise<Record<string, (...args: any[]) => Promise<any>>> {
   const scriptContents = await getStaticRenderFunctionsContentAsync(
     projectRoot,
     devServerUrl,
     options
   );
-  return profile(requireString, 'eval-metro-bundle')(scriptContents);
+
+  const contents = evalMetro(scriptContents);
+
+  // wrap each function with a try/catch that uses Metro's error formatter
+  return Object.keys(contents).reduce((acc, key) => {
+    const fn = contents[key];
+    if (typeof fn !== 'function') {
+      return { ...acc, [key]: fn };
+    }
+
+    acc[key] = async function () {
+      try {
+        return await fn.apply(this, arguments);
+      } catch (error: any) {
+        await logMetroError(projectRoot, { error });
+        throw new SilentError(error);
+      }
+    };
+    return acc;
+  }, {} as any);
+}
+
+function evalMetro(src: string) {
+  return profile(requireString, 'eval-metro-bundle')(src);
 }

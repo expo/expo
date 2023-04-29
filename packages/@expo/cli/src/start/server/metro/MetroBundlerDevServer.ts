@@ -15,7 +15,6 @@ import path from 'path';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
-import { env } from '../../../utils/env';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
 import { getStaticRenderFunctions } from '../getStaticRenderFunctions';
@@ -73,6 +72,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // Ensure the API Routes are included
       environment: 'node',
     });
+
     return getManifest({ fetchData: true });
   }
 
@@ -201,14 +201,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
 
     const [resources, staticHtml] = await Promise.all([bundleResources(), bundleStaticHtml()]);
-
     const content = await this.composeResourcesWithHtml({
       mode,
       resources,
       template: staticHtml,
       devBundleUrl: devBundleUrlPathname,
     });
-
     return {
       content,
       resources,
