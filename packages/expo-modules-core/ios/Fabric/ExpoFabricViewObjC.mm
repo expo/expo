@@ -142,7 +142,7 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
   const auto &newViewProps = *std::static_pointer_cast<ExpoViewProps const>(props);
   NSMutableDictionary<NSString *, id> *propsMap = [[NSMutableDictionary alloc] init];
 
-  for (const std::pair<std::string, folly::dynamic> item : newViewProps.propsMap) {
+  for (const auto &item : newViewProps.propsMap) {
     NSString *propName = [NSString stringWithUTF8String:item.first.c_str()];
 
     // Ignore props inherited from the base view and Yoga.

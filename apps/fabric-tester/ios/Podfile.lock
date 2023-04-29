@@ -20,7 +20,7 @@ PODS:
     - ExpoModulesCore
   - ExpoBlur (12.3.0):
     - ExpoModulesCore
-  - ExpoImage (1.2.1):
+  - ExpoImage (1.2.2):
     - ExpoModulesCore
     - SDWebImage (~> 5.15.0)
     - SDWebImageAVIFCoder (~> 0.9.4)
@@ -942,7 +942,7 @@ SPEC CHECKSUMS:
   Expo: 79deb55f33fab1b232232868a74713772943238d
   ExpoAppleAuthentication: 7bd5e4150d59e8df37aa80b425850ae88adf9e65
   ExpoBlur: b0d995dbfc725fc5b7ee60da076131995300815d
-  ExpoImage: 09d394e082cdd18d946f10a522d566dfca019fb8
+  ExpoImage: 5129495e9981da259c652e23bd87615980864818
   ExpoKeepAwake: 69f5f627670d62318410392d03e0b5db0f85759a
   ExpoLinearGradient: 496147427ac1a8ee4738e016e94fc19ba2f3a00a
   ExpoModulesCore: e093fd5d0fafc8d5c1d2c8c44f40811475315bf3
