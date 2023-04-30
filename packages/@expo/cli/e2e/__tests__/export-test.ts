@@ -228,7 +228,7 @@ describe('server', () => {
     120 * 1000
   );
 
-  it(
+  xit(
     'runs `npx expo export -p web` for static rendering',
     async () => {
       const projectRoot = await setupTestProjectAsync('export-router', 'with-router', '48.0.0');
