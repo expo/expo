@@ -109,7 +109,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
   }
 
-  async getStaticResourcesAsync({ mode }: { mode: string }): Promise<SerialAsset[]> {
+  async getStaticResourcesAsync({
+    mode,
+    sourcemap,
+  }: {
+    mode: string;
+    sourcemap?: boolean | 'inline';
+  }): Promise<SerialAsset[]> {
     const isDev = mode === 'development';
     const devBundleUrlPathname = createBundleUrlPath({
       platform: 'web',
@@ -123,6 +129,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     bundleUrl.searchParams.set('dev', String(isDev));
     bundleUrl.searchParams.set('minify', String(!isDev));
     bundleUrl.searchParams.set('serializer.output', 'static');
+    if (sourcemap != null) {
+      bundleUrl.searchParams.set('serializer.sourcemap', String(sourcemap));
+    }
 
     // Fetch the generated HTML from our custom Metro serializer
     const results = await fetch(bundleUrl.toString());
