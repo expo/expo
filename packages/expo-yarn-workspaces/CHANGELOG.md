@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for passing options to `expo/metro-config` -- enables CSS support.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
