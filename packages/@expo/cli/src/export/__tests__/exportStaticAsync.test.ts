@@ -56,29 +56,6 @@ describe(getHtmlFiles, () => {
 });
 
 describe(getFilesToExportFromServerAsync, () => {
-  it(`should export from server async 2`, async () => {
-    const renderAsync = jest.fn(async () => '');
-    expect(
-      await getFilesToExportFromServerAsync({
-        manifest: {
-          initialRouteName: undefined,
-          screens: {
-            alpha: {
-              path: 'alpha',
-              screens: { index: '', second: 'second' },
-              initialRouteName: 'index',
-            },
-          },
-        },
-        renderAsync,
-      })
-    ).toEqual(
-      new Map([
-        ['alpha/second.html', ''],
-        ['alpha/index.html', ''],
-      ])
-    );
-  });
   it(`should export from server async`, async () => {
     const renderAsync = jest.fn(async () => '');
     expect(
@@ -105,8 +82,14 @@ describe(getFilesToExportFromServerAsync, () => {
       })
     ).toEqual(
       new Map([
+        ['(app)/compose.html', ''],
+        ['(app)/index.html', ''],
+        ['(app)/note/[note].html', ''],
         ['(auth)/sign-in.html', ''],
+        ['[...404].html', ''],
         ['sign-in.html', ''],
+        ['alpha/index.html', ''],
+        ['alpha/second.html', ''],
         // ['[...404].html', ''],
         ['_sitemap.html', ''],
         ['compose.html', ''],

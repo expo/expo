@@ -57,27 +57,16 @@ export async function getFilesToExportFromServerAsync({
   // name : contents
   const files = new Map<string, string>();
 
-  const sanitizeName = (segment: string) => {
-    // Strip group names from the segment
-    return filterJoin(...segment.split('/').map((s) => (matchGroupName(s) ? '' : s)));
-  };
+  // const sanitizeName = (segment: string) => {
+  //   // Strip group names from the segment
+  //   return filterJoin(...segment.split('/').map((s) => (matchGroupName(s) ? '' : s)));
+  // };
 
-  const fetchScreens = (
-    screens: Record<string, any>,
-    additionPath: string = ''
-  ): Promise<any>[] => {
-    async function fetchScreenExactAsync(pathname: string, filename: string) {
-      const outputPath = filterJoin(additionPath, filename).replace(/^\//, '');
-      // TODO: Ensure no duplicates in the manifest.
-      if (files.has(outputPath)) {
-        return;
-      }
-      console.log('fetchScreenExactAsync', { additionPath, pathname, filename, outputPath });
-
-      // Prevent duplicate requests while running in parallel.
-      files.set(outputPath, '');
-
+  await Promise.all(
+    getHtmlFiles({ manifest }).map(async (outputPath) => {
+      const pathname = outputPath.replace(/\.html$/, '');
       try {
+        files.set(outputPath, '');
         const data = await renderAsync(pathname);
         files.set(outputPath, data);
       } catch (e: any) {
@@ -87,44 +76,8 @@ export async function getFilesToExportFromServerAsync({
         Log.exception(e);
         throw e;
       }
-    }
-
-    async function fetchScreenAsync({ segment, filename }: { segment: string; filename: string }) {
-      // Strip group names from the segment
-      const cleanSegment = sanitizeName(segment);
-
-      if (cleanSegment !== segment) {
-        // has groups, should request multiple screens.
-        await fetchScreenExactAsync(
-          filterJoin(additionPath, segment),
-          filterJoin(additionPath, filename).replace(/^\//, '')
-        );
-      }
-
-      await fetchScreenExactAsync(
-        filterJoin(additionPath, cleanSegment),
-        filterJoin(additionPath, sanitizeName(filename)).replace(/^\//, '')
-      );
-    }
-
-    return Object.entries(screens).map(async ([name, segment]) => {
-      const filename = name + '.html';
-
-      // Segment is a directory.
-      if (typeof segment !== 'string') {
-        const cleanSegment = sanitizeName(segment.path);
-        return Promise.all(fetchScreens(segment.screens, filterJoin(additionPath, cleanSegment)));
-      }
-
-      // TODO: handle dynamic routes
-      if (!segment.startsWith('*')) {
-        await fetchScreenAsync({ segment, filename });
-      }
-      return null;
-    });
-  };
-
-  await Promise.all(fetchScreens(manifest.screens));
+    })
+  );
 
   return files;
 }
@@ -200,6 +153,7 @@ export function getHtmlFiles({ manifest }: { manifest: any }): string[] {
               ? basePath + 'index'
               : basePath.slice(0, -1);
         }
+        // TODO: Dedupe requests for alias routes.
         addOptionalGroups(filePath);
       } else if (typeof value === 'object' && value?.screens) {
         const newPath = basePath + value.path + '/';
