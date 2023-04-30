@@ -2,7 +2,6 @@ import React from 'react';
 import TestRenderer from 'react-test-renderer';
 
 import { requireNativeViewManager } from '../NativeViewManagerAdapter';
-import Platform from '../Platform';
 
 jest.mock('react-native', () => {
   const ReactNative = jest.requireActual('react-native');
