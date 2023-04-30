@@ -21,6 +21,13 @@ internal struct DynamicOptionalType: AnyDynamicType {
     return false
   }
 
+  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+    if jsValue.isUndefined() || jsValue.isNull() {
+      return Optional<Any>.none as Any
+    }
+    return try wrappedType.cast(jsValue: jsValue, appContext: appContext)
+  }
+
   func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
     if Optional.isNil(value) || value is NSNull {
       return Optional<Any>.none as Any
