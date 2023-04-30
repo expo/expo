@@ -69,6 +69,13 @@ public class ExpoFabricView: ExpoFabricViewObjC {
   }
 
   /**
+   Returns a bool value whether the view supports prop with the given name.
+   */
+  public override func supportsProp(withName name: String) -> Bool {
+    return viewManagerPropDict?.index(forKey: name) != nil
+  }
+
+  /**
    The function that is called by Fabric when the view is unmounted and is being enqueued for recycling.
    It can also be called on app reload, so be careful to wipe out any dependencies specific to the currently running AppContext.
    */

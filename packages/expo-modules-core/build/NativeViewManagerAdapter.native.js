@@ -1,5 +1,6 @@
 import React from 'react';
 import { findNodeHandle, NativeModules, requireNativeComponent } from 'react-native';
+import Platform from './Platform';
 import { requireNativeModule } from './requireNativeModule';
 /**
  * A map that caches registered native components.
@@ -43,6 +44,10 @@ export function requireNativeViewManager(viewName) {
             this.nativeTag = findNodeHandle(this);
         }
         render() {
+            if (Platform.OS === 'ios') {
+                // On iOS we already got rid of the `proxiedProperties`.
+                return React.createElement(ReactNativeComponent, { ...this.props });
+            }
             const nativeProps = omit(this.props, proxiedPropsNames);
             const proxiedProps = pick(this.props, proxiedPropsNames);
             return React.createElement(ReactNativeComponent, { ...nativeProps, proxiedProperties: proxiedProps });
