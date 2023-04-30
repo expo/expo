@@ -458,8 +458,8 @@ function htmlFromSerialAssets(
         return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
       } else {
         return [
-          `<link rel="preload" href="${filename}" as="style">`,
-          `<link rel="stylesheet" href="${filename}">`,
+          `<link rel="preload" href="/${filename}" as="style">`,
+          `<link rel="stylesheet" href="/${filename}">`,
         ].join('');
       }
     })
@@ -471,7 +471,7 @@ function htmlFromSerialAssets(
     ? `<script src="${bundleUrl}" defer></script>`
     : jsAssets
         .map(({ filename }) => {
-          return `<script src="${filename}" defer></script>`;
+          return `<script src="/${filename}" defer></script>`;
         })
         .join('');
 
