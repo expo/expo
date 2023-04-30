@@ -12,7 +12,7 @@ import type { LoadOptions } from '@expo/metro-config';
 import chalk from 'chalk';
 import Metro from 'metro';
 
-import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssDependencies';
+import { CSSAsset, getCssModulesFromBundler } from '../start/server/metro/getCssModulesFromBundler';
 import { loadMetroConfigAsync } from '../start/server/metro/instantiateMetro';
 
 export type MetroDevServerOptions = LoadOptions & {

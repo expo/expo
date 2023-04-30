@@ -56,6 +56,7 @@ export async function loadMetroConfigAsync(
     config,
     platformBundlers,
     isTsconfigPathsEnabled: !!exp.experiments?.tsconfigPaths,
+    webOutput: exp.web?.output ?? 'single',
   });
 
   logEventAsync('metro config', getMetroProperties(projectRoot, exp, config));

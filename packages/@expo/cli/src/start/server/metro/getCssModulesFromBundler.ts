@@ -116,6 +116,6 @@ function getCssMetadata(module: Module): MetroModuleCSSMetadata | null {
   return null;
 }
 
-function getFileName(module: string) {
+export function getFileName(module: string) {
   return path.basename(module).replace(/\.[^.]+$/, '');
 }

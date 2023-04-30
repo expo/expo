@@ -129,7 +129,7 @@ export class DevServerManager {
 
   /** Start all dev servers. */
   async startAsync(startOptions: MultiBundlerStartOptions): Promise<ExpoConfig> {
-    const { exp } = getConfig(this.projectRoot);
+    const { exp } = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
 
     await logEventAsync('Start Project', {
       sdkVersion: exp.sdkVersion ?? null,

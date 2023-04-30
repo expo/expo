@@ -17,6 +17,9 @@ export async function createBundlesAsync(
   publishOptions: PublishOptions = {},
   bundleOptions: { platforms: Platform[]; dev?: boolean }
 ): Promise<Partial<Record<Platform, BundleOutput>>> {
+  if (!bundleOptions.platforms.length) {
+    return {};
+  }
   const projectConfig = getConfig(projectRoot, { skipSDKVersionRequirement: true });
   const { exp } = projectConfig;
 
