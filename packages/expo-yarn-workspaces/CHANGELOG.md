@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Add support for passing options to `expo/metro-config` -- enables CSS support.
+- Add support for passing options to `expo/metro-config` -- enables CSS support. ([#22325](https://github.com/expo/expo/pull/22325) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
