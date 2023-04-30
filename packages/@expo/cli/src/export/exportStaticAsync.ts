@@ -59,7 +59,7 @@ export async function getFilesToExportFromServerAsync({
 
   await Promise.all(
     getHtmlFiles({ manifest }).map(async (outputPath) => {
-      const pathname = outputPath.replace(/\.html$/, '');
+      const pathname = outputPath.replace(/(index)?\.html$/, '');
       try {
         files.set(outputPath, '');
         const data = await renderAsync(pathname);
