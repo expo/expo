@@ -30,7 +30,7 @@
 - Generate experimental expo-env.d.ts when EXPO_ROUTER_TYPED_ROUTES=true ([#22096](https://github.com/expo/expo/pull/22096) by [@marklawlor](https://github.com/marklawlor))
 - Improve prebuild for arbitrary template platforms. ([#22201](https://github.com/expo/expo/pull/22201) by [@byCedric](https://github.com/byCedric))
 - Further improve prebuild for arbitrary template platforms. ([#22209](https://github.com/expo/expo/pull/22209) by [@EvanBacon](https://github.com/EvanBacon))
-- Support `--dump-sourcemap` in the `expo export` command on web when using `output: 'static'`.
+- Support `--dump-sourcemap` in the `expo export` command on web when using `output: 'static'`. ([#22334](https://github.com/expo/expo/pull/22334) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
