@@ -1,6 +1,7 @@
 import React from 'react';
 import { findNodeHandle, NativeModules, requireNativeComponent, HostComponent } from 'react-native';
 
+import Platform from './Platform';
 import { requireNativeModule } from './requireNativeModule';
 
 // To make the transition from React Native's `requireNativeComponent` to Expo's
@@ -13,7 +14,7 @@ import { requireNativeModule } from './requireNativeModule';
 // adapter view component in a prop called `proxiedProperties`.
 
 type NativeExpoComponentProps = {
-  proxiedProperties: object;
+  proxiedProperties?: object;
 };
 
 /**
@@ -70,6 +71,10 @@ export function requireNativeViewManager<P>(viewName: string): React.ComponentTy
     }
 
     render(): React.ReactNode {
+      if (Platform.OS === 'ios') {
+        // On iOS we already got rid of the `proxiedProperties`.
+        return <ReactNativeComponent {...this.props} />;
+      }
       const nativeProps = omit(this.props, proxiedPropsNames);
       const proxiedProps = pick(this.props, proxiedPropsNames);
 

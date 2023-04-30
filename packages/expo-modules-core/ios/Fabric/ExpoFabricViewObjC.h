@@ -37,6 +37,8 @@
 
 - (void)viewDidUpdateProps;
 
+- (BOOL)supportsPropWithName:(nonnull NSString *)name;
+
 - (void)prepareForRecycle;
 
 #pragma mark - Methods injected to the class in runtime
