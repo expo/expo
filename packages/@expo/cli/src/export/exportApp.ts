@@ -67,7 +67,9 @@ export async function exportAppAsync(
     projectRoot,
     { resetCache: !!clear },
     {
-      platforms: useWebSSG ? platforms.filter((platform) => platform !== 'web') : platforms,
+      platforms,
+      // TODO: Breaks asset exports
+      // platforms: useWebSSG ? platforms.filter((platform) => platform !== 'web') : platforms,
       dev,
       // TODO: Disable source map generation if we aren't outputting them.
     }
