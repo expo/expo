@@ -99,13 +99,3 @@ describe(getFilesToExportFromServerAsync, () => {
     );
   });
 });
-
-('alpha/second.html');
-('alpha/index.html');
-('(auth)/sign-in.html');
-('sign-in.html');
-('[...404].html');
-('_sitemap.html');
-('compose.html');
-('index.html');
-('note/[note].html');

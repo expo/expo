@@ -9,8 +9,8 @@ import fetch from 'node-fetch';
 import path from 'path';
 import requireString from 'require-from-string';
 import resolveFrom from 'resolve-from';
-import { stripAnsi } from '../../utils/ansi';
 
+import { stripAnsi } from '../../utils/ansi';
 import { delayAsync } from '../../utils/delay';
 import { SilentError } from '../../utils/errors';
 import { memoize } from '../../utils/fn';
@@ -196,9 +196,9 @@ export async function getStaticRenderFunctions(
       return { ...acc, [key]: fn };
     }
 
-    acc[key] = async function () {
+    acc[key] = async function (...props: any[]) {
       try {
-        return await fn.apply(this, arguments);
+        return await fn.apply(this, props);
       } catch (error: any) {
         await logMetroError(projectRoot, { error });
         throw new SilentError(error);
