@@ -2,6 +2,7 @@ import React from 'react';
 import TestRenderer from 'react-test-renderer';
 
 import { requireNativeViewManager } from '../NativeViewManagerAdapter';
+import Platform from '../Platform';
 
 jest.mock('react-native', () => {
   const ReactNative = jest.requireActual('react-native');
@@ -46,7 +47,11 @@ describe('requireNativeViewManager', () => {
     expect(React.Children.toArray(testNativeComponent.props.children)).toHaveLength(1);
 
     // Custom props
-    expect(testNativeComponent.props.proxiedProperties).toEqual({ custom: 'hello' });
-    expect(testNativeComponent.props).not.toHaveProperty('custom');
+    if (Platform.OS === 'ios') {
+      expect(testNativeComponent.props.custom).toEqual('hello');
+    } else {
+      expect(testNativeComponent.props.proxiedProperties).toEqual({ custom: 'hello' });
+      expect(testNativeComponent.props).not.toHaveProperty('custom');
+    }
   });
 });
