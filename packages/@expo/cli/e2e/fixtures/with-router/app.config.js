@@ -8,6 +8,7 @@ module.exports = {
     bundleIdentifier: 'com.example.minimal',
   },
   web: {
+    output: process.env.EXPO_WEB_OUTPUT_MODE,
     bundler: 'metro',
   },
   experiments: {

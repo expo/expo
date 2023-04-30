@@ -116,9 +116,9 @@ function _rewriteRequestUrl() {
   };
   return data;
 }
-function _serializer() {
-  const data = require("./serializer");
-  _serializer = function () {
+function _withExpoSerializers() {
+  const data = require("./serializer/withExpoSerializers");
+  _withExpoSerializers = function () {
     return data;
   };
   return data;
@@ -288,7 +288,7 @@ function getDefaultConfig(projectRoot, options = {}) {
       assetPlugins: getAssetPlugins(projectRoot)
     }
   });
-  return (0, _serializer().withExpoSerializers)(metroConfig);
+  return (0, _withExpoSerializers().withExpoSerializers)(metroConfig);
 }
 async function loadAsync(projectRoot, {
   reporter,

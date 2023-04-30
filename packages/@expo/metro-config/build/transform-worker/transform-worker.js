@@ -44,6 +44,7 @@ function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "functio
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 const countLines = require('metro/src/lib/countLines');
 async function transform(config, projectRoot, filename, data, options) {
+  var _jsModuleResults$outp2;
   const isCss = options.type !== 'asset' && /\.(s?css|sass)$/.test(filename);
   // If the file is not CSS, then use the default behavior.
   if (!isCss) {
@@ -79,6 +80,7 @@ async function transform(config, projectRoot, filename, data, options) {
   // If the file is a CSS Module, then transform it to a JS module
   // in development and a static CSS file in production.
   if ((0, _cssModules().matchCssModule)(filename)) {
+    var _jsModuleResults$outp;
     const results = await (0, _cssModules().transformCssModuleWeb)({
       filename,
       src: code,
@@ -89,17 +91,13 @@ async function transform(config, projectRoot, filename, data, options) {
         sourceMap: false
       }
     });
-    if (options.dev) {
-      // Dev has the CSS appended to the JS file.
-      return _metroTransformWorker().default.transform(config, projectRoot, filename, Buffer.from(results.output), options);
-    }
     const jsModuleResults = await _metroTransformWorker().default.transform(config, projectRoot, filename, Buffer.from(results.output), options);
     const cssCode = results.css.toString();
     const output = [{
       type: 'js/module',
       data: {
         // @ts-expect-error
-        ...jsModuleResults.output[0].data,
+        ...((_jsModuleResults$outp = jsModuleResults.output[0]) === null || _jsModuleResults$outp === void 0 ? void 0 : _jsModuleResults$outp.data),
         // Append additional css metadata for static extraction.
         css: {
           code: cssCode,
@@ -117,17 +115,6 @@ async function transform(config, projectRoot, filename, data, options) {
 
   // Global CSS:
 
-  if (options.dev) {
-    return _metroTransformWorker().default.transform(config, projectRoot, filename,
-    // In development, we use a JS file that appends a style tag to the
-    // document. This is necessary because we need to replace the style tag
-    // when the CSS changes.
-    // NOTE: We may change this to better support static rendering in the future.
-    Buffer.from((0, _css().wrapDevelopmentCSS)({
-      src: code,
-      filename
-    })), options);
-  }
   const {
     transform
   } = await Promise.resolve().then(() => _interopRequireWildcard(require('lightningcss')));
@@ -150,16 +137,20 @@ async function transform(config, projectRoot, filename, data, options) {
 
   // Create a mock JS module that exports an empty object,
   // this ensures Metro dependency graph is correct.
-  const jsModuleResults = await _metroTransformWorker().default.transform(config, projectRoot, filename, Buffer.from(''), options);
+  const jsModuleResults = await _metroTransformWorker().default.transform(config, projectRoot, filename, options.dev ? Buffer.from((0, _css().wrapDevelopmentCSS)({
+    src: code,
+    filename
+  })) : Buffer.from(''), options);
   const cssCode = cssResults.code.toString();
 
   // In production, we export the CSS as a string and use a special type to prevent
   // it from being included in the JS bundle. We'll extract the CSS like an asset later
   // and append it to the HTML bundle.
   const output = [{
+    type: 'js/module',
     data: {
       // @ts-expect-error
-      ...jsModuleResults.output[0].data,
+      ...((_jsModuleResults$outp2 = jsModuleResults.output[0]) === null || _jsModuleResults$outp2 === void 0 ? void 0 : _jsModuleResults$outp2.data),
       // Append additional css metadata for static extraction.
       css: {
         code: cssCode,
@@ -167,8 +158,7 @@ async function transform(config, projectRoot, filename, data, options) {
         map: [],
         functionMap: null
       }
-    },
-    type: 'js/module'
+    }
   }];
   return {
     dependencies: jsModuleResults.dependencies,
