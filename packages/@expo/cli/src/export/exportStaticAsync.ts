@@ -57,11 +57,6 @@ export async function getFilesToExportFromServerAsync({
   // name : contents
   const files = new Map<string, string>();
 
-  // const sanitizeName = (segment: string) => {
-  //   // Strip group names from the segment
-  //   return filterJoin(...segment.split('/').map((s) => (matchGroupName(s) ? '' : s)));
-  // };
-
   await Promise.all(
     getHtmlFiles({ manifest }).map(async (outputPath) => {
       const pathname = outputPath.replace(/\.html$/, '');
@@ -80,10 +75,6 @@ export async function getFilesToExportFromServerAsync({
   );
 
   return files;
-}
-
-function filterJoin(...paths: (string | undefined)[]) {
-  return paths.filter(Boolean).join('/');
 }
 
 /** Perform all fs commits */
