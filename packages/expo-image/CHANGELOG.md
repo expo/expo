@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `ImageBackground` component.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
