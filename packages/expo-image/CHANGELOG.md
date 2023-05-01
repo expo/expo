@@ -162,3 +162,5 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Initial release 🥳
+
+- Added all the extra props to expo-image on web ([#22340](https://github.com/expo/expo/pull/22340) by [@makkarMeenu](https://github.com/makkarMeenu))
