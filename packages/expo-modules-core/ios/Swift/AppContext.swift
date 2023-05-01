@@ -353,6 +353,9 @@ public final class AppContext: NSObject {
    Unsets runtime objects that we hold for each module.
    */
   private func releaseRuntimeObjects() {
+    SharedObjectRegistry.clean()
+    classRegistry.clean()
+
     for module in moduleRegistry {
       module.javaScriptObject = nil
     }
