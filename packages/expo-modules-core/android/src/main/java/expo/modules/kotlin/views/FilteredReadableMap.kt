@@ -9,7 +9,6 @@ class FilteredReadableMapKeySetIterator(
   private val iterator: ReadableMapKeySetIterator,
   private val filter: Filter<String>
 ) : ReadableMapKeySetIterator {
-  private var hasNext = true
   private var next: String? = null
 
   init {
@@ -35,7 +34,6 @@ class FilteredReadableMapKeySetIterator(
       }
     }
     next = null
-    hasNext = false
   }
 }
 

@@ -8,7 +8,6 @@ class FilteredIterator<E>(
   private val iterator: Iterator<E>,
   private val filter: Filter<E>
 ) : Iterator<E> {
-  private var hasNext = true
   private var next: E? = null
 
   init {
@@ -34,6 +33,5 @@ class FilteredIterator<E>(
       }
     }
     next = null
-    hasNext = false
   }
 }
