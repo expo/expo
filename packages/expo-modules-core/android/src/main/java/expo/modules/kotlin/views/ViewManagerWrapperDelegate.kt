@@ -25,6 +25,9 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
   val name: String
     get() = moduleHolder.name
 
+  val props: Map<String, AnyViewProp>
+    get() = definition.props
+
   fun createView(context: Context): View {
     return definition
       .createView(context, moduleHolder.module.appContext)
@@ -33,8 +36,7 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
       }
   }
 
-  fun setProxiedProperties(view: View, proxiedProperties: ReadableMap) {
-    definition.setProps(proxiedProperties, view)
+  fun onViewDidUpdateProps(view: View) {
     definition.onViewDidUpdateProps?.let {
       try {
         exceptionDecorator({ OnViewDidUpdatePropsException(view.javaClass.kotlin, it) }) {
@@ -45,6 +47,29 @@ class ViewManagerWrapperDelegate(internal var moduleHolder: ModuleHolder) {
         definition.handleException(view, exception)
       }
     }
+  }
+
+  /**
+   * Updates the expo related properties of a given View based on a ReadableMap of property values.
+   *
+   * @param view The View whose properties should be updated.
+   * @param propsMap A ReadableMap of property values.
+   *
+   * @return A List of property names that were successfully updated.
+   */
+  fun updateProperties(view: View, propsMap: ReadableMap): List<String> {
+    val expoProps = props
+    val handledProps = mutableListOf<String>()
+    val iterator = propsMap.keySetIterator()
+
+    while (iterator.hasNextKey()) {
+      val key = iterator.nextKey()
+      expoProps[key]?.let { expoProp ->
+        expoProp.set(propsMap.getDynamic(key), view)
+        handledProps.add(key)
+      }
+    }
+    return handledProps
   }
 
   fun onDestroy(view: View) =
