@@ -1,7 +1,14 @@
 import React from 'react';
 import { findNodeHandle, NativeModules, requireNativeComponent } from 'react-native';
-import Platform from './Platform';
 import { requireNativeModule } from './requireNativeModule';
+// To make the transition from React Native's `requireNativeComponent` to Expo's
+// `requireNativeViewManager` as easy as possible, `requireNativeViewManager` is a drop-in
+// replacement for `requireNativeComponent`.
+//
+// For each view manager, we create a wrapper component that accepts all of the props available to
+// the author of the universal module. This wrapper component splits the props into two sets: props
+// passed to React Native's View (ex: style, testID) and custom view props, which are passed to the
+// adapter view component in a prop called `proxiedProperties`.
 /**
  * A map that caches registered native components.
  */
@@ -34,7 +41,6 @@ export function requireNativeViewManager(viewName) {
     // manager
     const reactNativeViewName = `ViewManagerAdapter_${viewName}`;
     const ReactNativeComponent = requireCachedNativeComponent(reactNativeViewName);
-    const proxiedPropsNames = viewManagerConfig?.propsNames ?? [];
     class NativeComponent extends React.PureComponent {
         static displayName = viewName;
         // This will be accessed from native when the prototype functions are called,
@@ -44,13 +50,7 @@ export function requireNativeViewManager(viewName) {
             this.nativeTag = findNodeHandle(this);
         }
         render() {
-            if (Platform.OS === 'ios') {
-                // On iOS we already got rid of the `proxiedProperties`.
-                return React.createElement(ReactNativeComponent, { ...this.props });
-            }
-            const nativeProps = omit(this.props, proxiedPropsNames);
-            const proxiedProps = pick(this.props, proxiedPropsNames);
-            return React.createElement(ReactNativeComponent, { ...nativeProps, proxiedProperties: proxiedProps });
+            return React.createElement(ReactNativeComponent, { ...this.props });
         }
     }
     try {
@@ -69,20 +69,5 @@ export function requireNativeViewManager(viewName) {
         // See: https://github.com/expo/expo/blob/main/packages/expo-modules-core/src/__tests__/NativeViewManagerAdapter-test.native.tsx
     }
     return NativeComponent;
-}
-function omit(props, propNames) {
-    const copied = { ...props };
-    for (const propName of propNames) {
-        delete copied[propName];
-    }
-    return copied;
-}
-function pick(props, propNames) {
-    return propNames.reduce((prev, curr) => {
-        if (curr in props) {
-            prev[curr] = props[curr];
-        }
-        return prev;
-    }, {});
 }
 //# sourceMappingURL=NativeViewManagerAdapter.native.js.map
