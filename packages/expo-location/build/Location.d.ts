@@ -135,7 +135,7 @@ export declare function getBackgroundPermissionsAsync(): Promise<PermissionRespo
  */
 export declare function requestBackgroundPermissionsAsync(): Promise<PermissionResponse>;
 /**
- * Check or request permissions for the foreground location.
+ * Check or request permissions for the background location.
  * This uses both `requestBackgroundPermissionsAsync` and `getBackgroundPermissionsAsync` to
  * interact with the permissions.
  *
