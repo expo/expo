@@ -353,8 +353,10 @@ public final class AppContext: NSObject {
    Unsets runtime objects that we hold for each module.
    */
   private func releaseRuntimeObjects() {
-    SharedObjectRegistry.clean()
-    classRegistry.clean()
+    // FIXME: Release objects only from the current context.
+    // Making the registry non-global (similarly to the class registry) would fix it.
+    SharedObjectRegistry.clear()
+    classRegistry.clear()
 
     for module in moduleRegistry {
       module.javaScriptObject = nil

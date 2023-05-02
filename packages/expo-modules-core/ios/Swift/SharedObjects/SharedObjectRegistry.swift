@@ -127,7 +127,7 @@ public final class SharedObjectRegistry {
     return createSharedJavaScriptObject(runtime: runtime, nativeObject: nativeObject)
   }
 
-  internal static func clean() {
+  internal static func clear() {
     pairs.removeAll()
   }
 }
