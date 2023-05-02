@@ -39,7 +39,6 @@ internal final class RemoteAppLoader: AppLoader {
 
     self.successBlock = { [weak self] (updateResponse: UpdateResponse?) in
       guard let strongSelf = self else {
-        successBlockArg(updateResponse)
         return
       }
       // even if update is nil (meaning we didn't load a new update),
