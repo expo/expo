@@ -24,4 +24,8 @@ internal final class ClassRegistry {
     let nativeClassId = ObjectIdentifier(nativeClass)
     register(nativeClassId: nativeClassId, javaScriptClass: javaScriptClass)
   }
+
+  internal func clear() {
+    nativeToJS.removeAll()
+  }
 }
