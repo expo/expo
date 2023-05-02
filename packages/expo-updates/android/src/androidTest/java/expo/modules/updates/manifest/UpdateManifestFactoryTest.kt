@@ -42,7 +42,7 @@ class UpdateManifestFactoryTest {
   fun testGetManifest_New() {
     val actual = getManifest(
       JSONObject(newManifestJson),
-      ResponseHeaderData(protocolVersion = "0"),
+      ResponseHeaderData(protocolVersionRaw = "0"),
       null,
       createConfig()
     )
@@ -54,7 +54,7 @@ class UpdateManifestFactoryTest {
   fun testGetManifest_UnsupportedProtocolVersion() {
     getManifest(
       JSONObject(newManifestJson),
-      ResponseHeaderData(protocolVersion = "100"),
+      ResponseHeaderData(protocolVersionRaw = "100"),
       null,
       createConfig()
     )

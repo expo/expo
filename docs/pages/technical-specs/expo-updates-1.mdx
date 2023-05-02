@@ -81,6 +81,7 @@ A conformant server MUST return a response structured in at least one of the two
 
 - For a response with `content-type: application/json` or `content-type: application/expo+json`, the [common response headers](#common-response-headers) and [other response headers](#other-response-headers) MUST be sent in the response headers and the [manifest body](#manifest-body) MUST be sent in the response body. This format of response does not support multiple response parts and therefore does not support _directives_, and SHOULD respond with an HTTP `406` error status when the most recent response to be served is not an _update_.
 - For a response with `content-type: multipart/mixed`, the response MUST be structured as specified in the [multipart response](#multipart-response) section.
+- A [multipart response](#multipart-response) with no parts MAY respond with an HTTP `204` status and no content, and thus no `content-type` response header.
 
 The choice of update and headers are dependent on the values of the request headers. A conformant server MUST respond with the most recent update, ordered by creation time, satisfying all parameters and constraints imposed by the [request headers](#request). The server MAY use any properties of the request like its headers and source IP address to choose amongst several updates that all satisfy the request's constraints.
 

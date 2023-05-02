@@ -32,6 +32,11 @@ internal enum PEMType {
   }
 }
 
+private let ErrorDomain = "EXUpdatesCrypto"
+private enum CryptoErrorCode: Int {
+  case PublicKeyDownloadError = 1049
+}
+
 /**
  * Methods for legacy signature verification of manifests.
  */
@@ -102,6 +107,11 @@ internal final class Crypto {
       fromURL: PublicKeyUrl,
       extraHeaders: [:]
     ) { publicKeyData, _ in
+      guard let publicKeyData = publicKeyData else {
+        fetchRemotelyBlock()
+        return
+      }
+
       verify(withPublicKey: publicKeyData, signature: signature, signedString: data) { isValid in
         if isValid {
           successBlock(isValid)
@@ -128,6 +138,14 @@ internal final class Crypto {
       fromURL: PublicKeyUrl,
       extraHeaders: [:]
     ) { publicKeyData, _ in
+      guard let publicKeyData = publicKeyData else {
+        errorBlock(NSError(
+          domain: ErrorDomain,
+          code: CryptoErrorCode.PublicKeyDownloadError.rawValue,
+          userInfo: [NSLocalizedDescriptionKey: "Public key response body empty"]
+        ))
+        return
+      }
       verify(withPublicKey: publicKeyData, signature: signature, signedString: data, callback: successBlock)
     } errorBlock: { error in
       errorBlock(error)
