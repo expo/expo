@@ -19,3 +19,13 @@ internal class CannotLoadAppException: GenericException<String> {
     "Could not load the app: \(param)"
   }
 }
+
+internal class WebBrowserException: Exception {
+  override var code: String {
+    "ERR_DEV_MENU_WEB_BROWSER"
+  }
+
+  override var reason: String {
+    "Another WebBrowser is already being presented."
+  }
+}

@@ -47,7 +47,7 @@ public class DevLauncherInternal: Module, EXDevLauncherPendingDeepLinkListener {
       let controller = EXDevLauncherController.sharedInstance()
 
       controller.loadApp(url, onSuccess: { promise.resolve(nil) }, onError: { error in
-          promise.reject(CannotLoadAppException(error.localizedDescription))
+        promise.reject(CannotLoadAppException(error.localizedDescription))
       })
     }
 
@@ -91,7 +91,7 @@ public class DevLauncherInternal: Module, EXDevLauncherPendingDeepLinkListener {
       let projectUrl = sanitizeUrlString(projectUrlString)
 
       controller.loadApp(updatesUrl, withProjectUrl: projectUrl, onSuccess: { promise.resolve(nil) }, onError: { error in
-          promise.reject(CannotLoadAppException(error.localizedDescription))
+        promise.reject(CannotLoadAppException(error.localizedDescription))
       })
     }
   }
