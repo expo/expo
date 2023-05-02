@@ -168,8 +168,8 @@ export async function getExtraParamsAsync() {
  * discriminate branches based on the `userType`.
  */
 export async function setExtraParamAsync(key, value) {
-    if (!ExpoUpdates.setExtraParamsAsync) {
-        throw new UnavailabilityError('Updates', 'setExtraParamsAsync');
+    if (!ExpoUpdates.setExtraParamAsync) {
+        throw new UnavailabilityError('Updates', 'setExtraParamAsync');
     }
     return await ExpoUpdates.setExtraParamAsync(key, value ?? null);
 }

@@ -216,8 +216,8 @@ export async function setExtraParamAsync(
   key: string,
   value: string | null | undefined
 ): Promise<void> {
-  if (!ExpoUpdates.setExtraParamsAsync) {
-    throw new UnavailabilityError('Updates', 'setExtraParamsAsync');
+  if (!ExpoUpdates.setExtraParamAsync) {
+    throw new UnavailabilityError('Updates', 'setExtraParamAsync');
   }
 
   return await ExpoUpdates.setExtraParamAsync(key, value ?? null);
