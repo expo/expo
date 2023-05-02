@@ -24,6 +24,7 @@
 - Copy native events before transforming them. ([#22162](https://github.com/expo/expo/pull/22162) by [@douglowder](https://github.com/douglowder))
 - Fix empty body no-op multipart response. ([#22227](https://github.com/expo/expo/pull/22227) by [@wschurman](https://github.com/wschurman))
 - Put extra data mutation in transaction. ([#22252](https://github.com/expo/expo/pull/22252) by [@wschurman](https://github.com/wschurman))
+- [iOS] fix bizarre bug when downloading update twice. ([#22355](https://github.com/expo/expo/pull/22355) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 
