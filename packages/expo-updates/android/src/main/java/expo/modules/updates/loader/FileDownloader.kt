@@ -95,7 +95,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
   internal fun parseRemoteUpdateResponse(response: Response, configuration: UpdatesConfiguration, callback: RemoteUpdateDownloadCallback) {
     val responseHeaders = response.headers
     val responseHeaderData = ResponseHeaderData(
-      protocolVersion = responseHeaders["expo-protocol-version"],
+      protocolVersionRaw = responseHeaders["expo-protocol-version"],
       manifestFiltersRaw = responseHeaders["expo-manifest-filters"],
       serverDefinedHeadersRaw = responseHeaders["expo-server-defined-headers"],
       manifestSignature = responseHeaders["expo-manifest-signature"],
@@ -103,9 +103,9 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
     val responseBody = response.body
 
     if (response.code == 204 || responseBody == null) {
-      // If the protocol version is 1, we support returning a 204 and no body to mean no-op.
+      // If the protocol version greater than 0, we support returning a 204 and no body to mean no-op.
       // A 204 has no content-type.
-      if (responseHeaderData.protocolVersion == "1") {
+      if (responseHeaderData.protocolVersion != null && responseHeaderData.protocolVersion > 0) {
         callback.onSuccess(
           UpdateResponse(
             responseHeaderData = responseHeaderData,
@@ -139,7 +139,7 @@ open class FileDownloader(context: Context, private val client: OkHttpClient) {
         return
       }
 
-      parseMultipartRemoteUpdateResponse(responseBody!!, responseHeaderData, boundaryParameter, configuration, callback)
+      parseMultipartRemoteUpdateResponse(responseBody, responseHeaderData, boundaryParameter, configuration, callback)
     } else {
       val manifestResponseInfo = ResponsePartInfo(
         responseHeaderData = responseHeaderData,

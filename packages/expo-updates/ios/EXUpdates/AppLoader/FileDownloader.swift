@@ -126,7 +126,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       guard let data = data else {
         let errorMessage = String(
           format: "File download response was empty for URL: %@",
-          [url.absoluteString]
+          url.absoluteString
         )
         self.logger.error(message: errorMessage, code: UpdatesErrorCode.assetsFailedToLoad)
         errorBlock(NSError(
@@ -357,14 +357,15 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
   ) {
     let headerDictionary = httpResponse.allHeaderFields as! [String: Any]
     let responseHeaderData = ResponseHeaderData(
-      protocolVersion: headerDictionary.optionalValue(forKey: "expo-protocol-version"),
+      protocolVersionRaw: headerDictionary.optionalValue(forKey: "expo-protocol-version"),
       serverDefinedHeadersRaw: headerDictionary.optionalValue(forKey: "expo-server-defined-headers"),
       manifestFiltersRaw: headerDictionary.optionalValue(forKey: "expo-manifest-filters"),
       manifestSignature: headerDictionary.optionalValue(forKey: "expo-manifest-signature")
     )
 
-    guard let data = data else {
-      if responseHeaderData.protocolVersion == "1" && httpResponse.statusCode == 204 {
+    if httpResponse.statusCode == 204 || data == nil {
+      if let protocolVersion = responseHeaderData.protocolVersion,
+        protocolVersion > 0 {
         successBlock(UpdateResponse(
           responseHeaderData: responseHeaderData,
           manifestUpdateResponsePart: nil,
@@ -372,7 +373,9 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
         ))
         return
       }
+    }
 
+    guard let data = data else {
       let errorMessage = "Missing body in remote update"
       logger.error(message: errorMessage, code: UpdatesErrorCode.unknown)
       errorBlock(NSError(
@@ -412,7 +415,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       return
     } else {
       let responseHeaderData = ResponseHeaderData(
-        protocolVersion: headerDictionary.optionalValue(forKey: "expo-protocol-version"),
+        protocolVersionRaw: headerDictionary.optionalValue(forKey: "expo-protocol-version"),
         serverDefinedHeadersRaw: headerDictionary.optionalValue(forKey: "expo-server-defined-headers"),
         manifestFiltersRaw: headerDictionary.optionalValue(forKey: "expo-manifest-filters"),
         manifestSignature: headerDictionary.optionalValue(forKey: "expo-manifest-signature")
@@ -537,7 +540,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
 
     let responseHeaders = httpResponse.allHeaderFields as! [String: Any]
     let responseHeaderData = ResponseHeaderData(
-      protocolVersion: responseHeaders.optionalValue(forKey: "expo-protocol-version"),
+      protocolVersionRaw: responseHeaders.optionalValue(forKey: "expo-protocol-version"),
       serverDefinedHeadersRaw: responseHeaders.optionalValue(forKey: "expo-server-defined-headers"),
       manifestFiltersRaw: responseHeaders.optionalValue(forKey: "expo-manifest-filters"),
       manifestSignature: responseHeaders.optionalValue(forKey: "expo-manifest-signature")

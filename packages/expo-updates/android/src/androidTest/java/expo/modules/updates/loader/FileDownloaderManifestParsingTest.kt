@@ -341,6 +341,45 @@ class FileDownloaderManifestParsingTest {
   }
 
   @Test
+  fun testManifestParsing_NullBodyResponseProtocol1() {
+    val context = InstrumentationRegistry.getInstrumentation().targetContext
+    val response = mockk<Response>().apply {
+      every { headers } returns mapOf("expo-protocol-version" to "1").toHeaders()
+      every { code } returns 200
+      every { body } returns null
+    }
+
+    val configuration = UpdatesConfiguration(
+      null,
+      mapOf(
+        UpdatesConfiguration.UPDATES_CONFIGURATION_UPDATE_URL_KEY to Uri.parse("https://exp.host/@test/test"),
+      )
+    )
+
+    var errorOccurred = false
+    var resultUpdateResponse: UpdateResponse? = null
+
+    FileDownloader(context).parseRemoteUpdateResponse(
+      response, configuration,
+      object : FileDownloader.RemoteUpdateDownloadCallback {
+        override fun onFailure(message: String, e: Exception) {
+          errorOccurred = true
+        }
+
+        override fun onSuccess(updateResponse: UpdateResponse) {
+          resultUpdateResponse = updateResponse
+        }
+      }
+    )
+
+    Assert.assertFalse(errorOccurred)
+
+    Assert.assertNotNull(resultUpdateResponse)
+    Assert.assertNull(resultUpdateResponse!!.manifestUpdateResponsePart)
+    Assert.assertNull(resultUpdateResponse!!.directiveUpdateResponsePart)
+  }
+
+  @Test
   fun testManifestParsing_204ResponseProtocol1() {
     val context = InstrumentationRegistry.getInstrumentation().targetContext
     val response = mockk<Response>().apply {
