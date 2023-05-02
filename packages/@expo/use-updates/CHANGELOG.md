@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Update docs and description, bump version. ([#22354](https://github.com/expo/expo/pull/22354) by [@douglowder](https://github.com/douglowder))
+
 ## 0.0.0 — 2023-04-18
 
 ### 🎉 New features
