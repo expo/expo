@@ -275,7 +275,6 @@ class AppContext(
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())
-    JNIDeallocator.deallocate()
     logger.info("✅ AppContext was destroyed")
   }
 
