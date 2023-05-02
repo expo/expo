@@ -1,5 +1,5 @@
 import React from 'react';
-import { View, StyleSheet } from 'react-native';
+import { StyleSheet } from 'react-native';
 import ExpoImage, { ExpoImageModule } from './ExpoImage';
 import { resolveContentFit, resolveContentPosition, resolveTransition } from './utils';
 import { resolveSources } from './utils/resolveSources';
@@ -38,38 +38,6 @@ export class Image extends React.PureComponent {
             loggedDefaultSourceDeprecationWarning = true;
         }
         return (React.createElement(ExpoImage, { ...restProps, style: restStyle, source: resolveSources(source), placeholder: resolveSources(placeholder ?? defaultSource ?? loadingIndicatorSource), contentFit: resolveContentFit(contentFit, resizeMode), contentPosition: resolveContentPosition(contentPosition), transition: resolveTransition(transition, fadeDuration) }));
-    }
-}
-export class ImageBackground extends React.PureComponent {
-    /**
-     * Preloads images at the given urls that can be later used in the image view.
-     * Preloaded images are always cached on the disk, so make sure to use
-     * `disk` (default) or `memory-disk` cache policy.
-     */
-    static prefetch(urls) {
-        return Image.prefetch(Array.isArray(urls) ? urls : [urls]);
-    }
-    /**
-     * Asynchronously clears all images stored in memory.
-     * @return A promise resolving to `true` when the operation succeeds.
-     * It may resolve to `false` on Android when the activity is no longer available.
-     */
-    static async clearMemoryCache() {
-        return await Image.clearMemoryCache();
-    }
-    /**
-     * Asynchronously clears all images from the disk cache.
-     * @return A promise resolving to `true` when the operation succeeds.
-     * It may resolve to `false` on Android when the activity is no longer available.
-     */
-    static async clearDiskCache() {
-        return await Image.clearDiskCache();
-    }
-    render() {
-        const { style, imageStyle, children, ...props } = this.props;
-        return (React.createElement(View, { style: style },
-            React.createElement(Image, { ...props, style: [StyleSheet.absoluteFill, imageStyle] }),
-            children));
     }
 }
 //# sourceMappingURL=Image.js.map
