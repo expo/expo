@@ -5,7 +5,7 @@ import { RecentApp } from '../providers/RecentlyOpenedAppsProvider';
 
 const DevLauncher =
   Platform.OS === 'ios'
-    ? requireNativeModule('EXDevLauncherInternal')
+    ? requireNativeModule('ExpoDevLauncherInternal')
     : NativeModules.EXDevLauncherInternal;
 const EventEmitter = new NativeEventEmitter(DevLauncher);
 

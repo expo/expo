@@ -17,7 +17,7 @@ public class DevLauncherInternal: Module, EXDevLauncherPendingDeepLinkListener {
       #endif
 
       return [
-        "clientUrlScheme": self.findClientUrlScheme,
+        "clientUrlScheme": findClientUrlScheme,
         "installationID": EXDevLauncherController.sharedInstance().installationIDHelper().getOrCreateInstallationID(),
         "isDevice": isDevice,
         "updatesConfig": EXDevLauncherController.sharedInstance().getUpdatesConfig()
@@ -41,14 +41,13 @@ public class DevLauncherInternal: Module, EXDevLauncherPendingDeepLinkListener {
     }
 
     AsyncFunction("loadApp") { (urlString: String, promise: Promise) in
-      guard let url = self.sanitizeUrlString(urlString) else {
-        promise.reject("ERR_DEV_LAUNCHER_INVALID_URL", "Cannot parse the provided url.")
-        return
+      guard let url = sanitizeUrlString(urlString) else {
+        throw InvalidURLException()
       }
       let controller = EXDevLauncherController.sharedInstance()
 
       controller.loadApp(url, onSuccess: { promise.resolve(nil) }, onError: { error in
-        promise.reject("ERR_DEV_LAUNCHER_CANNOT_LOAD_APP", error.localizedDescription)
+          promise.reject(CannotLoadAppException(error.localizedDescription))
       })
     }
 
@@ -85,15 +84,14 @@ public class DevLauncherInternal: Module, EXDevLauncherPendingDeepLinkListener {
     }
 
     AsyncFunction("loadUpdate") { (updateUrlString: String, projectUrlString: String, promise: Promise) in
-      guard let updatesUrl = self.sanitizeUrlString(updateUrlString) else {
-        promise.reject("ERR_DEV_LAUNCHER_INVALID_URL", "Cannot parse the provided url.")
-        return
+      guard let updatesUrl = sanitizeUrlString(updateUrlString) else {
+        throw InvalidURLException()
       }
       let controller = EXDevLauncherController.sharedInstance()
-      let projectUrl = self.sanitizeUrlString(projectUrlString)
+      let projectUrl = sanitizeUrlString(projectUrlString)
 
       controller.loadApp(updatesUrl, withProjectUrl: projectUrl, onSuccess: { promise.resolve(nil) }, onError: { error in
-        promise.reject("ERR_DEV_LAUNCHER_CANNOT_LOAD_APP", error.localizedDescription)
+          promise.reject(CannotLoadAppException(error.localizedDescription))
       })
     }
   }
@@ -101,26 +99,26 @@ public class DevLauncherInternal: Module, EXDevLauncherPendingDeepLinkListener {
   public func onNewPendingDeepLink(_ deepLink: URL) {
     sendEvent(ON_NEW_DEEP_LINK_EVENT, ["url": deepLink.absoluteString])
   }
+}
 
-  func sanitizeUrlString(_ urlString: String) -> URL? {
-    let sanitizedUrl = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
-    return URL(string: sanitizedUrl)
-  }
+private func sanitizeUrlString(_ urlString: String) -> URL? {
+  let sanitizedUrl = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
+  return URL(string: sanitizedUrl)
+}
 
-  func findClientUrlScheme() -> String? {
-    var clientUrlScheme: String?
-    if let urlTypes = Bundle.main.object(forInfoDictionaryKey: "CFBundleURLTypes") as? [[String: Any]] {
-      for urlType in urlTypes {
-        if let urlSchemes = urlType["CFBundleURLSchemes"] as? [String] {
-          for urlScheme in urlSchemes {
-            // Find a scheme with a prefix or fall back to the first scheme defined.
-            if urlScheme.hasPrefix("exp+") || clientUrlScheme == nil {
-              clientUrlScheme = urlScheme
-            }
+private func findClientUrlScheme() -> String? {
+  var clientUrlScheme: String?
+  if let urlTypes = Bundle.main.object(forInfoDictionaryKey: "CFBundleURLTypes") as? [[String: Any]] {
+    for urlType in urlTypes {
+      if let urlSchemes = urlType["CFBundleURLSchemes"] as? [String] {
+        for urlScheme in urlSchemes {
+          // Find a scheme with a prefix or fall back to the first scheme defined.
+          if urlScheme.hasPrefix("exp+") || clientUrlScheme == nil {
+            clientUrlScheme = urlScheme
           }
         }
       }
     }
-    return clientUrlScheme
   }
+  return clientUrlScheme
 }
