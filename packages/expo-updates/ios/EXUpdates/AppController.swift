@@ -36,10 +36,14 @@ public protocol AppControllerDelegate: AnyObject {
 @objcMembers
 public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelegate {
   private static let ErrorDomain = "EXUpdatesAppController"
+  private static let EXUpdatesEventName = "Expo.nativeUpdatesEvent"
 
-  private static let UpdateAvailableEventName = "updateAvailable"
-  private static let NoUpdateAvailableEventName = "noUpdateAvailable"
-  private static let ErrorEventName = "error"
+  public static let UpdateAvailableEventName = "updateAvailable"
+  public static let NoUpdateAvailableEventName = "noUpdateAvailable"
+  public static let ErrorEventName = "error"
+
+  public static let UpdateEventNotificationName = "EXUpdates_UpdateEventNotification"
+  public static let CheckForUpdateNotificationName = "EXUpdates_CheckForUpdateNotification"
 
   /**
    Delegate which will be notified when EXUpdates has an update ready to launch and
@@ -238,6 +242,8 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     isStarted = true
 
     purgeUpdatesLogsOlderThanOneDay()
+    initializeUpdateEventNotificationHandler()
+    initializeCheckForUpdateNotificationHandler()
 
     do {
       try initializeUpdatesDirectory()
@@ -328,6 +334,68 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
     return launcher?.launchedUpdate
   }
 
+  // MARK: - Notifications for checkForUpdate
+
+  /**
+   Observer for notifications indicating that the app wants to check for an available
+   update.
+
+   For now, we just log the notifications.
+   */
+  private func initializeCheckForUpdateNotificationHandler() {
+    NotificationCenter.default.addObserver(self, selector: #selector(handleCheckForUpdateNotification(notification:)), name: Notification.Name(AppController.CheckForUpdateNotificationName), object: nil)
+  }
+
+  public func handleCheckForUpdateNotification(notification: Notification) {
+    // TODO: initiate a call to checkForUpdateAsync() here
+    // For now, we log that the notification was received
+    logger.debug(message: "CheckForUpdate notification received")
+  }
+
+  public func postCheckForUpdateNotification() {
+    NotificationCenter.default.post(
+      name: Notification.Name(AppController.CheckForUpdateNotificationName),
+      object: nil
+    )
+  }
+
+  // MARK: - Notifications for UpdateEvents
+
+  /**
+   Observer for notifications that events of interest have occurred during a
+   check for update or downloading an update.
+
+   For now, we only have the three types of events that occur during the app startup
+   check for updates, and we immediately send the event to the JS bridge as an
+   UpdateEvent, so there is no functional change. This means that the notifications
+   are only used at present by the AppLoaderTask delegate method didFinishBackgroundUpdateWithStatus().
+
+   In future, these notifications will support more event types and will be used
+   to help construct the complete state of the updates module in a form that can be
+   read at the JS layer.
+   */
+  private func initializeUpdateEventNotificationHandler() {
+    // Use notifications to allow other parts of expo-updates to send UpdateEvents
+    NotificationCenter.default.addObserver(self, selector: #selector(handleUpdateEventNotification(notification:)), name: Notification.Name(AppController.UpdateEventNotificationName), object: nil)
+  }
+
+  public func handleUpdateEventNotification(notification: Notification) {
+    guard let body = notification.userInfo?["body"] as? [AnyHashable: Any],
+      let type = notification.userInfo?["type"] as? String else {
+      return
+    }
+    // For now, we only support the three types
+    sendEventToBridge(type, body: body)
+  }
+
+  public func postUpdateEventNotification(_ type: String, body: [AnyHashable: Any] = [:]) {
+    NotificationCenter.default.post(
+      name: Notification.Name(AppController.UpdateEventNotificationName),
+      object: nil,
+      userInfo: ["type": type, "body": body]
+    )
+  }
+
   // MARK: - AppLoaderTaskDelegate
 
   public func appLoaderTask(_: AppLoaderTask, didLoadCachedUpdate update: Update) -> Bool {
@@ -387,11 +455,9 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
         updateId: update?.loggingId(),
         assetId: nil
       )
-      UpdatesUtils.sendEvent(
-        toBridge: bridge,
-        withType: AppController.ErrorEventName,
-        body: ["message": error.localizedDescription]
-      )
+      postUpdateEventNotification(AppController.ErrorEventName, body: [
+        "message": error.localizedDescription
+      ])
     case .updateAvailable:
       remoteLoadStatus = .NewUpdateLoaded
       guard let update = update else {
@@ -403,13 +469,9 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
         updateId: update.loggingId(),
         assetId: nil
       )
-      UpdatesUtils.sendEvent(
-        toBridge: bridge,
-        withType: AppController.UpdateAvailableEventName,
-        body: [
-          "manifest": update.manifest.rawManifestJSON()
-        ]
-      )
+      postUpdateEventNotification(AppController.UpdateAvailableEventName, body: [
+        "manifest": update.manifest.rawManifestJSON()
+      ])
     case .noUpdateAvailable:
       remoteLoadStatus = .Idle
       logger.error(
@@ -418,7 +480,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
         updateId: update?.loggingId(),
         assetId: nil
       )
-      UpdatesUtils.sendEvent(toBridge: bridge, withType: AppController.NoUpdateAvailableEventName, body: [:])
+      postUpdateEventNotification(AppController.NoUpdateAvailableEventName, body: [:])
     }
 
     errorRecovery.notify(newRemoteLoadStatus: remoteLoadStatus)
@@ -467,6 +529,35 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
         launchedUpdate: launchedUpdate
       )
     }
+  }
+
+  internal func sendEventToBridge(_ eventType: String, body: [AnyHashable: Any]) {
+    guard let bridge = bridge else {
+      NSLog("EXUpdates: Could not emit %@ event. Did you set the bridge property on the controller singleton?", eventType)
+      return
+    }
+
+    var mutableBody = body
+    mutableBody["type"] = eventType
+    bridge.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [AppController.EXUpdatesEventName, mutableBody])
+  }
+
+  private func emergencyLaunch(fatalError error: NSError) {
+    isEmergencyLaunch = true
+
+    let launcherNoDatabase = AppLauncherNoDatabase()
+    launcher = launcherNoDatabase
+    launcherNoDatabase.launchUpdate(withConfig: config)
+
+    delegate.let { _ in
+      DispatchQueue.main.async { [weak self] in
+        if let strongSelf = self {
+          strongSelf.delegate?.appController(strongSelf, didStartWithSuccess: strongSelf.launchAssetUrl() != nil)
+        }
+      }
+    }
+
+    errorRecovery.writeErrorOrExceptionToLog(error)
   }
 
   // MARK: - ErrorRecoveryDelegate
@@ -582,25 +673,5 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
 
   public func throwException(_ exception: NSException) {
     exception.raise()
-  }
-
-  // MARK: - internal
-
-  private func emergencyLaunch(fatalError error: NSError) {
-    isEmergencyLaunch = true
-
-    let launcherNoDatabase = AppLauncherNoDatabase()
-    launcher = launcherNoDatabase
-    launcherNoDatabase.launchUpdate(withConfig: config)
-
-    delegate.let { _ in
-      DispatchQueue.main.async { [weak self] in
-        if let strongSelf = self {
-          strongSelf.delegate?.appController(strongSelf, didStartWithSuccess: strongSelf.launchAssetUrl() != nil)
-        }
-      }
-    }
-
-    errorRecovery.writeErrorOrExceptionToLog(error)
   }
 }
