@@ -101,7 +101,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
     describe("setMetadata") {
       it("overwrites all fields") {
         let responseHeaderData1 = ResponseHeaderData(
-          protocolVersion: nil,
+          protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
           manifestFiltersRaw: "branch-name=\"rollout-1\",test=\"value\"",
           manifestSignature: nil
@@ -112,7 +112,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
         }
         
         let responseHeaderData2 = ResponseHeaderData(
-          protocolVersion: nil,
+          protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
           manifestFiltersRaw: "branch-name=\"rollout-2\"",
           manifestSignature: nil
@@ -131,7 +131,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
       
       it("overwrites with empty") {
         let responseHeaderData1 = ResponseHeaderData(
-          protocolVersion: nil,
+          protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
           manifestFiltersRaw: "branch-name=\"rollout-1\"",
           manifestSignature: nil
@@ -142,7 +142,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
         }
         
         let responseHeaderData2 = ResponseHeaderData(
-          protocolVersion: nil,
+          protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
           manifestFiltersRaw: "",
           manifestSignature: nil
@@ -161,7 +161,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
       
       it("does not overwrite with nil") {
         let responseHeaderData1 = ResponseHeaderData(
-          protocolVersion: nil,
+          protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
           manifestFiltersRaw: "branch-name=\"rollout-1\"",
           manifestSignature: nil
@@ -172,7 +172,7 @@ class UpdatesDatabaseSpec : ExpoSpec {
         }
         
         let responseHeaderData2 = ResponseHeaderData(
-          protocolVersion: nil,
+          protocolVersionRaw: nil,
           serverDefinedHeadersRaw: nil,
           manifestFiltersRaw: nil,
           manifestSignature: nil
