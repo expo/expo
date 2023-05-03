@@ -142,7 +142,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
         expectedBase64URLEncodedSHA256Hash != hashBase64String {
         let errorMessage = String(
           format: "File download was successful but base64url-encoded SHA-256 did not match expected; expected: %@; actual: %@",
-          expectedBase64URLEncodedSHA256Hash
+          expectedBase64URLEncodedSHA256Hash,
           hashBase64String
         )
         self.logger.error(message: errorMessage, code: UpdatesErrorCode.assetsFailedToLoad)
@@ -161,7 +161,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       } catch {
         let errorMessage = String(
           format: "Could not write to path %@: %@",
-          destinationPath
+          destinationPath,
           error.localizedDescription
         )
         self.logger.error(message: errorMessage, code: UpdatesErrorCode.unknown)
@@ -863,8 +863,8 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       userInfo: [
         NSLocalizedDescriptionKey: String(
           format: "No compatible update found at %@. Only %@ are supported.",
-          config.updateUrl?.absoluteString,
-          config.sdkVersion
+          config.updateUrl?.absoluteString ?? "(missing config updateUrl)",
+          config.sdkVersion ?? "(missing sdkVersion field)"
         )
       ]
     )
