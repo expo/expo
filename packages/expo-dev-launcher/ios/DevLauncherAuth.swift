@@ -14,9 +14,7 @@ public class DevLauncherAuth: Module {
     Name("ExpoDevLauncherAuth")
 
     AsyncFunction("openAuthSessionAsync") { (authURL: String, redirectURL: String, promise: Promise) in
-      guard self.initializeWebBrowser(promise) else {
-        return
-      }
+      try self.initializeWebBrowser(promise)
 
       if #available(iOS 11.0, *) {
         guard let url = URL(string: authURL) else {
@@ -74,12 +72,11 @@ public class DevLauncherAuth: Module {
   /**
    * Helper that is used in openBrowserAsync and openAuthSessionAsync
    */
-  private func initializeWebBrowser(_ promise: Promise) {
+  private func initializeWebBrowser(_ promise: Promise) throws {
     if self.redirectPromise != nil {
       throw WebBrowserException()
     }
     self.redirectPromise = promise
-    return true
   }
 
   private func flowDidFinish() {

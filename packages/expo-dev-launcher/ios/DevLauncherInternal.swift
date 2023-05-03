@@ -107,18 +107,24 @@ private func sanitizeUrlString(_ urlString: String) -> URL? {
 }
 
 private func findClientUrlScheme() -> String? {
+  guard let urlTypes = Bundle.main.object(forInfoDictionaryKey: "CFBundleURLTypes") as? [[String: Any]] else {
+    return nil
+  }
+
   var clientUrlScheme: String?
-  if let urlTypes = Bundle.main.object(forInfoDictionaryKey: "CFBundleURLTypes") as? [[String: Any]] {
-    for urlType in urlTypes {
-      if let urlSchemes = urlType["CFBundleURLSchemes"] as? [String] {
-        for urlScheme in urlSchemes {
-          // Find a scheme with a prefix or fall back to the first scheme defined.
-          if urlScheme.hasPrefix("exp+") || clientUrlScheme == nil {
-            clientUrlScheme = urlScheme
-          }
-        }
+
+  for urlType in urlTypes {
+    guard let urlSchemes = urlType["CFBundleURLSchemes"] as? [String] else {
+      continue
+    }
+
+    for urlScheme in urlSchemes {
+      // Find a scheme with a prefix or fall back to the first scheme defined.
+      if urlScheme.hasPrefix("exp+") || clientUrlScheme == nil {
+        clientUrlScheme = urlScheme
       }
     }
   }
+
   return clientUrlScheme
 }
