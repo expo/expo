@@ -7,6 +7,7 @@ import android.database.ContentObserver
 import android.net.Uri
 import android.os.Bundle
 import android.os.Handler
+import android.os.Looper
 import android.provider.MediaStore
 import android.util.Log
 
@@ -30,7 +31,7 @@ class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistr
     moduleRegistry.getModule(UIManager::class.java).registerLifecycleEventListener(this)
     eventEmitter = moduleRegistry.getModule(EventEmitter::class.java)
 
-    val contentObserver: ContentObserver = object : ContentObserver(Handler()) {
+    val contentObserver: ContentObserver = object : ContentObserver(Handler(Looper.getMainLooper())) {
       override fun onChange(selfChange: Boolean, uri: Uri?) {
         super.onChange(selfChange, uri)
         if (isListening) {
@@ -65,14 +66,16 @@ class ScreenshotEventEmitter(val context: Context, moduleRegistry: ModuleRegistr
     return ContextCompat.checkSelfPermission(context, permission.READ_EXTERNAL_STORAGE) == PackageManager.PERMISSION_GRANTED
   }
 
-  @Nullable private fun getFilePathFromContentResolver(context: Context, uri: Uri?): String? {
+  @Nullable
+  private fun getFilePathFromContentResolver(context: Context, uri: Uri?): String? {
     if (uri == null) {
       return null
     }
     try {
       val cursor = context.contentResolver.query(uri, arrayOf(MediaStore.Images.Media.DATA), null, null, null)
       if (cursor != null && cursor.moveToFirst()) {
-        val path = cursor.getString(cursor.getColumnIndex(MediaStore.Images.Media.DATA))
+        val index = cursor.getColumnIndex(MediaStore.Images.Media.DATA)
+        val path = cursor.getString(index)
         cursor.close()
         return path
       }
