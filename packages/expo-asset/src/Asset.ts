@@ -13,7 +13,7 @@ export type AssetDescriptor = {
   name: string;
   type: string;
   hash?: string | null;
-  uri: string;
+  uri?: string | null;
   width?: number | null;
   height?: number | null;
 };
@@ -54,12 +54,11 @@ export class Asset {
    */
   hash: string | null = null;
   /**
-   * A URI that points to the asset's data on the remote server. When running the published version
-   * of your app, this refers to the location on Expo's asset server where Expo has stored your
-   * asset. When running the app from Expo CLI during development, this URI points to Expo CLI's
-   * server running on your computer and the asset is served directly from your computer.
+   * A URI that points to the asset's data on the remote server. When running the app from Expo 
+   * CLI during development, this URI points to Expo CLI's server running on your computer and 
+   * the asset is served directly from your computer. 
    */
-  uri: string;
+  uri: string | null = null;
   /**
    * If the asset has been downloaded (by calling [`downloadAsync()`](#downloadasync)), the
    * `file://` URI pointing to the local file on the device that contains the asset data.
@@ -84,7 +83,7 @@ export class Asset {
    */
   _downloadCallbacks: DownloadPromiseCallbacks[] = [];
 
-  constructor({ name, type, hash = null, uri, width, height }: AssetDescriptor) {
+  constructor({ name, type, hash = null, uri = null, width, height }: AssetDescriptor) {
     this.name = name;
     this.type = type;
     this.hash = hash;
@@ -105,10 +104,10 @@ export class Asset {
     }
 
     if (Platform.OS === 'web') {
-      if (!name) {
+      if (!name && uri) {
         this.name = AssetUris.getFilename(uri);
       }
-      if (!type) {
+      if (!type && uri) {
         this.type = AssetUris.getFileExtension(uri);
       }
     }
@@ -236,6 +235,9 @@ export class Asset {
    * @return Returns a Promise which fulfills with an `Asset` instance.
    */
   async downloadAsync(): Promise<this> {
+    if (!this.uri) {
+      return this;
+    }
     if (this.downloaded) {
       return this;
     }

@@ -18,7 +18,7 @@ export type AssetMetadata = Pick<
 };
 
 export type AssetSource = {
-  uri: string;
+  uri: string | null;
   hash: string;
 };
 
@@ -91,9 +91,10 @@ export function selectAssetSource(meta: AssetMetadata): AssetSource {
     return { uri: baseUrl.href, hash };
   }
 
-  // Production CDN URIs are based on each asset file hash
+  // During production, we ensure all required assets are on the device before allowing an 
+  // Update to run. A remote URI will not be provided for assets in this case
   return {
-    uri: `https://classic-assets.eascdn.net/~assets/${encodeURIComponent(hash)}`,
+    uri: null,
     hash,
   };
 }
