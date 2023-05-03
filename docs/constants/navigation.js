@@ -91,7 +91,7 @@ const home = [
       'Debugging',
       [
         makePage('debugging/errors-and-warnings.mdx'),
-        makePage('debugging/runtime-issue.mdx'),
+        makePage('debugging/runtime-issues.mdx'),
         makePage('debugging/tools.mdx'),
       ],
       { expanded: false }
