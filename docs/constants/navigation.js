@@ -434,6 +434,68 @@ const versionsReference = VERSIONS.reduce(
   {}
 );
 
+const router = [
+  makeSection(
+    'Expo Router',
+    [
+      makePage('router/overview.mdx'),
+      makePage('router/installation.mdx'),
+      makePage('router/usage.mdx'),
+      makePage('router/roadmap.mdx'),
+      makePage('router/typescript.mdx'),
+    ],
+    {
+      expanded: true,
+    }
+  ),
+  makeSection('Routing', [
+    makePage('router/routing/pages.mdx'),
+    makePage('router/routing/navigation.mdx'),
+    makePage('router/routing/links.mdx'),
+    makePage('router/routing/groups.mdx'),
+    makeGroup(
+      'Layouts',
+      [
+        makePage('router/layouts/root.mdx'),
+        makePage('router/layouts/nesting.mdx'),
+        makePage('router/layouts/stack.mdx'),
+        makePage('router/layouts/tabs.mdx'),
+        makePage('router/layouts/drawer.mdx'),
+        makePage('router/layouts/modal.mdx'),
+        makePage('router/layouts/settings.mdx'),
+      ],
+      { expanded: false }
+    ),
+    makeGroup(
+      'Errors',
+      [makePage('router/routing/unmatched.mdx'), makePage('router/routing/errors.mdx')],
+      { expanded: false }
+    ),
+  ]),
+  makeSection('Appearance', [
+    makePage('router/assets/splash.mdx'),
+    makePage('router/assets/fonts.mdx'),
+    makePage('router/assets/images.mdx'),
+    makeGroup(
+      'Styling',
+      [
+        makePage('router/styling/native.mdx'),
+        makePage('router/styling/css_web.mdx'),
+        makePage('router/styling/theming.mdx'),
+      ],
+      { expanded: false }
+    ),
+  ]),
+
+  makeSection('More', [
+    makePage('router/faq.mdx'),
+    makePage('router/troubleshooting.mdx'),
+    makePage('router/testing.mdx'),
+    makePage('router/hosting.mdx'),
+    makePage('router/sitemap.mdx'),
+  ]),
+];
+
 const reference = { ...versionsReference, latest: versionsReference['latest'] };
 
 export default {
@@ -450,6 +512,7 @@ export default {
   archiveDirectories,
   homeDirectories,
   learnDirectories,
+  router,
 };
 
 // --- MDX methods ---

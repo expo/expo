@@ -7,6 +7,7 @@ import {
   Home02Icon,
   GraduationHat02Icon,
   Stars02Icon,
+  NavigationPointer02Icon,
 } from '@expo/styleguide-icons';
 
 import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags.cjs';
@@ -56,6 +57,12 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
         title="Learn"
         Icon={GraduationHat02Icon}
         isActive={sidebarActiveGroup === 'learn'}
+      />
+      <SidebarSingleEntry
+        href="/router/overview"
+        title="Router"
+        Icon={NavigationPointer02Icon}
+        isActive={sidebarActiveGroup === 'router'}
       />
       {shouldShowFeaturePreviewLink() && (
         <SidebarSingleEntry

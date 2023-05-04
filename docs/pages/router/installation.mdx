@@ -1,0 +1,113 @@
+---
+title: Installation
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+
+## Quick start
+
+<Terminal
+  cmd={['$ npx create-expo-app@latest --example with-router']}
+  cmdCopy="npx create-expo-app@latest --example with-router"
+/>
+
+## Manual Setup
+
+> Expo Router supports `expo@46.0.13` and greater. Some features may require the latest SDK.
+
+Ensure your computer is [setup for running an Expo app](https://docs.expo.dev/get-started/installation/).
+
+
+<Step label="1">
+
+### Create an Expo project
+
+<Terminal
+  cmd={[
+    '$ npx create-expo-app',
+  ]}
+  cmdCopy="npx create-expo-app StickerSmash && cd StickerSmash"
+/>
+
+</Step>
+
+<Step label="2">
+
+### Install dependencies
+
+<Terminal
+  cmd={[
+    '$ npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar',
+  ]}
+  cmdCopy="npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar"
+/>
+
+</Step>
+
+<Step label="3">
+
+### Setup entry point
+
+Either delete the entry point in your `package.json`, or replace it with `index.js` to be explicit:
+
+```json
+{
+  "main": "index.js"
+}
+```
+
+
+Create a new file `index.js` in the root of your project. If it exists already, replace it with the following:
+
+```js
+import 'expo-router/entry';
+```
+
+</Step>
+
+<Step label="4">
+
+## Modify your project configuration
+
+Add a deep linking `scheme` and enable [`metro` web](https://docs.expo.dev/guides/customizing-metro/#web-support-how) in your `app.json` (or `app.config.js`):
+
+
+```diff
+{
+  "expo": {
++   "scheme": "myapp",
++   "web": {
++     "bundler": "metro"
++   }
+  }
+}
+```
+
+</Step>
+
+## Expo SDK &lt;49
+
+Expo Router requires at least `metro@0.76.0`. If you are using Expo SDK &lt;49 you will need to force upgrade your `metro` version by setting a Yarn resolution or npm override.
+
+If you use **Yarn**:
+
+```json title=package.json
+{
+  "resolutions": {
+    "metro": "0.76.0",
+    "metro-resolver": "0.76.0"
+  }
+}
+```
+
+If you use **npm**, this requires npm 8.3.0 or higher. You can install this with `npm i -g npm@^8.3.0`. After that, configure `overrides` in `package.json`:
+
+```json title=package.json
+{
+  "overrides": {
+    "metro": "0.76.0",
+    "metro-resolver": "0.76.0"
+  }
+}
+```

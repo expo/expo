@@ -46,9 +46,15 @@ export const isLearnPath = (path: string) => {
   return navigation.learnDirectories.some(name => Utilities.pathStartsWith(name, path));
 };
 
+export const isRouterPath = (path: string) => {
+  return Utilities.pathStartsWith('router', path);
+};
+
 export const getPageSection = (path: string) => {
   if (isReferencePath(path)) {
     return 'reference';
+  } else if (isRouterPath(path)) {
+    return 'router';
   } else if (isGeneralPath(path)) {
     return 'general';
   } else if (isFeaturePreviewPath(path)) {

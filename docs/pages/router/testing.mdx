@@ -1,0 +1,127 @@
+---
+title: Testing with Jest
+sidebar_title: Jest
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import AppConfigSchemaPropertiesTable from '~/components/plugins/AppConfigSchemaPropertiesTable';
+
+> This guide refers to upcoming Expo Router features, all of which are experimental.
+
+Expo Router adds first-class support for testing with [`Jest`](https://jestjs.io/)
+
+## Setup
+
+<Terminal
+  cmd={[
+    '$ npx expo install jest @testing-library/react-native jest-expo'
+  ]}
+  cmdCopy="npx expo install jest @testing-library/react-native jest-expo"
+/>
+
+```tsx jest.config.js
+module.exports = {
+  preset: "jest-expo",
+  roots: ["."],
+};
+```
+
+> Expo Router's test function will forcefully enable `jest.useFakeTimers()`. Please refer to the [Jest Docs](https://jestjs.io/docs/timer-mocks) on how to advance timers.
+
+## Writing a test
+
+```tsx my-component.test.ts
+import { screen, renderRouter } from "expo-router/testing-library";
+
+test("render the application", async () => {
+  renderRouter();
+  const signInText = await screen.findByText("Sign In");
+  expect(signInText).toBeTruthy();
+});
+```
+
+## Usage
+
+`expo-router/testing-library` can be used as a drop-in replacement for [`@testing-library/react-native`](https://callstack.github.io/react-native-testing-library/).
+
+### Rendering your application
+
+`renderRouter(options?: RenderOptions)`
+
+A helper function that wraps `render` from `@testing-library/react-native`. Renders your Expo Router application in a way that allows for testing.
+
+
+
+### Rendering a different directory
+
+`renderRouter(directory: string, options?: RenderOptions)`
+
+Renders application specified directory
+
+#### Rendering a mock `/app` directory
+
+```tsx
+renderRouter(routes: Record<string, Route>, options?: RenderOptions)`
+```
+
+Renders an app using only the routes w/ components specified. This allows you to quickly setup isolated environments to test your components
+
+#### Rendering a directory with file mocks
+
+```tsx
+renderRouterWithMocks(overrides: Record<string, Route>, options?: RenderOptions)`
+renderRouterWithMocks(directory: string, overrides?: Record<string, Route>, options?: RenderOptions)`
+
+type Route =
+  | () => ReactElement
+  | { default: () => ReactELement }
+```
+
+Renders the directory specified (defaults to `/app`) but replaces the specified file with the mocked versions. This can be useful to easily override `_layouts`.
+
+## RenderOptions
+
+RenderOptions are the same options as [`render`](https://callstack.github.io/react-native-testing-library/docs/api#render-options), with the following additional options:
+
+<AppConfigSchemaPropertiesTable schema={{
+  "initialRoute": {
+    "description": "Defaults to `/`. The deep link of where you'd like to enter your application.",
+    "type": "string"
+  }
+}} />
+
+## Matchers
+
+### `.toHavePathname()`
+
+```tsx
+expect(screen).toHavePathname(string);
+```
+
+Asserts that the currently rendered screen has the expected pathname.
+
+### `.toHaveSearchParams()`
+
+```tsx
+expect(screen).toHaveSearchParams(object);
+```
+
+Asserts that the currently rendered screen has the expected search params
+
+## Screen methods
+
+### `getPathname()`
+
+```tsx
+const pathname = screen.getPathname();
+```
+
+Returns the pathname of the currently rendered screen.
+
+### `getSearchParams()`
+
+```tsx
+const urlSearchParams: URLSearchParams = screen.getSearchParams();
+```
+
+Returns the URLSearchParams of the currently rendered screen.
