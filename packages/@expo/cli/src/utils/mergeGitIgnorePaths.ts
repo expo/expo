@@ -1,6 +1,8 @@
 import crypto from 'crypto';
 import fs from 'fs';
 
+import { Log } from '../log';
+
 type MergeResults = {
   contents: string;
   didClear: boolean;
@@ -120,7 +122,7 @@ export function upsertGitIgnoreContents(
     flag: 'a+',
   });
 
-  if (targetGitIgnore.match(new RegExp(`^${contents}$`))) {
+  if (targetGitIgnore.match(new RegExp(`^${contents}[\\n\\r\\s]*$`, 'm'))) {
     return null;
   }
 
@@ -170,26 +172,31 @@ export function createGitIgnoreHash(gitIgnore: string): string {
 }
 
 export function removeFromGitIgnore(targetGitIgnorePath: string, contents: string) {
-  if (!fs.existsSync(targetGitIgnorePath)) {
-    return;
+  try {
+    if (!fs.existsSync(targetGitIgnorePath)) {
+      return;
+    }
+
+    let targetGitIgnore = fs.readFileSync(targetGitIgnorePath, 'utf-8');
+
+    if (!targetGitIgnore.includes(contents)) {
+      return null;
+    }
+
+    targetGitIgnore = targetGitIgnore.replace(`${contents}\n`, '');
+
+    const indexes = getGeneratedSectionIndexes(targetGitIgnore);
+
+    if (indexes.start === indexes.end - 3) {
+      targetGitIgnore = targetGitIgnore.replace(
+        new RegExp(`^${generatedHeaderPrefix}((.|\n)*)${generatedFooterComment}$`, 'm'),
+        ''
+      );
+    }
+
+    return fs.writeFileSync(targetGitIgnorePath, targetGitIgnore);
+  } catch (error) {
+    Log.error(`Failed to read/write to .gitignore path: ${targetGitIgnorePath}`);
+    throw error;
   }
-
-  let targetGitIgnore = fs.readFileSync(targetGitIgnorePath, 'utf-8');
-
-  if (!targetGitIgnore.includes(contents)) {
-    return null;
-  }
-
-  targetGitIgnore = targetGitIgnore.replace(`${contents}\n`, '');
-
-  const indexes = getGeneratedSectionIndexes(targetGitIgnore);
-
-  if (indexes.start === indexes.end - 3) {
-    targetGitIgnore = targetGitIgnore.replace(
-      new RegExp(`^${generatedHeaderPrefix}((.|\n)*)${generatedFooterComment}$`, 'm'),
-      ''
-    );
-  }
-
-  return fs.writeFileSync(targetGitIgnorePath, targetGitIgnore);
 }

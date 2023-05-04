@@ -22,25 +22,26 @@ export async function typescriptTypeGeneration({
   server,
 }: TypeScriptTypeGenerationOptions) {
   const gitIgnorePath = path.join(projectRoot, '.gitignore');
+
+  // If typed routes are disabled, remove any files that were added.
   if (!env.EXPO_USE_TYPED_ROUTES) {
     await Promise.all([
       forceRemovalTSConfig(projectRoot),
       removeExpoEnvDTS(projectRoot),
       removeFromGitIgnore(gitIgnorePath, 'expo-env.d.ts'),
     ]);
-    return;
+  } else {
+    const dotExpoDir = ensureDotExpoProjectDirectoryInitialized(projectRoot);
+    const typesDirectory = path.resolve(dotExpoDir, './types');
+
+    // Ensure the types directory exists.
+    await fs.mkdir(typesDirectory, { recursive: true });
+
+    await Promise.all([
+      upsertGitIgnoreContents(path.join(projectRoot, '.gitignore'), 'expo-env.d.ts'),
+      writeExpoEnvDTS(projectRoot),
+      forceUpdateTSConfig(projectRoot),
+      setupTypedRoutes({ metro, server, typesDirectory, projectRoot }),
+    ]);
   }
-
-  const dotExpoDir = ensureDotExpoProjectDirectoryInitialized(projectRoot);
-  const typesDirectory = path.resolve(dotExpoDir, './types');
-
-  // Ensure the types directory exists.
-  await fs.mkdir(typesDirectory, { recursive: true });
-
-  await Promise.all([
-    upsertGitIgnoreContents(path.join(projectRoot, '.gitignore'), 'expo-env.d.ts'),
-    writeExpoEnvDTS(projectRoot),
-    forceUpdateTSConfig(projectRoot),
-    setupTypedRoutes({ metro, server, typesDirectory, projectRoot }),
-  ]);
 }
