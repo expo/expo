@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [Android] Fixed device credentials fallback when biometric sensors are unavailable
+
 ### 💡 Others
 
 ## 13.3.0 - 2023-04-10
