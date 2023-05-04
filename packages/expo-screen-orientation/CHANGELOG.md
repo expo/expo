@@ -6,7 +6,13 @@
 
 ### 🎉 New features
 
+- Migrated to new modules API on iOS.
+
 ### 🐛 Bug fixes
+
+- Fixed screen orientation on iOS 16.
+- Fixed status bar and navigation bar following the device's orientation regardless of applied orientation lock.
+- Fixed SafeAreaViews failing after pulling down quick settings when the device is in a different orientation than the current orientation lock allows.
 
 ### 💡 Others
 
