@@ -79,9 +79,9 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
         }
 
         if #available(iOS 16.0, *) {
-          let windowScene = rootViewController?.view.window?.windowScene
+          let windowScene = self.rootViewController?.view.window?.windowScene
           windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: orientationMask))
-          rootViewController?.setNeedsUpdateOfSupportedInterfaceOrientations()
+          self.rootViewController?.setNeedsUpdateOfSupportedInterfaceOrientations()
         } else {
           UIDevice.current.setValue(newOrientation.rawValue, forKey: "orientation")
           UIViewController.attemptRotationToDeviceOrientation()
