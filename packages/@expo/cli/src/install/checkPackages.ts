@@ -14,32 +14,39 @@ import { Options } from './resolveOptions';
 
 const debug = require('debug')('expo:install:check') as typeof console.log;
 
-// Exposed for testing.
-export async function checkPackagesAsync(
-  projectRoot: string,
-  {
-    packages,
-    packageManager,
-    options: { fix },
-    packageManagerArguments,
-  }: {
-    /**
-     * List of packages to version
-     * @example ['uuid', 'react-native-reanimated@latest']
-     */
-    packages: string[];
-    /** Package manager to use when installing the versioned packages. */
-    packageManager: PackageManager.NodePackageManager;
+type Props = {
+  /**
+   * List of packages to version
+   * @example ['uuid', 'react-native-reanimated@latest']
+   */
+  packages: string[];
+  /** Package manager to use when installing the versioned packages. */
+  packageManager: PackageManager.NodePackageManager;
 
-    /** How the check should resolve */
-    options: Pick<Options, 'fix'>;
-    /**
-     * Extra parameters to pass to the `packageManager` when installing versioned packages.
-     * @example ['--no-save']
-     */
-    packageManagerArguments: string[];
+  /** How the check should resolve */
+  options: Pick<Options, 'fix'>;
+  /**
+   * Extra parameters to pass to the `packageManager` when installing versioned packages.
+   * @example ['--no-save']
+   */
+  packageManagerArguments: string[];
+};
+
+// Exposed for testing.
+export async function checkPackagesAsync(projectRoot: string, props: Props) {
+  if (await checkPackagesInternalAsync(projectRoot, props)) {
+    Log.exit(chalk.greenBright('Dependencies are up to date'), 0);
   }
-) {
+
+  // Exit with non-zero exit code if any of the dependencies are out of date.
+  Log.exit(chalk.red('Found outdated dependencies'), 1);
+}
+
+// Exposed for testing.
+export async function checkPackagesInternalAsync(
+  projectRoot: string,
+  { packages, packageManager, options: { fix }, packageManagerArguments }: Props
+): Promise<boolean> {
   // Read the project Expo config without plugins.
   const { exp, pkg } = getConfig(projectRoot, {
     // Sometimes users will add a plugin to the config before installing the library,
@@ -50,7 +57,7 @@ export async function checkPackagesAsync(
   const dependencies = await getVersionedDependenciesAsync(projectRoot, exp, pkg, packages);
 
   if (!dependencies.length) {
-    Log.exit(chalk.greenBright('Dependencies are up to date'), 0);
+    return true;
   }
 
   logIncorrectDependencies(dependencies);
@@ -64,13 +71,14 @@ export async function checkPackagesAsync(
   if (value) {
     debug('Installing fixed dependencies:', dependencies);
     // Install the corrected dependencies.
-    return fixPackagesAsync(projectRoot, {
+    await fixPackagesAsync(projectRoot, {
       packageManager,
       packages: dependencies,
       packageManagerArguments,
       sdkVersion: exp.sdkVersion!,
     });
+    return true;
   }
-  // Exit with non-zero exit code if any of the dependencies are out of date.
-  Log.exit(chalk.red('Found outdated dependencies'), 1);
+
+  return false;
 }

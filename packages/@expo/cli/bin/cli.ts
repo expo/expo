@@ -28,6 +28,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
   'export:embed': () => import('../src/export/embed').then((i) => i.expoExportEmbed),
 
   // Auxiliary commands
+  upgrade: () => import('../src/upgrade').then((i) => i.expoUpgrade),
   install: () => import('../src/install').then((i) => i.expoInstall),
   customize: () => import('../src/customize').then((i) => i.expoCustomize),
 
@@ -78,6 +79,7 @@ if (!isSubcommand && args['--help']) {
     register,
     start,
     install,
+    upgrade,
     export: _export,
     config,
     customize,
@@ -98,7 +100,7 @@ if (!isSubcommand && args['--help']) {
   {bold Commands}
     ${Object.keys({ start, export: _export, ...others }).join(', ')}
     ${Object.keys({ 'run:ios': runIos, 'run:android': runAndroid, prebuild }).join(', ')}
-    ${Object.keys({ install, customize, config }).join(', ')}
+    ${Object.keys({ install, upgrade, customize, config }).join(', ')}
     {dim ${Object.keys({ login, logout, whoami, register }).join(', ')}}
 
   {bold Options}
