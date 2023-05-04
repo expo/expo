@@ -6,7 +6,7 @@
 
 ### 🎉 New features
 
-- Migrated to new modules API on iOS.
+- Migrated to new modules API on iOS. ([#22152](https://github.com/expo/expo/pull/22152) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
