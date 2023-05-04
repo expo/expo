@@ -3,6 +3,7 @@
 Object.defineProperty(exports, "__esModule", {
   value: true
 });
+exports.escapeBackticksAndOctals = escapeBackticksAndOctals;
 exports.getHotReplaceTemplate = getHotReplaceTemplate;
 exports.pathToHtmlSafeName = pathToHtmlSafeName;
 exports.wrapDevelopmentCSS = wrapDevelopmentCSS;
@@ -21,6 +22,7 @@ function getHotReplaceTemplate(id) {
   }`;
 }
 function wrapDevelopmentCSS(props) {
+  const withBackTicksEscaped = escapeBackticksAndOctals(props.src);
   return `(() => {
   if (typeof document === 'undefined') {
     return
@@ -30,12 +32,18 @@ function wrapDevelopmentCSS(props) {
   ${getHotReplaceTemplate(props.filename)}
   style.setAttribute('data-expo-loader', 'css');
   head.appendChild(style);
-  const css = \`${props.src.replace(/`/, '`')}\`;
+  const css = \`${withBackTicksEscaped}\`;
   if (style.styleSheet){
     style.styleSheet.cssText = css;
   } else {
     style.appendChild(document.createTextNode(css));
   }
 })();`;
+}
+function escapeBackticksAndOctals(str) {
+  if (typeof str !== 'string') {
+    return '';
+  }
+  return str.replace(/\\/g, '\\\\').replace(/`/g, '\\`').replace(/[\0-\7]/g, match => `\\0${match.charCodeAt(0).toString(8)}`);
 }
 //# sourceMappingURL=css.js.map

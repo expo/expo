@@ -51,13 +51,11 @@ class DevMenuAppInstanceTest: QuickSpec {
         bridge: mockedBridge
       )
 
-      let extraModules = appInstance.extraModules(for: mockedBridge)
+        let extraModules = appInstance.extraModules(for: mockedBridge)
 
       expect(extraModules).toNot(beNil())
-      expect(extraModules?.first { type(of: $0).moduleName() == "ExpoDevMenuInternal" }).toNot(beNil())
-      expect(extraModules?.first { type(of: $0).moduleName() == "RNCSafeAreaProvider" }).toNot(beNil())
-      expect(extraModules?.first { type(of: $0).moduleName() == "RNCSafeAreaView" }).toNot(beNil())
       expect(extraModules?.first { type(of: $0).moduleName() == "DevLoadingView" }).toNot(beNil())
+      expect(extraModules?.first { type(of: $0).moduleName() == "DevSettings" }).toNot(beNil())
     }
   }
 }

@@ -14,6 +14,8 @@ import worker, {
 
 import { wrapDevelopmentCSS } from './css';
 import { matchCssModule, transformCssModuleWeb } from './css-modules';
+import { transformPostCssModule } from './postcss';
+import { compileSass, matchSass } from './sass';
 
 const countLines = require('metro/src/lib/countLines') as (string: string) => number;
 
@@ -36,7 +38,7 @@ export async function transform(
   data: Buffer,
   options: JsTransformOptions
 ): Promise<TransformResponse> {
-  const isCss = options.type !== 'asset' && filename.endsWith('.css');
+  const isCss = options.type !== 'asset' && /\.(s?css|sass)$/.test(filename);
   // If the file is not CSS, then use the default behavior.
   if (!isCss) {
     return worker.transform(config, projectRoot, filename, data, options);
@@ -55,7 +57,19 @@ export async function transform(
     );
   }
 
-  const code = data.toString('utf8');
+  let code = data.toString('utf8');
+
+  // Apply postcss transforms
+  code = await transformPostCssModule(projectRoot, {
+    src: code,
+    filename,
+  });
+
+  // TODO: When native has CSS support, this will need to move higher up.
+  const syntax = matchSass(filename);
+  if (syntax) {
+    code = compileSass(projectRoot, { filename, src: code }, { syntax }).src;
+  }
 
   // If the file is a CSS Module, then transform it to a JS module
   // in development and a static CSS file in production.
@@ -71,11 +85,6 @@ export async function transform(
       },
     });
 
-    if (options.dev) {
-      // Dev has the CSS appended to the JS file.
-      return worker.transform(config, projectRoot, filename, Buffer.from(results.output), options);
-    }
-
     const jsModuleResults = await worker.transform(
       config,
       projectRoot,
@@ -90,7 +99,7 @@ export async function transform(
         type: 'js/module',
         data: {
           // @ts-expect-error
-          ...jsModuleResults.output[0].data,
+          ...jsModuleResults.output[0]?.data,
 
           // Append additional css metadata for static extraction.
           css: {
@@ -110,20 +119,6 @@ export async function transform(
   }
 
   // Global CSS:
-
-  if (options.dev) {
-    return worker.transform(
-      config,
-      projectRoot,
-      filename,
-      // In development, we use a JS file that appends a style tag to the
-      // document. This is necessary because we need to replace the style tag
-      // when the CSS changes.
-      // NOTE: We may change this to better support static rendering in the future.
-      Buffer.from(wrapDevelopmentCSS({ src: code, filename })),
-      options
-    );
-  }
 
   const { transform } = await import('lightningcss');
 
@@ -149,7 +144,7 @@ export async function transform(
     config,
     projectRoot,
     filename,
-    Buffer.from(''),
+    options.dev ? Buffer.from(wrapDevelopmentCSS({ src: code, filename })) : Buffer.from(''),
     options
   );
 
@@ -160,9 +155,10 @@ export async function transform(
   // and append it to the HTML bundle.
   const output: JsOutput[] = [
     {
+      type: 'js/module',
       data: {
         // @ts-expect-error
-        ...jsModuleResults.output[0].data,
+        ...jsModuleResults.output[0]?.data,
 
         // Append additional css metadata for static extraction.
         css: {
@@ -172,7 +168,6 @@ export async function transform(
           functionMap: null,
         },
       },
-      type: 'js/module',
     },
   ];
 
@@ -191,6 +186,5 @@ export async function transform(
 module.exports = {
   // Use defaults for everything that's not custom.
   ...worker,
-
   transform,
 };

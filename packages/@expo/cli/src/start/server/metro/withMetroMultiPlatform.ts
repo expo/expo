@@ -307,17 +307,21 @@ export async function withMetroMultiPlatformAsync(
     config,
     platformBundlers,
     isTsconfigPathsEnabled,
+    webOutput,
   }: {
     config: ConfigT;
     isTsconfigPathsEnabled: boolean;
     platformBundlers: PlatformBundlers;
+    webOutput?: 'single' | 'static';
   }
 ) {
-  // Auto pick App entry: this is injected with Babel.
+  // Auto pick App entry: this is injected with a custom serializer.
   process.env.EXPO_ROUTER_APP_ROOT = getAppRouterRelativeEntryPath(projectRoot);
-  process.env.EXPO_PROJECT_ROOT = process.env.EXPO_PROJECT_ROOT ?? projectRoot;
 
-  if (env.EXPO_USE_STATIC) {
+  // Required for @expo/metro-runtime to format paths in the web LogBox.
+  process.env.EXPO_PUBLIC_PROJECT_ROOT = process.env.EXPO_PUBLIC_PROJECT_ROOT ?? projectRoot;
+
+  if (webOutput === 'static') {
     // Enable static rendering in runtime space.
     process.env.EXPO_PUBLIC_USE_STATIC = '1';
   }

@@ -31,16 +31,20 @@
   ],
   "dependencies": {
     "@expo/config": "~8.0.0",
+    "@expo/env": "~0.0.2",
+    "@expo/json-file": "~8.2.37",
     "chalk": "^4.1.0",
     "debug": "^4.3.2",
     "find-yarn-workspace-root": "~2.0.0",
     "getenv": "^1.0.0",
+    "lightningcss": "~1.19.0",
+    "postcss": "~8.4.21",
     "resolve-from": "^5.0.0",
-    "sucrase": "^3.20.0",
-    "lightningcss": "~1.19.0"
+    "sucrase": "^3.20.0"
   },
   "devDependencies": {
-    "@babel/core": "^7.15.5"
+    "@babel/core": "^7.15.5",
+    "sass": "^1.60.0"
   },
   "publishConfig": {
     "access": "public"

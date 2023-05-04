@@ -15,6 +15,7 @@ export function getHotReplaceTemplate(id: string) {
 }
 
 export function wrapDevelopmentCSS(props: { src: string; filename: string }) {
+  const withBackTicksEscaped = escapeBackticksAndOctals(props.src);
   return `(() => {
   if (typeof document === 'undefined') {
     return
@@ -24,11 +25,22 @@ export function wrapDevelopmentCSS(props: { src: string; filename: string }) {
   ${getHotReplaceTemplate(props.filename)}
   style.setAttribute('data-expo-loader', 'css');
   head.appendChild(style);
-  const css = \`${props.src.replace(/`/, '`')}\`;
+  const css = \`${withBackTicksEscaped}\`;
   if (style.styleSheet){
     style.styleSheet.cssText = css;
   } else {
     style.appendChild(document.createTextNode(css));
   }
 })();`;
+}
+
+export function escapeBackticksAndOctals(str: string) {
+  if (typeof str !== 'string') {
+    return '';
+  }
+
+  return str
+    .replace(/\\/g, '\\\\')
+    .replace(/`/g, '\\`')
+    .replace(/[\0-\7]/g, (match) => `\\0${match.charCodeAt(0).toString(8)}`);
 }

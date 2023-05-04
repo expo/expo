@@ -16,14 +16,14 @@ const getSymlinkedNodeModulesForDirectory = require('./common/get-symlinked-modu
  *   * excludes all modules from Haste's module system (providesModule)
  *   * excludes modules in the native Android and Xcode projects
  */
-exports.createMetroConfiguration = function createMetroConfiguration(projectPath) {
+exports.createMetroConfiguration = function createMetroConfiguration(projectPath, options) {
   projectPath = path.resolve(projectPath);
   debug(`Creating a Metro configuration for the project at %s`, projectPath);
   const {
     // Remove the React Native reporter.
     reporter,
     ...defaultConfig
-  } = getDefaultConfig(projectPath);
+  } = getDefaultConfig(projectPath, options);
 
   let watchFolders;
   let extraNodeModules;
@@ -56,11 +56,6 @@ exports.createMetroConfiguration = function createMetroConfiguration(projectPath
 
       // Include .cjs files
       sourceExts: [...defaultConfig.resolver.sourceExts, 'cjs'],
-
-      nodeModulesPaths: [
-        ...defaultConfig.resolver.nodeModulesPaths,
-        path.join(projectPath, 'modules'),
-      ],
 
       // Make the symlinked packages visible to Metro
       extraNodeModules,

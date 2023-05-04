@@ -1,16 +1,14 @@
 import { ExpoUpdatesManifest } from '@expo/config';
 import { Updates } from '@expo/config-plugins';
 import accepts from 'accepts';
-import assert from 'assert';
 import crypto from 'crypto';
 import FormData from 'form-data';
 import { serializeDictionary, Dictionary } from 'structured-headers';
 
-import { getProjectAsync } from '../../../api/getProject';
 import { APISettings } from '../../../api/settings';
-import { signExpoGoManifestAsync } from '../../../api/signManifest';
 import UserSettings from '../../../api/user/UserSettings';
-import { ANONYMOUS_USERNAME, getUserAsync } from '../../../api/user/user';
+import { ANONYMOUS_USERNAME } from '../../../api/user/user';
+import * as Log from '../../../log';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
 import {
   CodeSigningInfo,
@@ -18,7 +16,6 @@ import {
   signManifestString,
 } from '../../../utils/codesigning';
 import { CommandError } from '../../../utils/errors';
-import { memoize } from '../../../utils/fn';
 import { stripPort } from '../../../utils/url';
 import { ManifestMiddleware, ManifestRequestInfo } from './ManifestMiddleware';
 import { assertRuntimePlatform, parsePlatformHeader } from './resolvePlatform';
@@ -57,7 +54,6 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     return {
       explicitlyPrefersMultipartMixed,
       platform,
-      acceptSignature: this.getLegacyAcceptSignatureHeader(req),
       expectSignature: expectSignature ? String(expectSignature) : null,
       hostname: stripPort(req.headers['host']),
     };
@@ -98,18 +94,11 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       this.options.privateKeyPath
     );
 
-    const easProjectId = exp.extra?.eas?.projectId;
-    const shouldUseAnonymousManifest = await shouldUseAnonymousManifestAsync(
-      easProjectId,
-      codeSigningInfo
-    );
-    const userAnonymousIdentifier = await UserSettings.getAnonymousIdentifierAsync();
-    if (!shouldUseAnonymousManifest) {
-      assert(easProjectId);
-    }
-    const scopeKey = shouldUseAnonymousManifest
-      ? `@${ANONYMOUS_USERNAME}/${exp.slug}-${userAnonymousIdentifier}`
-      : await this.getScopeKeyForProjectIdAsync(easProjectId);
+    const easProjectId = exp.extra?.eas?.projectId as string | undefined | null;
+    const scopeKey = await ExpoGoManifestHandlerMiddleware.getScopeKeyAsync({
+      slug: exp.slug,
+      codeSigningInfo,
+    });
 
     const expoUpdatesManifest: ExpoUpdatesManifest = {
       id: crypto.randomUUID(),
@@ -135,12 +124,6 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       },
     };
 
-    const headers = this.getDefaultResponseHeaders();
-    if (requestOptions.acceptSignature && !shouldUseAnonymousManifest) {
-      const manifestSignature = await this.getSignedManifestStringAsync(expoUpdatesManifest);
-      headers.set('expo-manifest-signature', manifestSignature);
-    }
-
     const stringifiedManifest = JSON.stringify(expoUpdatesManifest);
 
     let manifestPartHeaders: { 'expo-signature': string } | null = null;
@@ -165,6 +148,7 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
       certificateChainBody,
     });
 
+    const headers = this.getDefaultResponseHeaders();
     headers.set(
       'content-type',
       requestOptions.explicitlyPrefersMultipartMixed
@@ -209,31 +193,30 @@ export class ExpoGoManifestHandlerMiddleware extends ManifestMiddleware<ExpoGoMa
     });
   }
 
-  private getSignedManifestStringAsync = memoize(signExpoGoManifestAsync);
+  private static async getScopeKeyAsync({
+    slug,
+    codeSigningInfo,
+  }: {
+    slug: string;
+    codeSigningInfo: CodeSigningInfo | null;
+  }): Promise<string> {
+    const scopeKeyFromCodeSigningInfo = codeSigningInfo?.scopeKey;
+    if (scopeKeyFromCodeSigningInfo) {
+      return scopeKeyFromCodeSigningInfo;
+    }
 
-  private getScopeKeyForProjectIdAsync = memoize(getScopeKeyForProjectIdAsync);
-}
-
-/**
- * 1. No EAS project ID in config, then use anonymous scope key
- * 2. When offline or not logged in
- *   a. If code signing not accepted by client (only legacy manifest signing is supported), then use anonymous scope key
- *   b. If code signing accepted by client and no development code signing certificate is cached, then use anonymous scope key
- */
-async function shouldUseAnonymousManifestAsync(
-  easProjectId: string | undefined | null,
-  codeSigningInfo: CodeSigningInfo | null
-): Promise<boolean> {
-  if (!easProjectId || (APISettings.isOffline && codeSigningInfo === null)) {
-    return true;
+    Log.warn(
+      APISettings.isOffline
+        ? 'Using anonymous scope key in manifest for offline mode.'
+        : 'Using anonymous scope key in manifest.'
+    );
+    return await getAnonymousScopeKeyAsync(slug);
   }
-
-  return !(await getUserAsync());
 }
 
-async function getScopeKeyForProjectIdAsync(projectId: string): Promise<string> {
-  const project = await getProjectAsync(projectId);
-  return project.scopeKey;
+async function getAnonymousScopeKeyAsync(slug: string): Promise<string> {
+  const userAnonymousIdentifier = await UserSettings.getAnonymousIdentifierAsync();
+  return `@${ANONYMOUS_USERNAME}/${slug}-${userAnonymousIdentifier}`;
 }
 
 function convertToDictionaryItemsRepresentation(obj: { [key: string]: string }): Dictionary {

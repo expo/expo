@@ -43,9 +43,6 @@ public final class ClassComponent: ObjectDefinition {
         // TODO: Throw an exception? (@tsapeta)
         return
       }
-      // The properties can't go into the prototype as they would be shared across all instances.
-      // Instead, we decorate the instance object on initialization.
-      try? self.decorateWithProperties(object: this, appContext: appContext)
 
       // Call the native constructor when defined.
       let result = try? self.constructor?.call(by: this, withArguments: arguments, appContext: appContext)
@@ -55,7 +52,14 @@ public final class ClassComponent: ObjectDefinition {
         SharedObjectRegistry.add(native: result, javaScript: this)
       }
     }
+
     try decorate(object: klass, appContext: appContext)
+
+    // Register the JS class and its associated native type.
+    if let sharedObjectType = associatedType as? DynamicSharedObjectType {
+      appContext.classRegistry.register(nativeClassId: sharedObjectType.typeIdentifier, javaScriptClass: klass)
+    }
+
     return klass
   }
 
@@ -67,6 +71,7 @@ public final class ClassComponent: ObjectDefinition {
     decorateWithConstants(object: prototype)
     try decorateWithFunctions(object: prototype, appContext: appContext)
     try decorateWithClasses(object: prototype, appContext: appContext)
+    try decorateWithProperties(object: prototype, appContext: appContext)
   }
 }
 

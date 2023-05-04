@@ -99,14 +99,24 @@ describe(`manifest`, () => {
     mockExponentConstants({ manifest: fakeManifest });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
-    expect(console.warn).not.toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
+      )
+    );
   });
 
   it(`exists if defined as a string in ExponentConstants`, () => {
     mockExponentConstants({ manifest: JSON.stringify(fakeManifest) });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
-    expect(console.warn).not.toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
+      )
+    );
   });
 
   it(`exists if defined as an object by expo-updates`, () => {
@@ -114,7 +124,12 @@ describe(`manifest`, () => {
     mockExpoUpdates({ manifest: fakeManifest, manifestString: undefined });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
-    expect(console.warn).not.toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
+      )
+    );
   });
 
   it(`exists if defined as a string by expo-updates`, () => {
@@ -122,7 +137,12 @@ describe(`manifest`, () => {
     mockExpoUpdates({ manifest: undefined, manifestString: JSON.stringify(fakeManifest) });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
-    expect(console.warn).not.toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
+      )
+    );
   });
 
   it(`is null if undefined in ExponentConstants and expo-updates with bare execution environment`, () => {
@@ -133,9 +153,19 @@ describe(`manifest`, () => {
 
     // Skip warnings on web
     if (Platform.OS === 'web') {
-      expect(console.warn).not.toHaveBeenCalled();
+      expect(console.warn).toHaveBeenCalledTimes(1);
+      expect(console.warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
+        )
+      );
     } else {
-      expect(console.warn).toHaveBeenCalled();
+      expect(console.warn).toHaveBeenCalledTimes(2);
+      expect(console.warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
+        )
+      );
     }
   });
 
@@ -147,9 +177,19 @@ describe(`manifest`, () => {
 
     // Skip warnings on web
     if (Platform.OS === 'web') {
-      expect(console.warn).not.toHaveBeenCalled();
+      expect(console.warn).toHaveBeenCalledTimes(1);
+      expect(console.warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
+        )
+      );
     } else {
-      expect(console.warn).toHaveBeenCalled();
+      expect(console.warn).toHaveBeenCalledTimes(2);
+      expect(console.warn).toHaveBeenCalledWith(
+        expect.stringContaining(
+          'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
+        )
+      );
     }
   });
 
@@ -158,7 +198,12 @@ describe(`manifest`, () => {
     mockExpoUpdates({ manifest: fakeManifest2 });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toEqual(fakeManifest2);
-    expect(console.warn).not.toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
+      )
+    );
   });
 
   it(`is not overridden if expo-updates exports an empty manifest`, () => {
@@ -166,7 +211,12 @@ describe(`manifest`, () => {
     mockExpoUpdates({ manifest: {} });
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
-    expect(console.warn).not.toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
+      )
+    );
   });
 
   it(`does not have manifest2 when manifest is a classic manifest`, () => {
@@ -175,7 +225,12 @@ describe(`manifest`, () => {
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toEqual(fakeManifest);
     expect(ConstantsWithMock.manifest2).toBeNull();
-    expect(console.warn).not.toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
+      )
+    );
   });
 
   it(`has manifest2 when manifest is a new manifest`, () => {
@@ -184,7 +239,12 @@ describe(`manifest`, () => {
     const ConstantsWithMock = require('../Constants').default;
     expect(ConstantsWithMock.manifest).toBeNull();
     expect(ConstantsWithMock.manifest2).toEqual(fakeManifestNew);
-    expect(console.warn).not.toHaveBeenCalled();
+    expect(console.warn).toHaveBeenCalledTimes(1);
+    expect(console.warn).toHaveBeenCalledWith(
+      expect.stringContaining(
+        'Constants.manifest has been deprecated in favor of Constants.expoConfig.'
+      )
+    );
   });
 
   describe('expoConfig', () => {

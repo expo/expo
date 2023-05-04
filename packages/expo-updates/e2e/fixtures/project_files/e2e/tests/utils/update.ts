@@ -124,12 +124,22 @@ function getRollbackDirective(date: Date) {
   };
 }
 
+/**
+ * Common method used to create "no update available" directives
+ */
+function getNoUpdateAvailableDirective() {
+  return {
+    type: 'noUpdateAvailable',
+  };
+}
+
 export default {
   copyBundleToStaticFolder,
   copyAssetToStaticFolder,
   findAssets,
   getUpdateManifestForBundleFilename,
   getRollbackDirective,
+  getNoUpdateAvailableDirective,
   serverHost,
   serverPort,
 };

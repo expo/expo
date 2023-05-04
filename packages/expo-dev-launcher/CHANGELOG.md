@@ -6,6 +6,31 @@
 
 ### 🎉 New features
 
+- Add support to loading Expo modules. ([#22174](https://github.com/expo/expo/pull/22174) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- Fixed build errors on React Native 0.72.x. ([#22189](https://github.com/expo/expo/pull/22189) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
+- Set NODE_ENV before exporting bundles. ([#21983](https://github.com/expo/expo/pull/21983) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 📚 3rd party library updates
+
+- Update `react-native` to 0.71.7. ([#22253](https://github.com/expo/expo/pull/22253) by [@kudo](https://github.com/kudo))
+
+## 2.2.1 - 2023-04-14
+
+### 🐛 Bug fixes
+
+- Fixed `Invalid State: Cannot call send: until connection is open` crash when using network inspector on iOS. ([#22130](https://github.com/expo/expo/pull/22130) by [@kudo](https://github.com/kudo))
+
+## 2.2.0 - 2023-04-13
+
+### 🎉 New features
+
 - Added experimental network inspector. ([#21265](https://github.com/expo/expo/pull/21265), [#21327](https://github.com/expo/expo/pull/21327) by [@kudo](https://github.com/kudo))
 
 ### 🐛 Bug fixes
@@ -13,10 +38,6 @@
 - Add missing `mimeType` when emitting network responses. ([#21676](https://github.com/expo/expo/pull/21676) by [@byCedric](https://github.com/byCedric))
 - Add missing `Network.requestWillBeSentExtraInfo` when emitting network requests. ([#21965](https://github.com/expo/expo/pull/21965) by [@byCedric](https://github.com/byCedric))
 - Don't require legacy manifest signature in dev clients. ([#21970](https://github.com/expo/expo/pull/21970) by [@wschurman](https://github.com/wschurman))
-
-### 💡 Others
-
-- Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
 
 ## 2.1.6 - 2023-03-20
 

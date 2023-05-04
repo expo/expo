@@ -4,6 +4,33 @@ title: metro.config.js
 
 See more information about **metro.config.js** in the [customizing Metro guide](/guides/customizing-metro/).
 
+## Environment variables
+
+> For SDK 49 and above
+
+Environment variables can be loaded using **.env** files. These files are loaded according to the [standard **.env** file resolution](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use).
+
+If you are migrating an older project to SDK 49 or above, then you should ignore local env files by adding the following to your **.gitignore**:
+
+```sh .gitignore
+# local env files
+.env*.local
+```
+
+### Client environment variables
+
+Environment variables prefixed with `EXPO_PUBLIC_` will be exposed to the app at build-time. For example, `EXPO_PUBLIC_API_KEY` will be available as `process.env.EXPO_PUBLIC_API_KEY`.
+
+Environment variables will not be inlined in code inside of **node_modules**.
+
+For security purposes, client environment variables are inlined in the bundle, which means that `process.env` is not an iterable object, and you cannot dynamically access environment variables. Every variable must be referenced as a static property in order for it to be inlined. For example, the expression `process.env.EXPO_PUBLIC_KEY` will be rewritten and `process.env[‘EXPO_PUBLIC_KEY’]` will not.
+
+- Client environment variables should not contain secrets as they will be viewable in plain-text format in the production binary.
+- Use client environment variables for partially protected values, such as public API keys you don't want to commit to Git or hard-code in your app and that may change depending on the environment.
+- Expo environment variables can be updated while the development server (`npx expo start`) is running, without restarting or clearing the bundler cache — however, you'll need to modify and save an included source file to see the updates. You must also perform a client reload, as environment variables do not support Fast Refresh.
+
+{/* TODO: Usage in EAS */}
+
 ## CSS
 
 > Since SDK 49
@@ -89,6 +116,16 @@ CSS Modules are a way to scope CSS to a specific component. This is useful for a
 
 In Expo, CSS Modules are defined by creating a file with the `.module.css` extension. The file can be imported from any component. The exported value is an object with the class names as keys and the React Native style objects as values.
 
+CSS Modules support platform extensions to allow you to define different styles for different platforms. For example, you can define a `module.ios.css` and `module.android.css` file to define styles for iOS and Android respectively. You'll need to import without the extension, for example:
+
+```diff App.js
+// Importing `./App.module.ios.css`:
+- import styles from './App.module.css';
++ import styles from './App.module';
+```
+
+Flipping the extension, e.g. `App.ios.module.css` will not work and result in a universal module named `App.ios.module`.
+
 > You cannot pass styles to the `className` prop of a React Native or React Native for web component. Instead, you must use the `style` prop.
 
 ```js App.js
@@ -108,15 +145,45 @@ export default function Page() {
 - On web, all CSS values are available. CSS is not processed or auto-prefixed like it is with the React Native Web `StyleSheet` API.
 - CSS Modules use [lightningcss](https://github.com/parcel-bundler/lightningcss) under the hood, check [the issues](https://github.com/parcel-bundler/lightningcss/issues) for unsupported features.
 
+### PostCSS
+
+> Changing the Post CSS or `browserslist` config will require you to clear the Metro cache: `npx expo start --clear` | `npx expo export --clear`.
+
+[PostCSS](https://github.com/postcss/postcss) can be customized by adding a `postcss.config.json` file to the root of your project. This file should export a function that returns a PostCSS configuration object. For example:
+
+```json postcss.config.json
+{
+  "plugins": {
+    "autoprefixer": {}
+  }
+}
+```
+
+Both `postcss.config.json` and `postcss.config.js` are supported, but `postcss.config.json` enables better caching.
+
+### SASS
+
+Expo Metro has _partial_ support for SCSS/SASS.
+
+To setup, install the `sass` package in your project:
+
+```sh
+yarn add sass
+```
+
+Then, ensure [CSS is setup](#css) in the `metro.config.js` file.
+
+- When `sass` is installed, then modules without extensions will be resolved in the following order: `scss`, `sass`, `css`.
+- Only use the intended syntax with `sass` files.
+- Importing other files from inside a scss/sass file is not currently supported.
+
 ## Bare workflow setup
 
 > This guide is versioned and will need to be revisited when upgrading/downgrading Expo. Alternatively, use [Expo Prebuild](/workflow/prebuild) for fully automated setup.
 
 Projects that don't use [Expo Prebuild](/workflow/prebuild) must configure native files to ensure the Expo Metro config is always used to bundle the project.
 
-{/* 
-If this isn't done, then features like [aliases](/guides/typescript#path-aliases), [absolute imports](/guides/typescript#absolute-imports), asset hashing, and more will not work.
-*/}
+{/* If this isn't done, then features like [aliases](/guides/typescript#path-aliases), [absolute imports](/guides/typescript#absolute-imports), asset hashing, and more will not work. */}
 
 These modifications are meant to replace `npx react-native bundle` and `npx react-native start` with `npx expo export:embed` and `npx expo start --dev-client` respectively.
 

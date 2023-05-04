@@ -7,6 +7,7 @@
 ### 🎉 New features
 
 - [iOS] Migrated to new modules API. ([#22152](https://github.com/expo/expo/pull/22152) by [@behenate](https://github.com/behenate))
+- Migrated to new modules API on Android ([#22019](https://github.com/expo/expo/pull/22019) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 

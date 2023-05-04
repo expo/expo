@@ -1,6 +1,5 @@
 import ExpoDocumentPicker from './ExpoDocumentPicker';
 import { DocumentPickerOptions, DocumentPickerResult } from './types';
-export { DocumentPickerOptions, DocumentPickerResult as DocumentResult };
 
 const DEPRECATED_RESULT_KEYS = [
   'name',
@@ -63,3 +62,5 @@ export async function getDocumentAsync({
   });
   return mergeDeprecatedResult(result);
 }
+
+export * from './types';

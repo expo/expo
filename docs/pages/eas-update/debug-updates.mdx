@@ -160,35 +160,7 @@ After verifying `expo-updates` and EAS Update configurations, we can move on to 
 
 ### In-app debugging
 
-The expo-updates library exports a variety of functions to interact with updates once the app is already running. In certain cases, making a call to fetch an update and seeing an error message can help us narrow down the root cause.
-
-We can write the following code and then make a simulator build of our project to see if there are errors fetching updates:
-
-```jsx
-import { View, Button } from 'react-native';
-import * as Updates from 'expo-updates';
-
-function App() {
-  async function onFetchUpdateAsync() {
-    try {
-      const update = await Updates.checkForUpdateAsync();
-
-      if (update.isAvailable) {
-        await Updates.fetchUpdateAsync();
-        await Updates.reloadAsync();
-      }
-    } catch (error) {
-      alert(`Error fetching latest Expo update: ${error}`);
-    }
-  }
-
-  return (
-    <View>
-      <Button title="Fetch update" onPress={onFetchUpdateAsync} />
-    </View>
-  );
-}
-```
+The `expo-updates` library exports a variety of functions to interact with updates once the app is already running. In certain cases, making a call to fetch an update and seeing an error message can help us narrow down the root cause. We can make a simulator build of the project and manually check to see if updates are available or if there are errors when fetching updates. See the code example to [check for updates manually](/versions/latest/sdk/updates/#use-expo-updates-with-a-custom-server).
 
 ### Viewing network requests
 
@@ -283,13 +255,13 @@ We also provide a [step-by-step guide to try out EAS Update quickly](/eas-update
 sed -i '' 's/SKIP_BUNDLING/FORCE_BUNDLING/g;' ios/&lt;project name&gt;.xcodeproj/project.pbxproj
 ```
 
-- Execute a [debug build](/workflow/debugging/#native-debugging) of the app with Xcode or from the command line.
+- Execute a [debug build](/debugging/runtime-issue/#native-debugging) of the app with Xcode or from the command line.
 
 #### Android local builds
 
 - Set the debug environment variable: `export EX_UPDATES_NATIVE_DEBUG=1`
 - [Ensure the desired channel is set in your **AndroidManifest.xml**](/bare/updating-your-app/#configuring-the-channel-manually)
-- Execute a [debug build](/workflow/debugging/#native-debugging) of the app with Android Studio or from the command line.
+- Execute a [debug build](/debugging/runtime-issue/#native-debugging) of the app with Android Studio or from the command line.
 
 #### EAS Build
 

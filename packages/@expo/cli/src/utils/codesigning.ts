@@ -18,8 +18,13 @@ import { Dictionary, parseDictionary } from 'structured-headers';
 
 import { getExpoGoIntermediateCertificateAsync } from '../api/getExpoGoIntermediateCertificate';
 import { getProjectDevelopmentCertificateAsync } from '../api/getProjectDevelopmentCertificate';
+import { AppQuery } from '../api/graphql/queries/AppQuery';
 import { APISettings } from '../api/settings';
+import { ensureLoggedInAsync } from '../api/user/actions';
+import { Actor } from '../api/user/user';
+import { AppByIdQuery, Permission } from '../graphql/generated';
 import * as Log from '../log';
+import { learnMore } from '../utils/link';
 import { CommandError } from './errors';
 
 export type CodeSigningInfo = {
@@ -35,14 +40,20 @@ export type CodeSigningInfo = {
    * An empty array indicates that there is no need to serve the certificate chain in the multipart response.
    */
   certificateChainForResponse: string[];
+  /**
+   * Scope key cached for the project when certificate is development Expo Go code signing.
+   * For project-specific code signing (keyId == the project's generated keyId) this is undefined.
+   */
+  scopeKey: string | null;
 };
 
 type StoredDevelopmentExpoRootCodeSigningInfo = {
   easProjectId: string | null;
+  scopeKey: string | null;
   privateKey: string | null;
   certificateChain: string[] | null;
 };
-const DEVELOPMENT_CODE_SIGNING_SETTINGS_FILE_NAME = 'development-code-signing-settings.json';
+const DEVELOPMENT_CODE_SIGNING_SETTINGS_FILE_NAME = 'development-code-signing-settings-2.json';
 
 export function getDevelopmentCodeSigningDirectory(): string {
   return path.join(getExpoHomeDirectory(), 'codesigning');
@@ -95,6 +106,7 @@ function getProjectDevelopmentCodeSigningInfoFile<T extends JSONObject>(defaults
 export const DevelopmentCodeSigningInfoFile =
   getProjectDevelopmentCodeSigningInfoFile<StoredDevelopmentExpoRootCodeSigningInfo>({
     easProjectId: null,
+    scopeKey: null,
     privateKey: null,
     certificateChain: null,
   });
@@ -170,7 +182,11 @@ async function getExpoRootDevelopmentCodeSigningInfoAsync(
   // can't check for scope key validity since scope key is derived on the server from projectId and we may be offline.
   // we rely upon the client certificate check to validate the scope key
   if (!easProjectId) {
-    Log.warn('No project ID specified in app.json, unable to sign manifest');
+    Log.warn(
+      `Expo Application Services (EAS) is not configured for your project. Configuring EAS enables a more secure development experience amongst many other benefits. ${learnMore(
+        'https://docs.expo.dev/eas/'
+      )}`
+    );
     return null;
   }
 
@@ -194,6 +210,7 @@ async function getExpoRootDevelopmentCodeSigningInfoAsync(
         );
         return validatedCodeSigningInfo;
       } else {
+        // need to return null here and say a message
         throw e;
       }
     }
@@ -262,6 +279,7 @@ async function getProjectCodeSigningCertificateAsync(
     privateKey: privateKeyPEM,
     certificateForPrivateKey: certificatePEM,
     certificateChainForResponse: [],
+    scopeKey: null,
   };
 }
 
@@ -313,7 +331,11 @@ function validateStoredDevelopmentExpoRootCertificateCodeSigningInfo(
     return null;
   }
 
-  const { privateKey: privateKeyPEM, certificateChain: certificatePEMs } = codeSigningInfo;
+  const {
+    privateKey: privateKeyPEM,
+    certificateChain: certificatePEMs,
+    scopeKey,
+  } = codeSigningInfo;
   if (!privateKeyPEM || !certificatePEMs) {
     return null;
   }
@@ -329,19 +351,40 @@ function validateStoredDevelopmentExpoRootCertificateCodeSigningInfo(
     return null;
   }
 
-  // TODO(wschurman): maybe do more validation
+  // TODO(wschurman): maybe do more validation, like validation of projectID and scopeKey within eas certificate extension
 
   return {
     keyId: 'expo-go',
     certificateChainForResponse: certificatePEMs,
     certificateForPrivateKey: certificatePEMs[0],
     privateKey: privateKeyPEM,
+    scopeKey,
   };
+}
+
+function actorCanGetProjectDevelopmentCertificate(actor: Actor, app: AppByIdQuery['app']['byId']) {
+  const owningAccountId = app.ownerAccount.id;
+
+  const owningAccountIsActorPrimaryAccount =
+    actor.__typename === 'User' || actor.__typename === 'SSOUser'
+      ? actor.primaryAccount.id === owningAccountId
+      : false;
+  const userHasPublishPermissionForOwningAccount = !!actor.accounts
+    .find((account) => account.id === owningAccountId)
+    ?.users?.find((userPermission) => userPermission.actor.id === actor.id)
+    ?.permissions?.includes(Permission.Publish);
+  return owningAccountIsActorPrimaryAccount || userHasPublishPermissionForOwningAccount;
 }
 
 async function fetchAndCacheNewDevelopmentCodeSigningInfoAsync(
   easProjectId: string
-): Promise<CodeSigningInfo> {
+): Promise<CodeSigningInfo | null> {
+  const actor = await ensureLoggedInAsync();
+  const app = await AppQuery.byIdAsync(easProjectId);
+  if (!actorCanGetProjectDevelopmentCertificate(actor, app)) {
+    return null;
+  }
+
   const keyPair = generateKeyPair();
   const keyPairPEM = convertKeyPairToPEM(keyPair);
   const csr = generateCSR(keyPair, `Development Certificate for ${easProjectId}`);
@@ -353,6 +396,7 @@ async function fetchAndCacheNewDevelopmentCodeSigningInfoAsync(
 
   await DevelopmentCodeSigningInfoFile.setAsync(easProjectId, {
     easProjectId,
+    scopeKey: app.scopeKey,
     privateKey: keyPairPEM.privateKeyPEM,
     certificateChain: [developmentSigningCertificate, expoGoIntermediateCertificate],
   });
@@ -362,6 +406,7 @@ async function fetchAndCacheNewDevelopmentCodeSigningInfoAsync(
     certificateChainForResponse: [developmentSigningCertificate, expoGoIntermediateCertificate],
     certificateForPrivateKey: developmentSigningCertificate,
     privateKey: keyPairPEM.privateKeyPEM,
+    scopeKey: app.scopeKey,
   };
 }
 /**

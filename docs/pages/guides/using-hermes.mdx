@@ -108,6 +108,6 @@ Alternatively, you can use the JavaScript inspector from the following tools:
 
 ### Can I use Remote Debugging with Hermes?
 
-One of the many limitations of [remote debugging](/workflow/glossary-of-terms/#remote-debugging) is that it does not work with modules built on top of [JSI](https://github.com/react-native-community/discussions-and-proposals/issues/91). For example, if your app uses [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated) version 2 or higher, [remote debugging will not work](https://docs.swmansion.com/react-native-reanimated/docs/#known-problems-and-limitations).
+One of the many limitations of [remote debugging](/more/glossary-of-terms/#remote-debugging) is that it does not work with modules built on top of [JSI](https://github.com/react-native-community/discussions-and-proposals/issues/91), such as [react-native-reanimated](https://github.com/software-mansion/react-native-reanimated) version 2 or higher.
 
-Hermes supports [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/v8/) to debug JavaScript in place by connecting to the running engine on the device. This enables you to debug your app even when using JSI modules. This debugging technique is superior to remote debugging and replaces it for apps using Hermes.
+Hermes supports [Chrome DevTools Protocol](https://chromedevtools.github.io/devtools-protocol/v8/) to debug JavaScript in place by connecting to the engine running on the device, as opposed to remote debugging, which executes JavaScript within a desktop Chrome tab. Hermes apps use this debugging technique automatically when you open the debugger in Expo Go or a development build.

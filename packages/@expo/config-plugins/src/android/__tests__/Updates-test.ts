@@ -75,8 +75,7 @@ describe('Android Updates config', () => {
     const updateUrl = mainApplication['meta-data'].filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_UPDATE_URL'
     );
-    expect(updateUrl).toHaveLength(1);
-    expect(updateUrl[0].$['android:value']).toMatch('https://exp.host/@owner/my-app');
+    expect(updateUrl).toHaveLength(0);
 
     const sdkVersion = mainApplication['meta-data'].filter(
       (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_SDK_VERSION'
@@ -132,6 +131,53 @@ describe('Android Updates config', () => {
       (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_RUNTIME_VERSION'
     );
     expect(runtimeVersion).toHaveLength(0);
+  });
+
+  it('set correct values in AndroidManifest.xml for useClassicUpdates', async () => {
+    vol.fromJSON({
+      '/app/hello': fsReal.readFileSync(sampleCodeSigningCertificatePath, 'utf-8'),
+    });
+
+    let androidManifestJson = await getFixtureManifestAsync();
+    const config: ExpoConfig = {
+      name: 'foo',
+      sdkVersion: '37.0.0',
+      slug: 'my-app',
+      owner: 'owner',
+      updates: {
+        useClassicUpdates: true,
+      },
+    };
+    androidManifestJson = Updates.setUpdatesConfig(
+      '/app',
+      config,
+      androidManifestJson,
+      'user',
+      '0.11.0'
+    );
+    const mainApplication = getMainApplication(androidManifestJson)!;
+
+    if (!mainApplication['meta-data']) {
+      throw new Error('No meta-data found in AndroidManifest.xml');
+    }
+
+    const updateUrl = mainApplication['meta-data'].filter(
+      (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_UPDATE_URL'
+    );
+    expect(updateUrl).toHaveLength(1);
+    expect(updateUrl[0].$['android:value']).toMatch('https://exp.host/@owner/my-app');
+
+    const sdkVersion = mainApplication['meta-data'].filter(
+      (e) => e.$['android:name'] === 'expo.modules.updates.EXPO_SDK_VERSION'
+    );
+    expect(sdkVersion).toHaveLength(1);
+    expect(sdkVersion[0].$['android:value']).toMatch('37.0.0');
+
+    const enabled = mainApplication['meta-data'].filter(
+      (e) => e.$['android:name'] === 'expo.modules.updates.ENABLED'
+    );
+    expect(enabled).toHaveLength(1);
+    expect(enabled[0].$['android:value']).toMatch('true');
   });
 
   describe(Updates.ensureBuildGradleContainsConfigurationScript, () => {

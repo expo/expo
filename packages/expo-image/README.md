@@ -14,24 +14,24 @@ A cross-platform, performant image component for React Native and Expo.
 - Designed for speed
 - Support for many image formats (including animated ones)
 - Disk and memory caching
-- Supports [blurhash](https://blurha.sh), a compact representation of a placeholder for an image
+- Supports [BlurHash](https://blurha.sh) and [ThumbHash](https://evanw.github.io/thumbhash/) - compact representations of a placeholder for an image
 - Transitioning between images when the source changes (no more flickering!)
 - Implements the CSS [`object-fit`](https://developer.mozilla.org/en-US/docs/Web/CSS/object-fit) and [`object-position`](https://developer.mozilla.org/en-US/docs/Web/CSS/object-position) properties (see [`contentFit`](#contentfit) and [`contentPosition`](#contentposition) props)
 - Uses performant [`SDWebImage`](https://github.com/SDWebImage/SDWebImage) and [`Glide`](https://github.com/bumptech/glide) under the hood
 
 ## Supported image formats
 
-| Format | Android | iOS | Web |
-|:---:|:---:|:---:|:---:|
-| WebP | ✅ | ✅ | ✅ [~96% adoption](https://caniuse.com/webp) |
-| PNG / APNG | ✅ | ✅ | ✅ / ✅ [~96% adoption](https://caniuse.com/apng) |
-| AVIF | ✅ | ✅ | ⏳ [~79% adoption](https://caniuse.com/avif) |
-| HEIC | ✅ | ✅ | ❌ [not adopted yet](https://caniuse.com/heif) |
-| JPEG | ✅ | ✅ | ✅ |
-| GIF | ✅ | ✅ | ✅ |
-| SVG | ✅ | ✅ | ✅ |
-| ICO | ✅ | ✅ | ✅ |
-| ICNS | ❌ | ✅ | ❌ |
+|   Format   | Android | iOS |                        Web                        |
+| :--------: | :-----: | :-: | :-----------------------------------------------: |
+|    WebP    |   ✅    | ✅  |   ✅ [~96% adoption](https://caniuse.com/webp)    |
+| PNG / APNG |   ✅    | ✅  | ✅ / ✅ [~96% adoption](https://caniuse.com/apng) |
+|    AVIF    |   ✅    | ✅  |   ⏳ [~79% adoption](https://caniuse.com/avif)    |
+|    HEIC    |   ✅    | ✅  |  ❌ [not adopted yet](https://caniuse.com/heif)   |
+|    JPEG    |   ✅    | ✅  |                        ✅                         |
+|    GIF     |   ✅    | ✅  |                        ✅                         |
+|    SVG     |   ✅    | ✅  |                        ✅                         |
+|    ICO     |   ✅    | ✅  |                        ✅                         |
+|    ICNS    |   ❌    | ✅  |                        ❌                         |
 
 # API documentation
 

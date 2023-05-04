@@ -73,7 +73,7 @@ exports.withUpdates = withUpdates;
 function setUpdatesConfig(projectRoot, config, expoPlist, username, expoUpdatesPackageVersion) {
   const newExpoPlist = {
     ...expoPlist,
-    [Config.ENABLED]: (0, _Updates().getUpdatesEnabled)(config),
+    [Config.ENABLED]: (0, _Updates().getUpdatesEnabled)(config, username),
     [Config.CHECK_ON_LAUNCH]: (0, _Updates().getUpdatesCheckOnLaunch)(config, expoUpdatesPackageVersion),
     [Config.LAUNCH_WAIT_MS]: (0, _Updates().getUpdatesTimeout)(config)
   };
@@ -166,7 +166,7 @@ function isPlistConfigurationSet(expoPlist) {
   return Boolean(expoPlist.EXUpdatesURL && (expoPlist.EXUpdatesSDKVersion || expoPlist.EXUpdatesRuntimeVersion));
 }
 function isPlistConfigurationSynced(projectRoot, config, expoPlist, username) {
-  return (0, _Updates().getUpdateUrl)(config, username) === expoPlist.EXUpdatesURL && (0, _Updates().getUpdatesEnabled)(config) === expoPlist.EXUpdatesEnabled && (0, _Updates().getUpdatesTimeout)(config) === expoPlist.EXUpdatesLaunchWaitMs && (0, _Updates().getUpdatesCheckOnLaunch)(config) === expoPlist.EXUpdatesCheckOnLaunch && (0, _Updates().getUpdatesCodeSigningCertificate)(projectRoot, config) === expoPlist.EXUpdatesCodeSigningCertificate && (0, _Updates().getUpdatesCodeSigningMetadata)(config) === expoPlist.EXUpdatesCodeSigningMetadata && isPlistVersionConfigurationSynced(config, expoPlist);
+  return (0, _Updates().getUpdateUrl)(config, username) === expoPlist.EXUpdatesURL && (0, _Updates().getUpdatesEnabled)(config, username) === expoPlist.EXUpdatesEnabled && (0, _Updates().getUpdatesTimeout)(config) === expoPlist.EXUpdatesLaunchWaitMs && (0, _Updates().getUpdatesCheckOnLaunch)(config) === expoPlist.EXUpdatesCheckOnLaunch && (0, _Updates().getUpdatesCodeSigningCertificate)(projectRoot, config) === expoPlist.EXUpdatesCodeSigningCertificate && (0, _Updates().getUpdatesCodeSigningMetadata)(config) === expoPlist.EXUpdatesCodeSigningMetadata && isPlistVersionConfigurationSynced(config, expoPlist);
 }
 function isPlistVersionConfigurationSynced(config, expoPlist) {
   var _expoPlist$EXUpdatesR, _expoPlist$EXUpdatesS;

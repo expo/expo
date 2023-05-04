@@ -112,6 +112,29 @@ public final class AppContext: NSObject {
     reactBridge?.dispatchBlock(runBlock, queue: RCTJSThread)
   }
 
+  // MARK: - Classes
+
+  /**
+   A registry containing references to JavaScript classes.
+   - ToDo: Make one registry per module, not the entire app context.
+   Perhaps it should be kept by the `ModuleHolder`.
+   */
+  internal let classRegistry = ClassRegistry()
+
+  /**
+   Creates a new JavaScript object with the class prototype associated with the given native class.
+   - ToDo: Move this to `ModuleHolder` along the `classRegistry` property.
+   */
+  internal func newObject(nativeClassId: ObjectIdentifier) throws -> JavaScriptObject? {
+    guard let jsClass = classRegistry.getJavaScriptClass(nativeClassId: nativeClassId) else {
+      return nil
+    }
+    let prototype = try jsClass.getProperty("prototype").asObject()
+    let object = try runtime.createObject(withPrototype: prototype)
+
+    return object
+  }
+
   // MARK: - Legacy modules
 
   /**
@@ -330,6 +353,11 @@ public final class AppContext: NSObject {
    Unsets runtime objects that we hold for each module.
    */
   private func releaseRuntimeObjects() {
+    // FIXME: Release objects only from the current context.
+    // Making the registry non-global (similarly to the class registry) would fix it.
+    SharedObjectRegistry.clear()
+    classRegistry.clear()
+
     for module in moduleRegistry {
       module.javaScriptObject = nil
     }

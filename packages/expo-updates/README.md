@@ -23,7 +23,7 @@ If you're upgrading from `expo-updates@0.1.x`, you can opt into the **no-publish
 
 # Installation in managed Expo projects
 
-For [managed](https://docs.expo.dev/versions/latest/introduction/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/updates/).
+For [managed](https://docs.expo.dev/archive/managed-vs-bare/) Expo projects, please follow the installation instructions in the [API documentation for the latest stable release](https://docs.expo.dev/versions/latest/sdk/updates/).
 
 # Installation in bare React Native projects
 
@@ -118,7 +118,7 @@ In `expo-updates@0.9.0` and above, we support automatic installation of the modu
 
 # Removing pre-installed expo-updates
 
-Projects created by `expo init` and `expo prebuild` come with expo-updates pre-installed, because we anticipate most users will want this functionality. However, if you do not intend to use OTA updates, you can disable or uninstall the module.
+Projects created by `npx create-expo-app` and `npx expo prebuild` come with expo-updates pre-installed, because we anticipate most users will want this functionality. However, if you do not intend to use OTA updates, you can disable or uninstall the module.
 
 ## Disabling expo-updates
 

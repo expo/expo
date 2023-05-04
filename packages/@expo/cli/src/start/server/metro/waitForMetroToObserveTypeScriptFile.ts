@@ -65,3 +65,53 @@ export function waitForMetroToObserveTypeScriptFile(
   runner.server.addListener?.('close', off);
   return off;
 }
+
+export function observeFileChanges(
+  runner: {
+    metro: import('metro').Server;
+    server: ServerLike;
+  },
+  files: string[],
+  callback: () => void | Promise<void>
+): () => void {
+  const watcher = runner.metro.getBundler().getBundler().getWatcher();
+
+  const listener = ({
+    eventsQueue,
+  }: {
+    eventsQueue: {
+      filePath: string;
+      metadata?: {
+        type: 'f' | 'd' | 'l'; // Regular file / Directory / Symlink
+      } | null;
+      type: string;
+    }[];
+  }) => {
+    for (const event of eventsQueue) {
+      if (
+        // event.type === 'add' &&
+        event.metadata?.type !== 'd' &&
+        // We need to ignore node_modules because Metro will add all of the files in node_modules to the watcher.
+        !/node_modules/.test(event.filePath)
+      ) {
+        const { filePath } = event;
+        // Is TypeScript?
+        if (files.includes(filePath)) {
+          debug('Observed change:', filePath);
+          callback();
+          return;
+        }
+      }
+    }
+  };
+
+  debug('Watching file changes:', files);
+  watcher.addListener('change', listener);
+
+  const off = () => {
+    watcher.removeListener('change', listener);
+  };
+
+  runner.server.addListener?.('close', off);
+  return off;
+}
