@@ -2,7 +2,7 @@
 
 ## Unpublished
 
-- Updated `junit` to `4.13.2`.  ([#]() by [@josephyanks](https://github.com/josephyanks))
+- Updated `junit` to `4.13.2`.  ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
 
 ### 🛠 Breaking changes
 

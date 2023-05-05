@@ -2,7 +2,7 @@
 
 ## Unpublished
 
-- Updated `robolectric` to `4.10`.  ([#]() by [@josephyanks](https://github.com/josephyanks))
+- Updated `robolectric` to `4.10`.  ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
 
 ### 🛠 Breaking changes
 
