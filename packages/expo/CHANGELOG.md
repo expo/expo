@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Updated `junit` to `4.13.2`.  ([#]() by [@josephyanks](https://github.com/josephyanks))
+
 ### 🛠 Breaking changes
 
 - drop `EXPO_USE_LOCAL_CLI` in favor of using `expo` for the local CLI and `expo-cli` for the global CLI. ([#21388](https://github.com/expo/expo/pull/21388) by [@EvanBacon](https://github.com/EvanBacon))

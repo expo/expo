@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Updated `robolectric` to `4.10`.  ([#]() by [@josephyanks](https://github.com/josephyanks))
+
 ### 🛠 Breaking changes
 
 - Update iOS and Android entry points to support custom entry files (changed `index` to `.expo/.virtual-metro-entry`). This requires all projects to use `expo/metro-config` as the base config. ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))

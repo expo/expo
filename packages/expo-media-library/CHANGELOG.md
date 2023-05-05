@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Updated `robolectric` to `4.10`.  ([#]() by [@josephyanks](https://github.com/josephyanks))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features

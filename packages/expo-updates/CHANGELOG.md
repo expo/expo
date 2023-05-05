@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+- Updated `junit` to `4.13.2`.  ([#]() by [@josephyanks](https://github.com/josephyanks))
+
 ### 🛠 Breaking changes
 
 - Updated **setup documentation** to reflect that setup should include changing the entry from `index` to `.expo/.virtual-metro-entry` which is only available in SDK 49 `@expo/metro-config`. ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))
