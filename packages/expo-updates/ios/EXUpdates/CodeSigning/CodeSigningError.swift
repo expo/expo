@@ -4,7 +4,7 @@
 
 import Foundation
 
-internal enum CodeSigningError: Error {
+internal enum CodeSigningError: LocalizedError {
   case CertificateEncodingError
   case CertificateDERDecodeError
   case CertificateValidityError
@@ -26,7 +26,7 @@ internal enum CodeSigningError: Error {
   case AlgorithmParseError
   case InvalidExpoProjectInformationExtensionValue
 
-  func message() -> String {
+  var errorDescription: String {
     switch self {
     case .CertificateEncodingError:
       return "Code signing certificate could not be encoded in a lossless manner using utf8 encoding"

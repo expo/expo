@@ -27,8 +27,6 @@ typealias AppLoaderErrorBlock = (_ error: Error) -> Void
 @objc(EXUpdatesAppLoader)
 @objcMembers
 public class AppLoader: NSObject {
-  private static let ErrorDomain = "EXUpdatesAppLoader"
-
   internal let config: UpdatesConfig
   internal let database: UpdatesDatabase
   internal let directory: URL
@@ -371,13 +369,7 @@ public class AppLoader: NSObject {
 
       self.completionQueue.async {
         if let errorBlock = errorBlock {
-          errorBlock(NSError(
-            domain: AppLoader.ErrorDomain,
-            code: 1012,
-            userInfo: [
-              NSLocalizedDescriptionKey: "Failed to load all assets"
-            ]
-          ))
+          errorBlock(UpdatesError.appLoaderFailedToLoadAllAssets)
         } else if let successBlock = successBlock {
           successBlock(self.updateResponseContainingManifest!)
         }

@@ -18,14 +18,6 @@ import EXUpdatesInterface
 @objc(EXUpdatesDevLauncherController)
 @objcMembers
 public final class DevLauncherController: NSObject, UpdatesExternalInterface {
-  private static let ErrorDomain = "EXUpdatesDevLauncherController"
-
-  enum ErrorCode: Int {
-    case invalidUpdateURL = 1
-    case updateLaunchFailed = 4
-    case configFailed = 5
-  }
-
   private var tempConfig: UpdatesConfig?
 
   private weak var _bridge: AnyObject?
@@ -149,25 +141,12 @@ public final class DevLauncherController: NSObject, UpdatesExternalInterface {
     do {
       updatesConfiguration = try UpdatesConfig.configWithExpoPlist(mergingOtherDictionary: nil)
     } catch {
-      errorBlock(NSError(
-        domain: DevLauncherController.ErrorDomain,
-        code: ErrorCode.configFailed.rawValue,
-        userInfo: [
-          // swiftlint:disable:next line_length
-          NSLocalizedDescriptionKey: "Cannot load configuration from Expo.plist. Please ensure you've followed the setup and installation instructions for expo-updates to create Expo.plist and add it to your Xcode project."
-        ]
-      ))
+      errorBlock(UpdatesError.devLauncherConfigFailed)
       return nil
     }
 
     guard updatesConfiguration.updateUrl != nil && updatesConfiguration.scopeKey != nil else {
-      errorBlock(NSError(
-        domain: DevLauncherController.ErrorDomain,
-        code: ErrorCode.invalidUpdateURL.rawValue,
-        userInfo: [
-          NSLocalizedDescriptionKey: "Failed to read stored updates: configuration object must include a valid update URL"
-        ]
-      ))
+      errorBlock(UpdatesError.devLauncherInvalidUpdateURL)
       return nil
     }
 
@@ -224,11 +203,7 @@ public final class DevLauncherController: NSObject, UpdatesExternalInterface {
       if !success {
         // reset controller's configuration to what it was before this request
         controller.setConfigurationInternal(config: self.tempConfig!)
-        errorBlock(error ?? NSError(
-          domain: DevLauncherController.ErrorDomain,
-          code: ErrorCode.updateLaunchFailed.rawValue,
-          userInfo: [NSLocalizedDescriptionKey: "Failed to launch update with an unknown error"]
-        ))
+        errorBlock(error ?? UpdatesError.devLauncherUpdateLaunchFailed)
         return
       }
 

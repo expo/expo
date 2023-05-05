@@ -31,8 +31,6 @@ public typealias AppLauncherQueryCompletionBlock = (_ error: Error?, _ updateIds
 @objc(EXUpdatesAppLauncherWithDatabase)
 @objcMembers
 public class AppLauncherWithDatabase: NSObject, AppLauncher {
-  private static let ErrorDomain = "AppLauncher"
-
   public var launchedUpdate: Update?
   public var launchAssetUrl: URL?
   public var assetFilesMap: [String: Any]?
@@ -140,13 +138,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
         if error != nil || launchableUpdate == nil {
           if let completionInner = self.completion {
             self.completionQueue.async {
-              var userInfo: [String: Any] = [
-                NSLocalizedDescriptionKey: "No launchable updates found in database"
-              ]
-              if let error = error {
-                userInfo[NSUnderlyingErrorKey] = error
-              }
-              completionInner(NSError(domain: AppLauncherWithDatabase.ErrorDomain, code: 1011, userInfo: userInfo), false)
+              completionInner(UpdatesError.appLauncherNoLaunchableUpdates(reason: error), false)
             }
           }
         } else {
@@ -246,7 +238,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
     }
   }
 
-  private func ensureAssetExists(asset: UpdateAsset, withLocalUrl assetLocalUrl: URL, completion: @escaping (Bool) -> Void) {
+  private func ensureAssetExists(asset: UpdateAsset, withLocalUrl assetLocalUrl: URL, completion: @escaping (_ success: Bool) -> Void) {
     checkExistence(ofAsset: asset, withLocalUrl: assetLocalUrl) { exists in
       if exists {
         completion(true)
@@ -289,7 +281,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
     }
   }
 
-  private func checkExistence(ofAsset asset: UpdateAsset, withLocalUrl assetLocalUrl: URL, completion: @escaping (Bool) -> Void) {
+  private func checkExistence(ofAsset asset: UpdateAsset, withLocalUrl assetLocalUrl: URL, completion: @escaping (_ exists: Bool) -> Void) {
     FileDownloader.assetFilesQueue.async {
       let exists = FileManager.default.fileExists(atPath: assetLocalUrl.path)
       self.launcherQueue.async {
@@ -301,7 +293,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
   private func maybeCopyAssetFromMainBundle(
     _ asset: UpdateAsset,
     withLocalUrl assetLocalUrl: URL,
-    completion: @escaping (Bool, Error?) -> Void
+    completion: @escaping (_ success: Bool, _ error: UpdatesError?) -> Void
   ) {
     guard let embeddedManifest = EmbeddedAppLoader.embeddedManifest(withConfig: config, database: database) else {
       completion(false, nil)
@@ -316,14 +308,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
       FileDownloader.assetFilesQueue.async {
         guard let bundlePath = UpdatesUtils.path(forBundledAsset: matchingAsset) else {
           self.launcherQueue.async {
-            completion(
-              false,
-              NSError(
-                domain: AppLauncherWithDatabase.ErrorDomain,
-                code: 1013,
-                userInfo: [NSLocalizedDescriptionKey: "Asset bundlePath was unexpectedly nil"]
-              )
-            )
+            completion(false, UpdatesError.appLauncherAssetBundlePathNil)
           }
           return
         }
@@ -335,14 +320,7 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
           }
         } catch {
           self.launcherQueue.async {
-            completion(
-              false,
-              NSError(
-                domain: AppLauncherWithDatabase.ErrorDomain,
-                code: 1013,
-                userInfo: [NSLocalizedDescriptionKey: "Asset copy failed"]
-              )
-            )
+            completion(false, UpdatesError.appLauncherAssetCopyFailed)
           }
         }
       }
@@ -354,14 +332,10 @@ public class AppLauncherWithDatabase: NSObject, AppLauncher {
     }
   }
 
-  private func downloadAsset(_ asset: UpdateAsset, withLocalUrl assetLocalUrl: URL, completion: @escaping (Error?, UpdateAsset, URL) -> Void) {
+  private func downloadAsset(_ asset: UpdateAsset, withLocalUrl assetLocalUrl: URL, completion: @escaping (_ error: UpdatesError?, _ asset: UpdateAsset, _ assetLocalUrl: URL) -> Void) {
     guard let assetUrl = asset.url else {
       completion(
-        NSError(
-          domain: AppLauncherWithDatabase.ErrorDomain,
-          code: 1007,
-          userInfo: [NSLocalizedDescriptionKey: "Failed to download asset with no URL provided"]
-        ),
+        UpdatesError.appLauncherAssetDownloadNoURL,
         asset,
         assetLocalUrl
       )

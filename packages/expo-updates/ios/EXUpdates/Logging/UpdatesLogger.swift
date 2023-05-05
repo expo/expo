@@ -116,6 +116,12 @@ internal final class UpdatesLogger {
     error(message: message, code: code, updateId: nil, assetId: nil)
   }
 
+  func error(
+    _ updatesError: UpdatesError
+  ) {
+    error(message: updatesError.errorDescription, code: updatesError.updatesErrorCode)
+  }
+
   func fatal(
     message: String,
     code: UpdatesErrorCode = .none,

@@ -7,7 +7,7 @@ import ASN1Decoder
 import CommonCrypto
 
 internal typealias VerifySignatureSuccessBlock = (_ success: Bool) -> Void
-internal typealias VerifySignatureErrorBlock = (_ error: Error) -> Void
+internal typealias VerifySignatureErrorBlock = (_ error: UpdatesError) -> Void
 
 internal enum PEMType {
   case publicKey
@@ -30,11 +30,6 @@ internal enum PEMType {
       return "-----END CERTIFICATE-----"
     }
   }
-}
-
-private let ErrorDomain = "EXUpdatesCrypto"
-private enum CryptoErrorCode: Int {
-  case PublicKeyDownloadError = 1049
 }
 
 /**
@@ -88,11 +83,7 @@ internal final class Crypto {
     errorBlock: @escaping VerifySignatureErrorBlock
   ) {
     guard !data.isEmpty && !signature.isEmpty else {
-      errorBlock(NSError(
-        domain: "EXUpdatesCrypto",
-        code: 1001,
-        userInfo: [NSLocalizedDescriptionKey: "Cannot verify the manifest because it is empty or has no signature."]
-      ))
+      errorBlock(UpdatesError.cryptoManifestEmptyOrMissingSignature)
       return
     }
 
@@ -139,11 +130,7 @@ internal final class Crypto {
       extraHeaders: [:]
     ) { publicKeyData, _ in
       guard let publicKeyData = publicKeyData else {
-        errorBlock(NSError(
-          domain: ErrorDomain,
-          code: CryptoErrorCode.PublicKeyDownloadError.rawValue,
-          userInfo: [NSLocalizedDescriptionKey: "Public key response body empty"]
-        ))
+        errorBlock(UpdatesError.cryptoPublicKeyDownloadError)
         return
       }
       verify(withPublicKey: publicKeyData, signature: signature, signedString: data, callback: successBlock)

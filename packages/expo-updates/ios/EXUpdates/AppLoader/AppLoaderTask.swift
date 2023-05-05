@@ -59,8 +59,6 @@ public enum BackgroundUpdateStatus: Int {
 @objc(EXUpdatesAppLoaderTask)
 @objcMembers
 public final class AppLoaderTask: NSObject {
-  private static let ErrorDomain = "EXUpdatesAppLoaderTask"
-
   public weak var delegate: AppLoaderTaskDelegate?
 
   private let config: UpdatesConfig
@@ -106,35 +104,19 @@ public final class AppLoaderTask: NSObject {
 
   public func start() {
     guard config.isEnabled else {
-      // swiftlint:disable:next line_length
-      let errorMessage = "AppLoaderTask was passed a configuration object with updates disabled. You should load updates from an embedded source rather than calling AppLoaderTask, or enable updates in the configuration."
-      logger.error(message: errorMessage, code: .updateFailedToLoad)
+      let error = UpdatesError.appLoaderTaskUpdatesDisabled
+      logger.error(error)
       delegateQueue.async {
-        self.delegate?.appLoaderTask(
-          self,
-          didFinishWithError: NSError(
-            domain: AppLoaderTask.ErrorDomain,
-            code: 1030,
-            userInfo: [NSLocalizedDescriptionKey: errorMessage]
-          )
-        )
+        self.delegate?.appLoaderTask(self, didFinishWithError: error)
       }
       return
     }
 
     guard config.updateUrl != nil else {
-      // swiftlint:disable:next line_length
-      let errorMessage = "AppLoaderTask was passed a configuration object with a null URL. You must pass a nonnull URL in order to use AppLoaderTask to load updates."
-      logger.error(message: errorMessage, code: .updateFailedToLoad)
+      let error = UpdatesError.appLoaderTaskNullURL
+      logger.error(error)
       delegateQueue.async {
-        self.delegate?.appLoaderTask(
-          self,
-          didFinishWithError: NSError(
-            domain: AppLoaderTask.ErrorDomain,
-            code: 1030,
-            userInfo: [NSLocalizedDescriptionKey: errorMessage]
-          )
-        )
+        self.delegate?.appLoaderTask(self, didFinishWithError: error)
       }
       return
     }
@@ -203,16 +185,7 @@ public final class AppLoaderTask: NSObject {
           (self.finalizedLauncher!.launchAssetUrl != nil || self.finalizedLauncher!.launchedUpdate!.status == .StatusDevelopment) {
           delegate.appLoaderTask(self, didFinishWithLauncher: self.finalizedLauncher!, isUpToDate: self.isUpToDate)
         } else {
-          delegate.appLoaderTask(
-            self,
-            didFinishWithError: error ?? NSError(
-              domain: AppLoaderTask.ErrorDomain,
-              code: 1031,
-              userInfo: [
-                NSLocalizedDescriptionKey: "AppLoaderTask encountered an unexpected error and could not launch an update."
-              ]
-            )
-          )
+          delegate.appLoaderTask(self, didFinishWithError: error ?? UpdatesError.appLoaderTaskUnexpectedError)
         }
       }
     }

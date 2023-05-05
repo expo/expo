@@ -19,7 +19,6 @@ internal extension Array where Element: Equatable {
 @objcMembers
 public final class UpdatesUtils: NSObject {
   private static let EXUpdatesEventName = "Expo.nativeUpdatesEvent"
-  private static let EXUpdatesUtilsErrorDomain = "EXUpdatesUtils"
 
   internal static func runBlockOnMainThread(_ block: @escaping () -> Void) {
     if Thread.isMainThread {
@@ -64,13 +63,7 @@ public final class UpdatesUtils: NSObject {
 
     if exists {
       if !isDir.boolValue {
-        throw NSError(
-          domain: EXUpdatesUtilsErrorDomain,
-          code: 1005,
-          userInfo: [
-            NSLocalizedDescriptionKey: "Failed to create the Updates Directory; a file already exists with the required directory name"
-          ]
-        )
+        throw UpdatesError.updatesDirectoryCreationFailed
       }
     } else {
       try fileManager.createDirectory(atPath: updatesDirectoryPath, withIntermediateDirectories: true)

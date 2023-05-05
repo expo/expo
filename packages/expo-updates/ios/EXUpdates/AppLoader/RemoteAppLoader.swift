@@ -8,8 +8,6 @@ import Foundation
  * Subclass of AppLoader which handles downloading updates from a remote server.
  */
 internal final class RemoteAppLoader: AppLoader {
-  private static let ErrorDomain = "EXUpdatesRemoteAppLoader"
-
   private let downloader: FileDownloader
   private var remoteUpdateResponse: UpdateResponse?
   private let completionQueue: DispatchQueue
@@ -96,13 +94,7 @@ internal final class RemoteAppLoader: AppLoader {
       } else {
         guard let assetUrl = asset.url else {
           self.handleAssetDownload(
-            withError: NSError(
-              domain: RemoteAppLoader.ErrorDomain,
-              code: 1006,
-              userInfo: [
-                NSLocalizedDescriptionKey: "Failed to download asset with no URL provided"
-              ]
-            ),
+            withError: UpdatesError.appLoaderFailedToDownloadAssetNoURL,
             asset: asset
           )
           return

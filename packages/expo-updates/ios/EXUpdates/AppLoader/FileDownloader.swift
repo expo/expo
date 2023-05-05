@@ -14,34 +14,16 @@ import Foundation
 import EASClient
 
 internal typealias SuccessBlock = (_ data: Data?, _ urlResponse: URLResponse) -> Void
-internal typealias ErrorBlock = (_ error: Error) -> Void
+internal typealias ErrorBlock = (_ error: UpdatesError) -> Void
 internal typealias HashSuccessBlock = (_ data: Data, _ urlResponse: URLResponse, _ base64URLEncodedSHA256Hash: String) -> Void
 
 internal typealias RemoteUpdateDownloadSuccessBlock = (_ updateResponse: UpdateResponse) -> Void
-internal typealias RemoteUpdateDownloadErrorBlock = (_ error: Error) -> Void
+internal typealias RemoteUpdateDownloadErrorBlock = (_ error: UpdatesError) -> Void
 
 private typealias ParseManifestSuccessBlock = (_ manifestUpdateResponsePart: ManifestUpdateResponsePart) -> Void
-private typealias ParseManifestErrorBlock = (_ error: Error) -> Void
+private typealias ParseManifestErrorBlock = (_ error: UpdatesError) -> Void
 private typealias ParseDirectiveSuccessBlock = (_ directiveUpdateResponsePart: DirectiveUpdateResponsePart) -> Void
-private typealias ParseDirectiveErrorBlock = (_ error: Error) -> Void
-
-private let ErrorDomain = "EXUpdatesFileDownloader"
-private enum FileDownloaderErrorCode: Int {
-  case FileWriteError = 1002
-  case ManifestVerificationError = 1003
-  case FileHashMismatchError = 1004
-  case NoCompatibleUpdateError = 1009
-  case MismatchedManifestFiltersError = 1021
-  case ManifestParseError = 1022
-  case InvalidResponseError = 1040
-  case ManifestStringError = 1041
-  case ManifestJSONError = 1042
-  case ManifestSignatureError = 1043
-  case MultipartParsingError = 1044
-  case MultipartMissingManifestError = 1045
-  case MissingMultipartBoundaryError = 1047
-  case CodeSigningSignatureError = 1048
-}
+private typealias ParseDirectiveErrorBlock = (_ error: UpdatesError) -> Void
 
 enum FileDownloaderInternalError: Error {
   case extractUpdateResponseDictionaryNil
@@ -124,33 +106,18 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       extraHeaders: extraHeaders
     ) { data, response in
       guard let data = data else {
-        let errorMessage = String(
-          format: "File download response was empty for URL: %@",
-          url.absoluteString
-        )
-        self.logger.error(message: errorMessage, code: UpdatesErrorCode.assetsFailedToLoad)
-        errorBlock(NSError(
-          domain: ErrorDomain,
-          code: FileDownloaderErrorCode.InvalidResponseError.rawValue,
-          userInfo: [NSLocalizedDescriptionKey: errorMessage]
-        ))
+        let error = UpdatesError.emptyResponseError(url: url.absoluteString)
+        self.logger.error(error)
+        errorBlock(error)
         return
       }
 
       let hashBase64String = UpdatesUtils.base64UrlEncodedSHA256WithData(data)
       if let expectedBase64URLEncodedSHA256Hash = expectedBase64URLEncodedSHA256Hash,
         expectedBase64URLEncodedSHA256Hash != hashBase64String {
-        let errorMessage = String(
-          format: "File download was successful but base64url-encoded SHA-256 did not match expected; expected: %@; actual: %@",
-          expectedBase64URLEncodedSHA256Hash,
-          hashBase64String
-        )
-        self.logger.error(message: errorMessage, code: UpdatesErrorCode.assetsFailedToLoad)
-        errorBlock(NSError(
-          domain: ErrorDomain,
-          code: FileDownloaderErrorCode.FileHashMismatchError.rawValue,
-          userInfo: [NSLocalizedDescriptionKey: errorMessage]
-        ))
+        let error = UpdatesError.fileHashMismatchError(expectedHash: expectedBase64URLEncodedSHA256Hash, actualHash: hashBase64String)
+        self.logger.error(error)
+        errorBlock(error)
         return
       }
 
@@ -159,20 +126,9 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
         successBlock(data, response, hashBase64String)
         return
       } catch {
-        let errorMessage = String(
-          format: "Could not write to path %@: %@",
-          destinationPath,
-          error.localizedDescription
-        )
-        self.logger.error(message: errorMessage, code: UpdatesErrorCode.unknown)
-        errorBlock(NSError(
-          domain: ErrorDomain,
-          code: FileDownloaderErrorCode.FileWriteError.rawValue,
-          userInfo: [
-            NSLocalizedDescriptionKey: errorMessage,
-            NSUnderlyingErrorKey: error
-          ]
-        ))
+        let error = UpdatesError.fileWriteError(path: destinationPath, reason: error)
+        self.logger.error(error)
+        errorBlock(error)
         return
       }
     } errorBlock: { error in
@@ -202,13 +158,9 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       withRequest: request
     ) { data, response in
       guard let response = response as? HTTPURLResponse else {
-        let errorMessage = "response must be a HTTPURLResponse"
-        self.logger.error(message: errorMessage, code: UpdatesErrorCode.unknown)
-        errorBlock(NSError(
-          domain: ErrorDomain,
-          code: FileDownloaderErrorCode.InvalidResponseError.rawValue,
-          userInfo: [NSLocalizedDescriptionKey: errorMessage ]
-        ))
+        let error = UpdatesError.invalidResponseTypeError
+        self.logger.error(error)
+        errorBlock(error)
         return
       }
       self.parseManifestResponse(response, withData: data, database: database, successBlock: successBlock, errorBlock: errorBlock)
@@ -378,13 +330,9 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     }
 
     guard let data = data else {
-      let errorMessage = "Missing body in remote update"
-      logger.error(message: errorMessage, code: UpdatesErrorCode.unknown)
-      errorBlock(NSError(
-        domain: ErrorDomain,
-        code: FileDownloaderErrorCode.InvalidResponseError.rawValue,
-        userInfo: [NSLocalizedDescriptionKey: errorMessage]
-      ))
+      let error = UpdatesError.remoteUpdateMissingBody
+      logger.error(error)
+      errorBlock(error)
       return
     }
 
@@ -396,13 +344,9 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
         withDelimiter: FileDownloader.ParameterParserSemicolonDelimiter
       ) as? [String: Any],
         let boundaryParameterValue: String = contentTypeParameters.optionalValue(forKey: "boundary") else {
-        let errorMessage = "Missing boundary in multipart manifest content-type"
-        logger.error(message: errorMessage, code: UpdatesErrorCode.unknown)
-        errorBlock(NSError(
-          domain: ErrorDomain,
-          code: FileDownloaderErrorCode.MissingMultipartBoundaryError.rawValue,
-          userInfo: [NSLocalizedDescriptionKey: errorMessage]
-        ))
+        let error = UpdatesError.missingMultipartBoundaryError
+        logger.error(error)
+        errorBlock(error)
         return
       }
 
@@ -491,13 +435,9 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     }
 
     if !completed {
-      let message = "Could not read multipart remote update response"
-      logger.error(message: message, code: .unknown)
-      errorBlock(NSError(
-        domain: ErrorDomain,
-        code: FileDownloaderErrorCode.MultipartParsingError.rawValue,
-        userInfo: [NSLocalizedDescriptionKey: message]
-      ))
+      let error = UpdatesError.multipartParsingError
+      logger.error(error)
+      errorBlock(error)
       return
     }
 
@@ -507,18 +447,16 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       do {
         parsedExtensions = try JSONSerialization.jsonObject(with: extensionsData)
       } catch {
+        let error = UpdatesError.multipartExtensionsParseError
+        logger.error(error)
         errorBlock(error)
         return
       }
 
       guard let parsedExtensions = parsedExtensions as? [String: Any] else {
-        let message = "Failed to parse multipart remote update extensions"
-        logger.error(message: message, code: .unknown)
-        errorBlock(NSError(
-          domain: ErrorDomain,
-          code: FileDownloaderErrorCode.MultipartParsingError.rawValue,
-          userInfo: [NSLocalizedDescriptionKey: message]
-        ))
+        let error = UpdatesError.multipartExtensionsParseError
+        logger.error(error)
+        errorBlock(error)
         return
       }
 
@@ -526,13 +464,9 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     }
 
     if config.enableExpoUpdatesProtocolV0CompatibilityMode && manifestPartHeadersAndData == nil {
-      let message = "Multipart response missing manifest part. Manifest is required in version 0 of the expo-updates protocol. This may be due to the update being a rollback or other directive."
-      logger.error(message: message, code: .unknown)
-      errorBlock(NSError(
-        domain: ErrorDomain,
-        code: FileDownloaderErrorCode.MultipartMissingManifestError.rawValue,
-        userInfo: [NSLocalizedDescriptionKey: message]
-      ))
+      let error = UpdatesError.multipartMissingManifestError
+      logger.error(error)
+      errorBlock(error)
       return
     }
 
@@ -645,25 +579,16 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
           manifestResponseCertificateChain: certificateChainFromManifestResponse
         )
       } catch {
-        let codeSigningError = error as? CodeSigningError
-        let message = codeSigningError?.message() ?? error.localizedDescription
-        self.logger.error(message: message, code: .unknown)
-        errorBlock(NSError(
-          domain: ErrorDomain,
-          code: FileDownloaderErrorCode.CodeSigningSignatureError.rawValue,
-          userInfo: [NSLocalizedDescriptionKey: message]
-        ))
+        let error = UpdatesError.codeSigningError(reason: error)
+        self.logger.error(error)
+        errorBlock(error)
         return
       }
 
       if signatureValidationResult.validationResult == .invalid {
-        let message = "Directive download was successful, but signature was incorrect"
-        self.logger.error(message: message, code: .unknown)
-        errorBlock(NSError(
-          domain: ErrorDomain,
-          code: FileDownloaderErrorCode.CodeSigningSignatureError.rawValue,
-          userInfo: [NSLocalizedDescriptionKey: message]
-        ))
+        let error = UpdatesError.codeSigningSignatureError(part: "directive")
+        self.logger.error(error)
+        errorBlock(error)
         return
       }
 
@@ -673,25 +598,17 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
           do {
             directive = try UpdateDirective.fromJSONData(responsePartInfo.body)
           } catch {
-            let message = "Failed to parse directive: \(error.localizedDescription)"
-            self.logger.error(message: message, code: .unknown)
-            errorBlock(NSError(
-              domain: ErrorDomain,
-              code: FileDownloaderErrorCode.ManifestParseError.rawValue,
-              userInfo: [NSLocalizedDescriptionKey: message]
-            ))
+            let error = UpdatesError.directiveParseError(reason: error)
+            self.logger.error(error)
+            errorBlock(error)
             return
           }
 
           if expoProjectInformation.projectId != directive.signingInfo?.easProjectId ||
             expoProjectInformation.scopeKey != directive.signingInfo?.scopeKey {
-            let message = "Invalid certificate for directive project ID or scope key"
-            self.logger.error(message: message, code: .unknown)
-            errorBlock(NSError(
-              domain: ErrorDomain,
-              code: FileDownloaderErrorCode.CodeSigningSignatureError.rawValue,
-              userInfo: [NSLocalizedDescriptionKey: message]
-            ))
+            let error = UpdatesError.codeSigningCertificateExtensionMismatch
+            self.logger.error(error)
+            errorBlock(error)
             return
           }
         }
@@ -703,13 +620,9 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     do {
       directive = try UpdateDirective.fromJSONData(responsePartInfo.body)
     } catch {
-      let message = "Failed to parse directive: \(error.localizedDescription)"
-      self.logger.error(message: message, code: .unknown)
-      errorBlock(NSError(
-        domain: ErrorDomain,
-        code: FileDownloaderErrorCode.ManifestParseError.rawValue,
-        userInfo: [NSLocalizedDescriptionKey: message]
-      ))
+      let error = UpdatesError.directiveParseError(reason: error)
+      self.logger.error(error)
+      errorBlock(error)
       return
     }
 
@@ -730,7 +643,13 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     do {
       let manifestBodyJson = try JSONSerialization.jsonObject(with: responsePartInfo.body)
       updateResponseDictionary = try extractUpdateResponseDictionary(parsedJson: manifestBodyJson)
+    } catch let error as UpdatesError {
+      logger.error(error)
+      errorBlock(error)
+      return
     } catch {
+      let error = UpdatesError.manifestJSONError
+      logger.error(error)
       errorBlock(error)
       return
     }
@@ -747,24 +666,16 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     let isUnsignedFromXDL = signature as? String == "UNSIGNED"
 
     guard let manifestString = manifestString as? String else {
-      let message = "manifestString should be a string"
-      logger.error(message: message, code: .unknown)
-      errorBlock(NSError(
-        domain: ErrorDomain,
-        code: FileDownloaderErrorCode.ManifestStringError.rawValue,
-        userInfo: [NSLocalizedDescriptionKey: message]
-      ))
+      let error = UpdatesError.manifestStringError
+      logger.error(error)
+      errorBlock(error)
       return
     }
 
     guard let manifestStringData = manifestString.data(using: .utf8) else {
-      let message = "manifest should be a valid JSON object"
-      logger.error(message: message, code: .unknown)
-      errorBlock(NSError(
-        domain: ErrorDomain,
-        code: FileDownloaderErrorCode.ManifestJSONError.rawValue,
-        userInfo: [NSLocalizedDescriptionKey: message]
-      ))
+      let error = UpdatesError.manifestJSONError
+      logger.error(error)
+      errorBlock(error)
       return
     }
 
@@ -777,25 +688,17 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     }
 
     guard let manifest = manifest, manifestParseError == nil else {
-      let message = "manifest should be a valid JSON object"
-      logger.error(message: message, code: .unknown)
-      errorBlock(NSError(
-        domain: ErrorDomain,
-        code: FileDownloaderErrorCode.ManifestJSONError.rawValue,
-        userInfo: [NSLocalizedDescriptionKey: message]
-      ))
+      let error = UpdatesError.manifestJSONError
+      logger.error(error)
+      errorBlock(error)
       return
     }
 
     if let signature = signature, !isUnsignedFromXDL {
       guard let signature = signature as? String else {
-        let message = "signature should be a string"
-        logger.error(message: message, code: .unknown)
-        errorBlock(NSError(
-          domain: ErrorDomain,
-          code: FileDownloaderErrorCode.ManifestSignatureError.rawValue,
-          userInfo: [NSLocalizedDescriptionKey: message]
-        ))
+        let error = UpdatesError.manifestSignatureError
+        logger.error(error)
+        errorBlock(error)
         return
       }
 
@@ -805,13 +708,9 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
         config: config
       ) { isValid in
         guard isValid else {
-          let message = "Manifest verification failed"
-          self.logger.error(message: message, code: .unknown)
-          errorBlock(NSError(
-            domain: ErrorDomain,
-            code: FileDownloaderErrorCode.ManifestVerificationError.rawValue,
-            userInfo: [NSLocalizedDescriptionKey: message]
-          ))
+          let error = UpdatesError.manifestVerificationError
+          self.logger.error(error)
+          errorBlock(error)
           return
         }
 
@@ -857,17 +756,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       }
     }
 
-    throw NSError(
-      domain: ErrorDomain,
-      code: FileDownloaderErrorCode.NoCompatibleUpdateError.rawValue,
-      userInfo: [
-        NSLocalizedDescriptionKey: String(
-          format: "No compatible update found at %@. Only %@ are supported.",
-          config.updateUrl?.absoluteString ?? "(missing config updateUrl)",
-          config.sdkVersion ?? "(missing sdkVersion field)"
-        )
-      ]
-    )
+    throw UpdatesError.noCompatibleUpdateError(updateUrl: config.updateUrl?.absoluteString, sdkVersion: config.sdkVersion)
   }
 
   private func createUpdate(
@@ -901,25 +790,16 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
           manifestResponseCertificateChain: certificateChainFromManifestResponse
         )
       } catch {
-        let codeSigningError = error as? CodeSigningError
-        let message = codeSigningError?.message() ?? error.localizedDescription
-        self.logger.error(message: message, code: .unknown)
-        errorBlock(NSError(
-          domain: ErrorDomain,
-          code: FileDownloaderErrorCode.CodeSigningSignatureError.rawValue,
-          userInfo: [NSLocalizedDescriptionKey: message]
-        ))
+        let error = UpdatesError.codeSigningError(reason: error)
+        self.logger.error(error)
+        errorBlock(error)
         return
       }
 
       if signatureValidationResult.validationResult == .invalid {
-        let message = "Manifest download was successful, but signature was incorrect"
-        self.logger.error(message: message, code: .unknown)
-        errorBlock(NSError(
-          domain: ErrorDomain,
-          code: FileDownloaderErrorCode.CodeSigningSignatureError.rawValue,
-          userInfo: [NSLocalizedDescriptionKey: message]
-        ))
+        let error = UpdatesError.codeSigningSignatureError(part: "manifest")
+        self.logger.error(error)
+        errorBlock(error)
         return
       }
 
@@ -938,26 +818,18 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
             // Catch any assertions related to parsing the manifest JSON,
             // this will ensure invalid manifests can be easily debugged.
             // For example, this will catch nullish sdkVersion assertions.
-            let message = "Failed to parse manifest: \(error.localizedDescription)"
-            self.logger.error(message: message, code: .unknown)
-            errorBlock(NSError(
-              domain: ErrorDomain,
-              code: FileDownloaderErrorCode.ManifestParseError.rawValue,
-              userInfo: [NSLocalizedDescriptionKey: message]
-            ))
+            let error = UpdatesError.manifestParseError(reason: error)
+            self.logger.error(error)
+            errorBlock(error)
             return
           }
 
           let manifestForProjectInformation = update.manifest
           if expoProjectInformation.projectId != manifestForProjectInformation.easProjectId() ||
             expoProjectInformation.scopeKey != manifestForProjectInformation.scopeKey() {
-            let message = "Invalid certificate for manifest project ID or scope key"
-            self.logger.error(message: message, code: .unknown)
-            errorBlock(NSError(
-              domain: ErrorDomain,
-              code: FileDownloaderErrorCode.CodeSigningSignatureError.rawValue,
-              userInfo: [NSLocalizedDescriptionKey: message]
-            ))
+            let error = UpdatesError.codeSigningCertificateExtensionMismatch
+            self.logger.error(error)
+            errorBlock(error)
             return
           }
         }
@@ -979,24 +851,16 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       // Catch any assertions related to parsing the manifest JSON,
       // this will ensure invalid manifests can be easily debugged.
       // For example, this will catch nullish sdkVersion assertions.
-      let message = "Failed to parse manifest: \(error.localizedDescription)"
-      self.logger.error(message: message, code: .unknown)
-      errorBlock(NSError(
-        domain: ErrorDomain,
-        code: FileDownloaderErrorCode.ManifestParseError.rawValue,
-        userInfo: [NSLocalizedDescriptionKey: message]
-      ))
+      let error = UpdatesError.manifestParseError(reason: error)
+      self.logger.error(error)
+      errorBlock(error)
       return
     }
 
     if !SelectionPolicies.doesUpdate(update, matchFilters: responsePartInfo.responseHeaderData.manifestFilters) {
-      let message = "Downloaded manifest is invalid; provides filters that do not match its content"
-      self.logger.error(message: message, code: .unknown)
-      errorBlock(NSError(
-        domain: ErrorDomain,
-        code: FileDownloaderErrorCode.MismatchedManifestFiltersError.rawValue,
-        userInfo: [NSLocalizedDescriptionKey: message]
-      ))
+      let error = UpdatesError.mismatchedManifestFiltersError
+      self.logger.error(error)
+      errorBlock(error)
       return
     }
 
@@ -1010,10 +874,10 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
   ) {
     let task = session.dataTask(with: request) { data, response, error in
       guard let response = response else {
-        // error is non-nil when data and response are both nil
+        // error is non-nil when esponse is nil
         // swiftlint:disable:next force_unwrapping
-        let error = error!
-        self.logger.error(message: error.localizedDescription, code: .unknown)
+        let error = UpdatesError.responseErrorMissingResponse(reason: error!)
+        self.logger.error(error)
         errorBlock(error)
         return
       }
@@ -1044,12 +908,8 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     return .utf8
   }
 
-  private static func error(fromResponse response: HTTPURLResponse, body: String) -> NSError {
-    return NSError(
-      domain: ErrorDomain,
-      code: response.statusCode,
-      userInfo: [NSLocalizedDescriptionKey: body]
-    )
+  private static func error(fromResponse response: HTTPURLResponse, body: String) -> UpdatesError {
+    return UpdatesError.responseError(code: response.statusCode, body: body)
   }
 
   // MARK: - NSURLSessionTaskDelegate
@@ -1059,7 +919,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     task: URLSessionTask,
     willPerformHTTPRedirection response: HTTPURLResponse,
     newRequest request: URLRequest,
-    completionHandler: @escaping (URLRequest?) -> Void
+    completionHandler: @escaping (_ request: URLRequest?) -> Void
   ) {
     completionHandler(request)
   }
@@ -1070,7 +930,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     _ session: URLSession,
     dataTask: URLSessionDataTask,
     willCacheResponse proposedResponse: CachedURLResponse,
-    completionHandler: @escaping (CachedURLResponse?) -> Void
+    completionHandler: @escaping (_ response: CachedURLResponse?) -> Void
   ) {
     completionHandler(proposedResponse)
   }

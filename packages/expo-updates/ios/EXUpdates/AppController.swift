@@ -35,8 +35,6 @@ public protocol AppControllerDelegate: AnyObject {
 @objc(EXUpdatesAppController)
 @objcMembers
 public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelegate {
-  private static let ErrorDomain = "EXUpdatesAppController"
-
   private static let UpdateAvailableEventName = "updateAvailable"
   private static let NoUpdateAvailableEventName = "noUpdateAvailable"
   private static let ErrorEventName = "error"
@@ -471,7 +469,7 @@ public class AppController: NSObject, AppLoaderTaskDelegate, ErrorRecoveryDelega
 
   // MARK: - ErrorRecoveryDelegate
 
-  public func relaunch(completion: @escaping (Error?, Bool) -> Void) {
+  public func relaunch(completion: @escaping (_ error: Error?, _ success: Bool) -> Void) {
     let launcher = AppLauncherWithDatabase(
       config: config,
       database: database,
