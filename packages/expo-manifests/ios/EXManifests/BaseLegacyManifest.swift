@@ -29,7 +29,7 @@ public class BaseLegacyManifest: Manifest {
     return rawManifestJSON().requiredValue(forKey: "bundleUrl")
   }
 
-  public override func sdkVersion() -> String? {
+  public override func expoGoSDKVersion() -> String? {
     return rawManifestJSON().optionalValue(forKey: "sdkVersion")
   }
 

@@ -58,7 +58,7 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
     for (id providedManifestJSON in jsonManifestObjArray) {
       if ([providedManifestJSON isKindOfClass:[NSDictionary class]]) {
         EXManifestsManifest *providedManifest = [EXManifestsManifestFactory manifestForManifestJSON:providedManifestJSON];
-        NSString *sdkVersion = providedManifest.sdkVersion;
+        NSString *sdkVersion = providedManifest.expoGoSDKVersion;
         if (sdkVersion && [[EXVersions sharedInstance] supportsVersion:sdkVersion]) {
           return providedManifestJSON;
         }
@@ -335,9 +335,9 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
 {
   NSString *errorCode;
   NSDictionary *metadata;
-  if (maybeManifest && maybeManifest.sdkVersion) {
-    if (![maybeManifest.sdkVersion isEqualToString:@"UNVERSIONED"]) {
-      NSInteger manifestSdkVersion = [maybeManifest.sdkVersion integerValue];
+  if (maybeManifest && maybeManifest.expoGoSDKVersion) {
+    if (![maybeManifest.expoGoSDKVersion isEqualToString:@"UNVERSIONED"]) {
+      NSInteger manifestSdkVersion = [maybeManifest.expoGoSDKVersion integerValue];
       if (manifestSdkVersion) {
         NSInteger oldestSdkVersion = [[self _earliestSdkVersionSupported] integerValue];
         NSInteger newestSdkVersion = [[self _latestSdkVersionSupported] integerValue];
@@ -345,7 +345,7 @@ NSString * const EXRuntimeErrorDomain = @"incompatible-runtime";
           errorCode = @"EXPERIENCE_SDK_VERSION_OUTDATED";
           // since we are spoofing this error, we put the SDK version of the project as the
           // "available" SDK version -- it's the only one available from the server
-          metadata = @{@"availableSDKVersions": @[maybeManifest.sdkVersion]};
+          metadata = @{@"availableSDKVersions": @[maybeManifest.expoGoSDKVersion]};
         }
         if (manifestSdkVersion > newestSdkVersion) {
           errorCode = @"EXPERIENCE_SDK_VERSION_TOO_NEW";

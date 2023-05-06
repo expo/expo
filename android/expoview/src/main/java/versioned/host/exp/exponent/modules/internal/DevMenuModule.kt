@@ -93,7 +93,7 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
       debuggerMap.putString("label", getString(R.string.devmenu_open_js_debugger))
       debuggerMap.putBoolean("isEnabled", devSupportManager.devSupportEnabled)
       items.putBundle("dev-remote-debug", debuggerMap)
-    } else if (devSettings != null && devSupportManager.devSupportEnabled && manifest?.getSDKVersion() ?: "" < "49.0.0") {
+    } else if (devSettings != null && devSupportManager.devSupportEnabled && manifest?.getExpoGoSDKVersion() ?: "" < "49.0.0") {
       debuggerMap.putString("label", getString(if (devSettings.isRemoteJSDebugEnabled) R.string.devmenu_stop_remote_debugging else R.string.devmenu_start_remote_debugging))
       debuggerMap.putBoolean("isEnabled", devSupportManager.devSupportEnabled)
       items.putBundle("dev-remote-debug", debuggerMap)

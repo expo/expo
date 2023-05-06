@@ -187,7 +187,7 @@ RCT_EXTERN void EXRegisterScopedModule(Class, ...);
       @"isEnabled": @YES
     };
   } else if (
-      [self.manifest.sdkVersion compare:@"49.0.0" options:NSNumericSearch] == NSOrderedAscending &&
+      [self.manifest.expoGoSDKVersion compare:@"49.0.0" options:NSNumericSearch] == NSOrderedAscending &&
       devSettings.isRemoteDebuggingAvailable &&
       isDevModeEnabled
     ) {

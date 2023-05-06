@@ -32,7 +32,7 @@ class LegacyManifestSpec : ExpoSpec {
         expect(manifest.scopeKey()) == "@esamelson/native-component-list"
         expect(manifest.easProjectId()).to(beNil())
         expect(manifest.bundleUrl()) == "https://classic-assets.eascdn.net/%40esamelson%2Fnative-component-list%2F39.0.0%2F01c86fd863cfee878068eebd40f165df-39.0.0-ios.js"
-        expect(manifest.sdkVersion()) == "39.0.0"
+        expect(manifest.expoGoSDKVersion()) == "39.0.0"
 
         // from base base class
         expect(manifest.legacyId()) == "@esamelson/native-component-list"
