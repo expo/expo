@@ -33,7 +33,8 @@ class NewManifest(json: JSONObject) : Manifest(json) {
   @Throws(JSONException::class)
   override fun getBundleURL(): String = getLaunchAsset().require("url")
 
-  override fun getSDKVersion(): String? {
+  @Deprecated(message = "exposdk:... runtime version is deprecated")
+  private fun getSDKVersionFromRuntimeVersion(): String? {
     val runtimeVersion = getRuntimeVersion()
     if (runtimeVersion == "exposdk:UNVERSIONED") {
       return "UNVERSIONED"
@@ -45,6 +46,10 @@ class NewManifest(json: JSONObject) : Manifest(json) {
       return expoSDKRuntimeVersionMatch.group(1)!!
     }
     return null
+  }
+
+  override fun getExpoGoSDKVersion(): String? {
+    return getExpoClientConfigRootObject()?.getString("sdkVersion") ?: getSDKVersionFromRuntimeVersion()
   }
 
   @Throws(JSONException::class)

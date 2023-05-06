@@ -249,7 +249,7 @@ abstract class ReactNativeActivity :
     if (reactRootViewRNClass != null) {
       return reactRootViewRNClass as Class<out ViewGroup>
     }
-    var sdkVersion = manifest.getSDKVersion()
+    var sdkVersion = manifest.getExpoGoSDKVersion()
     if (Constants.TEMPORARY_ABI_VERSION != null && Constants.TEMPORARY_ABI_VERSION == this.sdkVersion) {
       sdkVersion = RNObject.UNVERSIONED
     }

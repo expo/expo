@@ -23,7 +23,6 @@ import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_ALGORITHM_KEY
 import expo.modules.updates.codesigning.CODE_SIGNING_METADATA_KEY_ID_KEY
 import expo.modules.updates.codesigning.CodeSigningAlgorithm
 import expo.modules.updates.manifest.EmbeddedManifest
-import expo.modules.updates.selectionpolicy.LauncherSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.LoaderSelectionPolicyFilterAware
 import expo.modules.updates.selectionpolicy.ReaperSelectionPolicyDevelopmentClient
 import expo.modules.updates.selectionpolicy.SelectionPolicy
@@ -175,7 +174,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
       }
     }
     val selectionPolicy = SelectionPolicy(
-      LauncherSelectionPolicyFilterAware(sdkVersionsList),
+      ExpoGoLauncherSelectionPolicyFilterAware(sdkVersionsList),
       LoaderSelectionPolicyFilterAware(),
       ReaperSelectionPolicyDevelopmentClient()
     )
@@ -254,7 +253,7 @@ class ExpoUpdatesAppLoader @JvmOverloads constructor(
         override fun onRemoteUpdateManifestResponseManifestLoaded(updateManifest: UpdateManifest) {
           // expo-cli does not always respect our SDK version headers and respond with a compatible update or an error
           // so we need to check the compatibility here
-          val sdkVersion = updateManifest.manifest.getSDKVersion()
+          val sdkVersion = updateManifest.manifest.getExpoGoSDKVersion()
           if (!isValidSdkVersion(sdkVersion)) {
             callback.onError(formatExceptionForIncompatibleSdk(sdkVersion))
             didAbort = true

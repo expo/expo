@@ -109,7 +109,11 @@ public class Manifest: NSObject {
     preconditionFailure("Must override in concrete class")
   }
 
-  public func sdkVersion() -> String? {
+  /**
+   Get the SDK version that should be attempted to be used in Expo Go. If no SDK version can be
+   determined, returns null
+   */
+  public func expoGoSDKVersion() -> String? {
     preconditionFailure("Must override in concrete class")
   }
 
@@ -308,7 +312,7 @@ public class Manifest: NSObject {
     }
 
     guard let jsEngine = jsEngine else {
-      let sdkMajorVersion = sdkMajorVersion()
+      let sdkMajorVersion = expoGoSDKMajorVersion()
       if sdkMajorVersion > 0 && sdkMajorVersion < 48 {
         return "jsc"
       } else {
@@ -318,8 +322,8 @@ public class Manifest: NSObject {
     return jsEngine
   }
 
-  private func sdkMajorVersion() -> Int {
-    let sdkVersion = sdkVersion()
+  private func expoGoSDKMajorVersion() -> Int {
+    let sdkVersion = expoGoSDKVersion()
     let components = sdkVersion?.components(separatedBy: ".")
     guard let components = components else {
       return 0

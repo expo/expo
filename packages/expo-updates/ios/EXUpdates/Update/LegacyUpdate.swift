@@ -49,7 +49,7 @@ internal final class LegacyUpdate: Update {
     if let manifestRuntimeVersion = manifestRuntimeVersion {
       runtimeVersion = assertType(value: manifestRuntimeVersion, description: "Manifest JSON runtime version must be string")
     } else {
-      runtimeVersion = manifest.sdkVersion().require("Manifest JSON must have a valid sdkVersion property defined")
+      runtimeVersion = manifest.expoGoSDKVersion().require("Manifest JSON must have a valid sdkVersion property defined")
     }
 
     let bundleUrl = URL(string: bundleUrlString).require("Manifest JSON must have a valid URL as the bundleUrl property")

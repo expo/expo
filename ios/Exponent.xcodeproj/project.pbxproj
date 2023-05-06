@@ -3,7 +3,7 @@
 	archiveVersion = 1;
 	classes = {
 	};
-	objectVersion = 46;
+	objectVersion = 54;
 	objects = {
 
 /* Begin PBXBuildFile section */
@@ -217,6 +217,8 @@
 		A1C33FE52667F6E70091644A /* EXSplashScreenHUDButton.m in Sources */ = {isa = PBXBuildFile; fileRef = A1C33FDB2667F6E70091644A /* EXSplashScreenHUDButton.m */; };
 		B0D21CC221E6488D8EDA79EA /* RNSharedElementTransitionManager.m in Sources */ = {isa = PBXBuildFile; fileRef = 1E9033E268A74098A882CCEB /* RNSharedElementTransitionManager.m */; settings = {COMPILER_FLAGS = "-w"; }; };
 		B21115F8246C1B47005BA616 /* EXScopedNotificationBuilder.m in Sources */ = {isa = PBXBuildFile; fileRef = B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */; };
+		B216039C2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift in Sources */ = {isa = PBXBuildFile; fileRef = B216039B2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift */; };
+		B216039D2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift in Sources */ = {isa = PBXBuildFile; fileRef = B216039B2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift */; };
 		B22BB0342366F3F400EE04EC /* EXScopedErrorRecoveryModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B22BB0322366F3F400EE04EC /* EXScopedErrorRecoveryModule.m */; };
 		B236C4F324740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B236C4F224740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.m */; };
 		B23D9AA324758C6600D09AC8 /* EXScopedNotificationPresentationModule.m in Sources */ = {isa = PBXBuildFile; fileRef = B23D9AA224758C6600D09AC8 /* EXScopedNotificationPresentationModule.m */; };
@@ -1146,6 +1148,7 @@
 		AF530F40E8F84F5FB7D7C181 /* RNSharedElementTransition.h */ = {isa = PBXFileReference; explicitFileType = undefined; fileEncoding = 4; includeInIndex = 0; lastKnownFileType = sourcecode.c.h; path = RNSharedElementTransition.h; sourceTree = "<group>"; };
 		B21115F6246C1B47005BA616 /* EXScopedNotificationBuilder.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationBuilder.h; sourceTree = "<group>"; };
 		B21115F7246C1B47005BA616 /* EXScopedNotificationBuilder.m */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.objc; path = EXScopedNotificationBuilder.m; sourceTree = "<group>"; };
+		B216039B2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EXExpoGoLauncherSelectionPolicyFilterAware.swift; sourceTree = "<group>"; };
 		B22BB0322366F3F400EE04EC /* EXScopedErrorRecoveryModule.m */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.objc; path = EXScopedErrorRecoveryModule.m; sourceTree = "<group>"; };
 		B22BB0332366F3F400EE04EC /* EXScopedErrorRecoveryModule.h */ = {isa = PBXFileReference; fileEncoding = 4; lastKnownFileType = sourcecode.c.h; path = EXScopedErrorRecoveryModule.h; sourceTree = "<group>"; };
 		B236C4F124740C1E00D0CB66 /* EXScopedNotificationSchedulerModule.h */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.c.h; path = EXScopedNotificationSchedulerModule.h; sourceTree = "<group>"; };
@@ -2303,6 +2306,7 @@
 				B26DF25528048DB80071B0CD /* EXAppLoaderHelpers.swift */,
 				2D5265E9294998B5001BB2BB /* EXHomeLoader.h */,
 				2D5265EA294998B5001BB2BB /* EXHomeLoader.m */,
+				B216039B2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift */,
 			);
 			path = AppLoader;
 			sourceTree = "<group>";
@@ -3712,6 +3716,7 @@
 				31E44FBF20C975BB008AA62F /* EXScopedModuleRegistryDelegate.m in Sources */,
 				B5FB74EA1FF6DADC001C764B /* EXScopedModuleRegistry.m in Sources */,
 				2F7A50E095D6492596EA0B26 /* RNSharedElementNode.m in Sources */,
+				B216039C2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift in Sources */,
 				2CFE1F25CD524A7ABFCAA366 /* RNSharedElementNodeManager.m in Sources */,
 				50659F05B6314F5192BC2215 /* RNSharedElementStyle.m in Sources */,
 				BE23D5E5DA574BA3A73C19C3 /* RNSharedElementTransition.m in Sources */,
@@ -4031,6 +4036,7 @@
 				2D5265EC294998B5001BB2BB /* EXHomeLoader.m in Sources */,
 				F14218B3262CB68600BB97E6 /* EXKernelAppRegistry.m in Sources */,
 				F14218B4262CB68600BB97E6 /* EXErrorRecoveryManager.m in Sources */,
+				B216039D2A017E490003168A /* EXExpoGoLauncherSelectionPolicyFilterAware.swift in Sources */,
 				F14218B9262CB68600BB97E6 /* AIRMapUrlTile.m in Sources */,
 				F14218BA262CB68600BB97E6 /* AIRMapCircle.m in Sources */,
 				F14218BB262CB68600BB97E6 /* EXScopedBranch.m in Sources */,
@@ -4328,7 +4334,10 @@
 				INFOPLIST_FILE = Exponent/Supporting/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -4352,6 +4361,10 @@
 				SWIFT_VERSION = 5.0;
 				SYSTEM_HEADER_SEARCH_PATHS = "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\"";
 				SYSTEM_HEADER_SEARCH_PATHS = "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\"";
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					"\"$(PODS_ROOT)/boost\"",
+					"\"$(PODS_ROOT)/RCT-Folly\"",
+				);
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -4393,7 +4406,10 @@
 				INFOPLIST_FILE = Exponent/Supporting/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -4416,6 +4432,10 @@
 				SWIFT_VERSION = 5.0;
 				SYSTEM_HEADER_SEARCH_PATHS = "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\"";
 				SYSTEM_HEADER_SEARCH_PATHS = "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\"";
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					"\"$(PODS_ROOT)/boost\"",
+					"\"$(PODS_ROOT)/RCT-Folly\"",
+				);
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -4441,7 +4461,11 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = Tests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = host.exp.Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4471,7 +4495,11 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = Tests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 11.4;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = host.exp.Tests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4491,7 +4519,11 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = ExponentIntegrationTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_DEBUG";
 				PRODUCT_BUNDLE_IDENTIFIER = host.exp.ExponentIntegrationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4510,7 +4542,11 @@
 				GCC_NO_COMMON_BLOCKS = YES;
 				INFOPLIST_FILE = ExponentIntegrationTests/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 9.3;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @loader_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
 				PRODUCT_BUNDLE_IDENTIFIER = host.exp.ExponentIntegrationTests;
 				PRODUCT_NAME = "$(TARGET_NAME)";
@@ -4556,7 +4592,10 @@
 				INFOPLIST_FILE = Exponent/Supporting/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -4580,6 +4619,10 @@
 				SWIFT_VERSION = 5.0;
 				SYSTEM_HEADER_SEARCH_PATHS = "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\"";
 				SYSTEM_HEADER_SEARCH_PATHS = "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\"";
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					"\"$(PODS_ROOT)/boost\"",
+					"\"$(PODS_ROOT)/RCT-Folly\"",
+				);
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Debug;
@@ -4622,7 +4665,10 @@
 				INFOPLIST_FILE = Exponent/Supporting/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 12.0;
 				IPHONEOS_DEPLOYMENT_TARGET = 13.0;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
 				OTHER_CPLUSPLUSFLAGS = (
 					"$(OTHER_CFLAGS)",
 					"-DFOLLY_NO_CONFIG",
@@ -4645,6 +4691,10 @@
 				SWIFT_VERSION = 5.0;
 				SYSTEM_HEADER_SEARCH_PATHS = "\"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/Folly\"";
 				SYSTEM_HEADER_SEARCH_PATHS = "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/RCT-Folly\"";
+				SYSTEM_HEADER_SEARCH_PATHS = (
+					"\"$(PODS_ROOT)/boost\"",
+					"\"$(PODS_ROOT)/RCT-Folly\"",
+				);
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};
 			name = Release;
@@ -4672,7 +4722,11 @@
 				);
 				INFOPLIST_FILE = ExpoNotificationServiceExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = "";
@@ -4707,7 +4761,11 @@
 				GCC_C_LANGUAGE_STANDARD = gnu11;
 				INFOPLIST_FILE = ExpoNotificationServiceExtension/Info.plist;
 				IPHONEOS_DEPLOYMENT_TARGET = 14.2;
-				LD_RUNPATH_SEARCH_PATHS = "$(inherited) @executable_path/Frameworks @executable_path/../../Frameworks";
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@executable_path/../../Frameworks",
+				);
 				MTL_FAST_MATH = YES;
 				OTHER_LDFLAGS = "";
 				OTHER_SWIFT_FLAGS = "$(inherited) -D EXPO_CONFIGURATION_RELEASE";
@@ -4715,8 +4773,9 @@
 				PRODUCT_NAME = "$(TARGET_NAME)";
 				PROVISIONING_PROFILE_SPECIFIER = "match AppStore host.exp.Exponent.ExpoNotificationServiceExtension";
 				SKIP_INSTALL = YES;
+				SWIFT_COMPILATION_MODE = wholemodule;
 				SWIFT_OBJC_BRIDGING_HEADER = "ExpoNotificationServiceExtension/ExpoNotificationServiceExtension-Bridging-Header.h";
-				SWIFT_OPTIMIZATION_LEVEL = "-Owholemodule";
+				SWIFT_OPTIMIZATION_LEVEL = "-O";
 				SWIFT_VERSION = 5.0;
 				TARGETED_DEVICE_FAMILY = "1,2";
 			};

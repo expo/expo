@@ -106,7 +106,7 @@ class InternalHeadlessAppLoader(private val context: Context) :
   private fun setManifest(manifestUrl: String, manifest: Manifest, bundleUrl: String?) {
     this.manifestUrl = manifestUrl
     this.manifest = manifest
-    sdkVersion = manifest.getSDKVersion()
+    sdkVersion = manifest.getExpoGoSDKVersion()
 
     // Notifications logic uses this to determine which experience to route a notification to
     ExponentDB.saveExperience(ExponentDBObject(this.manifestUrl!!, manifest, bundleUrl!!))

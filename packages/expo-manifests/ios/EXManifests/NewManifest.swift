@@ -37,7 +37,7 @@ public class NewManifest: Manifest {
     return rawManifestJSON().requiredValue(forKey: "runtimeVersion")
   }
 
-  public override func sdkVersion() -> String? {
+  private func getSDKVersionFromRuntimeVersion() -> String? {
     let runtimeVersion = runtimeVersion()
     if runtimeVersion == "exposdk:UNVERSIONED" {
       return "UNVERSIONED"
@@ -55,6 +55,10 @@ public class NewManifest: Manifest {
       return nil
     }
     return String(runtimeVersion[range])
+  }
+
+  public override func expoGoSDKVersion() -> String? {
+    return expoClientConfigRootObject()?.optionalValue(forKey: "sdkVersion") ?? getSDKVersionFromRuntimeVersion()
   }
 
   public func launchAsset() -> [String: Any] {

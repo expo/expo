@@ -70,7 +70,11 @@ abstract class Manifest(protected val json: JSONObject) {
 
   fun getMetadata(): JSONObject? = json.getNullable("metadata")
 
-  abstract fun getSDKVersion(): String?
+  /**
+   * Get the SDK version that should be attempted to be used in Expo Go. If no SDK version can be
+   * determined, returns null
+   */
+  abstract fun getExpoGoSDKVersion(): String?
 
   abstract fun getAssets(): JSONArray?
 
@@ -172,7 +176,7 @@ abstract class Manifest(protected val json: JSONObject) {
     var result = expoClientConfig
       ?.getNullable<JSONObject>("android")?.getNullable<String>("jsEngine") ?: expoClientConfig?.getNullable<String>("jsEngine")
     if (result == null) {
-      val sdkVersionComponents = getSDKVersion()?.split(".")
+      val sdkVersionComponents = getExpoGoSDKVersion()?.split(".")
       val sdkMajorVersion = if (sdkVersionComponents?.size == 3) sdkVersionComponents[0].toIntOrNull() else 0
       result = if (sdkMajorVersion in 1..47) "jsc" else "hermes"
     }
