@@ -321,20 +321,14 @@ This error is caused by the HTTP request tracking, which creates spans for log r
 
 ```js
 import * as Sentry from 'sentry-expo';
-import * as Network from 'expo-network';
-
-const devServerPort = 8081;
-let devServerIpAddress: string | null = null;
-Network.getIpAddressAsync().then(ip => {
-  devServerIpAddress = ip;
-});
+import Constants from 'expo-constants';
 
 Sentry.init({
   tracesSampleRate: 1.0,
   integrations: [
     new Sentry.Native.ReactNativeTracing({
       shouldCreateSpanForRequest: url => {
-        return !__DEV__ || !url.startsWith(`http://${devServerIpAddress}:${devServerPort}/logs`);
+        return !__DEV__ || !url.startsWith(`http://${Constants.expoConfig.hostUri}/logs`);
       },
     }),
   ],
