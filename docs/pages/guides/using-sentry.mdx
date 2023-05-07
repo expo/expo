@@ -317,7 +317,7 @@ Make sure your `organization`, `project` and `authToken` properties are set corr
 
 <Collapsible summary={<><CODE>expo-dev-client</CODE> transactions never finish</>}>
 
-This error is caused by the HTTP request tracking, which creates spans for log requests to the development server. To fix this, stop creating spans by adding the following code snippet:
+This error is caused by the HTTP request tracking, which creates spans for log requests (`Starting 'http.client' span on transaction...`) to the development server. To fix this, stop creating spans by adding the following code snippet:
 
 ```js
 import * as Sentry from 'sentry-expo';
