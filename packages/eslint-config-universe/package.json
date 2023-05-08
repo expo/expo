@@ -1,6 +1,6 @@
 {
   "name": "eslint-config-universe",
-  "version": "11.2.0",
+  "version": "11.3.0",
   "description": "Shared ESLint configs for universal Expo projects, Node, and web",
   "main": "default.js",
   "scripts": {

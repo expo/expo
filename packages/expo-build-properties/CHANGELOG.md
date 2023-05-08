@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Fixed false alarm error throwing when `ios.flipper=false` and `useFrameworks`. ([#22296](https://github.com/expo/expo/pull/22296) by [@kudo](https://github.com/kudo))
-
 ### 💡 Others
+
+## 0.7.0 — 2023-05-08
+
+### 🐛 Bug fixes
+
+- Fixed false alarm error throwing when `ios.flipper=false` and `useFrameworks`. ([#22296](https://github.com/expo/expo/pull/22296) by [@kudo](https://github.com/kudo))
 
 ## 0.6.0 - 2023-04-14
 

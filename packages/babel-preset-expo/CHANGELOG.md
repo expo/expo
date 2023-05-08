@@ -10,7 +10,9 @@
 
 ### 💡 Others
 
-### 📚 3rd party library updates
+## 9.4.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
 
 ## 9.3.2 - 2023-04-03
 
