@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Drop `entryPoint` usage.
+- Drop `entryPoint` usage. ([#22416](https://github.com/expo/expo/pull/22416) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
