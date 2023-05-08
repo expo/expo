@@ -38,13 +38,11 @@ export function writeMetroConfig(
   } catch (error: any) {
     updatingMetroConfigStep.stopAndPersist({
       symbol: chalk.yellow('›'),
-      text: chalk.yellow(chalk`{bold Metro skipped:} ${error.message}`),
+      text: chalk.yellow(chalk`{bold Skipped updating Metro config:} ${error.message}`),
     });
     // Log.log(`\u203A ${e.message}`);
     Log.log(
-      chalk`\u203A Ensure the project uses {bold expo/metro-config}.\n  {dim ${learnMore(
-        'https://docs.expo.dev/guides/customizing-metro'
-      )}}`
+      chalk`\u203A {dim ${learnMore('https://docs.expo.dev/guides/customizing-metro')}}`
     );
   }
 }
