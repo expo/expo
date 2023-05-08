@@ -59,7 +59,7 @@ describe(getFilesToExportFromServerAsync, () => {
   it(`should export from server async`, async () => {
     const renderAsync = jest.fn(async () => '');
     expect(
-      await getFilesToExportFromServerAsync({
+      await getFilesToExportFromServerAsync('/', {
         manifest: {
           initialRouteName: undefined,
           screens: {
