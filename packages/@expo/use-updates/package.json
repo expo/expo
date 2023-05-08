@@ -39,8 +39,8 @@
   },
   "dependencies": {
     "@expo/config": "~8.0.0",
-    "@expo/config-plugins": "~6.0.0",
-    "@expo/metro-config": "~0.7.0"
+    "@expo/config-plugins": "~7.0.0",
+    "@expo/metro-config": "~0.8.0"
   },
   "devDependencies": {
     "@testing-library/jest-native": "^4.0.4",
