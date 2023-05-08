@@ -83,7 +83,7 @@ const trimContent = (content: string) => {
 
 export const getContentHighlightHTML = (item: AlgoliaItemType) => ({
   dangerouslySetInnerHTML: {
-    __html: trimContent(item._highlightResult.content?.value || ''),
+    __html: trimContent(item._highlightResult.content?.value || item.hierarchy.lvl1 || ''),
   },
 });
 
