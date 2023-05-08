@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- On `iOS` fix browser session being kept alive after view controller is dismissed.
+- On `iOS` fix browser session being kept alive after view controller is dismissed. ([#22415](https://github.com/expo/expo/pull/22415) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

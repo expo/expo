@@ -5,15 +5,15 @@ import ExpoModulesCore
 
 internal class WebBrowserSession: NSObject, SFSafariViewControllerDelegate, UIAdaptivePresentationControllerDelegate {
   let viewController: SFSafariViewController
-  let onDismiss: () -> ()
+  let onDismiss: () -> Void
   var promise: Promise?
   var isOpen: Bool {
     promise != nil
   }
 
-  init(url: URL, options: WebBrowserOptions, onDismiss: @escaping () -> ()) {
+  init(url: URL, options: WebBrowserOptions, onDismiss: @escaping () -> Void) {
     self.onDismiss = onDismiss
-    
+
     let configuration = SFSafariViewController.Configuration()
     configuration.barCollapsingEnabled = options.enableBarCollapsing
     configuration.entersReaderIfAvailable = options.readerMode

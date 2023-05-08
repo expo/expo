@@ -51,7 +51,7 @@ final public class WebBrowserModule: Module {
     AsyncFunction("mayInitWithUrlAsync") {}
     AsyncFunction("getCustomTabsSupportingBrowsers") {}
   }
-  
+
   private func destroyBrowserSession() {
     currentWebBrowserSession?.dismiss()
     currentWebBrowserSession = nil
