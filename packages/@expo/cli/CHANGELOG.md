@@ -4,6 +4,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.8.0 — 2023-05-08
+
+### 🛠 Breaking changes
+
 - Set `NODE_ENV` and `BABEL_ENV` environment variables to `development` or `production` in `start`, `export`, `customize`, `install`, `run:ios`, `run:android`, `config`, `prebuild` commands based on the input mode. ([#21337](https://github.com/expo/expo/pull/21337) by [@EvanBacon](https://github.com/EvanBacon))
 - Export Hermes bytecode with `.hbc` extension. ([#22098](https://github.com/expo/expo/pull/22098) by [@EvanBacon](https://github.com/EvanBacon))
 - Default to expo go modern manifest format. ([#22168](https://github.com/expo/expo/pull/22168) by [@wschurman](https://github.com/wschurman))
@@ -30,6 +40,7 @@
 - Generate experimental expo-env.d.ts when EXPO_ROUTER_TYPED_ROUTES=true ([#22096](https://github.com/expo/expo/pull/22096) by [@marklawlor](https://github.com/marklawlor))
 - Improve prebuild for arbitrary template platforms. ([#22201](https://github.com/expo/expo/pull/22201) by [@byCedric](https://github.com/byCedric))
 - Further improve prebuild for arbitrary template platforms. ([#22209](https://github.com/expo/expo/pull/22209) by [@EvanBacon](https://github.com/EvanBacon))
+- Add SearchParams export type for Expo Router. ([#22380](https://github.com/expo/expo/pull/22380) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 

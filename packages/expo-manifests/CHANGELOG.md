@@ -14,6 +14,14 @@
 
 ### 💡 Others
 
+## 0.6.0 — 2023-05-08
+
+### 🎉 New features
+
+- Support new SDK version field in new manifests. ([#22356](https://github.com/expo/expo/pull/22356) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
 - Convert iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298), [#21648](https://github.com/expo/expo/pull/21648) by [@wschurman](https://github.com/wschurman))
 
 ## 0.5.2 - 2023-02-21

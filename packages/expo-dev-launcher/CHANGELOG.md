@@ -10,6 +10,14 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 2.3.0 — 2023-05-08
+
+### 🎉 New features
+
 - Add support to loading Expo modules. ([#22174](https://github.com/expo/expo/pull/22174) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 🐛 Bug fixes

@@ -8,6 +8,16 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.17.0 — 2023-05-08
+
+### 🛠 Breaking changes
+
 - Updated **setup documentation** to reflect that setup should include changing the entry from `index` to `.expo/.virtual-metro-entry` which is only available in SDK 49 `@expo/metro-config`. ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))
 - [android] Add support for version 1 of the protocol. ([#20275](https://github.com/expo/expo/pull/20275) by [@wschurman](https://github.com/wschurman))
 - Add support for version 1 of the protocol. ([#20275](https://github.com/expo/expo/pull/20275), [#21652](https://github.com/expo/expo/pull/21652) by [@wschurman](https://github.com/wschurman))
@@ -18,6 +28,7 @@
 - Add support for extra params. ([#21837](https://github.com/expo/expo/pull/21837) by [@wschurman](https://github.com/wschurman))
 - New checkAutomatically constant. ([#22137](https://github.com/expo/expo/pull/22137) by [@douglowder](https://github.com/douglowder))
 - Support 204 status for no-op responses. ([#22348](https://github.com/expo/expo/pull/22348) by [@wschurman](https://github.com/wschurman))
+- Support new SDK version field in new manifests. ([#22356](https://github.com/expo/expo/pull/22356) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
