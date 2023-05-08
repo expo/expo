@@ -10,6 +10,8 @@
 
 ### 💡 Others
 
+- Mark fixture `package.json` files as private.
+
 ## 0.8.0 — 2023-05-08
 
 ### 🛠 Breaking changes
