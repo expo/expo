@@ -18,7 +18,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-expo install expo-document-picker
+npx expo install expo-document-picker
 ```
 
 ### Configure for iOS
@@ -45,7 +45,7 @@ You can change the `com.apple.developer.icloud-container-environment` entitlemen
 }
 ```
 
-> Running `expo prebuild` will generate the [native project locally](https://docs.expo.io/workflow/customizing/) with the applied changes in your iOS Entitlements file.
+> Running `npx expo prebuild` will generate the [native project locally](https://docs.expo.dev/workflow/customizing/) with the applied changes in your iOS Entitlements file.
 
 # Contributing
 

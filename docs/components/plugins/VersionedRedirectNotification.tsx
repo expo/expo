@@ -1,4 +1,4 @@
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/compat/router';
 import { useEffect, useState } from 'react';
 
 import { P } from '~/ui/components/Text';
@@ -8,10 +8,10 @@ export default function VersionedRedirectNotification({ showForQuery = 'redirect
   const [visible, setVisible] = useState(false);
 
   useEffect(() => {
-    if (router.query) {
+    if (router?.query) {
       setVisible(router.query.hasOwnProperty(showForQuery));
     }
-  }, [router.query]);
+  }, [router?.query]);
 
   if (visible) {
     return (

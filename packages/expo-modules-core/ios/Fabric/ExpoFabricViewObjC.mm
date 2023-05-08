@@ -140,9 +140,18 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
 - (void)updateProps:(const facebook::react::Props::Shared &)props oldProps:(const facebook::react::Props::Shared &)oldProps
 {
   const auto &newViewProps = *std::static_pointer_cast<ExpoViewProps const>(props);
-  NSDictionary<NSString *, id> *proxiedProperties = convertFollyDynamicToId(newViewProps.proxiedProperties);
+  NSMutableDictionary<NSString *, id> *propsMap = [[NSMutableDictionary alloc] init];
 
-  [self updateProps:proxiedProperties];
+  for (const auto &item : newViewProps.propsMap) {
+    NSString *propName = [NSString stringWithUTF8String:item.first.c_str()];
+
+    // Ignore props inherited from the base view and Yoga.
+    if ([self supportsPropWithName:propName]) {
+      propsMap[propName] = convertFollyDynamicToId(item.second);
+    }
+  }
+
+  [self updateProps:propsMap];
   [super updateProps:props oldProps:oldProps];
   [self viewDidUpdateProps];
 }
@@ -172,6 +181,12 @@ static std::unordered_map<std::string, ExpoViewComponentDescriptor::Flavor> _com
 - (void)viewDidUpdateProps
 {
   // Implemented in `ExpoFabricView.swift`
+}
+
+- (BOOL)supportsPropWithName:(nonnull NSString *)name
+{
+  // Implemented in `ExpoFabricView.swift`
+  return NO;
 }
 
 #pragma mark - Methods to override in the subclass

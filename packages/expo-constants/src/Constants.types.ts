@@ -275,21 +275,35 @@ export interface NativeConstants {
    * Classic manifest for Expo apps using classic updates and the updates embedded in builds.
    * Returns `null` in bare workflow and when `manifest2` is non-null.
    * @deprecated Use `Constants.expoConfig` instead, which behaves more consistently across EAS Build
-   * and Update.
+   * and EAS Update.
    */
   manifest: AppManifest | null;
   /**
    * Manifest for Expo apps using modern Expo Updates from a remote source, such as apps that
    * use EAS Update. Returns `null` in bare workflow and when `manifest` is non-null.
-   * @deprecated Use `Constants.expoConfig` instead, which behaves more consistently across EAS Build
-   * and Update.
+   * `Constants.expoConfig` should be used for accessing the Expo config object.
    */
   manifest2: Manifest | null;
   /**
    * The standard Expo config object defined in `app.json` and `app.config.js` files. For both
    * classic and modern manifests, whether they are embedded or remote.
    */
-  expoConfig: ExpoConfig | null;
+  expoConfig:
+    | (ExpoConfig & {
+        /**
+         * Only present during development using @expo/cli.
+         */
+        hostUri?: string;
+      })
+    | null;
+  /**
+   * The standard Expo Go config object populated when running in Expo Go.
+   */
+  expoGoConfig: ExpoGoConfig | null;
+  /**
+   * The standard EAS config object populated when using EAS.
+   */
+  easConfig: EASConfig | null;
   /**
    * A string that is unique to the current session of your app. It is different across apps and
    * across multiple launches of the same app.

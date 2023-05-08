@@ -90,6 +90,13 @@ export const ImageScreens = [
       return optionalRequire(() => require('./ImageGifsScreen'));
     },
   },
+  {
+    name: 'MediaLibrary and ImagePicker integration',
+    route: 'image/media-library',
+    getComponent() {
+      return optionalRequire(() => require('./ImageMediaLibraryScreen'));
+    },
+  },
 ];
 
 if (Platform.OS === 'ios') {

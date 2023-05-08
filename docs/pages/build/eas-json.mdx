@@ -23,7 +23,7 @@ description: Learn how a project using EAS services is configured with eas.json.
 
 ## Build profiles
 
-A build profile is a named grouping of configuration that describes the necessary parameters to perform a certain type of build.
+A build profile is a named grouping of configurations that describes the necessary parameters to perform a certain type of build.
 
 The JSON object under the `build` key can contain multiple build profiles, and you can name these build profiles whatever you like; in the above example, there are three build profiles: `development`, `preview`, and `production`, but these could have been named `foo`, `bar`, and `baz` if that was your preference.
 
@@ -45,11 +45,11 @@ Developers using Expo tools usually end up having three different types of build
 
 These builds include developer tools, and they are never submitted to an app store.
 
-By default, `eas build:configure` will create a `development` profile with `"developmentClient": true`. This indicates that this build depends on [expo-dev-client](/clients/introduction.mdx).
+By default, `eas build:configure` will create a `development` profile with `"developmentClient": true`. This indicates that this build depends on [expo-dev-client](/clients/introduction).
 
-The `development` profile also defaults to `"distribution": "internal"`. This will make it easy to distribute your app directly to physical iOS and Android devices &mdash; [learn more](/build/internal-distribution.mdx).
+The `development` profile also defaults to `"distribution": "internal"`. This will make it easy to distribute your app directly to physical iOS and Android devices &mdash; [learn more](/build/internal-distribution).
 
-You may alternatively prefer for your development build to [run on an iOS Simulator](/build-reference/simulators.mdx). To do this, use the following configuration for `development` profile:
+You may alternatively prefer for your development build to [run on an iOS Simulator](/build-reference/simulators). To do this, use the following configuration for `development` profile:
 
 ```json eas.json
 {
@@ -67,7 +67,7 @@ You may alternatively prefer for your development build to [run on an iOS Simula
 }
 ```
 
-If you'd like to create a build for internal distribution and another for the iOS Simulator then you can create another development profile for that build. You might call the profile something like `development-simulator` and use the above configuration on that profile instead of on `development`. [No such configuration is required to run an Android APK on your device and in an emulator](/build-reference/apk.mdx); the same APK will work in both circumstances.
+If you'd like to create a build for internal distribution and another for the iOS Simulator then you can create another development profile for that build. You might call the profile something like `development-simulator` and use the above configuration on that profile instead of on `development`. [No such configuration is required to run an Android APK on your device and in an emulator](/build-reference/apk); the same APK will work in both circumstances.
 
 ### Preview builds
 
@@ -158,11 +158,11 @@ It's common to want to share build tool configuration between profiles, and we c
 
 The base image for the build job controls the default versions for a variety of dependencies, such as Node.js, Yarn, and Cocoapods. You can override them using the specific named fields as described in the previous section. However, the image includes specific versions of tools that can't be explicitly set any other way, such as the operating system version and Xcode version.
 
-If you are using the Expo managed workflow, EAS Build will pick the appropriate image to use with a reasonable set of dependencies for the SDK version that you are building for. Otherwise, it is recommended to read about the available images on ["Build server infrastructure"](/build-reference/infrastructure.mdx).
+If you are using the Expo managed workflow, EAS Build will pick the appropriate image to use with a reasonable set of dependencies for the SDK version that you are building for. Otherwise, it is recommended to read about the available images on [Build server infrastructure](/build-reference/infrastructure).
 
 ## Environment variables
 
-You can configure environment variables on your build profiles using the `"env"` field. These environment variable will be used to evaluate **app.config.js** locally when you run `eas build`, and they will also be set on the EAS Build worker.
+You can configure environment variables on your build profiles using the `"env"` field. These environment variables will be used to evaluate **app.config.js** locally when you run `eas build`, and they will also be set on the EAS Build builder.
 
 ```json eas.json
 {
@@ -186,4 +186,4 @@ You can configure environment variables on your build profiles using the `"env"`
 }
 ```
 
-The ["Environment variables and secrets" reference](/build-reference/variables.mdx) explains this topic in greater detail, and the [updates guide](/build/updates.mdx) provides guidance on considerations when using this feature alongside **expo-updates**.
+The [Environment variables and secrets](/build-reference/variables) reference explains this topic in greater detail, and the [updates guide](/build/updates) provides guidance on considerations when using this feature alongside `expo-updates`.

@@ -143,7 +143,7 @@ public class Update: NSObject {
         config: config,
         database: database
       )
-    case "0", "1":
+    case 0, 1:
       return NewUpdate.update(
         withNewManifest: NewManifest(rawManifestJSON: withManifest),
         extensions: extensions,

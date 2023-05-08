@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Removed the deprecated `UploadProgressData.totalByteSent` field. ([#22277](https://github.com/expo/expo/pull/22277) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
@@ -11,6 +13,8 @@
 - Add UTF-8 URI support on iOS. ([#21196](https://github.com/expo/expo/pull/21196) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
+
+- Android: Switch from deprecated `toLowerCase` to `lowercase` function ([#22225](https://github.com/expo/expo/pull/22225) by [@hbiede](https://github.com/hbiede))
 
 ## 15.2.2 — 2023-02-09
 

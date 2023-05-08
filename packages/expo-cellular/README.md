@@ -18,7 +18,7 @@ For bare React Native projects, you must ensure that you have [installed and con
 ### Add the package to your npm dependencies
 
 ```
-expo install expo-cellular
+npx expo install expo-cellular
 ```
 
 ### Configure for Android

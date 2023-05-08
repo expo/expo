@@ -448,7 +448,7 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     task.activityId = activityId
     task.bundleUrl = bundleUrl
 
-    sdkVersion = manifest.getSDKVersion()
+    sdkVersion = manifest.getExpoGoSDKVersion()
     isShellApp = this.manifestUrl == Constants.INITIAL_URL
 
     // Sometime we want to release a new version without adding a new .aar. Use TEMPORARY_ABI_VERSION

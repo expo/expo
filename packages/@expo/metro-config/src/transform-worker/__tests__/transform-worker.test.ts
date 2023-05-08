@@ -66,7 +66,7 @@ it(`performs a sanity check by transforming a JS file as expected`, async () => 
 
 it(`transforms a global CSS file in dev for web`, async () => {
   expect(
-    await doTransformForInput('acme.css', 'body { background: red; }', {
+    await doTransformForOutput('acme.css', 'body { background: red; }', {
       dev: true,
       minify: false,
       platform: 'web',
@@ -128,7 +128,7 @@ describe('CSS Modules', () => {
   describe('web', () => {
     it(`transforms for dev, minified`, async () => {
       expect(
-        await doTransformForInput('acme.module.css', '.container { background: red; }', {
+        await doTransformForOutput('acme.module.css', '.container { background: red; }', {
           dev: true,
           minify: true,
           platform: 'web',
@@ -137,7 +137,7 @@ describe('CSS Modules', () => {
     });
     it(`transforms for dev, not minified`, async () => {
       expect(
-        await doTransformForInput('acme.module.css', '.container { background: red; }', {
+        await doTransformForOutput('acme.module.css', '.container { background: red; }', {
           dev: true,
           minify: false,
           platform: 'web',

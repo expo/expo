@@ -18,7 +18,7 @@ const learnDirectories = ['tutorial', 'ui-programming', 'additional-resources'];
 /** Manual list of directories to categorize as "Archive" */
 const archiveDirectories = ['archive'];
 /** Manual list of directories to categorize as "Reference" */
-const referenceDirectories = ['versions', 'modules', 'technical-specs', 'more'];
+const referenceDirectories = ['versions', 'technical-specs', 'more'];
 /** Private preview section which isn't linked in the documentation */
 const previewDirectories = ['feature-preview', 'preview'];
 /** All other unlisted directories */
@@ -91,7 +91,7 @@ const home = [
       'Debugging',
       [
         makePage('debugging/errors-and-warnings.mdx'),
-        makePage('debugging/runtime-issue.mdx'),
+        makePage('debugging/runtime-issues.mdx'),
         makePage('debugging/tools.mdx'),
       ],
       { expanded: false }
@@ -233,6 +233,24 @@ const general = [
     makePage('eas/metadata/schema.mdx'),
     makePage('eas/metadata/faq.mdx'),
   ]),
+  makeSection(
+    'Expo Modules API',
+    [
+      makePage('modules/overview.mdx'),
+      makePage('modules/get-started.mdx'),
+      makePage('modules/native-module-tutorial.mdx'),
+      makePage('modules/native-view-tutorial.mdx'),
+      makePage('modules/config-plugin-and-native-module-tutorial.mdx'),
+      makePage('modules/use-standalone-expo-module-in-your-project.mdx'),
+      makePage('modules/existing-library.mdx'),
+      makePage('modules/module-api.mdx'),
+      makePage('modules/android-lifecycle-listeners.mdx'),
+      makePage('modules/appdelegate-subscribers.mdx'),
+      makePage('modules/autolinking.mdx'),
+      makePage('modules/module-config.mdx'),
+    ],
+    { expanded: true }
+  ),
   makeSection('Push notifications', [
     makePage('push-notifications/overview.mdx'),
     makePage('push-notifications/push-notifications-setup.mdx'),
@@ -290,6 +308,7 @@ const general = [
       makeSection('Bare React Native', [
         makePage('bare/hello-world.mdx'),
         makePage('bare/installing-expo-modules.mdx'),
+        makePage('bare/using-expo-cli.mdx'),
         makePage('bare/installing-updates.mdx'),
         makePage('bare/using-expo-client.mdx'),
         makePage('bare/updating-your-app.mdx'),
@@ -299,7 +318,12 @@ const general = [
     ],
     { expanded: true }
   ),
-  makeSection('Regulatory compliance', sortAlphabetical(pagesFromDir('regulatory-compliance')), {}),
+  makeSection('Regulatory compliance', [
+    makePage('regulatory-compliance/data-and-privacy-protection.mdx'),
+    makePage('regulatory-compliance/gdpr.mdx'),
+    makePage('regulatory-compliance/hipaa.mdx'),
+    makePage('regulatory-compliance/privacy-shield.mdx'),
+  ]),
 ];
 
 const learn = [
@@ -339,6 +363,10 @@ const preview = [
   makeSection('Preview', [
     makePage('preview/introduction.mdx'),
     makePage('preview/support.mdx'),
+    makeGroup('Custom builds', [
+      makePage('preview/custom-build-config.mdx'),
+      makePage('preview/custom-build-config-schema.mdx'),
+    ]),
     { expanded: true },
   ]),
 ];
@@ -384,24 +412,6 @@ const versionsReference = VERSIONS.reduce(
         expanded: true,
       }),
       makeSection('Expo SDK', pagesFromDir(`versions/${version}/sdk`), { expanded: true }),
-      makeSection(
-        'Expo Modules API',
-        [
-          makePage('modules/overview.mdx'),
-          makePage('modules/get-started.mdx'),
-          makePage('modules/native-module-tutorial.mdx'),
-          makePage('modules/native-view-tutorial.mdx'),
-          makePage('modules/config-plugin-and-native-module-tutorial.mdx'),
-          makePage('modules/use-standalone-expo-module-in-your-project.mdx'),
-          makePage('modules/existing-library.mdx'),
-          makePage('modules/module-api.mdx'),
-          makePage('modules/android-lifecycle-listeners.mdx'),
-          makePage('modules/appdelegate-subscribers.mdx'),
-          makePage('modules/autolinking.mdx'),
-          makePage('modules/module-config.mdx'),
-        ],
-        { expanded: true }
-      ),
       makeSection('Technical specs', [
         makePage('technical-specs/expo-updates-1.mdx'),
         makePage('technical-specs/expo-sfv-0.mdx'),
@@ -513,15 +523,4 @@ function pageUrl(file) {
   return pathname
     .replace(filePath.base, filePath.name === 'index' ? '' : filePath.name)
     .replace(/\/$/, '');
-}
-
-/**
- * Sort the list of pages alphabetically by either the sidebarTitle or title.
- */
-function sortAlphabetical(pages) {
-  return pages.sort((a, b) => {
-    const aTitle = a.sidebarTitle || a.name;
-    const bTitle = b.sidebarTitle || b.name;
-    return aTitle.localeCompare(bTitle);
-  });
 }

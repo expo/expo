@@ -136,8 +136,8 @@ const RENAMED_PAGES: Record<string, string> = {
   // Redirects after creating /home route
   '/next-steps/additional-resources/': '/additional-resources/',
   // TODO: (@aman) Uncomment the two lines below when we've removed third-party libraries from Reference
-  // '/versions/latest/sdk/safe-area-context/': '/home/develop/user-interface/safe-areas',
-  // '/versions/latest/sdk/async-storage/': '/home/develop/user-interface/store-data/#async-storage',
+  // '/versions/latest/sdk/safe-area-context/': '/develop/user-interface/safe-areas',
+  // '/versions/latest/sdk/async-storage/': '/develop/user-interface/store-data/#async-storage',
   '/get-started/create-a-new-app/': '/get-started/create-a-project',
   '/guides/config-plugins/': '/config-plugins/introduction/',
   '/workflow/debugging/': '/debugging/runtime-issue/',
@@ -158,8 +158,12 @@ const RENAMED_PAGES: Record<string, string> = {
   '/development/development-workflows/': '/develop/development-builds/development-workflows/',
   '/workflow/expo-cli/': '/more/expo-cli/',
   '/versions/latest/workflow/expo-cli/': '/more/expo-cli/',
-  '/debugging/': '/debugging/runtime-issue/',
+  '/debugging/': '/debugging/runtime-issues/',
+  '/debugging/runtime-issue/': '/debugging/runtime-issues/',
   '/guides/testing-with-jest/': '/develop/unit-testing/',
+  '/workflow/glossary-of-terms/': '/more/glossary-of-terms/',
+  '/development/installation/': '/develop/development-builds/installation/',
+  '/get-started/errors/': '/debugging/errors-and-warnings/',
 
   // Old redirects
   '/introduction/project-lifecycle/': '/introduction/managed-vs-bare/',
@@ -329,4 +333,15 @@ const RENAMED_PAGES: Record<string, string> = {
   // Push notifications
   '/push-notifications/using-fcm/': '/push-notifications/push-notifications-setup',
   '/config/app/': '/workflow/configuration/',
+  '/versions/latest/sdk/settings/': '/versions/latest/',
+  '/archive/expokit/eject/': '/archive/glossary/#eject',
+  '/versions/latest/sdk/admob/': '/versions/latest/',
+  '/versions/latest/sdk/payments/': '/versions/latest/sdk/stripe/',
+  '/distribution/app-icons/': '/develop/user-interface/app-icons/',
+  '/guides/using-libraries/': '/workflow/using-libraries/',
+  '/tutorial/': '/tutorial/introduction/',
+  // Note (@aman): The following redirect is temporary until Guides section has an overview
+  '/guides/': '/workflow/customizing/',
+  '/archive/workflow/customizing/': '/workflow/customizing/',
+  '/errors-and-warnings/': '/debugging/errors-and-warnings/',
 };

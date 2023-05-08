@@ -159,7 +159,9 @@ export function getTypedRoutesUtils(appRoot: string) {
       }
     };
 
-    addRoute(route, route);
+    if (!route.match(ARRAY_GROUP_REGEX)) {
+      addRoute(route, route);
+    }
 
     // Does this route have a group? eg /(group)
     if (route.includes('/(')) {
@@ -303,6 +305,10 @@ const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
     ? { params: RouteParams<InferPathName<T>> }
     : unknown;
 
+  /** Returns the search parameters for a route **/
+  export type SearchParams<T extends DynamicRouteTemplate | StaticRoutes | RelativePathString> =
+    T extends DynamicRouteTemplate ? RouteParams<T> : {};
+
   type InferPathName<T> = T extends { pathname: infer P } ? P : never;
 
   export interface LinkProps<T> extends OriginalLinkProps {
@@ -329,5 +335,6 @@ const routerDotTSTemplate = unsafeTemplate`declare module "expo-router" {
   };
 
   export function useRouter<T>(): Router<T>
+  export function useLocalSearchParams<T extends DynamicRouteTemplate | StaticRoutes | RelativePathString>(): SearchParams<T>
 }
 `;

@@ -7,6 +7,7 @@
 import { getConfig } from '@expo/config';
 import { prependMiddleware } from '@expo/dev-server';
 import * as runtimeEnv from '@expo/env';
+import { SerialAsset } from '@expo/metro-config/build/serializer/serializerAssets';
 import assert from 'assert';
 import chalk from 'chalk';
 import path from 'path';
@@ -14,13 +15,13 @@ import path from 'path';
 import { Log } from '../../../log';
 import getDevClientProperties from '../../../utils/analytics/getDevClientProperties';
 import { logEventAsync } from '../../../utils/analytics/rudderstackClient';
-import { env } from '../../../utils/env';
 import { getFreePortAsync } from '../../../utils/port';
 import { BundlerDevServer, BundlerStartOptions, DevServerInstance } from '../BundlerDevServer';
-import { getStaticPageContentsAsync, getStaticRenderFunctions } from '../getStaticRenderFunctions';
+import { getStaticRenderFunctions } from '../getStaticRenderFunctions';
 import { CreateFileMiddleware } from '../middleware/CreateFileMiddleware';
 import { HistoryFallbackMiddleware } from '../middleware/HistoryFallbackMiddleware';
 import { InterstitialPageMiddleware } from '../middleware/InterstitialPageMiddleware';
+import { createBundleUrlPath, resolveMainModuleName } from '../middleware/ManifestMiddleware';
 import { ReactDevToolsPageMiddleware } from '../middleware/ReactDevToolsPageMiddleware';
 import {
   DeepLinkHandler,
@@ -71,7 +72,79 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       // Ensure the API Routes are included
       environment: 'node',
     });
+
     return getManifest({ fetchData: true });
+  }
+
+  async composeResourcesWithHtml({
+    mode,
+    resources,
+    template,
+    devBundleUrl,
+  }: {
+    mode: 'development' | 'production';
+    resources: SerialAsset[];
+    template: string;
+    devBundleUrl?: string;
+  }) {
+    const isDev = mode === 'development';
+    return htmlFromSerialAssets(resources, {
+      dev: isDev,
+      template,
+      bundleUrl: isDev ? devBundleUrl : undefined,
+    });
+  }
+
+  async getStaticRenderFunctionAsync({ mode }: { mode: 'development' | 'production' }) {
+    const url = this.getDevServerUrl()!;
+
+    const { getStaticContent } = await getStaticRenderFunctions(this.projectRoot, url, {
+      minify: mode === 'production',
+      dev: mode !== 'production',
+      // Ensure the API Routes are included
+      environment: 'node',
+    });
+    return async (path: string) => {
+      return await getStaticContent(new URL(path, url));
+    };
+  }
+
+  async getStaticResourcesAsync({
+    mode,
+    sourcemap,
+  }: {
+    mode: string;
+    sourcemap?: boolean | 'inline';
+  }): Promise<SerialAsset[]> {
+    const isDev = mode === 'development';
+    const devBundleUrlPathname = createBundleUrlPath({
+      platform: 'web',
+      mode,
+      environment: 'client',
+      mainModuleName: resolveMainModuleName(this.projectRoot, getConfig(this.projectRoot), 'web'),
+    });
+
+    const bundleUrl = new URL(devBundleUrlPathname, this.getDevServerUrl()!);
+    bundleUrl.searchParams.set('platform', 'web');
+    bundleUrl.searchParams.set('dev', String(isDev));
+    bundleUrl.searchParams.set('minify', String(!isDev));
+    bundleUrl.searchParams.set('serializer.output', 'static');
+    if (sourcemap != null) {
+      bundleUrl.searchParams.set('serializer.sourcemap', String(sourcemap));
+    }
+
+    // Fetch the generated HTML from our custom Metro serializer
+    const results = await fetch(bundleUrl.toString());
+
+    const txt = await results.text();
+
+    try {
+      return JSON.parse(txt);
+    } catch (error: any) {
+      // console.log('txt', txt);
+      Log.exception(error);
+      throw error;
+    }
   }
 
   private async renderStaticErrorAsync(error: Error) {
@@ -85,20 +158,72 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     pathname: string,
     {
       mode,
+      sourcemap,
     }: {
       mode: 'development' | 'production';
+      sourcemap?: boolean | 'inline';
     }
   ) {
-    const location = new URL(pathname, 'https://example.dev');
-
-    const load = await getStaticPageContentsAsync(this.projectRoot, this.getDevServerUrl()!, {
-      minify: mode === 'production',
-      dev: mode !== 'production',
-      // Ensure the API Routes are included
-      environment: 'node',
+    const isDev = mode === 'development';
+    const devBundleUrlPathname = createBundleUrlPath({
+      platform: 'web',
+      mode,
+      environment: 'client',
+      mainModuleName: resolveMainModuleName(this.projectRoot, getConfig(this.projectRoot), 'web'),
     });
 
-    return await load(location);
+    const bundleResources = async () => {
+      const bundleUrl = new URL(devBundleUrlPathname, this.getDevServerUrl()!);
+      bundleUrl.searchParams.set('platform', 'web');
+      bundleUrl.searchParams.set('dev', String(isDev));
+      bundleUrl.searchParams.set('minify', String(!isDev));
+      bundleUrl.searchParams.set('serializer.output', 'static');
+      if (sourcemap != null) {
+        bundleUrl.searchParams.set('serializer.sourcemap', String(sourcemap));
+      }
+      // Fetch the generated HTML from our custom Metro serializer
+      const results = await fetch(bundleUrl.toString());
+
+      const txt = await results.text();
+
+      try {
+        return JSON.parse(txt);
+      } catch (error) {
+        Log.error(
+          'Failed to generate resources with Metro, the Metro config may not be using the correct serializer. Ensure the metro.config.js is extending the expo/metro-config and is not overriding the serializer.'
+        );
+        debug(txt);
+        throw error;
+      }
+    };
+
+    const bundleStaticHtml = async (): Promise<string> => {
+      const { getStaticContent } = await getStaticRenderFunctions(
+        this.projectRoot,
+        this.getDevServerUrl()!,
+        {
+          minify: mode === 'production',
+          dev: mode !== 'production',
+          // Ensure the API Routes are included
+          environment: 'node',
+        }
+      );
+
+      const location = new URL(pathname, this.getDevServerUrl()!);
+      return await getStaticContent(location);
+    };
+
+    const [resources, staticHtml] = await Promise.all([bundleResources(), bundleStaticHtml()]);
+    const content = await this.composeResourcesWithHtml({
+      mode,
+      resources,
+      template: staticHtml,
+      devBundleUrl: devBundleUrlPathname,
+    });
+    return {
+      content,
+      resources,
+    };
   }
 
   async watchEnvironmentVariables() {
@@ -193,12 +318,13 @@ export class MetroBundlerDevServer extends BundlerDevServer {
 
     // Append support for redirecting unhandled requests to the index.html page on web.
     if (this.isTargetingWeb()) {
+      const { exp } = getConfig(this.projectRoot, { skipSDKVersionRequirement: true });
+      const useWebSSG = exp.web?.output === 'static';
+
       // This MUST be after the manifest middleware so it doesn't have a chance to serve the template `public/index.html`.
       middleware.use(new ServeStaticMiddleware(this.projectRoot).getHandler());
 
-      const devServerUrl = `http://localhost:${options.port}`;
-
-      if (env.EXPO_USE_STATIC) {
+      if (useWebSSG) {
         middleware.use(async (req: ServerRequest, res: ServerResponse, next: ServerNext) => {
           if (!req?.url) {
             return next();
@@ -208,34 +334,15 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           if (req.url.endsWith('.ico')) {
             return next();
           }
-
-          const location = new URL(req.url, devServerUrl);
+          if (req.url.includes('serializer.output=static')) {
+            return next();
+          }
 
           try {
-            const { getStaticContent } = await getStaticRenderFunctions(
-              this.projectRoot,
-              devServerUrl,
-              {
-                minify: options.mode === 'production',
-                dev: options.mode !== 'production',
-                // Ensure the API Routes are included
-                environment: 'node',
-              }
-            );
-
-            let content = await getStaticContent(location);
-
-            //TODO: Not this -- disable injection some other way
-            if (options.mode !== 'production') {
-              // Add scripts for rehydration
-              // TODO: bundle split
-              content = content.replace(
-                '</body>',
-                [`<script src="${manifestMiddleware.getWebBundleUrl()}" defer></script>`].join(
-                  '\n'
-                ) + '</body>'
-              );
-            }
+            const { content } = await this.getStaticPageAsync(req.url, {
+              mode: options.mode ?? 'development',
+              sourcemap: true,
+            });
 
             res.setHeader('Content-Type', 'text/html');
             res.end(content);
@@ -248,7 +355,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       }
 
       // This MUST run last since it's the fallback.
-      if (!env.EXPO_USE_STATIC) {
+      if (!useWebSSG) {
         middleware.use(
           new HistoryFallbackMiddleware(manifestMiddleware.getHandler().internal).getHandler()
         );
@@ -351,4 +458,38 @@ export function getDeepLinkHandler(projectRoot: string): DeepLinkHandler {
       ...getDevClientProperties(projectRoot, exp),
     });
   };
+}
+
+function htmlFromSerialAssets(
+  assets: SerialAsset[],
+  { dev, template, bundleUrl }: { dev: boolean; template: string; bundleUrl?: string }
+) {
+  // Combine the CSS modules into tags that have hot refresh data attributes.
+  const styleString = assets
+    .filter((asset) => asset.type === 'css')
+    .map(({ metadata, filename, source }) => {
+      if (dev) {
+        return `<style data-expo-css-hmr="${metadata.hmrId}">` + source + '\n</style>';
+      } else {
+        return [
+          `<link rel="preload" href="/${filename}" as="style">`,
+          `<link rel="stylesheet" href="/${filename}">`,
+        ].join('');
+      }
+    })
+    .join('');
+
+  const jsAssets = assets.filter((asset) => asset.type === 'js');
+
+  const scripts = bundleUrl
+    ? `<script src="${bundleUrl}" defer></script>`
+    : jsAssets
+        .map(({ filename }) => {
+          return `<script src="/${filename}" defer></script>`;
+        })
+        .join('');
+
+  return template
+    .replace('</head>', `${styleString}</head>`)
+    .replace('</body>', `${scripts}\n</body>`);
 }

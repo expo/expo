@@ -77,11 +77,46 @@ export async function logMetroErrorWithStack(
   }
 }
 
-function logFromError(projectRoot: string, error: Error) {
+export async function logMetroError(projectRoot: string, { error }: { error: Error }) {
   const { LogBoxLog, parseErrorStack } = require(resolveFrom(
     projectRoot,
     '@expo/metro-runtime/symbolicate'
   ));
+
+  const stack = parseErrorStack(error.stack);
+
+  const log = new LogBoxLog({
+    level: 'static',
+    message: {
+      content: error.message,
+      substitutions: [],
+    },
+    isComponentError: false,
+    stack,
+    category: 'static',
+    componentStack: [],
+  });
+
+  await new Promise((res) => log.symbolicate('stack', res));
+
+  logMetroErrorWithStack(projectRoot, {
+    stack: log.symbolicated?.stack?.stack ?? [],
+    codeFrame: log.codeFrame,
+    error,
+  });
+}
+
+/** @returns the html required to render the static metro error as an SPA. */
+export function logFromError({ error, projectRoot }: { error: Error; projectRoot: string }): {
+  symbolicated: any;
+  symbolicate: (type: string, callback: () => void) => void;
+  codeFrame: CodeFrame;
+} {
+  const { LogBoxLog, parseErrorStack } = require(resolveFrom(
+    projectRoot,
+    '@expo/metro-runtime/symbolicate'
+  ));
+
   const stack = parseErrorStack(error.stack);
 
   return new LogBoxLog({
@@ -105,9 +140,9 @@ export async function logMetroErrorAsync({
   error: Error;
   projectRoot: string;
 }) {
-  const log = logFromError(projectRoot, error);
+  const log = logFromError({ projectRoot, error });
 
-  await new Promise((res) => log.symbolicate('stack', res));
+  await new Promise<void>((res) => log.symbolicate('stack', res));
 
   logMetroErrorWithStack(projectRoot, {
     stack: log.symbolicated?.stack?.stack ?? [],
@@ -124,9 +159,9 @@ export async function getErrorOverlayHtmlAsync({
   error: Error;
   projectRoot: string;
 }) {
-  const log = logFromError(projectRoot, error);
+  const log = logFromError({ projectRoot, error });
 
-  await new Promise((res) => log.symbolicate('stack', res));
+  await new Promise<void>((res) => log.symbolicate('stack', res));
 
   logMetroErrorWithStack(projectRoot, {
     stack: log.symbolicated?.stack?.stack ?? [],
