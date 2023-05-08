@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Drop `entryPoint` usage. ([#22416](https://github.com/expo/expo/pull/22416) by [@EvanBacon](https://github.com/EvanBacon))
+
 ### 💡 Others
 
 ## 8.0.3 — 2023-05-08

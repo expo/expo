@@ -38,13 +38,6 @@ function _Config() {
   };
   return data;
 }
-function _Errors() {
-  const data = require("../Errors");
-  _Errors = function () {
-    return data;
-  };
-  return data;
-}
 function _extensions() {
   const data = require("./extensions");
   _extensions = function () {
@@ -95,13 +88,8 @@ function getEntryPointWithExtensions(projectRoot, entryFiles, extensions, projec
     }
   }
   const {
-    exp,
     pkg
   } = projectConfig;
-  if (typeof (exp === null || exp === void 0 ? void 0 : exp.entryPoint) === 'string') {
-    // We want to stop reading the app.json for determining the entry file in SDK +49
-    throw new (_Errors().ConfigError)('expo.entryPoint has been removed in favor of the main field in the package.json.', 'DEPRECATED');
-  }
   if (pkg) {
     // If the config doesn't define a custom entry then we want to look at the `package.json`s `main` field, and try again.
     const {
