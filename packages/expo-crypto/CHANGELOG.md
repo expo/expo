@@ -2,6 +2,8 @@
 
 ## Unpublished
 
+### 📚 3rd party library updates
+
 - Updated `robolectric` to `4.10` and `junit` to `4.13.2`.  ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
 
 ### 🛠 Breaking changes
