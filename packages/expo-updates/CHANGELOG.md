@@ -13,6 +13,8 @@
 - Add rollback to embedded update directive. ([#21007](https://github.com/expo/expo/pull/21007), [#21652](https://github.com/expo/expo/pull/21652) by [@wschurman](https://github.com/wschurman))
 - Add support for extra params. ([#21837](https://github.com/expo/expo/pull/21837) by [@wschurman](https://github.com/wschurman))
 - New checkAutomatically constant. ([#22137](https://github.com/expo/expo/pull/22137) by [@douglowder](https://github.com/douglowder))
+- Support 204 status for no-op responses. ([#22348](https://github.com/expo/expo/pull/22348) by [@wschurman](https://github.com/wschurman))
+- Support new SDK version field in new manifests. ([#22356](https://github.com/expo/expo/pull/22356) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 
@@ -24,6 +26,7 @@
 - Copy native events before transforming them. ([#22162](https://github.com/expo/expo/pull/22162) by [@douglowder](https://github.com/douglowder))
 - Fix empty body no-op multipart response. ([#22227](https://github.com/expo/expo/pull/22227) by [@wschurman](https://github.com/wschurman))
 - Put extra data mutation in transaction. ([#22252](https://github.com/expo/expo/pull/22252) by [@wschurman](https://github.com/wschurman))
+- [iOS] fix bizarre bug when downloading update twice. ([#22355](https://github.com/expo/expo/pull/22355) by [@douglowder](https://github.com/douglowder))
 
 ### 💡 Others
 
