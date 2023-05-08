@@ -1,8 +1,7 @@
 import {
   replaceEnvironmentVariables,
-  withSerialProcessors,
   getTransformEnvironment,
-} from '../serializer';
+} from '../environmentVariableSerializerPlugin';
 
 describe(getTransformEnvironment, () => {
   [
@@ -29,18 +28,18 @@ describe(replaceEnvironmentVariables, () => {
   it('matches environment variables', () => {
     const contents = replaceEnvironmentVariables(
       `
-              const foo = process.env.JEST_WORKER_ID;
-              process.env.ABC;
-              console.log(process.env.NODE_ENV);
-              console.log(process.env.EXPO_PUBLIC_NODE_ENV);
-              process.env.EXPO_PUBLIC_FOO;
-  
-              a + b = c;
-  
-              env.EXPO_PUBLIC_URL;
-  
-              process.env['other'];
-              `,
+                const foo = process.env.JEST_WORKER_ID;
+                process.env.ABC;
+                console.log(process.env.NODE_ENV);
+                console.log(process.env.EXPO_PUBLIC_NODE_ENV);
+                process.env.EXPO_PUBLIC_FOO;
+    
+                a + b = c;
+    
+                env.EXPO_PUBLIC_URL;
+    
+                process.env['other'];
+                `,
       { EXPO_PUBLIC_NODE_ENV: 'development', EXPO_PUBLIC_FOO: 'bar' }
     );
     expect(contents).toMatch('development');
@@ -50,27 +49,5 @@ describe(replaceEnvironmentVariables, () => {
     expect(contents).not.toMatch('EXPO_PUBLIC_NODE_ENV');
     expect(contents).not.toMatch('EXPO_PUBLIC_FOO');
     expect(contents).toMatchSnapshot();
-  });
-});
-
-describe(withSerialProcessors, () => {
-  it(`executes in the expected order`, async () => {
-    const customSerializer = jest.fn();
-    const customProcessor = jest.fn((...res) => res);
-
-    const config = withSerialProcessors(
-      {
-        serializer: {
-          customSerializer,
-        },
-      },
-      [customProcessor]
-    );
-
-    // @ts-expect-error
-    await config.serializer.customSerializer('a', 'b', 'c');
-
-    expect(customProcessor).toBeCalledWith('a', 'b', 'c');
-    expect(customSerializer).toBeCalledWith('a', 'b', 'c');
   });
 });

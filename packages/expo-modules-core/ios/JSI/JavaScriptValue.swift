@@ -26,7 +26,7 @@ protocol AnyJavaScriptValue {
 }
 
 extension JavaScriptValue: AnyJavaScriptValue, AnyArgument {
-  var kind: JavaScriptValueKind {
+  public var kind: JavaScriptValueKind {
     switch true {
     case isUndefined():
       return .undefined

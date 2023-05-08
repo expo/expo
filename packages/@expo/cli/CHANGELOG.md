@@ -4,12 +4,23 @@
 
 ### 🛠 Breaking changes
 
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.8.0 — 2023-05-08
+
+### 🛠 Breaking changes
+
 - Set `NODE_ENV` and `BABEL_ENV` environment variables to `development` or `production` in `start`, `export`, `customize`, `install`, `run:ios`, `run:android`, `config`, `prebuild` commands based on the input mode. ([#21337](https://github.com/expo/expo/pull/21337) by [@EvanBacon](https://github.com/EvanBacon))
 - Export Hermes bytecode with `.hbc` extension. ([#22098](https://github.com/expo/expo/pull/22098) by [@EvanBacon](https://github.com/EvanBacon))
 - Default to expo go modern manifest format. ([#22168](https://github.com/expo/expo/pull/22168) by [@wschurman](https://github.com/wschurman))
 
 ### 🎉 New features
 
+- Support static CSS extraction in development for Metro web. ([#22325](https://github.com/expo/expo/pull/22325) by [@EvanBacon](https://github.com/EvanBacon))
 - Add internal `expo export:embed` command to replace `npx react-native bundle` in production builds. ([#21396](https://github.com/expo/expo/pull/21396) by [@EvanBacon](https://github.com/EvanBacon))
 - Automatically install TypeScript dependencies when TypeScript files are added during `expo start`. ([#21475](https://github.com/expo/expo/pull/21475) by [@EvanBacon](https://github.com/EvanBacon))
 - Add support for `compilerOptions.baseUrl` from `tsconfig.json` and `jsconfig.json` files to Metro. ([#21262](https://github.com/expo/expo/pull/21262) by [@EvanBacon](https://github.com/EvanBacon))
@@ -29,6 +40,7 @@
 - Generate experimental expo-env.d.ts when EXPO_ROUTER_TYPED_ROUTES=true ([#22096](https://github.com/expo/expo/pull/22096) by [@marklawlor](https://github.com/marklawlor))
 - Improve prebuild for arbitrary template platforms. ([#22201](https://github.com/expo/expo/pull/22201) by [@byCedric](https://github.com/byCedric))
 - Further improve prebuild for arbitrary template platforms. ([#22209](https://github.com/expo/expo/pull/22209) by [@EvanBacon](https://github.com/EvanBacon))
+- Add SearchParams export type for Expo Router. ([#22380](https://github.com/expo/expo/pull/22380) by [@marklawlor](https://github.com/marklawlor))
 
 ### 🐛 Bug fixes
 
@@ -38,6 +50,7 @@
 - Skip verifying arbitrary platforms when prebuilding. ([#22228](https://github.com/expo/expo/pull/22228) by [@byCedric](https://github.com/byCedric))
 - Fix prebuild `--template` flag on Windows for local tarballs. ([#22232](https://github.com/expo/expo/pull/22232) by [@byCedric](https://github.com/byCedric))
 - Fixed Activity does not start on Android 13 devices. ([#22286](https://github.com/expo/expo/pull/22286) by [@kudo](https://github.com/kudo))
+- Fix duplicate enpo-env.d.ts entries being added to the gitignore. ([#22127](https://github.com/expo/expo/pull/22127) by [@marklawlor](https://github.com/marklawlor))
 
 ### 💡 Others
 

@@ -77,6 +77,35 @@ export async function logMetroErrorWithStack(
   }
 }
 
+export async function logMetroError(projectRoot: string, { error }: { error: Error }) {
+  const { LogBoxLog, parseErrorStack } = require(resolveFrom(
+    projectRoot,
+    '@expo/metro-runtime/symbolicate'
+  ));
+
+  const stack = parseErrorStack(error.stack);
+
+  const log = new LogBoxLog({
+    level: 'static',
+    message: {
+      content: error.message,
+      substitutions: [],
+    },
+    isComponentError: false,
+    stack,
+    category: 'static',
+    componentStack: [],
+  });
+
+  await new Promise((res) => log.symbolicate('stack', res));
+
+  logMetroErrorWithStack(projectRoot, {
+    stack: log.symbolicated?.stack?.stack ?? [],
+    codeFrame: log.codeFrame,
+    error,
+  });
+}
+
 /** @returns the html required to render the static metro error as an SPA. */
 export async function getErrorOverlayHtmlAsync({
   error,
@@ -89,6 +118,7 @@ export async function getErrorOverlayHtmlAsync({
     projectRoot,
     '@expo/metro-runtime/symbolicate'
   ));
+
   const stack = parseErrorStack(error.stack);
 
   const log = new LogBoxLog({

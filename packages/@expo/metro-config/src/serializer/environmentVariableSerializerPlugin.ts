@@ -4,23 +4,12 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import type { Graph, MixedOutput, Module, SerializerOptions } from 'metro';
-import { ConfigT, InputConfigT } from 'metro-config';
-import baseJSBundle from 'metro/src/DeltaBundler/Serializers/baseJSBundle';
-import bundleToString from 'metro/src/lib/bundleToString';
+import { Graph, MixedOutput, Module, SerializerOptions } from 'metro';
 import countLines from 'metro/src/lib/countLines';
 
-import { env } from './env';
+import { SerializerParameters } from './withExpoSerializers';
 
-const debug = require('debug')('expo:metro-config:serializer') as typeof console.log;
-
-type Serializer = NonNullable<ConfigT['serializer']['customSerializer']>;
-
-type SerializerParameters = Parameters<Serializer>;
-
-// A serializer that processes the input and returns a modified version.
-// Unlike a serializer, these can be chained together.
-type SerialProcessor = (...props: SerializerParameters) => SerializerParameters;
+const debug = require('debug')('expo:metro-config:serializer:env-var') as typeof console.log;
 
 export function replaceEnvironmentVariables(
   code: string,
@@ -60,7 +49,7 @@ function getAllExpoPublicEnvVars() {
   return env;
 }
 
-export function serializeWithEnvironmentVariables(
+export function environmentVariableSerializerPlugin(
   entryPoint: string,
   preModules: readonly Module[],
   graph: Graph,
@@ -139,54 +128,5 @@ function getEnvPrelude(contents: string): Module<MixedOutput> {
         },
       },
     ],
-  };
-}
-
-export function withExpoSerializers(config: InputConfigT): InputConfigT {
-  const processors: SerialProcessor[] = [];
-  if (!env.EXPO_NO_CLIENT_ENV_VARS) {
-    processors.push(serializeWithEnvironmentVariables);
-  }
-
-  return withSerialProcessors(config, processors);
-}
-
-// There can only be one custom serializer as the input doesn't match the output.
-// Here we simply run
-export function withSerialProcessors(
-  config: InputConfigT,
-  processors: SerialProcessor[]
-): InputConfigT {
-  const originalSerializer = config.serializer?.customSerializer;
-
-  return {
-    ...config,
-    serializer: {
-      ...config.serializer,
-      customSerializer: createSerializerFromSerialProcessors(processors, originalSerializer),
-    },
-  };
-}
-
-function getDefaultSerializer(): Serializer {
-  return (...props: SerializerParameters): string => {
-    const bundle = baseJSBundle(...props);
-    return bundleToString(bundle).code;
-  };
-}
-
-export function createSerializerFromSerialProcessors(
-  processors: (SerialProcessor | undefined)[],
-  serializer?: Serializer
-): Serializer {
-  return (...props: SerializerParameters): ReturnType<Serializer> => {
-    for (const processor of processors) {
-      if (processor) {
-        props = processor(...props);
-      }
-    }
-
-    const finalSerializer = serializer ?? getDefaultSerializer();
-    return finalSerializer(...props);
   };
 }

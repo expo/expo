@@ -33,7 +33,7 @@ buildscript {
 }
 
 group = 'host.exp.exponent'
-version = '4.1.1'
+version = '4.2.0'
 
 // Creating sources with comments
 task androidSourcesJar(type: Jar) {
@@ -74,7 +74,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 8
-    versionName "4.1.1"
+    versionName "4.2.0"
   }
   lintOptions {
     abortOnError false

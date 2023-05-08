@@ -1,7 +1,7 @@
 {
   "name": "@expo/use-updates",
-  "version": "0.0.0",
-  "description": "A simpler JS API for the expo-updates module.",
+  "version": "0.0.1",
+  "description": "An easier to use, declarative JavaScript API for the expo-updates module.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
   "sideEffects": false,
@@ -39,8 +39,8 @@
   },
   "dependencies": {
     "@expo/config": "~8.0.0",
-    "@expo/config-plugins": "~6.0.0",
-    "@expo/metro-config": "~0.7.0"
+    "@expo/config-plugins": "~7.0.0",
+    "@expo/metro-config": "~0.8.0"
   },
   "devDependencies": {
     "@testing-library/jest-native": "^4.0.4",

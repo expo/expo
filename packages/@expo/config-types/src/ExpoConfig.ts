@@ -154,9 +154,9 @@ export interface ExpoConfig {
     silentLaunch?: boolean;
   };
   /**
-   * **Standalone Apps Only**. URL scheme to link into your app. For example, if we set this to `'demo'`, then demo:// URLs would open your app when tapped.
+   * **Custom Builds Only**. URL scheme(s) to link into your app. For example, if we set this to `'demo'`, then demo:// URLs would open your app when tapped.
    */
-  scheme?: string;
+  scheme?: string | string[];
   /**
    * Any extra fields you want to pass to your experience. Values are accessible via `Constants.expoConfig.extra` ([Learn more](https://docs.expo.dev/versions/latest/sdk/constants/#constantsmanifest))
    */
