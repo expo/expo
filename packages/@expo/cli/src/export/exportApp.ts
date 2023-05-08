@@ -109,6 +109,7 @@ export async function exportAppAsync(
         outputDir: outputPath,
         // TODO: Expose
         minify: true,
+        sourcemap: dumpSourcemap,
       });
       Log.log('Finished saving static files');
     } else {
