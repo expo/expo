@@ -3,6 +3,7 @@
   "version": "0.7.0",
   "description": "A Metro config for running React Native projects with the Metro bundler",
   "main": "build/ExpoMetroConfig.js",
+  "types": "build/ExpoMetroConfig.d.ts",
   "scripts": {
     "watch": "tsc --watch --preserveWatchOutput",
     "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
