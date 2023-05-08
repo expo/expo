@@ -22,5 +22,12 @@ declare global {
  * @throws Error when there is no native module with given name.
  */
 export declare function requireNativeModule<ModuleType = any>(moduleName: string): ModuleType;
+/**
+ * Checks whether a native module is installed. In the first place it tries to load
+ * the module installed through the JSI host object and then falls back to the bridge proxy module.
+ * @param moduleName Name of the requested native module.
+ * @returns Boolean value indicating whether the native module is installed.
+ */
+export declare function isNativeModuleInstalled(moduleName: string): boolean;
 export {};
 //# sourceMappingURL=requireNativeModule.d.ts.map

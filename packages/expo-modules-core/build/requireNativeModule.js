@@ -17,4 +17,15 @@ export function requireNativeModule(moduleName) {
     }
     return nativeModule;
 }
+/**
+ * Checks whether a native module is installed. In the first place it tries to load
+ * the module installed through the JSI host object and then falls back to the bridge proxy module.
+ * @param moduleName Name of the requested native module.
+ * @returns Boolean value indicating whether the native module is installed.
+ */
+export function isNativeModuleInstalled(moduleName) {
+    return (globalThis.expo?.modules?.[moduleName] !== undefined ||
+        globalThis.ExpoModules?.[moduleName] !== undefined ||
+        NativeModulesProxy[moduleName] !== undefined);
+}
 //# sourceMappingURL=requireNativeModule.js.map
