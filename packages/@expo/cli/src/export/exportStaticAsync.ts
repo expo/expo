@@ -18,7 +18,7 @@ import { stripAnsi } from '../utils/ansi';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
-type Options = { outputDir: string; minify: boolean };
+type Options = { outputDir: string; minify: boolean; sourcemap?: boolean | 'inline' };
 
 /** @private */
 export async function unstable_exportStaticAsync(projectRoot: string, options: Options) {
@@ -80,14 +80,14 @@ export async function getFilesToExportFromServerAsync({
 /** Perform all fs commits */
 export async function exportFromServerAsync(
   devServerManager: DevServerManager,
-  { outputDir }: Options
+  { outputDir, sourcemap }: Options
 ): Promise<void> {
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
 
   const [manifest, resources, renderAsync] = await Promise.all([
     devServer.getRoutesAsync(),
-    devServer.getStaticResourcesAsync({ mode: 'production' }),
+    devServer.getStaticResourcesAsync({ mode: 'production', sourcemap }),
     devServer.getStaticRenderFunctionAsync({
       mode: 'production',
     }),
