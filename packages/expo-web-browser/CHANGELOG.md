@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- On `iOS` fix browser session being kept alive after view controller is dismissed.
+
 ### 💡 Others
 
 ## 12.1.1 — 2023-02-09
