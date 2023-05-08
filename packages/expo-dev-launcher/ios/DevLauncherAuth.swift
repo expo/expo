@@ -60,7 +60,7 @@ public class DevLauncherAuth: Module {
       return DEV_LAUNCHER_DEFAULT_SCHEME
     }
 
-    AsyncFunction("setSessionAsync") { (session: String) in
+    AsyncFunction("setSessionAsync") { (session: String?) in
       UserDefaults.standard.set(session, forKey: "expo-session-secret")
     }
 

@@ -1,5 +1,5 @@
 import * as React from 'react';
-import {Platform} from 'react-native';
+import { Platform } from 'react-native';
 
 import { DeepLinkModal } from '../components/DeepLinkModal';
 import { addDeepLinkListener, getPendingDeepLink } from '../native-modules/DevLauncherInternal';
