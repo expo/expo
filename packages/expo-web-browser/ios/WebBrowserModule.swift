@@ -15,14 +15,15 @@ final public class WebBrowserModule: Module {
       guard self.currentWebBrowserSession?.isOpen != true else {
         throw WebBrowserAlreadyOpenException()
       }
-      self.currentWebBrowserSession = WebBrowserSession(url: url, options: options)
+      self.currentWebBrowserSession = WebBrowserSession(url: url, options: options) {
+        self.destroyBrowserSession()
+      }
       self.currentWebBrowserSession?.open(promise)
     }
     .runOnQueue(.main)
 
     AsyncFunction("dismissBrowser") {
-      self.currentWebBrowserSession?.dismiss()
-      self.currentWebBrowserSession = nil
+      self.destroyBrowserSession()
     }
     .runOnQueue(.main)
 
@@ -49,5 +50,10 @@ final public class WebBrowserModule: Module {
     AsyncFunction("coolDownAsync") {}
     AsyncFunction("mayInitWithUrlAsync") {}
     AsyncFunction("getCustomTabsSupportingBrowsers") {}
+  }
+  
+  private func destroyBrowserSession() {
+    currentWebBrowserSession?.dismiss()
+    currentWebBrowserSession = nil
   }
 }
