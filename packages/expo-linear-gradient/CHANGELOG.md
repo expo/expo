@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 12.2.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
 ## 12.1.2 - 2023-03-08
 
 ### 🐛 Bug fixes

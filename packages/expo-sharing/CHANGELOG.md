@@ -10,6 +10,10 @@
 
 ### 💡 Others
 
+## 11.4.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
 ## 11.3.2 — 2023-04-20
 
 ### 🐛 Bug fixes

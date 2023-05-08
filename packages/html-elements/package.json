@@ -1,6 +1,6 @@
 {
   "name": "@expo/html-elements",
-  "version": "0.4.1",
+  "version": "0.4.3",
   "description": "Universal semantic HTML React components for iOS, Android, web, and desktop",
   "main": "build/Elements.js",
   "types": "build/Elements.d.ts",

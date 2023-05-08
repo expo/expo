@@ -1,6 +1,6 @@
 {
   "name": "expo-crypto",
-  "version": "12.2.2",
+  "version": "12.3.0",
   "description": "Expo universal module for crypto",
   "main": "build/Crypto.js",
   "types": "build/Crypto.d.ts",

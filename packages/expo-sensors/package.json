@@ -1,6 +1,6 @@
 {
   "name": "expo-sensors",
-  "version": "12.1.1",
+  "version": "12.2.0",
   "description": "Provides access to a hardware device's accelerometer, gyroscope, magnetometer, and pedometer.",
   "main": "build/index.js",
   "types": "build/index.d.ts",
