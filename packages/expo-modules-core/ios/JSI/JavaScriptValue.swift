@@ -25,7 +25,7 @@ protocol AnyJavaScriptValue {
   static func convert(from value: JavaScriptValue, appContext: AppContext) throws -> Self
 }
 
-extension JavaScriptValue: AnyJavaScriptValue {
+extension JavaScriptValue: AnyJavaScriptValue, AnyArgument {
   public var kind: JavaScriptValueKind {
     switch true {
     case isUndefined():
