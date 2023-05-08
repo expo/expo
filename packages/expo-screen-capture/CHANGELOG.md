@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- On Android, migrated to Expo Modules API. ([#22208](https://github.com/expo/expo/pull/22208) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 5.2.0 — 2023-05-08
+
+### 🎉 New features
+
+- On Android, migrated to Expo Modules API. ([#22208](https://github.com/expo/expo/pull/22208) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

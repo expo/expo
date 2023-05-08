@@ -6,9 +6,15 @@
 
 ### 🎉 New features
 
-- Support new SDK version field in new manifests. ([#22356](https://github.com/expo/expo/pull/22356) by [@wschurman](https://github.com/wschurman))
-
 ### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.6.0 — 2023-05-08
+
+### 🎉 New features
+
+- Support new SDK version field in new manifests. ([#22356](https://github.com/expo/expo/pull/22356) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
