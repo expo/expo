@@ -109,13 +109,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
   }
 
-  async getStaticResourcesAsync({
-    mode,
-    sourcemap,
-  }: {
-    mode: string;
-    sourcemap?: boolean | 'inline';
-  }): Promise<SerialAsset[]> {
+  async getStaticResourcesAsync({ mode }: { mode: string }): Promise<SerialAsset[]> {
     const isDev = mode === 'development';
     const devBundleUrlPathname = createBundleUrlPath({
       platform: 'web',
@@ -129,9 +123,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     bundleUrl.searchParams.set('dev', String(isDev));
     bundleUrl.searchParams.set('minify', String(!isDev));
     bundleUrl.searchParams.set('serializer.output', 'static');
-    if (sourcemap != null) {
-      bundleUrl.searchParams.set('serializer.sourcemap', String(sourcemap));
-    }
 
     // Fetch the generated HTML from our custom Metro serializer
     const results = await fetch(bundleUrl.toString());
@@ -158,10 +149,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     pathname: string,
     {
       mode,
-      sourcemap,
     }: {
       mode: 'development' | 'production';
-      sourcemap?: boolean | 'inline';
     }
   ) {
     const isDev = mode === 'development';
@@ -178,9 +167,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       bundleUrl.searchParams.set('dev', String(isDev));
       bundleUrl.searchParams.set('minify', String(!isDev));
       bundleUrl.searchParams.set('serializer.output', 'static');
-      if (sourcemap != null) {
-        bundleUrl.searchParams.set('serializer.sourcemap', String(sourcemap));
-      }
+
       // Fetch the generated HTML from our custom Metro serializer
       const results = await fetch(bundleUrl.toString());
 
@@ -341,7 +328,6 @@ export class MetroBundlerDevServer extends BundlerDevServer {
           try {
             const { content } = await this.getStaticPageAsync(req.url, {
               mode: options.mode ?? 'development',
-              sourcemap: true,
             });
 
             res.setHeader('Content-Type', 'text/html');

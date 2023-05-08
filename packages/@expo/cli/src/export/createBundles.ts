@@ -44,7 +44,6 @@ export async function createBundlesAsync(
       platform,
       entryPoint: getEntryWithServerRoot(projectRoot, projectConfig, platform),
       dev: bundleOptions.dev,
-      sourceMapUrl: undefined,
     }))
   );
 
