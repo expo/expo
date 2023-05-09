@@ -66,7 +66,7 @@ export const RNDocsItem = ({ item, onSelect }: Props) => {
           {!lvl3 && !lvl2 && !lvl1 && lvl0 && (
             <CALLOUT weight="medium" {...getHighlightHTML(item, 'lvl0')} />
           )}
-          <FOOTNOTE theme="secondary" {...getContentHighlightHTML(item)} css={contentStyle} />
+          <FOOTNOTE theme="secondary" {...getContentHighlightHTML(item, true)} css={contentStyle} />
         </div>
         <ExternalLinkIcon />
       </div>
