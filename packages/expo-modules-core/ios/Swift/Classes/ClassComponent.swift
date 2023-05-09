@@ -83,7 +83,7 @@ public final class ClassComponent: ObjectDefinition {
 internal protocol ClassAssociatedObject {}
 
 // Basically we only need these two
-extension JavaScriptObject: ClassAssociatedObject, AnyArgument {
+extension JavaScriptObject: ClassAssociatedObject, AnyArgument, AnyJavaScriptValue {
   internal static func convert(from value: JavaScriptValue, appContext: AppContext) throws -> Self {
     guard value.kind == .object else {
       throw Conversions.ConvertingException<JavaScriptObject>(value)
