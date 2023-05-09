@@ -180,15 +180,15 @@ dependencies {
   androidTestImplementation 'androidx.test.uiautomator:uiautomator:2.2.0'
   androidTestImplementation 'com.azimolabs.conditionwatcher:conditionwatcher:0.2'
 
-  androidTestImplementation 'junit:junit:4.12'
+  androidTestImplementation 'junit:junit:4.13.2'
   androidTestImplementation 'org.mockito:mockito-core:1.10.19'
-  testImplementation 'org.robolectric:robolectric:3.8'
+  testImplementation 'org.robolectric:robolectric:4.10'
   androidTestImplementation 'androidx.test:runner:1.4.0'
   androidTestImplementation 'androidx.test:rules:1.4.0'
 
   testImplementation 'androidx.test:runner:1.4.0'
   testImplementation 'androidx.test:rules:1.4.0'
-  testImplementation 'junit:junit:4.12'
+  testImplementation 'junit:junit:4.13.2'
   testImplementation 'org.mockito:mockito-core:1.10.19'
 
   // WHEN_DISTRIBUTING_REMOVE_FROM_HERE

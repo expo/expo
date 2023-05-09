@@ -128,7 +128,7 @@ dependencies {
   implementation("org.apache.commons:commons-lang3:3.9")
   implementation("org.bouncycastle:bcutil-jdk15to18:1.70")
 
-  testImplementation 'junit:junit:4.13.1'
+  testImplementation 'junit:junit:4.13.2'
   testImplementation 'androidx.test:core:1.4.0'
   testImplementation 'io.mockk:mockk:1.12.3'
   testImplementation "org.jetbrains.kotlin:kotlin-test-junit:${getKotlinVersion()}"

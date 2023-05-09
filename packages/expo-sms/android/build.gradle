@@ -91,6 +91,6 @@ dependencies {
   if (project.findProject(':expo-modules-test-core')) {
     testImplementation project(':expo-modules-test-core')
   }
-  testImplementation "org.robolectric:robolectric:4.5.1"
-  testImplementation 'junit:junit:4.12'
+  testImplementation "org.robolectric:robolectric:4.10"
+  testImplementation 'junit:junit:4.13.2'
 }
