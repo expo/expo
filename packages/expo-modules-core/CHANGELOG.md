@@ -10,9 +10,17 @@
 
 ### 💡 Others
 
+## 1.3.2 — 2023-05-09
+
+### 🐛 Bug fixes
+
+- Fixed passing `JavaScriptObject` argument and view props. ([#22427](https://github.com/expo/expo/pull/22427) by [@lukmccall](https://github.com/lukmccall))
+
 ## 1.3.1 — 2023-05-08
 
-_This version does not introduce any user-facing changes._
+### 💡 Others
+
+- Made `JavaScriptValue.kind` public. ([#22386](https://github.com/expo/expo/pull/22386) by [@lukmccall](https://github.com/lukmccall))
 
 ## 1.3.0 — 2023-05-08
 
