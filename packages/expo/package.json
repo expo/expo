@@ -70,7 +70,7 @@
     "expo-font": "~11.2.0",
     "expo-keep-awake": "~12.1.0",
     "expo-modules-autolinking": "1.3.0",
-    "expo-modules-core": "1.3.1",
+    "expo-modules-core": "1.3.2",
     "fbemitter": "^3.0.0",
     "invariant": "^2.2.4",
     "md5-file": "^3.2.3",
