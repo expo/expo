@@ -2174,11 +2174,11 @@ PODS:
     - ExpoModulesCore
   - ExpoMailComposer (12.2.0):
     - ExpoModulesCore
-  - ExpoModulesCore (1.3.1):
+  - ExpoModulesCore (1.3.2):
     - React-Core
     - React-RCTAppDelegate
     - ReactCommon/turbomodule/core
-  - ExpoModulesCore/Tests (1.3.1):
+  - ExpoModulesCore/Tests (1.3.2):
     - ExpoModulesTestCore
     - React-Core
     - React-RCTAppDelegate
@@ -4755,7 +4755,7 @@ SPEC CHECKSUMS:
   ExpoLocalAuthentication: de5f50fae4fa643a3fc6b404d61a2ab36b5acf20
   ExpoLocalization: c1201ba5cfcfb187972138e58c07cc708c5399db
   ExpoMailComposer: b9a4871714550d5b4e26d1873f0572e350c86478
-  ExpoModulesCore: f6213b365d9767fdd842a8b2c1c0c1604e711fe5
+  ExpoModulesCore: b7865a95e88b5731893e177bbf82f6a05f3f92d9
   ExpoModulesTestCore: 42fce831c9601dcfaba09fe7a03dfe99e25754a4
   ExpoNetwork: ef59bebcdbeb6ea188157a8fc88e9ceafbff1f89
   ExpoPrint: 92311a7545d66959c6f3884e085bf336ba6c7c48
