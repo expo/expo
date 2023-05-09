@@ -2,6 +2,7 @@ package expo.modules.clipboard
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.Color
 import android.net.Uri
 import android.util.Base64
 import androidx.test.core.app.ApplicationProvider
@@ -140,7 +141,10 @@ class ClipboardImageTest {
 
     val bitmap = bitmapFromContentUriAsync(context, uri)
     val shadow = shadowOf(bitmap)
-    assertNotNull("Bitmap was not created from ContentResolver stream", shadow.createdFromStream)
+    assertNotNull(
+      "Bitmap was not created from ContentResolver stream",
+      shadow.createdFromStream
+    )
     assertBitmapMatchesMock(bitmap)
   }
 }
@@ -149,9 +153,14 @@ private fun assertBitmapMatchesMock(bitmap: Bitmap) {
   val message = "Bitmap doesn't match the mocked data"
   assertEquals("$message: Invalid width", 1, bitmap.width)
   assertEquals("$message: Invalid height", 1, bitmap.height)
+
+  // Note that on some tests, the pixel value will be -16777216, which is
+  // 11111111 00000000 00000000 00000000 in binary form. This is also a fully-opaque
+  // black color, so comparing hex strings is cleaner to capture both acceptable results
+  // (0 and -16777216).
   assertEquals(
     "$message: Incorrect pixel color. Expected black",
-    0x000000,
-    bitmap.getPixel(0, 0)
+    Integer.toHexString(bitmap.getPixel(0, 0)),
+    Integer.toHexString(Color.BLACK)
   )
 }

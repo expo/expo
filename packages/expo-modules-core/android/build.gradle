@@ -293,10 +293,10 @@ dependencies {
   compileOnly 'com.facebook.fbjni:fbjni:0.3.0'
 
   testImplementation 'androidx.test:core:1.4.0'
-  testImplementation 'junit:junit:4.13.1'
+  testImplementation 'junit:junit:4.13.2'
   testImplementation 'io.mockk:mockk:1.12.3'
   testImplementation "com.google.truth:truth:1.1.2"
-  testImplementation "org.robolectric:robolectric:4.5.1"
+  testImplementation "org.robolectric:robolectric:4.10"
   testImplementation "org.jetbrains.kotlinx:kotlinx-coroutines-test:1.6.0"
 
   androidTestImplementation 'androidx.test:runner:1.4.0'

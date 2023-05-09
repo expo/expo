@@ -120,7 +120,7 @@ dependencies {
         // used kotlin
         def kotlinReflect_version = project.ext.asyncStorageKtVersion
         def junit_version = "4.13.2"
-        def robolectric_version = "4.7.3"
+        def robolectric_version = "4.10"
         def truth_version = "1.1.3"
         def androidxtest_version = "1.4.0"
         def androidtest_junit_version = "1.1.3"
