@@ -37,6 +37,7 @@
 - Fix empty body no-op multipart response. ([#22227](https://github.com/expo/expo/pull/22227) by [@wschurman](https://github.com/wschurman))
 - Put extra data mutation in transaction. ([#22252](https://github.com/expo/expo/pull/22252) by [@wschurman](https://github.com/wschurman))
 - [iOS] fix bizarre bug when downloading update twice. ([#22355](https://github.com/expo/expo/pull/22355) by [@douglowder](https://github.com/douglowder))
+- Fix rollback to embedded logic. ([#22433](https://github.com/expo/expo/pull/22433) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 
