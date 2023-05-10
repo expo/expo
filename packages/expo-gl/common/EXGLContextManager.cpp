@@ -6,8 +6,9 @@ namespace gl_cpp {
 struct ContextState {
   EXGLContext *ctx;
   std::shared_mutex mutex;
-  bool isReady;
-  std::condition_variable cv;
+  std::promise<void> isReadyPromise;
+  std::future<void> isReady;
+  bool isBeingDestroyed = false;
 };
 
 struct ContextManager {
@@ -19,10 +20,9 @@ struct ContextManager {
 ContextManager manager;
 
 ContextWithLock ContextGet(EXGLContextId id) {
-  std::unique_lock lock(manager.contextLookupMutex);
+  std::shared_lock lock(manager.contextLookupMutex);
   auto iter = manager.contextMap.find(id);
-  // if ctx is null then destroy is in progress
-  if (iter == manager.contextMap.end() || iter->second.ctx == nullptr) {
+  if (iter == manager.contextMap.end() || iter->second.isBeingDestroyed) {
     return {nullptr, std::shared_lock<std::shared_mutex>()};
   }
   return {iter->second.ctx, std::shared_lock(iter->second.mutex)};
@@ -31,13 +31,23 @@ ContextWithLock ContextGet(EXGLContextId id) {
 void ContextMarkReady(EXGLContextId id) {
   std::shared_lock lock(manager.contextLookupMutex);
   auto iter = manager.contextMap.find(id);
-  // if ctx is null then destroy is in progress
-  if (iter == manager.contextMap.end() || iter->second.ctx == nullptr) {
+  if (iter == manager.contextMap.end() || iter->second.isBeingDestroyed) {
+    EXGLSysLog("No context to mark as ready");
     return;
   }
   std::shared_lock contextLock(iter->second.mutex);
-  iter->second.isReady = true;
-  iter->second.cv.notify_one();
+  iter->second.isReadyPromise.set_value();
+}
+
+void ContextMarkPrepareStart(EXGLContextId id) {
+  std::shared_lock lock(manager.contextLookupMutex);
+  auto iter = manager.contextMap.find(id);
+  if (iter == manager.contextMap.end() || iter->second.isBeingDestroyed) {
+    EXGLSysLog("No context to mark as ready");
+    return;
+  }
+  std::unique_lock contextLock(iter->second.mutex);
+  iter->second.isReady = iter->second.isReadyPromise.get_future();
 }
 
 EXGLContextId ContextCreate() {
@@ -58,7 +68,6 @@ EXGLContextId ContextCreate() {
 }
 
 void ContextDestroy(EXGLContextId id) {
-  // Wait for isReady to be set.
   {
     std::shared_lock lock(manager.contextLookupMutex);
     auto iter = manager.contextMap.find(id);
@@ -66,23 +75,32 @@ void ContextDestroy(EXGLContextId id) {
       EXGLSysLog("Unable to destory context. Context not found.");
       return;
     }
-    std::mutex localMutex;
-    std::unique_lock cv_lock(localMutex);
-    iter->second.cv.wait(cv_lock, [&] { return iter->second.isReady; });
+
+    // Wait for isReady to be set if future is valid, otherwise we know that
+    // ContextPrepare was not called yet, so we can just conntinue.
+    // Set isBeingDestroyed = true to make sure any ContextGet calls from
+    // now on will return nullptr.
+    {
+      std::shared_lock contextLock(iter->second.mutex);
+      if (iter->second.isReady.valid()) {
+        iter->second.isReady.wait();
+      }
+      iter->second.isBeingDestroyed = true;
+    }
+
+    // When we know that context is initialized, it's safe to use unique_lock
+    // without risk of a deadlock.
+    std::unique_lock contextLock(iter->second.mutex);
+    delete iter->second.ctx;
+    iter->second.ctx = nullptr;
   }
-  // When we know that context is initialized, it's safe to use unique_lock
-  // without risk of a deadlock.
+  // Remove entry from map (at this point nothing should hold a shared_lock on the context)
   {
     std::unique_lock lock(manager.contextLookupMutex);
     auto iter = manager.contextMap.find(id);
     if (iter == manager.contextMap.end()) {
       EXGLSysLog("Unable to destory context. Context not found.");
       return;
-    }
-    {
-      std::unique_lock lock(iter->second.mutex);
-      delete iter->second.ctx;
-      iter->second.ctx = nullptr;
     }
     manager.contextMap.erase(iter);
   }

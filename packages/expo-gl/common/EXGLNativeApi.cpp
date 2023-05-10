@@ -12,6 +12,7 @@ void EXGLContextPrepare(
     void *jsiPtr,
     EXGLContextId exglCtxId,
     std::function<void(void)> flushMethod) {
+  ContextMarkPrepareStart(exglCtxId);
   {
     auto [exglCtx, lock] = ContextGet(exglCtxId);
     if (exglCtx) {

@@ -10,6 +10,7 @@ using ContextWithLock = std::pair<EXGLContext *, std::shared_lock<std::shared_mu
 
 EXGLContextId ContextCreate();
 void ContextMarkReady(EXGLContextId id);
+void ContextMarkPrepareStart(EXGLContextId id);
 ContextWithLock ContextGet(EXGLContextId id);
 void ContextDestroy(EXGLContextId id);
 
