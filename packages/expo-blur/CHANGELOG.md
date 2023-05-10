@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed Detox tests hanging when `BlurView` is present
+
 ### 💡 Others
 
 ## 12.3.0 — 2023-04-17
