@@ -44,12 +44,12 @@ final class BlurEffectView: UIVisualEffectView {
     // is a continually running animation, which makes detox hang (it waits for the animation to finish indefinitely).
     // We can detect if detoxServer is running and in that case replace smooth intensity value with an on/off behaviour.
     let args = ProcessInfo.processInfo.arguments
-    
-    if (args.contains("-detoxServer") && args.contains("-detoxSessionId")) {
+
+    if args.contains("-detoxServer") && args.contains("-detoxSessionId") {
       effect = intensity > 0 ? visualEffect : nil
       return
     }
-    
+
     effect = nil
     animator?.stopAnimation(true)
     animator = UIViewPropertyAnimator(duration: 1, curve: .linear) { [unowned self] in
