@@ -65,7 +65,7 @@ If you need to make native code changes to your Expo project, such as adding cus
   - In the **General** tab, in the **Identity** section, put in a unique Bundle Identifier.
   - Also in the **General** tab, in the **Signing** section, select your personal or team Apple Developer account as your **Team**, and create a new signing certificate by clicking **Fix Issue**.
 - In the project's settings page, select the **ExpoNotificationServiceExtension** target, and then:
-  - In the **General** tab, in the **Identity** section, its Bundle Identifier should be prefixed with your unique Bundle Identifier. For example, if your unique Bundle Identifier is `host.exp.Exponent.unique`, then the Bundle Identifier for the notification service extension should be `host.exp.Exponent.unique.ExpoNotificationServiceExtension`.
+  - In the **General** tab, in the **Identity** section, change its Bundle Identifier to be prefixed with your unique Bundle Identifier. For example, if your unique Bundle Identifier is `host.exp.Exponent.unique`, then the Bundle Identifier for the notification service extension should be `host.exp.Exponent.unique.ExpoNotificationServiceExtension`.
 - Finally, run the build.
 
 ### Android
