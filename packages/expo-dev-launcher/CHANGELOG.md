@@ -13,7 +13,7 @@
 ### 📚 3rd party library updates
 
 - Update `react-native` to 0.71.7. ([#22253](https://github.com/expo/expo/pull/22253) by [@kudo](https://github.com/kudo))
-- Update `react-native` to 0.71.8. ([#xxxxx](https://github.com/expo/expo/pull/xxxxx) by [@gusgard](https://github.com/gusgard))
+- Update `react-native` to 0.71.8. ([#22458](https://github.com/expo/expo/pull/22458) by [@gusgard](https://github.com/gusgard))
 
 ## 2.2.1 — 2023-04-14
 
