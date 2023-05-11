@@ -1588,40 +1588,40 @@ PODS:
     - ABI48_0_0React-Core
     - ASN1Decoder (~> 1.8)
   - ABI48_0_0EXUpdatesInterface (0.9.1)
-  - ABI48_0_0FBLazyVector (0.71.7)
-  - ABI48_0_0FBReactNativeSpec (0.71.7):
-    - ABI48_0_0RCTRequired (= 0.71.7)
-    - ABI48_0_0RCTTypeSafety (= 0.71.7)
-    - ABI48_0_0React-Core (= 0.71.7)
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.7)
+  - ABI48_0_0FBLazyVector (0.71.8)
+  - ABI48_0_0FBReactNativeSpec (0.71.8):
+    - ABI48_0_0RCTRequired (= 0.71.8)
+    - ABI48_0_0RCTTypeSafety (= 0.71.8)
+    - ABI48_0_0React-Core (= 0.71.8)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.8)
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0hermes-engine (0.71.7):
-    - ABI48_0_0hermes-engine/Pre-built (= 0.71.7)
-  - ABI48_0_0hermes-engine/Pre-built (0.71.7)
+  - ABI48_0_0hermes-engine (0.71.8):
+    - ABI48_0_0hermes-engine/Pre-built (= 0.71.8)
+  - ABI48_0_0hermes-engine/Pre-built (0.71.8)
   - ABI48_0_0lottie-react-native (5.1.4):
     - ABI48_0_0React-Core
     - lottie-ios (~> 3.4.0)
-  - ABI48_0_0RCTRequired (0.71.7)
-  - ABI48_0_0RCTTypeSafety (0.71.7):
-    - ABI48_0_0FBLazyVector (= 0.71.7)
-    - ABI48_0_0RCTRequired (= 0.71.7)
-    - ABI48_0_0React-Core (= 0.71.7)
-  - ABI48_0_0React (0.71.7):
-    - ABI48_0_0React-Core (= 0.71.7)
-    - ABI48_0_0React-Core/DevSupport (= 0.71.7)
-    - ABI48_0_0React-Core/RCTWebSocket (= 0.71.7)
-    - ABI48_0_0React-RCTActionSheet (= 0.71.7)
-    - ABI48_0_0React-RCTAnimation (= 0.71.7)
-    - ABI48_0_0React-RCTBlob (= 0.71.7)
-    - ABI48_0_0React-RCTImage (= 0.71.7)
-    - ABI48_0_0React-RCTLinking (= 0.71.7)
-    - ABI48_0_0React-RCTNetwork (= 0.71.7)
-    - ABI48_0_0React-RCTSettings (= 0.71.7)
-    - ABI48_0_0React-RCTText (= 0.71.7)
-    - ABI48_0_0React-RCTVibration (= 0.71.7)
-  - ABI48_0_0React-callinvoker (0.71.7)
-  - ABI48_0_0React-Codegen (0.71.7):
+  - ABI48_0_0RCTRequired (0.71.8)
+  - ABI48_0_0RCTTypeSafety (0.71.8):
+    - ABI48_0_0FBLazyVector (= 0.71.8)
+    - ABI48_0_0RCTRequired (= 0.71.8)
+    - ABI48_0_0React-Core (= 0.71.8)
+  - ABI48_0_0React (0.71.8):
+    - ABI48_0_0React-Core (= 0.71.8)
+    - ABI48_0_0React-Core/DevSupport (= 0.71.8)
+    - ABI48_0_0React-Core/RCTWebSocket (= 0.71.8)
+    - ABI48_0_0React-RCTActionSheet (= 0.71.8)
+    - ABI48_0_0React-RCTAnimation (= 0.71.8)
+    - ABI48_0_0React-RCTBlob (= 0.71.8)
+    - ABI48_0_0React-RCTImage (= 0.71.8)
+    - ABI48_0_0React-RCTLinking (= 0.71.8)
+    - ABI48_0_0React-RCTNetwork (= 0.71.8)
+    - ABI48_0_0React-RCTSettings (= 0.71.8)
+    - ABI48_0_0React-RCTText (= 0.71.8)
+    - ABI48_0_0React-RCTVibration (= 0.71.8)
+  - ABI48_0_0React-callinvoker (0.71.8)
+  - ABI48_0_0React-Codegen (0.71.8):
     - ABI48_0_0FBReactNativeSpec
     - ABI48_0_0hermes-engine
     - ABI48_0_0RCTRequired
@@ -1632,213 +1632,213 @@ PODS:
     - ABI48_0_0ReactCommon/turbomodule/bridging
     - ABI48_0_0ReactCommon/turbomodule/core
     - RCT-Folly
-  - ABI48_0_0React-Core (0.71.7):
+  - ABI48_0_0React-Core (0.71.8):
     - ABI48_0_0hermes-engine
-    - ABI48_0_0React-Core/Default (= 0.71.7)
-    - ABI48_0_0React-cxxreact (= 0.71.7)
+    - ABI48_0_0React-Core/Default (= 0.71.8)
+    - ABI48_0_0React-cxxreact (= 0.71.8)
     - ABI48_0_0React-hermes
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-jsiexecutor (= 0.71.7)
-    - ABI48_0_0React-perflogger (= 0.71.7)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-jsiexecutor (= 0.71.8)
+    - ABI48_0_0React-perflogger (= 0.71.8)
     - ABI48_0_0Yoga
     - glog
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-Core/CoreModulesHeaders (0.71.7):
-    - ABI48_0_0hermes-engine
-    - ABI48_0_0React-Core/Default
-    - ABI48_0_0React-cxxreact (= 0.71.7)
-    - ABI48_0_0React-hermes
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-jsiexecutor (= 0.71.7)
-    - ABI48_0_0React-perflogger (= 0.71.7)
-    - ABI48_0_0Yoga
-    - glog
-    - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-Core/Default (0.71.7):
-    - ABI48_0_0hermes-engine
-    - ABI48_0_0React-cxxreact (= 0.71.7)
-    - ABI48_0_0React-hermes
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-jsiexecutor (= 0.71.7)
-    - ABI48_0_0React-perflogger (= 0.71.7)
-    - ABI48_0_0Yoga
-    - glog
-    - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-Core/DevSupport (0.71.7):
-    - ABI48_0_0hermes-engine
-    - ABI48_0_0React-Core/Default (= 0.71.7)
-    - ABI48_0_0React-Core/RCTWebSocket (= 0.71.7)
-    - ABI48_0_0React-cxxreact (= 0.71.7)
-    - ABI48_0_0React-hermes
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-jsiexecutor (= 0.71.7)
-    - ABI48_0_0React-jsinspector (= 0.71.7)
-    - ABI48_0_0React-perflogger (= 0.71.7)
-    - ABI48_0_0Yoga
-    - glog
-    - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-Core/RCTActionSheetHeaders (0.71.7):
+  - ABI48_0_0React-Core/CoreModulesHeaders (0.71.8):
     - ABI48_0_0hermes-engine
     - ABI48_0_0React-Core/Default
-    - ABI48_0_0React-cxxreact (= 0.71.7)
+    - ABI48_0_0React-cxxreact (= 0.71.8)
     - ABI48_0_0React-hermes
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-jsiexecutor (= 0.71.7)
-    - ABI48_0_0React-perflogger (= 0.71.7)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-jsiexecutor (= 0.71.8)
+    - ABI48_0_0React-perflogger (= 0.71.8)
     - ABI48_0_0Yoga
     - glog
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-Core/RCTAnimationHeaders (0.71.7):
+  - ABI48_0_0React-Core/Default (0.71.8):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-cxxreact (= 0.71.8)
+    - ABI48_0_0React-hermes
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-jsiexecutor (= 0.71.8)
+    - ABI48_0_0React-perflogger (= 0.71.8)
+    - ABI48_0_0Yoga
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-Core/DevSupport (0.71.8):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-Core/Default (= 0.71.8)
+    - ABI48_0_0React-Core/RCTWebSocket (= 0.71.8)
+    - ABI48_0_0React-cxxreact (= 0.71.8)
+    - ABI48_0_0React-hermes
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-jsiexecutor (= 0.71.8)
+    - ABI48_0_0React-jsinspector (= 0.71.8)
+    - ABI48_0_0React-perflogger (= 0.71.8)
+    - ABI48_0_0Yoga
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-Core/RCTActionSheetHeaders (0.71.8):
     - ABI48_0_0hermes-engine
     - ABI48_0_0React-Core/Default
-    - ABI48_0_0React-cxxreact (= 0.71.7)
+    - ABI48_0_0React-cxxreact (= 0.71.8)
     - ABI48_0_0React-hermes
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-jsiexecutor (= 0.71.7)
-    - ABI48_0_0React-perflogger (= 0.71.7)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-jsiexecutor (= 0.71.8)
+    - ABI48_0_0React-perflogger (= 0.71.8)
     - ABI48_0_0Yoga
     - glog
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-Core/RCTBlobHeaders (0.71.7):
+  - ABI48_0_0React-Core/RCTAnimationHeaders (0.71.8):
     - ABI48_0_0hermes-engine
     - ABI48_0_0React-Core/Default
-    - ABI48_0_0React-cxxreact (= 0.71.7)
+    - ABI48_0_0React-cxxreact (= 0.71.8)
     - ABI48_0_0React-hermes
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-jsiexecutor (= 0.71.7)
-    - ABI48_0_0React-perflogger (= 0.71.7)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-jsiexecutor (= 0.71.8)
+    - ABI48_0_0React-perflogger (= 0.71.8)
     - ABI48_0_0Yoga
     - glog
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-Core/RCTImageHeaders (0.71.7):
+  - ABI48_0_0React-Core/RCTBlobHeaders (0.71.8):
     - ABI48_0_0hermes-engine
     - ABI48_0_0React-Core/Default
-    - ABI48_0_0React-cxxreact (= 0.71.7)
+    - ABI48_0_0React-cxxreact (= 0.71.8)
     - ABI48_0_0React-hermes
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-jsiexecutor (= 0.71.7)
-    - ABI48_0_0React-perflogger (= 0.71.7)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-jsiexecutor (= 0.71.8)
+    - ABI48_0_0React-perflogger (= 0.71.8)
     - ABI48_0_0Yoga
     - glog
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-Core/RCTLinkingHeaders (0.71.7):
+  - ABI48_0_0React-Core/RCTImageHeaders (0.71.8):
     - ABI48_0_0hermes-engine
     - ABI48_0_0React-Core/Default
-    - ABI48_0_0React-cxxreact (= 0.71.7)
+    - ABI48_0_0React-cxxreact (= 0.71.8)
     - ABI48_0_0React-hermes
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-jsiexecutor (= 0.71.7)
-    - ABI48_0_0React-perflogger (= 0.71.7)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-jsiexecutor (= 0.71.8)
+    - ABI48_0_0React-perflogger (= 0.71.8)
     - ABI48_0_0Yoga
     - glog
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-Core/RCTNetworkHeaders (0.71.7):
+  - ABI48_0_0React-Core/RCTLinkingHeaders (0.71.8):
     - ABI48_0_0hermes-engine
     - ABI48_0_0React-Core/Default
-    - ABI48_0_0React-cxxreact (= 0.71.7)
+    - ABI48_0_0React-cxxreact (= 0.71.8)
     - ABI48_0_0React-hermes
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-jsiexecutor (= 0.71.7)
-    - ABI48_0_0React-perflogger (= 0.71.7)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-jsiexecutor (= 0.71.8)
+    - ABI48_0_0React-perflogger (= 0.71.8)
     - ABI48_0_0Yoga
     - glog
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-Core/RCTSettingsHeaders (0.71.7):
+  - ABI48_0_0React-Core/RCTNetworkHeaders (0.71.8):
     - ABI48_0_0hermes-engine
     - ABI48_0_0React-Core/Default
-    - ABI48_0_0React-cxxreact (= 0.71.7)
+    - ABI48_0_0React-cxxreact (= 0.71.8)
     - ABI48_0_0React-hermes
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-jsiexecutor (= 0.71.7)
-    - ABI48_0_0React-perflogger (= 0.71.7)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-jsiexecutor (= 0.71.8)
+    - ABI48_0_0React-perflogger (= 0.71.8)
     - ABI48_0_0Yoga
     - glog
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-Core/RCTTextHeaders (0.71.7):
+  - ABI48_0_0React-Core/RCTSettingsHeaders (0.71.8):
     - ABI48_0_0hermes-engine
     - ABI48_0_0React-Core/Default
-    - ABI48_0_0React-cxxreact (= 0.71.7)
+    - ABI48_0_0React-cxxreact (= 0.71.8)
     - ABI48_0_0React-hermes
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-jsiexecutor (= 0.71.7)
-    - ABI48_0_0React-perflogger (= 0.71.7)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-jsiexecutor (= 0.71.8)
+    - ABI48_0_0React-perflogger (= 0.71.8)
     - ABI48_0_0Yoga
     - glog
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-Core/RCTVibrationHeaders (0.71.7):
+  - ABI48_0_0React-Core/RCTTextHeaders (0.71.8):
     - ABI48_0_0hermes-engine
     - ABI48_0_0React-Core/Default
-    - ABI48_0_0React-cxxreact (= 0.71.7)
+    - ABI48_0_0React-cxxreact (= 0.71.8)
     - ABI48_0_0React-hermes
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-jsiexecutor (= 0.71.7)
-    - ABI48_0_0React-perflogger (= 0.71.7)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-jsiexecutor (= 0.71.8)
+    - ABI48_0_0React-perflogger (= 0.71.8)
     - ABI48_0_0Yoga
     - glog
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-Core/RCTWebSocket (0.71.7):
+  - ABI48_0_0React-Core/RCTVibrationHeaders (0.71.8):
     - ABI48_0_0hermes-engine
-    - ABI48_0_0React-Core/Default (= 0.71.7)
-    - ABI48_0_0React-cxxreact (= 0.71.7)
+    - ABI48_0_0React-Core/Default
+    - ABI48_0_0React-cxxreact (= 0.71.8)
     - ABI48_0_0React-hermes
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-jsiexecutor (= 0.71.7)
-    - ABI48_0_0React-perflogger (= 0.71.7)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-jsiexecutor (= 0.71.8)
+    - ABI48_0_0React-perflogger (= 0.71.8)
     - ABI48_0_0Yoga
     - glog
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-CoreModules (0.71.7):
-    - ABI48_0_0RCTTypeSafety (= 0.71.7)
-    - ABI48_0_0React-Codegen (= 0.71.7)
-    - ABI48_0_0React-Core/CoreModulesHeaders (= 0.71.7)
-    - ABI48_0_0React-jsi (= 0.71.7)
+  - ABI48_0_0React-Core/RCTWebSocket (0.71.8):
+    - ABI48_0_0hermes-engine
+    - ABI48_0_0React-Core/Default (= 0.71.8)
+    - ABI48_0_0React-cxxreact (= 0.71.8)
+    - ABI48_0_0React-hermes
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-jsiexecutor (= 0.71.8)
+    - ABI48_0_0React-perflogger (= 0.71.8)
+    - ABI48_0_0Yoga
+    - glog
+    - RCT-Folly (= 2021.07.22.00)
+  - ABI48_0_0React-CoreModules (0.71.8):
+    - ABI48_0_0RCTTypeSafety (= 0.71.8)
+    - ABI48_0_0React-Codegen (= 0.71.8)
+    - ABI48_0_0React-Core/CoreModulesHeaders (= 0.71.8)
+    - ABI48_0_0React-jsi (= 0.71.8)
     - ABI48_0_0React-RCTBlob
-    - ABI48_0_0React-RCTImage (= 0.71.7)
-    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.7)
+    - ABI48_0_0React-RCTImage (= 0.71.8)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.8)
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-cxxreact (0.71.7):
+  - ABI48_0_0React-cxxreact (0.71.8):
     - ABI48_0_0hermes-engine
-    - ABI48_0_0React-callinvoker (= 0.71.7)
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-jsinspector (= 0.71.7)
-    - ABI48_0_0React-logger (= 0.71.7)
-    - ABI48_0_0React-perflogger (= 0.71.7)
-    - ABI48_0_0React-runtimeexecutor (= 0.71.7)
+    - ABI48_0_0React-callinvoker (= 0.71.8)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-jsinspector (= 0.71.8)
+    - ABI48_0_0React-logger (= 0.71.8)
+    - ABI48_0_0React-perflogger (= 0.71.8)
+    - ABI48_0_0React-runtimeexecutor (= 0.71.8)
     - boost (= 1.76.0)
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-hermes (0.71.7):
+  - ABI48_0_0React-hermes (0.71.8):
     - ABI48_0_0hermes-engine
-    - ABI48_0_0React-cxxreact (= 0.71.7)
+    - ABI48_0_0React-cxxreact (= 0.71.8)
     - ABI48_0_0React-jsi
-    - ABI48_0_0React-jsiexecutor (= 0.71.7)
-    - ABI48_0_0React-jsinspector (= 0.71.7)
-    - ABI48_0_0React-perflogger (= 0.71.7)
+    - ABI48_0_0React-jsiexecutor (= 0.71.8)
+    - ABI48_0_0React-jsinspector (= 0.71.8)
+    - ABI48_0_0React-perflogger (= 0.71.8)
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.07.22.00)
     - RCT-Folly/Futures (= 2021.07.22.00)
-  - ABI48_0_0React-jsc (0.71.7):
-    - ABI48_0_0React-jsc/Fabric (= 0.71.7)
-    - ABI48_0_0React-jsi (= 0.71.7)
-  - ABI48_0_0React-jsc/Fabric (0.71.7):
-    - ABI48_0_0React-jsi (= 0.71.7)
-  - ABI48_0_0React-jsi (0.71.7):
+  - ABI48_0_0React-jsc (0.71.8):
+    - ABI48_0_0React-jsc/Fabric (= 0.71.8)
+    - ABI48_0_0React-jsi (= 0.71.8)
+  - ABI48_0_0React-jsc/Fabric (0.71.8):
+    - ABI48_0_0React-jsi (= 0.71.8)
+  - ABI48_0_0React-jsi (0.71.8):
     - boost (= 1.76.0)
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-jsiexecutor (0.71.7):
+  - ABI48_0_0React-jsiexecutor (0.71.8):
     - ABI48_0_0hermes-engine
-    - ABI48_0_0React-cxxreact (= 0.71.7)
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-perflogger (= 0.71.7)
+    - ABI48_0_0React-cxxreact (= 0.71.8)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-perflogger (= 0.71.8)
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-jsinspector (0.71.7)
-  - ABI48_0_0React-logger (0.71.7):
+  - ABI48_0_0React-jsinspector (0.71.8)
+  - ABI48_0_0React-logger (0.71.8):
     - glog
   - ABI48_0_0react-native-netinfo (9.3.7):
     - ABI48_0_0React-Core
@@ -1885,119 +1885,119 @@ PODS:
     - ABI48_0_0React-Core
   - ABI48_0_0react-native-webview (11.26.0):
     - ABI48_0_0React-Core
-  - ABI48_0_0React-perflogger (0.71.7)
-  - ABI48_0_0React-RCTActionSheet (0.71.7):
-    - ABI48_0_0React-Core/RCTActionSheetHeaders (= 0.71.7)
-  - ABI48_0_0React-RCTAnimation (0.71.7):
-    - ABI48_0_0RCTTypeSafety (= 0.71.7)
-    - ABI48_0_0React-Codegen (= 0.71.7)
-    - ABI48_0_0React-Core/RCTAnimationHeaders (= 0.71.7)
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.7)
+  - ABI48_0_0React-perflogger (0.71.8)
+  - ABI48_0_0React-RCTActionSheet (0.71.8):
+    - ABI48_0_0React-Core/RCTActionSheetHeaders (= 0.71.8)
+  - ABI48_0_0React-RCTAnimation (0.71.8):
+    - ABI48_0_0RCTTypeSafety (= 0.71.8)
+    - ABI48_0_0React-Codegen (= 0.71.8)
+    - ABI48_0_0React-Core/RCTAnimationHeaders (= 0.71.8)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.8)
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-RCTAppDelegate (0.71.7):
+  - ABI48_0_0React-RCTAppDelegate (0.71.8):
     - ABI48_0_0RCTRequired
     - ABI48_0_0RCTTypeSafety
     - ABI48_0_0React-Core
     - ABI48_0_0ReactCommon/turbomodule/core
     - RCT-Folly
-  - ABI48_0_0React-RCTBlob (0.71.7):
+  - ABI48_0_0React-RCTBlob (0.71.8):
     - ABI48_0_0hermes-engine
-    - ABI48_0_0React-Codegen (= 0.71.7)
-    - ABI48_0_0React-Core/RCTBlobHeaders (= 0.71.7)
-    - ABI48_0_0React-Core/RCTWebSocket (= 0.71.7)
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-RCTNetwork (= 0.71.7)
-    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.7)
+    - ABI48_0_0React-Codegen (= 0.71.8)
+    - ABI48_0_0React-Core/RCTBlobHeaders (= 0.71.8)
+    - ABI48_0_0React-Core/RCTWebSocket (= 0.71.8)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-RCTNetwork (= 0.71.8)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.8)
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-RCTImage (0.71.7):
-    - ABI48_0_0RCTTypeSafety (= 0.71.7)
-    - ABI48_0_0React-Codegen (= 0.71.7)
-    - ABI48_0_0React-Core/RCTImageHeaders (= 0.71.7)
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-RCTNetwork (= 0.71.7)
-    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.7)
+  - ABI48_0_0React-RCTImage (0.71.8):
+    - ABI48_0_0RCTTypeSafety (= 0.71.8)
+    - ABI48_0_0React-Codegen (= 0.71.8)
+    - ABI48_0_0React-Core/RCTImageHeaders (= 0.71.8)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-RCTNetwork (= 0.71.8)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.8)
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-RCTLinking (0.71.7):
-    - ABI48_0_0React-Codegen (= 0.71.7)
-    - ABI48_0_0React-Core/RCTLinkingHeaders (= 0.71.7)
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.7)
-  - ABI48_0_0React-RCTNetwork (0.71.7):
-    - ABI48_0_0RCTTypeSafety (= 0.71.7)
-    - ABI48_0_0React-Codegen (= 0.71.7)
-    - ABI48_0_0React-Core/RCTNetworkHeaders (= 0.71.7)
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.7)
+  - ABI48_0_0React-RCTLinking (0.71.8):
+    - ABI48_0_0React-Codegen (= 0.71.8)
+    - ABI48_0_0React-Core/RCTLinkingHeaders (= 0.71.8)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.8)
+  - ABI48_0_0React-RCTNetwork (0.71.8):
+    - ABI48_0_0RCTTypeSafety (= 0.71.8)
+    - ABI48_0_0React-Codegen (= 0.71.8)
+    - ABI48_0_0React-Core/RCTNetworkHeaders (= 0.71.8)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.8)
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-RCTSettings (0.71.7):
-    - ABI48_0_0RCTTypeSafety (= 0.71.7)
-    - ABI48_0_0React-Codegen (= 0.71.7)
-    - ABI48_0_0React-Core/RCTSettingsHeaders (= 0.71.7)
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.7)
+  - ABI48_0_0React-RCTSettings (0.71.8):
+    - ABI48_0_0RCTTypeSafety (= 0.71.8)
+    - ABI48_0_0React-Codegen (= 0.71.8)
+    - ABI48_0_0React-Core/RCTSettingsHeaders (= 0.71.8)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.8)
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-RCTText (0.71.7):
-    - ABI48_0_0React-Core/RCTTextHeaders (= 0.71.7)
-  - ABI48_0_0React-RCTVibration (0.71.7):
-    - ABI48_0_0React-Codegen (= 0.71.7)
-    - ABI48_0_0React-Core/RCTVibrationHeaders (= 0.71.7)
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.7)
+  - ABI48_0_0React-RCTText (0.71.8):
+    - ABI48_0_0React-Core/RCTTextHeaders (= 0.71.8)
+  - ABI48_0_0React-RCTVibration (0.71.8):
+    - ABI48_0_0React-Codegen (= 0.71.8)
+    - ABI48_0_0React-Core/RCTVibrationHeaders (= 0.71.8)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.8)
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0React-runtimeexecutor (0.71.7):
-    - ABI48_0_0React-jsi (= 0.71.7)
-  - ABI48_0_0ReactCommon (0.71.7):
-    - ABI48_0_0React-logger (= 0.71.7)
-    - ABI48_0_0ReactCommon/react_debug_core (= 0.71.7)
-    - ABI48_0_0ReactCommon/turbomodule (= 0.71.7)
-  - ABI48_0_0ReactCommon/react_debug_core (0.71.7):
-    - ABI48_0_0React-logger (= 0.71.7)
-  - ABI48_0_0ReactCommon/turbomodule (0.71.7):
+  - ABI48_0_0React-runtimeexecutor (0.71.8):
+    - ABI48_0_0React-jsi (= 0.71.8)
+  - ABI48_0_0ReactCommon (0.71.8):
+    - ABI48_0_0React-logger (= 0.71.8)
+    - ABI48_0_0ReactCommon/react_debug_core (= 0.71.8)
+    - ABI48_0_0ReactCommon/turbomodule (= 0.71.8)
+  - ABI48_0_0ReactCommon/react_debug_core (0.71.8):
+    - ABI48_0_0React-logger (= 0.71.8)
+  - ABI48_0_0ReactCommon/turbomodule (0.71.8):
     - ABI48_0_0hermes-engine
-    - ABI48_0_0React-callinvoker (= 0.71.7)
-    - ABI48_0_0React-Core (= 0.71.7)
-    - ABI48_0_0React-cxxreact (= 0.71.7)
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-logger (= 0.71.7)
-    - ABI48_0_0React-perflogger (= 0.71.7)
-    - ABI48_0_0ReactCommon/turbomodule/bridging (= 0.71.7)
-    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.7)
-    - ABI48_0_0ReactCommon/turbomodule/samples (= 0.71.7)
+    - ABI48_0_0React-callinvoker (= 0.71.8)
+    - ABI48_0_0React-Core (= 0.71.8)
+    - ABI48_0_0React-cxxreact (= 0.71.8)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-logger (= 0.71.8)
+    - ABI48_0_0React-perflogger (= 0.71.8)
+    - ABI48_0_0ReactCommon/turbomodule/bridging (= 0.71.8)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.8)
+    - ABI48_0_0ReactCommon/turbomodule/samples (= 0.71.8)
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0ReactCommon/turbomodule/bridging (0.71.7):
+  - ABI48_0_0ReactCommon/turbomodule/bridging (0.71.8):
     - ABI48_0_0hermes-engine
-    - ABI48_0_0React-callinvoker (= 0.71.7)
-    - ABI48_0_0React-Core (= 0.71.7)
-    - ABI48_0_0React-cxxreact (= 0.71.7)
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-logger (= 0.71.7)
-    - ABI48_0_0React-perflogger (= 0.71.7)
+    - ABI48_0_0React-callinvoker (= 0.71.8)
+    - ABI48_0_0React-Core (= 0.71.8)
+    - ABI48_0_0React-cxxreact (= 0.71.8)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-logger (= 0.71.8)
+    - ABI48_0_0React-perflogger (= 0.71.8)
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0ReactCommon/turbomodule/core (0.71.7):
+  - ABI48_0_0ReactCommon/turbomodule/core (0.71.8):
     - ABI48_0_0hermes-engine
-    - ABI48_0_0React-callinvoker (= 0.71.7)
-    - ABI48_0_0React-Core (= 0.71.7)
-    - ABI48_0_0React-cxxreact (= 0.71.7)
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-logger (= 0.71.7)
-    - ABI48_0_0React-perflogger (= 0.71.7)
+    - ABI48_0_0React-callinvoker (= 0.71.8)
+    - ABI48_0_0React-Core (= 0.71.8)
+    - ABI48_0_0React-cxxreact (= 0.71.8)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-logger (= 0.71.8)
+    - ABI48_0_0React-perflogger (= 0.71.8)
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.07.22.00)
-  - ABI48_0_0ReactCommon/turbomodule/samples (0.71.7):
+  - ABI48_0_0ReactCommon/turbomodule/samples (0.71.8):
     - ABI48_0_0hermes-engine
-    - ABI48_0_0React-callinvoker (= 0.71.7)
-    - ABI48_0_0React-Core (= 0.71.7)
-    - ABI48_0_0React-cxxreact (= 0.71.7)
-    - ABI48_0_0React-jsi (= 0.71.7)
-    - ABI48_0_0React-logger (= 0.71.7)
-    - ABI48_0_0React-perflogger (= 0.71.7)
-    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.7)
+    - ABI48_0_0React-callinvoker (= 0.71.8)
+    - ABI48_0_0React-Core (= 0.71.8)
+    - ABI48_0_0React-cxxreact (= 0.71.8)
+    - ABI48_0_0React-jsi (= 0.71.8)
+    - ABI48_0_0React-logger (= 0.71.8)
+    - ABI48_0_0React-perflogger (= 0.71.8)
+    - ABI48_0_0ReactCommon/turbomodule/core (= 0.71.8)
     - DoubleConversion
     - glog
     - RCT-Folly (= 2021.07.22.00)
@@ -4657,24 +4657,24 @@ SPEC CHECKSUMS:
   ABI48_0_0EXTaskManager: 50787a05672e70f5e0489bd106e0ee840d2e9d22
   ABI48_0_0EXUpdates: ce442e2b81977a7e59e2c78c89d7cf3b06ccc589
   ABI48_0_0EXUpdatesInterface: 483c7b433e33745bc96b5438cdce8ed5106d8f88
-  ABI48_0_0FBLazyVector: 9bb30a8f9fc54ad86d94298a24b452b8672d102d
-  ABI48_0_0FBReactNativeSpec: d4e590927f29394e491a9cbe2e66a1e34e271e77
-  ABI48_0_0hermes-engine: 918484db47836e0e5a0d1fb5f740107461d068b4
+  ABI48_0_0FBLazyVector: ba5a3ece320cd0cf1f5022a3079ee979ca876c82
+  ABI48_0_0FBReactNativeSpec: 417f58a4c86bac8737d3085b32042c39a2936941
+  ABI48_0_0hermes-engine: fdae846a9ce7e57b916325cb216c30d1731c5420
   ABI48_0_0lottie-react-native: e75c2a083fd686dbf0a69602103912b6317815bc
-  ABI48_0_0RCTRequired: fd699c3c7a8ce28f606970f10b00231ed288bfed
-  ABI48_0_0RCTTypeSafety: 95269fbb0676ed696b07078b2d4566b6b9b35299
-  ABI48_0_0React: ac8297eb9334e8824d8e0aa91f0a9c24559b15e8
-  ABI48_0_0React-callinvoker: 78d6540be378eac1cfc86caeec390a878a0f805d
-  ABI48_0_0React-Codegen: a7a0efcac821a1b8c98203fc9f6756450fda6617
-  ABI48_0_0React-Core: 75d67aebff6103c5b0434fbe596cac1c38cf5afd
-  ABI48_0_0React-CoreModules: e38dfece7303c64b34d581a3cf8f5034dec8911c
-  ABI48_0_0React-cxxreact: d5d9d29bb0756245416c4de3130ba0fb59b09ead
-  ABI48_0_0React-hermes: d295ffceb08d3a80f9ba68f2649374cdb113c336
-  ABI48_0_0React-jsc: 12f67a78d5a1191f30327bd8abf9976631c1c7c3
-  ABI48_0_0React-jsi: 71049fabca9747bf2d2b56d3811edc8286f6e4f8
-  ABI48_0_0React-jsiexecutor: 7fb7ce563c7a8d5862cd4424f0e365ac6d272f2a
-  ABI48_0_0React-jsinspector: 43fef5fdf70ad73c47c0a7d21eb08bd48ee3915d
-  ABI48_0_0React-logger: f1729ab771b413c249f5f0f47732864edbe5a297
+  ABI48_0_0RCTRequired: aa065e77a54123685e16909848bed02134180706
+  ABI48_0_0RCTTypeSafety: d072094019d2340313b41b99cc95f3321a03d3c5
+  ABI48_0_0React: 45b174cb6f6478d02382b09c31a5d8b9588afc27
+  ABI48_0_0React-callinvoker: ac92f8e02e8795903e25911eb1e3dbf64e176eac
+  ABI48_0_0React-Codegen: 12d64fdcf2e5d0fc01bdcc308abcb08e6aa21b04
+  ABI48_0_0React-Core: 477368eb8e3c6799fbacf62f825915c0932664f4
+  ABI48_0_0React-CoreModules: f0ae8e424bdd73d1ec175e712eb8463fc7f6b389
+  ABI48_0_0React-cxxreact: 326353dfcd2d6a16c49605bd1d03f74efd1f0a17
+  ABI48_0_0React-hermes: e481a662adf4e1cd991732d081b680beba915831
+  ABI48_0_0React-jsc: 998c55275689505814e2302d44ed254906d96a2c
+  ABI48_0_0React-jsi: f4d1bb65a37150a6610a0be7856cd218d5e8cec4
+  ABI48_0_0React-jsiexecutor: e97038fadb097b90893d0e9551575cd23e2bc46e
+  ABI48_0_0React-jsinspector: 9483941c42b269ac2c40d0698f2e989144e2b871
+  ABI48_0_0React-logger: e973f97947292bf811b918d4b7bfaaeb0d6b3797
   ABI48_0_0react-native-netinfo: ebd6d5549363a65c06bb17e0cfe5fcbbe6b33872
   ABI48_0_0react-native-pager-view: d305600a3bfed406e34eced45440aa49db7443ee
   ABI48_0_0react-native-safe-area-context: 20f8ba0ac5f1e77db9004646322ea28940571596
@@ -4682,19 +4682,19 @@ SPEC CHECKSUMS:
   ABI48_0_0react-native-skia: f798aadeab90f76f65e880f7f6ce226cfdb08168
   ABI48_0_0react-native-slider: 945bf10759c027ee55ab625ebc963f0d71c79a3e
   ABI48_0_0react-native-webview: 5865178c5798f4d992d530583f83a211c1f20024
-  ABI48_0_0React-perflogger: 0d4574f2725620588415f8e407efa81f7623d4e0
-  ABI48_0_0React-RCTActionSheet: 5bb2e66207563b55510098bcfa72d384371329bc
-  ABI48_0_0React-RCTAnimation: b79e88788d8ad91a94f146bad2fb7eacb7c39f9d
-  ABI48_0_0React-RCTAppDelegate: 14c11dc89bdc70e6922d0763a1867a5a4ac8e3ad
-  ABI48_0_0React-RCTBlob: 6e8c495b055cd3a55d97e158e73abda14cebd1eb
-  ABI48_0_0React-RCTImage: 3162b5aa582bb0c00b3383c7d2abf7b1896b776a
-  ABI48_0_0React-RCTLinking: a03e0dd22500b8a67bc5049e49fa35f50afb26b0
-  ABI48_0_0React-RCTNetwork: 7a30b4cb1c5ded165116d2575053a82fbab4243d
-  ABI48_0_0React-RCTSettings: f104b70f40a0cf456b5d388f28b0e3d122e3329a
-  ABI48_0_0React-RCTText: 6d6b3b2338a49a26315d39aed2409832abcecfc3
-  ABI48_0_0React-RCTVibration: 1cefdc1ac16284542cbb900c429b88674f0bbedc
-  ABI48_0_0React-runtimeexecutor: 3e4901153cbdb6db129fc3c69c5df6f98b8ce131
-  ABI48_0_0ReactCommon: 21252d272b2423d07703742a520ab2550c312a32
+  ABI48_0_0React-perflogger: 29078cf093c3fc68cd2a549089f318afa5f8f036
+  ABI48_0_0React-RCTActionSheet: 2badb1e3caddcb2c9e586bfad051714c82971543
+  ABI48_0_0React-RCTAnimation: 2feee66e8d65ebcefd7740184d3e5bc2ef1c1715
+  ABI48_0_0React-RCTAppDelegate: 82400fb83babaf1d07fd72742b8afe0911eb1a63
+  ABI48_0_0React-RCTBlob: 56c6ccad92b7c66286a97f26c286c3d70bda88a4
+  ABI48_0_0React-RCTImage: c593a86b9f7021552c2c8c5a63829b7a2df3e929
+  ABI48_0_0React-RCTLinking: 125449a6f32c134554d7faee6496bfeb58230505
+  ABI48_0_0React-RCTNetwork: ed2c9fc4fb19a5739220ca767365e41480249440
+  ABI48_0_0React-RCTSettings: 27d935c168657c6779851a9b90ef5e9cc4baa071
+  ABI48_0_0React-RCTText: 884c71164cd7f2815e662a3983a27c9ec5a56479
+  ABI48_0_0React-RCTVibration: e46bb8ee8468129d3c2cd54bd0a775a52f160c48
+  ABI48_0_0React-runtimeexecutor: b0c9085d61ad0d1fea433a2ab644cfc2f4493996
+  ABI48_0_0ReactCommon: e0f3be96b1cfbcb7d24946b7555eca4cf2cbb04a
   ABI48_0_0RNCAsyncStorage: 3f46749427aa9be4bc903863f7d8dcf8cd3c7276
   ABI48_0_0RNFlashList: 2ea187efe7559fd148b6f86f51b4a75495cf460d
   ABI48_0_0RNGestureHandler: 4ca478526fa36acac7af93af4d976c4bc69c88bc
@@ -4884,4 +4884,4 @@ SPEC CHECKSUMS:
 
 PODFILE CHECKSUM: 6bb5b123ef65907681848e92e63a6f9535528e03
 
-COCOAPODS: 1.11.2
+COCOAPODS: 1.12.0
