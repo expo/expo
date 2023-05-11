@@ -12,7 +12,7 @@
 
 ### 🐛 Bug fixes
 
-- Fixed missing permissions error on Android when the user only requests write permissions
+- Fixed missing permissions error on Android when the user only requests write permissions ([#22457](https://github.com/expo/expo/pull/22457) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 
