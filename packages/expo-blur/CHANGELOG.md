@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix BlurView demo screen not animating the blur intensity after dropping `proxiedProperties`.
+
 ### 💡 Others
 
 ## 12.3.1 — 2023-05-08
