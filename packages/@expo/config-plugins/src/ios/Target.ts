@@ -15,12 +15,22 @@ export enum TargetType {
   WATCH = 'com.apple.product-type.application.watchapp',
   APP_CLIP = 'com.apple.product-type.application.on-demand-install-capable',
   STICKER_PACK_EXTENSION = 'com.apple.product-type.app-extension.messages-sticker-pack',
+  FRAMEWORK = 'com.apple.product-type.framework',
   OTHER = 'other',
 }
+
+const signableTargetTypes: TargetType[] = [
+  TargetType.APPLICATION,
+  TargetType.APP_CLIP,
+  TargetType.EXTENSION,
+  TargetType.WATCH,
+  TargetType.STICKER_PACK_EXTENSION,
+];
 
 export interface Target {
   name: string;
   type: TargetType;
+  signable: boolean;
   dependencies?: Target[];
 }
 
@@ -52,6 +62,7 @@ export async function findApplicationTargetWithDependenciesAsync(
   return {
     name: trimQuotes(applicationTarget.name),
     type: TargetType.APPLICATION,
+    signable: true,
     dependencies,
   };
 }
@@ -77,6 +88,9 @@ function getTargetDependencies(
     return {
       name: trimQuotes(target.name),
       type,
+      signable: signableTargetTypes.some((signableTargetType) =>
+        isTargetOfType(target, signableTargetType)
+      ),
       dependencies: getTargetDependencies(project, target),
     };
   });
@@ -93,14 +107,6 @@ export function getNativeTargets(project: XcodeProject): NativeTargetSectionEntr
 
 export function findSignableTargets(project: XcodeProject): NativeTargetSectionEntry[] {
   const targets = getNativeTargets(project);
-
-  const signableTargetTypes = [
-    TargetType.APPLICATION,
-    TargetType.APP_CLIP,
-    TargetType.EXTENSION,
-    TargetType.WATCH,
-    TargetType.STICKER_PACK_EXTENSION,
-  ];
 
   const applicationTargets = targets.filter(([, target]) => {
     for (const targetType of signableTargetTypes) {
