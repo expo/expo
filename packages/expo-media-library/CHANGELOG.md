@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed missing permissions error on Android when the user only requests write permissions
+
 ### 💡 Others
 
 ## 15.3.0 — 2023-05-08

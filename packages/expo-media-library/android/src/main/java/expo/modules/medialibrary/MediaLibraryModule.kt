@@ -89,7 +89,7 @@ class MediaLibraryModule : Module() {
     }
 
     AsyncFunction("saveToLibraryAsync") { localUri: String, promise: Promise ->
-      throwUnlessPermissionsGranted {
+      throwUnlessPermissionsGranted(isWrite = true) {
         withModuleScope(promise) {
           CreateAsset(context, localUri, promise, false)
             .execute()
@@ -98,7 +98,7 @@ class MediaLibraryModule : Module() {
     }
 
     AsyncFunction("createAssetAsync") { localUri: String, promise: Promise ->
-      throwUnlessPermissionsGranted {
+      throwUnlessPermissionsGranted(isWrite = true) {
         withModuleScope(promise) {
           CreateAsset(context, localUri, promise)
             .execute()
@@ -107,7 +107,7 @@ class MediaLibraryModule : Module() {
     }
 
     AsyncFunction("addAssetsToAlbumAsync") { assetsId: List<String>, albumId: String, copyToAlbum: Boolean, promise: Promise ->
-      throwUnlessPermissionsGranted(writeOnly = false) {
+      throwUnlessPermissionsGranted(isWrite = true) {
         val action = actionIfUserGrantedPermission {
           withModuleScope(promise) {
             AddAssetsToAlbum(context, assetsId.toTypedArray(), albumId, copyToAlbum, promise)
@@ -119,7 +119,7 @@ class MediaLibraryModule : Module() {
     }
 
     AsyncFunction("removeAssetsFromAlbumAsync") { assetsId: List<String>, albumId: String, promise: Promise ->
-      throwUnlessPermissionsGranted {
+      throwUnlessPermissionsGranted(isWrite = true) {
         val action = actionIfUserGrantedPermission {
           withModuleScope(promise) {
             RemoveAssetsFromAlbum(context, assetsId.toTypedArray(), albumId, promise)
@@ -131,7 +131,7 @@ class MediaLibraryModule : Module() {
     }
 
     AsyncFunction("deleteAssetsAsync") { assetsId: List<String>, promise: Promise ->
-      throwUnlessPermissionsGranted {
+      throwUnlessPermissionsGranted(isWrite = true) {
         val action = actionIfUserGrantedPermission {
           withModuleScope(promise) {
             DeleteAssets(context, assetsId.toTypedArray(), promise)
@@ -143,7 +143,7 @@ class MediaLibraryModule : Module() {
     }
 
     AsyncFunction("deleteAssetsAsync") { assetsId: List<String>, promise: Promise ->
-      throwUnlessPermissionsGranted {
+      throwUnlessPermissionsGranted(isWrite = true) {
         val action = actionIfUserGrantedPermission {
           withModuleScope(promise) {
             DeleteAssets(context, assetsId.toTypedArray(), promise)
@@ -155,7 +155,7 @@ class MediaLibraryModule : Module() {
     }
 
     AsyncFunction("getAssetInfoAsync") { assetId: String, _: Map<String, Any?>? /* unused on android atm */, promise: Promise ->
-      throwUnlessPermissionsGranted(writeOnly = false) {
+      throwUnlessPermissionsGranted {
         withModuleScope(promise) {
           GetAssetInfo(context, assetId, promise).execute()
         }
@@ -180,7 +180,7 @@ class MediaLibraryModule : Module() {
     }
 
     AsyncFunction("createAlbumAsync") { albumName: String, assetId: String, copyAsset: Boolean, promise: Promise ->
-      throwUnlessPermissionsGranted {
+      throwUnlessPermissionsGranted(isWrite = true) {
         val action = actionIfUserGrantedPermission {
           withModuleScope(promise) {
             CreateAlbum(context, albumName, assetId, copyAsset, promise)
@@ -192,7 +192,7 @@ class MediaLibraryModule : Module() {
     }
 
     AsyncFunction("deleteAlbumsAsync") { albumIds: List<String>, promise: Promise ->
-      throwUnlessPermissionsGranted {
+      throwUnlessPermissionsGranted(isWrite = true) {
         val action = actionIfUserGrantedPermission {
           withModuleScope(promise) {
             DeleteAlbums(context, albumIds, promise)
@@ -371,9 +371,9 @@ class MediaLibraryModule : Module() {
     ).toTypedArray()
   }
 
-  private inline fun throwUnlessPermissionsGranted(writeOnly: Boolean = false, block: () -> Unit) {
-    val missingPermissionsCondition = if (writeOnly) isMissingWritePermission else isMissingPermissions
-    val missingPermissionsMessage = if (writeOnly) ERROR_NO_WRITE_PERMISSION_MESSAGE else ERROR_NO_PERMISSIONS_MESSAGE
+  private inline fun throwUnlessPermissionsGranted(isWrite: Boolean = false, block: () -> Unit) {
+    val missingPermissionsCondition = if (isWrite) isMissingWritePermission else isMissingPermissions
+    val missingPermissionsMessage = if (isWrite) ERROR_NO_WRITE_PERMISSION_MESSAGE else ERROR_NO_PERMISSIONS_MESSAGE
     if (missingPermissionsCondition) {
       throw PermissionsException(missingPermissionsMessage)
     }
