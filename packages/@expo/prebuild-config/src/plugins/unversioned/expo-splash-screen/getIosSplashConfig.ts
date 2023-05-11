@@ -9,6 +9,7 @@ export interface IOSSplashConfig {
   image?: string | null;
   // tabletImage: string | null;
   backgroundColor: string;
+  fadeTime: number;
   resizeMode: NonNullable<ExpoConfigIosSplash['resizeMode']>;
   tabletImage: string | null;
   // TODO: These are here just to test the functionality, the API should be more robust and account for tablet images.
@@ -32,6 +33,7 @@ export function getIosSplashConfig(config: ExpoConfig): IOSSplashConfig | null {
       image,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       backgroundColor: splash.backgroundColor ?? defaultBackgroundColor,
+      fadeTime: splash['fadeTime'] ?? 0,
       tabletImage: splash.tabletImage ?? null,
       tabletBackgroundColor: splash.tabletBackgroundColor,
       dark: {
@@ -50,6 +52,7 @@ export function getIosSplashConfig(config: ExpoConfig): IOSSplashConfig | null {
       image,
       resizeMode: splash.resizeMode ?? defaultResizeMode,
       backgroundColor: splash.backgroundColor ?? defaultBackgroundColor,
+      fadeTime: splash['fadeTime'] ?? 0,
       tabletImage: null,
       tabletBackgroundColor: null,
       dark: {
@@ -64,6 +67,7 @@ export function getIosSplashConfig(config: ExpoConfig): IOSSplashConfig | null {
   return {
     backgroundColor: '#ffffff',
     resizeMode: 'contain',
+    fadeTime: 0,
     tabletImage: null,
     tabletBackgroundColor: null,
   };

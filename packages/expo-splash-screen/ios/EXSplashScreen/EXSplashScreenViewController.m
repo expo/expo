@@ -4,6 +4,11 @@
 #import <ExpoModulesCore/EXDefines.h>
 #import <ExpoModulesCore/EXUtilities.h>
 
+static NSString * const InfoPlistFadeTimeKey = @"EXSplashScreenFadeTime";
+
+static NSTimeInterval const FadeTimeMinAllowedValue = 0.0;
+static NSTimeInterval const FadeTimeMaxAllowedValue = 5.0;
+
 @interface EXSplashScreenViewController ()
 
 @property (nonatomic, weak) UIView *rootView;
@@ -11,6 +16,7 @@
 @property (nonatomic, assign) BOOL autoHideEnabled;
 @property (nonatomic, assign) BOOL splashScreenShown;
 @property (nonatomic, assign) BOOL appContentAppeared;
+@property (nonatomic, assign) NSTimeInterval fadeTime;
 
 @end
 
@@ -24,6 +30,13 @@
     _splashScreenShown = NO;
     _appContentAppeared = NO;
     _splashScreenView = splashScreenView;
+    NSTimeInterval fadeTimeValue = [[[NSBundle mainBundle] objectForInfoDictionaryKey:InfoPlistFadeTimeKey] doubleValue] / 1000.0;
+    if (fadeTimeValue >= FadeTimeMinAllowedValue &&
+        fadeTimeValue <= FadeTimeMaxAllowedValue) {
+      _fadeTime = fadeTimeValue;
+    } else {
+      _fadeTime = 0.0;
+    }
   }
   return self;
 }
@@ -72,11 +85,24 @@
   EX_WEAKIFY(self);
   dispatch_async(dispatch_get_main_queue(), ^{
     EX_ENSURE_STRONGIFY(self);
-    [self.splashScreenView removeFromSuperview];
-    self.splashScreenShown = NO;
-    self.autoHideEnabled = YES;
-    if (successCallback) {
-      successCallback(YES);
+    if (self->_fadeTime > 0.0) {
+      [UIView animateWithDuration:1.0
+           animations:^{self.splashScreenView.alpha = 0.0;}
+           completion:^(BOOL finished){
+        [self.splashScreenView removeFromSuperview];
+        self.splashScreenShown = NO;
+        self.autoHideEnabled = YES;
+        if (successCallback) {
+          successCallback(YES);
+        }
+      }];
+    } else {
+      [self.splashScreenView removeFromSuperview];
+      self.splashScreenShown = NO;
+      self.autoHideEnabled = YES;
+      if (successCallback) {
+        successCallback(YES);
+      }
     }
   });
 }

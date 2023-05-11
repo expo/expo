@@ -3,6 +3,7 @@ type ExpoConfigIosSplash = NonNullable<NonNullable<ExpoConfig['ios']>['splash']>
 export interface IOSSplashConfig {
     image?: string | null;
     backgroundColor: string;
+    fadeTime: number;
     resizeMode: NonNullable<ExpoConfigIosSplash['resizeMode']>;
     tabletImage: string | null;
     tabletBackgroundColor: string | null;

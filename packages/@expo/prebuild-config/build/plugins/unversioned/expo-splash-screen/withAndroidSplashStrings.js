@@ -21,6 +21,7 @@ function _getAndroidSplashConfig() {
 }
 const RESIZE_MODE_KEY = 'expo_splash_screen_resize_mode';
 const STATUS_BAR_TRANSLUCENT_KEY = 'expo_splash_screen_status_bar_translucent';
+const FADE_TIME_KEY = 'expo_splash_screen_fade_time';
 const withAndroidSplashStrings = config => {
   return (0, _configPlugins().withStringsXml)(config, config => {
     const splashConfig = (0, _getAndroidSplashConfig().getAndroidSplashConfig)(config);
@@ -30,13 +31,14 @@ const withAndroidSplashStrings = config => {
         resizeMode
       } = splashConfig;
       const statusBarTranslucent = !!((_config$androidStatus = config.androidStatusBar) !== null && _config$androidStatus !== void 0 && _config$androidStatus.translucent);
-      config.modResults = setSplashStrings(config.modResults, resizeMode, statusBarTranslucent);
+      const fadeTime = `${splashConfig.fadeTime}`;
+      config.modResults = setSplashStrings(config.modResults, resizeMode, statusBarTranslucent, fadeTime);
     }
     return config;
   });
 };
 exports.withAndroidSplashStrings = withAndroidSplashStrings;
-function setSplashStrings(strings, resizeMode, statusBarTranslucent) {
+function setSplashStrings(strings, resizeMode, statusBarTranslucent, fadeTime) {
   return _configPlugins().AndroidConfig.Strings.setStringItem([_configPlugins().AndroidConfig.Resources.buildResourceItem({
     name: RESIZE_MODE_KEY,
     value: resizeMode,
@@ -44,6 +46,10 @@ function setSplashStrings(strings, resizeMode, statusBarTranslucent) {
   }), _configPlugins().AndroidConfig.Resources.buildResourceItem({
     name: STATUS_BAR_TRANSLUCENT_KEY,
     value: String(statusBarTranslucent),
+    translatable: false
+  }), _configPlugins().AndroidConfig.Resources.buildResourceItem({
+    name: FADE_TIME_KEY,
+    value: String(fadeTime),
     translatable: false
   })], strings);
 }

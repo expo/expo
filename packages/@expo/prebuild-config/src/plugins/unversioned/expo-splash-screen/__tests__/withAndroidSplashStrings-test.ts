@@ -9,6 +9,7 @@ describe(setSplashStrings, () => {
 <resources>
   <string name="expo_splash_screen_resize_mode" translatable="false">cover</string>
   <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
+  <string name="expo_splash_screen_fade_time" translatable="false">undefined</string>
 </resources>`;
     expect(XML.format(results)).toEqual(expectXML);
   });
@@ -23,6 +24,7 @@ describe(setSplashStrings, () => {
 <resources>
   <string name="expo_splash_screen_resize_mode" translatable="false">native</string>
   <string name="expo_splash_screen_status_bar_translucent" translatable="false">false</string>
+  <string name="expo_splash_screen_fade_time" translatable="false">undefined</string>
 </resources>`;
     expect(XML.format(results)).toEqual(expectXML);
   });

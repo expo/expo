@@ -30,6 +30,7 @@ const withIosSplashInfoPlist = (config, splash) => {
 exports.withIosSplashInfoPlist = withIosSplashInfoPlist;
 function setSplashInfoPlist(config, infoPlist, splash) {
   var _splash$dark, _splash$dark2, _splash$dark3, _splash$dark4;
+  infoPlist['EXSplashScreenFadeTime'] = splash.fadeTime;
   const isDarkModeEnabled = !!(splash !== null && splash !== void 0 && (_splash$dark = splash.dark) !== null && _splash$dark !== void 0 && _splash$dark.image || splash !== null && splash !== void 0 && (_splash$dark2 = splash.dark) !== null && _splash$dark2 !== void 0 && _splash$dark2.tabletImage || splash !== null && splash !== void 0 && (_splash$dark3 = splash.dark) !== null && _splash$dark3 !== void 0 && _splash$dark3.backgroundColor || splash !== null && splash !== void 0 && (_splash$dark4 = splash.dark) !== null && _splash$dark4 !== void 0 && _splash$dark4.tabletBackgroundColor);
   debug(`isDarkModeEnabled: `, isDarkModeEnabled);
   if (isDarkModeEnabled) {
