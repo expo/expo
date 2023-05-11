@@ -8,7 +8,7 @@
 
 ### 🐛 Bug fixes
 
-- Fix BlurView demo screen not animating the blur intensity after dropping `proxiedProperties`.
+- Fix BlurView demo screen not animating the blur intensity after dropping `proxiedProperties`. ([#22452](https://github.com/expo/expo/pull/22452) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 
