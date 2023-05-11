@@ -21,7 +21,7 @@
     ]
   },
   "resolutions": {
-    "react-native": "0.71.7",
+    "react-native": "0.71.8",
     "**/util": "~0.12.4"
   },
   "dependencies": {
