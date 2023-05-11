@@ -64,6 +64,8 @@ If you need to make native code changes to your Expo project, such as adding cus
 - In the project navigator, select the **Exponent** project to bring up the project's settings, and then:
   - In the **General** tab, in the **Identity** section, put in a unique Bundle Identifier.
   - Also in the **General** tab, in the **Signing** section, select your personal or team Apple Developer account as your **Team**, and create a new signing certificate by clicking **Fix Issue**.
+- In the project's settings page, select the **ExpoNotificationServiceExtension** target, and then:
+  - In the **General** tab, in the **Identity** section, its Bundle Identifier should be prefixed with your unique Bundle Identifier. For example, if your unique Bundle Identifier is `host.exp.Exponent.unique`, then the Bundle Identifier for the notification service extension should be `host.exp.Exponent.unique.ExpoNotificationServiceExtension`.
 - Finally, run the build.
 
 ### Android
@@ -97,6 +99,7 @@ Here are the steps to build a standalone Android app:
 ### iOS
 
 The iOS standalone app script has two actions, `build` and `configure`:
+
 - `build` creates an archive or a simulator build of the Expo iOS workspace,
 - `configure` accepts a path to an existing archive and modifies all its configuration files so that it will run as a standalone Expo project rather than in Expo Go.
 
