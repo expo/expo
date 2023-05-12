@@ -19,14 +19,6 @@ export enum TargetType {
   OTHER = 'other',
 }
 
-const signableTargetTypes: TargetType[] = [
-  TargetType.APPLICATION,
-  TargetType.APP_CLIP,
-  TargetType.EXTENSION,
-  TargetType.WATCH,
-  TargetType.STICKER_PACK_EXTENSION,
-];
-
 export interface Target {
   name: string;
   type: TargetType;
@@ -74,6 +66,9 @@ function getTargetDependencies(
   if (!parentTarget.dependencies || parentTarget.dependencies.length === 0) {
     return undefined;
   }
+
+  const nonSignableTargetTypes: TargetType[] = [TargetType.FRAMEWORK];
+
   return parentTarget.dependencies.map(({ value }) => {
     const { target: targetId } = project.getPBXGroupByKeyAndType(
       value,
@@ -88,7 +83,7 @@ function getTargetDependencies(
     return {
       name: trimQuotes(target.name),
       type,
-      signable: signableTargetTypes.some((signableTargetType) =>
+      signable: !nonSignableTargetTypes.some((signableTargetType) =>
         isTargetOfType(target, signableTargetType)
       ),
       dependencies: getTargetDependencies(project, target),
@@ -107,6 +102,14 @@ export function getNativeTargets(project: XcodeProject): NativeTargetSectionEntr
 
 export function findSignableTargets(project: XcodeProject): NativeTargetSectionEntry[] {
   const targets = getNativeTargets(project);
+
+  const signableTargetTypes: TargetType[] = [
+    TargetType.APPLICATION,
+    TargetType.APP_CLIP,
+    TargetType.EXTENSION,
+    TargetType.WATCH,
+    TargetType.STICKER_PACK_EXTENSION,
+  ];
 
   const applicationTargets = targets.filter(([, target]) => {
     for (const targetType of signableTargetTypes) {
