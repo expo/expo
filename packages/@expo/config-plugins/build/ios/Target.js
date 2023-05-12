@@ -43,7 +43,6 @@ exports.TargetType = TargetType;
   TargetType["FRAMEWORK"] = "com.apple.product-type.framework";
   TargetType["OTHER"] = "other";
 })(TargetType || (exports.TargetType = TargetType = {}));
-const signableTargetTypes = [TargetType.APPLICATION, TargetType.APP_CLIP, TargetType.EXTENSION, TargetType.WATCH, TargetType.STICKER_PACK_EXTENSION];
 function getXCBuildConfigurationFromPbxproj(project, {
   targetName,
   buildConfiguration = 'Release'
@@ -71,6 +70,7 @@ function getTargetDependencies(project, parentTarget) {
   if (!parentTarget.dependencies || parentTarget.dependencies.length === 0) {
     return undefined;
   }
+  const nonSignableTargetTypes = [TargetType.FRAMEWORK];
   return parentTarget.dependencies.map(({
     value
   }) => {
@@ -82,7 +82,7 @@ function getTargetDependencies(project, parentTarget) {
     return {
       name: (0, _string().trimQuotes)(target.name),
       type,
-      signable: signableTargetTypes.some(signableTargetType => isTargetOfType(target, signableTargetType)),
+      signable: !nonSignableTargetTypes.some(signableTargetType => isTargetOfType(target, signableTargetType)),
       dependencies: getTargetDependencies(project, target)
     };
   });
@@ -96,6 +96,7 @@ function getNativeTargets(project) {
 }
 function findSignableTargets(project) {
   const targets = getNativeTargets(project);
+  const signableTargetTypes = [TargetType.APPLICATION, TargetType.APP_CLIP, TargetType.EXTENSION, TargetType.WATCH, TargetType.STICKER_PACK_EXTENSION];
   const applicationTargets = targets.filter(([, target]) => {
     for (const targetType of signableTargetTypes) {
       if (isTargetOfType(target, targetType)) {
