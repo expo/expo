@@ -1,13 +1,7 @@
 import { BlurTint, BlurView } from 'expo-blur';
 import React, { useCallback, memo, useEffect } from 'react';
 import { View, StyleSheet, Text, Image } from 'react-native';
-import {
-  useAnimatedProps,
-  useSharedValue,
-  withRepeat,
-  withSequence,
-  withTiming,
-} from 'react-native-reanimated';
+import { useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
 
 import useResettingState from '../../utilities/useResettingState';
 import Slider from './Slider';
@@ -31,16 +25,15 @@ export default memo((props: { tint: BlurTint }) => {
     );
   }, []);
 
-  const animatedProps = useAnimatedProps(() => ({
-    intensity: manualIntensityIsActive ? manualIntensity.value : animatedIntensity.value,
-  }));
-
   return (
     <View style={styles.container}>
       <View style={styles.innerContainer}>
         <Image style={styles.image} source={{ uri: 'https://source.unsplash.com/300x300' }} />
         <Text style={styles.blurredText}>This text is blurred</Text>
-        <BlurView style={styles.blurView} tint={props.tint} animatedProps={animatedProps}>
+        <BlurView
+          style={styles.blurView}
+          tint={props.tint}
+          intensity={manualIntensityIsActive ? manualIntensity : animatedIntensity}>
           <Text style={styles.nonBlurredText}>{props.tint}</Text>
           <Slider
             title="Manual intensity:"

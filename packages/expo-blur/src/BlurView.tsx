@@ -1,33 +1,10 @@
 import { requireNativeViewManager } from 'expo-modules-core';
-import React, { ComponentType } from 'react';
+import React from 'react';
 import { StyleSheet, View } from 'react-native';
 
 import { BlurViewProps } from './BlurView.types';
-
-// Simplified Reanimated type, copied and slightly modified from react-native-reanimated
-let Reanimated:
-  | {
-      default: {
-        createAnimatedComponent<P extends object>(
-          component: ComponentType<P>,
-          options?: unknown
-        ): ComponentType<P>;
-      };
-    }
-  | undefined;
-
-// If available import react-native-reanimated
-try {
-  Reanimated = require('react-native-reanimated');
-  // Make sure that imported reanimated has the required functions
-  if (!Reanimated?.default.createAnimatedComponent) {
-    Reanimated = undefined;
-  }
-  // eslint-disable-next-line @typescript-eslint/no-unused-vars
-} catch (e) {
-  // Quietly continue when 'react-native-reanimated' is not available
-  Reanimated = undefined;
-}
+import getReanimatedIfAvailable from './getReanimatedIfAvailable';
+import isSharedValue from './isSharedValue';
 
 const NativeBlurView = requireNativeViewManager('ExpoBlurView');
 
@@ -35,42 +12,57 @@ const NativeBlurView = requireNativeViewManager('ExpoBlurView');
 // is not directly available to the user. Therefore, using
 // Animated.createAnimatedComponent(BlurView) will not have the desired effects.
 // We pass the animated props directly to the animated component if available
+const Reanimated = getReanimatedIfAvailable();
 const AnimatedNativeBlurView = Reanimated?.default.createAnimatedComponent(NativeBlurView);
 
+function FnBlurView({
+  tint = 'default',
+  intensity = 50,
+  blurReductionFactor = 4,
+  style,
+  children,
+  ...props
+}: BlurViewProps) {
+  const intensityIsSharedValue = isSharedValue(intensity);
+
+  if (intensityIsSharedValue && Reanimated === undefined) {
+    console.warn(
+      "You are trying to animate the blur intensity using a SharedValue, but 'react-native-reanimated' is not available. " +
+        "Make sure that 'react-native-reanimated' is correctly installed."
+    );
+  }
+
+  const BlurComponent =
+    intensityIsSharedValue && AnimatedNativeBlurView ? AnimatedNativeBlurView : NativeBlurView;
+
+  const animatedProps =
+    intensityIsSharedValue &&
+    Reanimated !== undefined &&
+    // Number of hooks will not change during runtime
+    // eslint-disable-next-line react-hooks/rules-of-hooks
+    Reanimated?.useAnimatedProps(() => ({
+      intensity: Math.min(intensity.value, 100),
+    }));
+
+  return (
+    <View {...props} style={[styles.container, style]}>
+      <BlurComponent
+        tint={tint}
+        intensity={intensity}
+        blurReductionFactor={blurReductionFactor}
+        style={StyleSheet.absoluteFill}
+        animatedProps={animatedProps}
+      />
+      {children}
+    </View>
+  );
+}
+
+// Function component if required by reanimated and class-based component is required by React Animated
+// Wrapping function component with class-based component fixes the conflict
 class BlurView extends React.Component<BlurViewProps> {
   render() {
-    const {
-      tint = 'default',
-      intensity = 50,
-      blurReductionFactor = 4,
-      style,
-      children,
-      animatedProps,
-      ...props
-    } = this.props;
-
-    if (animatedProps && Reanimated === undefined) {
-      console.warn(
-        "You've set the animatedProps property, but 'react-native-reanimated' is not available. " +
-          "Make sure 'react-native-reanimated' is correctly installed in order to use the animatedProps property."
-      );
-    }
-
-    const BlurComponent =
-      animatedProps && AnimatedNativeBlurView ? AnimatedNativeBlurView : NativeBlurView;
-
-    return (
-      <View {...props} style={[styles.container, style]}>
-        <BlurComponent
-          tint={tint}
-          intensity={intensity}
-          blurReductionFactor={blurReductionFactor}
-          style={StyleSheet.absoluteFill}
-          animatedProps={animatedProps}
-        />
-        {children}
-      </View>
-    );
+    return <FnBlurView {...this.props} />;
   }
 }
 
