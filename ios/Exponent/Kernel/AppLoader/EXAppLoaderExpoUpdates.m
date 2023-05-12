@@ -420,7 +420,7 @@ NS_ASSUME_NONNULL_BEGIN
   [sdkVersions addObjectsFromArray:sdkVersionRuntimeVersions];
 
   _selectionPolicy = [[EXUpdatesSelectionPolicy alloc]
-                      initWithLauncherSelectionPolicy:[[EXUpdatesLauncherSelectionPolicyFilterAware alloc] initWithRuntimeVersions:sdkVersions]
+                      initWithLauncherSelectionPolicy:[[EXExpoGoLauncherSelectionPolicyFilterAware alloc] initWithSdkVersions:sdkVersions]
                       loaderSelectionPolicy:[EXUpdatesLoaderSelectionPolicyFilterAware new]
                       reaperSelectionPolicy:[EXUpdatesReaperSelectionPolicyDevelopmentClient new]];
 
