@@ -9,7 +9,7 @@ export interface TaskManagerError {
 /**
  * Represents the object that is passed to the task executor.
  */
-export interface TaskManagerTaskBody<T = object> {
+export interface TaskManagerTaskBody<T = unknown> {
     /**
      * An object of data passed to the task executor. Its properties depends on the type of the task.
      */
@@ -67,7 +67,7 @@ export interface RegisteredTask extends TaskManagerTask {
 /**
  * Type of task executor – a function that handles the task.
  */
-export type TaskManagerTaskExecutor = (body: TaskManagerTaskBody) => void;
+export type TaskManagerTaskExecutor<T = unknown> = (body: TaskManagerTaskBody<T>) => void;
 /**
  * Defines task function. It must be called in the global scope of your JavaScript bundle.
  * In particular, it cannot be called in any of React lifecycle methods like `componentDidMount`.
@@ -78,7 +78,7 @@ export type TaskManagerTaskExecutor = (body: TaskManagerTaskBody) => void;
  * @param taskName Name of the task. It must be the same as the name you provided when registering the task.
  * @param taskExecutor A function that will be invoked when the task with given `taskName` is executed.
  */
-export declare function defineTask(taskName: string, taskExecutor: TaskManagerTaskExecutor): void;
+export declare function defineTask<T = unknown>(taskName: string, taskExecutor: TaskManagerTaskExecutor<T>): void;
 /**
  * Checks whether the task is already defined.
  *
