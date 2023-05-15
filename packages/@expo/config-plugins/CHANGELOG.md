@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Update `Target.findApplicationTargetWithDependenciesAsync` to mark framework targets as non-signable. ([#22454](https://github.com/expo/expo/pull/22454) by [@dsokal](https://github.com/dsokal))
+
 ### 💡 Others
 
 ## 6.0.1 — 2023-02-21
