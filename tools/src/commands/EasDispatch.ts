@@ -32,7 +32,7 @@ const CUSTOM_ACTIONS: Record<string, Action> = {
     action: androidBuildAndSubmitAsync,
   },
   'remove-background-permissions-from-info-plist': {
-    name: 'Removes permissions for background features that should be disabled in app store.',
+    name: 'Removes permissions for background features that should be disabled in the App Store.',
     actionId: 'remove-background-permissions-from-info-plist',
     action: internalRemoveBackgroundPermissionsFromInfoPlistAsync,
     internal: true,
