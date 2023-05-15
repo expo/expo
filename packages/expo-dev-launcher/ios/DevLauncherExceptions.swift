@@ -20,7 +20,7 @@ internal class CannotLoadAppException: GenericException<String> {
   }
 }
 
-internal class WebBrowserException: Exception {
+internal class WebBrowserAlreadyPresentedException: Exception {
   override var code: String {
     "ERR_DEV_MENU_WEB_BROWSER"
   }

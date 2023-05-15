@@ -13,31 +13,29 @@ public class DevLauncherAuth: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoDevLauncherAuth")
 
-    AsyncFunction("openAuthSessionAsync") { (authURL: String, redirectURL: String, promise: Promise) in
-      try self.initializeWebBrowser(promise)
+    AsyncFunction("openAuthSessionAsync") { (authURL: URL, redirectURL: String, promise: Promise) in
+      if self.redirectPromise != nil {
+        throw WebBrowserAlreadyPresentedException()
+      }
+      self.redirectPromise = promise
 
       if #available(iOS 11.0, *) {
-        guard let url = URL(string: authURL) else {
-          promise.reject("invalid_auth_url", "Invalid auth URL")
-          return
-        }
-
         let completionHandler: (URL?, Error?) -> Void = { [weak self]  callbackURL, error in
           // check if flow didn't already finish
-          guard let strongSelf = self, let redirectPromise = strongSelf.redirectPromise else {
+          guard let redirectPromise = self?.redirectPromise else {
             return
           }
 
-          if let callbackURL = callbackURL, error == nil {
+          if let callbackURL, error == nil {
             let url = callbackURL.absoluteString
-            redirectPromise.resolver(["type": "success", "url": url])
+            redirectPromise.resolve(["type": "success", "url": url])
           } else {
-            redirectPromise.resolver(["type": "cancel"])
+            redirectPromise.resolve(["type": "cancel"])
           }
-          strongSelf.flowDidFinish()
+          self?.flowDidFinish()
         }
 
-        self.authSession = SFAuthenticationSession(url: url, callbackURLScheme: redirectURL, completionHandler: completionHandler)
+        self.authSession = SFAuthenticationSession(url: authURL, callbackURLScheme: redirectURL, completionHandler: completionHandler)
         self.authSession?.start()
       } else {
         promise.resolve([
@@ -67,16 +65,6 @@ public class DevLauncherAuth: Module {
     AsyncFunction("restoreSessionAsync") {
       return UserDefaults.standard.string(forKey: "expo-session-secret")
     }
-  }
-
-  /**
-   * Helper that is used in openBrowserAsync and openAuthSessionAsync
-   */
-  private func initializeWebBrowser(_ promise: Promise) throws {
-    if self.redirectPromise != nil {
-      throw WebBrowserException()
-    }
-    self.redirectPromise = promise
   }
 
   private func flowDidFinish() {
