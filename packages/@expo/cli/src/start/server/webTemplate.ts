@@ -3,6 +3,7 @@ import fs from 'fs';
 import path from 'path';
 
 import { TEMPLATES } from '../../customize/templates';
+import { appendLinkToHtml, appendScriptsToHtml } from '../../export/html';
 import { env } from '../../utils/env';
 
 /**
@@ -13,15 +14,18 @@ export async function createTemplateHtmlFromExpoConfigAsync(
   projectRoot: string,
   {
     scripts,
+    cssLinks,
     exp = getConfig(projectRoot, { skipSDKVersionRequirement: true }).exp,
   }: {
     scripts: string[];
+    cssLinks?: string[];
     exp?: ExpoConfig;
   }
 ) {
   return createTemplateHtmlAsync(projectRoot, {
     langIsoCode: exp.web?.lang ?? 'en',
     scripts,
+    cssLinks,
     title: getNameFromConfig(exp).webName ?? 'Expo App',
     description: exp.web?.description,
     themeColor: exp.web?.themeColor,
@@ -57,12 +61,14 @@ export async function createTemplateHtmlAsync(
   projectRoot: string,
   {
     scripts,
+    cssLinks,
     description,
     langIsoCode,
     title,
     themeColor,
   }: {
     scripts: string[];
+    cssLinks?: string[];
     description?: string;
     langIsoCode: string;
     title: string;
@@ -74,10 +80,28 @@ export async function createTemplateHtmlAsync(
 
   contents = contents.replace('%LANG_ISO_CODE%', langIsoCode);
   contents = contents.replace('%WEB_TITLE%', title);
-  contents = contents.replace(
-    '</body>',
-    scripts.map((url) => `<script src="${url}"></script>`).join('') + '</body>'
-  );
+
+  contents = appendScriptsToHtml(contents, scripts);
+
+  if (cssLinks) {
+    contents = appendLinkToHtml(
+      contents,
+      cssLinks
+        .map((href) => [
+          // NOTE: We probably don't have to preload the CSS files for SPA-styled websites.
+          {
+            as: 'style',
+            rel: 'preload',
+            href,
+          },
+          {
+            rel: 'stylesheet',
+            href,
+          },
+        ])
+        .flat()
+    );
+  }
 
   if (themeColor) {
     contents = addMeta(contents, `name="theme-color" content="${themeColor}"`);

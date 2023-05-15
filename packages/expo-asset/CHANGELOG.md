@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 8.9.2 — 2023-05-08
+
+### 🐛 Bug fixes
+
+- Fixed monorepo asset resolution in production for Metro web. ([#22094](https://github.com/expo/expo/pull/22094) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 8.9.1 - 2023-03-08
 
 ### 🐛 Bug fixes

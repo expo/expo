@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 5.2.0 — 2023-05-08
+
+### 🎉 New features
+
+- Migrated to new modules API on Android ([#22019](https://github.com/expo/expo/pull/22019) by [@behenate](https://github.com/behenate))
+
 ## 5.1.1 — 2023-02-09
 
 _This version does not introduce any user-facing changes._

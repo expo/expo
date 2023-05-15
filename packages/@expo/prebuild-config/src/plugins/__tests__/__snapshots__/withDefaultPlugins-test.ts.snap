@@ -926,12 +926,6 @@ exports[`built-in plugins introspects mods 1`] = `
                 "meta-data": [
                   {
                     "$": {
-                      "android:name": "expo.modules.updates.EXPO_UPDATE_URL",
-                      "android:value": "https://exp.host/@bacon/mycoolapp",
-                    },
-                  },
-                  {
-                    "$": {
                       "android:name": "io.branch.sdk.BranchKey",
                       "android:value": "MY_BRANCH_ANDROID_KEY",
                     },
@@ -1231,7 +1225,6 @@ exports[`built-in plugins introspects mods 1`] = `
           "EXUpdatesCheckOnLaunch": "NEVER",
           "EXUpdatesEnabled": true,
           "EXUpdatesLaunchWaitMs": 650,
-          "EXUpdatesURL": "https://exp.host/@bacon/mycoolapp",
         },
         "infoPlist": {
           "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",
@@ -2006,12 +1999,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
                 "meta-data": [
                   {
                     "$": {
-                      "android:name": "expo.modules.updates.EXPO_UPDATE_URL",
-                      "android:value": "https://exp.host/@bacon/mycoolapp",
-                    },
-                  },
-                  {
-                    "$": {
                       "android:name": "io.branch.sdk.BranchKey",
                       "android:value": "MY_BRANCH_ANDROID_KEY",
                     },
@@ -2262,7 +2249,6 @@ exports[`built-in plugins introspects mods in a managed project 1`] = `
           "EXUpdatesCheckOnLaunch": "NEVER",
           "EXUpdatesEnabled": true,
           "EXUpdatesLaunchWaitMs": 650,
-          "EXUpdatesURL": "https://exp.host/@bacon/mycoolapp",
         },
         "infoPlist": {
           "CFBundleDevelopmentRegion": "$(DEVELOPMENT_LANGUAGE)",

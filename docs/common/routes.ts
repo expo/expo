@@ -18,8 +18,16 @@ export const isArchivePath = (path: string) => {
   return Utilities.pathStartsWith('archive', path);
 };
 
-export const isReferencePath = (path: string) => {
+export const isVersionedPath = (path: string) => {
   return Utilities.pathStartsWith('versions', path);
+};
+
+export const isReferencePath = (path: string) => {
+  return navigation.referenceDirectories.some(name => Utilities.pathStartsWith(name, path));
+};
+
+export const isHomePath = (path: string) => {
+  return navigation.homeDirectories.some(name => Utilities.pathStartsWith(name, path));
 };
 
 export const isGeneralPath = (path: string) => {
@@ -34,15 +42,13 @@ export const isPreviewPath = (path: string) => {
   return navigation.previewDirectories.some(name => Utilities.pathStartsWith(name, path));
 };
 
-export const isEasPath = (path: string) => {
-  return navigation.easDirectories.some(name => Utilities.pathStartsWith(name, path));
+export const isLearnPath = (path: string) => {
+  return navigation.learnDirectories.some(name => Utilities.pathStartsWith(name, path));
 };
 
 export const getPageSection = (path: string) => {
   if (isReferencePath(path)) {
     return 'reference';
-  } else if (isEasPath(path)) {
-    return 'eas';
   } else if (isGeneralPath(path)) {
     return 'general';
   } else if (isFeaturePreviewPath(path)) {
@@ -51,7 +57,11 @@ export const getPageSection = (path: string) => {
     return 'preview';
   } else if (isArchivePath(path)) {
     return 'archive';
+  } else if (isLearnPath(path)) {
+    return 'learn';
+  } else if (isHomePath(path)) {
+    return 'home';
   }
 
-  return 'general';
+  return 'home';
 };

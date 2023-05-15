@@ -1,7 +1,12 @@
 /* eslint-env jest */
+import {
+  isMultipartPartWithName,
+  parseMultipartMixedResponseAsync,
+} from '@expo/multipart-body-parser';
 import execa from 'execa';
 import fs from 'fs-extra';
 import fetch from 'node-fetch';
+import nullthrows from 'nullthrows';
 import path from 'path';
 
 import {
@@ -30,8 +35,8 @@ afterAll(() => {
 it('loads expected modules by default', async () => {
   const modules = await getLoadedModulesAsync(`require('../../build/src/start').expoStart`);
   expect(modules).toStrictEqual([
+    '../node_modules/ansi-styles/index.js',
     '../node_modules/arg/index.js',
-    '../node_modules/chalk/node_modules/ansi-styles/index.js',
     '../node_modules/chalk/source/index.js',
     '../node_modules/chalk/source/util.js',
     '../node_modules/has-flag/index.js',
@@ -138,40 +143,52 @@ describe('server', () => {
       });
 
       console.log('Fetching manifest');
-      const results = await fetch('http://localhost:19000/', {
+      const response = await fetch('http://localhost:19000/', {
         headers: {
           'expo-platform': 'ios',
+          Accept: 'multipart/mixed',
         },
-      }).then((res) => res.json());
+      });
+
+      const multipartParts = await parseMultipartMixedResponseAsync(
+        response.headers.get('content-type') as string,
+        await response.buffer()
+      );
+      const manifestPart = nullthrows(
+        multipartParts.find((part) => isMultipartPartWithName(part, 'manifest'))
+      );
+
+      const manifest = JSON.parse(manifestPart.body);
 
       // Required for Expo Go
-      expect(results.packagerOpts).toStrictEqual({
+      expect(manifest.extra.expoGo.packagerOpts).toStrictEqual({
         dev: true,
       });
-      expect(results.developer).toStrictEqual({
+      expect(manifest.extra.expoGo.developer).toStrictEqual({
         projectRoot: expect.anything(),
         tool: 'expo-cli',
       });
 
       // URLs
-      expect(results.bundleUrl).toBe(
+      expect(manifest.launchAsset.url).toBe(
         'http://127.0.0.1:19000/node_modules/expo/AppEntry.bundle?platform=ios&dev=true&hot=false'
       );
-      expect(results.debuggerHost).toBe('127.0.0.1:19000');
-      expect(results.hostUri).toBe('127.0.0.1:19000');
-      expect(results.logUrl).toBe('http://127.0.0.1:19000/logs');
-      expect(results.mainModuleName).toBe('node_modules/expo/AppEntry');
+      expect(manifest.extra.expoGo.debuggerHost).toBe('127.0.0.1:19000');
+      expect(manifest.extra.expoGo.logUrl).toBe('http://127.0.0.1:19000/logs');
+      expect(manifest.extra.expoGo.mainModuleName).toBe('node_modules/expo/AppEntry');
+      expect(manifest.extra.expoClient.hostUri).toBe('127.0.0.1:19000');
 
       // Manifest
-      expect(results.sdkVersion).toBe('47.0.0');
-      expect(results.slug).toBe('basic-start');
-      expect(results.name).toBe('basic-start');
+      expect(manifest.runtimeVersion).toBe('exposdk:47.0.0');
+      expect(manifest.extra.expoClient.sdkVersion).toBe('47.0.0');
+      expect(manifest.extra.expoClient.slug).toBe('basic-start');
+      expect(manifest.extra.expoClient.name).toBe('basic-start');
 
       // Custom
-      expect(results.__flipperHack).toBe('React Native packager is running');
+      expect(manifest.extra.expoGo.__flipperHack).toBe('React Native packager is running');
 
       console.log('Fetching bundle');
-      const bundle = await fetch(results.bundleUrl).then((res) => res.text());
+      const bundle = await fetch(manifest.launchAsset.url).then((res) => res.text());
       console.log('Fetched bundle: ', bundle.length);
       expect(bundle.length).toBeGreaterThan(1000);
       console.log('Finished');

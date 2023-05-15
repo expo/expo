@@ -10,6 +10,13 @@
 
 ### 💡 Others
 
+## 14.2.0 — 2023-05-08
+
+### 🐛 Bug fixes
+
+- Fixed invalid timezone returned for `getCalendars` on Web. ([#22003](https://github.com/expo/expo/pull/22003) by [@aleqsio](https://github.com/aleqsio))
+- Fixed errors thrown on Play Console pre-launch report. ([#22003](https://github.com/expo/expo/pull/22003) by [@aleqsio](https://github.com/aleqsio))
+
 ## 14.1.1 — 2023-02-09
 
 _This version does not introduce any user-facing changes._

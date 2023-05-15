@@ -354,7 +354,7 @@ export declare namespace StorageAccessFramework {
      */
     const moveAsync: typeof import("./FileSystem").moveAsync;
     /**
-     * Alias fro [`copyAsync`](#filesystemcopyasyncoptions) method.
+     * Alias for [`copyAsync`](#filesystemcopyasyncoptions) method.
      */
     const copyAsync: typeof import("./FileSystem").copyAsync;
 }

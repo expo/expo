@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 0.19.0 — 2023-05-08
+
+### 💡 Others
+
+- Android: Switch from deprecated `toLowerCase` to `lowercase` function ([#22225](https://github.com/expo/expo/pull/22225) by [@hbiede](https://github.com/hbiede))
+
+## 0.18.2 — 2023-04-26
+
+_This version does not introduce any user-facing changes._
+
 ## 0.18.1 — 2023-02-09
 
 _This version does not introduce any user-facing changes._

@@ -1,0 +1,108 @@
+---
+title: Using Expo CLI
+description: Learn how and why you can use Expo CLI instead of @react-native-community/cli in any React Native project.
+---
+
+import { Terminal } from '~/ui/components/Snippet';
+import { Collapsible } from '~/ui/components/Collapsible';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { DEMI } from '~/ui/components/Text';
+
+To use Expo CLI in a project created with `npx react-native init`, you will first need to install the `expo` package.
+This package includes the Expo Modules API and Expo CLI. For a complete explanation of how to install this, see the [Install Expo modules](/bare/installing-expo-modules.mdx) guide.
+For most apps, it's as simple as running the following command in your project directory:
+
+<Terminal cmd={['npx install-expo-modules@latest']} />
+
+## Why Expo CLI instead of `npx react-native`
+
+Expo CLI commands provide a number of benefits over the similar commands in `@react-native-community/cli`, including:
+
+- You can open up the Hermes debugger in one keystroke: <kbd>J</kbd>.
+- The debugger ships with React Developer Tools (`react-devtools`) already installed.
+- Support for [Continuous Native Generation](/workflow/prebuild.mdx) (CNG) with `npx expo prebuild` for easy upgrades, white-labeling, simple third-party package setup,
+  and improved maintainability of your codebase (by reducing the surface area).
+- Support for file-based routing with [`expo-router`](https://expo.github.io/router/docs).
+- View native logs directly in the terminal alongside your JavaScript logs.
+- Improved native build log formatting by using Expo CLI's own `xcpretty`-style tool that is built specifically for React Native apps.
+  For example, when compiling a Pod you can see which Node module included it.
+- [Automatic TypeScript support](/guides/typescript.mdx).
+- [Automatic web support](/guides/customizing-metro.mdx/#adding-web-support-to-metro) with Metro.
+- Out of the box [support for monorepos](/guides/monorepos.mdx).
+- Support for Expo tooling such as [expo-dev-client](/develop/development-builds/introduction.mdx), the [Expo Updates protocol](/technical-specs/expo-updates-1.mdx)
+  and [EAS Update](/eas-update/introduction.mdx).
+- `npx expo run:ios` will invoke `pod install` automatically when needed.
+- `npx expo install` picks known compatible versions of dependencies for well-known packages.
+- `npx expo run:[android|ios]` and `npx expo start` automatically detect if an app is running on the default port and suggests another.
+- Select an Android or iOS device to launch into using <kbd>Shift</kbd> + <kbd>I</kbd> or <kbd>Shift</kbd> + <kbd>A</kbd> from the interactive prompt.
+- Built-in support for serving your app over an [ngrok tunnel](/develop/development-builds/development-workflows.mdx/#tunnel-urls),
+  which is useful for testing on physical devices on restricted networks.
+
+We recommend Expo CLI for most React Native projects that target Android, iOS, and/or web. It does not yet have built-in support for the most popular out-of-tree platforms,
+macOS and Windows — if you are building for those platforms, you can use Expo CLI for the supported platforms and `@react-native-community/cli` for the others.
+
+## Compiling and running your app
+
+Once you have the `expo` package installed, you can use the `npx expo run:android` and `npx expo run:ios` commands as alternatives to `npx react-native run-android`
+and `npx react-native run-ios`. You can pass in the `--device` flag to select a device/simulator to build for — this also works for any connected iOS device.
+
+## Starting the bundler
+
+`npx expo run:[android|ios]` will start the bundler/development server. You can skip that by passing in `--no-bundler` flag.
+Start the development server independently with `npx expo start --dev-client`.
+
+## Common questions
+
+<Collapsible summary="Can I use Expo CLI without installing the Expo Modules API?">
+
+When you install the `expo` package with `npx install-expo-modules`, you will also install the Expo Modules API. If you just want to try out Expo CLI for now,
+you can install the `expo` package with `npm install` and then configure your **react-native.config.js** to exclude the package from autolinking:
+
+```js
+module.exports = {
+  dependencies: {
+    expo: {
+      platforms: {
+        android: null,
+        ios: null,
+        macos: null,
+      },
+    },
+  },
+};
+```
+
+> **Note**: Not all features will work without the Expo Modules API installed. For example, you will not be able to use the `expo-dev-client` package or `expo-router`.
+
+</Collapsible>
+
+<Collapsible summary="Can I use prebuild for out-of-tree platforms, such as macOS or Windows?">
+
+Yes! Refer to the [Customized Prebuild Example repository](https://github.com/byCedric/custom-prebuild-example) for more information.
+
+</Collapsible>
+
+## Learn more
+
+With the `expo` package installed and configured in your project, you can start using all features from Expo CLI and SDK.
+
+<BoxLink
+  title="Expo CLI Reference"
+  description="Learn more about the commands and flags available in Expo CLI."
+  href="/more/expo-cli"
+/>
+<BoxLink
+  title="Adopting Prebuild"
+  description={<>Automate your native directories using the <DEMI>app.json</DEMI>.</>}
+  href="/guides/adopting-prebuild"
+/>
+<BoxLink
+  title="Using the Expo SDK"
+  description="Try out modules from the Expo SDK in your app"
+  href="/versions/"
+/>
+<BoxLink
+  title="Try Expo Router"
+  description="Expo Router brings the best routing concepts from the web to native Android and iOS apps."
+  href="https://expo.github.io/router/docs/"
+/>

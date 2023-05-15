@@ -2,15 +2,23 @@
 
 ## Unpublished
 
+### 📚 3rd party library updates
+
+- Updated `robolectric` to `4.10`.  ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
 ### 🐛 Bug fixes
 
-- Fix saving animated GIFs on iOS. ([#21549](https://github.com/expo/expo/pull/21549) by [@desi-ivanov](https://github.com/desi-ivanov))
-
 ### 💡 Others
+
+## 15.3.0 — 2023-05-08
+
+### 🐛 Bug fixes
+
+- Fix saving animated GIFs on iOS. ([#21549](https://github.com/expo/expo/pull/21549) by [@desi-ivanov](https://github.com/desi-ivanov))
 
 ## 15.2.1 — 2023-02-09
 

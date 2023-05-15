@@ -2,6 +2,8 @@ require 'json'
 
 package = JSON.parse(File.read(File.join(__dir__, 'package.json')))
 
+folly_compiler_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
+
 Pod::Spec.new do |s|
   s.name           = 'expo-dev-menu'
   s.version        = package['version']
@@ -31,16 +33,32 @@ Pod::Spec.new do |s|
     "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-menu/Swift Compatibility Header\"",
   }
 
-  # Swift/Objective-C compatibility
-  s.pod_target_xcconfig = { "DEFINES_MODULE" => "YES" }
+  header_search_paths = [
+    '"$(PODS_ROOT)/boost"',
+    '"${PODS_ROOT}/Headers/Private/React-Core"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/ExpoModulesCore/Swift Compatibility Header"',
+    '"$(PODS_CONFIGURATION_BUILD_DIR)/expo-dev-menu-interface/Swift Compatibility Header"',
+  ]
+  s.pod_target_xcconfig = {
+    'DEFINES_MODULE' => 'YES',
+    'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
+    'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
+  }
 
   s.subspec 'SafeAreaView' do |safearea|
+    safearea.dependency 'ExpoModulesCore'
+
+    # Swift/Objective-C compatibility
+    safearea.pod_target_xcconfig = {
+      'DEFINES_MODULE' => 'YES',
+      'SWIFT_COMPILATION_MODE' => 'wholemodule'
+    }
     if File.exist?("vendored/react-native-safe-area-context/dev-menu-react-native-safe-area-context.xcframework") && Gem::Version.new(Pod::VERSION) >= Gem::Version.new('1.10.0')
       safearea.source_files = "vendored/react-native-safe-area-context/**/*.{h}"
       safearea.vendored_frameworks = "vendored/react-native-safe-area-context/dev-menu-react-native-safe-area-context.xcframework"
       safearea.private_header_files = 'vendored/react-native-safe-area-context/**/*.h'
     else
-      safearea.source_files = 'vendored/react-native-safe-area-context/**/*.{h,m}'
+      safearea.source_files = 'vendored/react-native-safe-area-context/**/*.{h,m,swift}'
       safearea.private_header_files = 'vendored/react-native-safe-area-context/**/*.h'
 
       safearea.compiler_flags = '-w -Xanalyzer -analyzer-disable-all-checks'
@@ -55,6 +73,7 @@ Pod::Spec.new do |s|
     s.source_files   = 'ios/**/*.{h,m,mm,swift}'
     s.preserve_paths = 'ios/**/*.{h,m,mm,swift}'
     s.exclude_files  = 'ios/*Tests/**/*', 'vendored/**/*'
+    s.compiler_flags = folly_compiler_flags
 
     main.dependency 'React-Core'
     main.dependency "EXManifests"

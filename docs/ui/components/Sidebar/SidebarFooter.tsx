@@ -1,8 +1,6 @@
-import { css } from '@emotion/react';
-import { theme, SnackLogo } from '@expo/styleguide';
-import { spacing } from '@expo/styleguide-base';
+import { SnackLogo } from '@expo/styleguide';
 import { ChangelogIcon, DiscordIcon, MessageDotsSquareIcon } from '@expo/styleguide-icons';
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/compat/router';
 
 import { SidebarSingleEntry } from './SidebarSingleEntry';
 import { ArchiveIcon } from './icons/Archive';
@@ -10,10 +8,10 @@ import { ArchiveIcon } from './icons/Archive';
 import { getPageSection } from '~/common/routes';
 
 export const SidebarFooter = () => {
-  const { pathname } = useRouter();
-  const isArchive = getPageSection(pathname) === 'archive';
+  const router = useRouter();
+  const isArchive = router?.pathname ? getPageSection(router.pathname) === 'archive' : false;
   return (
-    <div css={sidebarFooterContainer}>
+    <div className="flex flex-col p-4 border-t border-t-default bg-default">
       <SidebarSingleEntry
         secondary
         href="/archive"
@@ -52,11 +50,3 @@ export const SidebarFooter = () => {
     </div>
   );
 };
-
-const sidebarFooterContainer = css({
-  display: 'flex',
-  flexDirection: 'column',
-  padding: spacing[4],
-  borderTop: `1px solid ${theme.border.default}`,
-  background: theme.background.default,
-});

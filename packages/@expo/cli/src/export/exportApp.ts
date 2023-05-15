@@ -8,7 +8,7 @@ import { copyAsync, ensureDirectoryAsync } from '../utils/dir';
 import { env } from '../utils/env';
 import { setNodeEnv } from '../utils/nodeEnv';
 import { createBundlesAsync } from './createBundles';
-import { exportAssetsAsync } from './exportAssets';
+import { exportAssetsAsync, exportCssAssetsAsync } from './exportAssets';
 import { unstable_exportStaticAsync } from './exportStaticAsync';
 import { getPublicExpoManifestAsync } from './getPublicExpoManifest';
 import { printBundleSizes } from './printBundleSizes';
@@ -45,8 +45,11 @@ export async function exportAppAsync(
   }: Pick<Options, 'dumpAssetmap' | 'dumpSourcemap' | 'dev' | 'clear' | 'outputDir' | 'platforms'>
 ): Promise<void> {
   setNodeEnv(dev ? 'development' : 'production');
+  require('@expo/env').load(projectRoot);
 
   const exp = await getPublicExpoManifestAsync(projectRoot);
+
+  const useWebSSG = exp.web?.output === 'static';
 
   const publicPath = path.resolve(projectRoot, env.EXPO_PUBLIC_FOLDER);
 
@@ -65,52 +68,61 @@ export async function exportAppAsync(
     { resetCache: !!clear },
     {
       platforms,
+      // TODO: Breaks asset exports
+      // platforms: useWebSSG ? platforms.filter((platform) => platform !== 'web') : platforms,
       dev,
       // TODO: Disable source map generation if we aren't outputting them.
     }
   );
 
-  // Log bundle size info to the user
-  printBundleSizes(
-    Object.fromEntries(
-      Object.entries(bundles).map(([key, value]) => {
-        if (!dumpSourcemap) {
-          return [
-            key,
-            {
-              ...value,
-              // Remove source maps from the bundles if they aren't going to be written.
-              map: undefined,
-            },
-          ];
-        }
+  const bundleEntries = Object.entries(bundles);
+  if (bundleEntries.length) {
+    // Log bundle size info to the user
+    printBundleSizes(
+      Object.fromEntries(
+        bundleEntries.map(([key, value]) => {
+          if (!dumpSourcemap) {
+            return [
+              key,
+              {
+                ...value,
+                // Remove source maps from the bundles if they aren't going to be written.
+                map: undefined,
+              },
+            ];
+          }
 
-        return [key, value];
-      })
-    )
-  );
+          return [key, value];
+        })
+      )
+    );
+  }
 
   // Write the JS bundles to disk, and get the bundle file names (this could change with async chunk loading support).
   const { hashes, fileNames } = await writeBundlesAsync({ bundles, outputDir: bundlesPath });
 
   Log.log('Finished saving JS Bundles');
 
-  if (fileNames.web) {
-    if (env.EXPO_USE_STATIC) {
+  if (platforms.includes('web')) {
+    if (useWebSSG) {
       await unstable_exportStaticAsync(projectRoot, {
         outputDir: outputPath,
-        scripts: [`/bundles/${fileNames.web}`],
         // TODO: Expose
         minify: true,
       });
       Log.log('Finished saving static files');
     } else {
+      const cssLinks = await exportCssAssetsAsync({
+        outputDir,
+        bundles,
+      });
       // Generate SPA-styled HTML file.
       // If web exists, then write the template HTML file.
       await fs.promises.writeFile(
         path.join(staticFolder, 'index.html'),
         await createTemplateHtmlFromExpoConfigAsync(projectRoot, {
           scripts: [`/bundles/${fileNames.web}`],
+          cssLinks,
         })
       );
     }

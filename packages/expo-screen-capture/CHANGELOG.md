@@ -10,6 +10,16 @@
 
 ### 💡 Others
 
+## 5.2.0 — 2023-05-08
+
+### 🎉 New features
+
+- On Android, migrated to Expo Modules API. ([#22208](https://github.com/expo/expo/pull/22208) by [@alanjhughes](https://github.com/alanjhughes))
+
+### 💡 Others
+
+- Android: Switch from deprecated `toLowerCase` to `lowercase` function ([#22225](https://github.com/expo/expo/pull/22225) by [@hbiede](https://github.com/hbiede))
+
 ## 5.1.1 — 2023-02-09
 
 _This version does not introduce any user-facing changes._

@@ -24,6 +24,15 @@ export async function getAuthenticatedUserAsync() {
 }
 
 /**
+ * Returns public user data by the given username.
+ * @param username - The username of the user to retrieve.
+ */
+export async function getUserAsync(username: string) {
+  const { data } = await octokit.users.getByUsername({ username });
+  return data;
+}
+
+/**
  * Requests for the pull request object.
  */
 export async function getPullRequestAsync(
@@ -43,6 +52,40 @@ export async function getPullRequestAsync(
   });
   cachedPullRequests.set(pull_number, data);
   return data;
+}
+
+/**
+ * Returns the url of the PR that closed an issue.
+ */
+export async function getIssueCloserPrUrlAsync(issueNumber: number): Promise<string> {
+  const { repository } = await octokit.graphql<any>(
+    `query GetIssueCloser($repo: String!, $owner: String!, $issueNumber: Int!) {
+        repository(name: $repo, owner: $owner) {
+          issue(number: $issueNumber) {
+            timelineItems(itemTypes: CLOSED_EVENT, last: 1) {
+              nodes {
+                ... on ClosedEvent {
+                  createdAt
+                  closer {
+                    __typename
+                    ... on PullRequest {
+                      url
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }`,
+    {
+      owner,
+      repo,
+      issueNumber,
+    }
+  );
+
+  return repository?.issue?.timelineItems?.nodes?.[0]?.closer?.url;
 }
 
 /**

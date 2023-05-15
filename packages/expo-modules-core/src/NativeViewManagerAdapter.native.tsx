@@ -12,10 +12,6 @@ import { requireNativeModule } from './requireNativeModule';
 // passed to React Native's View (ex: style, testID) and custom view props, which are passed to the
 // adapter view component in a prop called `proxiedProperties`.
 
-type NativeExpoComponentProps = {
-  proxiedProperties: object;
-};
-
 /**
  * A map that caches registered native components.
  */
@@ -54,9 +50,7 @@ export function requireNativeViewManager<P>(viewName: string): React.ComponentTy
   // Set up the React Native native component, which is an adapter to the universal module's view
   // manager
   const reactNativeViewName = `ViewManagerAdapter_${viewName}`;
-  const ReactNativeComponent =
-    requireCachedNativeComponent<NativeExpoComponentProps>(reactNativeViewName);
-  const proxiedPropsNames = viewManagerConfig?.propsNames ?? [];
+  const ReactNativeComponent = requireCachedNativeComponent(reactNativeViewName);
 
   class NativeComponent extends React.PureComponent<P> {
     static displayName = viewName;
@@ -70,10 +64,7 @@ export function requireNativeViewManager<P>(viewName: string): React.ComponentTy
     }
 
     render(): React.ReactNode {
-      const nativeProps = omit(this.props, proxiedPropsNames);
-      const proxiedProps = pick(this.props, proxiedPropsNames);
-
-      return <ReactNativeComponent {...nativeProps} proxiedProperties={proxiedProps} />;
+      return <ReactNativeComponent {...this.props} />;
     }
   }
 
@@ -94,21 +85,4 @@ export function requireNativeViewManager<P>(viewName: string): React.ComponentTy
   }
 
   return NativeComponent;
-}
-
-function omit(props: Record<string, any>, propNames: string[]) {
-  const copied = { ...props };
-  for (const propName of propNames) {
-    delete copied[propName];
-  }
-  return copied;
-}
-
-function pick(props: Record<string, any>, propNames: string[]) {
-  return propNames.reduce((prev, curr) => {
-    if (curr in props) {
-      prev[curr] = props[curr];
-    }
-    return prev;
-  }, {});
 }

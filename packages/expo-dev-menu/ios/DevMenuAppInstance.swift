@@ -3,7 +3,7 @@
 import React
 
 @objc
-class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
+class DevMenuAppInstance: DevMenuRCTCxxBridgeDelegate, RCTBridgeDelegate {
   static private var CloseEventName = "closeDevMenu"
   static private var OpenEventName = "openDevMenu"
 
@@ -44,7 +44,7 @@ class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
     #if DEBUG
     if let packagerHost = jsPackagerHost() {
       return RCTBundleURLProvider.jsBundleURL(
-        forBundleRoot: ".expo/.virtual-metro-entry",
+        forBundleRoot: "index",
         packagerHost: packagerHost,
         enableDev: true,
         enableMinification: false)
@@ -54,9 +54,7 @@ class DevMenuAppInstance: NSObject, RCTBridgeDelegate {
   }
 
   func extraModules(for bridge: RCTBridge!) -> [RCTBridgeModule]! {
-    var modules: [RCTBridgeModule] = [DevMenuInternalModule(manager: manager)]
-    modules.append(contentsOf: DevMenuVendoredModulesUtils.vendoredModules(bridge))
-    modules.append(DevMenuLoadingView.init())
+    var modules: [RCTBridgeModule] = [DevMenuLoadingView.init()]
     modules.append(DevMenuRCTDevSettings.init())
     return modules
   }

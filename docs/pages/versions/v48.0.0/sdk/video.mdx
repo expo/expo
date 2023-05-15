@@ -8,7 +8,7 @@ iconUrl: '/static/images/packages/expo-av.png'
 import APISection from '~/components/plugins/APISection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
-import { SnackInline} from '~/ui/components/Snippet';
+import { SnackInline } from '~/ui/components/Snippet';
 
 The `Video` component from **`expo-av`** displays a video inline with the other UI elements in your app.
 
@@ -29,7 +29,7 @@ Here's a simple example of a video with a play/pause button.
 ```jsx
 import * as React from 'react';
 import { View, StyleSheet, Button } from 'react-native';
-import { Video, AVPlaybackStatus } from 'expo-av';
+import { Video, ResizeMode } from 'expo-av';
 
 export default function App() {
   const video = React.useRef(null);
@@ -43,7 +43,7 @@ export default function App() {
           uri: 'https://d23dyxeqlo5psv.cloudfront.net/big_buck_bunny.mp4',
         }}
         useNativeControls
-        resizeMode="contain"
+        resizeMode={ResizeMode.CONTAIN}
         isLooping
         onPlaybackStatusUpdate={status => setStatus(() => status)}
       />

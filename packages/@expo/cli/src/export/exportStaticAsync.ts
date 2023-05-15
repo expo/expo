@@ -18,7 +18,7 @@ import { stripAnsi } from '../utils/ansi';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
-type Options = { outputDir: string; scripts: string[]; minify: boolean };
+type Options = { outputDir: string; minify: boolean };
 
 /** @private */
 export async function unstable_exportStaticAsync(projectRoot: string, options: Options) {
@@ -42,71 +42,28 @@ export async function unstable_exportStaticAsync(projectRoot: string, options: O
   await devServerManager.stopAsync();
 }
 
-async function getExpoRoutesAsync(devServerManager: DevServerManager) {
-  const server = devServerManager.getDefaultDevServer();
-  assert(server instanceof MetroBundlerDevServer);
-  return server.getRoutesAsync();
-}
-
 /** Match `(page)` -> `page` */
 function matchGroupName(name: string): string | undefined {
   return name.match(/^\(([^/]+?)\)$/)?.[1];
 }
 
-function appendScriptsToHtml(html: string, scripts: string[]) {
-  return html.replace(
-    '</body>',
-    scripts.map((script) => `<script src="${script}" defer></script>`).join('') + '</body>'
-  );
-}
-
 export async function getFilesToExportFromServerAsync({
   manifest,
-  scripts,
   renderAsync,
 }: {
   manifest: any;
-  scripts: string[];
-  renderAsync: (pathname: string) => Promise<{
-    fetchData: boolean;
-    scriptContents: string;
-    renderAsync: () => any;
-  }>;
+  renderAsync: (pathname: string) => Promise<string>;
 }): Promise<Map<string, string>> {
   // name : contents
   const files = new Map<string, string>();
 
-  const sanitizeName = (segment: string) => {
-    // Strip group names from the segment
-    return segment
-      .split('/')
-      .map((s) => (matchGroupName(s) ? '' : s))
-      .filter(Boolean)
-      .join('/');
-  };
-
-  const fetchScreens = (
-    screens: Record<string, any>,
-    additionPath: string = ''
-  ): Promise<any>[] => {
-    async function fetchScreenExactAsync(pathname: string, filename: string) {
-      const outputPath = [additionPath, filename].filter(Boolean).join('/').replace(/^\//, '');
-      // TODO: Ensure no duplicates in the manifest.
-      if (files.has(outputPath)) {
-        return;
-      }
-
-      // Prevent duplicate requests while running in parallel.
-      files.set(outputPath, '');
-
+  await Promise.all(
+    getHtmlFiles({ manifest }).map(async (outputPath) => {
+      const pathname = outputPath.replace(/(index)?\.html$/, '');
       try {
+        files.set(outputPath, '');
         const data = await renderAsync(pathname);
-
-        if (data.fetchData) {
-          // console.log('ssr:', pathname);
-        } else {
-          files.set(outputPath, appendScriptsToHtml(data.renderAsync(), scripts));
-        }
+        files.set(outputPath, data);
       } catch (e: any) {
         // TODO: Format Metro error message better...
         Log.error('Failed to statically render route:', pathname);
@@ -114,46 +71,8 @@ export async function getFilesToExportFromServerAsync({
         Log.exception(e);
         throw e;
       }
-    }
-
-    async function fetchScreenAsync({ segment, filename }: { segment: string; filename: string }) {
-      // Strip group names from the segment
-      const cleanSegment = sanitizeName(segment);
-
-      if (cleanSegment !== segment) {
-        // has groups, should request multiple screens.
-        await fetchScreenExactAsync(
-          [additionPath, segment].filter(Boolean).join('/'),
-          [additionPath, filename].filter(Boolean).join('/').replace(/^\//, '')
-        );
-      }
-
-      await fetchScreenExactAsync(
-        [additionPath, cleanSegment].filter(Boolean).join('/'),
-        [additionPath, sanitizeName(filename)].filter(Boolean).join('/').replace(/^\//, '')
-      );
-    }
-
-    return Object.entries(screens).map(async ([name, segment]) => {
-      const filename = name + '.html';
-
-      // Segment is a directory.
-      if (typeof segment !== 'string') {
-        const cleanSegment = sanitizeName(segment.path);
-        return Promise.all(
-          fetchScreens(segment.screens, [additionPath, cleanSegment].filter(Boolean).join('/'))
-        );
-      }
-
-      // TODO: handle dynamic routes
-      if (segment !== '*') {
-        await fetchScreenAsync({ segment, filename });
-      }
-      return null;
-    });
-  };
-
-  await Promise.all(fetchScreens(manifest.screens));
+    })
+  );
 
   return files;
 }
@@ -161,26 +80,41 @@ export async function getFilesToExportFromServerAsync({
 /** Perform all fs commits */
 export async function exportFromServerAsync(
   devServerManager: DevServerManager,
-  { outputDir, scripts }: Options
+  { outputDir }: Options
 ): Promise<void> {
   const devServer = devServerManager.getDefaultDevServer();
+  assert(devServer instanceof MetroBundlerDevServer);
 
-  const manifest = await getExpoRoutesAsync(devServerManager);
+  const [manifest, resources, renderAsync] = await Promise.all([
+    devServer.getRoutesAsync(),
+    devServer.getStaticResourcesAsync({ mode: 'production' }),
+    devServer.getStaticRenderFunctionAsync({
+      mode: 'production',
+    }),
+  ]);
 
   debug('Routes:\n', inspect(manifest, { colors: true, depth: null }));
 
   const files = await getFilesToExportFromServerAsync({
     manifest,
-    scripts,
-    renderAsync(pathname: string) {
-      assert(devServer instanceof MetroBundlerDevServer);
-      return devServer.getStaticPageAsync(pathname, { mode: 'production' });
+    async renderAsync(pathname: string) {
+      const template = await renderAsync(pathname);
+      return devServer.composeResourcesWithHtml({
+        mode: 'production',
+        resources,
+        template,
+      });
     },
+  });
+
+  resources.forEach((resource) => {
+    files.set(resource.filename, resource.source);
   });
 
   fs.mkdirSync(path.join(outputDir), { recursive: true });
 
-  Log.log(`Exporting ${files.size} files:`);
+  Log.log('');
+  Log.log(chalk.bold`Exporting ${files.size} files:`);
   await Promise.all(
     [...files.entries()]
       .sort(([a], [b]) => a.localeCompare(b))
@@ -192,4 +126,82 @@ export async function exportFromServerAsync(
         await fs.promises.writeFile(outputPath, contents);
       })
   );
+  Log.log('');
+}
+
+export function getHtmlFiles({ manifest }: { manifest: any }): string[] {
+  const htmlFiles = new Set<string>();
+
+  function traverseScreens(screens: string | { screens: any; path: string }, basePath = '') {
+    for (const value of Object.values(screens)) {
+      if (typeof value === 'string') {
+        let filePath = basePath + value;
+        if (value === '') {
+          filePath =
+            basePath === ''
+              ? 'index'
+              : basePath.endsWith('/')
+              ? basePath + 'index'
+              : basePath.slice(0, -1);
+        }
+        // TODO: Dedupe requests for alias routes.
+        addOptionalGroups(filePath);
+      } else if (typeof value === 'object' && value?.screens) {
+        const newPath = basePath + value.path + '/';
+        traverseScreens(value.screens, newPath);
+      }
+    }
+  }
+
+  function addOptionalGroups(path: string) {
+    const variations = getPathVariations(path);
+    for (const variation of variations) {
+      htmlFiles.add(variation);
+    }
+  }
+
+  traverseScreens(manifest.screens);
+
+  return Array.from(htmlFiles).map((value) => {
+    const parts = value.split('/');
+    // Replace `:foo` with `[foo]` and `*foo` with `[...foo]`
+    const partsWithGroups = parts.map((part) => {
+      if (part.startsWith(':')) {
+        return `[${part.slice(1)}]`;
+      } else if (part.startsWith('*')) {
+        return `[...${part.slice(1)}]`;
+      }
+      return part;
+    });
+    return partsWithGroups.join('/') + '.html';
+  });
+}
+
+// Given a route like `(foo)/bar/(baz)`, return all possible variations of the route.
+// e.g. `(foo)/bar/(baz)`, `(foo)/bar/baz`, `foo/bar/(baz)`, `foo/bar/baz`,
+export function getPathVariations(routePath: string): string[] {
+  const variations = new Set<string>([routePath]);
+  const segments = routePath.split('/');
+
+  function generateVariations(segments: string[], index: number): void {
+    if (index >= segments.length) {
+      return;
+    }
+
+    const segment = segments[index];
+    const groupName = matchGroupName(segment);
+    if (groupName) {
+      const newSegments = [...segments];
+      newSegments.splice(index, 1);
+      variations.add(newSegments.join('/'));
+
+      generateVariations(newSegments, index + 1);
+    }
+
+    generateVariations(segments, index + 1);
+  }
+
+  generateVariations(segments, 0);
+
+  return Array.from(variations);
 }
