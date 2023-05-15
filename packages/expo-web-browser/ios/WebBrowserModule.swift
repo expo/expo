@@ -7,22 +7,19 @@ import AuthenticationServices
 final public class WebBrowserModule: Module {
   private var currentWebBrowserSession: WebBrowserSession?
   private var currentAuthSession: WebAuthSession?
-  private var promise: Promise?
 
   public func definition() -> ModuleDefinition {
     Name("ExpoWebBrowser")
 
     AsyncFunction("openBrowserAsync") { (url: URL, options: WebBrowserOptions, promise: Promise) in
-      guard self.promise == nil else {
+      guard self.currentWebBrowserSession == nil else {
         throw WebBrowserAlreadyOpenException()
       }
-      self.currentWebBrowserSession = WebBrowserSession(url: url, options: options) { type in
-        self.promise?.resolve(["type": type])
-        self.promise = nil
+      self.currentWebBrowserSession = WebBrowserSession(url: url, options: options) { [promise] type in
+        promise.resolve(["type": type])
         self.currentWebBrowserSession = nil
       }
       self.currentWebBrowserSession?.open()
-      self.promise = promise
     }
     .runOnQueue(.main)
 
