@@ -2,25 +2,29 @@
 
 exports[`renders a complex gradient 1`] = `
 <ViewManagerAdapter_ExpoLinearGradient
-  proxiedProperties={
-    {
-      "colors": [
-        4294901760,
-        4278190335,
-      ],
-      "endPoint": [
-        1,
-        1,
-      ],
-      "locations": [
-        0.5,
-        1,
-      ],
-      "startPoint": [
-        0,
-        0,
-      ],
-    }
+  colors={
+    [
+      4294901760,
+      4278190335,
+    ]
+  }
+  endPoint={
+    [
+      1,
+      1,
+    ]
+  }
+  locations={
+    [
+      0.5,
+      1,
+    ]
+  }
+  startPoint={
+    [
+      0,
+      0,
+    ]
   }
 />
 `;
