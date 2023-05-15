@@ -107,7 +107,7 @@ class MediaLibraryModule : Module() {
     }
 
     AsyncFunction("addAssetsToAlbumAsync") { assetsId: List<String>, albumId: String, copyToAlbum: Boolean, promise: Promise ->
-      throwUnlessPermissionsGranted(writeOnly = false) {
+      throwUnlessPermissionsGranted {
         val action = actionIfUserGrantedPermission {
           withModuleScope(promise) {
             AddAssetsToAlbum(context, assetsId.toTypedArray(), albumId, copyToAlbum, promise)
@@ -155,7 +155,7 @@ class MediaLibraryModule : Module() {
     }
 
     AsyncFunction("getAssetInfoAsync") { assetId: String, _: Map<String, Any?>? /* unused on android atm */, promise: Promise ->
-      throwUnlessPermissionsGranted(writeOnly = false) {
+      throwUnlessPermissionsGranted(isWrite = false) {
         withModuleScope(promise) {
           GetAssetInfo(context, assetId, promise).execute()
         }
@@ -163,7 +163,7 @@ class MediaLibraryModule : Module() {
     }
 
     AsyncFunction("getAlbumsAsync") { _: Map<String, Any?>? /* unused on android atm */, promise: Promise ->
-      throwUnlessPermissionsGranted {
+      throwUnlessPermissionsGranted(isWrite = false) {
         withModuleScope(promise) {
           GetAlbums(context, promise).execute()
         }
@@ -171,7 +171,7 @@ class MediaLibraryModule : Module() {
     }
 
     AsyncFunction("getAlbumAsync") { albumName: String, promise: Promise ->
-      throwUnlessPermissionsGranted {
+      throwUnlessPermissionsGranted(isWrite = false) {
         withModuleScope(promise) {
           GetAlbum(context, albumName, promise)
             .execute()
@@ -205,7 +205,7 @@ class MediaLibraryModule : Module() {
     }
 
     AsyncFunction("getAssetsAsync") { assetOptions: AssetsOptions, promise: Promise ->
-      throwUnlessPermissionsGranted {
+      throwUnlessPermissionsGranted(isWrite = false) {
         withModuleScope(promise) {
           GetAssets(context, assetOptions, promise)
             .execute()
@@ -251,7 +251,7 @@ class MediaLibraryModule : Module() {
     }
 
     AsyncFunction("albumNeedsMigrationAsync") { albumId: String, promise: Promise ->
-      throwUnlessPermissionsGranted {
+      throwUnlessPermissionsGranted(isWrite = false) {
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.R) {
           moduleCoroutineScope.launch {
             CheckIfAlbumShouldBeMigrated(context, albumId, promise)
@@ -371,9 +371,9 @@ class MediaLibraryModule : Module() {
     ).toTypedArray()
   }
 
-  private inline fun throwUnlessPermissionsGranted(writeOnly: Boolean = false, block: () -> Unit) {
-    val missingPermissionsCondition = if (writeOnly) isMissingWritePermission else isMissingPermissions
-    val missingPermissionsMessage = if (writeOnly) ERROR_NO_WRITE_PERMISSION_MESSAGE else ERROR_NO_PERMISSIONS_MESSAGE
+  private inline fun throwUnlessPermissionsGranted(isWrite: Boolean = true, block: () -> Unit) {
+    val missingPermissionsCondition = if (isWrite) isMissingWritePermission else isMissingPermissions
+    val missingPermissionsMessage = if (isWrite) ERROR_NO_WRITE_PERMISSION_MESSAGE else ERROR_NO_PERMISSIONS_MESSAGE
     if (missingPermissionsCondition) {
       throw PermissionsException(missingPermissionsMessage)
     }
