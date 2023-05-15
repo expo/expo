@@ -15,12 +15,14 @@ export enum TargetType {
   WATCH = 'com.apple.product-type.application.watchapp',
   APP_CLIP = 'com.apple.product-type.application.on-demand-install-capable',
   STICKER_PACK_EXTENSION = 'com.apple.product-type.app-extension.messages-sticker-pack',
+  FRAMEWORK = 'com.apple.product-type.framework',
   OTHER = 'other',
 }
 
 export interface Target {
   name: string;
   type: TargetType;
+  signable: boolean;
   dependencies?: Target[];
 }
 
@@ -52,6 +54,7 @@ export async function findApplicationTargetWithDependenciesAsync(
   return {
     name: trimQuotes(applicationTarget.name),
     type: TargetType.APPLICATION,
+    signable: true,
     dependencies,
   };
 }
@@ -63,6 +66,9 @@ function getTargetDependencies(
   if (!parentTarget.dependencies || parentTarget.dependencies.length === 0) {
     return undefined;
   }
+
+  const nonSignableTargetTypes: TargetType[] = [TargetType.FRAMEWORK];
+
   return parentTarget.dependencies.map(({ value }) => {
     const { target: targetId } = project.getPBXGroupByKeyAndType(
       value,
@@ -77,6 +83,9 @@ function getTargetDependencies(
     return {
       name: trimQuotes(target.name),
       type,
+      signable: !nonSignableTargetTypes.some((signableTargetType) =>
+        isTargetOfType(target, signableTargetType)
+      ),
       dependencies: getTargetDependencies(project, target),
     };
   });
@@ -94,7 +103,7 @@ export function getNativeTargets(project: XcodeProject): NativeTargetSectionEntr
 export function findSignableTargets(project: XcodeProject): NativeTargetSectionEntry[] {
   const targets = getNativeTargets(project);
 
-  const signableTargetTypes = [
+  const signableTargetTypes: TargetType[] = [
     TargetType.APPLICATION,
     TargetType.APP_CLIP,
     TargetType.EXTENSION,
