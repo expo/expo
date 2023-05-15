@@ -7,23 +7,28 @@ import AuthenticationServices
 final public class WebBrowserModule: Module {
   private var currentWebBrowserSession: WebBrowserSession?
   private var currentAuthSession: WebAuthSession?
+  private var promise: Promise?
 
   public func definition() -> ModuleDefinition {
     Name("ExpoWebBrowser")
 
-    AsyncFunction("openBrowserAsync") { (url: URL, options: WebBrowserOptions, promise: Promise) throws in
-      guard self.currentWebBrowserSession?.isOpen != true else {
+    AsyncFunction("openBrowserAsync") { (url: URL, options: WebBrowserOptions, promise: Promise) in
+      guard self.promise == nil else {
         throw WebBrowserAlreadyOpenException()
       }
-      self.currentWebBrowserSession = WebBrowserSession(url: url, options: options) {
-        self.destroyBrowserSession()
+      self.currentWebBrowserSession = WebBrowserSession(url: url, options: options) { type in
+        self.promise?.resolve(["type": type])
+        self.promise = nil
+        self.currentWebBrowserSession = nil
       }
-      self.currentWebBrowserSession?.open(promise)
+      self.currentWebBrowserSession?.open()
+      self.promise = promise
     }
     .runOnQueue(.main)
 
     AsyncFunction("dismissBrowser") {
-      self.destroyBrowserSession()
+      currentWebBrowserSession?.dismiss()
+      currentWebBrowserSession = nil
     }
     .runOnQueue(.main)
 
@@ -50,10 +55,5 @@ final public class WebBrowserModule: Module {
     AsyncFunction("coolDownAsync") {}
     AsyncFunction("mayInitWithUrlAsync") {}
     AsyncFunction("getCustomTabsSupportingBrowsers") {}
-  }
-
-  private func destroyBrowserSession() {
-    currentWebBrowserSession?.dismiss()
-    currentWebBrowserSession = nil
   }
 }
