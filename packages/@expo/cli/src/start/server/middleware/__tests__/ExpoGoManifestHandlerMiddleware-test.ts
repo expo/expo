@@ -14,7 +14,10 @@ import {
   mockExpoRootChain,
   mockSelfSigned,
 } from '../../../../utils/__tests__/fixtures/certificates';
-import { ExpoGoManifestHandlerMiddleware } from '../ExpoGoManifestHandlerMiddleware';
+import {
+  ExpoGoManifestHandlerMiddleware,
+  ResponseContentType,
+} from '../ExpoGoManifestHandlerMiddleware';
 import { ManifestMiddlewareOptions } from '../ManifestMiddleware';
 import { ServerHeaders, ServerRequest } from '../server.types';
 
@@ -117,7 +120,7 @@ describe('getParsedHeaders', () => {
       )
     ).toEqual({
       expectSignature: null,
-      explicitlyPrefersMultipartMixed: false,
+      responseContentType: ResponseContentType.TEXT_PLAIN,
       hostname: null,
       platform: 'none',
     });
@@ -129,7 +132,37 @@ describe('getParsedHeaders', () => {
         asReq({ url: 'http://localhost:3000', headers: { 'expo-platform': 'android' } })
       )
     ).toEqual({
-      explicitlyPrefersMultipartMixed: false,
+      responseContentType: ResponseContentType.TEXT_PLAIN,
+      expectSignature: null,
+      hostname: null,
+      platform: 'android',
+    });
+  });
+
+  it('supports application/json and expo+json', () => {
+    expect(
+      middleware.getParsedHeaders(
+        asReq({
+          url: 'http://localhost:3000',
+          headers: { 'expo-platform': 'android', accept: 'application/json' },
+        })
+      )
+    ).toEqual({
+      responseContentType: ResponseContentType.APPLICATION_JSON,
+      expectSignature: null,
+      hostname: null,
+      platform: 'android',
+    });
+
+    expect(
+      middleware.getParsedHeaders(
+        asReq({
+          url: 'http://localhost:3000',
+          headers: { 'expo-platform': 'android', accept: 'application/expo+json' },
+        })
+      )
+    ).toEqual({
+      responseContentType: ResponseContentType.APPLICATION_EXPO_JSON,
       expectSignature: null,
       hostname: null,
       platform: 'android',
@@ -150,7 +183,7 @@ describe('getParsedHeaders', () => {
         })
       )
     ).toEqual({
-      explicitlyPrefersMultipartMixed: true,
+      responseContentType: ResponseContentType.MULTIPART_MIXED,
       expectSignature: 'wat',
       hostname: 'localhost',
       // We don't care much about the platform here since it's already tested.
@@ -202,7 +235,7 @@ describe('_getManifestResponseAsync', () => {
     const middleware = createMiddleware();
     APISettings.isOffline = true;
     const results = await middleware._getManifestResponseAsync({
-      explicitlyPrefersMultipartMixed: true,
+      responseContentType: ResponseContentType.MULTIPART_MIXED,
       platform: 'android',
       expectSignature: null,
       hostname: 'localhost',
@@ -273,7 +306,7 @@ describe('_getManifestResponseAsync', () => {
     );
 
     const results = await middleware._getManifestResponseAsync({
-      explicitlyPrefersMultipartMixed: true,
+      responseContentType: ResponseContentType.MULTIPART_MIXED,
       platform: 'android',
       expectSignature: 'sig, keyid="testkeyid", alg="rsa-v1_5-sha256"',
       hostname: 'localhost',
@@ -312,7 +345,7 @@ describe('_getManifestResponseAsync', () => {
     const middleware = createMiddleware();
 
     const results = await middleware._getManifestResponseAsync({
-      explicitlyPrefersMultipartMixed: true,
+      responseContentType: ResponseContentType.MULTIPART_MIXED,
       platform: 'android',
       expectSignature: 'sig, keyid="expo-root", alg="rsa-v1_5-sha256"',
       hostname: 'localhost',
@@ -375,7 +408,7 @@ describe('_getManifestResponseAsync', () => {
     );
 
     const results = await middleware._getManifestResponseAsync({
-      explicitlyPrefersMultipartMixed: true,
+      responseContentType: ResponseContentType.MULTIPART_MIXED,
       platform: 'android',
       expectSignature: 'sig, keyid="testkeyid", alg="rsa-v1_5-sha256"',
       hostname: 'localhost',
@@ -416,7 +449,7 @@ describe('_getManifestResponseAsync', () => {
 
     const middlewareOnline = createMiddleware();
     await middlewareOnline._getManifestResponseAsync({
-      explicitlyPrefersMultipartMixed: true,
+      responseContentType: ResponseContentType.MULTIPART_MIXED,
       platform: 'android',
       expectSignature: 'sig, keyid="expo-root", alg="rsa-v1_5-sha256"',
       hostname: 'localhost',
@@ -428,7 +461,7 @@ describe('_getManifestResponseAsync', () => {
     const middleware = createMiddleware();
 
     const results = await middleware._getManifestResponseAsync({
-      explicitlyPrefersMultipartMixed: true,
+      responseContentType: ResponseContentType.MULTIPART_MIXED,
       platform: 'android',
       expectSignature: 'sig, keyid="expo-root", alg="rsa-v1_5-sha256"',
       hostname: 'localhost',
@@ -467,14 +500,79 @@ describe('_getManifestResponseAsync', () => {
     expect(certificateChainPartBody).toMatchSnapshot();
   });
 
+  it('returns application/json when requested', async () => {
+    const middleware = createMiddleware();
+    APISettings.isOffline = true;
+    const results = await middleware._getManifestResponseAsync({
+      responseContentType: ResponseContentType.APPLICATION_JSON,
+      platform: 'android',
+      expectSignature: null,
+      hostname: 'localhost',
+    });
+
+    expect(JSON.parse(results.body)).toMatchObject({
+      id: expect.any(String),
+      createdAt: expect.any(String),
+      runtimeVersion: '45.0.0',
+      launchAsset: {
+        key: 'bundle',
+        contentType: 'application/javascript',
+        url: 'https://localhost:8081/bundle.js',
+      },
+      assets: [],
+      metadata: {},
+      extra: {
+        eas: {
+          projectId: 'projectId',
+        },
+        expoClient: expect.anything(),
+        expoGo: {},
+        scopeKey: expect.stringMatching(/@anonymous\/.*/),
+      },
+    });
+    expect(results.version).toBe('45.0.0');
+
+    expect(results.headers).toEqual(
+      new Map(
+        Object.entries({
+          'expo-protocol-version': 0,
+          'expo-sfv-version': 0,
+          'cache-control': 'private, max-age=0',
+          'content-type': 'application/json',
+        })
+      )
+    );
+  });
+
   it('returns text/plain when explicitlyPrefersMultipartMixed is false', async () => {
     const middleware = createMiddleware();
     APISettings.isOffline = true;
     const results = await middleware._getManifestResponseAsync({
-      explicitlyPrefersMultipartMixed: false,
+      responseContentType: ResponseContentType.TEXT_PLAIN,
       platform: 'android',
       expectSignature: null,
       hostname: 'localhost',
+    });
+
+    expect(JSON.parse(results.body)).toMatchObject({
+      id: expect.any(String),
+      createdAt: expect.any(String),
+      runtimeVersion: '45.0.0',
+      launchAsset: {
+        key: 'bundle',
+        contentType: 'application/javascript',
+        url: 'https://localhost:8081/bundle.js',
+      },
+      assets: [],
+      metadata: {},
+      extra: {
+        eas: {
+          projectId: 'projectId',
+        },
+        expoClient: expect.anything(),
+        expoGo: {},
+        scopeKey: expect.stringMatching(/@anonymous\/.*/),
+      },
     });
     expect(results.version).toBe('45.0.0');
 

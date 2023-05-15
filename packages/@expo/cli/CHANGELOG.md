@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix modern manifest serving for dev client without expo-updates. ([#22470](https://github.com/expo/expo/pull/22470) by [@wschurman](https://github.com/wschurman))
+
 ### 💡 Others
 
 ## 0.8.0 — 2023-05-08
