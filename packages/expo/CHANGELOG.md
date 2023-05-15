@@ -10,8 +10,6 @@
 
 ### 💡 Others
 
-## 48.0.17 — 2023-05-11
-
 ### 📚 3rd party library updates
 
 - Update `react-native` to 0.71.8. ([#22458](https://github.com/expo/expo/pull/22458) by [@gusgard](https://github.com/gusgard))
