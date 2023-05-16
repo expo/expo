@@ -39,9 +39,7 @@ export function CodeBlocksTable({ children, tabs, connected = true, ...rest }: P
       {codeBlocks.map((codeBlock, index) => (
         <Snippet key={index} css={snippetWrapperStyle}>
           <SnippetHeader title={tabNames[index]} />
-          <SnippetContent skipPadding css={snippetContentStyle}>
-            {codeBlock}
-          </SnippetContent>
+          <SnippetContent className="p-0">{codeBlock}</SnippetContent>
         </Snippet>
       ))}
     </div>
@@ -96,8 +94,4 @@ const snippetWrapperStyle = css({
       marginBottom: spacing[4],
     },
   },
-});
-
-const snippetContentStyle = css({
-  height: '100%',
 });
