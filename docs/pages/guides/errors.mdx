@@ -19,6 +19,6 @@ We recommend using [Sentry](/guides/using-sentry) to track JavaScript errors in 
 
 ## Native errors
 
-You can compile your project locally to use first-party native debuggers (Xcode/Android Studio). See [native debugging guide](/debugging/runtime-issue/#native-debugging) for more information.
+You can compile your project locally to use first-party native debuggers (Xcode/Android Studio). See [native debugging guide](/debugging/runtime-issues/#native-debugging) for more information.
 
 Unlike the browser, there are a few circumstances where it's possible to crash the native app by writing invalid JavaScript. Usually, these are in areas where it would be performance-prohibitive to add native validation to your code, e.g. the part of the React Native bridge that converts JS objects into typed native values. If you encounter an inexplicable native crash, double check that your parameters are of the right type. These types of issues can be mitigated by [using TypeScript](/guides/typescript).
