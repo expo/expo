@@ -166,7 +166,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/get-started/errors/': '/debugging/errors-and-warnings/',
 
   // Old redirects
-  '/introduction/project-lifecycle/': '/introduction/managed-vs-bare/',
+  '/introduction/project-lifecycle/': '/archive/managed-vs-bare/',
   '/versions/latest/sdk/': '/versions/latest/',
   '/versions/latest/sdk/overview/': '/versions/latest/',
   '/guides/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
