@@ -50,8 +50,6 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
 
   override fun getName() = "EXDevLauncherInternal"
 
-  override fun hasConstants(): Boolean = true
-
   override fun getConstants(): Map<String, Any> {
     val isRunningOnEmulator = EmulatorUtilities.isRunningOnEmulator()
     return mapOf(
