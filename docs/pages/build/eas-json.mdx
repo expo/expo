@@ -4,7 +4,7 @@ sidebar_title: Configuration with eas.json
 description: Learn how a project using EAS services is configured with eas.json.
 ---
 
-**eas.json** is the configuration file for EAS CLI and services. It is located at the root of your project next to your **package.json**. Configuration for EAS Build all belongs under the `"build"` key. A minimal **eas.json** may look something like this:
+**eas.json** is the configuration file for EAS CLI and services. It is located at the root of your project next to your **package.json**. Configuration for EAS Build all belongs under the `build` key. A minimal **eas.json** is shown below:
 
 ```json eas.json
 {
@@ -23,19 +23,19 @@ description: Learn how a project using EAS services is configured with eas.json.
 
 ## Build profiles
 
-A build profile is a named grouping of configurations that describes the necessary parameters to perform a certain type of build.
+A build profile is a named group of configurations that describes the necessary parameters to perform a certain type of build.
 
-The JSON object under the `build` key can contain multiple build profiles, and you can name these build profiles whatever you like; in the above example, there are three build profiles: `development`, `preview`, and `production`, but these could have been named `foo`, `bar`, and `baz` if that was your preference.
+The JSON object under the `build` key can contain multiple build profiles, and you can name these build profiles whatever you like. In the previous example, there are three build profiles: `development`, `preview`, and `production`. However, these could have been named `foo`, `bar`, and `baz` if that is your preference.
 
 To run a build with a specific profile, execute `eas build --profile <profile-name>`. If you omit the `--profile` flag, EAS CLI will default to using the profile with the name **production**, if it exists.
 
 ### Platform-specific and common options
 
-Inside each build profile you can specify `android` and `ios` fields that contain platform-specific configuration for the build. Fields that are available to both platforms can be provided on the platform-specific configuration object or on the root of the profile.
+Inside each build profile, you can specify `android` and `ios` fields that contain platform-specific configuration for the build. Fields that are available to both platforms can be provided on the platform-specific configuration object or on the root of the profile.
 
 ### Sharing configuration between profiles
 
-Build profiles can extend another build profile using the `"extends"` key. For example, in the `preview` profile you may have `"extends": "production"`; this would make the `preview` profile inherit configuration of the `production` profile.
+Build profiles can extend another build profile using the `extends` key. For example, in the `preview` profile you may have `"extends": "production"`. This will make the `preview` profile inherit the configuration of the `production` profile.
 
 ## Common use cases
 
@@ -45,11 +45,11 @@ Developers using Expo tools usually end up having three different types of build
 
 These builds include developer tools, and they are never submitted to an app store.
 
-By default, `eas build:configure` will create a `development` profile with `"developmentClient": true`. This indicates that this build depends on [expo-dev-client](/clients/introduction).
+By default, `eas build:configure` will create a `development` profile with `"developmentClient": true`. This indicates that this build depends on [`expo-dev-client`](/develop/development-builds/introduction/).
 
-The `development` profile also defaults to `"distribution": "internal"`. This will make it easy to distribute your app directly to physical iOS and Android devices &mdash; [learn more](/build/internal-distribution).
+The `development` profile also defaults to `"distribution": "internal"`. This will make it easy to distribute your app directly to physical Android and iOS devices. See [Internal distribution](/build/internal-distribution) for more information.
 
-You may alternatively prefer for your development build to [run on an iOS Simulator](/build-reference/simulators). To do this, use the following configuration for `development` profile:
+You may alternatively prefer for your development build to [run on an iOS Simulator](/build-reference/simulators). To do this, use the following configuration for the `development` profile:
 
 ```json eas.json
 {
@@ -67,7 +67,7 @@ You may alternatively prefer for your development build to [run on an iOS Simula
 }
 ```
 
-If you'd like to create a build for internal distribution and another for the iOS Simulator then you can create another development profile for that build. You might call the profile something like `development-simulator` and use the above configuration on that profile instead of on `development`. [No such configuration is required to run an Android APK on your device and in an emulator](/build-reference/apk); the same APK will work in both circumstances.
+If you'd like to create a build for internal distribution and another for the iOS Simulator then you can create another development profile for that build. You might call the profile something like `development-simulator` and use the above configuration on that profile instead of on `development`. [No such configuration is required to run an Android APK on your device and in an emulator](/build-reference/apk). The same APK will work in both circumstances.
 
 ### Preview builds
 
@@ -87,7 +87,7 @@ A minimal `preview` profile looks like this:
 }
 ```
 
-Similar to [development builds](#development-builds), you can configure your preview build to run on the [iOS Simulator](/build-reference/simulators.mdx) or create a variant of your preview profile for that purpose. [No such configuration is required to run an Android APK on your device and in an emulator](/build-reference/apk.mdx); the same APK will work in both circumstances.
+Similar to [development builds](#development-builds), you can configure your preview build to run on the [iOS Simulator](/build-reference/simulators) or create a variant of your preview profile for that purpose. [No such configuration is required to run an Android APK on your device and in an emulator](/build-reference/apk); the same APK will work in both circumstances.
 
 ### Production builds
 
@@ -109,21 +109,21 @@ A minimal `production` profile looks like this:
 
 ### Installing multiple builds of the same app on a single device
 
-It's common to have development and production builds installed simultaneously on the same device. [Learn about "installing app variants on the same device"](../build-reference/variants.mdx).
+It's common to have development and production builds installed simultaneously on the same device. See [installing app variants on the same device](/build-reference/variants/).
 
 ## Configuring your build tools
 
-Every build depends either implicitly or explicitly on a specific set of versions of related tools that are needed to carry out the build process. These include, but are not limited to: Node.js, npm, yarn, Ruby, Bundler, Cocoapods, Fastlane, Xcode, and Android NDK.
+Every build depends either implicitly or explicitly on a specific set of versions of related tools that are needed to carry out the build process. These include but are not limited to: Node.js, npm, yarn, Ruby, Bundler, Cocoapods, Fastlane, Xcode, and Android NDK.
 
 ### Selecting build tool versions
 
-Versions for the most common build tools can be set on build profiles with fields corresponding to names of the tools, for example `"node"`:
+Versions for the most common build tools can be set on build profiles with fields corresponding to the names of the tools. For example `"node"`:
 
 ```json eas.json
 {
   "build": {
     "production": {
-      "node": "16.13.0"
+      "node": "16.18.0"
     }
     // ...
   }
