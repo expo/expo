@@ -8,7 +8,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 
 The `expo-updates` library fetches and manages updates received from a remote server. It supports [EAS Update](/eas-update/introduction), a hosted service that serves updates for projects using the `expo-updates` library.
 
-> If you are creating a new project, we recommend using `npx create-expo-app --template bare-minimum` (or `yarn create expo-app --template bare-minimum`) instead of `npx react-native init` because it will handle the following configuration for you automatically. It includes the `expo-updates` [config plugin](/guides/config-plugins), which will handle the following steps for you.
+> If you are creating a new project, we recommend using `npx create-expo-app --template bare-minimum` (or `yarn create expo-app --template bare-minimum`) instead of `npx react-native init` because it will handle the following configuration for you automatically. It includes the `expo-updates` [config plugin](/config-plugins/introduction/), which will handle the following steps for you.
 
 ## Installation
 
@@ -47,7 +47,7 @@ The changes below add the updates URL to the Expo configuration.
 +    },
 +    "runtimeVersion": "1.0.0",
 +    "updates": {
-+      "url": "http://localhost:3000/api/manifest"  
++      "url": "http://localhost:3000/api/manifest"
 +    }
 +  }
  }
@@ -72,13 +72,13 @@ Modify **ios/Podfile** to check for the JS engine configuration (JSC or Hermes) 
 @@ -2,6 +2,9 @@ require File.join(File.dirname(`node --print "require.resolve('expo/package.json
  require_relative '../node_modules/react-native/scripts/react_native_pods'
  require_relative '../node_modules/@react-native-community/cli-platform-ios/native_modules'
- 
+
 +require 'json'
 +podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
 +
  platform :ios, '13.0'
  prepare_react_native_project!
- 
+
 @@ -41,7 +44,7 @@ target 'MyApp' do
      # Hermes is now enabled by default. Disable by setting this flag to false.
      # Upcoming versions of React Native may rely on get_default_flags(), but
@@ -121,7 +121,7 @@ Modify **android/app/build.gradle** to check for the JS engine configuration (JS
 @@ -52,6 +52,11 @@ react {
      // hermesFlags = ["-O", "-output-source-map"]
  }
- 
+
 +// Override `hermesEnabled` by `expo.jsEngine`
 +ext {
 +  hermesEnabled = (findProperty('expo.jsEngine') ?: "hermes") == "hermes"
