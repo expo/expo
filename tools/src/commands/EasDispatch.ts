@@ -1,4 +1,5 @@
 import { Command } from '@expo/commander';
+import plist from '@expo/plist';
 import spawnAsync from '@expo/spawn-async';
 import assert from 'assert';
 import fs, { mkdirp } from 'fs-extra';
@@ -12,16 +13,29 @@ import logger from '../Logger';
 
 const RELEASE_BUILD_PROFILE = 'release-client';
 
-const CUSTOM_ACTIONS = {
+type Action = {
+  name: string;
+  actionId: string;
+  internal?: boolean;
+  action: () => Promise<void>;
+};
+
+const CUSTOM_ACTIONS: Record<string, Action> = {
   'ios-client-build-and-submit': {
-    name: 'Build a new iOS client and submit it to the App Store',
+    name: 'Build a new iOS client and submit it to the App Store.',
     actionId: 'ios-client-build-and-submit',
     action: iosBuildAndSubmitAsync,
   },
   'android-client-build-and-submit': {
-    name: 'Build a new Android client and submit it to the Play Store',
+    name: 'Build a new Android client and submit it to the Play Store.',
     actionId: 'android-client-build-and-submit',
     action: androidBuildAndSubmitAsync,
+  },
+  'remove-background-permissions-from-info-plist': {
+    name: 'Removes permissions for background features that should be disabled in the App Store.',
+    actionId: 'remove-background-permissions-from-info-plist',
+    action: internalRemoveBackgroundPermissionsFromInfoPlistAsync,
+    internal: true,
   },
 };
 
@@ -35,11 +49,13 @@ export default (program: Command) => {
 
 async function main(actionId: string | undefined) {
   if (!actionId || !CUSTOM_ACTIONS[actionId]) {
-    const actions = Object.values(CUSTOM_ACTIONS).map((i) => `\n- ${i.actionId} - ${i.name}`);
+    const actions = Object.values(CUSTOM_ACTIONS)
+      .filter((i) => !i.internal)
+      .map((i) => `\n- ${i.actionId} - ${i.name}`);
     if (!actionId) {
-      logger.error(`You need to provide action name. Select one of: ${actions}`);
+      logger.error(`You need to provide action name. Select one of: ${actions.join('')}`);
     } else {
-      logger.error(`Unknown action ${actionId}. Select one of: ${actions}`);
+      logger.error(`Unknown action ${actionId}. Select one of: ${actions.join('')}`);
     }
     return;
   }
@@ -172,6 +188,7 @@ async function androidBuildAndSubmitAsync() {
     'android-keystore-alias.password'
   );
 
+  logger.info('Preparing credentials');
   try {
     await spawnAsync(
       'gsutil',
@@ -200,6 +217,7 @@ async function androidBuildAndSubmitAsync() {
     }
     throw err;
   }
+
   await spawnAsync(
     'eas',
     ['build', '--platform', 'android', '--profile', RELEASE_BUILD_PROFILE, '--auto-submit'],
@@ -226,4 +244,25 @@ async function androidBuildAndSubmitAsync() {
       },
     }
   );
+}
+
+async function internalRemoveBackgroundPermissionsFromInfoPlistAsync(): Promise<void> {
+  const INFO_PLIST_PATH = path.join(EXPO_DIR, 'ios/Exponent/Supporting/Info.plist');
+  const rawPlist = await fs.readFile(INFO_PLIST_PATH, 'utf-8');
+  const parsedPlist = plist.parse(rawPlist);
+
+  logger.info(
+    `Removing NSLocationAlwaysAndWhenInUseUsageDescription from ios/Exponent/Supporting/Info.plist`
+  );
+  delete parsedPlist.NSLocationAlwaysAndWhenInUseUsageDescription;
+  logger.info(`Removing NSLocationAlwaysUsageDescription from ios/Exponent/Supporting/Info.plist`);
+  delete parsedPlist.NSLocationAlwaysUsageDescription;
+
+  logger.info(
+    `Removing location, audio and remonte-notfication from UIBackgroundModes from ios/Exponent/Supporting/Info.plist`
+  );
+  parsedPlist.UIBackgroundModes = parsedPlist.UIBackgroundModes.filter(
+    (i: string) => !['location', 'audio', 'remote-notification'].includes(i)
+  );
+  await fs.writeFile(INFO_PLIST_PATH, plist.build(parsedPlist));
 }
