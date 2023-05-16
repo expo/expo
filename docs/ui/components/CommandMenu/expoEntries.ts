@@ -6,7 +6,7 @@ import {
   EasSubmitIcon,
   CredentialIcon,
   Key01Icon,
-  LayersThree01Icon,
+  LayersTwo02Icon,
   BranchIcon,
   Cube02Icon,
   Dataflow03Icon,
@@ -61,7 +61,7 @@ export const entries = [
   {
     label: 'Project Updates',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/updates',
-    Icon: LayersThree01Icon,
+    Icon: LayersTwo02Icon,
   },
   {
     label: 'Project Credentials',
