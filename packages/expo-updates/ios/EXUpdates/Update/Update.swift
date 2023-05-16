@@ -82,7 +82,7 @@ public enum UpdateError: Int, Error {
 public class Update: NSObject {
   public let updateId: UUID
   public let scopeKey: String
-  public let commitTime: Date
+  public var commitTime: Date
   public let runtimeVersion: String
   public let keep: Bool
   public let isDevelopmentMode: Bool

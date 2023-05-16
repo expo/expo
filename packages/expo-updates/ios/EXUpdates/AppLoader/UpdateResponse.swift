@@ -15,7 +15,8 @@ internal final class SigningInfo {
   }
 }
 
-internal class UpdateDirective {
+@objc(EXUpdatesUpdateDirective)
+public class UpdateDirective : NSObject {
   let signingInfo: SigningInfo?
 
   init(signingInfo: SigningInfo?) {
@@ -52,9 +53,10 @@ internal class UpdateDirective {
   }
 }
 
-internal final class NoUpdateAvailableUpdateDirective: UpdateDirective {}
+public final class NoUpdateAvailableUpdateDirective: UpdateDirective {}
 
-internal final class RollBackToEmbeddedUpdateDirective: UpdateDirective {
+@objc(EXUpdatesRollBackToEmbeddedUpdateDirective)
+public final class RollBackToEmbeddedUpdateDirective: UpdateDirective {
   let commitTime: Date
 
   required init(commitTime: Date, signingInfo: SigningInfo?) {

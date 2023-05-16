@@ -25,13 +25,12 @@ import Foundation
  * update to launch in that case.
  */
 @objc(EXUpdatesSelectionPolicy)
-@objcMembers
 public final class SelectionPolicy: NSObject, LauncherSelectionPolicy, LoaderSelectionPolicy, ReaperSelectionPolicy {
   public let launcherSelectionPolicy: LauncherSelectionPolicy
   public let loaderSelectionPolicy: LoaderSelectionPolicy
   public let reaperSelectionPolicy: ReaperSelectionPolicy
 
-  public required init(
+  @objc public required init(
     launcherSelectionPolicy: LauncherSelectionPolicy,
     loaderSelectionPolicy: LoaderSelectionPolicy,
     reaperSelectionPolicy: ReaperSelectionPolicy
@@ -47,6 +46,10 @@ public final class SelectionPolicy: NSObject, LauncherSelectionPolicy, LoaderSel
 
   public func shouldLoadNewUpdate(_ newUpdate: Update?, withLaunchedUpdate launchedUpdate: Update?, filters: [String: Any]?) -> Bool {
     return loaderSelectionPolicy.shouldLoadNewUpdate(newUpdate, withLaunchedUpdate: launchedUpdate, filters: filters)
+  }
+
+  public func shouldLoadRollBackToEmbeddedDirective(_ directive: RollBackToEmbeddedUpdateDirective, withEmbeddedUpdate embeddedUpdate: Update, launchedUpdate: Update?, filters: [String: Any]?) -> Bool {
+    return loaderSelectionPolicy.shouldLoadRollBackToEmbeddedDirective(directive, withEmbeddedUpdate: embeddedUpdate, launchedUpdate: launchedUpdate, filters: filters)
   }
 
   public func updatesToDelete(withLaunchedUpdate launchedUpdate: Update, updates: [Update], filters: [String: Any]?) -> [Update] {
