@@ -18,7 +18,7 @@ Pod::Spec.new do |s|
   s.dependency 'ExpoModulesCore'
   s.dependency 'SDWebImage', '~> 5.15.0'
   s.dependency 'SDWebImageWebPCoder', '~> 0.9.1'
-  s.dependency 'SDWebImageAVIFCoder', '~> 0.9.4'
+  s.dependency 'SDWebImageAVIFCoder', '~> 0.10.0'
   s.dependency 'SDWebImageSVGCoder', '~> 1.6.1'
 
   # Swift/Objective-C compatibility
