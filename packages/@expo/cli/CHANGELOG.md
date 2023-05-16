@@ -13,6 +13,8 @@
 
 ### 💡 Others
 
+- Mark fixture `package.json` files as private. ([#22417](https://github.com/expo/expo/pull/22417) by [@EvanBacon](https://github.com/EvanBacon))
+
 ## 0.8.0 — 2023-05-08
 
 ### 🛠 Breaking changes
