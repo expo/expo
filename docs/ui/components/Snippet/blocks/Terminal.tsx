@@ -1,5 +1,6 @@
 import { css } from '@emotion/react';
 import { spacing } from '@expo/styleguide-base';
+import { TerminalSquareIcon } from '@expo/styleguide-icons';
 
 import { Snippet } from '../Snippet';
 import { SnippetContent } from '../SnippetContent';
@@ -24,7 +25,7 @@ export const Terminal = ({
   title = 'Terminal',
 }: TerminalProps) => (
   <Snippet css={wrapperStyle} includeMargin={includeMargin}>
-    <SnippetHeader alwaysDark title={title}>
+    <SnippetHeader alwaysDark title={title} Icon={TerminalSquareIcon}>
       {renderCopyButton({ cmd, cmdCopy })}
     </SnippetHeader>
     <SnippetContent alwaysDark hideOverflow={hideOverflow}>
