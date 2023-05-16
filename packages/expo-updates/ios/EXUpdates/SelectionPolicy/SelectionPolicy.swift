@@ -48,8 +48,18 @@ public final class SelectionPolicy: NSObject, LauncherSelectionPolicy, LoaderSel
     return loaderSelectionPolicy.shouldLoadNewUpdate(newUpdate, withLaunchedUpdate: launchedUpdate, filters: filters)
   }
 
-  public func shouldLoadRollBackToEmbeddedDirective(_ directive: RollBackToEmbeddedUpdateDirective, withEmbeddedUpdate embeddedUpdate: Update, launchedUpdate: Update?, filters: [String: Any]?) -> Bool {
-    return loaderSelectionPolicy.shouldLoadRollBackToEmbeddedDirective(directive, withEmbeddedUpdate: embeddedUpdate, launchedUpdate: launchedUpdate, filters: filters)
+  public func shouldLoadRollBackToEmbeddedDirective(
+    _ directive: RollBackToEmbeddedUpdateDirective,
+    withEmbeddedUpdate embeddedUpdate: Update,
+    launchedUpdate: Update?,
+    filters: [String: Any]?
+  ) -> Bool {
+    return loaderSelectionPolicy.shouldLoadRollBackToEmbeddedDirective(
+      directive,
+      withEmbeddedUpdate: embeddedUpdate,
+      launchedUpdate: launchedUpdate,
+      filters: filters
+    )
   }
 
   public func updatesToDelete(withLaunchedUpdate launchedUpdate: Update, updates: [Update], filters: [String: Any]?) -> [Update] {
