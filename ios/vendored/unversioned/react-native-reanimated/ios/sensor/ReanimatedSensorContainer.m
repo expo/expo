@@ -14,9 +14,15 @@ static NSNumber *_nextSensorId = nil;
   return self;
 }
 
-- (int)registerSensor:(ReanimatedSensorType)sensorType interval:(int)interval setter:(void (^)(double[]))setter
+- (int)registerSensor:(ReanimatedSensorType)sensorType
+             interval:(int)interval
+    iosReferenceFrame:(int)iosReferenceFrame
+               setter:(void (^)(double[], int))setter
 {
-  ReanimatedSensor *sensor = [[ReanimatedSensor alloc] init:sensorType interval:interval setter:setter];
+  ReanimatedSensor *sensor = [[ReanimatedSensor alloc] init:sensorType
+                                                   interval:interval
+                                          iosReferenceFrame:iosReferenceFrame
+                                                     setter:setter];
   if ([sensor initialize]) {
     NSNumber *sensorId = [_nextSensorId copy];
     _nextSensorId = [NSNumber numberWithInt:[_nextSensorId intValue] + 1];

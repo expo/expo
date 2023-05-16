@@ -1,5 +1,6 @@
 import assert from 'assert';
 import fs from 'fs-extra';
+import minimatch from 'minimatch';
 import path from 'path';
 
 import { Podspec } from '../../CocoaPods';
@@ -133,7 +134,20 @@ const config: VendoringTargetConfig = {
           'android/rnVersionPatch/**',
         ],
         async postCopyFilesHookAsync(sourceDirectory: string, targetDirectory: string) {
-          await fs.copy(path.join(sourceDirectory, 'Common'), path.join(targetDirectory, 'Common'));
+          const excludedBlobs = ['**/*.md'];
+
+          await fs.copy(
+            path.join(sourceDirectory, 'Common'),
+            path.join(targetDirectory, 'Common'),
+            {
+              filter: (src) => {
+                const isExcluded = excludedBlobs.some((blob) => minimatch(src, blob));
+                return !isExcluded;
+              },
+              overwrite: true,
+              errorOnExist: false,
+            }
+          );
           const reanimatedVersion = require(path.join(sourceDirectory, 'package.json')).version;
           await transformFileAsync(path.join(targetDirectory, 'android', 'build.gradle'), [
             // set reanimated version
@@ -168,36 +182,11 @@ const config: VendoringTargetConfig = {
               replaceWith: `$1\n    return`,
             },
             {
-              // remove jsc extraction
-              paths: 'build.gradle',
-              find: /def jscAAR = .*\n.*extractSO.*jscAAR.*$/gm,
-              replaceWith: '',
-            },
-            {
               // compileOnly hermes-engine
               paths: 'build.gradle',
               find: /implementation "com\.facebook\.react:hermes-android:?"\s*\/\/ version substituted by RNGP/g,
               replaceWith:
                 'compileOnly "com.facebook.react:hermes-android:${REACT_NATIVE_VERSION}"',
-            },
-            {
-              // find rn libs in ReactAndroid build output
-              paths: 'CMakeLists.txt',
-              find: 'set (RN_SO_DIR ${REACT_NATIVE_DIR}/ReactAndroid/src/main/jni/first-party/react/jni)',
-              replaceWith:
-                'set (RN_SO_DIR "${REACT_NATIVE_DIR}/ReactAndroid/build/intermediates/library_*/*/jni")',
-            },
-            {
-              // find hermes from prefab
-              paths: 'CMakeLists.txt',
-              find: /(string\(APPEND CMAKE_CXX_FLAGS " -DJS_RUNTIME_HERMES=1"\))/g,
-              replaceWith: `find_package(hermes-engine REQUIRED CONFIG)\n    $1`,
-            },
-            {
-              // find hermes from prefab
-              paths: 'CMakeLists.txt',
-              find: /"\$\{BUILD_DIR\}\/.+\/libhermes\.so"/g,
-              replaceWith: `hermes-engine::libhermes`,
             },
             {
               // expose `ReanimatedUIManagerFactory.create` publicly

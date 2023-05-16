@@ -3,7 +3,10 @@
 #if __has_include(<CoreMotion/CoreMotion.h>)
 @implementation ReanimatedSensor
 
-- (instancetype)init:(ReanimatedSensorType)sensorType interval:(int)interval setter:(void (^)(double[]))setter
+- (instancetype)init:(ReanimatedSensorType)sensorType
+             interval:(int)interval
+    iosReferenceFrame:(int)iosReferenceFrame
+               setter:(void (^)(double[], int))setter
 {
   self = [super init];
   _sensorType = sensorType;
@@ -12,6 +15,7 @@
   } else {
     _interval = interval / 1000.0; // in seconds
   }
+  _referenceFrame = iosReferenceFrame;
   _setter = setter;
   _motionManager = [[CMMotionManager alloc] init];
   return self;
@@ -49,7 +53,7 @@
                       return;
                     }
                     double data[] = {sensorData.rotationRate.x, sensorData.rotationRate.y, sensorData.rotationRate.z};
-                    self->_setter(data);
+                    self->_setter(data, [self getInterfaceOrientation]);
                     self->_lastTimestamp = currentTime;
                   }];
 
@@ -75,7 +79,7 @@
                                              sensorData.acceleration.x * G,
                                              sensorData.acceleration.y * G,
                                              sensorData.acceleration.z * G};
-                                         self->_setter(data);
+                                         self->_setter(data, [self getInterfaceOrientation]);
                                          self->_lastTimestamp = currentTime;
                                        }];
 
@@ -100,7 +104,7 @@
                             // convert G to m/s^2
                             double data[] = {
                                 sensorData.gravity.x * G, sensorData.gravity.y * G, sensorData.gravity.z * G};
-                            self->_setter(data);
+                            self->_setter(data, [self getInterfaceOrientation]);
                             self->_lastTimestamp = currentTime;
                           }];
 
@@ -123,7 +127,7 @@
                             }
                             double data[] = {
                                 sensorData.magneticField.x, sensorData.magneticField.y, sensorData.magneticField.z};
-                            self->_setter(data);
+                            self->_setter(data, [self getInterfaceOrientation]);
                             self->_lastTimestamp = currentTime;
                           }];
 
@@ -138,7 +142,19 @@
   [_motionManager setDeviceMotionUpdateInterval:_interval];
 
   [_motionManager setShowsDeviceMovementDisplay:YES];
-  [_motionManager startDeviceMotionUpdatesUsingReferenceFrame:CMAttitudeReferenceFrameXArbitraryZVertical
+
+  // _referenceFrame = Auto, on devices without magnetometer fall back to `XArbitraryZVertical`,
+  // `XArbitraryCorrectedZVertical` otherwise
+  if (_referenceFrame == 4) {
+    if (![_motionManager isMagnetometerAvailable]) {
+      _referenceFrame = 0;
+    } else {
+      _referenceFrame = 1;
+    }
+  }
+
+  // the binary shift works here because of the definition of CMAttitudeReferenceFrame
+  [_motionManager startDeviceMotionUpdatesUsingReferenceFrame:(1 << _referenceFrame)
                                                       toQueue:[NSOperationQueue mainQueue]
                                                   withHandler:^(CMDeviceMotion *sensorData, NSError *error) {
                                                     double currentTime = [[NSProcessInfo processInfo] systemUptime];
@@ -154,7 +170,7 @@
                                                         attitude.yaw,
                                                         attitude.pitch,
                                                         attitude.roll};
-                                                    self->_setter(data);
+                                                    self->_setter(data, [self getInterfaceOrientation]);
                                                     self->_lastTimestamp = currentTime;
                                                   }];
 
@@ -173,6 +189,26 @@
     [_motionManager stopMagnetometerUpdates];
   } else if (_sensorType == ROTATION_VECTOR) {
     [_motionManager stopDeviceMotionUpdates];
+  }
+}
+
+- (int)getInterfaceOrientation
+{
+  UIInterfaceOrientation orientation = UIInterfaceOrientationPortrait;
+  if (@available(iOS 13.0, *)) {
+    orientation = UIApplication.sharedApplication.windows.firstObject.windowScene.interfaceOrientation;
+  } else {
+    orientation = UIApplication.sharedApplication.statusBarOrientation;
+  }
+  switch (orientation) {
+    case UIInterfaceOrientationLandscapeLeft:
+      return 270;
+    case UIInterfaceOrientationLandscapeRight:
+      return 90;
+    case UIInterfaceOrientationPortraitUpsideDown:
+      return 180;
+    default:
+      return 0;
   }
 }
 
