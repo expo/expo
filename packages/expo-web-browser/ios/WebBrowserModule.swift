@@ -11,18 +11,21 @@ final public class WebBrowserModule: Module {
   public func definition() -> ModuleDefinition {
     Name("ExpoWebBrowser")
 
-    AsyncFunction("openBrowserAsync") { (url: URL, options: WebBrowserOptions, promise: Promise) throws in
-      guard self.currentWebBrowserSession?.isOpen != true else {
+    AsyncFunction("openBrowserAsync") { (url: URL, options: WebBrowserOptions, promise: Promise) in
+      guard self.currentWebBrowserSession == nil else {
         throw WebBrowserAlreadyOpenException()
       }
-      self.currentWebBrowserSession = WebBrowserSession(url: url, options: options)
-      self.currentWebBrowserSession?.open(promise)
+      self.currentWebBrowserSession = WebBrowserSession(url: url, options: options) { [promise] type in
+        promise.resolve(["type": type])
+        self.currentWebBrowserSession = nil
+      }
+      self.currentWebBrowserSession?.open()
     }
     .runOnQueue(.main)
 
     AsyncFunction("dismissBrowser") {
-      self.currentWebBrowserSession?.dismiss()
-      self.currentWebBrowserSession = nil
+      currentWebBrowserSession?.dismiss()
+      currentWebBrowserSession = nil
     }
     .runOnQueue(.main)
 
