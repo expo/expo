@@ -3,7 +3,7 @@
 import Foundation
 
 /**
- * A LoaderSelectionPolicy which decides whether or not to load an update, taking filters into
+ * A LoaderSelectionPolicy which decides whether or not to load an update or directive, taking filters into
  * account. Returns true (should load the update) if we don't have an existing newer update that
  * matches the given manifest filters.
  *
@@ -29,5 +29,25 @@ public final class LoaderSelectionPolicyFilterAware: NSObject, LoaderSelectionPo
     }
 
     return launchedUpdate.commitTime.compare(newUpdate.commitTime) == .orderedAscending
+  }
+
+  public func shouldLoadRollBackToEmbeddedDirective(_ directive: RollBackToEmbeddedUpdateDirective, withEmbeddedUpdate embeddedUpdate: Update, launchedUpdate: Update?, filters: [String : Any]?) -> Bool {
+    // if the embedded update doesn't match the filters, don't roll back to it (changing the
+    // timestamp of it won't change filter validity)
+    guard SelectionPolicies.doesUpdate(embeddedUpdate, matchFilters: filters) else {
+      return false
+    }
+
+    guard let launchedUpdate = launchedUpdate else {
+      return true
+    }
+
+    // if the current update doesn't pass the manifest filters
+        // we should roll back to the embedded update no matter the commitTime
+    if !SelectionPolicies.doesUpdate(launchedUpdate, matchFilters: filters) {
+      return true
+    }
+
+    return launchedUpdate.commitTime.compare(directive.commitTime) == .orderedAscending
   }
 }
