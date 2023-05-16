@@ -1,4 +1,5 @@
 {
+  "private": true,
   "main": "node_modules/expo/AppEntry.js",
   "dependencies": {
     "expo": "~47.0.13",
