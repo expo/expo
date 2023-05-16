@@ -406,7 +406,12 @@ public final class AppLoaderTask: NSObject {
       return
     }
 
-    if !self.selectionPolicy.shouldLoadRollBackToEmbeddedDirective(updateDirective, withEmbeddedUpdate: embeddedManifest, launchedUpdate: self.candidateLauncher?.launchedUpdate, filters: manifestFilters) {
+    if !self.selectionPolicy.shouldLoadRollBackToEmbeddedDirective(
+      updateDirective,
+      withEmbeddedUpdate: embeddedManifest,
+      launchedUpdate: self.candidateLauncher?.launchedUpdate,
+      filters: manifestFilters
+    ) {
       launchUpdate(nil, error: error)
       return
     }
