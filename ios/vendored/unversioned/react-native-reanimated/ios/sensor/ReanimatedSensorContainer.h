@@ -6,7 +6,10 @@
 }
 
 - (instancetype)init;
-- (int)registerSensor:(ReanimatedSensorType)sensorType interval:(int)interval setter:(void (^)(double[]))setter;
+- (int)registerSensor:(ReanimatedSensorType)sensorType
+             interval:(int)interval
+    iosReferenceFrame:(int)iosReferenceFrame
+               setter:(void (^)(double[], int))setter;
 - (void)unregisterSensor:(int)sensorId;
 
 @end

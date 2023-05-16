@@ -7,6 +7,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property NSMutableDictionary *values;
 
 - (instancetype)init:(UIView *)view;
+- (instancetype)initWithAbsolutePosition:(UIView *)view;
 
 @end
 

@@ -18,20 +18,22 @@ class WorkletEventHandler;
 class EventHandlerRegistry {
   std::map<
       std::string,
-      std::unordered_map<unsigned long, std::shared_ptr<WorkletEventHandler>>>
+      std::unordered_map<uint64_t, std::shared_ptr<WorkletEventHandler>>>
       eventMappings;
-  std::map<unsigned long, std::shared_ptr<WorkletEventHandler>> eventHandlers;
+  std::map<uint64_t, std::shared_ptr<WorkletEventHandler>> eventHandlers;
   std::mutex instanceMutex;
 
  public:
   void registerEventHandler(std::shared_ptr<WorkletEventHandler> eventHandler);
-  void unregisterEventHandler(unsigned long id);
+  void unregisterEventHandler(uint64_t id);
 
   void processEvent(
       jsi::Runtime &rt,
-      std::string eventName,
-      std::string eventPayload);
-  bool isAnyHandlerWaitingForEvent(std::string eventName);
+      double eventTimestamp,
+      const std::string &eventName,
+      const jsi::Value &eventPayload);
+
+  bool isAnyHandlerWaitingForEvent(const std::string &eventName);
 };
 
 } // namespace reanimated

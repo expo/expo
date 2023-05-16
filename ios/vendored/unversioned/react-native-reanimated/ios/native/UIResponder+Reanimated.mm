@@ -13,6 +13,7 @@ typedef HermesExecutorFactory ExecutorFactory;
 typedef JSCExecutorFactory ExecutorFactory;
 #endif
 
+#ifndef RCT_NEW_ARCH_ENABLED
 #ifndef DONT_AUTOINSTALL_REANIMATED
 
 @implementation UIResponder (Reanimated)
@@ -30,4 +31,5 @@ typedef JSCExecutorFactory ExecutorFactory;
 
 @end
 
-#endif
+#endif // DONT_AUTOINSTALL_REANIMATED
+#endif // RCT_NEW_ARCH_ENABLED
