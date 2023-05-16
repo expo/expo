@@ -17,5 +17,10 @@ public protocol LoaderSelectionPolicy {
    * update and saved in the database (i.e. decide whether the combination of the directive's commitTime
    * and the embedded update is "newer" than the currently running update, according to this class's ordering).
    */
-  func shouldLoadRollBackToEmbeddedDirective(_ directive: RollBackToEmbeddedUpdateDirective, withEmbeddedUpdate embeddedUpdate: Update, launchedUpdate: Update?, filters: [String: Any]?) -> Bool
+  func shouldLoadRollBackToEmbeddedDirective(
+    _ directive: RollBackToEmbeddedUpdateDirective,
+    withEmbeddedUpdate embeddedUpdate: Update,
+    launchedUpdate: Update?,
+    filters: [String: Any]?
+  ) -> Bool
 }

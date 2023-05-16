@@ -31,7 +31,12 @@ public final class LoaderSelectionPolicyFilterAware: NSObject, LoaderSelectionPo
     return launchedUpdate.commitTime.compare(newUpdate.commitTime) == .orderedAscending
   }
 
-  public func shouldLoadRollBackToEmbeddedDirective(_ directive: RollBackToEmbeddedUpdateDirective, withEmbeddedUpdate embeddedUpdate: Update, launchedUpdate: Update?, filters: [String : Any]?) -> Bool {
+  public func shouldLoadRollBackToEmbeddedDirective(
+    _ directive: RollBackToEmbeddedUpdateDirective,
+    withEmbeddedUpdate embeddedUpdate: Update,
+    launchedUpdate: Update?,
+    filters: [String: Any]?
+  ) -> Bool {
     // if the embedded update doesn't match the filters, don't roll back to it (changing the
     // timestamp of it won't change filter validity)
     guard SelectionPolicies.doesUpdate(embeddedUpdate, matchFilters: filters) else {

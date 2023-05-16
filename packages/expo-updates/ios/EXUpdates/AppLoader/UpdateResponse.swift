@@ -16,7 +16,7 @@ internal final class SigningInfo {
 }
 
 @objc(EXUpdatesUpdateDirective)
-public class UpdateDirective : NSObject {
+public class UpdateDirective: NSObject {
   let signingInfo: SigningInfo?
 
   init(signingInfo: SigningInfo?) {
