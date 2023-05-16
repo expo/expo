@@ -67,21 +67,21 @@ function cmdMapper(line: string, index: number) {
 
   if (line.startsWith('#')) {
     return (
-      <div key={key} className="dark-theme">
-        <CODE className="whitespace-pre inline-block !bg-[transparent] !border-none !leading-snug select-none !text-palette-gray10">
-          {line}
-        </CODE>
-      </div>
+      <CODE
+        key={key}
+        className="whitespace-pre !bg-[transparent] !border-none select-none !text-palette-gray10">
+        {line}
+      </CODE>
     );
   }
 
   if (line.startsWith('$')) {
     return (
-      <div key={key} className="dark-theme">
-        <CODE className="whitespace-pre inline-block !bg-[transparent] !border-none !leading-snug select-none !text-secondary">
+      <div key={key}>
+        <CODE className="whitespace-pre !bg-[transparent] !border-none select-none !text-secondary !px-0">
           -&nbsp;
         </CODE>
-        <CODE className="whitespace-pre inline-block !bg-[transparent] !border-none text-default !leading-snug">
+        <CODE className="whitespace-pre !bg-[transparent] !border-none text-default">
           {line.substring(1).trim()}
         </CODE>
       </div>
@@ -89,13 +89,9 @@ function cmdMapper(line: string, index: number) {
   }
 
   return (
-    <div key={key} className="dark-theme">
-      <CODE
-        css={[{ display: 'inherit' }]}
-        className="whitespace-pre inline-block !bg-[transparent] !border-none text-default !leading-snug">
-        {line}
-      </CODE>
-    </div>
+    <CODE key={key} className="whitespace-pre !bg-[transparent] !border-none text-default">
+      {line}
+    </CODE>
   );
 }
 
