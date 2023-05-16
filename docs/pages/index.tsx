@@ -71,15 +71,10 @@ const Home = () => {
                   }),
                 ]}
               />
-              <div
-                css={{
-                  position: 'relative',
-                  zIndex: 1,
-                }}>
+              <div className="flex flex-col gap-4 relative z-10">
                 <RawH2>
                   <QuickStartIcon /> Quick Start
                 </RawH2>
-                <br />
                 <Terminal includeMargin={false} cmd={['$ npx create-expo-app my-app']} />
               </div>
             </GridCell>
