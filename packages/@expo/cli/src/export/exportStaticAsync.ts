@@ -188,13 +188,14 @@ export function getPathVariations(routePath: string): string[] {
       return;
     }
 
-    const segment = segments[index];
-    const groupName = matchGroupName(segment);
-    if (groupName) {
-      const newSegments = [...segments];
+    const newSegments = [...segments];
+    while (
+      index < newSegments.length &&
+      matchGroupName(newSegments[index]) &&
+      newSegments.length > 1
+    ) {
       newSegments.splice(index, 1);
       variations.add(newSegments.join('/'));
-
       generateVariations(newSegments, index + 1);
     }
 
