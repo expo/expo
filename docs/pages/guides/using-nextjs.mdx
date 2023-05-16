@@ -5,10 +5,11 @@ description: A guide for integrating Next.js with Expo for the web.
 ---
 
 import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 
 > **Warning:** Using Next.js is not an official part of Expo's universal app development workflow.
 
-[Next.js][nextjs] is a React framework that provides simple page-based routing as well as server-side rendering. To use Next.js with the Expo SDK, we recommend that you use a library called [`@expo/next-adapter`][next-adapter] to handle the configuration.
+[Next.js][nextjs] is a React framework that provides simple page-based routing as well as server-side rendering. To use Next.js with the Expo SDK, we recommend using [`@expo/next-adapter`][next-adapter] library to handle the configuration.
 
 Using Expo with Next.js means you can share some of your existing components and APIs across your mobile and web app. Next.js has its own CLI that you'll need to use when developing for the web platform, so **you'll need to start your web projects with the Next.js CLI and not with `npx expo start`.**
 
@@ -18,18 +19,18 @@ Using Expo with Next.js means you can share some of your existing components and
 
 To get started, create a new project with [the template](https://github.com/expo/examples/tree/master/with-nextjs):
 
-```sh
-npx create-expo-app -e with-nextjs
-```
+<Terminal cmd={["$ npx create-expo-app -e with-nextjs"]} />
 
 - **Native**: `npx expo start` -- start the Expo project
 - **Web**: `npx next dev` -- start the Next.js project
 
 ## Manual setup
 
-### Dependencies
+### Install dependencies
 
-Ensure you have `expo`, `next`, `@expo/next-adapter` installed in your project. `yarn add expo next @expo/next-adapter`
+Ensure you have `expo`, `next`, `@expo/next-adapter` installed in your project:
+
+<Terminal cmd={["$ yarn add expo next @expo/next-adapter"]} />
 
 ### Transpilation
 
@@ -37,7 +38,7 @@ Configure Next.js to transform language features:
 
 <Collapsible summary={<>Next.js with swc. (Recommended)</>}>
   
-  When using Next.js with SWC, you can configure the `babel.config.js` to only account for native.
+  When using Next.js with SWC, you can configure the **babel.config.js** to only account for native.
 
 ```js babel.config.js
 module.exports = function (api) {
@@ -48,7 +49,7 @@ module.exports = function (api) {
 };
 ```
 
-You will also have to [force Next.js to use SWC](https://nextjs.org/docs/messages/swc-disabled) by adding the following to your `next.config.js`:
+You will also have to [force Next.js to use SWC](https://nextjs.org/docs/messages/swc-disabled) by adding the following to your **next.config.js**:
 
 ```js next.config.js
 module.exports = {
@@ -62,7 +63,7 @@ module.exports = {
 
 <Collapsible summary={<>Next.js with Babel. (Not recommended)</>}>
   
-  Adjust your `babel.config.js` to conditionally add `next/babel` when bundling with Webpack for web.
+  Adjust your **babel.config.js** to conditionally add `next/babel` when bundling with webpack for web.
 
 ```js babel.config.js
 module.exports = function (api) {
@@ -85,7 +86,7 @@ module.exports = function (api) {
 
 ### Next.js configuration
 
-Add the following to your `next.config.js`:
+Add the following to your **next.config.js**:
 
 ```js next.config.js
 const { withExpo } = require('@expo/next-adapter');
@@ -125,7 +126,7 @@ module.exports = nextConfig;
 
 ### React Native Web styling
 
-The package `react-native-web` builds on the assumption of reset CSS styles, here's how you reset styles in Next.js using the `pages/` directory.
+The package `react-native-web` builds on the assumption of reset CSS styles. Here's how you reset styles in Next.js using the **pages** directory.
 
 ```js pages/_document.js
 import { Children } from 'react';
@@ -204,7 +205,7 @@ export default function App({ Component, pageProps }) {
 
 ## Transpiling modules
 
-By default, modules in the React Native ecosystem are not transpiled to run in web browsers. React Native relies on advanced caching in Metro to reload quickly. Next.js uses Webpack, which does not have the same level of caching, so by default, no node modules are transpiled. You will have to manually mark every module you want to transpile with the `transpilePackages` option in `next.config.js`:
+By default, modules in the React Native ecosystem are not transpiled to run in web browsers. React Native relies on advanced caching in Metro to reload quickly. Next.js uses webpack, which does not have the same level of caching, so no node modules are transpiled by default. You will have to manually mark every module you want to transpile with the `transpilePackages` option in **next.config.js**:
 
 ```js next.config.js
 const { withExpo } = require('@expo/next-adapter');
@@ -244,14 +245,14 @@ This is Vercel's preferred method for deploying Next.js projects to production.
 
 ## Limitations or differences comparing to the default Expo for Web
 
-Using Next.js for the web means you will be bundling with the Next.js Webpack config. This will lead to some core differences in how you develop your app vs your website.
+Using Next.js for the web means you will be bundling with the Next.js webpack config. This will lead to some core differences in how you develop your app vs your website.
 
 - Expo Next.js adapter does not support the experimental app directory.
 - For File-based routing on native, we recommend using [Expo Router](https://github.com/expo/router).
 
 ## Contributing
 
-If you would like to help make Next.js support in Expo better, please feel free to open a PR or submit an issue:
+If you would like to help make Next.js support in Expo better, feel free to open a PR or submit an issue:
 
 - [@expo/next-adapter][next-adapter]
 
@@ -259,7 +260,7 @@ If you would like to help make Next.js support in Expo better, please feel free 
 
 ### Cannot use import statement outside a module
 
-Figure out which module has the import statement and add it to the `transpilePackages` option in `next.config.js`:
+Figure out which module has the import statement and add it to the `transpilePackages` option in **next.config.js**:
 
 ```js next.config.js
 const { withExpo } = require('@expo/next-adapter');
