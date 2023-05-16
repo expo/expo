@@ -1,6 +1,7 @@
 package expo.modules.updates.selectionpolicy
 
 import expo.modules.updates.db.entity.UpdateEntity
+import expo.modules.updates.loader.UpdateDirective
 import org.json.JSONObject
 
 /**
@@ -11,6 +12,13 @@ import org.json.JSONObject
 interface LoaderSelectionPolicy {
   fun shouldLoadNewUpdate(
     newUpdate: UpdateEntity?,
+    launchedUpdate: UpdateEntity?,
+    filters: JSONObject?
+  ): Boolean
+
+  fun shouldLoadRollBackToEmbeddedDirective(
+    directive: UpdateDirective.RollBackToEmbeddedUpdateDirective,
+    embeddedUpdate: UpdateEntity,
     launchedUpdate: UpdateEntity?,
     filters: JSONObject?
   ): Boolean

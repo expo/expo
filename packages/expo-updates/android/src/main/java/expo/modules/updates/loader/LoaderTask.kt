@@ -314,7 +314,7 @@ class LoaderTask(
             if (updateDirective != null) {
               return when (updateDirective) {
                 is UpdateDirective.RollBackToEmbeddedUpdateDirective -> {
-                  isUpToDate = false
+                  isUpToDate = true
                   Loader.OnUpdateResponseLoadedResult(shouldDownloadManifestIfPresentInResponse = false)
                 }
                 is UpdateDirective.NoUpdateAvailableUpdateDirective -> {
@@ -346,21 +346,84 @@ class LoaderTask(
           }
 
           override fun onSuccess(loaderResult: Loader.LoaderResult) {
-            var updateEntity = loaderResult.updateEntity
+            val updateEntity = loaderResult.updateEntity
             val updateDirective = loaderResult.updateDirective
 
-            // If directive is to roll-back to the embedded update and there is an embedded update,
-            // we need to update embedded update in the DB with the newer commitTime from the message so that
-            // the selection policy will choose it. That way future updates can continue to be applied
-            // over this roll back, but older ones won't.
-            // The embedded update is guaranteed to be in the DB from the earlier [EmbeddedLoader] call in this task.
-            if (updateDirective != null && updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective && configuration.hasEmbeddedUpdate) {
-              val embeddedUpdate = EmbeddedManifest.get(context, configuration)!!.updateEntity
-              database.updateDao().setUpdateCommitTime(embeddedUpdate!!, updateDirective.commitTime)
-              updateEntity = embeddedUpdate
+            if (updateDirective != null && updateDirective is UpdateDirective.RollBackToEmbeddedUpdateDirective) {
+              processRollBackToEmbeddedDirective(updateDirective)
+            } else {
+              launchUpdate(updateEntity)
+            }
+          }
+
+          /**
+           * If directive is to roll-back to the embedded update and there is an embedded update,
+           * we need to update embedded update in the DB with the newer commitTime from the directive
+           * so that the selection policy will choose it. That way future updates can continue to be applied
+           * over this roll back, but older ones won't.
+           */
+          private fun processRollBackToEmbeddedDirective(updateDirective: UpdateDirective.RollBackToEmbeddedUpdateDirective) {
+            if (!configuration.hasEmbeddedUpdate) {
+              launchUpdate(null)
+              return
             }
 
-            // a new update (or null update because onUpdateResponseLoaded returned false or it was just a message) has loaded successfully;
+            val embeddedUpdate = EmbeddedManifest.get(context, configuration)!!.updateEntity
+            if (embeddedUpdate == null) {
+              launchUpdate(null)
+              return
+            }
+
+            val launcher = DatabaseLauncher(configuration, directory, fileDownloader, selectionPolicy)
+            val launchableUpdate = launcher.getLaunchableUpdate(database, context)
+            val manifestFilters = ManifestMetadata.getManifestFilters(database, configuration)
+
+            if (!selectionPolicy.shouldLoadRollBackToEmbeddedDirective(updateDirective, embeddedUpdate, launchableUpdate, manifestFilters)) {
+              launchUpdate(null)
+              return
+            }
+
+            // update the embedded update commit time in the in-memory embedded update since it is a singleton
+            embeddedUpdate.commitTime = updateDirective.commitTime
+
+            // update the embedded update commit time in the database (requires loading and then updating)
+            EmbeddedLoader(context, configuration, database, directory).start(object : LoaderCallback {
+              /**
+               * This should never happen since we check for the embedded update above
+               */
+              override fun onFailure(e: Exception) {
+                Log.e(
+                  TAG,
+                  "Embedded update erroneously null when applying roll back to embedded directive",
+                  e
+                )
+                launchUpdate(null)
+              }
+
+              override fun onSuccess(loaderResult: Loader.LoaderResult) {
+                val embeddedUpdateToLoad = loaderResult.updateEntity
+                database.updateDao().setUpdateCommitTime(embeddedUpdateToLoad!!, updateDirective.commitTime)
+                launchUpdate(null)
+              }
+
+              override fun onAssetLoaded(
+                asset: AssetEntity,
+                successfulAssetCount: Int,
+                failedAssetCount: Int,
+                totalAssetCount: Int
+              ) {
+              }
+
+              override fun onUpdateResponseLoaded(updateResponse: UpdateResponse): Loader.OnUpdateResponseLoadedResult {
+                return Loader.OnUpdateResponseLoadedResult(
+                  shouldDownloadManifestIfPresentInResponse = true
+                )
+              }
+            })
+          }
+
+          private fun launchUpdate(availableUpdate: UpdateEntity?) {
+            // a new update (or null update because onUpdateResponseLoaded returned false or it was just a directive) has loaded successfully;
             // we need to launch it with a new Launcher and replace the old Launcher so that the callback fires with the new one
             val newLauncher = DatabaseLauncher(configuration, directory, fileDownloader, selectionPolicy)
             newLauncher.launch(
@@ -383,7 +446,7 @@ class LoaderTask(
                   }
                   remoteUpdateCallback.onSuccess()
                   if (hasLaunchedSynchronized) {
-                    if (updateEntity == null) {
+                    if (availableUpdate == null) {
                       callback.onBackgroundUpdateFinished(
                         BackgroundUpdateStatus.NO_UPDATE_AVAILABLE,
                         null,
@@ -392,7 +455,7 @@ class LoaderTask(
                     } else {
                       callback.onBackgroundUpdateFinished(
                         BackgroundUpdateStatus.UPDATE_AVAILABLE,
-                        updateEntity,
+                        availableUpdate,
                         null
                       )
                     }
