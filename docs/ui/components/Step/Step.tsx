@@ -12,7 +12,9 @@ export const Step = ({ children, label }: Props) => {
       <HEADLINE className="flex min-w-[28px] h-7 bg-element rounded-full items-center justify-center mt-1">
         {label}
       </HEADLINE>
-      <div className="pt-1 w-full prose-headings:!-mt-1 prose-ul:!mb-0 prose-ol:!mb-0">{children}</div>
+      <div className="pt-1 w-full prose-headings:!-mt-1 prose-ul:!mb-0 prose-ol:!mb-0">
+        {children}
+      </div>
     </div>
   );
 };
