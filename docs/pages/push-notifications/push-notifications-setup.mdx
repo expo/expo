@@ -161,7 +161,7 @@ export default function App() {
 
 ## Test using Expo Go and push notifications tool
 
-> This step allows testing the push notifications when developing your project using Expo Go. If you are using EAS or [development builds](/development/introduction), you can skip this step and move on to the next one to configure credentials for Android and iOS.
+> This step allows testing the push notifications when developing your project using Expo Go. If you are using EAS or [development builds](/develop/development-builds/introduction/), you can skip this step and move on to the next one to configure credentials for Android and iOS.
 
 To test the example from the previous step, you can use Expo Go to open the project and the [Expo push notifications tool](https://expo.dev/notifications) to send a notification to your device.
 
@@ -237,7 +237,7 @@ For Android, you need to configure **Firebase Cloud Messaging (FCM)** to get you
 
    > Firebase projects with multiple Android apps might contain duplicated data under the `client` array in the **google-services.json**. This can cause issues when the app is fetching the push notification token. **Make sure to only have one client object with the correct keys and metadata in google-services.json**.
 
-Now you can re-build the development build using the `eas build` command. At this point, if you need to create a development build, see [creating development builds](/development/create-development-builds/#on-a-device).
+Now you can re-build the development build using the `eas build` command. At this point, if you need to create a development build, see [creating development builds for a device](/develop/development-builds/create-a-build/#create-a-development-build-for-the-device).
 
 #### Upload server credentials
 
@@ -269,7 +269,7 @@ For Expo to send push notifications from our servers and use your credentials, y
 
 > **warning** A paid Apple Developer Account is required to generate credentials.
 
-For iOS, make sure you have [registered your iOS device](/development/create-development-builds/#on-a-device) on which you want to test before running the `eas build` command for the first time.
+For iOS, make sure you have [registered your iOS device](/develop/development-builds/create-a-build/#create-a-development-build-for-the-device) on which you want to test before running the `eas build` command for the first time.
 
 If you create a development build for the first time, you'll be asked to enable push notifications. Answer yes to the following questions when prompted:
 

@@ -140,7 +140,7 @@ const RENAMED_PAGES: Record<string, string> = {
   // '/versions/latest/sdk/async-storage/': '/develop/user-interface/store-data/#async-storage',
   '/get-started/create-a-new-app/': '/get-started/create-a-project',
   '/guides/config-plugins/': '/config-plugins/introduction/',
-  '/workflow/debugging/': '/debugging/runtime-issue/',
+  '/workflow/debugging/': '/debugging/runtime-issues/',
   '/guides/userinterface/': '/ui-programming/user-interface-libraries/',
   '/introduction/expo/': '/core-concepts/',
   '/introduction/why-not-expo/': '/faq/#limitations',
@@ -166,7 +166,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/get-started/errors/': '/debugging/errors-and-warnings/',
 
   // Old redirects
-  '/introduction/project-lifecycle/': '/introduction/managed-vs-bare/',
+  '/introduction/project-lifecycle/': '/archive/managed-vs-bare/',
   '/versions/latest/sdk/': '/versions/latest/',
   '/versions/latest/sdk/overview/': '/versions/latest/',
   '/guides/building-standalone-apps/': '/archive/classic-updates/building-standalone-apps/',
@@ -177,12 +177,12 @@ const RENAMED_PAGES: Record<string, string> = {
   '/expokit/': '/archive/glossary/#expokit/',
 
   // Development builds redirects
-  '/development/build/': '/development/create-development-builds/',
-  '/development/getting-started/': '/development/create-development-builds/',
-  '/development/troubleshooting/': '/development/introduction/',
-  '/development/upgrading/': '/development/introduction/',
-  '/development/extensions/': '/development/development-workflows/',
-  '/development/develop-your-project': '/development/use-development-builds',
+  '/development/build/': '/develop/development-builds/create-a-build/',
+  '/development/getting-started/': '/develop/development-builds/create-a-build/',
+  '/development/troubleshooting/': '/develop/development-builds/introduction/',
+  '/development/upgrading/': '/develop/development-builds/introduction/',
+  '/development/extensions/': '/develop/development-builds/development-workflows/',
+  '/development/develop-your-project': '/develop/development-builds/use-development-builds/',
 
   // Consolidate workflow page
   '/bare/customizing/': '/workflow/customizing/',
@@ -194,7 +194,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/workflow/publishing/': '/archive/classic-updates/publishing/',
   '/guides/linking/': '/workflow/linking/',
   '/guides/up-and-running/': '/get-started/installation/',
-  '/guides/debugging/': '/workflow/debugging/',
+  '/guides/debugging/': '/debugging/runtime-issues/',
   '/guides/logging/': '/workflow/logging/',
   '/introduction/troubleshooting-proxies/': '/guides/troubleshooting-proxies/',
   '/introduction/running-in-the-browser/': '/guides/running-in-the-browser/',
@@ -216,7 +216,7 @@ const RENAMED_PAGES: Record<string, string> = {
   '/versions/v37.0.0/sdk/overview/': '/versions/v37.0.0/',
 
   // Errors and debugging is better suited for getting started than tutorial
-  '/tutorial/errors/': '/get-started/errors/',
+  '/tutorial/errors/': '/debugging/errors-and-warnings/',
 
   // Redirects based on Next 9 upgrade (09/11/2020)
   '/api/': '/versions/latest/',

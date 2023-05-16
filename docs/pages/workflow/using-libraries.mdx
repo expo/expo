@@ -111,7 +111,7 @@ Now check the following:
 
 If you answered yes to any of these questions and the library is not part of the Expo SDK, this library may not be supported in [Expo Go][expo-go]. You can go ahead and try it in a new project to be sure. Run `npx create-expo-app` and add the library to the new project and try to use it. This is a great way to experiment with a library before including it in your project in all circumstances.
 
-Many React Native libraries are not compatible with [Expo Go][expo-go]. For these libraries, you can create a [development build](/development/introduction):
+Many React Native libraries are not compatible with [Expo Go][expo-go]. For these libraries, you can create a [development build]/develop/development-builds/introduction/):
 
 <BoxLink
   title="Adding custom native code"
@@ -133,15 +133,15 @@ Be sure to follow the project website or README for any additional configuration
 
 <Terminal cmd={['$ npx npm-home @react-navigation/native']} />
 
-If the module needs additional native configuration, you can do so using [config plugins](/guides/config-plugins). Some packages require a config plugin but they don't have one yet, you can refer to the list of [out-of-tree config plugins](https://github.com/expo/config-plugins/).
+If the module needs additional native configuration, you can do so using [config plugins](/config-plugins/introduction/). Some packages require a config plugin but they don't have one yet, you can refer to the list of [out-of-tree config plugins](https://github.com/expo/config-plugins/).
 
 <ConfigReactNative>
 
-If your project does not support [Expo Prebuild](/workflow/prebuild) then you won't be able to use [config plugins](/guides/config-plugins). You can either [adopt Expo Prebuild](/guides/adopting-prebuild) or set up and configure each library manually by following any additional setup guides from the respective module's website or README.
+If your project does not support [Expo Prebuild](/workflow/prebuild) then you won't be able to use [config plugins](/config-plugins/introduction/). You can either [adopt Expo Prebuild](/guides/adopting-prebuild) or set up and configure each library manually by following any additional setup guides from the respective module's website or README.
 
 </ConfigReactNative>
 
-If the module is not supported in [Expo Go][expo-go], you can create a [development build](/development/introduction):
+If the module is not supported in [Expo Go][expo-go], you can create a [development build](/develop/development-builds/introduction/):
 
 <BoxLink
   title="Adding custom native code"
@@ -149,5 +149,5 @@ If the module is not supported in [Expo Go][expo-go], you can create a [developm
   href="/workflow/customizing"
 />
 
-[expo-cli]: /workflow/expo-cli
+[expo-cli]: /more/expo-cli/
 [expo-go]: https://expo.dev/expo-go

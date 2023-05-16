@@ -18,7 +18,7 @@ It is available on both the Android Play Store and iOS App Store.
 
 ## How it works
 
-Expo Go is a native app that is installed on your device. When you run `npx expo start` in your project, [Expo CLI](/workflow/expo-cli) starts a [development server](/workflow/expo-cli#develop) and generates a QR code. You can then open the Expo Go app on your device and scan the QR code to connect to the dev server.
+Expo Go is a native app that is installed on your device. When you run `npx expo start` in your project, [Expo CLI](/more/expo-cli/) starts a [development server](/more/expo-cli/#develop) and generates a QR code. You can then open the Expo Go app on your device and scan the QR code to connect to the dev server.
 
 <Terminal cmd={['$ npx expo start']} />
 
@@ -30,7 +30,7 @@ Expo Go is a native app that is installed on your device. When you run `npx expo
 
 The dev server returns a JSON manifest file that describes the project. Expo Go uses this manifest to download the JavaScript bundle and any assets required to run the project. Then, the [JavaScript engine](/more/glossary-of-terms#javascript-engine) executes this JavaScript bundle to render the React Native app.
 
-You can open and share projects with the members of your [organization](/accounts/account-types/#organizations) by publishing with [EAS Update](/eas-update/introduction). Updates are bundled for production environments using the [`npx expo export`](/workflow/expo-cli#exporting) command.
+You can open and share projects with the members of your [organization](/accounts/account-types/#organizations) by publishing with [EAS Update](/eas-update/introduction). Updates are bundled for production environments using the [`npx expo export`](/more/expo-cli/#exporting) command.
 
 ### Manifest
 
@@ -60,7 +60,7 @@ Open the Expo Go app after it has finished installing. If you have created an ac
 
 Expo Go is not intended for public distribution. It is a development client that is not optimized for performance. We offer a suite of tools for building and submitting your apps directly to the app stores. For more information, see [Distribution](/distribution/introduction).
 
-You can create your own Expo Go type app by using the [`expo-dev-client`](/development/introduction) package. This package allows you to create a native client with any custom native code or configuration or a third-party library that requires configuring native code. For more information, see [development builds](/development/introduction).
+You can create your own Expo Go type app by using the [`expo-dev-client`](/develop/development-builds/introduction/) package. This package allows you to create a native client with any custom native code or configuration or a third-party library that requires configuring native code. For more information, see [development builds](/develop/development-builds/introduction/).
 
 You can view the source code for the [Android](https://github.com/expo/expo/tree/main/android), [iOS](https://github.com/expo/expo/tree/main/ios), and [JavaScript](https://github.com/expo/expo/tree/main/home) on GitHub.
 
