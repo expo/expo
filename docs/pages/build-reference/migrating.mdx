@@ -147,7 +147,7 @@ In projects built with `expo build` the native primitives required by AWS Amplif
 
 ### Animated WebP is not supported by default
 
-Most apps do not use this format and support for it adds around 3.4 MB to the final app size, so it is omitted by default. You can enable it by switching `expo.webp.animated=false` to `expo.webp.animated=true` using a custom [Config plugin](/guides/config-plugins) to update **android/gradle.properties**. For more information on how to implement the config plugin, [see this example](https://forums.expo.dev/t/animated-webp-expected-to-work-with-eas-builds/58960/5?u=notbrent) from the community.
+Most apps do not use this format and support for it adds around 3.4 MB to the final app size, so it is omitted by default. You can enable it by switching `expo.webp.animated=false` to `expo.webp.animated=true` using a custom [Config plugin](/config-plugins/introduction/) to update **android/gradle.properties**. For more information on how to implement the config plugin, [see this example](https://forums.expo.dev/t/animated-webp-expected-to-work-with-eas-builds/58960/5?u=notbrent) from the community.
 
 ### metro.config.js must export the entire default config from `expo/metro-config`
 
