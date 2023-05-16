@@ -58,7 +58,7 @@ exports[`APISectionUtils.CommentTextBlock component comment with example 1`] = `
       target="_blank"
     >
       <code
-        class="css-23wgco-TextComponent"
+        class="css-1a6y07t-TextComponent"
         data-text="true"
       >
         Install Referrer API
