@@ -6,16 +6,16 @@ description: Learn how to get started creating a new Expo project quickly and ea
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { ExpoGoLogo } from '@expo/styleguide';
+import { CALLOUT } from "~/ui/components/Text";
 
 To develop applications with Expo, you will want to start with two tools:
 
 - [Expo CLI](#expo-cli) a command-line tool to serve your project
-- [Expo Go](#expo-go-app-for-android-and-ios) a mobile client app to open the project on Android and iOS platforms.
+- [Expo Go](/get-started/expo-go) a mobile client app to open the project on Android and iOS platforms.
 
-Additionally, you can use any web browser to run the project on the web.
+Linux, macOS and Windows are all supported as your development machine. You can use any web browser to run the project on the web.
 
-> **info** You don't need macOS to build an iOS app with [EAS](/eas). You only need an iOS device to run [development builds](/develop/development-builds/introduction/). Windows, Linux, and macOS are all supported as your development machine.
-
+> **info** You don't need macOS to build an iOS app with [EAS](/eas). You only need an iOS device to run [development builds](/develop/development-builds/introduction/).
 ## Expo CLI
 
 [Expo CLI](/more/expo-cli/) is a command-line tool that is the primary interface between a developer and other Expo tools. It is used for different tasks in the development life cycle of your project such as serving the project in development, viewing logs, opening the app on an emulator or a physical device, and so on.
@@ -24,15 +24,15 @@ Additionally, you can use any web browser to run the project on the web.
 
 To use Expo CLI, you need to have the following tools installed on your developer machine:
 
-- [Node.js LTS release](https://nodejs.org/en/) - Only Node.js LTS releases (even-numbered) are recommended. As Node.js [officially states](https://nodejs.org/en/about/releases/), _"Production applications should only use Active LTS or Maintenance LTS releases"_. You can install Node.js using a version management tool (such as `nvm` or `volta` or any other of your choice) to switch between different Node.js versions.
+- [Node.js LTS release](https://nodejs.org/en/) - Only Node.js LTS releases (even-numbered) are recommended.
+  <CALLOUT theme="secondary">As Node.js [officially states](https://nodejs.org/en/about/releases/), "Production applications should only use Active LTS or Maintenance LTS releases". You can install Node.js using a version management tool (such as `nvm` or `volta` or any other of your choice) to switch between different Node.js versions.</CALLOUT>
 - [Git](https://git-scm.com)
-- [Watchman](https://facebook.github.io/watchman/docs/install#buildinstall) for macOS or Linux users.
+- [Watchman](https://facebook.github.io/watchman/docs/install#buildinstall) (for Linux or macOS users).
 
 ### Recommended tools
 
 - [Yarn](https://classic.yarnpkg.com/en/docs/install)
-- [VS Code Editor](https://code.visualstudio.com/download)
-  - [VS Code Expo Extension](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo) for Expo config debugging and autocomplete.
+- [VS Code Editor](https://code.visualstudio.com/download) and [VS Code Expo Extension](https://marketplace.visualstudio.com/items?itemName=byCedric.vscode-expo) for Expo easier debugging and config autocomplete.
 - [PowerShell](https://docs.microsoft.com/en-us/powershell/scripting/install/installing-powershell-core-on-windows), Bash via WSL, or the VS Code terminal for developers who prefer Windows.
 
 ### Use Expo CLI
