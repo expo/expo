@@ -221,7 +221,7 @@ export class Code extends React.Component<React.PropsWithChildren<Props>> {
         <SnippetHeader title={value.title}>
           <CopyAction text={cleanCopyValue(value.value)} />
         </SnippetHeader>
-        <SnippetContent skipPadding>
+        <SnippetContent className="p-0">
           <pre css={STYLES_CODE_CONTAINER} {...attributes}>
             <code
               css={STYLES_CODE_BLOCK}
