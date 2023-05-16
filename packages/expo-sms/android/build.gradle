@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '11.2.1'
+version = '11.3.0'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -74,7 +74,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 28
-    versionName "11.2.1"
+    versionName "11.3.0"
   }
   lintOptions {
     abortOnError false
@@ -91,6 +91,6 @@ dependencies {
   if (project.findProject(':expo-modules-test-core')) {
     testImplementation project(':expo-modules-test-core')
   }
-  testImplementation "org.robolectric:robolectric:4.5.1"
-  testImplementation 'junit:junit:4.12'
+  testImplementation "org.robolectric:robolectric:4.10"
+  testImplementation 'junit:junit:4.13.2'
 }

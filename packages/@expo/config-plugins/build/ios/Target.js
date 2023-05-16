@@ -40,6 +40,7 @@ exports.TargetType = TargetType;
   TargetType["WATCH"] = "com.apple.product-type.application.watchapp";
   TargetType["APP_CLIP"] = "com.apple.product-type.application.on-demand-install-capable";
   TargetType["STICKER_PACK_EXTENSION"] = "com.apple.product-type.app-extension.messages-sticker-pack";
+  TargetType["FRAMEWORK"] = "com.apple.product-type.framework";
   TargetType["OTHER"] = "other";
 })(TargetType || (exports.TargetType = TargetType = {}));
 function getXCBuildConfigurationFromPbxproj(project, {
@@ -61,6 +62,7 @@ async function findApplicationTargetWithDependenciesAsync(projectRoot, scheme) {
   return {
     name: (0, _string().trimQuotes)(applicationTarget.name),
     type: TargetType.APPLICATION,
+    signable: true,
     dependencies
   };
 }
@@ -68,6 +70,7 @@ function getTargetDependencies(project, parentTarget) {
   if (!parentTarget.dependencies || parentTarget.dependencies.length === 0) {
     return undefined;
   }
+  const nonSignableTargetTypes = [TargetType.FRAMEWORK];
   return parentTarget.dependencies.map(({
     value
   }) => {
@@ -79,6 +82,7 @@ function getTargetDependencies(project, parentTarget) {
     return {
       name: (0, _string().trimQuotes)(target.name),
       type,
+      signable: !nonSignableTargetTypes.some(signableTargetType => isTargetOfType(target, signableTargetType)),
       dependencies: getTargetDependencies(project, target)
     };
   });

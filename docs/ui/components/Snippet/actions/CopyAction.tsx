@@ -16,7 +16,11 @@ export const CopyAction = ({ text, ...rest }: CopyActionProps) => {
   };
 
   return (
-    <SnippetAction icon={<ClipboardIcon />} onClick={onCopyClick} disabled={copyDone} {...rest}>
+    <SnippetAction
+      leftSlot={<ClipboardIcon className="icon-sm text-icon-default" />}
+      onClick={onCopyClick}
+      disabled={copyDone}
+      {...rest}>
       {copyDone ? 'Copied!' : 'Copy'}
     </SnippetAction>
   );

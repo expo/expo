@@ -18,7 +18,7 @@ import { logMetroErrorAsync } from '../start/server/metro/metroErrorInterface';
 
 const debug = require('debug')('expo:export:generateStaticRoutes') as typeof console.log;
 
-type Options = { outputDir: string; minify: boolean; sourcemap?: boolean | 'inline' };
+type Options = { outputDir: string; minify: boolean };
 
 /** @private */
 export async function unstable_exportStaticAsync(projectRoot: string, options: Options) {
@@ -81,14 +81,14 @@ export async function getFilesToExportFromServerAsync(
 export async function exportFromServerAsync(
   projectRoot: string,
   devServerManager: DevServerManager,
-  { outputDir, sourcemap }: Options
+  { outputDir }: Options
 ): Promise<void> {
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
 
   const [manifest, resources, renderAsync] = await Promise.all([
     devServer.getRoutesAsync(),
-    devServer.getStaticResourcesAsync({ mode: 'production', sourcemap }),
+    devServer.getStaticResourcesAsync({ mode: 'production' }),
     devServer.getStaticRenderFunctionAsync({
       mode: 'production',
     }),

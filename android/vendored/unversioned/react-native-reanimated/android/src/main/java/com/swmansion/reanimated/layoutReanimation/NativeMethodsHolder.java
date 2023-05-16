@@ -3,9 +3,15 @@ package com.swmansion.reanimated.layoutReanimation;
 import java.util.HashMap;
 
 public interface NativeMethodsHolder {
-  public void startAnimationForTag(int tag, String type, HashMap<String, Float> values);
+  void startAnimation(int tag, int type, HashMap<String, Object> values);
 
-  public void removeConfigForTag(int tag);
+  boolean hasAnimation(int tag, int type);
 
-  public boolean isLayoutAnimationEnabled();
+  void clearAnimationConfig(int tag);
+
+  void cancelAnimation(int tag, int type, boolean cancelled, boolean removeView);
+
+  boolean isLayoutAnimationEnabled();
+
+  int findPrecedingViewTagForTransition(int tag);
 }
