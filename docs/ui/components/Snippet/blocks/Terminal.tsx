@@ -78,7 +78,7 @@ function cmdMapper(line: string, index: number) {
   if (line.startsWith('$')) {
     return (
       <div key={key}>
-        <CODE className="whitespace-pre !bg-[transparent] !border-none select-none !text-secondary !px-0">
+        <CODE className="whitespace-pre !bg-[transparent] !border-none select-none !text-secondary">
           -&nbsp;
         </CODE>
         <CODE className="whitespace-pre !bg-[transparent] !border-none text-default">
