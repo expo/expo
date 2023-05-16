@@ -156,7 +156,7 @@ PODS:
   - ExpoImage (1.2.2):
     - ExpoModulesCore
     - SDWebImage (~> 5.15.0)
-    - SDWebImageAVIFCoder (~> 0.9.4)
+    - SDWebImageAVIFCoder (~> 0.9.5)
     - SDWebImageSVGCoder (~> 1.6.1)
     - SDWebImageWebPCoder (~> 0.9.1)
   - ExpoImageManipulator (11.2.0):
@@ -286,16 +286,16 @@ PODS:
   - hermes-engine (0.71.7):
     - hermes-engine/Pre-built (= 0.71.7)
   - hermes-engine/Pre-built (0.71.7)
-  - libaom (2.0.2):
-    - libvmaf
-  - libavif (0.10.1):
-    - libavif/libaom (= 0.10.1)
-  - libavif/core (0.10.1)
-  - libavif/libaom (0.10.1):
+  - libaom (3.0.0):
+    - libvmaf (>= 2.2.0)
+  - libavif (0.11.0):
+    - libavif/libaom (= 0.11.0)
+  - libavif/core (0.11.0)
+  - libavif/libaom (0.11.0):
     - libaom (>= 2.0.0)
     - libavif/core
   - libevent (2.1.12)
-  - libvmaf (2.2.0)
+  - libvmaf (2.3.1)
   - libwebp (1.2.3):
     - libwebp/demux (= 1.2.3)
     - libwebp/mux (= 1.2.3)
@@ -749,7 +749,7 @@ PODS:
   - SDWebImage (5.15.0):
     - SDWebImage/Core (= 5.15.0)
   - SDWebImage/Core (5.15.0)
-  - SDWebImageAVIFCoder (0.9.4):
+  - SDWebImageAVIFCoder (0.9.5):
     - libavif (>= 0.9.1)
     - SDWebImage (~> 5.10)
   - SDWebImageSVGCoder (1.6.1):
@@ -1282,7 +1282,7 @@ SPEC CHECKSUMS:
   ExpoDocumentPicker: 2dfcc5935532a3193818017da5e2f3dfda0dbf3b
   ExpoGL: 66d0342641c28a0abbe382e2ca905c556442c7fc
   ExpoHaptics: fb64dfe302cba07591bf1679ecb9531dadfc13cf
-  ExpoImage: 5129495e9981da259c652e23bd87615980864818
+  ExpoImage: 1c965cbb352ed7a8c12dd96db56527dcd5ddddb4
   ExpoImageManipulator: b8d510b4d15689d8f276dff3482df5707836035b
   ExpoImagePicker: 432af66697986cc210bc814dee782a07b2037a61
   ExpoInsights: 55e764c08fe52d6cb5f926d8e9223df54ed0e9f4
@@ -1327,10 +1327,10 @@ SPEC CHECKSUMS:
   GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
   hermes-engine: 4438d2b8bf8bebaba1b1ac0451160bab59e491f8
-  libaom: 9bb51e0f8f9192245e3ca2a1c9e4375d9cbccc52
-  libavif: e242998ccec1c83bcba0bbdc256f460ad5077348
+  libaom: 144606b1da4b5915a1054383c3a4459ccdb3c661
+  libavif: 3f6fb5fb7d23417f79c386ed01963d54d40163d5
   libevent: 4049cae6c81cdb3654a443be001fb9bdceff7913
-  libvmaf: 8d61aabc2f4ed3e6591cf7406fa00a223ec11289
+  libvmaf: 27f523f1e63c694d14d534cd0fddd2fab0ae8711
   libwebp: 60305b2e989864154bd9be3d772730f08fc6a59c
   MLImage: a454f9f8ecfd537783a12f9488f5be1a68820829
   MLKitCommon: 3bc17c6f7d25ce3660f030350b46ae7ec9ebca6e
@@ -1387,7 +1387,7 @@ SPEC CHECKSUMS:
   RNSharedElement: 504fa28a235b12505b6daedbb452a9ec96809bd0
   RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
   SDWebImage: 9bec4c5cdd9579e1f57104735ee0c37df274d593
-  SDWebImageAVIFCoder: 5bf07409ab8a02f0a8e0ac976719b321d8fce209
+  SDWebImageAVIFCoder: d759e21cf4efb640cc97250566aa556ad8bb877c
   SDWebImageSVGCoder: 6fc109f9c2a82ab44510fff410b88b1a6c271ee8
   SDWebImageWebPCoder: 18503de6621dd2c420d680e33d46bf8e1d5169b0
   UMAppLoader: d1cd37524ea948f9e695722994496784a6d6213c
