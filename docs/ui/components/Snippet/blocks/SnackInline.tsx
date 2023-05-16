@@ -1,5 +1,4 @@
-import { css } from '@emotion/react';
-import { SnackLogo } from '@expo/styleguide';
+import { mergeClasses, SnackLogo } from '@expo/styleguide';
 import { ArrowUpRightIcon } from '@expo/styleguide-icons';
 import { useEffect, useRef, useState, PropsWithChildren } from 'react';
 
@@ -9,8 +8,10 @@ import { SnippetContent } from '../SnippetContent';
 import { SnippetHeader } from '../SnippetHeader';
 
 import { SNACK_URL, getSnackFiles } from '~/common/snack';
+import { cleanCopyValue } from '~/components/base/code';
 import { PageApiVersionContextType, usePageApiVersion } from '~/providers/page-api-version';
 import versions from '~/public/static/constants/versions.json';
+import { CopyAction } from '~/ui/components/Snippet/actions/CopyAction';
 
 const DEFAULT_PLATFORM = 'android';
 const { LATEST_VERSION } = versions;
@@ -73,9 +74,9 @@ export const SnackInline = ({
   };
 
   return (
-    <Snippet css={inlineSnackWrapperStyle} className="flex flex-col mb-3">
-      <SnippetHeader title={label || 'Example'}>
-        <form action={SNACK_URL} method="POST" target="_blank">
+    <Snippet className="flex flex-col mb-3 prose-pre:!m-0 prose-pre:!border-0">
+      <SnippetHeader title={label || 'Example'} Icon={SnackLogo}>
+        <form action={SNACK_URL} method="POST" target="_blank" className="contents">
           <input type="hidden" name="platform" value={defaultPlatform || DEFAULT_PLATFORM} />
           <input type="hidden" name="name" value={label || 'Example'} />
           <input type="hidden" name="dependencies" value={dependencies.join(',')} />
@@ -97,25 +98,18 @@ export const SnackInline = ({
               )}
             />
           )}
+          <CopyAction text={cleanCopyValue(getCode())} />
           <SnippetAction
             disabled={!isReady}
-            icon={<SnackLogo />}
-            iconRight={<ArrowUpRightIcon className="icon-sm text-icon-secondary" />}
+            rightSlot={<ArrowUpRightIcon className="icon-sm text-icon-secondary" />}
             type="submit">
             {buttonTitle || 'Open in Snack'}
           </SnippetAction>
         </form>
       </SnippetHeader>
-      <SnippetContent ref={contentRef} css={contentHidden && css({ display: 'none' })} skipPadding>
+      <SnippetContent ref={contentRef} className={mergeClasses('p-0', contentHidden && 'hidden')}>
         {children}
       </SnippetContent>
     </Snippet>
   );
 };
-
-const inlineSnackWrapperStyle = css({
-  pre: {
-    margin: 0,
-    border: 0,
-  },
-});

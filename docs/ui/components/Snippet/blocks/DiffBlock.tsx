@@ -49,7 +49,7 @@ export const DiffBlock = ({ source, raw }: Props) => {
   }: RenderLine) => (
     <Snippet key={oldRevision + '-' + newRevision}>
       <SnippetHeader title={newPath} />
-      <SnippetContent skipPadding hideOverflow>
+      <SnippetContent className="p-0" hideOverflow>
         <Diff viewType="unified" diffType={type} hunks={hunks}>
           {(hunks: any[]) => hunks.map(hunk => <Hunk key={hunk.content} hunk={hunk} />)}
         </Diff>

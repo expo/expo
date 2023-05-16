@@ -1,53 +1,28 @@
-import { css } from '@emotion/react';
-import { shadows, theme, Button, ButtonProps, mergeClasses } from '@expo/styleguide';
-import { palette } from '@expo/styleguide-base';
-import { cloneElement, ReactElement } from 'react';
+import { Button, ButtonProps, mergeClasses } from '@expo/styleguide';
 
 import { FOOTNOTE } from '~/ui/components/Text';
 
 export type SnippetActionProps = ButtonProps & {
-  icon?: ReactElement;
-  iconRight?: ReactElement;
   alwaysDark?: boolean;
 };
 
 export const SnippetAction = (props: SnippetActionProps) => {
-  const { children, icon, iconRight, alwaysDark = false, ...rest } = props;
-
-  const styledIcon =
-    icon &&
-    cloneElement(icon, {
-      className: mergeClasses('icon-sm', alwaysDark && 'text-palette-white'),
-    });
+  const { children, leftSlot, rightSlot, alwaysDark = false, ...rest } = props;
 
   return (
     <Button
       size="xs"
       theme="quaternary"
-      leftSlot={styledIcon}
-      rightSlot={iconRight}
-      css={[!alwaysDark && snippetActionStyle, alwaysDark && alwaysDarkStyle]}
+      leftSlot={leftSlot}
+      rightSlot={rightSlot}
       className={mergeClasses(
-        !alwaysDark && 'border-0 rounded-none border-l border-l-default h-10 leading-10 px-4',
-        alwaysDark && 'border-transparent bg-[transparent]'
+        alwaysDark &&
+          'dark-theme border-transparent bg-[transparent] hocus:shadow-xs hocus:border-palette-gray9 hocus:bg-palette-gray5',
+        !alwaysDark &&
+          'border-0 rounded-none border-l border-l-default h-10 leading-10 px-4 hocus:bg-subtle hocus:shadow-none'
       )}
       {...rest}>
       <FOOTNOTE className={mergeClasses(alwaysDark && '!text-palette-white')}>{children}</FOOTNOTE>
     </Button>
   );
 };
-
-const snippetActionStyle = css({
-  ':hover': {
-    backgroundColor: theme.background.subtle,
-    boxShadow: 'none',
-  },
-});
-
-const alwaysDarkStyle = css({
-  ':hover': {
-    borderColor: palette.dark.gray9,
-    background: palette.dark.gray5,
-    boxShadow: shadows.xs,
-  },
-});

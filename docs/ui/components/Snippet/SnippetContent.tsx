@@ -4,21 +4,11 @@ import { forwardRef, PropsWithChildren } from 'react';
 export type SnippetContentProps = PropsWithChildren<{
   alwaysDark?: boolean;
   hideOverflow?: boolean;
-  skipPadding?: boolean;
   className?: string;
 }>;
 
 export const SnippetContent = forwardRef<HTMLDivElement, SnippetContentProps>(
-  (
-    {
-      children,
-      className,
-      alwaysDark = false,
-      hideOverflow = false,
-      skipPadding = false,
-    }: SnippetContentProps,
-    ref
-  ) => (
+  ({ children, className, alwaysDark = false, hideOverflow = false }: SnippetContentProps, ref) => (
     <div
       ref={ref}
       className={mergeClasses(
@@ -26,7 +16,6 @@ export const SnippetContent = forwardRef<HTMLDivElement, SnippetContentProps>(
         'prose-code:!px-0 prose-code:!leading-snug',
         alwaysDark && 'dark-theme bg-palette-black border-transparent whitespace-nowrap',
         hideOverflow && 'overflow-hidden prose-code:!whitespace-nowrap',
-        skipPadding && '!p-0',
         className
       )}>
       {children}
