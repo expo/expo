@@ -75,8 +75,8 @@ export const SnackInline = ({
 
   return (
     <Snippet className="flex flex-col mb-3 prose-pre:!m-0 prose-pre:!border-0">
-      <SnippetHeader title={label || 'Example'}>
-        <form action={SNACK_URL} method="POST" target="_blank">
+      <SnippetHeader title={label || 'Example'} Icon={SnackLogo}>
+        <form action={SNACK_URL} method="POST" target="_blank" className="contents">
           <input type="hidden" name="platform" value={defaultPlatform || DEFAULT_PLATFORM} />
           <input type="hidden" name="name" value={label || 'Example'} />
           <input type="hidden" name="dependencies" value={dependencies.join(',')} />
@@ -101,7 +101,6 @@ export const SnackInline = ({
           <CopyAction text={cleanCopyValue(getCode())} />
           <SnippetAction
             disabled={!isReady}
-            leftSlot={<SnackLogo className="icon-sm" />}
             rightSlot={<ArrowUpRightIcon className="icon-sm text-icon-secondary" />}
             type="submit">
             {buttonTitle || 'Open in Snack'}
