@@ -12,14 +12,14 @@ The [Expo Go][expo-go] app can be used to experiment with most React Native apps
 
 The main drawback of iterating with Expo Go is that it is impossible to send custom native code over-the-air to the Expo Go app. This means you will need to do one of the following:
 
-1. Create a [development build](/development/introduction) to use custom native code, and distribute it with [internal distribution](/build/internal-distribution) or TestFlight.
+1. Create a [development build](/develop/development-builds/introduction/) to use custom native code, and distribute it with [internal distribution](/build/internal-distribution) or TestFlight.
 2. Conditionally disable unsupported native features in Expo Go.
 
 This guide will demonstrate achieving the second option by compatible library versions, detecting whether the code is running in an Expo Go app at run time, native module detection, and so on.
 
 ## Usage
 
-Inside any React Native app, start a [development server with Expo CLI](/workflow/expo-cli#develop):
+Inside any React Native app, start a [development server with Expo CLI](/more/expo-cli/#develop):
 
 <Terminal cmd={['$ npx expo start']} />
 
@@ -43,7 +43,7 @@ Then, launch your project in Expo Go by pressing <kbd>i</kbd> or <kbd>a</kbd> in
 
 ## Installing libraries
 
-Ensure your app uses the most compatible library versions for the project's `react-native` version. This means that use `npx expo install` instead of `npm install` to install libraries. Read more about [`npx expo install`](/workflow/expo-cli#install).
+Ensure your app uses the most compatible library versions for the project's `react-native` version. This means that use `npx expo install` instead of `npm install` to install libraries. Read more about [`npx expo install`](/more/expo-cli/#installation).
 
 ## Runtime detection
 
@@ -98,7 +98,7 @@ export default function App() {
 
 </SnackInline>
 
-If you run this code in the Expo Go app, you'll see the fallback view. If you can build this locally with the [Expo CLI run commands](/workflow/expo-cli#compiling) then you'll see the native blur hash view.
+If you run this code in the Expo Go app, you'll see the fallback view. If you can build this locally with the [Expo CLI run commands](/more/expo-cli/#compiling) then you'll see the native blur hash view.
 
 ## Native module detection
 

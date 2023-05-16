@@ -9,7 +9,7 @@ This guide details a few strategies for reporting and recovering from errors in 
 
 If your app encounters a fatal JavaScript error, native runtime will report the error differently depending on whether your app is in development or production.
 
-**In Development:** If you're serving your app from [Expo CLI](/workflow/expo-cli#develop), the fatal JavaScript error will be reported to the [React Native `RedBox` API](https://reactnative.dev/docs/debugging.html#in-app-errors-and-warnings) and no other action will be taken.
+**In Development:** If you're serving your app from [Expo CLI](/more/expo-cli/#develop), the fatal JavaScript error will be reported to the [React Native `RedBox` API](https://reactnative.dev/docs/debugging.html#in-app-errors-and-warnings) and no other action will be taken.
 
 **In Production:** If your published app encounters a fatal JavaScript error, the native app will immediately reload your JavaScript bundle. If the error happens very quickly after reloading, your native app will crash.
 

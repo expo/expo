@@ -32,12 +32,12 @@ If it still doesn't work, it may be due to the router configuration &mdash; this
 
 ## Running a project with a development build
 
-Expo Go is for quick experimentation, when it's time to build an app you can create development builds (for example, to [add custom native code](/workflow/customizing/)), the process for loading the project remains mostly the same but the mechanism to get the build on your device is different. Development builds can be created locally with [`npx expo run:[ios|android] --device`](/workflow/expo-cli/), with Xcode or Android Studio, or [remotely with EAS Build](/build/introduction/).
+Expo Go is for quick experimentation, when it's time to build an app you can create development builds (for example, to [add custom native code](/workflow/customizing/)), the process for loading the project remains mostly the same but the mechanism to get the build on your device is different. Development builds can be created locally with [`npx expo run:[ios|android] --device`](/more/expo-cli/), with Xcode or Android Studio, or [remotely with EAS Build](/build/introduction/).
 
 Refer to the [Getting Started guide for development builds](/development/getting-started/) to learn how to create and run it on your device.
 
 ## Running a project as a standalone app
 
-Both Expo Go and development builds include a user interface that is convenient for development, but that you would not use in a production release of your app. You can create standalone builds in the same way as development builds — locally with [`npx expo run:[ios|android] --device`](/workflow/expo-cli/), with Xcode or Android Studio, or [remotely with EAS Build](/build/introduction/). If you have `expo-dev-client` installed in your project, you will need to build the "Release" configuration/variant (`--configuration Release` for iOS and `--variant release` for Android).
+Both Expo Go and development builds include a user interface that is convenient for development, but that you would not use in a production release of your app. You can create standalone builds in the same way as development builds — locally with [`npx expo run:[ios|android] --device`](/more/expo-cli/), with Xcode or Android Studio, or [remotely with EAS Build](/build/introduction/). If you have `expo-dev-client` installed in your project, you will need to build the "Release" configuration/variant (`--configuration Release` for iOS and `--variant release` for Android).
 
 You may choose to install directly to your device (the `--device` flag with `npx expo run:[ios|android]`, or by selecting it in an IDE) or to use [internal distribution](/build/internal-distribution/), or [TestFlight](/submit/ios) / [Google Play](/submit/android).
