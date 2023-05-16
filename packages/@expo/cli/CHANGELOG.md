@@ -8,6 +8,7 @@
 
 ### 🐛 Bug fixes
 
+- Import `fetch` from `node-fetch` to support older Node.js versions. ([#22480](https://github.com/expo/expo/pull/22480) by [@EvanBacon](https://github.com/EvanBacon))
 - Fix modern manifest serving for dev client without expo-updates. ([#22470](https://github.com/expo/expo/pull/22470) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
