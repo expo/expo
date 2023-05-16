@@ -58,9 +58,9 @@ function FnBlurView({
   );
 }
 
-// Function component if required by reanimated and class-based component is required by React Animated
+// Functional component is required to use useAnimatedProps and class-based component is required by React Animated
 // Wrapping function component with class-based component fixes the conflict
-class BlurView extends React.Component<BlurViewProps> {
+export default class BlurView extends React.Component<BlurViewProps> {
   render() {
     return <FnBlurView {...this.props} />;
   }
@@ -69,5 +69,3 @@ class BlurView extends React.Component<BlurViewProps> {
 const styles = StyleSheet.create({
   container: { backgroundColor: 'transparent' },
 });
-
-export default BlurView;

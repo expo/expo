@@ -1,7 +1,7 @@
 import { BlurTint, BlurView } from 'expo-blur';
 import React, { useCallback, memo, useEffect } from 'react';
 import { View, StyleSheet, Text, Image } from 'react-native';
-import { useSharedValue, withRepeat, withSequence, withTiming } from 'react-native-reanimated';
+import { useSharedValue, withRepeat, withTiming } from 'react-native-reanimated';
 
 import useResettingState from '../../utilities/useResettingState';
 import Slider from './Slider';
@@ -17,12 +17,8 @@ export default memo((props: { tint: BlurTint }) => {
   }, []);
 
   useEffect(() => {
-    // Use two with timing animations to make sure the animation always runs from 0 to 100
-    animatedIntensity.value = withRepeat(
-      withSequence(withTiming(100, { duration: 2000 }), withTiming(0, { duration: 2000 })),
-      -1,
-      true
-    );
+    animatedIntensity.value = 0;
+    animatedIntensity.value = withRepeat(withTiming(100, { duration: 4000 }), -1, true);
   }, []);
 
   return (
