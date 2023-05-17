@@ -6,7 +6,7 @@ import {
   TouchableWithoutFeedback,
   View,
 } from 'react-native';
-import Animated from 'react-native-reanimated';
+import Animated, { useSharedValue, interpolate } from 'react-native-reanimated';
 import BottomSheet from 'reanimated-bottom-sheet';
 
 import DevMenuBottomSheetContext from './DevMenuBottomSheetContext';
@@ -26,12 +26,9 @@ class DevMenuBottomSheet extends React.PureComponent<Props, any> {
 
   snapPoints = [0, Math.max(BottomSheet.renumber('50%'), 600), '90%'];
 
-  callbackNode = new Animated.Value(0);
+  callbackNode = useSharedValue(0);
 
-  backgroundOpacity = this.callbackNode.interpolate({
-    inputRange: [0, 1],
-    outputRange: [0.5, 0],
-  });
+  backgroundOpacity = interpolate(this.callbackNode.value, [0, 1], [0.5, 0]);
 
   closeSubscription: EventSubscription | null = null;
 
