@@ -39,8 +39,8 @@ A cross-platform, performant image component for React Native and Expo.
 
 # Installation
 
-> Currently `expo-image` can be used only with Expo SDK47 in [development builds](/development/create-development-builds/) and bare React Native apps with [configured Expo modules](/bare/installing-expo-modules/).
-> It is not available in Expo Go and Snack yet.
+> Currently `expo-image` can be used only with [development builds](/development/create-development-builds/), in Expo Go, and bare React Native apps with [configured Expo modules](/bare/installing-expo-modules/).
+> It is not available with Snack yet.
 
 Add the package to your dependencies with the following commands:
 
