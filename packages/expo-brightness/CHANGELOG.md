@@ -10,6 +10,12 @@
 
 ### 💡 Others
 
+## 11.3.0 — 2023-05-08
+
+### 🎉 New features
+
+- Migrated Android to Expo Modules API. ([#22037](https://github.com/expo/expo/pull/22037) by [@alanjhughes](https://github.com/alanjhughes))
+
 ## 11.2.1 — 2023-02-09
 
 _This version does not introduce any user-facing changes._

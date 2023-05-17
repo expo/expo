@@ -11,7 +11,7 @@ import { Step } from '~/ui/components/Step';
 
 The installation steps on this page are only required to add the `expo-dev-client` library to a React Native or a bare project.
 
-> To add the `expo-dev-client` library to an existing managed project, see [Create development builds](/development/create-development-builds/).
+> To add the `expo-dev-client` library to an existing managed project, see [Create development builds](/develop/development-builds/create-a-build/).
 
 If you're starting your project, you can create a new project with our `with-dev-client` template. Run the following command to initialize the project:
 
@@ -61,7 +61,7 @@ For more information, see [uri-scheme package](https://www.npmjs.com/package/uri
 
 ## Optional configuration
 
-There are a few more changes you can make to get the best experience, but you [can skip ahead to building](/development/create-development-builds/#build-with-eas) if you prefer.
+There are a few more changes you can make to get the best experience, but you [can skip ahead to building](//develop/development-builds/create-a-build/#create-a-development-build-for-the-device) if you prefer.
 
 ### Disable packager autostart when building for iOS
 
@@ -71,7 +71,7 @@ When you start your project on iOS, the metro bundler will start automatically. 
 
 ### Add better error handlers
 
-For certain type of errors, you can provide more helpful error messages. To turn this on, import import `expo-dev-client` in the project's **index** file (in the managed workflow, you need to add this import on top of the **App.&lbrace;js|tsx&rbrace;**). Make sure that the import statement is above `import App from './App'`.
+For certain type of errors, you can provide more helpful error messages. To turn this on, import `expo-dev-client` in the project's **index** file (in the managed workflow, you need to add this import on top of the **App.&lbrace;js|tsx&rbrace;**). Make sure that the import statement is above `import App from './App'`.
 
 ```js
 import 'expo-dev-client';
@@ -79,7 +79,7 @@ import 'expo-dev-client';
 import App from "./App";
 ```
 
-For more information, see [Error handling](/development/use-development-builds/#add-error-handling).
+For more information, see [Error handling](/develop/development-builds/use-development-builds/#add-error-handling).
 
 ### Loading published updates
 
@@ -99,6 +99,6 @@ After doing so, if your project has an **ios/** directory on disk, you will need
 
 ## Build and install
 
-You're now ready to [build your first development build](/development/create-development-builds/#create-and-install-eas-build).
+You're now ready to [build your first development build](develop/development-builds/create-a-build/#initialize-eas-build).
 
 </Step>

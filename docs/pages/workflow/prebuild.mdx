@@ -156,7 +156,7 @@ If you are targeting additional platforms, you can still use prebuild for your *
 
 ### Making changes directly is quicker than modularizing and automating
 
-All native changes must be added with native modules (using React Native's built-in Native Module APIs or the Expo Modules API) and config plugins. This means if you want to quickly add a native file to your project to experiment, then you may be better off running prebuild and adding the file manually, then working your way back into the system with a [monorepo](/guides/monorepos). We plan to speed this process up by adding functionality to [Expo Autolinking](/workflow/glossary-of-terms#expo-autolinking) that finds project native files outside of the native folders and links them before building.
+All native changes must be added with native modules (using React Native's built-in Native Module APIs or the Expo Modules API) and config plugins. This means if you want to quickly add a native file to your project to experiment, then you may be better off running prebuild and adding the file manually, then working your way back into the system with a [monorepo](/guides/monorepos). We plan to speed this process up by adding functionality to [Expo Autolinking](/more/glossary-of-terms#expo-autolinking) that finds project native files outside of the native folders and links them before building.
 
 If you want to modify the configuration, such as the **gradle.properties** file, you'll have to write a plugin ([example](https://github.com/expo/expo/blob/1c994bb042ad47fbf6878e3b5793d4545f2d1208/apps/native-component-list/app.config.js#L21-L28)). This can be easily automated with helper plugin libraries, however, it is a bit slower if you need to do it often.
 
@@ -172,9 +172,9 @@ Alternatively, we also have a repo for [out-of-tree config plugins][config-plugi
 
 [config-plugins-repo]: https://github.com/expo/config-plugins
 [template]: https://github.com/expo/expo/tree/main/templates/expo-template-bare-minimum
-[native-modules]: /workflow/glossary-of-terms/#native-module
-[autolinking]: /workflow/glossary-of-terms#autolinking
+[native-modules]: /more/glossary-of-terms/#native-module
+[autolinking]: /more/glossary-of-terms#autolinking
 [eas]: /eas
 [expo-go]: https://expo.dev/expo-go
-[config-plugins]: /guides/config-plugins/
+[config-plugins]: /config-plugins/introduction/
 [expo-config]: /workflow/configuration/

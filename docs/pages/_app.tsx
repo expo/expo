@@ -1,10 +1,10 @@
 import { css, Global } from '@emotion/react';
 import { ThemeProvider } from '@expo/styleguide';
 import { MDXProvider } from '@mdx-js/react';
-import { Inter, Fira_Code } from '@next/font/google';
 import * as Sentry from '@sentry/react';
 import { BrowserTracing } from '@sentry/tracing';
 import { AppProps } from 'next/app';
+import { Inter, Fira_Code } from 'next/font/google';
 
 import { preprocessSentryError } from '~/common/sentry-utilities';
 import { useNProgress } from '~/common/use-nprogress';
@@ -12,18 +12,20 @@ import DocumentationElements from '~/components/page-higher-order/DocumentationE
 import { AnalyticsProvider } from '~/providers/Analytics';
 import { markdownComponents } from '~/ui/components/Markdown';
 
+import 'global-styles/global.css';
 import '@expo/styleguide/dist/expo-theme.css';
-import '@expo/styleguide/dist/global.css';
 import 'tippy.js/dist/tippy.css';
 
 const isDev = process.env.NODE_ENV === 'development';
 
 export const regularFont = Inter({
   display: 'swap',
+  subsets: ['latin'],
 });
 export const monospaceFont = Fira_Code({
   weight: ['400', '500'],
   display: 'swap',
+  subsets: ['latin'],
 });
 
 Sentry.init({

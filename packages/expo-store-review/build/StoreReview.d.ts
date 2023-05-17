@@ -14,8 +14,8 @@ export declare function isAvailableAsync(): Promise<boolean>;
  */
 export declare function requestReview(): Promise<void>;
 /**
- * This uses the `Constants` API to get the `Constants.manifest.ios.appStoreUrl` on iOS, or the
- * `Constants.manifest.android.playStoreUrl` on Android.
+ * This uses the `Constants` API to get the `Constants.expoConfig.ios.appStoreUrl` on iOS, or the
+ * `Constants.expoConfig.android.playStoreUrl` on Android.
  *
  * On Web this will return `null`.
  */

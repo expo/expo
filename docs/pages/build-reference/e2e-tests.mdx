@@ -164,8 +164,7 @@ module.exports = {
       /* @info This is project-specific, replace eastestsexample with correct value */
       build:
         'xcodebuild -workspace ios/eastestsexample.xcworkspace -scheme eastestsexample -configuration Release -sdk iphonesimulator -arch x86_64 -derivedDataPath ios/build',
-      binaryPath:
-        'ios/build/Build/Products/Release-iphonesimulator/eastestsexample.app',
+      binaryPath: 'ios/build/Build/Products/Release-iphonesimulator/eastestsexample.app',
       /* @end */
     },
     'android.release': {
@@ -459,7 +458,7 @@ The full example from this guide is available at https://github.com/expo/eas-tes
 
 The above guide explains how to run E2E tests against a release build of your project, which requires executing a full native build before each test run. Re-building the native app each time you run E2E tests may not be desirable if only the project JavaScript or assets have changed. However, this is necessary for release builds because the app JavaScript bundle is embedded into the binary.
 
-Instead, we can use [development builds](/development/introduction/) to load from a local development server or from [published updates](/eas-update/introduction/) to save time and CI resources. This can be done by having your E2E test runner invoke the app with a URL that points to a specific update bundle URL, as described in the [development builds deep linking URLs guide](/development/development-workflows/#deep-linking-urls).
+Instead, we can use [development builds](/develop/development-builds/introduction/) to load from a local development server or from [published updates](/eas-update/introduction/) to save time and CI resources. This can be done by having your E2E test runner invoke the app with a URL that points to a specific update bundle URL, as described in the [development builds deep linking URLs guide](/develop/development-builds/development-workflows/#deep-linking-urls).
 
 Development builds typically display an onboarding welcome screen when an app is launched for the first time, which intends to provide context about the `expo-dev-client` UI for developers. However, it can interfere with your E2E tests (which expect to interact with your app and not an onboarding screen). To skip the onboarding screen in a test environment, the query parameter `disableOnboarding=1` can be appended to the project URL (an EAS Update URL or a local development server URL).
 
@@ -534,10 +533,10 @@ async function openAppForDebugBuild(platform) {
   await sleep(3000);
 }
 
-const getDeepLinkUrl = (url) =>
+const getDeepLinkUrl = url =>
   `eastestsexample://expo-development-client/?url=${encodeURIComponent(url)}`;
 
-const getDevLauncherPackagerUrl = (platform) =>
+const getDevLauncherPackagerUrl = platform =>
   `http://localhost:8081/index.bundle?platform=${platform}&dev=true&minify=false&disableOnboarding=1`;
 
 const getLatestUpdateUrl = () =>
@@ -545,7 +544,7 @@ const getLatestUpdateUrl = () =>
 
 const getAppId = () => appConfig?.expo?.extra?.eas?.projectId ?? '';
 
-const sleep = (t) => new Promise((res) => setTimeout(res, t));
+const sleep = t => new Promise(res => setTimeout(res, t));
 ```
 
 </Collapsible>
@@ -576,15 +575,13 @@ module.exports = {
       type: 'ios.app',
       build:
         'xcodebuild -workspace ios/eastestsexample.xcworkspace -scheme eastestsexample -configuration Debug -sdk iphonesimulator -arch x86_64 -derivedDataPath ios/build',
-      binaryPath:
-        'ios/build/Build/Products/Debug-iphonesimulator/eastestsexample.app',
+      binaryPath: 'ios/build/Build/Products/Debug-iphonesimulator/eastestsexample.app',
     },
     'ios.release': {
       type: 'ios.app',
       build:
         'xcodebuild -workspace ios/eastestsexample.xcworkspace -scheme eastestsexample -configuration Release -sdk iphonesimulator -arch x86_64 -derivedDataPath ios/build',
-      binaryPath:
-        'ios/build/Build/Products/Release-iphonesimulator/eastestsexample.app',
+      binaryPath: 'ios/build/Build/Products/Release-iphonesimulator/eastestsexample.app',
     },
     'android.debug': {
       type: 'android.apk',
@@ -632,7 +629,6 @@ module.exports = {
     },
   },
 };
-
 ```
 
 </Collapsible>

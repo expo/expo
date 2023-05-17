@@ -40,6 +40,13 @@ open class JavaScriptObject @DoNotStrip internal constructor(@DoNotStrip private
   external fun hasProperty(name: String): Boolean
   external fun getProperty(name: String): JavaScriptValue
 
+  operator fun get(name: String): JavaScriptValue? {
+    if (hasProperty(name)) {
+      return getProperty(name)
+    }
+    return null
+  }
+
   external fun getPropertyNames(): Array<String>
   private external fun setBoolProperty(name: String, value: Boolean)
   private external fun setDoubleProperty(name: String, value: Double)
@@ -64,15 +71,27 @@ open class JavaScriptObject @DoNotStrip internal constructor(@DoNotStrip private
   }
 
   fun setProperty(name: String, value: Boolean) = setBoolProperty(name, value)
+  operator fun set(name: String, value: Boolean) = setBoolProperty(name, value)
+
   fun setProperty(name: String, value: Int) = setDoubleProperty(name, value.toDouble())
+  operator fun set(name: String, value: Int) = setDoubleProperty(name, value.toDouble())
+
   fun setProperty(name: String, value: Double) = setDoubleProperty(name, value)
+  operator fun set(name: String, value: Double) = setDoubleProperty(name, value)
+
   fun setProperty(name: String, value: String?) = setStringProperty(name, value)
+  operator fun set(name: String, value: String?) = setStringProperty(name, value)
+
   fun setProperty(name: String, value: JavaScriptValue?) = setJSValueProperty(name, value)
+  operator fun set(name: String, value: JavaScriptValue?) = setJSValueProperty(name, value)
+
   fun setProperty(name: String, value: JavaScriptObject?) = setJSObjectProperty(name, value)
+  operator fun set(name: String, value: JavaScriptObject?) = setJSObjectProperty(name, value)
 
   // Needed to handle untyped null value
   // Without it setProperty(name, null) won't work
   fun setProperty(name: String, `null`: Nothing?) = unsetProperty(name)
+  operator fun set(name: String, `null`: Nothing?) = unsetProperty(name)
 
   fun defineProperty(
     name: String,

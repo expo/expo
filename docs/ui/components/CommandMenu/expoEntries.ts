@@ -1,15 +1,15 @@
 import { SnackLogo } from '@expo/styleguide';
 import {
   BuildIcon,
-  DeploymentIcon,
   Grid01Icon,
   Settings01Icon,
   EasSubmitIcon,
-  ChannelIcon,
-  GitBranch01Icon,
-  UpdateIcon,
   CredentialIcon,
   Key01Icon,
+  LayersTwo02Icon,
+  BranchIcon,
+  Cube02Icon,
+  Dataflow03Icon,
 } from '@expo/styleguide-icons';
 
 export const entries = [
@@ -36,7 +36,7 @@ export const entries = [
   {
     label: 'Project Deployments',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/deployments',
-    Icon: DeploymentIcon,
+    Icon: Dataflow03Icon,
   },
   {
     label: 'Project Builds',
@@ -51,17 +51,17 @@ export const entries = [
   {
     label: 'Project Channels',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/channels',
-    Icon: ChannelIcon,
+    Icon: Cube02Icon,
   },
   {
     label: 'Project Branches',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/branches',
-    Icon: GitBranch01Icon,
+    Icon: BranchIcon,
   },
   {
     label: 'Project Updates',
     url: 'https://expo.dev/accounts/[account]/projects/[project]/updates',
-    Icon: UpdateIcon,
+    Icon: LayersTwo02Icon,
   },
   {
     label: 'Project Credentials',

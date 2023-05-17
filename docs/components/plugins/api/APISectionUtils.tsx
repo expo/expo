@@ -145,6 +145,9 @@ const omittableTypes = [
  */
 const replaceableTypes: Partial<Record<string, string>> = {
   ForwardRefExoticComponent: 'Component',
+  LocationAccuracy: 'Accuracy',
+  LocationGeofencingRegionState: 'GeofencingRegionState',
+  LocationActivityType: 'ActivityType',
 };
 
 const hardcodedTypeLinks: Record<string, string> = {

@@ -16,6 +16,8 @@ export default function App() {
     ? 'This app is running from built-in code'
     : 'This app is running an update';
 
+  const checkAutomaticallyMessage = `Automatic check setting = ${Updates.checkAutomatically}`;
+
   /**
    * Async function to manually check for an available update from EAS.
    */
@@ -85,6 +87,7 @@ export default function App() {
     <View style={styles.container}>
       <Text>Open up App.js to start working on your app!</Text>
       <Text>{runTypeMessage}</Text>
+      <Text>{checkAutomaticallyMessage}</Text>
       <Text style={styles.updateMessageText}>{updateMessage}</Text>
       <Pressable style={styles.button} onPress={handleCheckButtonPress}>
         <Text style={styles.buttonText}>Check manually for updates</Text>

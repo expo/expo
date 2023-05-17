@@ -108,7 +108,6 @@ describe(getTypedRoutesUtils, () => {
         {
           static: [
             '/page',
-            '/(a,b,c)/(d,e)/page',
             '/(a)/page',
             '/(a)/(d)/page',
             '/(a)/(e)/page',

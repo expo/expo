@@ -2,13 +2,23 @@
 
 ## Unpublished
 
-### 🛠 Breaking changes
+### 📚 3rd party library updates
 
-- Update iOS and Android entry points to support custom entry files (changed `index` to `.expo/.virtual-metro-entry`). This requires all projects to use `expo/metro-config` as the base config. ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))
+- Updated `robolectric` to `4.10`.  ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
+### 🛠 Breaking changes
 
 ### 🎉 New features
 
-- Added experimental react-devtools integration. ([#21462](https://github.com/expo/expo/pull/21462) by [@kudo](https://github.com/kudo))
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 3.0.0 — 2023-05-08
+
+### 🛠 Breaking changes
+
+- Update iOS and Android entry points to support custom entry files (changed `index` to `.expo/.virtual-metro-entry`). This requires all projects to use `expo/metro-config` as the base config. ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 🐛 Bug fixes
 
@@ -19,10 +29,22 @@
 ### 💡 Others
 
 - Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
+- Rewrite vendored safe area view using the new modules API. ([#22174](https://github.com/expo/expo/pull/22174) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Migrate iOS native modules to use the new Module API. ([#22263](https://github.com/expo/expo/pull/22263) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### ⚠️ Notices
 
 - Disable the `Remote JS debugger` option on menu when using SDK 49 or above. ([#22010](https://github.com/expo/expo/pull/22010) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 📚 3rd party library updates
+
+- Update `react-native` to 0.71.7. ([#22253](https://github.com/expo/expo/pull/22253) by [@kudo](https://github.com/kudo))
+
+## 2.2.0 - 2023-04-13
+
+### 🎉 New features
+
+- Added experimental react-devtools integration. ([#21462](https://github.com/expo/expo/pull/21462) by [@kudo](https://github.com/kudo))
 
 ## 2.1.4 - 2023-03-20
 

@@ -486,7 +486,7 @@ class JSIFunctionsTest {
   }
 
   @Test
-  fun allows_to_skip_trailing_optional_arguemnts() = withJSIInterop(
+  fun allows_to_skip_trailing_optional_arguments() = withJSIInterop(
     inlineModule {
       Name("TestModule")
       Function("test") { a: String, b: Int?, c: Boolean? ->
@@ -499,15 +499,22 @@ class JSIFunctionsTest {
         }
         return@Function "expo"
       }
+      Function("allOptionalArguments") { a: String?, b: Int? ->
+        Truth.assertThat(a).isNull()
+        Truth.assertThat(b).isNull()
+        return@Function "is awesome"
+      }
     }
   ) {
     val result1 = evaluateScript("expo.modules.TestModule.test('abc')").getString()
     val result2 = evaluateScript("expo.modules.TestModule.test('abc', 123)").getString()
     val result3 = evaluateScript("expo.modules.TestModule.test('abc', 123, true)").getString()
+    val result4 = evaluateScript("expo.modules.TestModule.allOptionalArguments()").getString()
 
     Truth.assertThat(result1).isEqualTo("expo")
     Truth.assertThat(result2).isEqualTo("expo")
     Truth.assertThat(result3).isEqualTo("expo")
+    Truth.assertThat(result4).isEqualTo("is awesome")
   }
 
   @Test
