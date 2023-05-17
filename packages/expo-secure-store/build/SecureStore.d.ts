@@ -35,16 +35,17 @@ export declare const WHEN_UNLOCKED: KeychainAccessibilityConstant;
 export declare const WHEN_UNLOCKED_THIS_DEVICE_ONLY: KeychainAccessibilityConstant;
 export type SecureStoreOptions = {
     /**
-     * - iOS: The item's service, equivalent to `kSecAttrService`
-     * - Android: Equivalent of the public/private key pair `Alias`
+     * - Android: Equivalent of the public/private key pair `Alias`.
+     * - iOS: The item's service, equivalent to [`kSecAttrService`](https://developer.apple.com/documentation/security/ksecattrservice/).
      * > If the item is set with the `keychainService` option, it will be required to later fetch the value.
      */
     keychainService?: string;
     /**
      * Option responsible for enabling the usage of the user authentication methods available on the device while
      * accessing data stored in SecureStore.
-     * - iOS: Equivalent to `kSecAccessControlBiometryCurrentSet`
-     * - Android: Equivalent to `setUserAuthenticationRequired(true)` (requires API 23).
+     * - Android: Equivalent to [`setUserAuthenticationRequired(true)`](https://developer.android.com/reference/android/security/keystore/KeyGenParameterSpec.Builder#setUserAuthenticationRequired(boolean))
+     *   (requires API 23).
+     * - iOS: Equivalent to [`kSecAccessControlBiometryCurrentSet`](https://developer.apple.com/documentation/security/secaccesscontrolcreateflags/ksecaccesscontrolbiometrycurrentset/).
      * Complete functionality is unlocked only with a freshly generated key - this would not work in tandem with the `keychainService`
      * value used for the others non-authenticated operations.
      */
@@ -55,7 +56,7 @@ export type SecureStoreOptions = {
     authenticationPrompt?: string;
     /**
      * Specifies when the stored entry is accessible, using iOS's `kSecAttrAccessible` property.
-     * @see Apple's documentation on [keychain item accessibility](https://developer.apple.com/library/content/documentation/Security/Conceptual/keychainServConcepts/02concepts/concepts.html).
+     * @see Apple's documentation on [keychain item accessibility](https://developer.apple.com/documentation/security/ksecattraccessible/).
      * @default SecureStore.WHEN_UNLOCKED
      * @platform ios
      */
@@ -66,7 +67,7 @@ export type SecureStoreOptions = {
  * permissions.
  *
  * @return Promise which fulfils witch `boolean`, indicating whether the SecureStore API is available
- * on the current device. Currently this resolves `true` on iOS and Android only.
+ * on the current device. Currently, this resolves `true` on Android and iOS only.
  */
 export declare function isAvailableAsync(): Promise<boolean>;
 /**
