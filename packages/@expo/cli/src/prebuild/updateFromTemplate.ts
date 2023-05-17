@@ -57,7 +57,6 @@ export async function updateFromTemplateAsync(
     template,
     templateDirectory,
     exp,
-    pkg,
     platforms,
   });
 
@@ -88,14 +87,12 @@ async function cloneTemplateAndCopyToProjectAsync({
   templateDirectory,
   template,
   exp,
-  pkg,
   platforms: unknownPlatforms,
 }: {
   projectRoot: string;
   templateDirectory: string;
   template?: string;
   exp: Pick<ExpoConfig, 'name' | 'sdkVersion'>;
-  pkg: PackageJSONConfig;
   platforms: ModPlatform[];
 }): Promise<string[]> {
   const ora = logNewSection(
@@ -111,7 +108,6 @@ async function cloneTemplateAndCopyToProjectAsync({
     });
 
     const results = await copyTemplateFilesAsync(projectRoot, {
-      pkg,
       templateDirectory,
       platforms,
     });
