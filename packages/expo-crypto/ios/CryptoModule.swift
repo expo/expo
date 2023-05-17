@@ -20,7 +20,7 @@ public class CryptoModule: Module {
     Function("digest", digest)
 
     Function("randomUUID") {
-      UUID().uuidString
+      UUID().uuidString.lowercased()
     }
   }
 }
