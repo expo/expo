@@ -50,7 +50,7 @@
     "@babel/plugin-transform-react-jsx": "^7.12.17",
     "@babel/preset-env": "^7.20.0",
     "babel-plugin-module-resolver": "^4.1.0",
-    "babel-plugin-react-native-web": "~0.18.10",
+    "babel-plugin-react-native-web": "~0.19.4",
     "metro-react-native-babel-preset": "0.76.4"
   },
   "devDependencies": {

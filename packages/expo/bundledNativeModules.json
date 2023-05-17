@@ -83,7 +83,7 @@
   "react": "18.2.0",
   "react-dom": "18.2.0",
   "react-native": "0.72.0-rc.3",
-  "react-native-web": "~0.18.10",
+  "react-native-web": "~0.19.4",
   "react-native-branch": "^5.4.0",
   "react-native-gesture-handler": "~2.10.1",
   "react-native-get-random-values": "~1.8.0",
