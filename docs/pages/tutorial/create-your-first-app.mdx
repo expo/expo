@@ -7,7 +7,7 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { A } from '~/ui/components/Text';
 import { Step } from '~/ui/components/Step';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { BookOpen02Icon, Download03Icon } from '@expo/styleguide-icons';
 
 In this chapter, let's learn how to create a new Expo project and how to get it running.
 
@@ -47,7 +47,14 @@ This command will create a new directory for the project with the name: **Sticke
 
 ## Download assets
 
-We'll need some assets to build the app. Let's <A href="/static/images/tutorial/sticker-smash-assets.zip" download>download these assets</A> that we will need throughout this tutorial. After downloading the archive, unzip it and replace the existing **assets** directory with it in the project directory. This will override the default assets when the new project is initialized.
+<BoxLink
+  title="Download assets archive"
+  Icon={Download03Icon}
+  description="We'll be using these assets throughout this tutorial."
+  href="/static/images/tutorial/sticker-smash-assets.zip"
+/>
+
+After downloading the archive, unzip it and replace the existing **assets** directory with it in the project directory. This will override the default assets when the new project is initialized.
 
 Now, let's open the project directory in our favorite code editor or IDE. Throughout this tutorial, we will use VS Code for our examples.
 
