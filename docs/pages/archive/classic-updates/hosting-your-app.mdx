@@ -3,6 +3,7 @@ title: Hosting Updates on Your Servers
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
+import { FileTree } from "~/ui/components/FileTree";
 
 > This doc was archived in August 2022 and will not receive any further updates. Please use EAS Update instead. [Learn more](/eas-update/introduction)
 
@@ -14,16 +15,13 @@ For simplicity, the rest of this article will refer to hosting an update for the
 
 First, you’ll need to export all the static files of your update so they can be served from your CDN. To do this, run `expo export --public-url <server-endpoint>` in your project directory and it will output all your app’s static files to a directory named `dist`. In this guide, we will use `https://expo.github.io/self-hosting-example` as our example server endpoint. Asset and bundle files are named by the MD5 hash of their content. Your output directory should look something like this now:
 
-```
-.
-├── android-index.json
-├── ios-index.json
-├── assets
-│   └── 1eccbc4c41d49fd81840aef3eaabe862
-└── bundles
-      ├── android-01ee6e3ab3e8c16a4d926c91808d5320.js
-      └── ios-ee8206cc754d3f7aa9123b7f909d94ea.js
-```
+<FileTree files={[
+  './android-index.json',
+  './ios-index.json',
+  './assets/1eccbc4c41d49fd81840aef3eaabe862',
+  './bundles/android-01ee6e3ab3e8c16a4d926c91808d5320.js',
+  './bundles/ios-ee8206cc754d3f7aa9123b7f909d94ea.js',
+]} />
 
 ## Hosting your static files
 
