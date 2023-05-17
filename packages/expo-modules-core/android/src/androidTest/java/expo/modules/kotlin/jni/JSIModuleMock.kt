@@ -45,6 +45,7 @@ internal inline fun withJSIInterop(
   every { catalystInstanceMock.getNativeModule(UIManagerModule::class.java) } answers { uiManagerModuleMock }
 
   val reactContextMock = mockk<ReactContext>()
+  every { reactContextMock.isBridgeless } answers { false }
   every { reactContextMock.hasCatalystInstance() } answers { true }
   every { reactContextMock.hasActiveReactInstance() } answers { true }
 
