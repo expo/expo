@@ -73,6 +73,7 @@ export default function ExpoImage({
           (className, style) =>
             (
               <ImageWrapper
+                {...props}
                 source={placeholder?.[0]}
                 style={{
                   objectFit: imagePlaceholderContentFit,
@@ -102,6 +103,7 @@ export default function ExpoImage({
       (className, style) =>
         (
           <ImageWrapper
+            {...props}
             source={selectedSource || placeholder?.[0]}
             events={{
               onError: [onErrorAdapter(onError), onLoadEnd, onErrorInner],
