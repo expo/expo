@@ -29,6 +29,7 @@ const commands: { [command: string]: () => Promise<Command> } = {
 
   // Auxiliary commands
   install: () => import('../src/install').then((i) => i.expoInstall),
+  add: () => import('../src/install').then((i) => i.expoInstall),
   customize: () => import('../src/customize').then((i) => i.expoCustomize),
 
   // Auth
@@ -78,6 +79,7 @@ if (!isSubcommand && args['--help']) {
     register,
     start,
     install,
+    add,
     export: _export,
     config,
     customize,
