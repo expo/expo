@@ -108,7 +108,7 @@ const path = require('path');
 
 const projectRoot = __dirname;
 const workspaceRoot = path.resolve(projectRoot, '../..');
-  
+
 const config = getDefaultConfig(workspaceRoot);
 
 // Only list the packages within your monorepo that your app uses. No need to add anything else.
@@ -210,11 +210,11 @@ Let's go back to the root and create the **packages/** folder. This folder can c
 <Terminal
   cmd={[
     '# Create our new package folder',
-    'mkdir -p packages/cool-package',
-    'cd packages/cool-package',
+    '$ mkdir -p packages/cool-package',
+    '$ cd packages/cool-package',
     '',
     '# And create the new package',
-    'yarn init',
+    '$ yarn init',
   ]}
   cmdCopy="mkdir -p packages/cool-package && cd packages/cool-package && yarn init"
 />

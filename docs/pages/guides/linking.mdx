@@ -40,12 +40,12 @@ This renders an `<a />` on web and a interactive `<Text />` which uses the `Link
 
 There are some URL schemes for core functionality that exist on every platform. The following is a non-exhaustive list, but covers the most commonly used schemes.
 
-| Scheme           | Description                                   |
-| ---------------- | --------------------------------------------- |
-| `https` / `http` | Open web browser app, eg: `https://expo.dev`  |
+| Scheme           | Description                                  |
+| ---------------- | -------------------------------------------- |
+| `https` / `http` | Open web browser app, eg: `https://expo.dev` |
 | `mailto`         | Open mail app, eg: `mailto:support@expo.dev` |
-| `tel`            | Open phone app, eg: `tel:+123456789`          |
-| `sms`            | Open SMS app, eg: `sms:+123456789`            |
+| `tel`            | Open phone app, eg: `tel:+123456789`         |
+| `sms`            | Open SMS app, eg: `sms:+123456789`           |
 
 ### Custom URL schemes
 
@@ -179,11 +179,11 @@ You can test it to ensure it works like this:
 <Terminal
   cmd={[
     '# Rebuild the native apps, be sure to use an emulator',
-    'yarn android',
-    'yarn ios',
+    '$ yarn android',
+    '$ yarn ios',
     '',
     '# Open a URI scheme',
-    'npx uri-scheme open myapp://some/redirect',
+    '$ npx uri-scheme open myapp://some/redirect',
   ]}
   cmdCopy="yarn android && yarn ios && npx uri-scheme open myapp://some/redirect"
 />
