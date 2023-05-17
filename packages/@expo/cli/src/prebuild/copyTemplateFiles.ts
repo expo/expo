@@ -1,14 +1,11 @@
-import { PackageJSONConfig } from '@expo/config';
 import { ModPlatform } from '@expo/config-plugins';
 import { MergeResults } from '@expo/config-plugins/build/utils/generateCode';
-import { getBareExtensions, getFileWithExtensions } from '@expo/config/paths';
 import chalk from 'chalk';
 import fs from 'fs';
 import path from 'path';
 
 import { copySync, directoryExistsAsync } from '../utils/dir';
 import { mergeGitIgnorePaths } from '../utils/mergeGitIgnorePaths';
-import { isPkgMainExpoAppEntry } from './updatePackageJson';
 
 const debug = require('debug')('expo:prebuild:copyTemplateFiles') as typeof console.log;
 
@@ -60,23 +57,18 @@ export function createCopyFilesSuccessMessage(
 export async function copyTemplateFilesAsync(
   projectRoot: string,
   {
-    pkg,
     templateDirectory,
     platforms,
   }: {
-    /** Project `package.json` as JSON. */
-    pkg: PackageJSONConfig;
     /** File path to the template directory. */
     templateDirectory: string;
     /** List of platforms to copy against. */
     platforms: ModPlatform[];
   }
 ): Promise<CopyFilesResults> {
-  const copyFilePaths = getFilePathsToCopy(projectRoot, pkg, platforms);
-
   const copyResults = await copyPathsFromTemplateAsync(projectRoot, {
     templateDirectory,
-    copyFilePaths,
+    copyFilePaths: platforms,
   });
 
   const hasPlatformSpecificGitIgnores = hasAllPlatformSpecificGitIgnores(
@@ -84,6 +76,8 @@ export async function copyTemplateFilesAsync(
     platforms
   );
   debug(`All platforms have an internal gitignore: ${hasPlatformSpecificGitIgnores}`);
+
+  // TODO: Remove gitignore modifications -- maybe move to `npx expo-doctor`
   const gitignore = hasPlatformSpecificGitIgnores
     ? null
     : mergeGitIgnorePaths(
@@ -121,31 +115,4 @@ async function copyPathsFromTemplateAsync(
   debug(`Copied files:`, copiedPaths);
   debug(`Skipped files:`, copiedPaths);
   return { copiedPaths, skippedPaths };
-}
-
-/** Get a list of relative file paths to copy from the template folder. Example: `['ios', 'android', 'index.js']` */
-function getFilePathsToCopy(projectRoot: string, pkg: PackageJSONConfig, platforms: ModPlatform[]) {
-  const targetPaths: string[] = [...platforms];
-
-  const bareEntryFile = resolveBareEntryFile(projectRoot, pkg.main);
-  // Only create index.js if we cannot resolve the existing entry point (after replacing the expo entry).
-  if (!bareEntryFile) {
-    targetPaths.push('index.js');
-  }
-
-  debug(`Files to copy:`, targetPaths);
-  return targetPaths;
-}
-
-export function resolveBareEntryFile(projectRoot: string, main: any) {
-  // expo app entry is not needed for bare projects.
-  if (isPkgMainExpoAppEntry(main)) {
-    return null;
-  }
-  // Look at the `package.json`s `main` field for the main file.
-  const resolvedMainField = main ?? './index';
-  // Get a list of possible extensions for the main file.
-  const extensions = getBareExtensions(['ios', 'android']);
-  // Testing the main field against all of the provided extensions - for legacy reasons we can't use node module resolution as the package.json allows you to pass in a file without a relative path and expect it as a relative path.
-  return getFileWithExtensions(projectRoot, resolvedMainField, extensions);
 }

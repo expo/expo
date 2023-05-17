@@ -57,9 +57,9 @@ def setupClosure = {
       if (Os.isFamily(Os.FAMILY_WINDOWS)) {
         // in cmd, & must be escaped with ^
         assetsFile = assetsFile.replace('&', '^&');
-        commandLine("cmd", "/c", *nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", projectRoot, assetsDir, entryFile)
+        commandLine("cmd", "/c", *nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", projectRoot, assetsDir, config.entryFile ?: "")
       } else {
-        commandLine(*nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", projectRoot, assetsDir, entryFile)
+        commandLine(*nodeExecutableAndArgs, "$expoUpdatesDir/scripts/createManifest.js", "android", projectRoot, assetsDir, config.entryFile ?: "")
       }
 
       enabled config."bundleIn${targetName}" || targetName.toLowerCase().contains("release") || ex_updates_native_debug
