@@ -10,7 +10,6 @@ import { copyTemplateFilesAsync, createCopyFilesSuccessMessage } from './copyTem
 import { cloneTemplateAsync } from './resolveTemplate';
 import { DependenciesModificationResults, updatePackageJSONAsync } from './updatePackageJson';
 import { validateTemplatePlatforms } from './validateTemplatePlatforms';
-import { writeMetroConfig } from './writeMetroConfig';
 
 /**
  * Creates local native files from an input template file path.
@@ -60,8 +59,6 @@ export async function updateFromTemplateAsync(
     exp,
     platforms,
   });
-
-  profile(writeMetroConfig)(projectRoot, { pkg, templateDirectory });
 
   const depsResults = await profile(updatePackageJSONAsync)(projectRoot, {
     templateDirectory,
