@@ -128,8 +128,9 @@ export async function downloadExpoGoAsync(
               complete: '=',
               incomplete: ' ',
             });
+          } else {
+            bar!.update(progress, total);
           }
-          bar!.update(progress, total);
         }
       },
     });
