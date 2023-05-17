@@ -165,7 +165,11 @@ export default {
     const url = await UrlUtils.constructManifestUrlAsync(path.join(EXPO_DIR, pathToHome));
 
     try {
-      const manifest = await getManifestAsync(url, platform, null);
+      // hack to convert modern manifest to classic
+      let manifest = (await getManifestAsync(url, platform, null)) as any;
+      const bundleUrl = manifest.launchAsset.url;
+      manifest = manifest.extra.expoClient;
+      manifest.bundleUrl = bundleUrl;
 
       if (manifest.name !== 'expo-home') {
         console.log(
