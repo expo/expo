@@ -63,6 +63,13 @@ export const ImageScreens = [
     },
   },
   {
+    name: 'Background',
+    route: 'image/background',
+    getComponent() {
+      return optionalRequire(() => require('./ImageBackgroundScreen'));
+    },
+  },
+  {
     name: 'Transitions',
     route: 'image/transitions',
     getComponent() {

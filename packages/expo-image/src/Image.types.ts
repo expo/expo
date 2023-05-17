@@ -1,4 +1,4 @@
-import { ImageStyle as RNImageStyle, ViewProps } from 'react-native';
+import { ImageStyle as RNImageStyle, ViewProps, StyleProp, ViewStyle } from 'react-native';
 
 export type ImageSource = {
   /**
@@ -61,7 +61,7 @@ export type ImageContentFit = 'cover' | 'contain' | 'fill' | 'none' | 'scale-dow
  */
 export interface ImageProps extends ViewProps {
   /** @hidden */
-  style?: RNImageStyle | RNImageStyle[];
+  style?: StyleProp<RNImageStyle>;
 
   /**
    * The image source, either a remote URL, a local file resource or a number that is the result of the `require()` function.
@@ -350,6 +350,15 @@ export type ImageContentPosition =
   }
   | ImageContentPositionString;
 // eslint-enable
+
+export interface ImageBackgroundProps extends Omit<ImageProps, 'style'> {
+  /** The style of the image container */
+  style?: StyleProp<ViewStyle> | undefined;
+  /** Style object for the image */
+  imageStyle?: StyleProp<RNImageStyle> | undefined;
+  /** @hidden */
+  children?: React.ReactNode | undefined;
+}
 
 /**
  * @hidden It's described as part of {@link ImageContentPosition}.
