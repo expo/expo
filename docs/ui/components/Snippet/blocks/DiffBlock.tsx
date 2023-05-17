@@ -1,3 +1,4 @@
+import { Copy07Icon } from '@expo/styleguide-icons';
 import { useEffect, useState, PropsWithChildren } from 'react';
 import { parseDiff, Diff, Hunk } from 'react-diff-view';
 
@@ -48,7 +49,7 @@ export const DiffBlock = ({ source, raw }: Props) => {
     newPath,
   }: RenderLine) => (
     <Snippet key={oldRevision + '-' + newRevision}>
-      <SnippetHeader title={newPath} />
+      <SnippetHeader title={newPath} Icon={Copy07Icon} />
       <SnippetContent className="p-0" hideOverflow>
         <Diff viewType="unified" diffType={type} hunks={hunks}>
           {(hunks: any[]) => hunks.map(hunk => <Hunk key={hunk.content} hunk={hunk} />)}
