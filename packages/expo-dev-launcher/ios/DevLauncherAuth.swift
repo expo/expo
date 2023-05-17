@@ -20,7 +20,7 @@ public class DevLauncherAuth: Module {
       self.redirectPromise = promise
 
       if #available(iOS 11.0, *) {
-        let completionHandler: (URL?, Error?) -> Void = { [weak self]  callbackURL, error in
+        let completionHandler: (URL?, Error?) -> Void = { [weak self] callbackURL, error in
           // check if flow didn't already finish
           guard let redirectPromise = self?.redirectPromise else {
             return
