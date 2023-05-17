@@ -1,4 +1,3 @@
-import { getRuntimeVersionForSDKVersion } from '@expo/sdk-runtime-versions';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import * as React from 'react';
@@ -7,23 +6,22 @@ import { Platform } from 'react-native';
 import { AppPlatform, useBranchesForProjectQuery } from '../../graphql/types';
 import * as Kernel from '../../kernel/Kernel';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
-import { getSDKMajorVersionForEASUpdateBranch } from '../ProjectScreen/EASUpdateLaunchSection';
 import { BranchListView } from './BranchListView';
 
 function useBranchesQuery({
   appId,
   platform,
-  runtimeVersions,
+  sdkVersions,
 }: {
   appId: string;
   platform: AppPlatform;
-  runtimeVersions: string[];
+  sdkVersions: string[];
 }) {
   const { data, fetchMore } = useBranchesForProjectQuery({
     variables: {
       appId,
       platform,
-      runtimeVersions,
+      sdkVersions,
       limit: 15,
       offset: 0,
     },
@@ -41,7 +39,6 @@ function useBranchesQuery({
     name: branch.name,
     id: branch.id,
     latestUpdate: branch.updates[0],
-    sdkVersion: getSDKMajorVersionForEASUpdateBranch(branch),
   }));
 
   const loadMoreAsync = React.useCallback(() => {
@@ -72,9 +69,7 @@ export function BranchList({ appId }: { appId: string }) {
   const { branchManifests, loadMoreAsync } = useBranchesQuery({
     appId,
     platform: Platform.OS === 'ios' ? AppPlatform.Ios : AppPlatform.Android,
-    runtimeVersions: Kernel.sdkVersions
-      .split(',')
-      .map((kernelSDKVersion) => getRuntimeVersionForSDKVersion(kernelSDKVersion)),
+    sdkVersions: Kernel.sdkVersions.split(','),
   });
 
   return <BranchListView data={branchManifests} appId={appId} loadMoreAsync={loadMoreAsync} />;

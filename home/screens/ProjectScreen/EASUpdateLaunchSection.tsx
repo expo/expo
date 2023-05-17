@@ -1,11 +1,9 @@
-import { getSDKVersionFromRuntimeVersion } from '@expo/sdk-runtime-versions';
 import { ChevronDownIcon } from '@expo/styleguide-native';
 import { useNavigation } from '@react-navigation/native';
 import { StackNavigationProp } from '@react-navigation/stack';
 import { Divider, Row, View, Text, useExpoTheme } from 'expo-dev-client-components';
 import React, { Fragment } from 'react';
 import { TouchableOpacity } from 'react-native-gesture-handler';
-import semver from 'semver';
 
 import { BranchListItem } from '../../components/BranchListItem';
 import { SectionHeader } from '../../components/SectionHeader';
@@ -13,28 +11,6 @@ import { WebContainerProjectPage_Query } from '../../graphql/types';
 import { HomeStackRoutes } from '../../navigation/Navigation.types';
 
 type ProjectPageApp = WebContainerProjectPage_Query['app']['byId'];
-type ProjectUpdateBranch = WebContainerProjectPage_Query['app']['byId']['updateBranches'][0];
-
-function truthy<TValue>(value: TValue | null | undefined): value is TValue {
-  return !!value;
-}
-
-export function getSDKMajorVersionForEASUpdateBranch(branch: ProjectUpdateBranch): number | null {
-  const updates = branch.updates;
-  if (updates.length === 0) {
-    return null;
-  }
-
-  return (
-    updates
-      .map((update) => {
-        const potentialSDKVersion = getSDKVersionFromRuntimeVersion(update.runtimeVersion);
-        return potentialSDKVersion ? semver.major(potentialSDKVersion) : null;
-      })
-      .filter(truthy)
-      .sort((a, b) => b - a)[0] ?? null
-  );
-}
 
 export function EASUpdateLaunchSection({ app }: { app: ProjectPageApp }) {
   const branchesToRender = app.updateBranches.filter(
@@ -45,7 +21,6 @@ export function EASUpdateLaunchSection({ app }: { app: ProjectPageApp }) {
     name: branch.name,
     id: branch.id,
     latestUpdate: branch.updates[0],
-    sdkVersion: getSDKMajorVersionForEASUpdateBranch(branch),
   }));
 
   const theme = useExpoTheme();
