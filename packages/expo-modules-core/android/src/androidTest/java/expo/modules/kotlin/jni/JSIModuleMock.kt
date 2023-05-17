@@ -1,5 +1,9 @@
 package expo.modules.kotlin.jni
 
+import com.facebook.react.bridge.CatalystInstance
+import com.facebook.react.bridge.ReactContext
+import com.facebook.react.uimanager.UIBlock
+import com.facebook.react.uimanager.UIManagerModule
 import com.google.common.truth.Truth
 import expo.modules.kotlin.AppContext
 import expo.modules.kotlin.ModuleRegistry
@@ -10,9 +14,13 @@ import expo.modules.kotlin.modules.ModuleDefinitionBuilder
 import expo.modules.kotlin.sharedobjects.SharedObjectRegistry
 import io.mockk.every
 import io.mockk.mockk
+import io.mockk.slot
+import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import java.lang.ref.WeakReference
+import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Sets up a test jsi environment with provided modules.
@@ -23,11 +31,29 @@ internal inline fun withJSIInterop(
   block: JSIInteropModuleRegistry.(methodQueue: TestScope) -> Unit
 ) {
   val appContextMock = mockk<AppContext>()
-
   val methodQueue = TestScope()
+
+  val uiManagerModuleMock = mockk<UIManagerModule>()
+  val slot = slot<UIBlock>()
+  every {uiManagerModuleMock.addUIBlock(capture(slot)) } answers {
+    methodQueue.launch() {
+      slot.captured.execute(mockk())
+    }
+  }
+
+  val catalystInstanceMock = mockk<CatalystInstance>()
+  every { catalystInstanceMock.getNativeModule(UIManagerModule::class.java) } answers { uiManagerModuleMock }
+
+  val reactContextMock = mockk<ReactContext>()
+  every { reactContextMock.hasCatalystInstance() } answers { true }
+  every { reactContextMock.hasActiveReactInstance() } answers { true }
+
+  every { reactContextMock.catalystInstance } answers { catalystInstanceMock }
+
   every { appContextMock.modulesQueue } answers { methodQueue }
   every { appContextMock.mainQueue } answers { methodQueue }
   every { appContextMock.backgroundCoroutineScope } answers { methodQueue }
+  every { appContextMock.reactContext } answers { reactContextMock }
 
   val registry = ModuleRegistry(WeakReference(appContextMock)).apply {
     modules.forEach {
