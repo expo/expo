@@ -14,7 +14,7 @@
 
 ### 🐛 Bug fixes
 
-- [Android] Resolve up the project root when creating production manifest.
+- [Android] Resolve up the project root when creating production manifest. ([#22044](https://github.com/expo/expo/pull/22044) by [@EvanBacon](https://github.com/EvanBacon))
 
 ### 💡 Others
 
