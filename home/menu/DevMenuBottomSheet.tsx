@@ -3,9 +3,10 @@ import BottomSheet, {
   BottomSheetView,
   useBottomSheetDynamicSnapPoints,
 } from '@gorhom/bottom-sheet';
-import React, { useEffect, useMemo, useRef } from 'react';
+import React, { useCallback, useEffect, useMemo, useRef } from 'react';
 import { StyleSheet, View } from 'react-native';
 
+import DevMenuBottomSheetContext from './DevMenuBottomSheetContext';
 import * as DevMenu from './DevMenuModule';
 
 type Props = {
@@ -15,9 +16,38 @@ type Props = {
 
 function DevMenuBottomSheet({ children, uuid }: Props) {
   const bottomSheetRef = useRef<BottomSheet | null>(null);
-  const onClose = async () => {
-    await DevMenu.closeAsync();
-  };
+
+  const onCollapse = useCallback(
+    () =>
+      new Promise<void>((resolve) => {
+        bottomSheetRef.current?.close();
+
+        // still no way to wait for animation to end before the callback, so we wait for 300ms
+        setTimeout(() => {
+          resolve();
+          DevMenu.closeAsync();
+        }, 300);
+      }),
+    []
+  );
+
+  const onExpand = useCallback(
+    () =>
+      new Promise<void>((resolve) => {
+        bottomSheetRef.current?.expand();
+        setTimeout(() => {
+          resolve();
+        }, 300);
+      }),
+    []
+  );
+
+  const onChange = useCallback((index: number) => {
+    if (index === -1) {
+      DevMenu.closeAsync();
+    }
+  }, []);
+
   const initialSnapPoints = useMemo(() => ['CONTENT_HEIGHT'], []);
 
   useEffect(() => {
@@ -52,10 +82,12 @@ function DevMenuBottomSheet({ children, uuid }: Props) {
       contentHeight={animatedContentHeight}
       backgroundStyle={styles.bottomSheetBackground}
       enablePanDownToClose
-      onClose={onClose}>
-      <BottomSheetView style={styles.contentContainerStyle} onLayout={handleContentLayout}>
-        {children}
-      </BottomSheetView>
+      onChange={onChange}>
+      <DevMenuBottomSheetContext.Provider value={{ collapse: onCollapse, expand: onExpand }}>
+        <BottomSheetView style={styles.contentContainerStyle} onLayout={handleContentLayout}>
+          {children}
+        </BottomSheetView>
+      </DevMenuBottomSheetContext.Provider>
       {/* Adds bottom offset so that no empty space is shown on overdrag */}
       <View style={{ height: 100 }} />
     </BottomSheet>
