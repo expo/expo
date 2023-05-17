@@ -1,8 +1,8 @@
 import React from 'react';
 
 export type Context = {
-  expand: () => any;
-  collapse: () => any;
+  expand: () => Promise<void>;
+  collapse: () => Promise<void>;
 };
 
 const DevMenuBottomSheetContext = React.createContext<Context | null>(null);
