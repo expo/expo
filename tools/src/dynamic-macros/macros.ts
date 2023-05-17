@@ -4,7 +4,6 @@ import { ExponentTools, Project, UrlUtils } from '@expo/xdl';
 import chalk from 'chalk';
 import crypto from 'crypto';
 import ip from 'ip';
-import M from 'minimatch';
 import fetch from 'node-fetch';
 import os from 'os';
 import path from 'path';
