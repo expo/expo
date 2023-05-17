@@ -15,12 +15,10 @@ import expo.modules.kotlin.sharedobjects.SharedObjectRegistry
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.slot
-import kotlinx.coroutines.CoroutineStart
 import kotlinx.coroutines.ExperimentalCoroutinesApi
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.test.TestScope
 import java.lang.ref.WeakReference
-import kotlin.coroutines.EmptyCoroutineContext
 
 /**
  * Sets up a test jsi environment with provided modules.
@@ -35,7 +33,7 @@ internal inline fun withJSIInterop(
 
   val uiManagerModuleMock = mockk<UIManagerModule>()
   val slot = slot<UIBlock>()
-  every {uiManagerModuleMock.addUIBlock(capture(slot)) } answers {
+  every { uiManagerModuleMock.addUIBlock(capture(slot)) } answers {
     methodQueue.launch() {
       slot.captured.execute(mockk())
     }
