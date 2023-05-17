@@ -40,7 +40,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
     const initialNode = placeholder?.[0]?.uri
         ? [
             initialNodeAnimationKey,
-            ({ onAnimationFinished }) => (className, style) => (React.createElement(ImageWrapper, { source: placeholder?.[0], style: {
+            ({ onAnimationFinished }) => (className, style) => (React.createElement(ImageWrapper, { ...props, source: placeholder?.[0], style: {
                     objectFit: imagePlaceholderContentFit,
                     ...(blurRadius ? { filter: `blur(${blurRadius}px)` } : {}),
                     ...style,
@@ -54,7 +54,7 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
         : selectedSource?.uri ?? placeholder?.[0]?.uri) ?? '';
     const currentNode = [
         currentNodeAnimationKey,
-        ({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) => (className, style) => (React.createElement(ImageWrapper, { source: selectedSource || placeholder?.[0], events: {
+        ({ onAnimationFinished, onReady, onMount, onError: onErrorInner }) => (className, style) => (React.createElement(ImageWrapper, { ...props, source: selectedSource || placeholder?.[0], events: {
                 onError: [onErrorAdapter(onError), onLoadEnd, onErrorInner],
                 onLoad: [onLoadAdapter(onLoad), onLoadEnd, onReady],
                 onMount: [onMount],
