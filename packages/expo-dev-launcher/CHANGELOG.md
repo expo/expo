@@ -2,7 +2,21 @@
 
 ## Unpublished
 
+### 📚 3rd party library updates
+
+- Updated `robolectric` to `4.10`.  ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
 ### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Fix modern manifest serving for dev client without expo-updates. ([#22470](https://github.com/expo/expo/pull/22470) by [@wschurman](https://github.com/wschurman))
+
+### 💡 Others
+
+## 2.3.0 — 2023-05-08
 
 ### 🎉 New features
 

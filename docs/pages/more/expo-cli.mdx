@@ -149,7 +149,7 @@ You can compile your app locally with the `run` commands:
 
 `npx expo run:ios` can only be run on a Mac, and Xcode must be installed. You can build the app in the cloud from any computer using `eas build -p ios`. Similarly, `npx expo run:android` requires Android Studio and Java to be installed and configured on your computer.
 
-Building locally is useful for developing native modules and [debugging complex native issues](/debugging/runtime-issue/#native-debugging). Building remotely with `eas build` is a much more resilient option due to the pre-configured cloud environment.
+Building locally is useful for developing native modules and [debugging complex native issues](/debugging/runtime-issues/#native-debugging). Building remotely with `eas build` is a much more resilient option due to the pre-configured cloud environment.
 
 If your project does not have the corresponding native directories, the `npx expo prebuild` command will run once to generate the respective directory before building.
 
@@ -262,7 +262,7 @@ There are three different config types that are generated from the Expo config:
 
 - `public`: The manifest file to use with OTA updates. Think of this like an `index.html` file's `<head />` element but for native apps.
 - `prebuild`: The config that is used for [Expo Prebuild](/workflow/prebuild) including async modifiers. This is the only time the config is not serializable.
-- `introspect`: A subset of the `prebuild` config that only shows in-memory modifications like `Info.plist` or `AndroidManifest.xml` changes. Learn more about [introspection](/guides/config-plugins#introspection).
+- `introspect`: A subset of the `prebuild` config that only shows in-memory modifications like `Info.plist` or `AndroidManifest.xml` changes. Learn more about [introspection](/config-plugins/development-and-debugging/#introspection).
 
 ## Install
 

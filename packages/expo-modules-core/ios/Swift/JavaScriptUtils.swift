@@ -11,7 +11,9 @@
  - Throws: Rethrows various exceptions that could be thrown by the dynamic types.
  */
 internal func cast(_ value: Any, toType type: AnyDynamicType, appContext: AppContext) throws -> Any {
-  // TODO: Accept JavaScriptValue and JavaScriptObject as argument types.
+  if let dynamicJSType = type as? DynamicJavaScriptType, dynamicJSType.equals(~JavaScriptValue.self)  {
+    return value
+  }
   if !(type is DynamicTypedArrayType), let value = value as? JavaScriptValue {
     return try type.cast(value.getRaw(), appContext: appContext)
   }

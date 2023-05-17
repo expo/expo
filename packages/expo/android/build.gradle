@@ -33,7 +33,7 @@ def getRNVersion() {
 ensureDependeciesWereEvaluated(project)
 
 group = 'host.exp.exponent'
-version = '48.0.1'
+version = '49.0.0-alpha.3'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -104,7 +104,7 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 1
-    versionName "48.0.1"
+    versionName "49.0.0-alpha.3"
     consumerProguardFiles("proguard-rules.pro")
   }
   lintOptions {
@@ -138,7 +138,7 @@ dependencies { dependencyHandler ->
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
 
-  testImplementation 'junit:junit:4.13.1'
+  testImplementation 'junit:junit:4.13.2'
   testImplementation 'androidx.test:core:1.4.0'
   testImplementation "com.google.truth:truth:1.1.2"
   testImplementation 'io.mockk:mockk:1.12.0'

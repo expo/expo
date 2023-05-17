@@ -1,6 +1,6 @@
 {
   "name": "expo-store-review",
-  "version": "6.2.1",
+  "version": "6.3.0",
   "description": "ExpoStoreReview standalone module",
   "main": "build/StoreReview.js",
   "types": "build/StoreReview.d.ts",

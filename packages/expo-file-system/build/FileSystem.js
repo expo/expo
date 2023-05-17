@@ -610,7 +610,7 @@ export var StorageAccessFramework;
      */
     StorageAccessFramework.moveAsync = baseMoveAsync;
     /**
-     * Alias fro [`copyAsync`](#filesystemcopyasyncoptions) method.
+     * Alias for [`copyAsync`](#filesystemcopyasyncoptions) method.
      */
     StorageAccessFramework.copyAsync = baseCopyAsync;
 })(StorageAccessFramework || (StorageAccessFramework = {}));

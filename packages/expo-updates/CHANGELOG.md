@@ -2,6 +2,22 @@
 
 ## Unpublished
 
+### 📚 3rd party library updates
+
+- Updated `junit` to `4.13.2`.  ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+- [Android] Load updates in background thread and prevent ANR from initial launch. ([#20273](https://github.com/expo/expo/pull/20273) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 0.17.0 — 2023-05-08
+
 ### 🛠 Breaking changes
 
 - Updated **setup documentation** to reflect that setup should include changing the entry from `index` to `.expo/.virtual-metro-entry` which is only available in SDK 49 `@expo/metro-config`. ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))
@@ -27,6 +43,7 @@
 - Fix empty body no-op multipart response. ([#22227](https://github.com/expo/expo/pull/22227) by [@wschurman](https://github.com/wschurman))
 - Put extra data mutation in transaction. ([#22252](https://github.com/expo/expo/pull/22252) by [@wschurman](https://github.com/wschurman))
 - [iOS] fix bizarre bug when downloading update twice. ([#22355](https://github.com/expo/expo/pull/22355) by [@douglowder](https://github.com/douglowder))
+- Fix rollback to embedded logic. ([#22433](https://github.com/expo/expo/pull/22433), [#22434](https://github.com/expo/expo/pull/22434) by [@wschurman](https://github.com/wschurman))
 
 ### 💡 Others
 

@@ -49,7 +49,11 @@ export const createPermalinkedComponent = (
   };
 };
 
-export function createTextComponent(Element: TextElement, textStyle?: SerializedStyles) {
+export function createTextComponent(
+  Element: TextElement,
+  textStyle?: SerializedStyles,
+  skipBaseStyle: boolean = false
+) {
   function TextComponent(props: TextComponentProps) {
     const {
       testID,
@@ -66,7 +70,7 @@ export function createTextComponent(Element: TextElement, textStyle?: Serialized
       <TextElementTag
         className={className}
         css={[
-          baseTextStyle,
+          !skipBaseStyle && baseTextStyle,
           textStyle,
           textWeight && { fontWeight: typography.utility.weight[textWeight].fontWeight },
           textTheme && { color: theme.text[textTheme] },
@@ -199,7 +203,8 @@ export const H5 = createPermalinkedComponent(RawH5, { baseNestingLevel: 5 });
 export const P = createTextComponent(TextElement.P, css(paragraphStyle as CSSObject));
 export const CODE = createTextComponent(
   TextElement.CODE,
-  css([typography.utility.inlineCode, codeStyle])
+  css([typography.utility.inlineCode, codeStyle]),
+  true
 );
 export const LI = createTextComponent(TextElement.LI, css(typography.body.li));
 export const LABEL = createTextComponent(TextElement.SPAN, css(typography.body.label));

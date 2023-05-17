@@ -6,9 +6,17 @@
 
 ### 🎉 New features
 
+- Add `ImageBackground` component. ([#22347](https://github.com/expo/expo/pull/22347) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 1.2.3 — 2023-05-16
+
+### 🐛 Bug fixes
+
+- Upgrade SDWebImageAVIFCoder to fix compiling issue with libavif < 0.11.0. ([#22491](https://github.com/expo/expo/pull/22491) by [@matinzd](https://github.com/matinzd))
 
 ## 1.2.2 — 2023-04-27
 

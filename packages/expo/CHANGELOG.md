@@ -2,6 +2,30 @@
 
 ## Unpublished
 
+### 📚 3rd party library updates
+
+- Updated `junit` to `4.13.2`.  ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+- Added `ReactActivityHandler.getDelayLoadAppHandler` interface on Android. ([#20273](https://github.com/expo/expo/pull/20273) by [@kudo](https://github.com/kudo))
+
+### 🐛 Bug fixes
+
+### 💡 Others
+
+## 49.0.0-alpha.3 — 2023-05-09
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.2 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 49.0.0-alpha.1 — 2023-05-08
+
 ### 🛠 Breaking changes
 
 - drop `EXPO_USE_LOCAL_CLI` in favor of using `expo` for the local CLI and `expo-cli` for the global CLI. ([#21388](https://github.com/expo/expo/pull/21388) by [@EvanBacon](https://github.com/EvanBacon))
@@ -11,8 +35,6 @@
 - Add `expo/scripts/launchPackager.command` script for launching Expo CLI when building iOS apps for development in Xcode. ([#21397](https://github.com/expo/expo/pull/21397) by [@EvanBacon](https://github.com/EvanBacon))
 - Added internal `export:embed` command for use in Xcode and Android Studio builds. ([#21396](https://github.com/expo/expo/pull/21396) by [@EvanBacon](https://github.com/EvanBacon))
 - Export TypeScript types for `expo/metro-config`. ([#21898](https://github.com/expo/expo/pull/21898) by [@EvanBacon](https://github.com/EvanBacon))
-
-### 🐛 Bug fixes
 
 ### 💡 Others
 
