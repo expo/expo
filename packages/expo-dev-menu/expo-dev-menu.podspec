@@ -44,6 +44,7 @@ Pod::Spec.new do |s|
     'CLANG_CXX_LANGUAGE_STANDARD' => 'c++17',
     'HEADER_SEARCH_PATHS' => header_search_paths.join(' '),
   }
+  install_modules_dependencies(s)
 
   s.subspec 'SafeAreaView' do |safearea|
     safearea.dependency 'ExpoModulesCore'

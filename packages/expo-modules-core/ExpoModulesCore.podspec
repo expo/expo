@@ -12,7 +12,7 @@ if ENV["REACT_NATIVE_OVERRIDE_VERSION"]
   reactNativeVersion = ENV["REACT_NATIVE_OVERRIDE_VERSION"]
 end
 
-REACT_NATIVE_MINOR_VERSION = reactNativeVersion.split('.')[1].to_i
+reactNativeMinorVersion = reactNativeVersion.split('.')[1].to_i
 
 fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
 fabric_compiler_flags = '-DRN_FABRIC_ENABLED -DRCT_NEW_ARCH_ENABLED'
@@ -77,12 +77,12 @@ Pod::Spec.new do |s|
     "HEADER_SEARCH_PATHS" => user_header_search_paths,
   }
 
-  compiler_flags = folly_compiler_flags + ' ' + "-DREACT_NATIVE_MINOR_VERSION=#{REACT_NATIVE_MINOR_VERSION}"
+  compiler_flags = folly_compiler_flags + ' ' + "-DREACT_NATIVE_MINOR_VERSION=#{reactNativeMinorVersion}"
 
   s.dependency 'React-Core'
   s.dependency 'ReactCommon/turbomodule/core'
-  s.dependency 'React-RCTAppDelegate' if REACT_NATIVE_MINOR_VERSION >= 71
-  s.dependency 'React-NativeModulesApple' if REACT_NATIVE_MINOR_VERSION >= 72
+  s.dependency 'React-RCTAppDelegate' if reactNativeMinorVersion >= 71
+  s.dependency 'React-NativeModulesApple' if reactNativeMinorVersion >= 72
 
   if fabric_enabled
     compiler_flags << ' ' << fabric_compiler_flags

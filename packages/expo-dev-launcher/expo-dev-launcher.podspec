@@ -61,6 +61,8 @@ Pod::Spec.new do |s|
   s.dependency "expo-dev-menu"
   s.dependency "ExpoModulesCore"
 
+  install_modules_dependencies(s)
+
   s.subspec 'Unsafe' do |unsafe|
     unsafe.source_files = 'ios/Unsafe/**/*.{h,m,mm,swift,cpp}'
     unsafe.compiler_flags = '-x objective-c++ -std=c++1z -fno-objc-arc' # Disable Automatic Reference Counting

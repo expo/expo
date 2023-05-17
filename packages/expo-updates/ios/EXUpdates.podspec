@@ -24,6 +24,8 @@ Pod::Spec.new do |s|
   s.dependency 'ReachabilitySwift'
   s.dependency 'ASN1Decoder', '~> 1.8'
 
+  install_modules_dependencies(s)
+
   ex_updates_native_debug = ENV['EX_UPDATES_NATIVE_DEBUG'] == '1'
 
   other_c_flags = ex_updates_native_debug ? "$(inherited) -DEX_UPDATES_NATIVE_DEBUG=1" : "$(inherited)"
