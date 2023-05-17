@@ -38,11 +38,31 @@ describe('shared config getters', () => {
   it(`returns correct default values from all getters if no value provided`, () => {
     expect(getSDKVersion({})).toBe(null);
     expect(getUpdatesCheckOnLaunch({})).toBe('ALWAYS');
-    expect(getUpdatesEnabled({})).toBe(true);
     expect(getUpdatesTimeout({})).toBe(0);
     expect(getUpdatesCodeSigningCertificate('/app', {})).toBe(undefined);
     expect(getUpdatesCodeSigningMetadata({})).toBe(undefined);
     expect(getUpdatesRequestHeaders({})).toBe(undefined);
+
+    expect(getUpdatesEnabled({ slug: 'my-app', owner: 'owner' }, null)).toBe(false);
+    expect(getUpdatesEnabled({ slug: 'my-app', owner: 'owner' }, 'owner')).toBe(false);
+    expect(
+      getUpdatesEnabled(
+        { slug: 'my-app', owner: 'owner', updates: { useClassicUpdates: true } },
+        null
+      )
+    ).toBe(true);
+    expect(
+      getUpdatesEnabled(
+        { slug: 'my-app', owner: 'owner', updates: { useClassicUpdates: true } },
+        'owner'
+      )
+    ).toBe(true);
+    expect(
+      getUpdatesEnabled(
+        { slug: 'my-app', owner: undefined, updates: { useClassicUpdates: true } },
+        null
+      )
+    ).toBe(false);
   });
 
   it(`returns correct value from all getters if value provided`, () => {
@@ -61,7 +81,14 @@ describe('shared config getters', () => {
       getUpdatesCheckOnLaunch({ updates: { checkAutomatically: 'ON_ERROR_RECOVERY' } }, '0.10.15')
     ).toBe('NEVER');
     expect(getUpdatesCheckOnLaunch({ updates: { checkAutomatically: 'ON_LOAD' } })).toBe('ALWAYS');
-    expect(getUpdatesEnabled({ updates: { enabled: false } })).toBe(false);
+    expect(getUpdatesCheckOnLaunch({ updates: { checkAutomatically: 'WIFI_ONLY' } })).toBe(
+      'WIFI_ONLY'
+    );
+    expect(getUpdatesCheckOnLaunch({ updates: { checkAutomatically: 'NEVER' } })).toBe('NEVER');
+    expect(getUpdatesCheckOnLaunch({ updates: {} })).toBe('ALWAYS');
+    expect(
+      getUpdatesEnabled({ slug: 'my-app', owner: 'owner', updates: { enabled: false } }, null)
+    ).toBe(false);
     expect(getUpdatesTimeout({ updates: { fallbackToCacheTimeout: 2000 } })).toBe(2000);
     expect(
       getUpdatesCodeSigningCertificate('/app', {
@@ -139,14 +166,22 @@ describe(getUpdateUrl, () => {
     expect(getUpdateUrl({ slug: 'foo' }, null)).toBe(null);
   });
 
-  it(`returns correct legacy urls if 'updates.url' is not provided, but 'slug' and ('username'|'owner') are provided.`, () => {
-    expect(getUpdateUrl({ slug: 'my-app' }, 'user')).toBe('https://exp.host/@user/my-app');
-    expect(getUpdateUrl({ slug: 'my-app', owner: 'owner' }, 'user')).toBe(
-      'https://exp.host/@owner/my-app'
+  it(`returns correct legacy urls if 'updates.url' is not provided, but 'slug' and ('username'|'owner') are provided and useClassicUpdates is true.`, () => {
+    expect(getUpdateUrl({ slug: 'my-app', updates: { useClassicUpdates: true } }, 'user')).toBe(
+      'https://exp.host/@user/my-app'
     );
-    expect(getUpdateUrl({ slug: 'my-app', owner: 'owner' }, null)).toBe(
-      'https://exp.host/@owner/my-app'
-    );
+    expect(
+      getUpdateUrl({ slug: 'my-app', owner: 'owner', updates: { useClassicUpdates: true } }, 'user')
+    ).toBe('https://exp.host/@owner/my-app');
+    expect(
+      getUpdateUrl({ slug: 'my-app', owner: 'owner', updates: { useClassicUpdates: true } }, null)
+    ).toBe('https://exp.host/@owner/my-app');
+  });
+
+  it(`returns correct legacy urls if 'updates.url' is not provided, but 'slug' and ('username'|'owner') are provided and useClassicUpdates is false.`, () => {
+    expect(getUpdateUrl({ slug: 'my-app' }, 'user')).toBe(null);
+    expect(getUpdateUrl({ slug: 'my-app', owner: 'owner' }, 'user')).toBe(null);
+    expect(getUpdateUrl({ slug: 'my-app', owner: 'owner' }, null)).toBe(null);
   });
 });
 

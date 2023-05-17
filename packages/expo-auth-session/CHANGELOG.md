@@ -10,7 +10,12 @@
 
 ### 💡 Others
 
+## 4.1.0 — 2023-05-08
+
+### 💡 Others
+
 - Added deprecation warning to `promptAsync` when the `useProxy` option is used. ([#21367](https://github.com/expo/expo/pull/21367) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- Warn on use of Constants.manifest. ([#22247](https://github.com/expo/expo/pull/22247) by [@wschurman](https://github.com/wschurman))
 
 ## 4.0.3 - 2023-02-23
 

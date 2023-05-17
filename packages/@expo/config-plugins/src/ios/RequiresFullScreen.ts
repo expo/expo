@@ -84,7 +84,7 @@ export function setRequiresFullScreen(
   if (!requiresFullScreen) {
     const existing = resolveExistingIpadInterfaceOrientations(infoPlist[iPadInterfaceKey]);
 
-    // There currently exists no mechanism to safely undo this feature besides `expo prebuild --clear`,
+    // There currently exists no mechanism to safely undo this feature besides `npx expo prebuild --clear`,
     // this seems ok though because anyone using `UISupportedInterfaceOrientations~ipad` probably
     // wants them to be defined to this value anyways. This is also the default value used in the Xcode iOS template.
 

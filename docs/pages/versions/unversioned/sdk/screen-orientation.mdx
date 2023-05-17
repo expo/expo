@@ -38,7 +38,7 @@ Apple added support for _split view_ mode to iPads in iOS 9. This changed how th
 
 ## Configuration in app.json/app.config.js
 
-You can configure `expo-screen-orientation` using its built-in [config plugin](/guides/config-plugins) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
+You can configure `expo-screen-orientation` using its built-in [config plugin](/config-plugins/introduction/) if you use config plugins in your project ([EAS Build](/build/introduction) or `npx expo run:[android|ios]`). The plugin allows you to configure various properties that cannot be set at runtime and require building a new app binary to take effect.
 
 <ConfigReactNative>
 
@@ -88,13 +88,3 @@ import * as ScreenOrientation from 'expo-screen-orientation';
 ```
 
 <APISection packageName="expo-screen-orientation" apiName="ScreenOrientation" />
-
-## Error Codes
-
-| Code                                                 | Description                                                                                      |
-| ---------------------------------------------------- | ------------------------------------------------------------------------------------------------ |
-| ERR_SCREEN_ORIENTATION_UNSUPPORTED_ORIENTATION_LOCK  | The platform does not support the [`OrientationLock`](#screenorientationorientationlock) policy. |
-| ERR_SCREEN_ORIENTATION_INVALID_ORIENTATION_LOCK      | An invalid [`OrientationLock`](#screenorientationorientationlock) was passed in.                 |
-| ERR_SCREEN_ORIENTATION_GET_ORIENTATION_LOCK          | **Android Only.** An unknown error occurred when trying to get the orientation lock.             |
-| ERR_SCREEN_ORIENTATION_GET_PLATFORM_ORIENTATION_LOCK | **Android Only.** An unknown error occurred when trying to get the platform orientation lock.    |
-| ERR_SCREEN_ORIENTATION_MISSING_ACTIVITY              | **Android Only.** Could not get the current activity.                                            |

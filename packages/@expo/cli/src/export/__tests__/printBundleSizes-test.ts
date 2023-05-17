@@ -53,10 +53,10 @@ describe(printBundleSizes, () => {
       })
     ).toEqual([
       ['index.ios.js', 'foo'],
-      ['index.android.js (Hermes)', expect.anything()],
+      ['index.android.hbc', expect.anything()],
       [expect.stringContaining('index.ios.js.map'), 'bars'],
       ['index.web.js', 'foo2'],
-      [expect.stringContaining('index.android.js.map (Hermes)'), '12345'],
+      [expect.stringContaining('index.android.hbc.map'), '12345'],
       [expect.stringContaining('index.web.js.map'), 'bars2'],
     ]);
   });

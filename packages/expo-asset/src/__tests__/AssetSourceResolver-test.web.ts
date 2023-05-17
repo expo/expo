@@ -20,12 +20,6 @@ it(`resolves a font asset`, () => {
     width: undefined,
     scale: 1,
     // Important that the path relative to the origin is correct (`foo/bar` is removed).
-    uri: 'http://localhost:8081/assets/assets/fonts/Spartan-Bold.ttf?platform=web&hash=a3b8dba87c8a969c604cab9f4267e628',
+    uri: '/assets/assets/fonts/Spartan-Bold.ttf?platform=web&hash=a3b8dba87c8a969c604cab9f4267e628',
   });
-});
-
-it(`asserts the server url is required`, () => {
-  expect(() => new AssetSourceResolver(null, null, fontAsset)).toThrowError(
-    'Web assets require a server URL'
-  );
 });

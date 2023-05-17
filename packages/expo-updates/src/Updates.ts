@@ -13,6 +13,7 @@ import {
   UpdateCheckResult,
   UpdateEvent,
   UpdateFetchResult,
+  UpdatesCheckAutomaticallyValue,
   UpdatesLogEntry,
 } from './Updates.types';
 
@@ -44,6 +45,19 @@ export const channel: string | null = ExpoUpdates.channel ?? null;
  * The runtime version of the current build.
  */
 export const runtimeVersion: string | null = ExpoUpdates.runtimeVersion ?? null;
+
+const _checkAutomaticallyMapNativeToJS = {
+  ALWAYS: 'ON_LOAD',
+  ERROR_RECOVERY_ONLY: 'ON_ERROR_RECOVERY',
+  NEVER: 'NEVER',
+  WIFI_ONLY: 'WIFI_ONLY',
+};
+
+/**
+ * Determines if and when expo-updates checks for and downloads updates automatically on startup.
+ */
+export const checkAutomatically: UpdatesCheckAutomaticallyValue | null =
+  _checkAutomaticallyMapNativeToJS[ExpoUpdates.checkAutomatically] ?? null;
 
 // @docsMissing
 /**
@@ -202,8 +216,8 @@ export async function setExtraParamAsync(
   key: string,
   value: string | null | undefined
 ): Promise<void> {
-  if (!ExpoUpdates.setExtraParamsAsync) {
-    throw new UnavailabilityError('Updates', 'setExtraParamsAsync');
+  if (!ExpoUpdates.setExtraParamAsync) {
+    throw new UnavailabilityError('Updates', 'setExtraParamAsync');
   }
 
   return await ExpoUpdates.setExtraParamAsync(key, value ?? null);
@@ -293,7 +307,7 @@ function _getEmitter(): EventEmitter {
 }
 
 function _emitEvent(params): void {
-  let newParams = params;
+  let newParams = { ...params };
   if (typeof params === 'string') {
     newParams = JSON.parse(params);
   }

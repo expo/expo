@@ -66,14 +66,14 @@ class NewManifestSpec : ExpoSpec {
         let runtimeVersion = "exposdk:39.0.0"
         let manifestJson = ["runtimeVersion": runtimeVersion]
         let manifest = NewManifest(rawManifestJSON: manifestJson)
-        expect(manifest.sdkVersion()) == "39.0.0"
+        expect(manifest.expoGoSDKVersion()) == "39.0.0"
       }
 
       it("is UNVERSIONED with valid unversioned case") {
         let runtimeVersion = "exposdk:UNVERSIONED"
         let manifestJson = ["runtimeVersion": runtimeVersion]
         let manifest = NewManifest(rawManifestJSON: manifestJson)
-        expect(manifest.sdkVersion()) == "UNVERSIONED"
+        expect(manifest.expoGoSDKVersion()) == "UNVERSIONED"
       }
 
       it("is nil with non-sdk runtime version cases") {
@@ -89,7 +89,7 @@ class NewManifestSpec : ExpoSpec {
         for runtimeVersion in runtimeVersions {
           let manifestJson = ["runtimeVersion": runtimeVersion]
           let manifest = NewManifest(rawManifestJSON: manifestJson)
-          expect(manifest.sdkVersion()).to(beNil())
+          expect(manifest.expoGoSDKVersion()).to(beNil())
         }
       }
     }

@@ -209,11 +209,12 @@ if (Platform.OS !== 'web') {
       });
 
       describeManifestTypes(
-        // @ts-expect-error scheme not an array in typedefs
         { scheme: ['my-app-1', 'my-app-2'], hostUri: 'exp.host/@test/test' },
         {
           extra: {
             expoClient: {
+              name: 'exp.host',
+              slug: 'exp.host',
               scheme: ['my-app-1', 'my-app-2'],
               hostUri: 'exp.host/@test/test',
             },
@@ -351,7 +352,6 @@ if (Platform.OS !== 'web') {
         });
 
         describeManifestTypes(
-          // @ts-expect-error scheme not an array in typedefs
           { scheme: ['my-app-1', 'my-app-2'], hostUri: 'exp.host/@test/test' },
           {
             extra: {

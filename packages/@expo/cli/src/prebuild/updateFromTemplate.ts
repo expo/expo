@@ -9,6 +9,7 @@ import { profile } from '../utils/profile';
 import { copyTemplateFilesAsync, createCopyFilesSuccessMessage } from './copyTemplateFiles';
 import { cloneTemplateAsync } from './resolveTemplate';
 import { DependenciesModificationResults, updatePackageJSONAsync } from './updatePackageJson';
+import { validateTemplatePlatforms } from './validateTemplatePlatforms';
 
 /**
  * Creates local native files from an input template file path.
@@ -88,7 +89,7 @@ async function cloneTemplateAndCopyToProjectAsync({
   template,
   exp,
   pkg,
-  platforms,
+  platforms: unknownPlatforms,
 }: {
   projectRoot: string;
   templateDirectory: string;
@@ -103,6 +104,11 @@ async function cloneTemplateAndCopyToProjectAsync({
 
   try {
     await cloneTemplateAsync({ templateDirectory, template, exp, ora });
+
+    const platforms = await validateTemplatePlatforms({
+      templateDirectory,
+      platforms: unknownPlatforms,
+    });
 
     const results = await copyTemplateFilesAsync(projectRoot, {
       pkg,

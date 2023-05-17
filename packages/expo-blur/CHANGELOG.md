@@ -6,11 +6,19 @@
 
 ### 🎉 New features
 
-- Add Android support for `BlurView`. ([#21744](https://github.com/expo/expo/pull/21744) by [@behenate](https://github.com/behenate))
-
 ### 🐛 Bug fixes
 
 ### 💡 Others
+
+## 12.3.1 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
+
+## 12.3.0 — 2023-04-17
+
+### 🎉 New features
+
+- Add Android support for `BlurView`. ([#21744](https://github.com/expo/expo/pull/21744) by [@behenate](https://github.com/behenate))
 
 ## 12.2.2 — 2023-02-14
 

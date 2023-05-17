@@ -50,6 +50,7 @@ const schema = {
                     },
                     nullable: true,
                 },
+                unstable_networkInspector: { type: 'boolean', nullable: true },
             },
             nullable: true,
         },
@@ -63,6 +64,7 @@ const schema = {
                     type: ['boolean', 'string'],
                     nullable: true,
                 },
+                unstable_networkInspector: { type: 'boolean', nullable: true },
             },
             nullable: true,
         },
@@ -128,7 +130,7 @@ function validateConfig(config) {
     maybeThrowInvalidVersions(config);
     // explicitly block using use_frameworks and Flipper in iOS
     // https://github.com/facebook/flipper/issues/2414
-    if (config?.ios?.flipper !== undefined && config?.ios?.useFrameworks !== undefined) {
+    if (Boolean(config.ios?.flipper) && config.ios?.useFrameworks !== undefined) {
         throw new Error('`ios.flipper` cannot be enabled when `ios.useFrameworks` is set.');
     }
     if (config.android?.enableShrinkResourcesInReleaseBuilds === true &&

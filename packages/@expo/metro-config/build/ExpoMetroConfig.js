@@ -10,8 +10,21 @@ Object.defineProperty(exports, "INTERNAL_CALLSITES_REGEX", {
     return _customizeFrame().INTERNAL_CALLSITES_REGEX;
   }
 });
+Object.defineProperty(exports, "MetroConfig", {
+  enumerable: true,
+  get: function () {
+    return _metroConfig().ConfigT;
+  }
+});
 exports.getDefaultConfig = getDefaultConfig;
 exports.loadAsync = loadAsync;
+function _config() {
+  const data = require("@expo/config");
+  _config = function () {
+    return data;
+  };
+  return data;
+}
 function _paths() {
   const data = require("@expo/config/paths");
   _paths = function () {
@@ -36,6 +49,20 @@ function _jsonFile() {
 function _chalk() {
   const data = _interopRequireDefault(require("chalk"));
   _chalk = function () {
+    return data;
+  };
+  return data;
+}
+function _metroCache() {
+  const data = require("metro-cache");
+  _metroCache = function () {
+    return data;
+  };
+  return data;
+}
+function _metroConfig() {
+  const data = require("metro-config");
+  _metroConfig = function () {
     return data;
   };
   return data;
@@ -89,16 +116,23 @@ function _rewriteRequestUrl() {
   };
   return data;
 }
-function _serializer() {
-  const data = require("./serializer");
-  _serializer = function () {
+function _withExpoSerializers() {
+  const data = require("./serializer/withExpoSerializers");
+  _withExpoSerializers = function () {
     return data;
   };
   return data;
 }
-function _metroConfig() {
+function _postcss() {
+  const data = require("./transform-worker/postcss");
+  _postcss = function () {
+    return data;
+  };
+  return data;
+}
+function _metroConfig2() {
   const data = require("./traveling/metro-config");
-  _metroConfig = function () {
+  _metroConfig2 = function () {
     return data;
   };
   return data;
@@ -107,6 +141,8 @@ function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { de
 function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
 function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
 // Copyright 2023-present 650 Industries (Expo). All rights reserved.
+
+// @ts-expect-error: incorrectly typed
 
 const debug = require('debug')('expo:metro:config');
 function getProjectBabelConfigFile(projectRoot) {
@@ -124,7 +160,7 @@ function getDefaultConfig(projectRoot, options = {}) {
   const {
     getDefaultConfig: getDefaultMetroConfig,
     mergeConfig
-  } = (0, _metroConfig().importMetroConfig)(projectRoot);
+  } = (0, _metroConfig2().importMetroConfig)(projectRoot);
   const isExotic = options.mode === 'exotic' || _env2().env.EXPO_USE_EXOTIC;
   if (isExotic && !hasWarnedAboutExotic) {
     hasWarnedAboutExotic = true;
@@ -146,16 +182,15 @@ function getDefaultConfig(projectRoot, options = {}) {
     isModern: false
   };
   const sourceExts = (0, _paths().getBareExtensions)([], sourceExtsConfig);
+
+  // Add support for cjs (without platform extensions).
+  sourceExts.push('cjs');
   let sassVersion = null;
   if (options.isCSSEnabled) {
     sassVersion = getSassVersion(projectRoot);
     // Enable SCSS by default so we can provide a better error message
     // when sass isn't installed.
     sourceExts.push('scss', 'sass', 'css');
-  }
-  if (isExotic) {
-    // Add support for cjs (without platform extensions).
-    sourceExts.push('cjs');
   }
   const envFiles = runtimeEnv().getFiles(process.env.NODE_ENV);
   const babelConfigPath = getProjectBabelConfigFile(projectRoot);
@@ -168,6 +203,7 @@ function getDefaultConfig(projectRoot, options = {}) {
     resolverMainFields.push('react-native');
   }
   resolverMainFields.push('browser', 'main');
+  const pkg = (0, _config().getPackageJson)(projectRoot);
   const watchFolders = (0, _getWatchFolders().getWatchFolders)(projectRoot);
   // TODO: nodeModulesPaths does not work with the new Node.js package.json exports API, this causes packages like uuid to fail. Disabling for now.
   const nodeModulesPaths = (0, _getModulesPaths().getModulesPaths)(projectRoot);
@@ -234,7 +270,9 @@ function getDefaultConfig(projectRoot, options = {}) {
     require.resolve('./transform-worker/transform-worker') : metroDefaultValues.transformerPath,
     transformer: {
       // Custom: These are passed to `getCacheKey` and ensure invalidation when the version changes.
-      // @ts-expect-error
+      // @ts-expect-error: not on type.
+      postcssHash: (0, _postcss().getPostcssConfigHash)(projectRoot),
+      browserslistHash: pkg.browserslist ? (0, _metroCache().stableHash)(JSON.stringify(pkg.browserslist)).toString('hex') : null,
       sassVersion,
       // `require.context` support
       unstable_allowRequireContext: true,
@@ -250,7 +288,7 @@ function getDefaultConfig(projectRoot, options = {}) {
       assetPlugins: getAssetPlugins(projectRoot)
     }
   });
-  return (0, _serializer().withExpoSerializers)(metroConfig);
+  return (0, _withExpoSerializers().withExpoSerializers)(metroConfig);
 }
 async function loadAsync(projectRoot, {
   reporter,
@@ -265,7 +303,7 @@ async function loadAsync(projectRoot, {
   }
   const {
     loadConfig
-  } = (0, _metroConfig().importMetroConfig)(projectRoot);
+  } = (0, _metroConfig2().importMetroConfig)(projectRoot);
   return await loadConfig({
     cwd: projectRoot,
     projectRoot,

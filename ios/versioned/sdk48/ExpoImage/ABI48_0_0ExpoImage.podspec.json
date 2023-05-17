@@ -22,7 +22,7 @@
       "~> 0.9.1"
     ],
     "SDWebImageAVIFCoder": [
-      "~> 0.9.4"
+      "~> 0.10.0"
     ],
     "SDWebImageSVGCoder": [
       "~> 1.6.1"
