@@ -293,9 +293,6 @@ dependencies {
   api 'com.google.maps.android:android-maps-utils:0.5'
   // Remember to update DetachAppTemplate build.gradle if you add any excludes or transitive = false here!
 
-  // Used only in Expo Go, see Analytics.java
-  compileOnly 'com.amplitude:android-sdk:2.23.2'
-
   // expo-file-system
   api 'com.squareup.okhttp3:okhttp:3.10.0'
   api 'com.squareup.okhttp3:okhttp-urlconnection:3.10.0'

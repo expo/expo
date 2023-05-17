@@ -1,6 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXAnalytics.h"
 #import "EXAppState.h"
 #import "EXAppViewController.h"
 #import "EXBuildConstants.h"
@@ -101,20 +100,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
 - (void)dealloc
 {
   [[NSNotificationCenter defaultCenter] removeObserver:self];
-}
-
-#pragma mark - Misc
-
-- (void)logAnalyticsEvent:(NSString *)eventId forAppRecord:(EXKernelAppRecord *)appRecord
-{
-  if (_appRegistry.homeAppRecord && appRecord == _appRegistry.homeAppRecord) {
-    return;
-  }
-  NSString *validatedSdkVersion = [[EXVersions sharedInstance] availableSdkVersionForManifest:appRecord.appLoader.manifest];
-  NSDictionary *props = (validatedSdkVersion) ? @{ @"SDK_VERSION": validatedSdkVersion } : @{};
-  [[EXAnalytics sharedInstance] logEvent:eventId
-                             manifestUrl:appRecord.appLoader.manifestUrl
-                         eventProperties:props];
 }
 
 #pragma mark - bridge registry delegate
@@ -316,7 +301,6 @@ NSString * const kEXReloadActiveAppRequest = @"EXReloadActiveAppRequest";
         [appStateModule setState:@"active"];
       }
       _visibleApp = appRecord;
-      [[EXAnalytics sharedInstance] logAppVisibleEvent];
     } else {
       _visibleApp = nil;
     }

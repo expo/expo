@@ -2049,8 +2049,10 @@ PODS:
     - StripePaymentsUI (~> 23.3.0)
   - ABI48_0_0UMAppLoader (4.1.1)
   - ABI48_0_0Yoga (1.14.0)
-  - Amplitude (6.0.0)
+  - Amplitude (8.16.0):
+    - AnalyticsConnector (~> 1.0.0)
   - Analytics (4.1.7)
+  - AnalyticsConnector (1.0.1)
   - AppAuth (1.6.0):
     - AppAuth/Core (= 1.6.0)
     - AppAuth/ExternalUserAgent (= 1.6.0)
@@ -3291,7 +3293,6 @@ DEPENDENCIES:
   - "ABI48_0_0stripe-react-native (from `./vendored/sdk48/@stripe/stripe-react-native`)"
   - ABI48_0_0UMAppLoader (from `./versioned/sdk48/UMAppLoader`)
   - ABI48_0_0Yoga (from `./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/yoga`)
-  - Amplitude
   - boost (from `../react-native-lab/react-native/third-party-podspecs/boost.podspec`)
   - CocoaLumberjack (~> 3.5.3)
   - DoubleConversion (from `../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
@@ -3429,6 +3430,7 @@ SPEC REPOS:
   trunk:
     - Amplitude
     - Analytics
+    - AnalyticsConnector
     - AppAuth
     - ASN1Decoder
     - Branch
@@ -4707,8 +4709,9 @@ SPEC CHECKSUMS:
   ABI48_0_0stripe-react-native: 10d38e575f12896c284962183534058ece127c5e
   ABI48_0_0UMAppLoader: 142596799d5a7b05119ae9f5c4e51ccc590e49a5
   ABI48_0_0Yoga: 13a232e4a5d1ecd44a45e050b5983aa20116b1fa
-  Amplitude: cc34fcd8dfffc3470bc2e05f3a4abb0178f6d963
+  Amplitude: 4daad8eb8193b15353221dfd96c52220367cb3e8
   Analytics: 3106b5af9b799c934f98a68ab8ba199f1c603fdb
+  AnalyticsConnector: eccd7e1cd3dd18e6bd09ac2506e37d4ed43ba3f4
   AppAuth: 8fca6b5563a5baef2c04bee27538025e4ceb2add
   ASN1Decoder: 6110fdeacfdb41559b1481457a1645be716610aa
   boost: 57d2868c099736d80fcd648bf211b4431e51a558
@@ -4884,6 +4887,6 @@ SPEC CHECKSUMS:
   Yoga: d56980c8914db0b51692f55533409e844b66133c
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 54bfc5a3db3368261ff5adbca7a033bc5edb2651
+PODFILE CHECKSUM: ad8b65dc4b7c9e32cf4690eb6979e45c43c07de7
 
 COCOAPODS: 1.12.1
