@@ -4,6 +4,7 @@ import { ExponentTools, Project, UrlUtils } from '@expo/xdl';
 import chalk from 'chalk';
 import crypto from 'crypto';
 import ip from 'ip';
+import M from 'minimatch';
 import fetch from 'node-fetch';
 import os from 'os';
 import path from 'path';
@@ -165,19 +166,24 @@ export default {
     const url = await UrlUtils.constructManifestUrlAsync(path.join(EXPO_DIR, pathToHome));
 
     try {
-      // hack to convert modern manifest to classic
-      let manifest = (await getManifestAsync(url, platform, null)) as any;
-      const bundleUrl = manifest.launchAsset.url;
-      manifest = manifest.extra.expoClient;
-      manifest.bundleUrl = bundleUrl;
+      const classicOrModernManifest = (await getManifestAsync(url, platform, null)) as any;
+      let classicManifest: Manifest;
+      if (classicOrModernManifest.launchAsset) {
+        // hack to convert modern manifest to classic
+        const bundleUrl = classicOrModernManifest.launchAsset.url;
+        classicManifest = classicOrModernManifest.extra.expoClient;
+        (classicManifest as any).bundleUrl = bundleUrl;
+      } else {
+        classicManifest = classicOrModernManifest;
+      }
 
-      if (manifest.name !== 'expo-home') {
+      if (classicManifest.name !== 'expo-home') {
         console.log(
           `Manifest at ${url} is not expo-home; using published kernel manifest instead...`
         );
         return '';
       }
-      return kernelManifestObjectToJson(manifest);
+      return kernelManifestObjectToJson(classicManifest);
     } catch {
       console.error(
         chalk.red(
