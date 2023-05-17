@@ -12,6 +12,8 @@
 
 ### 🐛 Bug fixes
 
+- Return lower case UUID on iOS. ([#22509](https://github.com/expo/expo/pull/22509) by [@LinusU](https://github.com/LinusU))
+
 ### 💡 Others
 
 ## 12.3.0 — 2023-05-08
