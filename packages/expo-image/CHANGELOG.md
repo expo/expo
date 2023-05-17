@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add `ImageBackground` component. ([#22347](https://github.com/expo/expo/pull/22347) by [@alanjhughes](https://github.com/alanjhughes))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
