@@ -7,6 +7,16 @@ const path = require('path');
 
 const filterPlatformAssetScales = require('./filterPlatformAssetScales');
 
+function findUpProjectRoot(cwd) {
+  if (['.', path.sep].includes(cwd)) return null;
+
+  if (fs.existsSync(path.join(cwd, 'package.json'))) {
+    return cwd;
+  } else {
+    return findUpProjectRoot(path.dirname(cwd));
+  }
+}
+
 /** Resolve the relative entry file using Expo's resolution method. */
 function getRelativeEntryPoint(projectRoot, platform) {
   const entry = resolveEntryPoint(projectRoot, { platform });
@@ -18,7 +28,7 @@ function getRelativeEntryPoint(projectRoot, platform) {
 
 (async function () {
   const platform = process.argv[2];
-  const possibleProjectRoot = process.argv[3];
+  const possibleProjectRoot = findUpProjectRoot(process.argv[3]);
   const destinationDir = process.argv[4];
   const entryFile =
     process.argv[5] ||
