@@ -34,6 +34,14 @@ class ReactActivityDelegateWrapper(
   private val reactActivityHandlers = ExpoModulesPackage.packageList
     .flatMap { it.createReactActivityHandlers(activity) }
   private val methodMap: ArrayMap<String, Method> = ArrayMap()
+  private val host: ReactNativeHost by lazy {
+    invokeDelegateMethod("getReactNativeHost")
+  }
+  /**
+   * When the app delay for `loadApp`, the ReactInstanceManager's lifecycle will be disrupted.
+   * This flag indicates we should emit `onResume` after `loadApp`.
+   */
+  private var shouldEmitPendingResume = false
 
   //region ReactActivityDelegate
 
@@ -50,7 +58,7 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun getReactNativeHost(): ReactNativeHost {
-    return invokeDelegateMethod("getReactNativeHost")
+    return host
   }
 
   override fun getReactInstanceManager(): ReactInstanceManager {
@@ -76,9 +84,23 @@ class ReactActivityDelegateWrapper(
       reactDelegate.loadApp(appKey)
       rootViewContainer.addView(reactDelegate.reactRootView, ViewGroup.LayoutParams.MATCH_PARENT)
       activity.setContentView(rootViewContainer)
-    } else {
-      return invokeDelegateMethod("loadApp", arrayOf(String::class.java), arrayOf(appKey))
+      return
     }
+
+    val delayLoadAppHandler = reactActivityHandlers.asSequence()
+      .mapNotNull { it.getDelayLoadAppHandler(activity, host) }
+      .firstOrNull()
+    if (delayLoadAppHandler != null) {
+      delayLoadAppHandler.whenReady {
+        invokeDelegateMethod<Unit, String?>("loadApp", arrayOf(String::class.java), arrayOf(appKey))
+        if (shouldEmitPendingResume) {
+          onResume()
+        }
+      }
+      return
+    }
+
+    return invokeDelegateMethod("loadApp", arrayOf(String::class.java), arrayOf(appKey))
   }
 
   override fun onCreate(savedInstanceState: Bundle?) {
@@ -123,13 +145,23 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onResume() {
+    if (!host.hasInstance()) {
+      shouldEmitPendingResume = true
+      return
+    }
     invokeDelegateMethod<Unit>("onResume")
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onResume(activity)
     }
+    shouldEmitPendingResume = false
   }
 
   override fun onPause() {
+    // If app is stopped before delayed `loadApp`, we should cancel the pending resume
+    shouldEmitPendingResume = false
+    if (!host.hasInstance()) {
+      return
+    }
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onPause(activity)
     }
@@ -137,6 +169,11 @@ class ReactActivityDelegateWrapper(
   }
 
   override fun onDestroy() {
+    // If app is stopped before delayed `loadApp`, we should cancel the pending resume
+    shouldEmitPendingResume = false
+    if (!host.hasInstance()) {
+      return
+    }
     reactActivityLifecycleListeners.forEach { listener ->
       listener.onDestroy(activity)
     }
