@@ -19,7 +19,6 @@
   },
   "dependencies": {
     "@apollo/client": "^3.4.10",
-    "@expo/sdk-runtime-versions": "^1.0.0",
     "@expo/styleguide-native": "^1.0.1",
     "@expo/vector-icons": "^13.0.0",
     "@gorhom/bottom-sheet": "4.4.6",
