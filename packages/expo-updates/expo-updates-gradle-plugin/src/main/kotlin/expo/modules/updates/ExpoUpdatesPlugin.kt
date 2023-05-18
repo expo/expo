@@ -28,12 +28,15 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
 
     androidComponents.onVariants(androidComponents.selector().all()) { variant ->
       val targetName = variant.name.replaceFirstChar { if (it.isLowerCase()) it.titlecase(Locale.ROOT) else it.toString() }
+      val projectRoot = project.rootProject.projectDir.parentFile.toPath()
+      val entryFile = projectRoot.relativize(reactExtension.entryFile.get().asFile.toPath())
       val isDebuggableVariant =
         reactExtension.debuggableVariants.get().any { it.equals(variant.name, ignoreCase = true) }
 
       val createManifestTask = project.tasks.register("create${targetName}ExpoManifest", CreateManifestTask::class.java) {
         it.description = "expo-updates: Create manifest for ${targetName}."
-        it.entryFileName.set(reactExtension.entryFile.get().asFile.name)
+        it.projectRoot.set(projectRoot.toString())
+        it.entryFile.set(entryFile.toString())
         it.nodeExecutableAndArgs.set(reactExtension.nodeExecutableAndArgs.get())
         it.enabled = !isDebuggableVariant
       }
@@ -43,7 +46,10 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
 
   abstract class CreateManifestTask : DefaultTask() {
     @get:Input
-    abstract val entryFileName: Property<String>
+    abstract val projectRoot: Property<String>
+
+    @get:Input
+    abstract val entryFile: Property<String>
 
     @get:Input
     abstract val nodeExecutableAndArgs: ListProperty<String>
@@ -56,14 +62,13 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
       assetDir.get().asFile.deleteRecursively()
       assetDir.get().asFile.mkdirs()
       project.exec {
-        val projectRoot = project.rootProject.projectDir
         val args = mutableListOf<String>().apply {
           addAll(nodeExecutableAndArgs.get())
           add("${getExpoUpdatesPackageDir()}/scripts/createManifest.js")
           add("android")
-          add(projectRoot.absolutePath.toString())
+          add(projectRoot.get())
           add(assetDir.get().toString())
-          add(entryFileName.get())
+          add(entryFile.get())
         }
 
         if (Os.isFamily(Os.FAMILY_WINDOWS)) {
@@ -80,7 +85,7 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
       val projectRoot = project.rootProject.projectDir
       val stdoutBuffer = ByteArrayOutputStream()
       project.exec {
-        it.commandLine("node", "-e", "console.log(require('path').dirname(require.resolve('expo-updates/package.json')));")
+        it.commandLine(*nodeExecutableAndArgs.get().toTypedArray(), "-e", "console.log(require('path').dirname(require.resolve('expo-updates/package.json')));")
         it.workingDir(projectRoot)
         it.standardOutput = stdoutBuffer
       }
