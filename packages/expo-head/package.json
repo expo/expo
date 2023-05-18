@@ -1,0 +1,37 @@
+{
+  "name": "expo-head",
+  "version": "0.0.2",
+  "description": "static page definitions for universal SEO",
+  "main": "build/index",
+  "types": "build/index.d.ts",
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/expo-head"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "author": "Expo <support@expo.dev>",
+  "license": "MIT",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo-head#readme",
+  "dependencies": {
+    "react-helmet-async": "^1.3.0"
+  },
+  "peerDependencies": {
+    "expo": "*",
+    "expo-constants": "*",
+    "expo-router": "*",
+    "react": "*",
+    "react-native": "*"
+  }
+}
