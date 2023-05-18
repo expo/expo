@@ -40,6 +40,8 @@ export default [
       '- For SDK version >= 45 or React Native version >= 0.71.0 `medium` maps to `m-medium`, otherwise it maps to `intel-medium`',
       '',
       'This can change over time. To ensure you stay on the same configuration even when we change our defaults, use the specific resource class name.',
+      '',
+      'The `large` resource class is not available for free plan.',
     ],
   },
   {
