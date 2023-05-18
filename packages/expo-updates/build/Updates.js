@@ -61,7 +61,7 @@ export const isEmbeddedLaunch = ExpoUpdates.isEmbeddedLaunch || false;
 export const isUsingEmbeddedAssets = ExpoUpdates.isUsingEmbeddedAssets || false;
 /**
  * If `expo-updates` is enabled, this is the
- * [manifest](/workflow/expo-go#manifest) object for the update that's currently
+ * [manifest](/get-started/expo-go/#manifest) object for the update that's currently
  * running.
  *
  * In development mode, or any other environment in which `expo-updates` is disabled, this object is
