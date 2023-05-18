@@ -10,6 +10,7 @@
 ### 🎉 New features
 
 - Add `npx expo add` as an alias to `npx expo install`. ([#22510](https://github.com/expo/expo/pull/22510) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `--no-minify` flag to `npx expo export` to prevent minifying output JavaScript.
 
 ### 🐛 Bug fixes
 
