@@ -39,6 +39,15 @@ final class BlurEffectView: UIVisualEffectView {
 
   override func draw(_ rect: CGRect) {
     super.draw(rect)
+
+    // BlurView intensity relies on running an animation and making it partially complete. This means that there
+    // is a continually running animation, which makes detox hang (it waits for the animation to finish indefinitely).
+    // We can detect if detoxServer is running and in that case replace smooth intensity value with an on/off behaviour.
+    if isDetoxPresent() {
+      effect = intensity > 0 ? visualEffect : nil
+      return
+    }
+
     effect = nil
     animator?.stopAnimation(true)
     animator = UIViewPropertyAnimator(duration: 1, curve: .linear) { [unowned self] in
@@ -55,6 +64,12 @@ private func blurEffectStyleFrom(_ tint: String) -> UIBlurEffect.Style {
   case "default": return .light
   default: return .dark
   }
+}
+
+private func isDetoxPresent() -> Bool {
+  let args = ProcessInfo.processInfo.arguments
+
+  return args.contains("-detoxServer") && args.contains("-detoxSessionId")
 }
 
 /**
