@@ -14,6 +14,8 @@
 
 ### 🐛 Bug fixes
 
+- Fix failing instrumentation tests in JavaScriptViewModule. ([#22518](https://github.com/expo/expo/pull/22518) by [@aleqsio](https://github.com/aleqsio))
+
 ### 💡 Others
 
 ## 1.3.2 — 2023-05-09
