@@ -1,0 +1,60 @@
+// Jest Snapshot v1, https://goo.gl/fbAQLP
+
+exports[`getHotReplaceTemplate should generate the correct template 1`] = `
+"
+  style.setAttribute('data-expo-css-hmr', "foo");
+  const previousStyle = document.querySelector(\`[data-expo-css-hmr="\${"foo"}"]\`);
+  if (previousStyle) {
+      previousStyle.parentNode.removeChild(previousStyle);
+  }"
+`;
+
+exports[`transform should shim css on native with comment in dev 1`] = `
+"// DEBUG: Global CSS is not supported on native platforms.
+// File: test.css"
+`;
+
+exports[`transform should transform css in dev mode 1`] = `
+"
+(() => {
+  if (typeof document === 'undefined') {
+    return
+  }
+  const head = document.head || document.getElementsByTagName('head')[0];
+  const style = document.createElement('style');
+  
+  style.setAttribute('data-expo-css-hmr', "test_css");
+  const previousStyle = document.querySelector(\`[data-expo-css-hmr="\${"test_css"}"]\`);
+  if (previousStyle) {
+      previousStyle.parentNode.removeChild(previousStyle);
+  }
+  style.setAttribute('data-expo-loader', 'css');
+  head.appendChild(style);
+  const css = \`body { color: red; }\`;
+  if (style.styleSheet){
+    style.styleSheet.cssText = css;
+  } else {
+    style.appendChild(document.createTextNode(css));
+  }
+})();"
+`;
+
+exports[`transform should transform css in prod mode 1`] = `
+"
+(() => {
+  if (typeof document === 'undefined') {
+    return
+  }
+  const head = document.head || document.getElementsByTagName('head')[0];
+  const style = document.createElement('style');
+  
+  style.setAttribute('data-expo-loader', 'css');
+  head.appendChild(style);
+  const css = \`body { color: red; }\`;
+  if (style.styleSheet){
+    style.styleSheet.cssText = css;
+  } else {
+    style.appendChild(document.createTextNode(css));
+  }
+})();"
+`;

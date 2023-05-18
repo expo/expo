@@ -1,0 +1,51 @@
+{
+  "name": "@expo/metro-runtime",
+  "version": "2.1.1",
+  "description": "Tools for making experimental Metro bundler features work",
+  "main": "build",
+  "homepage": "https://github.com/expo/expo/tree/main/packages/expo/@expo/metro-runtime",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "files": [
+    "build",
+    "symbolicate",
+    "async-require.js",
+    "async-require.d.ts",
+    "error-overlay.js",
+    "error-overlay.d.ts",
+    "transformer.js",
+    "transformer.d.ts",
+    "assets",
+    "!**/__tests__"
+  ],
+  "scripts": {
+    "build": "expo-module build",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "prepare": "expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/metro-runtime"
+  },
+  "peerDependencies": {
+    "react-native": "*"
+  },
+  "keywords": [
+    "expo",
+    "metro",
+    "fast-refresh",
+    "react-native"
+  ],
+  "author": "Expo <support@expo.dev>",
+  "license": "BSD-3-Clause",
+  "dependencies": {
+    "@bacons/react-views": "^1.1.3",
+    "qs": "^6.10.3"
+  }
+}
