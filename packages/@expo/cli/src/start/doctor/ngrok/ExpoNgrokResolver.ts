@@ -46,7 +46,7 @@ export interface NgrokInstance {
 }
 
 /** Resolves the ngrok instance from local or globally installed package. */
-export class NgrokResolver extends ExternalModule<NgrokInstance> {
+export class ExpoNgrokResolver extends ExternalModule<NgrokInstance> {
   constructor(projectRoot: string) {
     super(
       projectRoot,

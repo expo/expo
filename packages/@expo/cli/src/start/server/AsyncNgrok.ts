@@ -9,7 +9,11 @@ import * as Log from '../../log';
 import { delayAsync, resolveWithTimeout } from '../../utils/delay';
 import { env } from '../../utils/env';
 import { CommandError } from '../../utils/errors';
-import { isNgrokClientError, NgrokInstance, NgrokResolver } from '../doctor/ngrok/NgrokResolver';
+import {
+  isNgrokClientError,
+  NgrokInstance,
+  ExpoNgrokResolver,
+} from '../doctor/ngrok/ExpoNgrokResolver';
 import { hasAdbReverseAsync, startAdbReverseAsync } from '../platforms/android/adbReverse';
 import { ProjectSettings } from '../project/settings';
 
@@ -22,15 +26,21 @@ const NGROK_CONFIG = {
 
 const TUNNEL_TIMEOUT = 10 * 1000;
 
-export class AsyncNgrok {
+export interface AsyncNgrok {
+  startAsync(options?: { timeout?: number }): Promise<void>;
+  stopAsync(): Promise<void>;
+  getActiveUrl(): string | null;
+}
+
+export class ExpoNgrok implements AsyncNgrok {
   /** Resolves the best instance of ngrok, exposed for testing. */
-  resolver: NgrokResolver;
+  resolver: ExpoNgrokResolver;
 
   /** Info about the currently running instance of ngrok. */
   private serverUrl: string | null = null;
 
   constructor(private projectRoot: string, private port: number) {
-    this.resolver = new NgrokResolver(projectRoot);
+    this.resolver = new ExpoNgrokResolver(projectRoot);
   }
 
   public getActiveUrl(): string | null {

@@ -14,7 +14,7 @@ import {
   BaseResolveDeviceProps,
   PlatformManager,
 } from '../platforms/PlatformManager';
-import { AsyncNgrok } from './AsyncNgrok';
+import { AsyncNgrok, ExpoNgrok } from './AsyncNgrok';
 import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
 import { PlatformBundlers } from './platformBundlers';
@@ -245,7 +245,7 @@ export abstract class BundlerDevServer {
     const port = this.getInstance()?.location.port;
     if (!port) return null;
     debug('[ngrok] connect to port: ' + port);
-    this.ngrok = new AsyncNgrok(this.projectRoot, port);
+    this.ngrok = new ExpoNgrok(this.projectRoot, port);
     await this.ngrok.startAsync();
     return this.ngrok;
   }
