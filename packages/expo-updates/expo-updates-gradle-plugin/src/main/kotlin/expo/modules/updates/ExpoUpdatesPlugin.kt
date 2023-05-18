@@ -82,11 +82,10 @@ abstract class ExpoUpdatesPlugin : Plugin<Project> {
     }
 
     private fun getExpoUpdatesPackageDir(): String {
-      val projectRoot = project.rootProject.projectDir
       val stdoutBuffer = ByteArrayOutputStream()
       project.exec {
         it.commandLine(*nodeExecutableAndArgs.get().toTypedArray(), "-e", "console.log(require('path').dirname(require.resolve('expo-updates/package.json')));")
-        it.workingDir(projectRoot)
+        it.workingDir(projectRoot.get())
         it.standardOutput = stdoutBuffer
       }
       return String(stdoutBuffer.toByteArray()).trim()
