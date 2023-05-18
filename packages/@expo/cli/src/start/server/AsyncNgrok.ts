@@ -14,6 +14,7 @@ import {
   NgrokInstance,
   ExpoNgrokResolver,
 } from '../doctor/ngrok/ExpoNgrokResolver';
+import { NgrokResolver } from '../doctor/ngrok/NgrokResolver';
 import { hasAdbReverseAsync, startAdbReverseAsync } from '../platforms/android/adbReverse';
 import { ProjectSettings } from '../project/settings';
 
@@ -30,6 +31,95 @@ export interface AsyncNgrok {
   startAsync(options?: { timeout?: number }): Promise<void>;
   stopAsync(): Promise<void>;
   getActiveUrl(): string | null;
+}
+
+export class NgrokJs implements AsyncNgrok {
+  /** Resolves the best instance of ngrok, exposed for testing. */
+  resolver: NgrokResolver;
+
+  tunnelUrl: string | null = null;
+
+  // private session: import('@ngrok/ngrok').NgrokSession | null = null;
+  // private tunnel: import('@ngrok/ngrok').NgrokTunnel | null = null;
+
+  constructor(private projectRoot: string, private port: number) {
+    this.resolver = new NgrokResolver(projectRoot);
+  }
+
+  public getActiveUrl(): string | null {
+    // TODO
+    return this.tunnelUrl;
+    // return 'https://rpfghu8.bycedric.8081.exp.direct';
+  }
+
+  public async stopAsync(): Promise<void> {
+    // await this.tunnel?.close();
+    // await this.session?.close();
+
+    // this.tunnel = null;
+    // this.session = null;
+
+
+  }
+
+  public async startAsync(options: { timeout?: number } = {}): Promise<void> {
+    // Ensure the @ngrok/ngrok package is loaded first,
+    // which should be installed as global dependency
+    await this.resolver.resolveAsync({
+      prefersGlobalInstall: true,
+    });
+
+    // NOTE(EvanBacon): If the user doesn't have ADB installed,
+    // then skip attempting to reverse the port.
+    if (hasAdbReverseAsync()) {
+      // Ensure ADB reverse is running.
+      if (!(await startAdbReverseAsync([this.port]))) {
+        // TODO: Better error message.
+        throw new CommandError(
+          'NGROK_ADB',
+          `Cannot start tunnel URL because \`adb reverse\` failed for the connected Android device(s).`
+        );
+      }
+    }
+
+    await this._startInternalAsync(options);
+  }
+
+  async _startInternalAsync(options: { timeout?: number } = {}) {
+    // Load the ngrok package, without any checks.
+    // Ngrok is validated in `startAsync` instead.
+    const ngrok = await this.resolver.resolveAsync({
+      shouldPrompt: false,
+      autoInstall: false,
+    });
+
+    // Doesn't work from the EU either, it says "domain name only reserved in US"
+    this.tunnelUrl = await ngrok.connect({
+      authtoken: NGROK_CONFIG.authToken,
+      configPath: path.join(UserSettings.getDirectory(), 'ngrok.yml'),
+      region: 'us',
+      proto: 'http',
+      // hostname: 'exp.direct',
+      hostname: `bycedric.${this.port}.exp.direct`,
+      port: this.port,
+    });
+
+    console.log('Tunnel connected', this.tunnelUrl);
+
+    // Not enough options in the builds, vs the config object
+    // this.session = await new ngrok.NgrokSessionBuilder()
+    //   .authtoken(NGROK_CONFIG.authToken)
+    //   // .authtokenFromEnv()
+    //   .connect();
+
+    // this.tunnel = await this.session
+    //   .httpEndpoint()
+    //   .scheme('http')
+    //   .domain('rpfghu9.bycedric.8081.exp.direct')
+    //   .listen();
+
+    // this.tunnel.forwardTcp(`localhost:${this.port}`);
+  }
 }
 
 export class ExpoNgrok implements AsyncNgrok {

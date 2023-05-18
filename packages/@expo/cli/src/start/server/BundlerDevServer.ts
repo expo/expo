@@ -14,7 +14,7 @@ import {
   BaseResolveDeviceProps,
   PlatformManager,
 } from '../platforms/PlatformManager';
-import { AsyncNgrok, ExpoNgrok } from './AsyncNgrok';
+import { AsyncNgrok, ExpoNgrok, NgrokJs } from './AsyncNgrok';
 import { DevelopmentSession } from './DevelopmentSession';
 import { CreateURLOptions, UrlCreator } from './UrlCreator';
 import { PlatformBundlers } from './platformBundlers';
@@ -245,7 +245,12 @@ export abstract class BundlerDevServer {
     const port = this.getInstance()?.location.port;
     if (!port) return null;
     debug('[ngrok] connect to port: ' + port);
-    this.ngrok = new ExpoNgrok(this.projectRoot, port);
+    if (env.EXPO_TUNNEL_USE_EXPERIMENTAL) {
+      Log.warn('Experimental `@ngrok/ngrok` integration enabled.');
+    }
+    this.ngrok = env.EXPO_TUNNEL_USE_EXPERIMENTAL
+      ? new NgrokJs(this.projectRoot, port)
+      : new ExpoNgrok(this.projectRoot, port);
     await this.ngrok.startAsync();
     return this.ngrok;
   }

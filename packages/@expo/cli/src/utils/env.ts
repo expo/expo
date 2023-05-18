@@ -122,6 +122,13 @@ class Env {
   }
 
   /**
+   * **Experimental** Use the newer `@ngrok/ngrok` package for tunneling.
+   */
+  get EXPO_TUNNEL_USE_EXPERIMENTAL(): boolean {
+    return boolish('EXPO_TUNNEL_USE_EXPERIMENTAL', false);
+  }
+
+  /**
    * Force Expo CLI to use the [`resolver.resolverMainFields`](https://facebook.github.io/metro/docs/configuration/#resolvermainfields) from the project `metro.config.js` for all platforms.
    *
    * By default, Expo CLI will use `['browser', 'module', 'main']` (default for Webpack) for web and the user-defined main fields for other platforms.
