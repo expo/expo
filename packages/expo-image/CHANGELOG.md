@@ -8,9 +8,13 @@
 
 ### 🐛 Bug fixes
 
-- Upgrade SDWebImageAVIFCoder to fix compiling issue with libavif < 0.11.0. ([#22491](https://github.com/expo/expo/pull/22491) by [@matinzd](https://github.com/matinzd))
-
 ### 💡 Others
+
+## 1.0.1 — 2023-05-18
+
+### 🐛 Bug fixes
+
+- Upgrade SDWebImageAVIFCoder to fix compiling issue with libavif < 0.11.0. ([#22491](https://github.com/expo/expo/pull/22491) by [@matinzd](https://github.com/matinzd))
 
 ## 1.0.0 — 2023-02-21
 
