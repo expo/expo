@@ -50,8 +50,9 @@ export declare const isEmbeddedLaunch: boolean;
 export declare const isUsingEmbeddedAssets: boolean;
 /**
  * If `expo-updates` is enabled, this is the
- * [manifest](/get-started/expo-go/#manifest) object for the update that's currently
- * running.
+ * [manifest](/versions/latest/sdk/constants/#manifest) (or
+ * [classic manifest](/versions/latest/sdk/constants/#appmanifest))
+ * object for the update that's currently running.
  *
  * In development mode, or any other environment in which `expo-updates` is disabled, this object is
  * empty.
