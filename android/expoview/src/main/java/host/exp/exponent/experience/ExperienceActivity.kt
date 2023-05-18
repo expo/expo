@@ -31,7 +31,6 @@ import expo.modules.splashscreen.singletons.SplashScreen
 import host.exp.exponent.*
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderCallback
 import host.exp.exponent.ExpoUpdatesAppLoader.AppLoaderStatus
-import host.exp.exponent.analytics.Analytics
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.branch.BranchManager
 import host.exp.exponent.di.NativeModuleDepsProvider
@@ -224,7 +223,6 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     soLoaderInit()
 
     addNotification()
-    Analytics.logEventWithManifestUrl(Analytics.AnalyticsEvent.EXPERIENCE_APPEARED, manifestUrl)
   }
 
   override fun onWindowFocusChanged(hasFocus: Boolean) {
@@ -253,7 +251,6 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
       currentActivity = null
     }
     removeNotification()
-    Analytics.clearTimedEvents()
   }
 
   public override fun onSaveInstanceState(savedInstanceState: Bundle) {
@@ -304,8 +301,6 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
   }
 
   override fun onDoneLoading() {
-    Analytics.markEvent(Analytics.TimedEvent.FINISHED_LOADING_REACT_NATIVE)
-    Analytics.sendTimedEvents(manifestUrl)
   }
 
   fun onEvent(event: ExperienceDoneLoadingEvent) {
@@ -488,8 +483,6 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
     }
 
     isCrashed = false
-
-    Analytics.logEventWithManifestUrlSdkVersion(Analytics.AnalyticsEvent.LOAD_EXPERIENCE, manifestUrl, sdkVersion)
 
     ExperienceActivityUtils.updateOrientation(this.manifest!!, this)
     ExperienceActivityUtils.updateSoftwareKeyboardLayoutMode(this.manifest!!, this)
@@ -750,13 +743,6 @@ open class ExperienceActivity : BaseExperienceActivity(), StartReactInstanceDele
               (nuxOverlayView!!.parent as ViewGroup).removeView(nuxOverlayView)
             }
             nuxOverlayView = null
-            val eventProperties = JSONObject()
-            try {
-              eventProperties.put("IS_FROM_NOTIFICATION", isFromNotification)
-            } catch (e: JSONException) {
-              EXL.e(TAG, e.message)
-            }
-            Analytics.logEvent(Analytics.AnalyticsEvent.NUX_EXPERIENCE_OVERLAY_DISMISSED, eventProperties)
           }
 
           override fun onAnimationRepeat(animation: Animation) {}

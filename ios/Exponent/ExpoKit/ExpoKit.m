@@ -2,7 +2,6 @@
 
 #import "ExpoKit.h"
 #import "EXViewController.h"
-#import "EXAnalytics.h"
 #import "EXBuildConstants.h"
 #import "EXEnvironment.h"
 #import "EXKernel.h"
@@ -89,9 +88,6 @@ NSString * const EXAppDidRegisterUserNotificationSettingsNotification = @"kEXApp
 {
   [DDLog addLogger:[DDOSLogger sharedInstance]];
   RCTSetFatalHandler(handleFatalReactError);
-
-  // init analytics
-  [EXAnalytics sharedInstance];
 
   NSString *standaloneGMSKey = [[NSBundle mainBundle].infoDictionary objectForKey:@"GMSApiKey"];
   if (standaloneGMSKey && standaloneGMSKey.length) {
