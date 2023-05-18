@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- [iOS] Fixed Detox tests hanging when `BlurView` is present ([#22439](https://github.com/expo/expo/pull/22439) by [@behenate](https://github.com/behenate))
+
 ### 💡 Others
 
 ## 12.3.1 — 2023-05-08
