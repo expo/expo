@@ -1,0 +1,1 @@
+{"version":3,"file":"index.d.ts","sourceRoot":"","sources":["../../src/transformer/index.tsx"],"names":[],"mappings":";AAAA;;;;;;GAMG;AACH,OAAe,EACb,mBAAmB,EACnB,kBAAkB,EAClB,iBAAiB,EAClB,MAAM,wBAAwB,CAAC;AAKhC,wBAAsB,SAAS,CAC7B,MAAM,EAAE,mBAAmB,EAC3B,WAAW,EAAE,MAAM,EACnB,QAAQ,EAAE,MAAM,EAChB,IAAI,EAAE,MAAM,EACZ,OAAO,EAAE,kBAAkB,GAC1B,OAAO,CAAC,iBAAiB,CAAC,CAwB5B"}

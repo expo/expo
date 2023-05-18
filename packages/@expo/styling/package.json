@@ -1,0 +1,49 @@
+{
+  "name": "@expo/styling",
+  "version": "0.0.0",
+  "main": "./src/index",
+  "scripts": {
+    "build": "expo-module typecheck",
+    "clean": "expo-module clean",
+    "lint": "expo-module lint",
+    "test": "expo-module test",
+    "test:e2e": "jest --config e2e/jest.config.js",
+    "prepare": "EXPO_NONINTERACTIVE=1 expo-module prepare",
+    "prepublishOnly": "expo-module prepublishOnly",
+    "expo-module": "expo-module"
+  },
+  "author": "Expo",
+  "license": "MIT",
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/cli"
+  },
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "keywords": [
+    "expo"
+  ],
+  "dependencies": {
+    "lightningcss": "^1.19.0"
+  },
+  "devDependencies": {
+    "@testing-library/react-native": "^12.0.1",
+    "@types/metro-config": "0.76.2",
+    "jest-expo": "49.0.0-alpha.1",
+    "react-native-reanimated": "3.0.2"
+  },
+  "peerDependencies": {
+    "tailwindcss": "^3.3.1",
+    "react-native-reanimated": "3.0.2"
+  },
+  "peerDependenciesMeta": {
+    "tailwindcss": {
+      "optional": true
+    },
+    "react-native-reanimated": {
+      "optional": true
+    }
+  }
+}
