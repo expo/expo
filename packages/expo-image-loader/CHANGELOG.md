@@ -2,6 +2,12 @@
 
 ## Unpublished
 
+- Removed `com.facebook.fresco:fresco` dependency ([#22542](https://github.com/expo/expo/pull/22542) by [@josephyanks](https://github.com/josephyanks))
+- 
+### 📚 3rd party library updates
+
+- Updated `com.github.bumptech.glide:glide` to `4.15.1` and added customizable `glideVersion` variable on ext. ([#22542](https://github.com/expo/expo/pull/22542) by [@josephyanks](https://github.com/josephyanks))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
