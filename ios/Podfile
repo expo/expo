@@ -13,7 +13,6 @@ $expo_updates_create_manifest = false
 
 abstract_target 'Expo Go' do
   # Expo Client dependencies
-  pod 'Amplitude'
   pod 'CocoaLumberjack', '~> 3.5.3'
   pod 'GoogleMaps', '~> 7.1'
   pod 'Google-Maps-iOS-Utils', '~> 4.1.0'

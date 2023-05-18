@@ -1,6 +1,5 @@
 // Copyright 2015-present 650 Industries. All rights reserved.
 
-#import "EXAnalytics.h"
 #import "EXBuildConstants.h"
 #import "EXKernelUtil.h"
 #import "ExpoKit.h"
@@ -150,8 +149,6 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
 
       // load everything else from EXShell
       [self _loadMiscPropertiesWithConfig:shellConfig andInfoPlist:infoPlist];
-
-      [self _setAnalyticsPropertiesWithStandaloneManifestUrl:_standaloneManifestUrl isUserDetached:isUserDetach];
     }
   }
   _allManifestUrls = allManifestUrls;
@@ -224,17 +221,6 @@ NSString * const kEXEmbeddedManifestResourceName = @"shell-app-manifest";
   id bundleUrl = manifest[@"bundleUrl"];
   if (bundleUrl && [bundleUrl isKindOfClass:[NSString class]]) {
     _embeddedBundleUrl = (NSString *)bundleUrl;
-  }
-}
-
-- (void)_setAnalyticsPropertiesWithStandaloneManifestUrl:(NSString *)shellManifestUrl
-                                     isUserDetached:(BOOL)isUserDetached
-{
-  if (_testEnvironment == EXTestEnvironmentNone) {
-    [[EXAnalytics sharedInstance] setUserProperties:@{ @"INITIAL_URL": shellManifestUrl }];
-    if (isUserDetached) {
-      [[EXAnalytics sharedInstance] setUserProperties:@{ @"IS_DETACHED": @YES }];
-    }
   }
 }
 

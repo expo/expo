@@ -75,7 +75,7 @@ function getMacrosGeneratorForPlatform(platform) {
 
 function getSkippedTemplates(isBare: boolean): string[] {
   if (isBare) {
-    return ['AndroidManifest.xml', 'google-services.json', 'ExponentKeys.java'];
+    return ['AndroidManifest.xml', 'google-services.json'];
   }
 
   return [];

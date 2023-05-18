@@ -28,7 +28,6 @@ import expo.modules.manifests.core.Manifest
 import host.exp.exponent.Constants
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.RNObject
-import host.exp.exponent.analytics.Analytics
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.experience.BaseExperienceActivity.ExperienceContentLoaded
@@ -465,7 +464,6 @@ abstract class ReactNativeActivity :
       return RNObject("com.facebook.react.ReactInstanceManager")
     }
 
-    Analytics.markEvent(Analytics.TimedEvent.STARTED_LOADING_REACT_NATIVE)
     val mReactInstanceManager = builder.callRecursive("build")!!
     val devSettings =
       mReactInstanceManager.callRecursive("getDevSupportManager")!!.callRecursive("getDevSettings")
@@ -518,16 +516,6 @@ abstract class ReactNativeActivity :
     }
 
     errorQueue.clear()
-    try {
-      val eventProperties = JSONObject().apply {
-        put(Analytics.USER_ERROR_MESSAGE, errorMessage.userErrorMessage())
-        put(Analytics.DEVELOPER_ERROR_MESSAGE, errorMessage.developerErrorMessage())
-        put(Analytics.MANIFEST_URL, manifestUrl)
-      }
-      Analytics.logEvent(Analytics.AnalyticsEvent.ERROR_RELOADED, eventProperties)
-    } catch (e: Exception) {
-      EXL.e(TAG, e.message)
-    }
 
     return false
   }

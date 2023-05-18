@@ -20,7 +20,6 @@ import expo.modules.core.interfaces.Package
 import expo.modules.core.interfaces.SingletonModule
 import expo.modules.manifests.core.Manifest
 import host.exp.exponent.*
-import host.exp.exponent.analytics.Analytics
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.ExponentUrls
@@ -120,9 +119,6 @@ class Exponent private constructor(val context: Context, val application: Applic
     shouldForceCache: Boolean = false
   ): Boolean {
     var shouldForceNetwork = shouldForceNetworkArg
-    if (id != KernelConstants.KERNEL_BUNDLE_ID) {
-      Analytics.markEvent(Analytics.TimedEvent.STARTED_FETCHING_BUNDLE)
-    }
     val isDeveloping = manifest?.isDevelopmentMode() ?: false
     if (isDeveloping) {
       // This is important for running locally with no-dev
@@ -179,15 +175,7 @@ class Exponent private constructor(val context: Context, val application: Applic
             return
           }
 
-          if (id != KernelConstants.KERNEL_BUNDLE_ID) {
-            Analytics.markEvent(Analytics.TimedEvent.FINISHED_FETCHING_BUNDLE)
-          }
-
           try {
-            if (id != KernelConstants.KERNEL_BUNDLE_ID) {
-              Analytics.markEvent(Analytics.TimedEvent.STARTED_WRITING_BUNDLE)
-            }
-
             val sourceFile = File(directory, fileName)
 
             var hasCachedSourceFile = false
@@ -225,10 +213,6 @@ class Exponent private constructor(val context: Context, val application: Applic
                 IOUtils.closeQuietly(byteArrayOutputStream)
                 IOUtils.closeQuietly(inputStream)
               }
-            }
-
-            if (id != KernelConstants.KERNEL_BUNDLE_ID) {
-              Analytics.markEvent(Analytics.TimedEvent.FINISHED_WRITING_BUNDLE)
             }
 
             if (Constants.WRITE_BUNDLE_TO_LOG) {
@@ -427,9 +411,6 @@ class Exponent private constructor(val context: Context, val application: Applic
     } catch (e: RuntimeException) {
       EXL.testError(e)
     }
-
-    // Amplitude
-    Analytics.initializeAmplitude(context, application)
 
     // TODO: profile this
     FlowManager.init(

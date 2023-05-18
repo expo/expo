@@ -54,8 +54,6 @@ typedef NS_ENUM(NSInteger, EXKernelErrorCode) {
  */
 - (void)sendUrl:(NSString *)url toAppRecord:(EXKernelAppRecord *)app;
 
-- (void)logAnalyticsEvent:(NSString *)eventId forAppRecord:(EXKernelAppRecord *)appRecord;
-
 @end
 
 NS_ASSUME_NONNULL_END

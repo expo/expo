@@ -140,9 +140,6 @@
     <init>(java.lang.Throwable);
 }
 
-##### Amplitude #####
--keep class com.amplitude.api.** {*;}
-
 ##### DBFlow #####
 -keep class * extends com.raizlabs.android.dbflow.config.DatabaseHolder { *; }
 

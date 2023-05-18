@@ -120,7 +120,6 @@ Pod::Spec.new do |s|
     ss.dependency         "ABI46_0_0ExpoWebBrowser"
     ss.dependency         "ABI46_0_0Expo"
     ss.dependency         "ABI46_0_0UMAppLoader"
-    ss.dependency         "Amplitude"
     ss.dependency         "Analytics"
     ss.dependency         "AppAuth"
     ss.dependency         "FBAudienceNetwork"

@@ -31,9 +31,6 @@
       "barStyle": "dark-content"
     },
     "scheme": "exp",
-    "extra": {
-      "amplitudeApiKey": "081e5ec53f869b440b225d5e40ec73f9"
-    },
     "isKernel": true,
     "kernel": {
       "iosManifestPath": "../ios/Exponent/Supporting/kernel-manifest.json",
