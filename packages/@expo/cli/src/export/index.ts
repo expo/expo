@@ -46,7 +46,7 @@ export const expoExport: Command = async (argv) => {
         `--dump-assetmap            Dump the asset map for further processing`,
         `--dump-sourcemap           Dump the source map for debugging the JS bundle`,
         chalk`-p, --platform <platform>  Options: android, ios, web, all. {dim Default: all}`,
-        chalk`--no-minify           Prevent minifying source`,
+        `--no-minify                Prevent minifying source`,
         `-c, --clear                Clear the bundler cache`,
         `-h, --help                 Usage info`,
       ].join('\n')
