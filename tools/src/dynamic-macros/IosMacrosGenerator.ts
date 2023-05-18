@@ -55,8 +55,8 @@ async function generateBuildConstantsFromMacrosAsync(
       config.API_SERVER_ENDPOINT = 'https://exp.host/--/api/v2/';
     }
     if (keys) {
-      const { AMPLITUDE_KEY, AMPLITUDE_DEV_KEY, GOOGLE_MAPS_IOS_API_KEY } = keys;
-      config.DEFAULT_API_KEYS = { AMPLITUDE_KEY, AMPLITUDE_DEV_KEY, GOOGLE_MAPS_IOS_API_KEY };
+      const { GOOGLE_MAPS_IOS_API_KEY } = keys;
+      config.DEFAULT_API_KEYS = { GOOGLE_MAPS_IOS_API_KEY };
     }
     return validateBuildConstants(config, buildConfiguration);
   });

@@ -215,9 +215,6 @@ dependencies {
   // BEGIN_SDK_46
   versionedImplementation(project(':expoview-abi46_0_0'))
   // END_SDK_46
-
-  // This is not needed in shell apps, the Amplitude module will include this dep if installed
-  implementation 'com.amplitude:android-sdk:2.23.2'
 }
 
 // This has to be down here for some reason

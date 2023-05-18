@@ -2,7 +2,6 @@
 
 @import UIKit;
 
-#import "EXAnalytics.h"
 #import "EXAbstractLoader.h"
 #import "EXAppViewController.h"
 #import "EXAppLoadingProgressWindowController.h"
@@ -301,7 +300,6 @@ NS_ASSUME_NONNULL_BEGIN
       [self _overrideUserInterfaceStyleOf:self];
       [self _overrideAppearanceModuleBehaviour];
       [self _invalidateRecoveryTimer];
-      [[EXKernel sharedInstance] logAnalyticsEvent:@"LOAD_EXPERIENCE" forAppRecord:self.appRecord];
       [self.appRecord.appManager rebuildBridge];
     });
   }
@@ -750,7 +748,6 @@ NS_ASSUME_NONNULL_BEGIN
     _errorView.error = error;
     _contentView = _errorView;
     [self.view addSubview:_contentView];
-    [[EXAnalytics sharedInstance] logErrorVisibleEvent];
   }
 }
 

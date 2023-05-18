@@ -7,11 +7,9 @@ import android.view.View
 import android.view.ViewGroup
 import androidx.fragment.app.Fragment
 import host.exp.exponent.Constants
-import host.exp.exponent.analytics.Analytics
 import host.exp.exponent.analytics.EXL
 import host.exp.expoview.R
 import host.exp.expoview.databinding.ErrorFragmentBinding
-import org.json.JSONObject
 
 class ErrorFragment : Fragment() {
   private var _binding: ErrorFragmentBinding? = null
@@ -72,16 +70,6 @@ class ErrorFragment : Fragment() {
       }
     }
 
-    try {
-      val eventProperties = JSONObject().apply {
-        put(Analytics.USER_ERROR_MESSAGE, userErrorMessage)
-        put(Analytics.DEVELOPER_ERROR_MESSAGE, developerErrorMessage)
-        put(Analytics.MANIFEST_URL, manifestUrl)
-      }
-      Analytics.logEvent(Analytics.AnalyticsEvent.ERROR_SCREEN, eventProperties)
-    } catch (e: Exception) {
-      EXL.e(TAG, e.message)
-    }
     if (isHomeError || manifestUrl == null || manifestUrl == Constants.INITIAL_URL) {
       // Cannot go home in any of these cases
       binding.homeButton.visibility = View.GONE

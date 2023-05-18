@@ -29,7 +29,6 @@ import expo.modules.taskManager.TaskManagerPackage
 import host.exp.exponent.Constants
 import host.exp.exponent.ExponentManifest
 import host.exp.exponent.RNObject
-import host.exp.exponent.analytics.Analytics
 import host.exp.exponent.di.NativeModuleDepsProvider
 import host.exp.exponent.kernel.ExperienceKey
 import host.exp.exponent.kernel.Kernel.KernelStartedRunningEvent
@@ -83,7 +82,6 @@ open class HomeActivity : BaseExperienceActivity() {
   override fun onResume() {
     super.onResume()
     SoLoader.init(this, false)
-    Analytics.logEvent(Analytics.AnalyticsEvent.HOME_APPEARED)
   }
   //endregion Activity Lifecycle
   /**

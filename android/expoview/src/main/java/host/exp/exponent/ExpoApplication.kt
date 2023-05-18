@@ -5,7 +5,6 @@ import android.os.Debug
 import androidx.multidex.MultiDexApplication
 import com.facebook.react.bridge.ReactApplicationContext
 import com.facebook.soloader.SoLoader
-import host.exp.exponent.analytics.Analytics
 import host.exp.exponent.analytics.EXL
 import host.exp.exponent.branch.BranchManager
 import host.exp.exponent.di.NativeModuleDepsProvider
@@ -74,7 +73,6 @@ abstract class ExpoApplication : MultiDexApplication() {
       Debug.startMethodTracing("coldStart")
     }
 
-    Analytics.markEvent(Analytics.TimedEvent.LAUNCHER_ACTIVITY_STARTED)
     SoLoader.init(applicationContext, false)
 
     // Add exception handler. This is used by the entire process, so only need to add it here.
