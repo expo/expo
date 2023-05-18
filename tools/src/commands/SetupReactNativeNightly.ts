@@ -144,6 +144,24 @@ async function updateReactNativePackageAsync() {
       ])
     )
   );
+
+  // Workaround build error for outdated `@react-native/gradle-plugin`
+  const reactGradlePluginRoot = path.join(
+    EXPO_DIR,
+    'node_modules',
+    '@react-native',
+    'gradle-plugin'
+  );
+  await transformFileAsync(
+    path.join(reactGradlePluginRoot, 'src/main/kotlin/com/facebook/react/utils/DependencyUtils.kt'),
+    [
+      {
+        find: 'return if (versionString.startsWith("0.0.0")) {',
+        replaceWith:
+          'return if (versionString.startsWith("0.0.0") || "-nightly-" in versionString) {',
+      },
+    ]
+  );
 }
 
 async function patchReanimatedAsync(nightlyVersion: string) {
