@@ -18,7 +18,10 @@ import java.util.Locale
 
 abstract class ExpoUpdatesPlugin : Plugin<Project> {
   override fun apply(project: Project) {
-    val reactExtension = project.extensions.getByType(ReactExtension::class.java)
+    val reactExtension = project.extensions.findByType(ReactExtension::class.java) ?: run {
+      logger.warn("Stop expo-updates app.manifest generation because ReactExtension is not registered")
+      return
+    }
     val androidComponents = project.extensions.getByType(AndroidComponentsExtension::class.java)
 
     if (System.getenv("EX_UPDATES_NATIVE_DEBUG") == "1") {
