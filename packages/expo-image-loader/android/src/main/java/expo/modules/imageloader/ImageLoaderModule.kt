@@ -38,8 +38,6 @@ class ImageLoaderModule(val context: Context) : InternalModule, ImageLoaderInter
   ) {
     Glide.with(context)
       .asBitmap()
-      .diskCacheStrategy(DiskCacheStrategy.NONE)
-      .skipMemoryCache(true)
       .load(url)
       .into(object : CustomTarget<Bitmap>() {
         override fun onResourceReady(resource: Bitmap, transition: Transition<in Bitmap>?) {
