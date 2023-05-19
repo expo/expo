@@ -16,8 +16,7 @@ import kotlinx.coroutines.launch
 
 class DevMenuInternalModule : Module() {
   private val context: Context
-    get() = appContext.reactContext
-      ?: throw Exceptions.ReactContextLost()
+    get() = appContext.reactContext ?: throw Exceptions.ReactContextLost()
 
   override fun definition() = ModuleDefinition {
     Name("ExpoDevMenuInternal")
