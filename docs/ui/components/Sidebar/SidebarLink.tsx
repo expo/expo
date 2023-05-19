@@ -68,7 +68,7 @@ export const SidebarLink = ({ info, children }: SidebarLinkProps) => {
         ref={ref}
         css={[STYLES_LINK, isSelected && STYLES_LINK_ACTIVE]}
         {...customDataAttributes}>
-        {isSelected && <div css={STYLES_ACTIVE_BULLET} />}
+        <div css={[STYLES_BULLET, isSelected && STYLES_ACTIVE_BULLET]} />
         {children}
         {isExternal && <ArrowUpRightIcon className="icon-sm text-icon-secondary ml-auto" />}
       </LinkBase>
@@ -87,6 +87,7 @@ const STYLES_LINK = css`
   padding-left: ${spacing[2]}px;
   scroll-margin: 60px;
   width: 100%;
+  margin-left: -${spacing[4] + spacing[0.5]}px;
 
   &:hover {
     color: ${theme.text.link};
@@ -99,8 +100,6 @@ const STYLES_LINK = css`
 
 const STYLES_LINK_ACTIVE = css`
   color: ${theme.text.link};
-  padding-left: 0;
-  margin-left: -${spacing[2.5]}px;
 `;
 
 const STYLES_CONTAINER = css`
@@ -111,13 +110,16 @@ const STYLES_CONTAINER = css`
   padding-right: ${spacing[2]}px;
 `;
 
-const STYLES_ACTIVE_BULLET = css`
+const STYLES_BULLET = css`
   height: 6px;
   width: 6px;
   min-height: 6px;
   min-width: 6px;
-  background-color: ${theme.text.link};
   border-radius: 100%;
   margin: ${spacing[2]}px ${spacing[1.5]}px;
   align-self: self-start;
+`;
+
+const STYLES_ACTIVE_BULLET = css`
+  background-color: ${theme.text.link};
 `;
