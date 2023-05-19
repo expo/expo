@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "./build",
     "rootDir": "./src",
-    "noEmit": false
-  },
-  "include": ["./src/", "jest.d.ts"]
+    "noEmit": false,
+    "types": ["jest"]
+  }
 }

@@ -4,7 +4,7 @@
   "main": "./src/index",
   "scripts": {
     "build": "expo-module typecheck",
-    "clean": "expo-module clean",
+    "clean": "rimraf ./tsconfig.tsbuildinfo",
     "lint": "expo-module lint",
     "test": "expo-module test",
     "test:e2e": "jest --config e2e/jest.config.js",
@@ -30,20 +30,16 @@
   },
   "devDependencies": {
     "@testing-library/react-native": "^12.0.1",
+    "@types/jest": "^29.5.1",
     "@types/metro-config": "0.76.2",
-    "@types/jest": "^29.3.1",
     "jest": "^29.3.1",
     "jest-expo": "49.0.0-alpha.1",
-    "react-native-reanimated": "3.0.2"
+    "react-native-reanimated": "~3.0.2"
   },
   "peerDependencies": {
-    "tailwindcss": "^3.3.1",
-    "react-native-reanimated": "3.0.2"
+    "react-native-reanimated": ">=2.17.0 || >=3"
   },
   "peerDependenciesMeta": {
-    "tailwindcss": {
-      "optional": true
-    },
     "react-native-reanimated": {
       "optional": true
     }

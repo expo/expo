@@ -11,13 +11,6 @@ function _metroTransformWorker() {
   };
   return data;
 }
-function _css() {
-  const data = require("./css");
-  _css = function () {
-    return data;
-  };
-  return data;
-}
 function _cssModules() {
   const data = require("./css-modules");
   _cssModules = function () {
@@ -25,30 +18,39 @@ function _cssModules() {
   };
   return data;
 }
-function _postcss() {
-  const data = require("./postcss");
-  _postcss = function () {
+function _nativeCssTransform() {
+  const data = require("./nativeCssTransform");
+  _nativeCssTransform = function () {
     return data;
   };
   return data;
 }
-function _sass() {
-  const data = require("./sass");
-  _sass = function () {
+function _webCssTransform() {
+  const data = require("./webCssTransform");
+  _webCssTransform = function () {
     return data;
   };
   return data;
 }
 function _interopRequireDefault(obj) { return obj && obj.__esModule ? obj : { default: obj }; }
-function _getRequireWildcardCache(nodeInterop) { if (typeof WeakMap !== "function") return null; var cacheBabelInterop = new WeakMap(); var cacheNodeInterop = new WeakMap(); return (_getRequireWildcardCache = function (nodeInterop) { return nodeInterop ? cacheNodeInterop : cacheBabelInterop; })(nodeInterop); }
-function _interopRequireWildcard(obj, nodeInterop) { if (!nodeInterop && obj && obj.__esModule) { return obj; } if (obj === null || typeof obj !== "object" && typeof obj !== "function") { return { default: obj }; } var cache = _getRequireWildcardCache(nodeInterop); if (cache && cache.has(obj)) { return cache.get(obj); } var newObj = {}; var hasPropertyDescriptor = Object.defineProperty && Object.getOwnPropertyDescriptor; for (var key in obj) { if (key !== "default" && Object.prototype.hasOwnProperty.call(obj, key)) { var desc = hasPropertyDescriptor ? Object.getOwnPropertyDescriptor(obj, key) : null; if (desc && (desc.get || desc.set)) { Object.defineProperty(newObj, key, desc); } else { newObj[key] = obj[key]; } } } newObj.default = obj; if (cache) { cache.set(obj, newObj); } return newObj; }
-const countLines = require('metro/src/lib/countLines');
+/**
+ * Copyright 2023-present 650 Industries (Expo). All rights reserved.
+ * Copyright (c) Meta Platforms, Inc. and affiliates.
+ *
+ * This source code is licensed under the MIT license found in the
+ * LICENSE file in the root directory of this source tree.
+ */
+
 async function transform(config, projectRoot, filename, data, options) {
-  var _jsModuleResults$outp2;
+  var _config$externallyMan;
   const isCss = options.type !== 'asset' && /\.(s?css|sass)$/.test(filename);
   // If the file is not CSS, then use the default behavior.
   if (!isCss) {
     return _metroTransformWorker().default.transform(config, projectRoot, filename, data, options);
+  }
+  if ((_config$externallyMan = config.externallyManagedCss) !== null && _config$externallyMan !== void 0 && _config$externallyMan[filename]) {
+    var _config$externallyMan2;
+    return _metroTransformWorker().default.transform(config, projectRoot, filename, Buffer.from(`module.exports = require("${(_config$externallyMan2 = config.externallyManagedCss) === null || _config$externallyMan2 === void 0 ? void 0 : _config$externallyMan2[filename]}")`), options);
   }
 
   // If the platform is not web, then return an empty module.
@@ -58,112 +60,16 @@ async function transform(config, projectRoot, filename, data, options) {
     // TODO: Native CSS Modules
     Buffer.from(code), options);
   }
-  let code = data.toString('utf8');
 
-  // Apply postcss transforms
-  code = await (0, _postcss().transformPostCssModule)(projectRoot, {
-    src: code,
-    filename
-  });
-
-  // TODO: When native has CSS support, this will need to move higher up.
-  const syntax = (0, _sass().matchSass)(filename);
-  if (syntax) {
-    code = (0, _sass().compileSass)(projectRoot, {
-      filename,
-      src: code
-    }, {
-      syntax
-    }).src;
+  // While this is called webCss
+  if (!config.cssInterop) {
+    return (0, _webCssTransform().webCssTransform)(config, projectRoot, filename, data, options);
   }
-
-  // If the file is a CSS Module, then transform it to a JS module
-  // in development and a static CSS file in production.
-  if ((0, _cssModules().matchCssModule)(filename)) {
-    var _jsModuleResults$outp;
-    const results = await (0, _cssModules().transformCssModuleWeb)({
-      filename,
-      src: code,
-      options: {
-        projectRoot,
-        dev: options.dev,
-        minify: options.minify,
-        sourceMap: false
-      }
-    });
-    const jsModuleResults = await _metroTransformWorker().default.transform(config, projectRoot, filename, Buffer.from(results.output), options);
-    const cssCode = results.css.toString();
-    const output = [{
-      type: 'js/module',
-      data: {
-        // @ts-expect-error
-        ...((_jsModuleResults$outp = jsModuleResults.output[0]) === null || _jsModuleResults$outp === void 0 ? void 0 : _jsModuleResults$outp.data),
-        // Append additional css metadata for static extraction.
-        css: {
-          code: cssCode,
-          lineCount: countLines(cssCode),
-          map: [],
-          functionMap: null
-        }
-      }
-    }];
-    return {
-      dependencies: jsModuleResults.dependencies,
-      output
-    };
+  if (options.platform === 'web') {
+    return (0, _webCssTransform().webCssTransform)(config, projectRoot, filename, data, options);
+  } else {
+    return (0, _nativeCssTransform().nativeCssTransform)(config, projectRoot, filename, data, options);
   }
-
-  // Global CSS:
-
-  const {
-    transform
-  } = await Promise.resolve().then(() => _interopRequireWildcard(require('lightningcss')));
-
-  // TODO: Add bundling to resolve imports
-  // https://lightningcss.dev/bundling.html#bundling-order
-
-  const cssResults = transform({
-    filename,
-    code: Buffer.from(code),
-    sourceMap: false,
-    cssModules: false,
-    projectRoot,
-    minify: options.minify
-  });
-
-  // TODO: Warnings:
-  // cssResults.warnings.forEach((warning) => {
-  // });
-
-  // Create a mock JS module that exports an empty object,
-  // this ensures Metro dependency graph is correct.
-  const jsModuleResults = await _metroTransformWorker().default.transform(config, projectRoot, filename, options.dev ? Buffer.from((0, _css().wrapDevelopmentCSS)({
-    src: code,
-    filename
-  })) : Buffer.from(''), options);
-  const cssCode = cssResults.code.toString();
-
-  // In production, we export the CSS as a string and use a special type to prevent
-  // it from being included in the JS bundle. We'll extract the CSS like an asset later
-  // and append it to the HTML bundle.
-  const output = [{
-    type: 'js/module',
-    data: {
-      // @ts-expect-error
-      ...((_jsModuleResults$outp2 = jsModuleResults.output[0]) === null || _jsModuleResults$outp2 === void 0 ? void 0 : _jsModuleResults$outp2.data),
-      // Append additional css metadata for static extraction.
-      css: {
-        code: cssCode,
-        lineCount: countLines(cssCode),
-        map: [],
-        functionMap: null
-      }
-    }
-  }];
-  return {
-    dependencies: jsModuleResults.dependencies,
-    output
-  };
 }
 
 /**

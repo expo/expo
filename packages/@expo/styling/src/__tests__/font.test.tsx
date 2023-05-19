@@ -1,8 +1,8 @@
 import { render } from '@testing-library/react-native';
 import React from 'react';
 
-import { createMockComponent, registerCSS } from './utils';
 import { StyleSheet } from '../runtime/native/stylesheet';
+import { createMockComponent, registerCSS } from './utils';
 
 const A = createMockComponent();
 

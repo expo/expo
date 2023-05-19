@@ -1,6 +1,6 @@
 {
   "extends": "../../../tsconfig.node",
-  "include": ["./src"],
+  "include": ["./src", "./types"],
   "exclude": ["**/__mocks__/*", "**/__tests__/*"],
   "compilerOptions": {
     "outDir": "./build",

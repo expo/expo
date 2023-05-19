@@ -1,9 +1,9 @@
 import { act, render } from '@testing-library/react-native';
 import React from 'react';
 
-import { createMockComponent, registerCSS } from './utils';
 import { colorScheme, isReduceMotionEnabled, vw } from '../runtime/native/globals';
 import { StyleSheet } from '../runtime/native/stylesheet';
+import { createMockComponent, registerCSS } from './utils';
 
 const A = createMockComponent();
 

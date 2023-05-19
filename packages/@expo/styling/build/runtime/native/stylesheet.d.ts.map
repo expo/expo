@@ -1,0 +1,1 @@
+{"version":3,"file":"stylesheet.d.ts","sourceRoot":"","sources":["../../../src/runtime/native/stylesheet.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,UAAU,EAAE,UAAU,IAAI,YAAY,EAAE,UAAU,EAAE,MAAM,cAAc,CAAC;AAElF,OAAO,EAAE,yBAAyB,EAAE,cAAc,EAAE,SAAS,EAAa,MAAM,aAAa,CAAC;AAwD9F,eAAO,MAAM,UAAU;;;;;;8BA7CK,MAAM,IAAI;;;;;wBAahB,yBAAyB;qBAiB5B,OAAO,MAAM,EAAE,cAAc,CAAC;CAe0B,CAAC"}

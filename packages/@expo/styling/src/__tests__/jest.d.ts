@@ -1,3 +1,4 @@
+/// <reference types="@types/jest" />
 export {};
 declare global {
   namespace jest {

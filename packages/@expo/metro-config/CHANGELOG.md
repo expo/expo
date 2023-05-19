@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Add support for @expo/styling & Tailwind CSS support. ([#22551](https://github.com/expo/expo/pull/22551) by [@marklawlor](https://github.com/marklawlor))
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

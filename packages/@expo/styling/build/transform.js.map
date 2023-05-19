@@ -1,0 +1,1 @@
+{"version":3,"file":"transform.js","sourceRoot":"","sources":["../src/transform.ts"],"names":[],"mappings":"AAAA,OAAO,EAAE,uBAAuB,EAAE,MAAM,aAAa,CAAC","sourcesContent":["export { cssToReactNativeRuntime } from './css-to-rn';\n"]}

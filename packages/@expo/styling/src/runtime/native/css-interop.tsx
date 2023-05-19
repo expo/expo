@@ -12,7 +12,7 @@ import { StyleSheet } from './stylesheet';
 type CSSInteropWrapperProps = {
   __component: ComponentType<any>;
   __styleKeys: string[];
-  __next: boolean;
+  __experimental: boolean;
 } & Record<string, any>;
 
 /**
@@ -21,7 +21,7 @@ type CSSInteropWrapperProps = {
  * @param type The React component type that should be rendered.
  * @param props The props object that should be passed to the component.
  * @param key The optional key to use for the component.
- * @param next Indicates whether this component should be rendered as a next.js component.
+ * @param experimental Indicates whether this component should use experimental features
  * @returns The element rendered via the suppled JSX function
  */
 export function defaultCSSInterop(
@@ -29,12 +29,12 @@ export function defaultCSSInterop(
   type: ComponentType<any>,
   { ...props }: any,
   key: string,
-  next = false
+  experimental = false
 ) {
   // This sets the component type and specifies the style keys that should be used.
   props.__component = type;
   props.__styleKeys = ['style'];
-  props.__next = next;
+  props.__experimental = experimental;
 
   /**
    * If the development environment is enabled, we should use the DevOnlyCSSInteropWrapper to wrap every component.
@@ -56,7 +56,7 @@ export function defaultCSSInterop(
  * It subscribes to StyleSheet.register, so it can handle style changes that may occur asynchronously.
  */
 const DevOnlyCSSInteropWrapper = React.forwardRef(function DevOnlyCSSInteropWrapper(
-  { __component: Component, __styleKeys, __next, ...props }: CSSInteropWrapperProps,
+  { __component: Component, __styleKeys, __experimental, ...props }: CSSInteropWrapperProps,
   ref
 ) {
   // This uses a reducer and the useEffect hook to subscribe to StyleSheet.register.
@@ -74,7 +74,7 @@ const DevOnlyCSSInteropWrapper = React.forwardRef(function DevOnlyCSSInteropWrap
       __component={Component}
       __styleKeys={__styleKeys}
       __skipCssInterop
-      __next={__next}
+      __experimental={__experimental}
     />
   ) : (
     <Component {...props} ref={ref} __skipCssInterop />
@@ -91,12 +91,17 @@ const DevOnlyCSSInteropWrapper = React.forwardRef(function DevOnlyCSSInteropWrap
  *
  * @param __component - Component to be rendered
  * @param __styleKeys - List of keys with the style props that need to be computed
- * @param __next - Flag indicating if should we should advanced featuers
+ * @param __experimental - Flag indicating if should we should advanced featuers
  * @param $props - Any other props to be passed to the component
  * @param ref - Ref to the component
  */
 const CSSInteropWrapper = React.forwardRef(function CSSInteropWrapper(
-  { __component: Component, __styleKeys, __next: isNext, ...$props }: CSSInteropWrapperProps,
+  {
+    __component: Component,
+    __styleKeys,
+    __experimental: experimental,
+    ...$props
+  }: CSSInteropWrapperProps,
   ref
 ) {
   const [, rerender] = React.useReducer(rerenderReducer, 0);
@@ -269,7 +274,7 @@ const CSSInteropWrapper = React.forwardRef(function CSSInteropWrapper(
     children = <ContainerContext.Provider value={containers}>{children}</ContainerContext.Provider>;
   }
 
-  if (isNext && $interopMeta.animationInteropKey) {
+  if (experimental && $interopMeta.animationInteropKey) {
     return (
       <AnimationInterop
         {...props}

@@ -31,6 +31,7 @@
   ],
   "dependencies": {
     "@expo/config": "~8.0.0",
+    "@expo/styling": "0.0.0",
     "@expo/env": "~0.0.2",
     "@expo/json-file": "~8.2.37",
     "chalk": "^4.1.0",
@@ -45,6 +46,14 @@
   "devDependencies": {
     "@babel/core": "^7.15.5",
     "sass": "^1.60.0"
+  },
+  "peerDependencies": {
+    "tailwindcss": "^3.3.1"
+  },
+  "peerDependenciesMeta": {
+    "tailwindcss": {
+      "optional": true
+    }
   },
   "publishConfig": {
     "access": "public"

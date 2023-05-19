@@ -1,0 +1,1 @@
+{"version":3,"file":"utils.js","sourceRoot":"","sources":["../../src/css-to-rn/utils.ts"],"names":[],"mappings":"AAAA,MAAM,UAAU,eAAe,CAAC,KAAY;IAC1C,MAAM,IAAI,KAAK,CAAC,mBAAmB,KAAK,EAAE,CAAC,CAAC;AAC9C,CAAC","sourcesContent":["export function exhaustiveCheck(value: never) {\n  throw new Error(`Unhandled case: ${value}`);\n}\n"]}
