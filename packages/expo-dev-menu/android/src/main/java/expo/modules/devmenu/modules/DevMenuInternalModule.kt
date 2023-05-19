@@ -15,7 +15,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.launch
 
 class DevMenuInternalModule : Module() {
-  val reactContext: Context
+  private val context: Context
     get() = appContext.reactContext
       ?: throw Exceptions.ReactContextLost()
 
@@ -26,7 +26,7 @@ class DevMenuInternalModule : Module() {
     )
 
     AsyncFunction("loadFontsAsync") {
-      DevMenuManager.loadFonts(reactContext)
+      DevMenuManager.loadFonts(context)
     }
 
     AsyncFunction("dispatchCallableAsync") { callableId: String, args: ReadableMap? ->
@@ -69,7 +69,7 @@ class DevMenuInternalModule : Module() {
     }
 
     AsyncFunction("copyToClipboardAsync") { content: String ->
-      val clipboard = reactContext.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
+      val clipboard = context.getSystemService(Context.CLIPBOARD_SERVICE) as ClipboardManager
       val clip = ClipData.newPlainText(null, content)
       clipboard.setPrimaryClip(clip)
     }
