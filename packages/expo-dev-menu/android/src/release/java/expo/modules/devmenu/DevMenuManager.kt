@@ -1,6 +1,7 @@
 package expo.modules.devmenu
 
 import android.app.Activity
+import android.content.Context
 import android.os.Bundle
 import android.view.KeyEvent
 import android.view.MotionEvent
@@ -114,7 +115,7 @@ object DevMenuManager : DevMenuManagerInterface {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 
-  fun loadFonts(applicationContext: ReactApplicationContext) {
+  fun loadFonts(context: Context) {
     throw IllegalStateException(DEV_MENU_IS_NOT_AVAILABLE)
   }
 

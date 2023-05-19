@@ -72,12 +72,15 @@ class DevLauncherNetworkLogger private constructor() {
       put("timestamp", now)
       put("wallTime", now)
       if (redirectResponse != null) {
-        put("redirectResponse", mapOf(
-          "url" to redirectResponse.request().url().toString(),
-          "status" to redirectResponse.code(),
-          "statusText" to redirectResponse.message(),
-          "headers" to redirectResponse.headers().toSingleMap(),
-        ))
+        put(
+          "redirectResponse",
+          mapOf(
+            "url" to redirectResponse.request().url().toString(),
+            "status" to redirectResponse.code(),
+            "statusText" to redirectResponse.message(),
+            "headers" to redirectResponse.headers().toSingleMap(),
+          )
+        )
       }
     }
     val requestWillBeSentData = JSONObject(mapOf(

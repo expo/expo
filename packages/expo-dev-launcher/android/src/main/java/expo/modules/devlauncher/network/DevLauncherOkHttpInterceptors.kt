@@ -10,7 +10,7 @@ import okhttp3.Response
 class DevLauncherOkHttpNetworkInterceptor : Interceptor {
   override fun intercept(chain: Interceptor.Chain): Response {
     if (!DevLauncherNetworkLogger.instance.shouldEmitEvents()) {
-      return chain.proceed(chain.request());
+      return chain.proceed(chain.request())
     }
     val request = chain.request()
     val redirectResponse = request.tag(RedirectResponse::class.java)
@@ -39,11 +39,12 @@ class DevLauncherOkHttpNetworkInterceptor : Interceptor {
 class DevLauncherOkHttpAppInterceptor : Interceptor {
   override fun intercept(chain: Interceptor.Chain): Response {
     if (!DevLauncherNetworkLogger.instance.shouldEmitEvents()) {
-      return chain.proceed(chain.request());
+      return chain.proceed(chain.request())
     }
-    return chain.proceed(chain.request().newBuilder()
-      .tag(RedirectResponse::class.java, RedirectResponse())
-      .build()
+    return chain.proceed(
+      chain.request().newBuilder()
+        .tag(RedirectResponse::class.java, RedirectResponse())
+        .build()
     )
   }
 }

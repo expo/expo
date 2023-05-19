@@ -9,12 +9,16 @@ import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.config.ReactFeatureFlags
 import com.facebook.react.shell.MainReactPackage
 import devmenu.com.th3rdwave.safeareacontext.SafeAreaContextPackage
+import expo.modules.adapters.react.ModuleRegistryAdapter
+import expo.modules.adapters.react.ReactModuleRegistryProvider
 import expo.modules.devlauncher.DevLauncherController
 import expo.modules.devlauncher.DevLauncherPackage
 import expo.modules.devlauncher.helpers.findDevMenuPackage
 import expo.modules.devlauncher.helpers.findPackagesWithDevMenuExtension
 import expo.modules.devlauncher.helpers.injectDebugServerHost
+import expo.modules.devmenu.modules.DevMenuPreferences
 import expo.modules.devmenu.react.createNonDebuggableJavaScriptExecutorFactory
+import expo.modules.kotlin.ModulesProvider
 
 class DevLauncherClientHost(
   application: Application,
@@ -42,6 +46,15 @@ class DevLauncherClientHost(
 
     return listOf(
       MainReactPackage(null),
+      ModuleRegistryAdapter(
+        ReactModuleRegistryProvider(emptyList()),
+        object : ModulesProvider {
+          override fun getModulesList() =
+            listOf(
+              DevMenuPreferences::class.java,
+            )
+        }
+      ),
       DevLauncherPackage(),
       SafeAreaContextPackage(),
     ) +

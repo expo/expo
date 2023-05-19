@@ -127,7 +127,7 @@ abstract class DevLauncherAppLoader(
   }
 
   private fun tryToStopFlipper(): Boolean {
-    val androidFlipperClientClass = Class.forName("com.facebook.flipper.android.AndroidFlipperClient");
+    val androidFlipperClientClass = Class.forName("com.facebook.flipper.android.AndroidFlipperClient")
     val getInstanceMethod = androidFlipperClientClass.getMethod("getInstanceIfInitialized")
 
     val flipperClient = getInstanceMethod.invoke(null) ?: return false
