@@ -174,6 +174,26 @@ export enum UIImagePickerPresentationStyle {
   AUTOMATIC = 'automatic',
 }
 
+/**
+ * Picker preferred asset representation mode. Its values are directly mapped to the [`PHPickerConfigurationAssetRepresentationMode`](https://developer.apple.com/documentation/photokit/phpickerconfigurationassetrepresentationmode).
+ *
+ * @platform ios
+ */
+export enum UIImagePickerPreferredAssetRepresentationMode {
+  /**
+   * A mode that indicates that the system chooses the appropriate asset representation.
+   */
+  Automatic = 'automatic',
+  /**
+   * A mode that uses the most compatible asset representation.
+   */
+  Compatible = 'compatible',
+  /**
+   * A mode that uses the current representation to avoid transcoding, if possible.
+   */
+  Current = 'current',
+}
+
 export enum CameraType {
   /**
    * Back/rear camera.
@@ -440,6 +460,13 @@ export type ImagePickerOptions = {
    * @platform android
    */
   cameraType?: CameraType;
+  /**
+   * Choose [preferred asset representation mode](https://developer.apple.com/documentation/photokit/phpickerconfigurationassetrepresentationmode)
+   * to use when loading assets.
+   * @default ImagePicker.UIImagePickerPreferredAssetRepresentationMode.Automatic
+   * @platform ios 14+
+   */
+  preferredAssetRepresentationMode?: UIImagePickerPreferredAssetRepresentationMode;
 };
 
 // @needsAudit
