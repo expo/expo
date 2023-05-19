@@ -18,6 +18,8 @@
 
 ### 💡 Others
 
+- Migrate iOS native modules to use the new Module API. ([#22319](https://github.com/expo/expo/pull/22319) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ## 2.3.0 — 2023-05-08
 
 ### 🎉 New features
