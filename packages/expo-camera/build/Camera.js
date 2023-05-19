@@ -277,7 +277,7 @@ export default class Camera extends React.Component {
             this.props.onMountError(nativeEvent);
         }
     };
-    _onResponsiveOrientationChanged = ({ nativeEvent }) => {
+    _onResponsiveOrientationChanged = ({ nativeEvent, }) => {
         if (this.props.onResponsiveOrientationChanged) {
             this.props.onResponsiveOrientationChanged(nativeEvent);
         }
