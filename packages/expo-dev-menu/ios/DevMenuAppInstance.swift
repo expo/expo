@@ -16,7 +16,8 @@ class DevMenuAppInstance: DevMenuRCTCxxBridgeDelegate, RCTBridgeDelegate {
 
     super.init()
 
-    self.bridge = DevMenuRCTBridge.init(delegate: self, launchOptions: nil)
+    // Temporarily disable Dev Menu
+    // self.bridge = DevMenuRCTBridge.init(delegate: self, launchOptions: nil)
   }
 
   init(manager: DevMenuManager, bridge: RCTBridge) {

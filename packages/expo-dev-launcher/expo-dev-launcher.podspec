@@ -32,6 +32,13 @@ Pod::Spec.new do |s|
     'GCC_PREPROCESSOR_DEFINITIONS' => "EX_DEV_LAUNCHER_VERSION=#{s.version}"
   }
 
+  fabric_enabled = ENV['RCT_NEW_ARCH_ENABLED'] == '1'
+  fabric_flags = '-DRN_FABRIC_ENABLED -DRCT_NEW_ARCH_ENABLED'
+  folly_version = '2021.07.22.00'
+  folly_flags = '-DFOLLY_NO_CONFIG -DFOLLY_MOBILE=1 -DFOLLY_USE_LIBCPP=1 -Wno-comma -Wno-shorten-64-to-32'
+  folly_compiler_flags = folly_flags + ' ' + '-Wno-comma -Wno-shorten-64-to-32'
+  boost_compiler_flags = '-Wno-documentation'
+
   other_c_flags = '$(inherited)'
   dev_launcher_url = ENV['EX_DEV_LAUNCHER_URL'] || ""
   if dev_launcher_url != ""
@@ -46,12 +53,20 @@ Pod::Spec.new do |s|
   # Swift/Objective-C compatibility
   s.pod_target_xcconfig = {
     'DEFINES_MODULE' => 'YES',
-    'OTHER_CFLAGS[config=Debug]' => other_c_flags,
+    'OTHER_CFLAGS[config=Debug]' => other_c_flags + " " + folly_flags + " " + fabric_flags,
     'OTHER_SWIFT_FLAGS[config=Debug]' => other_swift_flags,
+    "HEADER_SEARCH_PATHS" => "\"$(PODS_TARGET_SRCROOT)/ReactCommon\" \"$(PODS_TARGET_SRCROOT)\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/DoubleConversion\" \"$(PODS_ROOT)/Headers/Private/React-Core\"",
+    "CLANG_CXX_LANGUAGE_STANDARD" => "c++17",
   }
 
   s.user_target_xcconfig = {
     "HEADER_SEARCH_PATHS" => "\"${PODS_CONFIGURATION_BUILD_DIR}/expo-dev-launcher/Swift Compatibility Header\"",
+  }
+
+  s.compiler_flags = folly_compiler_flags + ' ' + boost_compiler_flags
+  s.xcconfig = {
+    "HEADER_SEARCH_PATHS" => "\"$(PODS_ROOT)/boost\" \"$(PODS_ROOT)/boost-for-react-native\" \"$(PODS_ROOT)/glog\" \"$(PODS_ROOT)/RCT-Folly\" \"$(PODS_ROOT)/Headers/Public/React-hermes\" \"$(PODS_ROOT)/Headers/Public/hermes-engine\"",
+    "OTHER_CFLAGS" => other_c_flags + " " + folly_flags + " " + fabric_flags
   }
 
   s.dependency "React-Core"
