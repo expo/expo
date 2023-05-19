@@ -35,19 +35,11 @@ buildscript {
   }
 }
 
-// Creating sources with comments
-task androidSourcesJar(type: Jar) {
-  classifier = 'sources'
-  from android.sourceSets.main.java.srcDirs
-}
-
 afterEvaluate {
   publishing {
     publications {
       release(MavenPublication) {
         from components.release
-        // Add additional sourcesJar to artifacts
-        artifact(androidSourcesJar)
       }
     }
     repositories {
@@ -104,6 +96,11 @@ android {
 
     releaseWithDevMenu {
       setRoot 'src/debug'
+    }
+  }
+  publishing {
+    singleVariant("release") {
+      withSourcesJar()
     }
   }
 }
