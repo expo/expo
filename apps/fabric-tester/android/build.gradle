@@ -42,6 +42,19 @@ allprojects {
         maven { url 'https://www.jitpack.io' }
     }
 }
+
+// Workaround: Force all android libraries to use java 11.
+// This is to fix the build errors from some third party libraries still using java 8,
+// which cause gradle 8 errors:
+// 'compileDebugJavaWithJavac' task (current target is 1.8) and 'compileDebugKotlin' task (current target is 11) jvm target compatibility should be set to the same Java version.
+allprojects { subproject ->
+  subproject.pluginManager.withPlugin("com.android.library") {
+    subproject.extensions.findByType(com.android.build.api.variant.AndroidComponentsExtension)?.finalizeDsl { ext ->
+      ext.compileOptions.sourceCompatibility = JavaVersion.VERSION_11
+      ext.compileOptions.targetCompatibility = JavaVersion.VERSION_11
+    }
+  }
+}
 // @generated begin expo-camera-import - expo prebuild (DO NOT MODIFY) sync-f244f4f3d8bf7229102e8f992b525b8602c74770
 def expoCameraMavenPath = new File(["node", "--print", "require.resolve('expo-camera/package.json')"].execute(null, rootDir).text.trim(), "../android/maven")
 allprojects { repositories { maven { url(expoCameraMavenPath) } } }
