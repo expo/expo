@@ -32,16 +32,18 @@ export default function App() {
     const checkResult = await Updates.checkForUpdateAsync();
     if (checkResult.isRollBackToEmbedded) {
       setUpdateMessage('checkForUpdateAsync received a rollback directive...');
+      setUpdateAvailable(true);
     } else if (checkResult.isAvailable) {
       setUpdateMessage(
         `checkForUpdateAsync found a new update: manifest = \n${manifestToString(
           checkResult.manifest
         )}...`
       );
+      setUpdateAvailable(true);
     } else {
       setUpdateMessage('No new update available');
+      setUpdateAvailable(false);
     }
-    setUpdateAvailable(checkResult.isAvailable);
   };
 
   /**
