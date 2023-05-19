@@ -3,7 +3,6 @@ package expo.modules.devmenu
 import android.os.Bundle
 import com.facebook.react.ReactInstanceManager
 import expo.modules.devmenu.devtools.DevMenuDevToolsDelegate
-import kotlinx.coroutines.runBlocking
 
 object DevMenuDevSettings {
   fun getDevSettings(reactInstanceManager: ReactInstanceManager): Bundle {
