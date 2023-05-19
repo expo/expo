@@ -5,63 +5,63 @@ import ExpoModulesCore
 
 public final class CameraViewModule: Module {
   public func definition() -> ModuleDefinition {
-    Name("ExponentCamera")
+    Name("ExpoCamera")
 
     OnCreate {
       let permissionsManager = self.appContext?.permissions
 
       EXPermissionsMethodsDelegate.register(
-        [EXCameraPermissionRequester(), EXCameraCameraPermissionRequester(), EXCameraMicrophonePermissionRequester()],
+        [CameraPermissionRequester(), CameraCameraPermissionRequester(), CameraMicrophonePermissionRequester()],
         withPermissionsManager: permissionsManager
       )
     }
 
     Constants([
       "Type": [
-        "front": EXCameraType.front.rawValue,
-        "back": EXCameraType.back.rawValue
+        "front": CameraType.front.rawValue,
+        "back": CameraType.back.rawValue
       ],
       "FlashMode": [
-        "off": EXCameraFlashMode.off.rawValue,
-        "on": EXCameraFlashMode.on.rawValue,
-        "auto": EXCameraFlashMode.auto.rawValue,
-        "torch": EXCameraFlashMode.torch.rawValue
+        "off": CameraFlashMode.off.rawValue,
+        "on": CameraFlashMode.on.rawValue,
+        "auto": CameraFlashMode.auto.rawValue,
+        "torch": CameraFlashMode.torch.rawValue
       ],
       "AutoFocus": [
-        "on": EXCameraAutoFocus.on.rawValue,
-        "off": EXCameraAutoFocus.off.rawValue
+        "on": CameraAutoFocus.on.rawValue,
+        "off": CameraAutoFocus.off.rawValue
       ],
       "WhiteBalance": [
-        "auto": EXCameraWhiteBalance.auto.rawValue,
-        "sunny": EXCameraWhiteBalance.sunny.rawValue,
-        "cloudy": EXCameraWhiteBalance.cloudy.rawValue,
-        "shadow": EXCameraWhiteBalance.shadow.rawValue,
-        "incandescent": EXCameraWhiteBalance.incandescent.rawValue,
-        "fluorescent": EXCameraWhiteBalance.fluorescent.rawValue
+        "auto": CameraWhiteBalance.auto.rawValue,
+        "sunny": CameraWhiteBalance.sunny.rawValue,
+        "cloudy": CameraWhiteBalance.cloudy.rawValue,
+        "shadow": CameraWhiteBalance.shadow.rawValue,
+        "incandescent": CameraWhiteBalance.incandescent.rawValue,
+        "fluorescent": CameraWhiteBalance.fluorescent.rawValue
       ],
       "VideoQuality": [
-        "2160p": EXCameraVideoResolution.video2160p.rawValue,
-        "1080p": EXCameraVideoResolution.video1080p.rawValue,
-        "720p": EXCameraVideoResolution.video720p.rawValue,
-        "480p": EXCameraVideoResolution.video4x3.rawValue,
-        "4:3": EXCameraVideoResolution.video4x3.rawValue
+        "2160p": VideoQuality.video2160p.rawValue,
+        "1080p": VideoQuality.video1080p.rawValue,
+        "720p": VideoQuality.video720p.rawValue,
+        "480p": VideoQuality.video4x3.rawValue,
+        "4:3": VideoQuality.video4x3.rawValue
       ],
       "VideoStabilization": [
-        "off": EXCameraVideoStabilizationMode.videoStabilizationModeOff.rawValue,
-        "standard": EXCameraVideoStabilizationMode.videoStabilizationModeStandard.rawValue,
-        "cinematic": EXCameraVideoStabilizationMode.videoStabilizationModeCinematic.rawValue,
-        "auto": EXCameraVideoStabilizationMode.avCaptureVideoStabilizationModeAuto.rawValue
+        "off": CameraVideoStabilizationMode.off.rawValue,
+        "standard": CameraVideoStabilizationMode.standard.rawValue,
+        "cinematic": CameraVideoStabilizationMode.cinematic.rawValue,
+        "auto": CameraVideoStabilizationMode.auto.rawValue
       ],
       "VideoCodec": [
-        "H264": EXCameraVideoCodec.H264.rawValue,
-        "HEVC": EXCameraVideoCodec.HEVC.rawValue,
-        "JPEG": EXCameraVideoCodec.JPEG.rawValue,
-        "AppleProRes422": EXCameraVideoCodec.appleProRes422.rawValue,
-        "AppleProRes4444": EXCameraVideoCodec.appleProRes4444.rawValue
+        "H264": CameraVideoCodec.h264.rawValue,
+        "HEVC": CameraVideoCodec.hevc.rawValue,
+        "JPEG": CameraVideoCodec.jpeg.rawValue,
+        "AppleProRes422": CameraVideoCodec.appleProRes422.rawValue,
+        "AppleProRes4444": CameraVideoCodec.appleProRes4444.rawValue
       ]
     ])
 
-    View(EXCamera.self) {
+    View(ExpoCamera.self) {
       Events(
         "onCameraReady",
         "onMountError",
@@ -71,31 +71,31 @@ public final class CameraViewModule: Module {
         "onResponsiveOrientationChanged"
       )
 
-      Prop("type") { (view, type: Int) in
-        if view.presetCamera != type {
-          view.presetCamera = type
+      Prop("type") { (view, type: CameraType) in
+        if view.presetCamera.rawValue != type.rawValue {
+          view.presetCamera = type.toPosition()
           view.updateType()
         }
       }
 
-      Prop("flashMode") { (view, flashMode: Int) in
-        if let flashMode = EXCameraFlashMode(rawValue: flashMode), view.flashMode != flashMode {
+      Prop("flashMode") { (view, flashMode: CameraFlashMode) in
+        if view.flashMode.rawValue != flashMode.rawValue {
           view.flashMode = flashMode
           view.updateFlashMode()
         }
       }
 
       Prop("faceDetectorSettings") { (view, settings: [String: Any]) in
-        view.updateFaceDetectorSettings(settings)
+        view.updateFaceDetectorSettings(settings: settings)
       }
 
       Prop("barCodeScannerSettings") { (view, settings: [String: Any]) in
-        view.setBarCodeScannerSettings(settings)
+        view.setBarCodeScannerSettings(settings: settings)
       }
 
       Prop("autoFocus") { (view, autoFocus: Int) in
-        if view.autoFocus != autoFocus {
-          view.autoFocus = autoFocus
+        if view.autoFocus.rawValue != autoFocus {
+          view.autoFocus = AVCaptureDevice.FocusMode(rawValue: autoFocus) ?? .locked
           view.updateFocusMode()
         }
       }
@@ -115,15 +115,17 @@ public final class CameraViewModule: Module {
       }
 
       Prop("whiteBalance") { (view, whiteBalance: Int) in
-        if view.whiteBalance != whiteBalance {
-          view.whiteBalance = whiteBalance
+        if view.whiteBalance.rawValue != whiteBalance {
+          view.whiteBalance = CameraWhiteBalance(rawValue: whiteBalance) ?? .auto
           view.updateWhiteBalance()
         }
       }
 
       Prop("pictureSize") { (view, pictureSize: String) in
-        view.pictureSize = pictureSizesDict[pictureSize]?.rawValue as NSString?
-        view.updatePictureSize()
+        if let size = pictureSizesDict[pictureSize] {
+          view.pictureSize = size
+          view.updatePictureSize()
+        }
       }
 
       Prop("faceDetectorEnabled") { (view, detectFaces: Bool?) in
@@ -147,25 +149,25 @@ public final class CameraViewModule: Module {
     }
 
     AsyncFunction("takePicture") { (options: TakePictureOptions, viewTag: Int, promise: Promise) in
-      guard let view = self.appContext?.findView(withTag: viewTag, ofType: EXCamera.self) else {
-        throw Exceptions.ViewNotFound((tag: viewTag, type: EXCamera.self))
+      guard let view = self.appContext?.findView(withTag: viewTag, ofType: ExpoCamera.self) else {
+        throw Exceptions.ViewNotFound((tag: viewTag, type: ExpoCamera.self))
       }
       #if targetEnvironment(simulator)
       try takePictureForSimulator(self.appContext, view, options, promise)
       #else // simulator
-      view.takePicture(options.toDictionary(), resolve: promise.resolver, reject: promise.legacyRejecter)
+      view.takePicture(options: options, promise: promise)
       #endif // not simulator
     }
     .runOnQueue(.main)
 
-    AsyncFunction("record") { (options: [String: Any], viewTag: Int, promise: Promise) in
+    AsyncFunction("record") { (options: CameraRecordingOptions, viewTag: Int, promise: Promise) in
       #if targetEnvironment(simulator)
       throw Exceptions.SimulatorNotSupported()
       #else
-      guard let view = self.appContext?.findView(withTag: viewTag, ofType: EXCamera.self) else {
-        throw Exceptions.ViewNotFound((tag: viewTag, type: EXCamera.self))
+      guard let view = self.appContext?.findView(withTag: viewTag, ofType: ExpoCamera.self) else {
+        throw Exceptions.ViewNotFound((tag: viewTag, type: ExpoCamera.self))
       }
-      view.record(options, resolve: promise.resolver, reject: promise.legacyRejecter)
+      view.record(options: options, promise: promise)
       #endif
     }
     .runOnQueue(.main)
@@ -174,8 +176,8 @@ public final class CameraViewModule: Module {
       #if targetEnvironment(simulator)
       throw Exceptions.SimulatorNotSupported()
       #else
-      guard let view = self.appContext?.findView(withTag: viewTag, ofType: EXCamera.self) else {
-        throw Exceptions.ViewNotFound((tag: viewTag, type: EXCamera.self))
+      guard let view = self.appContext?.findView(withTag: viewTag, ofType: ExpoCamera.self) else {
+        throw Exceptions.ViewNotFound((tag: viewTag, type: ExpoCamera.self))
       }
       view.stopRecording()
       #endif
@@ -186,8 +188,8 @@ public final class CameraViewModule: Module {
       #if targetEnvironment(simulator)
       throw Exceptions.SimulatorNotSupported()
       #else
-      guard let view = self.appContext?.findView(withTag: viewTag, ofType: EXCamera.self) else {
-        throw Exceptions.ViewNotFound((tag: viewTag, type: EXCamera.self))
+      guard let view = self.appContext?.findView(withTag: viewTag, ofType: ExpoCamera.self) else {
+        throw Exceptions.ViewNotFound((tag: viewTag, type: ExpoCamera.self))
       }
       view.resumePreview()
       #endif
@@ -198,8 +200,8 @@ public final class CameraViewModule: Module {
       #if targetEnvironment(simulator)
       throw Exceptions.SimulatorNotSupported()
       #else
-      guard let view = self.appContext?.findView(withTag: viewTag, ofType: EXCamera.self) else {
-        throw Exceptions.ViewNotFound((tag: viewTag, type: EXCamera.self))
+      guard let view = self.appContext?.findView(withTag: viewTag, ofType: ExpoCamera.self) else {
+        throw Exceptions.ViewNotFound((tag: viewTag, type: ExpoCamera.self))
       }
       view.pausePreview()
       #endif
@@ -218,7 +220,7 @@ public final class CameraViewModule: Module {
     AsyncFunction("getPermissionsAsync") { (promise: Promise) in
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
         self.appContext?.permissions,
-        withRequester: EXCameraPermissionRequester.self,
+        withRequester: CameraPermissionRequester.self,
         resolve: promise.resolver,
         reject: promise.legacyRejecter
       )
@@ -227,7 +229,7 @@ public final class CameraViewModule: Module {
     AsyncFunction("requestPermissionsAsync") { (promise: Promise) in
       EXPermissionsMethodsDelegate.askForPermission(
         withPermissionsManager: self.appContext?.permissions,
-        withRequester: EXCameraPermissionRequester.self,
+        withRequester: CameraPermissionRequester.self,
         resolve: promise.resolver,
         reject: promise.legacyRejecter
       )
@@ -236,7 +238,7 @@ public final class CameraViewModule: Module {
     AsyncFunction("getCameraPermissionsAsync") { (promise: Promise) in
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
         self.appContext?.permissions,
-        withRequester: EXCameraCameraPermissionRequester.self,
+        withRequester: CameraCameraPermissionRequester.self,
         resolve: promise.resolver,
         reject: promise.legacyRejecter
       )
@@ -245,7 +247,7 @@ public final class CameraViewModule: Module {
     AsyncFunction("requestCameraPermissionsAsync") { (promise: Promise) in
       EXPermissionsMethodsDelegate.askForPermission(
         withPermissionsManager: self.appContext?.permissions,
-        withRequester: EXCameraCameraPermissionRequester.self,
+        withRequester: CameraCameraPermissionRequester.self,
         resolve: promise.resolver,
         reject: promise.legacyRejecter
       )
@@ -254,7 +256,7 @@ public final class CameraViewModule: Module {
     AsyncFunction("getMicrophonePermissionsAsync") { (promise: Promise) in
       EXPermissionsMethodsDelegate.getPermissionWithPermissionsManager(
         self.appContext?.permissions,
-        withRequester: EXCameraMicrophonePermissionRequester.self,
+        withRequester: CameraMicrophonePermissionRequester.self,
         resolve: promise.resolver,
         reject: promise.legacyRejecter
       )
@@ -263,7 +265,7 @@ public final class CameraViewModule: Module {
     AsyncFunction("requestMicrophonePermissionsAsync") { (promise: Promise) in
       EXPermissionsMethodsDelegate.askForPermission(
         withPermissionsManager: self.appContext?.permissions,
-        withRequester: EXCameraMicrophonePermissionRequester.self,
+        withRequester: CameraMicrophonePermissionRequester.self,
         resolve: promise.resolver,
         reject: promise.legacyRejecter
       )
@@ -271,7 +273,7 @@ public final class CameraViewModule: Module {
   }
 }
 
-private func takePictureForSimulator(_ appContext: AppContext?, _ view: EXCamera, _ options: TakePictureOptions, _ promise: Promise) throws {
+private func takePictureForSimulator(_ appContext: AppContext?, _ view: ExpoCamera, _ options: TakePictureOptions, _ promise: Promise) throws {
   if options.fastMode {
     promise.resolve()
   }
