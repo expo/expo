@@ -220,27 +220,6 @@ dependencies {
     }
 }
 
-afterEvaluate { project ->
-    task androidSourcesJar(type: Jar) {
-        classifier = 'sources'
-        from android.sourceSets.main.java.srcDirs
-        include '**/*.java'
-    }
-
-    android.libraryVariants.all { variant ->
-        def name = variant.name.capitalize()
-        def javaCompileTask = variant.javaCompileProvider.get()
-
-        task "jar${name}"(type: Jar, dependsOn: javaCompileTask) {
-            from javaCompileTask.destinationDir
-        }
-    }
-
-    artifacts {
-        archives androidSourcesJar
-    }
-}
-
 task extractAARHeaders {
     doLast {
         configurations.extractHeaders.files.each {

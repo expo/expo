@@ -13,20 +13,12 @@ file("${project(':ReactAndroid').projectDir}/gradle.properties").withInputStream
 group = 'host.exp.exponent'
 version = '45.0.0'
 
-// Creating sources with comments
-task androidSourcesJar(type: Jar) {
-  classifier = 'sources'
-  from android.sourceSets.main.java.srcDirs
-}
-
 afterEvaluate {
   publishing {
     publications {
       // use `versionedRelease` configuration when publishing to maven
       versionedRelease(MavenPublication) {
         from components.versionedRelease
-        // Add additional sourcesJar to artifacts
-        artifact(androidSourcesJar)
       }
     }
     repositories {
@@ -132,6 +124,12 @@ android {
 
   // use `versionedRelease` configuration when publishing to maven
   defaultPublishConfig "versionedRelease"
+
+  publishing {
+    singleVariant("release") {
+      withSourcesJar()
+    }
+  }
 }
 
 // WHEN_VERSIONING_REMOVE_FROM_HERE
