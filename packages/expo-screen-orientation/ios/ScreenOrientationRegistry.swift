@@ -12,7 +12,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   public static let shared = ScreenOrientationRegistry()
 
   var currentScreenOrientation: UIInterfaceOrientation
-  var notificationListeners: [ScreenOrientationModule?] = []
+  var orientationListeners: [ScreenOrientationModule?] = []
   var moduleInterfaceMasks: [ScreenOrientationModule: UIInterfaceOrientationMask] = [:]
   weak var currentTraitCollection: UITraitCollection?
   var lastOrientationMask: UIInterfaceOrientationMask
@@ -216,7 +216,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   // Called on the end of the screen orientation change. Notifies modules about the orientation change.
   func screenOrientationDidChange(_ newScreenOrientation: UIInterfaceOrientation) {
     currentScreenOrientation = newScreenOrientation
-    for module in notificationListeners {
+    for module in orientationListeners {
       module?.screenOrientationDidChange(newScreenOrientation)
     }
   }
@@ -226,13 +226,13 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   }
 
   func registerModuleToReceiveNotification(_ module: ScreenOrientationModule) {
-    notificationListeners.append(module)
+    orientationListeners.append(module)
   }
 
   func unregisterModuleFromReceivingNotification(_ module: ScreenOrientationModule) {
-    for i in (0..<notificationListeners.count).reversed() {
-      if notificationListeners[i] === module || notificationListeners[i] == nil {
-        notificationListeners.remove(at: i)
+    for i in (0..<orientationListeners.count).reversed() {
+      if orientationListeners[i] === module || orientationListeners[i] == nil {
+        orientationListeners.remove(at: i)
       }
     }
   }
