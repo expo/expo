@@ -24,11 +24,11 @@ public class DevLauncherInternal: Module, EXDevLauncherPendingDeepLinkListener {
       ]
     }
 
-    OnCreate {
+    OnStartObserving {
       EXDevLauncherController.sharedInstance().pendingDeepLinkRegistry.subscribe(self)
     }
 
-    OnDestroy {
+    OnStopObserving {
       EXDevLauncherController.sharedInstance().pendingDeepLinkRegistry.unsubscribe(self)
     }
 
