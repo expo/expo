@@ -8,12 +8,14 @@
 
 #import <UIKit/UIKit.h>
 #import <AVFoundation/AVFoundation.h>
+#import <CoreMotion/CoreMotion.h>
 #import <EXCamera/EXCamera.h>
 
 @interface EXCameraUtils : NSObject
 
 // Camera utilities
 + (AVCaptureDevice *)deviceWithMediaType:(NSString *)mediaType preferringPosition:(AVCaptureDevicePosition)position;
++ (UIDeviceOrientation)deviceOrientationForAccelerometerData:(CMAccelerometerData*)accelerometerData defaultOrientation:(UIDeviceOrientation)orientation;
 
 // Enum conversions
 + (float)temperatureForWhiteBalance:(EXCameraWhiteBalance)whiteBalance;

@@ -105,6 +105,13 @@ export enum VideoQuality {
   '4:3' = '4:3',
 }
 
+export enum CameraOrientation {
+  portrait = 1,
+  portraitUpsideDown = 2,
+  landscapeLeft = 3,
+  landscapeRight = 4,
+}
+
 // @docsMissing
 /**
  * @hidden We do not expose related web methods in docs.
@@ -274,6 +281,15 @@ export type PictureSavedListener = (event: {
  * @hidden
  */
 export type CameraReadyListener = () => void;
+
+/**
+ * @hidden
+ */
+export type ResponsiveOrientationChangedListener = (event: {
+  nativeEvent: ResponsiveOrientationChanged;
+}) => void;
+
+export type ResponsiveOrientationChanged = { orientation: CameraOrientation };
 
 /**
  * @hidden
@@ -470,6 +486,18 @@ export type CameraProps = ViewProps & {
    * @platform web
    */
   poster?: string;
+  /**
+   * Whether to allow responsive orientation of the camera when the screen orientation is locked (i.e. when set to `true`
+   * landscape photos will be taken if the device is turned that way, even if the app or device orientation is locked to portrait)
+   * @platform ios
+   */
+  responsiveOrientationWhenOrientationLocked?: boolean;
+  /**
+   * Callback invoked when responsive orientation changes. Only applicable if `responsiveOrientationWhenOrientationLocked` is `true`
+   * @param event result object that contains updated orientation of camera
+   * @platform ios
+   */
+  onResponsiveOrientationChanged?: (event: ResponsiveOrientationChanged) => void;
 };
 
 /**
@@ -485,6 +513,7 @@ export type CameraNativeProps = {
   onFacesDetected?: (event: { nativeEvent: FaceDetectionResult }) => void;
   onFaceDetectionError?: (event: { nativeEvent: Error }) => void;
   onPictureSaved?: PictureSavedListener;
+  onResponsiveOrientationChanged?: ResponsiveOrientationChangedListener;
   type?: number | string;
   flashMode?: number | string;
   autoFocus?: string | boolean | number;
@@ -499,6 +528,7 @@ export type CameraNativeProps = {
   ratio?: string;
   useCamera2Api?: boolean;
   poster?: string;
+  responsiveOrientationWhenOrientationLocked?: boolean;
 };
 
 // @docsMissing

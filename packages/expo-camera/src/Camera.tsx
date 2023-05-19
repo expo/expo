@@ -4,6 +4,7 @@ import { findNodeHandle } from 'react-native';
 
 import {
   CameraCapturedPicture,
+  CameraOrientation,
   CameraPictureOptions,
   CameraProps,
   CameraRecordingOptions,
@@ -339,6 +340,16 @@ export default class Camera extends React.Component<CameraProps> {
     }
   };
 
+  _onResponsiveOrientationChanged = ({
+    nativeEvent,
+  }: {
+    nativeEvent: { orientation: CameraOrientation };
+  }) => {
+    if (this.props.onResponsiveOrientationChanged) {
+      this.props.onResponsiveOrientationChanged(nativeEvent);
+    }
+  };
+
   _onObjectDetected =
     (callback?: Function) =>
     ({ nativeEvent }: { nativeEvent: any }) => {
@@ -392,6 +403,7 @@ export default class Camera extends React.Component<CameraProps> {
         onBarCodeScanned={onBarCodeScanned}
         onFacesDetected={onFacesDetected}
         onPictureSaved={_onPictureSaved}
+        onResponsiveOrientationChanged={this._onResponsiveOrientationChanged}
       />
     );
   }
