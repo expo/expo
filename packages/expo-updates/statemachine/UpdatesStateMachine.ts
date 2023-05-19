@@ -1,18 +1,36 @@
 import { createMachine, assign } from 'xstate';
 
 interface UpdatesContext {
-  updateId: number;
+  latestUpdateId: number;
+  downloadedUpdateId: number;
+  lastError: string;
 }
+
+const newManifestOnServer = assign({
+  latestUpdateId: (context: UpdatesContext) => context.latestUpdateId + 1,
+});
+
+const manifestDownloaded = assign({
+  downloadedUpdateId: (context: UpdatesContext) => context.latestUpdateId,
+});
+
+const setError = (error: string) =>
+  assign({
+    lastError: (context: UpdatesContext) => error,
+  });
 
 /**
  * Model of the expo-updates state machine, written in Typescript.
  * The actual implementations of this state machine will be in Swift on iOS and Kotlin on Android.
+ *
  */
 const UpdatesStateMachine = createMachine<UpdatesContext>({
   id: 'Updates',
   initial: 'afterRestart',
   context: {
-    updateId: 0,
+    latestUpdateId: 0,
+    downloadedUpdateId: 0,
+    lastError: '',
   },
   states: {
     afterRestart: {
@@ -24,18 +42,19 @@ const UpdatesStateMachine = createMachine<UpdatesContext>({
       on: {
         CHECK_COMPLETE_AVAILABLE_NEW: {
           target: 'updateAvailable',
-          actions: assign({
-            updateId: (context: UpdatesContext) => context.updateId + 1,
-          }),
+          actions: [newManifestOnServer, setError('')],
         },
         CHECK_COMPLETE_AVAILABLE_UNCHANGED: {
           target: 'updateAvailable',
+          actions: setError(''),
         },
         CHECK_COMPLETE_UNAVAILABLE: {
           target: 'updateNotAvailable',
+          actions: setError(''),
         },
         CHECK_ERROR: {
-          target: 'errorOnCheck',
+          target: 'afterRestart',
+          actions: setError('errorOnCheck'),
         },
       },
     },
@@ -43,15 +62,15 @@ const UpdatesStateMachine = createMachine<UpdatesContext>({
       on: {
         RECHECK_COMPLETE_NEW: {
           target: 'updateAvailable',
-          actions: assign({
-            updateId: (context: UpdatesContext) => context.updateId + 1,
-          }),
+          actions: [newManifestOnServer, setError('')],
         },
         RECHECK_COMPLETE_UNCHANGED: {
           target: 'updatePending',
+          actions: setError(''),
         },
         RECHECK_ERROR: {
-          target: 'errorOnRecheck',
+          target: 'updatePending',
+          actions: setError('errorOnReheck'),
         },
       },
     },
@@ -70,15 +89,15 @@ const UpdatesStateMachine = createMachine<UpdatesContext>({
       on: {
         DOWNLOAD_COMPLETE_NEW: {
           target: 'updatePending',
-          actions: assign({
-            updateId: (context: UpdatesContext) => context.updateId + 1,
-          }),
+          actions: [newManifestOnServer, manifestDownloaded, setError('')],
         },
         DOWNLOAD_COMPLETE_UNCHANGED: {
           target: 'updatePending',
+          actions: [manifestDownloaded, setError('')],
         },
         DOWNLOAD_ERROR: {
-          target: 'errorOnDownload',
+          target: 'updateAvailable',
+          actions: setError('errorOnDownload'),
         },
       },
     },
@@ -90,27 +109,6 @@ const UpdatesStateMachine = createMachine<UpdatesContext>({
     },
     restarting: {
       type: 'final',
-    },
-    errorOnCheck: {
-      on: {
-        DISMISS: {
-          target: 'afterRestart',
-        },
-      },
-    },
-    errorOnRecheck: {
-      on: {
-        DISMISS: {
-          target: 'updatePending',
-        },
-      },
-    },
-    errorOnDownload: {
-      on: {
-        DISMISS: {
-          target: 'updateAvailable',
-        },
-      },
     },
   },
 });
