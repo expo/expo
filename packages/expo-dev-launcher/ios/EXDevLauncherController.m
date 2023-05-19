@@ -52,6 +52,7 @@
 @property (nonatomic, strong) EXDevLauncherInstallationIDHelper *installationIDHelper;
 @property (nonatomic, strong) EXDevLauncherNetworkInterceptor *networkInterceptor;
 @property (nonatomic, assign) BOOL isStarted;
+@property (nonatomic, strong) EXDevLauncherBridgeDelegate *bridgeDelegate;
 
 @end
 
@@ -78,6 +79,7 @@
     self.installationIDHelper = [EXDevLauncherInstallationIDHelper new];
     self.networkInterceptor = [EXDevLauncherNetworkInterceptor new];
     self.shouldPreferUpdatesInterfaceSourceUrl = NO;
+    self.bridgeDelegate = [EXDevLauncherBridgeDelegate new];
   }
   return self;
 }
@@ -269,7 +271,7 @@
 
   [self _removeInitModuleObserver];
   UIApplication *application = [UIApplication sharedApplication];
-  UIView *rootView = [EXDevLauncherBridgeDelegate createRootViewWithModuleName:@"main" launchOptions:_launchOptions application:application];
+  UIView *rootView = [_bridgeDelegate createRootViewWithModuleName:@"main" launchOptions:_launchOptions application:application];
 
   [self _ensureUserInterfaceStyleIsInSyncWithTraitEnv:rootView];
 
