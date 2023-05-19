@@ -51,9 +51,9 @@ def defaultDir
 
 if (rootProject.ext.has('reactNativeAndroidRoot')) {
   defaultDir = rootProject.ext.get('reactNativeAndroidRoot')
-} else if (findProject(':ReactAndroid') != null) {
+} else if (findProject(':packages:react-native:ReactAndroid') != null) {
     sourceBuild = false
-    defaultDir = project(':ReactAndroid').projectDir
+    defaultDir = project(':packages:react-native:ReactAndroid').projectDir
 } else {
   defaultDir = file("$nodeModules/react-native")
 }
