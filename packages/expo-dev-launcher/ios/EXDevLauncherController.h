@@ -10,6 +10,7 @@ NS_ASSUME_NONNULL_BEGIN
 
 @class EXDevLauncherInstallationIDHelper;
 @class EXDevLauncherPendingDeepLinkRegistry;
+@class EXDevLauncherRecentlyOpenedAppsRegistry;
 @class EXDevLauncherController;
 @class EXDevLauncherErrorManager;
 
@@ -25,6 +26,7 @@ NS_ASSUME_NONNULL_BEGIN
 @property (nonatomic, weak) RCTBridge * _Nullable appBridge;
 @property (nonatomic, strong) RCTBridge *launcherBridge;
 @property (nonatomic, strong) EXDevLauncherPendingDeepLinkRegistry *pendingDeepLinkRegistry;
+@property (nonatomic, strong) EXDevLauncherRecentlyOpenedAppsRegistry *recentlyOpenedAppsRegistry;
 @property (nonatomic, strong) id updatesInterface;
 @property (nonatomic, readonly, assign) BOOL isStarted;
 

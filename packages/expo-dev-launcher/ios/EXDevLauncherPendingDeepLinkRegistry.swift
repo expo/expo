@@ -15,12 +15,10 @@ public class EXDevLauncherPendingDeepLinkRegistry: NSObject {
     }
   }
 
-  @objc
   public func subscribe(_ listener: EXDevLauncherPendingDeepLinkListener) {
     self.listeners.append(listener)
   }
 
-  @objc
   public func unsubscribe(_ listener: EXDevLauncherPendingDeepLinkListener) {
     self.listeners.removeAll { $0 === listener }
   }
