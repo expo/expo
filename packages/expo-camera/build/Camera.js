@@ -277,6 +277,11 @@ export default class Camera extends React.Component {
             this.props.onMountError(nativeEvent);
         }
     };
+    _onResponsiveOrientationChanged = ({ nativeEvent }) => {
+        if (this.props.onResponsiveOrientationChanged) {
+            this.props.onResponsiveOrientationChanged(nativeEvent);
+        }
+    };
     _onObjectDetected = (callback) => ({ nativeEvent }) => {
         const { type } = nativeEvent;
         if (this._lastEvents[type] &&
@@ -313,7 +318,7 @@ export default class Camera extends React.Component {
             ? this._onObjectDetected(this.props.onBarCodeScanned)
             : undefined;
         const onFacesDetected = this._onObjectDetected(this.props.onFacesDetected);
-        return (React.createElement(ExponentCamera, { ...nativeProps, ref: this._setReference, onCameraReady: this._onCameraReady, onMountError: this._onMountError, onBarCodeScanned: onBarCodeScanned, onFacesDetected: onFacesDetected, onPictureSaved: _onPictureSaved }));
+        return (React.createElement(ExponentCamera, { ...nativeProps, ref: this._setReference, onCameraReady: this._onCameraReady, onMountError: this._onMountError, onBarCodeScanned: onBarCodeScanned, onFacesDetected: onFacesDetected, onPictureSaved: _onPictureSaved, onResponsiveOrientationChanged: this._onResponsiveOrientationChanged }));
     }
 }
 export const { Constants, getPermissionsAsync, requestPermissionsAsync, getCameraPermissionsAsync, requestCameraPermissionsAsync, getMicrophonePermissionsAsync, requestMicrophonePermissionsAsync, } = Camera;

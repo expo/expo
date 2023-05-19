@@ -98,5 +98,12 @@ export var VideoQuality;
     VideoQuality["480p"] = "480p";
     VideoQuality["4:3"] = "4:3";
 })(VideoQuality || (VideoQuality = {}));
+export var CameraOrientation;
+(function (CameraOrientation) {
+    CameraOrientation[CameraOrientation["portrait"] = 1] = "portrait";
+    CameraOrientation[CameraOrientation["portraitUpsideDown"] = 2] = "portraitUpsideDown";
+    CameraOrientation[CameraOrientation["landscapeLeft"] = 3] = "landscapeLeft";
+    CameraOrientation[CameraOrientation["landscapeRight"] = 4] = "landscapeRight";
+})(CameraOrientation || (CameraOrientation = {}));
 export { PermissionStatus };
 //# sourceMappingURL=Camera.types.js.map

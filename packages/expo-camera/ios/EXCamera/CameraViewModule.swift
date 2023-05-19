@@ -67,7 +67,8 @@ public final class CameraViewModule: Module {
         "onMountError",
         "onPictureSaved",
         "onBarCodeScanned",
-        "onFacesDetected"
+        "onFacesDetected",
+        "onResponsiveOrientationChanged"
       )
 
       Prop("type") { (view, type: Int) in
@@ -134,6 +135,13 @@ public final class CameraViewModule: Module {
       Prop("barCodeScannerEnabled") { (view, scanBarCodes: Bool) in
         if view.isScanningBarCodes != scanBarCodes {
           view.isScanningBarCodes = scanBarCodes
+        }
+      }
+
+      Prop("responsiveOrientationWhenOrientationLocked") { (view, responsiveOrientation: Bool) in
+        if view.responsiveOrientationWhenOrientationLocked != responsiveOrientation {
+          view.responsiveOrientationWhenOrientationLocked = responsiveOrientation
+          view.updateResponsiveOrientationWhenOrientationLocked()
         }
       }
     }
