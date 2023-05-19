@@ -6,7 +6,6 @@ import android.net.Uri
 import androidx.browser.customtabs.CustomTabsIntent
 import com.facebook.react.bridge.*
 import expo.modules.devlauncher.koin.DevLauncherKoinComponent
-import expo.modules.devmenu.DevMenuManager
 
 private const val SessionKey = "expo-dev-menu.session"
 private const val SessionStore = "expo.modules.devmenu.sessionstore"
