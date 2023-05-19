@@ -166,7 +166,6 @@ PODS:
     - ABI46_0_0React-Core/DevSupport
     - ABI46_0_0ReactCommon
     - ABI46_0_0UMAppLoader
-    - Amplitude
     - Analytics
     - AppAuth
     - Branch
@@ -813,7 +812,6 @@ PODS:
     - ABI47_0_0React-hermes
     - ABI47_0_0ReactCommon
     - ABI47_0_0UMAppLoader
-    - Amplitude
     - Analytics
     - AppAuth
     - Branch
@@ -1472,7 +1470,6 @@ PODS:
     - ABI48_0_0React-hermes
     - ABI48_0_0ReactCommon
     - ABI48_0_0UMAppLoader
-    - Amplitude
     - Analytics
     - AppAuth
     - Branch
@@ -2049,7 +2046,6 @@ PODS:
     - StripePaymentsUI (~> 23.3.0)
   - ABI48_0_0UMAppLoader (4.1.1)
   - ABI48_0_0Yoga (1.14.0)
-  - Amplitude (6.0.0)
   - Analytics (4.1.7)
   - AppAuth (1.6.0):
     - AppAuth/Core (= 1.6.0)
@@ -3291,7 +3287,6 @@ DEPENDENCIES:
   - "ABI48_0_0stripe-react-native (from `./vendored/sdk48/@stripe/stripe-react-native`)"
   - ABI48_0_0UMAppLoader (from `./versioned/sdk48/UMAppLoader`)
   - ABI48_0_0Yoga (from `./versioned-react-native/ABI48_0_0/ReactNative/ReactCommon/yoga`)
-  - Amplitude
   - boost (from `../react-native-lab/react-native/third-party-podspecs/boost.podspec`)
   - CocoaLumberjack (~> 3.5.3)
   - DoubleConversion (from `../react-native-lab/react-native/third-party-podspecs/DoubleConversion.podspec`)
@@ -3427,7 +3422,6 @@ DEPENDENCIES:
 
 SPEC REPOS:
   trunk:
-    - Amplitude
     - Analytics
     - AppAuth
     - ASN1Decoder
@@ -4419,7 +4413,7 @@ SPEC CHECKSUMS:
   ABI46_0_0ExpoImageManipulator: d9c826732149dfa28c997f524d663d009fa536b6
   ABI46_0_0ExpoImagePicker: 0374ce58edabd479a94717cbc32418faf93bf6b6
   ABI46_0_0ExpoKeepAwake: 2a2af5decb4280b6d025b1b5043cd9370d2ab67f
-  ABI46_0_0ExpoKit: 4bed88e7a06dbf4b306354e143302ffae73d5020
+  ABI46_0_0ExpoKit: 59d226a2488da750e06e0472de7fef1e5b399b44
   ABI46_0_0ExpoLinearGradient: 9766a6de9eaad87afb1dfb1391403e70995b946e
   ABI46_0_0ExpoLocalization: a0d35d7490ab40a3015b26abbeb1d6da98daef78
   ABI46_0_0ExpoMailComposer: f6dc505417b6989d4fdaae7480f7b6add2deca62
@@ -4525,7 +4519,7 @@ SPEC CHECKSUMS:
   ABI47_0_0ExpoImageManipulator: eb2dd6507b54aa10251e752d6188a65dbfadd22a
   ABI47_0_0ExpoImagePicker: 18d65d537b1901117a47a6e63af1af3f2849c38e
   ABI47_0_0ExpoKeepAwake: 456098572219a61d7a2688e642bcab820045fdc2
-  ABI47_0_0ExpoKit: 2c3a538e37b1a010aee4540bc7d17c36ead6a51b
+  ABI47_0_0ExpoKit: 3d757f59e0f352fbae3bf5e75922ccd4302a6d0d
   ABI47_0_0ExpoLinearGradient: a2d68f4f95b4edb6dae4fa4d8cf28f1a9f08dfdb
   ABI47_0_0ExpoLocalization: ce34bad9f4bdcecc43fae16b13363f7663ab9f72
   ABI47_0_0ExpoMailComposer: 30f7bc875566c971a5e112d3a117d6227bae035d
@@ -4631,7 +4625,7 @@ SPEC CHECKSUMS:
   ABI48_0_0ExpoImageManipulator: 9d61e40b13268e04e51e868c770fea324dd5ac8d
   ABI48_0_0ExpoImagePicker: f55b4ae78f26481bec5a769f2b23c864c22f2608
   ABI48_0_0ExpoKeepAwake: 956461c0639ea092f296010edf75e17a7b827336
-  ABI48_0_0ExpoKit: 961a214b5c8251f3e4b4b54c2fdd297593f8aa43
+  ABI48_0_0ExpoKit: 3b07970abd13dbd260c307f45a52ec0d7610c76f
   ABI48_0_0ExpoLinearGradient: 8b0198f9c77fd8cfa47dedb0a6db7a255d263fee
   ABI48_0_0ExpoLocalAuthentication: 30b0231acd79565606e8494273c08741eed647c4
   ABI48_0_0ExpoLocalization: 50fb5251edc025bfea84d90747b855286af31445
@@ -4707,7 +4701,6 @@ SPEC CHECKSUMS:
   ABI48_0_0stripe-react-native: 10d38e575f12896c284962183534058ece127c5e
   ABI48_0_0UMAppLoader: 142596799d5a7b05119ae9f5c4e51ccc590e49a5
   ABI48_0_0Yoga: 13a232e4a5d1ecd44a45e050b5983aa20116b1fa
-  Amplitude: cc34fcd8dfffc3470bc2e05f3a4abb0178f6d963
   Analytics: 3106b5af9b799c934f98a68ab8ba199f1c603fdb
   AppAuth: 8fca6b5563a5baef2c04bee27538025e4ceb2add
   ASN1Decoder: 6110fdeacfdb41559b1481457a1645be716610aa
@@ -4884,6 +4877,6 @@ SPEC CHECKSUMS:
   Yoga: d56980c8914db0b51692f55533409e844b66133c
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: 54bfc5a3db3368261ff5adbca7a033bc5edb2651
+PODFILE CHECKSUM: ad8b65dc4b7c9e32cf4690eb6979e45c43c07de7
 
 COCOAPODS: 1.12.1

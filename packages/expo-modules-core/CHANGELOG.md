@@ -14,6 +14,9 @@
 
 ### 🐛 Bug fixes
 
+- Fix failing instrumentation tests in JavaScriptViewModule. ([#22518](https://github.com/expo/expo/pull/22518) by [@aleqsio](https://github.com/aleqsio))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
 
 ## 1.3.2 — 2023-05-09
