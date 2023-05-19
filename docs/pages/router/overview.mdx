@@ -1,42 +1,113 @@
 ---
 title: Expo Router
-description: Welcome to Expo Router
+description: Welcome to Expo Router - an open-source routing library for Universal React Native applications built with Expo.
 sidebar_title: Overview
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { GithubIcon } from '@expo/styleguide-icons';
+import { Container, Row, Col } from 'react-grid-system';
+import { spacing } from '@expo/styleguide-base';
 
-Expo Router is a routing library for React Native applications built with Expo. It provides a way to manage navigation between screens in your app, allowing users to move between different parts of your app's UI seamlessly, using the same components on multiple platforms (iOS, Android, Web, etc).
+Expo Router is a routing library for React Native applications built with Expo. It provides a way to manage navigation between screens in your app, allowing users to move between different parts of your app's UI seamlessly, using the same components on multiple platforms (Android, iOS, Web, and so on).
 
-Expo Router brings the best routing concepts from the web to native iOS and Android apps. Every file in the **app** directory automatically becomes a route in your mobile navigation, making it easier than ever to build, maintain, and scale your project. It's built on top of our powerful [React Navigation suite](https://reactnavigation.org/) enabling truly native navigation. The entire deep linking system is automatically generated live, so users can share links to any route in your app.
+Expo Router brings the best file-system routing concepts from the web to universal application - allowing your routing to work across every platform. When a file is added to the **app** directory, it automatically becomes a route in your mobile navigation. It makes building, maintaining, and scaling your project easier than ever. It's built on top of our powerful [React Navigation suite](https://reactnavigation.org/), enabling truly native navigation. The entire deep linking system is automatically generated live so that users can share links to any route in your app.
 
-## Quick Start
+## Quick start
 
-Run the following to create a project with `expo-router` setup:
+To create a project with `expo-router`, run the following command that comes with the automatic setup:
 
 <Terminal
   cmd={['$ npx create-expo-app@latest --example with-router']}
   cmdCopy="npx create-expo-app@latest --example with-router"
 />
 
-<BoxLink
-  title="Example source"
-  Icon={BookOpen02Icon}
-  description="See the example source code on GitHub."
-  href="https://github.com/expo/examples/tree/master/with-router"
-/>
+
+<Container fluid style={{ paddingLeft: -15, paddingRight: -15, marginBottom: spacing[6] }}>
+  <Row>
+    <Col>
+      <BoxLink
+        title="Example app"
+        Icon={GithubIcon}
+        description="See the source code for example app on GitHub."
+        href="https://github.com/expo/examples/tree/master/with-router"
+      />
+    </Col>
+    <Col>
+      <BoxLink
+        title="Detailed installation"
+        Icon={GithubIcon}
+        description="Detailed instructions on how to get started."
+        href="/router/installation/"
+      />
+    </Col>
+  </Row>
+</Container>
 
 ## Features
 
-- **Native** Truly native navigation with the most cutting-edge developer experience.
-- **Deep linking** Every screen in your app is automatically deep linkable. Making any part of your app shareable.
-- **Offline-first** Apps are cached and run offline-first, with automatic updates when you publish a new version. Handles all incoming native URLs without a network connection or server.
-- **Scale** Apps are built with a modular architecture that scales to any size. Refactoring and upgrading are a breeze due to the declarative nature of the API.
-- **Iteration** Universal Fast Refresh across iOS, Android, and web along with artifact memoziation in the bundler keep you moving fast at scale.
-- **Cross-Platform** Expo Router is a large step towards universal React apps. The same codebase can be used to build iOS, Android, and web apps.
+- **Native**: Truly native navigation with the most cutting-edge developer experience.
+- **Deep linking**: Every screen in your app is automatically deep linkable. Making any part of your app shareable.
+- **Offline-first**: Apps are cached and run offline-first, with automatic updates when you publish a new version. Handles all incoming native URLs without a network connection or server.
+- **Scale**: Apps are built with a modular architecture that scales to any size. Refactoring and upgrading are a breeze due to the declarative nature of the API.
+- **Iteration**: Universal Fast Refresh across Android, iOS, and web, along with artifact memoization in the bundler to keep you moving fast at scale.
+- **Cross-Platform**: Expo Router is a large step towards universal React apps. The same codebase can be used to build Android, Android, and web apps.
 
-## Troubleshooting
 
-If you run into any issues, please check the [troubleshooting guide](./troubleshooting). If you're still running into problems, please [open an issue](https://github.com/expo/router/issues).
+<Container fluid style={{ paddingLeft: -15, paddingRight: -15, marginBottom: spacing[6] }}>
+  <Row>
+    <Col>
+      <BoxLink
+        title="Routing"
+        Icon={GithubIcon}
+        description="Learn how to create pages."
+        href="https://docs.expo.dev/router/routing/pages/"
+      />
+    </Col>
+    <Col>
+      <BoxLink
+        title="Layouts"
+        Icon={GithubIcon}
+        description="See the source code for example app on GitHub."
+        href="https://docs.expo.dev/router/layouts/"
+      />
+    </Col>
+  </Row>
+  <Row>
+    <Col>
+      <BoxLink
+        title="Styling"
+        Icon={GithubIcon}
+        description="See the source code for example app on GitHub."
+        href="https://docs.expo.dev/router/styling/"
+      />
+    </Col>
+    <Col>
+      <BoxLink
+        title="Assets"
+        Icon={GithubIcon}
+        description="See the source code for example app on GitHub."
+        href="https://docs.expo.dev/router/assets/"
+      />
+    </Col>
+  </Row>
+  <Row>
+    <Col>
+      <BoxLink
+        title="Troubleshooting"
+        Icon={GithubIcon}
+        description="See the source code for example app on GitHub."
+        href="https://docs.expo.dev/router/troubleshooting/"
+      />
+    </Col>
+    <Col>
+      <BoxLink
+        title="GitHub"
+        Icon={GithubIcon}
+        description="See the source code, start a discussion or create an issue."
+        href="https://github.com/expo/expo-router"
+      />
+    </Col>
+  </Row>
+</Container>

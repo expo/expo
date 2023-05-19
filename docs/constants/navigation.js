@@ -440,7 +440,6 @@ const router = [
     [
       makePage('router/overview.mdx'),
       makePage('router/installation.mdx'),
-      makePage('router/usage.mdx'),
       makePage('router/roadmap.mdx'),
       makePage('router/typescript.mdx'),
     ],
@@ -485,6 +484,13 @@ const router = [
       ],
       { expanded: false }
     ),
+  ]),
+
+  makeSection('Functionality', [
+    makePage('router/features/head.mdx'),
+    makePage('router/features/async-routes.mdx'),
+    makePage('router/features/handoff.mdx'),
+    makePage('router/features/root-html.mdx'),
   ]),
 
   makeSection('More', [

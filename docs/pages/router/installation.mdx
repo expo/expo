@@ -1,32 +1,99 @@
 ---
 title: Installation
+description: Lean how to to get started and install Expo Router
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { GithubIcon, ExpoGoLogo } from '@expo/styleguide-icons';
+import { Container, Row, Col } from 'react-grid-system';
+import { spacing } from '@expo/styleguide-base';
 
 ## Quick start
+
+<Step label="1">
+
+We recommend creating a new Expo app using `create-expo-app`. This will will create a minimal project with the smallest footprint to get you started. To create a project, run:
 
 <Terminal
   cmd={['$ npx create-expo-app@latest --example with-router']}
   cmdCopy="npx create-expo-app@latest --example with-router"
 />
 
+</Step>
+
+<Step label="2">
+
+Once setup, you can start your project with any of these commends
+
+<Terminal
+  cmd={['$ npm start']}
+  cmdCopy="npm start"
+/>
+
+To view your app on a mobile device we recommend first starting with Expo Go, a free, open-source client which simplifies local development. As you application grows in complexity and you need more control, you can create your own custom Development build.
+
+<Container fluid style={{ paddingLeft: -15, paddingRight: -15, marginBottom: spacing[6] }}>
+  <Row>
+    <Col>
+      <BoxLink
+        title="Expo Go"
+        Icon={ExpoGoLogo}
+        description="Start here for the fastest/easiest setup"
+        href="/get-started/expo-go"
+      />
+    </Col>
+    <Col>
+      <BoxLink
+        title="Development builds"
+        Icon={GithubIcon}
+        description="Introduction to Development builds"
+        href="/develop/development-builds/introduction/"
+      />
+    </Col>
+  </Row>
+</Container>
+
+</Step>
+
+## Post-setup
+
+Congratulations on creating your Expo Router project! While developing on a physical mobile device will accurate, sometimes its faster to iterate on ideas locally using a virtual device within an emulator.
+
+<Container fluid style={{ paddingLeft: -15, paddingRight: -15, marginBottom: spacing[6] }}>
+  <Row>
+    <Col>
+      <BoxLink
+        title="Android Studio Emulator"
+        Icon={ExpoGoLogo}
+        description="Learn how to set up the Android Emulator to test your app on a virtual Android device."
+        href="/workflow/android-studio-emulator/"
+      />
+    </Col>
+    <Col>
+      <BoxLink
+        title="iOS Simulator"
+        Icon={ExpoGoLogo}
+        description="Learn how you can install the iOS simulator on your Mac and use it for developing your app."
+        href="/workflow/ios-simulator/"
+      />
+    </Col>
+  </Row>
+</Container>
+
 ## Manual Setup
 
-> Expo Router supports `expo@46.0.13` and greater. Some features may require the latest SDK.
+> Expo Router supports `expo@48.0.0` and greater. Some features may require the latest SDK.
 
 Ensure your computer is [setup for running an Expo app](https://docs.expo.dev/get-started/installation/).
-
 
 <Step label="1">
 
 ### Create an Expo project
 
 <Terminal
-  cmd={[
-    '$ npx create-expo-app',
-  ]}
+  cmd={['$ npx create-expo-app']}
   cmdCopy="npx create-expo-app StickerSmash && cd StickerSmash"
 />
 
