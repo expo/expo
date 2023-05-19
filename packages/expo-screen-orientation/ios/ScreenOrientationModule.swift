@@ -77,10 +77,6 @@ public class ScreenOrientationModule: Module, OrientationListener {
       promise.resolve(ModuleOrientation.from(orientation: screenOrientationRegistry.currentScreenOrientation).rawValue)
     }
 
-    OnCreate {
-      screenOrientationRegistry.registerModule(self)
-    }
-
     OnStartObserving {
       screenOrientationRegistry.registerModuleToReceiveNotification(self)
     }
@@ -89,12 +85,9 @@ public class ScreenOrientationModule: Module, OrientationListener {
       screenOrientationRegistry.unregisterModuleFromReceivingNotification(self)
     }
 
-    OnAppEntersForeground {
-      screenOrientationRegistry.moduleDidForeground(self)
-    }
-
-    OnAppEntersBackground {
-      screenOrientationRegistry.moduleDidBackground(self)
+    OnDestroy {
+      screenOrientationRegistry.unregisterModuleFromReceivingNotification(self)
+      screenOrientationRegistry.moduleWillDeallocate(self)
     }
   }
 

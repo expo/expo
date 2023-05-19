@@ -12,9 +12,8 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   public static let shared = ScreenOrientationRegistry()
 
   var currentScreenOrientation: UIInterfaceOrientation
-  var notificationListeners: [Module?] = []
-  var moduleInterfaceMasks: [HashableModule: UIInterfaceOrientationMask] = [:]
-  weak var foregroundedModule: Module?
+  var notificationListeners: [ScreenOrientationModule?] = []
+  var moduleInterfaceMasks: [ScreenOrientationModule: UIInterfaceOrientationMask] = [:]
   weak var currentTraitCollection: UITraitCollection?
   var lastOrientationMask: UIInterfaceOrientationMask
   var rootViewController: UIViewController? {
@@ -96,27 +95,27 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
     }
   }
 
-  func setMask(_ mask: UIInterfaceOrientationMask, forModule module: Module) {
-    moduleInterfaceMasks[.wrap(module)] = mask
-
-    if foregroundedModule === module {
-      enforceDesiredDeviceOrientation(withOrientationMask: mask)
-    }
+  func setMask(_ mask: UIInterfaceOrientationMask, forModule module: ScreenOrientationModule) {
+    moduleInterfaceMasks[module] = mask
+    enforceDesiredDeviceOrientation(withOrientationMask: mask)
   }
 
   // MARK: getters
   // Gets the orientationMask for the current module. Also used for Expo Go in EXAppViewController
   @objc
   public func requiredOrientationMask() -> UIInterfaceOrientationMask {
-    guard let foregroundedModule = self.foregroundedModule else {
-      return lastOrientationMask
-    }
-
-    guard let current = moduleInterfaceMasks[.wrap(foregroundedModule)] else {
+    if moduleInterfaceMasks.isEmpty {
       return []
     }
 
-    return current
+    // We want to apply an orientation mask which is an intersection of locks applied by the modules.
+    var mask = doesDeviceHaveNotch ? UIInterfaceOrientationMask.allButUpsideDown : UIInterfaceOrientationMask.all
+
+    for moduleMask in moduleInterfaceMasks {
+      mask = mask.intersection(moduleMask.value)
+    }
+
+    return mask
   }
 
   // MARK: events
@@ -136,10 +135,10 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
 
     // checks if screen orientation should be changed after user rotated the device
     if currentOrientationMask.contains(newScreenOrientation) {
-      // change current screen orientation
+      // when changing orientation without changing dimensions traitCollectionDidChange isn't triggered so the event has to be called manually
       if (newScreenOrientation.isPortrait && currentScreenOrientation.isPortrait)
         || (newScreenOrientation.isLandscape && currentScreenOrientation.isLandscape) {
-        currentScreenOrientation = newScreenOrientation // updates current screen orientation, but doesn't emit event
+        screenOrientationDidChange(newScreenOrientation)
         return
       }
 
@@ -218,39 +217,12 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   func screenOrientationDidChange(_ newScreenOrientation: UIInterfaceOrientation) {
     currentScreenOrientation = newScreenOrientation
     for module in notificationListeners {
-      guard let module = (module as? ScreenOrientationModule) else {
-        continue
-      }
-      module.screenOrientationDidChange(newScreenOrientation)
+      module?.screenOrientationDidChange(newScreenOrientation)
     }
   }
 
-  // MARK: lifecycle
-  func registerModule(_ module: Module) {
-    moduleDidForeground(module)
-  }
-
-  func moduleDidForeground(_ module: Module) {
-    foregroundedModule = module
-  }
-
-  func moduleDidBackground(_ module: Module?) {
-    guard let foregroundedModule = self.foregroundedModule else {
-      if module == nil {
-        lastOrientationMask = requiredOrientationMask()
-      }
-      return
-    }
-
-    if foregroundedModule === module {
-      // We save the mask to restore it when the app moves to the foreground.
-      lastOrientationMask = requiredOrientationMask()
-      self.foregroundedModule = nil
-    }
-  }
-
-  func moduleWillDeallocate(_ module: Module) {
-    moduleInterfaceMasks.removeValue(forKey: .wrap(module))
+  func moduleWillDeallocate(_ module: ScreenOrientationModule) {
+    moduleInterfaceMasks.removeValue(forKey: module)
   }
 
   func registerModuleToReceiveNotification(_ module: ScreenOrientationModule) {

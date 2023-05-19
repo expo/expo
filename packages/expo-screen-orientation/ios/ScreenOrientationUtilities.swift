@@ -1,24 +1,13 @@
 import ExpoModulesCore
 
 // Modules are not hashable. We are using a dictionary (moduleInterfaceMasks), where modules are keys.
-// This class allows using them as keys by using Object Identifiers.
-class HashableModule: Hashable {
-  let value: Module
-  init(_ value: Module) {
-    self.value = value
+extension ScreenOrientationModule: Hashable {
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(ObjectIdentifier(self))
   }
 
-  func hash(into hasher: inout Hasher) {
-    hasher.combine(ObjectIdentifier(value))
-  }
-
-  static func == (lhs: HashableModule, rhs: HashableModule) -> Bool {
-    return ObjectIdentifier(lhs.value) == ObjectIdentifier(rhs.value)
-  }
-
-  // A wrapper function that converts a Module to an ObjectIdentifierHashableModule
-  static func wrap(_ value: Module) -> HashableModule {
-    return HashableModule(value)
+  public static func == (lhs: ScreenOrientationModule, rhs: ScreenOrientationModule) -> Bool {
+    return ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
   }
 }
 
