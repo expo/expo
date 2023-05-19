@@ -4,17 +4,17 @@ import {
   MediaFeatureComparison,
   MediaFeatureValue,
   MediaQuery,
-} from "lightningcss";
+} from 'lightningcss';
 
-import { exhaustiveCheck } from "../../css-to-rn/utils";
+import { exhaustiveCheck } from '../../css-to-rn/utils';
 import {
   ContainerRuntime,
   ExtractedContainerQuery,
   Interaction,
   PseudoClassesQuery,
   SignalLike,
-} from "../../types";
-import { colorScheme, isReduceMotionEnabled, vh, vw } from "./globals";
+} from '../../types';
+import { colorScheme, isReduceMotionEnabled, vh, vw } from './globals';
 
 interface ConditionReference {
   width: number | SignalLike<number>;
@@ -34,13 +34,10 @@ export function testMediaQuery(
   conditionReference: ConditionReference = defaultConditionReference
 ) {
   const pass = testCondition(mediaQuery.condition, conditionReference);
-  return mediaQuery.qualifier === "not" ? !pass : pass;
+  return mediaQuery.qualifier === 'not' ? !pass : pass;
 }
 
-export function testPseudoClasses(
-  interaction: Interaction | undefined,
-  meta: PseudoClassesQuery
-) {
+export function testPseudoClasses(interaction: Interaction | undefined, meta: PseudoClassesQuery) {
   if (meta.active && !interaction?.active.get()) return false;
   if (meta.hover && !interaction?.hover.get()) return false;
   if (meta.focus && !interaction?.focus.get()) return false;
@@ -62,17 +59,12 @@ export function testContainerQuery(
 
     // If the query has a name, we use the container with that name
     // Otherwise default to the last container
-    const container = query.name
-      ? containers[query.name]
-      : containers.__default;
+    const container = query.name ? containers[query.name] : containers.__default;
 
     // We failed if the container doesn't exist (e.g no default container)
     if (!container) return false;
 
-    if (
-      query.pseudoClasses &&
-      !testPseudoClasses(container.interaction, query.pseudoClasses)
-    ) {
+    if (query.pseudoClasses && !testPseudoClasses(container.interaction, query.pseudoClasses)) {
       return false;
     }
 
@@ -96,35 +88,28 @@ export function testCondition(
 ): boolean {
   if (!condition) return true;
 
-  if (condition.type === "operation") {
-    if (condition.operator === "and") {
-      return condition.conditions.every((c) =>
-        testCondition(c, conditionReference)
-      );
+  if (condition.type === 'operation') {
+    if (condition.operator === 'and') {
+      return condition.conditions.every((c) => testCondition(c, conditionReference));
     } else {
-      return condition.conditions.some((c) =>
-        testCondition(c, conditionReference)
-      );
+      return condition.conditions.some((c) => testCondition(c, conditionReference));
     }
-  } else if (condition.type === "not") {
+  } else if (condition.type === 'not') {
     return !testCondition(condition.value, conditionReference);
   }
 
   return testFeature(condition.value, conditionReference);
 }
 
-function testFeature(
-  feature: MediaFeature,
-  conditionReference: ConditionReference
-) {
+function testFeature(feature: MediaFeature, conditionReference: ConditionReference) {
   switch (feature.type) {
-    case "plain":
+    case 'plain':
       return testPlainFeature(feature, conditionReference);
-    case "range":
+    case 'range':
       return testRange(feature, conditionReference);
-    case "boolean":
+    case 'boolean':
       return testBoolean(feature);
-    case "interval":
+    case 'interval':
       return false;
     default:
       exhaustiveCheck(feature);
@@ -134,7 +119,7 @@ function testFeature(
 }
 
 function testPlainFeature(
-  feature: Extract<MediaFeature, { type: "plain" }>,
+  feature: Extract<MediaFeature, { type: 'plain' }>,
   ref: ConditionReference
 ) {
   const value = getMediaFeatureValue(feature.value);
@@ -144,31 +129,31 @@ function testPlainFeature(
   }
 
   switch (feature.name) {
-    case "prefers-color-scheme":
+    case 'prefers-color-scheme':
       return colorScheme.get() === value;
-    case "width":
-      return testComparision("equal", ref.width, value);
-    case "min-width":
-      return testComparision("greater-than-equal", ref.width, value);
-    case "max-width":
-      return testComparision("less-than-equal", ref.width, value);
-    case "height":
-      return testComparision("equal", ref.height, value);
-    case "min-height":
-      return testComparision("greater-than-equal", ref.height, value);
-    case "max-height":
-      return testComparision("less-than-equal", ref.height, value);
+    case 'width':
+      return testComparision('equal', ref.width, value);
+    case 'min-width':
+      return testComparision('greater-than-equal', ref.width, value);
+    case 'max-width':
+      return testComparision('less-than-equal', ref.width, value);
+    case 'height':
+      return testComparision('equal', ref.height, value);
+    case 'min-height':
+      return testComparision('greater-than-equal', ref.height, value);
+    case 'max-height':
+      return testComparision('less-than-equal', ref.height, value);
     default:
       return false;
   }
 }
 
 function getMediaFeatureValue(value: MediaFeatureValue) {
-  if (value.type === "number") {
+  if (value.type === 'number') {
     return value.value;
-  } else if (value.type === "length") {
-    if (value.value.type === "value") {
-      if (value.value.value.unit === "px") {
+  } else if (value.type === 'length') {
+    if (value.value.type === 'value') {
+      if (value.value.value.unit === 'px') {
         return value.value.value.value;
       } else {
         return null;
@@ -176,28 +161,25 @@ function getMediaFeatureValue(value: MediaFeatureValue) {
     } else {
       return null;
     }
-  } else if (value.type === "ident") {
+  } else if (value.type === 'ident') {
     return value.value;
   }
 
   return null;
 }
 
-function testRange(
-  feature: Extract<MediaFeature, { type: "range" }>,
-  ref: ConditionReference
-) {
+function testRange(feature: Extract<MediaFeature, { type: 'range' }>, ref: ConditionReference) {
   const value = getMediaFeatureValue(feature.value);
 
-  if (value === null || typeof value !== "number") {
+  if (value === null || typeof value !== 'number') {
     return false;
   }
 
   /*eslint no-fallthrough: ["error", { "commentPattern": "break[\\s\\w]*omitted" }]*/
   switch (feature.name) {
-    case "height":
+    case 'height':
       return testComparision(feature.operator, ref.height, value);
-    case "width":
+    case 'width':
       return testComparision(feature.operator, ref.width, value);
   }
 
@@ -209,31 +191,29 @@ function testComparision(
   ref: number | SignalLike<number>,
   value: unknown
 ) {
-  if (typeof value !== "number") return false;
+  if (typeof value !== 'number') return false;
   switch (comparision) {
-    case "equal":
+    case 'equal':
       return unwrap(ref) === value;
-    case "greater-than":
+    case 'greater-than':
       return unwrap(ref) > value;
-    case "greater-than-equal":
+    case 'greater-than-equal':
       return unwrap(ref) >= value;
-    case "less-than":
+    case 'less-than':
       return unwrap(ref) < value;
-    case "less-than-equal":
+    case 'less-than-equal':
       return unwrap(ref) < value;
   }
 }
 
-function testBoolean(feature: Extract<MediaFeature, { type: "boolean" }>) {
+function testBoolean(feature: Extract<MediaFeature, { type: 'boolean' }>) {
   switch (feature.name) {
-    case "prefers-reduced-motion":
+    case 'prefers-reduced-motion':
       return isReduceMotionEnabled.get();
   }
   return false;
 }
 
 function unwrap<T>(value: T | SignalLike<T>): T {
-  return value && typeof value === "object" && "get" in value
-    ? value.get()
-    : value;
+  return value && typeof value === 'object' && 'get' in value ? value.get() : value;
 }

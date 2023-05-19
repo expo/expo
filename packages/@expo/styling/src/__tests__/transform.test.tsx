@@ -1,8 +1,8 @@
-import { render } from "@testing-library/react-native";
-import React from "react";
+import { render } from '@testing-library/react-native';
+import React from 'react';
 
-import { StyleSheet } from "../runtime/native/stylesheet";
-import { createMockComponent, registerCSS } from "./utils";
+import { StyleSheet } from '../runtime/native/stylesheet';
+import { createMockComponent, registerCSS } from './utils';
 
 const A = createMockComponent();
 
@@ -10,7 +10,7 @@ afterEach(() => {
   StyleSheet.__reset();
 });
 
-test("translateX percentage", () => {
+test('translateX percentage', () => {
   registerCSS(`.my-class { width: 120px; transform: translateX(10%); }`);
 
   render(<A className="my-class" />);
@@ -21,7 +21,7 @@ test("translateX percentage", () => {
   });
 });
 
-test("translateY percentage", () => {
+test('translateY percentage', () => {
   registerCSS(`.my-class { height: 120px; transform: translateY(10%); }`);
 
   render(<A className="my-class" />);
@@ -32,7 +32,7 @@ test("translateY percentage", () => {
   });
 });
 
-test("rotate-180", () => {
+test('rotate-180', () => {
   registerCSS(`
     .rotate-180 {
       --tw-rotate: 180deg;
@@ -48,13 +48,13 @@ test("rotate-180", () => {
         translateX: 0,
       },
       {
-        rotate: "180deg",
+        rotate: '180deg',
       },
       {
-        skewX: "0deg",
+        skewX: '0deg',
       },
       {
-        skewY: "0deg",
+        skewY: '0deg',
       },
       {
         scaleX: 1,

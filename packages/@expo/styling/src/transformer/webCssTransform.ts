@@ -5,22 +5,20 @@
  * This source code is licensed under the MIT license found in the
  * LICENSE file in the root directory of this source tree.
  */
-import { FBSourceFunctionMap } from "metro-source-map";
+import { FBSourceFunctionMap } from 'metro-source-map';
 import worker, {
   JsTransformerConfig,
   JsTransformOptions,
   TransformResponse,
-} from "metro-transform-worker";
+} from 'metro-transform-worker';
 
-import { wrapDevelopmentCSS } from "./css";
-import { matchCssModule, transformCssModuleWeb } from "./css-modules";
+import { wrapDevelopmentCSS } from './css';
+import { matchCssModule, transformCssModuleWeb } from './css-modules';
 // import { compileSass, matchSass } from "./sass";
 
-const countLines = require("metro/src/lib/countLines") as (
-  string: string
-) => number;
+const countLines = require('metro/src/lib/countLines') as (string: string) => number;
 
-type JSFileType = "js/script" | "js/module" | "js/module/asset";
+type JSFileType = 'js/script' | 'js/module' | 'js/module/asset';
 
 type JsOutput = {
   data: {
@@ -39,7 +37,7 @@ export async function webCssTransform(
   data: Buffer,
   options: JsTransformOptions
 ): Promise<TransformResponse> {
-  const code = data.toString("utf8");
+  const code = data.toString('utf8');
 
   // Apply postcss transforms
   // code = await transformPostCssModule(projectRoot, {
@@ -69,13 +67,7 @@ export async function webCssTransform(
 
     if (options.dev) {
       // Dev has the CSS appended to the JS file.
-      return worker.transform(
-        config,
-        projectRoot,
-        filename,
-        Buffer.from(results.output),
-        options
-      );
+      return worker.transform(config, projectRoot, filename, Buffer.from(results.output), options);
     }
 
     const jsModuleResults = await worker.transform(
@@ -89,7 +81,7 @@ export async function webCssTransform(
     const cssCode = results.css.toString();
     const output: JsOutput[] = [
       {
-        type: "js/module",
+        type: 'js/module',
         data: {
           ...jsModuleResults.output[0].data,
 
@@ -126,7 +118,7 @@ export async function webCssTransform(
     );
   }
 
-  const { transform } = await import("lightningcss");
+  const { transform } = await import('lightningcss');
 
   // TODO: Add bundling to resolve imports
   // https://lightningcss.dev/bundling.html#bundling-order
@@ -150,7 +142,7 @@ export async function webCssTransform(
     config,
     projectRoot,
     filename,
-    Buffer.from(""),
+    Buffer.from(''),
     options
   );
 
@@ -172,7 +164,7 @@ export async function webCssTransform(
           functionMap: null,
         },
       },
-      type: "js/module",
+      type: 'js/module',
     },
   ];
 

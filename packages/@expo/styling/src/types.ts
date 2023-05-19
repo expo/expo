@@ -5,7 +5,7 @@ import type {
   MediaCondition,
   Time,
   EasingFunction,
-} from "lightningcss";
+} from 'lightningcss';
 import type {
   ImageStyle,
   MatrixTransform,
@@ -23,19 +23,15 @@ import type {
   TranslateXTransform,
   TranslateYTransform,
   ViewStyle,
-} from "react-native";
+} from 'react-native';
 
 export type RuntimeValue = {
-  type: "runtime";
+  type: 'runtime';
   name: string;
   arguments: any[];
 };
 
-export type ExtractedStyleValue =
-  | string
-  | number
-  | RuntimeValue
-  | ExtractedStyleValue[];
+export type ExtractedStyleValue = string | number | RuntimeValue | ExtractedStyleValue[];
 
 export type ExtractedStyle = {
   isDynamic?: boolean;
@@ -210,18 +206,14 @@ export type TransformRecord = Partial<
 
 export type CamelToKebabCase<
   T extends string,
-  A extends string = ""
+  A extends string = ''
 > = T extends `${infer F}${infer R}`
-  ? CamelToKebabCase<
-      R,
-      `${A}${F extends Lowercase<F> ? "" : "-"}${Lowercase<F>}`
-    >
+  ? CamelToKebabCase<R, `${A}${F extends Lowercase<F> ? '' : '-'}${Lowercase<F>}`>
   : A;
 
-export type KebabToCamelCase<S extends string> =
-  S extends `${infer P1}-${infer P2}${infer P3}`
-    ? `${Lowercase<P1>}${Uppercase<P2>}${KebabToCamelCase<P3>}`
-    : Lowercase<S>;
+export type KebabToCamelCase<S extends string> = S extends `${infer P1}-${infer P2}${infer P3}`
+  ? `${Lowercase<P1>}${Uppercase<P2>}${KebabToCamelCase<P3>}`
+  : Lowercase<S>;
 
 /*
  * This is a list of all the CSS properties that can be animated
@@ -229,61 +221,61 @@ export type KebabToCamelCase<S extends string> =
  */
 export type AnimatableCSSProperty = keyof Style &
   KebabToCamelCase<
-    | "background-color"
-    | "border-bottom-color"
-    | "border-bottom-left-radius"
-    | "border-bottom-right-radius"
-    | "border-bottom-width"
-    | "border-color"
-    | "border-left-color"
-    | "border-left-width"
-    | "border-radius"
-    | "border-right-color"
-    | "border-right-width"
-    | "border-top-color"
-    | "border-top-width"
-    | "border-width"
-    | "bottom"
-    | "color"
-    | "flex"
-    | "flex-basis"
-    | "flex-grow"
-    | "flex-shrink"
-    | "font-size"
-    | "font-weight"
-    | "gap"
-    | "height"
-    | "left"
-    | "letter-spacing"
-    | "line-height"
-    | "margin"
-    | "margin-bottom"
-    | "margin-left"
-    | "margin-right"
-    | "margin-top"
-    | "max-height"
-    | "max-width"
-    | "min-height"
-    | "min-width"
-    | "object-position"
-    | "opacity"
-    | "order"
-    | "padding"
-    | "padding-bottom"
-    | "padding-left"
-    | "padding-right"
-    | "padding-top"
-    | "right"
-    | "rotate"
-    | "scale"
-    | "text-decoration"
-    | "top"
-    | "transform"
-    | "transform-origin"
-    | "translate"
-    | "vertical-align"
-    | "visibility"
-    | "width"
-    | "word-spacing"
-    | "z-index"
+    | 'background-color'
+    | 'border-bottom-color'
+    | 'border-bottom-left-radius'
+    | 'border-bottom-right-radius'
+    | 'border-bottom-width'
+    | 'border-color'
+    | 'border-left-color'
+    | 'border-left-width'
+    | 'border-radius'
+    | 'border-right-color'
+    | 'border-right-width'
+    | 'border-top-color'
+    | 'border-top-width'
+    | 'border-width'
+    | 'bottom'
+    | 'color'
+    | 'flex'
+    | 'flex-basis'
+    | 'flex-grow'
+    | 'flex-shrink'
+    | 'font-size'
+    | 'font-weight'
+    | 'gap'
+    | 'height'
+    | 'left'
+    | 'letter-spacing'
+    | 'line-height'
+    | 'margin'
+    | 'margin-bottom'
+    | 'margin-left'
+    | 'margin-right'
+    | 'margin-top'
+    | 'max-height'
+    | 'max-width'
+    | 'min-height'
+    | 'min-width'
+    | 'object-position'
+    | 'opacity'
+    | 'order'
+    | 'padding'
+    | 'padding-bottom'
+    | 'padding-left'
+    | 'padding-right'
+    | 'padding-top'
+    | 'right'
+    | 'rotate'
+    | 'scale'
+    | 'text-decoration'
+    | 'top'
+    | 'transform'
+    | 'transform-origin'
+    | 'translate'
+    | 'vertical-align'
+    | 'visibility'
+    | 'width'
+    | 'word-spacing'
+    | 'z-index'
   >;

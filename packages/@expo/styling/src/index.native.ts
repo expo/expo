@@ -1,5 +1,5 @@
-import React from "react";
+import React from 'react';
 
-export { StyleSheet } from "./runtime/native/stylesheet";
+export { StyleSheet } from './runtime/native/stylesheet';
 
 export const createElement = React.createElement;

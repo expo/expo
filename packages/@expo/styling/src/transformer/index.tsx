@@ -9,10 +9,10 @@ import worker, {
   JsTransformerConfig,
   JsTransformOptions,
   TransformResponse,
-} from "metro-transform-worker";
+} from 'metro-transform-worker';
 
-import { nativeCssTransform } from "./nativeCssTransform";
-import { webCssTransform } from "./webCssTransform";
+import { nativeCssTransform } from './nativeCssTransform';
+import { webCssTransform } from './webCssTransform';
 
 export async function transform(
   config: JsTransformerConfig,
@@ -21,7 +21,7 @@ export async function transform(
   data: Buffer,
   options: JsTransformOptions
 ): Promise<TransformResponse> {
-  const isCss = options.type !== "asset" && /\.(s?css|sass)$/.test(filename);
+  const isCss = options.type !== 'asset' && /\.(s?css|sass)$/.test(filename);
   // If the file is not CSS, then use the default behavior.
   if (!isCss) {
     return worker.transform(config, projectRoot, filename, data, options);
@@ -32,14 +32,12 @@ export async function transform(
       config,
       projectRoot,
       filename,
-      Buffer.from(
-        `module.exports = require("${config.externallyManagedCss?.[filename]}")`
-      ),
+      Buffer.from(`module.exports = require("${config.externallyManagedCss?.[filename]}")`),
       options
     );
   }
 
-  if (options.platform === "web") {
+  if (options.platform === 'web') {
     return webCssTransform(config, projectRoot, filename, data, options);
   } else {
     return nativeCssTransform(config, projectRoot, filename, data, options);

@@ -1,13 +1,13 @@
-import React from "react";
+import React from 'react';
 import {
   GestureResponderEvent,
   LayoutChangeEvent,
   NativeSyntheticEvent,
   TargetedEvent,
-} from "react-native";
+} from 'react-native';
 
-import { Interaction, InteropMeta } from "../../types";
-import { createSignal } from "./signals";
+import { Interaction, InteropMeta } from '../../types';
+import { createSignal } from './signals';
 
 export function useInteractionSignals(): Interaction {
   return React.useMemo(

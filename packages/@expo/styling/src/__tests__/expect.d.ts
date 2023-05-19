@@ -1,1 +1,1 @@
-declare module "expect/build/matchers";
+declare module 'expect/build/matchers';

@@ -1,5 +1,5 @@
 export function pathToHtmlSafeName(path: string) {
-  return path.replace(/[^a-zA-Z0-9_]/g, "_");
+  return path.replace(/[^a-zA-Z0-9_]/g, '_');
 }
 
 export function getHotReplaceTemplate(id: string) {
@@ -35,12 +35,12 @@ export function wrapDevelopmentCSS(props: { src: string; filename: string }) {
 }
 
 export function escapeBackticksAndOctals(str: string) {
-  if (typeof str !== "string") {
-    return "";
+  if (typeof str !== 'string') {
+    return '';
   }
 
   return str
-    .replace(/\\/g, "\\\\")
-    .replace(/`/g, "\\`")
+    .replace(/\\/g, '\\\\')
+    .replace(/`/g, '\\`')
     .replace(/[\0-\7]/g, (match) => `\\0${match.charCodeAt(0).toString(8)}`);
 }

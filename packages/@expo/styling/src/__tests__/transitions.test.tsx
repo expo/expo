@@ -1,10 +1,10 @@
-import { render } from "@testing-library/react-native";
-import React from "react";
-import { View } from "react-native";
+import { render } from '@testing-library/react-native';
+import React from 'react';
+import { View } from 'react-native';
 // import Animated from "react-native-reanimated";
 
-import { StyleSheet } from "../runtime/native/stylesheet";
-import { createMockComponent, registerCSS } from "./utils";
+import { StyleSheet } from '../runtime/native/stylesheet';
+import { createMockComponent, registerCSS } from './utils';
 
 const A = createMockComponent(View);
 
@@ -14,7 +14,7 @@ beforeEach(() => {
   StyleSheet.__reset();
 });
 
-test("numeric transition", () => {
+test('numeric transition', () => {
   registerCSS(`
     .transition {
       transition: width 1s;
@@ -29,11 +29,9 @@ test("numeric transition", () => {
     }
 `);
 
-  const { rerender, getByTestId } = render(
-    <A testID="test" className="transition first" />
-  );
+  const { rerender, getByTestId } = render(<A testID="test" className="transition first" />);
 
-  const testComponent = getByTestId("test");
+  const testComponent = getByTestId('test');
 
   // Should have a static width, no matter the time
   expect(testComponent).toHaveAnimatedStyle({
@@ -70,7 +68,7 @@ test("numeric transition", () => {
   });
 });
 
-test("color transition", () => {
+test('color transition', () => {
   registerCSS(`
     .transition {
       transition: color 1s;
@@ -85,43 +83,41 @@ test("color transition", () => {
     }
 `);
 
-  const { rerender, getByTestId } = render(
-    <A testID="test" className="transition first" />
-  );
+  const { rerender, getByTestId } = render(<A testID="test" className="transition first" />);
 
-  const testComponent = getByTestId("test");
+  const testComponent = getByTestId('test');
 
   // Should have a static width, no matter the time
   expect(testComponent).toHaveAnimatedStyle({
-    color: "rgba(255, 0, 0, 1)",
+    color: 'rgba(255, 0, 0, 1)',
   });
   jest.advanceTimersByTime(1000);
   expect(testComponent).toHaveAnimatedStyle({
-    color: "rgba(255, 0, 0, 1)",
+    color: 'rgba(255, 0, 0, 1)',
   });
 
   rerender(<A testID="test" className="transition second" />);
 
   // Directly after rerender, should still have the old width
   expect(testComponent).toHaveAnimatedStyle({
-    color: "rgba(255, 0, 0, 1)",
+    color: 'rgba(255, 0, 0, 1)',
   });
 
   // Width should only change after we advance time
   jest.advanceTimersByTime(500);
   expect(testComponent).toHaveAnimatedStyle({
-    color: "rgba(186, 0, 186, 1)",
+    color: 'rgba(186, 0, 186, 1)',
   });
 
   // At the end of the transition
   jest.advanceTimersByTime(500);
   expect(testComponent).toHaveAnimatedStyle({
-    color: "rgba(0, 0, 255, 1)",
+    color: 'rgba(0, 0, 255, 1)',
   });
 
   // Width should not change after the transition is done
   jest.advanceTimersByTime(500);
   expect(testComponent).toHaveAnimatedStyle({
-    color: "rgba(0, 0, 255, 1)",
+    color: 'rgba(0, 0, 255, 1)',
   });
 });

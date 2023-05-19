@@ -1,9 +1,9 @@
-import { act, render } from "@testing-library/react-native";
-import React from "react";
+import { act, render } from '@testing-library/react-native';
+import React from 'react';
 
-import { rem, vh, vw } from "../runtime/native/globals";
-import { StyleSheet } from "../runtime/native/stylesheet";
-import { createMockComponent, registerCSS } from "./utils";
+import { rem, vh, vw } from '../runtime/native/globals';
+import { StyleSheet } from '../runtime/native/stylesheet';
+import { createMockComponent, registerCSS } from './utils';
 
 const A = createMockComponent();
 
@@ -11,7 +11,7 @@ afterEach(() => {
   StyleSheet.__reset();
 });
 
-test("px", () => {
+test('px', () => {
   registerCSS(`.my-class { width: 10px; }`);
 
   render(<A className="my-class" />);
@@ -21,17 +21,17 @@ test("px", () => {
   });
 });
 
-test("%", () => {
+test('%', () => {
   registerCSS(`.my-class { width: 10%; }`);
 
   render(<A className="my-class" />);
 
   expect(A).styleToEqual({
-    width: "10%",
+    width: '10%',
   });
 });
 
-test("vw", () => {
+test('vw', () => {
   registerCSS(`.my-class { width: 10vw; }`);
 
   render(<A className="my-class" />);
@@ -49,7 +49,7 @@ test("vw", () => {
   expect(A).styleToEqual({ width: 10 });
 });
 
-test("vh", () => {
+test('vh', () => {
   registerCSS(`.my-class { height: 10vh; }`);
 
   render(<A className="my-class" />);
@@ -65,7 +65,7 @@ test("vh", () => {
   expect(A).styleToEqual({ height: 10 });
 });
 
-test("rem - default", () => {
+test('rem - default', () => {
   registerCSS(`.my-class { fontSize: 10rem; }`);
 
   render(<A className="my-class" />);
@@ -73,7 +73,7 @@ test("rem - default", () => {
   expect(A).styleToEqual({ fontSize: 140 });
 });
 
-test("rem - override", () => {
+test('rem - override', () => {
   registerCSS(`.my-class { fontSize: 10rem; }`, {
     inlineRem: 10,
   });
@@ -83,7 +83,7 @@ test("rem - override", () => {
   expect(A).styleToEqual({ fontSize: 100 });
 });
 
-test("rem - dynamic", () => {
+test('rem - dynamic', () => {
   registerCSS(`.my-class { fontSize: 10rem; }`, {
     inlineRem: false,
   });

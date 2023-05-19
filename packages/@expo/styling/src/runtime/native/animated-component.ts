@@ -1,6 +1,6 @@
-import React, { ComponentType } from "react";
-import { View, Text, Pressable } from "react-native";
-import Animated from "react-native-reanimated";
+import React, { ComponentType } from 'react';
+import { View, Text, Pressable } from 'react-native';
+import Animated from 'react-native-reanimated';
 
 const animatedCache = new WeakMap<ComponentType<any>, ComponentType<any>>([
   [View, Animated.View],
@@ -11,18 +11,16 @@ const animatedCache = new WeakMap<ComponentType<any>, ComponentType<any>>([
   [Pressable, Animated.createAnimatedComponent(Pressable)],
 ]);
 
-export function createAnimatedComponent(
-  Component: ComponentType<any>
-): ComponentType<any> {
+export function createAnimatedComponent(Component: ComponentType<any>): ComponentType<any> {
   if (animatedCache.has(Component)) {
     return animatedCache.get(Component)!;
-  } else if (Component.displayName?.startsWith("AnimatedComponent")) {
+  } else if (Component.displayName?.startsWith('AnimatedComponent')) {
     return Component;
   }
 
   if (
     !(
-      typeof Component !== "function" ||
+      typeof Component !== 'function' ||
       (Component.prototype && Component.prototype.isReactComponent)
     )
   ) {
@@ -31,9 +29,7 @@ export function createAnimatedComponent(
     );
   }
 
-  const AnimatedComponent = Animated.createAnimatedComponent(
-    Component as React.ComponentClass
-  );
+  const AnimatedComponent = Animated.createAnimatedComponent(Component as React.ComponentClass);
 
   animatedCache.set(Component, AnimatedComponent);
 

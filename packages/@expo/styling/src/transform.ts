@@ -1,1 +1,1 @@
-export { cssToReactNativeRuntime } from "./css-to-rn";
+export { cssToReactNativeRuntime } from './css-to-rn';

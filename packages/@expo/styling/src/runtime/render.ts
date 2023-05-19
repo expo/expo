@@ -5,7 +5,7 @@ export function render(
   key: string,
   next = false
 ) {
-  if (typeof type.cssInterop === "function" && !props.__skipCssInterop) {
+  if (typeof type.cssInterop === 'function' && !props.__skipCssInterop) {
     return type.cssInterop(jsx, type, props, key, next);
   } else {
     return jsx(type, props, key);

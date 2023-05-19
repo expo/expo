@@ -1,8 +1,8 @@
-import { render, screen } from "@testing-library/react-native";
-import React from "react";
+import { render, screen } from '@testing-library/react-native';
+import React from 'react';
 
-import { createMockComponent, registerCSS } from "./utils";
-import { StyleSheet } from "../runtime/native/stylesheet";
+import { createMockComponent, registerCSS } from './utils';
+import { StyleSheet } from '../runtime/native/stylesheet';
 
 const A = createMockComponent();
 
@@ -10,7 +10,7 @@ afterEach(() => {
   StyleSheet.__reset();
 });
 
-test("inline variable", () => {
+test('inline variable', () => {
   registerCSS(`.my-class { width: var(--my-var); --my-var: 10px; }`);
 
   render(<A className="my-class" />);
@@ -20,7 +20,7 @@ test("inline variable", () => {
   });
 });
 
-test("combined inline variable", () => {
+test('combined inline variable', () => {
   registerCSS(`
     .my-class-1 { width: var(--my-var); }
     .my-class-2 { --my-var: 10px; }
@@ -41,7 +41,7 @@ test("combined inline variable", () => {
   });
 });
 
-test("inherit variables", () => {
+test('inherit variables', () => {
   const B = createMockComponent();
 
   registerCSS(`

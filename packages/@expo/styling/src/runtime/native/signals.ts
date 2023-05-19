@@ -1,6 +1,6 @@
-import { useMemo, useEffect, useState } from "react";
+import { useMemo, useEffect, useState } from 'react';
 
-import { Signal } from "../../types";
+import { Signal } from '../../types';
 /*
  * This file handles the reactivity of our style.
  * The problem is that styles can conditionally use dynamic units (e.g. rem), and they
@@ -87,7 +87,7 @@ export function createSignal<T = unknown>(value: T): Signal<T> {
 
   const stale = (change: 1 | -1, fresh: boolean): void => {
     for (const subscriber of [...subscriptions]) {
-      if (typeof subscriber === "function") {
+      if (typeof subscriber === 'function') {
         subscriber();
       } else {
         subscriber.stale(change, fresh);
@@ -178,11 +178,7 @@ function createComputation<T = unknown>(fn: () => T) {
  * @param {() => void} rerender - a callback to rerender the component if the computation result changes
  * @returns {T} - the result of the computation function
  */
-export function useComputation<T>(
-  fn: () => T,
-  dependencies: unknown[],
-  rerender: () => void
-): T {
+export function useComputation<T>(fn: () => T, dependencies: unknown[], rerender: () => void): T {
   const [computation] = useState(() => createComputation(fn));
   useMemo(() => computation.update(fn), dependencies);
   useEffect(() => computation.subscribe(rerender), [computation]);

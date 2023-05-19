@@ -2,10 +2,10 @@ import worker, {
   JsTransformerConfig,
   JsTransformOptions,
   TransformResponse,
-} from "metro-transform-worker";
+} from 'metro-transform-worker';
 
-import { matchCssModule } from "./css-modules";
-import { cssToReactNativeRuntime } from "../css-to-rn";
+import { matchCssModule } from './css-modules';
+import { cssToReactNativeRuntime } from '../css-to-rn';
 
 export async function nativeCssTransform(
   config: JsTransformerConfig & {
@@ -35,11 +35,7 @@ export async function nativeCssTransform(
       config,
       projectRoot,
       filename,
-      Buffer.from(
-        `require("@expo/styling").StyleSheet.register(${JSON.stringify(
-          nativeStyles
-        )});`
-      ),
+      Buffer.from(`require("@expo/styling").StyleSheet.register(${JSON.stringify(nativeStyles)});`),
       options
     );
   }

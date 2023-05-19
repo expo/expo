@@ -1,4 +1,4 @@
-declare module "metro-transform-worker" {
+declare module 'metro-transform-worker' {
   export type JsTransformerConfig = any;
   export type JsTransformOptions = any;
   export type TransformResponse = any;

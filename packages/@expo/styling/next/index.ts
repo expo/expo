@@ -1,2 +1,2 @@
-import React from "react";
+import React from 'react';
 export const createElement = React.createElement;

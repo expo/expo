@@ -1,7 +1,7 @@
-import React from "react";
-import ReactJSXRuntime from "react/jsx-dev-runtime";
+import React from 'react';
+import ReactJSXRuntime from 'react/jsx-dev-runtime';
 
-import { render } from "./render";
+import { render } from './render';
 
 export const Fragment = React.Fragment;
 

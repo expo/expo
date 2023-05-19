@@ -1,6 +1,6 @@
-import matchers from "expect/build/matchers";
+import matchers from 'expect/build/matchers';
 
-require("react-native-reanimated/lib/reanimated2/jestUtils").setUpTests();
+require('react-native-reanimated/lib/reanimated2/jestUtils').setUpTests();
 
 matchers.customTesters = [];
 
