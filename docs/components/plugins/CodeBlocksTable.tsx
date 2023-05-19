@@ -1,10 +1,13 @@
 import { css } from '@emotion/react';
 import { breakpoints, spacing } from '@expo/styleguide-base';
+import { FileCode01Icon } from '@expo/styleguide-icons';
 import { PropsWithChildren } from 'react';
 
+import { cleanCopyValue } from '~/components/base/code';
 import { Snippet } from '~/ui/components/Snippet/Snippet';
 import { SnippetContent } from '~/ui/components/Snippet/SnippetContent';
 import { SnippetHeader } from '~/ui/components/Snippet/SnippetHeader';
+import { CopyAction } from '~/ui/components/Snippet/actions/CopyAction';
 
 const MDX_CLASS_NAME_TO_TAB_NAME: Record<string, string> = {
   'language-swift': 'Swift',
@@ -34,12 +37,16 @@ export function CodeBlocksTable({ children, tabs, connected = true, ...rest }: P
       return MDX_CLASS_NAME_TO_TAB_NAME[className] || className.replace('language-', '');
     });
 
+  console.warn(codeBlocks);
+
   return (
     <div css={[codeBlocksWrapperStyle, connected && codeBlockConnectedWrapperStyle]} {...rest}>
       {codeBlocks.map((codeBlock, index) => (
         <Snippet key={index} css={snippetWrapperStyle}>
-          <SnippetHeader title={tabNames[index]} />
-          <SnippetContent className="p-0">{codeBlock}</SnippetContent>
+          <SnippetHeader title={tabNames[index]} Icon={FileCode01Icon}>
+            <CopyAction text={cleanCopyValue(codeBlock.props.children.props.children)} />
+          </SnippetHeader>
+          <SnippetContent className="p-0 h-full">{codeBlock}</SnippetContent>
         </Snippet>
       ))}
     </div>
