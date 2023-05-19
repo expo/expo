@@ -36,7 +36,7 @@ import expo.modules.devmenu.api.DevMenuMetroClient
 import expo.modules.devmenu.detectors.ShakeDetector
 import expo.modules.devmenu.detectors.ThreeFingerLongPressDetector
 import expo.modules.devmenu.modules.DevMenuPreferences
-import expo.modules.devmenu.modules.DevMenuPreferencesHandel
+import expo.modules.devmenu.modules.DevMenuPreferencesHandle
 import expo.modules.devmenu.react.DevMenuPackagerCommandHandlersSwapper
 import expo.modules.devmenu.react.DevMenuShakeDetectorListenerSwapper
 import expo.modules.devmenu.tests.DevMenuDisabledTestInterceptor
@@ -228,7 +228,7 @@ object DevMenuManager : DevMenuManagerInterface, LifecycleEventListener {
     maybeStartDetectors(devMenuHost.getContext())
     preferences = (
       testInterceptor.overrideSettings()
-        ?: DevMenuPreferencesHandel(reactContext)
+        ?: DevMenuPreferencesHandle(reactContext)
       ).also {
       if (hasDisableOnboardingQueryParam(currentManifestURL.orEmpty())) {
         it.isOnboardingFinished = true

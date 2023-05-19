@@ -15,7 +15,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 import kotlinx.coroutines.launch
 
 class DevMenuInternalModule : Module() {
-  val reactContext
+  val reactContext: Context
     get() = appContext.reactContext
       ?: throw Exceptions.ReactContextLost()
 

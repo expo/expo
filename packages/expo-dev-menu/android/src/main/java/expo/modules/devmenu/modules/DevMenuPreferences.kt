@@ -10,7 +10,7 @@ import expo.modules.kotlin.modules.ModuleDefinition
 
 private const val DEV_SETTINGS_PREFERENCES = "expo.modules.devmenu.sharedpreferences"
 
-class DevMenuPreferencesHandel(context: Context) : DevMenuPreferencesInterface {
+class DevMenuPreferencesHandle(context: Context) : DevMenuPreferencesInterface {
   private val sharedPreferences by lazy {
     context.getSharedPreferences(DEV_SETTINGS_PREFERENCES, MODE_PRIVATE)
   }
@@ -95,7 +95,7 @@ class DevMenuPreferencesHandel(context: Context) : DevMenuPreferencesInterface {
  */
 class DevMenuPreferences : Module() {
   private val preferencesHandel by lazy {
-    DevMenuPreferencesHandel(
+    DevMenuPreferencesHandle(
       appContext.reactContext ?: throw Exceptions.ReactContextLost()
     )
   }
