@@ -1,8 +1,8 @@
-import { render } from "@testing-library/react-native";
-import React from "react";
+import { render } from '@testing-library/react-native';
+import React from 'react';
 
-import { StyleSheet } from "../runtime/native/stylesheet";
-import { createMockComponent, registerCSS } from "./utils";
+import { StyleSheet } from '../runtime/native/stylesheet';
+import { createMockComponent, registerCSS } from './utils';
 
 const A = createMockComponent();
 
@@ -12,7 +12,7 @@ beforeEach(() => {
   StyleSheet.__reset();
 });
 
-test("basic animation", () => {
+test('basic animation', () => {
   registerCSS(`
 .my-class {
   animation-duration: 3s;
@@ -30,28 +30,26 @@ test("basic animation", () => {
 }
 `);
 
-  const testComponent = render(
-    <A testID="test" className="my-class" />
-  ).getByTestId("test");
+  const testComponent = render(<A testID="test" className="my-class" />).getByTestId('test');
 
   expect(testComponent).toHaveAnimatedStyle({
-    marginLeft: "100%",
+    marginLeft: '100%',
   });
 
   jest.advanceTimersByTime(1500);
 
   expect(testComponent).toHaveAnimatedStyle({
-    marginLeft: "50%",
+    marginLeft: '50%',
   });
 
   jest.advanceTimersByTime(1500);
 
   expect(testComponent).toHaveAnimatedStyle({
-    marginLeft: "0%",
+    marginLeft: '0%',
   });
 });
 
-test("single frame", () => {
+test('single frame', () => {
   registerCSS(`
     .my-class {
       animation-duration: 3s;
@@ -65,28 +63,26 @@ test("single frame", () => {
     }
 `);
 
-  const testComponent = render(
-    <A testID="test" className="my-class" />
-  ).getByTestId("test");
+  const testComponent = render(<A testID="test" className="my-class" />).getByTestId('test');
 
   expect(testComponent).toHaveAnimatedStyle({
-    transform: [{ rotate: "0deg" }],
+    transform: [{ rotate: '0deg' }],
   });
 
   jest.advanceTimersByTime(1500);
 
   expect(testComponent).toHaveAnimatedStyle({
-    transform: [{ rotate: "180deg" }],
+    transform: [{ rotate: '180deg' }],
   });
 
   jest.advanceTimersByTime(1500);
 
   expect(testComponent).toHaveAnimatedStyle({
-    transform: [{ rotate: "360deg" }],
+    transform: [{ rotate: '360deg' }],
   });
 });
 
-test("transform - starting", () => {
+test('transform - starting', () => {
   registerCSS(`
     .my-class {
       animation-duration: 3s;
@@ -101,28 +97,26 @@ test("transform - starting", () => {
     }
 `);
 
-  const testComponent = render(
-    <A testID="test" className="my-class" />
-  ).getByTestId("test");
+  const testComponent = render(<A testID="test" className="my-class" />).getByTestId('test');
 
   expect(testComponent).toHaveAnimatedStyle({
-    transform: [{ rotate: "180deg" }],
+    transform: [{ rotate: '180deg' }],
   });
 
   jest.advanceTimersByTime(1500);
 
   expect(testComponent).toHaveAnimatedStyle({
-    transform: [{ rotate: "270deg" }],
+    transform: [{ rotate: '270deg' }],
   });
 
   jest.advanceTimersByTime(1500);
 
   expect(testComponent).toHaveAnimatedStyle({
-    transform: [{ rotate: "360deg" }],
+    transform: [{ rotate: '360deg' }],
   });
 });
 
-test("bounce", () => {
+test('bounce', () => {
   registerCSS(`
     .animate-bounce {
       animation: bounce 1s infinite;
@@ -142,9 +136,7 @@ test("bounce", () => {
     }
 `);
 
-  const testComponent = render(
-    <A testID="test" className="animate-bounce" />
-  ).getByTestId("test");
+  const testComponent = render(<A testID="test" className="animate-bounce" />).getByTestId('test');
 
   expect(testComponent).toHaveAnimatedStyle({
     height: 100,
@@ -154,12 +146,12 @@ test("bounce", () => {
       { translateX: 0 },
       { scaleX: 1 },
       { scaleY: 1 },
-      { rotate: "0deg" },
-      { rotateX: "0deg" },
-      { rotateY: "0deg" },
-      { rotateZ: "0deg" },
-      { skewX: "0deg" },
-      { skewY: "0deg" },
+      { rotate: '0deg' },
+      { rotateX: '0deg' },
+      { rotateY: '0deg' },
+      { rotateZ: '0deg' },
+      { skewX: '0deg' },
+      { skewY: '0deg' },
       { scale: 1 },
     ],
   });
@@ -174,12 +166,12 @@ test("bounce", () => {
       { translateX: 0 },
       { scaleX: 1 },
       { scaleY: 1 },
-      { rotate: "0deg" },
-      { rotateX: "0deg" },
-      { rotateY: "0deg" },
-      { rotateZ: "0deg" },
-      { skewX: "0deg" },
-      { skewY: "0deg" },
+      { rotate: '0deg' },
+      { rotateX: '0deg' },
+      { rotateY: '0deg' },
+      { rotateZ: '0deg' },
+      { skewX: '0deg' },
+      { skewY: '0deg' },
       { scale: 1 },
     ],
   });
@@ -194,12 +186,12 @@ test("bounce", () => {
       { translateX: 0 },
       { scaleX: 1 },
       { scaleY: 1 },
-      { rotate: "0deg" },
-      { rotateX: "0deg" },
-      { rotateY: "0deg" },
-      { rotateZ: "0deg" },
-      { skewX: "0deg" },
-      { skewY: "0deg" },
+      { rotate: '0deg' },
+      { rotateX: '0deg' },
+      { rotateY: '0deg' },
+      { rotateZ: '0deg' },
+      { skewX: '0deg' },
+      { skewY: '0deg' },
       { scale: 1 },
     ],
   });
