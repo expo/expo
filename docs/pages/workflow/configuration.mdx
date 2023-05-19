@@ -70,9 +70,7 @@ import Constants from 'expo-constants';
 Constants.expoConfig.extra.fact === 'kittens are cool';
 ```
 
-You can access and modify incoming config values by exporting a function that returns an object. This is useful if your project also has an **app.json**. By default, Expo CLI will read the **app.json** first and send the normalized results to the **app.config.js**. This functionality is disabled when the `--config` is used to specify a custom config.
-
-> **warning** The `--config` flag is deprecated. For more information, see [Migration from `--config` in Expo CLI](https://expo.fyi/config-flag-migration).
+You can access and modify incoming config values by exporting a function that returns an object. This is useful if your project also has an **app.json**. By default, Expo CLI will read the **app.json** first and send the normalized results to the **app.config.js**.
 
 For example, your **app.json** could look like this:
 
