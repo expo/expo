@@ -15,6 +15,7 @@
 ### 🐛 Bug fixes
 
 - [Android] Resolve up the project root when creating production manifest. ([#22044](https://github.com/expo/expo/pull/22044) by [@EvanBacon](https://github.com/EvanBacon))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 

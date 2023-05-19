@@ -54,6 +54,11 @@ android {
   lintOptions {
     abortOnError false
   }
+  publishing {
+    singleVariant("release") {
+      withSourcesJar()
+    }
+  }
 }
 
 if (safeExtGet("excludeAppGlideModule", false)) {

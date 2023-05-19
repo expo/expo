@@ -1,14 +1,7 @@
 // Gradle script for generating serialized public app config (from app.config.js/ts or app.json) and bundling it into the APK 
 
 import org.apache.tools.ant.taskdefs.condition.Os
-import org.gradle.util.GradleVersion
 
-void runBefore(String dependentTaskName, Task task) {
-  Task dependentTask = tasks.findByPath(dependentTaskName);
-  if (dependentTask != null) {
-    dependentTask.dependsOn task
-  }
-}
 
 def expoConstantsDir = ["node", "-e", "console.log(require('path').dirname(require.resolve('expo-constants/package.json')));"].execute(null, projectDir).text.trim()
 
@@ -17,7 +10,6 @@ def nodeExecutableAndArgs = config.nodeExecutableAndArgs ?: ["node"]
 
 afterEvaluate {
   def projectRoot = file("${rootProject.projectDir}")
-  def inputExcludes = ["android/**", "ios/**"]
 
   if (!android.hasProperty('libraryVariants')) {
     // For traditional application level integration, will be no-op to prevent duplicated app.config creation.
@@ -28,10 +20,9 @@ afterEvaluate {
     def targetPath = variant.dirName
 
     def assetsDir = file("$buildDir/generated/assets/expo-constants/${targetPath}")
+    def packageTaskName = "package${targetName}Assets"
 
-    def currentBundleTask = tasks.create(
-        name: "create${targetName}ExpoConfig",
-        type: Exec) {
+    def currentBundleTask = tasks.register("create${targetName}ExpoConfig", Exec) {
       description = "expo-constants: Create config for ${targetName}."
 
       doFirst {
@@ -39,8 +30,7 @@ afterEvaluate {
         assetsDir.mkdirs()
       }
 
-      // Set up inputs and outputs so gradle can cache the result
-      inputs.files fileTree(dir: projectRoot, excludes: inputExcludes)
+      // Set up outputs so gradle can cache the result
       outputs.dir assetsDir
 
       // Switch to project root and generate the app config
@@ -53,31 +43,26 @@ afterEvaluate {
       }
     }
 
-    def currentCopyAppConfigTask = tasks.create(
-        name: "copy${targetName}ExpoConfig",
-        type: Copy) {
+    def currentCopyAppConfigTask = tasks.register("copy${targetName}ExpoConfig", Copy) {
       description = "expo-constants: Copy generated app.config into ${targetName}."
 
       from(assetsDir)
       into("${projectDir}/src/main/assets")
       include('app.config')
 
-      dependsOn(currentBundleTask)
+      dependsOn("create${targetName}ExpoConfig")
     }
 
-    def currentCleanupAppConfigTask = tasks.create(
-        name: "cleanup${targetName}ExpoConfig",
-        type: Delete) {
+    def currentCleanupAppConfigTask = tasks.register("cleanup${targetName}ExpoConfig", Delete) {
       description = "expo-constants: Cleanup generated app.config from ${targetName}."
 
       delete files("${projectDir}/src/main/assets/app.config")
+      dependsOn(packageTaskName)
     }
 
     // In summary, these tasks try to create `src/main/assets/app.config` in building time for gradle to merge the asset.
     // And cleanup the generated app.config after building time.
-    def packageTask = tasks.findByPath("package${targetName}Assets")
-    packageTask.dependsOn(currentCopyAppConfigTask)
-    currentCleanupAppConfigTask.dependsOn(packageTask)
-    runBefore("process${targetName}JavaRes", currentCleanupAppConfigTask)
+    tasks.findByPath(packageTaskName).dependsOn(currentCopyAppConfigTask)
+    tasks.findByPath("process${targetName}JavaRes").dependsOn(currentCleanupAppConfigTask)
   }
 }

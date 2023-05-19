@@ -9,6 +9,7 @@
 ### 🐛 Bug fixes
 
 - [iOS] Fixed Detox tests hanging when `BlurView` is present ([#22439](https://github.com/expo/expo/pull/22439) by [@behenate](https://github.com/behenate))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
 
