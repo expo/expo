@@ -17,9 +17,9 @@ includeBuild('../react-native-lab/react-native/packages/react-native-gradle-plug
 include ':expoview'
 include ':tools'
 include ':ReactAndroid'
-project(':ReactAndroid').projectDir = new File(rootDir, '../react-native-lab/react-native/ReactAndroid')
+project(':ReactAndroid').projectDir = new File(rootDir, '../react-native-lab/react-native/packages/react-native/ReactAndroid')
 include ':ReactAndroid:hermes-engine'
-project(':ReactAndroid:hermes-engine').projectDir = new File(rootDir, '../react-native-lab/react-native/ReactAndroid/hermes-engine')
+project(':ReactAndroid:hermes-engine').projectDir = new File(rootDir, '../react-native-lab/react-native/packages/react-native/ReactAndroid/hermes-engine')
 include ':expo-modules-test-core'
 project(':expo-modules-test-core').projectDir = new File(rootDir, '../packages/expo-modules-test-core/android')
 
