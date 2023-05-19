@@ -1,5 +1,5 @@
 import * as React from 'react';
-import { CameraCapturedPicture, CameraPictureOptions, CameraProps, CameraRecordingOptions, CameraType, ConstantsType, PermissionResponse, VideoCodec } from './Camera.types';
+import { CameraCapturedPicture, CameraOrientation, CameraPictureOptions, CameraProps, CameraRecordingOptions, CameraType, ConstantsType, PermissionResponse, VideoCodec } from './Camera.types';
 export default class Camera extends React.Component<CameraProps> {
     /**
      * Check whether the current device has a camera. This is useful for web and simulators cases.
@@ -147,6 +147,11 @@ export default class Camera extends React.Component<CameraProps> {
     _onMountError: ({ nativeEvent }: {
         nativeEvent: {
             message: string;
+        };
+    }) => void;
+    _onResponsiveOrientationChanged: ({ nativeEvent }: {
+        nativeEvent: {
+            orientation: CameraOrientation;
         };
     }) => void;
     _onObjectDetected: (callback?: Function) => ({ nativeEvent }: {
