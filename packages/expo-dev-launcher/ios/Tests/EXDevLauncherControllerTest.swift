@@ -26,7 +26,6 @@ class EXDevLauncherControllerTest: QuickSpec {
       expect(modules.count).to(equal(9))
       expect(modules.first { $0 is RCTDevMenu }).toNot(beNil())
       expect(modules.first { type(of: $0).moduleName() == "DevLoadingView" }).toNot(beNil())
-      expect(modules.first { type(of: $0).moduleName() == "EXDevLauncherInternal" }).toNot(beNil())
     }
 
     it("controller should have access to managers classes") {

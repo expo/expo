@@ -60,7 +60,7 @@ export function UserProfileScreen({ navigation }) {
   const isAuthenticated = userData != null;
 
   return (
-    <SafeAreaView style={{ flex: 1 }}>
+    <SafeAreaView style={{ flex: 1 }} edges={['bottom']}>
       <ScrollView style={{ flex: 1 }}>
         <View>
           <AccountScreenHeader onClosePress={onClosePress} />
