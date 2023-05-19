@@ -457,13 +457,13 @@ export type CameraProps = ViewProps & {
      * Whether to allow responsive orientation of the camera when the screen orientation is locked (i.e. when set to `true`
      * landscape photos will be taken if the device is turned that way, even if the app or device orientation is locked to portrait)
      * @platform ios
-    */
+     */
     responsiveOrientationWhenOrientationLocked?: boolean;
     /**
-      * Callback invoked when responsive orientation changes. Only applicable if `responsiveOrientationWhenOrientationLocked` is `true`
-      * @param event result object that contains updated orientation of camera
-      * @platform ios
-    */
+     * Callback invoked when responsive orientation changes. Only applicable if `responsiveOrientationWhenOrientationLocked` is `true`
+     * @param event result object that contains updated orientation of camera
+     * @platform ios
+     */
     onResponsiveOrientationChanged?: (event: ResponsiveOrientationChanged) => void;
 };
 /**
