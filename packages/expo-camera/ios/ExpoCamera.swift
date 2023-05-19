@@ -4,7 +4,7 @@ import ExpoModulesCore
 class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCaptureFileOutputRecordingDelegate, AVCaptureMetadataOutputObjectsDelegate, AVCapturePhotoCaptureDelegate {
     
   internal var session = AVCaptureSession()
-  internal var sessionQueue = DispatchQueue(label: "cameraQueue")
+  internal var sessionQueue = DispatchQueue(label: "captureSessionQueue")
   
   // MARK: Legacy Modules
   private var faceDetector: EXFaceDetectorManagerInterface?
@@ -19,21 +19,24 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   var isDetectingFaces = false
   var isScanningBarCodes = false
   var presetCamera = AVCaptureDevice.Position.back
-  var zoom: CGFloat = 0.0
-  var autoFocus = AVCaptureDevice.FocusMode.locked
-  var focusDepth: Float = 0.0
+  var autoFocus = AVCaptureDevice.FocusMode.autoFocus
   var whiteBalance = CameraWhiteBalance.auto
   var flashMode = CameraFlashMode.auto
+  var zoom: CGFloat = 0
+  var focusDepth: Float = 0
   
   private var previewLayer: AVCaptureVideoPreviewLayer?
-  private var paused = false
+  private var isSessionRunning = false
   private var isValidVideoOptions = true
   private var videoCodecType: AVVideoCodecType?
+  private var photoCaptureOptions: TakePictureOptions?
+  private var videoStabilizationMode: AVCaptureVideoStabilizationMode?
+  
+  // MARK: Session Inputs and Outputs
+  
   private var movieFileOutput: AVCaptureMovieFileOutput?
   private var photoOutput: AVCapturePhotoOutput?
   private var videoCaptureDeviceInput: AVCaptureDeviceInput?
-  private var photoCaptureOptions: TakePictureOptions?
-  private var videoStabilizationMode: AVCaptureVideoStabilizationMode?
   
   // MARK: Callbacks
   
@@ -48,6 +51,10 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   let onBarCodeScanned = EventDispatcher()
   let onFacesDetected = EventDispatcher()
   
+  private var deviceOrientation: UIInterfaceOrientation {
+    window?.windowScene?.interfaceOrientation ?? .unknown
+  }
+  
   required init(appContext: AppContext? = nil) {
     super.init(appContext: appContext)
     faceDetector = createFaceDetectorManager()
@@ -61,7 +68,9 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
     previewLayer?.needsDisplayOnBoundsChange = true
 #endif
     self.changePreviewOrientation(orientation: UIApplication.shared.statusBarOrientation)
-    self.initializeCaptureSessionInput()
+    sessionQueue.async {
+      self.initializeCaptureSessionInput()
+    }
     self.startSession()
     NotificationCenter.default.addObserver(self, selector: #selector(orientationChanged(notification:)), name: UIDevice.orientationDidChangeNotification, object: nil)
     lifecycleManager?.register(self)
@@ -70,7 +79,9 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   func updateType() {
     sessionQueue.async { [weak self] in
       guard let self else { return }
-      self.initializeCaptureSessionInput()
+      sessionQueue.async {
+        self.initializeCaptureSessionInput()
+      }
       if !session.isRunning {
         startSession()
       }
@@ -129,42 +140,40 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
       return
     }
     
+    if presetCamera == .unspecified {
+      return
+    }
+    
+    let photoOutput = AVCapturePhotoOutput()
+    photoOutput.isLivePhotoCaptureEnabled = false
+    
+    if session.canAddOutput(photoOutput) {
+      session.addOutput(photoOutput)
+      self.photoOutput = photoOutput
+    }
+            
     sessionQueue.async { [weak self] in
       guard let self else { return }
-      if presetCamera == .unspecified {
-        return
-      }
-      
-      let photoOutput = AVCapturePhotoOutput()
-      if photoOutput.isLivePhotoCaptureSupported {
-        photoOutput.isLivePhotoCaptureEnabled = true
-      }
-      if session.canAddOutput(photoOutput) {
-        session.addOutput(photoOutput)
-        self.photoOutput = photoOutput
-      }
-      
+  
       NotificationCenter.default.addObserver(forName: NSNotification.Name.AVCaptureSessionRuntimeError, object: session, queue: nil) { [weak self] notification in
         guard let self else { return }
         
-        self.sessionQueue.async { [weak self] in
-          guard let self else { return }
+        self.sessionQueue.async {
           self.session.startRunning()
           self.ensureSessionConfiguration()
           self.onCameraReady()
         }
       }
       
-      sessionQueue.asyncAfter(deadline: .now() + round(50/1000000)) { [weak self] in
-        guard let self else { return }
-        maybeStartFaceDetection(presetCamera != .back)
-        if barCodeScanner != nil {
-          barCodeScanner?.maybeStartBarCodeScanning()
+      sessionQueue.asyncAfter(deadline: .now() + round(50/1000000)) {
+        self.maybeStartFaceDetection(self.presetCamera != .back)
+        if let barCodeScanner = self.barCodeScanner {
+          barCodeScanner.maybeStartBarCodeScanning()
         }
         
-        session.startRunning()
-        ensureSessionConfiguration()
-        onCameraReady()
+        self.session.startRunning()
+        self.ensureSessionConfiguration()
+        self.onCameraReady()
       }
     }
   }
@@ -227,13 +236,15 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
       try device.lockForConfiguration()
       
       if whiteBalance == CameraWhiteBalance.auto {
-        device.whiteBalanceMode = AVCaptureDevice.WhiteBalanceMode.autoWhiteBalance
+        device.whiteBalanceMode = AVCaptureDevice.WhiteBalanceMode.continuousAutoWhiteBalance
         device.unlockForConfiguration()
       } else {
-        let rgbGains = device.deviceWhiteBalanceGains(for: AVCaptureDevice.WhiteBalanceTemperatureAndTintValues(temperature: whiteBalance.temperature(), tint: 0))
-        
-        device.setWhiteBalanceModeLocked(with: rgbGains) { time in
-          device.unlockForConfiguration()
+        if device.isLockingWhiteBalanceWithCustomDeviceGainsSupported {
+          let rgbGains = device.deviceWhiteBalanceGains(for: AVCaptureDevice.WhiteBalanceTemperatureAndTintValues(temperature: whiteBalance.temperature(), tint: 0))
+          
+          device.setWhiteBalanceModeLocked(with: rgbGains) { time in
+            device.unlockForConfiguration()
+          }
         }
       }
     } catch {
@@ -244,23 +255,23 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
     device.unlockForConfiguration()
   }
   
-  func onAppBackgrounded() {
-    if session.isRunning && !paused {
-      paused = true
-      sessionQueue.async { [weak self] in
-        guard let self else { return }
-        session.stopRunning()
-      }
-    }
-  }
-  
   func onAppForegrounded() {
-    if session.isRunning && paused {
-      paused = false
+    if !session.isRunning && isSessionRunning {
+      isSessionRunning = false
       sessionQueue.async { [weak self] in
         guard let self else { return }
         session.startRunning()
         ensureSessionConfiguration()
+      }
+    }
+  }
+  
+  func onAppBackgrounded() {
+    if session.isRunning && !isSessionRunning {
+      isSessionRunning = true
+      sessionQueue.async { [weak self] in
+        guard let self else { return }
+        session.stopRunning()
       }
     }
   }
@@ -270,23 +281,23 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   }
   
   func setIsScanningBarCodes(scanning: Bool) {
-    if barCodeScanner != nil {
-      barCodeScanner?.setIsEnabled(scanning)
+    if let barCodeScanner {
+      barCodeScanner.setIsEnabled(scanning)
     } else if scanning {
       log.error("BarCodeScanner module not found. Make sure `expo-barcode-scanner` is installed and linked correctly.")
     }
   }
   
   func setBarCodeScannerSettings(settings: [String: Any]) {
-    if barCodeScanner != nil {
-      barCodeScanner?.setSettings(settings)
+    if let barCodeScanner {
+      barCodeScanner.setSettings(settings)
     }
   }
   
   func setIsDetectingFaces(detecting: Bool) {
-    if faceDetector != nil {
-      faceDetector?.setIsEnabled(detecting)
-    } else if isDetectingFaces {
+    if let faceDetector {
+      faceDetector.setIsEnabled(detecting)
+    } else if detecting {
       log.error("FaceDetector module not found. Make sure `expo-face-detector` is installed and linked correctly.");
     }
   }
@@ -299,39 +310,46 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   
   func takePicture(options: TakePictureOptions, promise: Promise) {
     if photoCapturedPromise != nil {
-      promise.legacyRejecter("E_IMAGE_CAPTURE_FAILED", "Camera is not ready yet. Wait for 'onCameraReady' callback.", nil)
+      promise.reject(CameraNotReadyException())
       return
     }
     
     guard let photoOutput else {
-      promise.legacyRejecter("E_IMAGE_CAPTURE_FAILED", "Camera is not ready yet. Wait for 'onCameraReady' callback.", nil)
+      promise.reject(CameraOutputNotReadyException())
       return
     }
-    
-    let connection = photoOutput.connection(with: .video)
-    connection?.videoOrientation = EXCameraUtils.videoOrientation(for: UIDevice.current.orientation)
     
     photoCapturedPromise = promise
     photoCaptureOptions = options
     
-    let outputSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecJPEG])
-
-//    outputSettings.isHighResolutionPhotoEnabled = true
-    var requestedFlashMode = AVCaptureDevice.FlashMode.off
-    
-    switch flashMode {
-    case .off:
-      requestedFlashMode = .off
-    case .auto:
-      requestedFlashMode = .auto
-    case .on, .torch:
-      requestedFlashMode = .on
+    sessionQueue.async {
+      let connection = photoOutput.connection(with: .video)
+      connection?.videoOrientation = EXCameraUtils.videoOrientation(for: UIDevice.current.orientation)
+      let photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecJPEG])
+      
+      if photoOutput.isHighResolutionCaptureEnabled {
+        photoSettings.isHighResolutionPhotoEnabled = true
+      }
+      var requestedFlashMode = AVCaptureDevice.FlashMode.off
+      
+      switch self.flashMode {
+      case .off:
+        requestedFlashMode = .off
+      case .auto:
+        requestedFlashMode = .auto
+      case .on, .torch:
+        requestedFlashMode = .on
+      }
+      
+      if photoOutput.supportedFlashModes.contains(requestedFlashMode) {
+        photoSettings.flashMode = requestedFlashMode
+      }
+      
+      if photoOutput.isHighResolutionCaptureEnabled {
+        photoSettings.isHighResolutionPhotoEnabled = true
+      }
+      photoOutput.capturePhoto(with: photoSettings, delegate: self)
     }
-    
-    if photoOutput.supportedFlashModes.contains(requestedFlashMode) {
-      outputSettings.flashMode = requestedFlashMode
-    }
-    photoOutput.capturePhoto(with: outputSettings, delegate: self)
   }
   
   func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
@@ -341,12 +359,12 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
     photoCaptureOptions = nil
     
     if error != nil {
-      promise.legacyRejecter("E_IMAGE_CAPTURE_FAILED", "Image could not be captured", error);
+      promise.reject(CameraImageCaptureException());
       return
     }
     
     if fileSystem == nil {
-      promise.legacyRejecter("E_IMAGE_CAPTURE_FAILED", "No file system module", nil);
+      promise.reject(Exceptions.FileSystemModuleNotFound())
       return;
     }
     
@@ -355,17 +373,15 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   }
   
   func handleCapturedImageData(imageData: Data?, metadata: [String: Any], options: TakePictureOptions, promise: Promise) {
-    guard let imageData else { return }
+    guard let imageData, var takenImage = UIImage(data: imageData)  else { return }
     
-    guard var takenImage = UIImage(data: imageData) else { return }
     if options.fastMode {
       promise.resolve()
     }
     
     var previewSize: CGSize
-    guard let orientation = window?.windowScene?.interfaceOrientation else { return }
     
-    if orientation == .portrait {
+    if deviceOrientation == .portrait {
       previewSize = CGSize(width: previewLayer?.frame.size.height ?? 0.0, height: previewLayer?.frame.size.width ?? 0.0)
     } else {
       previewSize = CGSize(width: previewLayer?.frame.size.width ?? 0.0, height: previewLayer?.frame.size.height ?? 0.0)
@@ -423,10 +439,9 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
         if updatedMetadata[kCGImagePropertyGPSDictionary as String] == nil {
           updatedMetadata[kCGImagePropertyGPSDictionary as String] = gpsDict
         } else {
-          if var metadataGpsDict = updatedMetadata[kCGImagePropertyGPSDictionary as String] as? [String: Any] {
-            gpsDict.forEach {
-              metadataGpsDict[$0.key] = $0.value
-            }
+          if var metadataGpsDict = updatedMetadata[kCGImagePropertyGPSDictionary as String] as? NSMutableDictionary {
+            print("metadataGpsDict")
+            metadataGpsDict.addEntries(from: gpsDict)
           }
         }
       }
@@ -438,7 +453,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
     }
     
     if processedImageData == nil {
-      promise.legacyRejecter("E_IMAGE_SAVE_FAILED", "Could not save the image.", nil)
+      promise.reject(CameraSavingImageException())
       return
     }
     
@@ -459,8 +474,8 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   
   func record(options: CameraRecordingOptions, promise: Promise) {
     if movieFileOutput == nil {
-      if faceDetector != nil {
-        faceDetector?.stopFaceDetection()
+      if let faceDetector {
+        faceDetector.stopFaceDetection()
       }
       setupMovieFileCapture()
     }
@@ -468,92 +483,72 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
     if let movieFileOutput, !movieFileOutput.isRecording && videoRecordedPromise == nil {
       updateSessionAudioIsMuted(options.mute)
       
-      guard let connection = movieFileOutput.connection(with: .video) else {
-        log.info("No connection for media type")
-        return
-      }
-      if connection.isVideoStabilizationSupported == false {
-        log.warn("\(#function): Video Stabilization is not supported on this device.")
-      } else {
-        if let videoStabilizationMode {
-          connection.preferredVideoStabilizationMode = videoStabilizationMode
+      if let connection = movieFileOutput.connection(with: .video) {
+        if !connection.isVideoStabilizationSupported {
+          log.warn("\(#function): Video Stabilization is not supported on this device.")
+        } else {
+          if let videoStabilizationMode {
+            connection.preferredVideoStabilizationMode = videoStabilizationMode
+          }
+        }
+        
+        setVideoOptions(options: options, for: connection, promise: promise)
+        connection.videoOrientation = EXCameraUtils.videoOrientation(for: UIDevice.current.orientation)
+        
+        if connection.isVideoOrientationSupported && options.mirror {
+          connection.isVideoMirrored = options.mirror
         }
       }
       
-      connection.videoOrientation = EXCameraUtils.videoOrientation(for: UIDevice.current.orientation)
+      let preset = options.quality?.resolution() ?? .high
+      updateSessionPreset(preset: preset)
       
-      var preset: AVCaptureSession.Preset? = nil
-      if let quality = options.quality {
-        preset = quality.resolution()
-      } else if session.sessionPreset == AVCaptureSession.Preset.photo {
-        preset = AVCaptureSession.Preset.high
-      }
-      
-      if let preset {
-        updateSessionPreset(preset: preset)
-      }
-      
-      setVideoOptions(options: options, for: connection, promise: promise)
-      
-      let canBeMirrored = connection.isVideoOrientationSupported
-      if canBeMirrored && options.mirror {
-        connection.isVideoMirrored = options.mirror
-      }
-      
-      sessionQueue.async { [weak self] in
-        guard let self else { return }
-        if !isValidVideoOptions {
+      sessionQueue.async {
+        if !self.isValidVideoOptions {
           return
         }
         
-        if fileSystem == nil {
-          promise.legacyRejecter("E_IMAGE_SAVE_FAILED", "No file system module", nil)
-          return
-        }
-        
-        guard let fileSystem else {
+        guard let fileSystem = self.fileSystem else {
           promise.reject(Exceptions.FileSystemModuleNotFound())
           return
         }
         
-        let directory = fileSystem.cachesDirectory.appending("Camera")
+        let directory = fileSystem.cachesDirectory.appending("/Camera")
         let path = fileSystem.generatePath(inDirectory: directory, withExtension: ".mov")
-        if let outputURL = URL(string: path) {
+        let fileUrl = NSURL(fileURLWithPath: path)
+        
+        if let outputURL = fileUrl.filePathURL {
           movieFileOutput.startRecording(to: outputURL, recordingDelegate: self)
-          videoRecordedPromise = promise
+          self.videoRecordedPromise = promise
         }
       }
     }
   }
   
   func setVideoOptions(options: CameraRecordingOptions, for connection: AVCaptureConnection, promise: Promise) {
-    sessionQueue.async { [weak self] in
-      guard let self else { return }
-      isValidVideoOptions = true
+    sessionQueue.async {
+      self.isValidVideoOptions = true
       
       if let maxDuration = options.maxDuration {
-        movieFileOutput?.maxRecordedDuration = CMTime(seconds: maxDuration, preferredTimescale: 30)
+        self.movieFileOutput?.maxRecordedDuration = CMTime(seconds: maxDuration, preferredTimescale: 30)
       }
       
       if let maxFileSize = options.maxFileSize {
-        movieFileOutput?.maxRecordedFileSize = Int64(maxFileSize)
+        self.movieFileOutput?.maxRecordedFileSize = Int64(maxFileSize)
       }
       
       if let codec = options.codec {
         let codecType = codec.codecType()
-        if let movieFileOutput {
+        if let movieFileOutput = self.movieFileOutput {
           if movieFileOutput.availableVideoCodecTypes.contains(codecType) {
             movieFileOutput.setOutputSettings([AVVideoCodecKey: codecType], for: connection)
             self.videoCodecType = codecType
           } else {
-            videoCodecType = nil
-            let videoCodecErrorMessage = "Video Codec '\(videoCodecType?.rawValue)' is not supported on this device"
+            promise.reject(CameraRecordingException(self.videoCodecType?.rawValue))
             
-            promise.legacyRejecter("E_RECORDING_FAILED", videoCodecErrorMessage, nil)
-            
-            cleanupMovieFileCapture()
-            videoRecordedPromise = nil
-            isValidVideoOptions = false
+            self.cleanupMovieFileCapture()
+            self.videoRecordedPromise = nil
+            self.isValidVideoOptions = false
           }
         }
       }
@@ -561,54 +556,63 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   }
   
   func updateSessionAudioIsMuted(_ isMuted: Bool) {
-    sessionQueue.async { [weak self] in
-      guard let self else { return }
-      session.beginConfiguration()
+    sessionQueue.async {
+      self.session.beginConfiguration()
       
-      for input in session.inputs  {
+      for input in self.session.inputs  {
         if let deviceInput = input as? AVCaptureDeviceInput {
           if deviceInput.device.hasMediaType(.audio) {
             if isMuted {
               self.session.removeInput(input)
             }
-            session.commitConfiguration()
+            self.session.commitConfiguration()
             return
           }
         }
       }
       
       if !isMuted {
-        guard let audioCapturedevice = AVCaptureDevice.default(for: .audio) else {
-          return
-        }
-        do {
-          let audioDeviceInput = try AVCaptureDeviceInput(device: audioCapturedevice)
-          
-          if self.session.canAddInput(audioDeviceInput) {
-            self.session.addInput(audioDeviceInput)
+        if let audioCapturedevice = AVCaptureDevice.default(for: .audio) {
+          do {
+            let audioDeviceInput = try AVCaptureDeviceInput(device: audioCapturedevice)
+            
+            if self.session.canAddInput(audioDeviceInput) {
+              self.session.addInput(audioDeviceInput)
+            }
+          } catch {
+            log.info("\(#function): \(error.localizedDescription)")
+            self.session.commitConfiguration()
+            return
           }
-        } catch {
-          log.info("\(#function): \(error.localizedDescription)")
-          return
         }
       }
       
-      session.commitConfiguration()
+      self.session.commitConfiguration()
     }
   }
   
   func setupMovieFileCapture() {
-    let movieFileOutput = AVCaptureMovieFileOutput()
-    if session.canAddOutput(movieFileOutput) {
-      self.movieFileOutput = movieFileOutput
+    let output = AVCaptureMovieFileOutput()
+    sessionQueue.async {
+      self.session.beginConfiguration()
+      if self.session.canAddOutput(output) {
+        self.session.addOutput(output)
+        self.session.sessionPreset = .high
+        self.movieFileOutput = output
+      }
+      self.session.commitConfiguration()
     }
   }
   
   func cleanupMovieFileCapture() {
-    if let movieFileOutput {
-      if session.outputs.contains(movieFileOutput) {
-        session.removeOutput(movieFileOutput)
-        self.movieFileOutput = nil
+    sessionQueue.async {
+      if let movieFileOutput = self.movieFileOutput {
+        self.session.beginConfiguration()
+        if self.session.outputs.contains(movieFileOutput) {
+          self.session.removeOutput(movieFileOutput)
+          self.movieFileOutput = nil
+        }
+        self.session.commitConfiguration()
       }
     }
   }
@@ -629,16 +633,16 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   }
   
   func ensureSessionConfiguration() {
-    sessionQueue.async { [weak self] in
-      guard let self else { return }
-      updateFlashMode()
+    sessionQueue.async {
+      self.session.beginConfiguration()
+      self.updateFlashMode()
+      self.session.commitConfiguration()
     }
   }
   
   func fileOutput(_ output: AVCaptureFileOutput, didFinishRecordingTo outputFileURL: URL, from connections: [AVCaptureConnection], error: Error?) {
-    
-    if error != nil {
-      videoRecordedPromise?.legacyRejecter("E_RECORDING_FAILED", "An error occurred while recording a video.", error)
+    if let error = error {
+      videoRecordedPromise?.reject(CameraRecordingFailedException())
     } else {
       videoRecordedPromise?.resolve(["uri": outputFileURL.absoluteString])
     }
@@ -663,7 +667,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   
   func setPresetCamera(presetCamera: AVCaptureDevice.Position) {
     self.presetCamera = presetCamera
-    faceDetector?.updateMirrored(presetCamera.rawValue != 1)
+    faceDetector?.updateMirrored(presetCamera != .back)
   }
   
   func stopRecording() {
@@ -679,7 +683,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   }
 
   func updateSessionPreset(preset: AVCaptureSession.Preset) {
-#if targetEnvironment(simulator)
+#if !targetEnvironment(simulator)
     sessionQueue.async { [weak self] in
       guard let self else { return }
       session.beginConfiguration()
@@ -696,88 +700,81 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
       return
     }
   
-    var orientation: AVCaptureVideoOrientation?
-    EXUtilities.performSynchronously { [weak self] in
-      orientation = EXCameraUtils.videoOrientation(for: UIApplication.shared.statusBarOrientation)
+    DispatchQueue.main.async {
+      var orientation: AVCaptureVideoOrientation = .portrait
+      if self.deviceOrientation != .unknown {
+        if let videoOrientation = AVCaptureVideoOrientation(rawValue: self.deviceOrientation.rawValue) {
+          orientation = videoOrientation
+        }
+      }
+      self.previewLayer?.connection?.videoOrientation = orientation
     }
     
-    guard let orientation  else { return }
-    
-    sessionQueue.async { [weak self] in
-      guard let self else { return }
-      session.beginConfiguration()
+    sessionQueue.async {
+      self.session.beginConfiguration()
       
-      guard let device = EXCameraUtils.device(withMediaType: AVMediaType.video.rawValue, preferring: presetCamera) else {
+      guard let device = ExpoCameraUtils.device(with: .video, preferring: self.presetCamera) else {
         return
       }
-     
+      
+      if let videoCaptureDeviceInput = self.videoCaptureDeviceInput {
+        self.session.removeInput(videoCaptureDeviceInput)
+      }
+      
       do {
         let captureDeviceInput = try AVCaptureDeviceInput(device: device)
-        if let videoCaptureDeviceInput {
-          session.removeInput(videoCaptureDeviceInput)
-        }
         
-        if session.canAddInput(captureDeviceInput) {
-          session.addInput(captureDeviceInput)
-          videoCaptureDeviceInput = captureDeviceInput
-          updateZoom()
-          updateFocusMode()
-          updateFocusDepth()
-          previewLayer?.connection?.videoOrientation = orientation
+        if self.session.canAddInput(captureDeviceInput) {
+          self.session.addInput(captureDeviceInput)
+          self.videoCaptureDeviceInput = captureDeviceInput
+          self.updateZoom()
+          self.updateFocusMode()
+          self.updateFocusDepth()
         }
-        session.commitConfiguration()
       } catch {
-        var errorMessage = "Camera could not be started - "
-        if error != nil {
-          errorMessage.append(error.localizedDescription)
-        } else {
-          errorMessage.append("there's no captureDeviceInput available")
-        }
-        onMountError(["message": errorMessage])
+        self.onMountError(["message": "Camera could not be started - \(error.localizedDescription)"])
       }
+      self.session.commitConfiguration()
     }
-    
-    session.commitConfiguration()
   }
   
   private func stopSession() {
 #if targetEnvironment(simulator)
     return
 #endif
-    sessionQueue.async { [weak self] in
-      guard let self else { return }
-      if let faceDetector {
+    sessionQueue.async {
+      if let faceDetector = self.faceDetector {
         faceDetector.stopFaceDetection()
       }
-      if let barCodeScanner {
+      if let barCodeScanner = self.barCodeScanner {
         barCodeScanner.stopBarCodeScanning()
       }
       
-      previewLayer?.removeFromSuperlayer()
-      session.commitConfiguration()
-      session.stopRunning()
+      self.previewLayer?.removeFromSuperlayer()
+      self.session.commitConfiguration()
+      self.session.stopRunning()
       
-      for input in session.inputs {
-        session.removeInput(input)
+      for input in self.session.inputs {
+        self.session.removeInput(input)
       }
       
-      for output in session.outputs {
-        session.removeOutput(output)
+      for output in self.session.outputs {
+        self.session.removeOutput(output)
       }
     }
   }
   
   @objc func orientationChanged(notification: Notification) {
-    guard let orientation = window?.windowScene?.interfaceOrientation else { return }
-    changePreviewOrientation(orientation: orientation)
+    changePreviewOrientation(orientation: deviceOrientation)
   }
   
   func changePreviewOrientation(orientation: UIInterfaceOrientation) {
     let videoOrientation = EXCameraUtils.videoOrientation(for: orientation)
-    EXUtilities.performSynchronously { [weak self] in
+    
+    DispatchQueue.main.async { [weak self] in
       guard let self else { return }
-      if ((previewLayer?.connection?.isVideoOrientationSupported) != nil) {
-        previewLayer?.connection?.videoOrientation = videoOrientation
+      if ((self.previewLayer?.connection?.isVideoOrientationSupported) == true) {
+        self.previewLayer?.connection?.videoOrientation = videoOrientation
       }
     }
   }
@@ -789,14 +786,13 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
       return nil
     }
     
-    faceDetector.setOnFacesDetected({ [weak self] faces in
+    faceDetector.setOnFacesDetected { [weak self] faces in
       guard let self else { return }
-      print("Face detected")
       self.onFacesDetected([
         "type": "face",
         "faces": faces
       ])
-    })
+    }
     
     faceDetector.setSessionQueue(sessionQueue)
     return faceDetector
@@ -824,7 +820,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   
   deinit {
     if let photoCapturedPromise {
-      photoCapturedPromise.legacyRejecter("E_IMAGE_CAPTURE_FAILED", "Camera unmounted during taking photo process.", nil)
+      photoCapturedPromise.reject(CameraUnmountedException())
     }
   }
 }

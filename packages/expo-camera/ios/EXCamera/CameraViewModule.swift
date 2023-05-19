@@ -93,9 +93,9 @@ public final class CameraViewModule: Module {
         view.setBarCodeScannerSettings(settings: settings)
       }
 
-      Prop("autoFocus") { (view, autoFocus: Int) in
-        if view.autoFocus.rawValue != autoFocus {
-          view.autoFocus = AVCaptureDevice.FocusMode(rawValue: autoFocus) ?? .locked
+      Prop("autoFocus") { (view, autoFocus: CameraAutoFocus) in
+        if view.autoFocus.rawValue != autoFocus.rawValue {
+          view.autoFocus = autoFocus.toAvAutoFocus()
           view.updateFocusMode()
         }
       }
@@ -131,12 +131,14 @@ public final class CameraViewModule: Module {
       Prop("faceDetectorEnabled") { (view, detectFaces: Bool?) in
         if view.isDetectingFaces != detectFaces {
           view.isDetectingFaces = detectFaces ?? false
+          view.setIsDetectingFaces(detecting: detectFaces)
         }
       }
 
       Prop("barCodeScannerEnabled") { (view, scanBarCodes: Bool?) in
         if view.isScanningBarCodes != scanBarCodes {
           view.isScanningBarCodes = scanBarCodes ?? false
+          view.setIsScanningBarCodes(scanning: scanBarCodes)
         }
       }
 

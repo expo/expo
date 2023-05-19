@@ -1,5 +1,3 @@
-import AVFoundation
-
 
 struct ExpoCameraUtils {
   static func device(with mediaType: AVMediaType, preferring position: AVCaptureDevice.Position) -> AVCaptureDevice? {
