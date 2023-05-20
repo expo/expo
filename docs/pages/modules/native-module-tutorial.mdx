@@ -8,6 +8,7 @@ import { CodeBlocksTable } from '~/components/plugins/CodeBlocksTable';
 import { PlatformTag } from '~/ui/components/Tag';
 import { APIBox } from '~/components/plugins/APIBox';
 import { Terminal } from '~/ui/components/Snippet';
+import { BoxLink } from '~/ui/components/BoxLink';
 
 In this tutorial, we are going to build a module that stores the user's preferred app theme - either dark, light, or system. We'll use [`UserDefaults`](https://developer.apple.com/documentation/foundation/userdefaults) on iOS and [`SharedPreferences`](https://developer.android.com/reference/android/content/SharedPreferences) on Android. It is possible to implement web support using [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage), but we'll leave that as an exercise for the reader.
 
@@ -457,6 +458,20 @@ We can see from the last line of the error message that `not-a-real-theme` is no
 
 ## Next steps
 
-Congratulations, you have created your first simple yet non-trivial Expo module for iOS and Android! Learn more about the API in the [Expo Module API reference](/modules/module-api).
+Congratulations! You have created your first simple yet non-trivial Expo module for Android and iOS.
 
-If you enjoyed this tutorial and haven't done the native view tutorial, go to the ["Creating a native view" tutorial](/modules/native-view-tutorial) next.
+You can con continue to the next tutorial to learn how to create a native view or see the Expo module API reference.
+
+<BoxLink
+  title="Creating a native view"
+  description="A tutorial on creating a native view that renders a WebView with Expo modules API."
+  href="/modules/native-view-tutorial/"
+  Icon={BookOpen02Icon}
+/>
+
+<BoxLink
+  title="Module API Reference"
+  description="Outline for the Expo Module API and common patterns like sending events from native code to JavaScript."
+  href="/modules/module-api/"
+  Icon={Grid01Icon}
+/>
