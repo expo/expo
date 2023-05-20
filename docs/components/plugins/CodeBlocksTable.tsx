@@ -37,8 +37,6 @@ export function CodeBlocksTable({ children, tabs, connected = true, ...rest }: P
       return MDX_CLASS_NAME_TO_TAB_NAME[className] || className.replace('language-', '');
     });
 
-  console.warn(codeBlocks);
-
   return (
     <div css={[codeBlocksWrapperStyle, connected && codeBlockConnectedWrapperStyle]} {...rest}>
       {codeBlocks.map((codeBlock, index) => (
