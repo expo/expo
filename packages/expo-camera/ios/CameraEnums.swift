@@ -67,15 +67,15 @@ enum CameraType: Int, Enumerable {
 }
 
 enum CameraAutoFocus: Int, Enumerable {
-  case on = 0
-  case off = 1
+  case off = 0
+  case on = 1
   
   func toAvAutoFocus() -> AVCaptureDevice.FocusMode {
     switch self {
     case .on:
-      return .locked
-    case .off:
       return .autoFocus
+    case .off:
+      return .locked
     default:
       return .autoFocus
     }
@@ -85,8 +85,8 @@ enum CameraAutoFocus: Int, Enumerable {
 enum CameraFlashMode: Int, Enumerable {
   case off = 0
   case on = 1
-  case torch = 2
-  case auto = 3
+  case auto = 2
+  case torch = 3
 }
 
 enum CameraVideoCodec: Int, Enumerable {

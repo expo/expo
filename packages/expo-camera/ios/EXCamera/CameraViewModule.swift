@@ -74,14 +74,12 @@ public final class CameraViewModule: Module {
       Prop("type") { (view, type: CameraType) in
         if view.presetCamera.rawValue != type.rawValue {
           view.presetCamera = type.toPosition()
-          view.updateType()
         }
       }
 
       Prop("flashMode") { (view, flashMode: CameraFlashMode) in
         if view.flashMode.rawValue != flashMode.rawValue {
           view.flashMode = flashMode
-          view.updateFlashMode()
         }
       }
 
@@ -96,35 +94,30 @@ public final class CameraViewModule: Module {
       Prop("autoFocus") { (view, autoFocus: CameraAutoFocus) in
         if view.autoFocus.rawValue != autoFocus.rawValue {
           view.autoFocus = autoFocus.toAvAutoFocus()
-          view.updateFocusMode()
         }
       }
 
       Prop("focusDepth") { (view, focusDepth: Float) in
         if fabsf(view.focusDepth - focusDepth) > Float.ulpOfOne {
           view.focusDepth = focusDepth
-          view.updateFocusDepth()
         }
       }
 
       Prop("zoom") { (view, zoom: Double) in
         if fabs(view.zoom - zoom) > Double.ulpOfOne {
           view.zoom = zoom
-          view.updateZoom()
         }
       }
 
       Prop("whiteBalance") { (view, whiteBalance: Int) in
         if view.whiteBalance.rawValue != whiteBalance {
           view.whiteBalance = CameraWhiteBalance(rawValue: whiteBalance) ?? .auto
-          view.updateWhiteBalance()
         }
       }
 
       Prop("pictureSize") { (view, pictureSize: String) in
         if let size = pictureSizesDict[pictureSize] {
           view.pictureSize = size
-          view.updatePictureSize()
         }
       }
 
