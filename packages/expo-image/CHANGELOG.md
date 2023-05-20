@@ -17,6 +17,8 @@
 
 ### 💡 Others
 
+- Updated `SDWebImage` to `5.15.8`, `SDWebImageWebPCoder` to `0.11.0` and `SDWebImageSVGCoder` to `1.7.0`.
+
 ## 1.2.3 — 2023-05-16
 
 ### 🐛 Bug fixes

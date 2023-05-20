@@ -1389,10 +1389,10 @@ PODS:
     - ABI48_0_0ExpoModulesCore
   - ABI48_0_0ExpoImage (1.0.0):
     - ABI48_0_0ExpoModulesCore
-    - SDWebImage (~> 5.15.0)
+    - SDWebImage (~> 5.15.8)
     - SDWebImageAVIFCoder (~> 0.10.0)
-    - SDWebImageSVGCoder (~> 1.6.1)
-    - SDWebImageWebPCoder (~> 0.9.1)
+    - SDWebImageSVGCoder (~> 1.7.0)
+    - SDWebImageWebPCoder (~> 0.11.0)
   - ABI48_0_0ExpoImageManipulator (11.1.1):
     - ABI48_0_0EXImageLoader
     - ABI48_0_0ExpoModulesCore
@@ -2151,10 +2151,10 @@ PODS:
     - ExpoModulesCore
   - ExpoImage (1.2.3):
     - ExpoModulesCore
-    - SDWebImage (~> 5.15.0)
+    - SDWebImage (~> 5.15.8)
     - SDWebImageAVIFCoder (~> 0.10.0)
-    - SDWebImageSVGCoder (~> 1.6.1)
-    - SDWebImageWebPCoder (~> 0.9.1)
+    - SDWebImageSVGCoder (~> 1.7.0)
+    - SDWebImageWebPCoder (~> 0.11.0)
   - ExpoImageManipulator (11.2.0):
     - EXImageLoader
     - ExpoModulesCore
@@ -2902,11 +2902,11 @@ PODS:
   - SDWebImageAVIFCoder (0.10.0):
     - libavif (>= 0.11.0)
     - SDWebImage (~> 5.10)
-  - SDWebImageSVGCoder (1.6.1):
+  - SDWebImageSVGCoder (1.7.0):
     - SDWebImage/Core (~> 5.6)
-  - SDWebImageWebPCoder (0.9.1):
+  - SDWebImageWebPCoder (0.11.0):
     - libwebp (~> 1.0)
-    - SDWebImage/Core (~> 5.13)
+    - SDWebImage/Core (~> 5.15)
   - Stripe (23.3.0):
     - StripeApplePay (= 23.3.0)
     - StripeCore (= 23.3.0)
@@ -4621,7 +4621,7 @@ SPEC CHECKSUMS:
   ABI48_0_0ExpoDevice: c119dd7e98df279cb9d06f58eede18289be95ea1
   ABI48_0_0ExpoGL: 158cdc822ab1831c6c91a0e62524c1a004b61b31
   ABI48_0_0ExpoHaptics: 4ece00d4b8aa47a1d45abc46ac9ae1d3e0a5edfb
-  ABI48_0_0ExpoImage: c9ae0f538744ed9b4b66870b767a75d6d3086016
+  ABI48_0_0ExpoImage: 24bf210cc71f3d8c8f804032b25b7c6f8088babf
   ABI48_0_0ExpoImageManipulator: 9d61e40b13268e04e51e868c770fea324dd5ac8d
   ABI48_0_0ExpoImagePicker: f55b4ae78f26481bec5a769f2b23c864c22f2608
   ABI48_0_0ExpoKeepAwake: 956461c0639ea092f296010edf75e17a7b827336
@@ -4740,7 +4740,7 @@ SPEC CHECKSUMS:
   ExpoDocumentPicker: 2dfcc5935532a3193818017da5e2f3dfda0dbf3b
   ExpoGL: 66d0342641c28a0abbe382e2ca905c556442c7fc
   ExpoHaptics: fb64dfe302cba07591bf1679ecb9531dadfc13cf
-  ExpoImage: 60f8d8182e8e13b5f5c2bb6bc860c933b2fe6c25
+  ExpoImage: f19f918d2ff1c9c9fbedc266e6a28d10aa335800
   ExpoImageManipulator: b8d510b4d15689d8f276dff3482df5707836035b
   ExpoImagePicker: 432af66697986cc210bc814dee782a07b2037a61
   ExpoKeepAwake: 6604830433e76ce03306b82054e634e81a6b9bbb
@@ -4862,8 +4862,8 @@ SPEC CHECKSUMS:
   RNSVG: 07dbd870b0dcdecc99b3a202fa37c8ca163caec2
   SDWebImage: cb032eba469c54e0000e78bcb0a13cdde0a52798
   SDWebImageAVIFCoder: 4aeea8fdf65af5c18525ecb5bdd8b8ed9bb45019
-  SDWebImageSVGCoder: 6fc109f9c2a82ab44510fff410b88b1a6c271ee8
-  SDWebImageWebPCoder: 18503de6621dd2c420d680e33d46bf8e1d5169b0
+  SDWebImageSVGCoder: 15a300a97ec1c8ac958f009c02220ac0402e936c
+  SDWebImageWebPCoder: 295a6573c512f54ad2dd58098e64e17dcf008499
   Stripe: 8a2e7c77fc28bff1d0961a129fac0cb2ed91ddcb
   stripe-react-native: c71683ecc56c63eecbb7172c2f97c8ac737fa37c
   StripeApplePay: 7b7a5e10891d2ea428cf1a3a737a07fe874f7e7d
