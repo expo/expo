@@ -9,6 +9,7 @@ import { PlatformTag } from '~/ui/components/Tag';
 import { APIBox } from '~/components/plugins/APIBox';
 import { Terminal } from '~/ui/components/Snippet';
 import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 
 In this tutorial, we are going to build a module that stores the user's preferred app theme - either dark, light, or system. We'll use [`UserDefaults`](https://developer.apple.com/documentation/foundation/userdefaults) on iOS and [`SharedPreferences`](https://developer.android.com/reference/android/content/SharedPreferences) on Android. It is possible to implement web support using [`localStorage`](https://developer.mozilla.org/en-US/docs/Web/API/Window/localStorage), but we'll leave that as an exercise for the reader.
 
