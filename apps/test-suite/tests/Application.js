@@ -70,13 +70,18 @@ export async function test({ describe, it, expect, jasmine }) {
         }
       });
 
-      describe(`doesn't get Android-only constants`, () => {
-        it('Application.androidId is null', () => {
-          expect(Application.androidId).toBeNull();
-        });
-      });
-
       describe(`doesn't call Android-only methods`, () => {
+        it(`Application.getAndroidIdAsync() doesn't get called`, async () => {
+          let androidId;
+          let error = null;
+          try {
+            androidId = await Application.getAndroidIdAsync();
+          } catch (e) {
+            error = e;
+          }
+          expect(error).toBeDefined();
+          expect(androidId).toBeUndefined();
+        });
         it(`Application.getLastUpdateTimeAsync() doesn't get called`, async () => {
           let lastUpdateTime;
           let error = null;
@@ -105,13 +110,13 @@ export async function test({ describe, it, expect, jasmine }) {
     describe(`Android device tests`, () => {
       it(`Application.getAndroidIdAsync() returns String`, async () => {
         let error = null;
-        let installReferrer;
+        let androidId;
         try {
-          installReferrer = await Application.getInstallReferrerAsync();
+          androidId = await Application.getAndroidIdAsync();
         } catch (e) {
           error = e;
         }
-        expect(installReferrer).toEqual(jasmine.any(String));
+        expect(androidId).toEqual(jasmine.any(String));
         expect(error).toBeNull();
       });
 
