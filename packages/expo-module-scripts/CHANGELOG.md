@@ -8,6 +8,8 @@
 
 ### 🐛 Bug fixes
 
+- Fixed `npx` script failing when `yarn` is not installed.
+
 ### 💡 Others
 
 ## 3.0.8 — 2023-05-08
