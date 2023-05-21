@@ -17,7 +17,7 @@
 
 ### 💡 Others
 
-- Updated `SDWebImage` to `5.15.8`, `SDWebImageWebPCoder` to `0.11.0` and `SDWebImageSVGCoder` to `1.7.0`.
+- Updated `SDWebImage` to `5.15.8`, `SDWebImageWebPCoder` to `0.11.0` and `SDWebImageSVGCoder` to `1.7.0`. ([#22576](https://github.com/expo/expo/pull/22576) by [@tsapeta](https://github.com/tsapeta))
 
 ## 1.2.3 — 2023-05-16
 
