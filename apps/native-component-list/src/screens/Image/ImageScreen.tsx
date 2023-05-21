@@ -104,6 +104,13 @@ export const ImageScreens = [
       return optionalRequire(() => require('./ImageMediaLibraryScreen'));
     },
   },
+  {
+    name: 'Navigating with shared element transition',
+    route: 'image/navigation',
+    getComponent() {
+      return optionalRequire(() => require('./ImageNavigationScreen'));
+    },
+  },
 ];
 
 if (Platform.OS === 'ios') {

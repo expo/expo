@@ -41,4 +41,11 @@ struct ImageSource: Record {
     // TODO: Don't cache other non-network requests (e.g. data URIs, local files)
     return !isPhotoLibraryAsset
   }
+
+  /**
+   Returns the custom `cacheKey` if provided or the string representation of `uri` otherwise.
+   */
+  internal func getCacheKey() -> String? {
+    return cacheKey ?? uri?.absoluteString
+  }
 }

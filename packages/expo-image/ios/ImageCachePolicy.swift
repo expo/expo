@@ -9,6 +9,14 @@ enum ImageCachePolicy: String, Enumerable {
   case memory = "memory"
   case memoryAndDisk = "memory-disk"
 
+  var canUseMemoryCache: Bool {
+    return self == .memory || self == .memoryAndDisk
+  }
+
+  var canUseDiskCache: Bool {
+    return self == .disk || self == .memoryAndDisk
+  }
+
   func toSdCacheType() -> SDImageCacheType {
     switch self {
     case .none:
