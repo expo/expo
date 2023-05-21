@@ -39,7 +39,7 @@ internal class ApplicationModuleTest {
     assertTrue("Returned hash map does not contain \"applicationName\" key", constants.containsKey("applicationName"))
     assertTrue("Returned hash map does not contain \"applicationId\" key", constants.containsKey("applicationId"))
     assertTrue("Returned hash map does not contain \"nativeApplicationVersion\" key", constants.containsKey("nativeApplicationVersion"))
-    assertTrue("Returned hash map does not contain \"androidId\" key", constants.containsKey("androidId"))
+    assertTrue("Returned hash map does not contain \"nativeBuildVersion\" key", constants.containsKey("nativeBuildVersion"))
   }
 
   @Test
