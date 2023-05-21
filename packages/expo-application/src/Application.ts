@@ -50,7 +50,7 @@ export const applicationId: string | null = ExpoApplication
 
 // @needsAudit
 /**
- * The value of [`Settings.Secure.ANDROID_ID`](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID).
+ * Gets the value of [`Settings.Secure.ANDROID_ID`](https://developer.android.com/reference/android/provider/Settings.Secure.html#ANDROID_ID).
  * This is a hexadecimal `string` unique to each combination of app-signing key, user, and device.
  * The value may change if a factory reset is performed on the device or if an APK signing key changes.
  * For more information about how the platform handles `ANDROID_ID` in Android 8.0 (API level 26)
@@ -62,7 +62,12 @@ export const applicationId: string | null = ExpoApplication
  * @example `"dd96dec43fb81c97"`
  * @platform android
  */
-export const androidId: string | null = ExpoApplication ? ExpoApplication.androidId || null : null;
+export async function getAndroidIdAsync(): Promise<string> {
+  if (!ExpoApplication.getAndroidIdAsync) {
+    throw new UnavailabilityError('expo-application', 'getAndroidIdAsync');
+  }
+  return await ExpoApplication.getAndroidIdAsync();
+}
 
 // @needsAudit
 /**
