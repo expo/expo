@@ -127,7 +127,8 @@ public final class AppContext: NSObject {
    */
   internal func newObject(nativeClassId: ObjectIdentifier) throws -> JavaScriptObject? {
     guard let jsClass = classRegistry.getJavaScriptClass(nativeClassId: nativeClassId) else {
-      return nil
+      // TODO: Define a JS class for SharedRef in the CoreModule and then use it here instead of a raw object (?)
+      return try runtime.createObject()
     }
     let prototype = try jsClass.getProperty("prototype").asObject()
     let object = try runtime.createObject(withPrototype: prototype)
