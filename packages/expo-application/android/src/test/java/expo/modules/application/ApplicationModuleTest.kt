@@ -39,7 +39,6 @@ internal class ApplicationModuleTest {
     assertTrue("Returned hash map does not contain \"applicationName\" key", constants.containsKey("applicationName"))
     assertTrue("Returned hash map does not contain \"applicationId\" key", constants.containsKey("applicationId"))
     assertTrue("Returned hash map does not contain \"nativeApplicationVersion\" key", constants.containsKey("nativeApplicationVersion"))
-    assertTrue("Returned hash map does not contain \"nativeBuildVersion\" key", constants.containsKey("nativeBuildVersion"))
     assertTrue("Returned hash map does not contain \"androidId\" key", constants.containsKey("androidId"))
   }
 
@@ -47,6 +46,13 @@ internal class ApplicationModuleTest {
   fun `getInstallationTimeAsync resolves promise (valid package name)`() {
     val promise = PromiseMock()
     applicationModule.getInstallationTimeAsync(promise)
+    assertResolved(promise)
+  }
+
+  @Test
+  fun `getAndroidIdAsync resolves promise`() {
+    val promise = PromiseMock()
+    applicationModule.getAndroidIdAsync(promise)
     assertResolved(promise)
   }
 

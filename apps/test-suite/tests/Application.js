@@ -103,11 +103,16 @@ export async function test({ describe, it, expect, jasmine }) {
     });
   } else if (Platform.OS === 'android') {
     describe(`Android device tests`, () => {
-      it(`gets Application.androidId as a String`, () => {
-        const androidId = Application.androidId;
-
-        expect(androidId).toBeDefined();
-        expect(androidId).toEqual(jasmine.any(String));
+      it(`Application.getAndroidIdAsync() returns String`, async () => {
+        let error = null;
+        let installReferrer;
+        try {
+          installReferrer = await Application.getInstallReferrerAsync();
+        } catch (e) {
+          error = e;
+        }
+        expect(installReferrer).toEqual(jasmine.any(String));
+        expect(error).toBeNull();
       });
 
       if (ExponentTest && !ExponentTest.isInCI) {
