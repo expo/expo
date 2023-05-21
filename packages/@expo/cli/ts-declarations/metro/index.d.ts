@@ -231,6 +231,8 @@ declare module 'metro' {
        */
       readonly isAsync: boolean;
 
+      readonly asyncType: string;
+
       /**
        * The dependency is actually a `__prefetchImport()` call.
        */
@@ -301,6 +303,7 @@ declare module 'metro' {
     readonly runModule: boolean;
     readonly sourceMapUrl: string | null | undefined;
     readonly sourceUrl: string | null | undefined;
+    readonly shouldAddToIgnoreList: (module: Module) => boolean;
   }
 
   //#endregion

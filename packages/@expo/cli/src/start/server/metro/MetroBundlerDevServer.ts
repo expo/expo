@@ -100,7 +100,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     const url = this.getDevServerUrl()!;
 
     const { getStaticContent } = await getStaticRenderFunctions(this.projectRoot, url, {
-      minify: mode === 'production',
+      minify: false,
       dev: mode !== 'production',
       // Ensure the API Routes are included
       environment: 'node',
@@ -175,6 +175,7 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       const txt = await results.text();
 
       try {
+        console.log('hey:', txt);
         return JSON.parse(txt);
       } catch (error) {
         Log.error(
@@ -190,7 +191,8 @@ export class MetroBundlerDevServer extends BundlerDevServer {
         this.projectRoot,
         this.getDevServerUrl()!,
         {
-          minify: mode === 'production',
+          // minify: mode === 'production',
+          minify: false,
           dev: mode !== 'production',
           // Ensure the API Routes are included
           environment: 'node',
@@ -201,7 +203,9 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return await getStaticContent(location);
     };
 
-    const [resources, staticHtml] = await Promise.all([bundleResources(), bundleStaticHtml()]);
+    const [resources] = await Promise.all([bundleResources()]);
+    // const staticHtml = '<div />';
+    const [staticHtml] = await Promise.all([bundleStaticHtml()]);
     const content = await this.composeResourcesWithHtml({
       mode,
       resources,
@@ -476,7 +480,13 @@ function htmlFromSerialAssets(
         })
         .join('');
 
+  const dllAsset = assets.filter((asset) => asset.type === 'json');
+
+  const dll = dllAsset.length
+    ? `<script type="text/javascript">var EXPO_DLL_MANIFEST=${dllAsset[0].source};</script>`
+    : '';
+
   return template
     .replace('</head>', `${styleString}</head>`)
-    .replace('</body>', `${scripts}\n</body>`);
+    .replace('</body>', `${scripts}${dll}\n</body>`);
 }

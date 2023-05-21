@@ -111,7 +111,7 @@ export async function createMetroEndpointAsync(
   const serverPath = path.relative(root, safeOtherFile).replace(/\.[jt]sx?$/, '.bundle');
   debug('fetching from Metro:', root, serverPath);
 
-  let url = `${devServerUrl}/${serverPath}?platform=${platform}&dev=${dev}&minify=${minify}`;
+  let url = `${devServerUrl}/${serverPath}?platform=${platform}&dev=${dev}&minify=${minify}&lazy=true`;
 
   if (environment) {
     url += `&resolver.environment=${environment}&transform.environment=${environment}`;
