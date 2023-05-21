@@ -1,0 +1,41 @@
+---
+title: Roadmap
+---
+
+import { Step } from '~/ui/components/Step';
+
+Expo Styling is an ambitious project that will be releasing in three stagings, with each stage being production ready.
+
+<Step label="1">
+
+### Create a flexible native runtime:
+
+CSS powers the Web and is a powerful styling engine. We need to create our own styling engine for React Native. While React Native has inline styles, it is missing concepts such as
+
+- Style variables
+- Media Queries
+- Container Queries
+- Viewport units
+- Style functions (min/max/clamp/calc/etc)
+- Transitions
+- Keyframe Animations
+
+During this first stage we will leveraging Tailwind CSS as the public API. Tailwind CSS is often described as "improved inline styles" - and already supports all the concepts we wish to introduce to Native making it an ideal choice.
+
+</Step>
+
+<Step label="2">
+
+### Create a new Style API
+
+The new native runtime will provide new concepts, so we will need a new API for to use them. This stage will focus on creating a new public API showcases the power of the new runtime. We will also address some of the rougher edge of universal styling such as differing flexbox specifications and style specificity.
+
+</Step>
+
+<Step label="3">
+
+### The multi-platform vision
+
+React Native's multiple platform vision will require new styling concepts. During this stage we will explore adding new native styling patterns (e.g. layout transitions) and improving the developer experience.
+
+</Step>

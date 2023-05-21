@@ -1,0 +1,123 @@
+---
+title: Tailwind CSS
+description:
+---
+
+import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
+import { Step } from '~/ui/components/Step';
+import { CompatibilityTable } from '~/ui/components/ExpoStyling/CompatibilityTable';
+
+[Tailwind CSS](https://tailwindcss.com) is a popular atomic-styling library for Web based projects and is commonly described as more scalable & flexible solution to inline-styles. As React Native is primarily uses inline-styles, Tailwind CSS' methodology naturally scales to universal development. Not all CSS properties are valid across every platform so please check the [compatibility](#compatibility) table below.
+
+## Installation
+
+<Step label="1">
+### Install Tailwind CSS, and create your `tailwind.config.js` file.
+
+<Terminal
+  cmd={[
+    `$ npx expo install @expo/styling`,
+    `$ npx expo install react-native-reanimated`,
+    `$ npx tailwindcss init`,
+  ]}
+  cmdCopy="npx expo install @expo/styling && npx tailwindcss init"
+/>
+
+</Step>
+
+<Step label="2">
+### Configure your template paths
+
+All the paths to all of your template files in your `tailwind.config.js` file
+
+```tsx
+/** @type {import('tailwindcss').Config} */
+module.exports = {
+  content: ["./app/**/*.{js,jsx,ts,tsx}"]
+  theme: {
+    extend: {}
+  },
+  plugins: []
+}
+```
+
+</Step>
+
+<Step label="3">
+### Add the Tailwind directive to your CSS
+
+Create a `global.css` file your project's root directory and add the `@tailwind` directives for each fo the Tailwind's layers.
+
+```css global.css
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+```
+
+</Step>
+
+<Step label="4">
+### Add the Tailwind configuration to your Metro config
+
+Pass your config into the `withTailwind` helper from `@expo/styling/tailwind`
+
+```tsx metro.config.js
+// Learn more https://docs.expo.io/guides/customizing-metro
+const { getDefaultConfig } = require('expo/metro-config');
+const { withTailwind } = require('@expo/styling/tailwind');
+
+const config = getDefaultConfig(__dirname);
+
+module.exports = withTailwind(config);
+```
+
+</Step>
+
+<Step label="5">
+### Enable the CSS polyfill
+
+#### Expo Router
+
+Add the following line to your top-level `_layout` file.
+
+```tsx _layout.tsx
+import '@expo/styling/polyfill';
+```
+
+#### Non-Expo Router projects
+
+```tsx _layout.tsx
+import '@expo/styling/polyfill';
+```
+
+</Step>
+
+## Troubleshooting
+
+If you are encountering any issues, make sure you consult the [Official Tailwind CSS Troubleshooting docs](https://tailwindcss.com/docs/content-configuration#troubleshooting)
+
+We hightly recommend running `npx tailwindcss -o output.css` and ensure that `output.css` contains the expected classes as the **first** troubleshooting step.
+
+<Collapsible summary="My tailwind styles are not being applied">
+
+1. Ensure the [polyfill](##enable-the-css-interop-polyfill) is enabled before all other imports
+2. Ensure the className is supported
+
+</Collapsible>
+
+<Collapsible summary="Why do classNames' like `text-${color}` not work?">
+
+This syntax is [not allowed by Tailwind CSS](https://tailwindcss.com/docs/content-configuration#dynamic-class-names)
+
+</Collapsible>
+
+<Collapsible summary="My production build is stuck">
+
+This is the same issue as [Styles rebuild in an infinite loop](https://tailwindcss.com/docs/content-configuration#styles-rebuild-in-an-infinite-loop)
+
+</Collapsible>
+
+## Compatibility
+
+<CompatibilityTable />
