@@ -52,7 +52,7 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
         isActive={sidebarActiveGroup === 'reference'}
       />
       <SidebarSingleEntry
-        href="/tutorial/create-your-first-app/"
+        href="/tutorial/introduction/"
         title="Learn"
         Icon={GraduationHat02Icon}
         isActive={sidebarActiveGroup === 'learn'}
