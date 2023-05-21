@@ -10,6 +10,7 @@
 ### 🎉 New features
 
 - Add `npx expo add` as an alias to `npx expo install`. ([#22510](https://github.com/expo/expo/pull/22510) by [@EvanBacon](https://github.com/EvanBacon))
+- Add `--reset-cache` flag to `expo start` and `expo export` for interop with the Metro docs.
 
 ### 🐛 Bug fixes
 
