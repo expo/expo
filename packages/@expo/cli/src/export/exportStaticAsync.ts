@@ -81,16 +81,17 @@ export async function getFilesToExportFromServerAsync(
 export async function exportFromServerAsync(
   projectRoot: string,
   devServerManager: DevServerManager,
-  { outputDir }: Options
+  { outputDir, minify }: Options
 ): Promise<void> {
   const devServer = devServerManager.getDefaultDevServer();
   assert(devServer instanceof MetroBundlerDevServer);
 
   const [manifest, resources, renderAsync] = await Promise.all([
     devServer.getRoutesAsync(),
-    devServer.getStaticResourcesAsync({ mode: 'production' }),
+    devServer.getStaticResourcesAsync({ mode: 'production', minify }),
     devServer.getStaticRenderFunctionAsync({
       mode: 'production',
+      minify,
     }),
   ]);
 

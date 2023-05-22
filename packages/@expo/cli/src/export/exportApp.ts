@@ -42,7 +42,11 @@ export async function exportAppAsync(
     dev,
     dumpAssetmap,
     dumpSourcemap,
-  }: Pick<Options, 'dumpAssetmap' | 'dumpSourcemap' | 'dev' | 'clear' | 'outputDir' | 'platforms'>
+    minify,
+  }: Pick<
+    Options,
+    'dumpAssetmap' | 'dumpSourcemap' | 'dev' | 'clear' | 'outputDir' | 'platforms' | 'minify'
+  >
 ): Promise<void> {
   setNodeEnv(dev ? 'development' : 'production');
   require('@expo/env').load(projectRoot);
@@ -68,6 +72,7 @@ export async function exportAppAsync(
     { resetCache: !!clear },
     {
       platforms,
+      minify,
       // TODO: Breaks asset exports
       // platforms: useWebSSG ? platforms.filter((platform) => platform !== 'web') : platforms,
       dev,
@@ -108,7 +113,7 @@ export async function exportAppAsync(
       await unstable_exportStaticAsync(projectRoot, {
         outputDir: outputPath,
         // TODO: Expose
-        minify: true,
+        minify,
       });
       Log.log('Finished saving static files');
     } else {

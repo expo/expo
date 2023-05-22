@@ -35,6 +35,7 @@ describe(resolveOptionsAsync, () => {
     ).resolves.toEqual({
       clear: true,
       dev: true,
+      minify: true,
       dumpAssetmap: true,
       dumpSourcemap: true,
       maxWorkers: 2,
@@ -47,6 +48,7 @@ describe(resolveOptionsAsync, () => {
     await expect(resolveOptionsAsync('/', {})).resolves.toEqual({
       clear: false,
       dev: false,
+      minify: true,
       dumpAssetmap: false,
       dumpSourcemap: false,
       maxWorkers: undefined,

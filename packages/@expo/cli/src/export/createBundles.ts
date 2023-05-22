@@ -15,7 +15,7 @@ export type PublishOptions = {
 export async function createBundlesAsync(
   projectRoot: string,
   publishOptions: PublishOptions = {},
-  bundleOptions: { platforms: Platform[]; dev?: boolean }
+  bundleOptions: { platforms: Platform[]; dev?: boolean; minify?: boolean }
 ): Promise<Partial<Record<Platform, BundleOutput>>> {
   if (!bundleOptions.platforms.length) {
     return {};
@@ -43,6 +43,7 @@ export async function createBundlesAsync(
     bundleOptions.platforms.map((platform: Platform) => ({
       platform,
       entryPoint: getEntryWithServerRoot(projectRoot, projectConfig, platform),
+      minify: bundleOptions.minify,
       dev: bundleOptions.dev,
     }))
   );
