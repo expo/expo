@@ -4,11 +4,19 @@
 
 ### 🛠 Breaking changes
 
-- Removed the deprecated `ExpoPushTokenOptions.experienceId` field. ([#22303](https://github.com/expo/expo/pull/22303) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-
 ### 🎉 New features
 
 ### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 0.19.0 — 2023-05-08
+
+### 🛠 Breaking changes
+
+- Removed the deprecated `ExpoPushTokenOptions.experienceId` field. ([#22303](https://github.com/expo/expo/pull/22303) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 
 ### 💡 Others
 

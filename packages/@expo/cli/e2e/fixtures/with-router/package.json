@@ -1,4 +1,5 @@
 {
+  "private": true,
   "dependencies": {
     "expo": "^48.0.4",
     "expo-constants": "~14.2.1",
@@ -17,6 +18,5 @@
   "devDependencies": {
     "@babel/core": "^7.19.3"
   },
-  "name": "with-router",
   "version": "1.0.0"
 }

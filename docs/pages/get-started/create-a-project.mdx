@@ -39,11 +39,11 @@ To initialize a new project, use [`create-expo-app`](/more/glossary-of-terms/#cr
 To start the development server, run the following command:
 
 <Terminal
-  cmd={['$ npx expo start', '', '# If using yarn', '$ yarn expo start']}
+  cmd={['$ npx expo start']}
   cmdCopy="npx expo start"
 />
 
-When you run the above command, the Expo CLI starts [Metro Bundler](/guides/customizing-metro). This bundler is an HTTP server that compiles the JavaScript code of your app using [Babel](https://babeljs.io/) and serves it to the Expo app. See how [Expo Development Server](/workflow/expo-cli#develop) works for more information about this process.
+When you run the above command, the Expo CLI starts [Metro Bundler](/guides/customizing-metro). This bundler is an HTTP server that compiles the JavaScript code of your app using [Babel](https://babeljs.io/) and serves it to the Expo app. See how [Expo Development Server](/more/expo-cli/#develop) works for more information about this process.
 
 </Step>
 
@@ -82,13 +82,13 @@ If you are using an emulator/simulator, you may find the following Expo CLI keyb
 
 </Step>
 
-<Step label="3">
+<Step label="4">
 
 ## Make your first change in App.js
 
 Now, all the steps are completed to get started, you can open **App.js** file in your code editor and change the contents of the existing `<Text>` to `Hello, world!`. You are going to see it update on your device.
 
-_Amazing, progress!_ You now have the Expo toolchain running on your machine, can edit the source code for a project, and see the changes live on your device.
+Amazing, progress! You now have the Expo toolchain running on your machine, can edit the source code for a project, and see the changes live on your device.
 
 <Collapsible summary="Changes not showing up on your device?">
 
@@ -96,8 +96,8 @@ Expo Go is configured by default to automatically reload the app whenever a file
 
 - Make sure you have the [development mode enabled in Expo CLI](/workflow/development-mode#development-mode).
 - Close the Expo app and reopen it.
-- Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press <kbd>Ctrl</kbd> + <kbd>m</kbd> for Android or <kbd>Cmd ⌘</kbd> + <kbd>d</kbd> for iOS.
-- If you see `Enable Fast Refresh`, press it. If you see `Disable Fast Refresh`, dismiss the developer menu. Now try making another change.
+- Once the app is open again, shake your device to reveal the developer menu. If you are using an emulator, press <kbd>Ctrl</kbd> + <kbd>M</kbd> for Android or <kbd>Cmd ⌘</kbd> + <kbd>D</kbd> for iOS.
+- If you see **Enable Fast Refresh**, press it. If you see **Disable Fast Refresh**, dismiss the developer menu. Now try making another change.
 
   <ImageSpotlight
     alt="Developer menu in Expo Go app."

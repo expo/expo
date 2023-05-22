@@ -115,19 +115,19 @@ describe('from pages/versions/latest/sdk/app-auth.mdx', () => {
     expect(rewrite(file, '../config/app.mdx#android')).toBe('/versions/latest/config/app/#android');
   });
 
-  it('resolves ../../../workflow/debugging.md to /workflow/debugging/', () => {
-    expect(rewrite(file, '../../../workflow/debugging.mdx')).toBe('/workflow/debugging/');
+  it('resolves ../../../debugging/runtime-issue.md to /debugging/runtime-issue/', () => {
+    expect(rewrite(file, '../../../debugging/runtime-issue.mdx')).toBe('/debugging/runtime-issue/');
   });
 });
 
-describe('from pages/workflow/debugging.mdx', () => {
-  const file = makeFile('workflow/debugging.mdx');
+describe('from pages/debugging/runtime-issue.mdx', () => {
+  const file = makeFile('debugging/runtime-issue.mdx');
 
   it('resolves hash only to same file', () => {
-    expect(rewrite(file, '#some-header')).toBe('/workflow/debugging/#some-header');
+    expect(rewrite(file, '#some-header')).toBe('/debugging/runtime-issue/#some-header');
   });
 
   it('resolves hash with ./ to same file', () => {
-    expect(rewrite(file, './#some-header')).toBe('/workflow/debugging/#some-header');
+    expect(rewrite(file, './#some-header')).toBe('/debugging/runtime-issue/#some-header');
   });
 });

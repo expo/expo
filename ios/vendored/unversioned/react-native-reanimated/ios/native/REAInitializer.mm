@@ -57,6 +57,8 @@ JSIExecutor::RuntimeInstaller REAJSIExecutorRuntimeInstaller(
 
     runtime.global().setProperty(runtime, "_WORKLET_RUNTIME", workletRuntimeValue);
 
+    runtime.global().setProperty(runtime, "_IS_FABRIC", false);
+
     auto version = getReanimatedVersionString(runtime);
     runtime.global().setProperty(runtime, "_REANIMATED_VERSION_CPP", version);
 

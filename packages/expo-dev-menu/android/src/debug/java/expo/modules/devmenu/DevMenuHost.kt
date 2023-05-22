@@ -10,11 +10,16 @@ import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.config.ReactFeatureFlags
+import com.facebook.react.devsupport.DevMenuReactInternalSettings
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.shell.MainReactPackage
 import devmenu.com.th3rdwave.safeareacontext.SafeAreaContextPackage
-import expo.modules.devmenu.react.DevMenuReactInternalSettings
+import expo.modules.adapters.react.ModuleRegistryAdapter
+import expo.modules.adapters.react.ReactModuleRegistryProvider
+import expo.modules.devmenu.modules.DevMenuInternalModule
+import expo.modules.devmenu.modules.DevMenuPreferences
 import expo.modules.devmenu.react.createNonDebuggableJavaScriptExecutorFactory
+import expo.modules.kotlin.ModulesProvider
 import java.io.BufferedReader
 import java.io.FileNotFoundException
 import java.io.InputStreamReader
@@ -27,6 +32,16 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
   override fun getPackages(): List<ReactPackage> {
     val packages = mutableListOf(
       MainReactPackage(null),
+      ModuleRegistryAdapter(
+        ReactModuleRegistryProvider(emptyList()),
+        object : ModulesProvider {
+          override fun getModulesList() =
+            listOf(
+              DevMenuInternalModule::class.java,
+              DevMenuPreferences::class.java
+            )
+        }
+      ),
       DevMenuPackage(),
       SafeAreaContextPackage()
     )

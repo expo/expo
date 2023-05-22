@@ -1,5 +1,5 @@
 import { ArrowRightIcon, ArrowUpRightIcon } from '@expo/styleguide-icons';
-import type { AnchorHTMLAttributes, ComponentType, ReactNode } from 'react';
+import type { AnchorHTMLAttributes, ComponentType, HTMLAttributes, ReactNode } from 'react';
 
 import { A, DEMI, P } from '~/ui/components/Text';
 
@@ -7,10 +7,11 @@ type BoxLinkProps = AnchorHTMLAttributes<HTMLLinkElement> & {
   title: string;
   description: ReactNode;
   testID?: string;
-  Icon?: ComponentType<any>;
+  Icon?: ComponentType<HTMLAttributes<SVGSVGElement>>;
+  imageUrl?: string;
 };
 
-export function BoxLink({ title, description, href, testID, Icon }: BoxLinkProps) {
+export function BoxLink({ title, description, href, testID, Icon, imageUrl }: BoxLinkProps) {
   const isExternal = Boolean(href && href.startsWith('http'));
   const ArrowIcon = isExternal ? ArrowUpRightIcon : ArrowRightIcon;
   return (
@@ -26,6 +27,7 @@ export function BoxLink({ title, description, href, testID, Icon }: BoxLinkProps
             <Icon className="icon-lg text-icon-default" />
           </div>
         )}
+        {imageUrl && <img className="!w-9 !h-9 self-center" src={imageUrl} alt="Icon" />}
         <div>
           <DEMI>{title}</DEMI>
           <P>{description}</P>

@@ -116,7 +116,7 @@ export const renderProp = (
   const HeaderComponent = exposeInSidebar ? H3Code : H4Code;
   const extractedSignatures = signatures || type?.declaration?.signatures;
   const extractedComment = getCommentOrSignatureComment(comment, extractedSignatures);
-  console.warn();
+
   return (
     <div key={`prop-entry-${name}`} css={[STYLES_APIBOX, STYLES_APIBOX_NESTED]}>
       <APISectionDeprecationNote comment={extractedComment} />

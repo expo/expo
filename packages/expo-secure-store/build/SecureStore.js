@@ -48,7 +48,7 @@ const VALUE_BYTES_LIMIT = 2048;
  * permissions.
  *
  * @return Promise which fulfils witch `boolean`, indicating whether the SecureStore API is available
- * on the current device. Currently this resolves `true` on iOS and Android only.
+ * on the current device. Currently, this resolves `true` on Android and iOS only.
  */
 export async function isAvailableAsync() {
     return !!ExpoSecureStore.getValueWithKeyAsync;

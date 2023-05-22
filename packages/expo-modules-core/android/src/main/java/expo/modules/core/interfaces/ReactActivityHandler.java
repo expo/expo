@@ -6,6 +6,7 @@ import android.view.ViewGroup;
 
 import com.facebook.react.ReactActivity;
 import com.facebook.react.ReactActivityDelegate;
+import com.facebook.react.ReactNativeHost;
 import com.facebook.react.ReactRootView;
 
 import androidx.annotation.Nullable;
@@ -53,5 +54,18 @@ public interface ReactActivityHandler {
   @Nullable
   default ReactActivityDelegate onDidCreateReactActivityDelegate(ReactActivity activity, ReactActivityDelegate delegate) {
     return null;
+  }
+
+  /**
+   * For modules to delay the call for react-native `loadApp`.
+   * This gives modules a chance to do some early and heavy initialization in background thread and avoid ANR.
+   * Right now it is for expo-updates only.
+   */
+  @Nullable
+  default DelayLoadAppHandler getDelayLoadAppHandler(ReactActivity activity, ReactNativeHost reactNativeHost) {
+    return null;
+  }
+  interface DelayLoadAppHandler {
+    void whenReady(Runnable runnable);
   }
 }

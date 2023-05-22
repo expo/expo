@@ -4,9 +4,19 @@
 
 ### 🛠 Breaking changes
 
-- Add support for config.updates.useClassicUpdates defaulting behavior. ([#22169](https://github.com/expo/expo/pull/22169) by [@wschurman](https://github.com/wschurman))
-
 ### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Update `Target.findApplicationTargetWithDependenciesAsync` to mark framework targets as non-signable. ([#22454](https://github.com/expo/expo/pull/22454) by [@dsokal](https://github.com/dsokal))
+
+### 💡 Others
+
+## 7.0.0 — 2023-05-08
+
+### 🛠 Breaking changes
+
+- Add support for config.updates.useClassicUpdates defaulting behavior. ([#22169](https://github.com/expo/expo/pull/22169) by [@wschurman](https://github.com/wschurman))
 
 ### 🐛 Bug fixes
 

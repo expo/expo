@@ -8,9 +8,15 @@
 
 ### 🐛 Bug fixes
 
-- Export all types from the module. ([#22172](https://github.com/expo/expo/pull/22172) by [@alanjhughes](https://github.com/alanjhughes))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+## 11.4.0 — 2023-05-08
+
+### 🐛 Bug fixes
+
+- Export all types from the module. ([#22172](https://github.com/expo/expo/pull/22172) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 11.3.0 — 2023-04-14
 

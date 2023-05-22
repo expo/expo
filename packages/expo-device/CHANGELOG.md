@@ -6,14 +6,22 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 5.3.0 — 2023-05-08
+
+### 🎉 New features
+
 - Added `deviceType` constant. ([#21633](https://github.com/expo/expo/pull/21633) by [@robertherber](https://github.com/robertherber))
 - On iOS added support for deviceType detection of Desktop on MacOS, checking for Catalyst and iPad app running on Mac. ([#21636](https://github.com/expo/expo/pull/21636) by [@robertherber](https://github.com/robertherber))
 
 ### 🐛 Bug fixes
 
 - Fixed Device.getDeviceTypeAsync() returning TABLET on some devices. ([#21325](https://github.com/expo/expo/pull/21325) by [@behenate](https://github.com/behenate))
-
-### 💡 Others
 
 ## 5.2.1 — 2023-02-09
 
