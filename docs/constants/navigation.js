@@ -458,6 +458,7 @@ const router = [
     makeGroup(
       'Layouts',
       [
+        makePage('router/layouts/overview.mdx'),
         makePage('router/layouts/root.mdx'),
         makePage('router/layouts/nesting.mdx'),
         makePage('router/layouts/stack.mdx'),

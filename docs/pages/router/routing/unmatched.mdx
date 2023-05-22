@@ -1,8 +1,16 @@
 ---
 title: Unmatched routes
+description: How to handle unmatched routes when using Expo Router.
+hideTOC: true
 ---
 
-{/* ![](/img/unmatched.png) */}
+import ImageSpotlight from '~/components/plugins/ImageSpotlight';
+
+<ImageSpotlight
+  alt="An example of unmatched routes displayed on all platforms."
+  src="/static/images/expo-router/unmatched.png"
+  style={{ maxWidth: 720 }}
+/>
 
 Native apps don't have a server so there are technically no 404s. However, if you're implementing a router universally, then it makes sense to handle missing routes. This is done automatically for each app, but you can also customize it.
 

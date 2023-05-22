@@ -1,35 +1,53 @@
 ---
 title: Drawer
+description: Learn how to use the Drawer layout in Expo Router.
+hideTOC: true
 ---
+
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { Terminal } from '~/ui/components/Snippet';
 
 To use [drawer navigator](https://reactnavigation.org/docs/drawer-based-navigation) you'll need to install some extra dependencies.
 
-```bash
-npx expo install @react-navigation/drawer react-native-gesture-handler react-native-reanimated
-```
+<Terminal
+  cmd={[
+    '$ npx expo install @react-navigation/drawer react-native-gesture-handler react-native-reanimated',
+  ]}
+/>
 
-Next you'll need to update your `babel.config.js` to include the reanimated plugin.
+Next, you'll need to update your **babel.config.js** to include the reanimated plugin:
 
-```js title=babel.config.js
+{/* prettier-ignore */}
+```js babel.config.js
 module.exports = {
-    presets: [
-        ...
+  presets: [
+      /* @hide ... */ /* @end */
     ],
     plugins: [
-        ...
-        'react-native-reanimated/plugin',
+      /* @hide ... */ /* @end */
+      'react-native-reanimated/plugin',
     ],
 };
 ```
 
-> After changing your `babel.config.js`, clear the babel cache `npx expo start --clear`
+> After changing your `babel.config.js`, once run `npx expo start --clear` to start the development server and clear the babel cache.
 
 Now you can use the `Drawer` layout to create a drawer navigator:
 
-```js
-import { Drawer } from "expo-router/drawer";
+```js app/_layout.js
+import { Drawer } from 'expo-router/drawer';
 
 export default function Layout() {
   return <Drawer />;
 }
 ```
+
+## Next steps
+
+<BoxLink
+  title="Modals"
+  Icon={BookOpen02Icon}
+  description="Learn how to use modals in Expo Router."
+  href="/router/layouts/modal/"
+/>

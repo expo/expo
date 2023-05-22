@@ -1,24 +1,39 @@
 ---
 title: Stack
+description: Learn how to use the Stack Layout in Expo Router.
+hideTOC: true
 ---
 
-The `Stack` Layout in Expo Router wraps the [Native Stack Navigator](https://reactnavigation.org/docs/native-stack-navigator) from React Navigation, not to be confused with the legacy [JS Stack Navigator](https://reactnavigation.org/docs/stack-navigator).
+import { FileTree } from '~/ui/components/FileTree';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 
-For a list of all options, see the [Native Stack Navigator: Options](https://reactnavigation.org/docs/native-stack-navigator#options).
+The `Stack` Layout in Expo Router wraps the [Native Stack Navigator](https://reactnavigation.org/docs/native-stack-navigator) from React Navigation. Do not confuse it with the legacy [JS Stack Navigator](https://reactnavigation.org/docs/stack-navigator).
 
-```bash title="File System"
-app/
-  _layout.js
-  index.js
-  details.js
-```
+<FileTree files={['app/_layout.js', 'app/index.js', 'app/detail.js']} />
 
-```js title=app/_layout.js
-import { Stack } from "expo-router/stack";
+To create a `Stack` layout with two screens as shown in the file structure above:
+
+```js app/_layout.js
+import { Stack } from 'expo-router/stack';
 
 export default function Layout() {
   return <Stack initialRouteName="index" />;
 }
 ```
 
-This will create a `Stack Layout` with two screens.
+## Next steps
+
+<BoxLink
+  title="Native Stack Navigator: Options"
+  Icon={BookOpen02Icon}
+  description="For a list of all options, see React Navigation's documentation."
+  href="https://reactnavigation.org/docs/native-stack-navigator#options"
+/>
+
+<BoxLink
+  title="Tabs layout"
+  Icon={BookOpen02Icon}
+  description="Learn how to use Tabs layout in Expo Router."
+  href="/router/layouts/tabs/"
+/>

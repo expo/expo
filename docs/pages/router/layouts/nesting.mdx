@@ -1,67 +1,84 @@
 ---
 title: Nesting navigators
+description: Learn how to nest navigators in Expo Router.
+hideTOC: true
 ---
 
-Ports the guide [React Navigation: Nesting navigators](https://reactnavigation.org/docs/nesting-navigators) to Expo Router.
+import { FileTree } from '~/ui/components/FileTree';
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 
-```bash title="File System"
-app/
-  _layout.js
-  index.js
-  home/
-    _layout.js
-    feed.js # Matches /home/feed
-    messages.js # Matches /home/messages
-```
+> This guide is an extension from [React Navigation: Nesting navigators](https://reactnavigation.org/docs/nesting-navigators) to Expo Router.
 
-```js title=app/_layout.js
-import { Stack } from "expo-router";
+> **warning** Navigation UI elements (Link, Tabs, Stack) may move out of the Expo Router library in the future.
+
+Consider the following file structure which is used as an example in this guide:
+
+<FileTree
+  files={[
+    'app/_layout.js',
+    'app/index.js',
+    'app/home/_layout.js',
+    'app/home/feed.js',
+    'app/home/messages.js',
+  ]}
+/>
+
+In the above example, **app/home/feed.js** matches `/home/feed` and **app/home/messages.js** matches `/home/messages`.
+
+```js app/_layout.js
+import { Stack } from 'expo-router';
 
 export default Stack;
 ```
 
-This is nested in the `_layout.js` layout, so it will be rendered as a stack.
+This is nested in the **\_layout.js** layout, so it will be rendered as a stack.
 
-```js title=app/home/_layout.js
-import { Tabs } from "expo-router";
+```js app/home/_layout.js
+import { Tabs } from 'expo-router';
 
 export default Tabs;
 ```
 
-```js title=app/index.js
-import { Link } from "expo-router";
+```js app/index.js
+import { Link } from 'expo-router';
 
 export default function Root() {
   return <Link href="/home/messages">Navigate to nested route</Link>;
 }
 ```
 
-This is nested in the `home/_layout.js` layout, so it will be rendered as a tab.
+This is nested in the **home/\_layout.js** layout, so it will be rendered as a tab.
 
-```js title=app/home/feed.js
-import { View, Text } from "react-native";
+```js app/home/feed.js
+import { View, Text } from 'react-native';
 
 export default function Feed() {
   return (
     <View>
       <Text>Feed screen</Text>
     </View>
-   );
+  );
 }
 ```
 
-```js title=app/home/messages.js
-import { View, Text } from "react-native";
+```js app/home/messages.js
+import { View, Text } from 'react-native';
 
 export default function Messages() {
   return (
     <View>
       <Text>Messages screen</Text>
     </View>
-   );
+  );
 }
 ```
 
-## Notes
+## Next steps
 
-- Navigation UI elements (Link, Tabs, Stack) may move out of the router package.
+<BoxLink
+  title="Stack layout"
+  Icon={BookOpen02Icon}
+  description="Learn how to use Stack layout in Expo Router."
+  href="/router/layouts/stack/"
+/>
