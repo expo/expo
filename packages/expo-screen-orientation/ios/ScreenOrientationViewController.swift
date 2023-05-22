@@ -17,15 +17,14 @@ class ScreenOrientationViewController: UIViewController {
       return
     }
 
-    // TODO: When printing to errors to JS available print the warnings there (@behenate)
     guard let mask = plistStringToInterfaceOrientationMask(orientationString) else {
-      print("Orientation lock string '\(orientationString)' provided in Info.plist does not correspond to a valid orientation mask. Application will default to portrait orientation lock.")
+      log.warn("Orientation lock string '\(orientationString)' provided in Info.plist does not correspond to a valid orientation mask. Application will default to portrait orientation lock.")
       self.init(defaultOrientationMask: .portrait)
       return
     }
 
     guard mask.isSupportedByDevice() else {
-      print("Orientation lock string '\(orientationString)' provided in Info.plist is not supported by the device. Application will default to portrait orientation lock.")
+      log.warn("Orientation lock string '\(orientationString)' provided in Info.plist is not supported by the device. Application will default to portrait orientation lock.")
       self.init(defaultOrientationMask: .portrait)
       return
     }

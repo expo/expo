@@ -4,8 +4,10 @@ protocol OrientationListener {
   func screenOrientationDidChange(_ orientation: UIInterfaceOrientation)
 }
 
-// This singleton holds information about desired orientation for every app which uses expo-screen-orientation.
-// Marked @objc and public, because this it is also used in EXAppViewController.
+/**
+ This singleton that holds information about desired orientation for every app which uses expo-screen-orientation.
+ Marked @objc and public, because this it is also used in EXAppViewController.
+ */
 @objc
 public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   @objc
@@ -43,7 +45,8 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
       object: UIDevice.current
     )
 
-    DispatchQueue.main.async {
+    // This is most likely already executed on the main thread, but we need to be sure
+    RCTExecuteOnMainQueue {
       UIDevice.current.beginGeneratingDeviceOrientationNotifications()
     }
   }
@@ -62,8 +65,10 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
     }
   }
 
-  // MARK: affecting screen orientation
-  // Rotates the view to currentScreenOrientation (or default orientation from the orientationMask)
+  // MARK: - Affecting screen orientation
+  /**
+   Rotates the view to currentScreenOrientation (or default orientation from the orientationMask)
+  */
   func enforceDesiredDeviceOrientation(withOrientationMask orientationMask: UIInterfaceOrientationMask) {
     var newOrientation = orientationMask.defaultOrientation()
 
@@ -71,26 +76,28 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
       newOrientation = currentScreenOrientation
     }
 
-    if newOrientation != .unknown {
-      DispatchQueue.main.async { [weak self] in
-        guard let self = self else {
-          return
-        }
+    guard newOrientation != .unknown else {
+      return
+    }
 
-        if #available(iOS 16.0, *) {
-          let windowScene = self.rootViewController?.view.window?.windowScene
-          windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: orientationMask))
-          self.rootViewController?.setNeedsUpdateOfSupportedInterfaceOrientations()
-        } else {
-          UIDevice.current.setValue(newOrientation.rawValue, forKey: "orientation")
-          UIViewController.attemptRotationToDeviceOrientation()
-        }
+    RCTExecuteOnMainQueue { [weak self] in
+      guard let self = self else {
+        return
+      }
 
-        // CurrentScreenOrientation might be unknown (especially just after launch), but at this point we already know the currentScreenOrientation.
-        // Later the currentScreenOrientation will be updated by the iOS orientation change notifications.
-        if self.currentScreenOrientation == .unknown {
-          self.screenOrientationDidChange(newOrientation)
-        }
+      if #available(iOS 16.0, *) {
+        let windowScene = self.rootViewController?.view.window?.windowScene
+        windowScene?.requestGeometryUpdate(.iOS(interfaceOrientations: orientationMask))
+        self.rootViewController?.setNeedsUpdateOfSupportedInterfaceOrientations()
+      } else {
+        UIDevice.current.setValue(newOrientation.rawValue, forKey: "orientation")
+        UIViewController.attemptRotationToDeviceOrientation()
+      }
+
+      // CurrentScreenOrientation might be unknown (especially just after launch), but at this point we already know the currentScreenOrientation.
+      // Later the currentScreenOrientation will be updated by the iOS orientation change notifications.
+      if self.currentScreenOrientation == .unknown {
+        self.screenOrientationDidChange(newOrientation)
       }
     }
   }
@@ -100,8 +107,10 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
     enforceDesiredDeviceOrientation(withOrientationMask: mask)
   }
 
-  // MARK: getters
-  // Gets the orientationMask for the current module. Also used for Expo Go in EXAppViewController
+  // MARK: - Getters
+  /**
+   Gets the orientationMask for the current module. Also used for Expo Go in EXAppViewController
+  */
   @objc
   public func requiredOrientationMask() -> UIInterfaceOrientationMask {
     if moduleInterfaceMasks.isEmpty {
@@ -119,9 +128,11 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
   }
 
   // MARK: events
-
-  // Called when iOS sends and OrientationDidChangeNotification
-  @objc func handleDeviceOrientationChange(notification: Notification) {
+  /**
+   Called when iOS sends and OrientationDidChangeNotification
+  */
+  @objc
+  func handleDeviceOrientationChange(notification: Notification) {
     let newScreenOrientation = UIDevice.current.orientation.toInterfaceOrientation()
 
     interfaceOrientationDidChange(newScreenOrientation)
@@ -143,7 +154,7 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
       }
 
       // on iPads, traitCollectionDidChange isn't triggered at all, so we have to call screenOrientationDidChange manually
-      if isIPad()
+      if isPad()
         && (newScreenOrientation.isPortrait && currentScreenOrientation.isLandscape
         || newScreenOrientation.isLandscape && currentScreenOrientation.isPortrait) {
         screenOrientationDidChange(newScreenOrientation)
@@ -151,58 +162,54 @@ public class ScreenOrientationRegistry: NSObject, UIApplicationDelegate {
     }
   }
 
-  // Called by ScreenOrientationViewController when the dimensions of the view change
-  // Also used for Expo Go in EXAppViewController
+  // MARK: - Events
+
+  /**
+   Called by ScreenOrientationViewController when the dimensions of the view change.
+   Also used for Expo Go in EXAppViewController.
+  */
   @objc
   public func traitCollectionDidChange(to traitCollection: UITraitCollection) {
     currentTraitCollection = traitCollection
 
-    let verticalSizeClass = traitCollection.verticalSizeClass
-    let horizontalSizeClass = traitCollection.horizontalSizeClass
     let currentDeviceOrientation = UIDevice.current.orientation.toInterfaceOrientation()
     let currentOrientationMask = self.rootViewController?.supportedInterfaceOrientations ?? []
 
     var newScreenOrientation = UIInterfaceOrientation.unknown
 
     // We need to deduce what is the new screen orientaiton based on currentOrientationMask and new dimensions of the view
-    if verticalSizeClass == .regular && horizontalSizeClass == .compact {
+    if traitCollection.isPortrait() {
       // From trait collection, we know that screen is in portrait or upside down orientation.
       let portraitMask = currentOrientationMask.intersection([.portrait, .portraitUpsideDown])
 
-      // Mask allows only proper portrait - we know that the device is in either proper portrait or upside down
-      // we deduce it is proper portrait.
       if portraitMask == .portrait {
+        // Mask allows only proper portrait - we know that the device is in either proper portrait or upside down
+        // we deduce it is proper portrait.
         newScreenOrientation = .portrait
-      }
-      // Mask allows only upside down portrait - we know that the device is in either proper portrait or upside down
-      // we deduce it is upside down portrait.
-      else if portraitMask == .portraitUpsideDown {
+      } else if portraitMask == .portraitUpsideDown {
+        // Mask allows only upside down portrait - we know that the device is in either proper portrait or upside down
+        // we deduce it is upside down portrait.
         newScreenOrientation = .portraitUpsideDown
-      }
-      // Mask allows portrait or upside down portrait - we can try to deduce orientation
-      // from device orientation.
-      else if currentDeviceOrientation == .portrait || currentDeviceOrientation == .portraitUpsideDown {
+      } else if currentDeviceOrientation == .portrait || currentDeviceOrientation == .portraitUpsideDown {
+        // Mask allows portrait or upside down portrait - we can try to deduce orientation
+        // from device orientation.
         newScreenOrientation = currentDeviceOrientation
       }
-    } else if (verticalSizeClass == .compact && horizontalSizeClass == .compact)
-      || (verticalSizeClass == .regular && horizontalSizeClass == .regular)
-      || (verticalSizeClass == .compact && horizontalSizeClass == .regular) {
+    } else if traitCollection.isLandscape() {
       // From trait collection, we know that screen is in landscape left or right orientation.
       let landscapeMask = currentOrientationMask.intersection(.landscape)
 
-      // Mask allows only proper landscape - we know that the device is in either proper landscape left or right
-      // we deduce it is proper left.
       if landscapeMask == .landscapeLeft {
+        // Mask allows only proper landscape - we know that the device is in either proper landscape left or right
+        // we deduce it is proper left.
         newScreenOrientation = .landscapeLeft
-      }
-      // Mask allows only upside down portrait - we know that the device is in either proper portrait or upside down
-      // we deduce it is upside right.
-      else if landscapeMask == .landscapeRight {
+      } else if landscapeMask == .landscapeRight {
+        // Mask allows only landscape right - we know that the device is in either proper landscape left or right
+        // we deduce it is landscape right.
         newScreenOrientation = .landscapeRight
-      }
-      // Mask allows landscape left or right - we can try to deduce orientation
-      // from device orientation.
-      else if currentDeviceOrientation == .landscapeLeft || currentDeviceOrientation == .landscapeRight {
+      } else if currentDeviceOrientation == .landscapeLeft || currentDeviceOrientation == .landscapeRight {
+        // Mask allows landscape left or right - we can try to deduce orientation
+        // from device orientation.
         newScreenOrientation = currentDeviceOrientation
       }
       // If the desired orientation is .landscape but the device is in .portrait orientation it will rotate to .landscapeRight

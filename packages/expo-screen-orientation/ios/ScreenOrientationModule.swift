@@ -1,6 +1,6 @@
 import ExpoModulesCore
 
-public class ScreenOrientationModule: Module, OrientationListener {
+public class ScreenOrientationModule: Module, OrientationListener, Hashable {
   static let didUpdateDimensionsEvent = "expoDidUpdateDimensions"
 
   let screenOrientationRegistry = ScreenOrientationRegistry.shared
@@ -13,32 +13,34 @@ public class ScreenOrientationModule: Module, OrientationListener {
 
     AsyncFunction("lockAsync") { (orientationLock: ModuleOrientationLock) in
       let orientationMask = orientationLock.toInterfaceOrientationMask()
+
       guard !orientationMask.isEmpty else {
         throw InvalidOrientationLockException()
       }
 
-      if !orientationMask.isSupportedByDevice() {
+      guard orientationMask.isSupportedByDevice() else {
         throw UnsupportedOrientationLockException("\(orientationLock.rawValue)")
       }
+
       screenOrientationRegistry.setMask(orientationMask, forModule: self)
     }
 
     AsyncFunction("lockPlatformAsync") { (allowedOrientations: [ModuleOrientation]) in
       var allowedOrientationsMask: UIInterfaceOrientationMask = []
+
       for allowedOrientation in allowedOrientations {
         let orientation = allowedOrientation.toInterfaceOrientation()
         let orientationMask = orientation.toInterfaceOrientationMask()
-        if orientationMask.isEmpty {
+
+        guard !orientationMask.isEmpty else {
           throw InvalidOrientationLockException()
-          return
-        }
+      }
 
         allowedOrientationsMask.insert(orientationMask)
       }
 
-      if !allowedOrientationsMask.isSupportedByDevice() {
+      guard allowedOrientationsMask.isSupportedByDevice() else {
         throw UnsupportedOrientationLockException(nil)
-        return
       }
 
       screenOrientationRegistry.setMask(allowedOrientationsMask, forModule: self)
@@ -64,7 +66,7 @@ public class ScreenOrientationModule: Module, OrientationListener {
       return allowedOrientations
     }
 
-    AsyncFunction("supportsOrientationLockAsync") {(orientationLock: ModuleOrientationLock) -> Bool in
+    AsyncFunction("supportsOrientationLockAsync") { (orientationLock: ModuleOrientationLock) -> Bool in
       let orientationMask = orientationLock.toInterfaceOrientationMask()
       return !orientationMask.isEmpty && orientationMask.isSupportedByDevice()
     }
@@ -87,6 +89,7 @@ public class ScreenOrientationModule: Module, OrientationListener {
     }
   }
 
+  // MARK: ScreenOrientationListener
   func screenOrientationDidChange(_ orientation: UIInterfaceOrientation) {
     guard let currentTraitCollection = screenOrientationRegistry.currentTraitCollection else {
       return
@@ -100,5 +103,14 @@ public class ScreenOrientationModule: Module, OrientationListener {
         "horizontalSizeClass": currentTraitCollection.horizontalSizeClass
       ] as [String: Any]
     ])
+  }
+
+  // MARK: Hashable
+  public func hash(into hasher: inout Hasher) {
+    hasher.combine(ObjectIdentifier(self))
+  }
+
+  public static func == (lhs: ScreenOrientationModule, rhs: ScreenOrientationModule) -> Bool {
+    return ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
   }
 }

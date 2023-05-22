@@ -1,16 +1,5 @@
 import ExpoModulesCore
 
-// Modules are not hashable. We are using a dictionary (moduleInterfaceMasks), where modules are keys.
-extension ScreenOrientationModule: Hashable {
-  public func hash(into hasher: inout Hasher) {
-    hasher.combine(ObjectIdentifier(self))
-  }
-
-  public static func == (lhs: ScreenOrientationModule, rhs: ScreenOrientationModule) -> Bool {
-    return ObjectIdentifier(lhs) == ObjectIdentifier(rhs)
-  }
-}
-
 internal func isPad() -> Bool {
   return UIDevice.current.userInterfaceIdiom == .pad
 }
@@ -23,10 +12,6 @@ internal var doesDeviceHaveNotch = {
   }
   return bottomSafeAreaInsetIsPositive
 }()
-
-internal func isIPad() -> Bool {
-  return UIDevice.current.userInterfaceIdiom == .pad
-}
 
 extension UIInterfaceOrientationMask {
   internal func toUIInterfaceOrientation() -> UIInterfaceOrientation {
@@ -110,5 +95,17 @@ extension UIDeviceOrientation {
     default:
       return .unknown
     }
+  }
+}
+
+extension UITraitCollection {
+  internal func isPortrait() -> Bool {
+    return verticalSizeClass == .regular && horizontalSizeClass == .compact
+  }
+
+  internal func isLandscape() -> Bool {
+    return (verticalSizeClass == .compact && horizontalSizeClass == .compact)
+    || (verticalSizeClass == .regular && horizontalSizeClass == .regular)
+    || (verticalSizeClass == .compact && horizontalSizeClass == .regular)
   }
 }
