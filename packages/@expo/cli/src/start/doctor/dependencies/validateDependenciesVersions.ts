@@ -118,8 +118,8 @@ export async function getVersionedDependenciesAsync(
   let incorrectDeps = findIncorrectDependencies(pkg, packageVersions, combinedKnownPackages);
   debug(`Incorrect dependencies: %O`, incorrectDeps);
 
-  if (pkg?.expo?.install?.skipPackages) {
-    const skipPackages = pkg.expo.install.skipPackages;
+  if (pkg?.expo?.skipVersionWarningsForPackages) {
+    const skipPackages = pkg.expo.skipVersionWarningsForPackages;
     const actuallyExcludedDeps = incorrectDeps.filter((dep) =>
       skipPackages.includes(dep.packageName)
     );
