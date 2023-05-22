@@ -8,8 +8,6 @@ version = '0.17.0'
 
 def ex_updates_native_debug = System.getenv("EX_UPDATES_NATIVE_DEBUG") == "1" ? "true" : "false"
 
-apply from: "../scripts/create-manifest-android.gradle"
-
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
   if (expoModulesCorePlugin.exists()) {
@@ -40,19 +38,11 @@ buildscript {
   }
 }
 
-// Creating sources with comments
-task androidSourcesJar(type: Jar) {
-  classifier = 'sources'
-  from android.sourceSets.main.java.srcDirs
-}
-
 afterEvaluate {
   publishing {
     publications {
       release(MavenPublication) {
         from components.release
-        // Add additional sourcesJar to artifacts
-        artifact(androidSourcesJar)
       }
     }
     repositories {
@@ -82,7 +72,10 @@ android {
     versionName '0.17.0'
     consumerProguardFiles("proguard-rules.pro")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
     buildConfigField("boolean", "EX_UPDATES_NATIVE_DEBUG", ex_updates_native_debug)
+    buildConfigField("boolean", "EX_UPDATES_ANDROID_DELAY_LOAD_APP", boolish(findProperty("EX_UPDATES_ANDROID_DELAY_LOAD_APP") ?: true).toString())
+
     // uncomment below to export the database schema when making changes
     /* javaCompileOptions {
       annotationProcessorOptions {
@@ -101,6 +94,11 @@ android {
     main.assets.srcDirs += files("$projectDir/src/main/certificates".toString())
     androidTest.assets.srcDirs += files("$projectDir/src/androidTest/schemas".toString())
     androidTest.assets.srcDirs += files("$projectDir/src/androidTest/certificates".toString())
+  }
+  publishing {
+    singleVariant("release") {
+      withSourcesJar()
+    }
   }
 }
 

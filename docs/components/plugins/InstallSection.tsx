@@ -40,8 +40,8 @@ const InstallSection = ({
       {hideBareInstructions ? null : (
         <P>
           If you're installing this in a{' '}
-          <A href="/introduction/managed-vs-bare/#bare-workflow">bare React Native app</A>, you
-          should also follow{' '}
+          <A href="/archive/managed-vs-bare/#bare-workflow">bare React Native app</A>, you should
+          also follow{' '}
           <A href={sourceCodeUrl ?? href}>
             <DEMI>these additional installation instructions</DEMI>
           </A>

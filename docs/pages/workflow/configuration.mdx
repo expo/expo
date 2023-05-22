@@ -9,7 +9,7 @@ import { Collapsible } from '~/ui/components/Collapsible';
 
 <PossibleRedirectNotification newUrl="/versions/latest/config/app/" />
 
-The Expo config (**app.json**, **app.config.js**, **app.config.ts**) is used for configuring how a project loads in [Expo Go](/workflow/expo-go), [Expo Prebuild](/workflow/prebuild) generation, and the OTA update manifest. You can think of this as an `index.html` but for React Native apps.
+The Expo config (**app.json**, **app.config.js**, **app.config.ts**) is used for configuring how a project loads in [Expo Go](/get-started/expo-go/), [Expo Prebuild](/workflow/prebuild) generation, and the OTA update manifest. You can think of this as an `index.html` but for React Native apps.
 
 It must be located at the root of your project, next to the **package.json**. Here is a bare-minimum example:
 
@@ -32,7 +32,7 @@ The Expo config configures many things such as app name, icon, splash screen, de
 
 ## Extending configuration
 
-Library authors can extend the Expo config by using [Expo Config plugins](/guides/config-plugins).
+Library authors can extend the Expo config by using [Expo Config plugins](/config-plugins/introduction/).
 
 > **info** Config plugins are mostly used to configure the [`npx expo prebuild`](/workflow/prebuild) command.
 
@@ -70,9 +70,7 @@ import Constants from 'expo-constants';
 Constants.expoConfig.extra.fact === 'kittens are cool';
 ```
 
-You can access and modify incoming config values by exporting a function that returns an object. This is useful if your project also has an **app.json**. By default, Expo CLI will read the **app.json** first and send the normalized results to the **app.config.js**. This functionality is disabled when the `--config` is used to specify a custom config.
-
-> **warning** The `--config` flag is deprecated. For more information, see [Migration from `--config` in Expo CLI](https://expo.fyi/config-flag-migration).
+You can access and modify incoming config values by exporting a function that returns an object. This is useful if your project also has an **app.json**. By default, Expo CLI will read the **app.json** first and send the normalized results to the **app.config.js**.
 
 For example, your **app.json** could look like this:
 
