@@ -11,6 +11,7 @@
 ### 🎉 New features
 
 - Added `ReactActivityHandler.getDelayLoadAppHandler` interface on Android. ([#20273](https://github.com/expo/expo/pull/20273) by [@kudo](https://github.com/kudo))
+- [iOS] Introduced shared refs – a way to pass native objects among different independent modules. ([#22583](https://github.com/expo/expo/pull/22583) by [@tsapeta](https://github.com/tsapeta))
 
 ### 🐛 Bug fixes
 
