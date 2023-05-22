@@ -38,8 +38,6 @@ internal class ImageLibraryContract(
         }
         if (input.options.mediaTypes == MediaTypes.ALL) {
           putExtra(Intent.EXTRA_MIME_TYPES, arrayOf(MediaTypes.IMAGES.toMimeType(), MediaTypes.VIDEOS.toMimeType()))
-        } else {
-          putExtra(Intent.EXTRA_MIME_TYPES, arrayOf(input.options.mediaTypes.toMimeType()))
         }
       }
 
