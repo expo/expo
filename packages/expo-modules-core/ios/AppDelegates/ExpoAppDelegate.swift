@@ -288,14 +288,7 @@ open class ExpoAppDelegate: UIResponder, UIApplicationDelegate {
 
   // TODO: - Handling CloudKit Invitations
 
-  // MARK: - Managing Interface Geometry
-
-  // We want to create intersection of all orientations set by subscribers. There should usually be only one subscriber.
-  public func application(_ application: UIApplication, supportedInterfaceOrientationsFor window: UIWindow?) -> UIInterfaceOrientationMask {
-    return subscribers.reduce(.all) { result, subscriber in
-      return subscriber.application?(application, supportedInterfaceOrientationsFor: window).intersection(result) ?? result
-    }
-  }
+  // TODO: - Managing Interface Geometry
 
   // MARK: - Statics
 

@@ -28,7 +28,6 @@
 - Fixed reload crash when expo-dev-menu is turned off. ([#21279](https://github.com/expo/expo/pull/21279) by [@jayshah123](https://github.com/jayshah123))
 - Fix JS entry file in development builds. ([#21984](https://github.com/expo/expo/pull/21984) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Update the start script to dynamically locate the packager IP from any network interface. ([#21977](https://github.com/expo/expo/pull/21977) by [@gabrieldonadel](https://github.com/gabrieldonadel))
-- [iOS] Fix assert in `requestOverlayMetricsIfNeeded` failing when the device is rotated to landscape orientation. ([#22152](https://github.com/expo/expo/pull/22152) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 

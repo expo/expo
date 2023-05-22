@@ -53,7 +53,6 @@
 - [iOS] Use `jsi::WeakObject` for weak objects on Hermes. ([#21986](https://github.com/expo/expo/pull/21986) by [@tsapeta](https://github.com/tsapeta))
 - [iOS] Removed legacyViewManager references from ExpoFabricView. ([#22089](https://github.com/expo/expo/pull/22089) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - [iOS] Dropped `proxiedProperties` prop. ([#22280](https://github.com/expo/expo/pull/22280) by [@tsapeta](https://github.com/tsapeta))
-- [iOS] Added Interface Geometry Management section to ExpoAppDelegate. ([#22152](https://github.com/expo/expo/pull/22152) by [@behenate](https://github.com/behenate))
 
 ## 1.2.7 - 2023-05-03
 
