@@ -9,6 +9,7 @@ export type Options = {
   maxWorkers?: number;
   dev: boolean;
   clear: boolean;
+  minify: boolean;
   dumpAssetmap: boolean;
   dumpSourcemap: boolean;
 };
@@ -67,6 +68,7 @@ export async function resolveOptionsAsync(projectRoot: string, args: any): Promi
   return {
     outputDir: args['--output-dir'] ?? 'dist',
     platforms,
+    minify: !args['--no-minify'],
     clear: !!args['--clear'],
     dev: !!args['--dev'],
     maxWorkers: args['--max-workers'],

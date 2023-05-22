@@ -65,6 +65,7 @@ it('runs `npx expo export --help`', async () => {
         --dump-assetmap            Dump the asset map for further processing
         --dump-sourcemap           Dump the source map for debugging the JS bundle
         -p, --platform <platform>  Options: android, ios, web, all. Default: all
+        --no-minify                Prevent minifying source
         -c, --clear                Clear the bundler cache
         -h, --help                 Usage info
     "

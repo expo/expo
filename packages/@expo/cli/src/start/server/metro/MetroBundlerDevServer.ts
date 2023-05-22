@@ -96,11 +96,17 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     });
   }
 
-  async getStaticRenderFunctionAsync({ mode }: { mode: 'development' | 'production' }) {
+  async getStaticRenderFunctionAsync({
+    mode,
+    minify = mode !== 'development',
+  }: {
+    mode: 'development' | 'production';
+    minify?: boolean;
+  }) {
     const url = this.getDevServerUrl()!;
 
     const { getStaticContent } = await getStaticRenderFunctions(this.projectRoot, url, {
-      minify: mode === 'production',
+      minify,
       dev: mode !== 'production',
       // Ensure the API Routes are included
       environment: 'node',
@@ -110,20 +116,23 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     };
   }
 
-  async getStaticResourcesAsync({ mode }: { mode: string }): Promise<SerialAsset[]> {
-    const isDev = mode === 'development';
+  async getStaticResourcesAsync({
+    mode,
+    minify = mode !== 'development',
+  }: {
+    mode: string;
+    minify?: boolean;
+  }): Promise<SerialAsset[]> {
     const devBundleUrlPathname = createBundleUrlPath({
       platform: 'web',
       mode,
+      minify,
       environment: 'client',
+      serializerOutput: 'static',
       mainModuleName: resolveMainModuleName(this.projectRoot, getConfig(this.projectRoot), 'web'),
     });
 
     const bundleUrl = new URL(devBundleUrlPathname, this.getDevServerUrl()!);
-    bundleUrl.searchParams.set('platform', 'web');
-    bundleUrl.searchParams.set('dev', String(isDev));
-    bundleUrl.searchParams.set('minify', String(!isDev));
-    bundleUrl.searchParams.set('serializer.output', 'static');
 
     // Fetch the generated HTML from our custom Metro serializer
     const results = await fetch(bundleUrl.toString());
@@ -133,8 +142,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     try {
       return JSON.parse(txt);
     } catch (error: any) {
-      // console.log('txt', txt);
-      Log.exception(error);
+      Log.error(
+        'Failed to generate resources with Metro, the Metro config may not be using the correct serializer. Ensure the metro.config.js is extending the expo/metro-config and is not overriding the serializer.'
+      );
+      debug(txt);
       throw error;
     }
   }
@@ -150,11 +161,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
     pathname: string,
     {
       mode,
+      minify = mode !== 'development',
     }: {
       mode: 'development' | 'production';
+      minify?: boolean;
     }
   ) {
-    const isDev = mode === 'development';
     const devBundleUrlPathname = createBundleUrlPath({
       platform: 'web',
       mode,
@@ -162,35 +174,12 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       mainModuleName: resolveMainModuleName(this.projectRoot, getConfig(this.projectRoot), 'web'),
     });
 
-    const bundleResources = async () => {
-      const bundleUrl = new URL(devBundleUrlPathname, this.getDevServerUrl()!);
-      bundleUrl.searchParams.set('platform', 'web');
-      bundleUrl.searchParams.set('dev', String(isDev));
-      bundleUrl.searchParams.set('minify', String(!isDev));
-      bundleUrl.searchParams.set('serializer.output', 'static');
-
-      // Fetch the generated HTML from our custom Metro serializer
-      const results = await fetch(bundleUrl.toString());
-
-      const txt = await results.text();
-
-      try {
-        return JSON.parse(txt);
-      } catch (error) {
-        Log.error(
-          'Failed to generate resources with Metro, the Metro config may not be using the correct serializer. Ensure the metro.config.js is extending the expo/metro-config and is not overriding the serializer.'
-        );
-        debug(txt);
-        throw error;
-      }
-    };
-
     const bundleStaticHtml = async (): Promise<string> => {
       const { getStaticContent } = await getStaticRenderFunctions(
         this.projectRoot,
         this.getDevServerUrl()!,
         {
-          minify: mode === 'production',
+          minify: false,
           dev: mode !== 'production',
           // Ensure the API Routes are included
           environment: 'node',
@@ -201,7 +190,10 @@ export class MetroBundlerDevServer extends BundlerDevServer {
       return await getStaticContent(location);
     };
 
-    const [resources, staticHtml] = await Promise.all([bundleResources(), bundleStaticHtml()]);
+    const [resources, staticHtml] = await Promise.all([
+      this.getStaticResourcesAsync({ mode, minify }),
+      bundleStaticHtml(),
+    ]);
     const content = await this.composeResourcesWithHtml({
       mode,
       resources,

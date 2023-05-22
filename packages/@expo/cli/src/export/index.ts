@@ -17,6 +17,7 @@ export const expoExport: Command = async (argv) => {
       '--max-workers': Number,
       '--output-dir': String,
       '--platform': String,
+      '--no-minify': Boolean,
 
       // Hack: This is added because EAS CLI always includes the flag.
       // If supplied, we'll do nothing with the value, but at least the process won't crash.
@@ -45,6 +46,7 @@ export const expoExport: Command = async (argv) => {
         `--dump-assetmap            Dump the asset map for further processing`,
         `--dump-sourcemap           Dump the source map for debugging the JS bundle`,
         chalk`-p, --platform <platform>  Options: android, ios, web, all. {dim Default: all}`,
+        `--no-minify                Prevent minifying source`,
         `-c, --clear                Clear the bundler cache`,
         `-h, --help                 Usage info`,
       ].join('\n')
