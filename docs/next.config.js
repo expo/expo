@@ -117,7 +117,7 @@ export default {
         ...navigation.homeDirectories,
         ...navigation.learnDirectories,
         ...navigation.generalDirectories,
-        ...navigation.router,
+        ...navigation.routerDirectories,
         ...navigation.referenceDirectories.filter(dir => dir === 'versions'),
         ...VERSIONS.map(version => `versions/${version}`),
       ],

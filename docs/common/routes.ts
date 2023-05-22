@@ -47,7 +47,7 @@ export const isLearnPath = (path: string) => {
 };
 
 export const isRouterPath = (path: string) => {
-  return Utilities.pathStartsWith('router', path);
+  return navigation.routerDirectories.some(name => Utilities.pathStartsWith(name, path));
 };
 
 export const getPageSection = (path: string) => {

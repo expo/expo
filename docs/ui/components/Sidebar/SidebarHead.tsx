@@ -47,6 +47,12 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
         isActive={sidebarActiveGroup === 'general'}
       />
       <SidebarSingleEntry
+        href="/router/overview"
+        title="Router"
+        Icon={NavigationPointer02Icon}
+        isActive={sidebarActiveGroup === 'router'}
+      />
+      <SidebarSingleEntry
         href="/versions/latest"
         title="Reference"
         Icon={DocsLogo}
@@ -57,12 +63,6 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
         title="Learn"
         Icon={GraduationHat02Icon}
         isActive={sidebarActiveGroup === 'learn'}
-      />
-      <SidebarSingleEntry
-        href="/router/overview"
-        title="Router"
-        Icon={NavigationPointer02Icon}
-        isActive={sidebarActiveGroup === 'router'}
       />
       {shouldShowFeaturePreviewLink() && (
         <SidebarSingleEntry

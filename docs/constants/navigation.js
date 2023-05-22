@@ -19,6 +19,8 @@ const learnDirectories = ['tutorial', 'ui-programming', 'additional-resources'];
 const archiveDirectories = ['archive'];
 /** Manual list of directories to categorize as "Reference" */
 const referenceDirectories = ['versions', 'technical-specs', 'more'];
+/** Manual list of directories to categorize as "Router" for Expo Router */
+const routerDirectories = ['router'];
 /** Private preview section which isn't linked in the documentation */
 const previewDirectories = ['feature-preview', 'preview'];
 /** All other unlisted directories */
@@ -35,6 +37,7 @@ const generalDirectories = fs
         ...archiveDirectories,
         ...referenceDirectories,
         ...learnDirectories,
+        ...routerDirectories,
         ...previewDirectories,
       ].includes(name)
   );
@@ -508,6 +511,7 @@ export default {
   home,
   general,
   learn,
+  router,
   preview,
   archive,
   featurePreview,
@@ -518,7 +522,7 @@ export default {
   archiveDirectories,
   homeDirectories,
   learnDirectories,
-  router,
+  routerDirectories,
 };
 
 // --- MDX methods ---
