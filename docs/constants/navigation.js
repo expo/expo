@@ -483,7 +483,7 @@ const router = [
       'Styling',
       [
         makePage('router/styling/native.mdx'),
-        makePage('router/styling/css_web.mdx'),
+        makePage('router/styling/css-web.mdx'),
         makePage('router/styling/theming.mdx'),
       ],
       { expanded: false }

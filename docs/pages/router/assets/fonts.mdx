@@ -1,20 +1,24 @@
 ---
 title: Fonts
+description: Learn how to load fonts in your app when using Expo Router.
+hideTOC: true
 ---
 
-Expo Router's `SplashScreen` can be used to hide your application until your desired font's are loaded.
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 
-```tsx file=app/_layout.tsx
-import { Text, View } from "react-native";
+Expo Router's `SplashScreen` can be used to hide your application until your desired fonts are loaded.
 
+```js app/_layout.js
+import { Text, View } from 'react-native';
 import {
-  // Import `SplashScreen` from `expo-router` instead of `expo-splash-screen`
+  /* @info Import `SplashScreen` from `expo-router` instead of `expo-splash-screen` */
   SplashScreen,
+  /* @end */
   // This example uses a basic Layout component, but you can use any Layout.
   Slot,
-} from "expo-router";
-
-import { useFonts, Inter_500Medium } from "@expo-google-fonts/inter";
+} from 'expo-router';
+import { useFonts, Inter_500Medium } from '@expo-google-fonts/inter';
 
 export default function Layout() {
   // Load the font `Inter_500Medium`
@@ -32,3 +36,12 @@ export default function Layout() {
   return <Slot />;
 }
 ```
+
+## Next steps
+
+<BoxLink
+  title="Images"
+  Icon={BookOpen02Icon}
+  description=" Learn how to use images with Expo Router."
+  href="/router/assets/images/"
+/>

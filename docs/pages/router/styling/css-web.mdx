@@ -1,0 +1,40 @@
+---
+title: CSS
+description: Expo Router supports CSS for styling web components.
+---
+
+Expo Router supports CSS for styling web components.
+
+## Use `className`
+
+Expo Router supports styling components via the `className` prop. Simply `import` your stylesheet in the top-most **\_layout** file.
+
+```js app/_layout.js
+import { Slot } from 'expo-router';
+
+/* @info Import your styles! */
+import 'global.css';
+/* @end */
+
+export default function RootLayout() {
+  return <Slot />;
+}
+```
+
+```js app/index.js
+export default function MyApp() {
+  return <div className="css-selector" />;
+}
+```
+
+## Use CSS Modules
+
+CSS Modules are available by using the `.module.css` extension. They locally scope CSS by creating unique class names and work similarly to React Native styles.
+
+```js app/index.js
+import styles from './styles.module.css';
+
+export default function MyApp() {
+  return <div styles={styles.container} />;
+}
+```

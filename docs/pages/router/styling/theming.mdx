@@ -1,25 +1,16 @@
 ---
 title: Theming
+description: Learn how to theme your app using same primitives from React Navigation library when using Expo Router.
+hideTOC: true
 ---
 
-:::info
+> This documentation only refers to theming the underlying React Navigation components. For general application theming we recommend you use CSS variables or a library.
 
-This documentation only refers to theming the underlying `React Navigation` components.
+In React Navigation, you set the theme for the entire app using the [`<NavigationContainer>`](https://reactnavigation.org/docs/navigation-container/#theme) component. Expo Router manages the root container for you, so instead you should set the theme using the `ThemeProvider` directly.
 
-For general application theming we recommend you use CSS variables or a library.
+```js app/_layout.js
 
-:::
-
-In React Navigation, you set the theme for the entire app using the [`<NavigationContainer />`](https://reactnavigation.org/docs/navigation-container/#theme) component. Expo Router manages the root container for you, so instead you should set the theme using the `ThemeProvider` directly.
-
-```js title=app/_layout.tsx
-
-import {
-  ThemeProvider,
-  DarkTheme,
-  DefaultTheme,
-  useTheme,
-} from "@react-navigation/native";
+import { ThemeProvider, DarkTheme, DefaultTheme, useTheme} from "@react-navigation/native";
 
 import { Slot } from 'expo-router';
 
