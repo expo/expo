@@ -81,6 +81,9 @@ allprojects {
             url "$rootDir/../node_modules/expo-camera/android/maven"
             url(new File(["node", "--print", "require.resolve('expo-camera/package.json')"].execute(null, rootDir).text.trim(), "../android/maven"))
         }
+        maven {
+            url(new File(["node", "--print", "require.resolve('detox/package.json')"].execute(null, rootDir).text.trim(), "../Detox-android"))
+        }
 
         google()
         mavenCentral()
