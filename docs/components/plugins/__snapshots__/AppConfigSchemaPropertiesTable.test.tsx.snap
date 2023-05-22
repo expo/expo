@@ -76,7 +76,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       Name of your app.
     </p>
     <details
-      class="css-extjfn-Collapsible"
+      class="css-u1z7e0-Collapsible"
     >
       <summary
         class="css-1iomq2j-Collapsible"
@@ -196,7 +196,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       Configuration for the bottom navigation bar on Android.
     </p>
     <details
-      class="css-extjfn-Collapsible"
+      class="css-u1z7e0-Collapsible"
     >
       <summary
         class="css-1iomq2j-Collapsible"
@@ -241,7 +241,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       </div>
     </details>
     <details
-      class="css-extjfn-Collapsible"
+      class="css-u1z7e0-Collapsible"
     >
       <summary
         class="css-1iomq2j-Collapsible"
@@ -369,7 +369,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
           Determines how and when the navigation bar is shown.
         </p>
         <details
-          class="css-extjfn-Collapsible"
+          class="css-u1z7e0-Collapsible"
         >
           <summary
             class="css-1iomq2j-Collapsible"
@@ -674,7 +674,7 @@ exports[`AppConfigSchemaPropertiesTable correctly matches snapshot 1`] = `
       Configuration for setting an array of custom intent filters in Android manifest.
     </p>
     <details
-      class="css-extjfn-Collapsible"
+      class="css-u1z7e0-Collapsible"
     >
       <summary
         class="css-1iomq2j-Collapsible"

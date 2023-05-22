@@ -44,6 +44,10 @@ const detailsStyle = css({
     boxShadow: shadows.xs,
   },
 
+  'h4:first-child': {
+    marginTop: 0,
+  },
+
   'h4 + &, p + &, li > &': {
     marginTop: spacing[3],
   },
