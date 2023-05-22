@@ -466,6 +466,20 @@ functions:
     command: echo "Hi!"
 ```
 
+### `functions.[function_name].supported_platforms`
+
+Used to define the supported platforms for a function. Defaults to all platforms. Allowed platforms: `darwin`, `linux`.
+
+For example, the function's supported platform is `darwin` (macOS):
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    supported_platforms: [darwin]
+    command: echo "Hi!"
+```
+
 ## `import`
 
 A config file path list used to import functions from other config files. Imported files cannot have the `build` section.
