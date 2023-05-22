@@ -3,21 +3,19 @@
 import React
 
 @objc
-class DevMenuAppInstance: DevMenuRCTCxxBridgeDelegate, RCTBridgeDelegate {
+class DevMenuAppInstance: DevMenuRCTAppDelegate {
   static private var CloseEventName = "closeDevMenu"
   static private var OpenEventName = "openDevMenu"
 
   private let manager: DevMenuManager
 
-  var bridge: RCTBridge?
 
   init(manager: DevMenuManager) {
     self.manager = manager
 
     super.init()
 
-    // Temporarily disable Dev Menu
-    // self.bridge = DevMenuRCTBridge.init(delegate: self, launchOptions: nil)
+    self.bridge = DevMenuRCTBridge.init(delegate: self, launchOptions: nil)
   }
 
   init(manager: DevMenuManager, bridge: RCTBridge) {
@@ -39,9 +37,9 @@ class DevMenuAppInstance: DevMenuRCTCxxBridgeDelegate, RCTBridgeDelegate {
     bridge?.enqueueJSCall("RCTDeviceEventEmitter.emit", args: [DevMenuAppInstance.OpenEventName])
   }
 
-  // MARK: RCTBridgeDelegate
+  // MARK: RCTAppDelegate
 
-  func sourceURL(for bridge: RCTBridge!) -> URL! {
+  @objc(sourceURLForBridge:) override func sourceURL(for bridge: RCTBridge!) -> URL! {
     #if DEBUG
     if let packagerHost = jsPackagerHost() {
       return RCTBundleURLProvider.jsBundleURL(
@@ -54,14 +52,18 @@ class DevMenuAppInstance: DevMenuRCTCxxBridgeDelegate, RCTBridgeDelegate {
     return jsSourceUrl()
   }
 
-  func extraModules(for bridge: RCTBridge!) -> [RCTBridgeModule]! {
+  override func extraModules(for bridge: RCTBridge!) -> [RCTBridgeModule]! {
     var modules: [RCTBridgeModule] = [DevMenuLoadingView.init()]
     modules.append(DevMenuRCTDevSettings.init())
     return modules
   }
 
-  func bridge(_ bridge: RCTBridge!, didNotFindModule moduleName: String!) -> Bool {
+  override func bridge(_ bridge: RCTBridge!, didNotFindModule moduleName: String!) -> Bool {
     return moduleName == "DevMenu"
+  }
+
+  func concurrentRootEnabled() -> Bool {
+    return true
   }
 
   // MARK: private
