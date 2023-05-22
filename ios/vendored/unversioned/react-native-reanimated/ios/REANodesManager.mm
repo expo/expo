@@ -96,6 +96,8 @@ using namespace facebook::react;
   BOOL _tryRunBatchUpdatesSynchronously;
   REAEventHandler _eventHandler;
   volatile void (^_mounting)(void);
+  NSObject *_syncLayoutUpdatesWaitLock;
+  volatile BOOL _syncLayoutUpdatesWaitTimedOut;
   NSMutableDictionary<NSNumber *, ComponentUpdate *> *_componentUpdateBuffer;
   NSMutableDictionary<NSNumber *, UIView *> *_viewRegistry;
 #ifdef RCT_NEW_ARCH_ENABLED
@@ -123,6 +125,7 @@ using namespace facebook::react;
     _operationsInBatch = [NSMutableDictionary new];
     _componentUpdateBuffer = [NSMutableDictionary new];
     _viewRegistry = [_uiManager valueForKey:@"_viewRegistry"];
+    _syncLayoutUpdatesWaitLock = [NSObject new];
   }
 
   _displayLink = [CADisplayLink displayLinkWithTarget:self selector:@selector(onAnimationFrame:)];
@@ -241,8 +244,14 @@ using namespace facebook::react;
 - (BOOL)uiManager:(RCTUIManager *)manager performMountingWithBlock:(RCTUIManagerMountingBlock)block
 {
   RCTAssert(_mounting == nil, @"Mouting block is expected to not be set");
-  _mounting = block;
-  return YES;
+  @synchronized(_syncLayoutUpdatesWaitLock) {
+    if (_syncLayoutUpdatesWaitTimedOut) {
+      return NO;
+    } else {
+      _mounting = block;
+      return YES;
+    }
+  }
 }
 
 - (void)performOperations
@@ -260,6 +269,7 @@ using namespace facebook::react;
 
     __weak __typeof__(self) weakSelf = self;
     dispatch_semaphore_t semaphore = dispatch_semaphore_create(0);
+    _syncLayoutUpdatesWaitTimedOut = NO;
     RCTExecuteOnUIManagerQueue(^{
       __typeof__(self) strongSelf = weakSelf;
       if (strongSelf == nil) {
@@ -276,7 +286,7 @@ using namespace facebook::react;
       }
 
       if (canUpdateSynchronously) {
-        [strongSelf.uiManager runSyncUIUpdatesWithObserver:self];
+        [strongSelf.uiManager runSyncUIUpdatesWithObserver:strongSelf];
         dispatch_semaphore_signal(semaphore);
       }
       // In case canUpdateSynchronously=true we still have to send uiManagerWillPerformMounting event
@@ -284,7 +294,16 @@ using namespace facebook::react;
       [strongSelf.uiManager setNeedsLayout];
     });
     if (trySynchronously) {
-      dispatch_semaphore_wait(semaphore, DISPATCH_TIME_FOREVER);
+      // The 16ms timeout here aims to match the frame duration. It may make sense to read that parameter
+      // from CADisplayLink but it is easier to hardcode it for the time being.
+      // The reason why we use frame duration here is that if takes longer than one frame to complete layout tasks
+      // there is no point of synchronizing layout with the UI interaction as we get that one frame delay anyways.
+      long result = dispatch_semaphore_wait(semaphore, dispatch_time(DISPATCH_TIME_NOW, 16 * NSEC_PER_MSEC));
+      if (result != 0) {
+        @synchronized(_syncLayoutUpdatesWaitLock) {
+          _syncLayoutUpdatesWaitTimedOut = YES;
+        }
+      }
     }
 
     if (_mounting) {
@@ -493,5 +512,12 @@ using namespace facebook::react;
 }
 
 #endif // RCT_NEW_ARCH_ENABLED
+
+- (void)maybeFlushUIUpdatesQueue
+{
+  if ([_displayLink isPaused]) {
+    [self performOperations];
+  }
+}
 
 @end

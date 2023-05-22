@@ -26,4 +26,4 @@ void REAIOSLogger::log(bool b)
   NSLog(@"%@", [NSString stringWithCString:str encoding:[NSString defaultCStringEncoding]]);
 }
 
-}
+} // namespace reanimated
