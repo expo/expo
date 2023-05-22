@@ -95,7 +95,9 @@ class DevMenuWindow: UIWindow, OverlayContainerViewControllerDelegate {
   ) -> CGFloat {
     switch OverlayNotch.allCases[index] {
     case .fullscreen:
-      return availableSpace - 45
+    // Before the dev menu is opened for the first time the availableSpace equals zero (correct value is loaded while opening the dev menu).
+    // In order to avoid crashing the app because of returning a negative value make sure that the returned value is >= 0.
+    return max(availableSpace - 45, 0)
     case .open:
       return availableSpace * 0.6
     case .hidden:
