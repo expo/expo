@@ -1,101 +1,51 @@
 ---
 title: Installation
-description: Lean how to to get started and install Expo Router
+description: Learn how to get started and install Expo Router in your app.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 import { BoxLink } from '~/ui/components/BoxLink';
-import { GithubIcon, ExpoGoLogo } from '@expo/styleguide-icons';
-import { Container, Row, Col } from 'react-grid-system';
-import { spacing } from '@expo/styleguide-base';
+import { GithubIcon, Map01Icon, BookOpen02Icon } from '@expo/styleguide-icons';
+import { Tabs, Tab } from '~/ui/components/Tabs';
+
+There are two ways you can get started to install and use Expo Router in your app.
 
 ## Quick start
 
 <Step label="1">
 
-We recommend creating a new Expo app using `create-expo-app`. This will will create a minimal project with the smallest footprint to get you started. To create a project, run:
+We recommend creating a new Expo app using `create-expo-app`. This will create a minimal project with the smallest footprint to get you started. To create a project, run the command:
 
-<Terminal
-  cmd={['$ npx create-expo-app@latest --example with-router']}
-  cmdCopy="npx create-expo-app@latest --example with-router"
-/>
+<Terminal cmd={['$ npx create-expo-app@latest --example with-router']} />
 
 </Step>
 
 <Step label="2">
 
-Once setup, you can start your project with any of these commends
+Once setup, you can start your project with any of these commands:
 
-<Terminal
-  cmd={['$ npm start']}
-  cmdCopy="npm start"
-/>
+<Terminal cmd={['$ npx expo start']} />
 
-To view your app on a mobile device we recommend first starting with Expo Go, a free, open-source client which simplifies local development. As you application grows in complexity and you need more control, you can create your own custom Development build.
-
-<Container fluid style={{ paddingLeft: -15, paddingRight: -15, marginBottom: spacing[6] }}>
-  <Row>
-    <Col>
-      <BoxLink
-        title="Expo Go"
-        Icon={ExpoGoLogo}
-        description="Start here for the fastest/easiest setup"
-        href="/get-started/expo-go"
-      />
-    </Col>
-    <Col>
-      <BoxLink
-        title="Development builds"
-        Icon={GithubIcon}
-        description="Introduction to Development builds"
-        href="/develop/development-builds/introduction/"
-      />
-    </Col>
-  </Row>
-</Container>
+To view your app on a mobile device, we recommend starting with [Expo Go](/get-started/expo-go). As your application grows in complexity and you need more control, you can create a [development build](/develop/development-builds/introduction/).
 
 </Step>
 
-## Post-setup
-
-Congratulations on creating your Expo Router project! While developing on a physical mobile device will accurate, sometimes its faster to iterate on ideas locally using a virtual device within an emulator.
-
-<Container fluid style={{ paddingLeft: -15, paddingRight: -15, marginBottom: spacing[6] }}>
-  <Row>
-    <Col>
-      <BoxLink
-        title="Android Studio Emulator"
-        Icon={ExpoGoLogo}
-        description="Learn how to set up the Android Emulator to test your app on a virtual Android device."
-        href="/workflow/android-studio-emulator/"
-      />
-    </Col>
-    <Col>
-      <BoxLink
-        title="iOS Simulator"
-        Icon={ExpoGoLogo}
-        description="Learn how you can install the iOS simulator on your Mac and use it for developing your app."
-        href="/workflow/ios-simulator/"
-      />
-    </Col>
-  </Row>
-</Container>
-
 ## Manual Setup
 
-> Expo Router supports `expo@48.0.0` and greater. Some features may require the latest SDK.
+> Expo Router supports Expo SDK 48 and above. Some features may require the latest SDK.
 
-Ensure your computer is [setup for running an Expo app](https://docs.expo.dev/get-started/installation/).
+### Prerequisites
+
+Make sure your computer is [set up for running an Expo app](/get-started/installation/).
 
 <Step label="1">
 
 ### Create an Expo project
 
-<Terminal
-  cmd={['$ npx create-expo-app']}
-  cmdCopy="npx create-expo-app StickerSmash && cd StickerSmash"
-/>
+To create a new project, run the following command:
+
+<Terminal cmd={['$ npx create-expo-app']} />
 
 </Step>
 
@@ -103,12 +53,15 @@ Ensure your computer is [setup for running an Expo app](https://docs.expo.dev/ge
 
 ### Install dependencies
 
+You'll need to install the following dependencies:
+
 <Terminal
   cmd={[
     '$ npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar react-native-gesture-handler',
   ]}
-  cmdCopy="npx expo install expo-router react-native-safe-area-context react-native-screens expo-linking expo-constants expo-status-bar react-native-gesture-handler"
 />
+
+The above command will install versions of these libraries that are compatible with the Expo SDK version your project is using.
 
 </Step>
 
@@ -116,18 +69,17 @@ Ensure your computer is [setup for running an Expo app](https://docs.expo.dev/ge
 
 ### Setup entry point
 
-Either delete the entry point in your `package.json`, or replace it with `index.js` to be explicit:
+Either delete the entry point in your **package.json** or replace it with **index.js** to be explicit:
 
-```json
+```json package.json
 {
   "main": "index.js"
 }
 ```
 
+Create a new file **index.js** in the root of your project. If it exists already, replace it with the following:
 
-Create a new file `index.js` in the root of your project. If it exists already, replace it with the following:
-
-```js
+```js index.js
 import 'expo-router/entry';
 ```
 
@@ -135,10 +87,9 @@ import 'expo-router/entry';
 
 <Step label="4">
 
-## Modify your project configuration
+### Modify project configuration
 
-Add a deep linking `scheme` and enable [`metro` web](https://docs.expo.dev/guides/customizing-metro/#web-support-how) in your `app.json` (or `app.config.js`):
-
+Add a deep linking `scheme` and enable [Metro web](/guides/customizing-metro/#web-support-how) in your app config (**app.json** or **app.config.js**):
 
 ```diff
 {
@@ -153,28 +104,50 @@ Add a deep linking `scheme` and enable [`metro` web](https://docs.expo.dev/guide
 
 </Step>
 
-## Expo SDK &lt;49
+## For Expo SDK below 49
 
-Expo Router requires at least `metro@0.76.0`. If you are using Expo SDK &lt;49 you will need to force upgrade your `metro` version by setting a Yarn resolution or npm override.
+Expo Router requires at least `metro@0.76.0`. If you are using Expo SDK version below 49, you will need to force upgrade your `metro` version by setting a Yarn resolution or npm override.
 
-If you use **Yarn**:
+<Tabs>
 
-```json title=package.json
-{
-  "resolutions": {
-    "metro": "0.76.0",
-    "metro-resolver": "0.76.0"
-  }
-}
-```
+<Tab label="Yarn">
 
-If you use **npm**, this requires npm 8.3.0 or higher. You can install this with `npm i -g npm@^8.3.0`. After that, configure `overrides` in `package.json`:
+    ```json package.json
+    {
+      "resolutions": {
+        "metro": "0.76.0",
+        "metro-resolver": "0.76.0"
+      }
+    }
+    ```
 
-```json title=package.json
-{
-  "overrides": {
-    "metro": "0.76.0",
-    "metro-resolver": "0.76.0"
-  }
-}
-```
+</Tab>
+
+<Tab label="npm">
+    ```json package.json
+    {
+      "overrides": {
+        "metro": "0.76.0",
+        "metro-resolver": "0.76.0"
+      }
+    }
+    ```
+</Tab>
+
+</Tabs>
+
+## Next steps
+
+<BoxLink
+  title="Roadmap"
+  Icon={Map01Icon}
+  description="A non-exhaustive list of features currently supported in Expo Router"
+  href="/router/roadmap/"
+/>
+
+<BoxLink
+  title="Roadmap"
+  Icon={Map01Icon}
+  description="A non-exhaustive list of features currently supported in Expo Router"
+  href="/router/roadmap/"
+/>

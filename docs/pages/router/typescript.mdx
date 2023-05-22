@@ -1,14 +1,36 @@
 ---
 title: TypeScript
+description: Expo Router provides an integrated TypeScript experience. Learn how to get started with TypeScript and Expo Router.
 ---
 
-> This guide requires expo@49.0.0-alpha.3 or greater––everything listed here is still experimental.
+import { Terminal } from '~/ui/components/Snippet';
+import { Tabs, Tab } from '~/ui/components/Tabs';
 
-Expo Router provides an integrated TypeScript experience. To get started install TypeScript either by `yarn -D typescript` or `npm i -D typescript` and create a file with either a `ts` or `tsx` extension. Next time you run `expo start` your project will automatically be configured to support TypeScript.
+> **warning** This guide requires `expo@49.0.0-alpha.3` or above. Everything listed here is still experimental.
 
-## Statically Typed Links
+Expo Router provides an integrated TypeScript experience. To start, install TypeScript using one of the methods below:
 
-Expo Router will generate a link definition in `.expo/types` that contains information about existing routes in your application. This overrides Expo Router's generic `Href<T>` definition with a personalised declaration.
+<Tabs>
+
+<Tab label="Yarn">
+
+<Terminal cmd={['$ yarn -D typescript']} />
+
+</Tab>
+
+<Tab label="npm">
+
+<Terminal cmd={['$ npm i -D typescript']} />
+
+</Tab>
+
+</Tabs>
+
+Then, create a file with either a **.ts** or **.tsx** extension. Next time, when you run `npx expo start` your project will automatically be configured to support TypeScript.
+
+## Statically typed links
+
+Expo Router will generate a link definition in **.expo/types**. It contains information about existing routes in your app. This overrides Expo Router's generic `Href<T>` definition with a personalized declaration.
 
 Components and functions that use `Href<T>` will now by statically typed and have a much stricter definition. For example:
 
@@ -16,13 +38,13 @@ Components and functions that use `Href<T>` will now by statically typed and hav
 ✅ <Link href="/about" />
 ✅ <Link href="/user/1" />
 ✅ <Link href={`/user/${id}`} />
-✅ <Link href={('/user' + id) as Href} />
+✅ <Link href={("/user" + id) as Href} />
 
 // TypeScript errors if href is not a valid route
 ❌ <Link href="/usser/1" />
 ```
 
-For dynamic routes, Href's need to be objects and their parameters are strictly typed
+For dynamic routes, Href's need to be objects and their parameters are strictly typed:
 
 ```tsx
 ✅ <Link href={{ pathname: "/user/[id]", params: { id: 1 }}} />
@@ -30,21 +52,21 @@ For dynamic routes, Href's need to be objects and their parameters are strictly 
 
 // TypeScript errors as href is valid, but it should be a HrefObject with params
 ❌ <Link href="/user/[id]" />
-// TypeScript errors as params contains invalid keys
+// TypeScript errors as params contain invalid keys
 ❌ <Link href={{ pathname: "/user/[id]", params: { _id: 1 }}} />
-// TypeScript errors as params contains unknown keys
+// TypeScript errors as params contain unknown keys
 ❌ <Link href={{ pathname: "/user/[id]", params: { id: 1, id2: 2 }}} />
 ```
 
-## Changes made to environment
+## Changes made to the environment
 
-The `includes` field of your `tsconfig.json` will be updated to include `expo-env.d.ts` and a hidden `.expo` folder. These entries are required and should not be removed.
+The `includes` field in your **tsconfig.json** gets updated to include **expo-env.d.ts** and a hidden **.expo** directory. These entries are required and should not be removed from the file.
 
-The generated `expo-env.d.ts` should not be removed or changed at any time. It should not be committed and should be ignored by version control (e.g. inside your .gitignore file).
+The generated **expo-env.d.ts** should not be removed or changed at any time. It should not be committed and should be ignored by version control. For example, do not add it inside the **.gitignore**.
 
 ### Global Types
 
-Expo Router makes the following changes to your TypeScript environment.
+Expo Router makes the following changes to your TypeScript environment:
 
 - Sets `process.env.NODE_ENV = "development" | "production" | "test"`
 - Allows the importing of `.[css|sass|scss]` files
@@ -53,9 +75,9 @@ Expo Router makes the following changes to your TypeScript environment.
 
 ### React Native Web
 
-Expo Router adds additional types for React Native Web. These include:
+Expo Router adds additional types for React Native Web including:
 
-- Add additional web-only styles for `ViewStyle`/`TextStyle`/`ImageStyle`
-- Add `tabIndex`/`accessibilityLevel`/`lang` to `TextProps`
+- Add additional web-only styles for `ViewStyle`, `TextStyle`, `ImageStyle`
+- Add `tabIndex`, `accessibilityLevel`, `lang` to `TextProps`
 - Add `hovered` to Pressable's `children` and `style` state callback function
 - Add `className` elements
