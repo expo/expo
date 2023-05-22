@@ -1,41 +1,54 @@
 ---
 title: Pages
+description: Learn about the file-based routing convention used by Expo Router.
 ---
 
-The file-based routing convention enables developers to structure their app in a logic and intuitive way. Expo Router uses this convention to optimize the app by generating native deep links and web routes automatically.
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 
-The convention is based on the concept of nesting routes inside each other to create shared UI elements like tab bars and headers across multiple children. This format should feel familiar to React developers.
+The file-based routing convention enables developers to structure their apps logically and intuitively. Expo Router uses this convention to optimize the app by generating native deep links and web routes automatically.
 
-File-based routing enables URLs for every page in your app. All routes must be created within the root `app/` directory. Within this directory, you can create routes by defining files using the route name.
+The convention is based on the concept of nesting routes inside each other to create shared UI elements, such as tab bars and headers across multiple children. This format should feel familiar to React developers.
 
-- `app/home.js` matches `/home`.
-- `app/settings/index.js` matches `/settings`.
-- `app/[user].js` matches any unmatched path like `/evanbacon` or `/expo`.
+File-based routing enables URLs for every page in your app. All routes must be created within the root **app** directory. You can create routes within this directory by defining files using the route name.
+
+- **app/home.js** matches `/home`
+- **app/settings/index.js** matches `/settings`
+- **app/[user].js** matches any unmatched path like `/evanbacon` or `/expo`
 
 ## Pages
 
 Pages are defined by exporting a React component as the default value from a file in the app directory.
 
-```js title="app/home.js"
-import { Text } from "react-native";
+```js app/home.js
+import { Text } from 'react-native';
 
 export default function Home() {
   return <Text>Home page</Text>;
 }
 ```
 
-- Files named `index` add no path segment to the URL. For example, `app/index.js` matches `/`.
-- The following extensions are supported by default: `js`, `jsx`, `ts`, `tsx`.
-- Metro platform extensions (e.g. `.ios.js`, `.native.ts`) are not supported.
-  - The page can re-export a component from a platform extension file
+- Files named **index** adds no path segment to the URL. For example, **app/index.js** matches `/`.
+- The following file extensions are supported by default: **.js**, **.jsx**, **.ts**, **.ts**.
+- Metro platform extensions (for example, **.ios.js**, **.native.ts**) are not supported.
+- The page can re-export a component from a platform extension file.
 
-## Dynamic Routes
+## Dynamic routes
 
 Dynamic routes match any unmatched path at a given segment level.
 
-- `app/blog/[slug].js` -- Matches `/blog/123` in your app and in the browser.
-- `app/blog/[...rest].js` -- Matches `/blog/123/settings` in your app and in the browser.
+- **app/blog/[slug].js** -- Matches `/blog/123` in the app and the browser.
+- **app/blog/[...rest].js** -- Matches `/blog/123/settings` in the app and the browser.
 
-Routes with higher specificity will be matched before a dynamic route. For example, `/blog/bacon` will match `blog/bacon.js` before `blog/[id].js`.
+Routes with higher specificity will be matched before a dynamic route. For example, `/blog/bacon` will match **blog/bacon.js** before **blog/[id].js**.
 
-Multiple slugs can be matched in a single route by adding the _rest syntax_: `...`. For example, `app/blog/[...id].js` will match `/blog/123/settings` in your app and in the browser.
+Multiple slugs can be matched in a single route by using the rest syntax (`...`). For example, **app/blog/[...id].js** will match `/blog/123/settings` in the app and the browser.
+
+## Next steps
+
+<BoxLink
+  title="Navigation"
+  Icon={BookOpen02Icon}
+  description="Learn how to use the Expo Router to navigate between pages in your app."
+  href="/router/routing/navigation/"
+/>

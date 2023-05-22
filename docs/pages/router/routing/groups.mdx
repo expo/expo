@@ -1,21 +1,20 @@
 ---
 title: Groups
+description: Learn how to define shared routes or use arrays to use the same route multiple times with different layouts using Expo Router.
 ---
 
 You can prevent a segment from showing in the URL by using the group syntax `()`.
 
-- `app/root/home.js` -- Matches `/root/home`.
-- `app/(root)/home.js` -- Matches `/home`.
+- **app/root/home.js** which matches `/root/home`
+- **app/(root)/home.js** which matches `/home`
 
 This is useful for adding layouts without adding additional segments to the URL.
 
-### Shared Routes
+## Shared routes
 
-To match the same URL with different layouts, use _groups_ with overlapping child routes.
+To match the same URL with different layouts, use **groups** with overlapping child routes. This pattern is very common in native apps. For example, in the Twitter app, a profile can be viewed in every tab (such as home, search, and profile). However, there is only one URL that is required to access this route.
 
-This pattern is very common in native apps. For example, in Twitter, a profile can be viewed in every tab (home, search, profile). There should only be one URL needed to access this route however.
-
-```bash title="File System"
+```bash File System
 app/
   _layout.js # Tab bar
   (home)
@@ -31,19 +30,17 @@ app/
 
 > When reloading the page, the first match (alphabetically) will be rendered.
 
-Shared routes can be navigated to directly by including the group name in the route, e.g. `/(search)/baconbrix` would navigate to `/baconbrix` in the _search_ layout.
+Shared routes can be navigated directly by including the group name in the route. For example, `/(search)/baconbrix` navigates to `/baconbrix` in the "search" layout.
 
-### Arrays
+## Arrays
 
-Instead of defining the same route multiple times with different layouts, use the array syntax `(,)` to duplicate the children of a group.
+Instead of defining the same route multiple times with different layouts, use the array syntax `(,)` to duplicate the children of a group. For example, **app/(home,search)/[user].js** creates **app/(home)/[user].js** and **app/(search)/[user].js** in memory.
 
-- `app/(home,search)/[user].js` -- creates `app/(home)/[user].js` and `app/(search)/[user].js` in memory.
+You can use the `segment` prop of a layout to distinguish between the two routes.
 
-Distinguishing between the two routes using the `segment` prop of a layout.
-
-```js title="app/(home,search)/_layout.js"
+```js app/(home,search)/_layout.js
 export default function DynamicLayout({ segment }) {
-  if (segment === "(search)") {
+  if (segment === '(search)') {
     return <SearchStack />;
   }
 

@@ -1,17 +1,22 @@
 ---
 title: Navigation
+description: Learn how to use the Expo Router to navigate between pages.
 ---
 
-Use the `<Link />` component to navigate between pages. This is conceptually similar to the `<a>` element in HTML.
+import { BoxLink } from '~/ui/components/BoxLink';
+import { BookOpen02Icon } from '@expo/styleguide-icons';
 
-```js
-import { Link } from "expo-router";
+Use the `Link` component to navigate between pages. This is conceptually similar to the `<a>` element in HTML.
+
+```js app/page.js
+import { Link } from 'expo-router';
 
 export default function Page() {
   return (
     <View>
-      // highlight-next-line
+      /* @info */
       <Link href="/">Home</Link>
+      /* @end */
     </View>
   );
 }
@@ -21,16 +26,16 @@ export default function Page() {
 - `href` can also accept an object like `{ pathname: 'profile', params: { id: '123' } }` to navigate to dynamic routes.
 - Use the `replace` prop to replace the current route in the history instead of pushing a new route.
 
-The Link component renders a `<Text>` component by default. You can customize the component by passing `asChild` which will forward all props to the first child of the Link component. The child component must support the `onPress` and `onClick` props, `href` and `accessibilityRole` will also be passed down.
+The `Link` component renders a `<Text>` component by default. You can customize the component by passing `asChild`, which will forward all props to the first child of the `Link` component. The child component must support the `onPress` and `onClick` props. The `href` and `accessibilityRole` will also be passed down.
 
-```js
-import { Pressable, Text } from "react-native";
-import { Link } from "expo-router";
+```js app/page.js
+import { Pressable, Text } from 'react-native';
+import { Link } from 'expo-router';
 
 function Home() {
   return (
-    // highlight-next-line
-    <Link href="/other" asChild>
+    /* @info */ <Link href="/other" asChild>
+      /* @end */
       <Pressable>{({ hovered, pressed }) => <Text>Home</Text>}</Pressable>
     </Link>
   );
@@ -39,25 +44,27 @@ function Home() {
 
 ## `useRouter`
 
-For more advanced use cases, you can use the imperative `useRouter()` hook to navigate imperatively.
+For more advanced use cases, you can use the imperative `useRouter` hook to navigate imperatively. Here is an example:
 
-```js
-import { View, Text } from "react-native";
-// highlight-next-line
-import { useRouter } from "expo-router";
+```js app/page.js
+import { View, Text } from 'react-native';
+/* @info */
+import { useRouter } from 'expo-router';
+/* @end */
 
 export default function Page() {
-  // highlight-next-line
+  /* @info */
   const router = useRouter();
+  /* @end */
 
   return (
     <View>
       <Text
         onPress={() => {
-          // highlight-next-line
-          router.push("/profile/settings");
-        }}
-      >
+          /* @info */
+          router.push('/profile/settings');
+          /* @end */
+        }}>
         Settings
       </Text>
     </View>
@@ -65,10 +72,10 @@ export default function Page() {
 }
 ```
 
-- **push**: _`(href: Href) => void`_ Navigate to a route. You can provide a full path like `/profile/settings` or a relative path like `../settings`. Navigate to dynamic routes by passing an object like `{ pathname: 'profile', params: { id: '123' } }`.
-- **replace**: _`(href: Href) => void`_ Same API as `push` but replaces the current route in the history instead of pushing a new one. This is useful for redirects.
-- **back**: _`() => void`_ Navigate back to previous route.
-- **setParams**: _`(params: Record<string, string>) => void`_ Update the query params for the currently selected route.
+- **push**: `(href: Href) => void` &mdash; Navigate to a route. You can provide a full path like `/profile/settings` or a relative path like `../settings`. Navigate to dynamic routes by passing an object like `{ pathname: 'profile', params: { id: '123' } }`.
+- **replace**: `(href: Href) => void` &mdash; Same API as `push` but replaces the current route in the history instead of pushing a new one. This is useful for redirects.
+- **back**: `() => void` &mdash; Navigate back to previous route.
+- **setParams**: `(params: Record<string, string>) => void` &mdash; Update the query params for the currently selected route.
 
 ### `Href` type
 
@@ -79,49 +86,53 @@ The `Href` type is a union of the following types:
 
 ## `usePathname`
 
-Returns the currently selected route location without search parameters. e.g. `/acme?foo=bar` -> `/acme`. Segments will be normalized: `/[id]?id=normal` -> `/normal`
+Returns the currently selected route location without search parameters. For example, `/acme?foo=bar` to `/acme`. Segments will be normalized: `/[id]?id=normal` to`/normal`.
 
-> `/profile/baconbrix?extra=info`
+Example route: `/profile/baconbrix?extra=info`
 
-```js title=app/profile/[user].tsx
-import { Text } from "react-native";
-// highlight-next-line
-import { usePathname } from "expo-router";
+```js app/profile/[user].tsx
+import { Text } from 'react-native';
+/* @info */
+import { usePathname } from 'expo-router';
+/* @end */
 
 export default function Route() {
-  // highlight-next-line
+  /* @info pathname = "/profile/baconbrix"*/
   const pathname = usePathname();
-  // pathname = "/profile/baconbrix"
+  /* @end */
+
   return <Text>User: {user}</Text>;
 }
 ```
 
 ## `useSearchParams`
 
-Returns the URL search parameters for the globally selected route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`.
+A hook that returns the URL search parameters for the globally selected route. For example, `/acme?foo=bar` as `{ foo: "bar" }`.
 
-> `/profile/baconbrix?extra=info`
+Example route: `/profile/baconbrix?extra=info`
 
-```js title=app/profile/[user].tsx
-import { Text } from "react-native";
-import { useSearchParams } from "expo-router";
+```js app/profile/[user].js
+import { Text } from 'react-native';
+import { useSearchParams } from 'expo-router';
 
 export default function Route() {
-  // highlight-next-line
+  /* @info */
   const { user, extra } = useSearchParams();
+  /* @end */
+
   return <Text>User: {user}</Text>;
 }
 ```
 
-Given a route at `app/profile/[id].tsx` if the hook is called while the URL is `/profile/123`, the results of `useSearchParams` would be as follows:
+Given a route is at **app/profile/[id].js**, if the hook is called while the URL is `/profile/123`, the results of `useSearchParams` are:
 
 ```js
 {
-  id: "123";
+  id: '123';
 }
 ```
 
-:::danger
+`useSearchParams` is for the global URL. When `/abc/home` pushes `/123/shop`, it returns `{ first: undefined, second: '123' }` on **/app/[first]/home.tsx**.
 
 ```bash
 app/
@@ -130,15 +141,11 @@ app/
   [second]/shop.tsx
 ```
 
-`useSearchParams` is for the global URL. When `/abc/home` pushes `/123/shop`, `useSearchParams` would return `{ first: undefined, second: '123' }` on `/app/[first]/home.tsx`.
-
-If you want the params on `/app/[first]/home.tsx` to remain as `{ first: 'abc' }` you can use `useLocalSearchParams`
-
-:::
+If you want the params on **/app/[first]/home.tsx** to remain as `{ first: 'abc' }` you can use [`useLocalSearchParams`](#uselocalsearchparams).
 
 ## `useLocalSearchParams`
 
-Returns the URL search parameters for the contextually selected route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`. This is useful for stacks where the previous screen is still mounted.
+A hook that returns the URL search parameters for the contextually selected route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`. This is useful for stacks where the previous screen is still mounted.
 
 ```bash
 app/
@@ -147,65 +154,73 @@ app/
   [second]/shop.tsx
 ```
 
-> `/profile/baconbrix?extra=info`
+Example route: `/profile/baconbrix?extra=info`
 
-```js title=app/profile/[user].tsx
-import { Text } from "react-native";
-import { useLocalSearchParams } from "expo-router";
+```js app/profile/[user].tsx
+import { Text } from 'react-native';
+import { useLocalSearchParams } from 'expo-router';
 
 export default function Route() {
-  // highlight-next-line
+  /* @info */
   const { user, extra } = useLocalSearchParams();
+  /* @end */
+
   return <Text>User: {user}</Text>;
 }
 ```
 
-Given a route at `[first]/home/.tsx` if the hook is called while the URL is `/abc/home`, the results of `useSearchParams` would be as follows:
+Given a route at **[first]/home/.tsx**, if the hook is called while the URL is `/abc/home`, the results of `useSearchParams` are:
 
 ```js
 {
-  home: "abc";
+  home: 'abc';
 }
 ```
 
-When `/abc/home` pushes `/123/shop`, this hook will still return `{ home: "abc" }`
+When `/abc/home` pushes `/123/shop`, this hook returns `{ home: "abc" }`.
 
 ## `useSegments`
 
-Returns a list of segments for the currently selected route. Segments are not normalized, so they will be the same as the file path. e.g. `/[id]?id=normal` -> `["[id]"]`
+Returns a list of segments for the currently selected route. Segments are not normalized so that they will be the same as the file path. For example, `/[id]?id=normal` as `["[id]"]`.
 
-```js title=app/profile/[user].tsx
-import { Text } from "react-native";
-// highlight-next-line
-import { useSegments } from "expo-router";
+```js app/profile/[user].js
+import { Text } from 'react-native';
+/* @info */
+import { useSegments } from 'expo-router';
+/* @end */
 
 export default function Route() {
-  // highlight-next-line
+  /* @info */
   const segments = useSegments();
+  /* @end */
   // segments = ["profile", "[user]"]
+
   return <Text>Hello</Text>;
 }
 ```
 
 ## `useNavigation`
 
-Access the underlying React Navigation [`navigation` prop](https://reactnavigation.org/docs/navigation-prop) to imperatively access layout-specific functionality like `navigation.openDrawer()` in a Drawer layout. [Learn more](https://reactnavigation.org/docs/navigation-prop/#navigator-dependent-functions).
+Access the underlying React Navigation [`navigation` prop](https://reactnavigation.org/docs/navigation-prop) to imperatively access layout-specific functionality like `navigation.openDrawer()` in a Drawer layout. See [Navigator dependent functions](https://reactnavigation.org/docs/navigation-prop/#navigator-dependent-functions) for more information.
 
-```js
-// highlight-next-line
-import { useNavigation } from "expo-router";
+```js app/profile.js
+/* @info */
+import { useNavigation } from 'expo-router';
+/* @end */
 
 export default function Route() {
-  // highlight-next-line
+  /* @info */
   const navigation = useNavigation();
+  /* @end */
+
   return (
     <View>
       <Text
         onPress={() => {
-          // highlight-next-line
+          /* @info */
           navigation.openDrawer();
-        }}
-      >
+          /* @end */
+        }}>
         Open Drawer
       </Text>
     </View>
@@ -217,10 +232,11 @@ export default function Route() {
 
 You can immediately redirect from a particular screen by using the `Redirect` component:
 
-```js
-import { View, Text } from "react-native";
-// highlight-next-line
-import { Redirect } from "expo-router";
+```js app/page.js
+import { View, Text } from 'react-native';
+/* @info */
+import { Redirect } from 'expo-router';
+/* @end */
 
 export default function Page() {
   // Some logic to determine if the user is logged in.
@@ -228,8 +244,9 @@ export default function Page() {
 
   if (!user) {
     // Redirect to the login screen if the user is not authenticated.
-    // highlight-next-line
+    /* @info */
     return <Redirect href="/login" />;
+    /* @end */
   }
 
   return (
@@ -242,9 +259,9 @@ export default function Page() {
 
 You can also redirect imperatively using the `useRouter` hook:
 
-```js
-import { Text } from "react-native";
-import { useRouter, useFocusEffect } from "expo-router";
+```js app/page.js
+import { Text } from 'react-native';
+import { useRouter, useFocusEffect } from 'expo-router';
 
 function MyScreen() {
   const router = useRouter();
@@ -253,9 +270,18 @@ function MyScreen() {
     // Call the replace method to redirect to a new route without adding to the history.
     // We do this in a useFocusEffect to ensure the redirect happens every time the screen
     // is focused.
-    router.replace("/profile/settings");
+    router.replace('/profile/settings');
   });
 
   return <Text>My Screen</Text>;
 }
 ```
+
+## Next steps
+
+<BoxLink
+  title="Links"
+  Icon={BookOpen02Icon}
+  description="Learn how Expo Router creates deep links for every page. "
+  href="/router/routing/links/"
+/>
