@@ -68,12 +68,14 @@ export function createBundleUrlPath({
   mode,
   minify = mode === 'production',
   environment,
+  serializerOutput,
 }: {
   platform: string;
   mainModuleName: string;
   mode: string;
   minify?: boolean;
   environment?: string;
+  serializerOutput?: 'static';
 }): string {
   const queryParams = new URLSearchParams({
     platform: encodeURIComponent(platform),
@@ -88,6 +90,9 @@ export function createBundleUrlPath({
   if (environment) {
     queryParams.append('resolver.environment', environment);
     queryParams.append('transform.environment', environment);
+  }
+  if (serializerOutput) {
+    queryParams.append('serializer.output', serializerOutput);
   }
 
   return `/${encodeURI(mainModuleName)}.bundle?${queryParams.toString()}`;
