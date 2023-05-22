@@ -27,7 +27,7 @@ ContextManager manager;
 //
 // This solution resolves an issue, but introduces a risk that uniqe lock will never
 // be establish, but given the use-case that should never happen.
-std::unique_lock<std::shared_mutex> getUniqueLockSafelly(std::shared_mutex &mutex) {
+std::unique_lock<std::shared_mutex> getUniqueLockSafely(std::shared_mutex &mutex) {
   std::unique_lock lock(mutex, std::defer_lock);
   while (!lock.try_lock()) {
     std::this_thread::sleep_for(std::chrono::milliseconds(1));
@@ -52,7 +52,7 @@ EXGLContextId ContextCreate() {
     return 0;
   }
 
-  std::unique_lock lock = getUniqueLockSafelly(manager.contextLookupMutex);
+  std::unique_lock lock = getUniqueLockSafely(manager.contextLookupMutex);
   EXGLContextId ctxId = manager.nextId++;
   if (manager.contextMap.find(ctxId) != manager.contextMap.end()) {
     EXGLSysLog("Tried to reuse an EXGLContext id. This shouldn't really happen...");
@@ -68,13 +68,13 @@ void ContextDestroy(EXGLContextId id) {
 
     auto iter = manager.contextMap.find(id);
     if (iter != manager.contextMap.end()) {
-      std::unique_lock lock = getUniqueLockSafelly(iter->second.mutex);
+      std::unique_lock lock = getUniqueLockSafely(iter->second.mutex);
       delete iter->second.ctx;
       iter->second.ctx = nullptr;
     }
   }
 
-  std::unique_lock lock = getUniqueLockSafelly(manager.contextLookupMutex);
+  std::unique_lock lock = getUniqueLockSafely(manager.contextLookupMutex);
   auto iter = manager.contextMap.find(id);
   if (iter != manager.contextMap.end()) {
     manager.contextMap.erase(iter);
