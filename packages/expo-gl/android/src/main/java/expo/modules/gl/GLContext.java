@@ -77,6 +77,7 @@ public class GLContext {
 
     mGLThread = new GLThread(surfaceTexture);
     mGLThread.start();
+    mEXGLCtxId = EXGLContextCreate();
 
     // On JS thread, get JavaScriptCore context, create EXGL context, call JS callback
     final GLContext glContext = this;
@@ -92,7 +93,6 @@ public class GLContext {
         long jsContextRef = jsContextProvider.getJavaScriptContextRef();
         synchronized (uiManager) {
           if (jsContextRef != 0) {
-            mEXGLCtxId = EXGLContextCreate();
             EXGLRegisterThread();
             EXGLContextPrepare(jsContextRef, mEXGLCtxId, glContext);
           }

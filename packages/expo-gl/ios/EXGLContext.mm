@@ -167,11 +167,14 @@
     // Flush all the stuff
     EXGLContextFlush(self->_contextId);
 
-    // Destroy JS binding
-    EXGLContextDestroy(self->_contextId);
+    id<EXUIManager> uiManager = [_moduleRegistry getModuleImplementingProtocol:@protocol(EXUIManager)];
+    [uiManager dispatchOnClientThread:^{
+      // Destroy JS binding
+      EXGLContextDestroy(self->_contextId);
 
-    // Remove from dictionary of contexts
-    [self->_objectManager deleteContextWithId:@(self->_contextId)];
+      // Remove from dictionary of contexts
+      [self->_objectManager deleteContextWithId:@(self->_contextId)];
+    }];
   }];
 }
 
