@@ -3,7 +3,7 @@ title: Using environment variables with EAS Update
 description: Learn how to set up and use environment variables with EAS Update.
 ---
 
-import { Collapsible } from '~/ui/components/Collapsible';
+import { Terminal } from '~/ui/components/Snippet';
 import { Step } from '~/ui/components/Step';
 
 EAS Build and EAS Update allow setting and getting environment variables at different times. There are multiple steps to ensure the proper environment variables are available when developing, building, and publishing an update.
@@ -41,9 +41,7 @@ The code above sets the `extra` property to an object with the environment varia
 
 To set the `API_URL` environment variable during development, you can prepend the variables before running `npx expo start` as shown below:
 
-```bash
-API_URL="http://localhost:3000" expo start
-```
+<Terminal cmd={['API_URL="http://localhost:3000" expo start']} />
 
 The command above will set the `API_URL` to `"http://localhost:3000"`. Install the [`expo-constants`](/versions/latest/sdk/constants/#installation) library then use the `Constants.expoConfig.extra.API_URL` property to access it inside a project.
 
@@ -72,9 +70,7 @@ When you run the command such as `eas build --profile production`, the `"env"` p
 
 To set the `API_URL` environment variable when publishing an update, you can prepend the environment variables before running `eas update` as shown below:
 
-```bash
-API_URL="https://prod.example.com" eas update --branch production
-```
+<Terminal cmd={['API_URL="https://prod.example.com" eas update --branch production']} />
 
 When EAS CLI creates the update, it will set the `API_URL` to `https://prod.example.com` inside the update's bundle. Install the [`expo-constants`](/versions/latest/sdk/constants/#installation) library then use the `Constants.expoConfig.extra.API_URL` property to access it inside a project.
 
