@@ -41,6 +41,3 @@ internal class CameraRecordingFailedException: Exception {
     "An error occurred while recording a video."
   }
 }
-
-
-

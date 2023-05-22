@@ -10,8 +10,10 @@ public final class CameraViewModule: Module {
     OnCreate {
       let permissionsManager = self.appContext?.permissions
 
-      EXPermissionsMethodsDelegate.register(
-        [CameraPermissionRequester(), CameraCameraPermissionRequester(), CameraMicrophonePermissionRequester()],
+      EXPermissionsMethodsDelegate.register([
+        CameraPermissionRequester(),
+        CameraCameraPermissionRequester(),
+        CameraMicrophonePermissionRequester()],
         withPermissionsManager: permissionsManager
       )
     }
@@ -289,7 +291,7 @@ private func generatePictureForSimulator(appContext: AppContext?, options: TakeP
     throw Exceptions.FileSystemModuleNotFound()
   }
   let path = fs.generatePath(inDirectory: fs.cachesDirectory.appending("/Camera"), withExtension: ".jpg")
-  let generatedPhoto = EXCameraUtils.generatePhoto(of: CGSize(width: 200, height: 200))
+  let generatedPhoto = ExpoCameraUtils.generatePhoto(of: CGSize(width: 200, height: 200))
   let photoData = generatedPhoto.jpegData(compressionQuality: options.quality)
 
   return [

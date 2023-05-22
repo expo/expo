@@ -16,7 +16,7 @@ enum VideoQuality: String, Enumerable {
   case video720p = "720p"
   case video480p = "480p"
   case video4x3 = "4:3"
-  
+
   func resolution() -> AVCaptureSession.Preset {
     switch self {
     case .video2160p:
@@ -39,7 +39,7 @@ enum VideoCodec: String, Enumerable {
   case jpeg = "jpeg"
   case appleProRes422 = "apcn"
   case appleProRes4444 = "ap4h"
-  
+
   func codecType() -> AVVideoCodecType {
     switch self {
     case .h264:

@@ -9,7 +9,7 @@ enum CameraWhiteBalance: Int {
   case shadow = 4
   case incandescent = 5
   case fluorescent = 6
-  
+
   func temperature() -> Float {
     switch self {
     case .sunny:
@@ -33,7 +33,7 @@ enum CameraVideoResolution: Int, Enumerable {
   case video1080p
   case video720p
   case video4x3
-  
+
   func resolution() -> AVCaptureSession.Preset {
     switch self {
     case .video2160p:
@@ -53,7 +53,7 @@ enum CameraVideoResolution: Int, Enumerable {
 enum CameraType: Int, Enumerable {
   case front = 0
   case back = 1
-  
+
   func toPosition() -> AVCaptureDevice.Position {
     switch self {
     case .front:
@@ -69,7 +69,7 @@ enum CameraType: Int, Enumerable {
 enum CameraAutoFocus: Int, Enumerable {
   case off = 0
   case on = 1
-  
+
   func toAvAutoFocus() -> AVCaptureDevice.FocusMode {
     switch self {
     case .on:
@@ -95,7 +95,7 @@ enum CameraVideoCodec: Int, Enumerable {
   case jpeg = 2
   case appleProRes422 = 3
   case appleProRes4444 = 4
-  
+
   func codecType() -> AVVideoCodecType {
     switch self {
     case .h264:
@@ -118,4 +118,3 @@ enum CameraVideoStabilizationMode: Int {
   case cinematic
   case auto
 }
-
