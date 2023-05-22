@@ -17,6 +17,7 @@
 #import <React/RCTLogBox.h>
 #import <React/RCTRedBox.h>
 #import <React/RCTPackagerConnection.h>
+#import <React-RCTAppDelegate/RCTAppDelegate.h>
 
 #pragma clang diagnostic pop
 
