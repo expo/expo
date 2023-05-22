@@ -448,7 +448,7 @@ functions:
   greetings:
     name: Say Hi!
     # @info #
-    command: echo "Hello world"
+    command: echo "Hi!"
     # @end #
 ```
 
@@ -463,7 +463,41 @@ functions:
     # @info #
     shell: /bin/sh
     # @end #
+    command: echo "Hi!"
 ```
+
+## `import`
+
+A config file path list used to import functions from other config files. Imported files cannot have the `build` section.
+
+For example, the following workflow imports two files and calls two imported functions - `say_hi` and `say_bye`.
+
+```yaml workflow.yml
+import:
+  - common-functions.yml
+  - another-file.yml
+
+build:
+  steps:
+    - say_hi
+    - say_bye
+```
+
+```yaml common-functions.yml
+functions:
+  say_hi:
+    name: Say Hi!
+    command: echo "Hi!"
+```
+
+```yaml another-file.yml
+functions:
+  say_bye:
+    name: Say bye :(
+    command: echo "Bye!"
+```
+
+## Functions
 
 ### Built-in EAS functions
 
@@ -497,7 +531,7 @@ The `eas/upload_artifact` function has the following properties
 | `inputs.path` | **Required**. The path to the artifact that is uploaded to the EAS servers. |
 | `inputs.type` | The type of artifact that is uploaded to the EAS servers.                   |
 
-## Use a reusable function in a `build`
+### Use a reusable function in a `build`
 
 For example, a workflow with the following reusable function contains a single command to print a message that is echoed.
 
