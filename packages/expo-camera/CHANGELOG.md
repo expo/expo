@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- On iOS, rewrite `obj-c` classes in `swift`.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others

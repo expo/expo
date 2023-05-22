@@ -541,7 +541,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
         return
       }
       
-      sessionQueue.async { [promise] in
+      sessionQueue.async { 
         let directory = fileSystem.cachesDirectory.appending("/Camera")
         let path = fileSystem.generatePath(inDirectory: directory, withExtension: ".mov")
         let fileUrl = NSURL(fileURLWithPath: path)

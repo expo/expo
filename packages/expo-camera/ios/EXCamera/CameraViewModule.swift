@@ -111,9 +111,9 @@ public final class CameraViewModule: Module {
         }
       }
 
-      Prop("whiteBalance") { (view, whiteBalance: Int) in
-        if view.whiteBalance.rawValue != whiteBalance {
-          view.whiteBalance = CameraWhiteBalance(rawValue: whiteBalance) ?? .auto
+      Prop("whiteBalance") { (view, whiteBalance: CameraWhiteBalance) in
+        if view.whiteBalance.rawValue != whiteBalance.rawValue {
+          view.whiteBalance = whiteBalance
         }
       }
 

@@ -1,7 +1,7 @@
 import AVFoundation
 import ExpoModulesCore
 
-enum CameraWhiteBalance: Int {
+enum CameraWhiteBalance: Int, Enumerable {
   case auto = 0
   case sunny = 1
   case cloudy = 2
