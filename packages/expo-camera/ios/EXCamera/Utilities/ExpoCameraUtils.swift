@@ -1,3 +1,4 @@
+
 struct ExpoCameraUtils {
   static func device(with mediaType: AVMediaType, preferring position: AVCaptureDevice.Position) -> AVCaptureDevice? {
     return AVCaptureDevice.default(.builtInWideAngleCamera, for: mediaType, position: position)
@@ -32,6 +33,19 @@ struct ExpoCameraUtils {
       return .portrait
     }
   }
+  
+  static func export(orientation: UIImage.Orientation) -> Int {
+    switch (orientation) {
+    case .left:
+      return 90;
+    case .right:
+      return -90;
+    case .down:
+      return 180;
+    default:
+      return 0;
+    }
+  }
 
   static func exportImage(orientation: UIImage.Orientation) -> Int {
     switch orientation {
@@ -48,8 +62,6 @@ struct ExpoCameraUtils {
   
   static func generatePhoto(of size: CGSize) -> UIImage {
     let rect = CGRect(x: 0, y: 0, width: size.width, height: size.height)
-    let image = UIImage()
-    
     let renderer = UIGraphicsImageRenderer(size: size)
     
     return renderer.image { ctx in
@@ -63,13 +75,14 @@ struct ExpoCameraUtils {
     }
   }
   
-  static func crop(image: UIImage, to rect: CGRect) -> UIImage? {
+  static func crop(image: UIImage, to rect: CGRect) -> UIImage {
     let cgImage = image.cgImage
-    guard  let croppedCgImage = cgImage?.cropping(to: rect) else { return nil }
+    guard let croppedCgImage = cgImage?.cropping(to: rect) else { return image }
     return UIImage(cgImage: croppedCgImage)
   }
   
-  static func writeImage(data: Data, to path: String) -> String? {
+  static func writeImage(data: Data, to path: String?) -> String? {
+    guard let path else { return nil }
     guard let url = URL(string: path) else { return nil }
     try? data.write(to: url)
     let fileUrl = URL(fileURLWithPath: path)

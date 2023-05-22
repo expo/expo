@@ -21,6 +21,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   private var videoCodecType: AVVideoCodecType?
   private var photoCaptureOptions: TakePictureOptions?
   private var videoStabilizationMode: AVCaptureVideoStabilizationMode?
+  private var errorNotification: NSObjectProtocol?
 
   // MARK: Property Observers
 
@@ -88,11 +89,11 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
 
   // MARK: Session Inputs and Outputs
 
-  private var movieFileOutput: AVCaptureMovieFileOutput?
+  private var videoFileOutput: AVCaptureMovieFileOutput?
   private var photoOutput: AVCapturePhotoOutput?
-  private var videoCaptureDeviceInput: AVCaptureDeviceInput?
+  private var captureDeviceInput: AVCaptureDeviceInput?
 
-  // MARK: Callbacks
+  // MARK: Promises
 
   private var photoCapturedPromise: Promise?
   private var videoRecordedPromise: Promise?
@@ -138,7 +139,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   }
 
   private func updateFlashMode() {
-    guard let device = videoCaptureDeviceInput?.device else { return }
+    guard let device = captureDeviceInput?.device else { return }
 
     if flashMode == .torch {
       if !device.hasTorch {
@@ -198,20 +199,8 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
         self.session.addOutput(photoOutput)
         self.photoOutput = photoOutput
       }
-
-      NotificationCenter.default.addObserver(forName: .AVCaptureSessionRuntimeError, object: self.session, queue: nil) { [weak self] notification in
-        guard let self else { return }
-        guard let error = notification.userInfo?[AVCaptureSessionErrorKey] as? AVError else { return }
-
-        if error.code == .mediaServicesWereReset {
-          if self.isSessionRunning {
-            self.session.startRunning()
-            self.isSessionRunning = self.session.isRunning
-            self.ensureSessionConfiguration()
-            self.onCameraReady()
-          }
-        }
-      }
+      
+      self.addErrorNotification()
 
       self.sessionQueue.asyncAfter(deadline: .now() + round(50/1000000)) {
         self.maybeStartFaceDetection(self.presetCamera != .back)
@@ -227,7 +216,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   }
 
   private func updateZoom() {
-    guard let device = videoCaptureDeviceInput?.device else { return }
+    guard let device = captureDeviceInput?.device else { return }
 
     do {
       try device.lockForConfiguration()
@@ -240,7 +229,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   }
 
   private func updateFocusMode() {
-    guard let device = videoCaptureDeviceInput?.device else { return }
+    guard let device = captureDeviceInput?.device else { return }
 
     do {
       try device.lockForConfiguration()
@@ -256,7 +245,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   }
 
   private func updateFocusDepth() {
-    guard let device = videoCaptureDeviceInput?.device, device.focusMode == .locked else {
+    guard let device = captureDeviceInput?.device, device.focusMode == .locked else {
       return
     }
 
@@ -276,7 +265,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   }
 
   func updateWhiteBalance() {
-    guard let device = videoCaptureDeviceInput?.device else { return }
+    guard let device = captureDeviceInput?.device else { return }
 
     do {
       try device.lockForConfiguration()
@@ -299,6 +288,26 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
 
     device.unlockForConfiguration()
   }
+  
+  private func addErrorNotification() {
+    if self.errorNotification != nil {
+      NotificationCenter.default.removeObserver(self.errorNotification)
+    }
+
+    self.errorNotification = NotificationCenter.default.addObserver(forName: .AVCaptureSessionRuntimeError, object: self.session, queue: nil) { [weak self] notification in
+      guard let self else { return }
+      guard let error = notification.userInfo?[AVCaptureSessionErrorKey] as? AVError else { return }
+
+      if error.code == .mediaServicesWereReset {
+        if self.isSessionRunning {
+          self.session.startRunning()
+          self.isSessionRunning = self.session.isRunning
+          self.ensureSessionConfiguration()
+          self.onCameraReady()
+        }
+      }
+    }
+  }
 
   func onAppForegrounded() {
     if !session.isRunning && isSessionRunning {
@@ -319,7 +328,6 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
       }
     }
   }
-
 
   func setBarCodeScannerSettings(settings: [String: Any]) {
     if let barCodeScanner {
@@ -349,7 +357,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
 
     sessionQueue.async {
       let connection = photoOutput.connection(with: .video)
-      connection?.videoOrientation = EXCameraUtils.videoOrientation(for: UIDevice.current.orientation)
+      connection?.videoOrientation = ExpoCameraUtils.videoOrientation(for: UIDevice.current.orientation)
       let photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecJPEG])
 
       if photoOutput.isHighResolutionCaptureEnabled {
@@ -404,33 +412,30 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
       promise.resolve()
     }
 
-    var previewSize: CGSize
-
-    if deviceOrientation == .portrait {
-      previewSize = CGSize(width: previewLayer?.frame.size.height ?? 0.0, height: previewLayer?.frame.size.width ?? 0.0)
-    } else {
-      previewSize = CGSize(width: previewLayer?.frame.size.width ?? 0.0, height: previewLayer?.frame.size.height ?? 0.0)
-    }
+    let previewSize: CGSize = {
+      return deviceOrientation == .portrait ?
+      CGSize(width: previewLayer?.frame.size.height ?? 0.0, height: previewLayer?.frame.size.width ?? 0.0) :
+      CGSize(width: previewLayer?.frame.size.width ?? 0.0, height: previewLayer?.frame.size.height ?? 0.0)
+    }()
 
     guard let takenCgImage = takenImage.cgImage else { return }
 
     let cropRect = CGRect(x: 0, y: 0, width: takenCgImage.width, height: takenCgImage.height)
     let croppedSize = AVMakeRect(aspectRatio: previewSize, insideRect: cropRect)
 
-    takenImage = EXCameraUtils.cropImage(takenImage, to: croppedSize)
+    takenImage = ExpoCameraUtils.crop(image: takenImage, to: croppedSize)
 
     let path = fileSystem?.generatePath(inDirectory: fileSystem?.cachesDirectory.appending("/Camera"), withExtension: ".jpg")
 
     let width = takenImage.size.width
     let height = takenImage.size.height
     var processedImageData: Data?
-    let quality = options.quality
 
     var response: [String: Any] = [:]
 
     if options.exif {
       let exifDict = metadata[kCGImagePropertyExifDictionary as String] as? [String: Any]
-      var updatedExif = EXCameraUtils.updateExifMetadata(exifDict, withAdditionalData: ["Orientation": EXCameraUtils.export(takenImage.imageOrientation)])
+      var updatedExif = EXCameraUtils.updateExifMetadata(exifDict, withAdditionalData: ["Orientation": ExpoCameraUtils.export(orientation: takenImage.imageOrientation)])
 
       updatedExif?[kCGImagePropertyExifPixelYDimension] = width
       updatedExif?[kCGImagePropertyExifPixelXDimension] = height
@@ -471,12 +476,12 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
       }
 
       updatedMetadata[kCGImagePropertyExifDictionary as String] = updatedExif
-      processedImageData = EXCameraUtils.data(from: takenImage, withMetadata: updatedMetadata, imageQuality: Float(quality))
+      processedImageData = EXCameraUtils.data(from: takenImage, withMetadata: updatedMetadata, imageQuality: Float(options.quality))
     } else {
-      processedImageData = takenImage.jpegData(compressionQuality: quality)
+      processedImageData = takenImage.jpegData(compressionQuality: options.quality)
     }
 
-    if processedImageData == nil {
+    guard let processedImageData else {
       promise.reject(CameraSavingImageException())
       return
     }
@@ -486,7 +491,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
     response["height"] = height
 
     if options.base64 {
-      response["base64"] = processedImageData?.base64EncodedString()
+      response["base64"] = processedImageData.base64EncodedString()
     }
 
     if options.fastMode {
@@ -497,17 +502,17 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   }
 
   func record(options: CameraRecordingOptions, promise: Promise) {
-    if movieFileOutput == nil {
+    if videoFileOutput == nil {
       if let faceDetector {
         faceDetector.stopFaceDetection()
       }
       setupMovieFileCapture()
     }
 
-    if let movieFileOutput, !movieFileOutput.isRecording && videoRecordedPromise == nil {
+    if let videoFileOutput, !videoFileOutput.isRecording && videoRecordedPromise == nil {
       updateSessionAudioIsMuted(options.mute)
 
-      if let connection = movieFileOutput.connection(with: .video) {
+      if let connection = videoFileOutput.connection(with: .video) {
         if !connection.isVideoStabilizationSupported {
           log.warn("\(#function): Video Stabilization is not supported on this device.")
         } else {
@@ -516,7 +521,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
           }
         }
 
-        connection.videoOrientation = EXCameraUtils.videoOrientation(for: deviceOrientation)
+        connection.videoOrientation = ExpoCameraUtils.videoOrientation(for: deviceOrientation)
         setVideoOptions(options: options, for: connection, promise: promise)
 
         if connection.isVideoOrientationSupported && options.mirror {
@@ -524,7 +529,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
         }
       }
 
-      let preset = options.quality?.resolution() ?? .high
+      let preset = options.quality?.toPreset() ?? .high
       updateSessionPreset(preset: preset)
 
       guard let fileSystem = self.fileSystem else {
@@ -543,7 +548,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
         self.videoRecordedPromise = promise
       
         if let outputURL = fileUrl.filePathURL {
-          movieFileOutput.startRecording(to: outputURL, recordingDelegate: self)
+          videoFileOutput.startRecording(to: outputURL, recordingDelegate: self)
         }
       }
     }
@@ -553,14 +558,14 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
     sessionQueue.async {
       self.isValidVideoOptions = true
 
-      guard let movieFileOutput = self.movieFileOutput else { return }
+      guard let movieFileOutput = self.videoFileOutput else { return }
 
       if let maxDuration = options.maxDuration {
-        self.movieFileOutput?.maxRecordedDuration = CMTime(seconds: maxDuration, preferredTimescale: 30)
+        self.videoFileOutput?.maxRecordedDuration = CMTime(seconds: maxDuration, preferredTimescale: 30)
       }
 
       if let maxFileSize = options.maxFileSize {
-        self.movieFileOutput?.maxRecordedFileSize = Int64(maxFileSize)
+        self.videoFileOutput?.maxRecordedFileSize = Int64(maxFileSize)
       }
 
       if let codec = options.codec {
@@ -619,15 +624,15 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
     let output = AVCaptureMovieFileOutput()
     if self.session.canAddOutput(output) {
       self.session.addOutput(output)
-      self.movieFileOutput = output
+      self.videoFileOutput = output
     }
   }
 
   func cleanupMovieFileCapture() {
-    if let movieFileOutput {
-      if session.outputs.contains(movieFileOutput) {
-        session.removeOutput(movieFileOutput)
-        self.movieFileOutput = nil
+    if let videoFileOutput {
+      if session.outputs.contains(videoFileOutput) {
+        session.removeOutput(videoFileOutput)
+        self.videoFileOutput = nil
       }
     }
   }
@@ -657,15 +662,11 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
     var success = true
 
     if error != nil {
-      print("Movie file finishing error: \(String(describing: error))")
       let value = (error as? NSError)?.userInfo[AVErrorRecordingSuccessfullyFinishedKey] as? Bool
       success = value == true ? true : false
     }
     
-    print("Video promise is nil \(videoRecordedPromise == nil)")
-
     if success && videoRecordedPromise != nil {
-      print("Resolving promise")
       videoRecordedPromise?.resolve(["uri": outputFileURL.absoluteString])
     } else if videoRecordedPromise != nil {
       videoRecordedPromise?.reject(CameraRecordingFailedException())
@@ -685,7 +686,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   func maybeStartFaceDetection(_ mirrored: Bool) {
     guard let faceDetector else { return }
     let connection = photoOutput?.connection(with: .video)
-    connection?.videoOrientation = EXCameraUtils.videoOrientation(for: UIDevice.current.orientation)
+    connection?.videoOrientation = ExpoCameraUtils.videoOrientation(for: UIDevice.current.orientation)
     faceDetector.maybeStartFaceDetection(on: session, with: previewLayer, mirrored: mirrored)
   }
 
@@ -695,7 +696,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   }
 
   func stopRecording() {
-    movieFileOutput?.stopRecording()
+    videoFileOutput?.stopRecording()
   }
 
   func resumePreview() {
@@ -719,7 +720,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   }
 
   func initializeCaptureSessionInput() {
-    if videoCaptureDeviceInput?.device.position == presetCamera {
+    if captureDeviceInput?.device.position == presetCamera {
       return
     }
 
@@ -740,7 +741,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
         return
       }
 
-      if let videoCaptureDeviceInput = self.videoCaptureDeviceInput {
+      if let videoCaptureDeviceInput = self.captureDeviceInput {
         self.session.removeInput(videoCaptureDeviceInput)
       }
 
@@ -749,7 +750,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
 
         if self.session.canAddInput(captureDeviceInput) {
           self.session.addInput(captureDeviceInput)
-          self.videoCaptureDeviceInput = captureDeviceInput
+          self.captureDeviceInput = captureDeviceInput
           self.updateZoom()
           self.updateFocusMode()
           self.updateFocusDepth()
@@ -793,7 +794,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   }
 
   func changePreviewOrientation(orientation: UIInterfaceOrientation) {
-    let videoOrientation = EXCameraUtils.videoOrientation(for: orientation)
+    let videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
 
     EXUtilities.performSynchronously {
       if (self.previewLayer?.connection?.isVideoOrientationSupported) == true {
@@ -844,6 +845,10 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   deinit {
     if let photoCapturedPromise {
       photoCapturedPromise.reject(CameraUnmountedException())
+    }
+    
+    if let errorNotification  {
+      NotificationCenter.default.removeObserver(errorNotification)
     }
   }
 }

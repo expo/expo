@@ -307,7 +307,7 @@ private func getAvailableVideoCodecs() -> [String] {
 
   session.beginConfiguration()
 
-  guard let captureDevice = EXCameraUtils.device(withMediaType: AVMediaType.video.rawValue, preferring: AVCaptureDevice.Position.front) else {
+  guard let captureDevice = ExpoCameraUtils.device(with: AVMediaType.video, preferring: AVCaptureDevice.Position.front) else {
     return []
   }
   guard let deviceInput = try? AVCaptureDeviceInput(device: captureDevice) else {

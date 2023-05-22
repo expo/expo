@@ -28,28 +28,6 @@ enum CameraWhiteBalance: Int {
   }
 }
 
-enum CameraVideoResolution: Int, Enumerable {
-  case video2160p
-  case video1080p
-  case video720p
-  case video4x3
-
-  func resolution() -> AVCaptureSession.Preset {
-    switch self {
-    case .video2160p:
-      return .hd4K3840x2160
-    case .video1080p:
-      return .hd1920x1080
-    case .video720p:
-      return .hd1280x720
-    case .video4x3:
-      return .vga640x480
-    default:
-      return .high
-    }
-  }
-}
-
 enum CameraType: Int, Enumerable {
   case front = 0
   case back = 1
