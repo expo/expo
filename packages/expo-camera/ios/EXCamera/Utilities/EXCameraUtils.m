@@ -12,6 +12,27 @@
 
 @implementation EXCameraUtils
 
+# pragma mark - Camera utilities
+
++ (UIDeviceOrientation)deviceOrientationForAccelerometerData:(CMAccelerometerData*)accelerometerData defaultOrientation:(UIDeviceOrientation)orientation
+{
+  if (accelerometerData.acceleration.x >= 0.75) {
+    return UIDeviceOrientationLandscapeRight;
+  }
+  if(accelerometerData.acceleration.x <= -0.75) {
+    return UIDeviceOrientationLandscapeLeft;
+  }
+  if(accelerometerData.acceleration.y <= -0.75) {
+    return UIDeviceOrientationPortrait;
+  }
+  if(accelerometerData.acceleration.y >= 0.75) {
+    return UIDeviceOrientationPortraitUpsideDown;
+  }
+
+  return orientation;
+}
+
+
 # pragma mark - Image utilities
 
 + (UIImage *)generatePhotoOfSize:(CGSize)size

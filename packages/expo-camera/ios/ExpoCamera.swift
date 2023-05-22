@@ -1,10 +1,13 @@
 import UIKit
 import ExpoModulesCore
+import CoreMotion
 
 class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCaptureFileOutputRecordingDelegate, AVCaptureMetadataOutputObjectsDelegate, AVCapturePhotoCaptureDelegate {
 
   internal var session = AVCaptureSession()
   internal var sessionQueue = DispatchQueue(label: "captureSessionQueue")
+  private var motionManager = CMMotionManager()
+  private var physicalOrientation: UIDeviceOrientation = .unknown
 
   // MARK: Legacy Modules
   private var faceDetector: EXFaceDetectorManagerInterface?
@@ -24,6 +27,11 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   private var errorNotification: NSObjectProtocol?
 
   // MARK: Property Observers
+  var responsiveOrientationWhenOrientationLocked = false {
+    didSet {
+      updateResponsiveOrientation()
+    }
+  }
 
   var pictureSize = AVCaptureSession.Preset.high {
     didSet {
@@ -105,6 +113,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   let onPictureSaved = EventDispatcher()
   let onBarCodeScanned = EventDispatcher()
   let onFacesDetected = EventDispatcher()
+  let onResponsiveOrientationChanged = EventDispatcher()
 
   private var deviceOrientation: UIInterfaceOrientation {
     window?.windowScene?.interfaceOrientation ?? .unknown
@@ -127,6 +136,8 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
     self.startSession()
     NotificationCenter.default.addObserver(self, selector: #selector(orientationChanged(notification:)), name: UIDevice.orientationDidChangeNotification, object: nil)
     lifecycleManager?.register(self)
+    motionManager.accelerometerUpdateInterval = 0.2
+    motionManager.gyroUpdateInterval = 0.2
   }
 
   private func updateType() {
@@ -340,6 +351,27 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
     }
   }
 
+  func updateResponsiveOrientation() {
+    if responsiveOrientationWhenOrientationLocked {
+      motionManager.startAccelerometerUpdates(to: OperationQueue()) { [weak self] _, error in
+        guard let self else {
+          return
+        }
+
+        guard error == nil else {
+          self.motionManager.stopAccelerometerUpdates()
+          return
+        }
+
+        let deviceOrientation = EXCameraUtils.deviceOrientation(for: self.motionManager.accelerometerData, defaultOrientation: physicalOrientation)
+        if deviceOrientation != self.physicalOrientation {
+          self.physicalOrientation = deviceOrientation
+          onResponsiveOrientationChanged(["orientation": deviceOrientation.rawValue])
+        }
+      }
+    }
+  }
+
   func takePicture(options: TakePictureOptions, promise: Promise) {
     if photoCapturedPromise != nil {
       promise.reject(CameraNotReadyException())
@@ -356,7 +388,8 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
 
     sessionQueue.async {
       let connection = photoOutput.connection(with: .video)
-      connection?.videoOrientation = ExpoCameraUtils.videoOrientation(for: UIDevice.current.orientation)
+      let orientation = self.responsiveOrientationWhenOrientationLocked ? self.physicalOrientation : UIDevice.current.orientation
+      connection?.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
       let photoSettings = AVCapturePhotoSettings(format: [AVVideoCodecKey: AVVideoCodecJPEG])
 
       if photoOutput.isHighResolutionCaptureEnabled {
@@ -520,7 +553,8 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
           }
         }
 
-        connection.videoOrientation = ExpoCameraUtils.videoOrientation(for: deviceOrientation)
+        let orientation = self.responsiveOrientationWhenOrientationLocked ? self.physicalOrientation : UIDevice.current.orientation
+        connection.videoOrientation = ExpoCameraUtils.videoOrientation(for: orientation)
         setVideoOptions(options: options, for: connection, promise: promise)
 
         if connection.isVideoOrientationSupported && options.mirror {
@@ -683,7 +717,9 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
   }
 
   func maybeStartFaceDetection(_ mirrored: Bool) {
-    guard let faceDetector else { return }
+    guard let faceDetector else {
+      return
+    }
     let connection = photoOutput?.connection(with: .video)
     connection?.videoOrientation = ExpoCameraUtils.videoOrientation(for: UIDevice.current.orientation)
     faceDetector.maybeStartFaceDetection(on: session, with: previewLayer, mirrored: mirrored)
@@ -774,6 +810,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
         barCodeScanner.stopBarCodeScanning()
       }
 
+      self.motionManager.stopAccelerometerUpdates()
       self.previewLayer?.removeFromSuperlayer()
       self.session.commitConfiguration()
       self.session.stopRunning()
