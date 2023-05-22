@@ -58,7 +58,7 @@
     };
 
     // Initialize GL context
-    _glContext = [[EXGLContext alloc] initWithDelegate:self andModuleRegistry:moduleRegistry];
+    _glContext = [[EXGLContext alloc] initWithDelegate:self andEnableExperimentalWorkletSupport:self.enableExperimentalWorkletSupport andModuleRegistry:moduleRegistry];
     _uiEaglCtx = [_glContext createSharedEAGLContext];
     [_glContext initialize];
 

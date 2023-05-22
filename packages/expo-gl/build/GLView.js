@@ -15,6 +15,7 @@ export class GLView extends React.Component {
     static NativeView;
     static defaultProps = {
         msaaSamples: 4,
+        enableExperimentalWorkletSupport: false,
     };
     /**
      * Imperative API that creates headless context which is devoid of underlying view.
@@ -53,7 +54,7 @@ export class GLView extends React.Component {
     exglCtxId;
     render() {
         const { onContextCreate, // eslint-disable-line no-unused-vars
-        msaaSamples, ...viewProps } = this.props;
+        msaaSamples, enableExperimentalWorkletSupport, ...viewProps } = this.props;
         return (React.createElement(View, { ...viewProps },
             React.createElement(NativeView, { ref: this._setNativeRef, style: {
                     flex: 1,
@@ -62,7 +63,7 @@ export class GLView extends React.Component {
                             backgroundColor: 'transparent',
                         }
                         : {}),
-                }, onSurfaceCreate: this._onSurfaceCreate, msaaSamples: Platform.OS === 'ios' ? msaaSamples : undefined })));
+                }, onSurfaceCreate: this._onSurfaceCreate, enableExperimentalWorkletSupport: enableExperimentalWorkletSupport, msaaSamples: Platform.OS === 'ios' ? msaaSamples : undefined })));
     }
     _setNativeRef = (nativeRef) => {
         if (this.props.nativeRef_EXPERIMENTAL) {

@@ -291,6 +291,22 @@ export const Screens = [
   },
   {
     getComponent() {
+      return optionalRequire(() => require('../screens/GL/GLViewOnBusyJSThread'));
+    },
+    name: 'GLViewOnBusyJSThread',
+    options: { title: 'Creating GLView when JS thread is busy' },
+    route: 'gl/busyjsthread',
+  },
+  {
+    getComponent() {
+      return optionalRequire(() => require('../screens/GL/GLViewOnBusyWorkletThread'));
+    },
+    name: 'GLViewOnBusyWorkletThread',
+    options: { title: 'Creating GLView when worklet thread is busy' },
+    route: 'gl/busyworkletthread',
+  },
+  {
+    getComponent() {
       return optionalRequire(() => require('../screens/GestureHandlerPinchScreen'));
     },
     name: 'GestureHandlerPinch',

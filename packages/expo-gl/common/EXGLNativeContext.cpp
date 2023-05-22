@@ -6,14 +6,19 @@ namespace gl_cpp {
 
 constexpr const char *OnJSRuntimeDestroyPropertyName = "__EXGLOnJsRuntimeDestroy";
 
-void EXGLContext::prepareContext(jsi::Runtime &runtime, std::function<void(void)> flushMethod) {
+void EXGLContext::prepareContext(
+    jsi::Runtime &runtime,
+    std::function<void(void)> flushMethod,
+    bool enableExperimentalWorkletSupport) {
   this->flushOnGLThread = flushMethod;
   try {
     auto viewport = prepareOpenGLESContext();
     createWebGLRenderer(runtime, this, viewport, runtime.global());
     tryRegisterOnJSRuntimeDestroy(runtime);
 
-    maybePrepareWorkletContext(runtime, viewport);
+    if (enableExperimentalWorkletSupport) {
+      maybePrepareWorkletContext(runtime, viewport);
+    }
   } catch (const std::runtime_error &err) {
     EXGLSysLog("Failed to setup EXGLContext [%s]", err.what());
   }
@@ -34,7 +39,7 @@ void EXGLContext::maybePrepareWorkletContext(jsi::Runtime &runtime, initGlesCont
     return;
   }
   uintptr_t rawWorkletRuntimePointer =
-      *reinterpret_cast<uintptr_t*>(workletRuntimeArrayBuffer.data(runtime));
+      *reinterpret_cast<uintptr_t *>(workletRuntimeArrayBuffer.data(runtime));
   jsi::Runtime &workletRuntime = *reinterpret_cast<jsi::Runtime *>(rawWorkletRuntimePointer);
   createWebGLRenderer(
       workletRuntime,

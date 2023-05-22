@@ -49,8 +49,11 @@ class EXGLContext {
   using Batch = std::vector<Op>;
 
  public:
-  EXGLContext(EXGLContextId ctxId): ctxId(ctxId) {}
-  void prepareContext(jsi::Runtime &runtime, std::function<void(void)> flushMethod);
+  EXGLContext(EXGLContextId ctxId) : ctxId(ctxId) {}
+  void prepareContext(
+      jsi::Runtime &runtime,
+      std::function<void(void)> flushMethod,
+      bool enableExperimentalWorkletSupport);
   void maybePrepareWorkletContext(jsi::Runtime &runtime, initGlesContext viewport);
 
   // --- Queue handling --------------------------------------------------------

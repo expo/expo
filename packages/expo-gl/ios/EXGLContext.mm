@@ -20,13 +20,14 @@
 @property (nonatomic, weak) EXGLObjectManager *objectManager;
 @property (nonatomic, assign) BOOL isContextReady;
 @property (nonatomic, assign) BOOL wasPrepareCalled;
+@property (nonatomic, assign) BOOL enableExperimentalWorkletSupport;
 @property (nonatomic) BOOL appIsBackgrounded;
 
 @end
 
 @implementation EXGLContext
 
-- (instancetype)initWithDelegate:(id<EXGLContextDelegate>)delegate andModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry
+- (instancetype)initWithDelegate:(id<EXGLContextDelegate>)delegate andEnableExperimentalWorkletSupport:(BOOL)enableExperimentalWorkletSupport andModuleRegistry:(nonnull EXModuleRegistry *)moduleRegistry
 {
   if (self = [super init]) {
     self.delegate = delegate;
@@ -38,6 +39,7 @@
     _isContextReady = NO;
     _wasPrepareCalled = NO;
     _appIsBackgrounded = NO;
+    _enableExperimentalWorkletSupport = enableExperimentalWorkletSupport;
   }
   return self;
 }
@@ -69,7 +71,7 @@
   }
 }
 
-- (void)initialize
+- (void)initialize:(BOOL)enableExperimentalWorkletSupport
 {
   self->_contextId = EXGLContextCreate();
   [self->_objectManager saveContext:self];
@@ -123,7 +125,7 @@
       }
 
       EXGLContextSetDefaultFramebuffer(self->_contextId, [self defaultFramebuffer]);
-      EXGLContextPrepare(jsRuntimePtr, self->_contextId, [self](){
+      EXGLContextPrepare(jsRuntimePtr, self->_contextId, _enableExperimentalWorkletSupport, [self](){
         [self flush];
       });
 

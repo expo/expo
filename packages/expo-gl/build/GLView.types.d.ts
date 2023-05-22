@@ -79,6 +79,11 @@ export type GLViewProps = {
      */
     msaaSamples: number;
     /**
+     * Enables support for interacting with a `gl` object from code running in Reanimated worklet.
+     * @default false
+     */
+    enableExperimentalWorkletSupport: boolean;
+    /**
      * @hidden
      * A ref callback for the native GLView
      */

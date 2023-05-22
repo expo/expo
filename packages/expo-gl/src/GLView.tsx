@@ -40,6 +40,7 @@ export class GLView extends React.Component<GLViewProps> {
 
   static defaultProps = {
     msaaSamples: 4,
+    enableExperimentalWorkletSupport: false,
   };
 
   /**
@@ -90,6 +91,7 @@ export class GLView extends React.Component<GLViewProps> {
     const {
       onContextCreate, // eslint-disable-line no-unused-vars
       msaaSamples,
+      enableExperimentalWorkletSupport,
       ...viewProps
     } = this.props;
 
@@ -106,6 +108,7 @@ export class GLView extends React.Component<GLViewProps> {
               : {}),
           }}
           onSurfaceCreate={this._onSurfaceCreate}
+          enableExperimentalWorkletSupport={enableExperimentalWorkletSupport}
           msaaSamples={Platform.OS === 'ios' ? msaaSamples : undefined}
         />
       </View>

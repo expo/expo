@@ -32,7 +32,11 @@ EXGLContextId EXGLContextCreate();
 // [JS thread] Create an EXGL context and return its id number. Saves the
 // JavaScript interface object (has a WebGLRenderingContext-style API) at
 // `global.__EXGLContexts[id]` in JavaScript.
-void EXGLContextPrepare(void *runtime, EXGLContextId exglCtxId, std::function<void(void)> flushMethod);
+void EXGLContextPrepare(
+    void *runtime,
+    EXGLContextId exglCtxId,
+    std::function<void(void)> flushMethod,
+    bool enableExperimentalWorkletSupport);
 #endif // __cplusplus
 
 // [Any thread] Check whether we should redraw the surface
