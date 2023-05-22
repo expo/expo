@@ -10,10 +10,12 @@ public final class CameraViewModule: Module {
     OnCreate {
       let permissionsManager = self.appContext?.permissions
 
-      EXPermissionsMethodsDelegate.register([
-        CameraPermissionRequester(),
-        CameraCameraPermissionRequester(),
-        CameraMicrophonePermissionRequester()],
+      EXPermissionsMethodsDelegate.register(
+        [
+          CameraPermissionRequester(),
+          CameraCameraPermissionRequester(),
+          CameraMicrophonePermissionRequester()
+        ],
         withPermissionsManager: permissionsManager
       )
     }

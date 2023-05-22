@@ -70,18 +70,28 @@ struct ExpoCameraUtils {
       let dateFormatter = DateFormatter()
       dateFormatter.dateFormat = "dd.MM.YY HH:mm:ss"
       let text = dateFormatter.string(from: currentDate)
-      text.draw(with: CGRect(x: size.width * 0.1, y: size.height * 0.9, width: size.width, height: size.height), attributes: [.font: UIFont.systemFont(ofSize: 18), .foregroundColor: UIColor.orange], context: nil)
+      text.draw(with: CGRect(
+        x: size.width * 0.1,
+        y: size.height * 0.9,
+        width: size.width,
+        height: size.height
+      ), attributes: [.font: UIFont.systemFont(ofSize: 18), .foregroundColor: UIColor.orange],
+        context: nil)
     }
   }
 
   static func crop(image: UIImage, to rect: CGRect) -> UIImage {
     let cgImage = image.cgImage
-    guard let croppedCgImage = cgImage?.cropping(to: rect) else { return image }
+    guard let croppedCgImage = cgImage?.cropping(to: rect) else {
+      return image
+    }
     return UIImage(cgImage: croppedCgImage)
   }
 
   static func writeImage(data: Data, to path: String?) -> String? {
-    guard let path else { return nil }
+    guard let path else {
+      return nil
+    }
     guard let url = URL(string: path) else { return nil }
     try? data.write(to: url)
     let fileUrl = URL(fileURLWithPath: path)
