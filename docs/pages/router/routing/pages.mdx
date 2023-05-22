@@ -37,8 +37,8 @@ export default function Home() {
 
 Dynamic routes match any unmatched path at a given segment level.
 
-- **app/blog/[slug].js** -- Matches `/blog/123` in the app and the browser.
-- **app/blog/[...rest].js** -- Matches `/blog/123/settings` in the app and the browser.
+- **app/blog/[slug].js** &mdash; Matches `/blog/123` in the app and the browser.
+- **app/blog/[...rest].js** &mdash; Matches `/blog/123/settings` in the app and the browser.
 
 Routes with higher specificity will be matched before a dynamic route. For example, `/blog/bacon` will match **blog/bacon.js** before **blog/[id].js**.
 

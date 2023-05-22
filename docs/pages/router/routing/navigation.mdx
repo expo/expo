@@ -5,6 +5,7 @@ description: Learn how to use the Expo Router to navigate between pages.
 
 import { BoxLink } from '~/ui/components/BoxLink';
 import { BookOpen02Icon } from '@expo/styleguide-icons';
+import { APIBox } from '~/components/plugins/APIBox';
 
 Use the `Link` component to navigate between pages. This is conceptually similar to the `<a>` element in HTML.
 
@@ -42,7 +43,9 @@ function Home() {
 }
 ```
 
-## `useRouter`
+## Hooks
+
+<APIBox header="useRouter">
 
 For more advanced use cases, you can use the imperative `useRouter` hook to navigate imperatively. Here is an example:
 
@@ -77,14 +80,9 @@ export default function Page() {
 - **back**: `() => void` &mdash; Navigate back to previous route.
 - **setParams**: `(params: Record<string, string>) => void` &mdash; Update the query params for the currently selected route.
 
-### `Href` type
+</APIBox>
 
-The `Href` type is a union of the following types:
-
-- **string**: A full path like `/profile/settings` or a relative path like `../settings`.
-- **object**: An object with a `pathname` and optional `params` object. The `pathname` can be a full path like `/profile/settings` or a relative path like `../settings`. The `params` can be an object of key/value pairs.
-
-## `usePathname`
+<APIBox header="usePathname">
 
 Returns the currently selected route location without search parameters. For example, `/acme?foo=bar` to `/acme`. Segments will be normalized: `/[id]?id=normal` to`/normal`.
 
@@ -105,9 +103,11 @@ export default function Route() {
 }
 ```
 
-## `useSearchParams`
+</APIBox>
 
-A hook that returns the URL search parameters for the globally selected route. For example, `/acme?foo=bar` as `{ foo: "bar" }`.
+<APIBox header="useSearchParams">
+
+Returns the URL search parameters for the globally selected route. For example, `/acme?foo=bar` as `{ foo: "bar" }`.
 
 Example route: `/profile/baconbrix?extra=info`
 
@@ -143,9 +143,11 @@ app/
 
 If you want the params on **/app/[first]/home.tsx** to remain as `{ first: 'abc' }` you can use [`useLocalSearchParams`](#uselocalsearchparams).
 
-## `useLocalSearchParams`
+</APIBox>
 
-A hook that returns the URL search parameters for the contextually selected route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`. This is useful for stacks where the previous screen is still mounted.
+<APIBox header="useLocalSearchParams">
+
+Returns the URL search parameters for the contextually selected route. e.g. `/acme?foo=bar` -> `{ foo: "bar" }`. This is useful for stacks where the previous screen is still mounted.
 
 ```bash
 app/
@@ -179,7 +181,9 @@ Given a route at **[first]/home/.tsx**, if the hook is called while the URL is `
 
 When `/abc/home` pushes `/123/shop`, this hook returns `{ home: "abc" }`.
 
-## `useSegments`
+</APIBox>
+
+<APIBox header="useSegments">
 
 Returns a list of segments for the currently selected route. Segments are not normalized so that they will be the same as the file path. For example, `/[id]?id=normal` as `["[id]"]`.
 
@@ -199,7 +203,9 @@ export default function Route() {
 }
 ```
 
-## `useNavigation`
+</APIBox>
+
+<APIBox header="useNavigation">
 
 Access the underlying React Navigation [`navigation` prop](https://reactnavigation.org/docs/navigation-prop) to imperatively access layout-specific functionality like `navigation.openDrawer()` in a Drawer layout. See [Navigator dependent functions](https://reactnavigation.org/docs/navigation-prop/#navigator-dependent-functions) for more information.
 
@@ -227,6 +233,19 @@ export default function Route() {
   );
 }
 ```
+
+</APIBox>
+
+## Types
+
+<APIBox header="Href">
+
+The `Href` type is a union of the following types:
+
+- **string**: A full path like `/profile/settings` or a relative path like `../settings`.
+- **object**: An object with a `pathname` and optional `params` object. The `pathname` can be a full path like `/profile/settings` or a relative path like `../settings`. The `params` can be an object of key/value pairs.
+
+</APIBox>
 
 ## Redirect
 
