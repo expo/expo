@@ -173,7 +173,6 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
     device.unlockForConfiguration()
   }
 
-
   private func startSession() {
 #if targetEnvironment(simulator)
     return
@@ -199,7 +198,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
         self.session.addOutput(photoOutput)
         self.photoOutput = photoOutput
       }
-      
+
       self.addErrorNotification()
 
       self.sessionQueue.asyncAfter(deadline: .now() + round(50/1000000)) {
@@ -288,7 +287,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
 
     device.unlockForConfiguration()
   }
-  
+
   private func addErrorNotification() {
     if self.errorNotification != nil {
       NotificationCenter.default.removeObserver(self.errorNotification)
@@ -540,13 +539,13 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
       if !self.isValidVideoOptions {
         return
       }
-      
-      sessionQueue.async { 
+
+      sessionQueue.async {
         let directory = fileSystem.cachesDirectory.appending("/Camera")
         let path = fileSystem.generatePath(inDirectory: directory, withExtension: ".mov")
         let fileUrl = NSURL(fileURLWithPath: path)
         self.videoRecordedPromise = promise
-      
+
         if let outputURL = fileUrl.filePathURL {
           videoFileOutput.startRecording(to: outputURL, recordingDelegate: self)
         }
@@ -665,7 +664,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
       let value = (error as? NSError)?.userInfo[AVErrorRecordingSuccessfullyFinishedKey] as? Bool
       success = value == true ? true : false
     }
-    
+
     if success && videoRecordedPromise != nil {
       videoRecordedPromise?.resolve(["uri": outputFileURL.absoluteString])
     } else if videoRecordedPromise != nil {
@@ -846,8 +845,8 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface, AVCapture
     if let photoCapturedPromise {
       photoCapturedPromise.reject(CameraUnmountedException())
     }
-    
-    if let errorNotification  {
+
+    if let errorNotification {
       NotificationCenter.default.removeObserver(errorNotification)
     }
   }
