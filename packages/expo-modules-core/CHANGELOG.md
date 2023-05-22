@@ -19,6 +19,8 @@
 
 ### 💡 Others
 
+- [iOS] Added Interface Geometry Management section to ExpoAppDelegate.
+
 ## 1.3.2 — 2023-05-09
 
 ### 🐛 Bug fixes
