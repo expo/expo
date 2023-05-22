@@ -70,12 +70,14 @@ struct ExpoCameraUtils {
       let dateFormatter = DateFormatter()
       dateFormatter.dateFormat = "dd.MM.YY HH:mm:ss"
       let text = dateFormatter.string(from: currentDate)
-      text.draw(with: CGRect(
+      text.draw(
+        with: CGRect(
         x: size.width * 0.1,
         y: size.height * 0.9,
         width: size.width,
         height: size.height
-      ), attributes: [.font: UIFont.systemFont(ofSize: 18), .foregroundColor: UIColor.orange],
+      ),
+        attributes: [.font: UIFont.systemFont(ofSize: 18), .foregroundColor: UIColor.orange],
         context: nil)
     }
   }

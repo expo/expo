@@ -2,6 +2,7 @@ import UIKit
 import ExpoModulesCore
 import CoreMotion
 
+// swiftlint:disable:next type_body_length
 class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
   AVCaptureFileOutputRecordingDelegate, AVCaptureMetadataOutputObjectsDelegate,
   AVCapturePhotoCaptureDelegate {
@@ -136,8 +137,10 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
     self.initializeCaptureSessionInput()
     self.startSession()
     NotificationCenter.default.addObserver(
-      self, selector: #selector(orientationChanged(notification:)),
-      name: UIDevice.orientationDidChangeNotification, object: nil)
+      self,
+      selector: #selector(orientationChanged(notification:)),
+      name: UIDevice.orientationDidChangeNotification,
+      object: nil)
     lifecycleManager?.register(self)
     motionManager.accelerometerUpdateInterval = 0.2
     motionManager.gyroUpdateInterval = 0.2
@@ -153,7 +156,9 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
   }
 
   private func updateFlashMode() {
-    guard let device = captureDeviceInput?.device else { return }
+    guard let device = captureDeviceInput?.device else {
+      return
+    }
 
     if flashMode == .torch {
       if !device.hasTorch {
@@ -188,9 +193,9 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
   }
 
   private func startSession() {
-#if targetEnvironment(simulator)
+    #if targetEnvironment(simulator)
     return
-#endif
+    #endif
     guard let manager = permissionsManager else {
       log.info("Permissions module not found.")
       return
@@ -215,7 +220,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
 
       self.addErrorNotification()
 
-      self.sessionQueue.asyncAfter(deadline: .now() + round(50/1000000)) {
+      self.sessionQueue.asyncAfter(deadline: .now() + round(50/1_000_000)) {
         self.maybeStartFaceDetection(self.presetCamera != .back)
         if let barCodeScanner = self.barCodeScanner {
           barCodeScanner.maybeStartBarCodeScanning()
@@ -229,7 +234,9 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
   }
 
   private func updateZoom() {
-    guard let device = captureDeviceInput?.device else { return }
+    guard let device = captureDeviceInput?.device else {
+      return
+    }
 
     do {
       try device.lockForConfiguration()
