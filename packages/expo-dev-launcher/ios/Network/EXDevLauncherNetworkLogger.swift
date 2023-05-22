@@ -32,28 +32,54 @@ public class EXDevLauncherNetworkLogger: NSObject {
   }
 
   /**
-   Emits CDP `Network.requestWillBeSent` event
+   Emits CDP `Network.requestWillBeSent` and `Network.requestWillBeSentExtraInfo` events
    */
-  func emitNetworkWillBeSent(request: URLRequest, requestId: String) {
+  func emitNetworkWillBeSent(request: URLRequest, requestId: String, redirectResponse: HTTPURLResponse?) {
     let now = Date().timeIntervalSince1970
-    let params = [
+    var requestParams: [String: Any] = [
+      "url": request.url?.absoluteString,
+      "method": request.httpMethod,
+      "headers": request.allHTTPHeaderFields
+    ]
+    if let httpBody = request.httpBodyData() {
+      requestParams["postData"] = String(data: httpBody, encoding: .utf8)
+    }
+    var params = [
       "requestId": requestId,
       "loaderId": "",
       "documentURL": "mobile",
       "initiator": ["type": "script"],
-      "redirectHasExtraInfo": false,
-      "request": [
-        "url": request.url?.absoluteString,
-        "method": request.httpMethod,
-        "headers": request.allHTTPHeaderFields
-      ],
+      "redirectHasExtraInfo": redirectResponse != nil,
+      "request": requestParams,
       "referrerPolicy": "no-referrer",
       "type": "Fetch",
       "timestamp": now,
       "wallTime": now
     ] as [String: Any]
+    if let redirectResponse {
+      params["redirectResponse"] = [
+        "url": redirectResponse.url?.absoluteString,
+        "status": redirectResponse.statusCode,
+        "statusText": "",
+        "headers": redirectResponse.allHeaderFields
+      ]
+    }
     if let data = try? JSONSerialization.data(
       withJSONObject: ["method": "Network.requestWillBeSent", "params": params],
+      options: []
+    ), let message = String(data: data, encoding: .utf8) {
+      inspectorPackagerConn?.sendWrappedEventToAllPages(message)
+    }
+    params = [
+      "requestId": requestId,
+      "associatedCookies": [],
+      "headers": requestParams["headers"],
+      "connectTiming": [
+        "requestTime": now
+      ]
+    ] as [String: Any]
+    if let data = try? JSONSerialization.data(
+      withJSONObject: ["method": "Network.requestWillBeSentExtraInfo", "params": params],
       options: []
     ), let message = String(data: data, encoding: .utf8) {
       inspectorPackagerConn?.sendWrappedEventToAllPages(message)
@@ -74,7 +100,8 @@ public class EXDevLauncherNetworkLogger: NSObject {
         "url": request.url?.absoluteString,
         "status": response.statusCode,
         "statusText": "",
-        "headers": response.allHeaderFields
+        "headers": response.allHeaderFields,
+        "mimeType": response.value(forHTTPHeaderField: "Content-Type") ?? ""
       ],
       "referrerPolicy": "no-referrer",
       "type": "Fetch",
@@ -171,9 +198,32 @@ extension RCTInspectorDevServerHelper {
 
 extension RCTInspectorPackagerConnection {
   /**
+   Indicates whether the packager connection is established and ready to send messages
+   */
+  func isReadyToSend() -> Bool {
+    guard isConnected() else {
+      return false
+    }
+    guard let webSocket = value(forKey: "_webSocket") as? AnyObject,
+      let readyState = webSocket.value(forKey: "readyState") as? Int else {
+      return false
+    }
+    // To support both RCTSRWebSocket (RN < 0.72) and SRWebSocket (RN >= 0.72)
+    // and not to introduce extra podspec dependencies,
+    // we use the internal and hardcoded value here.
+    // Given the fact that both RCTSRWebSocket and SRWebSocket has the readyState property
+    // and the open state is 1.
+    let OPEN_STATE = 1
+    return readyState == OPEN_STATE
+  }
+
+  /**
    Sends message from native to inspector proxy
    */
   func sendWrappedEventToAllPages(_ event: String) {
+    guard isReadyToSend() else {
+      return
+    }
     for page in RCTInspector.pages() {
       perform(NSSelectorFromString("sendWrappedEvent:message:"), with: String(page.id), with: event)
     }
@@ -194,7 +244,7 @@ public class EXDevLauncherNetworkLogger: NSObject {
     // no-op when running on release build where RCTInspector classes not exported
   }
 
-  func emitNetworkWillBeSent(request: URLRequest, requestId: String) {
+  func emitNetworkWillBeSent(request: URLRequest, requestId: String, redirectResponse: HTTPURLResponse?) {
   }
 
   func emitNetworkResponse(request: URLRequest, requestId: String, response: HTTPURLResponse) {

@@ -6,6 +6,16 @@
 internal struct DynamicSharedObjectType: AnyDynamicType {
   let innerType: SharedObject.Type
 
+  /**
+   A unique identifier of the wrapped type.
+   */
+  let typeIdentifier: ObjectIdentifier
+
+  init<SharedObjectType: SharedObject>(innerType: SharedObjectType.Type) {
+    self.innerType = innerType
+    self.typeIdentifier = ObjectIdentifier(SharedObjectType.self)
+  }
+
   func wraps<InnerType>(_ type: InnerType.Type) -> Bool {
     return innerType == InnerType.self
   }
@@ -17,12 +27,16 @@ internal struct DynamicSharedObjectType: AnyDynamicType {
     return false
   }
 
-  func cast<ValueType>(_ value: ValueType) throws -> Any {
+  func cast<ValueType>(_ value: ValueType, appContext: AppContext) throws -> Any {
     if let value = value as? SharedObject, type(of: value) == innerType {
       // Given value is a shared object already
       return value
     }
-    if let jsObject = try (value as? JavaScriptValue)?.asObject(),
+    throw NativeSharedObjectNotFoundException()
+  }
+
+  func cast(jsValue: JavaScriptValue, appContext: AppContext) throws -> Any {
+    if let jsObject = try? jsValue.asObject(),
        let nativeSharedObject = SharedObjectRegistry.toNativeObject(jsObject) {
       return nativeSharedObject
     }

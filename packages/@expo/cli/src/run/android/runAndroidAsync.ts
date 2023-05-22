@@ -13,8 +13,9 @@ import { Options, ResolvedOptions, resolveOptionsAsync } from './resolveOptions'
 const debug = require('debug')('expo:run:android');
 
 export async function runAndroidAsync(projectRoot: string, { install, ...options }: Options) {
-  // TODO: Add support for setting as production.
-  setNodeEnv('development');
+  // NOTE: This is a guess, the developer can overwrite with `NODE_ENV`.
+  setNodeEnv(options.variant === 'release' ? 'production' : 'development');
+  require('@expo/env').load(projectRoot);
 
   await ensureNativeProjectAsync(projectRoot, { platform: 'android', install });
 

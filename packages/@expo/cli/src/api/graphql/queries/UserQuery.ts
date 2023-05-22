@@ -1,7 +1,7 @@
 import gql from 'graphql-tag';
 
+import { CurrentUserQuery } from '../../../graphql/generated';
 import { graphqlClient, withErrorHandlingAsync } from '../client';
-import { CurrentUserQuery } from '../generated';
 
 export const UserQuery = {
   async currentUserAsync(): Promise<CurrentUserQuery['meActor']> {
@@ -13,7 +13,10 @@ export const UserQuery = {
               meActor {
                 __typename
                 id
-                ... on User {
+                ... on UserActor {
+                  primaryAccount {
+                    id
+                  }
                   username
                 }
                 ... on Robot {
@@ -21,9 +24,13 @@ export const UserQuery = {
                 }
                 accounts {
                   id
-                  name
+                  users {
+                    actor {
+                      id
+                    }
+                    permissions
+                  }
                 }
-                isExpoAdmin
               }
             }
           `,

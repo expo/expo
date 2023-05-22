@@ -1,5 +1,5 @@
 import fsExtra from 'fs-extra';
-import { info as logInfo } from 'next/dist/build/output/log.js';
+import NextLog from 'next/dist/build/output/log.js';
 import { join } from 'path';
 import rehypeSlug from 'rehype-slug';
 import remarkFrontmatter from 'remark-frontmatter';
@@ -13,9 +13,10 @@ import remarkCodeTitle from './mdx-plugins/remark-code-title.js';
 import remarkCreateStaticProps from './mdx-plugins/remark-create-static-props.js';
 import remarkExportHeadings from './mdx-plugins/remark-export-headings.js';
 import remarkLinkRewrite from './mdx-plugins/remark-link-rewrite.js';
+import { copyAsLatest } from './scripts/copy-latest.js';
 import createSitemap from './scripts/create-sitemap.js';
 
-const { copySync, removeSync, readJsonSync } = fsExtra;
+const { readJsonSync } = fsExtra;
 
 // note(simek): We cannot use direct JSON import because ESLint do not support `assert { type: 'json' }` syntax yet:
 // * https://github.com/eslint/eslint/discussions/15305
@@ -23,12 +24,8 @@ const { version, betaVersion } = readJsonSync('./package.json');
 const { VERSIONS } = readJsonSync('./public/static/constants/versions.json');
 const navigation = readJsonSync('./public/static/constants/navigation.json');
 
-// Prepare the latest version by copying the actual exact latest version
-const vLatest = join('pages', 'versions', `v${version}/`);
-const latest = join('pages', 'versions', 'latest/');
-removeSync(latest);
-copySync(vLatest, latest);
-logInfo(`Copied latest Expo SDK version from v${version}`);
+copyAsLatest(version);
+NextLog.info(`Copied latest Expo SDK version from v${version}`);
 
 const removeConsole =
   process.env.NODE_ENV !== 'development'
@@ -45,7 +42,6 @@ export default {
     // note(simek): would be nice enhancement, but it breaks the `@next/font` styles currently,
     // and results in font face swap on every page reload
     optimizeCss: false,
-    fontLoaders: [{ loader: '@next/font/google', options: { subsets: ['latin'] } }],
   },
   pageExtensions: ['js', 'jsx', 'ts', 'tsx', 'md', 'mdx'],
   compiler: {
@@ -118,14 +114,16 @@ export default {
       // Some of the search engines only track the first N items from the sitemap,
       // this makes sure our starting and general guides are first, and API index last (in order from new to old)
       pathsPriority: [
+        ...navigation.homeDirectories,
+        ...navigation.learnDirectories,
         ...navigation.generalDirectories,
-        ...navigation.easDirectories,
+        ...navigation.referenceDirectories.filter(dir => dir === 'versions'),
         ...VERSIONS.map(version => `versions/${version}`),
       ],
       // Some of our pages are "hidden" and should not be added to the sitemap
       pathsHidden: [...navigation.previewDirectories, ...navigation.archiveDirectories],
     });
-    logInfo(`📝 Generated sitemap with ${sitemapEntries.length} entries`);
+    NextLog.info(`📝 Generated sitemap with ${sitemapEntries.length} entries`);
 
     return pathMap;
   },

@@ -27,7 +27,7 @@ exports[`addGoogleMapsAppDelegateImport adds maps import to AppDelegate 1`] = `
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
 #if DEBUG
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry"];
 #else
   return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
@@ -103,7 +103,7 @@ exports[`addGoogleMapsAppDelegateInit adds maps import to AppDelegate 1`] = `
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
 #if DEBUG
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry"];
 #else
   return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
@@ -179,7 +179,7 @@ exports[`addGoogleMapsAppDelegateInit adds maps import to AppDelegate 2`] = `
 - (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
 {
 #if DEBUG
-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
+  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry"];
 #else
   return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
 #endif
@@ -237,6 +237,7 @@ require 'json'
 podfile_properties = JSON.parse(File.read(File.join(__dir__, 'Podfile.properties.json'))) rescue {}
 
 ENV['RCT_NEW_ARCH_ENABLED'] = podfile_properties['newArchEnabled'] == 'true' ? '1' : '0'
+ENV['EX_DEV_CLIENT_NETWORK_INSPECTOR'] = '1' if podfile_properties['EX_DEV_CLIENT_NETWORK_INSPECTOR'] == 'true'
 
 platform :ios, podfile_properties['ios.deploymentTarget'] || '13.0'
 install! 'cocoapods',

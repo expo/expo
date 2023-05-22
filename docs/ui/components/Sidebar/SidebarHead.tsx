@@ -1,9 +1,13 @@
 import { css } from '@emotion/react';
 import { theme, DocsLogo } from '@expo/styleguide';
 import { spacing } from '@expo/styleguide-base';
-import { ArrowLeftIcon, BookOpen02Icon, PlanEnterpriseIcon } from '@expo/styleguide-icons';
-
-import { PreviewIcon, PreviewInactiveIcon } from './icons/Preview';
+import {
+  ArrowLeftIcon,
+  BookOpen02Icon,
+  Home02Icon,
+  GraduationHat02Icon,
+  Stars02Icon,
+} from '@expo/styleguide-icons';
 
 import { shouldShowFeaturePreviewLink } from '~/constants/FeatureFlags.cjs';
 import { Search } from '~/ui/components/Search';
@@ -31,31 +35,33 @@ export const SidebarHead = ({ sidebarActiveGroup }: SidebarHeadProps) => {
       <Search />
       <SidebarSingleEntry
         href="/"
+        title="Home"
+        Icon={Home02Icon}
+        isActive={sidebarActiveGroup === 'home'}
+      />
+      <SidebarSingleEntry
+        href="/workflow/customizing"
         title="Guides"
         Icon={BookOpen02Icon}
         isActive={sidebarActiveGroup === 'general'}
       />
       <SidebarSingleEntry
-        href="/eas"
-        title="Expo Application Services"
-        Icon={PlanEnterpriseIcon}
-        isActive={sidebarActiveGroup === 'eas'}
-      />
-      <SidebarSingleEntry
         href="/versions/latest"
-        title="API Reference"
+        title="Reference"
         Icon={DocsLogo}
         isActive={sidebarActiveGroup === 'reference'}
+      />
+      <SidebarSingleEntry
+        href="/tutorial/introduction/"
+        title="Learn"
+        Icon={GraduationHat02Icon}
+        isActive={sidebarActiveGroup === 'learn'}
       />
       {shouldShowFeaturePreviewLink() && (
         <SidebarSingleEntry
           href="/feature-preview"
           title="Feature Preview"
-          Icon={
-            sidebarActiveGroup === 'featurePreview' || sidebarActiveGroup === 'preview'
-              ? PreviewIcon
-              : PreviewInactiveIcon
-          }
+          Icon={Stars02Icon}
           isActive={sidebarActiveGroup === 'featurePreview' || sidebarActiveGroup === 'preview'}
         />
       )}

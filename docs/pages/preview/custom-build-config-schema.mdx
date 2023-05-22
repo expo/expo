@@ -1,0 +1,568 @@
+---
+title: EAS Build custom builds config schema
+description: A reference of configuration options for custom workflows with EAS Build.
+hideFromSearch: true
+maxHeadingDepth: 5
+---
+
+Creating custom workflows for EAS Build helps customize the build process for your project.
+
+## YAML syntax for workflows
+
+Workflow files are stored inside the **.eas/build** directory path. They use YAML syntax and must have a `.yml` or `.yaml` file extension. If you are new to YAML or want to learn more about the syntax, see [Learn YAML in Y minutes](https://learnxinyminutes.com/docs/yaml/).
+
+## `build`
+
+Defined to describe a custom workflow. All config options to create a workflow are specified under it.
+
+### `name`
+
+The name of your workflow that is used to identify the workflow in the build logs. EAS Build uses this property to display the name of your workflow in the dashboard.
+
+For example, the workflow's name is `Run tests`:
+
+```yaml
+build:
+  # @info #
+  name: Run tests
+  # @end #
+  steps:
+    - run:
+        name: Install dependencies
+        command: npm install
+```
+
+### `steps`
+
+Steps are used to describe a list of actions either in the form of commands or function calls. These actions are executed when a workflow runs on EAS Build. You can define single or multiple steps in a workflow. However, it is **required** to define at least one step per workflow.
+
+Each step is configured with the following properties:
+
+#### `steps[].run`
+
+The `run` key is used to trigger a set of instructions. For example, a `run` key is used to install dependencies using the `npm install` command:
+
+```yaml
+build:
+  name: Install npm dependencies
+  steps:
+    # @info #
+    - run:
+        name: Install dependencies
+        command: npm install
+    # @end #
+```
+
+You can also use `steps[].run` to execute single or multiline shell commands:
+
+```yaml
+build:
+  name: Run inline shell commands
+  steps:
+    # @info #
+    - run: echo "Hello world"
+    - run: |
+        echo "Multiline"
+        echo "bash commands"
+    # @end #
+```
+
+#### Use a single step
+
+For example, a workflow with the following `steps` will run a single command to install npm dependencies:
+
+```yaml
+build:
+  name: Install npm dependencies
+  steps:
+    # @info #
+    - run:
+        name: Install dependencies
+        command: npm install
+    # @end #
+```
+
+> **Note:** `-` before `run` counts as indentation.
+
+#### Use multiple steps
+
+When multiple `steps` are defined, they are executed sequentially. For example, a workflow with the following `steps` will first run a single command to install npm dependencies and then run a command to run tests:
+
+```yaml
+build:
+  name: Run tests
+  steps:
+    # @info #
+    - run:
+        name: Install dependencies
+        command: npm install
+    - run:
+        name: Run tests
+        command: |
+          echo "Running tests..."
+          npm test
+    # @end #
+```
+
+#### `steps[].run.name`
+
+The name that is used in build logs to display the name of the step.
+
+#### `steps[].run.command`
+
+The `command` defines a custom shell command to run when a step is executed. It is **required** to define a command for each step. It can be a multiline shell command:
+
+```yaml
+build:
+  name: Run tests
+  steps:
+    - run:
+        name: Run tests
+        # @info #
+        command: |
+          echo "Running tests..."
+          npm test
+        # @end #
+```
+
+#### `steps[].run.working_directory`
+
+The `working_directory` is used to define an existing directory from the project's root directory. After an existing path is defined in a step, using it changes the current directory for that step. For example, a step is created to list all the assets inside the **assets** directory, which is a directory in your Expo project. The `working_directory` is set to `assets`:
+
+```yaml
+build:
+  name: Demo
+  steps:
+    - run:
+        name: List assets
+        # @info #
+        working_directory: assets
+        # @end #
+        command: ls -la
+```
+
+#### `steps[].run.shell`
+
+Used to define the default executable shell for a step. For example, the step's shell is set to `/bin/sh`:
+
+```yaml
+build:
+  name: Demo
+  steps:
+    - run:
+        # @info #
+        shell: /bin/sh
+        # @end #
+        command: |
+          echo "Steps can use another shell"
+          ps -p $$
+```
+
+#### `steps[].run.inputs`
+
+Input values are provided to a step. For example, you can use `input` to provide a value:
+
+```yaml
+build:
+  name: Demo
+  steps:
+    - run:
+        name: Say Hi
+        # @info #
+        inputs:
+          name: Expo
+        # @end #
+        command: echo "Hi, ${ inputs.name }!"
+```
+
+#### `steps[].run.outputs`
+
+An output value is expected during a step. For example, a step has an output value of `Hello world`:
+
+```yaml
+build:
+  name: Demo
+  steps:
+    - run:
+        name: Produce output
+        # @info #
+        outputs: [value]
+        # @end #
+        command: |
+          echo "Producing output for another step"
+          set-output value "Output from another step..."
+```
+
+#### `steps[].run.outputs.required`
+
+An output value can use a boolean to indicate if the output value is required or not. For example, a function does not have a required output value:
+
+```yaml
+build:
+  name: Demo
+  steps:
+    - run:
+        name: Produce another output
+        id: id456
+        # @info #
+        outputs:
+          - required_param
+          - name: optional_param
+            required: false
+        # @end #
+        command: |
+          echo "Producing more output"
+          set-output required_param "abc 123 456"
+```
+
+#### `steps[].run.id`
+
+Defining an `id` for a step allows:
+
+- Calling the same function that produces one or more outputs multiple times
+- Using the output from one step to another
+
+#### Call the same function one or more times
+
+For example, the following function generates a random number:
+
+```yaml
+functions:
+  random:
+    name: Generate random number
+    outputs: [value]
+    command: set-output value `random_number`
+```
+
+In a workflow, let's use the `random` function to generate two random numbers and print them:
+
+```yaml
+build:
+  name: Functions Demo
+  steps:
+    - random:
+        id: random_1
+    - random:
+        id: random_2
+    - run:
+        name: Print random numbers
+        inputs:
+          random_1: ${ steps.random_1.value }
+          random_2: ${ steps.random_2.value }
+        command: |
+          echo "${ inputs.random_1 }"
+          echo "${ inputs.random_2 }"
+```
+
+#### Use output from one step to another
+
+For example, the following workflow demonstrates how to use output from one step to another:
+
+```yaml
+build:
+  name: Outputs demo
+  steps:
+    - run:
+        name: Produce output
+        id: id123 # <---- !!!
+        outputs: [foo]
+        command: |
+          echo "Producing output for another step"
+          set-output foo bar
+    - run:
+        name: Use output from another step
+        inputs:
+          foo: ${ steps.id123.foo }
+        command: |
+          echo "foo = \"${ inputs.foo }\""
+```
+
+## `functions`
+
+Defined to describe a reusable function that can be used in a workflow. All config options to create a function are specified with the following properties:
+
+### `functions.[function_name]`
+
+The `[function_name]` is the name of a function that you define to identify it in the `build.steps`. For example, you can define a function with the name `greetings`:
+
+{/* prettier-ignore */}
+```yaml
+functions:
+  # @info #
+  greetings:
+  # @end #
+    name: Say Hi!
+```
+
+### `functions.[function_name].name`
+
+The name that is used in build logs to display the name of the function. For example, a function with the display name `Say Hi!`:
+
+```yaml
+functions:
+  greetings:
+    # @info #
+    name: Say Hi!
+    # @end #
+```
+
+{/* Note: (aman) Commenting this out since it's not implemented yet. */}
+{/* `platforms` */}
+{/* Name of the platform that a specific function should get executed. `linux` is used for Android and `darwin` for iOS. If not specified, the function is executed for both platforms when the appropriate build runs for each platform. */}
+
+### `functions.[function_name].inputs`
+
+Input values are provided to a function.
+
+#### `inputs[].name`
+
+The name of the input value. It is used as an identifier to access the input value such as in bash command interpolation.
+
+{/* prettier-ignore */}
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    inputs:
+      # @info #
+      - name: name
+      # @end #
+        default_value: Hello world
+    command: echo "${ inputs.name }!"
+```
+
+#### `inputs[].required`
+
+Boolean to indicate if the input value is required or not. For example, a function does not have a required value:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    inputs:
+      - name: name
+        # @info #
+        required: false
+        # @end #
+```
+
+#### `inputs[].default_value`
+
+You can use `default_value` to provide one default input. For example, a function has a default value of `Hello world`:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    inputs:
+      - name: name
+        # @info #
+        default_value: Hello world
+        # @end #
+```
+
+#### `inputs[].allowed_values`
+
+You can use `allowed_values` to provide multiple values in an array. For example, a function has multiple allowed values:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    inputs:
+      - name: name
+        default_value: Hello world
+        # @info #
+        allowed_values: [Hi, Hello, Hey]
+        # @end #
+```
+
+#### Multiple input values
+
+Multiple input values can be provided to a function.
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    # @info #
+    inputs:
+      - name: name
+        default_value: Expo
+      - name: greeting
+        default_value: Hi
+        allowed_values: [Hi, Hello]
+    # @end #
+    command: echo "${ inputs.greeting }, ${ inputs.name }!"
+```
+
+### `functions.[function_name].outputs`
+
+An output value is expected from a function. For example, a function has an output value of `Hello world`:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    # @info #
+    outputs: [value]
+    # @end #
+    command: set-output value "Hello world"
+```
+
+#### `outputs[].name`
+
+The name of the output value. It is used as an identifier to access the output value in another step:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    outputs:
+      # @info #
+      - name: name
+      # @end #
+```
+
+#### `outputs[].required`
+
+Boolean to indicate if the output value is required or not. For example, a function does not have a required output value:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    outputs:
+      - name: value
+        # @info #
+        required: false
+        # @end #
+```
+
+### `functions.[function_name].command`
+
+Used to define the command to run when a function is executed. It is **required** to define a command for each reusable function. For example, the command `echo "Hello world"` is used to print a message:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    # @info #
+    command: echo "Hello world"
+    # @end #
+```
+
+### `functions.[function_name].shell`
+
+Used to define the default executable shell for a step where a function is executed. For example, the step's shell is set to `/bin/sh`:
+
+```yaml
+functions:
+  greetings:
+    name: Say Hi!
+    # @info #
+    shell: /bin/sh
+    # @end #
+```
+
+### Built-in EAS functions
+
+EAS provides a built-in reusable function called `upload_artifact` that you can use in a workflow without defining the function definition.
+
+For example, a workflow with the following `steps` will upload an artifact to the EAS servers:
+
+```yaml upload.yml
+build:
+  name: Upload artifacts
+  steps:
+    - eas/upload_artifact:
+        name: Upload application archive
+        inputs:
+          path: fixtures/app-debug.apk
+    - eas/upload_artifact:
+        name: Upload build artifact
+        inputs:
+          type: build-artifact
+          path: assets/icon.png
+```
+
+> **info** **Tip:** Any function that is built-in and provided by EAS must start with the prefix `eas/`.
+
+The `eas/upload_artifact` function has the following properties
+
+| Property      | Description                                                                 |
+| ------------- | --------------------------------------------------------------------------- |
+| `name`        | The name of the step in the reusable function that shows in the build logs. |
+| `inputs`      | Requires input providers (such as `path` or `type`) to be defined.          |
+| `inputs.path` | **Required**. The path to the artifact that is uploaded to the EAS servers. |
+| `inputs.type` | The type of artifact that is uploaded to the EAS servers.                   |
+
+## Use a reusable function in a `build`
+
+For example, a workflow with the following reusable function contains a single command to print a message that is echoed.
+
+```yaml
+functions:
+  greetings:
+    - name: name
+      default_value: Hello world
+    inputs: [value]
+    command: echo "${ inputs.name }, { inputs.value }"
+```
+
+The above function can be used in a `build` as follows:
+
+```yaml
+build:
+  name: Functions Demo
+  steps:
+    # @info #
+    - greetings:
+        inputs:
+          value: Expo
+    # @end #
+```
+
+> **info** **Tip:** `build.steps` can execute multiple reusable `functions` sequentially.
+
+## Override values in a `build`
+
+You can override values for following properties:
+
+- `working_directory`
+- `name`
+- `shell`
+
+For example, a reusable function called `list_files`:
+
+```yaml
+functions:
+  # @info #
+  list_files:
+    name: List files
+    command: ls -la
+  # @end #
+```
+
+When `list_files` is called in a workflow, it lists all files in the root directory of a project:
+
+```yaml
+build:
+  name: List files
+  # @info #
+  steps:
+    - list_files
+  # @end #
+```
+
+You can use the `working_directory` property to override the behavior in the function call to list the files in a different directory by specifying the path to that directory:
+
+```yaml
+build:
+  name: List files
+    steps:
+      # @info #
+      - list_files:
+        working_directory: /a/b/c
+      # @end #
+```

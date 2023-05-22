@@ -12,6 +12,8 @@ namespace jsi = facebook::jsi;
 
 class JavaScriptRuntime;
 
+class JSIInteropModuleRegistry;
+
 /**
  * A convenient class to access underlying jni::Runtime and hold a weak reference to expo::JavaScriptRuntime.
  * It's working like std::weak_ptr but can have more helper methods.
@@ -30,6 +32,8 @@ public:
    * @return an reference to the jsi::Runtime.
    */
   jsi::Runtime &getJSRuntime();
+
+  JSIInteropModuleRegistry *getModuleRegistry();
 
   void ensureRuntimeIsValid();
 };

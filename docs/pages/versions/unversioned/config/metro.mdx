@@ -4,12 +4,187 @@ title: metro.config.js
 
 See more information about **metro.config.js** in the [customizing Metro guide](/guides/customizing-metro/).
 
+## Environment variables
+
+> For SDK 49 and above
+
+Environment variables can be loaded using **.env** files. These files are loaded according to the [standard **.env** file resolution](https://github.com/bkeepers/dotenv/blob/c6e583a/README.md#what-other-env-files-can-i-use).
+
+If you are migrating an older project to SDK 49 or above, then you should ignore local env files by adding the following to your **.gitignore**:
+
+```sh .gitignore
+# local env files
+.env*.local
+```
+
+### Client environment variables
+
+Environment variables prefixed with `EXPO_PUBLIC_` will be exposed to the app at build-time. For example, `EXPO_PUBLIC_API_KEY` will be available as `process.env.EXPO_PUBLIC_API_KEY`.
+
+Environment variables will not be inlined in code inside of **node_modules**.
+
+For security purposes, client environment variables are inlined in the bundle, which means that `process.env` is not an iterable object, and you cannot dynamically access environment variables. Every variable must be referenced as a static property in order for it to be inlined. For example, the expression `process.env.EXPO_PUBLIC_KEY` will be rewritten and `process.env[‘EXPO_PUBLIC_KEY’]` will not.
+
+- Client environment variables should not contain secrets as they will be viewable in plain-text format in the production binary.
+- Use client environment variables for partially protected values, such as public API keys you don't want to commit to Git or hard-code in your app and that may change depending on the environment.
+- Expo environment variables can be updated while the development server (`npx expo start`) is running, without restarting or clearing the bundler cache — however, you'll need to modify and save an included source file to see the updates. You must also perform a client reload, as environment variables do not support Fast Refresh.
+
+{/* TODO: Usage in EAS */}
+
+## CSS
+
+> Since SDK 49
+
+> **info** CSS support is under development and currently only works on web.
+
+Expo supports CSS in your project. You can import CSS files from any component. CSS Modules are also supported. To enable CSS, configure your `metro.config.js` as follows, setting `isCSSEnabled` to `true`:
+
+```js metro.config.js
+const { getDefaultConfig } = require('expo/metro-config');
+
+/** @type {import('expo/metro-config').MetroConfig} */
+const config = getDefaultConfig(__dirname, {
+  // Enable CSS support.
+  isCSSEnabled: true,
+});
+
+module.exports = config;
+```
+
+Now you'll need to clear the Metro cache and restart the development server:
+
+```sh
+yarn expo start --clear
+```
+
+Ensure you don't have a custom Metro transformer that processes CSS files. If you do, you'll need to remove it.
+
+### Global CSS
+
+> Warning: Global styles are web-only, usage will cause your application to diverge visually on native.
+
+You can import a CSS file from any component. The CSS will be applied to the entire page.
+
+Here, we'll define a global style for the class name `.container`:
+
+```css styles.css
+.container {
+  background-color: red;
+}
+```
+
+We can then use the class name in our component by importing the stylesheet and using `.container`:
+
+```js App.js
+import './styles.css';
+import { View } from 'react-native';
+
+export default function App() {
+  return (
+    <>
+      {/* Use `className` to assign the style with React DOM components. */}
+      <div className="container">Hello World</div>
+
+      {/* Use `style` with the following syntax to append class names in React Native for web. */}
+      <View
+        style={{
+          $$css: true,
+          _: 'container',
+        }}>
+        Hello World
+      </View>
+    </>
+  );
+}
+```
+
+You can also import stylesheets that are vendored in libraries, just like you would any node module:
+
+```js index.js
+// Applies the styles app-wide.
+import 'emoji-mart/css/emoji-mart.css';
+```
+
+- On native, all global stylesheets are automatically ignored.
+- Hot reloading is supported for global stylesheets, simply save the file and the changes will be applied.
+
+### CSS Modules
+
+> CSS Modules for native are under development and currently only work on web.
+
+CSS Modules are a way to scope CSS to a specific component. This is useful for avoiding naming collisions and for ensuring that styles are only applied to the intended component.
+
+In Expo, CSS Modules are defined by creating a file with the `.module.css` extension. The file can be imported from any component. The exported value is an object with the class names as keys and the React Native style objects as values.
+
+CSS Modules support platform extensions to allow you to define different styles for different platforms. For example, you can define a `module.ios.css` and `module.android.css` file to define styles for iOS and Android respectively. You'll need to import without the extension, for example:
+
+```diff App.js
+// Importing `./App.module.ios.css`:
+- import styles from './App.module.css';
++ import styles from './App.module';
+```
+
+Flipping the extension, e.g. `App.ios.module.css` will not work and result in a universal module named `App.ios.module`.
+
+> You cannot pass styles to the `className` prop of a React Native or React Native for web component. Instead, you must use the `style` prop.
+
+```js App.js
+import styles from './App.module.css';
+
+export default function Page() {
+  return <View style={styles.container}>Hello World</View>;
+}
+```
+
+```css App.module.css
+.container {
+  background-color: red;
+}
+```
+
+- On web, all CSS values are available. CSS is not processed or auto-prefixed like it is with the React Native Web `StyleSheet` API.
+- CSS Modules use [lightningcss](https://github.com/parcel-bundler/lightningcss) under the hood, check [the issues](https://github.com/parcel-bundler/lightningcss/issues) for unsupported features.
+
+### PostCSS
+
+> Changing the Post CSS or `browserslist` config will require you to clear the Metro cache: `npx expo start --clear` | `npx expo export --clear`.
+
+[PostCSS](https://github.com/postcss/postcss) can be customized by adding a `postcss.config.json` file to the root of your project. This file should export a function that returns a PostCSS configuration object. For example:
+
+```json postcss.config.json
+{
+  "plugins": {
+    "autoprefixer": {}
+  }
+}
+```
+
+Both `postcss.config.json` and `postcss.config.js` are supported, but `postcss.config.json` enables better caching.
+
+### SASS
+
+Expo Metro has _partial_ support for SCSS/SASS.
+
+To setup, install the `sass` package in your project:
+
+```sh
+yarn add sass
+```
+
+Then, ensure [CSS is setup](#css) in the `metro.config.js` file.
+
+- When `sass` is installed, then modules without extensions will be resolved in the following order: `scss`, `sass`, `css`.
+- Only use the intended syntax with `sass` files.
+- Importing other files from inside a scss/sass file is not currently supported.
+
 ## Bare workflow setup
 
 > This guide is versioned and will need to be revisited when upgrading/downgrading Expo. Alternatively, use [Expo Prebuild](/workflow/prebuild) for fully automated setup.
 
 Projects that don't use [Expo Prebuild](/workflow/prebuild) must configure native files to ensure the Expo Metro config is always used to bundle the project.
-If this isn't done, then features like [aliases](/guides/typescript#path-aliases), [absolute imports](/guides/typescript#absolute-imports), asset hashing, and more will not work.
+
+{/* If this isn't done, then features like [aliases](/guides/typescript#path-aliases), [absolute imports](/guides/typescript#absolute-imports), asset hashing, and more will not work. */}
+
 These modifications are meant to replace `npx react-native bundle` and `npx react-native start` with `npx expo export:embed` and `npx expo start --dev-client` respectively.
 
 ### `metro.config.js`
@@ -113,3 +288,53 @@ fi
 ```
 
 > You can set `CLI_PATH`, `BUNDLE_COMMAND`, and `ENTRY_FILE` environment variables to overwrite these defaults.
+
+### Custom Entry File
+
+By default, React Native only supports using a root `index.js` file as the entry file (or platform-specific variation like `index.ios.js`). Expo projects allow using any entry file, but this requires addition bare setup.
+
+#### Development
+
+Development mode entry files can be enabled by using the [`expo-dev-client`](/clients/introduction.mdx) package. Alternatively you can add the following configuration:
+
+In the `ios/[project]/AppDelegate.mm` file:
+
+```diff
+- (NSURL *)sourceURLForBridge:(RCTBridge *)bridge
+{
+#if DEBUG
+-  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@"index"];
++  return [[RCTBundleURLProvider sharedSettings] jsBundleURLForBundleRoot:@".expo/.virtual-metro-entry"];
+#else
+  return [[NSBundle mainBundle] URLForResource:@"main" withExtension:@"jsbundle"];
+#endif
+}
+```
+
+In the `android/app/src/main/java/**/MainApplication.java`:
+
+```diff
+@Override
+protected String getJSMainModuleName() {
+-  return "index";
++  return ".expo/.virtual-metro-entry";
+}
+```
+
+#### Production
+
+In your `ios/<Project>.xcodeproj/project.pbxproj` file, replace the `"Bundle React Native code and images"` script to set `$ENTRY_FILE` according using Metro:
+
+```diff
++			shellScript = "if [[ -f \"$PODS_ROOT/../.xcode.env\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env\"\nfi\nif [[ -f \"$PODS_ROOT/../.xcode.env.local\" ]]; then\n  source \"$PODS_ROOT/../.xcode.env.local\"\nfi\n\n# The project root by default is one level up from the ios directory\nexport PROJECT_ROOT=\"$PROJECT_DIR\"/..\n\nif [[ \"$CONFIGURATION\" = *Debug* ]]; then\n  export SKIP_BUNDLING=1\nfi\nif [[ -z \"$ENTRY_FILE\" ]]; then\n  # Set the entry JS file using the bundler's entry resolution.\n  export ENTRY_FILE=\"$(\"$NODE_BINARY\" -e \"require('expo/scripts/resolveAppEntry')\" \"$PROJECT_ROOT\" ios relative | tail -n 1)\"\nfi\n\nif [[ -z \"$CLI_PATH\" ]]; then\n  # Use Expo CLI\n  export CLI_PATH=\"$(\"$NODE_BINARY\" --print \"require.resolve('@expo/cli')\")\"\nfi\nif [[ -z \"$BUNDLE_COMMAND\" ]]; then\n  # Default Expo CLI command for bundling\n  export BUNDLE_COMMAND=\"export:embed\"\nfi\n\n`\"$NODE_BINARY\" --print \"require('path').dirname(require.resolve('react-native/package.json')) + '/scripts/react-native-xcode.sh'\"`\n\n";
+```
+
+The Android `app/build.gradle` must be configured to use Metro module resolution to find the root entry file. Modify the `react` config object:
+
+```diff
++ def projectRoot = rootDir.getAbsoluteFile().getParentFile().getAbsolutePath()
+
+react {
++    entryFile = file(["node", "-e", "require('expo/scripts/resolveAppEntry')", projectRoot, "android", "absolute"].execute(null, rootDir).text.trim())
+}
+```

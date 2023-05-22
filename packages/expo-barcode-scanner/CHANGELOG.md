@@ -8,7 +8,13 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+## 12.4.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
 
 ## 12.3.2 - 2023-03-03
 

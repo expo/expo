@@ -39,6 +39,7 @@ internal final class RemoteAppLoader: AppLoader {
 
     self.successBlock = { [weak self] (updateResponse: UpdateResponse?) in
       guard let strongSelf = self else {
+        successBlockArg(updateResponse)
         return
       }
       // even if update is nil (meaning we didn't load a new update),
@@ -62,7 +63,7 @@ internal final class RemoteAppLoader: AppLoader {
 
     database.databaseQueue.async {
       let embeddedUpdate = EmbeddedAppLoader.embeddedManifest(withConfig: self.config, database: self.database)
-      let extraHeaders = FileDownloader.extraHeaders(
+      let extraHeaders = FileDownloader.extraHeadersForRemoteUpdateRequest(
         withDatabase: self.database,
         config: self.config,
         launchedUpdate: self.launchedUpdate,

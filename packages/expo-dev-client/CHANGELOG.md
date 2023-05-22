@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+## 2.3.0 — 2023-05-08
+
+### 💡 Others
+
+- Update e2e tests to use custom entry file system. ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))
 
 ## 2.1.4 — 2023-02-28
 

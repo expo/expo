@@ -39,7 +39,10 @@ class DevLauncherManifestParser(
   }
 
   private fun getHeaders(): Headers {
-    val headersMap = mutableMapOf("expo-platform" to "android")
+    val headersMap = mutableMapOf(
+      "expo-platform" to "android",
+      "accept" to "application/expo+json,application/json"
+    )
     if (installationID != null) {
       headersMap["expo-dev-client-id"] = installationID
     }

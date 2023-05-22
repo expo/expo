@@ -4,7 +4,6 @@ import resolveFrom from 'resolve-from';
 
 import { getConfig } from '../Config';
 import { ProjectConfig } from '../Config.types';
-import { ConfigError } from '../Errors';
 import { getBareExtensions } from './extensions';
 
 // https://github.com/facebook/create-react-app/blob/9750738cce89a967cc71f28390daf5d4311b193c/packages/react-scripts/config/paths.js#L22
@@ -27,7 +26,7 @@ const nativePlatforms = ['ios', 'android'];
 
 export function resolveEntryPoint(
   projectRoot: string,
-  { platform, projectConfig }: { platform: string; projectConfig?: ProjectConfig }
+  { platform, projectConfig }: { platform: string; projectConfig?: Partial<ProjectConfig> }
 ) {
   const platforms = nativePlatforms.includes(platform) ? [platform, 'native'] : [platform];
   return getEntryPoint(projectRoot, ['./index'], platforms, projectConfig);
@@ -37,7 +36,7 @@ export function getEntryPoint(
   projectRoot: string,
   entryFiles: string[],
   platforms: string[],
-  projectConfig?: ProjectConfig
+  projectConfig?: Partial<ProjectConfig>
 ): string | null {
   const extensions = getBareExtensions(platforms);
   return getEntryPointWithExtensions(projectRoot, entryFiles, extensions, projectConfig);
@@ -48,7 +47,7 @@ export function getEntryPointWithExtensions(
   projectRoot: string,
   entryFiles: string[],
   extensions: string[],
-  projectConfig?: ProjectConfig
+  projectConfig?: Partial<ProjectConfig>
 ): string {
   if (!projectConfig) {
     // drop all logging abilities
@@ -61,15 +60,7 @@ export function getEntryPointWithExtensions(
     }
   }
 
-  const { exp, pkg } = projectConfig;
-
-  if (typeof exp?.entryPoint === 'string') {
-    // We want to stop reading the app.json for determining the entry file in SDK +49
-    throw new ConfigError(
-      'expo.entryPoint has been removed in favor of the main field in the package.json.',
-      'DEPRECATED'
-    );
-  }
+  const { pkg } = projectConfig;
 
   if (pkg) {
     // If the config doesn't define a custom entry then we want to look at the `package.json`s `main` field, and try again.

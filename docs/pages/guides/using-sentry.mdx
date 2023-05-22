@@ -38,21 +38,27 @@ It notifies you of exceptions or errors that your users run into while using you
 Before getting real-time updates on errors and making your app generally incredible, you'll need to make sure you've created a Sentry project. Here's how to do that:
 
 <Step label="1.1">
-  [Sign up for Sentry](https://sentry.io/signup/) (it's free), and create a project in your
-  Dashboard. Take note of your **organization name**, **project name**, and **`DSN`**; you'll need
-  them later. - **organization name** is available in your `Organization settings` tab - **project
-  name** is available in your project's `Settings` > `Projects` tab (find it in the list) -
-  **`DSN`** is available in your project's `Settings` > `Projects` > **Project name** > `Client Keys
-  (DSN)` tab
+
+[Sign up for Sentry](https://sentry.io/signup/) (it's free), and create a project in your
+Dashboard. Take note of your **organization slug**, **project name**, and **`DSN`** as you'll need
+them later:
+
+- **organization slug** is available in your **Organization settings** tab
+- **project name** is available in your project's **Settings** > **Projects** tab (find it in the list)
+- **`DSN`** is available in your project's **Settings** > **Projects** > **Project name** > **Client Keys
+  (DSN)** tab.
+
 </Step>
 
 <Step label="1.2">
-  Go to the [Sentry API section](https://sentry.io/settings/account/api/auth-tokens/), and create an
-  **auth token**. The token requires the scopes: `org:read`, `project:releases`, and
-  `project:write`. Save this, too.
+
+Go to the [Sentry API section](https://sentry.io/settings/account/api/auth-tokens/), and create an
+**auth token**. The token requires the scopes: `org:read`, `project:releases`, and
+`project:write`. Save them.
+
 </Step>
 
-Once you have each of these: organization name, project name, DSN, and auth token, you're all set!
+Once you have each of these: organization slug, project name, DSN, and auth token, you're all set!
 
 </Step>
 

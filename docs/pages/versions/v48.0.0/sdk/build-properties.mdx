@@ -9,7 +9,7 @@ import { ConfigPluginExample } from '~/components/plugins/ConfigSection';
 import { APIInstallSection } from '~/components/plugins/InstallSection';
 import PlatformsSection from '~/components/plugins/PlatformsSection';
 
-`expo-build-properties` is a [config plugin](/guides/config-plugins) configuring the native build properties
+`expo-build-properties` is a [config plugin](/config-plugins/introduction/) configuring the native build properties
 of your **android/gradle.properties** and **ios/Podfile.properties.json** directories during [Prebuild](/workflow/prebuild).
 
 > **info** This config plugin configures how [Prebuild command](/workflow/prebuild) generates the native **android** and **ios** folders
@@ -52,21 +52,25 @@ of your **android/gradle.properties** and **ios/Podfile.properties.json** direct
 ### Example app.config.js usage
 
 ```js app.config.js
-import { withPlugins } from 'expo/config-plugins';
-import { withBuildProperties } from 'expo-build-properties';
-
-export default withPlugins(config, [
-  [withBuildProperties, {
-    "android": {
-      "compileSdkVersion": 31,
-      "targetSdkVersion": 31,
-      "buildToolsVersion": "31.0.0"
-    },
-    "ios": {
-      "deploymentTarget": "13.0"
-    }
-  }]
-]);
+export default {
+  expo: {
+    plugins: [
+      [
+        'expo-build-properties',
+        {
+          android: {
+            compileSdkVersion: 31,
+            targetSdkVersion: 31,
+            buildToolsVersion: '31.0.0',
+          },
+          ios: {
+            deploymentTarget: '13.0',
+          },
+        },
+      ],
+    ],
+  },
+};
 ```
 
 ### All configurable properties

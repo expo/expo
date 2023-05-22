@@ -10,13 +10,23 @@ import { Collapsible } from '~/ui/components/Collapsible';
 import { CODE } from '~/ui/components/Text';
 import { Step } from '~/ui/components/Step';
 
-AuthSession API allows [browser-based authentication](/versions/latest/sdk/auth-session/#how-web-browser-based-authentication-flows-work) (using OAuth or OpenID Connect) to your project for Android, iOS, and the web. This guide provides steps on configuring and using the API with Google and a [development build](/development/create-development-builds/).
+AuthSession API allows [browser-based authentication](/versions/latest/sdk/auth-session/#how-web-browser-based-authentication-flows-work) (using OAuth or OpenID Connect) to your project for Android, iOS, and the web. This guide provides steps on configuring and using the API with Google and a [development build](/develop/development-builds/create-a-build/).
 
 ## Install libraries
 
 To use AuthSession API, you'll need to install the following packages in your project:
 
+<Terminal cmd={['$ npx expo install expo-auth-session expo-crypto expo-web-browser']} />
+
+<Collapsible summary="Using SDK 47 or below?">
+
+If you're using SDK 47 or below, you'll need to install `expo-random` instead of `expo-crypto` package:
+
 <Terminal cmd={['$ npx expo install expo-auth-session expo-random expo-web-browser']} />
+
+`expo-random` is deprecated from SDK 48 and above and is replaced by `expo-crypto`.
+
+</Collapsible>
 
 ## Get credentials
 
@@ -261,7 +271,7 @@ const styles = StyleSheet.create({
 
 ## Testing your app
 
-**For a development build**, see [Use development builds](/development/use-development-builds/#start-the-development-server) for further instructions on how to start the development server or run [`npx expo run:android` or `npx expo run:ios`](/workflow/expo-cli/#compiling) command to test the native project locally.
+**For a development build**, see [Use development builds](/develop/development-builds/use-development-builds/#start-the-development-server) for further instructions on how to start the development server or run [`npx expo run:android` or `npx expo run:ios`](/more/expo-cli/#compiling) command to test the native project locally.
 
 ## Expo web
 

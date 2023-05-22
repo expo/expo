@@ -3,7 +3,6 @@ import * as React from 'react';
 import { Platform, StyleSheet } from 'react-native';
 
 import { useMenuPreferences } from '../hooks/useMenuPreferences';
-import { GestureHandlerTouchableWrapper } from './GestureHandlerTouchableWrapper';
 
 const deviceMessage = Platform.select({
   ios: `Since this is your first time opening this development build, we wanted to show you this menu and let you know that you can shake your device or long press anywhere on the screen with three fingers to get back to it at any time.`,
@@ -51,15 +50,13 @@ export function Onboarding({ isDevice }: OnboardingProps) {
 
             <Spacer.Vertical size="xl" />
 
-            <GestureHandlerTouchableWrapper onPress={onOnboardingFinishedPress}>
-              <Button.ScaleOnPressContainer bg="primary" onPress={onOnboardingFinishedPress}>
-                <View py="small">
-                  <Button.Text align="center" size="large" color="primary" weight="medium">
-                    Got It
-                  </Button.Text>
-                </View>
-              </Button.ScaleOnPressContainer>
-            </GestureHandlerTouchableWrapper>
+            <Button.ScaleOnPressContainer bg="primary" onPress={onOnboardingFinishedPress}>
+              <View py="small">
+                <Button.Text align="center" size="large" color="primary" weight="medium">
+                  Got It
+                </Button.Text>
+              </View>
+            </Button.ScaleOnPressContainer>
           </View>
         </View>
       </View>

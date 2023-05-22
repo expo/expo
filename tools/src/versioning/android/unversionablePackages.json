@@ -9,6 +9,7 @@
   "expo-json-utils",
   "expo-module-scripts",
   "expo-module-template",
+  "expo-module-template-local",
   "jest-expo",
   "expo-modules-test-core",
   "expo-test-runner"

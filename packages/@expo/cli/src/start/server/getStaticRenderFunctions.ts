@@ -10,9 +10,12 @@ import path from 'path';
 import requireString from 'require-from-string';
 import resolveFrom from 'resolve-from';
 
+import { stripAnsi } from '../../utils/ansi';
 import { delayAsync } from '../../utils/delay';
+import { SilentError } from '../../utils/errors';
 import { memoize } from '../../utils/fn';
 import { profile } from '../../utils/profile';
+import { logMetroError } from './metro/metroErrorInterface';
 import { getMetroServerRoot } from './middleware/ManifestMiddleware';
 
 const debug = require('debug')('expo:start:server:node-renderer') as typeof console.log;
@@ -21,6 +24,11 @@ function wrapBundle(str: string) {
   // Skip the metro runtime so debugging is a bit easier.
   // Replace the __r() call with an export statement.
   return str.replace(/^(__r\(.*\);)$/m, 'module.exports = $1');
+}
+
+function stripProcess(str: string) {
+  // TODO: Remove from the metro prelude
+  return str.replace(/process=this\.process\|\|{},/m, '');
 }
 
 // TODO(EvanBacon): Group all the code together and version.
@@ -39,6 +47,8 @@ type StaticRenderOptions = {
   // Ensure the style format is `css-xxxx` (prod) instead of `css-view-xxxx` (dev)
   dev?: boolean;
   minify?: boolean;
+  platform?: string;
+  environment?: 'node';
 };
 
 const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredModuleId: string) => {
@@ -57,7 +67,7 @@ const moveStaticRenderFunction = memoize(async (projectRoot: string, requiredMod
 export async function getStaticRenderFunctionsContentAsync(
   projectRoot: string,
   devServerUrl: string,
-  { dev = false, minify = false }: StaticRenderOptions = {}
+  { dev = false, minify = false, environment }: StaticRenderOptions = {}
 ): Promise<string> {
   const root = getMetroServerRoot(projectRoot);
   const requiredModuleId = getRenderModuleId(root);
@@ -69,18 +79,69 @@ export async function getStaticRenderFunctionsContentAsync(
     moduleId = await moveStaticRenderFunction(projectRoot, requiredModuleId);
   }
 
-  const serverPath = path.relative(root, moduleId).replace(/\.[jt]sx?$/, '.bundle');
-  console.log(serverPath);
-  debug('Loading render functions from:', moduleId, moduleId, root);
+  return requireFileContentsWithMetro(root, devServerUrl, moduleId, { dev, minify, environment });
+}
 
-  const res = await fetch(`${devServerUrl}/${serverPath}?platform=web&dev=${dev}&minify=${minify}`);
+async function ensureFileInRootDirectory(projectRoot: string, otherFile: string) {
+  // Cannot be accessed using Metro's server API, we need to move the file
+  // into the project root and try again.
+  if (!path.relative(projectRoot, otherFile).startsWith('../')) {
+    return otherFile;
+  }
+
+  // Copy the file into the project to ensure it works in monorepos.
+  // This means the file cannot have any relative imports.
+  const tempDir = path.join(projectRoot, '.expo/static-tmp');
+  await fs.promises.mkdir(tempDir, { recursive: true });
+  const moduleId = path.join(tempDir, path.basename(otherFile));
+  await fs.promises.writeFile(moduleId, await fs.promises.readFile(otherFile, 'utf8'));
+  // Sleep to give watchman time to register the file.
+  await delayAsync(50);
+  return moduleId;
+}
+
+export async function createMetroEndpointAsync(
+  projectRoot: string,
+  devServerUrl: string,
+  absoluteFilePath: string,
+  { dev = false, platform = 'web', minify = false, environment }: StaticRenderOptions = {}
+): Promise<string> {
+  const root = getMetroServerRoot(projectRoot);
+  const safeOtherFile = await ensureFileInRootDirectory(projectRoot, absoluteFilePath);
+  const serverPath = path.relative(root, safeOtherFile).replace(/\.[jt]sx?$/, '.bundle');
+  debug('fetching from Metro:', root, serverPath);
+
+  let url = `${devServerUrl}/${serverPath}?platform=${platform}&dev=${dev}&minify=${minify}`;
+
+  if (environment) {
+    url += `&resolver.environment=${environment}&transform.environment=${environment}`;
+  }
+  return url;
+}
+
+export class MetroNodeError extends Error {
+  constructor(message: string, public rawObject: any) {
+    super(message);
+  }
+}
+
+export async function requireFileContentsWithMetro(
+  projectRoot: string,
+  devServerUrl: string,
+  absoluteFilePath: string,
+  props: StaticRenderOptions = {}
+): Promise<string> {
+  const url = await createMetroEndpointAsync(projectRoot, devServerUrl, absoluteFilePath, props);
+
+  const res = await fetch(url);
 
   // TODO: Improve error handling
   if (res.status === 500) {
     const text = await res.text();
-    if (text.startsWith('{"originModulePath"')) {
+    if (text.startsWith('{"originModulePath"') || text.startsWith('{"type":"TransformError"')) {
       const errorObject = JSON.parse(text);
-      throw new Error(errorObject.message);
+
+      throw new MetroNodeError(stripAnsi(errorObject.message) ?? errorObject.message, errorObject);
     }
     throw new Error(`[${res.status}]: ${res.statusText}\n${text}`);
   }
@@ -91,45 +152,62 @@ export async function getStaticRenderFunctionsContentAsync(
 
   const content = await res.text();
 
-  return wrapBundle(content);
+  let bun = wrapBundle(content);
+
+  // This exposes the entire environment to the bundle.
+  if (props.environment === 'node') {
+    bun = stripProcess(bun);
+  }
+
+  return bun;
+}
+export async function requireWithMetro<T>(
+  projectRoot: string,
+  devServerUrl: string,
+  absoluteFilePath: string,
+  options: StaticRenderOptions = {}
+): Promise<T> {
+  const content = await requireFileContentsWithMetro(
+    projectRoot,
+    devServerUrl,
+    absoluteFilePath,
+    options
+  );
+  return evalMetro(content);
 }
 
 export async function getStaticRenderFunctions(
   projectRoot: string,
   devServerUrl: string,
   options: StaticRenderOptions = {}
-): Promise<any> {
+): Promise<Record<string, (...args: any[]) => Promise<any>>> {
   const scriptContents = await getStaticRenderFunctionsContentAsync(
     projectRoot,
     devServerUrl,
     options
   );
-  return profile(requireString, 'eval-metro-bundle')(scriptContents);
+
+  const contents = evalMetro(scriptContents);
+
+  // wrap each function with a try/catch that uses Metro's error formatter
+  return Object.keys(contents).reduce((acc, key) => {
+    const fn = contents[key];
+    if (typeof fn !== 'function') {
+      return { ...acc, [key]: fn };
+    }
+
+    acc[key] = async function (...props: any[]) {
+      try {
+        return await fn.apply(this, props);
+      } catch (error: any) {
+        await logMetroError(projectRoot, { error });
+        throw new SilentError(error);
+      }
+    };
+    return acc;
+  }, {} as any);
 }
 
-export async function getStaticPageContentsAsync(
-  projectRoot: string,
-  devServerUrl: string,
-  options: StaticRenderOptions = {}
-) {
-  const scriptContents = await getStaticRenderFunctionsContentAsync(
-    projectRoot,
-    devServerUrl,
-    options
-  );
-
-  const {
-    getStaticContent,
-    // getDataLoader
-  } = profile(requireString, 'eval-metro-bundle')(scriptContents);
-
-  return function loadPageAsync(url: URL) {
-    // const fetchData = getDataLoader(url);
-
-    return {
-      fetchData: false,
-      scriptContents,
-      renderAsync: () => getStaticContent(url),
-    };
-  };
+function evalMetro(src: string) {
+  return profile(requireString, 'eval-metro-bundle')(src);
 }

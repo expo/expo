@@ -3,7 +3,7 @@ apply plugin: 'kotlin-android'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '7.2.1'
+version = '7.3.0'
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -35,19 +35,11 @@ buildscript {
   }
 }
 
-// Creating sources with comments
-task androidSourcesJar(type: Jar) {
-  classifier = 'sources'
-  from android.sourceSets.main.java.srcDirs
-}
-
 afterEvaluate {
   publishing {
     publications {
       release(MavenPublication) {
         from components.release
-        // Add additional sourcesJar to artifacts
-        artifact(androidSourcesJar)
       }
     }
     repositories {
@@ -74,10 +66,15 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 14
-    versionName '7.2.1'
+    versionName '7.3.0'
   }
   lintOptions {
     abortOnError false
+  }
+  publishing {
+    singleVariant("release") {
+      withSourcesJar()
+    }
   }
 }
 

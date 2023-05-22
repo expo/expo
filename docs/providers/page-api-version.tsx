@@ -1,7 +1,7 @@
-import { useRouter } from 'next/router';
+import { useRouter } from 'next/compat/router';
 import { createContext, PropsWithChildren, useCallback, useContext } from 'react';
 
-import { isReferencePath } from '~/common/routes';
+import { isVersionedPath } from '~/common/routes';
 import navigation from '~/public/static/constants/navigation.json';
 
 export const PageApiVersionContext = createContext({
@@ -25,12 +25,12 @@ type Props = PropsWithChildren<object>;
 
 export function PageApiVersionProvider({ children }: Props) {
   const router = useRouter();
-  const version = getVersionFromPath(router.pathname);
+  const version = getVersionFromPath(router?.pathname ?? '');
   const hasVersion = version !== null;
 
   // note(Cedric): if the page doesn't exists, the error page will handle it
   const setVersion = useCallback((newVersion: string) => {
-    router.push(replaceVersionInPath(router.pathname, newVersion));
+    router?.push(replaceVersionInPath(router.pathname, newVersion));
   }, []);
 
   return (
@@ -50,7 +50,7 @@ export function usePageApiVersion() {
  * This only accepts pathname without hashes or query strings.
  */
 export function getVersionFromPath(path: string): PageApiVersionContextType['version'] | null {
-  return isReferencePath(path)
+  return isVersionedPath(path)
     ? (path.split('/', 3).pop()! as PageApiVersionContextType['version'])
     : null;
 }

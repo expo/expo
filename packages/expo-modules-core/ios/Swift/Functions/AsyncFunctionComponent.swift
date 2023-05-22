@@ -46,10 +46,8 @@ public final class AsyncFunctionComponent<Args, FirstArgType, ReturnType>: AnyAs
   ) {
     self.name = name
     self.takesPromise = dynamicArgumentTypes.last?.wraps(Promise.self) ?? false
+    self.dynamicArgumentTypes = dynamicArgumentTypes
     self.body = body
-
-    // Drop the last argument type if it's the `Promise`.
-    self.dynamicArgumentTypes = takesPromise ? dynamicArgumentTypes.dropLast(1) : dynamicArgumentTypes
   }
 
   // MARK: - AnyFunction
@@ -59,25 +57,30 @@ public final class AsyncFunctionComponent<Args, FirstArgType, ReturnType>: AnyAs
   let dynamicArgumentTypes: [AnyDynamicType]
 
   var argumentsCount: Int {
-    return dynamicArgumentTypes.count - (takesOwner ? 1 : 0)
+    return dynamicArgumentTypes.count - (takesOwner ? 1 : 0) - (takesPromise ? 1 : 0)
   }
 
   var takesOwner: Bool = false
 
-  func call(by owner: AnyObject?, withArguments args: [Any], callback: @escaping (FunctionCallResult) -> ()) {
+  func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ()) {
     let promise = Promise { value in
       callback(.success(Conversions.convertFunctionResult(value)))
     } rejecter: { exception in
       callback(.failure(exception))
     }
-    var arguments: [Any] = []
+    var arguments: [Any] = concat(
+      arguments: args,
+      withOwner: owner,
+      withPromise: takesPromise ? promise : nil,
+      forFunction: self,
+      appContext: appContext
+    )
 
     do {
-      arguments = concat(
-        arguments: try cast(arguments: args, forFunction: self),
-        withOwner: owner,
-        forFunction: self
-      )
+      try validateArgumentsNumber(function: self, received: args.count)
+
+      // All `JavaScriptValue` args must be preliminarly converted on the JS thread, so before we jump to the function's queue.
+      arguments = try cast(jsValues: arguments, forFunction: self, appContext: appContext)
     } catch let error as Exception {
       callback(.failure(error))
       return
@@ -86,18 +89,18 @@ public final class AsyncFunctionComponent<Args, FirstArgType, ReturnType>: AnyAs
       return
     }
 
-    // Add promise to the array of arguments if necessary.
-    if takesPromise {
-      arguments.append(promise)
-    }
-
     let queue = queue ?? defaultQueue
 
     queue.async { [body, name] in
       let returnedValue: ReturnType?
 
       do {
+        // Convert arguments to the types desired by the function.
+        arguments = try cast(arguments: arguments, forFunction: self, appContext: appContext)
+
+        // swiftlint:disable:next force_cast
         let argumentsTuple = try Conversions.toTuple(arguments) as! Args
+
         returnedValue = try body(argumentsTuple)
       } catch let error as Exception {
         promise.reject(FunctionCallException(name).causedBy(error))
@@ -114,13 +117,13 @@ public final class AsyncFunctionComponent<Args, FirstArgType, ReturnType>: AnyAs
 
   // MARK: - JavaScriptObjectBuilder
 
-  func build(inRuntime runtime: JavaScriptRuntime) -> JavaScriptObject {
-    return runtime.createAsyncFunction(name, argsCount: argumentsCount) { [weak self, name] this, args, resolve, reject in
+  func build(appContext: AppContext) throws -> JavaScriptObject {
+    return try appContext.runtime.createAsyncFunction(name, argsCount: argumentsCount) { [weak self, name] this, args, resolve, reject in
       guard let self = self else {
         let exception = NativeFunctionUnavailableException(name)
         return reject(exception.code, exception.description, nil)
       }
-      self.call(by: this, withArguments: args) { result in
+      self.call(by: this, withArguments: args, appContext: appContext) { result in
         switch result {
         case .failure(let error):
           reject(error.code, error.description, nil)

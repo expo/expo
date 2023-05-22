@@ -13,7 +13,7 @@
 import Foundation
 import EASClient
 
-internal typealias SuccessBlock = (_ data: Data, _ urlResponse: URLResponse) -> Void
+internal typealias SuccessBlock = (_ data: Data?, _ urlResponse: URLResponse) -> Void
 internal typealias ErrorBlock = (_ error: Error) -> Void
 internal typealias HashSuccessBlock = (_ data: Data, _ urlResponse: URLResponse, _ base64URLEncodedSHA256Hash: String) -> Void
 
@@ -123,12 +123,27 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       fromURL: url,
       extraHeaders: extraHeaders
     ) { data, response in
+      guard let data = data else {
+        let errorMessage = String(
+          format: "File download response was empty for URL: %@",
+          url.absoluteString
+        )
+        self.logger.error(message: errorMessage, code: UpdatesErrorCode.assetsFailedToLoad)
+        errorBlock(NSError(
+          domain: ErrorDomain,
+          code: FileDownloaderErrorCode.InvalidResponseError.rawValue,
+          userInfo: [NSLocalizedDescriptionKey: errorMessage]
+        ))
+        return
+      }
+
       let hashBase64String = UpdatesUtils.base64UrlEncodedSHA256WithData(data)
       if let expectedBase64URLEncodedSHA256Hash = expectedBase64URLEncodedSHA256Hash,
         expectedBase64URLEncodedSHA256Hash != hashBase64String {
         let errorMessage = String(
           format: "File download was successful but base64url-encoded SHA-256 did not match expected; expected: %@; actual: %@",
-          [expectedBase64URLEncodedSHA256Hash, hashBase64String]
+          expectedBase64URLEncodedSHA256Hash,
+          hashBase64String
         )
         self.logger.error(message: errorMessage, code: UpdatesErrorCode.assetsFailedToLoad)
         errorBlock(NSError(
@@ -146,7 +161,8 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       } catch {
         let errorMessage = String(
           format: "Could not write to path %@: %@",
-          [destinationPath, error.localizedDescription]
+          destinationPath,
+          error.localizedDescription
         )
         self.logger.error(message: errorMessage, code: UpdatesErrorCode.unknown)
         errorBlock(NSError(
@@ -205,17 +221,27 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
    * Get extra (stateful) headers to pass into `downloadManifestFromURL:`
    * Must be called on the database queue
    */
-  static func extraHeaders(
+  static func extraHeadersForRemoteUpdateRequest(
     withDatabase database: UpdatesDatabase,
     config: UpdatesConfig,
     launchedUpdate: Update?,
     embeddedUpdate: Update?
   ) -> [String: Any] {
+    let scopeKey = config.scopeKey.require("Must have scopeKey in config")
+
     var extraHeaders: [String: Any] = [:]
     do {
-      extraHeaders = try database.serverDefinedHeaders(withScopeKey: config.scopeKey.require("Must have scopeKey in config")) ?? [:]
+      extraHeaders = try database.serverDefinedHeaders(withScopeKey: scopeKey) ?? [:]
     } catch {
       NSLog("Error selecting serverDefinedHeaders from database: %@", [error.localizedDescription])
+    }
+
+    do {
+      if let extraClientParams = try database.extraParams(withScopeKey: scopeKey) {
+        extraHeaders["Expo-Extra-Params"] = try StringStringDictionarySerializer.serialize(dictionary: extraClientParams)
+      }
+    } catch {
+      NSLog("Error adding extra params to headers: %@", [error.localizedDescription])
     }
 
     if let launchedUpdate = launchedUpdate {
@@ -326,12 +352,42 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
 
   func parseManifestResponse(
     _ httpResponse: HTTPURLResponse,
-    withData data: Data,
+    withData data: Data?,
     database: UpdatesDatabase,
     successBlock: @escaping RemoteUpdateDownloadSuccessBlock,
     errorBlock: @escaping RemoteUpdateDownloadErrorBlock
   ) {
     let headerDictionary = httpResponse.allHeaderFields as! [String: Any]
+    let responseHeaderData = ResponseHeaderData(
+      protocolVersionRaw: headerDictionary.optionalValue(forKey: "expo-protocol-version"),
+      serverDefinedHeadersRaw: headerDictionary.optionalValue(forKey: "expo-server-defined-headers"),
+      manifestFiltersRaw: headerDictionary.optionalValue(forKey: "expo-manifest-filters"),
+      manifestSignature: headerDictionary.optionalValue(forKey: "expo-manifest-signature")
+    )
+
+    if httpResponse.statusCode == 204 || data == nil {
+      if let protocolVersion = responseHeaderData.protocolVersion,
+        protocolVersion > 0 {
+        successBlock(UpdateResponse(
+          responseHeaderData: responseHeaderData,
+          manifestUpdateResponsePart: nil,
+          directiveUpdateResponsePart: nil
+        ))
+        return
+      }
+    }
+
+    guard let data = data else {
+      let errorMessage = "Missing body in remote update"
+      logger.error(message: errorMessage, code: UpdatesErrorCode.unknown)
+      errorBlock(NSError(
+        domain: ErrorDomain,
+        code: FileDownloaderErrorCode.InvalidResponseError.rawValue,
+        userInfo: [NSLocalizedDescriptionKey: errorMessage]
+      ))
+      return
+    }
+
     let contentType = headerDictionary.stringValueForCaseInsensitiveKey("content-type") ?? ""
 
     if contentType.lowercased().hasPrefix("multipart/") {
@@ -361,7 +417,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       return
     } else {
       let responseHeaderData = ResponseHeaderData(
-        protocolVersion: headerDictionary.optionalValue(forKey: "expo-protocol-version"),
+        protocolVersionRaw: headerDictionary.optionalValue(forKey: "expo-protocol-version"),
         serverDefinedHeadersRaw: headerDictionary.optionalValue(forKey: "expo-server-defined-headers"),
         manifestFiltersRaw: headerDictionary.optionalValue(forKey: "expo-manifest-filters"),
         manifestSignature: headerDictionary.optionalValue(forKey: "expo-manifest-signature")
@@ -407,7 +463,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     var certificateChainStringData: Data?
     var directivePartHeadersAndData: ([String: Any], Data)?
 
-    let completed = reader.readAllParts { headers, content, _ in
+    let completed = data.isEmpty || reader.readAllParts { headers, content, _ in
       if let contentDisposition = (headers as! [String: Any]).stringValueForCaseInsensitiveKey("content-disposition") {
         if let contentDispositionParameters = EXUpdatesParameterParser().parseParameterString(
           contentDisposition,
@@ -486,7 +542,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
 
     let responseHeaders = httpResponse.allHeaderFields as! [String: Any]
     let responseHeaderData = ResponseHeaderData(
-      protocolVersion: responseHeaders.optionalValue(forKey: "expo-protocol-version"),
+      protocolVersionRaw: responseHeaders.optionalValue(forKey: "expo-protocol-version"),
       serverDefinedHeadersRaw: responseHeaders.optionalValue(forKey: "expo-server-defined-headers"),
       manifestFiltersRaw: responseHeaders.optionalValue(forKey: "expo-manifest-filters"),
       manifestSignature: responseHeaders.optionalValue(forKey: "expo-manifest-signature")
@@ -807,7 +863,8 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       userInfo: [
         NSLocalizedDescriptionKey: String(
           format: "No compatible update found at %@. Only %@ are supported.",
-          [config.updateUrl?.absoluteString, config.sdkVersion]
+          config.updateUrl?.absoluteString ?? "(missing config updateUrl)",
+          config.sdkVersion ?? "(missing sdkVersion field)"
         )
       ]
     )
@@ -952,7 +1009,7 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
     errorBlock: @escaping ErrorBlock
   ) {
     let task = session.dataTask(with: request) { data, response, error in
-      guard let data = data, let response = response else {
+      guard let response = response else {
         // error is non-nil when data and response are both nil
         // swiftlint:disable:next force_unwrapping
         let error = error!
@@ -964,7 +1021,9 @@ internal final class FileDownloader: NSObject, URLSessionDataDelegate {
       if let httpResponse = response as? HTTPURLResponse,
         httpResponse.statusCode < 200 || httpResponse.statusCode >= 300 {
         let encoding = FileDownloader.encoding(fromResponse: httpResponse)
-        let body = String(data: data, encoding: encoding) ?? "Unknown body response"
+        let body = data.let { it in
+          String(data: it, encoding: encoding)
+        } ?? "Unknown body response"
         let error = FileDownloader.error(fromResponse: httpResponse, body: body)
         self.logger.error(message: error.localizedDescription, code: .unknown)
         errorBlock(error)

@@ -5,7 +5,7 @@ import fs from 'fs-extra';
 import glob from 'glob-promise';
 import path from 'path';
 
-import { ANDROID_DIR } from '../../Constants';
+import { ANDROID_DIR, ANDROID_VENDORED_DIR } from '../../Constants';
 import logger from '../../Logger';
 import { copyFileWithTransformsAsync, transformFilesAsync } from '../../Transforms';
 import { FileTransforms } from '../../Transforms.types';
@@ -14,8 +14,6 @@ import {
   exponentPackageTransforms,
   vendoredModulesTransforms,
 } from './transforms/vendoredModulesTransforms';
-
-const ANDROID_VENDORED_DIR = path.join(ANDROID_DIR, 'vendored');
 
 /**
  * Versions Android vendored modules.
@@ -65,7 +63,7 @@ export async function versionVendoredModulesAsync(
  * Prebuild shared libraries to jniLibs and cleanup CMakeLists.txt
  */
 async function maybePrebuildSharedLibsAsync(module: string, sdkNumber: number) {
-  const moduleRootDir = path.join(ANDROID_DIR, 'vendored', `sdk${sdkNumber}`, module, 'android');
+  const moduleRootDir = path.join(ANDROID_VENDORED_DIR, `sdk${sdkNumber}`, module, 'android');
   const cmakeFile = path.join(moduleRootDir, 'CMakeLists.txt');
   if (!fs.existsSync(cmakeFile)) {
     return;

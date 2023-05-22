@@ -148,7 +148,7 @@ internal class PropSetException(
 internal class ArgumentCastException(
   argDesiredType: KType,
   argIndex: Int,
-  providedType: ReadableType,
+  providedType: String,
   cause: CodedException,
 ) : DecoratedException(
   message = "The ${formatOrdinalNumber(argIndex + 1)} argument cannot be cast to type $argDesiredType (received $providedType)",

@@ -681,7 +681,7 @@ class CalendarModule(
     val rruleBundle = if (rrule != null) {
       val recurrenceRule = Bundle()
       val recurrenceRules = rrule.split(";").toTypedArray()
-      recurrenceRule.putString("frequency", recurrenceRules[0].split("=").toTypedArray()[1].toLowerCase(Locale.getDefault()))
+      recurrenceRule.putString("frequency", recurrenceRules[0].split("=").toTypedArray()[1].lowercase(Locale.getDefault()))
       if (recurrenceRules.size >= 2 && recurrenceRules[1].split("=").toTypedArray()[0] == "INTERVAL") {
         recurrenceRule.putInt("interval", recurrenceRules[1].split("=").toTypedArray()[1].toInt())
       }

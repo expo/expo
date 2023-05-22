@@ -38,7 +38,6 @@ const UNVERSIONED_PLACEHOLDER = '__UNVERSIONED__';
 const RELATIVE_RN_PATH = './react-native-lab/react-native';
 
 const EXTERNAL_REACT_ABI_DEPENDENCIES = [
-  'Amplitude',
   'Analytics',
   'AppAuth',
   'FBAudienceNetwork',

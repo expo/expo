@@ -24,6 +24,70 @@ declare module 'metro/src/HmrServer' {
   module.exports = MetroHmrServer;
 }
 
+declare module 'metro/src/ModuleGraph/worker/collectDependencies' {
+  export type AllowOptionalDependenciesWithOptions = {
+    exclude: string[];
+  };
+
+  export type DynamicRequiresBehavior = 'throwAtRuntime' | 'reject';
+
+  export type AllowOptionalDependencies = boolean | AllowOptionalDependenciesWithOptions;
+}
+
+declare module 'metro/src/DeltaBundler/types.flow' {
+  export type AllowOptionalDependenciesWithOptions = {
+    exclude: string[];
+  };
+
+  export type AllowOptionalDependencies = boolean | AllowOptionalDependenciesWithOptions;
+}
+declare module 'metro/src/DeltaBundler' {
+  export type AsyncDependencyType = 'async' | 'prefetch';
+  export type TransformResultDependency = {
+    /**
+     * The literal name provided to a require or import call. For example 'foo' in
+     * case of `require('foo')`.
+     */
+    name: string;
+
+    /**
+     * Extra data returned by the dependency extractor.
+     */
+    data: {
+      /**
+       * A locally unique key for this dependency within the current module.
+       */
+      key: string;
+      /**
+       * If not null, this dependency is due to a dynamic `import()` or `__prefetchImport()` call.
+       */
+      asyncType: AsyncDependencyType | null;
+      /**
+       * The condition for splitting on this dependency edge.
+       */
+      splitCondition?: {
+        mobileConfigName: string;
+      };
+      /**
+       * The dependency is enclosed in a try/catch block.
+       */
+      isOptional?: boolean;
+
+      locs: $ReadOnlyArray<BabelSourceLocation>;
+
+      /** Context for requiring a collection of modules. */
+      contextParams?: RequireContextParams;
+    };
+  };
+}
+
+declare module 'metro/src/lib/countLines' {
+  const countLines = (string: string) => number;
+
+  module.exports = countLines;
+  export default countLines;
+}
+
 declare module 'metro/src/lib/createWebsocketServer' {
   export function createWebsocketServer<TClient extends object>({
     websocketServer,
@@ -31,6 +95,93 @@ declare module 'metro/src/lib/createWebsocketServer' {
 
   module.exports = createWebsocketServer;
 }
+
+declare module 'metro/src/lib/splitBundleOptions' {
+  import { ConfigT } from 'metro-config';
+
+  type SplitBundleOptions = {
+    entryFile: string;
+    resolverOptions: unknown;
+    transformOptions: { platform: string };
+    serializerOptions: unknown;
+    graphOptions: unknown;
+    onProgress?: (numProcessed: number, total: number) => any;
+  };
+
+  type BundleOptions = any;
+
+  function splitBundleOptions(options: BundleOptions): SplitBundleOptions;
+
+  export default splitBundleOptions;
+}
+
+declare module 'metro/src/DeltaBundler/Serializers/helpers/js' {
+  import type { JsOutput } from 'metro-transform-worker';
+  import type { MixedOutput, Module } from 'metro';
+
+  export function getJsOutput(
+    module: readonly {
+      output: readonly MixedOutput[];
+      path?: string;
+    }
+  ): JsOutput;
+
+  export function isJsModule(module: Module<unknown>): boolean;
+}
+
+declare module 'metro/src/Assets' {
+  export type AssetInfo = {
+    files: string[];
+    hash: string;
+    name: string;
+    scales: number[];
+    type: string;
+  };
+
+  export type AssetDataWithoutFiles = {
+    __packager_asset: boolean;
+    fileSystemLocation: string;
+    hash: string;
+    height: number | null;
+    httpServerLocation: string;
+    name: string;
+    scales: number[];
+    type: string;
+    width: number | null;
+  };
+
+  export type AssetDataFiltered = {
+    __packager_asset: boolean;
+    hash: string;
+    height: number | null;
+    httpServerLocation: string;
+    name: string;
+    scales: number[];
+    type: string;
+    width: number | null;
+  };
+
+  export type AssetData = AssetDataWithoutFiles & { files: Array<string> };
+
+  export type AssetDataPlugin = (assetData: AssetData) => AssetData | Promise<AssetData>;
+
+  export async function getAsset(
+    relativePath: string,
+    projectRoot: string,
+    watchFolders: readonly string[],
+    platform: string | null | undefined,
+    assetExts: readonly string[]
+  ): Promise<Buffer>;
+
+  async function getAssetData(
+    assetPath: string,
+    localPath: string,
+    assetDataPlugins: readonly string[],
+    platform: string | null | undefined,
+    publicPath: string
+  ): Promise<AssetData>;
+}
+
 declare module 'metro' {
   //#region metro/src/Assets.js
 
@@ -51,8 +202,8 @@ declare module 'metro' {
   //#endregion
   //#region metro/src/DeltaBundler/types.flow.js
 
-  interface MixedOutput {
-    readonly data: unknown;
+  export interface MixedOutput {
+    readonly data: any;
     readonly type: string;
   }
 
@@ -167,7 +318,7 @@ declare module 'metro' {
 
   import { Server as HttpServer } from 'http';
   import { Server as HttpsServer } from 'https';
-  import { loadConfig, ConfigT, InputConfigT, Middleware } from 'metro-config';
+  import { loadConfig, ConfigT, InputConfigT, Middleware, ConfigT } from 'metro-config';
 
   type MetroMiddleWare = {
     attachHmrServer: (httpServer: HttpServer | HttpsServer) => void;
@@ -528,4 +679,46 @@ declare module 'metro' {
   }
 
   //#endregion
+}
+
+declare module 'metro/src/DeltaBundler/Serializers/baseJSBundle' {
+  import { Module, Graph, SerializerOptions } from 'metro';
+
+  type ModuleMap = readonly [number, string][];
+
+  type Bundle = {
+    readonly modules: ModuleMap;
+    readonly post: string;
+    readonly pre: string;
+  };
+
+  export default function baseJSBundle(
+    entryPoint: string,
+    preModules: readonly Module[],
+    graph: Graph,
+    options: SerializerOptions
+  ): Bundle;
+}
+
+declare module 'metro/src/lib/bundleToString' {
+  import { Module, ReadOnlyGraph, SerializerOptions } from 'metro';
+
+  type ModuleMap = readonly [number, string][];
+
+  type Bundle = {
+    readonly modules: ModuleMap;
+    readonly post: string;
+    readonly pre: string;
+  };
+
+  type BundleMetadata = {
+    readonly pre: number;
+    readonly post: number;
+    readonly modules: readonly [number, number][];
+  };
+
+  export default function bundleToString(bundle: Bundle): {
+    readonly code: string;
+    readonly metadata: BundleMetadata;
+  };
 }

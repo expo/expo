@@ -166,7 +166,7 @@ class FileDownloaderTest {
     val embeddedUpdateUUIDString = "9433b1ed-4006-46b8-8aa7-fdc7eeb203fd"
     val embeddedUpdate = UpdateEntity(UUID.fromString(embeddedUpdateUUIDString), Date(), "1.0", "test")
 
-    val extraHeaders = FileDownloader.getExtraHeaders(mockk(), mockk(), launchedUpdate, embeddedUpdate)
+    val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(mockk(), mockk(), launchedUpdate, embeddedUpdate)
 
     Assert.assertEquals(launchedUpdateUUIDString, extraHeaders.get("Expo-Current-Update-ID"))
     Assert.assertEquals(embeddedUpdateUUIDString, extraHeaders.get("Expo-Embedded-Update-ID"))
@@ -180,7 +180,7 @@ class FileDownloaderTest {
     mockkObject(ManifestMetadata)
     every { ManifestMetadata.getServerDefinedHeaders(any(), any()) } returns null
 
-    val extraHeaders = FileDownloader.getExtraHeaders(mockk(), mockk(), null, null)
+    val extraHeaders = FileDownloader.getExtraHeadersForRemoteUpdateRequest(mockk(), mockk(), null, null)
     Assert.assertFalse(extraHeaders.has("Expo-Current-Update-ID"))
     Assert.assertFalse(extraHeaders.has("Expo-Embedded-Update-ID"))
 

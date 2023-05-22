@@ -2,15 +2,69 @@
 
 ## Unpublished
 
+### 📚 3rd party library updates
+
+- Updated `robolectric` to `4.10` and `junit` to `4.13.2`.  ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features
 
+- Added `ReactActivityHandler.getDelayLoadAppHandler` interface on Android. ([#20273](https://github.com/expo/expo/pull/20273) by [@kudo](https://github.com/kudo))
+
 ### 🐛 Bug fixes
+
+- Fix failing instrumentation tests in JavaScriptViewModule. ([#22518](https://github.com/expo/expo/pull/22518) by [@aleqsio](https://github.com/aleqsio))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 1.3.2 — 2023-05-09
+
+### 🐛 Bug fixes
+
+- Fixed passing `JavaScriptObject` argument and view props. ([#22427](https://github.com/expo/expo/pull/22427) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.3.1 — 2023-05-08
+
+### 💡 Others
+
+- Made `JavaScriptValue.kind` public. ([#22386](https://github.com/expo/expo/pull/22386) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.3.0 — 2023-05-08
+
+### 🎉 New features
+
+- [iOS] Introduced native functions on the native component instances. ([#21746](https://github.com/expo/expo/pull/21746) by [@tsapeta](https://github.com/tsapeta))
+- View tag and React component ref can now be converted to an instance of the native view when used as a function's argument. ([#21816](https://github.com/expo/expo/pull/21816) by [@lukmccall](https://github.com/lukmccall), [#21829](https://github.com/expo/expo/pull/21829) by [@tsapeta](https://github.com/tsapeta))
+- JavaScript functions can now be passed as an argument to a module method. ([#21976](https://github.com/expo/expo/pull/21976) by [@lukmccall](https://github.com/lukmccall), [#22245](https://github.com/expo/expo/pull/22245) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Initializing and returning shared objects from the native side. ([#22195](https://github.com/expo/expo/pull/22195) by [@tsapeta](https://github.com/tsapeta))
+
+### 🐛 Bug fixes
+
+- Fixed build errors on React Native 0.72.x. ([#22170](https://github.com/expo/expo/pull/22170), [#22189](https://github.com/expo/expo/pull/22189) by [@kudo](https://github.com/kudo))
+- [Android] Fixed argument trailing not working correctly when all parameters are optional. ([#22293](https://github.com/expo/expo/pull/22293) by [@lukmccall](https://github.com/lukmccall))
 
 ### 💡 Others
 
 - [Android] Made `fallbackCallback` optional in the `registerForActivityResult` method. ([#21661](https://github.com/expo/expo/pull/21661) by [@lukmccall](https://github.com/lukmccall))
+- [iOS] Removed the legacy implementation of view managers. ([#21760](https://github.com/expo/expo/pull/21760) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Passed the app context instance down to dynamic types, object builders and convertibles. ([#21819](https://github.com/expo/expo/pull/21819) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Use `jsi::WeakObject` for weak objects on Hermes. ([#21986](https://github.com/expo/expo/pull/21986) by [@tsapeta](https://github.com/tsapeta))
+- [iOS] Removed legacyViewManager references from ExpoFabricView. ([#22089](https://github.com/expo/expo/pull/22089) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Dropped `proxiedProperties` prop. ([#22280](https://github.com/expo/expo/pull/22280) by [@tsapeta](https://github.com/tsapeta))
+
+## 1.2.7 - 2023-05-03
+
+### 🐛 Bug fixes
+
+- [Android] Improve the initial loading speed of the native view. ([#22153](https://github.com/expo/expo/pull/22153) by [@lukmccall](https://github.com/lukmccall))
+
+## 1.2.6 - 2023-03-20
+
+### 🐛 Bug fixes
+
+- [Android] Fixed `ReadableNativeMap` cannot be cast to the `Record`. ([#21773](https://github.com/expo/expo/pull/21773) by [@lukmccall](https://github.com/lukmccall))
 
 ## 1.2.5 - 2023-03-14
 

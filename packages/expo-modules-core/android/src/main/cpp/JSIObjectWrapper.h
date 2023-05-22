@@ -10,24 +10,35 @@ namespace jsi = facebook::jsi;
 
 namespace expo {
 /**
- * An interface for classes which wrap jsi::Object.
+ * An interface for classes which wrap `jsi::Object`.
  */
 class JSIObjectWrapper {
 public:
   /**
-   * @return a pointer to the underlying jsi::Object.
+   * @return a pointer to the underlying `jsi::Object`.
    */
   virtual std::shared_ptr<jsi::Object> get() = 0;
 };
 
 /**
- * An interface for classes which wrap jsi::Value.
+ * An interface for classes which wrap `jsi::Value`.
  */
 class JSIValueWrapper {
 public:
   /**
-   * @return a pointer to the underlying jsi::Value.
+   * @return a pointer to the underlying `jsi::Value`.
    */
   virtual std::shared_ptr<jsi::Value> get() = 0;
+};
+
+/**
+ * An interface for classes which wrap `jsi::Function`.
+ */
+class JSIFunctionWrapper {
+public:
+  /**
+   * @return a pointer to the underlying `jsi::Function`.
+   */
+  virtual std::shared_ptr<jsi::Function> get() = 0;
 };
 } // namespace expo

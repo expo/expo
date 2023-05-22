@@ -6,7 +6,7 @@ export default {
     async getDocumentAsync({ type = '*/*', multiple = false, }) {
         // SSR guard
         if (!Platform.isDOMAvailable) {
-            return { type: 'cancel' };
+            return { canceled: true, assets: null };
         }
         const input = document.createElement('input');
         input.style.display = 'none';
@@ -29,9 +29,11 @@ export default {
                     reader.onload = ({ target }) => {
                         const uri = target.result;
                         resolve({
+                            canceled: false,
                             type: 'success',
                             uri,
                             mimeType,
+                            assets: [],
                             name: targetFile.name,
                             file: targetFile,
                             lastModified: targetFile.lastModified,
@@ -43,7 +45,7 @@ export default {
                     reader.readAsDataURL(targetFile);
                 }
                 else {
-                    resolve({ type: 'cancel' });
+                    resolve({ canceled: true, assets: null });
                 }
                 document.body.removeChild(input);
             });

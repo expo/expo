@@ -91,6 +91,7 @@ internal class MissingTypeConverter(
   message = "Cannot find type converter for '$forType'.",
 )
 
+@DoNotStrip
 internal class InvalidArgsNumberException(received: Int, expected: Int, required: Int = expected) :
   CodedException(
     message = if (required < expected) {
@@ -178,6 +179,12 @@ internal class ArgumentCastException(
     }
   }
 }
+
+internal class InvalidSharedObjectException(
+  sharedType: KType,
+) : CodedException(
+  message = "Cannot convert provided JavaScriptObject to the '$sharedType', because it doesn't contain valid id"
+)
 
 internal class FieldCastException(
   fieldName: String,

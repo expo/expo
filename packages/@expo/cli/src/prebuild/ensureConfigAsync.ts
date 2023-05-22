@@ -37,7 +37,7 @@ export async function ensureConfigExistsAsync(projectRoot: string) {
   }
 }
 
-/** Ensure config is written, prompts for application identifiers, and removes entryPoint value. */
+/** Ensure config is written, and prompts for application identifiers. */
 export async function ensureConfigAsync(
   projectRoot: string,
   {
@@ -58,16 +58,6 @@ export async function ensureConfigAsync(
     await getOrPromptForBundleIdentifier(projectRoot);
   }
 
-  // We need the SDK version to proceed
-  const { exp, pkg } = getConfig(projectRoot);
-
-  // TODO(EvanBacon): Remove the requirement for this once we have a
-  // custom bundle script that respects Expo entry point resolution.
-  if (exp.entryPoint) {
-    delete exp.entryPoint;
-    Log.log(`\u203A expo.entryPoint is not needed and has been removed.`);
-  }
-
   // Read config again because prompting for bundle id or package name may have mutated the results.
-  return { exp, pkg };
+  return getConfig(projectRoot);
 }

@@ -76,7 +76,7 @@ On iOS, when a user changes the device's language, the app will reset. This mean
 
 ```tsx
 import { View, StyleSheet, Text } from 'react-native';
-import { getLocales } from 'expo-localization';
+import * as Localization from 'expo-localization';
 import { I18n } from 'i18n-js';
 
 // Set the key-value pairs for the different languages you want to support.
@@ -101,7 +101,7 @@ export default function App() {
         {i18n.t('welcome')} {i18n.t('name')}
       </Text>
       <Text>Current locale: {i18n.locale}</Text>
-      <Text>Device locale: {getLocales()[0].languageCode}</Text>
+      <Text>Device locale: {Localization.getLocales()[0].languageCode}</Text>
     </View>
   );
 }
@@ -194,7 +194,7 @@ To enable RTL support in your application using SDK 48 or later, install the `ex
 }
 ```
 
-This enables RTL when your app is loaded in Expo Go, in Expo dev Client, and in applications built using EAS Build or `expo prebuild`.
+This enables RTL when your app is loaded in Expo Go, in Expo dev Client, and in applications built using EAS Build or `npx expo prebuild`.
 
 When an application starts, Expo checks if the current device locale should render in RTL layout to look correctly. For example, an app marked to support RTL in the Expo config file will render in RTL mode in Hebrew or Arabic locale.
 

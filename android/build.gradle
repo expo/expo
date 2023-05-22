@@ -24,6 +24,7 @@ buildscript {
   dependencies {
     classpath "com.android.tools.build:gradle:${gradlePluginVersion}"
     classpath 'com.google.gms:google-services:4.3.5'
+    classpath 'com.google.firebase:firebase-crashlytics-gradle:2.9.4'
     classpath "de.undercouch:gradle-download-task:$gradleDownloadTaskVersion"
     classpath "org.jetbrains.kotlin:kotlin-gradle-plugin:$kotlinVersion"
 
@@ -39,6 +40,9 @@ plugins {
   id "com.diffplug.spotless" version "5.14.1"
 }
 // WHEN_DISTRIBUTING_REMOVE_TO_HERE
+
+def reactProperties = new Properties()
+file("${project(':ReactAndroid').projectDir}/gradle.properties").withInputStream { reactProperties.load(it) }
 
 allprojects {
   repositories {
@@ -100,6 +104,13 @@ allprojects {
         .because("Building React Native from source")
     }
     // WHEN_DISTRIBUTING_REMOVE_TO_HERE
+
+    resolutionStrategy.force(
+      "com.facebook.fresco:fbcore:${reactProperties.getProperty('FRESCO_VERSION')}",
+      "com.facebook.fresco:fresco:${reactProperties.getProperty('FRESCO_VERSION')}",
+      "com.facebook.fresco:imagepipeline-okhttp3:${reactProperties.getProperty('FRESCO_VERSION')}",
+      "com.facebook.fresco:ui-common:${reactProperties.getProperty('FRESCO_VERSION')}",
+    )
   }
 }
 

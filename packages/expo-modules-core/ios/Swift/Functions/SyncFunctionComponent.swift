@@ -10,9 +10,10 @@ internal protocol AnySyncFunctionComponent: AnyFunction {
      - owner: An object that calls this function. If the `takesOwner` property is true
        and type of the first argument matches the owner type, it's being passed as the argument.
      - args: An array of arguments to pass to the function. The arguments must be of the same type as in the underlying closure.
+     - appContext: An app context where the function is executed.
    - Returns: A value returned by the called function when succeeded or an error when it failed.
    */
-  func call(by owner: AnyObject?, withArguments args: [Any]) throws -> Any
+  func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext) throws -> Any
 }
 
 /**
@@ -49,9 +50,9 @@ public final class SyncFunctionComponent<Args, FirstArgType, ReturnType>: AnySyn
 
   var takesOwner: Bool = false
 
-  func call(by owner: AnyObject?, withArguments args: [Any], callback: @escaping (FunctionCallResult) -> ()) {
+  func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext, callback: @escaping (FunctionCallResult) -> ()) {
     do {
-      let result = try call(by: owner, withArguments: args)
+      let result = try call(by: owner, withArguments: args, appContext: appContext)
       callback(.success(Conversions.convertFunctionResult(result)))
     } catch let error as Exception {
       callback(.failure(error))
@@ -62,16 +63,26 @@ public final class SyncFunctionComponent<Args, FirstArgType, ReturnType>: AnySyn
 
   // MARK: - AnySyncFunctionComponent
 
-  func call(by owner: AnyObject?, withArguments args: [Any]) throws -> Any {
+  func call(by owner: AnyObject?, withArguments args: [Any], appContext: AppContext) throws -> Any {
     do {
-      let arguments = concat(
-        arguments: try cast(arguments: args, forFunction: self),
+      try validateArgumentsNumber(function: self, received: args.count)
+
+      var arguments = concat(
+        arguments: args,
         withOwner: owner,
-        forFunction: self
+        withPromise: nil,
+        forFunction: self,
+        appContext: appContext
       )
+
+      // Convert JS values to non-JS native types.
+      arguments = try cast(jsValues: arguments, forFunction: self, appContext: appContext)
+
+      // Convert arguments to the types desired by the function.
+      arguments = try cast(arguments: arguments, forFunction: self, appContext: appContext)
+
       let argumentsTuple = try Conversions.toTuple(arguments) as! Args
-      let result = try body(argumentsTuple)
-      return Conversions.convertFunctionResult(result)
+      return try body(argumentsTuple)
     } catch let error as Exception {
       throw FunctionCallException(name).causedBy(error)
     } catch {
@@ -81,17 +92,17 @@ public final class SyncFunctionComponent<Args, FirstArgType, ReturnType>: AnySyn
 
   // MARK: - JavaScriptObjectBuilder
 
-  func build(inRuntime runtime: JavaScriptRuntime) -> JavaScriptObject {
+  func build(appContext: AppContext) throws -> JavaScriptObject {
     // We intentionally capture a strong reference to `self`, otherwise the "detached" objects would
     // immediately lose the reference to the definition and thus the underlying native function.
     // It may potentially cause memory leaks, but at the time of writing this comment,
     // the native definition instance deallocates correctly when the JS VM triggers the garbage collector.
-    return runtime.createSyncFunction(name, argsCount: argumentsCount) { [weak runtime, self] this, args in
-      guard let runtime = runtime else {
-        throw Exceptions.RuntimeLost()
+    return try appContext.runtime.createSyncFunction(name, argsCount: argumentsCount) { [weak appContext, self] this, args in
+      guard let appContext else {
+        throw Exceptions.AppContextLost()
       }
-      let result = try self.call(by: this, withArguments: args)
-      return Conversions.convertFunctionResult(result, runtime: runtime)
+      let result = try self.call(by: this, withArguments: args, appContext: appContext)
+      return Conversions.convertFunctionResult(result, appContext: appContext, dynamicType: ~ReturnType.self)
     }
   }
 }

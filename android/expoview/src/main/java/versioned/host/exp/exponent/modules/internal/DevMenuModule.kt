@@ -92,14 +92,12 @@ class DevMenuModule(reactContext: ReactApplicationContext, val experiencePropert
     if (devSettings != null && devSupportManager.devSupportEnabled && isJsExecutorInspectable) {
       debuggerMap.putString("label", getString(R.string.devmenu_open_js_debugger))
       debuggerMap.putBoolean("isEnabled", devSupportManager.devSupportEnabled)
-    } else if (devSettings != null && devSupportManager.devSupportEnabled) {
+      items.putBundle("dev-remote-debug", debuggerMap)
+    } else if (devSettings != null && devSupportManager.devSupportEnabled && manifest?.getExpoGoSDKVersion() ?: "" < "49.0.0") {
       debuggerMap.putString("label", getString(if (devSettings.isRemoteJSDebugEnabled) R.string.devmenu_stop_remote_debugging else R.string.devmenu_start_remote_debugging))
       debuggerMap.putBoolean("isEnabled", devSupportManager.devSupportEnabled)
-    } else {
-      debuggerMap.putString("label", getString(R.string.devmenu_remote_debugger_unavailable))
-      debuggerMap.putBoolean("isEnabled", false)
+      items.putBundle("dev-remote-debug", debuggerMap)
     }
-    items.putBundle("dev-remote-debug", debuggerMap)
 
     if (devSettings != null && devSupportManager.devSupportEnabled && devSettings is DevInternalSettings) {
       hmrMap.putString("label", getString(if (devSettings.isHotModuleReplacementEnabled) R.string.devmenu_disable_fast_refresh else R.string.devmenu_enable_fast_refresh))

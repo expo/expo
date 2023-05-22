@@ -151,15 +151,31 @@ internal final class Conversions {
   /**
    Converts the function result to the type compatible with JavaScript.
    */
-  static func convertFunctionResult<ValueType>(_ value: ValueType?, runtime: JavaScriptRuntime? = nil) -> Any {
+  static func convertFunctionResult<ValueType>(
+    _ value: ValueType?,
+    appContext: AppContext? = nil,
+    dynamicType: AnyDynamicType? = nil
+  ) -> Any {
     if let value = value as? Record {
       return value.toDictionary()
     }
     if let value = value as? [Record] {
       return value.map { $0.toDictionary() }
     }
-    if let runtime = runtime, let value = value as? JavaScriptObjectBuilder {
-      return value.build(inRuntime: runtime)
+    if let appContext {
+      if let value = value as? JavaScriptObjectBuilder {
+        return try? value.build(appContext: appContext)
+      }
+
+      // If the returned value is a native shared object, create its JS representation and add the pair to the registry of shared objects.
+      if let value = value as? SharedObject, let dynamicType = dynamicType as? DynamicSharedObjectType {
+        guard let object = try? appContext.newObject(nativeClassId: dynamicType.typeIdentifier) else {
+          log.warn("Unable to create a JS object for \(dynamicType.description)")
+          return Optional<Any>.none
+        }
+        SharedObjectRegistry.add(native: value, javaScript: object)
+        return object
+      }
     }
     return value as Any
   }

@@ -88,7 +88,6 @@ When you modify **babel.config.js**, you should always restart the development s
 
 ```tsx
 import { Button } from 'react-native';
-import Constants from 'expo-constants';
 
 function Post() {
   const apiUrl = process.env.API_URL;
@@ -103,17 +102,17 @@ function Post() {
 
 This approach this plugin will work well with environment variables set in your shell process, but it won't automatically load **.env** files. We recommend using [direnv](https://direnv.net/) and **.envrc** to accomplish that.
 
-## Storing environment variables in .envrc or .env
+## Loading environment variables from a file
 
-If you want to automatically load environment variables from a file in your project rather than setting them in your shell profile or manually when running `npx expo start`, you may want to use a **.envrc** or **.env** file.
+If you want to automatically load environment variables from a file in your project rather than setting them in your shell profile or manually when running `npx expo start`, you may want to use an environment variable manager, such as direnv or dotenv.
 
 ### direnv
 
-[direnv](https://direnv.net/) automatically loads and unloads environment variables in your shell depending on your current directory. When you `cd` into your project directory, it will load all of the variables as configured in **.envrc**. [Learn more](https://direnv.net/#getting-started).
+[direnv](https://direnv.net/) automatically loads and unloads environment variables in your shell depending on your current directory. When you `cd` into your project directory, it will load all of the variables as configured in **.envrc**. Due to its tight shell integration, **we highly recommend direnv for the highest level of compatibility with all Expo and EAS CLI tooling**. To get started, see [direnv documentation](https://direnv.net/#getting-started).
 
 ### dotenv
 
-[dotenv](https://github.com/motdotla/dotenv) is a library that you import in your project code to load the **.env** file. [Learn more](https://github.com/motdotla/dotenv).
+[dotenv](https://github.com/motdotla/dotenv) is a library that you import in your project code to load the **.env** file. Since it works at the JavaScript code level, dotenv may be affected by your Node.js environment or how you invoke it from your code. Check the [documentation](https://github.com/motdotla/dotenv) for the correct usage if you run into issues.
 
 ## Security considerations
 

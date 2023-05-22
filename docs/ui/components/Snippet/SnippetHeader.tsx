@@ -1,55 +1,34 @@
-import { css } from '@emotion/react';
-import { theme } from '@expo/styleguide';
-import { borderRadius, palette } from '@expo/styleguide-base';
-import { PropsWithChildren } from 'react';
+import { mergeClasses } from '@expo/styleguide';
+import { ComponentType, HTMLAttributes, PropsWithChildren } from 'react';
 
 import { LABEL } from '~/ui/components/Text';
 
 type SnippetHeaderProps = PropsWithChildren<{
   title: string;
+  Icon?: ComponentType<HTMLAttributes<SVGSVGElement>>;
   alwaysDark?: boolean;
 }>;
 
-export const SnippetHeader = ({ title, children, alwaysDark = false }: SnippetHeaderProps) => (
-  <div css={[headerStyle, alwaysDark && headerDarkStyle]}>
-    <LABEL css={[headerTitleStyle, alwaysDark && { color: palette.white }]}>{title}</LABEL>
-    {!!children && <div css={headerActionsStyle}>{children}</div>}
+export const SnippetHeader = ({
+  title,
+  children,
+  Icon,
+  alwaysDark = false,
+}: SnippetHeaderProps) => (
+  <div
+    className={mergeClasses(
+      'flex pl-4 overflow-hidden justify-between bg-default border border-default rounded-t-md border-b-0 min-h-[40px]',
+      Icon && 'pl-3',
+      alwaysDark && 'dark-theme pr-2 dark:border-transparent !bg-palette-gray3'
+    )}>
+    <LABEL
+      className={mergeClasses(
+        'flex items-center gap-2 h-10 !leading-10 pr-4 select-none font-medium text-ellipsis whitespace-nowrap overflow-hidden',
+        alwaysDark && 'text-palette-white'
+      )}>
+      {Icon && <Icon className="icon-sm" />}
+      {title}
+    </LABEL>
+    {!!children && <div className="flex justify-end items-center">{children}</div>}
   </div>
 );
-
-const headerStyle = css`
-  background-color: ${theme.background.default};
-  border: 1px solid ${theme.border.default};
-  border-bottom: none;
-  border-top-left-radius: ${borderRadius.md}px;
-  border-top-right-radius: ${borderRadius.md}px;
-  display: flex;
-  padding: 0 0 0 16px;
-  justify-content: space-between;
-  min-height: 42px;
-  max-height: 42px;
-  overflow: hidden;
-`;
-
-const headerDarkStyle = css`
-  background-color: ${palette.dark.gray3};
-  border-color: transparent;
-  padding-right: 8px;
-`;
-
-const headerTitleStyle = css`
-  height: 42px;
-  line-height: 42px !important;
-  user-select: none;
-  font-weight: 500;
-  text-overflow: ellipsis;
-  white-space: nowrap;
-  overflow: hidden;
-  padding-right: 16px;
-`;
-
-const headerActionsStyle = css`
-  display: flex;
-  justify-content: flex-end;
-  align-items: center;
-`;

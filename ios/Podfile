@@ -13,7 +13,6 @@ $expo_updates_create_manifest = false
 
 abstract_target 'Expo Go' do
   # Expo Client dependencies
-  pod 'Amplitude'
   pod 'CocoaLumberjack', '~> 3.5.3'
   pod 'GoogleMaps', '~> 7.1'
   pod 'Google-Maps-iOS-Utils', '~> 4.1.0'
@@ -29,12 +28,14 @@ abstract_target 'Expo Go' do
   use_expo_modules!({
     exclude: [
       'expo-module-template',
+      'expo-module-template-local',
       'expo-in-app-purchases',
       'expo-dev-menu',
       'expo-dev-menu-interface',
       'expo-dev-launcher',
       'expo-dev-client',
-      'expo-maps'
+      'expo-maps',
+      'expo-insights',
     ],
     includeTests: true,
     flags: {

@@ -1,0 +1,40 @@
+{
+  "name": "@expo/env",
+  "version": "0.0.3",
+  "description": "hydrate environment variables from .env files into process.env",
+  "main": "build/index.js",
+  "scripts": {
+    "watch": "tsc --watch --preserveWatchOutput",
+    "build": "tsc --emitDeclarationOnly && babel src --out-dir build --extensions \".ts\" --source-maps --ignore \"src/**/__mocks__/*\",\"src/**/__tests__/*\"",
+    "prepare": "yarn run clean && yarn build",
+    "clean": "rimraf build ./tsconfig.tsbuildinfo",
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/expo/expo.git",
+    "directory": "packages/@expo/env"
+  },
+  "keywords": [],
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/main/packages/@expo/env#readme",
+  "files": [
+    "build"
+  ],
+  "dependencies": {
+    "dotenv": "~16.0.3",
+    "dotenv-expand": "~10.0.0",
+    "chalk": "^4.0.0",
+    "debug": "^4.3.4"
+  },
+  "devDependencies": {
+    "@babel/core": "^7.15.5"
+  },
+  "publishConfig": {
+    "access": "public"
+  }
+}

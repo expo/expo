@@ -2,7 +2,50 @@
 
 ## Unpublished
 
+### 📚 3rd party library updates
+
+- Updated `robolectric` to `4.10`.  ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
 ### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Fix modern manifest serving for dev client without expo-updates. ([#22470](https://github.com/expo/expo/pull/22470) by [@wschurman](https://github.com/wschurman))
+- Fixed react-native nighlies `0.73.0-nightly-20230515-066f0b76d` build errors on Android. ([#22503](https://github.com/expo/expo/pull/22503) by [@kudo](https://github.com/kudo))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Migrate iOS native modules to use the new Module API. ([#22319](https://github.com/expo/expo/pull/22319) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+## 2.3.0 — 2023-05-08
+
+### 🎉 New features
+
+- Add support to loading Expo modules. ([#22174](https://github.com/expo/expo/pull/22174) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
+### 🐛 Bug fixes
+
+- Fixed build errors on React Native 0.72.x. ([#22189](https://github.com/expo/expo/pull/22189) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+- Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
+- Set NODE_ENV before exporting bundles. ([#21983](https://github.com/expo/expo/pull/21983) by [@EvanBacon](https://github.com/EvanBacon))
+
+### 📚 3rd party library updates
+
+- Update `react-native` to 0.71.7. ([#22253](https://github.com/expo/expo/pull/22253) by [@kudo](https://github.com/kudo))
+
+## 2.2.1 - 2023-04-14
+
+### 🐛 Bug fixes
+
+- Fixed `Invalid State: Cannot call send: until connection is open` crash when using network inspector on iOS. ([#22130](https://github.com/expo/expo/pull/22130) by [@kudo](https://github.com/kudo))
+
+## 2.2.0 - 2023-04-13
 
 ### 🎉 New features
 
@@ -10,9 +53,15 @@
 
 ### 🐛 Bug fixes
 
-### 💡 Others
+- Add missing `mimeType` when emitting network responses. ([#21676](https://github.com/expo/expo/pull/21676) by [@byCedric](https://github.com/byCedric))
+- Add missing `Network.requestWillBeSentExtraInfo` when emitting network requests. ([#21965](https://github.com/expo/expo/pull/21965) by [@byCedric](https://github.com/byCedric))
+- Don't require legacy manifest signature in dev clients. ([#21970](https://github.com/expo/expo/pull/21970) by [@wschurman](https://github.com/wschurman))
 
-- Convert EXManifests iOS implementation to Swift. ([#21298](https://github.com/expo/expo/pull/21298) by [@wschurman](https://github.com/wschurman))
+## 2.1.6 - 2023-03-20
+
+### 🐛 Bug fixes
+
+- Change arg in gradle `.execute()` call to null to inherit env variables from user's env ([#21712](https://github.com/expo/expo/pull/21712) by [@phoenixiguess](https://github.com/phoenixiguess))
 
 ## 2.1.5 - 2023-03-03
 

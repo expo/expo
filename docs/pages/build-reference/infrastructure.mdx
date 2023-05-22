@@ -9,9 +9,9 @@ import { Collapsible } from '~/ui/components/Collapsible';
 
 > This document describes the current build infrastructure as of **June 27, 2022**. It is likely to change over time, and this document will be updated.
 
-## Worker IP addresses
+## Builder IP addresses
 
-Here is the [up-to-date list of worker IP addresses](https://expo.dev/eas-build-worker-ips.txt).
+Here is the [up-to-date list of builder IP addresses](https://expo.dev/eas-build-worker-ips.txt).
 
 ## Configuring build environment
 
@@ -29,7 +29,7 @@ When selecting an image for the build you can use the full name provided below o
 
 ## Android build server configurations
 
-Android workers run on virtual machines in an isolated environment. Every build gets its own dedicated VM instance.
+Android builders run on virtual machines in an isolated environment. Every build gets its own dedicated VM instance.
 
 - Build resources:
   - [`medium`](eas-json/#resourceclass-1): 4 CPU, 16 GB RAM ([`n2-standard-4`](https://cloud.google.com/compute/docs/general-purpose-machines#n2_machines) Google Cloud machine type)
@@ -148,14 +148,17 @@ Android workers run on virtual machines in an isolated environment. Every build 
 
 ## iOS build server configurations
 
-iOS worker VMs run on Mac Mini 8.1 hosts in an isolated environment. Every build gets its own fresh macOS VM:
+iOS builder VMs run on Mac Mini 8.1 hosts in an isolated environment. Every build gets its own fresh macOS VM:
 
 - Hardware:
   - Intel: Intel(R) Core(TM) i7-8700B CPU (6 cores/12 threads), 64 GB RAM
-  - M1: 3.2GHz 8-Core M1 (4 performance and 4 efficiency cores), 16 GB RAM [2020]
+  - M1: 3.2GHz 8-Core M1 (4 performance and 4 efficiency cores), 16 GB RAM
+  - M2: 3.4GHz 12-Core M2 (8 performance and 4 efficiency cores), 24 GB RAM
+  - M2 Pro: 3.4GHz 10-Core M2 Pro (6 performance and 4 efficiency cores), 32 GB RAM
 - Build resources:
   - [`intel-medium`](eas-json/#resourceclass-2): 3 cores, 12 GB RAM, 2 builder VMs per host
-  - [`m1-medium`](eas-json/#resourceclass-2): 2 cores, 8 GB RAM, 2 builder VMs per host
+  - [`m-medium`](eas-json/#resourceclass-2): 2 cores, 8 GB RAM, 2 builder VMs per host
+  - [`large`](eas-json/#resourceclass-2): 4 cores, 12 GB RAM, 2 builder VMs per host (for builds running on M2 Pro hosts) or 4 cores, 22 GB RAM, 1 builder VM per host (for builds running on M2 hosts)
 - [npm cache](caching/#javascript-dependencies)
 - [CocoaPods cache](caching/#ios-dependencies)
 - [`cocoapods-nexus-plugin`](https://github.com/expo/eas-build/tree/main/packages/cocoapods-nexus-plugin)
@@ -176,7 +179,23 @@ iOS worker VMs run on Mac Mini 8.1 hosts in an isolated environment. Every build
 
 ### iOS server images
 
-#### `macos-monterey-12.6-xcode-14.2` (alias `latest`)
+#### `macos-ventura-13.3-xcode-14.3` (`latest` for Apple silicon builders, only available for Apple silicon builders)
+
+<Collapsible summary="Details">
+
+- macOS Ventrua 13.3
+- Xcode 14.3 (14E222b)
+- Node.js 16.18.1
+- Yarn 1.22.17
+- pnpm 8.2.0
+- npm 8.1.2
+- fastlane 2.212.2
+- CocoaPods 1.12.0
+- Ruby 2.7
+
+</Collapsible>
+
+#### `macos-monterey-12.6-xcode-14.2` (`latest` for Intel builders, `default` for Apple silicon builders)
 
 <Collapsible summary="Details">
 
@@ -192,7 +211,7 @@ iOS worker VMs run on Mac Mini 8.1 hosts in an isolated environment. Every build
 
 </Collapsible>
 
-#### `macos-monterey-12.6-xcode-14.1` (alias `default`)
+#### `macos-monterey-12.6-xcode-14.1` (`default` for Intel builders)
 
 <Collapsible summary="Details">
 
@@ -288,7 +307,7 @@ iOS worker VMs run on Mac Mini 8.1 hosts in an isolated environment. Every build
 
 </Collapsible>
 
-#### `macos-big-sur-11.4-xcode-12.5` (deprecated, not available for M1 workers)
+#### `macos-big-sur-11.4-xcode-12.5` (deprecated, only available for Intel builders)
 
 <Collapsible summary="Details">
 

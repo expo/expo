@@ -45,6 +45,7 @@ void JSIInteropModuleRegistry::installJSI(
   jsRegistry = std::make_unique<JSReferencesCache>(*runtime);
 
   runtimeHolder = std::make_shared<JavaScriptRuntime>(
+    this,
     runtime,
     jsInvokerHolder->cthis()->getCallInvoker(),
     nativeInvokerHolder->cthis()->getCallInvoker()
@@ -76,7 +77,7 @@ void JSIInteropModuleRegistry::installJSIForTests() {
 #if !UNIT_TEST
   throw std::logic_error("The function is only available when UNIT_TEST is defined.");
 #else
-  runtimeHolder = std::make_shared<JavaScriptRuntime>();
+  runtimeHolder = std::make_shared<JavaScriptRuntime>(this);
   jsi::Runtime &jsiRuntime = runtimeHolder->get();
 
   jsRegistry = std::make_unique<JSReferencesCache>(jsiRuntime);
@@ -114,9 +115,21 @@ JSIInteropModuleRegistry::callGetJavaScriptModulesNames() const {
   return method(javaPart_);
 }
 
+bool JSIInteropModuleRegistry::callHasModule(const std::string &moduleName) const {
+  const static auto method = expo::JSIInteropModuleRegistry::javaClassLocal()
+    ->getMethod<jboolean(std::string)>(
+      "hasModule"
+    );
+  return (bool) method(javaPart_, moduleName);
+}
+
 jni::local_ref<JavaScriptModuleObject::javaobject>
 JSIInteropModuleRegistry::getModule(const std::string &moduleName) const {
   return callGetJavaScriptModuleObjectMethod(moduleName);
+}
+
+bool JSIInteropModuleRegistry::hasModule(const std::string &moduleName) const {
+  return callHasModule(moduleName);
 }
 
 jni::local_ref<jni::JArrayClass<jni::JString>> JSIInteropModuleRegistry::getModulesName() const {
@@ -139,5 +152,16 @@ jni::local_ref<JavaScriptObject::javaobject> JSIInteropModuleRegistry::createObj
 
 void JSIInteropModuleRegistry::drainJSEventLoop() {
   runtimeHolder->drainJSEventLoop();
+}
+
+void JSIInteropModuleRegistry::registerSharedObject(
+  jni::local_ref<jobject> native,
+  jni::local_ref<JavaScriptObject::javaobject> js
+) {
+  const static auto method = expo::JSIInteropModuleRegistry::javaClassLocal()
+    ->getMethod<void(jni::local_ref<jobject>, jni::local_ref<JavaScriptObject::javaobject>)>(
+      "registerSharedObject"
+    );
+  method(javaPart_, std::move(native), std::move(js));
 }
 } // namespace expo

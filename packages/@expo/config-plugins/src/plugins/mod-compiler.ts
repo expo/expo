@@ -109,7 +109,6 @@ const orders: Record<string, string[]> = {
     // run the XcodeProject mod second because many plugins attempt to read from it.
     'xcodeproj',
   ],
-  android: ['dangerous'],
 };
 /**
  * A generic plugin compiler.
@@ -144,7 +143,7 @@ export async function evalModsAsync(
     let entries = Object.entries(platform);
     if (entries.length) {
       // Move dangerous item to the first position if it exists, this ensures that all dangerous code runs first.
-      entries = sortMods(entries, orders[platformName]!);
+      entries = sortMods(entries, orders[platformName] ?? ['dangerous']);
       debug(`run in order: ${entries.map(([name]) => name).join(', ')}`);
       const platformProjectRoot = path.join(projectRoot, platformName);
       const projectName =

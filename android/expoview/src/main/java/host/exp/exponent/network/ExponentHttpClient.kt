@@ -3,15 +3,12 @@ package host.exp.exponent.network
 
 import android.content.Context
 import host.exp.exponent.Constants
-import host.exp.exponent.analytics.Analytics
 import host.exp.exponent.analytics.EXL
 import okhttp3.*
 import okhttp3.MediaType.Companion.toMediaTypeOrNull
 import okio.BufferedSource
 import okio.buffer
 import okio.source
-import org.json.JSONException
-import org.json.JSONObject
 import java.io.FileNotFoundException
 import java.io.IOException
 import java.net.MalformedURLException
@@ -116,7 +113,6 @@ class ExponentHttpClient(
       override fun onResponse(call: Call, response: Response) {
         if (response.isSuccessful) {
           callback.onCachedResponse(OkHttpV1ExpoResponse(response), false)
-          logEventWithUri(Analytics.AnalyticsEvent.HTTP_USED_CACHE_RESPONSE, uri)
         } else {
           tryHardCodedResponse(uri, call, callback, initialResponse, initialException)
         }
@@ -153,7 +149,6 @@ class ExponentHttpClient(
             )
             .build()
           callback.onCachedResponse(OkHttpV1ExpoResponse(response), true)
-          logEventWithUri(Analytics.AnalyticsEvent.HTTP_USED_EMBEDDED_RESPONSE, uri)
           return
         }
       }
@@ -198,17 +193,6 @@ class ExponentHttpClient(
     } catch (e: IOException) {
       EXL.e(TAG, e)
       null
-    }
-  }
-
-  private fun logEventWithUri(event: Analytics.AnalyticsEvent, uri: String) {
-    try {
-      val eventProperties = JSONObject().apply {
-        put("URI", uri)
-      }
-      Analytics.logEvent(event, eventProperties)
-    } catch (e: JSONException) {
-      EXL.e(TAG, e)
     }
   }
 

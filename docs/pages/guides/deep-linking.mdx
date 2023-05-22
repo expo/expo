@@ -196,7 +196,7 @@ It may be desirable for links to your domain to always open your app (without pr
 
 <Collapsible summary={<>Handle App Links on Android for <CODE>expo-dev-client</CODE> version 1.2.1 and below</>}>
 
-From Android 12 onwards, there is an issue reported when verifying the App Links with [`expo-dev-client`](/development/create-development-builds) version 1.2.1 and below.
+From Android 12 onwards, there is an issue reported when verifying the App Links with [`expo-dev-client`](/develop/development-builds/introduction/#what-is-an-expo-dev-client) version 1.2.1 and below.
 
 In Expo config, when `expo.android.intentFilters` is used and `"autoVerify"` is set to `true`, the `expo-dev-client` adds a scheme `<data android:scheme="exp+<slug>" />` to the intent filter. This scheme breaks the App Links verification.
 
@@ -230,7 +230,7 @@ An example of the `exp+` scheme breaking the verification process:
 </activity>
 ```
 
-You can fix this issue by creating a custom [Config Plugin](/guides/config-plugins/) that removes the `exp+` schemes when verifying `intentFilters`. In your project, create a new file called **withAndroidVerifiedLinksWorkaround.js** with the following code snippet:
+You can fix this issue by creating a custom [Config Plugin](/config-plugins/introduction/) that removes the `exp+` schemes when verifying `intentFilters`. In your project, create a new file called **withAndroidVerifiedLinksWorkaround.js** with the following code snippet:
 
 ```js withAndroidVerifiedLinksWorkaround.js
 const { createRunOncePlugin, withAndroidManifest } = require('@expo/config-plugins');

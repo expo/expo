@@ -4,6 +4,7 @@ package expo.modules.kotlin.types
 
 import android.graphics.Color
 import android.net.Uri
+import android.view.View
 import com.facebook.react.bridge.Dynamic
 import com.facebook.react.bridge.ReadableArray
 import com.facebook.react.bridge.ReadableMap
@@ -12,10 +13,13 @@ import expo.modules.kotlin.apifeatures.EitherType
 import expo.modules.kotlin.exception.MissingTypeConverter
 import expo.modules.kotlin.jni.CppType
 import expo.modules.kotlin.jni.ExpectedType
+import expo.modules.kotlin.jni.JavaScriptFunction
 import expo.modules.kotlin.jni.JavaScriptObject
 import expo.modules.kotlin.jni.JavaScriptValue
 import expo.modules.kotlin.records.Record
 import expo.modules.kotlin.records.RecordTypeConverter
+import expo.modules.kotlin.sharedobjects.SharedObject
+import expo.modules.kotlin.sharedobjects.SharedObjectTypeConverter
 import expo.modules.kotlin.typedarray.BigInt64Array
 import expo.modules.kotlin.typedarray.BigUint64Array
 import expo.modules.kotlin.typedarray.Float32Array
@@ -33,6 +37,7 @@ import expo.modules.kotlin.types.io.PathTypeConverter
 import expo.modules.kotlin.types.net.JavaURITypeConverter
 import expo.modules.kotlin.types.net.URLTypConverter
 import expo.modules.kotlin.types.net.UriTypeConverter
+import expo.modules.kotlin.views.ViewTypeConverter
 import java.io.File
 import java.net.URI
 import java.net.URL
@@ -113,6 +118,18 @@ object TypeConverterProviderImpl : TypeConverterProvider {
       val converter = RecordTypeConverter<Record>(this, type)
       cachedRecordConverters[kClass] = converter
       return converter
+    }
+
+    if (kClass.isSubclassOf(View::class)) {
+      return ViewTypeConverter<View>(type)
+    }
+
+    if (kClass.isSubclassOf(SharedObject::class)) {
+      return SharedObjectTypeConverter<SharedObject>(type)
+    }
+
+    if (kClass.isSubclassOf(JavaScriptFunction::class)) {
+      return JavaScriptFunctionTypeConverter<Any>(type)
     }
 
     return handelEither(type, kClass)

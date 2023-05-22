@@ -20,8 +20,8 @@ export function ApiVersionSelect() {
 
   return (
     <div css={containerStyle}>
-      <label css={labelStyle} htmlFor="api-version-select">
-        <LABEL css={labelTextStyle}>{versionToText(version)}</LABEL>
+      <label className="flex flex-row items-center" htmlFor="api-version-select">
+        <LABEL className="flex">{versionToText(version)}</LABEL>
         <ChevronDownIcon className="icon-sm shrink-0" />
       </label>
       <select
@@ -37,7 +37,7 @@ export function ApiVersionSelect() {
       </select>
       {/* Changing versions is a JS only mechanism. To help crawlers find other versions, we add hidden links. */}
       {VERSIONS.map(version => (
-        <A css={crawlerLinkStyle} key={version} href={`/versions/${version}`} />
+        <A className="hidden" key={version} href={`/versions/${version}`} />
       ))}
     </div>
   );
@@ -62,20 +62,6 @@ const containerStyle = css({
   boxShadow: shadows.xs,
   margin: spacing[4],
   padding: `${spacing[2]}px ${spacing[3]}px`,
-});
-
-const labelStyle = css({
-  display: 'flex',
-  flexDirection: 'row',
-  alignItems: 'center',
-});
-
-const labelTextStyle = css({
-  flex: 1,
-});
-
-const crawlerLinkStyle = css({
-  display: 'none',
 });
 
 const selectStyle = css({

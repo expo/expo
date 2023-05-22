@@ -5,18 +5,25 @@ index 557797a..2ccae2e 100644
 @@ -1,4 +1,5 @@
  package com.myapp;
 +import expo.modules.ReactActivityDelegateWrapper;
- 
+
  import com.facebook.react.ReactActivity;
  import com.facebook.react.ReactActivityDelegate;
-@@ -21,7 +22,7 @@ public class MainActivity extends ReactActivity {
+@@ -23,13 +24,13 @@ public class MainActivity extends ReactActivity {
     */
    @Override
    protected ReactActivityDelegate createReactActivityDelegate() {
--    return new MainActivityDelegate(this, getMainComponentName());
-+    return new ReactActivityDelegateWrapper(this, new MainActivityDelegate(this, getMainComponentName()));
+-    return new DefaultReactActivityDelegate(
++    return new ReactActivityDelegateWrapper(this, BuildConfig.IS_NEW_ARCHITECTURE_ENABLED, new DefaultReactActivityDelegate(
+         this,
+         getMainComponentName(),
+         // If you opted-in for the New Architecture, we enable the Fabric Renderer.
+         DefaultNewArchitectureEntryPoint.getFabricEnabled(), // fabricEnabled
+         // If you opted-in for the New Architecture, we enable Concurrent React (i.e. React 18).
+         DefaultNewArchitectureEntryPoint.getConcurrentReactEnabled() // concurrentRootEnabled
+-        );
++        ));
    }
- 
-   public static class MainActivityDelegate extends ReactActivityDelegate {
+ }
 diff --git a/android/app/src/main/java/com/myapp/MainApplication.java b/android/app/src/main/java/com/myapp/MainApplication.java
 index fd8ec88..73cbea8 100644
 --- a/android/app/src/main/java/com/myapp/MainApplication.java
@@ -29,56 +36,59 @@ index fd8ec88..73cbea8 100644
 +import expo.modules.BuildConfig;
  
  import android.app.Application;
- import android.content.Context;
-@@ -16,7 +19,7 @@ import java.util.List;
+ import com.facebook.react.PackageList;
+@@ -13,7 +16,7 @@ import java.util.List;
  public class MainApplication extends Application implements ReactApplication {
- 
+
    private final ReactNativeHost mReactNativeHost =
--      new ReactNativeHost(this) {
-+      new ReactNativeHostWrapper(this, new ReactNativeHost(this) {
+-      new DefaultReactNativeHost(this) {
++      new ReactNativeHostWrapper(this, new DefaultReactNativeHost(this) {
          @Override
          public boolean getUseDeveloperSupport() {
            return BuildConfig.DEBUG;
-@@ -35,10 +38,10 @@ public class MainApplication extends Application implements ReactApplication {
-         protected String getJSMainModuleName() {
-           return "index";
+@@ -42,7 +45,7 @@ public class MainApplication extends Application implements ReactApplication {
+         protected Boolean isHermesEnabled() {
+           return BuildConfig.IS_HERMES_ENABLED;
          }
 -      };
 +      });
- 
-   private final ReactNativeHost mNewArchitectureNativeHost =
--      new MainApplicationReactNativeHost(this);
-+      new ReactNativeHostWrapper(this, new MainApplicationReactNativeHost(this));
- 
+
    @Override
    public ReactNativeHost getReactNativeHost() {
-@@ -56,6 +59,7 @@ public class MainApplication extends Application implements ReactApplication {
-     ReactFeatureFlags.useTurboModules = BuildConfig.IS_NEW_ARCHITECTURE_ENABLED;
-     SoLoader.init(this, /* native exopackage */ false);
-     initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
-+    ApplicationLifecycleDispatcher.onApplicationCreate(this);
-   }
- 
-   /**
-@@ -88,4 +92,10 @@ public class MainApplication extends Application implements ReactApplication {
-       }
+@@ -58,5 +61,12 @@ public class MainApplication extends Application implements ReactApplication {
+       DefaultNewArchitectureEntryPoint.load();
      }
-   }
+     ReactNativeFlipper.initializeFlipper(this, getReactNativeHost().getReactInstanceManager());
++    ApplicationLifecycleDispatcher.onApplicationCreate(this);
++  }
 +
 +  @Override
 +  public void onConfigurationChanged(Configuration newConfig) {
 +    super.onConfigurationChanged(newConfig);
 +    ApplicationLifecycleDispatcher.onConfigurationChanged(this, newConfig);
-+  }
+   }
+ }
+diff --git a/android/build.gradle b/android/build.gradle
+index 67d887b..f63636a 100644
+--- a/android/build.gradle
++++ b/android/build.gradle
+@@ -15,7 +15,7 @@ buildscript {
+         mavenCentral()
+     }
+     dependencies {
+-        classpath("com.android.tools.build:gradle:7.3.1")
++        classpath("com.android.tools.build:gradle:7.4.1")
+         classpath("com.facebook.react:react-native-gradle-plugin")
+     }
  }
 diff --git a/android/settings.gradle b/android/settings.gradle
-index 47725a0..e787ab1 100644
+index 546e701..9f61409 100644
 --- a/android/settings.gradle
 +++ b/android/settings.gradle
-@@ -7,3 +7,6 @@ if (settings.hasProperty("newArchEnabled") && settings.newArchEnabled == "true")
-     include(":ReactAndroid")
-     project(":ReactAndroid").projectDir = file('../node_modules/react-native/ReactAndroid')
- }
+@@ -2,3 +2,6 @@ rootProject.name = 'myapp'
+ apply from: file("../node_modules/@react-native-community/cli-platform-android/native_modules.gradle"); applyNativeModulesSettingsGradle(settings)
+ include ':app'
+ includeBuild('../node_modules/react-native-gradle-plugin')
 +
 +apply from: new File(["node", "--print", "require.resolve('expo/package.json')"].execute(null, rootDir).text.trim(), "../scripts/autolinking.gradle")
 +useExpoModules()

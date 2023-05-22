@@ -4,11 +4,9 @@ apply plugin: 'kotlin-kapt'
 apply plugin: 'maven-publish'
 
 group = 'host.exp.exponent'
-version = '0.16.1'
+version = '0.17.0'
 
 def ex_updates_native_debug = System.getenv("EX_UPDATES_NATIVE_DEBUG") == "1" ? "true" : "false"
-
-apply from: "../scripts/create-manifest-android.gradle"
 
 buildscript {
   def expoModulesCorePlugin = new File(project(":expo-modules-core").projectDir.absolutePath, "ExpoModulesCorePlugin.gradle")
@@ -40,19 +38,11 @@ buildscript {
   }
 }
 
-// Creating sources with comments
-task androidSourcesJar(type: Jar) {
-  classifier = 'sources'
-  from android.sourceSets.main.java.srcDirs
-}
-
 afterEvaluate {
   publishing {
     publications {
       release(MavenPublication) {
         from components.release
-        // Add additional sourcesJar to artifacts
-        artifact(androidSourcesJar)
       }
     }
     repositories {
@@ -79,10 +69,13 @@ android {
     minSdkVersion safeExtGet("minSdkVersion", 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
     versionCode 31
-    versionName '0.16.1'
+    versionName '0.17.0'
     consumerProguardFiles("proguard-rules.pro")
     testInstrumentationRunner "androidx.test.runner.AndroidJUnitRunner"
+
     buildConfigField("boolean", "EX_UPDATES_NATIVE_DEBUG", ex_updates_native_debug)
+    buildConfigField("boolean", "EX_UPDATES_ANDROID_DELAY_LOAD_APP", boolish(findProperty("EX_UPDATES_ANDROID_DELAY_LOAD_APP") ?: true).toString())
+
     // uncomment below to export the database schema when making changes
     /* javaCompileOptions {
       annotationProcessorOptions {
@@ -101,6 +94,11 @@ android {
     main.assets.srcDirs += files("$projectDir/src/main/certificates".toString())
     androidTest.assets.srcDirs += files("$projectDir/src/androidTest/schemas".toString())
     androidTest.assets.srcDirs += files("$projectDir/src/androidTest/certificates".toString())
+  }
+  publishing {
+    singleVariant("release") {
+      withSourcesJar()
+    }
   }
 }
 
@@ -128,7 +126,7 @@ dependencies {
   implementation("org.apache.commons:commons-lang3:3.9")
   implementation("org.bouncycastle:bcutil-jdk15to18:1.70")
 
-  testImplementation 'junit:junit:4.13.1'
+  testImplementation 'junit:junit:4.13.2'
   testImplementation 'androidx.test:core:1.4.0'
   testImplementation 'io.mockk:mockk:1.12.3'
   testImplementation "org.jetbrains.kotlin:kotlin-test-junit:${getKotlinVersion()}"
