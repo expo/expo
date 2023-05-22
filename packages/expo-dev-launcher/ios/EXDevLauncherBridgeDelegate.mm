@@ -22,13 +22,13 @@
 
 static NSString *const kRNConcurrentRoot = @"concurrentRoot";
 
-#endif
-
 @interface EXDevLauncherBridgeDelegate () <RCTTurboModuleManagerDelegate, RCTCxxBridgeDelegate> {
   std::shared_ptr<const facebook::react::ReactNativeConfig> _reactNativeConfig;
   facebook::react::ContextContainer::Shared _contextContainer;
 }
 @end
+
+#endif
 
 @implementation EXDevLauncherBridgeDelegate
 
