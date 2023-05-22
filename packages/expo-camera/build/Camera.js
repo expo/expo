@@ -1,7 +1,7 @@
 import { createPermissionHook, Platform, UnavailabilityError } from 'expo-modules-core';
 import * as React from 'react';
 import { findNodeHandle } from 'react-native';
-import ExponentCamera from './ExponentCamera';
+import ExpoCamera from './ExpoCamera';
 import CameraManager from './ExponentCameraManager';
 import { ConversionTables, ensureNativeProps } from './utils/props';
 const EventThrottleMs = 500;

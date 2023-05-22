@@ -16,8 +16,8 @@ class CameraCameraPermissionRequester: NSObject, EXPermissionsRequester {
       systemStatus = AVCaptureDevice.authorizationStatus(for: .video)
     } else {
       EXFatal(EXErrorWithMessage("""
-      This app is missing either NSCameraUsageDescription or NSMicrophoneUsageDescription, so audio/video services will fail. Add one of these
-      entries to your bundle's Info.plist.
+      This app is missing either NSCameraUsageDescription or NSMicrophoneUsageDescription,
+      so audio/video services will fail. Add one of these entries to your bundle's Info.plist.
       """))
       systemStatus = .denied
     }
@@ -61,8 +61,8 @@ class CameraPermissionRequester: NSObject, EXPermissionsRequester {
       systemStatus = AVCaptureDevice.authorizationStatus(for: .video)
     } else {
       EXFatal(EXErrorWithMessage("""
-         This app is missing either NSCameraUsageDescription or NSMicrophoneUsageDescription, so audio/video services will fail. Add one of these entries to
-         your bundle's Info.plist
+      This app is missing either NSCameraUsageDescription or NSMicrophoneUsageDescription, so audio/video services will fail. Add one of these entries to
+      your bundle's Info.plist
       """))
       systemStatus = .denied
     }
@@ -83,7 +83,7 @@ class CameraPermissionRequester: NSObject, EXPermissionsRequester {
     ]
   }
 
-  public func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: EXPromiseRejectBlock) {
+  func requestPermissions(resolver resolve: @escaping EXPromiseResolveBlock, rejecter reject: EXPromiseRejectBlock) {
     AVCaptureDevice.requestAccess(for: .video) { [weak self] _ in
       resolve(self?.getPermissions())
     }
@@ -105,7 +105,8 @@ class CameraMicrophonePermissionRequester: NSObject, EXPermissionsRequester {
       systemStatus = AVCaptureDevice.authorizationStatus(for: .audio)
     } else {
       EXFatal(EXErrorWithMessage("""
-         This app is missing NSMicrophoneUsageDescription, so audio services will fail. Add this entry to your bundle's Info.plist.
+         This app is missing NSMicrophoneUsageDescription, so audio services will fail.
+         Add this entry to your bundle's Info.plist.
       """))
       systemStatus = .denied
     }

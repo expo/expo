@@ -92,7 +92,9 @@ struct ExpoCameraUtils {
     guard let path else {
       return nil
     }
-    guard let url = URL(string: path) else { return nil }
+    guard let url = URL(string: path) else {
+      return nil
+    }
     try? data.write(to: url)
     let fileUrl = URL(fileURLWithPath: path)
     return fileUrl.absoluteString

@@ -65,6 +65,7 @@ public final class CameraViewModule: Module {
       ]
     ])
 
+    // swiftlint:disable:next closure_body_length
     View(ExpoCamera.self) {
       Events(
         "onCameraReady",
@@ -140,8 +141,8 @@ public final class CameraViewModule: Module {
       }
 
       Prop("responsiveOrientationWhenOrientationLocked") { (view, responsiveOrientation: Bool) in
-        if view.responsiveOrientationWhenOrientationLocked != responsiveOrientation {
-          view.responsiveOrientationWhenOrientationLocked = responsiveOrientation
+        if view.responsiveWhenOrientationLocked != responsiveOrientation {
+          view.responsiveWhenOrientationLocked = responsiveOrientation
         }
       }
     }
@@ -308,7 +309,9 @@ private func getAvailableVideoCodecs() -> [String] {
 
   session.beginConfiguration()
 
-  guard let captureDevice = ExpoCameraUtils.device(with: AVMediaType.video, preferring: AVCaptureDevice.Position.front) else {
+  guard let captureDevice = ExpoCameraUtils.device(
+    with: AVMediaType.video,
+    preferring: AVCaptureDevice.Position.front) else {
     return []
   }
   guard let deviceInput = try? AVCaptureDeviceInput(device: captureDevice) else {
