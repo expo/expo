@@ -36,6 +36,7 @@ import java.util.Queue;
 import java.util.Set;
 import java.util.concurrent.ConcurrentLinkedQueue;
 import java.util.concurrent.Semaphore;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
 import javax.annotation.Nullable;
 
@@ -163,6 +164,10 @@ public class NodesManager implements EventDispatcherListener {
     }
   }
 
+  public boolean isAnimationRunning() {
+    return mCallbackPosted.get();
+  }
+
   public void onHostResume() {
     if (mCallbackPosted.getAndSet(false)) {
       startUpdatingOnAnimationFrame();
@@ -183,7 +188,7 @@ public class NodesManager implements EventDispatcherListener {
     }
   }
 
-  private void performOperations() {
+  public void performOperations() {
     if (BuildConfig.IS_NEW_ARCHITECTURE_ENABLED) {
       mNativeProxy.performOperations();
     } else if (!mOperationsInBatch.isEmpty()) {
@@ -218,13 +223,11 @@ public class NodesManager implements EventDispatcherListener {
             }
           });
       if (trySynchronously) {
-        while (true) {
-          try {
-            semaphore.acquire();
-            break;
-          } catch (InterruptedException e) {
-            // noop
-          }
+        try {
+          semaphore.tryAcquire(16, TimeUnit.MILLISECONDS);
+        } catch (InterruptedException e) {
+          // if the thread is interruped we just continue and let the layout update happen
+          // asynchronously
         }
       }
     }

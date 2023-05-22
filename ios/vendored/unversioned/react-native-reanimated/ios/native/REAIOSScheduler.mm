@@ -45,4 +45,4 @@ void REAIOSScheduler::scheduleOnUI(std::function<void()> job)
 
 REAIOSScheduler::~REAIOSScheduler() {}
 
-}
+} // namespace reanimated

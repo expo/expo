@@ -39,11 +39,9 @@ public class NativeMethodsHelper {
   public static void scrollTo(View view, double argX, double argY, boolean animated) {
     int x = Math.round(PixelUtil.toPixelFromDIP(argX));
     int y = Math.round(PixelUtil.toPixelFromDIP(argY));
-    boolean horizontal = false;
+    boolean isHorizontal = view instanceof ReactHorizontalScrollView;
 
-    if (view instanceof ReactHorizontalScrollView) {
-      horizontal = true;
-    } else {
+    if (!isHorizontal) {
       if (view instanceof ReactSwipeRefreshLayout) {
         view = findScrollView((ReactSwipeRefreshLayout) view);
       }
@@ -56,17 +54,14 @@ public class NativeMethodsHelper {
     }
 
     if (animated) {
-      if (horizontal) {
-        ((ReactHorizontalScrollView) view).smoothScrollTo((int) x, (int) y);
+      final View finalView = view;
+      if (isHorizontal) {
+        view.post(() -> ((ReactHorizontalScrollView) finalView).smoothScrollTo(x, y));
       } else {
-        ((ReactScrollView) view).smoothScrollTo((int) x, (int) y);
+        view.post(() -> ((ReactScrollView) finalView).smoothScrollTo(x, y));
       }
     } else {
-      if (horizontal) {
-        ((ReactHorizontalScrollView) view).scrollTo((int) x, (int) y);
-      } else {
-        ((ReactScrollView) view).scrollTo((int) x, (int) y);
-      }
+      view.scrollTo(x, y);
     }
   }
 

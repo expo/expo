@@ -7,6 +7,10 @@
 #include <iostream>
 #include <string>
 
+#ifdef ANDROID
+#include <android/log.h>
+#endif
+
 namespace reanimated {
 
 // This is a class that counts how many instances of a different class there
@@ -22,8 +26,16 @@ class SingleInstanceChecker {
  private:
   void assertWithMessage(bool condition, std::string message) {
     if (!condition) {
-      std::cerr << message << std::endl;
-      assert(condition);
+#ifdef ANDROID
+      __android_log_print(
+          ANDROID_LOG_WARN, "Reanimated", "%s", message.c_str());
+#else
+      std::cerr << "[Reanimated] " << message << std::endl;
+#endif
+
+#ifdef IS_REANIMATED_EXAMPLE_APP
+      assert(false);
+#endif
     }
   }
 

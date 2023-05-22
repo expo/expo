@@ -66,6 +66,7 @@
 {
   // This method should never be called.
   react_native_assert(false);
+  return nullptr;
 }
 
 @end

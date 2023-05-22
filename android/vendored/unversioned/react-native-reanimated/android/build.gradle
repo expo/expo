@@ -72,9 +72,12 @@ def resolveClientSideBuild() {
     return true
 }
 
+def isReanimatedExampleApp() {
+    return safeAppExtGet("isReanimatedExampleApp", false)
+}
+
 def isDeveloperMode() {
-    // developer mode, to run Example app
-    return safeAppExtGet("isReanimatedExampleApp", false) || System.getenv("REANIMATED_PACKAGE_BUILD") == "1"
+    return isReanimatedExampleApp() || System.getenv("REANIMATED_PACKAGE_BUILD") == "1"
 }
 
 def isNewArchitectureEnabled() {
@@ -204,7 +207,7 @@ file("$reactNativeRootDir/ReactAndroid/gradle.properties").withInputStream { rea
 def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
 def REACT_NATIVE_MINOR_VERSION = REACT_NATIVE_VERSION.startsWith("0.0.0-") ? 1000 : REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
 def REANIMATED_PACKAGE_BUILD = System.getenv("REANIMATED_PACKAGE_BUILD")
-def REANIMATED_VERSION = "3.0.2"
+def REANIMATED_VERSION = "3.1.0"
 def REANIMATED_MAJOR_VERSION = 3
 
 // for React Native <= 0.70
@@ -433,6 +436,10 @@ apply plugin: "de.undercouch.download"
 
 android {
     compileSdkVersion safeExtGet("compileSdkVersion", 30)
+    def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+    if (agpVersion.tokenize('.')[0].toInteger() >= 7) {
+        namespace "com.swmansion.reanimated"
+    }
     if (REACT_NATIVE_MINOR_VERSION >= 71) {
         buildFeatures {
             prefab true
@@ -455,6 +462,7 @@ android {
                         "-DJS_RUNTIME_DIR=${jsRuntimeDir}",
                         "-DCLIENT_SIDE_BUILD=${CLIENT_SIDE_BUILD}",
                         "-DIS_NEW_ARCHITECTURE_ENABLED=${isNewArchitectureEnabled()}",
+                        "-DIS_REANIMATED_EXAMPLE_APP=${isReanimatedExampleApp()}",
                         "-DPLAYGROUND_APP_NAME=${getPlaygroundAppName()}",
                         "-DREANIMATED_PACKAGE_BUILD=${REANIMATED_PACKAGE_BUILD}",
                         "-DREANIMATED_VERSION=${REANIMATED_VERSION}"
@@ -597,11 +605,11 @@ def assertNoReanimated2WithNewArchitecture = task assertNoReanimated2WithNewArch
 }
 
 def assertLatestReactNativeWithNewArchitecture = task assertLatestReactNativeWithNewArchitectureTask {
-    onlyIf { isNewArchitectureEnabled() && REANIMATED_MAJOR_VERSION == 3 && REACT_NATIVE_MINOR_VERSION < 71 }
+    onlyIf { isNewArchitectureEnabled() && REANIMATED_MAJOR_VERSION == 3 && REACT_NATIVE_MINOR_VERSION < 72 }
     doFirst {
         throw new GradleException(
             "\n[react-native-reanimated] Reanimated " + REANIMATED_VERSION + " supports the New Architecture " +
-            "only on the latest minor release of React Native. Please upgrade to React Native 0.71.0+ " +
+            "only on the latest minor release of React Native. Please upgrade to React Native 0.72.0+ " +
             "or downgrade to an older version of Reanimated v3."
         )
     }
@@ -1070,13 +1078,13 @@ afterEvaluate {
         nativeBuildDependsOn(prepareThirdPartyNdkHeaders)
         nativeBuildDependsOn(extractAARHeaders)
         nativeBuildDependsOn(extractSOFiles)
-
-        tasks.forEach({ task ->
-            if (task.name.contains("JniLibFolders")) {
-                task.dependsOn(packageNdkLibs)
-            }
-        })
     }
+
+    tasks.forEach({ task ->
+        if (task.name.contains("JniLibFolders")) {
+            task.dependsOn(packageNdkLibs)
+        }
+    })
 
     if (JS_RUNTIME == "hermes") {
         if (REACT_NATIVE_MINOR_VERSION < 71) {

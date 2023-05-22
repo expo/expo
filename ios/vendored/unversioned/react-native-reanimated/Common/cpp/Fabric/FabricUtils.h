@@ -36,7 +36,7 @@ struct UIManagerPublic {
 struct BindingPublic : public jni::HybridClass<Binding>,
                        public SchedulerDelegate,
                        public LayoutAnimationStatusDelegate {
-  butter::shared_mutex installMutex_;
+  std::shared_mutex installMutex_;
   std::shared_ptr<FabricMountingManager> mountingManager_;
   std::shared_ptr<facebook::react::Scheduler> scheduler_;
 };
