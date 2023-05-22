@@ -17,8 +17,12 @@ import expo.modules.screenorientation.enums.OrientationAttr
 import expo.modules.screenorientation.enums.OrientationLock
 
 class ScreenOrientationModule : Module(), LifecycleEventListener {
+  private val weakCurrentActivity
+    get() = appContext.activityProvider?.currentActivity
+
   private val currentActivity
-    get() = appContext.activityProvider?.currentActivity ?: throw Exceptions.MissingActivity()
+    get() = weakCurrentActivity ?: throw Exceptions.MissingActivity()
+
   private val uiManager
     get() = appContext.legacyModuleRegistry.getModule(UIManager::class.java)
       ?: throw IllegalStateException("Could not find implementation for UIManager.")
@@ -71,13 +75,13 @@ class ScreenOrientationModule : Module(), LifecycleEventListener {
     OnDestroy {
       uiManager.unregisterLifecycleEventListener(this@ScreenOrientationModule)
       initialOrientation?.let {
-        currentActivity.requestedOrientation = it
+        weakCurrentActivity?.requestedOrientation = it
       }
     }
   }
 
   override fun onHostResume() {
-    initialOrientation = initialOrientation ?: currentActivity.requestedOrientation
+    initialOrientation = initialOrientation ?: weakCurrentActivity?.requestedOrientation
   }
 
   override fun onHostPause() = Unit
