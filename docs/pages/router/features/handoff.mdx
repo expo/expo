@@ -6,11 +6,11 @@ import ImageSpotlight from '~/components/plugins/ImageSpotlight';
 import { BoxLink } from '~/ui/components/BoxLink';
 import { GithubIcon } from '@expo/styleguide-icons';
 
-> **warning** This guide requires `expo@49.0.0-alpha.3` or greater––everything listed here is still experimental. You may need to [use Expo CLI on `main`](https://github.com/expo/expo/tree/main/packages/%40expo/cli#contributing) to use these features.
+> **warning** This guide requires `expo@49.0.0-alpha.3` or above Everything listed here is still experimental. You may need to use [Expo CLI on `main`](https://github.com/expo/expo/tree/main/packages/%40expo/cli#contributing) to use these features.
 
 Handoff is a feature that enables users to continue browsing your app or website on another device. This functionality is generally very useful for users, but it can be difficult to implement. Expo Router streamlines a lot of the complexity of handoff by providing a simple API.
 
-In Expo Router, the underlying iOS API (`NSUserActivity`) requires a `webpageUrl` which the OS recommends as the current URL for switching to your app. The `expo-router/head` component has a native module which can be used to automatically set the `webpageUrl` to the current URL.
+In Expo Router, the underlying iOS API (`NSUserActivity`) requires a `webpageUrl` which the OS recommends as the current URL for switching to your app. The `expo-router/head` component has a native module that can be used to automatically set the `webpageUrl` to the current URL.
 
 ## Setup
 
@@ -18,10 +18,10 @@ The following restrictions and considerations are very important:
 
 - Handoff is Apple-only.
 - Handoff can not be used in the Expo Go app as it requires build-time configuration.
-- Handoff requires [universal links](/docs/guides/universal-links) to be configured.
+- Handoff requires universal links to be configured.
 - Handoff requires the `expo-router/head` component to be used on each page that you want to support.
 
-Ensure your `public/.well-known/apple-app-site-association` file is configured correctly. It must contain the `activitycontinuation` key with the `apps` array containing your app's bundle ID and Team ID formatted as `<APPLE_TEAM_ID>.<IOS_BUNDLE_ID>`, e.g. `QQ57RJ5UTD.app.expo.acme` where `QQ57RJ5UTD` is the Team ID and `app.expo.acme` is the bundle identifier.
+Ensure your **public/.well-known/apple-app-site-association** file is configured correctly. It must contain the `activitycontinuation` key with the `apps` array containing your app's bundle ID and Team ID formatted as `<APPLE_TEAM_ID>.<IOS_BUNDLE_ID>`. For example, `QQ57RJ5UTD.app.expo.acme` where `QQ57RJ5UTD` is the Team ID and `app.expo.acme` is the bundle identifier.
 
 ```json public/.well-known/apple-app-site-association
 {
@@ -55,7 +55,7 @@ Ensure you set the Handoff origin in your `app.config.js` file. This is the URL 
 
 ```js app.config.js
 // Be sure to change this to be unique to your project.
-process.env.EXPO_TUNNEL_SUBDOMAIN = "bacon-router-sandbox";
+process.env.EXPO_TUNNEL_SUBDOMAIN = 'bacon-router-sandbox';
 
 const ngrokUrl = `${process.env.EXPO_TUNNEL_SUBDOMAIN}.ngrok.io`;
 
@@ -63,7 +63,7 @@ const ngrokUrl = `${process.env.EXPO_TUNNEL_SUBDOMAIN}.ngrok.io`;
 module.exports = {
   // ...
   ios: {
-    bundleIdentifier: "...",
+    bundleIdentifier: '...',
     associatedDomains: [
       `applinks:${ngrokUrl}`,
       `activitycontinuation:${ngrokUrl}`,
@@ -77,12 +77,12 @@ module.exports = {
 
   plugins: [
     [
-      "expo-router",
+      'expo-router',
       {
         headOrigin:
-          process.env.NODE_ENV === "development"
+          process.env.NODE_ENV === 'development'
             ? `https://${ngrokUrl}`
-            : "https://my-website-example.com",
+            : 'https://my-website-example.com',
       },
     ],
   ],
@@ -93,15 +93,15 @@ module.exports = {
 
 After you've configured the Expo Config, sync the changes with your native build `npx expo prebuild -p ios`.
 
-Now you must start the website BEFORE installing the app on your device, this is because when you install the app, the OS will trigger Apple's servers to ping your website for the `.well-known/apple-app-site-association` file. If the website is not running, the OS will not be able to find the file and handoff will not work. If this happens, simply rebuild the native app with `npx expo run:ios -d`.
+Now you must start the website before installing the app on your device. This is because when you install the app, the OS will trigger Apple's servers to ping your website for the **.well-known/apple-app-site-association** file. If the website is not running, the OS will not be able to find the file and handoff will not work. If this happens, simply rebuild the native app with `npx expo run:ios -d`.
 
 ## Usage
 
 In any route that you want to support handoff, you must use the `expo-router/head` component.
 
-```tsx app/index.tsx
-import Head from "expo-router/head";
-import { Text } from "react-native";
+```js app/index.js
+import Head from 'expo-router/head';
+import { Text } from 'react-native';
 
 export default function App() {
   return (
@@ -127,8 +127,8 @@ The `expo-router/head` component supports the following meta tags:
 
 You may want to switch the values between platforms, for that you can use `Platform.select`:
 
-```tsx app/index.tsx
-import Head from "expo-router/head";
+```js app/index.js
+import Head from 'expo-router/head';
 
 export default function App() {
   return (
@@ -136,7 +136,7 @@ export default function App() {
       <Head>
         <meta
           property="og:url"
-          content={Platform.select({ web: "https://expo.dev", default: null })}
+          content={Platform.select({ web: 'https://expo.dev', default: null })}
         />
       </Head>
     </>
@@ -146,7 +146,7 @@ export default function App() {
 
 ## Testing
 
-> Ensure your Apple devices have Handoff enabled: [Enabling Handoff](https://support.apple.com/en-us/HT209455). You can test this by following the steps below, but substituting your app with Safari.
+> Ensure your Apple devices have Handoff enabled: [Enabling Handoff](https://support.apple.com/en-us/HT209455). You can test this by following the steps below but substituting your app with Safari.
 
 1. Open your native application on your device.
 2. Navigate to a route in the app that supports handoff, i.e. is rendering the `<Head />` element from Expo Router.
@@ -164,15 +164,15 @@ export default function App() {
   src="/static/images/expo-router/iphone-handoff.png"
 />
 
-> If you only see the Safari icon in your iPhone's App Switcher, then handoff is not working. Follow the [Trouble Shooting](#trouble-shooting) section below.
+> If you only see the Safari icon in your iPhone's App Switcher, then handoff is not working. Follow the [Troubleshooting](#trouble-shooting) section below.
 
-## Trouble Shooting
+## Troubleshooting
 
-You can test the Apple App Site Association file (`public/.well-known/apple-app-site-association`) by using a validator like this one: [AASA Validator](https://branch.io/resources/aasa-validator/).
+You can test the Apple App Site Association file (**public/.well-known/apple-app-site-association**) by using a validator like this one: [AASA Validator](https://branch.io/resources/aasa-validator/).
 
 If you're having issues, the best thing you can do is enable the most aggressive handoff settings in your app, this will ensure that any possible route is linkable. You can do this like so:
 
-Ensure your `public/.well-known/apple-app-site-association` file matches all routes:
+Ensure your **public/.well-known/apple-app-site-association** file matches all routes:
 
 ```json public/.well-known/apple-app-site-association
 {
@@ -237,6 +237,6 @@ If all else fails, you can try to debug the issue by following the steps in the 
   href="https://developer.apple.com/documentation/foundation/task_management/implementing_handoff_in_your_ap"
 />
 
-## Known Issues
+## Known issues
 
 - Handoff from web (Chrome) to native, does not appear to support Client-side Routing. This means the URL presented in the App Switcher will be the URL of the page you were on when you clicked the link, or reloaded the page. This appears to be a limitation of the web platform, and not something that can be fixed by Expo Router.
