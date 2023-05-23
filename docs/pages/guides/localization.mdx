@@ -3,10 +3,8 @@ title: Localization
 description: Learn about getting started and configuring localization in an Expo project using expo-localization.
 ---
 
-import { ConfigReactNative } from '~/components/plugins/ConfigSection';
 import { SnackInline } from '~/ui/components/Snippet';
 import { Terminal } from '~/ui/components/Snippet';
-import { BoxLink } from '~/ui/components/BoxLink';
 import { Collapsible } from '~/ui/components/Collapsible';
 
 If you want your app to be easy to use for users who speak different languages or come from different cultures, you should localize it.
@@ -179,7 +177,7 @@ Now, iOS knows to set the display name of your app to `こんにちは` whenever
 
 Several regions around the world write text from right to left. If you want to localize your app, so it looks as expected in RTL languages, you need to make sure your app handles these layout and text direction changes accordingly.
 
-To enable RTL support in your application using SDK 48 or later, install the `expo-localization` package and add the following properties in Expo config: 
+To enable RTL support in your application using SDK 48 or later, install the `expo-localization` package and add the following properties in Expo config:
 
 <Terminal cmd={['$ npx expo install expo-localization']} />
 

@@ -31,7 +31,7 @@ View all channels:
 View a specific channel:
 
 <Terminal
-  cmd={['$ eas channel:view [channel-name]', '', '', '# Example', '$ eas channel:view production']}
+  cmd={['$ eas channel:view [channel-name]', '', '# Example', '$ eas channel:view production']}
   cmdCopy="eas channel:view [channel-name]"
 />
 
@@ -40,7 +40,6 @@ Create a channel:
 <Terminal
   cmd={[
     '$ eas channel:create [channel-name]',
-    '',
     '',
     '# Example',
     '$ eas channel:create production',
@@ -69,7 +68,6 @@ View a specific update:
   cmd={[
     '$ eas update:view [update-group-id]',
     '',
-    '',
     '# Example',
     '$ eas update:view dbfd479f-d981-44ce-8774-f2fbcc386aa',
   ]}
@@ -83,7 +81,6 @@ View a specific update:
 <Terminal
   cmd={[
     '$ eas update --branch [branch-name] --message "..."',
-    '',
     '',
     '# Example',
     '$ eas update --branch version-1.0 --message "Fixes typo"',
@@ -101,7 +98,6 @@ If you're using Git, we can use the `--auto` flag to auto-fill the branch name a
   cmd={[
     '$ eas branch:delete [branch-name]',
     '',
-    '',
     '# Example',
     '$ eas branch:delete version-1.0',
   ]}
@@ -115,7 +111,6 @@ Renaming branches do not disconnect any channel–branch links. If you had a cha
 <Terminal
   cmd={[
     '$ eas branch:rename --from [branch-name] --to [branch-name]',
-    '',
     '',
     '# Example',
     '$ eas branch:rename --from version-1.0 --to version-1.0-new',
@@ -133,7 +128,6 @@ We can make a previous update immediately available to all users. This command t
   cmd={[
     '$ eas update:republish --group [update-group-id]',
     '$ eas update:republish --branch [branch-name]',
-    '',
     '',
     '# Example',
     '$ eas update:republish --group dbfd479f-d981-44ce-8774-f2fbcc386aa',
