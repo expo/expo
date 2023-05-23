@@ -61,7 +61,8 @@ class CameraPermissionRequester: NSObject, EXPermissionsRequester {
       systemStatus = AVCaptureDevice.authorizationStatus(for: .video)
     } else {
       EXFatal(EXErrorWithMessage("""
-      This app is missing either NSCameraUsageDescription or NSMicrophoneUsageDescription, so audio/video services will fail. Add one of these entries to
+      This app is missing either NSCameraUsageDescription or NSMicrophoneUsageDescription,
+      so audio/video services will fail. Add one of these entries to
       your bundle's Info.plist
       """))
       systemStatus = .denied

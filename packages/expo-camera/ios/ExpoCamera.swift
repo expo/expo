@@ -433,6 +433,40 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
     }
   }
 
+  func photoOutput(
+    _ output: AVCapturePhotoOutput,
+    didFinishProcessingRawPhoto rawSampleBuffer: CMSampleBuffer?,
+    previewPhoto previewPhotoSampleBuffer: CMSampleBuffer?,
+    resolvedSettings: AVCaptureResolvedPhotoSettings,
+    bracketSettings: AVCaptureBracketedStillImageSettings?,
+    error: Error?) {
+    guard let promise = photoCapturedPromise, let options = photoCaptureOptions else { return }
+    photoCapturedPromise = nil
+    photoCaptureOptions = nil
+
+    guard let rawSampleBuffer, error != nil else {
+      promise.reject(CameraImageCaptureException())
+      return
+    }
+
+    if fileSystem == nil {
+      promise.reject(Exceptions.FileSystemModuleNotFound())
+      return
+    }
+
+    guard let imageData = AVCapturePhotoOutput.jpegPhotoDataRepresentation(
+      forJPEGSampleBuffer: rawSampleBuffer,
+      previewPhotoSampleBuffer: previewPhotoSampleBuffer),
+          let sourceImage = CGImageSourceCreateWithData(imageData as CFData, nil),
+          let metadata = CGImageSourceCopyPropertiesAtIndex(sourceImage, 0, nil) as? [String: Any]
+    else {
+      promise.reject(CameraMetadataDecodingException())
+      return
+    }
+
+    self.handleCapturedImageData(imageData: imageData, metadata: metadata, options: options, promise: promise)
+  }
+
   func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
     guard let promise = photoCapturedPromise, let options = photoCaptureOptions else { return }
 
