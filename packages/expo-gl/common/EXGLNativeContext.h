@@ -52,8 +52,8 @@ class EXGLContext {
   EXGLContext(EXGLContextId ctxId) : ctxId(ctxId) {}
   void prepareContext(
       jsi::Runtime &runtime,
-      std::function<void(void)> flushMethod,
-      bool enableExperimentalWorkletSupport);
+      bool enableExperimentalWorkletSupport,
+      std::function<void(void)> flushMethod);
   void maybePrepareWorkletContext(jsi::Runtime &runtime, initGlesContext viewport);
 
   // --- Queue handling --------------------------------------------------------

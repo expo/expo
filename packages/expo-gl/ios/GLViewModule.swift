@@ -13,7 +13,7 @@ public final class GLViewModule: Module {
         view.msaaSamples = msaaSamples
       }
       Prop("enableExperimentalWorkletSupport") { (view, enableExperimentalWorkletSupport: Bool) in
-        view.enableExperimentalWorkletSupport = enableExperimentalWorkletSupport 
+        view.enableExperimentalWorkletSupport = enableExperimentalWorkletSupport
       }
     }
   }

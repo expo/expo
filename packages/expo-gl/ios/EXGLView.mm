@@ -58,7 +58,7 @@
     };
 
     // Initialize GL context
-    _glContext = [[EXGLContext alloc] initWithDelegate:self andEnableExperimentalWorkletSupport:self.enableExperimentalWorkletSupport andModuleRegistry:moduleRegistry];
+    _glContext = [[EXGLContext alloc] initWithDelegate:self andModuleRegistry:moduleRegistry];
     _uiEaglCtx = [_glContext createSharedEAGLContext];
     [_glContext initialize];
 
@@ -98,7 +98,7 @@
                           height:self.contentScaleFactor * self.frame.size.height];
 
   _isLayouted = YES;
-  [_glContext prepare:nil];
+  [_glContext prepare:nil andEnableExperimentalWorkletSupport:self.enableExperimentalWorkletSupport];
   [self maybeCallSurfaceCreated];
 }
 

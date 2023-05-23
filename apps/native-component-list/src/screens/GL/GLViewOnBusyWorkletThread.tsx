@@ -46,7 +46,6 @@ async function onContextCreate(gl: ExpoWebGLRenderingContext) {
   gl.vertexAttribPointer(positionAttrib, 2, gl.FLOAT, false, 0, 0);
 
   const asset = Asset.fromModule(require('../../../assets/images/nikki.png'));
-  console.log(asset);
   await asset.downloadAsync();
   const texture = gl.createTexture();
   gl.activeTexture(gl.TEXTURE0);
@@ -81,11 +80,7 @@ export default function GLViewOnBusyWorkletThread() {
   return (
     <View style={styles.flex}>
       {show ? (
-        <GLView
-          style={styles.flex}
-          onContextCreate={onContextCreate}
-          enableExperimentalWorkletSupport
-        />
+        <GLView style={styles.flex} onContextCreate={onContextCreate} />
       ) : (
         <View style={styles.placeholder}>
           <Text>no gl view</Text>

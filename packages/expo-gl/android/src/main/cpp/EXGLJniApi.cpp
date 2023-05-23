@@ -31,7 +31,7 @@ Java_expo_modules_gl_cpp_EXGL_EXGLContextPrepare
   std::function<void(void)> flushMethod = [glContextRef, flushMethodRef] {
     threadLocalEnv->CallVoidMethod(glContextRef, flushMethodRef);
   };
-  EXGLContextPrepare((void*) jsiPtr, exglCtxId, flushMethod, enableExperimentalWorkletSupport == JNI_TRUE);
+  EXGLContextPrepare((void*) jsiPtr, exglCtxId, enableExperimentalWorkletSupport == JNI_TRUE, flushMethod);
 }
 
 JNIEXPORT void JNICALL

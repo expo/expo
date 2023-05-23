@@ -27,7 +27,7 @@ class GLView(context: Context, appContext: AppContext) : TextureView(context), S
   private val exglContextId: Int
     get() = glContext.contextId
 
-  var enableExperimentalWorkletSupport: Boolean = false;
+  var enableExperimentalWorkletSupport: Boolean = false
   val onSurfaceCreate by EventDispatcher<OnSurfaceCreateRecord>()
 
   init {

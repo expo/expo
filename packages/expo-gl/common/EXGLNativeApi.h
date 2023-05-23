@@ -35,8 +35,8 @@ EXGLContextId EXGLContextCreate();
 void EXGLContextPrepare(
     void *runtime,
     EXGLContextId exglCtxId,
-    std::function<void(void)> flushMethod,
-    bool enableExperimentalWorkletSupport);
+    bool enableExperimentalWorkletSupport,
+    std::function<void(void)> flushMethod);
 #endif // __cplusplus
 
 // [Any thread] Check whether we should redraw the surface

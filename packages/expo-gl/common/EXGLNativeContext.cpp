@@ -8,8 +8,8 @@ constexpr const char *OnJSRuntimeDestroyPropertyName = "__EXGLOnJsRuntimeDestroy
 
 void EXGLContext::prepareContext(
     jsi::Runtime &runtime,
-    std::function<void(void)> flushMethod,
-    bool enableExperimentalWorkletSupport) {
+    bool enableExperimentalWorkletSupport,
+    std::function<void(void)> flushMethod) {
   this->flushOnGLThread = flushMethod;
   try {
     auto viewport = prepareOpenGLESContext();

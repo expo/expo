@@ -83,6 +83,11 @@ export class GLView extends React.Component {
             unregisterGLContext(this.exglCtxId);
         }
     }
+    componentDidUpdate(prevProps) {
+        if (this.props.enableExperimentalWorkletSupport !== prevProps.enableExperimentalWorkletSupport) {
+            console.warn('Updating prop enableExperimentalWorkletSupport is not supported');
+        }
+    }
     // @docsMissing
     async startARSessionAsync() {
         if (!ExponentGLViewManager.startARSessionAsync) {

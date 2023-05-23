@@ -138,6 +138,14 @@ export class GLView extends React.Component<GLViewProps> {
     }
   }
 
+  componentDidUpdate(prevProps: GLViewProps): void {
+    if (
+      this.props.enableExperimentalWorkletSupport !== prevProps.enableExperimentalWorkletSupport
+    ) {
+      console.warn('Updating prop enableExperimentalWorkletSupport is not supported');
+    }
+  }
+
   // @docsMissing
   async startARSessionAsync(): Promise<any> {
     if (!ExponentGLViewManager.startARSessionAsync) {
