@@ -14,9 +14,7 @@ import worker, {
 
 import { wrapDevelopmentCSS } from './css';
 import { matchCssModule, transformCssModuleWeb } from './css-modules';
-import { transformPostCssModule } from './postcss';
-import { compileSass, matchSass } from './sass';
-// import { compileSass, matchSass } from "./sass";
+import { precompileCss } from './precompile';
 
 const countLines = require('metro/src/lib/countLines') as (string: string) => number;
 
@@ -32,26 +30,17 @@ type JsOutput = {
   type: JSFileType;
 };
 
-export async function webCssTransform(
+/**
+ * The staticCssTransform will convert a CSS to static style objects.
+ */
+export async function staticCssTransform(
   config: JsTransformerConfig,
   projectRoot: string,
   filename: string,
   data: Buffer,
   options: JsTransformOptions
 ): Promise<TransformResponse> {
-  let code = data.toString('utf8');
-
-  // Apply postcss transforms
-  code = await transformPostCssModule(projectRoot, {
-    src: code,
-    filename,
-  });
-
-  // TODO: When native has CSS support, this will need to move higher up.
-  const syntax = matchSass(filename);
-  if (syntax) {
-    code = compileSass(projectRoot, { filename, src: code }, { syntax }).src;
-  }
+  const code = await precompileCss(projectRoot, filename, data);
 
   // If the file is a CSS Module, then transform it to a JS module
   // in development and a static CSS file in production.

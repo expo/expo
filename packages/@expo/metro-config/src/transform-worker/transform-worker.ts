@@ -12,8 +12,8 @@ import worker, {
 } from 'metro-transform-worker';
 
 import { matchCssModule } from './css-modules';
-import { nativeCssTransform } from './nativeCssTransform';
-import { webCssTransform } from './webCssTransform';
+import { cssInteropTransform } from './cssInteropTransform';
+import { staticCssTransform } from './staticCssTransform';
 
 export type ExpoJsTransformerConfig = {
   externallyManagedCss?: Record<string, string>;
@@ -43,6 +43,14 @@ export async function transform(
     );
   }
 
+  if (config.cssInterop) {
+    if (options.platform === 'web') {
+      return staticCssTransform(config, projectRoot, filename, data, options);
+    } else {
+      return cssInteropTransform(config, projectRoot, filename, data, options);
+    }
+  }
+
   // If the platform is not web, then return an empty module.
   if (options.platform !== 'web') {
     const code = matchCssModule(filename) ? 'module.exports={};' : '';
@@ -56,16 +64,7 @@ export async function transform(
     );
   }
 
-  // While this is called webCss
-  if (!config.cssInterop) {
-    return webCssTransform(config, projectRoot, filename, data, options);
-  }
-
-  if (options.platform === 'web') {
-    return webCssTransform(config, projectRoot, filename, data, options);
-  } else {
-    return nativeCssTransform(config, projectRoot, filename, data, options);
-  }
+  return staticCssTransform(config, projectRoot, filename, data, options);
 }
 
 /**
