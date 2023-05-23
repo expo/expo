@@ -188,3 +188,25 @@ jobs:
               repo: context.repo.repo,
               state: 'closed'
             })
+  react-native-core:
+    runs-on: ubuntu-20.04
+    if: "${{ contains(github.event.label.name, 'invalid issue: react-native-core') }}"
+    steps:
+      - uses: actions/github-script@v6
+        with:
+          github-token: ${{ secrets.EXPO_BOT_GITHUB_TOKEN }}
+          script: |
+            github.rest.issues.createComment({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              body: `Hi there! It looks like your issue is related to the react-native core.
+
+              We recommend posting this issue directly to the react-native repository by [clicking here](https://github.com/facebook/react-native/issues/new/choose).
+            `})
+            github.rest.issues.update({
+              issue_number: context.issue.number,
+              owner: context.repo.owner,
+              repo: context.repo.repo,
+              state: 'closed'
+            })
