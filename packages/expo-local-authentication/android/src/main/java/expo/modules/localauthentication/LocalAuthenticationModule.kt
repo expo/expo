@@ -296,7 +296,7 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
       return
     }
 
-    val promptMessage =  options["promptMessage"] as? String ?: ""
+    val promptMessage = options["promptMessage"] as? String ?: ""
     val requireConfirmation = options["requireConfirmation"] as? Boolean ?: true
 
     // BiometricPrompt callbacks are invoked on the main thread so also run this there to avoid
@@ -306,7 +306,7 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
         // On Android devices older than 11, we need to use Keyguard to unlock by Device Credentials.
         if (Build.VERSION.SDK_INT < 30) {
           val credentialConfirmationIntent = keyguardManager.createConfirmDeviceCredentialIntent(promptMessage, "")
-          fragmentActivity.startActivityForResult(credentialConfirmationIntent, DEVICE_CREDENTIAL_FALLBACK_CODE);
+          fragmentActivity.startActivityForResult(credentialConfirmationIntent, DEVICE_CREDENTIAL_FALLBACK_CODE)
           return@Runnable
         }
 
