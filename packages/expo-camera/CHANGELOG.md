@@ -7,7 +7,7 @@
 ### 🛠 Breaking changes
 
 ### 🎉 New features
-
+- On Android, added sound of shutter click when picture is taken.
 ### 🐛 Bug fixes
 
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
