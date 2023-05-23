@@ -10,6 +10,8 @@
 
 ### 🎉 New features
 
+- [Android] Added support for the new architecture. ([#22607](https://github.com/expo/expo/pull/22607) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+
 ### 🐛 Bug fixes
 
 - Fixed react-native nighlies `0.73.0-nightly-20230515-066f0b76d` build errors on Android. ([#22503](https://github.com/expo/expo/pull/22503) by [@kudo](https://github.com/kudo))
