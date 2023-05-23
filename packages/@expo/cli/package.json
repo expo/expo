@@ -112,7 +112,7 @@
     "@graphql-codegen/typescript-operations": "2.5.12",
     "@expo/multipart-body-parser": "^1.0.0",
     "@expo/ngrok": "4.1.0",
-    "@expo/webpack-config": "^0.17.4",
+    "@expo/webpack-config": "^18.0.4",
     "@swc/core": "^1.2.126",
     "@taskr/clear": "1.1.0",
     "@taskr/esnext": "1.1.0",
