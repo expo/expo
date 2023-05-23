@@ -287,7 +287,9 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
   }
 
   func updateWhiteBalance() {
-    guard let device = captureDeviceInput?.device else { return }
+    guard let device = captureDeviceInput?.device else {
+      return
+    }
 
     do {
       try device.lockForConfiguration()
@@ -447,7 +449,9 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
     bracketSettings: AVCaptureBracketedStillImageSettings?,
     error: Error?
   ) {
-    guard let promise = photoCapturedPromise, let options = photoCaptureOptions else { return }
+    guard let promise = photoCapturedPromise, let options = photoCaptureOptions else {
+      return
+    }
     photoCapturedPromise = nil
     photoCaptureOptions = nil
 
@@ -464,8 +468,8 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
     guard let imageData = AVCapturePhotoOutput.jpegPhotoDataRepresentation(
       forJPEGSampleBuffer: rawSampleBuffer,
       previewPhotoSampleBuffer: previewPhotoSampleBuffer),
-          let sourceImage = CGImageSourceCreateWithData(imageData as CFData, nil),
-          let metadata = CGImageSourceCopyPropertiesAtIndex(sourceImage, 0, nil) as? [String: Any]
+      let sourceImage = CGImageSourceCreateWithData(imageData as CFData, nil),
+      let metadata = CGImageSourceCopyPropertiesAtIndex(sourceImage, 0, nil) as? [String: Any]
     else {
       promise.reject(CameraMetadataDecodingException())
       return
@@ -475,7 +479,9 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
   }
 
   func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
-    guard let promise = photoCapturedPromise, let options = photoCaptureOptions else { return }
+    guard let promise = photoCapturedPromise, let options = photoCaptureOptions else {
+      return
+    }
 
     photoCapturedPromise = nil
     photoCaptureOptions = nil
@@ -498,8 +504,11 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
     imageData: Data?,
     metadata: [String: Any],
     options: TakePictureOptions,
-    promise: Promise) {
-    guard let imageData, var takenImage = UIImage(data: imageData)  else { return }
+    promise: Promise
+  ) {
+    guard let imageData, var takenImage = UIImage(data: imageData) else {
+      return
+    }
 
     if options.fastMode {
       promise.resolve()
@@ -511,7 +520,9 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
       CGSize(width: previewLayer?.frame.size.width ?? 0.0, height: previewLayer?.frame.size.height ?? 0.0)
     }()
 
-    guard let takenCgImage = takenImage.cgImage else { return }
+    guard let takenCgImage = takenImage.cgImage else {
+      return
+    }
 
     let cropRect = CGRect(x: 0, y: 0, width: takenCgImage.width, height: takenCgImage.height)
     let croppedSize = AVMakeRect(aspectRatio: previewSize, insideRect: cropRect)
@@ -660,7 +671,9 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
     sessionQueue.async {
       self.isValidVideoOptions = true
 
-      guard let movieFileOutput = self.videoFileOutput else { return }
+      guard let movieFileOutput = self.videoFileOutput else {
+        return
+      }
 
       if let maxDuration = options.maxDuration {
         self.videoFileOutput?.maxRecordedDuration = CMTime(seconds: maxDuration, preferredTimescale: 30)
@@ -920,7 +933,9 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
     }
 
     faceDetector.setOnFacesDetected { [weak self] faces in
-      guard let self else { return }
+      guard let self else {
+        return
+      }
       self.onFacesDetected([
         "type": "face",
         "faces": faces
