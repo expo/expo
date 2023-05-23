@@ -8,8 +8,10 @@ import com.facebook.react.ReactInstanceManager
 import com.facebook.react.ReactNativeHost
 import com.facebook.react.ReactPackage
 import com.facebook.react.ReactPackageTurboModuleManagerDelegate
+import com.facebook.react.bridge.JSIModulePackage
 import com.facebook.react.bridge.JavaScriptExecutorFactory
 import com.facebook.react.config.ReactFeatureFlags
+import com.facebook.react.defaults.DefaultJSIModulePackage
 import com.facebook.react.devsupport.DevMenuReactInternalSettings
 import com.facebook.react.devsupport.DevServerHelper
 import com.facebook.react.shell.MainReactPackage
@@ -120,4 +122,10 @@ class DevMenuHost(application: Application) : ReactNativeHost(application) {
     method.isAccessible = true
     return method.invoke(appHost) as ReactPackageTurboModuleManagerDelegate.Builder
   }
+  override fun getJSIModulePackage(): JSIModulePackage? =
+    if (ReactFeatureFlags.enableFabricRenderer) {
+      DefaultJSIModulePackage(this)
+    } else {
+      null
+    }
 }
