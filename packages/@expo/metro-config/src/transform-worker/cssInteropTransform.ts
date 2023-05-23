@@ -6,7 +6,7 @@ import worker, {
 } from 'metro-transform-worker';
 
 import { matchCssModule } from './css-modules';
-import { precompileCss } from './precompile';
+import { cssPreprocessors } from './preprocessors';
 
 export async function cssInteropTransform(
   config: JsTransformerConfig & {
@@ -17,7 +17,7 @@ export async function cssInteropTransform(
   data: Buffer,
   options: JsTransformOptions
 ): Promise<TransformResponse> {
-  const code = await precompileCss(projectRoot, filename, data);
+  const code = await cssPreprocessors(projectRoot, filename, data);
 
   const nativeStyles = cssToReactNativeRuntime(Buffer.from(code, 'utf8'));
 

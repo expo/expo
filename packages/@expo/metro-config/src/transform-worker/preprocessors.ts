@@ -1,7 +1,7 @@
 import { transformPostCssModule } from './postcss';
 import { compileSass, matchSass } from './sass';
 
-export async function precompileCss(projectRoot: string, filename: string, data: Buffer) {
+export async function cssPreprocessors(projectRoot: string, filename: string, data: Buffer) {
   let code = data.toString('utf8');
 
   // Apply postcss transforms

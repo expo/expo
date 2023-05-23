@@ -14,7 +14,7 @@ import worker, {
 
 import { wrapDevelopmentCSS } from './css';
 import { matchCssModule, transformCssModuleWeb } from './css-modules';
-import { precompileCss } from './precompile';
+import { cssPreprocessors } from './preprocessors';
 
 const countLines = require('metro/src/lib/countLines') as (string: string) => number;
 
@@ -40,7 +40,7 @@ export async function staticCssTransform(
   data: Buffer,
   options: JsTransformOptions
 ): Promise<TransformResponse> {
-  const code = await precompileCss(projectRoot, filename, data);
+  const code = await cssPreprocessors(projectRoot, filename, data);
 
   // If the file is a CSS Module, then transform it to a JS module
   // in development and a static CSS file in production.
