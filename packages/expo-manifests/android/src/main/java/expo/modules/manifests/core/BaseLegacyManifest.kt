@@ -18,7 +18,7 @@ abstract class BaseLegacyManifest(json: JSONObject) : Manifest(json) {
   @Throws(JSONException::class)
   override fun getBundleURL(): String = json.require("bundleUrl")
 
-  override fun getSDKVersion(): String? = json.getNullable("sdkVersion")
+  override fun getExpoGoSDKVersion(): String? = json.getNullable("sdkVersion")
 
   override fun getExpoGoConfigRootObject(): JSONObject? {
     return json

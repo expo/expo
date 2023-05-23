@@ -60,6 +60,10 @@ public final class ComponentData: RCTComponentData {
     var remainingProps = props
 
     for (key, prop) in propsDict {
+      if props.index(forKey: key) == nil {
+        continue
+      }
+
       let newValue = props[key] as Any
 
       // TODO: @tsapeta: Figure out better way to rethrow errors from here.

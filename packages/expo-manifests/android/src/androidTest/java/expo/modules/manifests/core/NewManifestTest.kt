@@ -15,7 +15,7 @@ class NewManifestTest {
     val manifestJson =
       "{\"runtimeVersion\":\"$runtimeVersion\"}"
     val manifest = NewManifest(JSONObject(manifestJson))
-    Assert.assertEquals(manifest.getSDKVersion(), "39.0.0")
+    Assert.assertEquals(manifest.getExpoGoSDKVersion(), "39.0.0")
   }
 
   @Test
@@ -25,7 +25,7 @@ class NewManifestTest {
     val manifestJson =
       "{\"runtimeVersion\":\"$runtimeVersion\"}"
     val manifest = NewManifest(JSONObject(manifestJson))
-    Assert.assertEquals(manifest.getSDKVersion(), "UNVERSIONED")
+    Assert.assertEquals(manifest.getExpoGoSDKVersion(), "UNVERSIONED")
   }
 
   @Test
@@ -43,7 +43,7 @@ class NewManifestTest {
       val manifestJson =
         "{\"runtimeVersion\":\"$runtimeVersion\"}"
       val manifest = NewManifest(JSONObject(manifestJson))
-      Assert.assertNull(manifest.getSDKVersion())
+      Assert.assertNull(manifest.getExpoGoSDKVersion())
     }
   }
 }

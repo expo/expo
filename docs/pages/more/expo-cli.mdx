@@ -1,7 +1,7 @@
 ---
 title: Expo CLI
 maxHeadingDepth: 4
-description: The Expo CLI is a command-line tool that is the primary interface between a developer and other Expo tools. Learn more about how to get started using Expo CLI.
+description: The Expo CLI is a command-line tool that is the primary interface between a developer and other Expo tools.
 ---
 
 import { Terminal } from '~/ui/components/Snippet';
@@ -149,7 +149,7 @@ You can compile your app locally with the `run` commands:
 
 `npx expo run:ios` can only be run on a Mac, and Xcode must be installed. You can build the app in the cloud from any computer using `eas build -p ios`. Similarly, `npx expo run:android` requires Android Studio and Java to be installed and configured on your computer.
 
-Building locally is useful for developing native modules and [debugging complex native issues](/debugging/runtime-issue/#native-debugging). Building remotely with `eas build` is a much more resilient option due to the pre-configured cloud environment.
+Building locally is useful for developing native modules and [debugging complex native issues](/debugging/runtime-issues/#native-debugging). Building remotely with `eas build` is a much more resilient option due to the pre-configured cloud environment.
 
 If your project does not have the corresponding native directories, the `npx expo prebuild` command will run once to generate the respective directory before building.
 
@@ -226,6 +226,7 @@ The following options are provided:
 - `--output-dir <dir>`: The directory to export the static files to. **Default: dist**
 - `--max-workers <number>`: Maximum number of tasks to allow the bundler to spawn. Setting this to `0` will run all transpilation on the same process, meaning you can easily debug Babel transpilation.
 - `-c, --clear`: Clear the bundler cache before exporting.
+- `--no-minify`: Skip minifying JavaScript and CSS assets (SDK 49 and above).
 
 ### Exporting with webpack
 
@@ -262,7 +263,7 @@ There are three different config types that are generated from the Expo config:
 
 - `public`: The manifest file to use with OTA updates. Think of this like an `index.html` file's `<head />` element but for native apps.
 - `prebuild`: The config that is used for [Expo Prebuild](/workflow/prebuild) including async modifiers. This is the only time the config is not serializable.
-- `introspect`: A subset of the `prebuild` config that only shows in-memory modifications like `Info.plist` or `AndroidManifest.xml` changes. Learn more about [introspection](/guides/config-plugins#introspection).
+- `introspect`: A subset of the `prebuild` config that only shows in-memory modifications like `Info.plist` or `AndroidManifest.xml` changes. Learn more about [introspection](/config-plugins/development-and-debugging/#introspection).
 
 ## Install
 
@@ -368,10 +369,9 @@ From here, you can choose to generate basic project files like:
 | `EXPO_IMAGE_UTILS_NO_SHARP`         | **boolean** | Disable the usage of global Sharp CLI installation in favor of the slower Jimp package for image manipulation. This is used in places like `npx expo prebuild` for generating app icons.                                                                                                                                                                                             |
 | `EXPO_TUNNEL_SUBDOMAIN`             | **boolean** | <StatusTag status="experimental" /><br/>Disable using `exp.direct` as the hostname for `--tunnel` connections. This enables **https://** forwarding which can be used to test universal links on iOS. This may cause unexpected issues with `expo-linking` and Expo Go. Select the exact subdomain to use by passing a `string` value that is not one of: `true`, `false`, `1`, `0`. |
 | `EXPO_METRO_NO_MAIN_FIELD_OVERRIDE` | **boolean** | Force Expo CLI to use the [`resolver.resolverMainFields`](https://facebook.github.io/metro/docs/configuration/#resolvermainfields) from the project's **metro.config.js** for all platforms. By default, Expo CLI will use `['browser', 'module', 'main']`, which is the default for webpack, for the web and the user-defined main fields for other platforms.                      |
-| `EXPO_USE_PATH_ALIASES`             | **boolean** | <StatusTag status="experimental" note="SDK 49+" /><br/>Allow Metro to use the `compilerOptions.paths` and `compilerOptions.baseUrl` features from **tsconfig.json** or **jsconfig.json**) to enable import aliases and absolute imports.                                                                                                                                             |
 | `EXPO_USE_CUSTOM_INSPECTOR_PROXY`   | **boolean** | <StatusTag status="experimental" note="SDK 49+" /><br/>Use a customized inspector proxy with improved support for the Chrome DevTools protocol.<br/>This includes support for the network inspector.                                                                                                                                                                                 |
 | `EXPO_USE_TYPED_ROUTES`             | **boolean** | <StatusTag status="experimental" note="SDK 49+" /><br/>Generate TypeScript types for Expo Router.<br/>This includes support for the network inspector.                                                                                                                                                                                                                               |
-| `EXPO_NO_CLIENT_ENV_VARS`           | **boolean** | <StatusTag status="experimental" note="SDK 49+" /><br/>Prevent inlining `EXPO_PUBLIC_` environment variables in client bundles.                                                                                                                                                                                                                                                                            |
+| `EXPO_NO_CLIENT_ENV_VARS`           | **boolean** | <StatusTag status="experimental" note="SDK 49+" /><br/>Prevent inlining `EXPO_PUBLIC_` environment variables in client bundles.                                                                                                                                                                                                                                                      |
 
 ## Telemetry
 

@@ -10,7 +10,6 @@ import com.facebook.react.bridge.ReactContext
 import expo.modules.devlauncher.launcher.DevLauncherClientHost
 import expo.modules.devlauncher.launcher.DevLauncherControllerInterface
 import expo.modules.devlauncher.launcher.DevLauncherReactActivityDelegateSupplier
-import expo.modules.devlauncher.launcher.DevLauncherRecentlyOpenedAppsRegistry
 import expo.modules.devlauncher.launcher.DevLauncherAppEntry
 
 import expo.modules.manifests.core.Manifest

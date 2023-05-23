@@ -142,7 +142,7 @@ export default function DocumentationPage(props: Props) {
           />
         )}
         {props.description && (
-          <P theme="secondary" data-text="true">
+          <P theme="secondary" data-description="true">
             {props.description}
           </P>
         )}

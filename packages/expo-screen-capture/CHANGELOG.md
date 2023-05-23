@@ -6,9 +6,17 @@
 
 ### 🎉 New features
 
-- On Android, migrated to Expo Modules API. ([#22208](https://github.com/expo/expo/pull/22208) by [@alanjhughes](https://github.com/alanjhughes))
-
 ### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 5.2.0 — 2023-05-08
+
+### 🎉 New features
+
+- On Android, migrated to Expo Modules API. ([#22208](https://github.com/expo/expo/pull/22208) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 💡 Others
 

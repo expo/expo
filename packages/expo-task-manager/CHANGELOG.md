@@ -8,7 +8,15 @@
 
 ### 🐛 Bug fixes
 
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
+
 ### 💡 Others
+
+- Update `defineTask` to accept type arguments. ([#21958](https://github.com/expo/expo/pull/21958) by [@kazuma0129](https://github.com/kazuma0129))
+
+## 11.2.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
 
 ## 11.1.1 — 2023-02-09
 

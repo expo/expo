@@ -751,7 +751,7 @@ export namespace StorageAccessFramework {
    */
   export const moveAsync = baseMoveAsync;
   /**
-   * Alias fro [`copyAsync`](#filesystemcopyasyncoptions) method.
+   * Alias for [`copyAsync`](#filesystemcopyasyncoptions) method.
    */
   export const copyAsync = baseCopyAsync;
 }

@@ -2,17 +2,33 @@
 
 ## Unpublished
 
+### 📚 3rd party library updates
+
+- Updated `robolectric` to `4.10`.  ([#22395](https://github.com/expo/expo/pull/22395) by [@josephyanks](https://github.com/josephyanks))
+
+### 🛠 Breaking changes
+
+### 🎉 New features
+
+### 🐛 Bug fixes
+
+- Fixed react-native nighlies `0.73.0-nightly-20230515-066f0b76d` build errors on Android. ([#22503](https://github.com/expo/expo/pull/22503) by [@kudo](https://github.com/kudo))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 3.0.0 — 2023-05-08
+
 ### 🛠 Breaking changes
 
 - Update iOS and Android entry points to support custom entry files (changed `index` to `.expo/.virtual-metro-entry`). This requires all projects to use `expo/metro-config` as the base config. ([#21643](https://github.com/expo/expo/pull/21643) by [@EvanBacon](https://github.com/EvanBacon))
-
-### 🎉 New features
 
 ### 🐛 Bug fixes
 
 - Fixed reload crash when expo-dev-menu is turned off. ([#21279](https://github.com/expo/expo/pull/21279) by [@jayshah123](https://github.com/jayshah123))
 - Fix JS entry file in development builds. ([#21984](https://github.com/expo/expo/pull/21984) by [@gabrieldonadel](https://github.com/gabrieldonadel))
 - Update the start script to dynamically locate the packager IP from any network interface. ([#21977](https://github.com/expo/expo/pull/21977) by [@gabrieldonadel](https://github.com/gabrieldonadel))
+- [iOS] Fix assert in `requestOverlayMetricsIfNeeded` failing when the device is rotated to landscape orientation. ([#22598](https://github.com/expo/expo/pull/22598) by [@behenate](https://github.com/behenate))
 
 ### 💡 Others
 

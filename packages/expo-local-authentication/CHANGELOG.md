@@ -9,8 +9,13 @@
 ### 🐛 Bug fixes
 
 - [Android] Fixed device credentials fallback when biometric sensors are unavailable ([#22388](https://github.com/expo/expo/pull/22388) by [@hubastard](https://github.com/hubastard))
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+## 13.4.0 — 2023-05-08
+
+_This version does not introduce any user-facing changes._
 
 ## 13.3.0 - 2023-04-10
 

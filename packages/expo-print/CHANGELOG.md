@@ -6,14 +6,22 @@
 
 ### 🎉 New features
 
+### 🐛 Bug fixes
+
+- Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
+
+### 💡 Others
+
+## 12.3.0 — 2023-05-08
+
+### 🎉 New features
+
 - Migrated iOS codebase to use Expo modules API. ([#21561](https://github.com/expo/expo/pull/21561) by [@behenate](https://github.com/behenate))
 - Migrated Android codebase to use the Expo modules API and Kotlin coroutines. ([#21714](https://github.com/expo/expo/pull/21714) by [@behenate](https://github.com/behenate))
 
 ### 🐛 Bug fixes
 
 - Fixed [Multiple Print Bug on iOS 16](https://github.com/expo/expo/issues/19399). ([#21561](https://github.com/expo/expo/pull/21561) by [@behenate](https://github.com/behenate))
-
-### 💡 Others
 
 ## 12.2.1 — 2023-02-09
 
