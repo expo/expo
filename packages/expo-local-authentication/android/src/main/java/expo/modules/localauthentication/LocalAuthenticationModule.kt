@@ -287,11 +287,11 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
     val fragmentActivity = currentActivity as FragmentActivity?
     if (fragmentActivity == null) {
       promise.resolve(
-              Bundle().apply {
-                putBoolean("success", false)
-                putString("error", "not_available")
-                putString("warning", "getCurrentActivity() returned null")
-              }
+        Bundle().apply {
+          putBoolean("success", false)
+          putString("error", "not_available")
+          putString("warning", "getCurrentActivity() returned null")
+        }
       )
       return
     }
@@ -303,7 +303,7 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
     // having to do locking.
     uIManager.runOnUiQueueThread(
       Runnable {
-        // On Android device older than 11, we need to use Keyguard to unlock by Device Credentials.
+        // On Android devices older than 11, we need to use Keyguard to unlock by Device Credentials.
         if (Build.VERSION.SDK_INT < 30) {
           val credentialConfirmationIntent = keyguardManager.createConfirmDeviceCredentialIntent(promptMessage, "")
           fragmentActivity.startActivityForResult(credentialConfirmationIntent, DEVICE_CREDENTIAL_FALLBACK_CODE);
@@ -311,7 +311,13 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
         }
 
         val executor: Executor = Executors.newSingleThreadExecutor()
-        biometricPrompt = BiometricPrompt(fragmentActivity, executor, authenticationCallback)
+        val localBiometricPrompt = BiometricPrompt(fragmentActivity, executor, authenticationCallback)
+        if (localBiometricPrompt == null) {
+          promise.reject("E_INTERNAL_ERRROR", "Canceled authentication due to an internal error")
+          return@Runnable
+        }
+        biometricPrompt = localBiometricPrompt
+
         val promptInfoBuilder = PromptInfo.Builder()
         promptMessage?.let {
           promptInfoBuilder.setTitle(it)
@@ -320,7 +326,7 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
         promptInfoBuilder.setConfirmationRequired(requireConfirmation)
         val promptInfo = promptInfoBuilder.build()
         try {
-          biometricPrompt!!.authenticate(promptInfo)
+          localBiometricPrompt.authenticate(promptInfo)
         } catch (ex: NullPointerException) {
           promise.reject("E_INTERNAL_ERRROR", "Canceled authentication due to an internal error")
         }
@@ -338,7 +344,6 @@ class LocalAuthenticationModule(context: Context) : ExportedModule(context), Act
           }
         )
       } else {
-
         promise?.resolve(
           Bundle().apply {
             putBoolean("success", false)
