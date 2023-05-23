@@ -6,6 +6,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import expo.modules.imagepicker.ImagePickerOptions
+import expo.modules.imagepicker.MediaTypes
 import expo.modules.imagepicker.getAllDataUris
 import expo.modules.imagepicker.toMediaType
 import expo.modules.kotlin.activityresult.AppContextActivityResultContract
@@ -34,6 +35,9 @@ internal class ImageLibraryContract(
       .apply {
         if (input.options.allowsMultipleSelection) {
           putExtra(Intent.EXTRA_ALLOW_MULTIPLE, true)
+        }
+        if (input.options.mediaTypes == MediaTypes.ALL) {
+          putExtra(Intent.EXTRA_MIME_TYPES, arrayOf(MediaTypes.IMAGES.toMimeType(), MediaTypes.VIDEOS.toMimeType()))
         }
       }
 
