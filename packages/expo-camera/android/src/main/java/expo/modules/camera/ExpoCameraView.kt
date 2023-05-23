@@ -7,6 +7,7 @@ import android.graphics.SurfaceTexture
 import android.net.Uri
 import android.os.Bundle
 import android.view.View
+import android.media.MediaActionSound
 import com.google.android.cameraview.CameraView
 import expo.modules.camera.CameraViewHelper.getCamcorderProfile
 import expo.modules.camera.CameraViewHelper.getCorrectCameraRotation
@@ -147,6 +148,8 @@ class ExpoCameraView(
     pictureTakenOptions[promise] = options
     pictureTakenDirectories[promise] = cacheDirectory
     try {
+      val sound = MediaActionSound()
+      sound.play(MediaActionSound.SHUTTER_CLICK)
       cameraView.takePicture()
     } catch (e: Exception) {
       pictureTakenPromises.remove(promise)
