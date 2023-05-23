@@ -149,6 +149,11 @@ export function updatePkgDependencies(
         continue;
       }
 
+      // Do not modify manually skipped dependencies
+      if (skipDependencyUpdate.includes(dependenciesKey)) {
+        continue;
+      }
+
       // Ensure the package only needs to be added when missing
       if (addWhenMissingDependencies.includes(dependenciesKey)) {
         let projectHasRecommended: boolean | null = null;
@@ -166,11 +171,6 @@ export function updatePkgDependencies(
           nonRecommendedPackages.push(`${dependenciesKey}@${defaultDependencies[dependenciesKey]}`);
         }
         // Do not modify add-only dependencies
-        continue;
-      }
-
-      // Do not modify manually skipped dependencies
-      if (skipDependencyUpdate.includes(dependenciesKey)) {
         continue;
       }
     }
