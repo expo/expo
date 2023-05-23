@@ -1,7 +1,11 @@
+import chalk from 'chalk';
+
+import * as Log from '../../log';
 import { isModuleSymlinked } from '../../utils/isModuleSymlinked';
 import { hashForDependencyMap, updatePkgDependencies } from '../updatePackageJson';
 
 jest.mock('../../utils/isModuleSymlinked');
+jest.mock('../../log');
 
 describe(hashForDependencyMap, () => {
   it(`dependencies in any order hash to the same value`, () => {
@@ -44,6 +48,7 @@ describe(updatePkgDependencies, () => {
     });
     expect(pkg.dependencies).toStrictEqual({
       ...requiredPackages,
+      'react-native': 'version-from-project', // add-only package, do not overwrite
       'optional-package': 'version-from-project-1',
       'optional-package-2': 'version-from-template-2',
       'optional-package-3': 'version-from-project-3',
@@ -105,9 +110,39 @@ describe(updatePkgDependencies, () => {
     });
     expect(pkg.dependencies).toStrictEqual({
       ...sdk44RequiredPackages,
+      'react-native': 'version-from-project', // add-only package, do not overwrite
       'optional-package': 'version-from-project-1',
       'optional-package-2': 'version-from-template-2',
       'optional-package-3': 'version-from-project-3',
     });
+  });
+  test('does not overwrite add-only packages when defined', () => {
+    const pkg = {
+      dependencies: {
+        expo: 'version-from-project',
+        'react-native': 'version-from-project',
+      },
+      devDependencies: {},
+    };
+    updatePkgDependencies('fake path', {
+      templatePkg: {
+        dependencies: {
+          ...requiredPackages,
+          expo: 'version-from-template',
+        },
+        devDependencies: {},
+      },
+      pkg,
+    });
+    expect(pkg.dependencies).toStrictEqual({
+      ...requiredPackages,
+      'react-native': 'version-from-project', // add-only package, do not overwrite
+      expo: 'version-from-template',
+    });
+    expect(Log.warn).toBeCalledWith(
+      expect.stringContaining(
+        `instead of recommended ${chalk.bold('react-native@version-from-template-required-1')}`
+      )
+    );
   });
 });
