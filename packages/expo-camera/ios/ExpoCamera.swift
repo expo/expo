@@ -773,10 +773,12 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
     }
   }
 
-  func fileOutput(_ output: AVCaptureFileOutput,
-                  didFinishRecordingTo outputFileURL: URL,
-                  from connections: [AVCaptureConnection],
-                  error: Error?) {
+  func fileOutput(
+    _ output: AVCaptureFileOutput,
+    didFinishRecordingTo outputFileURL: URL,
+    from connections: [AVCaptureConnection],
+    error: Error?
+  ) {
     var success = true
 
     if error != nil {
@@ -828,7 +830,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
   }
 
   func updateSessionPreset(preset: AVCaptureSession.Preset) {
-#if !targetEnvironment(simulator)
+    #if !targetEnvironment(simulator)
     sessionQueue.async {
       self.session.beginConfiguration()
       if self.session.canSetSessionPreset(preset) {
@@ -836,7 +838,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
       }
       self.session.commitConfiguration()
     }
-#endif
+    #endif
   }
 
   func initializeCaptureSessionInput() {
@@ -884,9 +886,9 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
   }
 
   private func stopSession() {
-#if targetEnvironment(simulator)
+    #if targetEnvironment(simulator)
     return
-#endif
+    #endif
     sessionQueue.async {
       if let faceDetector = self.faceDetector {
         faceDetector.stopFaceDetection()
