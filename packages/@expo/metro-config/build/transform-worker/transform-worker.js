@@ -18,16 +18,16 @@ function _cssModules() {
   };
   return data;
 }
-function _nativeCssTransform() {
-  const data = require("./nativeCssTransform");
-  _nativeCssTransform = function () {
+function _cssInteropTransform() {
+  const data = require("./cssInteropTransform");
+  _cssInteropTransform = function () {
     return data;
   };
   return data;
 }
-function _webCssTransform() {
-  const data = require("./webCssTransform");
-  _webCssTransform = function () {
+function _staticCssTransform() {
+  const data = require("./staticCssTransform");
+  _staticCssTransform = function () {
     return data;
   };
   return data;
@@ -52,6 +52,13 @@ async function transform(config, projectRoot, filename, data, options) {
     var _config$externallyMan2;
     return _metroTransformWorker().default.transform(config, projectRoot, filename, Buffer.from(`module.exports = require("${(_config$externallyMan2 = config.externallyManagedCss) === null || _config$externallyMan2 === void 0 ? void 0 : _config$externallyMan2[filename]}")`), options);
   }
+  if (config.cssInterop) {
+    if (options.platform === 'web') {
+      return (0, _staticCssTransform().staticCssTransform)(config, projectRoot, filename, data, options);
+    } else {
+      return (0, _cssInteropTransform().cssInteropTransform)(config, projectRoot, filename, data, options);
+    }
+  }
 
   // If the platform is not web, then return an empty module.
   if (options.platform !== 'web') {
@@ -60,16 +67,7 @@ async function transform(config, projectRoot, filename, data, options) {
     // TODO: Native CSS Modules
     Buffer.from(code), options);
   }
-
-  // While this is called webCss
-  if (!config.cssInterop) {
-    return (0, _webCssTransform().webCssTransform)(config, projectRoot, filename, data, options);
-  }
-  if (options.platform === 'web') {
-    return (0, _webCssTransform().webCssTransform)(config, projectRoot, filename, data, options);
-  } else {
-    return (0, _nativeCssTransform().nativeCssTransform)(config, projectRoot, filename, data, options);
-  }
+  return (0, _staticCssTransform().staticCssTransform)(config, projectRoot, filename, data, options);
 }
 
 /**
