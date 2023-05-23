@@ -3,7 +3,7 @@
   "compilerOptions": {
     "outDir": "./build",
     "rootDir": "./src",
-    "noEmit": false,
-    "types": ["jest"]
-  }
+    "noEmit": false
+  },
+  "exclude": ["./src/__tests__/"]
 }

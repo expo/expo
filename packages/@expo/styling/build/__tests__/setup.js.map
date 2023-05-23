@@ -1,1 +1,0 @@
-{"version":3,"file":"setup.js","sourceRoot":"","sources":["../../src/__tests__/setup.ts"],"names":[],"mappings":"AAAA,OAAO,CAAC,0DAA0D,CAAC,CAAC,UAAU,EAAE,CAAC","sourcesContent":["require('react-native-reanimated/lib/module/reanimated2/jestUtils').setUpTests();\n"]}

@@ -1,4 +1,3 @@
-/// <reference types="react" />
 import { Dimensions, Appearance } from 'react-native';
 import { ContainerRuntime, ExtractedAnimation, StyleMeta, StyleProp } from '../../types';
 export declare const globalStyles: Map<string, StyleProp>;

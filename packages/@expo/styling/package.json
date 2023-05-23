@@ -3,7 +3,7 @@
   "version": "0.0.0",
   "main": "./src/index",
   "scripts": {
-    "build": "expo-module typecheck",
+    "build": "expo-module typecheck --noEmit false",
     "clean": "rimraf ./tsconfig.tsbuildinfo",
     "lint": "expo-module lint",
     "test": "expo-module test",
