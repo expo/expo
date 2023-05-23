@@ -47,14 +47,6 @@
     "@babel/core": "^7.15.5",
     "sass": "^1.60.0"
   },
-  "peerDependencies": {
-    "tailwindcss": "^3.3.1"
-  },
-  "peerDependenciesMeta": {
-    "tailwindcss": {
-      "optional": true
-    }
-  },
   "publishConfig": {
     "access": "public"
   }
