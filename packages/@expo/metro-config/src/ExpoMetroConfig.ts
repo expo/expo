@@ -167,10 +167,21 @@ export function getDefaultConfig(
       additionalExts: envFiles.map((file: string) => file.replace(/^\./, '')),
     },
     serializer: {
-      getModulesRunBeforeMainModule: () => [
-        require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore')),
-        // TODO: Bacon: load Expo side-effects
-      ],
+      getModulesRunBeforeMainModule: () => {
+        const preModules: string[] = [];
+
+        // We need to shift this to be the first module so web Fast Refresh works as expected.
+        // This will only be applied if the module is installed and imported somewhere in the bundle already.
+        const metroRuntime = resolveFrom.silent(projectRoot, '@expo/metro-runtime');
+        if (metroRuntime) {
+          preModules.push(metroRuntime);
+        }
+
+        preModules.push(
+          require.resolve(path.join(reactNativePath, 'Libraries/Core/InitializeCore'))
+        );
+        return preModules;
+      },
       getPolyfills: () => require(path.join(reactNativePath, 'rn-get-polyfills'))(),
     },
     server: {

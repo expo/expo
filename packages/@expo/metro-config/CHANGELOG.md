@@ -6,6 +6,8 @@
 
 ### 🎉 New features
 
+- Ensure `@expo/metro-runtime` is shifted to be imported first when installed.
+
 ### 🐛 Bug fixes
 
 ### 💡 Others
