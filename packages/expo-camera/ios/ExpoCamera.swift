@@ -220,7 +220,7 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
 
       self.addErrorNotification()
 
-      self.sessionQueue.asyncAfter(deadline: .now() + round(50/1_000_000)) {
+      self.sessionQueue.asyncAfter(deadline: .now() + round(50 / 1_000_000)) {
         self.maybeStartFaceDetection(self.presetCamera != .back)
         if let barCodeScanner = self.barCodeScanner {
           barCodeScanner.maybeStartBarCodeScanning()
@@ -249,7 +249,9 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
   }
 
   private func updateFocusMode() {
-    guard let device = captureDeviceInput?.device else { return }
+    guard let device = captureDeviceInput?.device else {
+      return
+    }
 
     do {
       try device.lockForConfiguration()
@@ -318,9 +320,14 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
 
     self.errorNotification = NotificationCenter.default.addObserver(
       forName: .AVCaptureSessionRuntimeError,
-      object: self.session, queue: nil) { [weak self] notification in
-      guard let self else { return }
-      guard let error = notification.userInfo?[AVCaptureSessionErrorKey] as? AVError else { return }
+      object: self.session,
+      queue: nil) { [weak self] notification in
+      guard let self else {
+        return
+      }
+      guard let error = notification.userInfo?[AVCaptureSessionErrorKey] as? AVError else {
+        return
+      }
 
       if error.code == .mediaServicesWereReset {
         if self.isSessionRunning {
@@ -336,10 +343,9 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
   func onAppForegrounded() {
     if !session.isRunning && isSessionRunning {
       isSessionRunning = false
-      sessionQueue.async { [weak self] in
-        guard let self else { return }
-        session.startRunning()
-        ensureSessionConfiguration()
+      sessionQueue.async {
+        self.session.startRunning()
+        self.ensureSessionConfiguration()
       }
     }
   }
@@ -439,7 +445,8 @@ class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
     previewPhoto previewPhotoSampleBuffer: CMSampleBuffer?,
     resolvedSettings: AVCaptureResolvedPhotoSettings,
     bracketSettings: AVCaptureBracketedStillImageSettings?,
-    error: Error?) {
+    error: Error?
+  ) {
     guard let promise = photoCapturedPromise, let options = photoCaptureOptions else { return }
     photoCapturedPromise = nil
     photoCaptureOptions = nil
