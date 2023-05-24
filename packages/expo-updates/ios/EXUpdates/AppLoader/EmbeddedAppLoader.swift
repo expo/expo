@@ -140,7 +140,7 @@ public final class EmbeddedAppLoader: AppLoader {
         let bundlePath = UpdatesUtils.path(forBundledAsset: asset).require(
           String(
             format: "Could not find the expected embedded asset in NSBundle %@.%@. " +
-                    "Check that expo-updates is installed correctly, and verify that assets are present in the ipa file.",
+              "Check that expo-updates is installed correctly, and verify that assets are present in the ipa file.",
             mainBundleFilename,
             asset.type ?? ""
           )
