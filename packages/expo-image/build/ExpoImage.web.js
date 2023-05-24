@@ -4,6 +4,21 @@ import ImageWrapper from './web/ImageWrapper';
 import loadStyle from './web/style';
 import useSourceSelection from './web/useSourceSelection';
 loadStyle();
+export const ExpoImageModule = {
+    prefetch(urls) {
+        const urlsArray = Array.isArray(urls) ? urls : [urls];
+        urlsArray.forEach((url) => {
+            const img = new Image();
+            img.src = url;
+        });
+    },
+    async clearMemoryCache() {
+        return false;
+    },
+    async clearDiskCache() {
+        return false;
+    },
+};
 function onLoadAdapter(onLoad) {
     return (event) => {
         const target = event.target;
@@ -70,9 +85,9 @@ export default function ExpoImage({ source, placeholder, contentFit, contentPosi
             backgroundColor: backgroundColor?.toString(),
             transform: transform?.toString(),
             borderColor: borderColor?.toString(),
-            ...style,
-            overflow: 'hidden',
             position: 'relative',
+            overflow: 'hidden',
+            ...style,
         } },
         React.createElement(AnimationManager, { transition: transition, recyclingKey: recyclingKey, initial: initialNode }, currentNode)));
 }
