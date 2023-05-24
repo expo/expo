@@ -101,7 +101,7 @@ describe(getTypedRoutesUtils, () => {
     const filepaths = [
       ['/app/file.tsx', true, { static: ['/file'] }],
       ['/app/(group)/page.tsx', true, { static: ['/(group)/page', '/page'] }],
-      ['/app/folder/[slug].tsx', true, { dynamic: ['/folder/${SafeSlug<T>}'] }],
+      ['/app/folder/[slug].tsx', true, { dynamic: ['/folder/${CleanRoutePart<T>}'] }],
       [
         '/app/(a,b,c)/(d,e)/page.tsx',
         true,
