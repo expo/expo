@@ -61,7 +61,6 @@ export const runServer = async (
   const serverApp = connect();
 
   const { middleware, end, metroServer } = await Metro.createConnectMiddleware(config, {
-    // @ts-expect-error
     hasReducedPerformance,
     waitForBundler,
     watch,
