@@ -4,6 +4,7 @@
 
 ### 🐛 Bug fixes
 
+- Fixed styles order breaking layouting on web.
 - Uses prop spreading on web to pass all unused props to the native image component ([#22340](https://github.com/expo/expo/pull/22340) by [@makkarMeenu](https://github.com/makkarMeenu))
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
 
@@ -11,6 +12,7 @@
 
 ### 🎉 New features
 
+- Add perfetch implementation on web.
 - Add `ImageBackground` component. ([#22347](https://github.com/expo/expo/pull/22347) by [@alanjhughes](https://github.com/alanjhughes))
 
 ### 🐛 Bug fixes
