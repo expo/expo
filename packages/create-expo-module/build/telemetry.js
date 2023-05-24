@@ -87,6 +87,7 @@ function eventCreateExpoModule(packageManager, options) {
             withReadme: options.withReadme,
             withChangelog: options.withChangelog,
             withExample: options.example,
+            local: !!options.local,
         },
     };
 }
