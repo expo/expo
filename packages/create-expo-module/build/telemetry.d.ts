@@ -15,6 +15,7 @@ export declare function eventCreateExpoModule(packageManager: string, options: C
         withReadme: boolean;
         withChangelog: boolean;
         withExample: boolean;
+        local: boolean;
     };
 };
 export {};
