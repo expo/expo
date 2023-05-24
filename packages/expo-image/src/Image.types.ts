@@ -250,9 +250,6 @@ export interface ImageProps extends ViewProps {
   /**
    * The text that's read by the screen reader when the user interacts with the image. Sets the the `alt` tag on web which is used for web crawlers and link traversal.
    * @default undefined
-   * @platform android
-   * @platform ios
-   * @platform web
    */
   accessibilityLabel?: string;
 
@@ -261,9 +258,6 @@ export interface ImageProps extends ViewProps {
    *
    * @alias accessibilityLabel
    * @default undefined
-   * @platform android
-   * @platform ios
-   * @platform web
    */
   alt?: string;
 
