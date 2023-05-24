@@ -1,4 +1,4 @@
-#ifdef RN_FABRIC_ENABLED
+#ifdef RCT_NEW_ARCH_ENABLED
 
 #import "RNGestureHandlerButtonComponentView.h"
 
@@ -57,4 +57,4 @@ Class<RCTComponentViewProtocol> RNGestureHandlerButtonCls(void)
   return RNGestureHandlerButtonComponentView.class;
 }
 
-#endif // RN_FABRIC_ENABLED
+#endif // RCT_NEW_ARCH_ENABLED

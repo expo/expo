@@ -7,6 +7,8 @@ Package-specific changes not released in any SDK will be added here just before 
 
 ### 📚 3rd party library updates
 
+- Updated `react-native-gesture-handler` from `2.9.0` to `2.10.1`. ([#22621](https://github.com/expo/expo/pull/22621) by [@kudo](https://github.com/kudo))
+
 ### 🛠 Breaking changes
 
 ### 🎉 New features

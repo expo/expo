@@ -229,17 +229,23 @@ class RNGestureHandlerButtonViewManager : ViewGroupManager<ButtonViewGroup>(), R
           colorDrawable.setCornerRadius(borderRadius)
         }
 
-        val layerDrawable = LayerDrawable(arrayOf(colorDrawable, selectable))
+        val layerDrawable = LayerDrawable(if (selectable != null) arrayOf(colorDrawable, selectable) else arrayOf(colorDrawable))
         background = layerDrawable
       }
     }
 
-    private fun createSelectableDrawable(): Drawable {
+    private fun createSelectableDrawable(): Drawable? {
       // TODO: remove once support for RN 0.63 is dropped, since 0.64 minSdkVersion is 21
       if (Build.VERSION.SDK_INT < Build.VERSION_CODES.LOLLIPOP) {
         context.theme.resolveAttribute(android.R.attr.selectableItemBackground, resolveOutValue, true)
         @Suppress("Deprecation")
         return resources.getDrawable(resolveOutValue.resourceId)
+      }
+
+      // Since Android 13, alpha channel in RippleDrawable is clamped between [128, 255]
+      // see https://github.com/aosp-mirror/platform_frameworks_base/blob/c1bd0480261460584753508327ca8a0c6fc80758/graphics/java/android/graphics/drawable/RippleDrawable.java#L1012
+      if (rippleColor == Color.TRANSPARENT && Build.VERSION.SDK_INT >= Build.VERSION_CODES.TIRAMISU) {
+        return null
       }
 
       val states = arrayOf(intArrayOf(android.R.attr.state_enabled))

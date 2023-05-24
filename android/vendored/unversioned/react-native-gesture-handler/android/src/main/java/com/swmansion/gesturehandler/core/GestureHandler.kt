@@ -64,7 +64,7 @@ open class GestureHandler<ConcreteGestureHandlerT : GestureHandler<ConcreteGestu
   private var shouldCancelWhenOutside = false
   var numberOfPointers = 0
     private set
-  private var orchestrator: GestureHandlerOrchestrator? = null
+  protected var orchestrator: GestureHandlerOrchestrator? = null
   private var onTouchEventListener: OnTouchEventListener? = null
   private var interactionController: GestureHandlerInteractionController? = null
 

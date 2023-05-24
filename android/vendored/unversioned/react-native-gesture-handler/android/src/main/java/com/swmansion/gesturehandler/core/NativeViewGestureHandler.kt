@@ -5,6 +5,8 @@ import android.view.MotionEvent
 import android.view.View
 import android.view.ViewConfiguration
 import android.view.ViewGroup
+import android.widget.ScrollView
+import com.facebook.react.views.swiperefresh.ReactSwipeRefreshLayout
 import com.facebook.react.views.textinput.ReactEditText
 
 class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
@@ -72,6 +74,7 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     when (val view = view) {
       is NativeViewGestureHandlerHook -> this.hook = view
       is ReactEditText -> this.hook = EditTextHook(this, view)
+      is ReactSwipeRefreshLayout -> this.hook = SwipeRefreshLayoutHook(this, view)
     }
   }
 
@@ -207,5 +210,41 @@ class NativeViewGestureHandler : GestureHandler<NativeViewGestureHandler>() {
     }
 
     override fun shouldCancelRootViewGestureHandlerIfNecessary() = true
+  }
+
+  private class SwipeRefreshLayoutHook(
+    private val handler: NativeViewGestureHandler,
+    private val swipeRefreshLayout: ReactSwipeRefreshLayout
+  ) : NativeViewGestureHandlerHook {
+    override fun wantsToHandleEventBeforeActivation() = true
+
+    override fun handleEventBeforeActivation(event: MotionEvent) {
+      // RefreshControl from GH is set up in a way that ScrollView wrapped with it should wait for
+      // it to fail. This way the RefreshControl is not canceled by the scroll handler.
+      // The problem with this approach is that the RefreshControl handler stays active all the time
+      // preventing scroll from activating.
+      // This is a workaround to prevent it from happening.
+
+      // First get the ScrollView under the RefreshControl, if there is none, return.
+      val scroll = swipeRefreshLayout.getChildAt(0) as? ScrollView ?: return
+
+      // Then find the first NativeViewGestureHandler attached to it
+      val scrollHandler = handler.orchestrator
+        ?.getHandlersForView(scroll)
+        ?.first {
+          it is NativeViewGestureHandler
+        }
+
+      // If handler was found, it's active and the ScrollView is not at the top, fail the RefreshControl
+      if (scrollHandler != null && scrollHandler.state == STATE_ACTIVE && scroll.scrollY > 0) {
+        handler.fail()
+      }
+
+      // The drawback is that the smooth transition from scrolling to refreshing in a single swipe
+      // is impossible this way and two swipes are required:
+      // - one to go back to top
+      // - one to actually refresh
+      // oh well  ¯\_(ツ)_/¯
+    }
   }
 }
