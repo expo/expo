@@ -1,5 +1,7 @@
 import groovy.json.JsonSlurper
-import java.nio.file.Paths
+
+import javax.inject.Inject
+import java.nio.file.Files
 
 buildscript {
     def kotlin_version = rootProject.ext.has('kotlinVersion') ? rootProject.ext.get('kotlinVersion') : project.properties['RNGH_kotlinVersion']
@@ -66,6 +68,14 @@ if (project == rootProject) {
     apply from: "spotless.gradle"
 }
 
+def shouldAssertNoMultipleInstances() {
+  if (rootProject.hasProperty("disableMultipleInstancesCheck")) {
+    return rootProject.property("disableMultipleInstancesCheck") != "true"
+  } else {
+    return true
+  }
+}
+
 // Check whether Reanimated 2.3 or higher is installed alongside Gesture Handler
 def shouldUseCommonInterfaceFromReanimated() {
     return true
@@ -87,28 +97,6 @@ def reactNativeArchitectures() {
     return value ? value.split(",") : ["armeabi-v7a", "x86", "x86_64", "arm64-v8a"]
 }
 
-def shouldAssertNoMultipleInstances() {
-  if (rootProject.hasProperty("disableMultipleInstancesCheck")) {
-    return rootProject.property("disableMultipleInstancesCheck") != "true"
-  } else {
-    return true
-  }
-}
-
-def noMultipleInstancesAssertion() {
-    Set<File> files = fileTree(rootDir.parent) {
-        include "node_modules/**/react-native-gesture-handler/package.json"
-        exclude "**/.yarn/**"
-        exclude "**/.pnpm/**"
-    }.files
-
-    if (files.size() > 1) {
-        String parsedLocation = files.stream().map({ File file -> "- " + file.toString().replace("/package.json", "") }).collect().join("\n")
-        String exceptionMessage = "\n[Gesture Handler] Multiple instances of Gesture Handler were detected. Only one instance of react-native-gesture-handler can be installed in a project. You need to resolve the conflict manually. Check out the documentation: https://docs.swmansion.com/react-native-gesture-handler/docs/troubleshooting#multiple-instances-of-gesture-handler-were-detected \n\nConflict between: \n" + parsedLocation + "\n";
-        throw new Exception(exceptionMessage);
-    }
-}
-
 def REACT_NATIVE_DIR = resolveReactNativeDirectory()
 
 def reactProperties = new Properties()
@@ -117,16 +105,64 @@ file("$REACT_NATIVE_DIR/ReactAndroid/gradle.properties").withInputStream { react
 def REACT_NATIVE_VERSION = reactProperties.getProperty("VERSION_NAME")
 def REACT_NATIVE_MINOR_VERSION = REACT_NATIVE_VERSION.startsWith("0.0.0-") ? 1000 : REACT_NATIVE_VERSION.split("\\.")[1].toInteger()
 
-def assertionTask = task assertNoMultipleInstances {
-    onlyIf { shouldAssertNoMultipleInstances() }
-    doFirst {
-        noMultipleInstancesAssertion()
+
+abstract class NoMultipleInstancesAssertionTask extends DefaultTask {
+    @Inject abstract ObjectFactory getObjectFactory()
+
+    @Input abstract Property<File> getProjectDirFile()
+    @Input abstract Property<File> getRootDirFile()
+    @Input abstract Property<Boolean> getShouldCheck()
+
+    def findGestureHandlerInstancesForPath(String path) {
+        return objectFactory.fileTree().from(path)
+                .include("**/react-native-gesture-handler/package.json")
+                .exclude("**/.yarn/**")
+                .exclude({ Files.isSymbolicLink(it.getFile().toPath()) })
+                .findAll()
+    }
+
+    @TaskAction
+    def check() {
+        if (shouldCheck.get()) {
+            // Assert there are no multiple installations of Gesture Handler
+            Set<File> files
+
+            if (projectDirFile.get().parent.contains(rootDirFile.get().parent)) {
+                // standard app
+                files = findGestureHandlerInstancesForPath(rootDirFile.get().parent + "/node_modules")
+            } else {
+                // monorepo
+                files = findGestureHandlerInstancesForPath(rootDirFile.get().parent + "/node_modules")
+                files.addAll(
+                    findGestureHandlerInstancesForPath(projectDirFile.get().parentFile.parent)
+                )
+            }
+
+            if (files.size() > 1) {
+                String parsedLocation = files.stream().map({
+                    File file -> "- " + file.toString().replace("/package.json", "")
+                }).collect().join("\n")
+                String exceptionMessage = "\n[react-native-gesture-handler] Multiple versions of Gesture Handler " +
+                        "were detected. Only one instance of react-native-gesture-handler can be installed in a " +
+                        "project. You need to resolve the conflict manually. Check out the documentation: " +
+                        "https://docs.swmansion.com/react-native-gesture-handler/docs/troubleshooting" +
+                        "#multiple-instances-of-gesture-handler-were-detected \n\nConflict between: \n" +
+                        parsedLocation + "\n"
+                throw new GradleException(exceptionMessage)
+            }
+        }
     }
 }
 
-tasks.preBuild {
-    dependsOn assertionTask
+tasks.register('assertNoMultipleInstances', NoMultipleInstancesAssertionTask) {
+    shouldCheck = shouldAssertNoMultipleInstances()
+    rootDirFile = rootDir
+    projectDirFile = projectDir
 }
+
+ tasks.preBuild {
+     dependsOn assertNoMultipleInstances
+ }
 
 repositories {
     mavenCentral()
@@ -134,6 +170,10 @@ repositories {
 
 android {
     compileSdkVersion safeExtGet("compileSdkVersion", 28)
+    def agpVersion = com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION
+    if (agpVersion.tokenize('.')[0].toInteger() >= 7) {
+        namespace "com.swmansion.gesturehandler"
+    }
 
     // Used to override the NDK path/version on internal CI or by allowing
     // users to customize the NDK path/version from their root project (e.g. for M1 support)
