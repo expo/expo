@@ -152,9 +152,8 @@ export default function ExpoImage({
         backgroundColor: backgroundColor?.toString(),
         transform: transform?.toString(),
         borderColor: borderColor?.toString(),
-        ...style,
-        overflow: 'hidden',
         position: 'relative',
+        overflow: 'hidden',
       }}>
       <AnimationManager transition={transition} recyclingKey={recyclingKey} initial={initialNode}>
         {currentNode}
