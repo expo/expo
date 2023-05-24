@@ -1,2 +1,2 @@
-<manifest package="<%- project.package %>">
+<manifest>
 </manifest>
