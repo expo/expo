@@ -75,7 +75,7 @@ Pod::Spec.new do |s|
     ss.dependency         "ABI47_0_0EXDocumentPicker"
     ss.dependency         "ABI47_0_0EASClient"
     ss.dependency         "ABI47_0_0EXErrorRecovery"
-    ss.dependency         "ABI46_0_0EXFileSystem"
+    ss.dependency         "ABI47_0_0EXFileSystem"
     ss.dependency         "ABI47_0_0EXFirebaseAnalytics"
     ss.dependency         "ABI47_0_0EXFirebaseCore"
     ss.dependency         "ABI47_0_0EXFont"
