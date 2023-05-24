@@ -200,9 +200,9 @@ jobs:
               issue_number: context.issue.number,
               owner: context.repo.owner,
               repo: context.repo.repo,
-              body: `Hi there! It looks like your issue is related to the react-native core.
+              body: `Hi there! It looks like your issue concerns code in react-native core, rather than Expo tools.
 
-              We recommend posting this issue directly to the react-native repository by [clicking here](https://github.com/facebook/react-native/issues/new/choose).
+              We recommend posting this issue directly to the [react-native repository](https://github.com/facebook/react-native/issues/new/choose).
             `})
             github.rest.issues.update({
               issue_number: context.issue.number,
