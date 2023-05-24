@@ -1,6 +1,4 @@
-<manifest xmlns:android="http://schemas.android.com/apk/res/android"
-  package="expo.modules.image">
-
+<manifest xmlns:android="http://schemas.android.com/apk/res/android">
   <!-- Begin Glide configuration -->
   <!-- Internet access (https://bumptech.github.io/glide/doc/download-setup.html#internet) -->
   <uses-permission android:name="android.permission.INTERNET" />

@@ -36,6 +36,7 @@ buildscript {
 
 android {
   compileSdkVersion safeExtGet("compileSdkVersion", 33)
+  namespace "expo.modules.devlauncher"
   defaultConfig {
     minSdkVersion safeExtGet('minSdkVersion', 21)
     targetSdkVersion safeExtGet("targetSdkVersion", 33)
