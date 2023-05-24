@@ -299,12 +299,7 @@ function RecentlyOpenedApps({ onRecentAppPress, loadingUrl }) {
 
     if (app.isEASUpdate && app.updateMessage != null) {
       return (
-        <RecentEASUpdateRow
-          label={label}
-          url={app.url}
-          message={app.updateMessage}
-          branchName={app.branchName}
-        />
+        <RecentEASUpdateRow url={app.url} message={app.updateMessage} branchName={app.branchName} />
       );
     }
 
@@ -389,7 +384,7 @@ function RecentLocalPackagerRow({ label, url }) {
   );
 }
 
-function RecentEASUpdateRow({ label, url, branchName, message }) {
+function RecentEASUpdateRow({ url, branchName, message }) {
   const palette = useExpoPalette();
   return (
     <View>
