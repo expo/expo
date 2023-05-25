@@ -44,7 +44,7 @@ class ModuleHolder(val module: Module) {
       definition.classData.forEach { clazz ->
         val clazzModuleObject = JavaScriptModuleObject(jniDeallocator, clazz.name)
           .initUsingObjectDefinition(module.appContext, clazz.objectDefinition)
-        appContext.jniDeallocator.addReference(clazzModuleObject);
+        appContext.jniDeallocator.addReference(clazzModuleObject)
 
         val constructor = clazz.constructor
         registerClass(
