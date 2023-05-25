@@ -16,7 +16,7 @@
 
 ### 💡 Others
 
-- On Android, removed use of deprecated `LocationRequest` constructor and replaced with `LocationRequest.Builder`.
+- On Android, removed use of deprecated `LocationRequest` constructor and replaced with `LocationRequest.Builder`. ([#22653](https://github.com/expo/expo/pull/22653) by [@alanjhughes](https://github.com/alanjhughes))
 
 ## 15.2.0 — 2023-05-08
 
