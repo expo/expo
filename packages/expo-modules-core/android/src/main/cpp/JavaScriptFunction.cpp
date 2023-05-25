@@ -53,4 +53,17 @@ jobject JavaScriptFunction::invoke(
   auto convertedResult = converter->convert(rt, env, moduleRegistry, result);
   return convertedResult;
 }
+
+jni::local_ref<JavaScriptFunction::javaobject> JavaScriptFunction::newInstance(
+  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+  std::weak_ptr<JavaScriptRuntime> runtime,
+  std::shared_ptr<jsi::Function> jsFunction
+) {
+  auto function = JavaScriptFunction::newObjectCxxArgs(
+    std::move(runtime),
+    std::move(jsFunction)
+  );
+  jsiInteropModuleRegistry->jniDeallocator->addReference(function);
+  return function;
+}
 } // namespace expo

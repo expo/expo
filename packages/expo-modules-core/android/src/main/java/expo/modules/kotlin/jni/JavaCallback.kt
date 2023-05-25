@@ -9,10 +9,6 @@ import expo.modules.kotlin.exception.UnexpectedException
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
 class JavaCallback @DoNotStrip internal constructor(@DoNotStrip private val mHybridData: HybridData) : Destructible {
-  init {
-    JNIDeallocator.addReference(this)
-  }
-
   operator fun invoke(result: Any?) {
     if (result == null) {
       invoke()

@@ -14,7 +14,10 @@ class JNIDeallocatorTest {
     }
   ) {
     val moduleObject = evaluateScript("expo.modules.TestModule")
-    Truth.assertThat(JNIDeallocator.inspectMemory()).contains(moduleObject)
+
+    val deallocator = appContextHolder.get()!!.jniDeallocator
+
+    Truth.assertThat(deallocator.inspectMemory()).contains(moduleObject)
   }
 
   @Test
@@ -22,11 +25,13 @@ class JNIDeallocatorTest {
     withJSIInterop(
       inlineModule {
         Name("TestModule")
+      },
+      block = {
+        evaluateScript("expo.modules.TestModule")
+      },
+      afterCleanup = {
+        Truth.assertThat(it.inspectMemory()).isEmpty()
       }
-    ) {
-      evaluateScript("expo.modules.TestModule")
-    }
-    // JNIDeallocator.deallocate() is automatically call in the end of `withJSIInterop` scope
-    Truth.assertThat(JNIDeallocator.inspectMemory()).isEmpty()
+    )
   }
 }

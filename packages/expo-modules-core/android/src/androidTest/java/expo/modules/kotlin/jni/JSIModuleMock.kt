@@ -26,15 +26,19 @@ import java.lang.ref.WeakReference
 @OptIn(ExperimentalCoroutinesApi::class)
 internal inline fun withJSIInterop(
   vararg modules: Module,
-  block: JSIInteropModuleRegistry.(methodQueue: TestScope) -> Unit
+  block: JSIInteropModuleRegistry.(methodQueue: TestScope) -> Unit,
+  afterCleanup: (deallocator: JNIDeallocator) -> Unit
 ) {
   val appContextMock = mockk<AppContext>()
   val methodQueue = TestScope()
+  val jniDeallocator = JNIDeallocator(
+    shouldCreateDestructorThread = false
+  )
 
   val uiManagerModuleMock = mockk<UIManagerModule>()
   val slot = slot<UIBlock>()
   every { uiManagerModuleMock.addUIBlock(capture(slot)) } answers {
-    methodQueue.launch() {
+    methodQueue.launch {
       slot.captured.execute(mockk())
     }
   }
@@ -53,6 +57,7 @@ internal inline fun withJSIInterop(
   every { appContextMock.mainQueue } answers { methodQueue }
   every { appContextMock.backgroundCoroutineScope } answers { methodQueue }
   every { appContextMock.reactContext } answers { reactContextMock }
+  every { appContextMock.jniDeallocator } answers { jniDeallocator }
 
   val registry = ModuleRegistry(WeakReference(appContextMock)).apply {
     modules.forEach {
@@ -64,14 +69,22 @@ internal inline fun withJSIInterop(
   every { appContextMock.sharedObjectRegistry } answers { sharedObjectRegistry }
 
   val jsiIterop = JSIInteropModuleRegistry(appContextMock).apply {
-    installJSIForTests()
+    installJSIForTests(jniDeallocator)
   }
 
   block(jsiIterop, methodQueue)
 
-  JNIDeallocator.deallocate()
+  jniDeallocator.deallocate()
   jsiIterop.deallocate()
+
+  afterCleanup(jniDeallocator)
 }
+
+@OptIn(ExperimentalCoroutinesApi::class)
+internal inline fun withJSIInterop(
+  vararg modules: Module,
+  block: JSIInteropModuleRegistry.(methodQueue: TestScope) -> Unit
+) = withJSIInterop(*modules, block = block, afterCleanup = {})
 
 /**
  * A syntax sugar that creates a new module from the definition block.

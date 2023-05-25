@@ -31,6 +31,7 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
    */
   external fun installJSI(
     jsRuntimePointer: Long,
+    jniDeallocator: JNIDeallocator,
     jsInvokerHolder: CallInvokerHolderImpl,
     nativeInvokerHolder: CallInvokerHolderImpl
   )
@@ -38,7 +39,13 @@ class JSIInteropModuleRegistry(appContext: AppContext) : Destructible {
   /**
    * Initializes the test runtime. Shouldn't be used in the production.
    */
-  external fun installJSIForTests()
+  external fun installJSIForTests(
+    jniDeallocator: JNIDeallocator,
+  )
+
+  fun installJSIForTests() = installJSIForTests(
+    JNIDeallocator(shouldCreateDestructorThread = false)
+  )
 
   /**
    * Evaluates given JavaScript source code.

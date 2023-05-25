@@ -91,6 +91,8 @@ class AppContext(
       CoroutineName("expo.modules.MainQueue")
   )
 
+  val jniDeallocator: JNIDeallocator = JNIDeallocator()
+
   internal var legacyModulesProxyHolder: WeakReference<NativeModulesProxy>? = null
 
   private val activityResultsManager = ActivityResultsManager(this)
@@ -130,6 +132,7 @@ class AppContext(
         ?.let {
           jsiInterop.installJSI(
             it,
+            jniDeallocator,
             jsContextProvider.jsCallInvokerHolder,
             catalystInstance.nativeCallInvokerHolder as CallInvokerHolderImpl
           )
@@ -275,7 +278,7 @@ class AppContext(
     modulesQueue.cancel(ContextDestroyedException())
     mainQueue.cancel(ContextDestroyedException())
     backgroundCoroutineScope.cancel(ContextDestroyedException())
-    JNIDeallocator.deallocate()
+    jniDeallocator.deallocate()
     logger.info("✅ AppContext was destroyed")
   }
 

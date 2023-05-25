@@ -1,6 +1,7 @@
 #include "JavaScriptTypedArray.h"
 
 #include "JavaScriptRuntime.h"
+#include "JSIInteropModuleRegistry.h"
 
 namespace expo {
 
@@ -87,5 +88,18 @@ void JavaScriptTypedArray::writeBuffer(
 ) {
   auto region = buffer->getRegion(0, size);
   memcpy(rawPointer + position, region.get(), size);
+}
+
+jni::local_ref<JavaScriptTypedArray::javaobject> JavaScriptTypedArray::newInstance(
+  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+  std::weak_ptr<JavaScriptRuntime> runtime,
+  std::shared_ptr<jsi::Object> jsObject
+) {
+  auto object = JavaScriptTypedArray::newObjectCxxArgs(
+    std::move(runtime),
+    std::move(jsObject)
+  );
+  jsiInteropModuleRegistry->jniDeallocator->addReference(object);
+  return object;
 }
 }

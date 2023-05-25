@@ -159,7 +159,8 @@ jobject TypedArrayFrontendConverter::convert(
   JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
-  return JavaScriptTypedArray::newObjectCxxArgs(
+  return JavaScriptTypedArray::newInstance(
+    moduleRegistry,
     moduleRegistry->runtimeHolder->weak_from_this(),
     std::make_shared<jsi::Object>(value.getObject(rt))
   ).release();
@@ -178,7 +179,8 @@ jobject JavaScriptValueFrontendConverter::convert(
   JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
-  return JavaScriptValue::newObjectCxxArgs(
+  return JavaScriptValue::newInstance(
+    moduleRegistry,
     moduleRegistry->runtimeHolder->weak_from_this(),
     // TODO(@lukmccall): make sure that copy here is necessary
     std::make_shared<jsi::Value>(jsi::Value(rt, value))
@@ -195,7 +197,8 @@ jobject JavaScriptObjectFrontendConverter::convert(
   JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
-  return JavaScriptObject::newObjectCxxArgs(
+  return JavaScriptObject::newInstance(
+    moduleRegistry,
     moduleRegistry->runtimeHolder->weak_from_this(),
     std::make_shared<jsi::Object>(value.getObject(rt))
   ).release();
@@ -214,7 +217,8 @@ jobject JavaScriptFunctionFrontendConverter::convert(
   JSIInteropModuleRegistry *moduleRegistry,
   const jsi::Value &value
 ) const {
-  return JavaScriptFunction::newObjectCxxArgs(
+  return JavaScriptFunction::newInstance(
+    moduleRegistry,
     moduleRegistry->runtimeHolder->weak_from_this(),
     std::make_shared<jsi::Function>(value.getObject(rt).asFunction(rt))
   ).release();

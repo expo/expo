@@ -11,10 +11,6 @@ import kotlin.reflect.typeOf
 @Suppress("KotlinJniMissingFunction")
 @DoNotStrip
 class JavaScriptValue @DoNotStrip private constructor(@DoNotStrip private val mHybridData: HybridData) : Destructible {
-  init {
-    JNIDeallocator.addReference(this)
-  }
-
   fun isValid() = mHybridData.isValid
   external fun kind(): String
 
