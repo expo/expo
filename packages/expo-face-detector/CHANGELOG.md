@@ -4,6 +4,8 @@
 
 ### 🛠 Breaking changes
 
+- Removed face detector from Expo Go on iOS. (https://expo.fyi/face-detector-removed). ([#22619](https://github.com/expo/expo/pull/22619) by [@aleqsio](https://github.com/aleqsio))
+
 ### 🎉 New features
 
 ### 🐛 Bug fixes
