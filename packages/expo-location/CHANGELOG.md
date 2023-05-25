@@ -4,7 +4,7 @@
 
 ### 📚 3rd party library updates
 
-- Updated `com.google.android.gms:play-services-location` to `21.0.1` and `io.nlopez.smartlocation:library` to `3.3.3`  ([#22468](https://github.com/expo/expo/pull/22468) by [@josephyanks](https://github.com/josephyanks))
+- Updated `com.google.android.gms:play-services-location` to `21.0.1` and `io.nlopez.smartlocation:library` to `3.3.3` ([#22468](https://github.com/expo/expo/pull/22468) by [@josephyanks](https://github.com/josephyanks))
 
 ### 🛠 Breaking changes
 
@@ -15,6 +15,8 @@
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537) by [@kudo](https://github.com/kudo))
 
 ### 💡 Others
+
+- On Android, removed use of deprecated `LocationRequest` constructor and replaced with `LocationRequest.Builder`.
 
 ## 15.2.0 — 2023-05-08
 
