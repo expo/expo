@@ -89,7 +89,7 @@ public class ScreenOrientationModule: Module, OrientationListener, Hashable {
     }
   }
 
-  // MARK: ScreenOrientationListener
+  // MARK: - ScreenOrientationListener
   func screenOrientationDidChange(_ orientation: UIInterfaceOrientation) {
     guard let currentTraitCollection = screenOrientationRegistry.currentTraitCollection else {
       return
@@ -105,7 +105,7 @@ public class ScreenOrientationModule: Module, OrientationListener, Hashable {
     ])
   }
 
-  // MARK: Hashable
+  // MARK: - Hashable
   public func hash(into hasher: inout Hasher) {
     hasher.combine(ObjectIdentifier(self))
   }

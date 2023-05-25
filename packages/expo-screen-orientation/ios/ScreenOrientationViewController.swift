@@ -37,7 +37,6 @@ class ScreenOrientationViewController: UIViewController {
     fatalError("init(coder:) has not been implemented")
   }
 
-  // Most of the time screen orientation will also be dependent on value set in ScreenOrientationAppDelegate
   override var supportedInterfaceOrientations: UIInterfaceOrientationMask {
     guard !shouldUseRNScreenOrientation() else {
       return super.supportedInterfaceOrientations
@@ -55,8 +54,8 @@ class ScreenOrientationViewController: UIViewController {
     }
   }
 
-  // If RNScreens set the orientation we want to use it instead of our orientation
   private func shouldUseRNScreenOrientation() -> Bool {
+    // If RNScreens has set the orientation we want to use it instead of our orientation
     guard let screenWindowTraitsClass = NSClassFromString("RNSScreenWindowTraits") else {
       return false
     }
