@@ -1,8 +1,8 @@
 import * as Application from 'expo-application';
 import Constants from 'expo-constants';
-import { Platform } from 'react-native';
+import { Platform, ScrollView, Image } from 'react-native';
 
-import { Ionicons } from '@expo/vector-icons';
+import { Entypo } from '@expo/vector-icons';
 
 const bareMap = {
   ios: {
