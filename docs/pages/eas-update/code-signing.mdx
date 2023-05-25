@@ -16,6 +16,7 @@ The `expo-updates` library supports end-to-end code signing. Code signing allows
 ## Code Signing with EAS Update
 
 <Step label="1">
+
 Generate a private key and corresponding code signing certificate for your app:
 
 <Terminal
@@ -34,9 +35,11 @@ Generate a private key and corresponding code signing certificate for your app:
   - A shorter validity duration will require [key rotation](#key-rotation) more frequently but is considered better practice since a compromised private key will have a sooner expiration which limits exposure.
   - Shorter validity durations add overhead to your app's release process as the key must be rotated more frequently. Binaries with expired certificates won't apply new updates.
   - For example, Expo sets this value to 20 years for the public Expo Go app, but only 1 year for internal apps with binaries that are distributed more frequently. We plan to rotate our keys every 10 years.
-    </Step>
+
+</Step>
 
 <Step label="2">
+
 Configure your app's builds to use code signing:
 
 <Terminal
@@ -53,6 +56,7 @@ After this step, create a new build with a new runtime version. The code signing
 </Step>
 
 <Step label="3">
+
 Publish a signed update for your app:
 
 <Terminal cmd={['eas update --private-key-path keys/private-key.pem']} />
@@ -62,12 +66,14 @@ During `eas update`, the EAS CLI automatically detects that code signing is conf
 </Step>
 
 <Step label="4">
-  Download the update on the client (this step is done automatically by the library). The build from
-  step (2) that is configured for code signing checks if there is a new update available. The server
-  responds with the update published in step (3) and its generated signature. After being downloaded
-  but before being applied, the update is verified against the embedded certificate and included
-  signature. The update is applied if the certificate and signature are valid, and rejected
-  otherwise.
+
+Download the update on the client (this step is done automatically by the library). The build from
+step (2) that is configured for code signing checks if there is a new update available. The server
+responds with the update published in step (3) and its generated signature. After being downloaded
+but before being applied, the update is verified against the embedded certificate and included
+signature. The update is applied if the certificate and signature are valid, and rejected
+otherwise.
+
 </Step>
 
 ## Key Rotation
