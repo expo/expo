@@ -36,12 +36,6 @@ PODS:
     - ABI46_0_0ExpoModulesCore
   - ABI46_0_0EXErrorRecovery (3.2.0):
     - ABI46_0_0ExpoModulesCore
-  - ABI46_0_0EXFaceDetector (11.3.0):
-    - ABI46_0_0ExpoModulesCore
-    - GoogleMLKit/FaceDetection (= 2.6.0)
-    - MLKitCommon (= 5.0.0)
-    - MLKitFaceDetection (= 1.5.0)
-    - MLKitVision (= 3.0.0)
   - ABI46_0_0EXFileSystem (14.1.0):
     - ABI46_0_0ExpoModulesCore
   - ABI46_0_0EXFirebaseAnalytics (7.1.1):
@@ -111,7 +105,6 @@ PODS:
     - ABI46_0_0EXDevice
     - ABI46_0_0EXDocumentPicker
     - ABI46_0_0EXErrorRecovery
-    - ABI46_0_0EXFaceDetector
     - ABI46_0_0EXFileSystem
     - ABI46_0_0EXFirebaseAnalytics
     - ABI46_0_0EXFirebaseCore
@@ -682,12 +675,6 @@ PODS:
     - ABI47_0_0ExpoModulesCore
   - ABI47_0_0EXErrorRecovery (4.0.0):
     - ABI47_0_0ExpoModulesCore
-  - ABI47_0_0EXFaceDetector (12.0.0):
-    - ABI47_0_0ExpoModulesCore
-    - GoogleMLKit/FaceDetection (= 2.6.0)
-    - MLKitCommon (= 5.0.0)
-    - MLKitFaceDetection (= 1.5.0)
-    - MLKitVision (= 3.0.0)
   - ABI47_0_0EXFileSystem (15.1.0):
     - ABI47_0_0ExpoModulesCore
   - ABI47_0_0EXFirebaseAnalytics (8.0.0):
@@ -756,7 +743,6 @@ PODS:
     - ABI47_0_0EXDevice
     - ABI47_0_0EXDocumentPicker
     - ABI47_0_0EXErrorRecovery
-    - ABI47_0_0EXFaceDetector
     - ABI47_0_0EXFileSystem
     - ABI47_0_0EXFirebaseAnalytics
     - ABI47_0_0EXFirebaseCore
@@ -1339,12 +1325,6 @@ PODS:
     - ABI48_0_0ExpoModulesCore
   - ABI48_0_0EXDocumentPicker (11.2.2):
     - ABI48_0_0ExpoModulesCore
-  - ABI48_0_0EXFaceDetector (12.1.1):
-    - ABI48_0_0ExpoModulesCore
-    - GoogleMLKit/FaceDetection (= 2.6.0)
-    - MLKitCommon (= 5.0.0)
-    - MLKitFaceDetection (= 1.5.0)
-    - MLKitVision (= 3.0.0)
   - ABI48_0_0EXFileSystem (15.2.2):
     - ABI48_0_0ExpoModulesCore
   - ABI48_0_0EXFont (11.1.1):
@@ -1411,7 +1391,6 @@ PODS:
     - ABI48_0_0EXConstants
     - ABI48_0_0EXContacts
     - ABI48_0_0EXDocumentPicker
-    - ABI48_0_0EXFaceDetector
     - ABI48_0_0EXFileSystem
     - ABI48_0_0EXFont
     - ABI48_0_0EXImageLoader
@@ -2089,12 +2068,6 @@ PODS:
     - ExpoModulesCore
   - EXContacts (12.1.0):
     - ExpoModulesCore
-  - EXFaceDetector (12.1.2):
-    - ExpoModulesCore
-    - GoogleMLKit/FaceDetection (= 2.6.0)
-    - MLKitCommon (= 5.0.0)
-    - MLKitFaceDetection (= 1.5.0)
-    - MLKitVision (= 3.0.0)
   - EXFileSystem (15.3.0):
     - ExpoModulesCore
   - EXFileSystem/Tests (15.3.0):
@@ -2353,28 +2326,11 @@ PODS:
   - GoogleMaps/Base (7.1.0)
   - GoogleMaps/Maps (7.1.0):
     - GoogleMaps/Base
-  - GoogleMLKit/FaceDetection (2.6.0):
-    - GoogleMLKit/MLKitCore
-    - MLKitFaceDetection (~> 1.5.0)
-  - GoogleMLKit/MLKitCore (2.6.0):
-    - MLKitCommon (~> 5.0.0)
   - GooglePlaces (7.1.0)
   - GoogleSignIn (7.0.0):
     - AppAuth (~> 1.5)
     - GTMAppAuth (< 3.0, >= 1.3)
     - GTMSessionFetcher/Core (< 4.0, >= 1.1)
-  - GoogleToolboxForMac/DebugUtils (2.3.2):
-    - GoogleToolboxForMac/Defines (= 2.3.2)
-  - GoogleToolboxForMac/Defines (2.3.2)
-  - GoogleToolboxForMac/Logger (2.3.2):
-    - GoogleToolboxForMac/Defines (= 2.3.2)
-  - "GoogleToolboxForMac/NSData+zlib (2.3.2)":
-    - GoogleToolboxForMac/Defines (= 2.3.2)
-  - "GoogleToolboxForMac/NSDictionary+URLArguments (2.3.2)":
-    - GoogleToolboxForMac/DebugUtils (= 2.3.2)
-    - GoogleToolboxForMac/Defines (= 2.3.2)
-    - "GoogleToolboxForMac/NSString+URLArguments (= 2.3.2)"
-  - "GoogleToolboxForMac/NSString+URLArguments (2.3.2)"
   - GoogleUserMessagingPlatform (2.0.1)
   - GoogleUtilities (7.8.0):
     - GoogleUtilities/AppDelegateSwizzler (= 7.8.0)
@@ -2409,8 +2365,6 @@ PODS:
     - GoogleUtilities/MethodSwizzler
   - GoogleUtilities/UserDefaults (7.8.0):
     - GoogleUtilities/Logger
-  - GoogleUtilitiesComponents (1.1.0):
-    - GoogleUtilities/Logger
   - GTMAppAuth (2.0.0):
     - AppAuth/Core (~> 1.6)
     - GTMSessionFetcher/Core (< 4.0, >= 1.5)
@@ -2443,26 +2397,6 @@ PODS:
     - lottie-ios (~> 3.4.0)
     - React-Core
   - MBProgressHUD (1.2.0)
-  - MLImage (1.0.0-beta2)
-  - MLKitCommon (5.0.0):
-    - GoogleDataTransport (~> 9.0)
-    - GoogleToolboxForMac/Logger (~> 2.1)
-    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
-    - "GoogleToolboxForMac/NSDictionary+URLArguments (~> 2.1)"
-    - GoogleUtilities/UserDefaults (~> 7.0)
-    - GoogleUtilitiesComponents (~> 1.0)
-    - GTMSessionFetcher/Core (~> 1.1)
-    - Protobuf (~> 3.12)
-  - MLKitFaceDetection (1.5.0):
-    - MLKitCommon (~> 5.0)
-    - MLKitVision (~> 3.0)
-  - MLKitVision (3.0.0):
-    - GoogleToolboxForMac/Logger (~> 2.1)
-    - "GoogleToolboxForMac/NSData+zlib (~> 2.1)"
-    - GTMSessionFetcher/Core (~> 1.1)
-    - MLImage (= 1.0.0-beta2)
-    - MLKitCommon (~> 5.0)
-    - Protobuf (~> 3.12)
   - nanopb (2.30909.0):
     - nanopb/decode (= 2.30909.0)
     - nanopb/encode (= 2.30909.0)
@@ -2470,7 +2404,6 @@ PODS:
   - nanopb/encode (2.30909.0)
   - Nimble (9.2.1)
   - PromisesObjC (2.1.1)
-  - Protobuf (3.21.12)
   - Quick (5.0.1)
   - RCT-Folly (2021.07.22.00):
     - boost
@@ -2968,7 +2901,6 @@ DEPENDENCIES:
   - ABI46_0_0EXDevice (from `./versioned/sdk46/EXDevice`)
   - ABI46_0_0EXDocumentPicker (from `./versioned/sdk46/EXDocumentPicker`)
   - ABI46_0_0EXErrorRecovery (from `./versioned/sdk46/EXErrorRecovery`)
-  - ABI46_0_0EXFaceDetector (from `./versioned/sdk46/EXFaceDetector`)
   - ABI46_0_0EXFileSystem (from `./versioned/sdk46/EXFileSystem`)
   - ABI46_0_0EXFirebaseAnalytics (from `./versioned/sdk46/EXFirebaseAnalytics`)
   - ABI46_0_0EXFirebaseCore (from `./versioned/sdk46/EXFirebaseCore`)
@@ -3077,7 +3009,6 @@ DEPENDENCIES:
   - ABI47_0_0EXDevice (from `./versioned/sdk47/EXDevice`)
   - ABI47_0_0EXDocumentPicker (from `./versioned/sdk47/EXDocumentPicker`)
   - ABI47_0_0EXErrorRecovery (from `./versioned/sdk47/EXErrorRecovery`)
-  - ABI47_0_0EXFaceDetector (from `./versioned/sdk47/EXFaceDetector`)
   - ABI47_0_0EXFileSystem (from `./versioned/sdk47/EXFileSystem`)
   - ABI47_0_0EXFirebaseAnalytics (from `./versioned/sdk47/EXFirebaseAnalytics`)
   - ABI47_0_0EXFirebaseCore (from `./versioned/sdk47/EXFirebaseCore`)
@@ -3184,7 +3115,6 @@ DEPENDENCIES:
   - ABI48_0_0EXConstants (from `./versioned/sdk48/EXConstants`)
   - ABI48_0_0EXContacts (from `./versioned/sdk48/EXContacts`)
   - ABI48_0_0EXDocumentPicker (from `./versioned/sdk48/EXDocumentPicker`)
-  - ABI48_0_0EXFaceDetector (from `./versioned/sdk48/EXFaceDetector`)
   - ABI48_0_0EXFileSystem (from `./versioned/sdk48/EXFileSystem`)
   - ABI48_0_0EXFont (from `./versioned/sdk48/EXFont`)
   - ABI48_0_0EXImageLoader (from `./versioned/sdk48/EXImageLoader`)
@@ -3301,7 +3231,6 @@ DEPENDENCIES:
   - EXCamera (from `../packages/expo-camera/ios`)
   - EXConstants (from `../packages/expo-constants/ios`)
   - EXContacts (from `../packages/expo-contacts/ios`)
-  - EXFaceDetector (from `../packages/expo-face-detector/ios`)
   - EXFileSystem (from `../packages/expo-file-system/ios`)
   - EXFileSystem/Tests (from `../packages/expo-file-system/ios`)
   - EXFont (from `../packages/expo-font/ios`)
@@ -3443,13 +3372,10 @@ SPEC REPOS:
     - GoogleAppMeasurement
     - GoogleDataTransport
     - GoogleMaps
-    - GoogleMLKit
     - GooglePlaces
     - GoogleSignIn
-    - GoogleToolboxForMac
     - GoogleUserMessagingPlatform
     - GoogleUtilities
-    - GoogleUtilitiesComponents
     - GTMAppAuth
     - GTMSessionFetcher
     - libaom
@@ -3459,13 +3385,8 @@ SPEC REPOS:
     - libwebp
     - lottie-ios
     - MBProgressHUD
-    - MLImage
-    - MLKitCommon
-    - MLKitFaceDetection
-    - MLKitVision
     - nanopb
     - PromisesObjC
-    - Protobuf
     - Quick
     - ReachabilitySwift
     - SDWebImage
@@ -3515,8 +3436,6 @@ EXTERNAL SOURCES:
     :path: "./versioned/sdk46/EXDocumentPicker"
   ABI46_0_0EXErrorRecovery:
     :path: "./versioned/sdk46/EXErrorRecovery"
-  ABI46_0_0EXFaceDetector:
-    :path: "./versioned/sdk46/EXFaceDetector"
   ABI46_0_0EXFileSystem:
     :path: "./versioned/sdk46/EXFileSystem"
   ABI46_0_0EXFirebaseAnalytics:
@@ -3727,8 +3646,6 @@ EXTERNAL SOURCES:
     :path: "./versioned/sdk47/EXDocumentPicker"
   ABI47_0_0EXErrorRecovery:
     :path: "./versioned/sdk47/EXErrorRecovery"
-  ABI47_0_0EXFaceDetector:
-    :path: "./versioned/sdk47/EXFaceDetector"
   ABI47_0_0EXFileSystem:
     :path: "./versioned/sdk47/EXFileSystem"
   ABI47_0_0EXFirebaseAnalytics:
@@ -3937,8 +3854,6 @@ EXTERNAL SOURCES:
     :path: "./versioned/sdk48/EXContacts"
   ABI48_0_0EXDocumentPicker:
     :path: "./versioned/sdk48/EXDocumentPicker"
-  ABI48_0_0EXFaceDetector:
-    :path: "./versioned/sdk48/EXFaceDetector"
   ABI48_0_0EXFileSystem:
     :path: "./versioned/sdk48/EXFileSystem"
   ABI48_0_0EXFont:
@@ -4163,8 +4078,6 @@ EXTERNAL SOURCES:
     :path: "../packages/expo-constants/ios"
   EXContacts:
     :path: "../packages/expo-contacts/ios"
-  EXFaceDetector:
-    :path: "../packages/expo-face-detector/ios"
   EXFileSystem:
     :path: "../packages/expo-file-system/ios"
   EXFont:
@@ -4389,7 +4302,6 @@ SPEC CHECKSUMS:
   ABI46_0_0EXDevice: b474ca9136f899a023bb8e46f9286ff3b7130c68
   ABI46_0_0EXDocumentPicker: e3cdaea0d1a753a27a16a742f11fc13b68abc73d
   ABI46_0_0EXErrorRecovery: 57414b3f06d179dcb9103e84a8d29c20a7844157
-  ABI46_0_0EXFaceDetector: 8e6fee14dd8d4e44b1fe50f830a7e810a73654a7
   ABI46_0_0EXFileSystem: 7c3f65d29dd12cadccd6e46c906758bbdbe864cc
   ABI46_0_0EXFirebaseAnalytics: 8d16689cf40fdfa0c625993f2490a61b5786c98f
   ABI46_0_0EXFirebaseCore: e2c8e2fe87a94a871e661c7278d67d3aac8732de
@@ -4413,7 +4325,7 @@ SPEC CHECKSUMS:
   ABI46_0_0ExpoImageManipulator: d9c826732149dfa28c997f524d663d009fa536b6
   ABI46_0_0ExpoImagePicker: 0374ce58edabd479a94717cbc32418faf93bf6b6
   ABI46_0_0ExpoKeepAwake: 2a2af5decb4280b6d025b1b5043cd9370d2ab67f
-  ABI46_0_0ExpoKit: 59d226a2488da750e06e0472de7fef1e5b399b44
+  ABI46_0_0ExpoKit: 3bdffb064a39985976199716717e1d9f5d914ba6
   ABI46_0_0ExpoLinearGradient: 9766a6de9eaad87afb1dfb1391403e70995b946e
   ABI46_0_0ExpoLocalization: a0d35d7490ab40a3015b26abbeb1d6da98daef78
   ABI46_0_0ExpoMailComposer: f6dc505417b6989d4fdaae7480f7b6add2deca62
@@ -4495,7 +4407,6 @@ SPEC CHECKSUMS:
   ABI47_0_0EXDevice: 7662fd834f4dcd51da363527668d027c749e7014
   ABI47_0_0EXDocumentPicker: cc83c0a15125844adf6b2c1d29e8194ab9238462
   ABI47_0_0EXErrorRecovery: f56fae8d37bb6f1c23138ff1396b097470105e95
-  ABI47_0_0EXFaceDetector: 491dff65c82435fca60274ddbdb1216266efa43c
   ABI47_0_0EXFileSystem: 5ed4625d96bc53c0144f2f3b5a2013510c82dcfd
   ABI47_0_0EXFirebaseAnalytics: d05b15f641d0325f67e58512e0c83605f1d9e14b
   ABI47_0_0EXFirebaseCore: 3e3b69be1923cf89331827f7eb6422fc849d2ba8
@@ -4519,7 +4430,7 @@ SPEC CHECKSUMS:
   ABI47_0_0ExpoImageManipulator: eb2dd6507b54aa10251e752d6188a65dbfadd22a
   ABI47_0_0ExpoImagePicker: 18d65d537b1901117a47a6e63af1af3f2849c38e
   ABI47_0_0ExpoKeepAwake: 456098572219a61d7a2688e642bcab820045fdc2
-  ABI47_0_0ExpoKit: 3d757f59e0f352fbae3bf5e75922ccd4302a6d0d
+  ABI47_0_0ExpoKit: 5d95d71ee26abb423a57de6f3c9fc37701d1e888
   ABI47_0_0ExpoLinearGradient: a2d68f4f95b4edb6dae4fa4d8cf28f1a9f08dfdb
   ABI47_0_0ExpoLocalization: ce34bad9f4bdcecc43fae16b13363f7663ab9f72
   ABI47_0_0ExpoMailComposer: 30f7bc875566c971a5e112d3a117d6227bae035d
@@ -4600,7 +4511,6 @@ SPEC CHECKSUMS:
   ABI48_0_0EXConstants: 0b4e15d7127edd6bd20924db4d36cf66898f69c7
   ABI48_0_0EXContacts: 27299908cc14df85a0efd1774a50df6314718a4b
   ABI48_0_0EXDocumentPicker: 808e8bbfc648a8fd86d0eeec97273683ae07bc99
-  ABI48_0_0EXFaceDetector: e4c919fb86ff4ce22957709445086541ad25551d
   ABI48_0_0EXFileSystem: 1a887b2f2dfc349de82dfc999a1e0401398b7a26
   ABI48_0_0EXFont: ccba5fca4115733c29c3aba6eb61338bd8905096
   ABI48_0_0EXImageLoader: 1051596897c81b87cde7263d0e0cb5fbe9b0d118
@@ -4625,7 +4535,7 @@ SPEC CHECKSUMS:
   ABI48_0_0ExpoImageManipulator: 9d61e40b13268e04e51e868c770fea324dd5ac8d
   ABI48_0_0ExpoImagePicker: f55b4ae78f26481bec5a769f2b23c864c22f2608
   ABI48_0_0ExpoKeepAwake: 956461c0639ea092f296010edf75e17a7b827336
-  ABI48_0_0ExpoKit: 3b07970abd13dbd260c307f45a52ec0d7610c76f
+  ABI48_0_0ExpoKit: 4f0e8aebd74cbc764f05eba94f918ec527360219
   ABI48_0_0ExpoLinearGradient: 8b0198f9c77fd8cfa47dedb0a6db7a255d263fee
   ABI48_0_0ExpoLocalAuthentication: 30b0231acd79565606e8494273c08741eed647c4
   ABI48_0_0ExpoLocalization: 50fb5251edc025bfea84d90747b855286af31445
@@ -4718,7 +4628,6 @@ SPEC CHECKSUMS:
   EXCamera: f231ff0f85e84dc6e8167f4a8e2881d2e4260e5c
   EXConstants: 29269f841ed8786d483b753021953264ac04818f
   EXContacts: 16af1b3017380e1d09a63c61ac7d664c2b1b5c88
-  EXFaceDetector: c4c78ff3cb77cb8998a918e995e04c0893889b98
   EXFileSystem: 0b4a2c08c2dc92146849772145d61c1773144283
   EXFont: 6a9d36ba12a7156095a251097a5f7136f37f975b
   EXImageLoader: 9d209a8231962d4aafa60ca40380b02a398f07b9
@@ -4790,13 +4699,10 @@ SPEC CHECKSUMS:
   GoogleAppMeasurement: 6ee231473fbd75c11221dfce489894334024eead
   GoogleDataTransport: 1c8145da7117bd68bbbed00cf304edb6a24de00f
   GoogleMaps: bc56ffb0324e345a2d91bac1a64a920f9c8f1b20
-  GoogleMLKit: 755661c46990a85e42278015f26400286d98ad95
   GooglePlaces: 187946335ec3dc624de71c0a9ddcc712f19b0ee1
   GoogleSignIn: b232380cf495a429b8095d3178a8d5855b42e842
-  GoogleToolboxForMac: 8bef7c7c5cf7291c687cf5354f39f9db6399ad34
   GoogleUserMessagingPlatform: 5f8b30daf181805317b6b985bb51c1ff3beca054
   GoogleUtilities: 1d20a6ad97ef46f67bbdec158ce00563a671ebb7
-  GoogleUtilitiesComponents: 679b2c881db3b615a2777504623df6122dd20afe
   GTMAppAuth: 99fb010047ba3973b7026e45393f51f27ab965ae
   GTMSessionFetcher: 5595ec75acf5be50814f81e9189490412bad82ba
   hermes-engine: 4438d2b8bf8bebaba1b1ac0451160bab59e491f8
@@ -4809,14 +4715,9 @@ SPEC CHECKSUMS:
   lottie-ios: 8f97d3271e155c2d688875c29cd3c74908aef5f8
   lottie-react-native: b702fab740cdb952a8e2354713d3beda63ff97b0
   MBProgressHUD: 3ee5efcc380f6a79a7cc9b363dd669c5e1ae7406
-  MLImage: a454f9f8ecfd537783a12f9488f5be1a68820829
-  MLKitCommon: 3bc17c6f7d25ce3660f030350b46ae7ec9ebca6e
-  MLKitFaceDetection: 617cb847441868a8bfd4b48d751c9b33c1104948
-  MLKitVision: e87dc3f2e456a6ab32361ebd985e078dd2746143
   nanopb: b552cce312b6c8484180ef47159bc0f65a1f0431
   Nimble: d954d0accfd082f2225e62d71008440493e318f4
   PromisesObjC: ab77feca74fa2823e7af4249b8326368e61014cb
-  Protobuf: 120350fc38646e2dedc26f49ecba778184ea1de2
   Quick: 749aa754fd1e7d984f2000fe051e18a3a9809179
   RCT-Folly: 424b8c9a7a0b9ab2886ffe9c3b041ef628fd4fb1
   RCTRequired: 5a4a30ac20c86eeadd6844a9328f78d4168cf9b2
@@ -4877,6 +4778,6 @@ SPEC CHECKSUMS:
   Yoga: d56980c8914db0b51692f55533409e844b66133c
   ZXingObjC: fdbb269f25dd2032da343e06f10224d62f537bdb
 
-PODFILE CHECKSUM: ad8b65dc4b7c9e32cf4690eb6979e45c43c07de7
+PODFILE CHECKSUM: 2cf03733a41a4d922f40ea96cd7e2b96ea352b03
 
 COCOAPODS: 1.12.1
