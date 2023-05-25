@@ -102,7 +102,12 @@ public class DevLauncherInternal: Module, EXDevLauncherPendingDeepLinkListener {
 }
 
 private func sanitizeUrlString(_ urlString: String) -> URL? {
-  let sanitizedUrl = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
+  var sanitizedUrl = urlString.trimmingCharacters(in: .whitespacesAndNewlines)
+  // If the url does contain a scheme use "http://"
+  if !sanitizedUrl.contains("://") {
+    sanitizedUrl = "http://" + sanitizedUrl
+  }
+
   return URL(string: sanitizedUrl)
 }
 
