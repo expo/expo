@@ -1,3 +1,5 @@
+declare var global: any;
+
 import { UnavailabilityError } from 'expo-modules-core';
 
 import ExpoFaceDetector from './ExpoFaceDetector';
