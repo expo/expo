@@ -38,6 +38,7 @@ module.exports = {
       RefreshControl: 'react-native-gesture-handler',
       // Maybe flash list?
       FlatList: 'react-native-gesture-handler',
+      SafeAreaView: 'react-native-safe-area-context',
     };
     const targetPackage = 'react-native';
 
@@ -66,18 +67,9 @@ module.exports = {
               newTextGroups[source].push(name);
             });
 
-            const newText = Object.keys(newTextGroups)
-              .map((source) => `import { ${newTextGroups[source].join(', ')} } from '${source}';`)
-              .join('\n');
-
             const remainingImports = node.specifiers
               .filter((specifier) => !importsToChange.includes(specifier.imported.name))
               .map((specifier) => specifier.imported.name);
-
-            const remainingText =
-              remainingImports.length > 0
-                ? `import { ${remainingImports.join(', ')} } from '${targetPackage}';`
-                : '';
 
             context.report({
               node,
@@ -85,10 +77,68 @@ module.exports = {
                 ...new Set(importsToChange.map((name) => `'${recommendations[name]}'`)),
               ])} instead of '${targetPackage}'`,
               fix(fixer) {
-                return [
-                  fixer.replaceTextRange([node.range[0], node.range[1]], remainingText),
-                  fixer.insertTextBefore(node, newText + '\n'),
-                ];
+                // Existing import statements from the recommended sources
+                const existingImportStatements = context
+                  .getSourceCode()
+                  .ast.body.filter(
+                    (n) =>
+                      n.type === 'ImportDeclaration' &&
+                      Object.values(recommendations).includes(n.source.value)
+                  );
+
+                // Create a map of existing import specifiers for each source
+                const existingImportSpecifiers = {};
+                existingImportStatements.forEach((n) => {
+                  existingImportSpecifiers[n.source.value] = n.specifiers
+                    .filter((specifier) => specifier.type === 'ImportSpecifier')
+                    .map((specifier) => specifier.imported.name);
+                });
+
+                // Array to hold fixer operations
+                const fixerOperations = [];
+
+                // Create new import statements or modify existing ones
+                Object.keys(newTextGroups).forEach((source) => {
+                  if (existingImportSpecifiers[source]) {
+                    // If there's an existing import statement, add new imports to it
+                    const importNames = Array.from(
+                      new Set([...existingImportSpecifiers[source], ...newTextGroups[source]])
+                    );
+                    const existingImportStatement = existingImportStatements.find(
+                      (n) => n.source.value === source
+                    );
+                    // Create a fixer replacement operation for the modified import statement
+                    fixerOperations.push(
+                      fixer.replaceText(
+                        existingImportStatement,
+                        `import { ${importNames.join(', ')} } from '${source}';`
+                      )
+                    );
+                  } else {
+                    // If there's no existing import statement, create a new one
+                    const newImportStatement = `import { ${newTextGroups[source].join(
+                      ', '
+                    )} } from '${source}';`;
+                    // Always add a newline at the end of new import statements
+                    const newText = newImportStatement + '\n';
+                    fixerOperations.push(fixer.insertTextBefore(node, newText));
+                  }
+                });
+
+                // Replace the original import statement with remaining imports (if any)
+                if (remainingImports.length > 0) {
+                  fixerOperations.push(
+                    fixer.replaceText(
+                      node,
+                      `import { ${remainingImports.join(', ')} } from '${targetPackage}';`
+                    )
+                  );
+                } else {
+                  // If no remaining imports, remove the original import statement
+                  fixerOperations.push(fixer.remove(node));
+                }
+
+                return fixerOperations;
               },
             });
           }
