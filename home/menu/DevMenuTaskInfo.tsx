@@ -24,7 +24,7 @@ export function DevMenuTaskInfo({ task }: Props) {
     <View>
       <Row bg="default" padding="medium">
         {!manifest?.metadata?.branchName && iconUrl ? (
-          // EAS Updates don't have icons
+          // EAS Update don't have icons
           <Image source={{ uri: iconUrl }} style={styles.taskIcon} />
         ) : null}
         <View flex="1" style={{ justifyContent: 'center' }}>

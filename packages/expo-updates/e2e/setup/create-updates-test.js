@@ -13,7 +13,7 @@ const EXPO_ACCOUNT_NAME = process.env.EXPO_ACCOUNT_NAME || 'myusername';
 /**
  * This generates a project at the location TEST_PROJECT_ROOT,
  * set up to use the latest bits from the current repo source,
- * and can be used to test different expo-updates and EAS updates workflows.
+ * and can be used to test different expo-updates and EAS Update workflows.
  */
 
 function transformAppJson(appJson, projectName, runtimeVersion) {

@@ -140,7 +140,7 @@ describe('<ExtensionsScreen />', () => {
     });
   });
 
-  test('eas updates see all branches press', async () => {
+  test('EAS Update see all branches press', async () => {
     const mockNavigation: any = {
       navigate: jest.fn(),
     };
@@ -187,7 +187,7 @@ describe('<ExtensionsScreen />', () => {
     });
   });
 
-  test('eas updates no compatible branches state', async () => {
+  test('EAS Update no compatible branches state', async () => {
     const mockNavigation: any = {
       navigate: jest.fn(),
     };
@@ -213,7 +213,7 @@ describe('<ExtensionsScreen />', () => {
     });
   });
 
-  test('eas updates no branches state', async () => {
+  test('EAS Update no branches state', async () => {
     const mockNavigation: any = {
       navigate: jest.fn(),
     };
@@ -233,7 +233,7 @@ describe('<ExtensionsScreen />', () => {
     });
   });
 
-  test.todo('eas updates shows error toast');
+  test.todo('EAS Update shows error toast');
 });
 
 function renderAuthenticatedScreen({ mockNavigation }) {

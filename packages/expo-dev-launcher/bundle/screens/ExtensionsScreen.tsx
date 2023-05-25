@@ -287,7 +287,7 @@ function EASUpdatesPreview({
       <View mx="medium">
         <View px="small">
           <Heading size="small" color="secondary">
-            EAS Updates
+            EAS Update
           </Heading>
         </View>
         <Spacer.Vertical size="small" />
@@ -301,7 +301,7 @@ function EASUpdatesPreview({
     <View mx="medium">
       <View py="small" px="small">
         <Heading size="small" color="secondary">
-          EAS Updates
+          EAS Update
         </Heading>
       </View>
       {branches?.slice(0, 2).map((branch, index, arr) => {

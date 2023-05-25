@@ -208,7 +208,7 @@ describe('<BranchesScreen />', () => {
   });
 
   test.todo('recent empty branches are visible in the footer');
-  test.todo('eas updates shows error toast');
+  test.todo('EAS Update shows error toast');
 });
 
 function renderBranchesScreen(mockNavigation: any) {

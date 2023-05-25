@@ -199,7 +199,7 @@ _This version does not introduce any user-facing changes._
 ### 🎉 New features
 
 - Include extra information in the recently opened list ([#17633](https://github.com/expo/expo/pull/17633) by [@ajsmth](https://github.com/ajsmth))
-- Add debug settings for EAS Updates (admin only) ([#17842](https://github.com/expo/expo/pull/17842) by [@ajsmth](https://github.com/ajsmth))
+- Add debug settings for EAS Update (admin only) ([#17842](https://github.com/expo/expo/pull/17842) by [@ajsmth](https://github.com/ajsmth))
 - Add organizations to account selector ([#18152](https://github.com/expo/expo/pull/18152) by [@ajsmth](https://github.com/ajsmth))
 - Restore navigation state after loading an update ([#18189](https://github.com/expo/expo/pull/18189) by [@ajsmth](https://github.com/ajsmth))
 

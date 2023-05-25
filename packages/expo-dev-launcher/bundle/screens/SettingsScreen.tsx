@@ -357,7 +357,7 @@ function UpdatesDebugSettings() {
 
       <View px="medium">
         <Heading size="small" color="secondary">
-          EAS Updates App ID
+          EAS Update App ID
         </Heading>
         <Spacer.Vertical size="small" />
       </View>
