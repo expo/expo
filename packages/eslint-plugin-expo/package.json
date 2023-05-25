@@ -1,0 +1,40 @@
+{
+  "name": "eslint-plugin-expo",
+  "version": "0.0.0",
+  "description": "eslint plugins for building better Expo apps",
+  "main": "index.js",
+  "scripts": {
+    "lint": "eslint .",
+    "test": "jest"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/expo/expo.git",
+    "directory": "packages/eslint-plugin-expo"
+  },
+  "keywords": [
+    "expo",
+    "react-native"
+  ],
+  "files": [
+    "index.js",
+    "rules"
+  ],
+  "author": "Expo",
+  "license": "MIT",
+  "bugs": {
+    "url": "https://github.com/expo/expo/issues"
+  },
+  "homepage": "https://github.com/expo/expo/tree/main/packages/eslint-plugin-expo",
+  "dependencies": {
+  },
+  "peerDependencies": {
+    "eslint": ">=8.10",
+    "prettier": ">=2.4"
+  },
+  "peerDependenciesMeta": {
+    "prettier": {
+      "optional": true
+    }
+  }
+}

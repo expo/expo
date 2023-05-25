@@ -2,6 +2,8 @@ import * as Application from 'expo-application';
 import Constants from 'expo-constants';
 import { Platform } from 'react-native';
 
+import { Ionicons } from '@expo/vector-icons';
+
 const bareMap = {
   ios: {
     // bare-expo
