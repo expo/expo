@@ -82,7 +82,7 @@ repositories {
   mavenCentral()
 }
 
-def glideVersion = safeExtGet('glideVersion', '4.15.1')
+def glideVersion = safeExtGet('glideVersion', '4.13.2')
 
 dependencies {
   implementation project(':expo-modules-core')
