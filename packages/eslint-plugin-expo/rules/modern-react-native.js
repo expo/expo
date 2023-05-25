@@ -30,7 +30,8 @@ module.exports = {
     const disallowedImports = options.preserve || [];
 
     const recommendations = {
-      Linking: 'expo-linking',
+      // TODO: Linking needs to be imported differently and that changes all the collision resolution logic.
+      // Linking: 'expo-linking',
       Image: 'expo-image',
       StatusBar: 'expo-status-bar',
       ScrollView: 'react-native-gesture-handler',

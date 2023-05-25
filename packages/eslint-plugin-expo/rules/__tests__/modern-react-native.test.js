@@ -31,6 +31,15 @@ ruleTester.run('no-rn-image-imports', rule, {
     {
       code: `import * as Linking from 'expo-linking';`,
     },
+    // Supports options
+    {
+      code: `import { Image } from 'react-native';`,
+      options: [
+        {
+          preserve: ['Image'],
+        },
+      ],
+    },
   ],
   invalid: [
     {
@@ -62,6 +71,22 @@ import { View } from 'react-native';`,
       output: `import { ScrollView } from 'react-native-gesture-handler';
 import { Image } from 'expo-image';
 `,
+    },
+
+    {
+      code: `import { View, ScrollView, Image } from 'react-native';`,
+      options: [
+        {
+          preserve: ['Image'],
+        },
+      ],
+      errors: [
+        {
+          message: `Import ScrollView from 'react-native-gesture-handler' instead of 'react-native'`,
+        },
+      ],
+      output: `import { ScrollView } from 'react-native-gesture-handler';
+import { View, Image } from 'react-native';`,
     },
   ],
 });
