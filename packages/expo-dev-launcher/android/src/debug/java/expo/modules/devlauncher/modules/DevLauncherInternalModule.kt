@@ -85,7 +85,13 @@ class DevLauncherInternalModule(reactContext: ReactApplicationContext?) :
   }
 
   private fun sanitizeUrlString(url: String): Uri {
-    return Uri.parse(url.trim())
+    var sanitizedUrl = url.trim()
+    // If the url does contain a scheme use "http://"
+    if(!sanitizedUrl.contains("://")) {
+      sanitizedUrl = "http://" + sanitizedUrl
+    }
+
+    return Uri.parse(sanitizedUrl)
   }
 
   @ReactMethod
