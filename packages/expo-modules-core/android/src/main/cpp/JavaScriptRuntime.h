@@ -2,6 +2,8 @@
 
 #pragma once
 
+#include "JNIDeallocator.h"
+
 #include <jsi/jsi.h>
 #include <fbjni/fbjni.h>
 #include <ReactCommon/CallInvoker.h>
@@ -65,19 +67,19 @@ public:
    * @throws if the input format is unknown, or evaluation causes an error,
    * a jni::JniException<JavaScriptEvaluateException> will be thrown.
    */
-  jni::local_ref<jni::HybridClass<JavaScriptValue>::javaobject> evaluateScript(
+  jni::local_ref<jni::HybridClass<JavaScriptValue, Destructible>::javaobject> evaluateScript(
     const std::string &script
   );
 
   /**
    * Returns the runtime global object for use in Kotlin.
    */
-  jni::local_ref<jni::HybridClass<JavaScriptObject>::javaobject> global();
+  jni::local_ref<jni::HybridClass<JavaScriptObject, Destructible>::javaobject> global();
 
   /**
    * Creates a new object for use in Kotlin.
    */
-  jni::local_ref<jni::HybridClass<JavaScriptObject>::javaobject> createObject();
+  jni::local_ref<jni::HybridClass<JavaScriptObject, Destructible>::javaobject> createObject();
 
   /**
    * Drains the JavaScript VM internal Microtask (a.k.a. event loop) queue.

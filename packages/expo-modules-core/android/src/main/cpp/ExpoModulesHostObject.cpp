@@ -21,6 +21,9 @@ ExpoModulesHostObject::~ExpoModulesHostObject() {
   facebook::react::LongLivedObjectCollection::get().clear();
   installer->jsRegistry.reset();
   installer->runtimeHolder.reset();
+  installer->jsInvoker.reset();
+  installer->nativeInvoker.reset();
+  installer->jniDeallocator.reset();
 }
 
 jsi::Value ExpoModulesHostObject::get(jsi::Runtime &runtime, const jsi::PropNameID &name) {

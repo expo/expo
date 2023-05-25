@@ -361,7 +361,7 @@ inline fun ModuleDefinitionBuilder.Object(block: ObjectDefinitionBuilder.() -> U
 
 inline fun Module.Object(block: ObjectDefinitionBuilder.() -> Unit): JavaScriptModuleObject {
   val objectData = ObjectDefinitionBuilder().also(block).buildObject()
-  return JavaScriptModuleObject("[Anonymous Object]")
+  return JavaScriptModuleObject(appContext.jniDeallocator, "[Anonymous Object]")
     .apply {
       val constants = objectData.constantsProvider()
       val convertedConstants = Arguments.makeNativeMap(constants)

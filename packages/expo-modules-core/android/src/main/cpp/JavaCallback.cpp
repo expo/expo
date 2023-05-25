@@ -1,6 +1,7 @@
 // Copyright © 2021-present 650 Industries, Inc. (aka Expo)
 
 #include "JavaCallback.h"
+#include "JSIInteropModuleRegistry.h"
 
 namespace expo {
 
@@ -21,6 +22,14 @@ void JavaCallback::registerNatives() {
                  });
 }
 
+jni::local_ref<JavaCallback::javaobject> JavaCallback::newInstance(
+  JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+  Callback callback
+) {
+  auto object = JavaCallback::newObjectCxxArgs(std::move(callback));
+  jsiInteropModuleRegistry->jniDeallocator->addReference(object);
+  return object;
+}
 
 void JavaCallback::invoke() {
   callback(nullptr);

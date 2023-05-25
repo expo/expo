@@ -4,7 +4,7 @@
 #include "JavaScriptValue.h"
 #include "JavaScriptObject.h"
 #include "Exceptions.h"
-#include "JavaScriptRuntime.h"
+#include "JSIInteropModuleRegistry.h"
 
 #if UNIT_TEST
 
@@ -125,7 +125,8 @@ jni::local_ref<JavaScriptValue::javaobject>
 JavaScriptRuntime::evaluateScript(const std::string &script) {
   auto scriptBuffer = std::make_shared<jsi::StringBuffer>(script);
   try {
-    return JavaScriptValue::newObjectCxxArgs(
+    return JavaScriptValue::newInstance(
+      jsiInteropModuleRegistry,
       weak_from_this(),
       std::make_shared<jsi::Value>(runtime->evaluateJavaScript(scriptBuffer, "<<evaluated>>"))
     );
@@ -148,12 +149,12 @@ JavaScriptRuntime::evaluateScript(const std::string &script) {
 
 jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::global() {
   auto global = std::make_shared<jsi::Object>(runtime->global());
-  return JavaScriptObject::newObjectCxxArgs(weak_from_this(), global);
+  return JavaScriptObject::newInstance(jsiInteropModuleRegistry, weak_from_this(), global);
 }
 
 jni::local_ref<JavaScriptObject::javaobject> JavaScriptRuntime::createObject() {
   auto newObject = std::make_shared<jsi::Object>(*runtime);
-  return JavaScriptObject::newObjectCxxArgs(weak_from_this(), newObject);
+  return JavaScriptObject::newInstance(jsiInteropModuleRegistry, weak_from_this(), newObject);
 }
 
 void JavaScriptRuntime::drainJSEventLoop() {
