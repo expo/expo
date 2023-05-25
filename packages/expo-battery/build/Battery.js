@@ -1,4 +1,5 @@
 import { EventEmitter } from 'expo-modules-core';
+import { useEffect, useState } from 'react';
 import { BatteryState, } from './Battery.types';
 import ExpoBattery from './ExpoBattery';
 const BatteryEventEmitter = new EventEmitter(ExpoBattery);
@@ -159,6 +160,86 @@ export function addBatteryStateListener(listener) {
  */
 export function addLowPowerModeListener(listener) {
     return BatteryEventEmitter.addListener('Expo.powerModeDidChange', listener);
+}
+// @needsAudit
+/**
+ * ```ts
+ * const batteryLevel = useBatteryLevel();
+ * ```
+ * Returns the battery level of the device
+ *
+ * @see addBatteryLevelListener
+ * @return The battery level of the device
+ */
+export function useBatteryLevel() {
+    const [batteryLevel, setBatteryLevel] = useState(-1);
+    useEffect(() => {
+        const listener = addBatteryLevelListener((b) => setBatteryLevel(b.batteryLevel));
+        return () => listener.remove();
+    }, []);
+    return batteryLevel;
+}
+// @needsAudit
+/**
+ * ```ts
+ * const batteryState = useBatteryState();
+ * ```
+ * Returns the battery state of the device
+ *
+ * @see addBatteryStateListener
+ * @return The battery state of the device
+ */
+export function useBatteryState() {
+    const [batteryState, setBatteryState] = useState(BatteryState.UNKNOWN);
+    useEffect(() => {
+        const listener = addBatteryStateListener((b) => setBatteryState(b.batteryState));
+        return () => listener.remove();
+    }, []);
+    return batteryState;
+}
+// @needsAudit
+/**
+ * ```ts
+ * const lowPowerMode = useLowPowerMode();
+ * ```
+ * Returns boolean indicating if the device is in low power mode
+ *
+ * @see addLowPowerModeListener
+ * @return boolean indicating if the device is in low power mode
+ */
+export function useLowPowerMode() {
+    const [lowPowerMode, setLowPowerMode] = useState(false);
+    useEffect(() => {
+        const listener = addLowPowerModeListener((b) => setLowPowerMode(b.lowPowerMode));
+        return () => listener.remove();
+    }, []);
+    return lowPowerMode;
+}
+// @needsAudit
+/**
+ * ```ts
+ * const { lowPowerMode, batteryLevel, batteryState } = usePowerState();
+ * ```
+ * Returns power state information
+ *
+ * @see PowerState
+ * @return power state information
+ */
+export function usePowerState() {
+    const [lowPowerMode, setLowPowerMode] = useState(false);
+    const [batteryState, setBatteryState] = useState(BatteryState.UNKNOWN);
+    const [batteryLevel, setBatteryLevel] = useState(-1);
+    useEffect(() => {
+        const modeListener = addLowPowerModeListener((b) => setLowPowerMode(b.lowPowerMode));
+        const levelListener = addBatteryLevelListener((b) => setBatteryLevel(b.batteryLevel));
+        const stateListener = addBatteryStateListener((b) => setBatteryState(b.batteryState));
+        return () => {
+            modeListener.remove();
+            levelListener.remove();
+            stateListener.remove();
+        };
+    }, []);
+    return { lowPowerMode, batteryLevel, batteryState };
 }
 export { BatteryState, };
 //# sourceMappingURL=Battery.js.map

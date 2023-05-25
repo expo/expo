@@ -10,6 +10,8 @@
 
 ### 🎉 New features
 
+- Added hooks `useBatteryLevel`, `useBatteryState`, `useLowPowerMode`, and `usePowerState`
+
 ### 🐛 Bug fixes
 
 - Fixed Android build warnings for Gradle version 8. ([#22537](https://github.com/expo/expo/pull/22537), [#22609](https://github.com/expo/expo/pull/22609) by [@kudo](https://github.com/kudo))
