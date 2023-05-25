@@ -49,7 +49,7 @@ module.exports = {
         }
 
         if (node.source.value === targetPackage) {
-          let importsToChange = [];
+          const importsToChange = [];
           node.specifiers.forEach((specifier) => {
             if (specifier.type === 'ImportSpecifier') {
               importsToChange.push(specifier.imported.name);
@@ -87,7 +87,6 @@ module.exports = {
                 return [
                   fixer.replaceTextRange([node.range[0], node.range[1]], remainingText),
                   fixer.insertTextBefore(node, newText),
-                  // fixer.insertTextBefore(node, newText + '\n'),
                 ];
               },
             });

@@ -27,7 +27,6 @@ module.exports = {
   create(context) {
     return {
       JSXOpeningElement(node) {
-        // if (node.name.name === 'Image') {
         node.attributes.forEach((attr) => {
           node.attributes.forEach((attr) => {
             if (attr.name.name === 'style') {
@@ -39,7 +38,7 @@ module.exports = {
                 context.report({
                   node: attr,
                   message: 'Remove empty style objects',
-                  fix: function (fixer) {
+                  fix(fixer) {
                     const rangeStart = attr.range[0];
                     const rangeEnd = attr.range[1];
                     const sourceCode = context.getSourceCode();
@@ -57,7 +56,7 @@ module.exports = {
                   context.report({
                     node: attr,
                     message: 'Remove empty style arrays',
-                    fix: function (fixer) {
+                    fix(fixer) {
                       const rangeStart = attr.range[0];
                       const rangeEnd = attr.range[1];
                       const sourceCode = context.getSourceCode();
@@ -75,7 +74,7 @@ module.exports = {
                     context.report({
                       node: attr,
                       message: 'Replace single-object style arrays with the object',
-                      fix: function (fixer) {
+                      fix(fixer) {
                         return fixer.replaceText(attr.value, `{${objectSourceCode}}`);
                       },
                     });
@@ -84,7 +83,7 @@ module.exports = {
                     context.report({
                       node: attr,
                       message: 'Replace single-identifier style arrays with the identifier',
-                      fix: function (fixer) {
+                      fix(fixer) {
                         return fixer.replaceText(attr.value, `{${identifierSourceCode}}`);
                       },
                     });
@@ -94,79 +93,6 @@ module.exports = {
             }
           });
         });
-
-        //   if (attr.name.name === 'style') {
-        //     const isObjectExpression = attr.value.expression.type === 'ObjectExpression';
-        //     const isArrayExpression = attr.value.expression.type === 'ArrayExpression';
-
-        //     if (isObjectExpression && attr.value.expression.properties.length === 0) {
-        //       // Empty object
-        //       context.report({
-        //         node: attr,
-        //         message: 'Remove empty style objects',
-        //         fix(fixer) {
-        //           const rangeStart = attr.range[0];
-        //           const rangeEnd = attr.range[1];
-        //           const sourceCode = context.getSourceCode();
-
-        //           // Check for whitespace after the attribute.
-        //           let whitespaceEnd = rangeEnd;
-        //           while (sourceCode.text[whitespaceEnd] === ' ') {
-        //             whitespaceEnd++;
-        //           }
-
-        //           // Replace the attribute with the following whitespace.
-        //           return fixer.removeRange([rangeStart, whitespaceEnd]);
-        //         },
-        //       });
-        //     } else if (isArrayExpression && attr.value.expression.elements.length === 0) {
-        //       // Empty array
-        //       context.report({
-        //         node: attr,
-        //         message: 'Remove empty style arrays',
-        //         fix(fixer) {
-        //           const rangeStart = attr.range[0];
-        //           const rangeEnd = attr.range[1];
-        //           const sourceCode = context.getSourceCode();
-
-        //           // Check for whitespace after the attribute.
-        //           let whitespaceEnd = rangeEnd;
-        //           while (sourceCode.text[whitespaceEnd] === ' ') {
-        //             whitespaceEnd++;
-        //           }
-
-        //           // Replace the attribute with the following whitespace.
-        //           return fixer.removeRange([rangeStart, whitespaceEnd]);
-        //         },
-        //       });
-        //     } else if (
-        //       isArrayExpression &&
-        //       attr.value.expression.elements.length === 1
-        //     ) {
-        //       // Array with a single element
-        //       if (elements[0].type === 'ObjectExpression') {
-        //         const objectSourceCode = context.getSourceCode().getText(elements[0]);
-        //         context.report({
-        //           node: attr,
-        //           message: 'Replace single-object style arrays with the object',
-        //           fix: function(fixer) {
-        //             return fixer.replaceText(attr.value, `{${objectSourceCode}}`);
-        //           },
-        //         });
-        //       } else if (elements[0].type === 'Identifier') {
-        //         const identifierSourceCode = context.getSourceCode().getText(elements[0]);
-        //         context.report({
-        //           node: attr,
-        //           message: 'Replace single-identifier style arrays with the identifier',
-        //           fix: function(fixer) {
-        //             return fixer.replaceText(attr.value, identifierSourceCode);
-        //           },
-        //         });
-        //       }
-        //     }
-        //   }
-        // });
-        // }
       },
     };
   },
