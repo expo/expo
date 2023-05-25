@@ -1,8 +1,8 @@
-declare var global: any;
-
 import { UnavailabilityError } from 'expo-modules-core';
 
 import ExpoFaceDetector from './ExpoFaceDetector';
+
+declare const global: any;
 
 // @docsMissing
 export type Point = { x: number; y: number };
