@@ -1,7 +1,6 @@
-<manifest xmlns:tools="http://schemas.android.com/tools"
-  package="expo.modules.imagepicker"
-          xmlns:android="http://schemas.android.com/apk/res/android"
-    >
+<manifest package="expo.modules.imagepicker"
+          xmlns:tools="http://schemas.android.com/tools"
+          xmlns:android="http://schemas.android.com/apk/res/android">
     <!-- Required for picking images from camera directly -->
     <uses-permission android:name="android.permission.CAMERA"/>
 
@@ -12,6 +11,7 @@
     <uses-permission android:name="android.permission.READ_MEDIA_VIDEO" />
 
     <application>
+      <!-- Trigger Google Play services to install the backported photo picker module. -->
       <service android:name="com.google.android.gms.metadata.ModuleDependencies"
         android:enabled="false"
         android:exported="false"

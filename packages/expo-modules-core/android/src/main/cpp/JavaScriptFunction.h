@@ -18,13 +18,19 @@ namespace expo {
 /**
  * Represents any JavaScript function. Its purpose is to expose the `jsi::Function` API back to Kotlin.
  */
-class JavaScriptFunction : public jni::HybridClass<JavaScriptFunction>, JSIFunctionWrapper {
+class JavaScriptFunction : public jni::HybridClass<JavaScriptFunction, Destructible>, JSIFunctionWrapper {
 public:
   static auto constexpr
     kJavaDescriptor = "Lexpo/modules/kotlin/jni/JavaScriptFunction;";
   static auto constexpr TAG = "JavaScriptFunction";
 
   static void registerNatives();
+
+  static jni::local_ref<JavaScriptFunction::javaobject> newInstance(
+    JSIInteropModuleRegistry *jsiInteropModuleRegistry,
+    std::weak_ptr<JavaScriptRuntime> runtime,
+    std::shared_ptr<jsi::Function> jsFunction
+  );
 
   JavaScriptFunction(
     std::weak_ptr<JavaScriptRuntime> runtime,
