@@ -18,6 +18,14 @@ ruleTester.run('no-empty-styles', rule, {
 import { Image } from 'react-native';
 
 function App() {
+  return <Image style={{ color: 'red' }} {...{}} />
+}`,
+    },
+    {
+      code: `
+import { Image } from 'react-native';
+
+function App() {
   return <Image style={{ color: 'red' }} />
 }`,
     },
