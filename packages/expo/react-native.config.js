@@ -49,6 +49,8 @@ module.exports = {
         : {
             packageImportPath: 'import expo.modules.ExpoModulesPackage;',
           },
+      macos: null,
+      windows: null,
     },
   },
 };
