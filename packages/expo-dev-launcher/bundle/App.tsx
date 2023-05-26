@@ -51,7 +51,7 @@ export function App(props: LauncherAppProps) {
 
 const Main = () => {
   return (
-    <Tab.Navigator screenOptions={{ tabBarHideOnKeyboard: true }} detachInactiveScreens={false}>
+    <Tab.Navigator detachInactiveScreens={false}>
       <Tab.Screen
         name="Home"
         component={HomeScreen}
