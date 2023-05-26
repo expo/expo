@@ -29,7 +29,7 @@ module.exports = {
       JSXOpeningElement(node) {
         node.attributes.forEach((attr) => {
           node.attributes.forEach((attr) => {
-            if (attr.name?.name === 'style') {
+            if (attr.name?.name === 'style' && attr.value.expression) {
               const isArrayExpression = attr.value.expression.type === 'ArrayExpression';
               const isObjectExpression = attr.value.expression.type === 'ObjectExpression';
 

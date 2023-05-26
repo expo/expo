@@ -15,6 +15,12 @@ ruleTester.run('no-empty-styles', rule, {
   valid: [
     {
       code: `
+function App() {
+  return <div style="auto" />
+}`,
+    },
+    {
+      code: `
 import { Image } from 'react-native';
 
 function App() {
@@ -98,6 +104,19 @@ import { Image } from 'react-native';
 function App() {
   const style = { color: 'red' };
   return <Image style={style} />
+}`,
+      errors: [{ message: 'Replace single-identifier style arrays with the identifier' }],
+    },
+    {
+      code: `
+const styles = { container: {color: 'red'} };
+function App() {
+  return <div style={[styles.container]} />
+}`,
+      output: `
+const styles = { container: {color: 'red'} };
+function App() {
+  return <div style={styles.container} />
 }`,
       errors: [{ message: 'Replace single-identifier style arrays with the identifier' }],
     },
