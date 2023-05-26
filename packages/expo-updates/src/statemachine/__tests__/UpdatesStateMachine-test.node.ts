@@ -17,12 +17,12 @@ describe('Updates state machine tests', () => {
 
   it('should set updateAvailable when new update found', (done) => {
     const testUpdateId = '00000-xxxx';
-    let isChecking = false;
+    let wasChecking = false;
     const machine = interpret(UpdatesStateMachine)
       .onTransition((state) => {
         if (state.value === 'checking') {
-          isChecking = true;
-        } else if (state.value === 'idle' && isChecking) {
+          wasChecking = true;
+        } else if (state.value === 'idle' && wasChecking) {
           expect(state.context.isChecking).toBe(false);
           expect(state.context.checkError).toBeUndefined();
           expect(state.context.latestUpdateId).toEqual(testUpdateId);
@@ -50,12 +50,12 @@ describe('Updates state machine tests', () => {
 
   it('should see updatePending when new update downloaded', (done) => {
     const testUpdateId = '00000-xxxx';
-    let isDownloading = false;
+    let wasDownloading = false;
     const machine = interpret(UpdatesStateMachine)
       .onTransition((state) => {
         if (state.value === 'downloading') {
-          isDownloading = true;
-        } else if (state.value === 'idle' && isDownloading) {
+          wasDownloading = true;
+        } else if (state.value === 'idle' && wasDownloading) {
           expect(state.context.isChecking).toBe(false);
           expect(state.context.checkError).toBeUndefined();
           expect(state.context.latestUpdateId).toEqual(testUpdateId);
@@ -72,16 +72,16 @@ describe('Updates state machine tests', () => {
 
   it('should see updatePending but no update available', (done) => {
     const testUpdateId = '00000-xxxx';
-    let isDownloading = false;
-    let isChecking = false;
+    let wasDownloading = false;
+    let wasChecking = false;
     const machine = interpret(UpdatesStateMachine)
       .onTransition((state) => {
         if (state.value === 'checking') {
-          isChecking = true;
+          wasChecking = true;
         }
         if (state.value === 'downloading') {
-          isDownloading = true;
-        } else if (state.value === 'idle' && isChecking && isDownloading) {
+          wasDownloading = true;
+        } else if (state.value === 'idle' && wasChecking && wasDownloading) {
           expect(state.context.isChecking).toBe(false);
           expect(state.context.checkError).toBeUndefined();
           expect(state.context.latestUpdateId).toBeUndefined();
