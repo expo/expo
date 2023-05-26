@@ -78,6 +78,7 @@ export const UpdatesStateMachine = createMachine<UpdatesContext>({
     isUpdateAvailable: false,
     isUpdatePending: false,
   },
+  predictableActionArguments: true,
   states: {
     idle: {
       on: {

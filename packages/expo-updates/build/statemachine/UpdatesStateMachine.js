@@ -45,7 +45,6 @@ const downloadNow = assign({
  * The actual implementations of this state machine will be in Swift on iOS and Kotlin on Android.
  */
 export const UpdatesStateMachine = createMachine({
-    /** @xstate-layout N4IgpgJg5mDOIC5QFUAOECGAXOA6AlhADZgDEAwgBICi5A0gNoAMAuoqKgPaz5b6cA7diAAeiAKxMAbLgBMARgAcAdnEBmKWtnj5ATjUAaEAE8Ju5bnHLFTACzLl8tePWyAvm6NpMOWAWJkACIA8gDqAHIAMsEAgoHMbEggXDx8gsJiCLZSurhSKjpM4lK2iuKKUlJGpgg5apZq8vKOTPq2tsUeXujYeIQkpABK1ADKACoxg2MJwim8-EJJmcrOuLr5ylKyW0WyiorViFLNuDbZ8jm6skXiul0g3r1+AMYAFmDPANb4AlAUNPQAPrkYIAWQACpFqGNqICYgA1GIASUiMQAQlDAeFqKEZkk5mlFqBMrJZLZLPpNvYyo1pIcEIp5LhbLpWbobGUpKp3J4Hj1fLg3h9vr9-rQ6MCwZDobCEcjURjYchwlQYuEAOLUeKsWbcebpJaIUnk25qKnWdTyOkmI1qJi4ZyU7T7cou+6PAVCr4-P5UcWSiFQmGA5VylHoqF4jh6wkZI1kilmkoW2lVG0IZyyXCbFzmTRMMkaNTu-l4L0i30AiXUQaDYKDKPJGMLOMIY2J800q1pmr2cS4ZpKUlcpTs9olnx4CCcADuAiInAwEB9pBCEWicQD0uD2NxOvxzYNxPjJspya71pq1lypVssl07RWajNd15Hqns-ni+XorXUVigRbkGSoqpQaqatqiTRqkLaGm2Camp2lqXog6zkso6wONIag2PItgTk8uDTnOC5Liuf4boBNZ1g2+7QfqRKiCeHbnshPaIE0Th5MUeE6LYrSyKoHi8gInAQHAwjvvAB4wUeTEIAAtOxikyEwanqRpGnKARAr9GAuqyYxmRSDoawbFshZ4WS9LHIoDp2FIRR2AojKKDpZbvN6vwGQxrY5HITCNLIzjlMognWPSeHkoo2TOGUFyOYoVzuX4xFfmR3kyb5cF3vSYUyDYDi0jhFTZCluAAE5wFgGAVXwmX0bGcEVDII77JsORMBUug2ScRTZKUCh2pUr4eEAA */
     id: 'Updates',
     initial: 'idle',
     context: {
@@ -54,6 +53,7 @@ export const UpdatesStateMachine = createMachine({
         isUpdateAvailable: false,
         isUpdatePending: false,
     },
+    predictableActionArguments: true,
     states: {
         idle: {
             on: {
