@@ -12,7 +12,6 @@ import {
   TerminalIcon,
   ChevronRightIcon,
   InfoIcon,
-  scale,
   useExpoPalette,
   BranchIcon,
 } from 'expo-dev-client-components';
@@ -113,15 +112,11 @@ export function HomeScreen({
   };
 
   return (
-    <View testID="DevLauncherMainScreen">
-      <AppHeader navigation={navigation} />
-      <ScrollView
-        style={{}}
-        contentContainerStyle={{
-          paddingBottom: scale['48'],
-        }}>
-        <ScreenContainer>
-          <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+    <View testID="DevLauncherMainScreen" flex="1">
+      <KeyboardAvoidingView behavior="padding" style={{ flex: 1 }}>
+        <AppHeader navigation={navigation} />
+        <ScrollView>
+          <ScreenContainer>
             {crashReport && (
               <View px="medium" py="small" mt="small">
                 <Button.ScaleOnPressContainer
@@ -210,9 +205,9 @@ export function HomeScreen({
 
               <RecentlyOpenedApps onRecentAppPress={onRecentAppPress} loadingUrl={loadingUrl} />
             </View>
-          </KeyboardAvoidingView>
-        </ScreenContainer>
-      </ScrollView>
+          </ScreenContainer>
+        </ScrollView>
+      </KeyboardAvoidingView>
     </View>
   );
 }
