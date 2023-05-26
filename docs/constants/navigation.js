@@ -20,7 +20,7 @@ const archiveDirectories = ['archive'];
 /** Manual list of directories to categorize as "Reference" */
 const referenceDirectories = ['versions', 'technical-specs', 'more'];
 /** Private preview section which isn't linked in the documentation */
-const previewDirectories = ['feature-preview', 'preview'];
+const previewDirectories = ['feature-preview', 'preview', 'router'];
 /** All other unlisted directories */
 const generalDirectories = fs
   .readdirSync(PAGES_DIR, { withFileTypes: true })
@@ -368,6 +368,30 @@ const preview = [
       makePage('preview/custom-build-config-schema.mdx'),
     ]),
     { expanded: true },
+  ]),
+  makeSection('Expo Router', [
+    makeGroup('Static rendering', [
+      makePage('router/static-rendering/async-routes.mdx'),
+      makePage('router/static-rendering/root-html.mdx'),
+    ]),
+    makeGroup('Advance layout patterns', [
+      makePage('router/advance/root-layout.mdx'),
+      makePage('router/advance/stack.mdx'),
+      makePage('router/advance/tabs.mdx'),
+      makePage('router/advance/nesting-navigators.mdx'),
+      makePage('router/advance/drawer.mdx'),
+      makePage('router/advance/modal.mdx'),
+      makePage('router/advance/router-settings.mdx'),
+    ]),
+    makeGroup('Reference', [
+      makePage('router/reference/roadmap.mdx'),
+      makePage('router/reference/sitemap.mdx'),
+      makePage('router/reference/typescript.mdx'),
+      makePage('router/reference/authentication.mdx'),
+      makePage('router/reference/screen-tracking.mdx'),
+      makePage('router/reference/troubleshooting.mdx'),
+      makePage('router/reference/faq.mdx'),
+    ]),
   ]),
 ];
 
