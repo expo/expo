@@ -71,8 +71,15 @@ module.exports = {
                       return fixer.replaceText(attr.value, `{${identifierSourceCode}}`);
                     },
                   });
-                } else {
-                  console.log('Unknown element type', elements[0].type);
+                } else if (elements[0].type === 'MemberExpression') {
+                  const memberExpressionSourceCode = context.getSourceCode().getText(elements[0]);
+                  context.report({
+                    node: attr,
+                    message: `Replace \`style={[${memberExpressionSourceCode}]}\` with \`style={${memberExpressionSourceCode}}\``,
+                    fix(fixer) {
+                      return fixer.replaceText(attr.value, `{${memberExpressionSourceCode}}`);
+                    },
+                  });
                 }
               }
             }

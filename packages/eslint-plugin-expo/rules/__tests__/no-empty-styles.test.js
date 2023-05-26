@@ -118,7 +118,7 @@ const styles = { container: {color: 'red'} };
 function App() {
   return <div style={styles.container} />
 }`,
-      errors: [{ message: 'Replace single-identifier style arrays with the identifier' }],
+      errors: [{ message: 'Replace `style={[styles.container]}` with `style={styles.container}`' }],
     },
   ],
 });
