@@ -23,6 +23,10 @@ internal class ImagePickerOptions : Record, Serializable {
   var quality: Double = 0.2
 
   @Field
+  @IntRange(from = 0)
+  var selectionLimit: Int = 0
+
+  @Field
   var base64: Boolean = false
 
   @Field

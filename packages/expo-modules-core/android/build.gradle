@@ -281,8 +281,8 @@ dependencies {
    * We're enforcing the most up-to-date versions of the dependencies here that are used in subclassing chain for ReactActivity.
    */
   implementation "androidx.appcompat:appcompat:1.4.1"
-  implementation "androidx.activity:activity-ktx:1.4.0" // androidx.appcompat:appcompat:1.4.1 depends on version 1.2.3, so we enforce higher one here
-  implementation "androidx.fragment:fragment-ktx:1.4.1" // androidx.appcomapt:appcompat:1.4.1 depends on version 1.3.4, so we enforce higher one here
+  implementation "androidx.activity:activity-ktx:1.7.1" // androidx.appcompat:appcompat:1.4.1 depends on version 1.2.3, so we enforce higher one here
+  implementation "androidx.fragment:fragment-ktx:1.5.7" // androidx.appcomapt:appcompat:1.4.1 depends on version 1.3.4, so we enforce higher one here
 
   //noinspection GradleDynamicVersion
   implementation 'com.facebook.react:react-native:+'
