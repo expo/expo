@@ -367,6 +367,15 @@ const preview = [
       makePage('preview/custom-build-config.mdx'),
       makePage('preview/custom-build-config-schema.mdx'),
     ]),
+    makeGroup('Routing', [
+      makePage('routing/introduction.mdx'),
+      makePage('routing/installation.mdx'),
+      makePage('routing/create-pages.mdx'),
+      makePage('routing/shared-routes-and-layouts.mdx'),
+      makePage('routing/appearance.mdx'),
+      makePage('routing/styling.mdx'),
+      makePage('routing/error-handling.mdx'),
+    ]),
     { expanded: true },
   ]),
 ];
