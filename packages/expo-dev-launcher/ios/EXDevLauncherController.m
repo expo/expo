@@ -25,6 +25,10 @@
 #import <EXDevLauncher-Swift.h>
 #endif
 
+#ifdef RCT_NEW_ARCH_ENABLED
+#import <React/RCTSurfaceView.h>
+#endif
+
 @import EXManifests;
 @import EXDevMenu;
 
@@ -564,12 +568,18 @@
   [[NSNotificationCenter defaultCenter] removeObserver:self name:RCTContentDidAppearNotification object:nil];
 
   dispatch_async(dispatch_get_main_queue(), ^{
+    #ifdef RCT_NEW_ARCH_ENABLED
+      #define EXPECTED_ROOT_VIEW RCTSurfaceView
+    #else
+      #define EXPECTED_ROOT_VIEW RCTRootView
+    #endif
     NSArray<UIView *> *views = [[[self->_window rootViewController] view] subviews];
     for (UIView *view in views) {
-      if (![view isKindOfClass:[RCTRootContentView class]]) {
+      if (![view isKindOfClass:[EXPECTED_ROOT_VIEW class]]) {
         [view removeFromSuperview];
       }
     }
+    #undef EXPECTED_ROOT_VIEW
   });
 }
 
