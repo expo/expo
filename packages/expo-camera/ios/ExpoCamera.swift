@@ -384,7 +384,6 @@ public class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
           self.motionManager.stopAccelerometerUpdates()
           return
         }
-        
 
         let deviceOrientation = ExpoCameraUtils.deviceOrientation(
           for: accelerometerData,
@@ -479,7 +478,11 @@ public class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
     self.handleCapturedImageData(imageData: imageData, metadata: metadata, options: options, promise: promise)
   }
 
-  public func photoOutput(_ output: AVCapturePhotoOutput, didFinishProcessingPhoto photo: AVCapturePhoto, error: Error?) {
+  public func photoOutput(
+    _ output: AVCapturePhotoOutput,
+    didFinishProcessingPhoto photo: AVCapturePhoto,
+    error: Error?
+    ) {
     guard let promise = photoCapturedPromise, let options = photoCaptureOptions else {
       return
     }
@@ -493,7 +496,12 @@ public class ExpoCamera: ExpoView, EXAppLifecycleListener, EXCameraInterface,
     }
 
     let imageData = photo.fileDataRepresentation()
-    handleCapturedImageData(imageData: imageData, metadata: photo.metadata, options: options, promise: promise)
+    handleCapturedImageData(
+      imageData: imageData,
+      metadata: photo.metadata,
+      options: options,
+      promise: promise
+    )
   }
 
   func handleCapturedImageData(
